@@ -45,7 +45,7 @@ namespace NHibernate.Criterion
 			return new SqlString(
 				criteriaQuery.NewQueryParameter(TypedValue).Single(),
 				" as ",
-				GetColumnAliases(position, criteria, criteriaQuery)[0]);
+				GetColumnAlias(position));
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

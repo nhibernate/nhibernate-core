@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.Util;
 
 namespace NHibernate.Persister.Entity
@@ -16,7 +17,7 @@ namespace NHibernate.Persister.Entity
 		/// Given a query alias and an identifying suffix, render the property select fragment.
 		/// </summary>
 		//6.0 TODO: Merge into IQueryable
-		public static string PropertySelectFragment(this IQueryable query, string alias, string suffix, string[] fetchProperties)
+		public static string PropertySelectFragment(this IQueryable query, string alias, string suffix, ICollection<string> fetchProperties)
 		{
 			return ReflectHelper.CastOrThrow<AbstractEntityPersister>(query, "individual lazy property fetches")
 			                    .PropertySelectFragment(alias, suffix, fetchProperties);

@@ -12,28 +12,16 @@ namespace NHibernate.Test.Criteria.Lambda
 	{
 		private void AssertCriteriaAreNotEqual(ICriteria expected, ICriteria actual)
 		{
-			try
-			{
-				AssertCriteriaAreEqual(expected, actual);
-				Assert.Fail("No exception thrown");
-			}
-			catch
-			{
-				Assert.Pass();
-			}
+			Assert.Throws<AssertionException>(
+				() => { AssertCriteriaAreEqual(expected, actual); },
+				"No exception thrown");
 		}
 
 		private void AssertCriteriaAreNotEqual(DetachedCriteria expected, DetachedCriteria actual)
 		{
-			try
-			{
-				AssertCriteriaAreEqual(expected, actual);
-				Assert.Fail("No exception thrown");
-			}
-			catch
-			{
-				Assert.Pass();
-			}
+			Assert.Throws<AssertionException>(
+				() => { AssertCriteriaAreEqual(expected, actual); },
+				"No exception thrown");
 		}
 
 		[Test]

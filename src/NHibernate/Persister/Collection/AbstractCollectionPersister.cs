@@ -1380,7 +1380,9 @@ namespace NHibernate.Persister.Collection
 
 			return buffer.ToString();
 		}
-		
+
+		// Since 5.4
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public bool IsManyToManyFiltered(IDictionary<string, IFilter> enabledFilters)
 		{
 			return IsManyToMany && (manyToManyWhereString != null || manyToManyFilterHelper.IsAffectedBy(enabledFilters));

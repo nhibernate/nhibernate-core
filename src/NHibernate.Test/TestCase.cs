@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+using System.Linq;
 using System.Reflection;
 using log4net;
 using NHibernate.Cfg;
@@ -29,6 +31,15 @@ namespace NHibernate.Test
 		private SchemaExport _schemaExport;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
+		private static readonly FieldInfo PlanCacheField;
+
+		static TestCase()
+		{
+			PlanCacheField = typeof(QueryPlanCache)
+				                 .GetField("planCache", BindingFlags.NonPublic | BindingFlags.Instance)
+			                 ?? throw new InvalidOperationException(
+				                 "planCache field does not exist in QueryPlanCache.");
+		}
 
 		protected Dialect.Dialect Dialect
 		{
@@ -220,15 +231,22 @@ namespace NHibernate.Test
 
 		protected virtual bool CheckDatabaseWasCleaned()
 		{
-			if (Sfi.GetAllClassMetadata().Count == 0)
+			var allClassMetadata = Sfi.GetAllClassMetadata();
+			if (allClassMetadata.Count == 0)
 			{
 				// Return early in the case of no mappings, also avoiding
 				// a warning when executing the HQL below.
 				return true;
 			}
 
+			var explicitPolymorphismEntities = allClassMetadata.Values.Where(x => x is NHibernate.Persister.Entity.IQueryable queryable && queryable.IsExplicitPolymorphism).ToArray();
+
+			//TODO: Maybe add explicit load query checks 
+			if (explicitPolymorphismEntities.Length == allClassMetadata.Count)
+				return true;
+
 			bool empty;
-			using (ISession s = Sfi.OpenSession())
+			using (ISession s = OpenSession())
 			{
 				IList objects = s.CreateQuery("from System.Object o").List();
 				empty = objects.Count == 0;
@@ -282,15 +300,16 @@ namespace NHibernate.Test
 
 		protected virtual void CreateSchema()
 		{
-			SchemaExport.Create(OutputDdl, true);
+			using (var optionalConnection = OpenConnectionForSchemaExport())
+				SchemaExport.Create(OutputDdl, true, optionalConnection);
 		}
 
 		protected virtual void DropSchema()
 		{
-			DropSchema(OutputDdl, SchemaExport, Sfi);
+			DropSchema(OutputDdl, SchemaExport, Sfi, OpenConnectionForSchemaExport);
 		}
 
-		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi)
+		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi, Func<DbConnection> getConnection = null)
 		{
 			if (sfi?.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
 			{
@@ -303,7 +322,16 @@ namespace NHibernate.Test
 				fbDriver.ClearPool(null);
 			}
 
-			export.Drop(useStdOut, true);
+			using(var optionalConnection = getConnection?.Invoke())
+				export.Drop(useStdOut, true, optionalConnection);
+		}
+
+		/// <summary>
+		/// Specific connection is required only for Database multi-tenancy. In other cases can be null 
+		/// </summary>
+		protected virtual DbConnection OpenConnectionForSchemaExport()
+		{
+			return null;
 		}
 
 		protected virtual DebugSessionFactory BuildSessionFactory()
@@ -440,7 +468,6 @@ namespace NHibernate.Test
 		private static readonly Dictionary<string, HashSet<System.Type>> DialectsNotSupportingStandardFunction =
 			new Dictionary<string, HashSet<System.Type>>
 			{
-				{"locate", new HashSet<System.Type> {typeof (SQLiteDialect)}},
 				{"bit_length", new HashSet<System.Type> {typeof (SQLiteDialect)}},
 				{"extract", new HashSet<System.Type> {typeof (SQLiteDialect)}},
 				{
@@ -489,14 +516,14 @@ namespace NHibernate.Test
 				$"{dialect} doesn't support {functionName} standard function.");
 		}
 
+		protected SoftLimitMRUCache GetQueryPlanCache()
+		{
+			return (SoftLimitMRUCache) PlanCacheField.GetValue(Sfi.QueryPlanCache);
+		}
+
 		protected void ClearQueryPlanCache()
 		{
-			var planCacheField = typeof(QueryPlanCache)
-									.GetField("planCache", BindingFlags.NonPublic | BindingFlags.Instance)
-								?? throw new InvalidOperationException("planCache field does not exist in QueryPlanCache.");
-
-			var planCache = (SoftLimitMRUCache) planCacheField.GetValue(Sfi.QueryPlanCache);
-			planCache.Clear();
+			GetQueryPlanCache().Clear();
 		}
 
 		protected Substitute<Dialect.Dialect> SubstituteDialect()

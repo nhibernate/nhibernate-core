@@ -12,6 +12,7 @@ using NHibernate.Hql;
 using NHibernate.Linq;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
+using NHibernate.MultiTenancy;
 using NHibernate.Transaction;
 using NHibernate.Util;
 
@@ -196,6 +197,8 @@ namespace NHibernate.Cfg
 				settings.IsAutoQuoteEnabled = false;
 			}
 
+			settings.ThrowOnSchemaUpdate = PropertiesHelper.GetBoolean(Environment.Hbm2ddlThrowOnUpdate, properties, false);
+
 			#endregion
 
 			bool useSecondLevelCache = PropertiesHelper.GetBoolean(Environment.UseSecondLevelCache, properties, true);
@@ -308,13 +311,28 @@ namespace NHibernate.Cfg
 			// Not ported - JdbcBatchVersionedData
 
 			settings.QueryModelRewriterFactory = CreateQueryModelRewriterFactory(properties);
-			
+			settings.PreTransformerRegistrar = CreatePreTransformerRegistrar(properties);
+
+			// Avoid dependency on re-linq assembly when PreTransformerRegistrar is null
+			if (settings.PreTransformerRegistrar != null)
+			{
+				settings.LinqPreTransformer = NhRelinqQueryParser.CreatePreTransformer(settings.PreTransformerRegistrar);
+			}
+
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;
 			
 			bool trackSessionId = PropertiesHelper.GetBoolean(Environment.TrackSessionId, properties, true);
 			log.Debug("Track session id: " + EnabledDisabled(trackSessionId));
 			settings.TrackSessionId = trackSessionId;
+
+			var multiTenancyStrategy = PropertiesHelper.GetEnum(Environment.MultiTenancy, properties, MultiTenancyStrategy.None);
+			settings.MultiTenancyStrategy = multiTenancyStrategy;
+			if (multiTenancyStrategy != MultiTenancyStrategy.None)
+			{
+				log.Debug("multi-tenancy strategy : " + multiTenancyStrategy);
+				settings.MultiTenancyConnectionProvider = CreateMultiTenancyConnectionProvider(properties);
+			}
 
 			return settings;
 		}
@@ -402,6 +420,29 @@ namespace NHibernate.Cfg
 			}
 		}
 
+		private static IMultiTenancyConnectionProvider CreateMultiTenancyConnectionProvider(IDictionary<string, string> properties)
+		{
+			string className = PropertiesHelper.GetString(
+				Environment.MultiTenancyConnectionProvider,
+				properties,
+				null);
+			log.Info("Multi-tenancy connection provider: {0}", className);
+			if (className == null)
+			{
+				return null;
+			}
+
+			try
+			{
+				return (IMultiTenancyConnectionProvider)
+					Environment.ObjectsFactory.CreateInstance(System.Type.GetType(className, true));
+			}
+			catch (Exception cnfe)
+			{
+				throw new HibernateException("could not find Multi-tenancy connection provider class: " + className, cnfe);
+			}
+		}
+
 		private static ITransactionFactory CreateTransactionFactory(IDictionary<string, string> properties)
 		{
 			string className = PropertiesHelper.GetString(
@@ -440,6 +481,26 @@ namespace NHibernate.Cfg
 			catch (Exception cnfe)
 			{
 				throw new HibernateException("could not instantiate IQueryModelRewriterFactory: " + className, cnfe);
+			}
+		}
+
+		private static IExpressionTransformerRegistrar CreatePreTransformerRegistrar(IDictionary<string, string> properties)
+		{
+			var className = PropertiesHelper.GetString(Environment.PreTransformerRegistrar, properties, null);
+			if (className == null)
+				return null;
+
+			log.Info("Pre-transformer registrar: {0}", className);
+
+			try
+			{
+				return
+					(IExpressionTransformerRegistrar)
+					Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
+			}
+			catch (Exception e)
+			{
+				throw new HibernateException("could not instantiate IExpressionTransformerRegistrar: " + className, e);
 			}
 		}
 	}

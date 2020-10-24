@@ -176,7 +176,7 @@ namespace NHibernate.Engine.Query
 
 		public IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session)
 		{
-			return new SafetyEnumerable<T>(PerformIterate(queryParameters, session));
+			return PerformIterate(queryParameters, session).CastOrDefault<T>();
 		}
 
         public int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)

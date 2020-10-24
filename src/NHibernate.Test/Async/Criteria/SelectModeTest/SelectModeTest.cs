@@ -480,6 +480,72 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 			}
 		}
 
+		//GH-2440
+		[Test]
+		public async Task FetchWithAliasedJoinFutureAsync()
+		{
+			using (var session = OpenSession())
+			{
+				EntityComplex alias = null;
+				EntitySimpleChild child1 = null;
+				var list = (await (session.QueryOver<EntityComplex>(() => alias)
+								.Where(ec => ec.Id == _parentEntityComplexId)
+								.JoinQueryOver(() => alias.Child1, () => child1)
+								.Fetch(SelectMode.Fetch, () => alias.ChildrenList)
+								.TransformUsing(Transformers.DistinctRootEntity)
+								.Future()
+								.GetEnumerableAsync()))
+								.ToList();
+
+				var childList = list[0].ChildrenList;
+				Assert.That(list[0].ChildrenList.Count, Is.GreaterThan(1));
+				Assert.That(list[0].ChildrenList, Is.EqualTo(list[0].ChildrenList.OrderByDescending(c => c.OrderIdx)), "wrong order");
+			}
+		}
+
+		//GH-2440
+		[Test]
+		public async Task CacheableFetchWithAliasedJoinFutureAsync()
+		{
+			using (var session = OpenSession())
+			{
+				EntityComplex alias = null;
+				EntitySimpleChild child1 = null;
+				var list = (await (session.QueryOver<EntityComplex>(() => alias)
+								.Where(ec => ec.Id == _parentEntityComplexId)
+								.JoinQueryOver(() => alias.Child1, () => child1)
+								.Fetch(SelectMode.Fetch, () => alias.ChildrenList)
+								.TransformUsing(Transformers.DistinctRootEntity)
+								.Cacheable()
+								.Future()
+								.GetEnumerableAsync()))
+								.ToList();
+				EntityComplex value = null;
+				Assert.DoesNotThrow(() => value = list[0]);
+				Assert.That(value, Is.Not.Null);
+			}
+
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex alias = null;
+				EntitySimpleChild child1 = null;
+				var list = session.QueryOver<EntityComplex>(() => alias)
+								.Where(ec => ec.Id == _parentEntityComplexId)
+								.JoinQueryOver(() => alias.Child1, () => child1)
+								.Fetch(SelectMode.Fetch, () => alias.ChildrenList)
+								.TransformUsing(Transformers.DistinctRootEntity)
+								.Cacheable()
+								.Future()
+								.ToList();
+				EntityComplex value = null;
+				Assert.DoesNotThrow(() => value = list[0]);
+				Assert.That(value, Is.Not.Null);
+
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(0), "Query is expected to be retrieved from cache");
+			}
+		}
+
 		[Test, Obsolete]
 		public async Task FetchModeEagerForLazyAsync()
 		{

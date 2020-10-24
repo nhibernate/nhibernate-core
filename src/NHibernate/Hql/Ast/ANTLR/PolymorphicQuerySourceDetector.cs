@@ -45,7 +45,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 					implementors.ToArray(implementor => MakeIdent(querySource, implementor)));
 		}
 
-		private static string GetClassName(IASTNode querySource)
+		internal static string GetClassName(IASTNode querySource)
 		{
 			switch (querySource.Type)
 			{

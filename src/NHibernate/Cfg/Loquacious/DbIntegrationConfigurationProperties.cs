@@ -4,6 +4,7 @@ using NHibernate.Connection;
 using NHibernate.Driver;
 using NHibernate.Exceptions;
 using NHibernate.Linq.Visitors;
+using NHibernate.MultiTenancy;
 using NHibernate.Transaction;
 
 namespace NHibernate.Cfg.Loquacious
@@ -130,9 +131,37 @@ namespace NHibernate.Cfg.Loquacious
 			set { configuration.SetProperty(Environment.Hbm2ddlAuto, value.ToString()); }
 		}
 
+		// 6.0 TODO default should become true
+		/// <summary>
+		/// Whether to throw or not on schema auto-update failures. <see langword="false" /> by default.
+		/// </summary>
+		public bool ThrowOnSchemaUpdate
+		{
+			set { configuration.SetProperty(Environment.Hbm2ddlThrowOnUpdate, value.ToString().ToLowerInvariant()); }
+		}
+
 		public void QueryModelRewriterFactory<TFactory>() where TFactory : IQueryModelRewriterFactory
 		{
 			configuration.SetProperty(Environment.QueryModelRewriterFactory, typeof(TFactory).AssemblyQualifiedName);
+		}
+
+		/// <summary>
+		/// Set the class of the LINQ query pre-transformer registrar.
+		/// </summary>
+		/// <typeparam name="TRegistrar">The class of the LINQ query pre-transformer registrar.</typeparam>
+		public void PreTransformerRegistrar<TRegistrar>() where TRegistrar : IExpressionTransformerRegistrar
+		{
+			configuration.SetProperty(Environment.PreTransformerRegistrar, typeof(TRegistrar).AssemblyQualifiedName);
+		}
+
+		public MultiTenancy.MultiTenancyStrategy MultiTenancy
+		{
+			set { configuration.SetProperty(Environment.MultiTenancy,  value.ToString()); }
+		}
+
+		public void MultiTenancyConnectionProvider<TProvider>() where TProvider : IMultiTenancyConnectionProvider
+		{
+			configuration.SetProperty(Environment.MultiTenancyConnectionProvider, typeof(TProvider).AssemblyQualifiedName);
 		}
 
 		#endregion

@@ -21,18 +21,12 @@ namespace NHibernate.Dialect.Function
 
 		public NoArgSQLFunction(string name, IType returnType, bool hasParenthesesIfNoArguments)
 		{
-#pragma warning disable 618
 			Name = name;
-#pragma warning restore 618
 			FunctionReturnType = returnType;
 			HasParenthesesIfNoArguments = hasParenthesesIfNoArguments;
 		}
 
 		public IType FunctionReturnType { get; protected set; }
-
-		// Since v5.3
-		[Obsolete("Use FunctionName property instead.")]
-		public string Name { get; protected set; }
 
 		#region ISQLFunction Members
 
@@ -58,9 +52,7 @@ namespace NHibernate.Dialect.Function
 		}
 
 		/// <inheritdoc />
-#pragma warning disable 618
-		public string FunctionName => Name;
-#pragma warning restore 618
+		public string Name { get; protected set; }
 
 		public bool HasArguments
 		{
@@ -73,15 +65,15 @@ namespace NHibernate.Dialect.Function
 		{
 			if (args.Count > 0)
 			{
-				throw new QueryException("function takes no arguments: " + FunctionName);
+				throw new QueryException("function takes no arguments: " + Name);
 			}
 
 			if (HasParenthesesIfNoArguments)
 			{
-				return new SqlString(FunctionName + "()");
+				return new SqlString(Name + "()");
 			}
 
-			return new SqlString(FunctionName);
+			return new SqlString(Name);
 		}
 
 		#endregion

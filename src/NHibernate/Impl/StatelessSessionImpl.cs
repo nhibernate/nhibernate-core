@@ -539,40 +539,32 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary> Retrieve a entity. </summary>
+		/// <summary> Retrieve an entity. </summary>
 		/// <returns> a detached entity instance </returns>
 		public object Get(string entityName, object id)
 		{
 			return Get(entityName, id, LockMode.None);
 		}
 
-		/// <summary> Retrieve a entity.
-		///
+		/// <summary>
+		/// Retrieve an entity.
 		/// </summary>
 		/// <returns> a detached entity instance
 		/// </returns>
 		public T Get<T>(object id)
 		{
-			using (BeginProcess())
-			{
-				return (T)Get(typeof(T), id);
-			}
-		}
-
-		private object Get(System.Type persistentClass, object id)
-		{
-			return Get(persistentClass.FullName, id);
+			return (T) Get(typeof(T).FullName, id);
 		}
 
 		/// <summary>
-		/// Retrieve a entity, obtaining the specified lock mode.
+		/// Retrieve an entity, obtaining the specified lock mode.
 		/// </summary>
 		/// <returns> a detached entity instance </returns>
 		public object Get(string entityName, object id, LockMode lockMode)
 		{
 			using (BeginProcess())
 			{
-				object result = Factory.GetEntityPersister(entityName).Load(id, null, lockMode, this);
+				object result = Factory.GetEntityPersister(entityName).Load(id, null, lockMode ?? LockMode.None, this);
 				if (temporaryPersistenceContext.IsLoadFinished)
 				{
 					temporaryPersistenceContext.Clear();
@@ -582,15 +574,12 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Retrieve a entity, obtaining the specified lock mode.
+		/// Retrieve an entity, obtaining the specified lock mode.
 		/// </summary>
 		/// <returns> a detached entity instance </returns>
 		public T Get<T>(object id, LockMode lockMode)
 		{
-			using (BeginProcess())
-			{
-				return (T)Get(typeof(T).FullName, id, lockMode);
-			}
+			return (T) Get(typeof(T).FullName, id, lockMode);
 		}
 
 		/// <summary>

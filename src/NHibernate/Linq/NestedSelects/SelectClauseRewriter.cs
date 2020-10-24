@@ -38,6 +38,17 @@ namespace NHibernate.Linq.NestedSelects
 			return base.Visit(expression);
 		}
 
+		protected override Expression VisitUnary(UnaryExpression node)
+		{
+			if (node.NodeType == ExpressionType.Convert &&
+				(node.Operand is MemberExpression || node.Operand is QuerySourceReferenceExpression))
+			{
+				return AddAndConvertExpression(node.Operand, node.Type);
+			}
+
+			return base.VisitUnary(node);
+		}
+
 		protected override Expression VisitMember(MemberExpression expression)
 		{
 			return AddAndConvertExpression(expression);
@@ -50,13 +61,18 @@ namespace NHibernate.Linq.NestedSelects
 
 		private Expression AddAndConvertExpression(Expression expression)
 		{
+			return AddAndConvertExpression(expression, expression.Type);
+		}
+
+		private Expression AddAndConvertExpression(Expression expression, System.Type type)
+		{
 			expressions.Add(new ExpressionHolder { Expression = expression, Tuple = tuple });
 
 			return Expression.Convert(
 				Expression.ArrayIndex(
 					Expression.Property(parameter, Tuple.ItemsProperty),
 					Expression.Constant(expressions.Count - 1)),
-				expression.Type);
+				type);
 		}
 	}
 }

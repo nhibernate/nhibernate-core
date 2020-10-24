@@ -356,7 +356,8 @@ namespace NHibernate.SqlCommand
 		public SqlCommandInfo ToSqlCommandInfo()
 		{
 			SqlString text = ToSqlString();
-			List<SqlType> parameterTypes = new List<SqlType>(new SafetyEnumerable<SqlType>(columns.Values));
+
+			var parameterTypes = columns.Values.OfType<SqlType>().ToList(); 
 			parameterTypes.AddRange(whereParameterTypes);
 			return new SqlCommandInfo(text, parameterTypes.ToArray());
 		}

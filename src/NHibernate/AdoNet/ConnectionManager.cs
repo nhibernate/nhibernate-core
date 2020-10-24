@@ -4,8 +4,9 @@ using System.Data;
 using System.Data.Common;
 using System.Runtime.Serialization;
 using System.Security;
-
+using NHibernate.Connection;
 using NHibernate.Engine;
+using NHibernate.Impl;
 
 namespace NHibernate.AdoNet
 {
@@ -19,6 +20,7 @@ namespace NHibernate.AdoNet
 	[Serializable]
 	public partial class ConnectionManager : ISerializable, IDeserializationCallback
 	{
+		private readonly IConnectionAccess _connectionAccess;
 		private static readonly INHibernateLogger _log = NHibernateLogger.For(typeof(ConnectionManager));
 
 		[NonSerialized]
@@ -78,7 +80,8 @@ namespace NHibernate.AdoNet
 			DbConnection suppliedConnection,
 			ConnectionReleaseMode connectionReleaseMode,
 			IInterceptor interceptor,
-			bool shouldAutoJoinTransaction)
+			bool shouldAutoJoinTransaction,
+			IConnectionAccess connectionAccess)
 		{
 			Session = session;
 			_connection = suppliedConnection;
@@ -89,6 +92,18 @@ namespace NHibernate.AdoNet
 
 			_ownConnection = suppliedConnection == null;
 			ShouldAutoJoinTransaction = shouldAutoJoinTransaction;
+			_connectionAccess = connectionAccess ?? throw new ArgumentNullException(nameof(connectionAccess));
+		}
+
+		//Since 5.3
+		[Obsolete("Use overload with connectionAccess parameter")]
+		public ConnectionManager(
+			ISessionImplementor session,
+			DbConnection suppliedConnection,
+			ConnectionReleaseMode connectionReleaseMode,
+			IInterceptor interceptor,
+			bool shouldAutoJoinTransaction) : this(session, suppliedConnection, connectionReleaseMode, interceptor, shouldAutoJoinTransaction, new NonContextualConnectionAccess(session.Factory))
+		{
 		}
 
 		public void AddDependentSession(ISessionImplementor session)
@@ -148,7 +163,7 @@ namespace NHibernate.AdoNet
 			if (_backupConnection != null)
 			{
 				_log.Warn("Backup connection was still defined at time of closing.");
-				Factory.ConnectionProvider.CloseConnection(_backupConnection);
+				_connectionAccess.CloseConnection(_backupConnection);
 				_backupConnection = null;
 			}
 
@@ -205,7 +220,7 @@ namespace NHibernate.AdoNet
 
 		private void CloseConnection()
 		{
-			Factory.ConnectionProvider.CloseConnection(_connection);
+			_connectionAccess.CloseConnection(_connection);
 			_connection = null;
 		}
 
@@ -239,7 +254,7 @@ namespace NHibernate.AdoNet
 			{
 				if (_ownConnection)
 				{
-					_connection = Factory.ConnectionProvider.GetConnection();
+					_connection = _connectionAccess.GetConnection();
 					// Will fail if the connection is already enlisted in another transaction.
 					// Probable case: nested transaction scope with connection auto-enlistment enabled.
 					// That is an user error.
@@ -362,6 +377,7 @@ namespace NHibernate.AdoNet
 			_connectionReleaseMode =
 				(ConnectionReleaseMode)info.GetValue("connectionReleaseMode", typeof(ConnectionReleaseMode));
 			_interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
+			_connectionAccess = (IConnectionAccess) info.GetValue("connectionAccess", typeof(IConnectionAccess));
 		}
 
 		[SecurityCritical]
@@ -371,6 +387,7 @@ namespace NHibernate.AdoNet
 			info.AddValue("session", Session, typeof(ISessionImplementor));
 			info.AddValue("connectionReleaseMode", _connectionReleaseMode, typeof(ConnectionReleaseMode));
 			info.AddValue("interceptor", _interceptor, typeof(IInterceptor));
+			info.AddValue("connectionAccess", _connectionAccess, typeof(IConnectionAccess));
 		}
 
 		#endregion

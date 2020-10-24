@@ -1,8 +1,8 @@
-dist: trusty
+os: linux
+dist: xenial
 language: csharp
 mono: none
 dotnet: 2.1.300
-sudo: required
 services:
   - mysql
   - postgresql
@@ -13,27 +13,24 @@ env:
   - DB=Firebird 
   - DB=MySQL CONNECTION_STRING="Server=127.0.0.1;Uid=root;Database=nhibernate;Old Guids=True;"   
   - DB=SQLite 
-matrix:
-  allow_failures:
-    - env: DB=MySQL CONNECTION_STRING="Server=127.0.0.1;Uid=root;Database=nhibernate;Old Guids=True;"
 before_install:
-  - curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-  - curl https://packages.microsoft.com/config/ubuntu/14.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list
   - sudo apt-get update -qq
   - sudo apt-get install -y powershell 
   - |-
     if [[ "$DB" == "MySQL" ]]
     then
-      echo -e '[server]\nlower_case_table_names=1' | sudo tee -a /etc/mysql/my.cnf
+      echo -e '[server]\nlower_case_table_names=1\n[mysqld]\ncharacter-set-server=utf8\ncollation-server=utf8_general_ci' | sudo tee -a /etc/mysql/my.cnf
       sudo service mysql restart
     fi
   - |-
     if [[ "$DB" == "Firebird" ]]
     then
-      sudo apt-get install -y libicu-dev libtommath-dev curl
-      curl -L -O https://github.com/FirebirdSQL/firebird/releases/download/R3_0_3/Firebird-3.0.3.32900-0.amd64.tar.gz
-      tar xzvf Firebird-3.0.3.32900-0.amd64.tar.gz
-      pushd Firebird-3.0.3.32900-0.amd64
+      sudo apt-get install -y libtommath-dev
+      # This would be required on bionic and above
+      # sudo ln -s /usr/lib/x86_64-linux-gnu/libtommath.so.1 /usr/lib/x86_64-linux-gnu/libtommath.so.0
+      wget -q https://github.com/FirebirdSQL/firebird/releases/download/R3_0_5/Firebird-3.0.5.33220-0.amd64.tar.gz
+      tar xzvf Firebird-3.0.5.33220-0.amd64.tar.gz
+      pushd Firebird-3.0.5.33220-0.amd64
         sudo ./install.sh -silent   
       popd
       export $(sudo cat /opt/firebird/SYSDBA.password | grep -v ^# | xargs)
@@ -41,7 +38,7 @@ before_install:
       echo -e "nhibernate = /tmp/firebird/nhibernate.fdb" | sudo tee -a /opt/firebird/databases.conf
       echo -e "AuthServer = Srp\nAuthClient = Srp\nUserManager = Srp\nWireCrypt = Enabled" | sudo tee -a /opt/firebird/firebird.conf
       sudo /opt/firebird/bin/gsec -modify SYSDBA -pw masterkey -admin yes
-      sudo service firebird restart
+      sudo systemctl restart firebird-superserver
     fi
 before_script:
   - if [[ "$DB" == "SqlServer2008" ]]; then docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=P@ssw0rd" -e "MSSQL_PID=Express" -p 1433:1433 -d --name sqlexpress microsoft/mssql-server-linux:latest; fi

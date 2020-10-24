@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 {
 	public class Order
@@ -8,5 +10,6 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 		public string Column { get; set; }
 		public string Name { get; set; }
 		public string Abracadabra { get; set; }
+		public ISet<OrderRow> Rows { get; set; }
 	}
 }

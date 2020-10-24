@@ -787,18 +787,8 @@ namespace NHibernate.Loader.Criteria
 
 			if (projectionTypes == null)
 			{
-					//it does not refer to an alias of a projection,
-					//look for a property
-
-				if (TryGetType(subcriteria, propertyName, out var type))
-				{
-					return type;
-				}
-				if (outerQueryTranslator != null)
-				{
-					return outerQueryTranslator.GetTypeUsingProjection(subcriteria, propertyName);
-				}
-				throw new QueryException("Could not find property " + propertyName);
+				//it does not refer to an alias of a projection, look for a property
+				return GetType(subcriteria, propertyName);
 			}
 			else
 			{
@@ -813,10 +803,13 @@ namespace NHibernate.Loader.Criteria
 
 		public IType GetType(ICriteria subcriteria, string propertyName)
 		{
-			if(!TryParseCriteriaPath(subcriteria, propertyName, out var entityName, out var entityPropName, out _))
-				throw new QueryException("Could not find property " + propertyName);
+			if (TryGetType(subcriteria, propertyName, out var resultType))
+				return resultType;
 
-			return GetPropertyMapping(entityName).ToType(entityPropName);
+			if (outerQueryTranslator != null)
+				return outerQueryTranslator.GetType(subcriteria, propertyName);
+
+			throw new QueryException("Could not find property " + propertyName);
 		}
 
 		public bool TryGetType(ICriteria subcriteria, string propertyName, out IType type)
@@ -870,6 +863,23 @@ namespace NHibernate.Loader.Criteria
 				}
 			}
 			return GetEntityName(subcriteria);
+		}
+
+		/// <summary> 
+		/// Substitute the SQL aliases in <see cref="SqlString"/> template.
+		/// </summary>
+		public SqlString RenderSQLAliases(SqlString sqlTemplate)
+		{
+			var result = criteriaSQLAliasMap
+				.Where(p => !string.IsNullOrEmpty(p.Key.Alias))
+				.Aggregate(sqlTemplate, (current, p) => current.Replace("{" + p.Key.Alias + "}", p.Value));
+
+			if (outerQueryTranslator != null)
+			{
+				return outerQueryTranslator.RenderSQLAliases(result);
+			}
+
+			return result;
 		}
 
 		public string GetSQLAlias(ICriteria criteria, string propertyName)

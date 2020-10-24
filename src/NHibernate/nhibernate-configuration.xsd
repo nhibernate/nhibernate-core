@@ -124,6 +124,14 @@
 										<xs:enumeration value="query.imports" />
 										<xs:enumeration value="hbm2ddl.auto" />
 										<xs:enumeration value="hbm2ddl.keywords" />
+										<xs:enumeration value="hbm2ddl.throw_on_update">
+											<xs:annotation>
+												<!-- 6.0 TODO: should become true -->
+												<xs:documentation>
+													Whether to throw or not on schema auto-update failures. false by default.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="sql_exception_converter" />
 										<xs:enumeration value="adonet.wrap_result_sets" />
 										<xs:enumeration value="prepare_sql" />
@@ -151,6 +159,13 @@
 										<xs:enumeration value="order_inserts" />
 										<xs:enumeration value="order_updates" />
 										<xs:enumeration value="query.query_model_rewriter_factory" />
+										<xs:enumeration value="query.pre_transformer_registrar">
+											<xs:annotation>
+												<xs:documentation>
+													The pre-transformer registrar used to register custom expression transformers.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="linqtohql.generatorsregistry" />
 										<xs:enumeration value="linqtohql.legacy_preevaluation">
 											<xs:annotation>
@@ -318,6 +333,20 @@
 													is enabled. In case the current session id won't be used, it is recommended to disable it, in order
 													to increase performance.
 													True by default.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="multi_tenancy.strategy">
+											<xs:annotation>
+												<xs:documentation>
+													Strategy for multi-tenancy. Supported Values: Database, None. Corresponds to MultiTenancyStrategy enum.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="multi_tenancy.connection_provider">
+											<xs:annotation>
+												<xs:documentation>
+													Connection provider for given multi-tenancy strategy. Class name implementing IMultiTenancyConnectionProvider.
 												</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>

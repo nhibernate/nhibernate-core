@@ -299,7 +299,6 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public void Locate()
 		{
-			AssumeFunctionSupported("locate");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);

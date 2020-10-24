@@ -53,6 +53,40 @@ namespace NHibernate.Test.Linq
 			Assert.That(results, Has.Count.EqualTo(expectedRows));
 		}
 
+		private class CustomerVm : BaseCustomerVm
+		{
+		}
+
+		private class BaseCustomerVm
+		{
+			public string Id { get; set; }
+
+			public string Name { get; set; }
+		}
+
+		[TestCase("$filter=Name eq 'Maria Anders'", 1)]
+		public void BasePropertyFilter(string queryString, int expectedRows)
+		{
+			var query = ApplyFilter(
+				session.Query<Customer>().Select(o => new CustomerVm {Name = o.ContactName, Id = o.CustomerId}),
+				queryString);
+
+			var results = ((IQueryable<CustomerVm>) query).ToList();
+			Assert.That(results, Has.Count.EqualTo(expectedRows));
+		}
+
+		//GH-2362
+		[TestCase("$filter=CustomerId le 'ANATR'", 2)]
+		[TestCase("$filter=startswith(CustomerId, 'ANATR')", 1)]
+		[TestCase("$filter=endswith(CustomerId, 'ANATR')", 1)]
+		[TestCase("$filter=indexof(CustomerId, 'ANATR') eq 0", 1)]
+		public void StringFilter(string queryString, int expectedCount)
+		{
+			Assert.That(
+				ApplyFilter(session.Query<Customer>(), queryString).Cast<Customer>().ToList(),
+				Has.Count.EqualTo(expectedCount));
+		}
+
 		private IQueryable ApplyFilter<T>(IQueryable<T> query, string queryString)
 		{
 			var context = new ODataQueryContext(CreatEdmModel(), typeof(T), null) { };
@@ -130,6 +164,8 @@ namespace NHibernate.Test.Linq
 			employeeModel.EntityType.Property(o => o.Notes);
 			employeeModel.EntityType.Property(o => o.Title);
 			employeeModel.EntityType.HasMany(o => o.Orders);
+
+			builder.EntitySet<CustomerVm>(nameof(CustomerVm));
 
 			return builder.GetEdmModel();
 		}

@@ -131,6 +131,18 @@ namespace NHibernate.Hql.Ast.ANTLR
 						}
 					}
 					break;
+				case LEFT:
+				case RIGHT:
+					// Support left and right functions
+					if (input.LA(2) == OPEN)
+					{
+						input.LT(1).Type = IDENT;
+						if (log.IsDebugEnabled())
+						{
+							log.Debug("weakKeywords() : new LT(1) token - {0}", input.LT(1));
+						}
+					}
+					break;
 				default:
 					// Case 2: The current token is after FROM and before '.'.
                     if (t != IDENT && input.LA(-1) == FROM && ((input.LA(2) == DOT) || (input.LA(2) == IDENT) || (input.LA(2) == -1)))

@@ -148,7 +148,7 @@ namespace NHibernate.Dialect
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
-				return new SqlString("cast('", FunctionName, "' as ", FunctionReturnType.SqlTypes(factory)[0].ToString(), ")");
+				return new SqlString("cast('", Name, "' as ", FunctionReturnType.SqlTypes(factory)[0].ToString(), ")");
 			}
 		}
 
@@ -161,7 +161,7 @@ namespace NHibernate.Dialect
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
-				return new SqlString(FunctionName);
+				return new SqlString(Name);
 			}
 		}
 
@@ -235,7 +235,7 @@ namespace NHibernate.Dialect
 			}
 
 			/// <inheritdoc />
-			public string FunctionName => "position";
+			public string Name => "position";
 
 			public bool HasArguments
 			{
@@ -525,6 +525,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("locate", new PositionFunction());
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
 			RegisterFunction("left", new StandardSQLFunction("left"));
+			RegisterFunction("right", new StandardSQLFunction("right"));
 		}
 
 		private void RegisterBlobFunctions()

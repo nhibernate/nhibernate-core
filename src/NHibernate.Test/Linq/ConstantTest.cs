@@ -121,6 +121,22 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void ConstantNonCachedInMemberInitExpressionWithCondition()
+		{
+			var shipper1 = GetShipper(1);
+			var shipper2 = GetShipper(2);
+
+			Assert.That(shipper1.Number, Is.EqualTo(1));
+			Assert.That(shipper2.Number, Is.EqualTo(2));
+		}
+
+		private ShipperDto GetShipper(int id)
+		{
+			return db.Shippers.Where(o => o.ShipperId == id)
+			         .Select(o => new ShipperDto {Number = id, CompanyName = o.CompanyName}).Single();
+		}
+
+		[Test]
 		public void ConstantInNewArrayExpression()
 		{
 			var c1 = (from c in db.Categories
@@ -215,10 +231,14 @@ namespace NHibernate.Test.Linq
 			var q2 = (from c in db.Customers
 			          where c.CustomerId == "ANATR"
 			          select c);
-			var parameters1 = ExpressionParameterVisitor.Visit(q1.Expression, Sfi);
-			var k1 = ExpressionKeyVisitor.Visit(q1.Expression, parameters1);
-			var parameters2 = ExpressionParameterVisitor.Visit(q2.Expression, Sfi);
-			var k2 = ExpressionKeyVisitor.Visit(q2.Expression, parameters2);
+			var preTransformParameters = new PreTransformationParameters(QueryMode.Select, Sfi);
+			var preTransformResult = NhRelinqQueryParser.PreTransform(q1.Expression, preTransformParameters);
+			var parameters1 = ExpressionParameterVisitor.Visit(preTransformResult);
+			var k1 = ExpressionKeyVisitor.Visit(preTransformResult.Expression, parameters1, Sfi);
+
+			var preTransformResult2 = NhRelinqQueryParser.PreTransform(q2.Expression, preTransformParameters);
+			var parameters2 = ExpressionParameterVisitor.Visit(preTransformResult2);
+			var k2 = ExpressionKeyVisitor.Visit(preTransformResult2.Expression, parameters2, Sfi);
 
 			Assert.That(parameters1, Has.Count.GreaterThan(0), "parameters1");
 			Assert.That(parameters2, Has.Count.GreaterThan(0), "parameters2");

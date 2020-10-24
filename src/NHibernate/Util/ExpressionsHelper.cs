@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using NHibernate.Engine;
 using NHibernate.Linq;
+using NHibernate.Linq.Clauses;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
@@ -13,6 +16,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Parsing;
 
 namespace NHibernate.Util
 {
@@ -26,6 +30,76 @@ namespace NHibernate.Util
 					string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}", expression.Body.NodeType));
 			}
 			return ((MemberExpression)expression.Body).Member;
+		}
+
+#if NETCOREAPP2_0
+		/// <summary>
+		/// Try to retrieve <see cref="GetMemberBinder"/> from a reduced <see cref="ExpressionType.Dynamic"/> expression.
+		/// </summary>
+		/// <param name="expression">The reduced dynamic expression.</param>
+		/// <param name="memberBinder">The out binder parameter.</param>
+		/// <returns>Whether the binder was found.</returns>
+		internal static bool TryGetDynamicMemberBinder(InvocationExpression expression, out GetMemberBinder memberBinder)
+		{
+			// This is an ugly workaround for dynamic expressions in .NET Core. In .NET Core a dynamic expression is reduced
+			// when first visited by a expression visitor that is not a DynamicExpressionVisitor, where in .NET Framework it is never reduced.
+			// As RelinqExpressionVisitor does not extend DynamicExpressionVisitor, we will always have a reduced dynamic expression in .NET Core.
+			// Unfortunately we can not tap into the expression tree earlier to intercept the dynamic expression
+			if (expression.Arguments.Count == 2 &&
+			    expression.Arguments[0] is ConstantExpression constant &&
+			    constant.Value is CallSite site &&
+			    site.Binder is GetMemberBinder binder)
+			{
+				memberBinder = binder;
+				return true;
+			}
+
+			memberBinder = null;
+			return false;
+		}
+#endif
+
+		/// <summary>
+		/// Check whether the given expression represent a variable.
+		/// </summary>
+		/// <param name="expression">The expression to check.</param>
+		/// <param name="path">The path of the variable.</param>
+		/// <param name="closureContext">The closure context where the variable is stored.</param>
+		/// <returns>Whether the expression represents a variable.</returns>
+		internal static bool IsVariable(Expression expression, out string path, out object closureContext)
+		{
+			Expression childExpression;
+			string currentPath;
+			switch (expression)
+			{
+				case MemberExpression memberExpression:
+					childExpression = memberExpression.Expression;
+					currentPath = memberExpression.Member.Name;
+					break;
+				case ConstantExpression constantExpression:
+					path = null;
+					if (constantExpression.Type.Attributes.HasFlag(TypeAttributes.NestedPrivate) &&
+					    Attribute.IsDefined(constantExpression.Type, typeof(CompilerGeneratedAttribute), inherit: true))
+					{
+						closureContext = constantExpression.Value;
+						return true;
+					}
+
+					closureContext = null;
+					return false;
+				default:
+					path = null;
+					closureContext = null;
+					return false;
+			}
+
+			if (!IsVariable(childExpression, out path, out closureContext))
+			{
+				return false;
+			}
+
+			path = path != null ? $"{currentPath}_{path}" : currentPath;
+			return true;
 		}
 
 		/// <summary>
@@ -590,6 +664,34 @@ namespace NHibernate.Util
 				return base.Visit(node.Expression);
 			}
 
+#if NETCOREAPP2_0
+			protected override Expression VisitInvocation(InvocationExpression node)
+			{
+				if (TryGetDynamicMemberBinder(node, out var binder))
+				{
+					_memberPaths.Push(new MemberMetadata(binder.Name, _convertType, _hasIndexer));
+					_convertType = null;
+					_hasIndexer = false;
+					return base.Visit(node.Arguments[1]);
+				}
+
+				return base.VisitInvocation(node);
+			}
+#endif
+
+			protected override Expression VisitDynamic(DynamicExpression node)
+			{
+				if (node.Binder is GetMemberBinder binder)
+				{
+					_memberPaths.Push(new MemberMetadata(binder.Name, _convertType, _hasIndexer));
+					_convertType = null;
+					_hasIndexer = false;
+					return base.Visit(node.Arguments[0]);
+				}
+
+				return Visit(node);
+			}
+
 			protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression node)
 			{
 				if (node.ReferencedQuerySource is IFromClause fromClause)
@@ -602,9 +704,20 @@ namespace NHibernate.Util
 					return base.Visit(joinClause.InnerSequence);
 				}
 
+				if (node.ReferencedQuerySource is NhOuterJoinClause outerJoinClause)
+				{
+					return base.Visit(outerJoinClause.JoinClause.InnerSequence);
+				}
+
 				// Not supported expression
 				_entityName = null;
 				return node;
+			}
+
+			protected override Expression VisitSubQuery(SubQueryExpression expression)
+			{
+				base.Visit(expression.QueryModel.SelectClause.Selector);
+				return expression;
 			}
 
 			protected override Expression VisitUnary(UnaryExpression node)
@@ -669,6 +782,14 @@ namespace NHibernate.Util
 							? Enumerable.First(node.Arguments) // q.Children.ElementAt(0)
 							: node.Object // q.Children[0]
 					);
+				}
+
+				if (VisitorUtil.TryGetPotentialDynamicComponentDictionaryMember(node, out var memberName))
+				{
+					_memberPaths.Push(new MemberMetadata(memberName, _convertType, _hasIndexer));
+					_convertType = null;
+					_hasIndexer = false;
+					return base.Visit(node.Object);
 				}
 
 				return Visit(node);

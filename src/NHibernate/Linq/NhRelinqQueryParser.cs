@@ -7,6 +7,7 @@ using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Linq.ExpressionTransformers;
 using NHibernate.Linq.Visitors;
+using NHibernate.Param;
 using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.EagerFetching.Parsing;
@@ -20,16 +21,9 @@ namespace NHibernate.Linq
 	public static class NhRelinqQueryParser
 	{
 		private static readonly QueryParser QueryParser;
-		private static readonly IExpressionTreeProcessor PreProcessor;
 
 		static NhRelinqQueryParser()
 		{
-			var preTransformerRegistry = new ExpressionTransformerRegistry();
-			// NH-3247: must remove .Net compiler char to int conversion before
-			// parameterization occurs.
-			preTransformerRegistry.Register(new RemoveCharToIntConversion());
-			PreProcessor = new TransformingExpressionTreeProcessor(preTransformerRegistry);
-
 			var transformerRegistry = ExpressionTransformerRegistry.CreateDefault();
 			transformerRegistry.Register(new RemoveRedundantCast());
 			transformerRegistry.Register(new SimplifyCompareTransformer());
@@ -53,10 +47,12 @@ namespace NHibernate.Linq
 		/// </summary>
 		/// <param name="expression">The expression to transform.</param>
 		/// <returns>The transformed expression.</returns>
-		[Obsolete("Use overload with an additional sessionFactory parameter")]
+		[Obsolete("Use overload with PreTransformationParameters parameter")]
 		public static Expression PreTransform(Expression expression)
 		{
-			return PreTransform(expression, null);
+			// In order to keep the old behavior use a DML query mode to skip detecting variables,
+			// which will then generate parameters for each constant expression
+			return PreTransform(expression, new PreTransformationParameters(QueryMode.Delete, null)).Expression;
 		}
 
 		/// <summary>
@@ -64,18 +60,36 @@ namespace NHibernate.Linq
 		/// expression key computing and parsing.
 		/// </summary>
 		/// <param name="expression">The expression to transform.</param>
-		/// <param name="sessionFactory">The session factory.</param>
-		/// <returns>The transformed expression.</returns>
-		public static Expression PreTransform(Expression expression, ISessionFactoryImplementor sessionFactory)
+		/// <param name="parameters">The parameters used in the transformation process.</param>
+		/// <returns><see cref="PreTransformationResult"/> that contains the transformed expression.</returns>
+		public static PreTransformationResult PreTransform(Expression expression, PreTransformationParameters parameters)
 		{
-			var partiallyEvaluatedExpression =
-				NhPartialEvaluatingExpressionVisitor.EvaluateIndependentSubtrees(expression, sessionFactory);
-			return PreProcessor.Process(partiallyEvaluatedExpression);
+			parameters.EvaluatableExpressionFilter = new NhEvaluatableExpressionFilter(parameters.SessionFactory);
+			parameters.QueryVariables = new Dictionary<ConstantExpression, QueryVariable>();
+
+			var partiallyEvaluatedExpression = NhPartialEvaluatingExpressionVisitor
+				.EvaluateIndependentSubtrees(expression, parameters);
+
+			return new PreTransformationResult(
+				parameters.PreTransformer.Invoke(partiallyEvaluatedExpression),
+				parameters.SessionFactory,
+				parameters.QueryVariables);
 		}
 
 		public static QueryModel Parse(Expression expression)
 		{
 			return QueryParser.GetParsedQuery(expression);
+		}
+
+		internal static Func<Expression, Expression> CreatePreTransformer(IExpressionTransformerRegistrar expressionTransformerRegistrar)
+		{
+			var preTransformerRegistry = new ExpressionTransformerRegistry();
+			// NH-3247: must remove .Net compiler char to int conversion before
+			// parameterization occurs.
+			preTransformerRegistry.Register(new RemoveCharToIntConversion());
+			expressionTransformerRegistrar?.Register(preTransformerRegistry);
+
+			return new TransformingExpressionTreeProcessor(preTransformerRegistry).Process;
 		}
 	}
 

@@ -45,5 +45,23 @@ namespace NHibernate.Test.Extralazy
 			get { return photos; }
 			set { photos = value; }
 		}
+
+		public virtual IDictionary<string, UserSetting> Settings { get; set; } = new Dictionary<string, UserSetting>();
+
+		public virtual ISet<UserPermission> Permissions { get; set; } = new HashSet<UserPermission>();
+
+		public virtual ISet<UserFollower> Followers { get; set; } = new HashSet<UserFollower>();
+
+		public virtual IList<Company> Companies { get; set; } = new List<Company>();
+
+		public virtual IList<CreditCard> CreditCards { get; set; } = new List<CreditCard>();
+
+		public virtual void UpdateCompaniesIndexes()
+		{
+			for (var i = 0; i < Companies.Count; i++)
+			{
+				Companies[i].ListIndex = i;
+			}
+		}
 	}
 }

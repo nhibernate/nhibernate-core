@@ -91,9 +91,13 @@ namespace NHibernate.Mapping
 		{
 			foreach (Column col in columnIterator)
 			{
-				if (!col.IsFormula)
-					AddColumn(col);
+				AddColumn(col);
 			}
+		}
+
+		public void AddColumns(IEnumerable<ISelectable> columnIterator)
+		{
+			AddColumns(columnIterator.OfType<Column>());
 		}
 
 		/// <summary>

@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Dialect;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -372,6 +374,17 @@ namespace NHibernate.Test.Linq
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
+		[Test(Description = "GH-2471")]
+		public void TimeSheetsWithStringContainsSubQueryWithAsQueryableAfterWhere()
+		{
+			var query = (
+				from timesheet in db.Timesheets
+				where timesheet.Entries.Where(e => e.Comments != null).AsQueryable().Any(e => e.Comments.Contains("testing"))
+				select timesheet).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
 		[Test(Description = "NH-3002")]
 		public void HqlOrderLinesWithInnerJoinAndSubQuery()
 		{
@@ -507,6 +520,172 @@ where c.Order.Customer.CustomerId = 'VINET'
 						 select order).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(61));
+		}
+
+		[Test(Description = "GH2479")]
+		public void OrdersWithSubquery9()
+		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+
+			var ordersQuery = db.Orders
+			                    .Where(x => x.Employee.EmployeeId > 5)
+			                    .OrderByDescending(x => x.OrderId)
+			                    .Take(2);
+
+			var orderLinesFuture = db.OrderLines
+			                         .Where(x => ordersQuery.Any(o => o == x.Order))
+			                         .OrderBy(x => x.Id)
+			                         .ToFuture();
+
+			var orders = ordersQuery.ToFuture().ToList();
+			var orderLines = orderLinesFuture.ToList();
+
+			Assert.That(orders.Count, Is.EqualTo(2), nameof(orders));
+			Assert.That(orderLines.Count, Is.EqualTo(4), nameof(orderLines));
+		}
+
+		[Test]
+		public void OrdersWithSubquery9A()
+		{
+			var ordersQuery = db.Orders
+			                    .Where(x => x.Employee.EmployeeId > 5)
+			                    .OrderByDescending(x => x.OrderId);
+
+			var orderLinesFuture = db.OrderLines
+			                         .Where(x => ordersQuery.Any(o => o == x.Order))
+			                         .OrderBy(x => x.Id)
+			                         .ToFuture();
+
+			var orders = ordersQuery.ToFuture().ToList();
+			var orderLines = orderLinesFuture.ToList();
+
+			Assert.That(orders.Count, Is.EqualTo(286), nameof(orders));
+			Assert.That(orderLines.Count, Is.EqualTo(711), nameof(orderLines));
+		}
+
+		[Test]
+		public void OrdersWithSubquery9Count()
+		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
+			var ordersQuery = db.Orders
+								.Where(x => x.Employee.EmployeeId > 5)
+								.OrderByDescending(x => x.OrderId)
+								.Take(2);
+
+			var orderLines = db.OrderLines
+									.Where(x => ordersQuery.Count(o => o == x.Order) > 0)
+									.OrderBy(x => x.Id)
+									.ToList();
+
+			Assert.That(orderLines.Count, Is.EqualTo(4), nameof(orderLines));
+		}
+
+		[Test]
+		public void OrdersWithSubquery9Sum()
+		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
+			var ordersQuery = db.Orders
+								.Where(x => x.Employee.EmployeeId > 5)
+								.OrderByDescending(x => x.OrderId)
+								.Take(2);
+
+			var orderLines = db.OrderLines
+								.Where(x => ordersQuery.Where(o => o == x.Order).Sum(o => o.Freight.Value) > 0)
+								.OrderBy(x => x.Id)
+								.ToList();
+
+			Assert.That(orderLines.Count, Is.EqualTo(4), nameof(orderLines));
+		}
+
+		[Test(Description = "GH2479")]
+		public void OrdersWithSubquery10()
+		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+
+			var ordersQuery = db.Orders
+			                    .Where(x => x.Employee.EmployeeId > 5)
+			                    .OrderByDescending(x => x.OrderId)
+			                    .Take(2);
+
+			var productsQuery = ordersQuery.SelectMany(x => x.OrderLines).Select(x => x.Product);
+			var productsFuture = db.Products
+			                       .Where(x => productsQuery.Contains(x))
+			                       .OrderBy(x => x.ProductId)
+			                       .ToFuture();
+
+			var orders = ordersQuery.ToFuture().ToList();
+			var products = productsFuture.ToList();
+
+			Assert.That(orders.Count, Is.EqualTo(2), nameof(orders));
+			Assert.That(products.Count, Is.EqualTo(4), nameof(products));
+		}
+
+		[Test]
+		public void OrdersWithSubquery10A()
+		{
+			var ordersQuery = db.Orders
+			                    .Where(x => x.Employee.EmployeeId > 5)
+			                    .OrderByDescending(x => x.OrderId);
+
+			var productsQuery = ordersQuery.SelectMany(x => x.OrderLines).Select(x => x.Product);
+			var productsFuture = db.Products
+			                       .Where(x => productsQuery.Contains(x))
+			                       .OrderBy(x => x.ProductId)
+			                       .ToFuture();
+
+			var orders = ordersQuery.ToFuture().ToList();
+			var products = productsFuture.ToList();
+
+			Assert.That(orders.Count, Is.EqualTo(286), nameof(orders));
+			Assert.That(products.Count, Is.EqualTo(77), nameof(products));
+		}
+
+		[Test(Description = "GH2479")]
+		public void OrdersWithSubquery11()
+		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("MS SQL CE does not support sorting on a subquery.");
+
+			var ordersQuery = db.Orders
+			                    .OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId)
+			                    .Take(2);
+
+			var orderLineQuery = ordersQuery.SelectMany(x => x.OrderLines);
+			var productsNotInLargestOrders = db.Products
+			                                   .Where(x => orderLineQuery.All(p => p.Product != x))
+			                                   .OrderBy(x => x.ProductId)
+			                                   .ToList();
+
+			Assert.That(productsNotInLargestOrders.Count, Is.EqualTo(49), nameof(productsNotInLargestOrders));
+		}
+
+		[Test]
+		public void OrdersWithSubquery11A()
+		{
+			var ordersQuery = db.Orders
+			                    .OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId);
+
+			var orderLineQuery = ordersQuery.SelectMany(x => x.OrderLines);
+			var productsNotInLargestOrders = db.Products
+			                                   .Where(x => orderLineQuery.All(p => p.Product != x))
+			                                   .OrderBy(x => x.ProductId)
+			                                   .ToList();
+
+			Assert.That(productsNotInLargestOrders.Count, Is.EqualTo(0), nameof(productsNotInLargestOrders));
 		}
 
 		[Test(Description = "NH-2654")]

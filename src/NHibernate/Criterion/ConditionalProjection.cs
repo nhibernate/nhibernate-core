@@ -5,7 +5,6 @@ namespace NHibernate.Criterion
 	using Engine;
 	using SqlCommand;
 	using Type;
-	using Util;
 
 	[Serializable]
 	public class ConditionalProjection : SimpleProjection
@@ -48,7 +47,7 @@ namespace NHibernate.Criterion
 			var ifTrue = CriterionUtil.GetColumnNameAsSqlStringPart(whenTrue, criteriaQuery, criteria);
 			var ifFalse = CriterionUtil.GetColumnNameAsSqlStringPart(whenFalse, criteriaQuery, criteria);
 			return new SqlString("(case when ", condition, " then ", ifTrue, " else ", ifFalse, " end) as ",
-			                     GetColumnAliases(position, criteria, criteriaQuery)[0]);
+			                     GetColumnAlias(position));
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -57,11 +56,11 @@ namespace NHibernate.Criterion
 			IType[] falseTypes = whenFalse.GetTypes(criteria, criteriaQuery);
 
 			bool areEqual = trueTypes.Length == falseTypes.Length;
-			if (trueTypes.Length == falseTypes.Length)
+			if (areEqual)
 			{
 				for (int i = 0; i < trueTypes.Length; i++)
 				{
-					if(trueTypes[i].Equals(falseTypes[i]) == false)
+					if(trueTypes[i].ReturnedClass != falseTypes[i].ReturnedClass)
 					{
 						areEqual = false;
 						break;

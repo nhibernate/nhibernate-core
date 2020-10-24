@@ -1,6 +1,5 @@
 using System;
 using NHibernate.Engine;
-using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -40,7 +39,7 @@ namespace NHibernate.Mapping
 			if (!IsOneToMany)
 			{
 				PrimaryKey pk = new PrimaryKey();
-				pk.AddColumns(new SafetyEnumerable<Column>(Key.ColumnIterator));
+				pk.AddColumns(Key.ColumnIterator);
 
 				// index should be last column listed
 				bool isFormula = false;
@@ -52,11 +51,11 @@ namespace NHibernate.Mapping
 				if (isFormula)
 				{
 					//if it is a formula index, use the element columns in the PK
-					pk.AddColumns(new SafetyEnumerable<Column>(Element.ColumnIterator));
+					pk.AddColumns(Element.ColumnIterator);
 				}
 				else
 				{
-					pk.AddColumns(new SafetyEnumerable<Column>(Index.ColumnIterator));
+					pk.AddColumns(Index.ColumnIterator);
 				}
 
 				CollectionTable.PrimaryKey = pk;

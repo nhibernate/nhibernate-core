@@ -1413,7 +1413,12 @@ namespace NHibernate.Persister.Entity
 			int[] lazyIndexes;
 			if (allLazyProperties)
 			{
-				lazyIndexes = indexes = lazyPropertyNumbers;
+				indexes = lazyPropertyNumbers;
+				lazyIndexes = new int[lazyPropertyNumbers.Length];
+				for(var i = 0; i < lazyIndexes.Length; i++)
+				{
+					lazyIndexes[i] = i;
+				}
 			}
 			else
 			{
@@ -3777,12 +3782,10 @@ namespace NHibernate.Persister.Entity
 			int tableSpan = SubclassTableSpan;
 			for (int j = 1; j < tableSpan; j++) //notice that we skip the first table; it is the driving table!
 			{
-				string[] idCols = StringHelper.Qualify(name, GetJoinIdKeyColumns(j)); //some joins may be to non primary keys
-
-				bool joinIsIncluded = IsClassOrSuperclassTable(j) ||
-					(includeSubclasses && !IsSubclassTableSequentialSelect(j) && !IsSubclassTableLazy(j));
+				var joinIsIncluded = IsJoinIncluded(includeSubclasses, j);
 				if (joinIsIncluded)
 				{
+					string[] idCols = StringHelper.Qualify(name, GetJoinIdKeyColumns(j)); //some joins may be to non primary keys
 					join.AddJoin(GetSubclassTableName(j),
 						GenerateTableAlias(name, j),
 						idCols,
@@ -3794,6 +3797,26 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 			return join;
+		}
+
+		internal bool HasSubclassJoins(bool includeSubclasses)
+		{
+			if (SubclassTableSpan == 1)
+				return false;
+
+			for (int i = 1; i < SubclassTableSpan; ++i)
+			{
+				if (IsJoinIncluded(includeSubclasses, i))
+					return true;
+			}
+
+			return false;
+		}
+
+		private bool IsJoinIncluded(bool includeSubclasses, int j)
+		{
+			return IsClassOrSuperclassTable(j) ||
+					(includeSubclasses && !IsSubclassTableSequentialSelect(j) && !IsSubclassTableLazy(j));
 		}
 
 		private JoinFragment CreateJoin(int[] tableNumbers, string drivingAlias)

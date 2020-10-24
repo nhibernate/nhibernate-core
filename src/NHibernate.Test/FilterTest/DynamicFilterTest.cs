@@ -33,7 +33,7 @@ namespace NHibernate.Test.FilterTest
 			var persister = Sfi
 				.GetCollectionPersister(typeof(Salesperson).FullName + ".Orders");
 			var cacheKey =
-				new CacheKey(testData.steveId, persister.KeyType, persister.Role, Sfi);
+				new CacheKey(testData.steveId, persister.KeyType, persister.Role, Sfi, null);
 			CollectionCacheEntry cachedData;
 
 			using (var session = OpenSession())

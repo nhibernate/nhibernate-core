@@ -155,6 +155,15 @@ namespace NHibernate.Linq.Functions
 
 		public override bool AllowsNullableReturnType(MethodInfo method) => false;
 
+		/// <inheritdoc />
+		public override bool TryGetCollectionParameter(MethodCallExpression expression, out ConstantExpression collectionParameter)
+		{
+			var argument = expression.Method.IsStatic ? expression.Arguments[0] : expression.Object;
+			collectionParameter = argument as ConstantExpression;
+
+			return collectionParameter != null;
+		}
+
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			// TODO - alias generator

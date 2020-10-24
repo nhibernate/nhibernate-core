@@ -42,5 +42,12 @@ namespace NHibernate.Linq.Functions
 		}
 
 		public bool AllowsNullableReturnType(MethodInfo method) => !method.ReturnType.IsValueType;
+
+		/// <inheritdoc />
+		public bool TryGetCollectionParameter(MethodCallExpression expression, out ConstantExpression collectionParameter)
+		{
+			collectionParameter = null;
+			return false;
+		}
 	}
 }

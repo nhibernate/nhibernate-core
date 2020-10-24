@@ -7,6 +7,7 @@ using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
+using NHibernate.Connection;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
@@ -17,6 +18,7 @@ using NHibernate.Linq;
 using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
 using NHibernate.Multi;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister.Entity;
 using NHibernate.Transaction;
 using NHibernate.Type;
@@ -57,6 +59,31 @@ namespace NHibernate.Impl
 
 		internal AbstractSessionImpl() { }
 
+		private TenantConfiguration ValidateTenantConfiguration(ISessionFactoryImplementor factory, ISessionCreationOptions options)
+		{
+			if (factory.Settings.MultiTenancyStrategy == MultiTenancyStrategy.None)
+				return null;
+
+			var tenantConfiguration = ReflectHelper.CastOrThrow<ISessionCreationOptionsWithMultiTenancy>(options, "multi-tenancy").TenantConfiguration;
+
+			if (string.IsNullOrEmpty(tenantConfiguration?.TenantIdentifier))
+			{
+				throw new ArgumentException(
+					$"Tenant configuration with `{nameof(TenantConfiguration.TenantIdentifier)}` defined is required for multi-tenancy.",
+					nameof(tenantConfiguration));
+			}
+
+			if (_factory.Settings.MultiTenancyConnectionProvider == null)
+			{
+				throw new ArgumentException(
+					$"`{nameof(IMultiTenancyConnectionProvider)}` is required for multi-tenancy." +
+					$" Provide it via '{Cfg.Environment.MultiTenancyConnectionProvider}` session factory setting." +
+					$" You can use `{nameof(AbstractMultiTenancyConnectionProvider)}` as a base.");
+			}
+
+			return tenantConfiguration;
+		}
+
 		protected internal AbstractSessionImpl(ISessionFactoryImplementor factory, ISessionCreationOptions options)
 		{
 			SessionId = factory.Settings.TrackSessionId ? Guid.NewGuid() : Guid.Empty;
@@ -66,6 +93,8 @@ namespace NHibernate.Impl
 				Timestamp = factory.Settings.CacheProvider.NextTimestamp();
 				_flushMode = options.InitialSessionFlushMode;
 				Interceptor = options.SessionInterceptor ?? EmptyInterceptor.Instance;
+
+				_tenantConfiguration = ValidateTenantConfiguration(factory, options);
 
 				if (options is ISharedSessionCreationOptions sharedOptions && sharedOptions.IsTransactionCoordinatorShared)
 				{
@@ -84,7 +113,10 @@ namespace NHibernate.Impl
 						options.UserSuppliedConnection,
 						options.SessionConnectionReleaseMode,
 						Interceptor,
-						options.ShouldAutoJoinTransaction);
+						options.ShouldAutoJoinTransaction,
+						_tenantConfiguration == null
+							? new NonContextualConnectionAccess(_factory)
+							: _factory.Settings.MultiTenancyConnectionProvider.GetConnectionAccess(_tenantConfiguration, _factory));
 				}
 			}
 		}
@@ -109,7 +141,7 @@ namespace NHibernate.Impl
 
 		public CacheKey GenerateCacheKey(object id, IType type, string entityOrRoleName)
 		{
-			return new CacheKey(id, type, entityOrRoleName, Factory);
+			return new CacheKey(id, type, entityOrRoleName, Factory, TenantIdentifier);
 		}
 
 		public ISessionFactoryImplementor Factory
@@ -388,6 +420,7 @@ namespace NHibernate.Impl
 		}
 
 		private ProcessHelper _processHelper = new ProcessHelper();
+		private TenantConfiguration _tenantConfiguration;
 
 		[Serializable]
 		private sealed class ProcessHelper : IDisposable
@@ -464,6 +497,15 @@ namespace NHibernate.Impl
 		// 6.0 TODO: remove virtual.
 		/// <inheritdoc />
 		public virtual bool TransactionInProgress => ConnectionManager.IsInActiveTransaction;
+
+		//6.0 TODO Add to ISessionImplementor
+		public TenantConfiguration TenantConfiguration
+		{
+			get => _tenantConfiguration;
+			protected set => _tenantConfiguration = value;
+		}
+
+		public string TenantIdentifier => _tenantConfiguration?.TenantIdentifier;
 
 		#endregion
 

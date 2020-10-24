@@ -180,6 +180,19 @@ namespace NHibernate.Util
 			return method.IsGenericMethod ? method.GetGenericMethodDefinition() : method;
 		}
 
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a1">A dummy parameter</param>
+		/// <param name="a2">A dummy parameter</param>
+		/// <param name="a3">A dummy parameter</param>
+		/// <param name="a4">A dummy parameter</param>
+		/// <param name="a5">A dummy parameter</param>
+		internal static MethodInfo FastGetMethodDefinition<T1, T2, T3, T4, T5, TResult>(System.Func<T1, T2, T3, T4, T5, TResult> func, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+		{
+			var method = func.Method;
+			return method.IsGenericMethod ? method.GetGenericMethodDefinition() : method;
+		}
+
 		/// <summary>
 		/// Get the <see cref="MethodInfo"/> for a public overload of a given method if the method does not match
 		/// given parameter types, otherwise directly yield the given method.

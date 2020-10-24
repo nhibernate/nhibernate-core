@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
 using NHibernate.AdoNet;
 using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
@@ -9,6 +10,7 @@ using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
+using NHibernate.MultiTenancy;
 using NHibernate.Transaction;
 
 namespace NHibernate.Cfg
@@ -129,6 +131,13 @@ namespace NHibernate.Cfg
 		public bool IsNamedQueryStartupCheckingEnabled { get; internal set; }
 
 		public bool IsBatchVersionedDataEnabled { get; internal set; }
+		
+		// 6.0 TODO : should throw by default
+		/// <summary>
+		/// <see langword="true" /> to throw in case any failure is reported during schema auto-update,
+		/// <see langword="false" /> to ignore failures.
+		/// </summary>
+		public bool ThrowOnSchemaUpdate { get; internal set; }
 
 		#region NH specific
 
@@ -182,7 +191,14 @@ namespace NHibernate.Cfg
 		public bool LinqToHqlFallbackOnPreEvaluation { get; internal set; }
 
 		public IQueryModelRewriterFactory QueryModelRewriterFactory { get; internal set; }
-		
+
+		/// <summary>
+		/// The pre-transformer registrar used to register custom expression transformers.
+		/// </summary>
+		public IExpressionTransformerRegistrar PreTransformerRegistrar { get; internal set; }
+
+		internal Func<Expression, Expression> LinqPreTransformer { get; set; }
+
 		#endregion
 
 		internal string GetFullCacheRegionName(string name)
@@ -192,5 +208,9 @@ namespace NHibernate.Cfg
 				return prefix + '.' + name;
 			return name;
 		}
+
+		public MultiTenancyStrategy MultiTenancyStrategy { get; internal set; }
+
+		public IMultiTenancyConnectionProvider MultiTenancyConnectionProvider { get; internal set; }
 	}
 }

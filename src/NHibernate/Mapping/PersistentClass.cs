@@ -761,7 +761,7 @@ namespace NHibernate.Mapping
 			pk.Name = PKAlias.ToAliasString(table.Name);
 			table.PrimaryKey = pk;
 
-			pk.AddColumns(new SafetyEnumerable<Column>(Key.ColumnIterator));
+			pk.AddColumns(Key.ColumnIterator);
 		}
 
 		/// <summary>

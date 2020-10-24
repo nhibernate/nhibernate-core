@@ -5421,6 +5421,20 @@ namespace NHibernate.Test.Legacy
 			}
 		}
 
+		// NH-2329 (GH-1218)
+		[Test]
+		public async Task JoinOverJoinAsync()
+		{
+			using (var s = OpenSession())
+			{
+				await (s.CreateCriteria(typeof(Stuff), "s1")
+				       .CreateAlias("s1.MoreStuff", "m1")
+				       .CreateAlias("m1.Stuffs", "s2")
+				       .Add(Expression.Eq("s2.Id", 2L))
+				       .ListAsync<Stuff>());
+			}
+		}
+
 		#region NHibernate specific tests
 
 		[Test]

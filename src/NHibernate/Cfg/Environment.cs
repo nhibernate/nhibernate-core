@@ -6,6 +6,8 @@ using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Engine;
 using NHibernate.Linq;
+using NHibernate.Linq.Visitors;
+using NHibernate.MultiTenancy;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg
@@ -193,6 +195,12 @@ namespace NHibernate.Cfg
 		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string QueryImports = "query.imports";
 		public const string Hbm2ddlAuto = "hbm2ddl.auto";
+
+		// 6.0 TODO default should become true
+		/// <summary>
+		/// Whether to throw or not on schema auto-update failures. <c>false</c> by default.
+		/// </summary>
+		public const string Hbm2ddlThrowOnUpdate = "hbm2ddl.throw_on_update";
 		public const string Hbm2ddlKeyWords = "hbm2ddl.keywords";
 
 		public const string SqlExceptionConverter = "sql_exception_converter";
@@ -275,6 +283,11 @@ namespace NHibernate.Cfg
 		public const string OrderUpdates = "order_updates";
 
 		public const string QueryModelRewriterFactory = "query.query_model_rewriter_factory";
+
+		/// <summary>
+		/// The class name of the LINQ query pre-transformer registrar, implementing <see cref="IExpressionTransformerRegistrar"/>.
+		/// </summary>
+		public const string PreTransformerRegistrar = "query.pre_transformer_registrar";
 
 		/// <summary>
 		/// Set the default length used in casting when the target type is length bound and
@@ -372,6 +385,16 @@ namespace NHibernate.Cfg
 		public const string TrackSessionId = "track_session_id";
 
 		private static readonly Dictionary<string, string> GlobalProperties = new Dictionary<string, string>();
+
+		/// <summary>
+		/// Strategy for multi-tenancy.</summary>
+		/// See also <seealso cref="MultiTenancyStrategy"/>
+		public const string MultiTenancy = "multi_tenancy.strategy";
+
+		/// <summary>
+		/// Connection provider for given multi-tenancy strategy. Class name implementing IMultiTenancyConnectionProvider.
+		/// </summary>
+		public const string MultiTenancyConnectionProvider = "multi_tenancy.connection_provider";
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;

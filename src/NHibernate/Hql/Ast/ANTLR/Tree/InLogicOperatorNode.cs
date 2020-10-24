@@ -47,11 +47,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				IASTNode inListChild = inList.GetChild(0);
 				while (inListChild != null)
 				{
-					var expectedTypeAwareNode = inListChild as IExpectedTypeAwareNode;
-					if (expectedTypeAwareNode != null)
+					if (inListChild is IExpectedTypeAwareNode expectedTypeAwareNode &&
+						expectedTypeAwareNode.ExpectedType == null)
 					{
 						expectedTypeAwareNode.ExpectedType = lhsType;
 					}
+
 					inListChild = inListChild.NextSibling;
 				}
 			}

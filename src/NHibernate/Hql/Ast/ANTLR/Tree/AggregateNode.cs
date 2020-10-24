@@ -27,7 +27,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				if (SessionFactoryHelper.FindSQLFunction(Text) is ISQLFunctionExtended sqlFunction)
 				{
-					return sqlFunction.FunctionName;
+					return sqlFunction.Name;
 				}
 
 				return Text;

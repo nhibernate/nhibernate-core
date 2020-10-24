@@ -128,7 +128,7 @@ namespace NHibernate.Engine.Query
 		public async Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			return new SafetyEnumerable<T>(await (PerformIterateAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false));
+			return (await (PerformIterateAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false)).CastOrDefault<T>();
 		}
 
         public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
