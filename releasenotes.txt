@@ -17,7 +17,7 @@ Release notes - NHibernate - Version 5.3.4
    * #2578 Add missing possible breaking changes for #2365
    * #2587 Release 5.3.4
 
-As part of releasing 5.3.4, one missing 5.3.0 possible breaking changes have been added, about
+As part of releasing 5.3.4, one missing 5.3.0 possible breaking changes has been added, about
 custom method generators for Linq. See 5.3.0 possible breaking changes.
 
 Build 5.3.3
