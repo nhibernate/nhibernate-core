@@ -2614,6 +2614,28 @@ namespace NHibernate.Linq
 			throw new InvalidOperationException("The method should be used inside Linq to indicate a type of a parameter");
 		}
 
+		public static IQueryable<T> AsNoTracking<T>(this IQueryable<T> query)
+		{
+			if (query is NhQueryable<T> nhQuery)
+			{
+				var oldProvider = nhQuery.Provider as DefaultQueryProvider;
+
+				if (oldProvider.Session is IStatelessSession)
+				{
+					return query;
+				}
+
+				var statelessSession = (oldProvider.Session as SessionImpl)
+					.StatelessSessionWithOptions()
+					.Connection(oldProvider.Session.Connection)
+					.OpenStatelessSession() as ISessionImplementor;
+				var newProvider = new DefaultQueryProvider(statelessSession, null);
+				return new NhQueryable<T>(newProvider, query.Expression);
+			}
+
+			return query;
+		}
+
 		internal static INhQueryProvider GetNhProvider<TSource>(this IQueryable<TSource> source)
 		{
 			if (source == null)
