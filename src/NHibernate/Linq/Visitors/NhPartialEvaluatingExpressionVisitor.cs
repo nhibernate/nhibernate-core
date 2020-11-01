@@ -157,7 +157,9 @@ namespace NHibernate.Linq.Visitors
 
 		private bool ContainsVariable(Expression expression)
 		{
-			if (!(expression is UnaryExpression unaryExpression))
+			if (!(expression is UnaryExpression unaryExpression) ||
+				// Avoid detecting expression variables as parameters
+				typeof(Expression).IsAssignableFrom(expression.Type))
 			{
 				return false;
 			}

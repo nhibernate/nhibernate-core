@@ -956,5 +956,30 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			Assert.That(result.Count, Is.EqualTo(45));
 		}
+
+		public class Specification<T>
+		{
+			private Expression<Func<T, bool>> _expression;
+
+			public Specification(Expression<Func<T, bool>> expression)
+			{
+				_expression = expression;
+			}
+
+			public static implicit operator Expression<Func<T, bool>>(Specification<T> specification)
+			{
+				return specification._expression;
+			}
+		}
+
+		[Test]
+		public void ImplicitConversionInsideWhereSubqueryExpression()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
+			var spec = new Specification<Order>(x => x.Freight > 1000);
+			db.Orders.Where(o => db.Orders.Where(spec).Any(x => x.OrderId == o.OrderId)).ToList();
+		}
 	}
 }
