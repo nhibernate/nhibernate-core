@@ -20,5 +20,20 @@ namespace NHibernate.Test.Linq
 			Assert.True(customers.All(c => !session.Contains(c)));
 			Assert.AreEqual(0, this.session.GetSessionImplementation().PersistenceContext.EntityEntries.Count);
 		}
+
+		[Test]
+		public void FutureQueryIsNoTracking()
+		{
+			var customers = db.Customers
+				.Where(c => c.ContactTitle == "Sales Representative")
+				.AsNoTracking()
+				.ToFuture()
+				.ToList();
+
+			Assert.NotNull(customers);
+			Assert.IsNotEmpty(customers);
+			Assert.True(customers.All(c => !session.Contains(c)));
+			Assert.AreEqual(0, this.session.GetSessionImplementation().PersistenceContext.EntityEntries.Count);
+		}
 	}
 }
