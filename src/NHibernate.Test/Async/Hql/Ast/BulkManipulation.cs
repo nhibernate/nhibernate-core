@@ -223,7 +223,8 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.CleanupAsync());
 		}
 
-		public async Task InsertWithGeneratedIdAsync(CancellationToken cancellationToken = default(CancellationToken))
+		[Test]
+		public async Task InsertWithGeneratedIdAsync()
 		{
 			// Make sure the env supports bulk inserts with generated ids...
 			IEntityPersister persister = Sfi.GetEntityPersister(typeof (PettingZoo).FullName);
@@ -238,21 +239,21 @@ namespace NHibernate.Test.Hql.Ast
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			await (s.SaveAsync(zoo, cancellationToken));
-			await (t.CommitAsync(cancellationToken));
+			await (s.SaveAsync(zoo));
+			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			int count = await (s.CreateQuery("insert into PettingZoo (name) select name from Zoo").ExecuteUpdateAsync(cancellationToken));
-			await (t.CommitAsync(cancellationToken));
+			int count = await (s.CreateQuery("insert into PettingZoo (name) select name from Zoo").ExecuteUpdateAsync());
+			await (t.CommitAsync());
 			s.Close();
 			Assert.That(count, Is.EqualTo(1), "unexpected insertion count");
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			var pz = (PettingZoo) await (s.CreateQuery("from PettingZoo").UniqueResultAsync(cancellationToken));
-			await (t.CommitAsync(cancellationToken));
+			var pz = (PettingZoo) await (s.CreateQuery("from PettingZoo").UniqueResultAsync());
+			await (t.CommitAsync());
 			s.Close();
 
 			Assert.That(zoo.Name, Is.EqualTo(pz.Name));
@@ -260,8 +261,8 @@ namespace NHibernate.Test.Hql.Ast
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.CreateQuery("delete Zoo").ExecuteUpdateAsync(cancellationToken));
-			await (t.CommitAsync(cancellationToken));
+			await (s.CreateQuery("delete Zoo").ExecuteUpdateAsync());
+			await (t.CommitAsync());
 			s.Close();
 		}
 
@@ -826,6 +827,31 @@ namespace NHibernate.Test.Hql.Ast
 			await (data.CleanupAsync());
 		}
 
+		[Test]
+		public async Task UpdateMultitableWithWhereExistsSubqueryAsync()
+		{
+			if (!Dialect.SupportsTemporaryTables) 
+				Assert.Ignore("Cannot perform multi-table updates using dialect not supporting temp tables.");
+
+			if(!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Dialect does not support scalar sub-select");
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				String updateQryString = "update Human h " +
+										"set h.description = 'updated' " +
+										"where exists (" +
+										"      select f.id " +
+										"      from h.friends f " +
+										"      where f.name.last = 'Public' " +
+										")";
+				await (s.CreateQuery(updateQryString).ExecuteUpdateAsync());
+
+				await (t.CommitAsync());
+			}
+		}
+
 		#endregion
 
 		#region DELETES
@@ -834,25 +860,7 @@ namespace NHibernate.Test.Hql.Ast
 		public async Task DeleteWithSubqueryAsync()
 		{
 			// setup the test data...
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				var owner = new SimpleEntityWithAssociation { Name = "myEntity-1" };
-				owner.AddAssociation("assoc-1");
-				owner.AddAssociation("assoc-2");
-				owner.AddAssociation("assoc-3");
-				await (s.SaveAsync(owner));
-				var owner2 = new SimpleEntityWithAssociation { Name = "myEntity-2" };
-				owner2.AddAssociation("assoc-1");
-				owner2.AddAssociation("assoc-2");
-				owner2.AddAssociation("assoc-3");
-				owner2.AddAssociation("assoc-4");
-				await (s.SaveAsync(owner2));
-				var owner3 = new SimpleEntityWithAssociation { Name = "myEntity-3" };
-				await (s.SaveAsync(owner3));
-				await (t.CommitAsync());
-				s.Close();
-			}
+			await (CreateSimpleEntityWithAssociationDataAsync());
 
 			// now try the bulk delete
 			using (var s = OpenSession())
@@ -868,14 +876,7 @@ namespace NHibernate.Test.Hql.Ast
 			}
 
 			// finally, clean up
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				await (s.CreateQuery("delete SimpleAssociatedEntity").ExecuteUpdateAsync());
-				await (s.CreateQuery("delete SimpleEntityWithAssociation").ExecuteUpdateAsync());
-				await (t.CommitAsync());
-				s.Close();
-			}
+			await (CleanSimpleEntityWithAssociationDataAsync());
 		}
 
 		[Test]
@@ -1079,6 +1080,56 @@ namespace NHibernate.Test.Hql.Ast
 			s.Close();
 		}
 
+		[Test]
+		public async Task DeleteSubQueryReferencingTargetPropertAsync()
+		{
+			await (CreateSimpleEntityWithAssociationDataAsync());
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var count = await (s.CreateQuery("delete from SimpleEntityWithAssociation m where not exists (select d from SimpleAssociatedEntity d where d.Owner = m) and m.Name like 'myEntity%'").ExecuteUpdateAsync());
+				Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
+				await (t.CommitAsync());
+			}
+
+			await (CleanSimpleEntityWithAssociationDataAsync());
+		}
+
+		private async Task CreateSimpleEntityWithAssociationDataAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var owner = new SimpleEntityWithAssociation {Name = "myEntity-1"};
+				owner.AddAssociation("assoc-1");
+				owner.AddAssociation("assoc-2");
+				owner.AddAssociation("assoc-3");
+				await (s.SaveAsync(owner, cancellationToken));
+				var owner2 = new SimpleEntityWithAssociation {Name = "myEntity-2"};
+				owner2.AddAssociation("assoc-1");
+				owner2.AddAssociation("assoc-2");
+				owner2.AddAssociation("assoc-3");
+				owner2.AddAssociation("assoc-4");
+				await (s.SaveAsync(owner2, cancellationToken));
+				var owner3 = new SimpleEntityWithAssociation {Name = "myEntity-3"};
+				await (s.SaveAsync(owner3, cancellationToken));
+				await (t.CommitAsync(cancellationToken));
+				s.Close();
+			}
+		}
+
+		private async Task CleanSimpleEntityWithAssociationDataAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.CreateQuery("delete SimpleAssociatedEntity").ExecuteUpdateAsync(cancellationToken));
+				await (s.CreateQuery("delete SimpleEntityWithAssociation").ExecuteUpdateAsync(cancellationToken));
+				await (t.CommitAsync(cancellationToken));
+				s.Close();
+			}
+		}
 		#endregion
 
 		private class TestData

@@ -427,6 +427,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			clauseStack.Push(_currentClauseType);
 			_currentClauseType = clauseType;
+			if (_level == 1)
+			{
+				CurrentTopLevelClauseType = clauseType;
+			}
 		}
 
 		void HandleClauseEnd(int clauseType)
@@ -1095,6 +1099,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 				get { return _currentClauseType; }
 		}
+
+		// Note: CurrentClauseType tracks the current clause within the current
+		// statement, regardless of level; CurrentTopLevelClauseType, on the other
+		// hand, tracks the current clause within the top (or primary) statement.
+		// Thus, CurrentTopLevelClauseType ignores the clauses from any subqueries.
+		public int CurrentTopLevelClauseType { get; private set; }
 
 		public IDictionary<string, IFilter> EnabledFilters
 		{

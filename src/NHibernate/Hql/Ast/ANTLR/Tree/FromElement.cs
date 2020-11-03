@@ -526,9 +526,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				propertyName = NHibernate.Persister.Entity.EntityPersister.EntityID;
 			}
 
-			cols = UseTableAliases
-				? GetPropertyMapping(propertyName).ToColumns(table, propertyName)
-				: GetPropertyMapping(propertyName).ToColumns(propertyName);
+			cols = ToColumns(table, propertyName, Walker.StatementType == HqlSqlWalker.SELECT);
 
 			return cols;
 		}
