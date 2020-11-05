@@ -167,7 +167,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			// Correlated subqueries create 'special' implied from nodes
 			// because correlated subselects can't use an ANSI-style join
-			bool explicitSubqueryFromElement = _fromClause.IsSubQuery && !_implied;
+			bool explicitSubqueryFromElement = _fromClause.IsScalarSubQuery && !_implied;
 			if (explicitSubqueryFromElement)
 			{
 				string pathRoot = StringHelper.Root(_path);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
@@ -9,7 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class SelectExpressionImpl : FromReferenceNode, ISelectExpression 
+	public class SelectExpressionImpl : FromReferenceNode
 	{
 		public SelectExpressionImpl(IToken token) : base(token)
 		{
@@ -20,9 +21,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			throw new InvalidOperationException();
 		}
 
+		// Since v5.4
+		[Obsolete("Use overload with aliasCreator parameter instead.")]
 		public override void SetScalarColumnText(int i)
 		{
 			Text = FromElement.RenderScalarIdentifierSelect(i);
+		}
+
+		/// <inheritdoc />
+		public override string[] SetScalarColumnText(int i, Func<int, int, string> aliasCreator)
+		{
+			var fragment = FromElement.GetScalarIdentifierSelectFragment(i, aliasCreator);
+			Text = fragment.ToSqlStringFragment(false);
+			return fragment.GetColumnAliases().ToArray();
 		}
 
 		public override void Resolve(bool generateJoin, bool implicitJoin, string classAlias, IASTNode parent)

@@ -144,7 +144,7 @@ namespace NHibernate.Loader.Custom.Sql
 					throw new QueryException("Using return-propertys together with * syntax is not supported.");
 				}
 
-				string selectFragment = collectionPersister.SelectFragment(aliasName, collectionSuffix);
+				var selectFragment = collectionPersister.GetSelectFragment(aliasName, collectionSuffix).ToSqlStringFragment(false);
 				aliasesFound++;
 
 				// Collection may just contain elements and no entities, in which case resolution of

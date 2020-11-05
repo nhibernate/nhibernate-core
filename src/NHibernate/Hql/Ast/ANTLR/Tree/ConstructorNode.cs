@@ -8,7 +8,7 @@ using NHibernate.Util;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public class ConstructorNode : SelectExpressionList, ISelectExpression 
+	public class ConstructorNode : SelectExpressionList, ISelectExpressionExtension
 	{
 		private IType[] _constructorArgumentTypes;
 		private ConstructorInfo _constructor;
@@ -27,9 +27,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public string[] GetAliases()
 		{
-			ISelectExpression[] selectExpressions = CollectSelectExpressions();
-			string[] aliases = new string[selectExpressions.Length];
-			for (int i = 0; i < selectExpressions.Length; i++)
+			var selectExpressions = GetSelectExpressions();
+			string[] aliases = new string[selectExpressions.Count];
+			for (int i = 0; i < selectExpressions.Count; i++)
 			{
 				string alias = selectExpressions[i].Alias;
 				aliases[i] = alias ?? i.ToString();
@@ -48,6 +48,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return _scalarColumnIndex; }
 		}
 
+		// Since v5.4
+		[Obsolete("Use overload with aliasCreator parameter instead.")]
 		public void SetScalarColumn(int i)
 		{
 			ISelectExpression[] selectExpressions = CollectSelectExpressions();
@@ -59,6 +61,23 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
+		/// <inheritdoc />
+		public string[] SetScalarColumn(int i, Func<int, int, string> aliasCreator)
+		{
+			var selectExpressions = GetSelectExpressions();
+			var aliases = new List<string>();
+			// Invoke setScalarColumnText on each constructor argument.
+			for (var j = 0; j < selectExpressions.Count; j++)
+			{
+				var selectExpression = selectExpressions[j];
+				aliases.AddRange(selectExpression.SetScalarColumn(j, aliasCreator));
+			}
+
+			return aliases.ToArray();
+		}
+
+		// Since v5.4
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public void SetScalarColumnText(int i)
 		{
 			ISelectExpression[] selectExpressions = CollectSelectExpressions();
@@ -132,9 +151,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private IType[] ResolveConstructorArgumentTypes()
 		{
-			ISelectExpression[] argumentExpressions = CollectSelectExpressions();
-			IType[] types = new IType[argumentExpressions.Length];
-			for ( int x = 0; x < argumentExpressions.Length; x++ ) 
+			var argumentExpressions = GetSelectExpressions();
+			var types = new IType[argumentExpressions.Count];
+			for (var x = 0; x < argumentExpressions.Count; x++)
 			{
 				types[x] = argumentExpressions[x].DataType;
 			}

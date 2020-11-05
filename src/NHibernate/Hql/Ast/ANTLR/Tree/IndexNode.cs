@@ -25,7 +25,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
+		// Since v5.4
+		[Obsolete("Use overload with aliasCreator parameter instead.")]
 		public override void SetScalarColumnText(int i)
+		{
+			throw new InvalidOperationException("An IndexNode cannot generate column text!");
+		}
+
+		/// <inheritdoc />
+		public override string[] SetScalarColumnText(int i, Func<int, int, string> aliasCreator)
 		{
 			throw new InvalidOperationException("An IndexNode cannot generate column text!");
 		}

@@ -48,6 +48,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
+		// Since v5.4
+		[Obsolete("Use overload with aliasCreator parameter instead.")]
 		public override void SetScalarColumnText(int i)
 		{
 			if ( _selectColumns == null ) 
@@ -58,6 +60,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{	// Collection 'property function'
 				ColumnHelper.GenerateScalarColumns(Walker.ASTFactory, this, _selectColumns, i);
 			}
+		}
+
+		/// <inheritdoc />
+		public override string[] SetScalarColumnText(int i, Func<int, int, string> aliasCreator)
+		{
+			return _selectColumns == null
+				? new[] {ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i, aliasCreator)} // Dialect function
+				: ColumnHelper.GenerateScalarColumns(ASTFactory, this, _selectColumns, i, aliasCreator); // Collection 'property function'
 		}
 
 		public void InitializeMethodNode(IASTNode name, bool inSelect)

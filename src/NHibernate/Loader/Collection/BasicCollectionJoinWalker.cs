@@ -71,7 +71,7 @@ namespace NHibernate.Loader.Collection
 
 			SqlSelectBuilder select =
 				new SqlSelectBuilder(Factory)
-				.SetSelectClause(collectionPersister.SelectFragment(alias, CollectionSuffixes[0])
+				.SetSelectClause(collectionPersister.GetSelectFragment(alias, CollectionSuffixes[0]).ToSqlStringFragment(false)
 				                                              + SelectString(associations))
 				.SetFromClause(collectionPersister.TableName, alias)
 				.SetWhereClause(whereString.ToSqlString())

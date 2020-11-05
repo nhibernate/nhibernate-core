@@ -33,7 +33,12 @@ namespace NHibernate.DomainModel.Northwind.Entities
         {
             get { return _session.Query<Order>(); }
         }
-		
+
+        public IQueryable<CompositeOrder> CompositeOrders
+        {
+            get { return _session.Query<CompositeOrder>(); }
+        }
+
         public IQueryable<OrderLine> OrderLines
         {
             get { return _session.Query<OrderLine>(); }

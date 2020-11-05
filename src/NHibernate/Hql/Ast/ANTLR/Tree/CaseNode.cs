@@ -12,7 +12,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class CaseNode : AbstractSelectExpression, ISelectExpression 
+	public class CaseNode : AbstractSelectExpression
 	{
 		public CaseNode(IToken token) : base(token)
 		{
@@ -59,9 +59,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { base.DataType = value; }
 		}
 
+		// Since v5.4
+		[Obsolete("Use overload with aliasCreator parameter instead.")]
 		public override void SetScalarColumnText(int i)
 		{
 			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i );
+		}
+
+		/// <inheritdoc />
+		public override string[] SetScalarColumnText(int i, Func<int, int, string> aliasCreator)
+		{
+			return new[] {ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i, aliasCreator)};
 		}
 	}
 }

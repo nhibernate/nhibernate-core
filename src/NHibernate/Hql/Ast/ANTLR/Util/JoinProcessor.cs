@@ -245,7 +245,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				}
 				bool shallowQuery = _walker.IsShallowQuery;
 				bool includeSubclasses = _fromElement.IncludeSubclasses;
-				bool subQuery = _fromClause.IsSubQuery;
+				bool subQuery = _fromClause.IsScalarSubQuery;
 				return includeSubclasses && containsTableAlias && !subQuery && !shallowQuery;
 			}
 		}

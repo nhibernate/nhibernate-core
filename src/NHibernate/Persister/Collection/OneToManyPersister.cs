@@ -300,7 +300,7 @@ namespace NHibernate.Persister.Collection
 
 			if (includeCollectionColumns)
 			{
-				buf.Append(SelectFragment(lhsAlias, collectionSuffix)).Append(StringHelper.CommaSpace);
+				buf.Append(GetSelectFragment(lhsAlias, collectionSuffix).ToSqlStringFragment(false)).Append(StringHelper.CommaSpace);
 			}
 
 			//6.0 TODO: Remove

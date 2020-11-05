@@ -78,6 +78,30 @@ namespace NHibernate.Type
 			}
 		}
 
+		internal ComponentType(
+			IType[] propertyTypes,
+			string[] propertyNames,
+			bool[] propertyNullability,
+			int propertySpan,
+			CascadeStyle[] cascade,
+			FetchMode?[] joinedFetch,
+			bool isKey,
+			bool overridesGetHashCode,
+			IComponentTuplizer tuplizer,
+			EntityMode entityMode)
+		{
+			this.propertyTypes = propertyTypes;
+			this.propertyNames = propertyNames;
+			this.propertyNullability = propertyNullability;
+			this.propertySpan = propertySpan;
+			this.cascade = cascade;
+			this.joinedFetch = joinedFetch;
+			this.isKey = isKey;
+			this.overridesGetHashCode = overridesGetHashCode;
+			ComponentTuplizer = tuplizer;
+			EntityMode = entityMode;
+		}
+
 		/// <summary></summary>
 		public override bool IsCollectionType
 		{
