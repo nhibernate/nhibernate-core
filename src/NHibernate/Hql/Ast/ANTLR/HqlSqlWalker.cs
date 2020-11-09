@@ -749,10 +749,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			int joinType,
 			IASTNode with)
 		{
-			if (log.IsDebugEnabled())
-			{
-				log.Debug($"Creating subquery-join FromElement [{alias?.Text}]");
-			}
+			log.Debug("Creating subquery-join FromElement [{0}]", alias?.Text);
 
 			var join = new JoinSubqueryFromElement(
 				CurrentFromClause,
