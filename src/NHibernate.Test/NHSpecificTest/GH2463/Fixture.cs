@@ -8,6 +8,11 @@ namespace NHibernate.Test.NHSpecificTest.GH2463
 	[TestFixture]
 	public class Fixture : TestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return Dialect.SupportsScalarSubSelects;
+		}
+
 		protected override string[] Mappings
 		{
 			get { return new[] {"ABC.hbm.xml"}; }
