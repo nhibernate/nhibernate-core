@@ -413,34 +413,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 				else if (_fromElement.Walker.IsSubQuery)
 				{
-					// for a subquery, the alias to use depends on a few things (we
-					// already know this is not an overall SELECT):
-					//      1) if this FROM_ELEMENT represents a correlation to the
-					//          outer-most query
-					//              A) if the outer query represents a multi-table
-					//                  persister, we need to use the given alias
-					//                  in anticipation of one of the multi-table
-					//                  executors being used (as this subquery will
-					//                  actually be used in the "id select" phase
-					//                  of that multi-table executor)
-					//              B) otherwise, we need to use the persister's
-					//                  table name as the column qualification
-					//      2) otherwise (not correlated), use the given alias
-					if (IsCorrelation)
-					{
-						if (IsMultiTable)
-						{
-							return propertyMapping.ToColumns(tableAlias, path);
-						}
-						else
-						{
-							return propertyMapping.ToColumns(ExtractTableName(), path);
-						}
-					}
-					else
-					{
-						return propertyMapping.ToColumns(tableAlias, path);
-					}
+					// We already know it's subqery for DML query.
+					// If this FROM_ELEMENT represents a correlation to the outer-most query we must use real table name
+					// for UPDATE(typically in a SET clause)/DELETE queries unless it's multi-table reference inside top level where clause
+					// (as this subquery will actually be used in the "id select" phase of that multi-table executor)
+					var useAlias = _fromElement.Walker.StatementType == HqlSqlWalker.INSERT
+						|| (IsMultiTable && _fromElement.Walker.CurrentTopLevelClauseType == HqlSqlWalker.WHERE);
+
+					if (!useAlias && IsCorrelation)
+						return propertyMapping.ToColumns(ExtractTableName(), path);
+
+					return propertyMapping.ToColumns(tableAlias, path);
 				}
 				else
 				{
