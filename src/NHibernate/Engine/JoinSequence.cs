@@ -193,9 +193,9 @@ namespace NHibernate.Engine
 				else
 				{
 					// NH Different behavior : NH1179 and NH1293
-					// Apply filters in Many-To-One association
+					// Apply filters for entity joins and Many-To-One association
 					var enabledForManyToOne = FilterHelper.GetEnabledForManyToOne(enabledFilters);
-					condition = new SqlString(string.IsNullOrEmpty(on) && enabledForManyToOne.Count > 0
+					condition = new SqlString(string.IsNullOrEmpty(on) && (ForceFilter || enabledForManyToOne.Count > 0)
 					            	? join.Joinable.FilterFragment(join.Alias, enabledForManyToOne)
 					            	: on);
 				}
@@ -327,5 +327,7 @@ namespace NHibernate.Engine
 		internal string RootAlias => rootAlias;
 
 		public ISessionFactoryImplementor Factory => factory;
+
+		internal bool ForceFilter { get; set; }
 	}
 }

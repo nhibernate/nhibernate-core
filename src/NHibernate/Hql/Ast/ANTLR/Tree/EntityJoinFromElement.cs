@@ -18,7 +18,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			InitializeEntity(fromClause, entityPersister.EntityName, entityPersister, entityType, alias, tableAlias);
 
 			//NH Specific: hibernate uses special class EntityJoinJoinSequenceImpl
-			JoinSequence = new JoinSequence(SessionFactoryHelper.Factory)
+			JoinSequence = new JoinSequence(SessionFactoryHelper.Factory) {ForceFilter = true}
 				.AddJoin(entityType, tableAlias, joinType, Array.Empty<string>());
 
 			fromClause.Walker.AddQuerySpaces(entityPersister.QuerySpaces);
