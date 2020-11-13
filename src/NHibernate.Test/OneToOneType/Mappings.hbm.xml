@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.OneToOneType" default-lazy="false">
-  <class name="Owner">
+  <class name="Owner" select-before-update="true">
     <id name="Id" unsaved-value="0" generator="native"/>
     <property name="Name"/>
-    <one-to-one name="Details" class="Details" cascade="all"/>
+    <one-to-one name="Details" class="Details" cascade="all-delete-orphan"/>
   </class>
 
   <class name="Details">
