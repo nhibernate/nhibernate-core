@@ -100,6 +100,8 @@ namespace NHibernate.Loader
 
 		public ISet<string> EntityFetchLazyProperties { get; set; }
 
+		internal bool ForceFilter { get; set; }
+
 		string[] IJoin.LHSColumns => lhsColumns;
 		string IJoin.Alias => RHSAlias;
 		IAssociationType IJoin.AssociationType => JoinableType;

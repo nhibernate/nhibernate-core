@@ -388,7 +388,8 @@ namespace NHibernate.Loader
 					GetWithClause(path, pathAlias),
 					Factory,
 					enabledFilters,
-					GetSelectMode(path)), path);
+					GetSelectMode(path)) {ForceFilter = true},
+				path);
 			AddAssociation(assoc);
 		}
 
@@ -849,9 +850,9 @@ namespace NHibernate.Loader
 				else
 				{
 					// NH Different behavior : NH1179 and NH1293
-					// Apply filters in Many-To-One association
+					// Apply filters for entity joins and Many-To-One associations
 					SqlString filter = null;
-					if (enabledFiltersForManyToOne.Count > 0)
+					if (oj.ForceFilter || enabledFiltersForManyToOne.Count > 0)
 					{
 						string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForManyToOne);
 						bool joinClauseDoesNotContainsFilterAlready =

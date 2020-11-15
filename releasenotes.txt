@@ -1,4 +1,19 @@
-﻿Build 5.3.4
+﻿Build 5.3.5
+=============================
+
+Release notes - NHibernate - Version 5.3.5
+
+2 issues were resolved in this release.
+
+** Bug
+
+   * #2599 WrongClassException in Linq query
+
+** Task
+
+   * #2606 Release 5.3.5
+
+Build 5.3.4
 =============================
 
 Release notes - NHibernate - Version 5.3.4
