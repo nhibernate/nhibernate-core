@@ -204,12 +204,11 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// We always need to dirty check as our identifier is dependent on
-		/// whether or not a persistent entry exists.
+		/// We only need to dirty check when the identifier can be null.
 		/// </summary>
 		public override bool IsAlwaysDirtyChecked
 		{
-			get { return true; }
+			get { return IsNullable; }
 		}
 
 		public override string PropertyName
