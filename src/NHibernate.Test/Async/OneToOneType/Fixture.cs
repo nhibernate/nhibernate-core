@@ -68,5 +68,47 @@ namespace NHibernate.Test.OneToOneType
 				Assert.NotNull(owner.Details);
 			}
 		}
+
+		[Test]
+		public async Task OneToOnePersistedOnOwnerUpdateForSessionUpdateAsync()
+		{
+			Owner owner;
+
+			using (var s = Sfi.OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				owner = new Owner()
+				{
+					Name = "Owner",
+				};
+
+				await (s.SaveAsync(owner));
+				await (tx.CommitAsync());
+			}
+
+			using (var s = Sfi.OpenSession())
+			{
+				owner = await (s.GetAsync<Owner>(owner.Id));
+			}
+
+			using (var s = Sfi.OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				await (s.SaveOrUpdateAsync(owner));
+				owner.Details = new Details()
+				{
+					Data = "Owner Details"
+				};
+
+				await (tx.CommitAsync());
+			}
+
+			using (var s = Sfi.OpenSession())
+			{
+				owner = await (s.GetAsync<Owner>(owner.Id));
+
+				Assert.IsNotNull(owner.Details);
+			}
+		}
 	}
 }
