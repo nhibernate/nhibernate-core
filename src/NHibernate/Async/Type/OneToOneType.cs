@@ -80,20 +80,21 @@ namespace NHibernate.Type
 			return this.IsDirtyAsync(old, current, session, cancellationToken);
 		}
 
-		public override Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
+		public override async Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			if (current == null)
 			{
-				return Task.FromCanceled<bool>(cancellationToken);
+				return old != null;
 			}
-			try
+			if (old == null)
 			{
-				return Task.FromResult<bool>(IsModified(old, current, checkable, session));
+				return true;
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
+			var oldIdentifier = IsIdentifier(old, session) ? old : await (GetIdentifierAsync(old, session, cancellationToken)).ConfigureAwait(false);
+			var currentIdentifier = await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false);
+			// the ids are fully resolved, so compare them with isDirty(), not isModified()
+			return await (GetIdentifierOrUniqueKeyType(session.Factory).IsDirtyAsync(oldIdentifier, currentIdentifier, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
