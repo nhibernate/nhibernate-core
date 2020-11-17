@@ -47,30 +47,13 @@
 		<property name="tools.dir" value="${root.dir}/Tools"/>
 	</target>
 
-	<target name="common.tools-restore" depends="common.init common.get-dotnet-version">
+	<target name="common.tools-restore" depends="common.init">
 		<exec workingdir="${root.dir}" program="dotnet" verbose="true">
 			<arg line="tool restore" />
 		</exec> 
 		<exec workingdir="${root.dir}/Tools" program="dotnet" verbose="true">
 			<arg line="restore ./packages.csproj --packages ." />
 		</exec> 
-	</target>
-
-	<target name="common.get-dotnet-version">
-		<property name="dotnet.version.file" value="${root.dir}/Tools/dotnet.version" />
-		<exec workingdir="${root.dir}/Tools" program="dotnet" output="${dotnet.version.file}">
-			<arg line="--version" />
-		</exec>
-		<loadfile file="${dotnet.version.file}" property="dotnet.version.content" />
-		<delete file="${dotnet.version.file}" />
-		<echo message="dotnet version: ${string::trim(dotnet.version.content)}" />
-		<if test="${string::index-of(dotnet.version.content, '-') == -1}">
-			<property name="dotnet.version" value="${version::parse(string::trim(dotnet.version.content))}" />
-		</if>
-		<!-- For preview versions we have to substring until - character. Example: 5.0.100-preview.2.20176.6  -->
-		<if test="${string::index-of(dotnet.version.content, '-') != -1}">
-			<property name="dotnet.version" value="${version::parse(string::trim(string::substring(dotnet.version.content, 0, string::index-of(dotnet.version.content, '-'))))}" />
-		</if>
 	</target>
 
 </project>
