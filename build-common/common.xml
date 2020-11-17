@@ -48,6 +48,9 @@
 	</target>
 
 	<target name="common.tools-restore" depends="common.init common.get-dotnet-version">
+		<exec workingdir="${root.dir}" program="dotnet" verbose="true">
+			<arg line="tool restore" />
+		</exec> 
 		<exec workingdir="${root.dir}/Tools" program="dotnet" verbose="true">
 			<arg line="restore ./packages.csproj --packages ." />
 		</exec> 
