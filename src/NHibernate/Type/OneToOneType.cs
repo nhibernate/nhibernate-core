@@ -88,7 +88,28 @@ namespace NHibernate.Type
 
 		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return false;
+			if (current == null)
+			{
+				return old != null;
+			}
+			if (old == null)
+			{
+				return true;
+			}
+			var oldIdentifier = IsIdentifier(old, session) ? old : GetIdentifier(old, session);
+			var currentIdentifier = GetIdentifier(current, session);
+			// the ids are fully resolved, so compare them with isDirty(), not isModified()
+			return GetIdentifierOrUniqueKeyType(session.Factory).IsDirty(oldIdentifier, currentIdentifier, session);
+		}
+
+		private bool IsIdentifier(object value, ISessionImplementor session)
+		{
+			var identifierType = GetIdentifierType(session);
+			if (identifierType == null)
+			{
+				return false;
+			}
+			return value.GetType() == identifierType.ReturnedClass;
 		}
 
 		public override bool IsNull(object owner, ISessionImplementor session)
