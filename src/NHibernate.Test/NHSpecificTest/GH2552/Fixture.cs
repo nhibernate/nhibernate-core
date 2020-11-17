@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 			Sfi.Evict(typeof(DetailsByRef));
 		}
 
-		private void OneToOneTest<TPerson, TDetails>() where TPerson : Person, new() where TDetails : Details, new()
+		private void OneToOneFetchTest<TPerson, TDetails>() where TPerson : Person, new() where TDetails : Details, new()
 		{
 			List<object> ids = this.CreatePersonAndDetails<TPerson, TDetails>();
 
@@ -115,15 +115,15 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 		}
 
 		[Test]
-		public void OneToOneCacheByForeignKey()
+		public void OneToOneCacheFetchByForeignKey()
 		{
-			OneToOneTest<PersonByFK, DetailsByFK>();
+			OneToOneFetchTest<PersonByFK, DetailsByFK>();
 		}
 
 		[Test]
-		public void OneToOneCacheByRef()
+		public void OneToOneCacheFetchByRef()
 		{
-			OneToOneTest<PersonByRef, DetailsByRef>();
+			OneToOneFetchTest<PersonByRef, DetailsByRef>();
 		}
 	}
 }

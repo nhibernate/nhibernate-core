@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 			Sfi.Evict(typeof(DetailsByRef));
 		}
 
-		private async Task OneToOneTestAsync<TPerson, TDetails>(CancellationToken cancellationToken = default(CancellationToken)) where TPerson : Person, new() where TDetails : Details, new()
+		private async Task OneToOneFetchTestAsync<TPerson, TDetails>(CancellationToken cancellationToken = default(CancellationToken)) where TPerson : Person, new() where TDetails : Details, new()
 		{
 			List<object> ids = await (this.CreatePersonAndDetailsAsync<TPerson, TDetails>(cancellationToken));
 
@@ -127,15 +127,15 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 		}
 
 		[Test]
-		public async Task OneToOneCacheByForeignKeyAsync()
+		public async Task OneToOneCacheFetchByForeignKeyAsync()
 		{
-			await (OneToOneTestAsync<PersonByFK, DetailsByFK>());
+			await (OneToOneFetchTestAsync<PersonByFK, DetailsByFK>());
 		}
 
 		[Test]
-		public async Task OneToOneCacheByRefAsync()
+		public async Task OneToOneCacheFetchByRefAsync()
 		{
-			await (OneToOneTestAsync<PersonByRef, DetailsByRef>());
+			await (OneToOneFetchTestAsync<PersonByRef, DetailsByRef>());
 		}
 	}
 }
