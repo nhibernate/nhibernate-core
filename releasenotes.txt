@@ -1,4 +1,41 @@
-﻿Build 5.3.3
+﻿Build 5.3.5
+=============================
+
+Release notes - NHibernate - Version 5.3.5
+
+2 issues were resolved in this release.
+
+** Bug
+
+   * #2599 WrongClassException in Linq query
+
+** Task
+
+   * #2606 Release 5.3.5
+
+Build 5.3.4
+=============================
+
+Release notes - NHibernate - Version 5.3.4
+
+6 issues were resolved in this release.
+
+** Bug
+
+   * #2580 InvalidWithClauseException when join polymorphic entity
+   * #2559 Regression in caching linq query with ThenFetchMany statement.
+   * #2549 ApplyFilter does not work on join statements in LINQ
+   * #2537 Unable to cast "System.Linq.Expressions.UnaryExpression" to "System.Linq.Expressions.LambdaExpression".
+
+** Task
+
+   * #2578 Add missing possible breaking changes for #2365
+   * #2587 Release 5.3.4
+
+As part of releasing 5.3.4, one missing 5.3.0 possible breaking change has been added, about
+custom method generators for Linq. See 5.3.0 possible breaking changes.
+
+Build 5.3.3
 =============================
 
 Release notes - NHibernate - Version 5.3.3
@@ -135,6 +172,8 @@ Release notes - NHibernate - Version 5.3.0
           already exists in the set will now return false.
         * Calling `ISet<>.Add` or `ICollection<>.Add` on an uninitialized set mapped as `lazy="true"` with a
           transient element that does not override `Equals` method will not initialize the collection.
+        * Linq custom generators deriving from `BaseHqlGeneratorForMethod` should override the
+          `TryGetCollectionParameter` method if they have to support parameter lists.
 
 ** Bug
 
