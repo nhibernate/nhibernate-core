@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using NHibernate.Cache;
+using System.Linq;
 using NHibernate.Stat;
-using NHibernate.Test.CacheTest.Caches;
 using NUnit.Framework;
 using NHCfg = NHibernate.Cfg;
 
@@ -121,7 +119,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				// Get the first person with details.
-				Person person = s.QueryOver<TPerson>()
+				Person person = s.Query<TPerson>()
 					.Where(p => p.Details != null)
 					.Take(1)
 					.SingleOrDefault();
@@ -129,7 +127,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 				Assert.NotNull(person);
 				Assert.NotNull(person.Details);
 
-				s.SaveOrUpdate(person);
 				person.Details = null;
 
 				tx.Commit();
