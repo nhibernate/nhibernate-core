@@ -77,6 +77,79 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 			Assert.AreEqual(0, statistics.SecondLevelCacheMissCount, "Second level cache miss count");
 		}
 
+		private async Task OneToOneUpdateTestAsync<TPerson, TDetails>(CancellationToken cancellationToken = default(CancellationToken)) where TPerson : Person, new() where TDetails : Details, new()
+		{
+			List<object> ids = await (this.CreatePersonAndDetailsAsync<TPerson, TDetails>(cancellationToken));
+
+			IStatistics statistics = Sfi.Statistics;
+
+			// Clear the second level cache and the statistics
+			await (Sfi.EvictEntityAsync(typeof(TPerson).FullName, cancellationToken));
+			await (Sfi.EvictEntityAsync(typeof(TDetails).FullName, cancellationToken));
+			await (Sfi.EvictQueriesAsync(cancellationToken));
+
+			statistics.Clear();
+
+			// Fill the empty caches with data.
+			await (this.FetchPeopleByIdAsync<TPerson>(ids, cancellationToken));
+
+			// Verify that no data was retrieved from the cache.
+			Assert.AreEqual(0, statistics.SecondLevelCacheHitCount, "Second level cache hit count");
+			statistics.Clear();
+
+			int personId = await (DeleteDetailsFromFirstPersonAsync<TPerson>(cancellationToken));
+
+			// Verify that the cache was updated
+			Assert.AreEqual(1, statistics.SecondLevelCachePutCount, "Second level cache put count");
+			statistics.Clear();
+
+			// Verify that the Person was updated in the cache
+			using (ISession s = Sfi.OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				TPerson person = await (s.GetAsync<TPerson>(personId, cancellationToken));
+
+				Assert.IsNull(person.Details);
+			}
+
+			Assert.AreEqual(0, statistics.SecondLevelCacheMissCount, "Second level cache miss count");
+			statistics.Clear();
+
+			// Verify that the Details was removed from the cache and deleted.
+			using (ISession s = Sfi.OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				TDetails details = await (s.GetAsync<TDetails>(personId, cancellationToken));
+
+				Assert.Null(details);
+			}
+
+			Assert.AreEqual(0, statistics.SecondLevelCacheHitCount, "Second level cache hit count");
+		}
+
+		private async Task<int> DeleteDetailsFromFirstPersonAsync<TPerson>(CancellationToken cancellationToken = default(CancellationToken)) where TPerson:Person
+		{
+			using (ISession s = Sfi.OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				// Get the first person with details.
+				Person person = await (s.QueryOver<TPerson>()
+					.Where(p => p.Details != null)
+					.Take(1)
+					.SingleOrDefaultAsync(cancellationToken));
+
+				Assert.NotNull(person);
+				Assert.NotNull(person.Details);
+
+				await (s.SaveOrUpdateAsync(person, cancellationToken));
+				person.Details = null;
+
+				await (tx.CommitAsync(cancellationToken));
+
+				return person.Id;
+			}
+		}
+
 		private async Task<List<object>> CreatePersonAndDetailsAsync<TPerson, TDetails>(CancellationToken cancellationToken = default(CancellationToken)) where TPerson : Person, new() where TDetails : Details, new()
 		{
 			List<object> ids = new List<object>();
@@ -136,6 +209,18 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 		public async Task OneToOneCacheFetchByRefAsync()
 		{
 			await (OneToOneFetchTestAsync<PersonByRef, DetailsByRef>());
+		}
+
+		[Test]
+		public async Task OneToOneCacheUpdateByForeignKeyAsync()
+		{
+			await (OneToOneUpdateTestAsync<PersonByFK, DetailsByFK>());
+		}
+
+		[Test]
+		public async Task OneToOneCacheUpdateByRefAsync()
+		{
+			await (OneToOneUpdateTestAsync<PersonByRef, DetailsByRef>());
 		}
 	}
 }
