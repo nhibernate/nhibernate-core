@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.GH2552">
   <class name="PersonByFK" batch-size="3">
-    <cache usage="read-only"/>
+    <cache usage="read-write"/>
     <id name="Id" unsaved-value="0" generator="native"/>
     <property name="Name"/>
-    <one-to-one name="Details" class="DetailsByFK" fetch="join" cascade="all"/>
+    <one-to-one name="Details" class="DetailsByFK" fetch="join" cascade="all-delete-orphan"/>
   </class>
 
   <class name="DetailsByFK">
-    <cache usage="read-only"/>
+    <cache usage="read-write"/>
     <id name="Id" unsaved-value="0">
       <generator class="foreign">
         <param name="property">Person</param>
@@ -19,14 +19,14 @@
   </class>
 
   <class name="PersonByRef" batch-size="3">
-    <cache usage="read-only"/>
+    <cache usage="read-write"/>
     <id name="Id" unsaved-value="0" generator="native"/>
     <property name="Name" />
-    <one-to-one name="Details" class="DetailsByRef" property-ref="Person" fetch="join" cascade="all"/>
+    <one-to-one name="Details" class="DetailsByRef" property-ref="Person" fetch="join" cascade="all-delete-orphan"/>
   </class>
 
   <class name="DetailsByRef">
-    <cache usage="read-only"/>
+    <cache usage="read-write"/>
     <id name="Id" unsaved-value="0" generator="native"/>
     <many-to-one name="Person" class="PersonByRef" column="PersonId" unique="true"/>
     <property name="Data"/>

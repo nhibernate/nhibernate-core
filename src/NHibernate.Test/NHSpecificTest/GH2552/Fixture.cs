@@ -65,6 +65,79 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 			Assert.AreEqual(0, statistics.SecondLevelCacheMissCount, "Second level cache miss count");
 		}
 
+		private void OneToOneUpdateTest<TPerson, TDetails>() where TPerson : Person, new() where TDetails : Details, new()
+		{
+			List<object> ids = this.CreatePersonAndDetails<TPerson, TDetails>();
+
+			IStatistics statistics = Sfi.Statistics;
+
+			// Clear the second level cache and the statistics
+			Sfi.EvictEntity(typeof(TPerson).FullName);
+			Sfi.EvictEntity(typeof(TDetails).FullName);
+			Sfi.EvictQueries();
+
+			statistics.Clear();
+
+			// Fill the empty caches with data.
+			this.FetchPeopleById<TPerson>(ids);
+
+			// Verify that no data was retrieved from the cache.
+			Assert.AreEqual(0, statistics.SecondLevelCacheHitCount, "Second level cache hit count");
+			statistics.Clear();
+
+			int personId = DeleteDetailsFromFirstPerson<TPerson>();
+
+			// Verify that the cache was updated
+			Assert.AreEqual(1, statistics.SecondLevelCachePutCount, "Second level cache put count");
+			statistics.Clear();
+
+			// Verify that the Person was updated in the cache
+			using (ISession s = Sfi.OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				TPerson person = s.Get<TPerson>(personId);
+
+				Assert.IsNull(person.Details);
+			}
+
+			Assert.AreEqual(0, statistics.SecondLevelCacheMissCount, "Second level cache miss count");
+			statistics.Clear();
+
+			// Verify that the Details was removed from the cache and deleted.
+			using (ISession s = Sfi.OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				TDetails details = s.Get<TDetails>(personId);
+
+				Assert.Null(details);
+			}
+
+			Assert.AreEqual(0, statistics.SecondLevelCacheHitCount, "Second level cache hit count");
+		}
+
+		private int DeleteDetailsFromFirstPerson<TPerson>() where TPerson:Person
+		{
+			using (ISession s = Sfi.OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				// Get the first person with details.
+				Person person = s.QueryOver<TPerson>()
+					.Where(p => p.Details != null)
+					.Take(1)
+					.SingleOrDefault();
+
+				Assert.NotNull(person);
+				Assert.NotNull(person.Details);
+
+				s.SaveOrUpdate(person);
+				person.Details = null;
+
+				tx.Commit();
+
+				return person.Id;
+			}
+		}
+
 		private List<object> CreatePersonAndDetails<TPerson, TDetails>() where TPerson : Person, new() where TDetails : Details, new()
 		{
 			List<object> ids = new List<object>();
@@ -124,6 +197,18 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 		public void OneToOneCacheFetchByRef()
 		{
 			OneToOneFetchTest<PersonByRef, DetailsByRef>();
+		}
+
+		[Test]
+		public void OneToOneCacheUpdateByForeignKey()
+		{
+			OneToOneUpdateTest<PersonByFK, DetailsByFK>();
+		}
+
+		[Test]
+		public void OneToOneCacheUpdateByRef()
+		{
+			OneToOneUpdateTest<PersonByRef, DetailsByRef>();
 		}
 	}
 }
