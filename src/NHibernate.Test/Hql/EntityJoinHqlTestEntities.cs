@@ -16,8 +16,9 @@ namespace NHibernate.Test.Hql.EntityJoinHqlTestEntities
 	{
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
+		public virtual NullableOwner Parent { get; set; }
 	}
-	
+
 	public class PropRefEntity
 	{
 		public virtual Guid Id { get; set; }

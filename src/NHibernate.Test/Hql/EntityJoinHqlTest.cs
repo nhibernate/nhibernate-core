@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Test.Hql.EntityJoinHqlTestEntities;
@@ -153,12 +154,12 @@ namespace NHibernate.Test.Hql
 						.CreateQuery(
 							"select ex "
 							+ "from NullableOwner ex "
-							+ "left join OneToOneEntity st with st = ex.OneToOne "
-						).SetMaxResults(1)
+							+ "inner join OneToOneEntity st with st = ex.OneToOne "
+						)
 						.UniqueResult<NullableOwner>();
 
-				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(2));
-				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+				Assert.That(entity, Is.Not.Null);
+				Assert.That(Regex.Matches(sqlLog.Appender.GetEvents()[0].RenderedMessage, "OneToOneEntity").Count, Is.EqualTo(2));
 			}
 		}
 
@@ -177,8 +178,28 @@ namespace NHibernate.Test.Hql
 						).SetMaxResults(1)
 						.UniqueResult<NullableOwner>();
 
-				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
-				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+				Assert.That(entity, Is.Not.Null);
+				Assert.That(Regex.Matches(sqlLog.Appender.GetEvents()[0].RenderedMessage, "OneToOneEntity").Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public void NullableOneToOneWhereEntityIsNull()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var entity =
+					session
+						.CreateQuery(
+							"select ex "
+							+ "from NullableOwner ex "
+							+ "where ex.OneToOne is null "
+						).SetMaxResults(1)
+						.UniqueResult<NullableOwner>();
+
+				Assert.That(entity, Is.Not.Null);
+				Assert.That(Regex.Matches(sqlLog.Appender.GetEvents()[0].RenderedMessage, "OneToOneEntity").Count, Is.EqualTo(1));
 			}
 		}
 
@@ -197,8 +218,8 @@ namespace NHibernate.Test.Hql
 						).SetMaxResults(1)
 						.UniqueResult<NullableOwner>();
 
-				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
-				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+				Assert.That(entity, Is.Not.Null);
+				Assert.That(Regex.Matches(sqlLog.Appender.GetEvents()[0].RenderedMessage, "OneToOneEntity").Count, Is.EqualTo(1));
 			}
 		}
 
@@ -211,14 +232,32 @@ namespace NHibernate.Test.Hql
 				var entity =
 					session
 						.CreateQuery(
-							"select ex "
-							+ "from NullableOwner ex "
+							"select ex from NullableOwner ex "
 							+ "where ex.PropRef is not null "
-						).SetMaxResults(1)
+						)
 						.UniqueResult<NullableOwner>();
 
-				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "PropRefEntity").Count, Is.EqualTo(1));
-				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+				Assert.That(entity, Is.Not.Null);
+				Assert.That(Regex.Matches(sqlLog.Appender.GetEvents()[0].RenderedMessage, "PropRefEntity").Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public void NullablePropRefWhereIdEntityNullShouldAddJoin()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var entity =
+					session
+						.CreateQuery(
+							"select ex from NullableOwner ex "
+							+ "where ex.PropRef is null "
+						)
+						.UniqueResult<NullableOwner>();
+
+				Assert.That(entity, Is.Not.Null);
+				Assert.That(Regex.Matches(sqlLog.Appender.GetEvents()[0].RenderedMessage, "PropRefEntity").Count, Is.EqualTo(1));
 			}
 		}
 
@@ -234,28 +273,41 @@ namespace NHibernate.Test.Hql
 							"select ex "
 							+ "from NullableOwner ex left join fetch ex.OneToOne o "
 							+ "where o is null "
-						).SetMaxResults(1)
+						)
 						.UniqueResult<NullableOwner>();
 
+				Assert.That(entity, Is.Not.Null);
 				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
 			}
 		}
-		
+
+		[Test(Description = "GH-2611")]
+		public void NullableOneIsNullLinq()
+		{
+			using (var session = OpenSession())
+			{
+				var entity = session.Query<NullableOwner>().Where(x => x.OneToOne == null).FirstOrDefault();
+				Assert.That(entity, Is.Not.Null);
+			}
+		}
+
 		[Test]
 		public void NullableOneToOneFetchQueryIsNotAffected2()
 		{
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				var entity =
+				var entities =
 					session
 						.CreateQuery(
 							"select ex "
 							+ "from NullableOwner ex left join fetch ex.OneToOne o "
 							+ "where o.Id is null "
-						).SetMaxResults(1)
-						.UniqueResult<NullableOwner>();
+						)
+						.List<NullableOwner>();
+				var entity = entities[0];
 
+				Assert.That(entity, Is.Not.Null);
 				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
 			}
 		}
@@ -493,8 +545,9 @@ namespace NHibernate.Test.Hql
 			mapper.Class<OneToOneEntity>(
 				rc =>
 				{
-					rc.Id(e => e.Id, m => m.Generator(Generators.GuidComb));
+					rc.Id(e => e.Id, m => m.Generator(Generators.Foreign<OneToOneEntity>(x => x.Parent)));
 					rc.Property(e => e.Name);
+					rc.OneToOne(x => x.Parent, x => x.Constrained(true));
 				});
 
 			mapper.Class<PropRefEntity>(
@@ -510,7 +563,11 @@ namespace NHibernate.Test.Hql
 				{
 					rc.Id(e => e.Id, m => m.Generator(Generators.GuidComb));
 					rc.Property(e => e.Name);
-					rc.OneToOne(e => e.OneToOne, m => m.Constrained(false));
+					rc.OneToOne(e => e.OneToOne, m =>
+					{
+						m.Constrained(false);
+						m.Cascade(Mapping.ByCode.Cascade.All);
+					});
 					rc.ManyToOne(
 						e => e.PropRef,
 						m =>
@@ -519,6 +576,7 @@ namespace NHibernate.Test.Hql
 							m.PropertyRef(nameof(PropRefEntity.PropertyRef));
 							m.ForeignKey("none");
 							m.NotFound(NotFoundMode.Ignore);
+							m.Cascade(Mapping.ByCode.Cascade.All);
 						});
 				});
 
@@ -589,7 +647,10 @@ namespace NHibernate.Test.Hql
 				};
 				session.Save(_noAssociation);
 
-				session.Flush();
+				session.Save(new NullableOwner() {Name = "NoAssociation"});
+				var nullableOwner = new NullableOwner() {Name = "Association", PropRef = new PropRefEntity() {Name = "x", PropertyRef = "xx"}, OneToOne = new OneToOneEntity() {Name = "x"},};
+				nullableOwner.OneToOne.Parent = nullableOwner;
+				session.Save(nullableOwner);
 				transaction.Commit();
 			}
 		}

@@ -409,9 +409,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else
 			{
-				comparisonWithNullableEntity = (Walker.IsComparativeExpressionClause && entityType.IsNullable);
-				joinIsNeeded = generateJoin || (Walker.IsInSelect && !Walker.IsInCase) || (Walker.IsInFrom && !Walker.IsComparativeExpressionClause)
-				               || comparisonWithNullableEntity;
+				if (Walker.IsComparativeExpressionClause && entityType.IsNullable)
+				{
+					joinIsNeeded = comparisonWithNullableEntity = true;
+					_joinType = JoinType.LeftOuterJoin;
+				}
+				else
+				{
+					joinIsNeeded = generateJoin || (Walker.IsInSelect && !Walker.IsInCase) || (Walker.IsInFrom && !Walker.IsComparativeExpressionClause);
+				}
 			}
 
 			if ( joinIsNeeded ) 
@@ -517,7 +523,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// If this is an implied join in a from element, then use the impled join type which is part of the
 				// tree parser's state (set by the gramamar actions).
 				JoinSequence joinSequence = SessionFactoryHelper
-					.CreateJoinSequence( impliedJoin, propertyType, tableAlias, _joinType, joinColumns );
+					.CreateJoinSequence(_joinType != JoinType.LeftOuterJoin && impliedJoin, propertyType, tableAlias, _joinType, joinColumns);
 
 				var factory = new FromElementFactory(
 						currentFromClause,
