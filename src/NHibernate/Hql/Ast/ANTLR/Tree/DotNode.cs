@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Antlr.Runtime;
 
 using NHibernate.Engine;
@@ -412,7 +413,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				if (Walker.IsComparativeExpressionClause && entityType.IsNullable)
 				{
 					joinIsNeeded = comparisonWithNullableEntity = true;
-					_joinType = JoinType.LeftOuterJoin;
+
+					//TODO: Fix this hack. We should always left join here. Skip left join for nullable entity if query contains implicit joins. We currently don't support such queries (see OneToOneCompositeQueryCompareWithJoin)
+					var fromJoins = ASTUtil.CollectChildren<FromElement>(Walker.CurrentFromClause, x => x is FromElement fe && !fe.IsImplied && fe.Type == HqlSqlWalker.FROM_FRAGMENT);
+					if(fromJoins.Count == 1)
+						_joinType = JoinType.LeftOuterJoin;
 				}
 				else
 				{

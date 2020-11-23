@@ -11,10 +11,10 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Test.Hql.EntityJoinHqlTestEntities;
 using NUnit.Framework;
-using NHibernate.Linq;
 
 namespace NHibernate.Test.Hql
 {
@@ -298,7 +298,17 @@ namespace NHibernate.Test.Hql
 		{
 			using (var session = OpenSession())
 			{
-				var entity = await (session.Query<NullableOwner>().Where(x => x.OneToOne == null).FirstOrDefaultAsync());
+				var entity = await (session.Query<NullableOwner>().Where(x => x.OneToOne == null).SingleOrDefaultAsync());
+				Assert.That(entity, Is.Not.Null);
+			}
+		}
+
+		[Test(Description = "GH-2611")]
+		public async Task NullableOneFetchIsNullLinqAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var entity = await (session.Query<NullableOwner>().Fetch(x => x.OneToOne).Where(x => x.OneToOne == null).SingleOrDefaultAsync());
 				Assert.That(entity, Is.Not.Null);
 			}
 		}
@@ -309,15 +319,14 @@ namespace NHibernate.Test.Hql
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				var entities =
+				var entity =
 					await (session
 						.CreateQuery(
 							"select ex "
 							+ "from NullableOwner ex left join fetch ex.OneToOne o "
 							+ "where o.Id is null "
 						)
-						.ListAsync<NullableOwner>());
-				var entity = entities[0];
+						.UniqueResultAsync<NullableOwner>());
 
 				Assert.That(entity, Is.Not.Null);
 				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
