@@ -76,12 +76,12 @@ namespace NHibernate.Test.Associations
 		{
 			using (var session = OpenSession())
 			{
-				var loadedEntity = session.QueryOver<Parent>().Where(p => p.OneToOneComp != null).SingleOrDefault();
+				var loadedEntity = session.QueryOver<Parent>().Where(p => p.OneToOneComp != null).JoinQueryOver(x => x.OneToOneComp).SingleOrDefault();
 
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-		
+
 		[Test]
 		public void OneToOneCompositeQueryCompareWithJoin()
 		{
@@ -92,7 +92,20 @@ namespace NHibernate.Test.Associations
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-		
+
+		[Explicit("Not supported.")]
+		[Test]
+		public void OneToOneCompositeQueryCompareWithJoinOrIsNull()
+		{
+			using(new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var loadedEntities = session.CreateQuery("select p from Parent p, EntityWithCompositeId e where p.OneToOneComp = e or p.OneToOneComp is null").List<Parent>();
+
+				Assert.That(loadedEntities.Count, Is.EqualTo(2));
+			}
+		}
+
 		[Explicit("Expression in Restrictions.Where can't recognize direct alias comparison.")]
 		[Test]
 		public void OneToOneCompositeQueryOverCompareWithJoin()
@@ -134,7 +147,7 @@ namespace NHibernate.Test.Associations
 		{
 			using (var session = OpenSession())
 			{
-				var loadedProjection = session.Query<Parent>().Select(x => new {x.OneToOneComp, x.Key}).FirstOrDefault();
+				var loadedProjection = session.Query<Parent>().Where(x => x.OneToOneComp != null).Select(x => new {x.OneToOneComp, x.Key}).FirstOrDefault();
 
 				Assert.That(loadedProjection.OneToOneComp, Is.Not.Null);
 			}
@@ -147,6 +160,7 @@ namespace NHibernate.Test.Associations
 			using (var session = OpenSession())
 			{
 				var loadedEntity = session.QueryOver<Parent>()
+										.JoinQueryOver(x => x.OneToOneComp)
 										.Select(x => x.OneToOneComp)
 										.SingleOrDefault<EntityWithCompositeId>();
 
@@ -225,6 +239,7 @@ namespace NHibernate.Test.Associations
 
 				session.Save(oneToOneParent.OneToOneComp);
 				session.Save(oneToOneParent);
+				session.Save(new Parent() {Key = new CompositeKey() {Id1 = 1, Id2 = 1}});
 
 				session.Flush();
 				transaction.Commit();

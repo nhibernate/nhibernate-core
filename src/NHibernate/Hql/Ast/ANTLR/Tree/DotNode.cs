@@ -414,7 +414,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				{
 					joinIsNeeded = comparisonWithNullableEntity = true;
 
-					//TODO: Fix this hack. We should always left join here. Skip left join for nullable entity if query contains implicit joins. We currently don't support such queries (see OneToOneCompositeQueryCompareWithJoin)
+					//TODO: Fix this hack. Ideally we should always left join here. Skip left join for nullable entity if query contains implicit joins. We currently don't support left joins for such queries (see OneToOneCompositeQueryCompareWithJoinOrIsNull)
 					var fromJoins = ASTUtil.CollectChildren<FromElement>(Walker.CurrentFromClause, x => x is FromElement fe && !fe.IsImplied && fe.Type == HqlSqlWalker.FROM_FRAGMENT);
 					if(fromJoins.Count == 1)
 						_joinType = JoinType.LeftOuterJoin;

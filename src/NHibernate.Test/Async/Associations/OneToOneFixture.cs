@@ -88,12 +88,12 @@ namespace NHibernate.Test.Associations
 		{
 			using (var session = OpenSession())
 			{
-				var loadedEntity = await (session.QueryOver<Parent>().Where(p => p.OneToOneComp != null).SingleOrDefaultAsync());
+				var loadedEntity = await (session.QueryOver<Parent>().Where(p => p.OneToOneComp != null).JoinQueryOver(x => x.OneToOneComp).SingleOrDefaultAsync());
 
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-		
+
 		[Test]
 		public async Task OneToOneCompositeQueryCompareWithJoinAsync()
 		{
@@ -104,7 +104,20 @@ namespace NHibernate.Test.Associations
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-		
+
+		[Explicit("Not supported.")]
+		[Test]
+		public async Task OneToOneCompositeQueryCompareWithJoinOrIsNullAsync()
+		{
+			using(new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var loadedEntities = await (session.CreateQuery("select p from Parent p, EntityWithCompositeId e where p.OneToOneComp = e or p.OneToOneComp is null").ListAsync<Parent>());
+
+				Assert.That(loadedEntities.Count, Is.EqualTo(2));
+			}
+		}
+
 		[Explicit("Expression in Restrictions.Where can't recognize direct alias comparison.")]
 		[Test]
 		public async Task OneToOneCompositeQueryOverCompareWithJoinAsync()
@@ -146,7 +159,7 @@ namespace NHibernate.Test.Associations
 		{
 			using (var session = OpenSession())
 			{
-				var loadedProjection = await (session.Query<Parent>().Select(x => new {x.OneToOneComp, x.Key}).FirstOrDefaultAsync());
+				var loadedProjection = await (session.Query<Parent>().Where(x => x.OneToOneComp != null).Select(x => new {x.OneToOneComp, x.Key}).FirstOrDefaultAsync());
 
 				Assert.That(loadedProjection.OneToOneComp, Is.Not.Null);
 			}
@@ -159,6 +172,7 @@ namespace NHibernate.Test.Associations
 			using (var session = OpenSession())
 			{
 				var loadedEntity = await (session.QueryOver<Parent>()
+										.JoinQueryOver(x => x.OneToOneComp)
 										.Select(x => x.OneToOneComp)
 										.SingleOrDefaultAsync<EntityWithCompositeId>());
 
@@ -237,6 +251,7 @@ namespace NHibernate.Test.Associations
 
 				session.Save(oneToOneParent.OneToOneComp);
 				session.Save(oneToOneParent);
+				session.Save(new Parent() {Key = new CompositeKey() {Id1 = 1, Id2 = 1}});
 
 				session.Flush();
 				transaction.Commit();
