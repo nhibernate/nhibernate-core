@@ -10,17 +10,60 @@
 
 using System;
 using System.Linq;
+using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Dialect;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 using NHibernate.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH3426
 {
 	using System.Threading.Tasks;
-	[TestFixture]
+	/// <summary>
+	/// Verify that we can convert a GUID column to a string in the standard GUID format inside
+	/// the database engine.
+	/// </summary>
+	[TestFixture(true)]
+	[TestFixture(false)]
 	public class FixtureAsync : TestCaseMappingByCode
 	{
+		private readonly bool _useBinaryGuid;
+
+		public FixtureAsync(bool useBinaryGuid)
+		{
+			_useBinaryGuid = useBinaryGuid;
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// For SQLite, we run the tests for both storage modes (SQLite specific setting).
+			if (dialect is SQLiteDialect)
+				return true;
+
+			// For all other dialects, run the tests only once since the storage mode
+			// is not relevant. (We use the case of _useBinaryGuid==true since this is probably
+			// what most engines do internally.)
+			return _useBinaryGuid;
+		}
+
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+
+			if (Dialect is SQLiteDialect)
+			{
+				var connStr = configuration.Properties[Environment.ConnectionString];
+
+				if (_useBinaryGuid)
+					connStr += "BinaryGuid=True;";
+				else
+					connStr += "BinaryGuid=False;";
+
+				configuration.Properties[Environment.ConnectionString] = connStr;
+			}
+		}
 
 		protected override HbmMapping GetMappings()
 		{
@@ -68,7 +111,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 					.Select(x => new { Id = x.Id.ToString() })
 					.ToListAsync());
 
-				Assert.AreEqual(id.ToUpper(), list[0].Id.ToUpper());
+				Assert.That(list[0].Id.ToUpper(), Is.EqualTo(id.ToUpper()));
 			}
 		}
 		
@@ -106,6 +149,54 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 				var list = await (session.Query<Entity>()
 				                  .Where(x => ((Guid?) x.Id).ToString() == x.Id.ToString())
 				                  .ToListAsync());
+
+				Assert.That(list, Has.Count.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public async Task SelectGuidToStringImplicitAsync()
+		{
+			if (Dialect is SQLiteDialect && _useBinaryGuid)
+				Assert.Ignore("Fails with BinaryGuid=True due to GH-2109. (2019-04-09).");
+
+			if (Dialect is FirebirdDialect || Dialect is MySQLDialect || Dialect is Oracle8iDialect)
+				Assert.Ignore("Since strguid() is not applied, it fails on Firebird, MySQL and Oracle " +
+							"because a simple cast cannot be used for GUID to string conversion on " +
+							"these dialects. See GH-2109.");
+
+			using (var session = OpenSession())
+			{
+				// Verify in-db GUID to string conversion when ToString() is applied to the entity that has
+				// a GUID id column (that is, we deliberately avoid mentioning the Id property). This
+				// exposes bug GH-2109.
+				var list = await (session.Query<Entity>()
+								.Select(x => new { Id = x.ToString() })
+								.ToListAsync());
+
+				Assert.That(list[0].Id.ToUpper(), Is.EqualTo(id.ToUpper()));
+			}
+		}
+
+		[Test]
+		public async Task WhereGuidToStringImplicitAsync()
+		{
+			if (Dialect is SQLiteDialect && _useBinaryGuid)
+				Assert.Ignore("Fails with BinaryGuid=True due to GH-2109. (2019-04-09).");
+
+			if (Dialect is FirebirdDialect || Dialect is MySQLDialect || Dialect is Oracle8iDialect)
+				Assert.Ignore("Since strguid() is not applied, it fails on Firebird, MySQL and Oracle " +
+							"because a simple cast cannot be used for GUID to string conversion on " +
+							"these dialects. See GH-2109.");
+
+			using (var session = OpenSession())
+			{
+				// Verify in-db GUID to string conversion when ToString() is applied to the entity that has
+				// a GUID id column (that is, we deliberately avoid mentioning the Id property). This
+				// exposes bug GH-2109.
+				var list = await (session.Query<Entity>()
+								.Where(x => x.ToString().ToUpper() == id)
+								.ToListAsync());
 
 				Assert.That(list, Has.Count.EqualTo(1));
 			}

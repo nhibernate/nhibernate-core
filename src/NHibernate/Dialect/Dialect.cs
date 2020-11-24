@@ -55,6 +55,7 @@ namespace NHibernate.Dialect
 		static Dialect()
 		{
 			StandardAggregateFunctions["count"] = new CountQueryFunctionInfo();
+			StandardAggregateFunctions["count_big"] = new CountQueryFunctionInfo();
 			StandardAggregateFunctions["avg"] = new AvgQueryFunctionInfo();
 			StandardAggregateFunctions["max"] = new ClassicAggregateFunction("max", false);
 			StandardAggregateFunctions["min"] = new ClassicAggregateFunction("min", false);
@@ -93,19 +94,19 @@ namespace NHibernate.Dialect
 			RegisterFunction("coalesce", new StandardSQLFunction("coalesce"));
 			RegisterFunction("nullif", new StandardSQLFunction("nullif"));
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
-			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
+			RegisterFunction("mod", new ModulusFunction(false, false));
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("lower", new StandardSQLFunction("lower"));
 			RegisterFunction("cast", new CastFunction());
 			RegisterFunction("transparentcast", new TransparentCastFunction());
 			RegisterFunction("extract", new AnsiExtractFunction());
-			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "||", ")"));
+			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", " || ", ")"));
 
 			// the syntax of current_timestamp is extracted from H3.2 tests 
 			// - test\hql\ASTParserLoadingTest.java
 			// - test\org\hibernate\test\hql\HQLTest.java
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, true));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime, true));
 			RegisterFunction("sysdate", new NoArgSQLFunction("sysdate", NHibernateUtil.DateTime, false));
 
 			//map second/minute/hour/day/month/year to ANSI extract(), override on subclasses
@@ -271,12 +272,42 @@ namespace NHibernate.Dialect
 		/// (via the CAST() SQL function) for the given <see cref="SqlType"/> typecode.
 		/// </summary>
 		/// <param name="sqlType">The <see cref="SqlType"/> typecode.</param>
+		/// <param name="typeName">The database type name that will be set in case it was found.</param>
+		/// <returns>Whether the type name was found.</returns>
+		public virtual bool TryGetCastTypeName(SqlType sqlType, out string typeName)
+		{
+			return TryGetCastTypeName(sqlType, _typeNames, out typeName);
+		}
+
+		/// <summary> 
+		/// Get the name of the database type appropriate for casting operations
+		/// (via the CAST() SQL function) for the given <see cref="SqlType"/> typecode.
+		/// </summary>
+		/// <param name="sqlType">The <see cref="SqlType"/> typecode.</param>
 		/// <param name="castTypeNames">The source for type names.</param>
 		/// <returns>The database type name.</returns>
 		protected virtual string GetCastTypeName(SqlType sqlType, TypeNames castTypeNames)
 		{
+			if (!TryGetCastTypeName(sqlType, castTypeNames, out var result))
+			{
+				throw new ArgumentException("Dialect does not support DbType." + sqlType.DbType, nameof(sqlType));
+			}
+
+			return result;
+		}
+
+		/// <summary> 
+		/// Get the name of the database type appropriate for casting operations
+		/// (via the CAST() SQL function) for the given <see cref="SqlType"/> typecode.
+		/// </summary>
+		/// <param name="sqlType">The <see cref="SqlType"/> typecode.</param>
+		/// <param name="castTypeNames">The source for type names.</param>
+		/// <param name="typeName">The database type name that will be set in case it was found.</param>
+		/// <returns>Whether the type name was found.</returns>
+		protected virtual bool TryGetCastTypeName(SqlType sqlType, TypeNames castTypeNames, out string typeName)
+		{
 			if (sqlType.LengthDefined || sqlType.PrecisionDefined || sqlType.ScaleDefined)
-				return castTypeNames.Get(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale);
+				return castTypeNames.TryGet(sqlType.DbType, sqlType.Length, sqlType.Precision, sqlType.Scale, out typeName);
 			switch (sqlType.DbType)
 			{
 				case DbType.Decimal:
@@ -284,18 +315,18 @@ namespace NHibernate.Dialect
 				case DbType.Double:
 					// We cannot know if the user needs its digit after or before the dot, so use a configurable
 					// default.
-					return castTypeNames.Get(sqlType.DbType, 0, DefaultCastPrecision, DefaultCastScale);
+					return castTypeNames.TryGet(sqlType.DbType, 0, DefaultCastPrecision, DefaultCastScale, out typeName);
 				case DbType.DateTime:
 				case DbType.DateTime2:
 				case DbType.DateTimeOffset:
 				case DbType.Time:
 				case DbType.Currency:
 					// Use default for these, dialects are supposed to map them to max capacity
-					return castTypeNames.Get(sqlType.DbType);
+					return castTypeNames.TryGet(sqlType.DbType, out typeName);
 				default:
 					// Other types are either length bound or not length/precision/scale bound. Otherwise they need to be
 					// handled previously.
-					return castTypeNames.Get(sqlType.DbType, DefaultCastLength, 0, 0);
+					return castTypeNames.TryGet(sqlType.DbType, DefaultCastLength, 0, 0, out typeName);
 			}
 		}
 
@@ -794,7 +825,6 @@ namespace NHibernate.Dialect
 		{
 			return " drop constraint " + constraintName;
 		}
-
 
 		/// <summary>
 		/// The syntax that is used to check if a constraint does not exists before creating it
@@ -1307,6 +1337,11 @@ namespace NHibernate.Dialect
 		{
 			return new ANSIJoinFragment();
 		}
+
+		/// <summary>
+		/// Does this dialect support CROSS JOIN?
+		/// </summary>
+		public virtual bool SupportsCrossJoin => true;
 
 		/// <summary> 
 		/// Create a <see cref="CaseFragment"/> strategy responsible

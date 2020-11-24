@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 
-
 namespace NHibernate.Connection
 {
 	using System.Threading.Tasks;
@@ -24,7 +23,6 @@ namespace NHibernate.Connection
 		/// Throws an <see cref="InvalidOperationException"/> if this method is called
 		/// because the user is responsible for creating <see cref="DbConnection"/>s.
 		/// </summary>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>
 		/// No value is returned because an <see cref="InvalidOperationException"/> is thrown.
 		/// </returns>
@@ -32,7 +30,7 @@ namespace NHibernate.Connection
 		/// Thrown when this method is called.  User is responsible for creating
 		/// <see cref="DbConnection"/>s.
 		/// </exception>
-		public override Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
+		public override Task<DbConnection> GetConnectionAsync(string connectionString, CancellationToken cancellationToken)
 		{
 			throw new InvalidOperationException("The user must provide an ADO.NET connection - NHibernate is not creating it.");
 		}

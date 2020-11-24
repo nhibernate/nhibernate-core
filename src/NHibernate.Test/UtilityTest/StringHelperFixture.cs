@@ -138,7 +138,6 @@ namespace NHibernate.Test.UtilityTest
 			Assert.That(StringHelper.PurgeBackticksEnclosing("`something`"), Is.EqualTo("something"));
 		}
 
-
 		[TestCase("ab", 0, -1, 0)]
 		[TestCase("a\r\nb", 0, 1, 2)]
 		[TestCase("a\nb", 0, 1, 1)]
@@ -152,7 +151,6 @@ namespace NHibernate.Test.UtilityTest
 			Assert.That(matchIndex, Is.EqualTo(expectedIndex));
 			Assert.That(matchLength, Is.EqualTo(expectedMatchLength));
 		}
-
 
 		[TestCase("ab", 0, false, 0)]
 		[TestCase("a\r\nb", 0, false, 0)]

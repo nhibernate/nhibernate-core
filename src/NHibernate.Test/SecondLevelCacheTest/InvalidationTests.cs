@@ -92,7 +92,6 @@ namespace NHibernate.Test.SecondLevelCacheTest
 					tx.Commit();
 				}
 
-
 				//Update Item using LINQ
 				using (var tx = session.BeginTransaction())
 				{

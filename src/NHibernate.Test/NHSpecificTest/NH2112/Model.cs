@@ -23,7 +23,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2112
         }
         public override bool Equals(object obj)
         {
-
             return this.Equals(obj as TEntity);
         }
         private int? mHashCode;
@@ -62,8 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2112
 
     	public virtual string Name { get; set; }
         public virtual IDictionary<B, string> Map { get; set; }
-
-    }
+	}
 
     public class B : BaseEntity<B, int>
     {

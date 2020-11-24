@@ -6,7 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2074
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
 		{
 			return dialect is MsSql2000Dialect;
@@ -20,6 +19,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2074
             	s.CreateQuery("from Person").List();
             }
 		} 
-
 	}
 }

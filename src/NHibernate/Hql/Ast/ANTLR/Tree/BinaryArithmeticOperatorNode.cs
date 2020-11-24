@@ -32,32 +32,34 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			IType lhType = (lhs is SqlNode) ? ((SqlNode)lhs).DataType : null;
 			IType rhType = (rhs is SqlNode) ? ((SqlNode)rhs).DataType : null;
 
-			if (lhs is IExpectedTypeAwareNode && rhType != null)
-			{
-				IType expectedType;
+			TrySetExpectedType(lhs, rhType, true);
+			TrySetExpectedType(rhs, lhType, false);
+		}
 
-				// we have something like : "? [op] rhs"
-				if (IsDateTimeType(rhType))
+		private void TrySetExpectedType(IASTNode operand, IType otherOperandType, bool leftHandOperand)
+		{
+			if (!(operand is IExpectedTypeAwareNode typeAwareNode) || 
+			    otherOperandType == null ||
+			    typeAwareNode.ExpectedType != null)
+			{
+				return;
+			}
+
+			IType expectedType = null;
+
+			// we have something like : "lhs [op] ?" or "? [op] rhs"
+			if (IsDateTimeType(otherOperandType))
+			{
+				if (leftHandOperand)
 				{
 					// more specifically : "? [op] datetime"
 					//      1) if the operator is MINUS, the param needs to be of
 					//          some datetime type
 					//      2) if the operator is PLUS, the param needs to be of
 					//          some numeric type
-					expectedType = Type == HqlSqlWalker.PLUS ? NHibernateUtil.Double : rhType;
+					expectedType = Type == HqlSqlWalker.PLUS ? NHibernateUtil.Double : otherOperandType;
 				}
-				else
-				{
-					expectedType = rhType;
-				}
-				((IExpectedTypeAwareNode)lhs).ExpectedType = expectedType;
-			}
-			else if (rhs is ParameterNode && lhType != null)
-			{
-				IType expectedType = null;
-
-				// we have something like : "lhs [op] ?"
-				if (IsDateTimeType(lhType))
+				else if (Type == HqlSqlWalker.PLUS)
 				{
 					// more specifically : "datetime [op] ?"
 					//      1) if the operator is MINUS, we really cannot determine
@@ -65,17 +67,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					//          numeric would be valid
 					//      2) if the operator is PLUS, the param needs to be of
 					//          some numeric type
-					if (Type == HqlSqlWalker.PLUS)
-					{
-						expectedType = NHibernateUtil.Double;
-					}
+					expectedType = NHibernateUtil.Double;
 				}
-				else
-				{
-					expectedType = lhType;
-				}
-				((IExpectedTypeAwareNode)rhs).ExpectedType = expectedType;
 			}
+			else
+			{
+				expectedType = otherOperandType;
+			}
+
+			typeAwareNode.ExpectedType = expectedType;
 		}
 
 		public override IType DataType
@@ -98,7 +98,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				base.DataType = value;
 			}
 		}
-
 
 		private IType ResolveDataType()
 		{

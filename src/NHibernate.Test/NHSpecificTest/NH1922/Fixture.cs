@@ -35,7 +35,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1922
             base.OnTearDown();
         }
 
-
         [Test]
         public void CanExecuteQueryOnStatelessSessionUsingDetachedCriteria()
         {
@@ -50,7 +49,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1922
 				Assert.IsNotNull(cust);
             }
         }
-
-       
-    }
+	}
 }

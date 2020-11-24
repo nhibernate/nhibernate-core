@@ -2,7 +2,6 @@ using System;
 using NHibernate.SqlCommand;
 using NHibernate.Engine;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -49,19 +48,12 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
 		{
-			if (projection == null)
-			{
-				return new SqlString(aggregate, "(", criteriaQuery.GetColumn(criteria, propertyName), ") as y", loc.ToString(), "_");
-			}
+			var column = CriterionUtil.GetColumnNameAsSqlStringPart(propertyName, projection, criteriaQuery, criteria);
 
 			return new SqlString(
 				aggregate,
 				"(",
-				SqlStringHelper.RemoveAsAliasesFromSql(
-					projection.ToSqlString(
-						criteria,
-						loc,
-						criteriaQuery)),
+				column,
 				") as y",
 				loc.ToString(),
 				"_");

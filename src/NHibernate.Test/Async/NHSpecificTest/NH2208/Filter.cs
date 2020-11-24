@@ -16,13 +16,23 @@ namespace NHibernate.Test.NHSpecificTest.NH2208
 	[TestFixture]
 	public class FilterAsync : BugTestCase
 	{
-		[Test, Ignore("Not fixed yet")]
-		public async Task TestAsync()
+		[Test]
+		public async Task TestHqlAsync()
 		{
 			using (ISession session = OpenSession())
 			{
 				session.EnableFilter("myfilter");
 				await (session.CreateQuery("from E1 e join fetch e.BO").ListAsync());
+			}
+		}
+
+		[Test]
+		public async Task TestQueryOverAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				session.EnableFilter("myfilter");
+				await (session.QueryOver<E1>().JoinQueryOver(x => x.BO).ListAsync());
 			}
 		}
 	}

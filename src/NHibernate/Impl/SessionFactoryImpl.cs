@@ -21,6 +21,7 @@ using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -77,13 +78,18 @@ namespace NHibernate.Impl
 	{
 		#region Default entity not found delegate
 
-		private class DefaultEntityNotFoundDelegate : IEntityNotFoundDelegate
+		internal class DefaultEntityNotFoundDelegate : IEntityNotFoundDelegate
 		{
 			#region IEntityNotFoundDelegate Members
 
 			public void HandleEntityNotFound(string entityName, object id)
 			{
 				throw new ObjectNotFoundException(id, entityName);
+			}
+
+			public void HandleEntityNotFound(string entityName, string propertyName, object key)
+			{
+				throw new ObjectNotFoundByUniqueKeyException(entityName, propertyName, key);
 			}
 
 			#endregion
@@ -162,7 +168,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly UpdateTimestampsCache updateTimestampsCache;
 		[NonSerialized]
-		private readonly IDictionary<string, string[]> entityNameImplementorsMap = new ConcurrentDictionary<string, string[]>(4 * System.Environment.ProcessorCount, 100);
+		private readonly ConcurrentDictionary<string, string[]> entityNameImplementorsMap = new ConcurrentDictionary<string, string[]>(4 * System.Environment.ProcessorCount, 100);
 		private readonly string uuid;
 		private bool disposed;
 
@@ -210,6 +216,22 @@ namespace NHibernate.Impl
 				// Ignore if the Dialect does not provide DataBaseSchema
 				log.Warn(ex, "Dialect does not provide DataBaseSchema, but keywords import or auto quoting is enabled.");
 			}
+
+			#region Serialization info
+
+			name = settings.SessionFactoryName;
+			try
+			{
+				uuid = (string)UuidGenerator.Generate(null, null);
+			}
+			catch (Exception ex)
+			{
+				throw new AssertionFailure("Could not generate UUID", ex);
+			}
+
+			SessionFactoryObjectFactory.AddInstance(uuid, name, this, properties);
+
+			#endregion
 
 			#region Caches
 			settings.CacheProvider.Start(properties);
@@ -321,22 +343,6 @@ namespace NHibernate.Impl
 			}
 			#endregion
 
-			#region Serialization info
-
-			name = settings.SessionFactoryName;
-			try
-			{
-				uuid = (string)UuidGenerator.Generate(null, null);
-			}
-			catch (Exception ex)
-			{
-				throw new AssertionFailure("Could not generate UUID", ex);
-			}
-
-			SessionFactoryObjectFactory.AddInstance(uuid, name, this, properties);
-
-			#endregion
-
 			log.Debug("Instantiated session factory");
 
 			#region Schema management
@@ -347,12 +353,23 @@ namespace NHibernate.Impl
 
 			if (settings.IsAutoUpdateSchema)
 			{
-				new SchemaUpdate(cfg).Execute(false, true);
+				var schemaUpdate = new SchemaUpdate(cfg);
+				schemaUpdate.Execute(false, true);
+				if (settings.ThrowOnSchemaUpdate)
+				{
+					if (schemaUpdate.Exceptions.Any())
+					{
+						throw new AggregateHibernateException(
+							"Schema update has failed, see inner exceptions for details", schemaUpdate.Exceptions);
+					}
+				}
 			}
+			
 			if (settings.IsAutoValidateSchema)
 			{
 				new SchemaValidator(cfg, settings).Validate();
 			}
+			
 			if (settings.IsAutoDropSchema)
 			{
 				schemaExport = new SchemaExport(cfg);
@@ -852,6 +869,16 @@ namespace NHibernate.Impl
 		/// </summary>
 		public void Close()
 		{
+			if (isClosed)
+			{
+				if (log.IsDebugEnabled())
+				{
+					log.Debug("Already closed");
+				}
+
+				return;
+			}
+
 			log.Info("Closing");
 
 			isClosed = true;
@@ -906,16 +933,7 @@ namespace NHibernate.Impl
 
 		public void Evict(System.Type persistentClass, object id)
 		{
-			IEntityPersister p = GetEntityPersister(persistentClass.FullName);
-			if (p.HasCache)
-			{
-				if (log.IsDebugEnabled())
-				{
-					log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id));
-				}
-				CacheKey ck = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
-				p.Cache.Remove(ck);
-			}
+			EvictEntity(persistentClass.FullName, id);
 		}
 
 		public void Evict(System.Type persistentClass)
@@ -969,33 +987,44 @@ namespace NHibernate.Impl
 
 		public void EvictEntity(string entityName, object id)
 		{
+			EvictEntity(entityName, id, null);
+		}
+
+		public void EvictEntity(string entityName, object id, string tenantIdentifier)
+		{
 			IEntityPersister p = GetEntityPersister(entityName);
 			if (p.HasCache)
 			{
 				if (log.IsDebugEnabled())
 				{
-					log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id, this));
+					LogEvict(tenantIdentifier, MessageHelper.InfoString(p, id, this));
 				}
-				CacheKey cacheKey = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
+				CacheKey cacheKey = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName, tenantIdentifier);
 				p.Cache.Remove(cacheKey);
 			}
 		}
 
 		public void EvictCollection(string roleName, object id)
 		{
+			EvictCollection(roleName, id, null);
+		}
+
+		public void EvictCollection(string roleName, object id, string tenantIdentifier)
+		{
 			ICollectionPersister p = GetCollectionPersister(roleName);
 			if (p.HasCache)
 			{
 				if (log.IsDebugEnabled())
 				{
-					log.Debug("evicting second-level cache: {0}", MessageHelper.CollectionInfoString(p, id));
+					LogEvict(tenantIdentifier, MessageHelper.CollectionInfoString(p, id));
 				}
-				CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
+
+				CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role, tenantIdentifier);
 				p.Cache.Remove(ck);
 			}
 		}
 
-		private CacheKey GenerateCacheKeyForEvict(object id, IType type, string entityOrRoleName)
+		private CacheKey GenerateCacheKeyForEvict(object id, IType type, string entityOrRoleName, string tenantIdentifier)
 		{
 			// if there is a session context, use that to generate the key.
 			if (CurrentSessionContext != null)
@@ -1006,7 +1035,12 @@ namespace NHibernate.Impl
 					.GenerateCacheKey(id, type, entityOrRoleName);
 			}
 
-			return new CacheKey(id, type, entityOrRoleName, this);
+			if (settings.MultiTenancyStrategy != MultiTenancyStrategy.None && tenantIdentifier == null)
+			{
+				throw new ArgumentException("Use overload with tenantIdentifier or initialize CurrentSessionContext.");
+			}
+
+			return new CacheKey(id, type, entityOrRoleName, this, tenantIdentifier);
 		}
 
 		public void EvictCollection(string roleName)
@@ -1237,6 +1271,17 @@ namespace NHibernate.Impl
 
 		#endregion
 
+		private static void LogEvict(string tenantIdentifier, string infoString)
+		{
+			if (string.IsNullOrEmpty(tenantIdentifier))
+			{
+				log.Debug("evicting second-level cache: {0}", infoString);
+				return;
+			}
+
+			log.Debug("evicting second-level cache for tenant '{1}': {0}", infoString, tenantIdentifier);
+		}
+
 		private void Init()
 		{
 			statistics = new StatisticsImpl(this);
@@ -1397,7 +1442,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		internal class SessionBuilderImpl<T> : ISessionBuilder<T>, ISessionCreationOptions where T : ISessionBuilder<T>
+		internal class SessionBuilderImpl<T> : ISessionBuilder<T>, ISessionCreationOptions, ISessionCreationOptionsWithMultiTenancy where T : ISessionBuilder<T>
 		{
 			// NH specific: implementing return type covariance with interface is a mess in .Net.
 			private T _this;
@@ -1410,7 +1455,7 @@ namespace NHibernate.Impl
 			private ConnectionReleaseMode _connectionReleaseMode;
 			private FlushMode _flushMode;
 			private bool _autoClose;
-			private bool _autoJoinTransaction = true;
+			private bool _autoJoinTransaction;
 
 			public SessionBuilderImpl(SessionFactoryImpl sessionFactory)
 			{
@@ -1419,6 +1464,7 @@ namespace NHibernate.Impl
 				// set up default builder values...
 				_connectionReleaseMode = sessionFactory.Settings.ConnectionReleaseMode;
 				_autoClose = sessionFactory.Settings.IsAutoCloseSessionEnabled;
+				_autoJoinTransaction = sessionFactory.Settings.AutoJoinTransaction;
 				// NH different implementation: not using Settings.IsFlushBeforeCompletionEnabled
 				_flushMode = sessionFactory.Settings.DefaultFlushMode;
 			}
@@ -1505,6 +1551,13 @@ namespace NHibernate.Impl
 				_flushMode = flushMode;
 				return _this;
 			}
+
+			public TenantConfiguration TenantConfiguration
+			{
+				get;
+				//TODO 6.0: Make protected
+				set;
+			}
 		}
 
 		// NH specific: implementing return type covariance with interface is a mess in .Net.
@@ -1516,7 +1569,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		internal class StatelessSessionBuilderImpl<T> : IStatelessSessionBuilder, ISessionCreationOptions where T : IStatelessSessionBuilder
+		internal class StatelessSessionBuilderImpl<T> : IStatelessSessionBuilder, ISessionCreationOptionsWithMultiTenancy, ISessionCreationOptions where T : IStatelessSessionBuilder
 		{
 			// NH specific: implementing return type covariance with interface is a mess in .Net.
 			private T _this;
@@ -1557,6 +1610,13 @@ namespace NHibernate.Impl
 			public IInterceptor SessionInterceptor => EmptyInterceptor.Instance;
 
 			public ConnectionReleaseMode SessionConnectionReleaseMode => ConnectionReleaseMode.AfterTransaction;
+
+			public TenantConfiguration TenantConfiguration
+			{
+				get;
+				//TODO 6.0: Make protected
+				set;
+			}
 		}
 	}
 }

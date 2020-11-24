@@ -80,4 +80,10 @@ namespace NHibernate.Multi
 		/// </summary>
 		void ExecuteNonBatched();
 	}
+
+	//TODO 6.0: Remove along with ignore rule for IQueryBatchItem.ProcessResults in AsyncGenerator.yml
+	internal partial interface IQueryBatchItemWithAsyncProcessResults
+	{
+		void ProcessResults();
+	}
 }

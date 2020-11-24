@@ -70,7 +70,6 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 			Assert.AreEqual(2, menu2.Nodes.Count, "Test count after removal");
 			Assert.AreEqual(rootNode, menu2.Nodes[0], "Test identity first node in menu");
 
-
 			s.Delete("from Node");
 			s.Delete("from Menu");
 			s.Flush();

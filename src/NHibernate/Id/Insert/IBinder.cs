@@ -4,7 +4,7 @@ namespace NHibernate.Id.Insert
 {
 	public partial interface IBinder
 	{
-		object Entity { get;}
+		object Entity { get; }
 		void BindValues(DbCommand cm);
 	}
 }

@@ -22,12 +22,13 @@ using NHibernate.Linq;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class PersistentIdentifierBag<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
+	public partial class PersistentIdentifierBag<T> : AbstractPersistentCollection, IList<T>, IReadOnlyList<T>, IList, IQueryable<T>
 	{
 
 		/// <summary>
@@ -155,6 +156,9 @@ namespace NHibernate.Collection.Generic
 			return element;
 		}
 
+		//Since 5.3
+		/// <inheritdoc />
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -163,8 +167,7 @@ namespace NHibernate.Collection.Generic
 			}
 			try
 			{
-				var sn = (ISet<SnapshotElement>)GetSnapshot();
-				return GetOrphansAsync(sn.Select(x => x.Value).ToArray(), (ICollection) _values, entityName, Session, cancellationToken);
+				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
 			}
 			catch (Exception ex)
 			{

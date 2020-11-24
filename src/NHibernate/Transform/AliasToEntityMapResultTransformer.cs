@@ -29,7 +29,6 @@ namespace NHibernate.Transform
 			return collection;
 		}
 
-
 		public override bool IsTransformedValueATupleElement(string[] aliases, int tupleLength)
 		{
 			return false;

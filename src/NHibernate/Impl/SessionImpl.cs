@@ -16,6 +16,7 @@ using NHibernate.Hql;
 using NHibernate.Intercept;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -104,6 +105,7 @@ namespace NHibernate.Impl
 			enabledFilterNames = (List<string>)info.GetValue("enabledFilterNames", typeof(List<string>));
 
 			ConnectionManager = (ConnectionManager)info.GetValue("connectionManager", typeof(ConnectionManager));
+			TenantConfiguration = info.GetValue<TenantConfiguration>(nameof(TenantConfiguration));
 		}
 
 		/// <summary>
@@ -143,6 +145,7 @@ namespace NHibernate.Impl
 			info.AddValue("enabledFilterNames", enabledFilterNames, typeof(List<string>));
 
 			info.AddValue("connectionManager", ConnectionManager, typeof(ConnectionManager));
+			info.AddValue(nameof(TenantConfiguration), TenantConfiguration);
 		}
 
 		#endregion
@@ -1156,45 +1159,59 @@ namespace NHibernate.Impl
 			return Load(entityClass.FullName, id);
 		}
 
+		/// <inheritdoc />
 		public T Get<T>(object id)
 		{
-			using (BeginProcess())
-			{
-				return (T)Get(typeof(T), id);
-			}
+			return (T) Get(typeof(T), id);
 		}
 
+		/// <inheritdoc />
 		public T Get<T>(object id, LockMode lockMode)
 		{
-			using (BeginProcess())
-			{
-				return (T)Get(typeof(T), id, lockMode);
-			}
+			return (T) Get(typeof(T), id, lockMode);
 		}
 
+		/// <inheritdoc />
 		public object Get(System.Type entityClass, object id)
 		{
 			return Get(entityClass.FullName, id);
 		}
 
-		/// <summary>
-		/// Load the data for the object with the specified id into a newly created object
-		/// using "for update", if supported. A new key will be assigned to the object.
-		/// This should return an existing proxy where appropriate.
-		///
-		/// If the object does not exist in the database, null is returned.
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
-		/// <param name="lockMode"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public object Get(System.Type clazz, object id, LockMode lockMode)
+		{
+			return Get(clazz.FullName, id, lockMode);
+		}
+
+		/// <inheritdoc />
+		public object Get(string entityName, object id, LockMode lockMode)
 		{
 			using (BeginProcess())
 			{
-				LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
+				LoadEvent loadEvent = new LoadEvent(id, entityName, lockMode, this);
 				FireLoad(loadEvent, LoadEventListener.Get);
+				//Note: AfterOperation call is skipped to avoid releasing the lock when outside of a transaction.
 				return loadEvent.Result;
+			}
+		}
+
+		/// <inheritdoc />
+		public object Get(string entityName, object id)
+		{
+			using (BeginProcess())
+			{
+				LoadEvent loadEvent = new LoadEvent(id, entityName, null, this);
+				bool success = false;
+				try
+				{
+					FireLoad(loadEvent, LoadEventListener.Get);
+					success = true;
+					return loadEvent.Result;
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
 			}
 		}
 
@@ -1226,25 +1243,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public object Get(string entityName, object id)
-		{
-			using (BeginProcess())
-			{
-				LoadEvent loadEvent = new LoadEvent(id, entityName, false, this);
-				bool success = false;
-				try
-				{
-					FireLoad(loadEvent, LoadEventListener.Get);
-					success = true;
-					return loadEvent.Result;
-				}
-				finally
-				{
-					AfterOperation(success);
-				}
-			}
-		}
-
 		/// <summary>
 		/// Load the data for the object with the specified id into a newly created object.
 		/// This is only called when lazily initializing a proxy.
@@ -1265,7 +1263,6 @@ namespace NHibernate.Impl
 				return loadEvent.Result;
 			}
 		}
-
 
 		/// <summary>
 		/// Return the object with the specified id or throw exception if no row with that id exists. Defer the load,
@@ -1543,17 +1540,18 @@ namespace NHibernate.Impl
 
 				// free managed resources that are being managed by the session if we
 				// know this call came through Dispose()
-				if (isDisposing && !IsClosed)
+				if (isDisposing)
 				{
-					Close();
+					if (!IsClosed)
+					{
+						Close();
+					}
+					// nothing for Finalizer to do - so tell the GC to ignore it
+					GC.SuppressFinalize(this);
 				}
 
 				// free unmanaged resources here
-
 				IsAlreadyDisposed = true;
-
-				// nothing for Finalizer to do - so tell the GC to ignore it
-				GC.SuppressFinalize(this);
 			}
 		}
 
@@ -1698,19 +1696,21 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override void List(CriteriaImpl criteria, IList results)
+		public override IList<T> List<T>(CriteriaImpl criteria)
 		{
 			using (BeginProcess())
 			{
 				string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
 				int size = implementors.Length;
+				if (size == 0)
+					throw new QueryException(criteria.EntityOrClassName + " is not mapped");
 
 				CriteriaLoader[] loaders = new CriteriaLoader[size];
 				ISet<string> spaces = new HashSet<string>();
 
 				for (int i = 0; i < size; i++)
 				{
-					loaders[i] = new CriteriaLoader(
+					var loader = new CriteriaLoader(
 						GetOuterJoinLoadable(implementors[i]),
 						Factory,
 						criteria,
@@ -1718,7 +1718,8 @@ namespace NHibernate.Impl
 						enabledFilters
 						);
 
-					spaces.UnionWith(loaders[i].QuerySpaces);
+					spaces.UnionWith(loader.QuerySpaces);
+					loaders[size - 1 - i] = loader;
 				}
 
 				AutoFlushIfRequired(spaces);
@@ -1728,11 +1729,9 @@ namespace NHibernate.Impl
 				{
 					try
 					{
-						for (int i = size - 1; i >= 0; i--)
-						{
-							ArrayHelper.AddAll(results, loaders[i].List(this));
-						}
+						var results = loaders.LoadAllToList<T>(this); 
 						success = true;
+						return results;
 					}
 					catch (HibernateException)
 					{
@@ -1749,6 +1748,12 @@ namespace NHibernate.Impl
 					}
 				}
 			}
+		}
+
+		//TODO 6.0: Remove (use base class implementation)
+		public override void List(CriteriaImpl criteria, IList results)
+		{
+			ArrayHelper.AddAll(results, List(criteria));
 		}
 
 		public bool Contains(object obj)
@@ -2412,6 +2417,7 @@ namespace NHibernate.Impl
 				: base((SessionFactoryImpl)session.Factory)
 			{
 				_session = session;
+				TenantConfiguration = session.TenantConfiguration;
 				SetSelf(this);
 			}
 
@@ -2464,6 +2470,7 @@ namespace NHibernate.Impl
 				: base((SessionFactoryImpl)session.Factory)
 			{
 				_session = session;
+				TenantConfiguration = session.TenantConfiguration;
 				SetSelf(this);
 			}
 

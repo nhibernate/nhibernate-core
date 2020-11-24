@@ -80,6 +80,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
+			RegisterFunction("random", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
 			RegisterFunction("soundex", new StandardSQLFunction("soundex", NHibernateUtil.String));
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
@@ -87,6 +88,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
 			RegisterFunction("variance", new StandardSQLFunction("variance", NHibernateUtil.Double));
 
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime, false));
+			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
 			RegisterFunction("julian_day", new StandardSQLFunction("julian_day", NHibernateUtil.Int32));
 			RegisterFunction("microsecond", new StandardSQLFunction("microsecond", NHibernateUtil.Int32));
 			RegisterFunction("midnight_seconds", new StandardSQLFunction("midnight_seconds", NHibernateUtil.Int32));
@@ -128,7 +131,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
 
-			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
+			RegisterFunction("mod", new ModulusFunction(true, false));
 
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
 
@@ -137,8 +140,6 @@ namespace NHibernate.Dialect
 			RegisterFunction("bor", new Function.BitwiseFunctionOperation("bitor"));
 			RegisterFunction("bxor", new Function.BitwiseFunctionOperation("bitxor"));
 			RegisterFunction("bnot", new Function.BitwiseFunctionOperation("bitnot"));
-
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, false));
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.DB2Driver";
 		}
@@ -178,7 +179,6 @@ namespace NHibernate.Dialect
 		{
 			get { return "default"; }
 		}
-
 
 		public override string GetSelectSequenceNextValString(string sequenceName)
 		{
@@ -232,28 +232,29 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
+		public override SqlString GetLimitString(SqlString sql, SqlString offset, SqlString limit)
 		{
 			if (offset == null)
 			{
-				return new SqlString(querySqlString,
-									 " fetch first ",
-									 limit,
-									 " rows only");
+				return new SqlString(sql, " fetch first ", limit, " rows only");
 			}
+
+			ExtractColumnOrAliasNames(sql, out var selectColumns, out _, out _);
 
 			/*
 			 * "select * from (select row_number() over(orderby_clause) as rownum, "
 			 * querySqlString_without select
 			 * " ) as tempresult where rownum between ? and ?"
 			 */
-			string rownumClause = GetRowNumber(querySqlString);
+			string rownumClause = GetRowNumber(sql);
 
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
 			pagingBuilder
-				.Add("select * from (select ")
+				.Add("select " )
+				.Add(string.Join(",", selectColumns))
+				.Add(" from (select ")
 				.Add(rownumClause)
-				.Add(querySqlString.Substring(7))
+				.Add(sql.Substring(7))
 				.Add(") as tempresult where rownum ");
 
 			if (limit != null)
@@ -297,9 +298,14 @@ namespace NHibernate.Dialect
 
 		#region Overridden informational metadata
 
+		public override bool SupportsNullInUnique => false;
+
 		public override bool SupportsEmptyInList => false;
 
 		public override bool SupportsResultSetPositionQueryMethodsOnForwardOnlyCursor => false;
+
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false; // DB2 v9.1 doesn't support 'cross join' syntax
 
 		public override bool SupportsLobValueChangePropogation => false;
 

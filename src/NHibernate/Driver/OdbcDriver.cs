@@ -25,7 +25,6 @@ namespace NHibernate.Driver
 
 		private byte? _dbDateTimeScale;
 
-
 		public override void Configure(IDictionary<string, string> settings)
 		{
 			base.Configure(settings);
@@ -79,10 +78,18 @@ namespace NHibernate.Driver
 			{
 				switch (dbParam.DbType)
 				{
-					case DbType.AnsiString:
-					case DbType.AnsiStringFixedLength:
-					case DbType.String:
 					case DbType.StringFixedLength:
+					case DbType.AnsiStringFixedLength:
+						// For types that are using one character (CharType, AnsiCharType, TrueFalseType, YesNoType and EnumCharType),
+						// we have to specify the length otherwise sql function like charindex won't work as expected.
+						if (sqlType.Length == 1)
+						{
+							dbParam.Size = sqlType.Length;
+						}
+
+						break;
+					case DbType.String:
+					case DbType.AnsiString:
 						// NH-4083: do not limit to column length if above 2000. Setting size may trigger conversion from
 						// nvarchar to ntext when size is superior or equal to 2000, causing some queries to fail:
 						// https://stackoverflow.com/q/8569844/1178314

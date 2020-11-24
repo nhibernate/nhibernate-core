@@ -289,6 +289,76 @@ namespace NHibernate.Test.LinqBulkManipulation
 			}
 		}
 
+		[Test(Description = "GH2594")]
+		public void InsertIntoWithSubquery()
+		{
+			if(!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Dialect does not support scalar sub-select");
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s
+					.Query<Car>()
+					.InsertInto(
+						x => new Pickup
+						{
+							Id = -s.Query<Car>().Where(c => c.Id == x.Id).Select(c => c.Id).FirstOrDefault(),
+							Vin = x.Vin,
+							Owner = x.Owner
+						});
+
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void UpdateWithSubquery()
+		{
+			if(!TestDialect.SupportsModifyAndSelectSameTable || !Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Not supported by dialect");
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s
+					.Query<Car>()
+					.Update(
+						x => new
+						{
+							Id = -s.Query<Car>().Where(c => c.Id == x.Id).Select(c => c.Id).FirstOrDefault(),
+							Vin = x.Vin,
+							Owner = x.Owner
+						});
+
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void MultiTableUpdateWithSubquery()
+		{
+			if (!Dialect.SupportsTemporaryTables) 
+				Assert.Ignore("Cannot perform multi-table updates using dialect not supporting temp tables.");
+
+			if(!TestDialect.SupportsModifyAndSelectSameTable || !Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Not supported by dialect");
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s
+					.Query<Animal>()
+					.Update(
+						x => new
+						{
+							Description = s.Query<DomesticAnimal>().Where(c => c.Id == x.Id).Select(c => c.Description).FirstOrDefault(),
+						});
+
+				t.Commit();
+			}
+		}
+
 		[Test]
 		public void InsertWithManyToOne()
 		{
@@ -456,9 +526,8 @@ namespace NHibernate.Test.LinqBulkManipulation
 
 			// this is just checking parsing and syntax...
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				s.BeginTransaction();
-
 				Assert.DoesNotThrow(() =>
 				{
 					s
@@ -466,7 +535,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 						.InsertInto(x => new Animal { Description = x.Description, BodyWeight = x.BodyWeight });
 				});
 
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 
@@ -749,7 +818,6 @@ namespace NHibernate.Test.LinqBulkManipulation
 				}
 				using (var t = s.BeginTransaction())
 				{
-
 					var count = s.Query<Zoo>().UpdateBuilder().Set(y => y.Name, y => y.Name).Update();
 					Assert.That(count, Is.EqualTo(2), "Incorrect discrim subclass update count");
 
@@ -792,7 +860,6 @@ namespace NHibernate.Test.LinqBulkManipulation
 				count =
 					s.Query<Dragon>().UpdateBuilder().Set(y => y.FireTemperature, 300).Update();
 				Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
-
 
 				count =
 					s.Query<Animal>().UpdateBuilder().Set(y => y.BodyWeight, y => y.BodyWeight + 1 + 1).Update();
@@ -974,11 +1041,29 @@ namespace NHibernate.Test.LinqBulkManipulation
 			}
 
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				s.BeginTransaction();
 				var count = s.Query<SimpleEntityWithAssociation>().Where(x => x.AssociatedEntities.Count == 0 && x.Name.Contains("myEntity")).Delete();
 				Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
-				s.Transaction.Commit();
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void DeleteWithSubquery2()
+		{
+			if(!TestDialect.SupportsModifyAndSelectSameTable || !Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Not supported by dialect");
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s
+					.Query<Car>()
+					.Where(x => x.Id == -s.Query<Car>().Where(c => c.Id == x.Id).Select(c => c.Id).FirstOrDefault())
+					.Delete();
+
+				t.Commit();
 			}
 		}
 
@@ -1006,7 +1091,6 @@ namespace NHibernate.Test.LinqBulkManipulation
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-
 				var count = s.Query<Animal>().Where(x => x.Id == _polliwog.Id).Delete();
 				Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
 

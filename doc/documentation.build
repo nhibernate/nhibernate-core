@@ -9,7 +9,7 @@
 	<property name="root.dir" value=".." />
 	<include buildfile="${root.dir}/build-common/common.xml" />
 
-	<target name="init" depends="common.init common.nuget-restore">
+	<target name="init" depends="common.init common.tools-restore">
 		<property name="doc.out.dir" value="${build.dir}/doc" />
 		<property name="doc.help2.out.dir" value="${doc.out.dir}/help2" />
 		<property name="doc.chm.out.dir" value="${doc.out.dir}" />

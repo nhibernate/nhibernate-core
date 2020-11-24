@@ -102,7 +102,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			set { filter = value; }
 		}
 
-
 		public override void ReportError(RecognitionException e)
 		{
 			_parseErrorHandler.ReportError(e);
@@ -124,6 +123,18 @@ namespace NHibernate.Hql.Ast.ANTLR
 					// Case 1: Multi token keywords GROUP BY and ORDER BY
 					// The next token ( LT(2) ) should be 'by'... otherwise, this is just an ident.
 					if (input.LA(2) != LITERAL_by)
+					{
+						input.LT(1).Type = IDENT;
+						if (log.IsDebugEnabled())
+						{
+							log.Debug("weakKeywords() : new LT(1) token - {0}", input.LT(1));
+						}
+					}
+					break;
+				case LEFT:
+				case RIGHT:
+					// Support left and right functions
+					if (input.LA(2) == OPEN)
 					{
 						input.LT(1).Type = IDENT;
 						if (log.IsDebugEnabled())

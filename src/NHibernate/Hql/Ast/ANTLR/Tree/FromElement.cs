@@ -76,6 +76,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_isAllPropertyFetch = fetch;
 		}
 
+		// Since 5.4
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public void SetWithClauseFragment(String withClauseJoinAlias, SqlString withClauseFragment)
 		{
 			_withClauseJoinAlias = withClauseJoinAlias;
@@ -121,7 +123,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public virtual bool IsImpliedInFromClause
 		{
-			get { return false; }  // Since this is an explicit FROM element, it can't be implied in the FROM clause.
+			get { return false; } // Since this is an explicit FROM element, it can't be implied in the FROM clause.
 		}
 
 		public bool IsFetch
@@ -178,6 +180,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get { return false; } // This is an explicit FROM element.
 		}
+
+		internal bool? IsPartOfJoinSequence { get; set; }
 
 		public bool IsDereferencedBySuperclassOrSubclassProperty
 		{
@@ -311,8 +315,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public SqlString WithClauseFragment
 		{
 			get { return _withClauseFragment; }
+			set { _withClauseFragment = value; }
 		}
 
+		// Since 5.4
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public string WithClauseJoinAlias
 		{
 			get { return _withClauseJoinAlias; }
@@ -457,7 +464,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public bool UseWhereFragment
 		{
-			get { return _useWhereFragment;}
+			get { return _useWhereFragment; }
 			set { _useWhereFragment = value; }
 		}
 
@@ -483,6 +490,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public virtual string GetIdentityColumn()
 		{
+			var cols = GetIdentityColumns();
+			string result = string.Join(", ", cols);
+
+			if (cols.Length > 1 && Walker.IsComparativeExpressionClause)
+			{
+				return "(" + result + ")";
+			}
+
+			return result;
+		}
+
+		internal string[] GetIdentityColumns()
+		{
 			CheckInitialized();
 			string table = TableAlias;
 
@@ -490,7 +510,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				throw new InvalidOperationException("No table alias for node " + this);
 			}
-			string[] cols;
 			string propertyName;
 			if (EntityPersister != null && EntityPersister.EntityMetamodel != null
 					&& EntityPersister.EntityMetamodel.HasNonIdentifierPropertyNamedId)
@@ -505,21 +524,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				propertyName = NHibernate.Persister.Entity.EntityPersister.EntityID;
 			}
-			if (Walker.StatementType == HqlSqlWalker.SELECT)
-			{
-				cols = GetPropertyMapping(propertyName).ToColumns(table, propertyName);
-			}
-			else
-			{
-				cols = GetPropertyMapping(propertyName).ToColumns(propertyName);
-			}
-			string result = string.Join(", ", cols);
 
-			// There used to be code here that added parentheses if the number of columns was greater than one.
-			// This was causing invalid queries like select (c1, c2) from x.  I couldn't think of a reason that
-			// parentheses would be wanted around a list of columns, so I removed them.
-			return result;
+			return ToColumns(table, propertyName, Walker.StatementType == HqlSqlWalker.SELECT);
 		}
+
+		internal bool UseTableAliases => Walker.StatementType == HqlSqlWalker.SELECT || Walker.IsSubQuery;
 
 		public void HandlePropertyBeingDereferenced(IType propertySource, string propertyName)
 		{

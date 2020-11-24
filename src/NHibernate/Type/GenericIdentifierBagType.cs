@@ -75,7 +75,6 @@ namespace NHibernate.Type
 			return anticipatedSize <= 0 ? new List<T>() : new List<T>(anticipatedSize + 1);
 		}
 
-
 		protected override void Clear(object collection)
 		{
 			((IList<T>)collection).Clear();

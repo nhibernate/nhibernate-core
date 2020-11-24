@@ -51,7 +51,6 @@ namespace NHibernate.Event.Default
 
 		internal override object ProcessCollection(object collection, CollectionType type)
 		{
-
 			if (collection != null)
 			{
 				ISessionImplementor session = Session;

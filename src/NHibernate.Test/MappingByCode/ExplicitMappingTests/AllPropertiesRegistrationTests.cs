@@ -110,7 +110,6 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 
 		private class Inherited:MyClass
 		{
-			
 		}
 
 		[Test]
@@ -265,7 +264,6 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 				mc.Component<object>("Compo", y => y.Access(Accessor.Field));
 			}), Throws.TypeOf<MappingException>());
 		}
-
 
 		[Test]
 		public void WhenMapOneToOneWithWrongTypeThenThrows()

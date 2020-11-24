@@ -3,7 +3,6 @@ using System.Linq;
 using NHibernate.Mapping;
 using NHibernate.Type;
 
-
 namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public static class MappingLogExtensions

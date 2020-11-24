@@ -9,7 +9,6 @@ namespace NHibernate.Action
 	[Serializable]
 	public sealed partial class EntityIdentityInsertAction : AbstractEntityInsertAction
 	{
-		private readonly object lockObject = new object();
 		private readonly bool isDelayed;
 		private readonly EntityKey delayedEntityKey;
 		//private CacheEntry cacheEntry;
@@ -19,7 +18,9 @@ namespace NHibernate.Action
 			: base(null, state, instance, persister, session)
 		{
 			this.isDelayed = isDelayed;
-			delayedEntityKey = this.isDelayed ? GenerateDelayedEntityKey() : null;
+			delayedEntityKey = this.isDelayed
+				? Session.GenerateEntityKey(new DelayedPostInsertIdentifier(), Persister)
+				: null;
 		}
 
 		public object GeneratedId
@@ -30,17 +31,6 @@ namespace NHibernate.Action
 		public EntityKey DelayedEntityKey
 		{
 			get { return delayedEntityKey; }
-		}
-
-		private EntityKey GenerateDelayedEntityKey()
-		{
-			lock (lockObject)
-			{
-				if (!isDelayed)
-					throw new HibernateException("Cannot request delayed entity-key for non-delayed post-insert-id generation");
-
-				return Session.GenerateEntityKey(new DelayedPostInsertIdentifier(), Persister);
-			}
 		}
 
 		protected internal override bool HasPostCommitEventListeners

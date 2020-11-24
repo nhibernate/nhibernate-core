@@ -56,6 +56,11 @@ namespace NHibernate.Proxy
 			var name = new AssemblyName(assemblyName);
 
 			var assemblyBuilder = ProxyBuilderHelper.DefineDynamicAssembly(AppDomain.CurrentDomain, name);
+
+#if NETFX || NETCOREAPP2_0
+			if (!baseType.IsVisible)
+				ProxyBuilderHelper.GenerateInstanceOfIgnoresAccessChecksToAttribute(assemblyBuilder, baseType.Assembly.GetName().Name);
+#endif
 			var moduleBuilder = ProxyBuilderHelper.DefineDynamicModule(assemblyBuilder, moduleName);
 
 			const TypeAttributes typeAttributes = TypeAttributes.AutoClass | TypeAttributes.Class | TypeAttributes.Public | TypeAttributes.BeforeFieldInit;

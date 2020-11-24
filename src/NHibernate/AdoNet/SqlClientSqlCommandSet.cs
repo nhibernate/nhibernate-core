@@ -76,7 +76,6 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-
 		/// <summary>
 		/// Return the batch command to be executed
 		/// </summary>

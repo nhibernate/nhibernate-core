@@ -164,6 +164,7 @@ namespace NHibernate.Transaction
 					// don't dispose of multiple times.
 					return;
 				}
+				_isAlreadyDisposed = true;
 
 				// free managed resources that are being managed by the AdoTransaction if we
 				// know this call came through Dispose()
@@ -181,13 +182,11 @@ namespace NHibernate.Transaction
 						// Assume we are rolled back
 						await (AfterTransactionCompletionAsync(false, cancellationToken)).ConfigureAwait(false);
 					}
+					// nothing for Finalizer to do - so tell the GC to ignore it
+					GC.SuppressFinalize(this);
 				}
 
 				// free unmanaged resources here
-
-				_isAlreadyDisposed = true;
-				// nothing for Finalizer to do - so tell the GC to ignore it
-				GC.SuppressFinalize(this);
 			}
 		}
 

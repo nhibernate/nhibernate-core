@@ -29,7 +29,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly string _queryIdentifier;
 		private readonly IASTNode _stageOneAst;
 		private readonly ISessionFactoryImplementor _factory;
-		
+		private readonly IDictionary<string, NamedParameter> _namedParameters;
+
 		private bool _shallowQuery;
 		private bool _compiled;
 		private IDictionary<string, IFilter> _enabledFilters;
@@ -47,10 +48,28 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <param name="enabledFilters">Currently enabled filters</param>
 		/// <param name="factory">The session factory constructing this translator instance.</param>
 		public QueryTranslatorImpl(
-				string queryIdentifier,
-				IASTNode parsedQuery,
-				IDictionary<string, IFilter> enabledFilters,
-				ISessionFactoryImplementor factory)
+			string queryIdentifier,
+			IASTNode parsedQuery,
+			IDictionary<string, IFilter> enabledFilters,
+			ISessionFactoryImplementor factory)
+			: this(queryIdentifier, parsedQuery, enabledFilters, factory, null)
+		{
+		}
+
+		/// <summary>
+		/// Creates a new AST-based query translator.
+		/// </summary>
+		/// <param name="queryIdentifier">The query-identifier (used in stats collection)</param>
+		/// <param name="parsedQuery">The hql query to translate</param>
+		/// <param name="enabledFilters">Currently enabled filters</param>
+		/// <param name="factory">The session factory constructing this translator instance.</param>
+		/// <param name="namedParameters">The named parameters information.</param>
+		internal QueryTranslatorImpl(
+			string queryIdentifier,
+			IASTNode parsedQuery,
+			IDictionary<string, IFilter> enabledFilters,
+			ISessionFactoryImplementor factory,
+			IDictionary<string, NamedParameter> namedParameters)
 		{
 			_queryIdentifier = queryIdentifier;
 			_stageOneAst = parsedQuery;
@@ -58,6 +77,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_shallowQuery = false;
 			_enabledFilters = enabledFilters;
 			_factory = factory;
+			_namedParameters = namedParameters;
 		}
 
 		/// <summary>
@@ -123,7 +143,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				int size = results.Count;
 				var tmp = new List<object>();
-				var distinction = new IdentitySet();
+				var distinction = new HashSet<object>(ReferenceComparer<object>.Instance);
 
 				for ( int i = 0; i < size; i++ ) 
 				{
@@ -434,7 +454,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private HqlSqlTranslator Analyze(string collectionRole)
 		{
-			var translator = new HqlSqlTranslator(_stageOneAst, this, _factory, _tokenReplacements, collectionRole);
+			var translator = new HqlSqlTranslator(_stageOneAst, this, _factory, _tokenReplacements, _namedParameters, collectionRole);
 
 			translator.Translate();
 
@@ -548,15 +568,23 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly QueryTranslatorImpl _qti;
 		private readonly ISessionFactoryImplementor _sfi;
 		private readonly IDictionary<string, string> _tokenReplacements;
+		private readonly IDictionary<string, NamedParameter> _namedParameters;
 		private readonly string _collectionRole;
 		private IStatement _resultAst;
 
-		public HqlSqlTranslator(IASTNode ast, QueryTranslatorImpl qti, ISessionFactoryImplementor sfi, IDictionary<string, string> tokenReplacements, string collectionRole)
+		public HqlSqlTranslator(
+			IASTNode ast,
+			QueryTranslatorImpl qti,
+			ISessionFactoryImplementor sfi,
+			IDictionary<string, string> tokenReplacements,
+			IDictionary<string, NamedParameter> namedParameters,
+			string collectionRole)
 		{
 			_inputAst = ast;
 			_qti = qti;
 			_sfi = sfi;
 			_tokenReplacements = tokenReplacements;
+			_namedParameters = namedParameters;
 			_collectionRole = collectionRole;
 		}
 
@@ -576,7 +604,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				var nodes = new BufferedTreeNodeStream(_inputAst);
 
-				var hqlSqlWalker = new HqlSqlWalker(_qti, _sfi, nodes, _tokenReplacements, _collectionRole);
+				var hqlSqlWalker = new HqlSqlWalker(_qti, _sfi, nodes, _tokenReplacements, _namedParameters, _collectionRole);
 				hqlSqlWalker.TreeAdaptor = new HqlSqlWalkerTreeAdaptor(hqlSqlWalker);
 
 				try

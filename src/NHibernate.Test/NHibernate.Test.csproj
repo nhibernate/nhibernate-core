@@ -25,6 +25,7 @@
     <None Remove="NHSpecificTest\NH3023\db-teardown.sql" />
     <EmbeddedResource Include="NHSpecificTest\NH3023\db-seed.sql" />
     <EmbeddedResource Include="NHSpecificTest\NH3023\db-teardown.sql" />
+    <EmbeddedResource Include="log4net.xml" />
     <EmbeddedResource Include="TestEmbeddedConfig.cfg.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -45,15 +46,26 @@
     <Compile Remove="**\NHSpecificTest\NH3121\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\NHibernate\Util\AsyncReaderWriterLock.cs">
+      <Link>UtilityTest\AsyncReaderWriterLock.cs</Link>
+    </Compile>
+    <Compile Include="..\NHibernate\Collection\Generic\SetHelpers\SetSnapShot.cs">
+      <Link>UtilityTest\SetSnapShot.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.3.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="1.0.19269.1" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.109.2" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.8.11" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
-    <PackageReference Include="NUnit" Version="3.10.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.3.0" />
     <PackageReference Include="Npgsql" Version="4.0.3" />
+    <PackageReference Include="MySql.Data" Version="8.0.22" />
   </ItemGroup>
   <ItemGroup Condition="$(NhNetFx)">
     <Reference Include="System.Configuration" />
@@ -63,7 +75,6 @@
     <Reference Include="System.Data.OracleClient" />
     <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
     <PackageReference Include="Oracle.ManagedDataAccess" Version="12.1.2400" />
-    <PackageReference Include="MySql.Data" Version="6.9.11" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
     <PackageReference Include="System.CodeDom" Version="4.4.0" />
@@ -71,8 +82,7 @@
     <PackageReference Include="System.Data.OracleClient" Version="1.0.8" />
     <PackageReference Include="System.Data.Odbc" Version="4.5.0" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
-    <PackageReference Include="NUnitLite" Version="3.10.1" />
-    <PackageReference Include="MySql.Data" Version="6.10.6" />
+    <PackageReference Include="NUnitLite" Version="3.12.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(NuGetPackageRoot)' != '' ">
     <NativeBinaries Include="$(NuGetPackageRoot)microsoft.sqlserver.compact\4.0.8876.1\NativeBinaries\**\*.*" />

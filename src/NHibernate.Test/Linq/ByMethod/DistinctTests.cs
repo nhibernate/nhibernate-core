@@ -33,6 +33,25 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
+		public void DistinctAndOrderByOnAnonymousTypeProjection()
+		{
+			var result = db.Orders
+							.Where(x => x.ShippingDate != null)
+							.Select(x => new { x.ShippingDate })
+							.OrderByDescending(x => x.ShippingDate)
+							.Distinct()
+							.ToArray();
+
+			var expectedResults = result
+								.OrderByDescending(x => x.ShippingDate)
+								.Distinct()
+								.ToArray();
+
+			Assert.That(result.Length, Is.EqualTo(387));
+			CollectionAssert.AreEqual(expectedResults, result);
+		}
+
+		[Test]
 		public void DistinctOnComplexAnonymousTypeProjection()
 		{
 			//NH-2380
@@ -119,7 +138,6 @@ namespace NHibernate.Test.Linq.ByMethod
 					  .And.Message.EqualTo(
 						  "Cannot use distinct on result that depends on methods for which no SQL equivalent exist."));
 		}
-
 
 		[Test]
 		public void DistinctOnTypeProjectionWithCustomProjectionMethodsIsBlocked2()

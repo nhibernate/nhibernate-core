@@ -37,7 +37,6 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			await (SavingAndRetrievingActionAsync(new AllDates {Sql_datetime2 = Now},
 			                          entity => DateTimeAssert.AreEqual(entity.Sql_datetime2, Now)));
 
-
 			await (SavingAndRetrievingActionAsync(new AllDates { Sql_datetime2 = DateTime.MinValue },
 									  entity => DateTimeAssert.AreEqual(entity.Sql_datetime2, DateTime.MinValue)));
 

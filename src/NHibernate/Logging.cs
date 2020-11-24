@@ -1,6 +1,5 @@
 using System;
-using System.Configuration;
-using System.Linq;
+using NHibernate.Cfg;
 using System.Runtime.CompilerServices;
 
 namespace NHibernate
@@ -49,7 +48,6 @@ namespace NHibernate
 	/// </remarks>
 	public static class NHibernateLogger
 	{
-		private const string nhibernateLoggerConfKey = "nhibernate-logger";
 		private static INHibernateLoggerFactory _loggerFactory;
 
 #pragma warning disable 618
@@ -135,19 +133,14 @@ namespace NHibernate
 
 		private static string GetNhibernateLoggerClass()
 		{
-			var nhibernateLogger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => nhibernateLoggerConfKey.Equals(k, StringComparison.OrdinalIgnoreCase));
-			string nhibernateLoggerClass = null;
-			if (string.IsNullOrEmpty(nhibernateLogger))
+			var nhibernateLoggerClass = ConfigurationProvider.Current.GetLoggerFactoryClassName();
+			if (nhibernateLoggerClass == null)
 			{
 				// look for log4net
 				if (Log4NetLoggerFactory.Log4NetAssembly != null)
 				{
 					nhibernateLoggerClass = typeof(Log4NetLoggerFactory).AssemblyQualifiedName;
 				}
-			}
-			else
-			{
-				nhibernateLoggerClass = ConfigurationManager.AppSettings[nhibernateLogger];
 			}
 			return nhibernateLoggerClass;
 		}

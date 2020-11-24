@@ -80,6 +80,5 @@ namespace NHibernate.Test.SqlTest.Custom
 			await (t.CommitAsync());
 			s.Close();
 		}
-
 	}
 }

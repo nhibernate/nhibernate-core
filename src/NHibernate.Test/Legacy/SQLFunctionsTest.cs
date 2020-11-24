@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using log4net;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
@@ -104,19 +105,30 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
+		//NH-3893 (GH-1349) left and right functions are broken
 		[Test]
-		[Ignore("NH-3893 is not fixed")]
 		public void LeftAndRight()
 		{
-			// As of NH-3893, left and right functions are broken. Seemed confused with join keyword, and not
-			// supported on Hibernate side.
+			//left or right functions are supported by most dialects but not registered.
+			AssumeFunctionSupported("left");
+			AssumeFunctionSupported("right");
+
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
+				Simple simple = new Simple();
+				simple.Name = "Simple Dialect Function Test";
+				simple.Address = "Simple Address";
+				simple.Pay = 45.8f;
+				simple.Count = 2;
+				s.Save(simple, 10L);
+
 				var rset = s.CreateQuery("select left('abc', 2), right('abc', 2) from s in class Simple").List<object[]>();
 				var row = rset[0];
 				Assert.AreEqual("ab", row[0], "Left function is broken.");
 				Assert.AreEqual("bc", row[1], "Right function is broken.");
+
+				s.Delete(simple);
 				t.Commit();
 			}
 		}
@@ -137,6 +149,112 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
+		[Test]
+		public void SetParametersWithDictionary()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				s.Save(simple, 10L);
+				var q = s.CreateQuery("from s in class Simple where s.Name = :Name and s.Count = :Count");
+				var parameters = new Dictionary<string, object>
+				{
+					{ nameof(simple.Name), simple.Name },
+					{ nameof(simple.Count), simple.Count },
+				};
+				q.SetProperties(parameters);
+				var results = q.List();
+				Assert.That(results, Has.One.EqualTo(simple));
+				s.Delete(simple);
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void SetParametersWithHashtable()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				s.Save(simple, 10L);
+				var q = s.CreateQuery("from s in class Simple where s.Name = :Name and (s.Address = :Address or :Address is null and s.Address is null)");
+				var parameters = new Hashtable
+				{
+					{ nameof(simple.Name), simple.Name },
+					{ nameof(simple.Address), simple.Address },
+				};
+				q.SetProperties(parameters);
+				var results = q.List();
+				Assert.That(results, Has.One.EqualTo(simple));
+				s.Delete(simple);
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void SetParametersWithDynamic()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				s.Save(simple, 10L);
+				var q = s.CreateQuery("from s in class Simple where s.Name = :Name and s.Count = :Count");
+				dynamic parameters = new ExpandoObject();
+				parameters.Name = simple.Name;
+				parameters.Count = simple.Count;
+				q.SetProperties(parameters);
+				var results = q.List();
+				Assert.That(results, Has.One.EqualTo(simple));
+				s.Delete(simple);
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void SetNullParameterWithDictionary()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				s.Save(simple, 10L);
+				var q = s.CreateQuery("from s in class Simple where s.Name = :Name and (s.Address = :Address or :Address is null and s.Address is null)");
+				var parameters = new Dictionary<string, object>
+				{
+					{ nameof(simple.Name), simple.Name },
+					{ nameof(simple.Address), null },
+				};
+				q.SetProperties(parameters);
+				var results = q.List();
+				Assert.That(results, Has.One.EqualTo(simple));
+				s.Delete(simple);
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void SetParameterListWithDictionary()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				s.Save(simple, 10L);
+				var q = s.CreateQuery("from s in class Simple where s.Name in (:Name)");
+				var parameters = new Dictionary<string, object>
+				{
+					{ nameof(simple.Name), new [] {simple.Name} }
+				};
+				q.SetProperties(parameters);
+				var results = q.List();
+				Assert.That(results, Has.One.EqualTo(simple));
+				s.Delete(simple);
+				t.Commit();
+			}
+		}
 
 		[Test]
 		public void Broken()
@@ -199,7 +317,6 @@ namespace NHibernate.Test.Legacy
 			t.Commit();
 			s.Close();
 		}
-
 
 		[Test]
 		public void CachedQuery()

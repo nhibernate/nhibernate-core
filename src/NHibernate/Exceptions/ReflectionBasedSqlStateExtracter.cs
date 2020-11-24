@@ -6,7 +6,6 @@ namespace NHibernate.Exceptions
 {
     class ReflectionBasedSqlStateExtracter: SqlStateExtracter
     {
- 
         /* OdbcException, OleDbException, IfxException, Db2Exception, and possible others
          * have Errors collection which contains fields: NativeError and SQLState
          * These fields can be extracted using reflection
