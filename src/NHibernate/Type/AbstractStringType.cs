@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Globalization;
@@ -64,7 +64,7 @@ namespace NHibernate.Type
 			// set the parameter value before the size check, since ODBC changes the size automatically
 			parameter.Value = value;
 
-			if (parameter.Size > 0 && ((string)value).Length > parameter.Size)
+			if (parameter.Size > 0 && value != null && Convert.ToString(value).Length > parameter.Size)
 				throw new HibernateException("The length of the string value exceeds the length configured in the mapping/parameter.");
 		}
 

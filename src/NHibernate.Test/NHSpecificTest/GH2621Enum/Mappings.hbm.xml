@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+           namespace="NHibernate.Test.NHSpecificTest.GH2621Enum"
+           assembly="NHibernate.Test"
+>
+  <class name="ClassWithString" >
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <property name="Name"/>
+    <property name="Kind"/>
+  </class>
+
+</hibernate-mapping>

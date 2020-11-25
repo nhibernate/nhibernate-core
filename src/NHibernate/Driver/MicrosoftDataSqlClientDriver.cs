@@ -75,6 +75,9 @@ namespace NHibernate.Driver
 		/// <inheritdoc />
 		public virtual void AdjustParameterForValue(DbParameter parameter, SqlType sqlType, object value)
 		{
+			if (value is Enum)
+				value = Enum.GetName(value.GetType(), value);
+
 			if (value is string stringVal)
 				switch (parameter.DbType)
 				{
