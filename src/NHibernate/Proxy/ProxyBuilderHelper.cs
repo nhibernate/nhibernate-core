@@ -1,4 +1,4 @@
-#region Credits
+﻿#region Credits
 
 // Part of this work is based on LinFu.DynamicProxy framework (c) Philip Laureano who has donated it to NHibernate project.
 // The license is the same of NHibernate license (LGPL Version 2.1, February 1999).
@@ -178,8 +178,6 @@ namespace NHibernate.Proxy
 					CallingConventions.HasThis,
 					method.ReturnType,
 					parameters.ToArray(param => param.ParameterType));
-			if (explicitImplementation)
-				methodBuilder.SetImplementationFlags(MethodImplAttributes.Managed | MethodImplAttributes.IL);
 
 			var typeArgs = method.GetGenericArguments();
 			if (typeArgs.Length > 0)
@@ -207,6 +205,9 @@ namespace NHibernate.Proxy
 					typeArgBuilder.SetInterfaceConstraints(interfaceTypeConstraints);
 				}
 			}
+
+			if (explicitImplementation)
+				methodBuilder.SetImplementationFlags(MethodImplAttributes.Managed | MethodImplAttributes.IL);
 
 			return methodBuilder;
 		}
