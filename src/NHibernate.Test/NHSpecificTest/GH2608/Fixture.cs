@@ -29,5 +29,18 @@ namespace NHibernate.Test.NHSpecificTest.GH2608
 				tx.Commit();
 			}
 		}
+
+		[Test]
+		public void PersistBidiPrimaryKeyOneToOne()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var p = new Person { Name = "steve" };
+				p.Details = new PersonalDetails { SomePersonalDetail = "I have big feet", Person = p };
+				s.Persist(p);
+				tx.Commit();
+			}
+		}
 	}
 }
