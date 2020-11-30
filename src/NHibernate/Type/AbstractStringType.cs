@@ -58,14 +58,23 @@ namespace NHibernate.Type
 		{
 			var parameter = cmd.Parameters[index];
 
-			//Allow the driver to adjust the parameter for the value
-			session.Factory.ConnectionProvider.Driver.AdjustParameterForValue(parameter, SqlType, value);
+			if (value == null)
+			{
+				parameter.Value = DBNull.Value;
+			}
+			else
+			{
+				var stringValue = Convert.ToString(value);
+			
+				//Allow the driver to adjust the parameter for the value
+				session.Factory.ConnectionProvider.Driver.AdjustParameterForValue(parameter, SqlType, stringValue);
 
-			// set the parameter value before the size check, since ODBC changes the size automatically
-			parameter.Value = value;
+				// set the parameter value before the size check, since ODBC changes the size automatically
+				parameter.Value = stringValue;
 
-			if (parameter.Size > 0 && value != null && Convert.ToString(value).Length > parameter.Size)
-				throw new HibernateException("The length of the string value exceeds the length configured in the mapping/parameter.");
+				if (parameter.Size > 0 && stringValue.Length > parameter.Size)
+					throw new HibernateException("The length of the string value exceeds the length configured in the mapping/parameter.");
+			}
 		}
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
