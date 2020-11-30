@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2621Enum
 				using (ITransaction t = s.BeginTransaction())
 				{
 					var query = s.CreateQuery(@"
-							SELECT Name FROM NHibernate.Test.NHSpecificTest.GH2620Enum.ClassWithString ROOT WHERE ROOT.Kind = :kind");
+							SELECT Name FROM NHibernate.Test.NHSpecificTest.GH2621Enum.ClassWithString ROOT WHERE ROOT.Kind = :kind");
 					query.SetParameter("kind", Kind.SomeKind);
 					Assert.DoesNotThrow(() => query.List());
 				}
