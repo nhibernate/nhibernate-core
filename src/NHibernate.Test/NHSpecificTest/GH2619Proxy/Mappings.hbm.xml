@@ -3,7 +3,7 @@
            namespace="NHibernate.Test.NHSpecificTest.GH2619Proxy"
            assembly="NHibernate.Test"
 >
-  <class name="ClassWithGenericNonVirtualMethod" >
+  <class name="ClassWithGenericNonVirtualMethod" table="CWGNVM" >
     <id name="Id">
       <generator class="increment"/>
     </id>
