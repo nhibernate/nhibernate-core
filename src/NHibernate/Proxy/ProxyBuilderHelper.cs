@@ -1,4 +1,4 @@
-﻿#region Credits
+#region Credits
 
 // Part of this work is based on LinFu.DynamicProxy framework (c) Philip Laureano who has donated it to NHibernate project.
 // The license is the same of NHibernate license (LGPL Version 2.1, February 1999).
