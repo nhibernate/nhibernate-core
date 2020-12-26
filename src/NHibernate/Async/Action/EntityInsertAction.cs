@@ -40,10 +40,16 @@ namespace NHibernate.Action
 
 			bool veto = await (PreInsertAsync(cancellationToken)).ConfigureAwait(false);
 
+			var isDelayed = false;
 			// Don't need to lock the cache here, since if someone
 			// else inserted the same pk first, the insert would fail
 			if (!veto)
 			{
+				if (id is DelayedPostInsertIdentifier delayed && delayed.ActualId != null)
+				{
+					isDelayed = true;
+					id = delayed.ActualId;
+				}
 				await (persister.InsertAsync(id, State, instance, Session, cancellationToken)).ConfigureAwait(false);
 
 				EntityEntry entry = Session.PersistenceContext.GetEntry(instance);
@@ -53,6 +59,10 @@ namespace NHibernate.Action
 				}
 
 				entry.PostInsert();
+				if (isDelayed)
+				{
+					Session.PersistenceContext.ReplaceDelayedEntityIdentityInsertKeys(entry.EntityKey, id);
+				}
 
 				if (persister.HasInsertGeneratedProperties)
 				{
