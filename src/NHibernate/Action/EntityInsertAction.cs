@@ -49,10 +49,12 @@ namespace NHibernate.Action
 			// else inserted the same pk first, the insert would fail
 			if (!veto)
 			{
-				if (id is DelayedPostInsertIdentifier delayed && delayed.ActualId != null)
+				if (id is DelayedPostInsertIdentifier delayed)
 				{
 					wasDelayed = true;
-					id = delayed.ActualId;
+					id = delayed.ActualId ??
+						throw new InvalidOperationException(
+							$"The delayed foreign identifier {delayed} has not been resolved before insertion of a {instance}");
 				}
 				persister.Insert(id, State, instance, Session);
 
