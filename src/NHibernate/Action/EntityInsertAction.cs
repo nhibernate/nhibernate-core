@@ -44,14 +44,14 @@ namespace NHibernate.Action
 
 			bool veto = PreInsert();
 
-			var isDelayed = false;
+			var wasDelayed = false;
 			// Don't need to lock the cache here, since if someone
 			// else inserted the same pk first, the insert would fail
 			if (!veto)
 			{
 				if (id is DelayedPostInsertIdentifier delayed && delayed.ActualId != null)
 				{
-					isDelayed = true;
+					wasDelayed = true;
 					id = delayed.ActualId;
 				}
 				persister.Insert(id, State, instance, Session);
@@ -63,7 +63,7 @@ namespace NHibernate.Action
 				}
 
 				entry.PostInsert();
-				if (isDelayed)
+				if (wasDelayed)
 				{
 					Session.PersistenceContext.ReplaceDelayedEntityIdentityInsertKeys(entry.EntityKey, id);
 				}
