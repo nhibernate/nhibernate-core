@@ -49,6 +49,7 @@ namespace NHibernate.Action
 			// else inserted the same pk first, the insert would fail
 			if (!veto)
 			{
+				// The identifier may be a foreign delayed identifier, which at this point should have been resolved.
 				if (id is DelayedPostInsertIdentifier delayed)
 				{
 					wasDelayed = true;
