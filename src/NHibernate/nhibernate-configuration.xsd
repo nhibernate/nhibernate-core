@@ -122,6 +122,8 @@
 										<xs:enumeration value="query.factory_class" />
 										<xs:enumeration value="query.linq_provider_class" />
 										<xs:enumeration value="query.imports" />
+										<xs:enumeration value="query.plan_parameter_metadata_max_size" />
+										<xs:enumeration value="query.plan_cache_max_size" />
 										<xs:enumeration value="hbm2ddl.auto" />
 										<xs:enumeration value="hbm2ddl.keywords" />
 										<xs:enumeration value="hbm2ddl.throw_on_update">
