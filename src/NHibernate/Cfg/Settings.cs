@@ -212,5 +212,7 @@ namespace NHibernate.Cfg
 		public MultiTenancyStrategy MultiTenancyStrategy { get; internal set; }
 
 		public IMultiTenancyConnectionProvider MultiTenancyConnectionProvider { get; internal set; }
+		public int QueryPlanCacheParameterMetadataMaxSize { get; internal set; }
+		public int QueryPlanCacheMaxSize { get; internal set; }
 	}
 }
