@@ -49,7 +49,6 @@ namespace NHibernate.Test.CfgTest
 		{
 			public SettingsTestCaseData(string key, string value, Func<Settings, object> settingsProp) : base(key, value, settingsProp)
 			{
-
 			}
 		}
 	}
