@@ -181,12 +181,15 @@ namespace NHibernate.Impl
 
 		public SessionFactoryImpl(Configuration cfg, IMapping mapping, Settings settings, EventListeners listeners)
 		{
+			this.settings = settings;
+
 			Init();
+			
 			log.Info("building session factory");
 
 			properties = new Dictionary<string, string>(cfg.Properties);
 			interceptor = cfg.Interceptor;
-			this.settings = settings;
+			
 			sqlFunctionRegistry = new SQLFunctionRegistry(settings.Dialect, cfg.SqlFunctions);
 			eventListeners = listeners;
 			filters = new Dictionary<string, FilterDefinition>(cfg.FilterDefinitions);
