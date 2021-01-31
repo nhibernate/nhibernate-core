@@ -23,7 +23,9 @@ namespace NHibernate.Mapping
 
 		private EntityType EntityType
 		{
-			get { return TypeFactory.ManyToOne(ReferencedEntityName, null, false, false, IsIgnoreNotFound, false, null); }
+			get { return TypeFactory.ManyToOne(
+				ReferencedEntityName, null, false, false, 
+				IsIgnoreNotFound, false, null, null); }
 		}
 
 		public bool IsIgnoreNotFound

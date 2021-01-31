@@ -655,13 +655,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 			else if ((indexManyToManyMapping = mapMapping.Item as HbmIndexManyToMany) != null)
 			{
-				var manyToOne = new ManyToOne(model.CollectionTable);
+				var manyToOne = new ManyToOne(model.CollectionTable, model.Owner);
 				BindIndexManyToMany(indexManyToManyMapping, manyToOne, IndexedCollection.DefaultIndexColumnName, model.IsOneToMany);
 				model.Index = manyToOne;
 			}
 			else if ((mapKeyManyToManyMapping = mapMapping.Item as HbmMapKeyManyToMany) != null)
 			{
-				var manyToOne = new ManyToOne(model.CollectionTable);
+				var manyToOne = new ManyToOne(model.CollectionTable, model.Owner);
 				BindMapKeyManyToMany(mapKeyManyToManyMapping, manyToOne, IndexedCollection.DefaultIndexColumnName, model.IsOneToMany);
 				model.Index = manyToOne;
 			}
@@ -813,7 +813,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void BindManyToMany(HbmManyToMany manyToManyMapping, Mapping.Collection model)
 		{
-			var manyToMany = new ManyToOne(model.CollectionTable);
+			var manyToMany = new ManyToOne(model.CollectionTable, model.Owner);
 			model.Element = manyToMany;
 			new ValuePropertyBinder(manyToMany, Mappings).BindSimpleValue(manyToManyMapping,
 																	   Mapping.Collection.DefaultElementColumnName, false);
