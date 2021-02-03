@@ -849,19 +849,6 @@ namespace NHibernate.Test.Linq
 			Assert.That(result.SerialNumber, Is.EqualTo("1121"));
 		}
 
-		[Test(Description = "GH-2642")]
-		public void CanUseImplicitCastOperatorToGuid()
-		{
-			var id = new GuidWrapper(new Guid("{01234567-abcd-abcd-abcd-0123456789ab}"));
-
-			var query = session.Query<Shipper>().Where(a => a.Reference == id);
-
-			Assert.DoesNotThrow(() =>
-			{
-				var _ = query.ToList();
-			});
-		}
-
 		private static List<object[]> CanUseCompareInQueryDataSource()
 		{
 			return new List<object[]>
@@ -902,21 +889,6 @@ namespace NHibernate.Test.Linq
 				{
 					expression, expectedCount, expectCase
 				};
-		}
-
-		private struct GuidWrapper
-		{
-			public readonly Guid Id;
-
-			public GuidWrapper(Guid id)
-			{
-				Id = id;
-			}
-
-			public static implicit operator Guid(GuidWrapper idWrapper)
-			{
-				return idWrapper.Id;
-			}
 		}
 	}
 }

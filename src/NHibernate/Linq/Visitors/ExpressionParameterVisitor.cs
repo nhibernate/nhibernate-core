@@ -146,7 +146,9 @@ namespace NHibernate.Linq.Visitors
 			// If we have an expression like "Convert(<constant>)" we no not want to lose the conversion operation
 			// because it might be necessary if the types are incompatible with each other, which might happen if
 			// the expression uses an implicitly or explicitly defined cast operator.
-			if (node.NodeType == ExpressionType.Convert && node.Operand is ConstantExpression constantExpression)
+			if (node.NodeType == ExpressionType.Convert &&
+			    node.Method != null && // The implicit/explicit operator method
+				node.Operand is ConstantExpression constantExpression)
 			{
 				// Instead of getting constantExpression.Value, we override the value by compiling and executing this subtree,
 				// performing the cast.
