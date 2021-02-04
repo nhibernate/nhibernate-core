@@ -317,8 +317,8 @@ possible solutions:
 			var rightType = GetExpressionType(expression.Right);
 			if (leftType != null && leftType == rightType)
 			{
-				_notCastableExpressions.Add(expression.Left, leftType);
-				_notCastableExpressions.Add(expression.Right, rightType);
+				_notCastableExpressions.TryAdd(expression.Left, leftType);
+				_notCastableExpressions.TryAdd(expression.Right, rightType);
 			}
 
 			if (expression.NodeType == ExpressionType.Equal)

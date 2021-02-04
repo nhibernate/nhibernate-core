@@ -848,6 +848,22 @@ namespace NHibernate.Test.Linq
 			Assert.That(result.SerialNumber, Is.EqualTo("1121"));
 		}
 
+		[Test]
+		public async Task CanCompareAggregateResultAsync()
+		{
+			await (session.Query<Customer>()
+			       .Select(o => new AggregateDate { Id = o.CustomerId, MaxDate = o.Orders.Max(l => l.RequiredOrderDate)})
+			       .Where(o => o.MaxDate <= DateTime.Today && o.MaxDate >= DateTime.Today)
+			       .ToListAsync());
+		}
+
+		private class AggregateDate
+		{
+			public string Id { get; set; }
+
+			public DateTime? MaxDate { get; set; }
+		}
+
 		private static List<object[]> CanUseCompareInQueryDataSource()
 		{
 			return new List<object[]>
