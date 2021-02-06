@@ -143,7 +143,7 @@ namespace NHibernate.Linq.Visitors
 
 		protected override Expression VisitUnary(UnaryExpression node)
 		{
-			// If we have an expression like "Convert(<constant>)" we no not want to lose the conversion operation
+			// If we have an expression like "Convert(<constant>)" we do not want to lose the conversion operation
 			// because it might be necessary if the types are incompatible with each other, which might happen if
 			// the expression uses an implicitly or explicitly defined cast operator.
 			if (node.NodeType == ExpressionType.Convert &&
