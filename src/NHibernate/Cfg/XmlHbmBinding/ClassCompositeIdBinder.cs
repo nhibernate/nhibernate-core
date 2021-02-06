@@ -101,7 +101,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				if (keyManyToOneSchema != null)
 				{
-					var manyToOne = new ManyToOne(compositeId.Table, compositeId.Owner);
+					var manyToOne = new ManyToOne(compositeId.Table);
 
 					string propertyName = keyManyToOneSchema.name == null ? null : StringHelper.Qualify(path, keyManyToOneSchema.name);
 

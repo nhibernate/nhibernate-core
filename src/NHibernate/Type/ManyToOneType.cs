@@ -1,6 +1,7 @@
 using System;
 using System.Data.Common;
 using NHibernate.Engine;
+using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -14,7 +15,6 @@ namespace NHibernate.Type
 	{
 		private readonly bool ignoreNotFound;
 		private readonly bool isLogicalOneToOne;
-		private readonly string _entityName;
 
 		public ManyToOneType(string className)
 			: this(className, false)
@@ -30,41 +30,18 @@ namespace NHibernate.Type
 		}
 		
 		//Since 5.3
-		[Obsolete("Use Constructor with owner property name and property name")]
+		[Obsolete("Use Constructor with property name")]
 		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
-			: this(entityName, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null, null)
+			: this(entityName, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null)
 		{
 		}
 
-		//Since 5.3.6
-		[Obsolete("Use Constructor with owner entity name")]
 		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne, string propertyName)
-			: this(entityName, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null, propertyName)
-		{
-		}
-
-		/// <summary>
-		/// Build a many-to-one relation.
-		/// </summary>
-		/// <param name="referencedEntityName">The referenced entity name.</param>
-		/// <param name="uniqueKeyPropertyName">The property-ref name, or <see langword="null" /> if we reference
-		/// the PK of the associated entity.</param>
-		/// <param name="lazy">Is the association lazily loaded?</param>
-		/// <param name="unwrapProxy">Is unwrapping of proxies allowed for this association; unwrapping says to return
-		/// the "implementation target" of lazy proxies; typically only possible with lazy="no-proxy".</param>
-		/// <param name="ignoreNotFound"><see langword="false" /> for throwing an exception if the referenced
-		/// entity is missing in the database, <see langword="true" /> for yielding <see langword="null" /> instead.</param>
-		/// <param name="isLogicalOneToOne"></param>
-		/// <param name="entityName">The property owner entity name.</param>
-		/// <param name="propertyName">The property name.</param>
-		public ManyToOneType(string referencedEntityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy,
-		                     bool ignoreNotFound, bool isLogicalOneToOne, string entityName, string propertyName)
-			: base(referencedEntityName, uniqueKeyPropertyName, !lazy, unwrapProxy)
+			: base(entityName, uniqueKeyPropertyName, !lazy, unwrapProxy)
 		{
 			this.ignoreNotFound = ignoreNotFound;
 			this.isLogicalOneToOne = isLogicalOneToOne;
 			PropertyName = propertyName;
-			_entityName = entityName;
 		}
 
 		public override int GetColumnSpan(IMapping mapping)
@@ -185,19 +162,24 @@ namespace NHibernate.Type
 
 		public override bool IsNull(object owner, ISessionImplementor session)
 		{
-			if (IsNullable && !string.IsNullOrEmpty(PropertyName) && owner != null)
-			{
-				var ownerPersister = session.Factory.GetEntityPersister(_entityName);
-				var id = session.GetContextEntityIdentifier(owner);
-				if (id == null)
-					return false;
+			if (!IsNullable || string.IsNullOrEmpty(PropertyName) || owner == null)
+				return false;
 
-				var entityKey = session.GenerateEntityKey(id, ownerPersister);
+			var entityKey = GetEntityKey(owner, session);
+			if (entityKey == null)
+				return false;
 
-				return session.PersistenceContext.IsPropertyNull(entityKey, PropertyName);
-			}
+			return session.PersistenceContext.IsPropertyNull(entityKey, PropertyName);
+		}
 
-			return false;
+		private static EntityKey GetEntityKey(object owner, ISessionImplementor session)
+		{
+			var entry = session.PersistenceContext.GetEntry(owner);
+			if (entry != null)
+				return entry.EntityKey;
+			if (owner is INHibernateProxy proxy)
+				return session.GenerateEntityKey(proxy.HibernateLazyInitializer.Identifier, session.Factory.GetEntityPersister(proxy.HibernateLazyInitializer.EntityName));
+			return null;
 		}
 
 		public override object Disassemble(object value, ISessionImplementor session, object owner)

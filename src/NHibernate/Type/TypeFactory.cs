@@ -957,39 +957,18 @@ namespace NHibernate.Type
 		/// <summary>
 		/// A many-to-one association type for the given class and cascade style.
 		/// </summary>
-		/// <param name="persistentClass">The referenced class.</param>
-		/// <param name="uniqueKeyPropertyName">The property-ref name, or <see langword="null" /> if we reference
-		/// the PK of the associated entity.</param>
-		/// <param name="lazy">Is the association lazily loaded?</param>
-		/// <param name="unwrapProxy">Is unwrapping of proxies allowed for this association; unwrapping says to return
-		/// the "implementation target" of lazy proxies; typically only possible with lazy="no-proxy".</param>
-		/// <param name="ignoreNotFound"><see langword="false" /> for throwing an exception if the referenced
-		/// entity is missing in the database, <see langword="true" /> for yielding <see langword="null" /> instead.</param>
-		/// <param name="isLogicalOneToOne"></param>
-		/// <param name="entityName">The property owner entity name.</param>
-		/// <param name="propertyName">The property name.</param>
-		public static EntityType ManyToOne(string persistentClass, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy,
-		                                   bool ignoreNotFound, bool isLogicalOneToOne, string entityName, string propertyName)
-		{
-			return new ManyToOneType(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, entityName, propertyName);
-		}
-
-		/// <summary>
-		/// A many-to-one association type for the given class and cascade style.
-		/// </summary>
-		[Obsolete("Use ManyToOne with owner entity name")]
 		public static EntityType ManyToOne(string persistentClass, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne, string propertyName)
 		{
-			return ManyToOne(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null, propertyName);
+			return new ManyToOneType(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, propertyName);
 		}
 
 		/// <summary>
 		/// A many-to-one association type for the given class and cascade style.
 		/// </summary>
-		[Obsolete("Use ManyToOne with owner entity name and propertyName")]
+		[Obsolete("Use ManyToOne with propertyName")]
 		public static EntityType ManyToOne(string persistentClass, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
 		{
-			return ManyToOne(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null, null);
+			return ManyToOne(persistentClass, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null);
 		}
 
 		public static CollectionType Array(string role, string propertyRef, System.Type elementClass)

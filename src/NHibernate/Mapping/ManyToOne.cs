@@ -9,24 +9,11 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class ManyToOne : ToOne
 	{
-		private readonly string _entityName;
-
-		/// <summary>
-		/// Construct a many-to-one mapping.
-		/// </summary>
-		/// <param name="table">The table.</param>
-		/// <param name="owner">The association owner.</param>
-		public ManyToOne(Table table, PersistentClass owner) : base(table)
-		{
-			_entityName = owner?.EntityName;
-		}
-
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="table"></param>
-		[Obsolete("Use overload with owner instead.")]
-		public ManyToOne(Table table) : this(table, null)
+		public ManyToOne(Table table) : base(table)
 		{
 		}
 
@@ -54,7 +41,7 @@ namespace NHibernate.Mapping
 			get { return isLogicalOneToOne; }
 			set { isLogicalOneToOne = value; }
 		}
-
+		
 		public string PropertyName { get; set; }
 
 		private IType type;
@@ -64,9 +51,8 @@ namespace NHibernate.Mapping
 			{
 				if (type == null)
 				{
-					type = TypeFactory.ManyToOne(
-						ReferencedEntityName, ReferencedPropertyName, IsLazy, UnwrapProxy,
-						IsIgnoreNotFound, isLogicalOneToOne, _entityName, PropertyName);
+					type =
+						TypeFactory.ManyToOne(ReferencedEntityName, ReferencedPropertyName, IsLazy, UnwrapProxy, IsIgnoreNotFound, isLogicalOneToOne, PropertyName);
 				}
 				return type;
 			}

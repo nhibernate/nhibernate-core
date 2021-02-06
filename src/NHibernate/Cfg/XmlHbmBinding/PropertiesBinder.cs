@@ -129,7 +129,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else if ((manyToOneMapping = entityPropertyMapping as HbmManyToOne) != null)
 				{
-					var value = new ManyToOne(table, persistentClass);
+					var value = new ManyToOne(table);
 					BindManyToOne(manyToOneMapping, value, propertyName, true);
 					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
 					BindManyToOneProperty(manyToOneMapping, property);
@@ -189,7 +189,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				}
 				else if ((keyManyToOneMapping = entityPropertyMapping as HbmKeyManyToOne) != null)
 				{
-					var value = new ManyToOne(table, persistentClass);
+					var value = new ManyToOne(table);
 					BindKeyManyToOne(keyManyToOneMapping, value, propertyName, componetDefaultNullable);
 					property = CreateProperty(entityPropertyMapping, className, value, inheritedMetas);
 				}

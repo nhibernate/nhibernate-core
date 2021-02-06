@@ -11,6 +11,7 @@
 using System;
 using System.Data.Common;
 using NHibernate.Engine;
+using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
