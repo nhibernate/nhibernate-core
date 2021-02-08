@@ -697,6 +697,12 @@ namespace NHibernate.Util
 			{
 				if (node.ReferencedQuerySource is IFromClause fromClause)
 				{
+					// Types will be different when OfType method is used (e.g. Query<A>().OfType<B>())
+					if (fromClause.ItemType != node.Type)
+					{
+						_convertType = node.Type;
+					}
+
 					return base.Visit(fromClause.FromExpression);
 				}
 
