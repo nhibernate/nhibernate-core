@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
 using Remotion.Linq.Clauses.ResultOperators;
 
@@ -37,7 +40,19 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 					tree.AddWhereClause(tree.TreeBuilder.Equality(
 						tree.TreeBuilder.Ident(GetFromAlias(tree.Root).AstNode.Text),
 						itemExpression));
-					tree.SetRoot(tree.TreeBuilder.Exists((HqlQuery)tree.Root));
+					if (tree.IsRoot)
+					{
+						tree.AddTakeClause(tree.TreeBuilder.Constant(1));
+						Expression<Func<IEnumerable<object>, bool>> x = l => l.Any();
+						tree.AddListTransformer(x);
+
+						Expression<Func<IEnumerable<bool>, bool>> px = l => l.Any(r => r);
+						tree.AddPostExecuteTransformer(px);
+					}
+					else
+					{
+						tree.SetRoot(tree.TreeBuilder.Exists((HqlQuery) tree.Root));
+					}
 				}
 				else
 				{
