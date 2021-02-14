@@ -1059,10 +1059,9 @@ namespace NHibernate.Loader
 			}
 		}
 
-		private static void ColumnFragment(SqlStringBuilder builder, string alias, string[] columnNames)
+		private void ColumnFragment(SqlStringBuilder builder, string alias, string[] columnNames)
 		{
 			//foo = ? and bar = ?
-			var prefix = alias + StringHelper.Dot;
 			var added = false;
 			foreach (var columnName in columnNames)
 			{
@@ -1072,8 +1071,7 @@ namespace NHibernate.Loader
 				}
 
 				builder
-					.Add(prefix)
-					.Add(columnName)
+					.Add(StringHelper.Qualify(GenerateAliasForColumn(alias, columnName), columnName))
 					.Add("=")
 					.Add(Parameter.Placeholder);
 
