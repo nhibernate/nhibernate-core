@@ -1,4 +1,31 @@
-﻿Build 5.3.5
+﻿Build 5.3.6
+=============================
+
+Release notes - NHibernate - Version 5.3.6
+
+11 issues were resolved in this release.
+
+** Bug
+
+   * #2659 IQueryable<T> filter by subquery gives "Item with Same Key has already been added"
+   * #2649 Invalid parameter conversion for enums mapped in sub-classes
+   * #2646 Invalid generated sql with linq any in select and composite keys
+   * #2642 Linq expression parser removes required Convert nodes
+   * #2631 IndexOutOfRange exception with One-to-One mapping
+   * #2627 Null reference on Merge for detached unsaved entity
+   * #2626 WHERE IN SELECT uses wrong column
+   * #2608 Delay entity insert may fail with Merge
+   * #2544 Recognition error occurs using System.Linq.Queryable.Contains
+
+** Improvement
+
+   * #2656 Make sure dbcommand is disposed
+
+** Task
+
+   * #2676 Release 5.3.6
+
+Build 5.3.5
 =============================
 
 Release notes - NHibernate - Version 5.3.5
