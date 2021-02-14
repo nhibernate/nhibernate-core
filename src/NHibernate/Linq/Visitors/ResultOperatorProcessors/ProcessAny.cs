@@ -11,6 +11,11 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 	{
 		public void Process(AnyResultOperator anyOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{
+			Process(tree);
+		}
+
+		internal static void Process(IntermediateHqlTree tree)
+		{
 			if (tree.IsRoot)
 			{
 				tree.AddTakeClause(tree.TreeBuilder.Constant(1));
@@ -24,7 +29,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			}
 			else
 			{
-				tree.SetRoot(tree.TreeBuilder.Exists((HqlQuery)tree.Root));
+				tree.SetRoot(tree.TreeBuilder.Exists((HqlQuery) tree.Root));
 			}
 		}
 	}

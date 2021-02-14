@@ -40,19 +40,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 					tree.AddWhereClause(tree.TreeBuilder.Equality(
 						tree.TreeBuilder.Ident(GetFromAlias(tree.Root).AstNode.Text),
 						itemExpression));
-					if (tree.IsRoot)
-					{
-						tree.AddTakeClause(tree.TreeBuilder.Constant(1));
-						Expression<Func<IEnumerable<object>, bool>> x = l => l.Any();
-						tree.AddListTransformer(x);
-
-						Expression<Func<IEnumerable<bool>, bool>> px = l => l.Any(r => r);
-						tree.AddPostExecuteTransformer(px);
-					}
-					else
-					{
-						tree.SetRoot(tree.TreeBuilder.Exists((HqlQuery) tree.Root));
-					}
+					ProcessAny.Process(tree);
 				}
 				else
 				{
