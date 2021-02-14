@@ -25,6 +25,9 @@ Release notes - NHibernate - Version 5.3.6
 
    * #2676 Release 5.3.6
 
+As part of releasing 5.3.6, one missing 5.3.0 possible breaking change has been added, about
+Merge no more triggering immediate generation of identifier. See 5.3.0 possible breaking changes.
+
 Build 5.3.5
 =============================
 
@@ -148,7 +151,7 @@ Release notes - NHibernate - Version 5.3.0
         * `update` and `delete` statements will now take into account any enabled filter on the entities
           they update or delete, while previously they were ignoring them. (`insert` statements will also take
           them into account, but previously they were failing instead of ignoring enabled filters.)
-        * ISession.Persist will no more trigger immediate generation of identifier.
+        * ISession.Persist and ISession.Merge will no more trigger immediate generation of identifier.
         * Bags will no more be loaded with "null" entities, they will be filtered out.
         * Setting the value of an uninitialized lazy property will no more trigger loading of all the lazy
           properties of the entity.
