@@ -3,7 +3,7 @@
 
 Release notes - NHibernate - Version 5.3.6
 
-11 issues were resolved in this release.
+12 issues were resolved in this release.
 
 ** Bug
 
@@ -19,6 +19,7 @@ Release notes - NHibernate - Version 5.3.6
 
 ** Improvement
 
+   * #2677 Missing ConfigureAwait in FutureEnumerable.GetEnumerableAsync
    * #2656 Make sure dbcommand is disposed
 
 ** Task
