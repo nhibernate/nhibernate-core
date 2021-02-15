@@ -578,7 +578,7 @@ namespace NHibernate.Multi
 
 			public async Task<IEnumerable<TResult>> GetEnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return await _result.GetValueAsync(cancellationToken);
+				return await _result.GetValueAsync(cancellationToken).ConfigureAwait(false);
 			}
 
 			public IEnumerable<TResult> GetEnumerable()
