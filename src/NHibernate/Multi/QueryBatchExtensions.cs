@@ -567,18 +567,13 @@ namespace NHibernate.Multi
 			}
 		}
 
-		class FutureEnumerable<TResult> : IFutureEnumerable<TResult>
+		partial class FutureEnumerable<TResult> : IFutureEnumerable<TResult>
 		{
 			private readonly IFutureList<TResult> _result;
 
 			public FutureEnumerable(IQueryBatch batch, IQueryBatchItem<TResult> query)
 			{
 				_result = new FutureList<TResult>(batch, query);
-			}
-
-			public async Task<IEnumerable<TResult>> GetEnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
-			{
-				return await _result.GetValueAsync(cancellationToken).ConfigureAwait(false);
 			}
 
 			public IEnumerable<TResult> GetEnumerable()
