@@ -2138,17 +2138,20 @@ namespace NHibernate.Persister.Entity
 
 		public virtual string GenerateTableAliasForColumn(string rootAlias, string column)
 		{
-			if (SubclassTableSpan == 1)
-				return rootAlias;
+			return GenerateTableAlias(rootAlias, GetColumnTableNumber(column));
+		}
 
-			int propertyIndex = Array.IndexOf(SubclassColumnClosure, column);
+		private int GetColumnTableNumber(string column)
+		{
+			if (SubclassTableSpan == 1)
+				return 0;
+
+			int i = Array.IndexOf(SubclassColumnClosure, column);
 
 			// The check for KeyColumnNames was added to fix NH-2491
-			if (propertyIndex < 0 || Array.IndexOf(KeyColumnNames, column) >= 0)
-			{
-				return rootAlias;
-			}
-			return GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[propertyIndex]);
+			return i < 0 || Array.IndexOf(KeyColumnNames, column) >= 0 
+				? 0
+				: SubclassColumnTableNumberClosure[i];
 		}
 
 		public string GenerateTableAlias(string rootAlias, int tableNumber)
@@ -3803,8 +3806,7 @@ namespace NHibernate.Persister.Entity
 		{
 			foreach (var column in columns)
 			{
-				int i = Array.IndexOf(SubclassColumnClosure, column);
-				if (i >= 0 && SubclassColumnTableNumberClosure[i] != 0)
+				if (GetColumnTableNumber(column) > 0)
 					return true;
 			}
 			return false;
