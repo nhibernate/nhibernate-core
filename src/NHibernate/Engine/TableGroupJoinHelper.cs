@@ -113,9 +113,11 @@ namespace NHibernate.Engine
 
 		private static AbstractEntityPersister GetEntityPersister(IJoinable joinable)
 		{
-			return joinable.IsCollection
-				? ((IQueryableCollection) joinable).ElementPersister as AbstractEntityPersister
-				: joinable as AbstractEntityPersister;
+			if (!joinable.IsCollection)
+				return joinable as AbstractEntityPersister;
+
+			var collection = (IQueryableCollection) joinable;
+			return collection.ElementType.IsEntityType ? collection.ElementPersister as AbstractEntityPersister : null;
 		}
 
 		private static void AppendWithClause(SqlStringBuilder fromFragment, bool hasConditions, SqlString[] withClauseFragments)
