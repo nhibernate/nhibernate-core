@@ -2138,6 +2138,9 @@ namespace NHibernate.Persister.Entity
 
 		public virtual string GenerateTableAliasForColumn(string rootAlias, string column)
 		{
+			if (SubclassTableSpan == 1)
+				return rootAlias;
+
 			int propertyIndex = Array.IndexOf(SubclassColumnClosure, column);
 
 			// The check for KeyColumnNames was added to fix NH-2491
@@ -3794,6 +3797,17 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 			return join;
+		}
+
+		internal bool ColumnsDependOnSubclassJoins(string[] columns)
+		{
+			foreach (var column in columns)
+			{
+				int i = Array.IndexOf(SubclassColumnClosure, column);
+				if (i >= 0 && SubclassColumnTableNumberClosure[i] != 0)
+					return true;
+			}
+			return false;
 		}
 
 		internal bool HasSubclassJoins(bool includeSubclasses)

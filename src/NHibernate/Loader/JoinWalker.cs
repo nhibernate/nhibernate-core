@@ -751,8 +751,9 @@ namespace NHibernate.Loader
 			}
 			else
 			{
-				foreignKeyTable = type.GetAssociatedJoinable(Factory).TableName;
-				foreignKeyColumns = JoinHelper.GetRHSColumnNames(type, Factory);
+				var joinable = type.GetAssociatedJoinable(Factory);
+				foreignKeyTable = joinable.TableName;
+				foreignKeyColumns = JoinHelper.GetRHSColumnNames(joinable, type);
 			}
 
 			return IsDuplicateAssociation(foreignKeyTable, foreignKeyColumns);

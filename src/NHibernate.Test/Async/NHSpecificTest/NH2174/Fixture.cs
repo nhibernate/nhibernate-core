@@ -41,7 +41,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 			}
 		}
 
-		[KnownBug("Not fixed yet")]
 		[Test]
 		public async Task LinqFetchAsync()
 		{
@@ -54,7 +53,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 			}
 		}
 
-		[KnownBug("Not fixed yet")]
 		[Test]
 		public async Task QueryOverFetchAsync()
 		{
