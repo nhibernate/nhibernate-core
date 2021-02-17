@@ -30,7 +30,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 			}
 		}
 
-		[KnownBug("Not fixed yet")]
 		[Test]
 		public void LinqFetch()
 		{
@@ -43,7 +42,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 			}
 		}
 
-		[KnownBug("Not fixed yet")]
 		[Test]
 		public void QueryOverFetch()
 		{
