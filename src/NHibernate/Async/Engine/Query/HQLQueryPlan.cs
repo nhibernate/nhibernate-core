@@ -78,7 +78,7 @@ namespace NHibernate.Engine.Query
 					for (int x = 0; x < size; x++)
 					{
 						object result = tmp[x];
-						if (distinction.Add(result))
+						if (!distinction.Add(result))
 						{
 							continue;
 						}

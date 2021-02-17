@@ -178,8 +178,6 @@ namespace NHibernate.Proxy
 					CallingConventions.HasThis,
 					method.ReturnType,
 					parameters.ToArray(param => param.ParameterType));
-			if (explicitImplementation)
-				methodBuilder.SetImplementationFlags(MethodImplAttributes.Managed | MethodImplAttributes.IL);
 
 			var typeArgs = method.GetGenericArguments();
 			if (typeArgs.Length > 0)
@@ -207,6 +205,9 @@ namespace NHibernate.Proxy
 					typeArgBuilder.SetInterfaceConstraints(interfaceTypeConstraints);
 				}
 			}
+
+			if (explicitImplementation)
+				methodBuilder.SetImplementationFlags(MethodImplAttributes.Managed | MethodImplAttributes.IL);
 
 			return methodBuilder;
 		}

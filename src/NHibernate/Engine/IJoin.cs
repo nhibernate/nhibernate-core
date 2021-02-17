@@ -8,6 +8,7 @@ namespace NHibernate.Engine
 	{
 		IJoinable Joinable { get;  }
 		string[] LHSColumns { get; }
+		string[] RHSColumns { get; }
 		string Alias { get;  }
 		IAssociationType AssociationType { get;  }
 		JoinType JoinType { get; }

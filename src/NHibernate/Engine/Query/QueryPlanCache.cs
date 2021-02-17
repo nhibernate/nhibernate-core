@@ -23,14 +23,20 @@ namespace NHibernate.Engine.Query
 		// unnecessary cache entries.
 		// Used solely for caching param metadata for native-sql queries, see
 		// getSQLParameterMetadata() for a discussion as to why...
-		private readonly SimpleMRUCache sqlParamMetadataCache = new SimpleMRUCache();
+		private readonly SimpleMRUCache sqlParamMetadataCache;
 
 		// the cache of the actual plans...
-		private readonly SoftLimitMRUCache planCache = new SoftLimitMRUCache(128);
+		private readonly SoftLimitMRUCache planCache;
+		
+		internal const int DefaultParameterMetadataMaxCount = 128;
+		internal const int DefaultQueryPlanMaxCount = 128;
 
 		public QueryPlanCache(ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
+
+			sqlParamMetadataCache = new SimpleMRUCache(factory.Settings.QueryPlanCacheParameterMetadataMaxSize);
+			planCache = new SoftLimitMRUCache(factory.Settings.QueryPlanCacheMaxSize);
 		}
 
 		public ParameterMetadata GetSQLParameterMetadata(string query)

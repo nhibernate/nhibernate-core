@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+           namespace="NHibernate.Test.NHSpecificTest.GH2614"
+           assembly="NHibernate.Test"
+>
+  <class name="ConcreteClass1" >
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <property name="Name"/>
+  </class>
+
+  <class name="ConcreteClass2" >
+    <id name="Id">
+      <generator class="increment"/>
+    </id>
+    <property name="Name"/>
+  </class>
+
+</hibernate-mapping>

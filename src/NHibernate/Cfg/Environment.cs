@@ -5,6 +5,7 @@ using System.Reflection;
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Engine;
+using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.Linq.Visitors;
 using NHibernate.MultiTenancy;
@@ -395,6 +396,30 @@ namespace NHibernate.Cfg
 		/// Connection provider for given multi-tenancy strategy. Class name implementing IMultiTenancyConnectionProvider.
 		/// </summary>
 		public const string MultiTenancyConnectionProvider = "multi_tenancy.connection_provider";
+
+		/// <summary>
+		/// The maximum number of entries including:
+		/// <list>
+		/// <item>
+		///	<see cref="HQLQueryPlan"/>
+		/// </item>
+		/// <item>
+		/// <see cref="NativeSQLQueryPlan"/>
+		/// </item>
+		/// <item>
+		/// <see cref="FilterQueryPlan"/>
+		/// </item>
+		/// </list>
+		/// 
+		/// maintained by <see cref="QueryPlanCache"/>. Default is 128.
+		/// </summary>
+		public const string QueryPlanCacheMaxSize = "query.plan_cache_max_size";
+
+		/// <summary>
+		/// The maximum number of <see cref="ParameterMetadata"/> maintained
+		/// by <see cref="QueryPlanCache"/>. Default is 128.
+		/// </summary>
+		public const string QueryPlanCacheParameterMetadataMaxSize = "query.plan_parameter_metadata_max_size";
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;

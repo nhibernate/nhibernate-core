@@ -24,7 +24,8 @@ namespace NHibernate.Loader.Collection
 			}
 			else
 			{
-				string columnsJoin = string.Join(StringHelper.CommaSpace, StringHelper.Qualify(alias, columnNames));
+				string columnsJoin =
+					string.Join(StringHelper.CommaSpace, columnNames.ToArray(column => StringHelper.Qualify(GenerateAliasForColumn(alias, column), column)));
 
 				SqlStringBuilder buf = new SqlStringBuilder();
 				if (columnNames.Length > 1)

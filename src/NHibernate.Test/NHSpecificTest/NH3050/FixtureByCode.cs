@@ -5,6 +5,7 @@ using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System;
+using NHibernate.Cfg;
 
 namespace NHibernate.Test.NHSpecificTest.NH3050
 {
@@ -59,12 +60,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 			}
 		}
 
+		protected override void Configure(Configuration configuration)
+		{
+			//firstly to make things simpler, we set the query plan cache size to 1
+			configuration.Properties[Cfg.Environment.QueryPlanCacheMaxSize] = "1";
+		}
+
 		[Test]
 		public void NH3050_Reproduction()
 		{
-			//firstly to make things simpler, we set the query plan cache size to 1
-			Assert.IsTrue(TrySetQueryPlanCacheSize(Sfi, 1));
-
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
@@ -93,36 +97,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 				//an exception is thrown as it tries to cast to a NhLinqExpression.
 				query.ToList();
 			}
-		}
-
-		/// <summary>
-		/// Uses reflection to create a new SoftLimitMRUCache with a specified size and sets session factory query plan cache to it.
-		/// This is done like this as NHibernate does not currently provide any way to specify the query plan cache size through configuration.
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <param name="size"></param>
-		/// <returns></returns>
-		private static bool TrySetQueryPlanCacheSize(ISessionFactory factory, int size)
-		{
-			var factoryImpl = (factory as DebugSessionFactory)?.ActualFactory as Impl.SessionFactoryImpl;
-			if (factoryImpl != null)
-			{
-				var queryPlanCacheFieldInfo = typeof(Impl.SessionFactoryImpl).GetField("queryPlanCache", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-				if (queryPlanCacheFieldInfo != null)
-				{
-					var queryPlanCache = (Engine.Query.QueryPlanCache)queryPlanCacheFieldInfo.GetValue(factoryImpl);
-
-					var planCacheFieldInfo = typeof(Engine.Query.QueryPlanCache).GetField("planCache", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-					if (planCacheFieldInfo != null)
-					{
-						var softLimitMRUCache = new Util.SoftLimitMRUCache(size);
-
-						planCacheFieldInfo.SetValue(queryPlanCache, softLimitMRUCache);
-						return true;
-					}
-				}
-			}
-			return false;
 		}
 	}
 }
