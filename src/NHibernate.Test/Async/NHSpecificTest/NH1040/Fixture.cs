@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1040
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.CreateQuery("delete from System.Object").ExecuteUpdate();
+				session.Delete("from System.Object");
 
 				transaction.Commit();
 			}
