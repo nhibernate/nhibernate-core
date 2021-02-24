@@ -169,6 +169,8 @@ namespace NHibernate.Loader
 			return false;
 		}
 
+		//Since 5.4
+		[Obsolete("This method is not used anymore and will be removed in a next major version")]
 		public void AddManyToManyJoin(JoinFragment outerjoin, IQueryableCollection collection)
 		{
 			string manyToManyFilter = collection.GetManyToManyFilterFragment(rhsAlias, enabledFilters);

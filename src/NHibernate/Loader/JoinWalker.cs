@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -841,52 +840,49 @@ namespace NHibernate.Loader
 			JoinFragment outerjoin = Dialect.CreateOuterJoinFragment();
 
 			var sortedAssociations = GetSortedAssociations(associations);
-			OuterJoinableAssociation last = null;
 			for (var index = 0; index < sortedAssociations.Count; index++)
 			{
 				OuterJoinableAssociation oj = sortedAssociations[index];
-				if (oj.IsCollection && oj.Joinable is IQueryableCollection qc && qc.IsManyToMany)
+				if (oj.IsCollection && oj.Joinable is IQueryableCollection qc && qc.IsManyToMany && index < sortedAssociations.Count - 1)
 				{
-					var a = sortedAssociations[index + 1];
-					var filter = new SqlString(qc.GetManyToManyFilterFragment(a.RHSAlias, enabledFilters));
-					if (TableGroupJoinHelper.ProcessAsTableGroupJoin(new[] {oj, a}, new[] {oj.On, a.On, filter}, true, outerjoin, alias => true, factory))
+					var entityAssociation = sortedAssociations[index + 1];
+					var f = qc.GetManyToManyFilterFragment(entityAssociation.RHSAlias, enabledFilters);
+					if (oj.IsManyToManyWith(entityAssociation) && TableGroupJoinHelper.ProcessAsTableGroupJoin(
+						new[] {oj, entityAssociation},
+						new[] {oj.On, entityAssociation.On, string.IsNullOrEmpty(f) ? SqlString.Empty : new SqlString(f)},
+						true,
+						outerjoin,
+						alias => true,
+						factory))
 					{
-						last = null;
 						index++;
 						continue;
 					}
 				}
-				if (last != null && last.IsManyToManyWith(oj))
+
+				// NH Different behavior : NH1179 and NH1293
+				// Apply filters for entity joins and Many-To-One associations
+				SqlString filter = null;
+				if (oj.ForceFilter || enabledFiltersForManyToOne.Count > 0)
 				{
-					oj.AddManyToManyJoin(outerjoin, (IQueryableCollection) last.Joinable);
-				}
-				else
-				{
-					// NH Different behavior : NH1179 and NH1293
-					// Apply filters for entity joins and Many-To-One associations
-					SqlString filter = null;
-					if (oj.ForceFilter || enabledFiltersForManyToOne.Count > 0)
+					string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForManyToOne);
+					bool joinClauseDoesNotContainsFilterAlready =
+						oj.On?.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
+					if (joinClauseDoesNotContainsFilterAlready)
 					{
-						string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForManyToOne);
-						bool joinClauseDoesNotContainsFilterAlready =
-							oj.On?.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
-						if (joinClauseDoesNotContainsFilterAlready)
-						{
-							filter = new SqlString(manyToOneFilterFragment);
-						}
+						filter = new SqlString(manyToOneFilterFragment);
 					}
-
-					if (TableGroupJoinHelper.ProcessAsTableGroupJoin(new[] {oj}, new[] {oj.On, filter}, true, outerjoin, alias => true, factory))
-						continue;
-
-					oj.AddJoins(outerjoin);
-
-					// Ensure that the join condition is added to the join, not the where clause.
-					// Adding the condition to the where clause causes left joins to become inner joins.
-					if (SqlStringHelper.IsNotEmpty(filter))
-						outerjoin.AddFromFragmentString(filter);
 				}
-				last = oj;
+
+				if (TableGroupJoinHelper.ProcessAsTableGroupJoin(new[] {oj}, new[] {oj.On, filter}, true, outerjoin, alias => true, factory))
+					continue;
+
+				oj.AddJoins(outerjoin);
+
+				// Ensure that the join condition is added to the join, not the where clause.
+				// Adding the condition to the where clause causes left joins to become inner joins.
+				if (SqlStringHelper.IsNotEmpty(filter))
+					outerjoin.AddFromFragmentString(filter);
 			}
 
 			return outerjoin;
