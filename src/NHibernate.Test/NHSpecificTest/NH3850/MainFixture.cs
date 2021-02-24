@@ -194,6 +194,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			}
 		}
 
+		[Test]
+		public void ContainsBBase()
+		{
+			using (var session = OpenSession())
+			{
+				var item = session.Query<DomainClassBExtendedByA>().First(dc => dc.Name == SearchName1);
+				var result = session.Query<DomainClassBExtendedByA>().Contains(item);
+				Assert.That(result, Is.True);
+			}
+		}
+
 		// Non-reg case
 		[Test]
 		public void AnyCBase()
@@ -217,6 +228,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(result, Is.True);
 				result = session.Query<DomainClassCExtendedByD>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.True, "Future");
+			}
+		}
+
+		[Test]
+		public void ContainsCBase()
+		{
+			using (var session = OpenSession())
+			{
+				var item = session.Query<DomainClassCExtendedByD>().First(dc => dc.Name == SearchName1);
+				var result = session.Query<DomainClassCExtendedByD>().Contains(item);
+				Assert.That(result, Is.True);
 			}
 		}
 
@@ -246,6 +268,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			}
 		}
 
+		[Test]
+		public void ContainsE()
+		{
+			using (var session = OpenSession())
+			{
+				var item = session.Query<DomainClassE>().First(dc => dc.Name == SearchName1);
+				var result = session.Query<DomainClassE>().Contains(item);
+				Assert.That(result, Is.True);
+			}
+		}
+
 		// Non-reg case
 		[Test]
 		public void AnyF()
@@ -272,6 +305,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			}
 		}
 
+		[Test]
+		public void ContainsF()
+		{
+			using (var session = OpenSession())
+			{
+				var item = new DomainClassF() {Id = -1};
+				var result = session.Query<DomainClassF>().Contains(item);
+				Assert.That(result, Is.False);
+			}
+		}
+
 		// Non-reg case
 		[Test]
 		public void AnyGBase()
@@ -295,6 +339,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(result, Is.True);
 				result = session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == SearchName1)).Value;
 				Assert.That(result, Is.True, "Future");
+			}
+		}
+
+		[Test]
+		public void ContainsGBase()
+		{
+			using (var session = OpenSession())
+			{
+				var item = session.Query<DomainClassGExtendedByH>().First(dc => dc.Name == SearchName1);
+				var result = session.Query<DomainClassGExtendedByH>().Contains(item);
+				Assert.That(result, Is.True);
 			}
 		}
 

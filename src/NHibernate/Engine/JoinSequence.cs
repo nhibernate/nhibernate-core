@@ -47,6 +47,7 @@ namespace NHibernate.Engine
 			private readonly JoinType joinType;
 			private readonly string alias;
 			private readonly string[] lhsColumns;
+			private readonly string[] rhsColumns;
 
 			public Join(ISessionFactoryImplementor factory, IAssociationType associationType, string alias, JoinType joinType,
 						string[] lhsColumns)
@@ -56,6 +57,9 @@ namespace NHibernate.Engine
 				this.alias = alias;
 				this.joinType = joinType;
 				this.lhsColumns = lhsColumns;
+				this.rhsColumns = lhsColumns.Length > 0
+					? JoinHelper.GetRHSColumnNames(joinable, associationType)
+					: Array.Empty<string>();
 			}
 
 			public string Alias
@@ -81,6 +85,11 @@ namespace NHibernate.Engine
 			public string[] LHSColumns
 			{
 				get { return lhsColumns; }
+			}
+
+			public string[] RHSColumns
+			{
+				get { return rhsColumns; }
 			}
 
 			public override string ToString()
@@ -195,7 +204,7 @@ namespace NHibernate.Engine
 					join.Joinable.TableName,
 					join.Alias,
 					join.LHSColumns,
-					JoinHelper.GetRHSColumnNames(join.AssociationType, factory),
+					join.RHSColumns,
 					join.JoinType,
 					withClauses[i]
 				);

@@ -7,6 +7,7 @@ using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
 using NHibernate.Connection;
 using NHibernate.Dialect;
+using NHibernate.Engine.Query;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Linq;
@@ -318,6 +319,10 @@ namespace NHibernate.Cfg
 			{
 				settings.LinqPreTransformer = NhRelinqQueryParser.CreatePreTransformer(settings.PreTransformerRegistrar);
 			}
+
+			//QueryPlanCache:
+			settings.QueryPlanCacheParameterMetadataMaxSize = PropertiesHelper.GetInt32(Environment.QueryPlanCacheParameterMetadataMaxSize, properties, QueryPlanCache.DefaultParameterMetadataMaxCount); 
+			settings.QueryPlanCacheMaxSize = PropertiesHelper.GetInt32(Environment.QueryPlanCacheMaxSize, properties, QueryPlanCache.DefaultQueryPlanMaxCount);
 
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;
