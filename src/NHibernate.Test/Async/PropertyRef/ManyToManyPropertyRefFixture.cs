@@ -8,20 +8,22 @@
 //------------------------------------------------------------------------------
 
 
+using System.Linq;
 using NHibernate.Criterion;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.PropertyRef
 {
 	using System.Threading.Tasks;
-	[TestFixture]
+	[TestFixture(Description = "NH-2180 (GH-1214)")]
 	public class ManyToManyPropertyRefFixtureAsync : TestCase
 	{
 		protected override string[] Mappings => new[] { "PropertyRef.ManyToManyWithPropertyRef.hbm.xml" };
 
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		private object _manyAId;
+		private long _manyAId;
 
 		protected override void OnSetUp()
 		{
@@ -34,7 +36,7 @@ namespace NHibernate.Test.PropertyRef
 				var manyB2 = new ManyB { Number = 8, Value = "a value of b2" };
 				var manyB3 = new ManyB { Number = 12, Value = "a value of b3" };
 
-				_manyAId = session.Save(manyA);
+				_manyAId = (long) session.Save(manyA);
 				session.Save(manyB1);
 				session.Save(manyB2);
 				session.Save(manyB3);
@@ -143,6 +145,21 @@ System.Collections.Generic.KeyNotFoundException: Der angegebene Schlüssel war n
 			 */
 
 			Assert.That(loadedManyA.ManyBs, Has.Count.EqualTo(3).And.None.Null);
+		}
+
+		[Test]
+		public async Task LinqFetchAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var manyA = (await (session
+								.Query<ManyA>()
+								.Where(a => a.Id == _manyAId)
+								.FetchMany(a => a.ManyBs)
+								.ToListAsync()))
+								.First();
+				Assert.That(manyA.ManyBs, Has.Count.EqualTo(3).And.None.Null);
+			}
 		}
 	}
 }

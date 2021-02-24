@@ -154,6 +154,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 		[Test]
 		public async Task LazyLoadAsync()
 		{
+			if(Dialect is PostgreSQLDialect)
+				Assert.Ignore("Dialect doesn't support 0/1 to bool implicit cast");
+
 			using (var s = OpenSession())
 			{
 				var asset = await (s.Query<Asset>().FirstAsync());
@@ -166,6 +169,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 		[Test]
 		public async Task LazyLoadFilteredAsync()
 		{
+			if(Dialect is PostgreSQLDialect)
+				Assert.Ignore("Dialect doesn't support 0/1 to bool implicit cast");
+
 			using (var s = OpenSession())
 			{
 				s.EnableFilter("deletedFilter").SetParameter("deletedParam", false);
