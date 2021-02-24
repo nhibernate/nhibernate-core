@@ -187,6 +187,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			}
 		}
 
+		[Test]
+		public async Task ContainsBBaseAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var item = await (session.Query<DomainClassBExtendedByA>().FirstAsync(dc => dc.Name == SearchName1));
+				var result = session.Query<DomainClassBExtendedByA>().Contains(item);
+				Assert.That(result, Is.True);
+			}
+		}
+
 		// Non-reg case
 		[Test]
 		public async Task AnyCBaseAsync()
@@ -213,6 +224,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			}
 		}
 
+		[Test]
+		public async Task ContainsCBaseAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var item = await (session.Query<DomainClassCExtendedByD>().FirstAsync(dc => dc.Name == SearchName1));
+				var result = session.Query<DomainClassCExtendedByD>().Contains(item);
+				Assert.That(result, Is.True);
+			}
+		}
+
 		// Non-reg case
 		[Test]
 		public async Task AnyEAsync()
@@ -236,6 +258,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(result, Is.True);
 				result = await (session.Query<DomainClassE>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == SearchName1)).GetValueAsync());
 				Assert.That(result, Is.True, "Future");
+			}
+		}
+
+		[Test]
+		public async Task ContainsEAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var item = await (session.Query<DomainClassE>().FirstAsync(dc => dc.Name == SearchName1));
+				var result = session.Query<DomainClassE>().Contains(item);
+				Assert.That(result, Is.True);
 			}
 		}
 
@@ -288,6 +321,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(result, Is.True);
 				result = await (session.Query<DomainClassGExtendedByH>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == SearchName1)).GetValueAsync());
 				Assert.That(result, Is.True, "Future");
+			}
+		}
+
+		[Test]
+		public async Task ContainsGBaseAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var item = await (session.Query<DomainClassGExtendedByH>().FirstAsync(dc => dc.Name == SearchName1));
+				var result = session.Query<DomainClassGExtendedByH>().Contains(item);
+				Assert.That(result, Is.True);
 			}
 		}
 

@@ -617,6 +617,64 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task UsingParameterWithImplicitOperatorAsync()
+		{
+			var id = new GuidImplicitWrapper(new Guid("{356E4A7E-B027-4321-BA40-E2677E6502CF}"));
+			Assert.That(await (db.Shippers.Where(o => o.Reference == id).ToListAsync()), Has.Count.EqualTo(1));
+
+			id = new GuidImplicitWrapper(new Guid("{356E4A7E-B027-4321-BA40-E2677E6502FF}"));
+			Assert.That(await (db.Shippers.Where(o => o.Reference == id).ToListAsync()), Is.Empty);
+
+			await (AssertTotalParametersAsync(
+				db.Shippers.Where(o => o.Reference == id && id == o.Reference),
+				1));
+		}
+
+		private struct GuidImplicitWrapper
+		{
+			public readonly Guid Id;
+
+			public GuidImplicitWrapper(Guid id)
+			{
+				Id = id;
+			}
+
+			public static implicit operator Guid(GuidImplicitWrapper idWrapper)
+			{
+				return idWrapper.Id;
+			}
+		}
+
+		[Test]
+		public async Task UsingParameterWithExplicitOperatorAsync()
+		{
+			var id = new GuidExplicitWrapper(new Guid("{356E4A7E-B027-4321-BA40-E2677E6502CF}"));
+			Assert.That(await (db.Shippers.Where(o => o.Reference == (Guid) id).ToListAsync()), Has.Count.EqualTo(1));
+
+			id = new GuidExplicitWrapper(new Guid("{356E4A7E-B027-4321-BA40-E2677E6502FF}"));
+			Assert.That(await (db.Shippers.Where(o => o.Reference == (Guid) id).ToListAsync()), Is.Empty);
+
+			await (AssertTotalParametersAsync(
+				db.Shippers.Where(o => o.Reference == (Guid) id && (Guid) id == o.Reference),
+				1));
+		}
+
+		private struct GuidExplicitWrapper
+		{
+			public readonly Guid Id;
+
+			public GuidExplicitWrapper(Guid id)
+			{
+				Id = id;
+			}
+
+			public static explicit operator Guid(GuidExplicitWrapper idWrapper)
+			{
+				return idWrapper.Id;
+			}
+		}
+
+		[Test]
 		public async Task UsingParameterOnSelectorsAsync()
 		{
 			var user = new User() {Id = 1};

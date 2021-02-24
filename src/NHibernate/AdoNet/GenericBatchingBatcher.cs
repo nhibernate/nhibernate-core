@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
@@ -215,23 +214,24 @@ namespace NHibernate.AdoNet
 					return 0;
 				}
 
-				var batcherCommand = _batcher.Driver.GenerateCommand(
+				using (var batcherCommand = _batcher.Driver.GenerateCommand(
 					_commandType,
 					_sql.ToSqlString(),
-					_sqlTypes.ToArray()
-				);
-				for (var i = 0; i < _parameters.Count; i++)
+					_sqlTypes.ToArray()))
 				{
-					var parameter = _parameters[i];
-					var cmdParam = batcherCommand.Parameters[i];
-					cmdParam.Value = parameter.Value;
-					cmdParam.Direction = parameter.Direction;
-					cmdParam.Precision = parameter.Precision;
-					cmdParam.Scale = parameter.Scale;
-					cmdParam.Size = parameter.Size;
+					for (var i = 0; i < _parameters.Count; i++)
+					{
+						var parameter = _parameters[i];
+						var cmdParam = batcherCommand.Parameters[i];
+						cmdParam.Value = parameter.Value;
+						cmdParam.Direction = parameter.Direction;
+						cmdParam.Precision = parameter.Precision;
+						cmdParam.Scale = parameter.Scale;
+						cmdParam.Size = parameter.Size;
+					}
+					_batcher.Prepare(batcherCommand);
+					return batcherCommand.ExecuteNonQuery();
 				}
-				_batcher.Prepare(batcherCommand);
-				return batcherCommand.ExecuteNonQuery();
 			}
 
 			public void Clear()

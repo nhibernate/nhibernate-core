@@ -38,6 +38,8 @@ namespace NHibernate.Test.Operations
 					s.Delete("from Competition");
 
 					s.Delete("from Employer");
+					s.Delete("from Address");
+					s.Delete("from Person");
 
 					tx.Commit();
 				}
@@ -118,7 +120,7 @@ namespace NHibernate.Test.Operations
 			}
 		}
 
-		[Test, Ignore("Need some more investigation about id sync.")]
+		[Test]
 		public void MergeBidiPrimayKeyOneToOne()
 		{
 			Person p;

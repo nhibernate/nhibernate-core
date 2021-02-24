@@ -182,6 +182,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		void BeforeStatement(string statementName, int statementType)
 		{
 			_inFunctionCall = false;
+			_inCase = false;
 			_level++;
 			if (_level == 1)
 			{

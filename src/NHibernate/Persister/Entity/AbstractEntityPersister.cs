@@ -3353,7 +3353,7 @@ namespace NHibernate.Persister.Entity
 						IType[] types = PropertyTypes;
 						for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 						{
-							if (IsPropertyOfTable(i, j) && versionability[i])
+							if (IsPropertyOfTable(i, j) && versionability[i] && types[i].GetOwnerColumnSpan(Factory) > 0)
 							{
 								// this property belongs to the table and it is not specifically
 								// excluded from optimistic locking by optimistic-lock="false"
@@ -3589,13 +3589,13 @@ namespace NHibernate.Persister.Entity
 				{
 					delete.SetComment("delete " + EntityName + " [" + j + "]");
 				}
-
 				bool[] versionability = PropertyVersionability;
 				IType[] types = PropertyTypes;
 				for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 				{
 					bool include = versionability[i] &&
-												 IsPropertyOfTable(i, j);
+												 IsPropertyOfTable(i, j) 
+												&& types[i].GetOwnerColumnSpan(Factory) > 0;
 
 					if (include)
 					{

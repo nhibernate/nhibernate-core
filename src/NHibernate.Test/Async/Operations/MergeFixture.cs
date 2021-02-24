@@ -50,6 +50,8 @@ namespace NHibernate.Test.Operations
 					await (s.DeleteAsync("from Competition", cancellationToken));
 
 					await (s.DeleteAsync("from Employer", cancellationToken));
+					await (s.DeleteAsync("from Address", cancellationToken));
+					await (s.DeleteAsync("from Person", cancellationToken));
 
 					await (tx.CommitAsync(cancellationToken));
 				}
@@ -76,6 +78,8 @@ namespace NHibernate.Test.Operations
 					s.Delete("from Competition");
 
 					s.Delete("from Employer");
+					s.Delete("from Address");
+					s.Delete("from Person");
 
 					tx.Commit();
 				}
@@ -153,6 +157,41 @@ namespace NHibernate.Test.Operations
 					await (s.DeleteAsync(p));
 					await (tx.CommitAsync());
 				}
+			}
+		}
+
+		[Test]
+		public async Task MergeBidiPrimayKeyOneToOneAsync()
+		{
+			Person p;
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				p = new Person {Name = "steve"};
+				new PersonalDetails {SomePersonalDetail = "I have big feet", Person = p};
+				await (s.PersistAsync(p));
+				await (tx.CommitAsync());
+			}
+
+			ClearCounts();
+
+			p.Details.SomePersonalDetail = p.Details.SomePersonalDetail + " and big hands too";
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				p = (Person) await (s.MergeAsync(p));
+				await (tx.CommitAsync());
+			}
+
+			AssertInsertCount(0);
+			AssertUpdateCount(1);
+			AssertDeleteCount(0);
+
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
+			{
+				await (s.DeleteAsync(p));
+				await (tx.CommitAsync());
 			}
 		}
 

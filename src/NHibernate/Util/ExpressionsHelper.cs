@@ -16,6 +16,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Util
@@ -696,6 +697,12 @@ namespace NHibernate.Util
 			{
 				if (node.ReferencedQuerySource is IFromClause fromClause)
 				{
+					// Types will be different when OfType method is used (e.g. Query<A>().OfType<B>())
+					if (fromClause.ItemType != node.Type)
+					{
+						_convertType = node.Type;
+					}
+
 					return base.Visit(fromClause.FromExpression);
 				}
 
@@ -716,6 +723,12 @@ namespace NHibernate.Util
 
 			protected override Expression VisitSubQuery(SubQueryExpression expression)
 			{
+				var ofTypeOperator = expression.QueryModel.ResultOperators.OfType<OfTypeResultOperator>().FirstOrDefault();
+				if (ofTypeOperator != null)
+				{
+					_convertType = ofTypeOperator.SearchedItemType;
+				}
+
 				base.Visit(expression.QueryModel.SelectClause.Selector);
 				return expression;
 			}

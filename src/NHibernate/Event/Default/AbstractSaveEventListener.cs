@@ -173,7 +173,8 @@ namespace NHibernate.Event.Default
 						throw new NonUniqueObjectException(id, persister.EntityName);
 					}
 				}
-				persister.SetIdentifier(entity, id);
+				if (!(id is DelayedPostInsertIdentifier))
+					persister.SetIdentifier(entity, id);
 			}
 			else
 			{

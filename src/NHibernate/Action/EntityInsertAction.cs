@@ -44,10 +44,19 @@ namespace NHibernate.Action
 
 			bool veto = PreInsert();
 
+			var wasDelayed = false;
 			// Don't need to lock the cache here, since if someone
 			// else inserted the same pk first, the insert would fail
 			if (!veto)
 			{
+				// The identifier may be a foreign delayed identifier, which at this point should have been resolved.
+				if (id is DelayedPostInsertIdentifier delayed)
+				{
+					wasDelayed = true;
+					id = delayed.ActualId ??
+						throw new InvalidOperationException(
+							$"The delayed foreign identifier {delayed} has not been resolved before insertion of a {instance}");
+				}
 				persister.Insert(id, State, instance, Session);
 
 				EntityEntry entry = Session.PersistenceContext.GetEntry(instance);
@@ -57,6 +66,10 @@ namespace NHibernate.Action
 				}
 
 				entry.PostInsert();
+				if (wasDelayed)
+				{
+					Session.PersistenceContext.ReplaceDelayedEntityIdentityInsertKeys(entry.EntityKey, id);
+				}
 
 				if (persister.HasInsertGeneratedProperties)
 				{

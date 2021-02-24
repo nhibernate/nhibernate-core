@@ -19,6 +19,8 @@ namespace NHibernate.DomainModel.Northwind.Entities
     public abstract class Reptile : Animal
     {
         public virtual double BodyTemperature { get; set; }
+
+		public virtual EnumStoredAsString Enum1 { get; set; }
     }
 
     public class Lizard : Reptile { }

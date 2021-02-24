@@ -45,5 +45,10 @@ namespace NHibernate.Action
 		{
 			return string.Format("<delayed:{0}>", sequence);
 		}
+
+		/// <summary>
+		/// The actual identifier value that has been generated.
+		/// </summary>
+		public object ActualId { get; set; }
 	}
 }
