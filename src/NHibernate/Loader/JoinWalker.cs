@@ -847,13 +847,14 @@ namespace NHibernate.Loader
 				{
 					var entityAssociation = sortedAssociations[index + 1];
 					var f = qc.GetManyToManyFilterFragment(entityAssociation.RHSAlias, enabledFilters);
-					if (oj.IsManyToManyWith(entityAssociation) && TableGroupJoinHelper.ProcessAsTableGroupJoin(
-						new[] {oj, entityAssociation},
-						new[] {oj.On, entityAssociation.On, string.IsNullOrEmpty(f) ? SqlString.Empty : new SqlString(f)},
-						true,
-						outerjoin,
-						alias => true,
-						factory))
+					if (oj.IsManyToManyWith(entityAssociation)
+						&& TableGroupJoinHelper.ProcessAsTableGroupJoin(
+							new[] {oj, entityAssociation},
+							new[] {oj.On, entityAssociation.On, string.IsNullOrEmpty(f) ? SqlString.Empty : new SqlString(f)},
+							true,
+							outerjoin,
+							alias => true,
+							factory))
 					{
 						index++;
 						continue;
@@ -866,9 +867,7 @@ namespace NHibernate.Loader
 				if (oj.ForceFilter || enabledFiltersForManyToOne.Count > 0)
 				{
 					string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForManyToOne);
-					bool joinClauseDoesNotContainsFilterAlready =
-						oj.On?.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
-					if (joinClauseDoesNotContainsFilterAlready)
+					if (!string.IsNullOrEmpty(manyToOneFilterFragment) && oj.On?.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1)
 					{
 						filter = new SqlString(manyToOneFilterFragment);
 					}

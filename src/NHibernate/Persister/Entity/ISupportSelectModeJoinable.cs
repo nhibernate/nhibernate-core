@@ -36,6 +36,6 @@ namespace NHibernate.Persister.Entity
 	// 6.0 TODO: merge into 'IJoinable'.
 	internal interface ISupportLazyPropsJoinable
 	{
-		string SelectFragment(string rhsAlias, string collectionSuffix, bool shouldFetchCollectionPersister, EntityLoadInfo entityLoadInfo);
+		string SelectFragment(string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo);
 	}
 }
