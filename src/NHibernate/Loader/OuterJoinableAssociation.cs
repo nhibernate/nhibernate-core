@@ -169,6 +169,8 @@ namespace NHibernate.Loader
 			return false;
 		}
 
+		//Since 5.4
+		[Obsolete("This method is not used anymore and will be removed in a next major version")]
 		public void AddManyToManyJoin(JoinFragment outerjoin, IQueryableCollection collection)
 		{
 			string manyToManyFilter = collection.GetManyToManyFilterFragment(rhsAlias, enabledFilters);
@@ -204,7 +206,7 @@ namespace NHibernate.Loader
 			throw new ArgumentOutOfRangeException(nameof(SelectMode), SelectMode.ToString());
 		}
 
-		internal string GetSelectFragment(string entitySuffix, string collectionSuffix, OuterJoinableAssociation next)
+		internal string GetSelectFragment(string entitySuffix, string collectionSuffix)
 		{
 			switch (SelectMode)
 			{
@@ -212,8 +214,8 @@ namespace NHibernate.Loader
 				case SelectMode.Fetch:
 #pragma warning disable 618
 					return Joinable.SelectFragment(
-						next?.Joinable,
-						next?.RHSAlias,
+						null,
+						null,
 						RHSAlias,
 						entitySuffix,
 						collectionSuffix,
@@ -224,8 +226,8 @@ namespace NHibernate.Loader
 #pragma warning disable 618
 					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(Joinable, "fetch lazy properties")
 					                    .SelectFragment(
-						                    next?.Joinable,
-						                    next?.RHSAlias,
+						                    null,
+						                    null,
 						                    RHSAlias,
 						                    entitySuffix,
 						                    collectionSuffix,
@@ -236,9 +238,7 @@ namespace NHibernate.Loader
 				case SelectMode.FetchLazyPropertyGroup:
 					return ReflectHelper.CastOrThrow<ISupportLazyPropsJoinable>(Joinable, "fetch lazy property")
 					                    .SelectFragment(
-						                    next?.Joinable,
-						                    next?.RHSAlias,
-						                    RHSAlias,
+											RHSAlias,
 						                    collectionSuffix,
 						                    ShouldFetchCollectionPersister(),
 						                    new EntityLoadInfo(entitySuffix)
