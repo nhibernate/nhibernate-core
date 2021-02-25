@@ -3,14 +3,13 @@
 	public abstract class Person
 	{
 		private Details _details;
-		
+
 		public virtual int Id { get; protected set; }
 		public virtual string Name { get; set; }
-		public virtual Details Details {
-			get
-			{
-				return _details;
-			}
+
+		public virtual Details Details
+		{
+			get { return _details; }
 			set
 			{
 				_details = value;
@@ -21,8 +20,8 @@
 				}
 			}
 		}
-
 	}
+
 	public class PersonByFK : Person { }
 
 	public class PersonByRef : Person { }
