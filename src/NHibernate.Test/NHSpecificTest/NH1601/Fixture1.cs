@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1601
@@ -6,6 +5,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
     [TestFixture]
     public class Fixture1 : BugTestCase
     {
+        protected override bool AppliesTo(Dialect.Dialect dialect)
+        {
+            return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+        }
+
         /// <summary>
         /// Loads the project do not call Count on the list assigned.
         /// </summary>
@@ -90,7 +94,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             return project;
         }
 
-
         public ProjectWithOneList LoadProject()
         {
             ProjectWithOneList project;
@@ -109,7 +112,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
 
         public void RefreshProject(ProjectWithOneList project)
         {
-
             using (ISession session = OpenSession())
             using (ITransaction tx = session.BeginTransaction())
             {

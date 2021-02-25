@@ -15,7 +15,7 @@ namespace NHibernate.Loader.Entity
 {
 	public partial class CollectionElementLoader : OuterJoinLoader
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (CollectionElementLoader));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (CollectionElementLoader));
 
 		private readonly IOuterJoinLoadable persister;
 		private readonly IType keyType;
@@ -39,7 +39,7 @@ namespace NHibernate.Loader.Entity
 
 			PostInstantiate();
 
-			log.Debug("Static select for entity " + entityName + ": " + SqlString);
+			log.Debug("Static select for entity {0}: {1}", entityName, SqlString);
 		}
 
 		private IEnumerable<IParameterSpecification> CreateParameterSpecificationsAndAssignBackTrack(IEnumerable<Parameter> sqlPatameters)

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -50,7 +51,7 @@ namespace NHibernate.Loader
 					{
 						bagCount++;
 					}
-					collectionDescriptors[i] = new GeneratedCollectionAliases(collectionPersisters[i], collectionSuffixes[i]);
+					collectionDescriptors[i] = new GeneratedCollectionAliases(GetCollectionUserProvidedAlias(i), collectionPersisters[i], collectionSuffixes[i]);
 				}
 			}
 			else
@@ -62,8 +63,13 @@ namespace NHibernate.Loader
 			// so be careful about how you formulate your queries in this case
 			if (bagCount > 1)
 			{
-				throw new QueryException("Cannot simultaneously fetch multiple bags.");
+				throw new QueryException($"Cannot simultaneously fetch multiple bags: {this}");
 			}
+		}
+
+		protected virtual IDictionary<string, string[]> GetCollectionUserProvidedAlias(int index)
+		{
+			return null;
 		}
 
 		private static bool IsBag(ICollectionPersister collectionPersister)
@@ -93,10 +99,15 @@ namespace NHibernate.Loader
 
 			for (int i = 0; i < length; i++)
 			{
-				suffixes[i] = (i + seed).ToString() + StringHelper.Underscore;
+				suffixes[i] = GenerateSuffix(i + seed);
 			}
 
 			return suffixes;
+		}
+
+		public static string GenerateSuffix(int index)
+		{
+			return index.ToString() + StringHelper.Underscore;
 		}
 	}
 }

@@ -18,7 +18,7 @@ namespace NHibernate.Test.SqlTest.Custom.Oracle
 	[TestFixture]
 	public class OracleCustomSQLFixtureAsync : CustomStoredProcSupportTestAsync
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "SqlTest.Custom.Oracle.Mappings.hbm.xml", "SqlTest.Custom.Oracle.StoredProcedures.hbm.xml" }; }
 		}
@@ -66,6 +66,5 @@ namespace NHibernate.Test.SqlTest.Custom.Oracle
 			await (t.CommitAsync());
 			s.Close();
 		}
-
 	}
 }

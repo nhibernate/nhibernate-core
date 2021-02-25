@@ -27,12 +27,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public IASTNode LeftHandOperand
 		{
-			get { return GetChild(0);}
+			get { return GetChild(0); }
 		}
 
 		public IASTNode RightHandOperand
 		{
-			get { return GetChild(1);}
+			get { return GetChild(1); }
 		}
 
 		/// <summary>
@@ -51,6 +51,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				throw new SemanticException( "right-hand operand of a binary operator was null" );
 			}
+
 			ProcessMetaTypeDiscriminatorIfNecessary(lhs, rhs);
 			IType lhsType = ExtractDataType( lhs );
 			IType rhsType = ExtractDataType( rhs );
@@ -64,15 +65,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				rhsType = lhsType;
 			}
 
-			var lshExpectedTypeAwareNode = lhs as IExpectedTypeAwareNode;
-			if (lshExpectedTypeAwareNode != null)
+			if (lhs is IExpectedTypeAwareNode lshTypeAwareNode && lshTypeAwareNode.ExpectedType == null)
 			{
-				lshExpectedTypeAwareNode.ExpectedType = rhsType;
+				lshTypeAwareNode.ExpectedType = rhsType;
 			}
-			var rshExpectedTypeAwareNode = rhs as IExpectedTypeAwareNode;
-			if (rshExpectedTypeAwareNode != null)
+
+			if (rhs is IExpectedTypeAwareNode rshTypeAwareNode && rshTypeAwareNode.ExpectedType == null)
 			{
-				rshExpectedTypeAwareNode.ExpectedType = lhsType;
+				rshTypeAwareNode.ExpectedType = lhsType;
 			}
 
 			MutateRowValueConstructorSyntaxesIfNecessary( lhsType, rhsType );
@@ -199,31 +199,31 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return embeddedParameters.ToArray();
 		}
 
-		private string Translate(int valueElements, string comparisonText, string[] lhsElementTexts, string[] rhsElementTexts)
+		private protected string Translate(int valueElements, string comparisonText, string[] lhsElementTexts, string[] rhsElementTexts)
 		{
-			var multicolumnComparisonClauses = new List<string>();
+			var multicolumnComparisonClauses = new string[valueElements];
 			for (int i = 0; i < valueElements; i++)
 			{
-				multicolumnComparisonClauses.Add(string.Format("{0} {1} {2}", lhsElementTexts[i], comparisonText, rhsElementTexts[i]));
+				multicolumnComparisonClauses[i] = string.Join(" ", lhsElementTexts[i], comparisonText, rhsElementTexts[i]);
 			}
-			return "(" + string.Join(" and ", multicolumnComparisonClauses.ToArray()) + ")";
+			return string.Concat("(", string.Join(" and ", multicolumnComparisonClauses), ")");
 		}
 
-		private static string[] ExtractMutationTexts(IASTNode operand, int count) 
+		private protected static string[] ExtractMutationTexts(IASTNode operand, int count) 
 		{
-			if ( operand is ParameterNode ) 
+			if ( operand is ParameterNode )
 			{
-				return Enumerable.Repeat("?", count).ToArray();
+				return ArrayHelper.Fill("?", count);
 			}
 			if (operand is SqlNode)
 			{
 				string nodeText = operand.Text;
 
-				if (nodeText.StartsWith("("))
+				if (nodeText.StartsWith('('))
 				{
 					nodeText = nodeText.Substring(1);
 				}
-				if (nodeText.EndsWith(")"))
+				if (nodeText.EndsWith(')'))
 				{
 					nodeText = nodeText.Substring(0, nodeText.Length - 1);
 				}
@@ -270,32 +270,34 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private void ProcessMetaTypeDiscriminatorIfNecessary(IASTNode lhs, IASTNode rhs)
 		{
 			// this method inserts the discriminator value for the rhs node so that .class queries on <any> mappings work with the class name
-			var lhsNode = lhs as SqlNode;
-			var rhsNode = rhs as SqlNode;
-			if (lhsNode == null || rhsNode == null)
+			if (!(lhs is SqlNode lhsNode) || !(rhs is SqlNode rhsNode))
 			{
 				return;
 			}
 
-			var lhsNodeMetaType = lhsNode.DataType as MetaType;
-			if (lhsNodeMetaType != null)
+			if (rhsNode is IdentNode && lhsNode.DataType is MetaType lhsNodeMetaType)
 			{
-				string className = SessionFactoryHelper.GetImportedClassName(rhsNode.OriginalText);
-
-				object discriminatorValue = lhsNodeMetaType.GetMetaValue(TypeNameParser.Parse(className).Type);
-				rhsNode.Text = discriminatorValue.ToString();
+				EvaluateType(rhsNode, lhsNodeMetaType);
 				return;
 			}
 
-			var rhsNodeMetaType = rhsNode.DataType as MetaType;
-			if (rhsNodeMetaType != null)
+			if (lhsNode is IdentNode && rhsNode.DataType is MetaType rhsNodeMetaType)
 			{
-				string className = SessionFactoryHelper.GetImportedClassName(lhsNode.OriginalText);
-
-				object discriminatorValue = rhsNodeMetaType.GetMetaValue(TypeNameParser.Parse(className).Type);
-				lhsNode.Text = discriminatorValue.ToString();
-				return;
+				EvaluateType(lhsNode, rhsNodeMetaType);
 			}
+		}
+
+		private void EvaluateType(SqlNode node, MetaType metaType)
+		{
+			var sessionFactory = SessionFactoryHelper.Factory;
+
+			var className = sessionFactory.GetImportedClassName(node.OriginalText);
+
+			var discriminatorValue = metaType.GetMetaValue(
+				TypeNameParser.Parse(className).Type,
+				sessionFactory.Dialect);
+
+			node.Text = discriminatorValue;
 		}
 	}
 }

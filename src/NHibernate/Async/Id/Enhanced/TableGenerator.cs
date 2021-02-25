@@ -26,19 +26,15 @@ namespace NHibernate.Id.Enhanced
 	using System.Threading;
 	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
-		private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
-
-		[MethodImpl()]
 		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (await _generate.LockAsync())
+			using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
 			{
 				return await (Optimizer.GenerateAsync(new TableAccessCallback(session, this), cancellationToken)).ConfigureAwait(false);
 			}
 		}
-
 
 		private partial class TableAccessCallback : IAccessCallback
 		{
@@ -53,7 +49,6 @@ namespace NHibernate.Id.Enhanced
 
 			#endregion
 		}
-
 
 		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction, CancellationToken cancellationToken)
 		{
@@ -101,12 +96,12 @@ namespace NHibernate.Id.Enhanced
 						result = Convert.ToInt64(selectedValue);
 					}
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception ex)
 				{
-					log.Error("Unable to read or initialize hi value in " + TableName, ex);
+					log.Error(ex, "Unable to read or initialize hi value in {0}", TableName);
 					throw;
 				}
-
 
 				try
 				{
@@ -124,9 +119,10 @@ namespace NHibernate.Id.Enhanced
 						updatedRows = await (updateCmd.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					}
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception ex)
 				{
-					log.Error("Unable to update hi value in " + TableName, ex);
+					log.Error(ex, "Unable to update hi value in {0}", TableName);
 					throw;
 				}
 			}

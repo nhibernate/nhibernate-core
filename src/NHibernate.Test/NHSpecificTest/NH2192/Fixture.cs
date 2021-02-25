@@ -9,6 +9,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2192
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsConcurrencyTests;
+		}
+
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
@@ -45,8 +50,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2192
 			List<Exception> exceptions = new List<Exception>();
 
 			var threads = new List<Thread>();
+			var threadCount = _threadCount > TestDialect.MaxNumberOfConnections
+				? TestDialect.MaxNumberOfConnections.Value
+				: _threadCount;
 
-			for (int i=0; i<_threadCount; i++)
+			for (var i = 0; i < threadCount; i++)
 			{
 				var thread = new Thread(new ThreadStart(() =>
 					{
@@ -88,7 +96,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2192
 			Func<int> result = FetchRowResults;
 			List<Task<int>> tasks = new List<Task<int>>();
 
-			for (int i = 0; i < _threadCount; i++)
+			var threadCount = _threadCount > TestDialect.MaxNumberOfConnections
+				? TestDialect.MaxNumberOfConnections.Value
+				: _threadCount;
+
+			for (int i = 0; i < threadCount; i++)
 			{
 				tasks.Add(Task.Run<int>(result));
 			}

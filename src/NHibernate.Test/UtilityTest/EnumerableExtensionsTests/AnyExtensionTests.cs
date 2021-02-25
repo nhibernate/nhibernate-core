@@ -5,13 +5,15 @@ using NHibernate.Util;
 
 namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 {
+	//Since v5.1
+	[Obsolete]
 	[TestFixture]
 	public class AnyExtensionTests
 	{
 		[Test]
 		public void WhenEmptyListThenReturnFalse()
 		{
-			Assert.That((new object[0]).Any(), Is.False);
+			Assert.That((Array.Empty<object>()).Any(), Is.False);
 		}
 
 		[Test]

@@ -18,9 +18,23 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 	[TestFixture]
 	public class TimeFixtureAsync : FixtureBaseAsync
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"NHSpecificTest.Dates.Mappings.Time.hbm.xml"}; }
+		}
+
+		[Test]
+		public async Task SavingAndRetrievingTestAsync()
+		{
+			DateTime now = DateTime.Parse("23:59:59");
+
+			await (SavingAndRetrievingActionAsync(new AllDates {Sql_time = now},
+			                          entity =>
+			                          	{
+			                          		Assert.AreEqual(entity.Sql_time.Hour, now.Hour);
+			                          		Assert.AreEqual(entity.Sql_time.Minute, now.Minute);
+			                          		Assert.AreEqual(entity.Sql_time.Second, now.Second);
+			                          	}));
 		}
 	}
 }

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -32,8 +33,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException("property");
 			}
-			var toAdd = new[] {property};
-			_component.Items = _component.Items == null ? toAdd : _component.Items.Concat(toAdd).ToArray();
+			_component.Items = ArrayHelper.Append(_component.Items, property);
 		}
 
 		#endregion
@@ -68,6 +68,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Lazy(bool isLazy)
 		{
 			_component.lazy = isLazy;
+		}
+
+		public void LazyGroup(string name)
+		{
+			_component.lazygroup = name;
 		}
 
 		public void Unique(bool unique)

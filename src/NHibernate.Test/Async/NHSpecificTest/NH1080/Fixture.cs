@@ -19,13 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
     [TestFixture]
     public class FixtureAsync : BugTestCase
     {
-        public override string BugNumber
-        {
-            get { return "NH1080"; }
-        }
-
-
-        /* Bug occurs when an HQL query joins a OneToOne association (A.C), followed by a ManyToOne (A.B2) that 
+	    /* Bug occurs when an HQL query joins a OneToOne association (A.C), followed by a ManyToOne (A.B2) that 
            * returns null in the resultset.
            * 
            * This results in both associations being (incorrectly) marked as one-to-one's, due to an instance variable in
@@ -51,9 +45,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
             c.ID = 1;
             c.Value = "OneToOne";
 
-           
-
-          
             A a = new A();
             a.ID = 1;
             a.Value = "Parent";
@@ -68,7 +59,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
 
             try
             {
-
                 using (ISession s = Sfi.OpenSession())
                 {
                     await (s.SaveAsync(c));
@@ -91,7 +81,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
             {
                 using (ISession s = Sfi.OpenSession())
                 {
-                    
                     await (s.DeleteAsync(a));
                     await (s.DeleteAsync(b1));
                     await (s.DeleteAsync(c));

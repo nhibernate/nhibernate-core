@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1421
 			using (var s = OpenSession())
 			{
 				var query = s.CreateQuery("from AnEntity a where a.id in (:myList)");
-				Assert.That(() => query.SetParameterList("myList", new long[0]).ListAsync(), Throws.Exception.Not.InstanceOf<NullReferenceException>());
+				Assert.That(() => query.SetParameterList("myList", Array.Empty<long>()).ListAsync(), Throws.Exception.Not.InstanceOf<NullReferenceException>());
 			}
 		}
 	}

@@ -25,7 +25,7 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public partial class NHybridDataReader : DbDataReader
 	{
-		private readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(NHybridDataReader));
+		private readonly INHibernateLogger log = NHibernateLogger.For(typeof(NHybridDataReader));
 
 		private DbDataReader _reader;
 		private bool _isMidstream;
@@ -73,9 +73,9 @@ namespace NHibernate.Driver
 		{
 			if (_reader.IsClosed == false && _reader.GetType() != typeof(NDataReader))
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Moving DbDataReader into an NDataReader.  It was converted in midstream " + _isMidstream.ToString());
+					log.Debug("Moving DbDataReader into an NDataReader.  It was converted in midstream {0}", _isMidstream);
 				}
 				_reader = NDataReader.Create(_reader, _isMidstream);
 			}

@@ -74,6 +74,22 @@ namespace NHibernate.Hql.Ast
 			return new HqlSelectFrom(_factory, @from);
 		}
 
+		public HqlFrom From(HqlRange range, params HqlJoin[] joins)
+		{
+			var hqlFrom = new HqlFrom(_factory, range);
+			foreach (var join in joins)
+				hqlFrom.AddChild(join);
+			return hqlFrom;
+		}
+
+		public HqlFrom From(HqlRange range, IEnumerable<HqlJoin>  joins)
+		{
+			var hqlFrom = new HqlFrom(_factory, range);
+			foreach (var join in joins)
+				hqlFrom.AddChild(join);
+			return hqlFrom;
+		}
+
 		public HqlFrom From(HqlRange range)
 		{
 			return new HqlFrom(_factory, range);
@@ -291,6 +307,11 @@ namespace NHibernate.Hql.Ast
 			return new HqlCount(_factory, child);
 		}
 
+		public HqlCountBig CountBig(HqlExpression child)
+		{
+			return new HqlCountBig(_factory, child);
+		}
+
 		public HqlRowStar RowStar()
 		{
 			return new HqlRowStar(_factory);
@@ -299,6 +320,17 @@ namespace NHibernate.Hql.Ast
 		public HqlCast Cast(HqlExpression expression, System.Type type)
 		{
 			return new HqlCast(_factory, expression, type);
+		}
+
+		/// <summary>
+		/// Generate a cast node intended solely to hint HQL at the resulting type, without issuing an actual SQL cast.
+		/// </summary>
+		/// <param name="expression">The expression to cast.</param>
+		/// <param name="type">The resulting type.</param>
+		/// <returns>A <see cref="HqlTransparentCast"/> node.</returns>
+		public HqlTransparentCast TransparentCast(HqlExpression expression, System.Type type)
+		{
+			return new HqlTransparentCast(_factory, expression, type);
 		}
 
 		public HqlBitwiseNot BitwiseNot()
@@ -451,9 +483,19 @@ namespace NHibernate.Hql.Ast
 			return new HqlIn(_factory, itemExpression, source);
 		}
 
+		public HqlInnerJoin InnerJoin(HqlExpression expression, HqlAlias @alias)
+		{
+			return new HqlInnerJoin(_factory, expression, @alias);
+		}
+
 		public HqlLeftJoin LeftJoin(HqlExpression expression, HqlAlias @alias)
 		{
 			return new HqlLeftJoin(_factory, expression, @alias);
+		}
+
+		public HqlCrossJoin CrossJoin(HqlExpression expression, HqlAlias @alias)
+		{
+			return new HqlCrossJoin(_factory, expression, @alias);
 		}
 
 		public HqlFetchJoin FetchJoin(HqlExpression expression, HqlAlias @alias)
@@ -464,6 +506,11 @@ namespace NHibernate.Hql.Ast
 		public HqlLeftFetchJoin LeftFetchJoin(HqlExpression expression, HqlAlias @alias)
 		{
 			return new HqlLeftFetchJoin(_factory, expression, @alias);
+		}
+
+		public HqlFetch Fetch()
+		{
+			return new HqlFetch(_factory);
 		}
 
 		public HqlClass Class()
@@ -486,9 +533,16 @@ namespace NHibernate.Hql.Ast
 			return new HqlCoalesce(_factory, lhs, rhs);
 		}
 
+		//Since v5.2
+		[Obsolete("Please use Index method instead.")]
 		public HqlTreeNode DictionaryItem(HqlExpression dictionary, HqlExpression index)
 		{
 			return new HqlDictionaryIndex(_factory, dictionary, index);
+		}
+
+		public HqlTreeNode Index(HqlExpression collection, HqlExpression index)
+		{
+			return new HqlIndex(_factory, collection, index);
 		}
 
 		public HqlTreeNode Indices(HqlExpression dictionary)

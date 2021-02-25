@@ -15,9 +15,10 @@ namespace NHibernate.Linq.ReWriters
 
 		internal static readonly System.Type[] FlattenableResultOperators =
 		{
+			typeof(LockResultOperator),
+			typeof(FetchLazyPropertiesResultOperator),
 			typeof(FetchOneRequest),
-			typeof(FetchManyRequest),
-			typeof(OptionsResultOperator)
+			typeof(FetchManyRequest)
 		};
 
 		private QueryReferenceExpressionFlattener(QueryModel model)

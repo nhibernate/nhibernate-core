@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.Util;
@@ -39,6 +40,43 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary>
+		/// Generate a name hopefully unique using the table and column names.
+		/// Static so the name can be generated prior to creating the Constraint.
+		/// They're cached, keyed by name, in multiple locations.
+		/// </summary>
+		/// <param name="prefix">A name prefix for the generated name.</param>
+		/// <param name="table">The table for which the name is generated.</param>
+		/// <param name="referencedTable">The referenced table, if any.</param>
+		/// <param name="columns">The columns for which the name is generated.</param>
+		/// <returns>The generated name.</returns>
+		/// <remarks>Hybrid of Hibernate <c>Constraint.generateName</c> and
+		/// <c>NamingHelper.generateHashedFkName</c>.</remarks>
+		public static string GenerateName(
+			string prefix, Table table, Table referencedTable, IEnumerable<Column> columns)
+		{
+			// Use a concatenation that guarantees uniqueness, even if identical names
+			// exist between all table and column identifiers.
+			var sb = new StringBuilder("table`").Append(table.Name).Append("`");
+			if (referencedTable != null)
+				sb.Append("references`").Append(referencedTable.Name).Append("`");
+
+			// Ensure a consistent ordering of columns, regardless of the order
+			// they were bound.
+			foreach (var column in columns.OrderBy(c => c.CanonicalName))
+			{
+				sb.Append("column`").Append(column.CanonicalName).Append("`");
+			}
+			// Hash the generated name for avoiding collisions with user choosen names.
+			// This is not 100% reliable, as hashing may still have a chance of generating
+			// collisions.
+			// Hibernate uses MD5 here, which .Net standrad implementation is rejected by
+			// FIPS enabled machine. Better use a non-cryptographic hash.
+			var name = prefix + Hasher.HashToString(sb.ToString());
+
+			return name;
+		}
+
+		/// <summary>
 		/// Adds the <see cref="Column"/> to the <see cref="ICollection"/> of 
 		/// Columns that are part of the constraint.
 		/// </summary>
@@ -53,9 +91,13 @@ namespace NHibernate.Mapping
 		{
 			foreach (Column col in columnIterator)
 			{
-				if (!col.IsFormula)
-					AddColumn(col);
+				AddColumn(col);
 			}
+		}
+
+		public void AddColumns(IEnumerable<ISelectable> columnIterator)
+		{
+			AddColumns(columnIterator.OfType<Column>());
 		}
 
 		/// <summary>
@@ -71,7 +113,7 @@ namespace NHibernate.Mapping
 
 		public IList<Column> Columns
 		{
-			get{return columns;}
+			get { return columns; }
 		}
 
 		/// <summary>
@@ -99,19 +141,23 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public virtual string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
-			if (IsGenerated(dialect))
-			{
-				string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
-				string drop =
-					string.Format("alter table {0} drop constraint {1}", Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema), Name);
-				string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
-
-				return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
-			}
-			else
+			if (!IsGenerated(dialect))
 			{
 				return null;
 			}
+
+			var catalog = Table.GetQuotedCatalog(dialect, defaultCatalog);
+			var schema = Table.GetQuotedSchema(dialect, defaultSchema);
+			var tableName = Table.GetQuotedName(dialect);
+
+			return new StringBuilder()
+						.AppendLine(dialect.GetIfExistsDropConstraint(catalog, schema, tableName, Name))
+						.Append("alter table ")
+						.Append(Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema))
+						.Append(" drop constraint ")
+						.AppendLine(Name)
+						.Append(dialect.GetIfExistsDropConstraintEnd(catalog, schema, tableName, Name))
+						.ToString();
 		}
 
 		/// <summary>
@@ -126,18 +172,15 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public virtual string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
 		{
-			if (IsGenerated(dialect))
-			{
-				string constraintString = SqlConstraintString(dialect, Name, defaultCatalog, defaultSchema);
-				StringBuilder buf = new StringBuilder("alter table ")
-					.Append(Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema))
-					.Append(constraintString);
-				return buf.ToString();
-			}
-			else
+			if (!IsGenerated(dialect))
 			{
 				return null;
 			}
+
+			StringBuilder buf = new StringBuilder("alter table ")
+				.Append(Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema))
+				.Append(SqlConstraintString(dialect, Name, defaultCatalog, defaultSchema));
+			return buf.ToString();
 		}
 
 		#endregion

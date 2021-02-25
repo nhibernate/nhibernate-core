@@ -29,24 +29,24 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 				this.factory = factory;
 				object savedId;
 				using (var session = factory.OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					var entity = new MyClass();
 					entity.Children.Add(new MyChild { Parent = entity });
 					entity.Components.Add(new MyComponent { Something = "something" });
 					entity.Elements.Add("somethingelse");
 					savedId = session.Save(entity);
-					session.Transaction.Commit();
+					tran.Commit();
 				}
 
 				using (var session = factory.OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					entity = session.Get<MyClass>(savedId);
 					NHibernateUtil.Initialize(entity.Children);
 					NHibernateUtil.Initialize(entity.Components);
 					NHibernateUtil.Initialize(entity.Elements);
-					session.Transaction.Commit();
+					tran.Commit();
 				}
 			}
 
@@ -76,13 +76,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 
 				// When I reassociate the collections the Owner has value
 				using (var session = OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					var merged = (MyClass)await (session.MergeAsync(scenario.Entity));
 					Assert.That(((IPersistentCollection)merged.Children).Owner, Is.Not.Null);
 					Assert.That(((IPersistentCollection)merged.Components).Owner, Is.Not.Null);
 					Assert.That(((IPersistentCollection)merged.Elements).Owner, Is.Not.Null);
-					await (session.Transaction.CommitAsync());
+					await (tran.CommitAsync());
 				}
 			}
 		}
@@ -97,7 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 				((IPersistentCollection)scenario.Entity.Elements).Owner = null;
 
 				using (var session = OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					// When I reassociate the collections the Owner is null
 					await (session.LockAsync(scenario.Entity, LockMode.None));
@@ -105,17 +105,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 					scenario.Entity.Children.Add(new MyChild { Parent = scenario.Entity });
 					scenario.Entity.Components.Add(new MyComponent { Something = "something" });
 					scenario.Entity.Elements.Add("somethingelse");
-					await (session.Transaction.CommitAsync());
+					await (tran.CommitAsync());
 				}
 
 				using (var session = OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					var fresh = await (session.GetAsync<MyClass>(scenario.Entity.Id));
 					Assert.That(fresh.Children, Has.Count.EqualTo(2));
 					Assert.That(fresh.Components, Has.Count.EqualTo(2));
 					Assert.That(fresh.Elements, Has.Count.EqualTo(2));
-					await (session.Transaction.CommitAsync());
+					await (tran.CommitAsync());
 				}
 			}
 		}
@@ -130,24 +130,24 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 				((IPersistentCollection)scenario.Entity.Elements).Owner = null;
 
 				using (var session = OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					scenario.Entity.Children.Add(new MyChild { Parent = scenario.Entity });
 					scenario.Entity.Components.Add(new MyComponent { Something = "something" });
 					scenario.Entity.Elements.Add("somethingelse");
 					// When I reassociate the collections the Owner is null
 					await (session.UpdateAsync(scenario.Entity));
-					await (session.Transaction.CommitAsync());
+					await (tran.CommitAsync());
 				}
 
 				using (var session = OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					var fresh = await (session.GetAsync<MyClass>(scenario.Entity.Id));
 					Assert.That(fresh.Children, Has.Count.EqualTo(2));
 					Assert.That(fresh.Components, Has.Count.EqualTo(2));
 					Assert.That(fresh.Elements, Has.Count.EqualTo(2));
-					await (session.Transaction.CommitAsync());
+					await (tran.CommitAsync());
 				}
 			}
 		}
@@ -162,24 +162,24 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 				((IPersistentCollection)scenario.Entity.Elements).Owner = null;
 
 				using (var session = OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					scenario.Entity.Children.Add(new MyChild { Parent = scenario.Entity });
 					scenario.Entity.Components.Add(new MyComponent { Something = "something" });
 					scenario.Entity.Elements.Add("somethingelse");
 					// When I reassociate the collections the Owner is null
 					await (session.SaveOrUpdateAsync(scenario.Entity));
-					await (session.Transaction.CommitAsync());
+					await (tran.CommitAsync());
 				}
 
 				using (var session = OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					var fresh = await (session.GetAsync<MyClass>(scenario.Entity.Id));
 					Assert.That(fresh.Children, Has.Count.EqualTo(2));
 					Assert.That(fresh.Components, Has.Count.EqualTo(2));
 					Assert.That(fresh.Elements, Has.Count.EqualTo(2));
-					await (session.Transaction.CommitAsync());
+					await (tran.CommitAsync());
 				}
 			}
 		}
@@ -194,18 +194,18 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 				((IPersistentCollection)scenario.Entity.Elements).Owner = null;
 
 				using (var session = OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					await (session.DeleteAsync(scenario.Entity));
-					await (session.Transaction.CommitAsync());
+					await (tran.CommitAsync());
 				}
 
 				using (var session = OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					var fresh = await (session.GetAsync<MyClass>(scenario.Entity.Id));
 					Assert.That(fresh, Is.Null);
-					await (session.Transaction.CommitAsync());
+					await (tran.CommitAsync());
 				}
 			}
 		}

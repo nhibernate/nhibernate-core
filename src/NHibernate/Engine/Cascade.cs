@@ -1,9 +1,10 @@
 using System.Collections;
-
+using System.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Event;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -70,13 +71,13 @@ namespace NHibernate.Engine
 	/// </summary>
 	public sealed partial class Cascade
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Cascade));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(Cascade));
 
 		private CascadePoint point;
 		private readonly IEventSource eventSource;
 		private readonly CascadingAction action;
 
-		private readonly Stack componentPathStack = new Stack();
+		private readonly Stack<string> componentPathStack = new Stack<string>();
 
 		public Cascade(CascadingAction action, CascadePoint point, IEventSource eventSource)
 		{
@@ -84,7 +85,6 @@ namespace NHibernate.Engine
 			this.eventSource = eventSource;
 			this.action = action;
 		}
-
 
 		/// <summary> Cascade an action from the parent entity instance to all its children. </summary>
 		/// <param name="persister">The parent's entity persister </param>
@@ -108,16 +108,16 @@ namespace NHibernate.Engine
 		{
 			if (persister.HasCascades || action.RequiresNoCascadeChecking)
 			{
-				log.Info("processing cascade " + action + " for: " + persister.EntityName);
+				log.Info("processing cascade {0} for: {1}", action, persister.EntityName);
 
 				IType[] types = persister.PropertyTypes;
 				CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
-				bool hasUninitializedLazyProperties = persister.HasUninitializedLazyProperties(parent);
+				var uninitializedLazyProperties = persister.EntityMetamodel.BytecodeEnhancementMetadata.GetUninitializedLazyProperties(parent);
 				for (int i = 0; i < types.Length; i++)
 				{
 					CascadeStyle style = cascadeStyles[i];
 					string propertyName = persister.PropertyNames[i];
-					if (hasUninitializedLazyProperties && persister.PropertyLaziness[i] && !action.PerformOnLazyProperty)
+					if (uninitializedLazyProperties.Contains(propertyName) && persister.PropertyLaziness[i] && !action.PerformOnLazyProperty)
 					{
 						//do nothing to avoid a lazy property initialization
 						continue;
@@ -133,7 +133,7 @@ namespace NHibernate.Engine
 					}
 				}
 
-				log.Info("done processing cascade " + action + " for: " + persister.EntityName);
+				log.Info("done processing cascade {0} for: {1}", action, persister.EntityName);
 			}
 		}
 
@@ -168,14 +168,21 @@ namespace NHibernate.Engine
 						// value is orphaned if loaded state for this property shows not null
 						// because it is currently null.
 						EntityEntry entry = eventSource.PersistenceContext.GetEntry(parent);
-						if (entry != null && entry.Status != Status.Saving)
+						//LoadedState is null when detached entity is cascaded from session.Update context
+						if (entry?.LoadedState != null && entry.Status != Status.Saving)
 						{
-							EntityType entityType = (EntityType)type;
 							object loadedValue;
-							if (!componentPathStack.Any())
+							if (componentPathStack.Count == 0)
 							{
 								// association defined on entity
 								loadedValue = entry.GetLoadedValue(propertyName);
+
+								// Check this is not a null carrying proxy. The no-proxy load is currently handled by
+								// putting a proxy (!) flagged for unwrapping (even for non-constrained one-to-one,
+								// which association may be null) in the loadedState of the parent. The unwrap flag
+								// causes it to support having a null implementation, instead of throwing an entity
+								// not found error.
+								loadedValue = eventSource.PersistenceContext.UnproxyAndReassociate(loadedValue);
 							}
 							else
 							{
@@ -282,12 +289,12 @@ namespace NHibernate.Engine
 
 			if (reallyDoCascade)
 			{
-				log.Info("cascade " + action + " for collection: " + collectionType.Role);
+				log.Info("cascade {0} for collection: {1}", action, collectionType.Role);
 
 				foreach (object o in action.GetCascadableChildrenIterator(eventSource, collectionType, child))
 					CascadeProperty(parent, o, elemType, style, null, anything, isCascadeDeleteEnabled);
 
-				log.Info("done cascade " + action + " for collection: " + collectionType.Role);
+				log.Info("done cascade {0} for collection: {1}", action, collectionType.Role);
 			}
 
 			var childAsPersColl = child as IPersistentCollection;
@@ -297,7 +304,7 @@ namespace NHibernate.Engine
 			if (deleteOrphans)
 			{
 				// handle orphaned entities!!
-				log.Info("deleting orphans for collection: " + collectionType.Role);
+				log.Info("deleting orphans for collection: {0}", collectionType.Role);
 
 				// we can do the cast since orphan-delete does not apply to:
 				// 1. newly instantiated collections
@@ -305,7 +312,7 @@ namespace NHibernate.Engine
 				string entityName = collectionType.GetAssociatedEntityName(eventSource.Factory);
 				DeleteOrphans(entityName, childAsPersColl);
 
-				log.Info("done deleting orphans for collection: " + collectionType.Role);
+				log.Info("done deleting orphans for collection: {0}", collectionType.Role);
 			}
 		}
 
@@ -328,7 +335,7 @@ namespace NHibernate.Engine
 			{
 				if (orphan != null)
 				{
-					log.Info("deleting orphaned entity instance: " + entityName);
+					log.Info("deleting orphaned entity instance: {0}", entityName);
 
 					eventSource.Delete(entityName, orphan, false, null);
 				}

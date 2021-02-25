@@ -8,10 +8,7 @@
 //------------------------------------------------------------------------------
 
 
-using System;
-
 using NHibernate.Dialect;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.GeneratedTest
@@ -25,9 +22,9 @@ namespace NHibernate.Test.GeneratedTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
-			get { return new string[] { "GeneratedTest.ComponentOwner.hbm.xml" }; }
+			get { return new [] { "GeneratedTest.ComponentOwner.hbm.xml" }; }
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
@@ -39,34 +36,40 @@ namespace NHibernate.Test.GeneratedTest
 		public async Task PartialComponentGenerationAsync()
 		{
 			ComponentOwner owner = new ComponentOwner("initial");
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			await (s.SaveAsync(owner));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(owner));
+				await (t.CommitAsync());
+				s.Close();
+			}
 
 			Assert.IsNotNull(owner.Component, "expecting insert value generation");
 			int previousValue = owner.Component.Generated;
 			Assert.AreNotEqual(0, previousValue, "expecting insert value generation");
 
-			s = OpenSession();
-			s.BeginTransaction();
-			owner = (ComponentOwner) await (s.GetAsync(typeof(ComponentOwner), owner.Id));
-			Assert.AreEqual(previousValue, owner.Component.Generated, "expecting insert value generation");
-			owner.Name = "subsequent";
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				owner = (ComponentOwner) await (s.GetAsync(typeof(ComponentOwner), owner.Id));
+				Assert.AreEqual(previousValue, owner.Component.Generated, "expecting insert value generation");
+				owner.Name = "subsequent";
+				await (t.CommitAsync());
+				s.Close();
+			}
 
 			Assert.IsNotNull(owner.Component);
 			previousValue = owner.Component.Generated;
 
-			s = OpenSession();
-			s.BeginTransaction();
-			owner = (ComponentOwner) await (s.GetAsync(typeof(ComponentOwner), owner.Id));
-			Assert.AreEqual(previousValue, owner.Component.Generated, "expecting update value generation");
-			await (s.DeleteAsync(owner));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				owner = (ComponentOwner) await (s.GetAsync(typeof(ComponentOwner), owner.Id));
+				Assert.AreEqual(previousValue, owner.Component.Generated, "expecting update value generation");
+				await (s.DeleteAsync(owner));
+				await (t.CommitAsync());
+				s.Close();
+			}
 		}
 	}
 }

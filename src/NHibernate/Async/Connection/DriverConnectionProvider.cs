@@ -22,23 +22,23 @@ namespace NHibernate.Connection
 		/// Gets a new open <see cref="DbConnection"/> through 
 		/// the <see cref="NHibernate.Driver.IDriver"/>.
 		/// </summary>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>
 		/// An Open <see cref="DbConnection"/>.
 		/// </returns>
 		/// <exception cref="Exception">
 		/// If there is any problem creating or opening the <see cref="DbConnection"/>.
 		/// </exception>
-		public override async Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
+		public override async Task<DbConnection> GetConnectionAsync(string connectionString, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("Obtaining DbConnection from Driver");
 			var conn = Driver.CreateConnection();
 			try
 			{
-				conn.ConnectionString = ConnectionString;
+				conn.ConnectionString = connectionString;
 				await (conn.OpenAsync(cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception)
 			{
 				conn.Dispose();

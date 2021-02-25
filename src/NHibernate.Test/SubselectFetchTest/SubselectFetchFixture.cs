@@ -289,8 +289,8 @@ namespace NHibernate.Test.SubselectFetchTest
 				.List();
 
 			IList parents = s.CreateCriteria(typeof(Parent))
-				.SetFetchMode("MoreChildren", FetchMode.Join)
-				.SetFetchMode("MoreChildren.Friends", FetchMode.Join)
+				.Fetch("MoreChildren")
+				.Fetch("MoreChildren.Friends")
 				.AddOrder(Order.Desc("Name"))
 				.List();
 
@@ -366,7 +366,7 @@ namespace NHibernate.Test.SubselectFetchTest
 			s.Close();
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"SubselectFetchTest.ParentChild.hbm.xml"}; }
 		}

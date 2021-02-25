@@ -8,7 +8,7 @@ namespace NHibernate.Test.VersionTest.Db
 	[TestFixture]
 	public class DbVersionFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"VersionTest.Db.User.hbm.xml"}; }
 		}

@@ -1,16 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
-using NHibernate.Impl;
-using NHibernate.Param;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
@@ -24,7 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	[CLSCompliant(false)]
 	public class JoinProcessor
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(JoinProcessor));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(JoinProcessor));
 
 		private readonly HqlSqlWalker _walker;
 		private readonly SyntheticAndFactory _syntheticAndFactory;
@@ -56,16 +49,25 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 					return JoinType.RightOuterJoin;
 				case HqlSqlWalker.FULL:
 					return JoinType.FullJoin;
+				case HqlSqlWalker.CROSS:
+					return JoinType.CrossJoin;
 				default:
 					throw new AssertionFailure("undefined join type " + astJoinType);
 			}
 		}
 
-		public void ProcessJoins(QueryNode query) 
+		// Since v5.3
+		[Obsolete("Use ProcessJoins taking an IRestrictableStatement instead")]
+		public void ProcessJoins(QueryNode query)
+		{
+			IRestrictableStatement rs = query;
+			ProcessJoins(rs);
+		}
+
+		public void ProcessJoins(IRestrictableStatement query) 
 		{
 			FromClause fromClause = query.FromClause;
-
-			IList<IASTNode> fromElements;
+			IList<FromElement> fromElements;
 			if ( DotNode.UseThetaStyleImplicitJoins ) 
 			{
 				// for regression testing against output from the old parser...
@@ -74,37 +76,75 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				// expected by the old parser; this is definitely another of those "only needed
 				// for regression purposes".  The SyntheticAndFactory, then, simply injects them as it
 				// encounters them.
-				fromElements = new List<IASTNode>();
-				IList<IASTNode> t = fromClause.GetFromElements();
+				fromElements = new List<FromElement>();
+				var t = fromClause.GetFromElementsTyped();
 
 				for (int i = t.Count - 1; i >= 0; i--)
 				{
 					fromElements.Add(t[i]);
 				}
 			}
-			else 
+			else
 			{
-				fromElements = fromClause.GetFromElements();
+				fromElements = fromClause.GetFromElementsTyped();
+
+				for (var index = fromElements.Count - 1; index >= 0; index--)
+				{
+					var fromElement = fromElements[index];
+					// We found an implied from element that is used in the WITH clause of another from element, so it need to become part of it's join sequence
+					if (fromElement.IsImplied && fromElement.IsPartOfJoinSequence == null)
+					{
+						var origin = fromElement.Origin;
+						while(origin.IsImplied)
+						{
+							origin = origin.Origin;
+							origin.IsPartOfJoinSequence = false;
+						}
+
+						if (origin.WithClauseFragment?.Contains(fromElement.TableAlias + ".") == true)
+						{
+							List<FromElement> elements = new List<FromElement>();
+							while(fromElement.IsImplied)
+							{
+								elements.Add(fromElement);
+								// This from element will be rendered as part of the origins join sequence
+								fromElement.Text = string.Empty;
+								fromElement.IsPartOfJoinSequence = true;
+								fromElement = fromElement.Origin;
+							}
+
+							for (var i = elements.Count - 1; i >= 0; i--)
+							{
+								origin.JoinSequence.AddJoin(elements[i]);
+							}
+						}
+					}
+				}
 			}
 
 			// Iterate through the alias,JoinSequence pairs and generate SQL token nodes.
 			foreach (FromElement fromElement in fromElements)
 			{
+				if(fromElement.IsPartOfJoinSequence == true)
+					continue;
+
 				JoinSequence join = fromElement.JoinSequence;
 
 				join.SetSelector(new JoinSequenceSelector(_walker, fromClause, fromElement));
 
-				AddJoinNodes( query, join, fromElement );
+				// the delete and update statements created here will never be executed when IsMultiTable is true,
+				// only the where clause will be used by MultiTableUpdateExecutor/MultiTableDeleteExecutor. In that case
+				// we have to use the alias from the persister.
+				AddJoinNodes( query, join, fromElement);
 			}
 		}
 
-		private void AddJoinNodes(QueryNode query, JoinSequence join, FromElement fromElement) 
+		private void AddJoinNodes(IRestrictableStatement query, JoinSequence join, FromElement fromElement)
 		{
 			JoinFragment joinFragment = join.ToJoinFragment(
 					_walker.EnabledFilters,
 					fromElement.UseFromFragment || fromElement.IsDereferencedBySuperclassOrSubclassProperty,
-					fromElement.WithClauseFragment,
-					fromElement.WithClauseJoinAlias
+					fromElement.WithClauseFragment
 			);
 
 			SqlString frag = joinFragment.ToFromFragmentString;
@@ -124,9 +164,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			if ( fromElement.UseFromFragment /*&& StringHelper.isNotEmpty( frag )*/ ) 
 			{
 				SqlString fromFragment = ProcessFromFragment( frag, join ).Trim();
-				if ( log.IsDebugEnabled ) 
+				if ( log.IsDebugEnabled() ) 
 				{
-					log.Debug( "Using FROM fragment [" + fromFragment + "]" );
+					log.Debug("Using FROM fragment [{0}]", fromFragment);
 				}
 
 				ProcessDynamicFilterParameters(fromFragment,fromElement,_walker);
@@ -168,12 +208,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 		private static bool HasDynamicFilterParam(SqlString sqlFragment)
 		{
-			return sqlFragment.IndexOfCaseInsensitive(ParserHelper.HqlVariablePrefix) < 0;
+			return !ParserHelper.HasHqlVariable(sqlFragment);
 		}
 
 		private static bool HasCollectionFilterParam(SqlString sqlFragment)
 		{
-			return sqlFragment.IndexOfCaseInsensitive("?") < 0;
+			return sqlFragment.IndexOfOrdinal("?") < 0;
 		}
 
 		private class JoinSequenceSelector : JoinSequence.ISelector
@@ -200,7 +240,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				if ( _fromElement.IsDereferencedBySubclassProperty) 
 				{
 					// TODO : or should we return 'containsTableAlias'??
-					log.Info( "forcing inclusion of extra joins [alias=" + alias + ", containsTableAlias=" + containsTableAlias + "]" );
+					log.Info("forcing inclusion of extra joins [alias={0}, containsTableAlias={1}]", alias, containsTableAlias);
 					return true;
 				}
 				bool shallowQuery = _walker.IsShallowQuery;

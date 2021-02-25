@@ -11,11 +11,10 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public abstract class AbstractEmptinessExpression : AbstractCriterion
 	{
-		private readonly TypedValue[] NO_VALUES = new TypedValue[0];
+		private readonly TypedValue[] NO_VALUES = Array.Empty<TypedValue>();
 		private readonly string propertyName;
 
 		protected abstract bool ExcludeEmpty { get; }
-
 
 		protected AbstractEmptinessExpression(string propertyName)
 		{
@@ -61,7 +60,6 @@ namespace NHibernate.Criterion
 
 			return new SqlString(new object[] {ExcludeEmpty ? "exists" : "not exists", innerSelect.ToString()});
 		}
-
 
 		protected IQueryableCollection GetQueryableCollection(string entityName, string actualPropertyName,
 															  ISessionFactoryImplementor factory)

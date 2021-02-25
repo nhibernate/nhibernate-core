@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Event;
@@ -14,7 +15,7 @@ namespace NHibernate.Test.Events.PostEvents
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"Events.PostEvents.SimpleEntity.hbm.xml"}; }
 		}
@@ -44,7 +45,7 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			DbCleanup();
-			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 
 		[Test]
@@ -73,7 +74,7 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			DbCleanup();
-			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 
 		[Test]
@@ -111,7 +112,7 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			DbCleanup();
-			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 
 		[Test]
@@ -151,7 +152,7 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			DbCleanup();
-			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 
 		[Test]
@@ -190,7 +191,7 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			DbCleanup();
-			((DebugSessionFactory)Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[0];
+			((DebugSessionFactory)Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 		private void DbCleanup()
 		{

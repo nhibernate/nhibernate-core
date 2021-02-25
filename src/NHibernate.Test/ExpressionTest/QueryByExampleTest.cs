@@ -9,7 +9,7 @@ namespace NHibernate.Test.ExpressionTest
 	[TestFixture]
 	public class QueryByExampleTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Componentizable.hbm.xml"}; }
 		}
@@ -95,7 +95,6 @@ namespace NHibernate.Test.ExpressionTest
 				Componentizable master = GetMaster("hibernate", null, "ope%");
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
 				Example ex = Example.Create(master).EnableLike();
-
 
 				crit.Add(Expression.Or(Expression.Not(ex), ex));
 

@@ -28,7 +28,7 @@ namespace NHibernate.Test.Criteria
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Criteria.Enrolment.hbm.xml" }; }
 		}
@@ -46,18 +46,11 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
-		public Task DetachedCriteriaItSelfAsync()
+		public async Task DetachedCriteriaItSelfAsync()
 		{
-			try
-			{
-				DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
+			DetachedCriteria dc = DetachedCriteria.For(typeof(Student))
 				.Add(Expression.Eq("Name", "Gavin King"));
-				return SerializeAndListAsync(dc);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (SerializeAndListAsync(dc));
 		}
 
 		[Test]
@@ -144,13 +137,16 @@ namespace NHibernate.Test.Criteria
 			await (SerializeAndListAsync(dc));
 
 			// Subquery
-			dc = DetachedCriteria.For(typeof(Student))
-				.Add(Property.ForName("StudentNumber").Eq(232L))
-				.SetProjection(Property.ForName("Name"));
+			if (TestDialect.SupportsOperatorAll)
+			{
+				dc = DetachedCriteria.For(typeof(Student))
+				  .Add(Property.ForName("StudentNumber").Eq(232L))
+				  .SetProjection(Property.ForName("Name"));
 
-			DetachedCriteria dcs = DetachedCriteria.For(typeof(Student))
-				.Add(Subqueries.PropertyEqAll("Name", dc));
-			await (SerializeAndListAsync(dc));
+				DetachedCriteria dcs = DetachedCriteria.For(typeof(Student))
+					.Add(Subqueries.PropertyEqAll("Name", dc));
+				await (SerializeAndListAsync(dcs));
+			}
 
 			// SQLCriterion
 			dc = DetachedCriteria.For(typeof(Student))

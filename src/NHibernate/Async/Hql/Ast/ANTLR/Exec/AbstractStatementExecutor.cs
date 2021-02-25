@@ -24,28 +24,15 @@ using NHibernate.SqlTypes;
 using NHibernate.Transaction;
 using NHibernate.Util;
 using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	public abstract partial class AbstractStatementExecutor : IStatementExecutor
 	{
 
 		public abstract Task<int> ExecuteAsync(QueryParameters parameters, ISessionImplementor session, CancellationToken cancellationToken);
-
-		protected virtual async Task CoordinateSharedCacheCleanupAsync(ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			var action = new BulkOperationCleanupAction(session, AffectedQueryables);
-
-			await (action.InitAsync(cancellationToken)).ConfigureAwait(false);
-
-			if (session.IsEventSource)
-			{
-				await (((IEventSource)session).ActionQueue.AddActionAsync(action, cancellationToken)).ConfigureAwait(false);
-			}
-		}
 
 		protected virtual async Task CreateTemporaryTableIfNecessaryAsync(IQueryable persister, ISessionImplementor session, CancellationToken cancellationToken)
 		{
@@ -81,19 +68,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			{
 				IIsolatedWork work = new TmpIdTableDropIsolatedWork(persister, log, session);
 
-				if (ShouldIsolateTemporaryTableDDL())
+				if (ShouldIsolateTemporaryTableDDL() && session.ConnectionManager.CurrentTransaction != null)
 				{
-					session.ConnectionManager.Transaction.RegisterSynchronization(new AfterTransactionCompletes((success) =>
-					{
-						if (Factory.Settings.IsDataDefinitionInTransactionSupported)
-						{
-							Isolater.DoIsolatedWork(work, session);
-						}
-						else
-						{
-							Isolater.DoNonTransactedWork(work, session);
-						}
-					}));
+					session.ConnectionManager.CurrentTransaction.RegisterSynchronization(
+						new IsolatedWorkAfterTransaction(work, session));
 				}
 				else
 				{
@@ -111,12 +89,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				try
 				{
 					var commandText = new SqlString("delete from " + persister.TemporaryIdTableName);
-					ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, commandText, new SqlType[0], cancellationToken)).ConfigureAwait(false);
+					ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, commandText, Array.Empty<SqlType>(), cancellationToken)).ConfigureAwait(false);
 					await (session.Batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception t)
 				{
-					log.Warn("unable to cleanup temporary id table after use [" + t + "]");
+					log.Warn(t, "unable to cleanup temporary id table after use [{0}]", t);
 				}
 				finally
 				{
@@ -150,9 +129,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					await (stmnt.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					session.Factory.Settings.SqlStatementLogger.LogCommand(stmnt, FormatStyle.Ddl);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception t)
 				{
-					log.Debug("unable to create temporary id table [" + t.Message + "]");
+					log.Debug(t, "unable to create temporary id table [{0}]", t.Message);
 				}
 				finally
 				{
@@ -186,9 +166,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					await (stmnt.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					session.Factory.Settings.SqlStatementLogger.LogCommand(stmnt, FormatStyle.Ddl);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (Exception t)
 				{
-					log.Warn("unable to drop temporary id table after use [" + t.Message + "]");
+					log.Warn("unable to drop temporary id table after use [{0}]", t.Message);
 				}
 				finally
 				{

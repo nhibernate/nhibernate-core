@@ -6,7 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.ElementsEnums
 	[TestFixture]
 	public class IntEnumsBagNoNameFixture : AbstractIntEnumsBagFixture
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "NHSpecificTest.ElementsEnums.SimpleWithEnumsNoName.hbm.xml" }; }
 		}

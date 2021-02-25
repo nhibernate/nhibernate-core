@@ -55,7 +55,31 @@ namespace NHibernate.Linq.GroupBy
 		{
 			_transformed = true;
 			// Transform each initializer recursively (to allow for nested initializers)
+			if (expression.Members == null)
+				return Expression.New(expression.Constructor, expression.Arguments.Select(VisitInternal));
+
 			return Expression.New(expression.Constructor, expression.Arguments.Select(VisitInternal), expression.Members);
+		}
+
+		protected override Expression VisitMemberInit(MemberInitExpression node)
+		{
+			_transformed = true;
+			return Expression.MemberInit((NewExpression) VisitInternal(node.NewExpression), node.Bindings.Select(VisitMemberBinding));
+		}
+
+		protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)
+		{
+			return node.Update(VisitInternal(node.Expression));
+		}
+
+		protected override MemberListBinding VisitMemberListBinding(MemberListBinding node)
+		{
+			return node.Update(node.Initializers.Select(o => o.Update(o.Arguments.Select(VisitInternal))));
+		}
+
+		protected override MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding node)
+		{
+			return node.Update(node.Bindings.Select(VisitMemberBinding));
 		}
 
 		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)

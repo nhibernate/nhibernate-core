@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
@@ -102,6 +103,7 @@ namespace NHibernate.Dialect
 			// If changing the default value, keep it in sync with OracleDataClientDriverBase.Configure.
 			UseNPrefixedTypesForUnicode = PropertiesHelper.GetBoolean(Environment.OracleUseNPrefixedTypesForUnicode, settings, false);
 			RegisterCharacterTypeMappings();
+			RegisterFloatingPointTypeMappings();
 		}
 
 		#region private static readonly string[] DialectKeywords = { ... }
@@ -182,13 +184,18 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.UInt32, "NUMBER(10,0)");
 			RegisterColumnType(DbType.UInt64, "NUMBER(20,0)");
 
-			RegisterColumnType(DbType.Currency, "NUMBER(20,2)");
+			// 6.0 TODO: bring down to 18,4 for consistency with other dialects.
+			RegisterColumnType(DbType.Currency, "NUMBER(22,4)");
+			RegisterColumnType(DbType.Decimal, "NUMBER(19,5)");
+			// Oracle max precision is 39-40, but .Net is limited to 28-29.
+			RegisterColumnType(DbType.Decimal, 29, "NUMBER($p,$s)");
+		}
+
+		protected virtual void RegisterFloatingPointTypeMappings()
+		{
 			RegisterColumnType(DbType.Single, "FLOAT(24)");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION");
-			// Oracle max precision is 39-40, but .Net is limited to 28-29.
-			RegisterColumnType(DbType.Double, 28, "NUMBER($p,$s)");
-			RegisterColumnType(DbType.Decimal, "NUMBER(19,5)");
-			RegisterColumnType(DbType.Decimal, 28, "NUMBER($p,$s)");
+			RegisterColumnType(DbType.Double, 40, "NUMBER($p,$s)");
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()
@@ -229,7 +236,9 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("round", new StandardSQLFunction("round"));
 			RegisterFunction("trunc", new StandardSQLFunction("trunc"));
+			RegisterFunction("truncate", new StandardSQLFunction("trunc"));
 			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
+			RegisterFunction("ceiling", new StandardSQLFunction("ceil"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
 
 			RegisterFunction("chr", new StandardSQLFunction("chr", NHibernateUtil.Character));
@@ -247,7 +256,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("to_char", new StandardSQLFunction("to_char", NHibernateUtil.String));
 			RegisterFunction("to_date", new StandardSQLFunction("to_date", NHibernateUtil.DateTime));
 
-			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.Date, false));
+			// In Oracle, date includes a time, just with fractional seconds dropped. For actually only having
+			// the date, it must be truncated. Otherwise comparisons may yield unexpected results.
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.LocalDate, "trunc(current_date)"));
 			RegisterFunction("current_time", new NoArgSQLFunction("current_timestamp", NHibernateUtil.Time, false));
 			RegisterFunction("current_timestamp", new CurrentTimeStamp());
 
@@ -286,7 +297,7 @@ namespace NHibernate.Dialect
 			// Multi-param numeric dialect functions...
 			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Double));
 			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Int32));
-			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
+			RegisterFunction("mod", new ModulusFunction(true, true));
 			RegisterFunction("nvl", new StandardSQLFunction("nvl"));
 			RegisterFunction("nvl2", new StandardSQLFunction("nvl2"));
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
@@ -297,13 +308,16 @@ namespace NHibernate.Dialect
 			RegisterFunction("next_day", new StandardSQLFunction("next_day", NHibernateUtil.Date));
 
 			RegisterFunction("str", new StandardSQLFunction("to_char", NHibernateUtil.String));
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "substr(rawtohex(?1), 7, 2) || substr(rawtohex(?1), 5, 2) || substr(rawtohex(?1), 3, 2) || substr(rawtohex(?1), 1, 2) || '-' || substr(rawtohex(?1), 11, 2) || substr(rawtohex(?1), 9, 2) || '-' || substr(rawtohex(?1), 15, 2) || substr(rawtohex(?1), 13, 2) || '-' || substr(rawtohex(?1), 17, 4) || '-' || substr(rawtohex(?1), 21) "));
 
-			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+			RegisterFunction("iif", new IifSQLFunction());
 
-			RegisterFunction("band", new BitwiseFunctionOperation("bitand"));
+			RegisterFunction("band", new Function.BitwiseFunctionOperation("bitand"));
 			RegisterFunction("bor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2)"));
 			RegisterFunction("bxor", new SQLFunctionTemplate(null, "?1 + ?2 - BITAND(?1, ?2) * 2"));
 			RegisterFunction("bnot", new SQLFunctionTemplate(null, "(-1 - ?1)"));
+
+			RegisterFunction("new_uuid", new NoArgSQLFunction("sys_guid", NHibernateUtil.Guid));
 		}
 
 		protected internal virtual void RegisterDefaultProperties()
@@ -321,6 +335,9 @@ namespace NHibernate.Dialect
 		{
 			return new OracleJoinFragment();
 		}
+
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false;
 
 		/// <summary> 
 		/// Map case support to the Oracle DECODE function.  Oracle did not
@@ -383,7 +400,7 @@ namespace NHibernate.Dialect
 			Dictionary<SqlString, SqlString> columnToAlias;
 			ExtractColumnOrAliasNames(select, out columnsOrAliases, out aliasToColumn, out columnToAlias);
 
-			return StringHelper.Join(",", columnsOrAliases);
+			return string.Join(",", columnsOrAliases);
 		}
 
 		/// <summary> 
@@ -482,10 +499,17 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		// Since v5.1
+		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
 		public override bool ForUpdateOfColumns
 		{
 			get { return true; }
 		}
+
+		/* 6.0 TODO: uncomment once ForUpdateOfColumns is removed.
+		/// <inheritdoc />
+		public override bool UsesColumnsWithForUpdateOf => true;
+		*/
 
 		public override bool SupportsUnionAll
 		{
@@ -533,6 +557,10 @@ namespace NHibernate.Dialect
 			}
 		}
 
+		// 30 before 12.1. https://stackoverflow.com/a/756569/1178314
+		/// <inheritdoc />
+		public override int MaxAliasLength => 30;
+
 		#region Overridden informational metadata
 
 		public override bool SupportsEmptyInList
@@ -551,7 +579,7 @@ namespace NHibernate.Dialect
 		[Serializable]
 		private class CurrentTimeStamp : NoArgSQLFunction
 		{
-			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.DateTime, true) {}
+			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.LocalDateTime, true) {}
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{
@@ -559,7 +587,7 @@ namespace NHibernate.Dialect
 			}
 		}
 		[Serializable]
-		private class LocateFunction : ISQLFunction
+		private class LocateFunction : ISQLFunction, ISQLFunctionExtended
 		{
 			private static readonly ISQLFunction LocateWith2Params = new SQLFunctionTemplate(NHibernateUtil.Int32,
 																							 "instr(?2, ?1)");
@@ -569,10 +597,29 @@ namespace NHibernate.Dialect
 
 			#region Implementation of ISQLFunction
 
+			// Since v5.3
+			[Obsolete("Use GetReturnType method instead.")]
 			public IType ReturnType(IType columnType, IMapping mapping)
 			{
 				return NHibernateUtil.Int32;
 			}
+
+			/// <inheritdoc />
+			public IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+#pragma warning disable 618
+				return ReturnType(argumentTypes.FirstOrDefault(), mapping);
+#pragma warning restore 618
+			}
+
+			/// <inheritdoc />
+			public IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+				return GetReturnType(argumentTypes, mapping, throwOnError);
+			}
+
+			/// <inheritdoc />
+			public string Name => "instr";
 
 			public bool HasArguments
 			{

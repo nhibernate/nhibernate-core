@@ -41,7 +41,6 @@ namespace NHibernate.Test.DialectTest
 		// be.
 		protected string[] tableThatNeedsToBeQuoted;
 
-
 		[SetUp]
 		public virtual void SetUp()
 		{
@@ -68,7 +67,7 @@ namespace NHibernate.Test.DialectTest
 
 			using (var connection = await (sessions.ConnectionProvider.GetConnectionAsync(CancellationToken.None)))
 			{
-				var statement = driver.GenerateCommand(CommandType.Text, new SqlString(dialect.CurrentTimestampSelectString), new SqlType[0]);
+				var statement = driver.GenerateCommand(CommandType.Text, new SqlString(dialect.CurrentTimestampSelectString), Array.Empty<SqlType>());
 				statement.Connection = connection;
 				using (var reader = await (statement.ExecuteReaderAsync()))
 				{

@@ -7,21 +7,20 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Action
 {
 	[Serializable]
-	public sealed partial class EntityIdentityInsertAction : EntityAction
+	public sealed partial class EntityIdentityInsertAction : AbstractEntityInsertAction
 	{
-		private readonly object lockObject = new object();
-		private readonly object[] state;
 		private readonly bool isDelayed;
 		private readonly EntityKey delayedEntityKey;
 		//private CacheEntry cacheEntry;
 		private object generatedId;
 
 		public EntityIdentityInsertAction(object[] state, object instance, IEntityPersister persister, ISessionImplementor session, bool isDelayed)
-			: base(session, null, instance, persister)
+			: base(null, state, instance, persister, session)
 		{
-			this.state = state;
 			this.isDelayed = isDelayed;
-			delayedEntityKey = this.isDelayed ? GenerateDelayedEntityKey() : null;
+			delayedEntityKey = this.isDelayed
+				? Session.GenerateEntityKey(new DelayedPostInsertIdentifier(), Persister)
+				: null;
 		}
 
 		public object GeneratedId
@@ -32,17 +31,6 @@ namespace NHibernate.Action
 		public EntityKey DelayedEntityKey
 		{
 			get { return delayedEntityKey; }
-		}
-
-		private EntityKey GenerateDelayedEntityKey()
-		{
-			lock (lockObject)
-			{
-				if (!isDelayed)
-					throw new HibernateException("Cannot request delayed entity-key for non-delayed post-insert-id generation");
-
-				return Session.GenerateEntityKey(new DelayedPostInsertIdentifier(), Persister);
-			}
 		}
 
 		protected internal override bool HasPostCommitEventListeners
@@ -72,10 +60,10 @@ namespace NHibernate.Action
 
 			if (!veto)
 			{
-				generatedId = persister.Insert(state, instance, Session);
+				generatedId = persister.Insert(State, instance, Session);
 				if (persister.HasInsertGeneratedProperties)
 				{
-					persister.ProcessInsertGeneratedProperties(generatedId, instance, state, Session);
+					persister.ProcessInsertGeneratedProperties(generatedId, instance, State, Session);
 				}
 				//need to do that here rather than in the save event listener to let
 				//the post insert events to have a id-filled entity when IDENTITY is used (EJB3)
@@ -107,7 +95,7 @@ namespace NHibernate.Action
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostInsertEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostInsertEvent postEvent = new PostInsertEvent(Instance, generatedId, state, Persister, (IEventSource)Session);
+				PostInsertEvent postEvent = new PostInsertEvent(Instance, generatedId, State, Persister, (IEventSource)Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
 					listener.OnPostInsert(postEvent);
@@ -120,7 +108,7 @@ namespace NHibernate.Action
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostCommitInsertEventListeners;
 			if (postListeners.Length > 0)
 			{
-				var postEvent = new PostInsertEvent(Instance, generatedId, state, Persister, (IEventSource) Session);
+				var postEvent = new PostInsertEvent(Instance, generatedId, State, Persister, (IEventSource) Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
 					listener.OnPostInsert(postEvent);
@@ -134,7 +122,7 @@ namespace NHibernate.Action
 			bool veto = false;
 			if (preListeners.Length > 0)
 			{
-				var preEvent = new PreInsertEvent(Instance, null, state, Persister, (IEventSource) Session);
+				var preEvent = new PreInsertEvent(Instance, null, State, Persister, (IEventSource) Session);
 				foreach (IPreInsertEventListener listener in preListeners)
 				{
 					veto |= listener.OnPreInsert(preEvent);

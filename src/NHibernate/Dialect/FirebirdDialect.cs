@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using NHibernate.Dialect.Function;
@@ -154,7 +155,7 @@ namespace NHibernate.Dialect
 		[Serializable]
 		private class CurrentTimeStamp : NoArgSQLFunction
 		{
-			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.DateTime, true)
+			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.LocalDateTime, true)
 			{
 			}
 
@@ -205,7 +206,7 @@ namespace NHibernate.Dialect
 		}
 
 		[Serializable]
-		private class PositionFunction : ISQLFunction
+		private class PositionFunction : ISQLFunction, ISQLFunctionExtended
 		{
 			// The cast is needed, at least in the case that ?3 is a named integer parameter, otherwise firebird will generate an error.  
 			// We have a unit test to cover this potential firebird bug.
@@ -214,10 +215,27 @@ namespace NHibernate.Dialect
 			private static readonly ISQLFunction LocateWith3Params = new SQLFunctionTemplate(NHibernateUtil.Int32,
 				"position(?1, ?2, cast(?3 as int))");
 
+			// Since v5.3
+			[Obsolete("Use GetReturnType method instead.")]
 			public IType ReturnType(IType columnType, IMapping mapping)
 			{
 				return NHibernateUtil.Int32;
 			}
+
+			/// <inheritdoc />
+			public IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+				return NHibernateUtil.Int32;
+			}
+
+			/// <inheritdoc />
+			public IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+				return GetReturnType(argumentTypes, mapping, throwOnError);
+			}
+
+			/// <inheritdoc />
+			public string Name => "position";
 
 			public bool HasArguments
 			{
@@ -413,19 +431,23 @@ namespace NHibernate.Dialect
 		private void OverrideStandardHQLFunctions()
 		{
 			RegisterFunction("current_timestamp", new CurrentTimeStamp());
+			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
 			RegisterFunction("length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int64, 1));
 			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));
 			RegisterFunction("lower", new StandardSafeSQLFunction("lower", NHibernateUtil.String, 1));
 			RegisterFunction("upper", new StandardSafeSQLFunction("upper", NHibernateUtil.String, 1));
-			RegisterFunction("mod", new StandardSafeSQLFunction("mod", NHibernateUtil.Double, 2));
+			// Modulo does not throw for decimal parameters but they are casted to int by Firebird, which produces unexpected results
+			RegisterFunction("mod", new ModulusFunction(false, false));
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as VARCHAR(255))"));
+			RegisterFunction("strguid", new StandardSQLFunction("uuid_to_char", NHibernateUtil.String));
 			RegisterFunction("sysdate", new CastedFunction("today", NHibernateUtil.Date));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
+			RegisterFunction("new_uuid", new NoArgSQLFunction("gen_uuid", NHibernateUtil.Guid));
 			// Bitwise operations
-			RegisterFunction("band", new BitwiseFunctionOperation("bin_and"));
-			RegisterFunction("bor", new BitwiseFunctionOperation("bin_or"));
-			RegisterFunction("bxor", new BitwiseFunctionOperation("bin_xor"));
-			RegisterFunction("bnot", new BitwiseFunctionOperation("bin_not"));
+			RegisterFunction("band", new Function.BitwiseFunctionOperation("bin_and"));
+			RegisterFunction("bor", new Function.BitwiseFunctionOperation("bin_or"));
+			RegisterFunction("bxor", new Function.BitwiseFunctionOperation("bin_xor"));
+			RegisterFunction("bnot", new Function.BitwiseFunctionOperation("bin_not"));
 		}
 
 		private void RegisterFirebirdServerEmbeddedFunctions()
@@ -434,7 +456,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("yesterday", new CastedFunction("yesterday", NHibernateUtil.Date));
 			RegisterFunction("tomorrow", new CastedFunction("tomorrow", NHibernateUtil.Date));
 			RegisterFunction("now", new CastedFunction("now", NHibernateUtil.DateTime));
-			RegisterFunction("iif", new StandardSafeSQLFunction("iif", 3));
+			RegisterFunction("iif", new IifSafeSQLFunction());
 			// New embedded functions in FB 2.0 (http://www.firebirdsql.org/rlsnotes20/rnfbtwo-str.html#str-string-func)
 			RegisterFunction("char_length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int64, 1));
 			RegisterFunction("bit_length", new StandardSafeSQLFunction("bit_length", NHibernateUtil.Int64, 1));
@@ -453,7 +475,8 @@ namespace NHibernate.Dialect
 		private void RegisterMathematicalFunctions()
 		{
 			RegisterFunction("abs", new StandardSQLFunction("abs", NHibernateUtil.Double));
-			RegisterFunction("ceiling", new StandardSQLFunction("ceiling", NHibernateUtil.Double));
+			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
+			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
 			RegisterFunction("div", new StandardSQLFunction("div", NHibernateUtil.Double));
 			RegisterFunction("dpower", new StandardSQLFunction("dpower", NHibernateUtil.Double));
 			RegisterFunction("ln", new StandardSQLFunction("ln", NHibernateUtil.Double));
@@ -461,10 +484,12 @@ namespace NHibernate.Dialect
 			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
 			RegisterFunction("pi", new NoArgSQLFunction("pi", NHibernateUtil.Double));
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
+			RegisterFunction("random", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
 			RegisterFunction("sqtr", new StandardSQLFunction("sqtr", NHibernateUtil.Double));
-			RegisterFunction("truncate", new StandardSQLFunction("truncate"));
-			RegisterFunction("floor", new StandardSafeSQLFunction("floor", NHibernateUtil.Double, 1));
+			RegisterFunction("trunc", new StandardSQLFunction("trunc"));
+			RegisterFunction("truncate", new StandardSQLFunction("trunc"));
+			RegisterFunction("floor", new StandardSQLFunction("floor"));
 			RegisterFunction("round", new StandardSQLFunction("round"));
 		}
 
@@ -485,8 +510,10 @@ namespace NHibernate.Dialect
 
 		private void RegisterStringAndCharFunctions()
 		{
-			RegisterFunction("ascii_char", new StandardSQLFunction("ascii_char"));
-			RegisterFunction("ascii_val", new StandardSQLFunction("ascii_val", NHibernateUtil.Int16));
+			RegisterFunction("ascii_char", new StandardSQLFunction("ascii_char", NHibernateUtil.Character));
+			RegisterFunction("chr", new StandardSQLFunction("ascii_char", NHibernateUtil.Character));
+			RegisterFunction("ascii_val", new StandardSQLFunction("ascii_val", NHibernateUtil.Int32));
+			RegisterFunction("ascii", new StandardSQLFunction("ascii_val", NHibernateUtil.Int32));
 			RegisterFunction("lpad", new StandardSQLFunction("lpad"));
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
 			RegisterFunction("sright", new StandardSQLFunction("sright"));
@@ -498,6 +525,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("locate", new PositionFunction());
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
 			RegisterFunction("left", new StandardSQLFunction("left"));
+			RegisterFunction("right", new StandardSQLFunction("right"));
 		}
 
 		private void RegisterBlobFunctions()
@@ -519,6 +547,12 @@ namespace NHibernate.Dialect
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
 			RegisterFunction("tanh", new StandardSQLFunction("tanh", NHibernateUtil.Double));
 		}
+
+		// As of Firebird 2.5 documentation, limit is 30/31 (not all source are concordant), with some
+		// cases supporting more but considered as bugs and no more tolerated in v3.
+		// It seems it may be extended to 63 for Firebird v4.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 30;
 
 		#region Informational metadata
 

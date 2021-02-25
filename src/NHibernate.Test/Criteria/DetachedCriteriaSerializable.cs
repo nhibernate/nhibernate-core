@@ -16,7 +16,7 @@ namespace NHibernate.Test.Criteria
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Criteria.Enrolment.hbm.xml" }; }
 		}
@@ -281,21 +281,29 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
-		public void ResultTransformes()
+		public void ResultTransformesAreSerializable()
 		{
 			IResultTransformer rt = new RootEntityResultTransformer();
-			NHAssert.IsSerializable(rt);
-
-			rt = new AliasToBeanConstructorResultTransformer(typeof(StudentDTO).GetConstructor(new System.Type[] { }));
-			NHAssert.IsSerializable(rt);
-
-			rt = new AliasToBeanResultTransformer(typeof(StudentDTO));
 			NHAssert.IsSerializable(rt);
 
 			rt = new DistinctRootEntityResultTransformer();
 			NHAssert.IsSerializable(rt);
 
 			rt = new PassThroughResultTransformer();
+			NHAssert.IsSerializable(rt);
+		}
+
+		[Test]
+		public void AliasToBeanConstructorResultTransformerIsSerializable()
+		{
+			var rt = new AliasToBeanConstructorResultTransformer(typeof(StudentDTO).GetConstructor(System.Type.EmptyTypes));
+			NHAssert.IsSerializable(rt);
+		}
+
+		[Test]
+		public void AliasToBeanResultTransformerIsSerializable()
+		{
+			var rt = new AliasToBeanResultTransformer(typeof(StudentDTO));
 			NHAssert.IsSerializable(rt);
 		}
 
@@ -383,13 +391,16 @@ namespace NHibernate.Test.Criteria
 			SerializeAndList(dc);
 
 			// Subquery
-			dc = DetachedCriteria.For(typeof(Student))
-				.Add(Property.ForName("StudentNumber").Eq(232L))
-				.SetProjection(Property.ForName("Name"));
+			if (TestDialect.SupportsOperatorAll)
+			{
+				dc = DetachedCriteria.For(typeof(Student))
+				  .Add(Property.ForName("StudentNumber").Eq(232L))
+				  .SetProjection(Property.ForName("Name"));
 
-			DetachedCriteria dcs = DetachedCriteria.For(typeof(Student))
-				.Add(Subqueries.PropertyEqAll("Name", dc));
-			SerializeAndList(dc);
+				DetachedCriteria dcs = DetachedCriteria.For(typeof(Student))
+					.Add(Subqueries.PropertyEqAll("Name", dc));
+				SerializeAndList(dcs);
+			}
 
 			// SQLCriterion
 			dc = DetachedCriteria.For(typeof(Student))

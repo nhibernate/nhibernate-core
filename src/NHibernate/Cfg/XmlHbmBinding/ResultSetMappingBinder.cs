@@ -7,6 +7,7 @@ using NHibernate.Engine.Query.Sql;
 using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
+using Array = System.Array;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -32,7 +33,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			ResultSetMappingDefinition definition = new ResultSetMappingDefinition(name);
 
 			int count = 0;
-			foreach (object item in items ?? new object[0])
+			foreach (object item in items ?? System.Array.Empty<object>())
 			{
 				count += 1;
 				INativeSQLQueryReturn queryReturn = CreateQueryReturn(item, count);
@@ -52,20 +53,20 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			HbmReturnScalar returnScalarSchema = item as HbmReturnScalar;
 
 			if (returnScalarSchema != null)
-				return CreateScalarReturn(returnScalarSchema);
+					return CreateScalarReturn(returnScalarSchema);
 
 			else if (returnSchema != null)
-				return CreateReturn(returnSchema, count);
+					return CreateReturn(returnSchema, count);
 
 			else if (returnJoinSchema != null)
-				return CreateJoinReturn(returnJoinSchema);
+					return CreateJoinReturn(returnJoinSchema);
 
 			else if (loadCollectionSchema != null)
-				return CreateLoadCollectionReturn(loadCollectionSchema);
+					return CreateLoadCollectionReturn(loadCollectionSchema);
 
 			else
-				return null;
-		}
+					return null;
+			}
 
 		private INativeSQLQueryReturn CreateScalarReturn(HbmReturnScalar returnScalarSchema)
 		{
@@ -166,7 +167,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			List<HbmReturnProperty> properties = new List<HbmReturnProperty>();
 			List<string> propertyNames = new List<string>();
 
-			foreach (HbmReturnProperty returnPropertySchema in returnProperties ?? new HbmReturnProperty[0])
+			foreach (HbmReturnProperty returnPropertySchema in returnProperties ?? Array.Empty<HbmReturnProperty>())
 			{
 				string name = returnPropertySchema.name;
 				if (pc == null || name.IndexOf('.') == -1)
@@ -309,7 +310,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				newPropertyResults[entry.Key] = entry.Value;
 			}
-			return newPropertyResults.Count == 0 ? (IDictionary<string, string[]>)new CollectionHelper.EmptyMapClass<string, string[]>() : newPropertyResults;
+			return newPropertyResults.Count == 0 ? (IDictionary<string, string[]>)CollectionHelper.EmptyDictionary<string, string[]>() : newPropertyResults;
 		}
 
 		private static List<string> GetResultColumns(HbmReturnProperty returnPropertySchema)
@@ -320,7 +321,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (column != null)
 				allResultColumns.Add(column);
 
-			foreach (HbmReturnColumn returnColumnSchema in returnPropertySchema.returncolumn ?? new HbmReturnColumn[0])
+			foreach (HbmReturnColumn returnColumnSchema in returnPropertySchema.returncolumn ?? Array.Empty<HbmReturnColumn>())
 				allResultColumns.Add(Unquote(returnColumnSchema.name));
 
 			return allResultColumns;

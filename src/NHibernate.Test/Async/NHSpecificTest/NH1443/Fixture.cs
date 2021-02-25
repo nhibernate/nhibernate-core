@@ -20,93 +20,55 @@ namespace NHibernate.Test.NHSpecificTest.NH1443
 	[TestFixture]
 	public class FixtureAsync
 	{
-		private static Task BugAsync(Configuration cfg, CancellationToken cancellationToken = default(CancellationToken))
+		private static async Task BugAsync(Configuration cfg, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			try
-			{
-				var su = new SchemaExport(cfg);
-				var sb = new StringBuilder(500);
-				su.Execute(x => sb.AppendLine(x), false, false);
-				string script = sb.ToString();
+			var su = new SchemaExport(cfg);
+			var sb = new StringBuilder(500);
+			await (su.ExecuteAsync(x => sb.AppendLine(x), false, false, cancellationToken));
+			string script = sb.ToString();
 
+			if (Dialect.Dialect.GetDialect(cfg.Properties).SupportsIfExistsBeforeTableName)
+				Assert.That(script, Does.Match("drop table if exists nhibernate.dbo.Aclass"));
+			else
+				Assert.That(script, Does.Match("drop table nhibernate.dbo.Aclass"));
 
-				if (Dialect.Dialect.GetDialect(cfg.Properties).SupportsIfExistsBeforeTableName)
-					Assert.That(script, Does.Match("drop table if exists nhibernate.dbo.Aclass"));
-				else
-					Assert.That(script, Does.Match("drop table nhibernate.dbo.Aclass"));
-
-				Assert.That(script, Does.Match("create table nhibernate.dbo.Aclass"));
-				return Task.CompletedTask;
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-			
+			Assert.That(script, Does.Match("create ((column|row) )?table nhibernate.dbo.Aclass"));
 		}
 
 		[Test]
-		public Task WithDefaultValuesInConfigurationAsync()
+		public async Task WithDefaultValuesInConfigurationAsync()
 		{
-			try
-			{
-				Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
-				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1443.AclassWithNothing.hbm.xml", GetType().Assembly);
-				cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
-				cfg.SetProperty(Environment.DefaultSchema, "dbo");
-				return BugAsync(cfg);
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1443.AclassWithNothing.hbm.xml", GetType().Assembly);
+			cfg.SetProperty(Environment.DefaultCatalog, "nhibernate");
+			cfg.SetProperty(Environment.DefaultSchema, "dbo");
+			await (BugAsync(cfg));
 		}
 
 		[Test]
-		public Task WithDefaultValuesInMappingAsync()
+		public async Task WithDefaultValuesInMappingAsync()
 		{
-			try
-			{
-				Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
-				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1443.AclassWithDefault.hbm.xml", GetType().Assembly);
-				return BugAsync(cfg);
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1443.AclassWithDefault.hbm.xml", GetType().Assembly);
+			await (BugAsync(cfg));
 		}
 
 		[Test]
-		public Task WithSpecificValuesInMappingAsync()
+		public async Task WithSpecificValuesInMappingAsync()
 		{
-			try
-			{
-				Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
-				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1443.AclassWithSpecific.hbm.xml", GetType().Assembly);
-				return BugAsync(cfg);
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1443.AclassWithSpecific.hbm.xml", GetType().Assembly);
+			await (BugAsync(cfg));
 		}
 
 		[Test]
-		public Task WithDefaultValuesInConfigurationPriorityToMappingAsync()
+		public async Task WithDefaultValuesInConfigurationPriorityToMappingAsync()
 		{
-			try
-			{
-				Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
-				cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1443.AclassWithDefault.hbm.xml", GetType().Assembly);
-				cfg.SetProperty(Environment.DefaultCatalog, "somethingDifferent");
-				cfg.SetProperty(Environment.DefaultSchema, "somethingDifferent");
-				return BugAsync(cfg);
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1443.AclassWithDefault.hbm.xml", GetType().Assembly);
+			cfg.SetProperty(Environment.DefaultCatalog, "somethingDifferent");
+			cfg.SetProperty(Environment.DefaultSchema, "somethingDifferent");
+			await (BugAsync(cfg));
 		}
 	}
 }

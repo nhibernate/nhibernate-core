@@ -10,15 +10,14 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
-using NHibernate.Linq;
 using NHibernate.Util;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
+	// Since v5.2
+	[Obsolete("DynamicProxy namespace has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	internal class DefaultMethodEmitter : IMethodBodyEmitter
 	{
-		private static readonly MethodInfo getInterceptor;
-
 		private static readonly MethodInfo handlerMethod = ReflectHelper.GetMethod<IInterceptor>(
 			i => i.Intercept(null));
 		private static readonly MethodInfo getArguments = typeof(InvocationInfo).GetMethod("get_Arguments");
@@ -33,16 +32,7 @@ namespace NHibernate.Proxy.DynamicProxy
 				typeof (object[])
 			});
 
-		private static readonly PropertyInfo interceptorProperty = typeof (IProxy).GetProperty("Interceptor");
-
-		private static readonly ConstructorInfo notImplementedConstructor = typeof(NotImplementedException).GetConstructor(new System.Type[0]);
-
 		private readonly IArgumentHandler _argumentHandler;
-
-		static DefaultMethodEmitter()
-		{
-			getInterceptor = interceptorProperty.GetGetMethod();
-		}
 
 		public DefaultMethodEmitter() : this(new DefaultArgumentHandler()) {}
 
@@ -60,12 +50,12 @@ namespace NHibernate.Proxy.DynamicProxy
 			ParameterInfo[] parameters = method.GetParameters();
 			IL.DeclareLocal(typeof (object[]));
 			IL.DeclareLocal(typeof (InvocationInfo));
-			IL.DeclareLocal(typeof(System.Type[]));
+			IL.DeclareLocal(typeof (System.Type[]));
 
 			IL.Emit(OpCodes.Ldarg_0);
-			IL.Emit(OpCodes.Callvirt, getInterceptor);
+			IL.Emit(OpCodes.Ldfld, field);
 
-			// if (interceptor == null)
+			// if (this.__interceptor == null)
 			// 		return base.method(...);
 
 			Label skipBaseCall = IL.DefineLabel();
@@ -78,7 +68,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.MarkLabel(skipBaseCall);
 
 			// Push arguments for InvocationInfo constructor.
-			IL.Emit(OpCodes.Ldarg_0);  // 'this' pointer
+			IL.Emit(OpCodes.Ldarg_0); // 'this' pointer
 			PushTargetMethodInfo(IL, proxyMethod, method);
 			PushTargetMethodInfo(IL, callbackMethod, callbackMethod);
 			PushStackTrace(IL);
@@ -90,9 +80,9 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Newobj, infoConstructor);
 			IL.Emit(OpCodes.Stloc_1);
 
-			// this.Interceptor.Intercept(info);
+			// this.__interceptor.Intercept(info);
 			IL.Emit(OpCodes.Ldarg_0);
-			IL.Emit(OpCodes.Callvirt, getInterceptor);
+			IL.Emit(OpCodes.Ldfld, field);
 			IL.Emit(OpCodes.Ldloc_1);
 			IL.Emit(OpCodes.Callvirt, handlerMethod);
 
@@ -142,23 +132,19 @@ namespace NHibernate.Proxy.DynamicProxy
 
 				IL.Emit(OpCodes.Unbox_Any, unboxedType);
 
-				OpCode stind = GetStindInstruction(param.ParameterType);
-				IL.Emit(stind);
-			}
-		}
-
-		private static OpCode GetStindInstruction(System.Type parameterType)
-		{
-			if (parameterType.IsByRef)
-			{
-				OpCode stindOpCode;
-				if(OpCodesMap.TryGetStindOpCode(parameterType.GetElementType(), out stindOpCode))
+				if (Nullable.GetUnderlyingType(unboxedType) != null)
 				{
-					return stindOpCode;
+					IL.Emit(OpCodes.Stobj, unboxedType);
+				}
+				else if (OpCodesMap.TryGetStindOpCode(param.ParameterType.GetElementType(), out var stind))
+				{
+					IL.Emit(stind);
+				}
+				else
+				{
+					IL.Emit(OpCodes.Stind_Ref);
 				}
 			}
-
-			return OpCodes.Stind_Ref;
 		}
 
 		private static void PushTargetMethodInfo(ILGenerator IL, MethodBuilder generatedMethod, MethodInfo method)

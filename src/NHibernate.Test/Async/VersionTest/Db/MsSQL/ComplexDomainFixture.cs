@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
 using NHibernate.Dialect;
 using NUnit.Framework;
 
@@ -17,7 +16,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 	[TestFixture]
 	public class ComplexDomainFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "VersionTest.Db.MsSQL.ComplexVersioned.hbm.xml" }; }
 		}
@@ -62,11 +61,11 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 				Assert.IsTrue(BinaryTimestamp.Equals(bar.Timestamp, retrievedBar.Timestamp), "Timestamps are different!");
 			}
 
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
-				session.BeginTransaction();
 				await (session.DeleteAsync("from Bar"));
-				await (session.Transaction.CommitAsync());
+				await (tran.CommitAsync());
 			}
 		}
 	}

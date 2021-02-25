@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace NHibernate.Test.NHSpecificTest.NH3119
 {
@@ -12,12 +11,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 
 	public class Component
 	{
-		public Component()
-		{
-			LastCtorStackTrace = new StackTrace().ToString();
-		}
-
 		public string Value { get; set; }
-		public string LastCtorStackTrace { get; private set; }
 	}
 }

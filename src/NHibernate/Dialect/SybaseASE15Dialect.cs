@@ -36,7 +36,10 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Int16, 255, "tinyint");
 			RegisterColumnType(DbType.Int32, "int");
 			RegisterColumnType(DbType.Int64, "bigint");
-			RegisterColumnType(DbType.Decimal, "numeric(18,0)");
+			// 6.0 TODO: bring down to 19,5 for consistency with other dialects.
+			RegisterColumnType(DbType.Decimal, "numeric(23,5)");
+			// Maximal precision is said to be 38, but .Net is limited to 28-29.
+			RegisterColumnType(DbType.Decimal, 29, "numeric($p,$s)");
 			RegisterColumnType(DbType.Single, "real");
 			RegisterColumnType(DbType.Double, "float");
 			RegisterColumnType(DbType.AnsiStringFixedLength, "char(255)");
@@ -53,6 +56,9 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "date");
 			RegisterColumnType(DbType.Binary, 8000, "varbinary($l)");
 			RegisterColumnType(DbType.Binary, "varbinary");
+			// newid default is to generate a 32 bytes character uuid (no-dashes), but it has an option for
+			// including dashes, then raising it to 36 bytes.
+			RegisterColumnType(DbType.Guid, "varchar(36)");
 
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
 			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
@@ -65,9 +71,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(","+",")"));
 			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
 			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double));
-			RegisterFunction("current_date", new NoArgSQLFunction("getdate", NHibernateUtil.Date));
-			RegisterFunction("current_time", new NoArgSQLFunction("getdate", NHibernateUtil.Time));
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime));
+			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate));
+			RegisterFunction("current_time", new NoArgSQLFunction("current_time", NHibernateUtil.Time));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.LocalDateTime));
+			RegisterFunction("current_utctimestamp", new NoArgSQLFunction("getutcdate", NHibernateUtil.UtcDateTime));
 			RegisterFunction("datename", new StandardSQLFunction("datename", NHibernateUtil.String));
 			RegisterFunction("day", new StandardSQLFunction("day", NHibernateUtil.Int32));
 			RegisterFunction("degrees", new StandardSQLFunction("degrees", NHibernateUtil.Double));
@@ -86,11 +93,13 @@ namespace NHibernate.Dialect
 			RegisterFunction("lower", new StandardSQLFunction("lower"));
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
 			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));
-			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "?1 % ?2"));
+			RegisterFunction("mod", new ModulusFunctionTemplate(false));
 			RegisterFunction("month", new StandardSQLFunction("month", NHibernateUtil.Int32));
 			RegisterFunction("pi", new NoArgSQLFunction("pi", NHibernateUtil.Double));
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("rand", new StandardSQLFunction("rand", NHibernateUtil.Double));
+			// rand returns the same value for each row, rand2 returns a new one for each row.
+			RegisterFunction("random", new StandardSQLFunction("rand2", NHibernateUtil.Double));
 			RegisterFunction("reverse", new StandardSQLFunction("reverse"));
 			RegisterFunction("round", new StandardSQLFunction("round"));
 			RegisterFunction("rtrim", new StandardSQLFunction("rtrim"));
@@ -101,13 +110,16 @@ namespace NHibernate.Dialect
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
 			RegisterFunction("square", new StandardSQLFunction("square"));
 			RegisterFunction("str", new StandardSQLFunction("str", NHibernateUtil.String));
+			RegisterFunction("strguid", new StandardSQLFunction("str", NHibernateUtil.String));
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
-			// TODO RegisterFunction("trim", new SQLFunctionTemplate(NHibernateUtil.String, "ltrim(rtrim(?1))"));
+			RegisterFunction("trim", new AnsiTrimEmulationFunction("str_replace"));
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("user", new NoArgSQLFunction("user", NHibernateUtil.String));
 			RegisterFunction("year", new StandardSQLFunction("year", NHibernateUtil.Int32));
 
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
+
+			RegisterFunction("new_uuid", new NoArgSQLFunction("newid", NHibernateUtil.Guid));
 		}
 		
 		public override string AddColumnString
@@ -159,7 +171,14 @@ namespace NHibernate.Dialect
 		{
 			get { return "select getdate()"; }
 		}
-		
+
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSelectString =>
+			"SELECT " + CurrentUtcTimestampSQLFunctionName;
+
+		/// <inheritdoc />
+		public override bool SupportsCurrentUtcTimestampSelection => true;
+
 		/// <summary>
 		/// Sybase ASE 15 temporary tables are not supported
 		/// </summary>
@@ -228,12 +247,18 @@ namespace NHibernate.Dialect
 		{
 			get { return "getdate()"; }
 		}
-		
+
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSQLFunctionName => "getutcdate()";
+
 		public override bool SupportsExpectedLobUsagePattern
 		{
 			get { return false; }
 		}
-		
+
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false;
+
 		public override char OpenQuote
 		{
 			get { return '['; }

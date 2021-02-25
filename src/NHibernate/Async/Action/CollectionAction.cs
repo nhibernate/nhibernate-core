@@ -22,8 +22,27 @@ namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public abstract partial class CollectionAction : IExecutable, IComparable<CollectionAction>, IDeserializationCallback
+	public abstract partial class CollectionAction : IAsyncExecutable, IComparable<CollectionAction>, IDeserializationCallback, IAfterTransactionCompletionProcess
 	{
+
+		protected async Task<object> GetKeyAsync(CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (key is DelayedPostInsertIdentifier)
+			{
+				// need to look it up
+				var finalKey = await (persister.CollectionType.GetKeyOfOwnerAsync(collection.Owner, session, cancellationToken)).ConfigureAwait(false);
+				if (finalKey == key)
+				{
+					// we may be screwed here since the collection action is about to execute
+					// and we do not know the final owner key value
+				}
+
+				return finalKey;
+			}
+
+			return key;
+		}
 
 		#region IExecutable Members
 
@@ -48,6 +67,23 @@ namespace NHibernate.Action
 		/// <summary>Execute this action</summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		public abstract Task ExecuteAsync(CancellationToken cancellationToken);
+
+		public virtual Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				var ck = session.GenerateCacheKey(key, persister.KeyType, persister.Role);
+				return persister.Cache.ReleaseAsync(ck, softLock, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
 
 		#endregion
 

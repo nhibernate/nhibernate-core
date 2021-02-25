@@ -46,7 +46,6 @@ namespace NHibernate.Test.ConnectionStringTest
 	
 	public partial class MockConnectionProvider : ConnectionProvider
 	{
-		
 		public string PublicConnectionString
 		{
 			get
@@ -54,12 +53,12 @@ namespace NHibernate.Test.ConnectionStringTest
 				return base.ConnectionString;
 			}
 		}
-		
+
 		/// <summary>
 		/// Get an open <see cref="DbConnection"/>.
 		/// </summary>
 		/// <returns>An open <see cref="DbConnection"/>.</returns>
-		public override DbConnection GetConnection()
+		public override DbConnection GetConnection(string connectionString)
 		{
 			throw new NotImplementedException();
 		}
@@ -69,5 +68,4 @@ namespace NHibernate.Test.ConnectionStringTest
 			return;
 		}
 	}
-	
 }

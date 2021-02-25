@@ -17,7 +17,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string queryName = querySchema.name;
 			string queryText = querySchema.GetText();
 
-			log.DebugFormat("Named query: {0} -> {1}", queryName, queryText);
+			log.Debug("Named query: {0} -> {1}", queryName, queryText);
 
 			bool cacheable = querySchema.cacheable;
 			string region = querySchema.cacheregion;

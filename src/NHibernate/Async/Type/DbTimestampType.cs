@@ -33,7 +33,7 @@ namespace NHibernate.Type
 				log.Debug("incoming session was null; using current application host time");
 				return await (base.SeedAsync(null, cancellationToken)).ConfigureAwait(false);
 			}
-			if (!session.Factory.Dialect.SupportsCurrentTimestampSelection)
+			if (!SupportsCurrentTimestampSelection(session.Factory.Dialect))
 			{
 				log.Info("falling back to application host based timestamp, as dialect does not support current timestamp selection");
 				return await (base.SeedAsync(session, cancellationToken)).ConfigureAwait(false);
@@ -41,6 +41,12 @@ namespace NHibernate.Type
 			return await (GetCurrentTimestampAsync(session, cancellationToken)).ConfigureAwait(false);
 		}
 
+		/// <summary>
+		/// Retrieves the current timestamp in database.
+		/// </summary>
+		/// <param name="session">The session to use for retrieving the timestamp.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>A datetime.</returns>
 		protected virtual async Task<DateTime> GetCurrentTimestampAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -48,7 +54,7 @@ namespace NHibernate.Type
 			// Need to round notably for Sql Server DateTime with Odbc, which has a 3.33ms resolution,
 			// causing stale data update failure 2/3 of times if not rounded to 10ms.
 			return Round(
-				await (UsePreparedStatementAsync(dialect.CurrentTimestampSelectString, session, cancellationToken)).ConfigureAwait(false),
+				await (UsePreparedStatementAsync(GetCurrentTimestampSelectString(dialect), session, cancellationToken)).ConfigureAwait(false),
 				dialect.TimestampResolutionInTicks);
 		}
 
@@ -58,7 +64,7 @@ namespace NHibernate.Type
 			var tsSelect = new SqlString(timestampSelectString);
 			DbCommand ps = null;
 			DbDataReader rs = null;
-			using (new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			{
 				try
 				{
@@ -66,8 +72,8 @@ namespace NHibernate.Type
 					rs = await (session.Batcher.ExecuteReaderAsync(ps, cancellationToken)).ConfigureAwait(false);
 					await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false);
 					var ts = rs.GetDateTime(0);
-					log.DebugFormat("current timestamp retreived from db : {0} (ticks={1})", ts, ts.Ticks);
-					return ts;
+					log.Debug("current timestamp retrieved from db : {0} (ticks={1})", ts, ts.Ticks);
+					return AdjustDateTime(ts);
 				}
 				catch (DbException sqle)
 				{
@@ -87,7 +93,7 @@ namespace NHibernate.Type
 						}
 						catch (DbException sqle)
 						{
-							log.Warn("unable to clean up prepared statement", sqle);
+							log.Warn(sqle, "unable to clean up prepared statement");
 						}
 					}
 				}

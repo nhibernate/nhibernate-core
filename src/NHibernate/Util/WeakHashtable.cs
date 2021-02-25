@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 using NHibernate.DebugHelpers;
 
 namespace NHibernate.Util
@@ -10,15 +11,19 @@ namespace NHibernate.Util
 	// instead to avoid requiring UnmanagedCode permission.
 	[DebuggerTypeProxy(typeof(DictionaryProxy))]
 	[Serializable]
-	public class WeakRefWrapper
+	public class WeakRefWrapper : IDeserializationCallback
 	{
 		private WeakReference reference;
-		private int hashCode;
+		// hashcode may vary among processes, they cannot be stored and have to be re-computed after deserialization
+		[NonSerialized]
+		private int? _hashCode;
 
 		public WeakRefWrapper(object target)
 		{
 			reference = new WeakReference(target);
-			hashCode = target.GetHashCode();
+
+			// No need to delay computation here, but we need the lazy for the deserialization case.
+			_hashCode = GenerateHashCode();
 		}
 
 		public override bool Equals(object obj)
@@ -42,13 +47,35 @@ namespace NHibernate.Util
 				return false;
 			}
 
-			return hashCode == that.hashCode &&
+			return GetHashCode() == that.GetHashCode() &&
 				   Equals(target, that.Target);
 		}
 
 		public override int GetHashCode()
 		{
-			return hashCode;
+			// If the object is put in a set or dictionary during deserialization, the hashcode will not yet be
+			// computed. Compute the hashcode on the fly. So long as this happens only during deserialization, there
+			// will be no thread safety issues. For the hashcode to be always defined after deserialization, the
+			// deserialization callback is used.
+			// As the reference may (unlikely) die between the computation here and the deserialization callback,
+			// better also store the computed on the fly value.
+			return _hashCode ?? (_hashCode = GenerateHashCode()).Value;
+		}
+
+		/// <inheritdoc />
+		public void OnDeserialization(object sender)
+		{
+			// If the value has already been computed for some reasons, keep-it. Otherwise the hashcode may change
+			// due to the reference having died.
+			if (!_hashCode.HasValue)
+				_hashCode = GenerateHashCode();
+		}
+
+		private int GenerateHashCode()
+		{
+			// Defaulting to the base value is not a trouble, because a dead reference is considered only equal to
+			// itself.
+			return reference.Target?.GetHashCode() ?? base.GetHashCode();
 		}
 
 		public object Target

@@ -20,7 +20,7 @@ namespace NHibernate.Test.Legacy
 	[TestFixture]
 	public class ABCProxyTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"ABCProxy.hbm.xml"}; }
 		}
@@ -273,39 +273,6 @@ namespace NHibernate.Test.Legacy
 			await (s.DeleteAsync(b));
 			await (t.CommitAsync());
 			s.Close();
-		}
-
-		[Test, Ignore("ANTLR parser : Not supported ")]
-		public async Task OnoToOneComparingAsync()
-		{
-			A a = new A();
-			E d1 = new E();
-			C1 c = new C1();
-			E d2 = new E();
-			a.Forward = d1;
-			d1.Reverse = a;
-			c.Forward = d2;
-			d2.Reverse = c;
-
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
-			{
-				await (s.SaveAsync(a));
-				await (s.SaveAsync(d2));
-				await (t.CommitAsync());
-			}
-			using (ISession s = OpenSession())
-			{
-				IList l = await (s.CreateQuery("from E e, A a where e.Reverse = a.Forward and a = ?").SetEntity(0, a).ListAsync());
-				Assert.AreEqual(1, l.Count);
-			}
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
-			{
-				await (s.DeleteAsync("from A"));
-				await (s.DeleteAsync("from E"));
-				await (t.CommitAsync());
-			}
 		}
 
 		[Test]

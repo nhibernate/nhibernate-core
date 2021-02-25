@@ -1,9 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.CacheTest
@@ -14,95 +14,104 @@ namespace NHibernate.Test.CacheTest
 		private readonly SqlString SqlAll =
 			new SqlString("select entitywith0_.id as id0_, entitywith0_.Description as Descript2_0_, entitywith0_.Value as Value0_ from EntityWithFilters entitywith0_");
 
-		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
+		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings
-		{
-			get { return new[] { "CacheTest.EntityWithFilters.hbm.xml" }; }
-		}
+		protected override string[] Mappings => new[] { "CacheTest.EntityWithFilters.hbm.xml" };
 
 		[Test]
 		public void EqualityWithFilters()
 		{
-			QueryKey qk, qk1;
-			QueryKeyFilterDescLikeToCompare(out qk, out qk1);
-			Assert.That(qk, Is.EqualTo(qk1));
+			QueryKeyFilterDescLikeToCompare(out var qk, out var qk1, true);
+			Assert.That(qk, Is.EqualTo(qk1), "Like");
 
-			QueryKeyFilterDescValueToCompare(out qk, out qk1);
-			Assert.That(qk, Is.EqualTo(qk1));
+			QueryKeyFilterDescValueToCompare(out qk, out qk1, true);
+			Assert.That(qk, Is.EqualTo(qk1), "Value");
 		}
 
-		private void QueryKeyFilterDescLikeToCompare(out QueryKey qk, out QueryKey qk1)
+		private void QueryKeyFilterDescLikeToCompare(out QueryKey qk, out QueryKey qk1, bool sameValue)
 		{
 			const string filterName = "DescriptionLike";
 			var f = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f.SetParameter("pLike", "so%");
-			var fk =  new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
+			var fk =  new FilterKey(f);
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk };
-			qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null);
+			qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
 
 			var f1 = new FilterImpl(Sfi.GetFilterDefinition(filterName));
-			f1.SetParameter("pLike", "%ing");
-			var fk1 = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
+			f1.SetParameter("pLike", sameValue ? "so%" : "%ing");
+			var fk1 = new FilterKey(f1);
 			fks = new HashSet<FilterKey> { fk1 };
-			qk1 = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null);
+			qk1 = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
 		}
 
-		private void QueryKeyFilterDescValueToCompare(out QueryKey qk, out QueryKey qk1)
+		private void QueryKeyFilterDescValueToCompare(out QueryKey qk, out QueryKey qk1, bool sameValue)
 		{
 			const string filterName = "DescriptionEqualAndValueGT";
 
 			var f = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f.SetParameter("pDesc", "something").SetParameter("pValue", 10);
-			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
+			var fk = new FilterKey(f);
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk };
-			qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null);
+			qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
 
 			var f1 = new FilterImpl(Sfi.GetFilterDefinition(filterName));
-			f1.SetParameter("pDesc", "something").SetParameter("pValue", 11);
-			var fk1 = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
+			f1.SetParameter("pDesc", "something").SetParameter("pValue", sameValue ? 10 : 11);
+			var fk1 = new FilterKey(f1);
 			fks = new HashSet<FilterKey> { fk1 };
-			qk1 = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null);
+			qk1 = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
 		}
 
 		[Test]
 		public void NotEqualityWithFilters()
 		{
-			QueryKey qk, qk1;
-			QueryKeyFilterDescLikeToCompare(out qk, out qk1);
+			QueryKeyFilterDescLikeToCompare(out var qk, out var qk1, false);
+			Assert.That(qk, Is.Not.EqualTo(qk1), "qk & qk1");
 
-			QueryKey qvk, qvk1;
-			QueryKeyFilterDescValueToCompare(out qvk, out qvk1);
+			QueryKeyFilterDescValueToCompare(out var qvk, out var qvk1, false);
+			Assert.That(qvk, Is.Not.EqualTo(qvk1), "qvk & qvk1");
 
-			Assert.That(qk, Is.Not.EqualTo(qvk));
-			Assert.That(qk1, Is.Not.EqualTo(qvk1));
+			Assert.That(qk, Is.Not.EqualTo(qvk), "qk & qvk");
+			Assert.That(qk1, Is.Not.EqualTo(qvk1), "qk1 & qvk1");
 		}
 
 		[Test]
 		public void HashCodeWithFilters()
 		{
-			QueryKey qk, qk1;
-			QueryKeyFilterDescLikeToCompare(out qk, out qk1);
-			Assert.That(qk.GetHashCode(), Is.EqualTo(qk1.GetHashCode()));
+			QueryKeyFilterDescLikeToCompare(out var qk, out var qk1, true);
+			Assert.That(qk.GetHashCode(), Is.EqualTo(qk1.GetHashCode()), "Like");
 
-			QueryKeyFilterDescValueToCompare(out qk, out qk1);
-			Assert.That(qk.GetHashCode(), Is.EqualTo(qk1.GetHashCode()));
+			QueryKeyFilterDescValueToCompare(out qk, out qk1, true);
+			Assert.That(qk.GetHashCode(), Is.EqualTo(qk1.GetHashCode()), "Value");
 		}
 
 		[Test]
 		public void NotEqualHashCodeWithFilters()
 		{
-			QueryKey qk, qk1;
-			QueryKeyFilterDescLikeToCompare(out qk, out qk1);
+			// GetHashCode semantic does not guarantee no collision may ever occur, but the algorithm should
+			// generates different hashcodes for similar but unequal cases. These tests check that cache keys
+			// for a query generated for different parameters values are no more equal.
+			QueryKeyFilterDescLikeToCompare(out var qk, out var qk1, false);
+			Assert.That(qk.GetHashCode(), Is.Not.EqualTo(qk1.GetHashCode()), "qk & qk1");
 
-			QueryKey qvk, qvk1;
-			QueryKeyFilterDescValueToCompare(out qvk, out qvk1);
+			QueryKeyFilterDescValueToCompare(out var qvk, out var qvk1, false);
+			Assert.That(qvk.GetHashCode(), Is.Not.EqualTo(qvk1.GetHashCode()), "qvk & qvk1");
 
-			Assert.That(qk.GetHashCode(), Is.Not.EqualTo(qvk.GetHashCode()));
-			Assert.That(qk1.GetHashCode(), Is.Not.EqualTo(qvk1.GetHashCode()));
+			Assert.That(qk.GetHashCode(), Is.Not.EqualTo(qvk.GetHashCode()), "qk & qvk");
+			Assert.That(qk1.GetHashCode(), Is.Not.EqualTo(qvk1.GetHashCode()), "qk1 & qvk1");
+		}
+
+		[Test]
+		public void HashCodeWithFiltersAndSerialization()
+		{
+			QueryKeyFilterDescLikeToCompare(out var qk, out var qk1, true);
+			var bytes = SerializationHelper.Serialize(qk);
+			qk = (QueryKey) SerializationHelper.Deserialize(bytes);
+			Assert.That(qk.GetHashCode(), Is.EqualTo(qk1.GetHashCode()), "Like");
+
+			QueryKeyFilterDescValueToCompare(out qk, out qk1, true);
+			bytes = SerializationHelper.Serialize(qk);
+			qk = (QueryKey) SerializationHelper.Deserialize(bytes);
+			Assert.That(qk.GetHashCode(), Is.EqualTo(qk1.GetHashCode()), "Value");
 		}
 
 		[Test]
@@ -111,18 +120,18 @@ namespace NHibernate.Test.CacheTest
 			string filterName = "DescriptionLike";
 			var f = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f.SetParameter("pLike", "so%");
-			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
+			var fk = new FilterKey(f);
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk };
-			var qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null);
-			Assert.That(qk.ToString(), Does.Contain(string.Format("filters: ['{0}']",fk)));
+			var qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
+			Assert.That(qk.ToString(), Does.Contain($"filters: ['{fk}']"), "Like");
 
 			filterName = "DescriptionEqualAndValueGT";
 			f = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f.SetParameter("pDesc", "something").SetParameter("pValue", 10);
-			fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
+			fk = new FilterKey(f);
 			fks = new HashSet<FilterKey> { fk };
-			qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null);
-			Assert.That(qk.ToString(), Does.Contain(string.Format("filters: ['{0}']", fk)));
+			qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
+			Assert.That(qk.ToString(), Does.Contain($"filters: ['{fk}']"), "Value");
 		}
 
 		[Test]
@@ -131,16 +140,16 @@ namespace NHibernate.Test.CacheTest
 			string filterName = "DescriptionLike";
 			var f = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f.SetParameter("pLike", "so%");
-			var fk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
+			var fk = new FilterKey(f);
 
 			filterName = "DescriptionEqualAndValueGT";
 			var fv = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			fv.SetParameter("pDesc", "something").SetParameter("pValue", 10);
-			var fvk = new FilterKey(filterName, f.Parameters, f.FilterDefinition.ParameterTypes);
+			var fvk = new FilterKey(fv);
 
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk, fvk };
-			var qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null);
-			Assert.That(qk.ToString(), Does.Contain(string.Format("filters: ['{0}', '{1}']", fk, fvk)));
+			var qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
+			Assert.That(qk.ToString(), Does.Contain($"filters: ['{fk}', '{fvk}']"));
 		}
 	}
 }

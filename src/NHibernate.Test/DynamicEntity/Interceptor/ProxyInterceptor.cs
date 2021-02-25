@@ -1,5 +1,8 @@
+using System;
+
 namespace NHibernate.Test.DynamicEntity.Interceptor
 {
+	[Obsolete("Require dynamic proxies")]
 	public class ProxyInterceptor : EmptyInterceptor
 	{
 		public override string GetEntityName(object entity)

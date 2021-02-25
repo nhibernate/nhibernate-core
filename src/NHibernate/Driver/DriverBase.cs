@@ -16,7 +16,7 @@ namespace NHibernate.Driver
 	/// </summary>
 	public abstract class DriverBase : IDriver, ISqlParameterFormatter
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DriverBase));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DriverBase));
 
 		private int commandTimeout;
 		private bool prepareSql;
@@ -25,7 +25,7 @@ namespace NHibernate.Driver
 		{
 			// Command timeout
 			commandTimeout = PropertiesHelper.GetInt32(Environment.CommandTimeout, settings, -1);
-			if (commandTimeout > -1 && log.IsInfoEnabled)
+			if (commandTimeout > -1 && log.IsInfoEnabled())
 			{
 				log.Info(string.Format("setting ADO.NET command timeout to {0} seconds", commandTimeout));
 			}
@@ -45,6 +45,21 @@ namespace NHibernate.Driver
 
 		public abstract DbConnection CreateConnection();
 		public abstract DbCommand CreateCommand();
+
+		/// <summary>
+		/// Begin an ADO <see cref="DbTransaction" />.
+		/// </summary>
+		/// <param name="isolationLevel">The isolation level requested for the transaction.</param>
+		/// <param name="connection">The connection on which to start the transaction.</param>
+		/// <returns>The started <see cref="DbTransaction" />.</returns>
+		public virtual DbTransaction BeginTransaction(IsolationLevel isolationLevel, DbConnection connection)
+		{
+			if (isolationLevel == IsolationLevel.Unspecified)
+			{
+				return connection.BeginTransaction();
+			}
+			return connection.BeginTransaction(isolationLevel);
+		}
 
 		/// <summary>
 		/// Does this Driver require the use of a Named Prefix in the SQL statement.  
@@ -148,9 +163,9 @@ namespace NHibernate.Driver
 				}
 				catch (Exception e)
 				{
-					if (log.IsWarnEnabled)
+					if (log.IsWarnEnabled())
 					{
-						log.Warn(e.ToString());
+						log.Warn(e, e.ToString());
 					}
 				}
 			}
@@ -234,7 +249,7 @@ namespace NHibernate.Driver
 		public virtual void ExpandQueryParameters(DbCommand cmd, SqlString sqlString, SqlType[] parameterTypes)
 		{
 			if (UseNamedPrefixInSql)
-				return;  // named parameters are ok
+				return; // named parameters are ok
 
 			var expandedParameters = new List<DbParameter>();
 			foreach (object part in sqlString)
@@ -313,9 +328,15 @@ namespace NHibernate.Driver
 
 		public virtual bool RequiresTimeSpanForTime => false;
 
+#if NETCOREAPP2_0
+		public virtual bool SupportsSystemTransactions => false;
+
+		public virtual bool SupportsNullEnlistment => false;
+#else
 		public virtual bool SupportsSystemTransactions => true;
 
 		public virtual bool SupportsNullEnlistment => true;
+#endif
 
 		/// <inheritdoc />
 		public virtual bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => true;
@@ -324,5 +345,11 @@ namespace NHibernate.Driver
 
 		/// <inheritdoc />
 		public virtual DateTime MinDate => DateTime.MinValue;
+
+		//6.0 TODO: Add property definition to IDialect
+		/// <summary>
+		/// Get the timeout in seconds for ADO.NET queries.
+		/// </summary>
+		public virtual int CommandTimeout => commandTimeout;
 	}
 }

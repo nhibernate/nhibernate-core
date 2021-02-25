@@ -16,6 +16,7 @@ using NHibernate.Exceptions;
 using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Metadata;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -30,25 +31,31 @@ namespace NHibernate.Test
 	/// it is used when testing to check that tests clean up after themselves.
 	/// </summary>
 	/// <remarks>Sessions opened from other sessions are not tracked.</remarks>
+	[Serializable]
 	public partial class DebugSessionFactory : ISessionFactoryImplementor
 	{
+		[NonSerialized]
+		private DebugConnectionProvider _debugConnectionProvider;
+
 		/// <summary>
 		/// The debug connection provider if configured for using it, <see langword="null"/> otherwise.
 		/// Use <c>ActualFactory.ConnectionProvider</c> if needing unconditionally the connection provider, be
 		/// it debug or not.
 		/// </summary>
-		public DebugConnectionProvider DebugConnectionProvider { get; }
+		public DebugConnectionProvider DebugConnectionProvider
+			=> _debugConnectionProvider ??
+				(_debugConnectionProvider = ActualFactory.ConnectionProvider as DebugConnectionProvider);
 		public ISessionFactoryImplementor ActualFactory { get; }
 
 		public EventListeners EventListeners => ((SessionFactoryImpl)ActualFactory).EventListeners;
 
+		[NonSerialized]
 		private readonly ConcurrentBag<ISessionImplementor> _openedSessions = new ConcurrentBag<ISessionImplementor>();
 		private static readonly ILog _log = LogManager.GetLogger(typeof(DebugSessionFactory).Assembly, typeof(TestCase));
 
 		public DebugSessionFactory(ISessionFactory actualFactory)
 		{
 			ActualFactory = (ISessionFactoryImplementor)actualFactory;
-			DebugConnectionProvider = ActualFactory.ConnectionProvider as DebugConnectionProvider;
 		}
 
 		#region Session tracking
@@ -292,7 +299,9 @@ namespace NHibernate.Test
 
 		SQLFunctionRegistry ISessionFactoryImplementor.SQLFunctionRegistry => ActualFactory.SQLFunctionRegistry;
 
+#pragma warning disable 618
 		IDictionary<string, ICache> ISessionFactoryImplementor.GetAllSecondLevelCacheRegions()
+#pragma warning restore 618
 		{
 			return ActualFactory.GetAllSecondLevelCacheRegions();
 		}
@@ -354,7 +363,9 @@ namespace NHibernate.Test
 			return ActualFactory.GetIdentifierGenerator(rootEntityName);
 		}
 
+#pragma warning disable 618
 		ICache ISessionFactoryImplementor.GetSecondLevelCacheRegion(string regionName)
+#pragma warning restore 618
 		{
 			return ActualFactory.GetSecondLevelCacheRegion(regionName);
 		}
@@ -386,10 +397,13 @@ namespace NHibernate.Test
 
 		public static ISessionCreationOptions GetCreationOptions(IStatelessSessionBuilder sessionBuilder)
 		{
-			return ((StatelessSessionBuilder)sessionBuilder).CreationOptions;
+			return (sessionBuilder as StatelessSessionBuilder)?.CreationOptions ??
+				(ISessionCreationOptions)sessionBuilder;
 		}
 
-		internal class SessionBuilder : ISessionBuilder
+		internal class SessionBuilder : ISessionBuilder,
+			//TODO 6.0: Remove interface with implementation (will be replaced TenantConfiguration ISessionBuilder method)
+			ISessionCreationOptionsWithMultiTenancy
 		{
 			private readonly ISessionBuilder _actualBuilder;
 			private readonly DebugSessionFactory _debugFactory;
@@ -454,9 +468,17 @@ namespace NHibernate.Test
 			}
 
 			#endregion
+
+			TenantConfiguration ISessionCreationOptionsWithMultiTenancy.TenantConfiguration
+			{
+				get => (_actualBuilder as ISessionCreationOptionsWithMultiTenancy)?.TenantConfiguration;
+				set => _actualBuilder.Tenant(value);
+			}
 		}
 
-		internal class StatelessSessionBuilder : IStatelessSessionBuilder
+		internal class StatelessSessionBuilder : IStatelessSessionBuilder,
+			//TODO 6.0: Remove interface with implementation (will be replaced TenantConfiguration IStatelessSessionBuilder method)
+			ISessionCreationOptionsWithMultiTenancy
 		{
 			private readonly IStatelessSessionBuilder _actualBuilder;
 			private readonly DebugSessionFactory _debugFactory;
@@ -488,6 +510,12 @@ namespace NHibernate.Test
 			{
 				_actualBuilder.AutoJoinTransaction(autoJoinTransaction);
 				return this;
+			}
+
+			TenantConfiguration ISessionCreationOptionsWithMultiTenancy.TenantConfiguration
+			{
+				get => (_actualBuilder as ISessionCreationOptionsWithMultiTenancy)?.TenantConfiguration;
+				set => _actualBuilder.Tenant(value);
 			}
 
 			#endregion

@@ -111,7 +111,7 @@ namespace NHibernate.Mapping
 					int i = 0;
 					foreach (string token in tokens)
 					{
-						styles[i++] = CascadeStyle.GetCascadeStyle(token.ToLowerInvariant().Trim());
+						styles[i++] = CascadeStyle.GetCascadeStyle(token.Trim());
 					}
 					if (tokens.Length == 1) return styles[0];
 					else return new CascadeStyle.MultipleCascadeStyle(styles);
@@ -263,6 +263,8 @@ namespace NHibernate.Mapping
 			}
 			set { isLazy = value; }
 		}
+
+		public string LazyGroup { get; set; }
 
 		public virtual bool BackRef
 		{

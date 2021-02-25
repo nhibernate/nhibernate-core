@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using NHibernate.Cfg.MappingSchema;
+﻿using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode.Impl;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode
 {
@@ -25,9 +24,7 @@ namespace NHibernate.Mapping.ByCode
 					rename = this.rename
 				};
 
-			var existingImports = hbmMapping.import ?? new HbmImport[0];
-
-			hbmMapping.import = existingImports.Concat(new [] { hbmImport }).ToArray();
+			hbmMapping.import = ArrayHelper.Append(hbmMapping.import, hbmImport);
 		}
 	}
 }

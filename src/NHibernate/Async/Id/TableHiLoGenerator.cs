@@ -23,7 +23,6 @@ namespace NHibernate.Id
 	using System.Threading;
 	public partial class TableHiLoGenerator : TableGenerator
 	{
-		private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
 		#region IIdentifierGenerator Members
 
@@ -34,11 +33,10 @@ namespace NHibernate.Id
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The new identifier as a <see cref="Int64"/>.</returns>
-		[MethodImpl()]
 		public override async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (await _generate.LockAsync())
+			using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
 			{
 				if (maxLo < 1)
 				{
@@ -53,7 +51,7 @@ namespace NHibernate.Id
 					long hival = Convert.ToInt64(await (base.GenerateAsync(session, obj, cancellationToken)).ConfigureAwait(false));
 					lo = (hival == 0) ? 1 : 0;
 					hi = hival * (maxLo + 1);
-					log.Debug("New high value: " + hival);
+					log.Debug("New high value: {0}", hival);
 				}
 
 				return IdentifierGeneratorFactory.CreateNumber(hi + lo++, returnClass);

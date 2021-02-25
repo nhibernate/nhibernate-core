@@ -12,18 +12,12 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-
 namespace NHibernate.Test.NHSpecificTest.NH1039
 {
 	using System.Threading.Tasks;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1039";  }
-		}
-
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();

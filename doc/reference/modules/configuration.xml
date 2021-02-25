@@ -148,13 +148,6 @@ var session = sessions.OpenSession(conn);
             </listitem>
             <listitem>
                 <para>
-                    Add the properties to a configuration section in the application
-                    configuration file. The section should be named <literal>nhibernate</literal>
-                    and its handler set to <literal>System.Configuration.NameValueSectionHandler</literal>.
-                </para>
-            </listitem>
-            <listitem>
-                <para>
                     Include <literal>&lt;property&gt;</literal> elements in a configuration
                     section in the application configuration file. The section should be named
                     <literal>hibernate-configuration</literal> and its handler set to
@@ -440,22 +433,51 @@ var session = sessions.OpenSession(conn);
 
     </sect1>
 
+    <sect1 id="configuration-provider">
+        <title>Using a custom configuration provider</title>
+
+        <para>
+            By default, NHibernate attempts to read the <literal>hibernate-configuration</literal> section
+            through the .Net <literal>ConfigurationManager</literal>. Some environments do not support it, so
+            NHibernate provides a way to set a custom configuration provider, through the
+            <literal>NHibernate.Cfg.ConfigurationProvider.Current</literal> property.
+        </para>
+
+        <para>
+            To disable the configuration provider, in case you configure NHibernate entirely programmatically,
+            set this property to <literal>null</literal>.
+        </para>
+
+        <programlisting><![CDATA[ConfigurationProvider.Current = null;]]></programlisting>
+
+        <para>
+            To provide directly the <literal>System.Configuration.Configuration</literal> instance to use, assign
+            the <literal>Current</literal> property with an instance of
+            <literal>NHibernate.Cfg.SystemConfigurationProvider</literal> built with your
+            <literal>Configuration</literal> instance.
+        </para>
+
+        <programlisting><![CDATA[ConfigurationProvider.Current = new SystemConfigurationProvider(yourConfig);]]></programlisting>
+
+        <para>
+            You may also derive a custom provider from <literal>NHibernate.Cfg.ConfigurationProvider</literal>,
+            implements its abstract methods, and assign an instance of your custom provider to the
+            <literal>NHibernate.Cfg.ConfigurationProvider.Current</literal> property.
+        </para>
+
+        <para>
+            Changes of the <literal>ConfigurationProvider.Current</literal> property value are to be done very
+            early in the application lifecycle, before any other call on a NHibernate API. Otherwise they
+            may not be taken into account.
+        </para>
+    </sect1>
+
     <sect1 id="configuration-optional">
         <title>Optional configuration properties</title>
         
         <para>
             There are a number of other properties that control the behaviour of NHibernate
             at runtime. All are optional and have reasonable default values.
-        </para>
-
-        <para>
-            System-level properties can only be set manually by setting static properties of
-            <literal>NHibernate.Cfg.Environment</literal> class or be defined in the
-            <literal>&lt;nhibernate&gt;</literal> section of the application
-            configuration file. These properties cannot be set using
-            <literal>Configuration.SetProperties</literal> or be defined in the
-            <literal>&lt;hibernate-configuration&gt;</literal> section of the application configuration
-            file.
         </para>
 
         <table frame="topbot" id="configuration-optional-properties" revision="3">
@@ -520,45 +542,6 @@ var session = sessions.OpenSession(conn);
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
                                 recommended values between <literal>0</literal> and <literal>3</literal>
-                            </para>
-                        </entry>
-                    </row>
-                    <row>
-                        <entry>
-                            <literal>use_reflection_optimizer</literal>
-                        </entry>
-                        <entry>
-                            Enables use of a runtime-generated class to set or get properties of an entity
-                            or component instead of using runtime reflection (System-level property).
-                            The use of the reflection optimizer inflicts a certain startup cost on the
-                            application but should lead to better performance in the long run.
-                            Defaults to <literal>true</literal>.
-                            <para>
-                                You can not set this property in <literal>hibernate.cfg.xml</literal>, but only
-                                in <literal>&lt;hibernate-configuration&gt;</literal> section of the application
-                                configuration file or by code by setting
-                                <literal>NHibernate.Cfg.Environment.UseReflectionOptimizer</literal>
-                                before creating any <literal>NHibernate.Cfg.Configuration</literal> instance.
-                            </para>
-                            <para>
-                                <emphasis role="strong">eg.</emphasis> 
-                                <literal>true</literal> | <literal>false</literal>
-                            </para>
-                        </entry>
-                    </row>
-                    <row>
-                        <entry>
-                            <literal>bytecode.provider</literal>
-                        </entry>
-                        <entry>
-                            Specifies the bytecode provider to use to optimize the use of reflection in NHibernate.
-                            Use <literal>null</literal> to disable the optimization completely, <literal>lcg</literal>
-                            to use built-in lightweight code generation, or the class name of a custom
-                            <literal>IBytecodeProvider</literal> implementation. Defaults to <literal>lcg</literal>.
-                            <para>
-                                <emphasis role="strong">eg.</emphasis>
-                                <literal>null</literal> | <literal>lcg</literal> |
-                                <literal>classname.of.BytecodeProvider, assembly</literal>
                             </para>
                         </entry>
                     </row>
@@ -761,6 +744,19 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>query.pre_transformer_registrar</literal>
+                        </entry>
+                        <entry>
+                            The class name of the LINQ query pre-transformer registrar, implementing
+                            <literal>IExpressionTransformerRegistrar</literal>. Defaults to <literal>null</literal> (no registrar).
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>classname.of.ExpressionTransformerRegistrar, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>linqtohql.generatorsregistry</literal>
                         </entry>
                         <entry>
@@ -770,6 +766,57 @@ var session = sessions.OpenSession(conn);
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>classname.of.LinqToHqlGeneratorsRegistry, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>linqtohql.legacy_preevaluation</literal>
+                        </entry>
+                        <entry>
+                            Whether to use the legacy pre-evaluation or not in Linq queries. Defaults to <literal>true</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                            <para>
+                                Legacy pre-evaluation is causing special properties or functions like <literal>DateTime.Now</literal>
+                                or <literal>Guid.NewGuid()</literal> to be always evaluated with the .Net runtime and replaced in the
+                                query by parameter values.
+                            </para>
+                            <para>
+                                The new pre-evaluation allows them to be converted to HQL function calls which will be run on the db
+                                side. This allows for example to retrieve the server time instead of the client time, or to generate
+                                UUIDs for each row instead of an unique one for all rows.
+                            </para>
+                            <para>
+                                The new pre-evaluation will likely be enabled by default in the next major version (6.0).
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>linqtohql.fallback_on_preevaluation</literal>
+                        </entry>
+                        <entry>
+                            When the new pre-evaluation is enabled, should methods which translation is not supported by the current
+                            dialect fallback to pre-evaluation? Defaults to <literal>false</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                            <para>
+                                When this fallback option is enabled while legacy pre-evaluation is disabled, properties or functions
+                                like <literal>DateTime.Now</literal> or <literal>Guid.NewGuid()</literal> used in Linq expressions
+                                will not fail when the dialect does not support them, but will instead be pre-evaluated.
+                            </para>
+                            <para>
+                                When this fallback option is disabled while legacy pre-evaluation is disabled, properties or functions
+                                like <literal>DateTime.Now</literal> or <literal>Guid.NewGuid()</literal> used in Linq expressions
+                                will fail when the dialect does not support them.
+                            </para>
+                            <para>
+                                This option has no effect if the legacy pre-evaluation is enabled.
                             </para>
                         </entry>
                     </row>
@@ -834,7 +881,7 @@ var session = sessions.OpenSession(conn);
                             is closed explicitly.
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
-                                <literal>create</literal> | <literal>create-drop</literal>
+                                <literal>create</literal> | <literal>create-drop</literal> | <literal>update</literal> | <literal>validate</literal>
                             </para>
                         </entry>
                     </row>
@@ -865,6 +912,20 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>hbm2ddl.throw_on_update</literal>
+                        </entry>
+                        <entry>
+                            When <literal>hbm2ddl.auto</literal> is <literal>update</literal>, whether to throw or not on schema auto-update failures.
+                            <!-- 6.0 TODO: should become true by default. -->
+                            Disabled by default.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>use_proxy_validator</literal>
                         </entry>
                         <entry>
@@ -882,7 +943,7 @@ var session = sessions.OpenSession(conn);
                         </entry>
                         <entry>
                             The class name of a custom <literal>IProxyFactoryFactory</literal> implementation.
-                            Defaults to the built-in <literal>DefaultProxyFactoryFactory</literal>.
+                            Defaults to the built-in <literal>StaticProxyFactoryFactory</literal>.
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>classname.of.ProxyFactoryFactory, assembly</literal>
@@ -963,6 +1024,25 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>transaction.auto_join</literal>
+                        </entry>
+                        <entry>
+                            Should sessions check on every operation whether there is an ongoing system transaction or not, and enlist
+                            into it if any?
+                            <para>
+                                Default is <literal>true</literal>. It can also be controlled at session opening, with
+                                <literal>ISessionFactory.WithOptions</literal>. A session can also be instructed to explicitly join the current
+                                transaction by calling <literal>ISession.JoinTransaction</literal>. This setting has no effect when using a
+                                transaction factory that is not system transactions aware.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>default_flush_mode</literal>
                         </entry>
                         <entry>
@@ -1029,6 +1109,29 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>track_session_id</literal>
+                        </entry>
+                        <entry>
+                            Set whether the session id should be tracked in logs or not. When <literal>true</literal>, each
+                            session will have an unique <literal>Guid</literal> that can be retrieved with
+                            <literal>ISessionImplementor.SessionId</literal>, otherwise <literal>ISessionImplementor.SessionId</literal>
+                            will be <literal>Guid.Empty</literal>.
+                            <para>
+                                Session id is used for logging purpose and can also be retrieved on the static property
+                                <literal>NHibernate.Impl.SessionIdLoggingContext.SessionId</literal>, when tracking is enabled.
+                            </para>
+                            <para>
+                                Disabling tracking by setting <literal>track_session_id</literal> to <literal>false</literal>
+                                increases performances. Default is <literal>true</literal>.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>sql_types.keep_datetime</literal>
                         </entry>
                         <entry>
@@ -1036,6 +1139,28 @@ var session = sessions.OpenSession(conn);
                             is used instead of <literal>DbType.DateTime</literal>. This may be disabled by setting
                             <literal>sql_types.keep_datetime</literal> to <literal>true</literal>.
                             Defaults to <literal>false</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>firebird.disable_parameter_casting</literal>
+                        </entry>
+                        <entry>
+                            <para>
+                                Firebird with FirebirdSql.Data.FirebirdClient may be unable to determine the type
+                                of parameters in many circumstances, unless they are explicitly casted in the SQL
+                                query. To avoid this trouble, the NHibernate <literal>FirebirdClientDriver</literal> parses SQL
+                                commands for detecting parameters in them and adding an explicit SQL cast around
+                                parameters which may trigger the issue.
+                            </para>
+                            <para>
+                                Defaults to <literal>false</literal>.
+                                For disabling this behavior, set this setting to true.
+                            </para>
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>true</literal> | <literal>false</literal>
@@ -1079,13 +1204,61 @@ var session = sessions.OpenSession(conn);
                             with MS SQL Server 2008+.
                             <para>
                                 This is intended to work around issues like:
-                                <programlisting>System.Data.Odbc.OdbcException : ERROR [22008] [Microsoft][SQL Server Native Client 11.0]
-Datetime field overflow. Fractional second precision exceeds the scale specified
+                                <programlisting>System.Data.Odbc.OdbcException :
+ERROR [22008]
+[Microsoft][SQL Server Native Client 11.0]
+Datetime field overflow. Fractional second
+precision exceeds the scale specified
 in the parameter binding.</programlisting>
                             </para>
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>3</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>sqlite.binaryguid</literal>
+                        </entry>
+                        <entry>
+                            SQLite can store GUIDs in binary or text form, controlled by the BinaryGuid
+                            connection string parameter (default is 'true'). The BinaryGuid setting will affect
+                            how to cast GUID to string in SQL. NHibernate will attempt to detect this
+                            setting automatically from the connection string, but if the connection
+                            or connection string is being handled by the application instead of by NHibernate,
+                            you can use the <literal>sqlite.binaryguid</literal> NHibernate setting to override the behavior.
+                            The value can be <literal>true</literal> or <literal>false</literal>.
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>nhibernate-logger</literal>
+                        </entry>
+                        <entry>
+                            The class name of an <literal>ILoggerFactory</literal> implementation. It allows using another
+                            logger than log4net.
+                            <para>
+                                The default is not defined, which causes NHibernate to search for log4net assembly. If this
+                                search succeeds, NHibernate will log with log4net. Otherwise, its internal logging will
+                                be disabled.
+                            </para>
+                            <para>
+                                This is a very special system-level property. It can only be set through an
+                                <ulink url="https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/appsettings/">appSetting</ulink>
+                                named <literal>nhibernate-logger</literal> in the application configuration file. It cannot
+                                be set neither with <literal>NHibernate.Cfg.Environment</literal> class, nor be defined in the
+                                <literal>&lt;hibernate-configuration&gt;</literal> section of the application
+                                configuration file, nor supplied by using <literal>Configuration.SetProperties</literal>, nor
+                                set in the <literal>hibernate.cfg.xml</literal> configuration file.
+                            </para>
+                            <para>
+                                Alternatively to using the setting, a logger factory can be programmatically supplied by using
+                                <literal>NHibernateLogger.SetLoggersFactory</literal>.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>classname.of.LoggerFactory, assembly</literal>
                             </para>
                         </entry>
                     </row>
@@ -1108,7 +1281,7 @@ in the parameter binding.</programlisting>
 
             <table frame="topbot" id="sql-dialects" revision="2">
                 <title>NHibernate SQL Dialects (<literal>dialect</literal>)</title>
-                <tgroup cols="2">
+                <tgroup cols="3">
                     <colspec colwidth="1*"/>
                     <colspec colwidth="2.5*"/>
                     <colspec colwidth="2.5*"/>
@@ -1289,6 +1462,13 @@ in the parameter binding.</programlisting>
                                 Set <literal>driver_class</literal> to
                                 <literal>NHibernate.Driver.SQLite20Driver</literal>
                                 for System.Data.SQLite provider for .NET 2.0.
+                                <para>
+                                    Due to
+                                    <ulink url="https://system.data.sqlite.org/index.html/tktview/44a0955ea344a777ffdbcc077831e1adc8b77a36">the
+                                    behavior of System.Data.SQLite</ulink> with <literal>DateTime</literal>, consider using
+                                    <literal>DateTimeFormatString=yyyy-MM-dd HH:mm:ss.FFFFFFF;</literal> in the SQLite
+                                    connection string for preventing undesired time shifts with its default configuration.
+                                </para>
                             </entry>
                         </row>
                         <row>
@@ -1404,6 +1584,95 @@ in the parameter binding.</programlisting>
 
         </sect2>
 
+        <sect2 id="configuration-optional-systemlevel">
+            <title>System level optional properties</title>
+
+            <para>
+                Some properties are system-level properties. They can only be set manually by setting static
+                properties of <literal>NHibernate.Cfg.Environment</literal> class or be defined in the
+                <literal>&lt;hibernate-configuration&gt;</literal> section of the application configuration
+                file, as direct sub-elements. These properties can neither be set using
+                <literal>Configuration.SetProperties</literal> or the <literal>hibernate.cfg.xml</literal>
+                configuration file, nor be set as <literal>&lt;session-factory&gt;</literal> properties.
+            </para>
+
+            <table frame="topbot" id="configuration-systemlevel-properties">
+                <title>NHibernate system level properties</title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colwidth="1*"/>
+                    <colspec colname="c2" colwidth="1*"/>
+                    <thead>
+                        <row>
+                            <entry>Property name</entry>
+                            <entry>Purpose</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <literal>bytecode-provider</literal>
+                            </entry>
+                            <entry>
+                                <para>
+                                    Specifies the bytecode provider to use to optimize the use of reflection in NHibernate.
+                                    Use <literal>null</literal> to disable the optimization completely, <literal>lcg</literal>
+                                    to use built-in lightweight code generation, or the assembly qualified class name of a custom
+                                    <literal>IBytecodeProvider</literal> implementation. Defaults to <literal>lcg</literal>.
+                                </para>
+                                <programlisting><![CDATA[<bytecode-provider
+    type="lcg|null|className" />]]></programlisting>
+                                <para>
+                                    You can also set this property by code by setting
+                                    <literal>NHibernate.Cfg.Environment.BytecodeProvider</literal>
+                                    before creating any <literal>NHibernate.Cfg.Configuration</literal> instance.
+                                </para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <literal>objects-factory</literal>
+                            </entry>
+                            <entry>
+                                <para>
+                                    Specifies a custom objects factory to use for instantiating NHibernate dependencies.
+                                    Use the assembly qualified class name of a custom <literal>IObjectsFactory</literal>
+                                    implementation.
+                                </para>
+                                <programlisting><![CDATA[<bytecode-provider
+    type="className" />]]></programlisting>
+                                <para>
+                                    You can also set this property by code by setting
+                                    <literal>NHibernate.Cfg.Environment.ObjectsFactory</literal>
+                                    before creating any <literal>NHibernate.Cfg.Configuration</literal> instance.
+                                </para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <literal>reflection-optimizer</literal>
+                            </entry>
+                            <entry>
+                                <para>
+                                    Enables use of a runtime-generated class to set or get properties of an entity
+                                    or component instead of using runtime reflection. The use of the reflection
+                                    optimizer inflicts a certain startup cost on the application but should lead to
+                                    better performance in the long run. Defaults to <literal>true</literal>.
+                                </para>
+                                <programlisting><![CDATA[<reflection-optimizer
+    use="true|false"/>]]></programlisting>
+                                <para>
+                                    You can also set this property by code by setting
+                                    <literal>NHibernate.Cfg.Environment.UseReflectionOptimizer</literal>
+                                    before creating any <literal>NHibernate.Cfg.Configuration</literal> instance.
+                                </para>
+                            </entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+        </sect2>
+
     </sect1>
 
     <sect1 id="configuration-logging">
@@ -1473,7 +1742,7 @@ in the parameter binding.</programlisting>
         <para>
             An alternative approach is to specify a full configuration in a file named
             <literal>hibernate.cfg.xml</literal>. This file can be used as a replacement
-            for the <literal>&lt;nhibernate;&gt;</literal> or <literal>&lt;hibernate-configuration&gt;</literal>
+            for the <literal>&lt;hibernate-configuration&gt;</literal>
             sections of the application configuration file.
         </para>
 

@@ -55,7 +55,7 @@ namespace NHibernate.Persister.Entity
 			for (int i = 0; i < columns.Length; i++)
 			{
 				if (columns[i] == null)
-					result[i] = StringHelper.Replace(templates[i], Template.Placeholder, alias);
+					result[i] = Template.ReplacePlaceholder(templates[i], alias);
 				else
 					result[i] = StringHelper.Qualify(alias, columns[i]);
 			}
@@ -81,7 +81,7 @@ namespace NHibernate.Persister.Entity
 			for (int i = 0; i < columns.Length; i++)
 			{
 				if (columns[i] == null)
-					result[i] = StringHelper.Replace(templates[i], Template.Placeholder, string.Empty);
+					result[i] = Template.ReplacePlaceholder(templates[i], string.Empty);
 				else
 					result[i] = columns[i];
 			}
@@ -103,7 +103,7 @@ namespace NHibernate.Persister.Entity
 
 		protected internal void InitPropertyPaths( string path, IType type, string[] columns, string[] formulaTemplates, IMapping factory )
 		{
-			if (columns.Length != type.GetColumnSpan(factory))
+			if (columns.Length != type.GetOwnerColumnSpan(factory))
 			{
 				throw new MappingException(
 					string.Format("broken column mapping for: {0} of: {1}, type {2} expects {3} columns, but {4} were mapped",

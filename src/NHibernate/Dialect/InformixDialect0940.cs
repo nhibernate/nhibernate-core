@@ -8,7 +8,6 @@ using NHibernate.Util;
 //using NHibernate.Dialect.Schema;
 using Environment = NHibernate.Cfg.Environment;
 
-
 namespace NHibernate.Dialect
 {
     /// <summary>
@@ -41,7 +40,6 @@ namespace NHibernate.Dialect
             RegisterColumnType(DbType.Binary, "BLOB");
             RegisterColumnType(DbType.String, 2147483647, "CLOB");
         }
-
 
         /// <summary> Get the select command used retrieve the names of all sequences.</summary>
         /// <returns> The select command; or null if sequences are not supported. </returns>
@@ -106,8 +104,7 @@ namespace NHibernate.Dialect
             return "create sequence " + sequenceName;
             // +
             //" INCREMENT BY 1 START WITH 1 MINVALUE 1 NOCYCLE CACHE 20 NOORDER";
-
-        }
+		}
 
         // in .NET overloaded version cannot be overriden (in Java allowed)
         //protected override string GetCreateSequenceString(string sequenceName, int initialValue, int incrementSize)
@@ -129,7 +126,10 @@ namespace NHibernate.Dialect
             return new ANSIJoinFragment();
         }
 
-        /// <summary>
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false;
+
+		/// <summary>
         /// Does this Dialect have some kind of <c>LIMIT</c> syntax?
         /// </summary>
         /// <value>False, unless overridden.</value>
@@ -146,5 +146,8 @@ namespace NHibernate.Dialect
             get { return false; }
         }
 
+        // Informix 9 is said on Internet to be limited to 128. (http://www.justskins.com/forums/length-of-columns-names-143294.html)
+        /// <inheritdoc />
+        public override int MaxAliasLength => 128;
     };
 }

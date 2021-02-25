@@ -17,8 +17,8 @@ namespace NHibernate.AdoNet
 		private int _countOfCommands;
 		private int _totalExpectedRowsAffected;
 		private DbCommand _currentBatch;
-		private IDictionary<string, List<object>> _parameterValueListHashTable;
-		private IDictionary<string, bool> _parameterIsAllNullsHashTable;
+		private Dictionary<string, List<object>> _parameterValueListHashTable;
+		private Dictionary<string, bool> _parameterIsAllNullsHashTable;
 		private StringBuilder _currentBatchCommandsLog;
 
 		public OracleDataClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
@@ -38,7 +38,7 @@ namespace NHibernate.AdoNet
 			_totalExpectedRowsAffected += expectation.ExpectedRowCount;
 			string lineWithParameters = null;
 			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled)
+			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
 			{
 				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(CurrentCommand);
 				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
@@ -48,9 +48,9 @@ namespace NHibernate.AdoNet
 					.Append(":")
 					.AppendLine(lineWithParameters);
 			}
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug("Adding to batch:" + lineWithParameters);
+				Log.Debug("Adding to batch:{0}", lineWithParameters);
 			}
 
 			if (_currentBatch == null)
@@ -136,7 +136,7 @@ namespace NHibernate.AdoNet
 						throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
 					}
 
-					Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected);
+					Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected, ps);
 				}
 				finally
 				{

@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
+using NHibernate.Intercept;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -14,44 +17,44 @@ namespace NHibernate.Engine
 	/// </summary>
 	public partial interface IPersistenceContext
 	{
-		bool IsStateless { get;}
+		bool IsStateless { get; }
 
 		/// <summary>
 		/// Get the session to which this persistence context is bound.
 		/// </summary>
-		ISessionImplementor Session { get;}
+		ISessionImplementor Session { get; }
 
 		/// <summary>
 		/// Retrieve this persistence context's managed load context.
 		/// </summary>
-		LoadContexts LoadContexts { get;}
+		LoadContexts LoadContexts { get; }
 
 		/// <summary>
 		/// Get the <tt>BatchFetchQueue</tt>, instantiating one if necessary.
 		/// </summary>
-		BatchFetchQueue BatchFetchQueue { get;}
+		BatchFetchQueue BatchFetchQueue { get; }
 
 		/// <summary> Retrieve the set of EntityKeys representing nullifiable references</summary>
-		ISet<EntityKey> NullifiableEntityKeys { get;}
+		ISet<EntityKey> NullifiableEntityKeys { get; }
 
 		/// <summary> Get the mapping from key value to entity instance</summary>
-		IDictionary<EntityKey, object> EntitiesByKey { get;}
+		IDictionary<EntityKey, object> EntitiesByKey { get; }
 
 		/// <summary> Get the mapping from entity instance to entity entry</summary>
-		IDictionary EntityEntries { get;}
+		IDictionary EntityEntries { get; }
 
 		/// <summary> Get the mapping from collection instance to collection entry</summary>
-		IDictionary CollectionEntries { get;}
+		IDictionary CollectionEntries { get; }
 
 		/// <summary> Get the mapping from collection key to collection instance</summary>
-		IDictionary<CollectionKey, IPersistentCollection> CollectionsByKey { get;}
+		IDictionary<CollectionKey, IPersistentCollection> CollectionsByKey { get; }
 
 		/// <summary> How deep are we cascaded?</summary>
-		int CascadeLevel { get;}
+		int CascadeLevel { get; }
 
 		/// <summary>Is a flush cycle currently in process?</summary>
 		/// <remarks>Called before and after the flushcycle</remarks>
-		bool Flushing { get; set;}
+		bool Flushing { get; set; }
 		
 		/// <summary>
 		/// The read-only status for entities (and proxies) loaded into this persistence context.
@@ -84,7 +87,7 @@ namespace NHibernate.Engine
 		void Clear();
 
 		/// <summary>False if we know for certain that all the entities are read-only</summary>
-		bool HasNonReadOnlyEntities { get;}
+		bool HasNonReadOnlyEntities { get; }
 
 		/// <summary> Set the status of an entry</summary>
 		void SetEntryStatus(EntityEntry entry, Status status);
@@ -160,6 +163,8 @@ namespace NHibernate.Engine
 		CollectionEntry GetCollectionEntry(IPersistentCollection coll);
 
 		/// <summary> Adds an entity to the internal caches.</summary>
+		// Since 5.3
+		[Obsolete("Use the AddEntity extension method instead")]
 		EntityEntry AddEntity(object entity, Status status, object[] loadedState, EntityKey entityKey, object version,
 													LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
 													bool disableVersionIncrement, bool lazyPropertiesAreUnfetched);
@@ -168,6 +173,8 @@ namespace NHibernate.Engine
 		/// Generates an appropriate EntityEntry instance and adds it
 		/// to the event source's internal caches.
 		/// </summary>
+		// Since 5.3
+		[Obsolete("Use the AddEntry extension method instead")]
 		EntityEntry AddEntry(object entity, Status status, object[] loadedState, object rowId, object id, object version,
 		                     LockMode lockMode, bool existsInDatabase, IEntityPersister persister, bool disableVersionIncrement,
 		                     bool lazyPropertiesAreUnfetched);
@@ -408,5 +415,98 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="child">The child.</param>
 		void RemoveChildParent(object child);
+	}
+
+	public static class PersistenceContextExtensions
+	{
+		/// <summary> Adds an entity to the internal caches.</summary>
+		public static EntityEntry AddEntity(
+			this IPersistenceContext context,
+			object entity,
+			Status status,
+			object[] loadedState,
+			EntityKey entityKey,
+			object version,
+			LockMode lockMode,
+			bool existsInDatabase,
+			IEntityPersister persister,
+			bool disableVersionIncrement)
+		{
+			if (context is StatefulPersistenceContext statefulPersistence)
+			{
+				return statefulPersistence.AddEntity(
+					entity,
+					status,
+					loadedState,
+					entityKey,
+					version,
+					lockMode,
+					existsInDatabase,
+					persister,
+					disableVersionIncrement);
+			}
+
+#pragma warning disable 618
+			return context.AddEntity(
+				entity,
+				status,
+				loadedState,
+				entityKey,
+				version,
+				lockMode,
+				existsInDatabase,
+				persister,
+				disableVersionIncrement,
+				loadedState?.Any(o => o == LazyPropertyInitializer.UnfetchedProperty) == true);
+#pragma warning restore 618
+		}
+
+		/// <summary>
+		/// Generates an appropriate EntityEntry instance and adds it
+		/// to the event source's internal caches.
+		/// </summary>
+		public static EntityEntry AddEntry(
+			this IPersistenceContext context,
+			object entity,
+			Status status,
+			object[] loadedState,
+			object rowId,
+			object id,
+			object version,
+			LockMode lockMode,
+			bool existsInDatabase,
+			IEntityPersister persister,
+			bool disableVersionIncrement)
+		{
+			if (context is StatefulPersistenceContext statefulPersistence)
+			{
+				return statefulPersistence.AddEntry(
+					entity,
+					status,
+					loadedState,
+					rowId,
+					id,
+					version,
+					lockMode,
+					existsInDatabase,
+					persister,
+					disableVersionIncrement);
+			}
+
+#pragma warning disable 618
+			return context.AddEntry(
+				entity,
+				status,
+				loadedState,
+				rowId,
+				id,
+				version,
+				lockMode,
+				existsInDatabase,
+				persister,
+				disableVersionIncrement,
+				loadedState?.Any(o => o == LazyPropertyInitializer.UnfetchedProperty) == true);
+#pragma warning restore 618
+		}
 	}
 }

@@ -1,13 +1,17 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace NHibernate.Exceptions
 {
-    public class SqlParseException : Exception 
-    {
+	[Serializable]
+	public class SqlParseException : Exception 
+	{
+		public SqlParseException(string message) : base(message)
+		{
+		}
 
-        public SqlParseException(string Message) : base(Message)
-        {
-        }
-
-    }
+		protected SqlParseException(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
+		}
+	}
 }

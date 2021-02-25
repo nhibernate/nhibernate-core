@@ -27,6 +27,6 @@ namespace NHibernate.Tuple.Component
 
 		/// <summary> Does the component managed by this tuuplizer contain a parent property? </summary>
 		/// <returns> True if the component does contain a parent property; false otherwise. </returns>
-		bool HasParentProperty { get;}
+		bool HasParentProperty { get; }
 	}
 }

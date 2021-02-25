@@ -6,14 +6,8 @@ namespace NHibernate.Test.NHSpecificTest.NH681
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH681"; }
-		}
-
 		protected override void Configure(NHibernate.Cfg.Configuration cfg)
 		{
-			
 		}
 
 		[Test]

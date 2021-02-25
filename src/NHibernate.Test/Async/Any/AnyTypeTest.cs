@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Any
@@ -22,7 +21,7 @@ namespace NHibernate.Test.Any
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Any.Person.hbm.xml"}; }
 		}
@@ -35,30 +34,36 @@ namespace NHibernate.Test.Any
 		[Test]
 		public async Task FlushProcessingAsync()
 		{
+			var person = new Person();
+			var address = new Address();
 			//http://opensource.atlassian.com/projects/hibernate/browse/HHH-1663
-			ISession session = OpenSession();
-			session.BeginTransaction();
-			Person person = new Person();
-			Address address = new Address();
-			person.Data = address;
-			await (session.SaveOrUpdateAsync(person));
-			await (session.SaveOrUpdateAsync(address));
-			await (session.Transaction.CommitAsync());
-			session.Close();
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				person.Data = address;
+				await (session.SaveOrUpdateAsync(person));
+				await (session.SaveOrUpdateAsync(address));
+				await (tran.CommitAsync());
+				session.Close();
+			}
 
-			session = OpenSession();
-			session.BeginTransaction();
-			person = (Person) await (session.LoadAsync(typeof (Person), person.Id));
-			person.Name = "makingpersondirty";
-			await (session.Transaction.CommitAsync());
-			session.Close();
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				person = (Person) await (session.LoadAsync(typeof(Person), person.Id));
+				person.Name = "makingpersondirty";
+				await (tran.CommitAsync());
+				session.Close();
+			}
 
-			session = OpenSession();
-			session.BeginTransaction();
-			await (session.DeleteAsync(person));
-			await (session.DeleteAsync(address));
-			await (session.Transaction.CommitAsync());
-			session.Close();
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				await (session.DeleteAsync(person));
+				await (session.DeleteAsync(address));
+				await (tran.CommitAsync());
+				session.Close();
+			}
 		}
 	}
 }

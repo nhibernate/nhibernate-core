@@ -8,14 +8,15 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 //using NHibernate.Dialect.Schema;
 

@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.CacheTest">
+  <class name="EntityA">
+    <cache usage="read-write" region="Common" />
+    <id type="int" />
+    <property name="Description"/>
+    <property name="Value" column="`Value`"/>
+    <set name="Related">
+      <cache usage="nonstrict-read-write" region="Common" />
+      <key column="Related" />
+      <one-to-many class="EntityA"/>
+    </set>
+  </class>
+  <class name="EntityB">
+    <cache usage="read-only" region="Common" />
+    <id type="int" />
+    <property name="Description"/>
+    <property name="Value" column="`Value`"/>
+    <set name="Related">
+      <cache usage="read-write" region="Common" />
+      <key column="Related" />
+      <one-to-many class="EntityB"/>
+    </set>
+  </class>
+  <query name="EntityA.All" cache-region="Common" cacheable="true">
+    from EntityA
+  </query>
+</hibernate-mapping>

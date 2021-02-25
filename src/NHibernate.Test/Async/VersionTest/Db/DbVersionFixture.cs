@@ -18,7 +18,7 @@ namespace NHibernate.Test.VersionTest.Db
 	[TestFixture]
 	public class DbVersionFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"VersionTest.Db.User.hbm.xml"}; }
 		}
@@ -44,7 +44,7 @@ namespace NHibernate.Test.VersionTest.Db
 
 			// For dialects (Oracle8 for example) which do not return "true
 			// timestamps" sleep for a bit to allow the db date-time increment...
-			Thread.Sleep(1500);
+			await (System.Threading.Tasks.Task.Delay(1500));
 
 			s = OpenSession();
 			t = s.BeginTransaction();
@@ -58,7 +58,7 @@ namespace NHibernate.Test.VersionTest.Db
 			Assert.That(!NHibernateUtil.DbTimestamp.IsEqual(guyTimestamp, guy.Timestamp), "owner version not incremented");
 
 			guyTimestamp = guy.Timestamp;
-			Thread.Sleep(1500);
+			await (System.Threading.Tasks.Task.Delay(1500));
 
 			s = OpenSession();
 			t = s.BeginTransaction();

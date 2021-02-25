@@ -19,6 +19,7 @@ using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -26,7 +27,6 @@ namespace NHibernate.Id
 	using System.Threading;
 	public partial class IncrementGenerator : IIdentifierGenerator, IConfigurable
 	{
-		private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
 		/// <summary>
 		///
@@ -35,16 +35,16 @@ namespace NHibernate.Id
 		/// <param name="obj"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns></returns>
-		[MethodImpl()]
 		public async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (await _generate.LockAsync())
+			using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
 			{
 				if (_sql != null)
 				{
 					await (GetNextAsync(session, cancellationToken)).ConfigureAwait(false);
 				}
+
 				return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
 			}
 		}
@@ -52,7 +52,7 @@ namespace NHibernate.Id
 		private async Task GetNextAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			Logger.Debug("fetching initial value: " + _sql);
+			Logger.Debug("fetching initial value: {0}", _sql);
 
 			try
 			{
@@ -72,7 +72,7 @@ namespace NHibernate.Id
 							_next = 1L;
 						}
 						_sql = null;
-						Logger.Debug("first free id: " + _next);
+						Logger.Debug("first free id: {0}", _next);
 					}
 					finally
 					{
@@ -86,7 +86,7 @@ namespace NHibernate.Id
 			}
 			catch (DbException sqle)
 			{
-				Logger.Error("could not get increment value", sqle);
+				Logger.Error(sqle, "could not get increment value");
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
 												 "could not fetch initial value for increment generator");
 			}

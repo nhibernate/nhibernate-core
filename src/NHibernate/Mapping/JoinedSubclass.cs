@@ -41,10 +41,5 @@ namespace NHibernate.Mapping
 				throw new MappingException(string.Format("subclass key has wrong number of columns: {0} type: {1}", MappedClass.Name, Key.Type.Name));
 			}
 		}
-
-		public override IEnumerable<Property> ReferenceablePropertyIterator
-		{
-			get { return PropertyIterator; }
-		}
 	}
 }

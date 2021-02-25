@@ -8,23 +8,46 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Param;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
-using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Loader.Criteria
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+	internal static partial class CriteriaLoaderExtensions
+	{
+		/// <summary>
+		/// Loads all loaders results to single typed list
+		/// </summary>
+		internal static async Task<List<T>> LoadAllToListAsync<T>(this IList<CriteriaLoader> loaders, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var subresults = new List<IList>(loaders.Count);
+			foreach(var l in loaders)
+			{
+				subresults.Add(await (l.ListAsync(session, cancellationToken)).ConfigureAwait(false));
+			}
+
+			var results = new List<T>(subresults.Sum(r => r.Count));
+			foreach(var list in subresults)
+			{
+				ArrayHelper.AddAll(results, list);
+			}
+			return results;
+		}
+	}
+
 	public partial class CriteriaLoader : OuterJoinLoader
 	{
 
@@ -36,9 +59,9 @@ namespace NHibernate.Loader.Criteria
 			}
 			try
 			{
-				return ListAsync(session, translator.GetQueryParameters(), querySpaces, resultTypes, cancellationToken);
+				return ListAsync(session, translator.GetQueryParameters(), querySpaces, cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<IList>(ex);
 			}
@@ -51,7 +74,6 @@ namespace NHibernate.Loader.Criteria
 			return ResolveResultTransformer(customResultTransformer)
 				.TransformTuple(await (GetResultRowAsync(row, rs, session, cancellationToken)).ConfigureAwait(false), ResultRowAliases);
 		}
-
 
 		protected override async Task<object[]> GetResultRowAsync(object[] row, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken)
 		{

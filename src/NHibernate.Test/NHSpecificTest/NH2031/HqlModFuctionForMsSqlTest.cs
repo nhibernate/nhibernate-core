@@ -7,7 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2031
 {
 	public class MyClass
 	{
-		
 	}
 
 	[TestFixture]
@@ -28,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2031
 
 		public string GetSql(string query)
 		{
-			var qt = new QueryTranslatorImpl(null, new HqlParseEngine(query, false, Sfi).Parse(), new CollectionHelper.EmptyMapClass<string, IFilter>(), Sfi);
+			var qt = new QueryTranslatorImpl(null, new HqlParseEngine(query, false, Sfi).Parse(), CollectionHelper.EmptyDictionary<string, IFilter>(), Sfi);
 			qt.Compile(null, false);
 			return qt.SQLString;
 		}

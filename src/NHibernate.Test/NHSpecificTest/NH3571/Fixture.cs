@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3571
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -73,7 +73,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3571
 					tran.Commit();
 				}
 			}
-
 		}
 
 		[Test]
@@ -91,7 +90,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3571
 				Assert.AreEqual("First Product", product.Details.Properties["Name"]);
 			}
 		}
-
 
 		[Test]
 		public void MultipleQueriesShouldNotCache()
@@ -112,7 +110,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3571
 				Assert.That(product2.ProductId, Is.EqualTo("2"));
 			}
 		}
-
 
 		[Test]
 		public void DifferentKeyInDynamicComponentDictionaryReturnsDifferentExpressionKeys()

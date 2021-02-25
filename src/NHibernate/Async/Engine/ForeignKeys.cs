@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-
 using NHibernate.Id;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -99,7 +98,6 @@ namespace NHibernate.Engine
 			private async Task<bool> IsNullifiableAsync(string entityName, object obj, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-
 				//if (obj == org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY)
 				//  return false; //this is kinda the best we can do...
 
@@ -157,10 +155,6 @@ namespace NHibernate.Engine
 		public static async Task<bool> IsNotTransientSlowAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (entity.IsProxy())
-				return true;
-			if (session.PersistenceContext.IsEntryFor(entity))
-				return true;
 			return !await (IsTransientSlowAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false);
 		}
 
@@ -181,10 +175,29 @@ namespace NHibernate.Engine
 				return false;
 			}
 
+			var proxy = entity as INHibernateProxy;
+			if (proxy?.HibernateLazyInitializer.IsUninitialized == true)
+			{
+				return false;
+			}
+
 			// let the interceptor inspect the instance to decide
+			var interceptorResult = session.Interceptor.IsTransient(entity);
+			if (interceptorResult.HasValue)
+				return interceptorResult;
+
 			// let the persister inspect the instance to decide
-			return session.Interceptor.IsTransient(entity) ??
-			       await (session.GetEntityPersister(entityName, entity).IsTransientAsync(entity, session, cancellationToken)).ConfigureAwait(false);
+			if (proxy != null)
+			{
+				// The persister only deals with unproxied entities.
+				entity = await (proxy.HibernateLazyInitializer.GetImplementationAsync(cancellationToken)).ConfigureAwait(false);
+			}
+
+			return await (session
+				.GetEntityPersister(
+					entityName,
+					entity)
+				.IsTransientAsync(entity, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary> 
@@ -209,11 +222,8 @@ namespace NHibernate.Engine
 				// When using assigned identifiers we cannot tell if an entity
 				// is transient or detached without querying the database.
 				// This could potentially cause Select N+1 in cascaded saves, so warn the user.
-				log.Warn(
-					"Unable to determine if " + entity.ToString()
-					+ " with assigned identifier " + persister.GetIdentifier(entity)
-					+ " is transient or detached; querying the database."
-					+ " Use explicit Save() or Update() in session to prevent this.");
+				log.Warn("Unable to determine if {0} with assigned identifier {1} is transient or detached; querying the database. Use explicit Save() or Update() in session to prevent this.", 
+					entity, persister.GetIdentifier(entity));
 			}
 
 			// hit the database, after checking the session cache for a snapshot
@@ -255,21 +265,10 @@ namespace NHibernate.Engine
 
 					if ((await (IsTransientFastAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault())
 					{
-						/***********************************************/
-						// TODO NH verify the behavior of NH607 test
-						// these lines are only to pass test NH607 during PersistenceContext porting
-						// i'm not secure that NH607 is a test for a right behavior
-						EntityEntry entry = session.PersistenceContext.GetEntry(entity);
-						if (entry != null)
-							return entry.Id;
-						// the check was put here to have les possible impact
-						/**********************************************/
-
 						entityName = entityName ?? session.GuessEntityName(entity);
 						string entityString = entity.ToString();
 						throw new TransientObjectException(
 							string.Format("object references an unsaved transient instance - save the transient instance before flushing or set cascade action for the property to something that would make it autosave. Type: {0}, Entity: {1}", entityName, entityString));
-
 					}
 					id = session.GetEntityPersister(entityName, entity).GetIdentifier(entity);
 				}

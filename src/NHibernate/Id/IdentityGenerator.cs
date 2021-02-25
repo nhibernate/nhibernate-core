@@ -60,7 +60,7 @@ namespace NHibernate.Id
 
 			public override IdentifierGeneratingInsert PrepareIdentifierGeneratingInsert()
 			{
-				InsertSelectIdentityInsert insert = new InsertSelectIdentityInsert(factory);
+				var insert = new InsertSelectIdentityInsert(factory, persister.RootTableKeyColumnNames[0]);
 				insert.AddIdentityColumn(persister.RootTableKeyColumnNames[0]);
 				return insert;
 			}
@@ -95,7 +95,6 @@ namespace NHibernate.Id
 		/// </summary>
 		public partial class BasicDelegate : AbstractSelectingDelegate, IInsertGeneratedIdentifierDelegate
 		{
-
 			private readonly IPostInsertIdentityPersister persister;
 			private readonly ISessionFactoryImplementor factory;
 

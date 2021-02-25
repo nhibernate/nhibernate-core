@@ -12,10 +12,10 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	public class DatabaseMetadata : IDatabaseMetadata
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (DatabaseMetadata));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (DatabaseMetadata));
 
-		private readonly IDictionary<string, ITableMetadata> tables = new Dictionary<string, ITableMetadata>();
-		private readonly ISet<string> sequences = new HashSet<string>();
+		private readonly Dictionary<string, ITableMetadata> tables = new Dictionary<string, ITableMetadata>();
+		private readonly HashSet<string> sequences = new HashSet<string>();
 		private readonly bool extras;
 		private readonly Dialect.Dialect dialect;
 		private readonly IDataBaseSchema meta;
@@ -26,7 +26,6 @@ namespace NHibernate.Tool.hbm2ddl
 			: this(connection, dialect, true)
 		{
 		}
-
 
 		public DatabaseMetadata(DbConnection connection, Dialect.Dialect dialect, bool extras)
 		{
@@ -73,7 +72,6 @@ namespace NHibernate.Tool.hbm2ddl
 							metaInfo = meta.GetTables(catalog, schema, name, Types);
 						}
 					}
-
 				}
 				DataRowCollection rows = metaInfo.Rows;
 
@@ -88,7 +86,7 @@ namespace NHibernate.Tool.hbm2ddl
 					}
 				}
 
-				log.Info("table not found: " + name);
+				log.Info("table not found: {0}", name);
 				return null;
 			}
 			catch (DbException sqle)

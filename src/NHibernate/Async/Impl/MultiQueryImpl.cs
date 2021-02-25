@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -39,24 +40,31 @@ namespace NHibernate.Impl
 		public async Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (new SessionIdLoggingContext(session.SessionId))
+			using (session.BeginProcess())
 			{
 				bool cacheable = session.Factory.Settings.IsQueryCacheEnabled && isCacheable;
 				combinedParameters = CreateCombinedQueryParameters();
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.DebugFormat("Multi query with {0} queries.", queries.Count);
+					log.Debug("Multi query with {0} queries.", queries.Count);
 					for (int i = 0; i < queries.Count; i++)
 					{
-						log.DebugFormat("Query #{0}: {1}", i, queries[i]);
+						log.Debug("Query #{0}: {1}", i, queries[i]);
 					}
 				}
 
 				try
 				{
 					Before();
-					return cacheable ? await (ListUsingQueryCacheAsync(cancellationToken)).ConfigureAwait(false) : await (ListIgnoreQueryCacheAsync(cancellationToken)).ConfigureAwait(false);
+
+					var querySpaces = new HashSet<string>(Translators.SelectMany(t => t.QuerySpaces));
+					if (resultSetsCommand.HasQueries)
+					{
+						await (session.AutoFlushIfRequiredAsync(querySpaces, cancellationToken)).ConfigureAwait(false);
+					}
+
+					return cacheable ? await (ListUsingQueryCacheAsync(querySpaces, cancellationToken)).ConfigureAwait(false) : await (ListIgnoreQueryCacheAsync(cancellationToken)).ConfigureAwait(false);
 				}
 				finally
 				{
@@ -68,11 +76,10 @@ namespace NHibernate.Impl
 		protected async Task<List<object>> DoListAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
-			var stopWatch = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (session.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWatch.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 			int rowCount = 0;
 
@@ -81,14 +88,15 @@ namespace NHibernate.Impl
 			var hydratedObjects = new List<object>[Translators.Count];
 			List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[Translators.Count];
 			bool[] createSubselects = new bool[Translators.Count];
+			var cacheBatcher = new CacheBatcher(session);
 
 			try
 			{
-				using (var reader = await (resultSetsCommand.GetReaderAsync(commandTimeout != RowSelection.NoValue ? commandTimeout : (int?)null, cancellationToken)).ConfigureAwait(false))
+				using (var reader = await (resultSetsCommand.GetReaderAsync(_timeout, cancellationToken)).ConfigureAwait(false))
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.DebugFormat("Executing {0} queries", translators.Count);
+						log.Debug("Executing {0} queries", translators.Count);
 					}
 					for (int i = 0; i < translators.Count; i++)
 					{
@@ -106,7 +114,7 @@ namespace NHibernate.Impl
 
 						if (parameter.HasAutoDiscoverScalarTypes)
 						{
-							translator.Loader.AutoDiscoverTypes(reader);
+							translator.Loader.AutoDiscoverTypes(reader, parameter, null);
 						}
 
 						LockMode[] lockModeArray = translator.Loader.GetLockModes(parameter.LockModes);
@@ -118,7 +126,7 @@ namespace NHibernate.Impl
 						translator.Loader.HandleEmptyCollections(parameter.CollectionKeys, reader, session);
 						EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
 							log.Debug("processing result set");
 						}
@@ -127,14 +135,15 @@ namespace NHibernate.Impl
 						int count;
 						for (count = 0; count < maxRows && await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false); count++)
 						{
-							if (log.IsDebugEnabled)
+							if (log.IsDebugEnabled())
 							{
-								log.Debug("result set row: " + count);
+								log.Debug("result set row: {0}", count);
 							}
 
 							rowCount++;
 							object result = await (translator.Loader.GetRowFromResultSetAsync(
-								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true, cancellationToken)).ConfigureAwait(false);
+								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true, null, null,
+								(persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
 							tempResults.Add(result);
 
 							if (createSubselects[i])
@@ -144,16 +153,16 @@ namespace NHibernate.Impl
 							}
 						}
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
-							log.Debug(string.Format("done processing result set ({0} rows)", count));
+							log.Debug("done processing result set ({0} rows)", count);
 						}
 
 						results.Add(tempResults);
 
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
-							log.DebugFormat("Query {0} returned {1} results", i, tempResults.Count);
+							log.Debug("Query {0} returned {1} results", i, tempResults.Count);
 						}
 
 						await (reader.NextResultAsync(cancellationToken)).ConfigureAwait(false);
@@ -164,49 +173,30 @@ namespace NHibernate.Impl
 						ITranslator translator = translators[i];
 						QueryParameters parameter = parameters[i];
 
-						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false, cancellationToken)).ConfigureAwait(false);
+						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false, cacheBatcher, cancellationToken)).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{
 							translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, session);
 						}
 					}
+
+					await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception sqle)
 			{
-				var message = string.Format("Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
-				log.Error(message, sqle);
+				log.Error(sqle, "Failed to execute multi query: [{0}]", resultSetsCommand.Sql);
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi query", resultSetsCommand.Sql);
 			}
 
-			if (statsEnabled)
+			if (stopWatch != null)
 			{
 				stopWatch.Stop();
 				session.Factory.StatisticsImplementor.QueryExecuted(string.Format("{0} queries (MultiQuery)", translators.Count), rowCount, stopWatch.Elapsed);
 			}
 			return results;
-		}
-
-		private async Task AggregateQueriesInformationAsync(CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			int queryIndex = 0;
-			foreach (AbstractQueryImpl query in queries)
-			{
-				query.VerifyParameters();
-				QueryParameters queryParameters = query.GetQueryParameters();
-				queryParameters.ValidateParameters();
-				foreach (var translator in await (query.GetTranslatorsAsync(session, queryParameters, cancellationToken)).ConfigureAwait(false))
-				{
-					translators.Add(translator);
-					translatorQueryMap.Add(queryIndex);
-					parameters.Add(queryParameters);
-					ISqlCommand singleCommand = translator.Loader.CreateSqlCommand(queryParameters, session);
-					resultSetsCommand.Append(singleCommand);
-				}
-				queryIndex++;
-			}
 		}
 
 		public async Task<object> GetResultAsync(string key, CancellationToken cancellationToken = default(CancellationToken))
@@ -232,19 +222,17 @@ namespace NHibernate.Impl
 			return GetResultList(await (DoListAsync(cancellationToken)).ConfigureAwait(false));
 		}
 
-		private async Task<IList> ListUsingQueryCacheAsync(CancellationToken cancellationToken)
+		private async Task<IList> ListUsingQueryCacheAsync(HashSet<string> querySpaces, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IQueryCache queryCache = session.Factory.GetQueryCache(cacheRegion);
 
 			ISet<FilterKey> filterKeys = FilterKey.CreateFilterKeys(session.EnabledFilters);
 
-			ISet<string> querySpaces = new HashSet<string>();
 			List<IType[]> resultTypesList = new List<IType[]>(Translators.Count);
 			for (int i = 0; i < Translators.Count; i++)
 			{
 				ITranslator queryTranslator = Translators[i];
-				querySpaces.UnionWith(queryTranslator.QuerySpaces);
 				resultTypesList.Add(queryTranslator.ReturnTypes);
 			}
 			int[] firstRows = new int[Parameters.Count];
@@ -268,7 +256,7 @@ namespace NHibernate.Impl
 			{
 				log.Debug("Cache miss for multi query");
 				var list = await (DoListAsync(cancellationToken)).ConfigureAwait(false);
-				await (queryCache.PutAsync(key, new ICacheAssembler[] { assembler }, new object[] { list }, false, session, cancellationToken)).ConfigureAwait(false);
+				await (queryCache.PutAsync(key, combinedParameters, new ICacheAssembler[] { assembler }, new object[] { list }, session, cancellationToken)).ConfigureAwait(false);
 				result = list;
 			}
 

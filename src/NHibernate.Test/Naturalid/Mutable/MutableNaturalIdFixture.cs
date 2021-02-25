@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Reflection;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
@@ -16,7 +14,7 @@ namespace NHibernate.Test.Naturalid.Mutable
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Naturalid.Mutable.User.hbm.xml"}; }
 		}
@@ -31,41 +29,33 @@ namespace NHibernate.Test.Naturalid.Mutable
 		[Test]
 		public void ReattachmentNaturalIdCheck()
 		{
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			User u = new User("gavin", "hb", "secret");
-			s.Persist(u);
-			s.Transaction.Commit();
-			s.Close();
+			User u;
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				u = new User("gavin", "hb", "secret");
+				s.Persist(u);
+				t.Commit();
+				s.Close();
+			}
 
 			FieldInfo name = u.GetType().GetField("name",
 			                                      BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 			name.SetValue(u, "Gavin");
-			s = OpenSession();
-			s.BeginTransaction();
-			try
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				s.Update(u);
-				s.Transaction.Commit();
-			}
-			catch (HibernateException)
-			{
-				s.Transaction.Rollback();
-			}
-			catch (Exception)
-			{
-					s.Transaction.Rollback();
-			}
-			finally
-			{
-				s.Close();
+				t.Commit();
 			}
 
-			s = OpenSession();
-			s.BeginTransaction();
-			s.Delete(u);
-			s.Transaction.Commit();
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Delete(u);
+				t.Commit();
+				s.Close();
+			}
 		}
 
 		[Test]
@@ -215,7 +205,6 @@ namespace NHibernate.Test.Naturalid.Mutable
 
 			t.Commit();
 			s.Close();
-
 
 			s = OpenSession();
 			t = s.BeginTransaction();

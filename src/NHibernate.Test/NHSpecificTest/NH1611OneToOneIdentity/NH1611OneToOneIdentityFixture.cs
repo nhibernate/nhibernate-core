@@ -6,11 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 	[TestFixture]
 	public class NH1611OneToOneIdentityFixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1611OneToOneIdentity"; }
-		}
-
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();
@@ -45,7 +40,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 			}
 		}
 
-
 		[Test]
 		public void CanQueryOneToOneWithCompositeId()
 		{
@@ -57,10 +51,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 					IList<Primary> list = criteria.List<Primary>();
 					Assert.AreEqual("blarg", list[0].Description);
 					Assert.AreEqual("nuts", list[0].Adjunct.AdjunctDescription);
-
 				}
 			}
 		}
-	
 	}
 }

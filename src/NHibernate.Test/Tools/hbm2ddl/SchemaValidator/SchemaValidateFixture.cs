@@ -41,7 +41,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 			validator.Validate();
 		}
 
-		[Test, SetCulture("tr-TR"), SetUICulture("tr-TR")]
+		[Test, SetCulture("tr-TR"), SetUICulture("tr-TR"), NetFxOnly]
 		public void ShouldVerifySameTableTurkish()
 		{
 			//NH-3063

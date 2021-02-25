@@ -17,7 +17,7 @@ namespace NHibernate.Util
 	/// </summary>
 	public static class ReflectHelper
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ReflectHelper));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ReflectHelper));
 
 		public const BindingFlags AnyVisibilityInstance = BindingFlags.Instance | BindingFlags.Public |
 														   BindingFlags.NonPublic;
@@ -26,6 +26,16 @@ namespace NHibernate.Util
 
 		private static readonly MethodInfo Exception_InternalPreserveStackTrace =
 			typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
+
+		internal static T CastOrThrow<T>(object obj, string supportMessage) where T : class
+		{
+			if (obj is T t)
+				return t;
+
+			var typeKind = typeof(T).IsInterface ? "interface" : "class";
+			var objType = obj?.GetType().FullName ?? "Object must not be null and";
+			throw new ArgumentException($@"{objType} requires to implement {typeof(T).FullName} {typeKind} to support {supportMessage}.");
+		}
 
 		/// <summary>
 		/// Extract the <see cref="MethodInfo"/> from a given expression.
@@ -57,6 +67,21 @@ namespace NHibernate.Util
 		/// <summary>
 		/// Extract the <see cref="MethodInfo"/> from a given expression.
 		/// </summary>
+		/// <typeparam name="TSource">The declaring-type of the method.</typeparam>
+		/// <typeparam name="TResult">The return type of the method.</typeparam>
+		/// <param name="method">The method.</param>
+		/// <returns>The <see cref="MethodInfo"/> of the method.</returns>
+		public static MethodInfo GetMethod<TSource, TResult>(Expression<Func<TSource, TResult>> method)
+		{
+			if (method == null)
+				throw new ArgumentNullException(nameof(method));
+
+			return ((MethodCallExpression) method.Body).Method;
+		}
+
+		/// <summary>
+		/// Extract the <see cref="MethodInfo"/> from a given expression.
+		/// </summary>
 		/// <param name="method">The method.</param>
 		/// <returns>The <see cref="MethodInfo"/> of the no-generic method or the generic-definition for a generic-method.</returns>
 		/// <seealso cref="MethodInfo.GetGenericMethodDefinition"/>
@@ -77,6 +102,95 @@ namespace NHibernate.Util
 				throw new ArgumentNullException(nameof(method));
 
 			return ((MethodCallExpression)method.Body).Method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		internal static MethodInfo FastGetMethod<TResult>(System.Func<TResult> func)
+		{
+			return func.Method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a">A dummy parameter</param>
+		internal static MethodInfo FastGetMethod<T, TResult>(System.Func<T, TResult> func, T a)
+		{
+			return func.Method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a1">A dummy parameter</param>
+		/// <param name="a2">A dummy parameter</param>
+		internal static MethodInfo FastGetMethod<T1, T2, TResult>(System.Func<T1, T2, TResult> func, T1 a1, T2 a2)
+		{
+			return func.Method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a1">A dummy parameter</param>
+		/// <param name="a2">A dummy parameter</param>
+		/// <param name="a3">A dummy parameter</param>
+		internal static MethodInfo FastGetMethod<T1, T2, T3, TResult>(System.Func<T1, T2, T3, TResult> func, T1 a1, T2 a2, T3 a3)
+		{
+			return func.Method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a">A dummy parameter</param>
+		internal static MethodInfo FastGetMethodDefinition<T, TResult>(System.Func<T, TResult> func, T a)
+		{
+			var method = func.Method;
+			return method.IsGenericMethod ? method.GetGenericMethodDefinition() : method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a1">A dummy parameter</param>
+		/// <param name="a2">A dummy parameter</param>
+		internal static MethodInfo FastGetMethodDefinition<T1, T2, TResult>(System.Func<T1, T2, TResult> func, T1 a1, T2 a2)
+		{
+			var method = func.Method;
+			return method.IsGenericMethod ? method.GetGenericMethodDefinition() : method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a1">A dummy parameter</param>
+		/// <param name="a2">A dummy parameter</param>
+		/// <param name="a3">A dummy parameter</param>
+		internal static MethodInfo FastGetMethodDefinition<T1, T2, T3, TResult>(System.Func<T1, T2, T3, TResult> func, T1 a1, T2 a2, T3 a3)
+		{
+			var method = func.Method;
+			return method.IsGenericMethod ? method.GetGenericMethodDefinition() : method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a1">A dummy parameter</param>
+		/// <param name="a2">A dummy parameter</param>
+		/// <param name="a3">A dummy parameter</param>
+		/// <param name="a4">A dummy parameter</param>
+		internal static MethodInfo FastGetMethodDefinition<T1, T2, T3, T4, TResult>(System.Func<T1, T2, T3, T4, TResult> func, T1 a1, T2 a2, T3 a3, T4 a4)
+		{
+			var method = func.Method;
+			return method.IsGenericMethod ? method.GetGenericMethodDefinition() : method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a1">A dummy parameter</param>
+		/// <param name="a2">A dummy parameter</param>
+		/// <param name="a3">A dummy parameter</param>
+		/// <param name="a4">A dummy parameter</param>
+		/// <param name="a5">A dummy parameter</param>
+		internal static MethodInfo FastGetMethodDefinition<T1, T2, T3, T4, T5, TResult>(System.Func<T1, T2, T3, T4, T5, TResult> func, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+		{
+			var method = func.Method;
+			return method.IsGenericMethod ? method.GetGenericMethodDefinition() : method;
 		}
 
 		/// <summary>
@@ -116,6 +230,21 @@ namespace NHibernate.Util
 		/// <param name="property">The expression representing the property getter.</param>
 		/// <returns>The <see cref="MemberInfo"/> of the property.</returns>
 		public static MemberInfo GetProperty<TSource, TResult>(Expression<Func<TSource, TResult>> property)
+		{
+			if (property == null)
+			{
+				throw new ArgumentNullException(nameof(property));
+			}
+			return ((MemberExpression)property.Body).Member;
+		}
+
+		/// <summary>
+		/// Gets the static field or property to be accessed.
+		/// </summary>
+		/// <typeparam name="TResult">The type of the property.</typeparam>
+		/// <param name="property">The expression representing the property getter.</param>
+		/// <returns>The <see cref="MemberInfo"/> of the property.</returns>
+		public static MemberInfo GetProperty<TResult>(Expression<Func<TResult>> property)
 		{
 			if (property == null)
 			{
@@ -268,7 +397,7 @@ namespace NHibernate.Util
 
 			var heuristicClass = propertyClass.UnwrapIfNullable();
 
-			return TypeFactory.HeuristicType(heuristicClass.AssemblyQualifiedName);
+			return TypeFactory.HeuristicType(heuristicClass);
 		}
 
 		/// <summary>
@@ -325,7 +454,7 @@ namespace NHibernate.Util
 		/// the method try to find the System.Type scanning all Assemblies of the <see cref="AppDomain.CurrentDomain"/>.
 		/// </remarks>
 		/// <exception cref="TypeLoadException">If no System.Type was found for <paramref name="classFullName"/>.</exception>
-				public static System.Type ClassForFullName(string classFullName)
+		public static System.Type ClassForFullName(string classFullName)
 		{
 			var result = ClassForFullNameOrNull(classFullName);
 			if (result == null)
@@ -398,7 +527,6 @@ namespace NHibernate.Util
 			{
 				// Try to get the type from an already loaded assembly
 				System.Type type = System.Type.GetType(name.ToString());
-
 				if (type != null)
 				{
 					return type;
@@ -407,17 +535,27 @@ namespace NHibernate.Util
 				if (name.Assembly == null)
 				{
 					// No assembly was specified for the type, so just fail
-					string message = "Could not load type " + name + ". Possible cause: no assembly name specified.";
-					log.Warn(message);
-					if (throwOnError) throw new TypeLoadException(message);
+					const string noAssembly = "Could not load type {0}. Possible cause: no assembly name specified.";
+					log.Warn(noAssembly, name);
+					if (throwOnError) throw new TypeLoadException(string.Format(noAssembly, name));
 					return null;
+				}
+
+				//Load type from already loaded assembly
+				type = System.Type.GetType(
+					name.ToString(),
+					an => AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName == an.FullName),
+					null);
+				if (type != null)
+				{
+					return type;
 				}
 
 				Assembly assembly = Assembly.Load(name.Assembly);
 
 				if (assembly == null)
 				{
-					log.Warn("Could not load type " + name + ". Possible cause: incorrect assembly name specified.");
+					log.Warn("Could not load type {0}. Possible cause: incorrect assembly name specified.", name);
 					return null;
 				}
 
@@ -425,7 +563,7 @@ namespace NHibernate.Util
 
 				if (type == null)
 				{
-					log.Warn("Could not load type " + name + ".");
+					log.Warn("Could not load type {0}.", name);
 					return null;
 				}
 
@@ -433,9 +571,9 @@ namespace NHibernate.Util
 			}
 			catch (Exception e)
 			{
-				if (log.IsErrorEnabled)
+				if (log.IsErrorEnabled())
 				{
-					log.Error("Could not load type " + name + ".", e);
+					log.Error(e, "Could not load type {0}.", name);
 				}
 				if (throwOnError) throw;
 				return null;
@@ -598,8 +736,20 @@ namespace NHibernate.Util
 		/// <returns>The unwrapped exception.</returns>
 		public static Exception UnwrapTargetInvocationException(TargetInvocationException ex)
 		{
-			Exception_InternalPreserveStackTrace.Invoke(ex.InnerException, new Object[] { });
+			Exception_InternalPreserveStackTrace.Invoke(ex.InnerException, Array.Empty<object>());
 			return ex.InnerException;
+		}
+
+		/// <summary>
+		/// Ensures an exception current stack-trace will be preserved if the exception is explicitly rethrown.
+		/// </summary>
+		/// <param name="ex">
+		/// The <see cref="Exception"/> which current stack-trace is to be preserved in case of explicit rethrow.
+		/// </param>
+		/// <returns>The unwrapped exception.</returns>
+		internal static void PreserveStackTrace(Exception ex)
+		{
+			Exception_InternalPreserveStackTrace.Invoke(ex, Array.Empty<object>());
 		}
 
 		/// <summary>
@@ -645,33 +795,26 @@ namespace NHibernate.Util
 			List<System.Type> typesToSearch = new List<System.Type>();
 			MethodInfo foundMethod = null;
 			
-			try
-			{            
-				typesToSearch.Add(type);
-			
-				if (type.IsInterface)
-				{
-					// Methods on parent interfaces are not actually inherited
-					// by child interfaces, so we have to use GetInterfaces to
-					// identify any parent interfaces that may contain the
-					// method implementation
-					System.Type[] inheritedInterfaces = type.GetInterfaces();
-					typesToSearch.AddRange(inheritedInterfaces);
-				}
-
-				foreach (System.Type typeToSearch in typesToSearch)
-				{
-					MethodInfo result = typeToSearch.GetMethod(method.Name, bindingFlags, null, tps, null);
-					if (result != null)
-					{
-						foundMethod = result;
-						break;
-					}
-				}
-			}
-			catch (Exception)
+			typesToSearch.Add(type);
+		
+			if (type.IsInterface)
 			{
-			   throw;
+				// Methods on parent interfaces are not actually inherited
+				// by child interfaces, so we have to use GetInterfaces to
+				// identify any parent interfaces that may contain the
+				// method implementation
+				System.Type[] inheritedInterfaces = type.GetInterfaces();
+				typesToSearch.AddRange(inheritedInterfaces);
+			}
+
+			foreach (System.Type typeToSearch in typesToSearch)
+			{
+				MethodInfo result = typeToSearch.GetMethod(method.Name, bindingFlags, null, tps, null);
+				if (result != null)
+				{
+					foundMethod = result;
+					break;
+				}
 			}
 			
 			return foundMethod;
@@ -762,12 +905,12 @@ namespace NHibernate.Util
 
 		public static bool IsPropertyGet(MethodInfo method)
 		{
-			return method.IsSpecialName && method.Name.StartsWith("get_");
+			return method.IsSpecialName && method.Name.StartsWith("get_", StringComparison.Ordinal);
 		}
 
 		public static bool IsPropertySet(MethodInfo method)
 		{
-			return method.IsSpecialName && method.Name.StartsWith("set_");
+			return method.IsSpecialName && method.Name.StartsWith("set_", StringComparison.Ordinal);
 		}
 
 		public static string GetPropertyName(MethodInfo method)

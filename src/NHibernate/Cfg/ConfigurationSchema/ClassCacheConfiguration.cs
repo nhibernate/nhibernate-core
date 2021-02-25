@@ -89,7 +89,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 					switch (classCacheElement.Name)
 					{
 						case "class":
-							if (classCacheElement.Value.Trim().Length == 0)
+							if (string.IsNullOrWhiteSpace(classCacheElement.Value))
 								throw new HibernateConfigException("Invalid class-cache element; the attribute <class> must be assigned with no empty value");
 							clazz = classCacheElement.Value;
 							break;
@@ -127,7 +127,6 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			get { return region; }
 		}
 
-
 		private EntityCacheUsage usage;
 		/// <summary>
 		/// Cache strategy.
@@ -149,6 +148,5 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		{
 			get { return include; }
 		}
-
 	}
 }

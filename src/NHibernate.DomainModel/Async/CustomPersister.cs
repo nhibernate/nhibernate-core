@@ -21,6 +21,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
+using Array = System.Array;
 
 namespace NHibernate.DomainModel
 {
@@ -37,7 +38,7 @@ namespace NHibernate.DomainModel
 		{
 			try
 			{
-				if (!EqualsHelper.Equals(currentState[0], previousState[0]))
+				if (!Equals(currentState[0], previousState[0]))
 				{
 					return Task.FromResult<int[]>(new int[] { 0 });
 				}
@@ -56,7 +57,7 @@ namespace NHibernate.DomainModel
 		{
 			try
 			{
-				if (!EqualsHelper.Equals(old[0], current[0]))
+				if (!Equals(old[0], current[0]))
 				{
 					return Task.FromResult<int[]>(new int[] { 0 });
 				}
@@ -84,9 +85,8 @@ namespace NHibernate.DomainModel
 			if (obj != null)
 			{
 				clone = (Custom)obj.Clone();
-				TwoPhaseLoad.AddUninitializedEntity(session.GenerateEntityKey(id, this), clone, this, LockMode.None, false,
-				                                    session);
-				TwoPhaseLoad.PostHydrate(this, id, new String[] {obj.Name}, null, clone, LockMode.None, false, session);
+				TwoPhaseLoad.AddUninitializedEntity(session.GenerateEntityKey(id, this), clone, this, LockMode.None, session);
+				TwoPhaseLoad.PostHydrate(this, id, new String[] {obj.Name}, null, clone, LockMode.None, session);
 				await (TwoPhaseLoad.InitializeEntityAsync(clone, false, session, new PreLoadEvent((IEventSource) session),
 				                              new PostLoadEvent((IEventSource) session), cancellationToken));
 			}

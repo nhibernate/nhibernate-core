@@ -43,9 +43,10 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			cmd.Parameters[index].Value = Convert.ToByte(value);
+			var dp = cmd.Parameters[index];
+			dp.Value = dp.DbType == DbType.Int16 ? Convert.ToInt16(value) : Convert.ToByte(value);
 		}
-
+		
 		public override string Name
 		{
 			get { return "Byte"; }
@@ -56,12 +57,21 @@ namespace NHibernate.Type
 			return value.ToString();
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc />
 		public virtual object StringToObject(string xml)
 		{
 			return Byte.Parse(xml);
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior. Replace override keyword by virtual after having
+		// removed the obsoleted base.
+		/// <inheritdoc cref="IVersionType.FromStringValue"/>
+#pragma warning disable 672
 		public override object FromStringValue(string xml)
+#pragma warning restore 672
 		{
 			return byte.Parse(xml);
 		}

@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class BasicObjectFixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecific.BasicObject.hbm.xml"}; }
 		}
@@ -48,7 +48,6 @@ namespace NHibernate.Test.NHSpecificTest
 
 			s = OpenSession();
 			bo = (BasicObject) s.Load(typeof(BasicObject), bo.Id);
-
 
 			Assert.IsNotNull(bo.AnyWithProxy, "AnyWithProxy should not be null");
 			Assert.IsTrue(bo.AnyWithProxy is IBasicObjectProxy, "AnyWithProxy should have been a IBasicObjectProxy instance");

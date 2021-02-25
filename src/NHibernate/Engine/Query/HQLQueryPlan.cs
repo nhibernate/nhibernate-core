@@ -31,7 +31,7 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public partial class HQLQueryPlan : IQueryPlan
 	{
-		protected static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(HQLQueryPlan));
+		protected static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(HQLQueryPlan));
 
 		private readonly string _sourceQuery;
 
@@ -85,9 +85,9 @@ namespace NHibernate.Engine.Query
 
 		public void PerformList(QueryParameters queryParameters, ISessionImplementor session, IList results)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug("find: " + _sourceQuery);
+				Log.Debug("find: {0}", _sourceQuery);
 				queryParameters.LogParameters(session.Factory);
 			}
 
@@ -108,7 +108,7 @@ namespace NHibernate.Engine.Query
 			}
 
 			IList combinedResults = results ?? new List<object>();
-			IdentitySet distinction = new IdentitySet();
+			var distinction = new HashSet<object>(ReferenceComparer<object>.Instance);
 			int includedCount = -1;
 			for (int i = 0; i < Translators.Length; i++)
 			{
@@ -128,7 +128,7 @@ namespace NHibernate.Engine.Query
 					for (int x = 0; x < size; x++)
 					{
 						object result = tmp[x];
-						if (distinction.Add(result))
+						if (!distinction.Add(result))
 						{
 							continue;
 						}
@@ -152,9 +152,9 @@ namespace NHibernate.Engine.Query
 
 		public IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug("enumerable: " + _sourceQuery);
+				Log.Debug("enumerable: {0}", _sourceQuery);
 				queryParameters.LogParameters(session.Factory);
 			}
 			if (Translators.Length == 0)
@@ -176,19 +176,19 @@ namespace NHibernate.Engine.Query
 
 		public IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session)
 		{
-			return new SafetyEnumerable<T>(PerformIterate(queryParameters, session));
+			return PerformIterate(queryParameters, session).CastOrDefault<T>();
 		}
 
         public int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)
         {
-            if (Log.IsDebugEnabled)
+            if (Log.IsDebugEnabled())
             {
-                Log.Debug("executeUpdate: " + _sourceQuery);
+                Log.Debug("executeUpdate: {0}", _sourceQuery);
                 queryParameters.LogParameters(session.Factory);
             }
             if (Translators.Length != 1)
             {
-                Log.Warn("manipulation query [" + _sourceQuery + "] resulted in [" + Translators.Length + "] split queries");
+                Log.Warn("manipulation query [{0}] resulted in [{1}] split queries", _sourceQuery, Translators.Length);
             }
             int result = 0;
             for (int i = 0; i < Translators.Length; i++)

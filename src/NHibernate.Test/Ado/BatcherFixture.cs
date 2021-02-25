@@ -1,4 +1,3 @@
-using System.Collections;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NUnit.Framework;
@@ -13,7 +12,7 @@ namespace NHibernate.Test.Ado
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Ado.VerySimple.hbm.xml", "Ado.AlmostSimple.hbm.xml" }; }
 		}
@@ -44,11 +43,11 @@ namespace NHibernate.Test.Ado
 		private void Cleanup()
 		{
 			using (ISession s = Sfi.OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.CreateQuery("delete from VerySimple").ExecuteUpdate();
 				s.CreateQuery("delete from AlmostSimple").ExecuteUpdate();
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 
@@ -59,6 +58,7 @@ namespace NHibernate.Test.Ado
 			{
 				s.Save(new VerySimple {Id = 1, Name = "Fabio", Weight = 119.5});
 				s.Save(new VerySimple {Id = 2, Name = "Fiamma", Weight = 9.8});
+				s.Save(new VerySimple {Id = 3, Name = "Roberto", Weight = 98.8 });
 				tx.Commit();
 			}
 		}
@@ -74,11 +74,14 @@ namespace NHibernate.Test.Ado
 			{
 				var vs1 = s.Get<VerySimple>(1);
 				var vs2 = s.Get<VerySimple>(2);
+				var vs3 = s.Get<VerySimple>(3);
 				vs1.Weight -= 10;
 				vs2.Weight -= 1;
+				vs3.Weight -= 5;
 				Sfi.Statistics.Clear();
 				s.Update(vs1);
 				s.Update(vs2);
+				s.Update(vs3);
 				tx.Commit();
 			}
 
@@ -86,16 +89,18 @@ namespace NHibernate.Test.Ado
 			Cleanup();
 		}
 
-		[Test, Ignore("Not fixed yet.")]
+		[Test, Ignore("Not fixed yet."), NetFxOnly]
 		[Description("SqlClient: The batcher should run all different INSERT queries in only one roundtrip.")]
 		public void SqlClientOneRoundTripForUpdateAndInsert()
 		{
+#if NETFX
 			if (Sfi.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
 				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
+#endif
 
 			FillDb();
 
-			using(var sqlLog = new SqlLogSpy())
+			using (var sqlLog = new SqlLogSpy())
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
@@ -124,12 +129,14 @@ namespace NHibernate.Test.Ado
 			Cleanup();
 		}
 
-		[Test]
+		[Test, NetFxOnly]
 		[Description("SqlClient: The batcher log output should be formatted")]
 		public void BatchedoutputShouldBeFormatted()
 		{
+#if NETFX
 			if (Sfi.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
 				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
+#endif
 
 			using (var sqlLog = new SqlLogSpy())
 			{
@@ -140,7 +147,6 @@ namespace NHibernate.Test.Ado
 
 			Cleanup();
 		}
-
 
 		[Test]
 		[Description("The batcher should run all DELETE queries in only one roundtrip.")]
@@ -153,9 +159,11 @@ namespace NHibernate.Test.Ado
 			{
 				var vs1 = s.Get<VerySimple>(1);
 				var vs2 = s.Get<VerySimple>(2);
+				var vs3 = s.Get<VerySimple>(3);
 				Sfi.Statistics.Clear();
 				s.Delete(vs1);
 				s.Delete(vs2);
+				s.Delete(vs3);
 				tx.Commit();
 			}
 

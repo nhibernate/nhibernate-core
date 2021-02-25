@@ -22,7 +22,7 @@ namespace NHibernate.Criterion
 			_projection = projection;
 		}
 
-		private static readonly TypedValue[] NoValues = new TypedValue[0];
+		private static readonly TypedValue[] NoValues = Array.Empty<TypedValue>();
 
 		/// <summary>
 		/// Initialize a new instance of the <see cref="NotNullExpression" /> class for a named
@@ -39,8 +39,8 @@ namespace NHibernate.Criterion
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria);
+			var columnNames =
+				CriterionUtil.GetColumnNamesAsSqlStringParts(_propertyName, _projection, criteriaQuery, criteria);
 
 			bool opNeeded = false;
 
@@ -52,7 +52,7 @@ namespace NHibernate.Criterion
 				}
 				opNeeded = true;
 
-				sqlBuilder.Add(columnNames[i])
+				sqlBuilder.AddObject(columnNames[i])
 					.Add(" is not null");
 			}
 

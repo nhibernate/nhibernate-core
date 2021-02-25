@@ -1,4 +1,3 @@
-using System.Collections;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Generatedkeys.Select
@@ -6,7 +5,7 @@ namespace NHibernate.Test.Generatedkeys.Select
 	[TestFixture]
 	public class SelectGeneratorTest: TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Generatedkeys.Select.MyEntity.hbm.xml" }; }
 		}
@@ -24,19 +23,19 @@ namespace NHibernate.Test.Generatedkeys.Select
 		[Test]
 		public void GetGeneratedKeysSupport()
 		{
-			ISession session = OpenSession();
-			session.BeginTransaction();
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				MyEntity e = new MyEntity("entity-1");
+				session.Save(e);
 
-			MyEntity e = new MyEntity("entity-1");
-			session.Save(e);
+				// this insert should happen immediately!
+				Assert.AreEqual(1, e.Id, "id not generated through forced insertion");
 
-			// this insert should happen immediately!
-			Assert.AreEqual(1, e.Id, "id not generated through forced insertion");
-
-			session.Delete(e);
-			session.Transaction.Commit();
-			session.Close();
+				session.Delete(e);
+				tran.Commit();
+				session.Close();
+			}
 		}
-
 	}
 }

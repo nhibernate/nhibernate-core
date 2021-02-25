@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest
 	public class MapFixtureAsync : TestCase
 	{
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -55,7 +55,6 @@ namespace NHibernate.Test.NHSpecificTest
 				session.Flush();
 			}
 		}
-
 
 		[Test]
 		public async Task TestSelectAsync()

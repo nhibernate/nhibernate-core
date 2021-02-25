@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1891
 	[TestFixture]
 	public class Fixture : TestCase
 	{
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "NHSpecificTest.NH1891.FormulaEscaping.hbm.xml" }; }
 		}

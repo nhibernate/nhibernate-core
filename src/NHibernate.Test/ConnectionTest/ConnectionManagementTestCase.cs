@@ -5,7 +5,7 @@ namespace NHibernate.Test.ConnectionTest
 {
 	public abstract class ConnectionManagementTestCase : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"ConnectionTest.Silly.hbm.xml"}; }
 		}

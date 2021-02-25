@@ -128,10 +128,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 			var parameterNode = n as ParameterNode;
 			if (parameterNode != null)
 			{
-				var parameter = Parameter.Placeholder;
-				// supposed to be simplevalue
-				parameter.BackTrack = parameterNode.HqlParameterSpecification.GetIdsForBackTrack(sessionFactory).Single();
-				writer.PushParameter(parameter);
+				var list = parameterNode.HqlParameterSpecification.GetIdsForBackTrack(sessionFactory).Select(
+					backTrack =>
+					{
+						var parameter = Parameter.Placeholder;
+						parameter.BackTrack = backTrack;
+						return parameter;
+					}).ToList();
+				Out(SqlStringHelper.ParametersList(list));
 			}
 			else if (n is SqlNode)
 			{
@@ -206,8 +210,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				return;
 			}
-
-			if (right.RealOrigin == left || (right.RealOrigin != null && right.RealOrigin == left.RealOrigin))
+			if (right.Type == ENTITY_JOIN)
+			{
+				Out(" ");
+			}
+			else if (right.RealOrigin == left || (right.RealOrigin != null && right.RealOrigin == left.RealOrigin))
 			{
 				// right represents a joins originating from left; or
 				// both right and left reprersent joins originating from the same FromElement
@@ -303,6 +310,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
+		private void OutAggregateFunctionName(IASTNode m)
+		{
+			var aggregateNode = (AggregateNode) m;
+			Out(aggregateNode.FunctionName);
+		}
+
 		private void CommaBetweenParameters(String comma)
 		{
 			writer.CommaBetweenParameters(comma);
@@ -384,7 +397,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void BeginBitwiseOp(string op)
 		{
-			var function = sessionFactory.SQLFunctionRegistry.FindSQLFunction(op.ToLowerInvariant());
+			var function = sessionFactory.SQLFunctionRegistry.FindSQLFunction(op);
 			if (function == null)
 				return;
 
@@ -394,7 +407,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void EndBitwiseOp(string op)
 		{
-			ISQLFunction function = sessionFactory.SQLFunctionRegistry.FindSQLFunction(op.ToLowerInvariant());
+			ISQLFunction function = sessionFactory.SQLFunctionRegistry.FindSQLFunction(op);
 			if (function == null)
 				return;
 
@@ -486,7 +499,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				return builder.ToSqlString();
 			}
-
 
 			#endregion
 		}

@@ -14,7 +14,7 @@ namespace NHibernate.Id.Enhanced
 	/// </summary>
 	public partial class SequenceStructure : IDatabaseStructure
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(SequenceStructure));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(SequenceStructure));
 
 		private readonly int _incrementSize;
 		private readonly int _initialValue;
@@ -107,9 +107,9 @@ namespace NHibernate.Id.Enhanced
 						{
 							rs.Read();
 							long result = Convert.ToInt64(rs.GetValue(0));
-							if (Log.IsDebugEnabled)
+							if (Log.IsDebugEnabled())
 							{
-								Log.Debug("Sequence value obtained: " + result);
+								Log.Debug("Sequence value obtained: {0}", result);
 							}
 							return result;
 						}

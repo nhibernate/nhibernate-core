@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using NHibernate.Multi;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2201
@@ -45,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2201
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public async Task CanUseMutliCriteriaAndFetchSelectAsync()
 		{
 			using (var s = OpenSession())
@@ -63,6 +64,24 @@ namespace NHibernate.Test.NHSpecificTest.NH2201
 				Assert.That(result1.Count, Is.EqualTo(2));
 				Assert.That(result2.Count, Is.EqualTo(2));
 				Console.WriteLine("*** end");
+			}
+		}
+
+		[Test]
+		public async Task CanUseQueryBatchAndFetchSelectAsync()
+		{
+			using (var s = OpenSession())
+			{
+				var multi =
+					s.CreateQueryBatch()
+					 .Add<Parent>(s.CreateCriteria<Parent>())
+					 .Add<Parent>(s.CreateCriteria<Parent>());
+
+				var result1 = await (multi.GetResultAsync<Parent>(0));
+				var result2 = await (multi.GetResultAsync<Parent>(1));
+
+				Assert.That(result1.Count, Is.EqualTo(2));
+				Assert.That(result2.Count, Is.EqualTo(2));
 			}
 		}
 	}

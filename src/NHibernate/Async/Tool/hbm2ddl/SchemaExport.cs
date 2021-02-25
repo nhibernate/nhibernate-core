@@ -17,6 +17,7 @@ using System.IO;
 using NHibernate.AdoNet.Util;
 using NHibernate.Cfg;
 using NHibernate.Connection;
+using NHibernate.MultiTenancy;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
 
@@ -37,7 +38,6 @@ namespace NHibernate.Tool.hbm2ddl
 			dialect = Dialect.Dialect.GetDialect(configProperties);
 
 			string autoKeyWordsImport = PropertiesHelper.GetString(Environment.Hbm2ddlKeyWords, configProperties, "not-defined");
-			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
 			{
 				await (SchemaMetadataUpdater.UpdateAsync(cfg, dialect, cancellationToken)).ConfigureAwait(false);
@@ -47,9 +47,11 @@ namespace NHibernate.Tool.hbm2ddl
 			dropSQL = cfg.GenerateDropSchemaScript(dialect);
 			createSQL = cfg.GenerateSchemaCreationScript(dialect);
 			formatter = (PropertiesHelper.GetBoolean(Environment.FormatSql, configProperties, true) ? FormatStyle.Ddl : FormatStyle.None).Formatter;
+			_requireTenantConnection = PropertiesHelper.GetEnum(Environment.MultiTenancy, configProperties, MultiTenancyStrategy.None) == MultiTenancyStrategy.Database;
 			wasInitialized = true;
 		}
 
+		//TODO 6.0: Remove (replaced by method with optional connection parameter)
 		/// <summary>
 		/// Run the schema creation script
 		/// </summary>
@@ -66,9 +68,39 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return ExecuteAsync(useStdOut, execute, false, cancellationToken);
+			return CreateAsync(useStdOut, execute, null, cancellationToken);
 		}
 
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
+		/// <summary>
+		/// Run the schema creation script
+		/// </summary>
+		/// <param name="useStdOut"><see langword="true" /> if the ddl should be outputted in the Console.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <param name="connection"> Optional explicit connection. Required for multi-tenancy.
+		/// Must be an opened connection. The method doesn't close the connection. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <remarks>
+		/// This is a convenience method that calls <see cref="ExecuteAsync(bool, bool, bool,CancellationToken)"/> and sets
+		/// the justDrop parameter to false.
+		/// </remarks>
+		public Task CreateAsync(bool useStdOut, bool execute, DbConnection connection, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				return InitConnectionAndExecuteAsync(GetAction(useStdOut), execute, false, connection, null, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		//TODO 6.0: Remove (replaced by method with optional connection parameter)
 		/// <summary>
 		/// Run the schema creation script
 		/// </summary>
@@ -85,9 +117,32 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return ExecuteAsync(scriptAction, execute, false, cancellationToken);
+			return CreateAsync(scriptAction, execute, null, cancellationToken);
 		}
 
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
+		/// <summary>
+		/// Run the schema creation script
+		/// </summary>
+		/// <param name="scriptAction"> an action that will be called for each line of the generated ddl.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <param name="connection"> Optional explicit connection. Required for multi-tenancy.
+		/// Must be an opened connection. The method doesn't close the connection. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <remarks>
+		/// This is a convenience method that calls <see cref="ExecuteAsync(bool, bool, bool,CancellationToken)"/> and sets
+		/// the justDrop parameter to false.
+		/// </remarks>
+		public Task CreateAsync(Action<string> scriptAction, bool execute, DbConnection connection, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InitConnectionAndExecuteAsync(scriptAction, execute, false, connection, null, cancellationToken);
+		}
+
+		//TODO 6.0: Remove (replaced by method with optional connection parameter)
 		/// <summary>
 		/// Run the schema creation script
 		/// </summary>
@@ -104,9 +159,32 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return ExecuteAsync(null, execute, false, exportOutput, cancellationToken);
+			return CreateAsync(exportOutput, execute, null, cancellationToken);
 		}
 
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
+		/// <summary>
+		/// Run the schema creation script
+		/// </summary>
+		/// <param name="exportOutput"> if non-null, the ddl will be written to this TextWriter.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <param name="connection"> Optional explicit connection. Required for multi-tenancy.
+		/// Must be an opened connection. The method doesn't close the connection. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <remarks>
+		/// This is a convenience method that calls <see cref="ExecuteAsync(bool, bool, bool,CancellationToken)"/> and sets
+		/// the justDrop parameter to false.
+		/// </remarks>
+		public Task CreateAsync(TextWriter exportOutput, bool execute, DbConnection connection, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InitConnectionAndExecuteAsync(null, execute, false, connection, exportOutput, cancellationToken);
+		}
+
+		//TODO 6.0: Remove (replaced by method with optional connection parameter)
 		/// <summary>
 		/// Run the drop schema script
 		/// </summary>
@@ -123,9 +201,39 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return ExecuteAsync(useStdOut, execute, true, cancellationToken);
+			return DropAsync(useStdOut, execute, null, cancellationToken);
 		}
 
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
+		/// <summary>
+		/// Run the drop schema script
+		/// </summary>
+		/// <param name="useStdOut"><see langword="true" /> if the ddl should be outputted in the Console.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <param name="connection"> Optional explicit connection. Required for multi-tenancy.
+		/// Must be an opened connection. The method doesn't close the connection. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <remarks>
+		/// This is a convenience method that calls <see cref="ExecuteAsync(bool, bool, bool,CancellationToken)"/> and sets
+		/// the justDrop parameter to true.
+		/// </remarks>
+		public Task DropAsync(bool useStdOut, bool execute, DbConnection connection, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				return InitConnectionAndExecuteAsync(GetAction(useStdOut), execute, true, connection, null, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		//TODO 6.0: Remove (replaced by method with optional connection parameter) 
 		/// <summary>
 		/// Run the drop schema script
 		/// </summary>
@@ -142,14 +250,35 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return ExecuteAsync(null, execute, true, exportOutput, cancellationToken);
+			return DropAsync(exportOutput, execute, null, cancellationToken);
 		}
 
-		private async Task ExecuteAsync(Action<string> scriptAction, bool execute, bool throwOnError, TextWriter exportOutput,
+		//TODO 6.0: Make connection parameter optional: DbConnection connection = null
+		/// <summary>
+		/// Run the drop schema script
+		/// </summary>
+		/// <param name="exportOutput"> if non-null, the ddl will be written to this TextWriter.</param>
+		/// <param name="execute"><see langword="true" /> if the ddl should be executed against the Database.</param>
+		/// <param name="connection"> Optional explicit connection. Required for multi-tenancy.
+		/// Must be an opened connection. The method doesn't close the connection. </param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <remarks>
+		/// This is a convenience method that calls <see cref="ExecuteAsync(Action&lt;string&gt;, bool, bool, TextWriter,CancellationToken)"/> and sets
+		/// the justDrop parameter to true.
+		/// </remarks>
+		public Task DropAsync(TextWriter exportOutput, bool execute, DbConnection connection, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InitConnectionAndExecuteAsync(null, execute, true, connection, exportOutput, cancellationToken);
+		}
+
+		private async Task ExecuteInitializedAsync(Action<string> scriptAction, bool execute, bool throwOnError, TextWriter exportOutput,
 							 DbCommand statement, string sql, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			await (InitializeAsync(cancellationToken)).ConfigureAwait(false);
 			try
 			{
 				string formatted = formatter.Format(sql);
@@ -172,10 +301,10 @@ namespace NHibernate.Tool.hbm2ddl
 					await (ExecuteSqlAsync(statement, sql, cancellationToken)).ConfigureAwait(false);
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
-				log.Warn("Unsuccessful: " + sql);
-				log.Warn(e.Message);
+				log.Warn(e, "Unsuccessful: {0}", sql);
 				if (throwOnError)
 				{
 					throw;
@@ -188,12 +317,9 @@ namespace NHibernate.Tool.hbm2ddl
 			cancellationToken.ThrowIfCancellationRequested();
 			if (dialect.SupportsSqlBatches)
 			{
-				var objFactory = Environment.BytecodeProvider.ObjectsFactory;
-				ScriptSplitter splitter = (ScriptSplitter)objFactory.CreateInstance(typeof(ScriptSplitter), sql);
-
-				foreach (string stmt in splitter)
+				foreach (var stmt in new ScriptSplitter(sql))
 				{
-					log.DebugFormat("SQL Batch: {0}", stmt);
+					log.Debug("SQL Batch: {0}", stmt);
 					cmd.CommandText = stmt;
 					cmd.CommandType = CommandType.Text;
 					await (cmd.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
@@ -233,14 +359,7 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			try
 			{
-				if (useStdOut)
-				{
-					return ExecuteAsync(Console.WriteLine, execute, justDrop, connection, exportOutput, cancellationToken);
-				}
-				else
-				{
-					return ExecuteAsync(null, execute, justDrop, connection, exportOutput, cancellationToken);
-				}
+				return ExecuteAsync(GetAction(useStdOut), execute, justDrop, connection, exportOutput, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -268,14 +387,14 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				for (int i = 0; i < dropSQL.Length; i++)
 				{
-					await (ExecuteAsync(scriptAction, execute, false, exportOutput, statement, dropSQL[i], cancellationToken)).ConfigureAwait(false);
+					await (ExecuteInitializedAsync(scriptAction, execute, false, exportOutput, statement, dropSQL[i], cancellationToken)).ConfigureAwait(false);
 				}
 
 				if (!justDrop)
 				{
 					for (int j = 0; j < createSQL.Length; j++)
 					{
-						await (ExecuteAsync(scriptAction, execute, true, exportOutput, statement, createSQL[j], cancellationToken)).ConfigureAwait(false);
+						await (ExecuteInitializedAsync(scriptAction, execute, true, exportOutput, statement, createSQL[j], cancellationToken)).ConfigureAwait(false);
 					}
 				}
 			}
@@ -290,7 +409,7 @@ namespace NHibernate.Tool.hbm2ddl
 				}
 				catch (Exception e)
 				{
-					log.Error("Could not close connection: " + e.Message, e);
+					log.Error(e, "Could not close connection: {0}", e.Message);
 				}
 				if (exportOutput != null)
 				{
@@ -300,7 +419,7 @@ namespace NHibernate.Tool.hbm2ddl
 					}
 					catch (Exception ioe)
 					{
-						log.Error("Error closing output file " + outputFile + ": " + ioe.Message, ioe);
+						log.Error(ioe, "Error closing output file {0}: {1}", outputFile, ioe.Message);
 					}
 				}
 			}
@@ -324,21 +443,13 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			try
 			{
-				if (useStdOut)
-				{
-					return ExecuteAsync(Console.WriteLine, execute, justDrop, cancellationToken);
-				}
-				else
-				{
-					return ExecuteAsync(null, execute, justDrop, cancellationToken);
-				}
+				return InitConnectionAndExecuteAsync(GetAction(useStdOut), execute, justDrop, null, null, cancellationToken);
 			}
 			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
 		}
-
 
 		public Task ExecuteAsync(Action<string> scriptAction, bool execute, bool justDrop, CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -349,12 +460,19 @@ namespace NHibernate.Tool.hbm2ddl
 			return ExecuteAsync(scriptAction, execute, justDrop, null, cancellationToken);
 		}
 
+		public Task ExecuteAsync(Action<string> scriptAction, bool execute, bool justDrop, TextWriter exportOutput, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return InitConnectionAndExecuteAsync(scriptAction, execute, justDrop, null, exportOutput, cancellationToken);
+		}
 
-		public async Task ExecuteAsync(Action<string> scriptAction, bool execute, bool justDrop, TextWriter exportOutput, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task InitConnectionAndExecuteAsync(Action<string> scriptAction, bool execute, bool justDrop, DbConnection connection, TextWriter exportOutput, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			await (InitializeAsync(cancellationToken)).ConfigureAwait(false);
-			DbConnection connection = null;
 			TextWriter fileOutput = exportOutput;
 			IConnectionProvider connectionProvider = null;
 
@@ -365,8 +483,13 @@ namespace NHibernate.Tool.hbm2ddl
 					fileOutput = new StreamWriter(outputFile);
 				}
 
-				if (execute)
+				if (execute && connection == null)
 				{
+					if (_requireTenantConnection)
+					{
+						throw new ArgumentException("When Database multi-tenancy is enabled you need to provide explicit connection. Please use overload with connection parameter.");
+					}
+
 					var props = new Dictionary<string, string>();
 					foreach (var de in dialect.DefaultProperties)
 					{
@@ -387,6 +510,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 				await (ExecuteAsync(scriptAction, execute, justDrop, connection, fileOutput, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				// So that we don't wrap HibernateExceptions in HibernateExceptions
@@ -394,12 +518,12 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 			catch (Exception e)
 			{
-				log.Error(e.Message, e);
+				log.Error(e, e.Message);
 				throw new HibernateException(e.Message, e);
 			}
 			finally
 			{
-				if (connection != null)
+				if (connectionProvider != null)
 				{
 					connectionProvider.CloseConnection(connection);
 					connectionProvider.Dispose();

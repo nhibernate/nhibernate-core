@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
 
@@ -21,17 +22,20 @@ namespace NHibernate.Intercept
 			return Cfg.Environment.BytecodeProvider.ProxyFactoryFactory.IsInstrumented(entityClass);
 		}
 
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public static bool IsInstrumented(object entity)
 		{
 			return entity is IFieldInterceptorAccessor;
 		}
 
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public static IFieldInterceptor ExtractFieldInterceptor(object entity)
 		{
 			var fieldInterceptorAccessor = entity as IFieldInterceptorAccessor;
 			return fieldInterceptorAccessor == null ? null : fieldInterceptorAccessor.FieldInterceptor;
 		}
 
+		[Obsolete("Use IBytecodeEnhancementMetadata.InjectInterceptor method instead")]
 		public static IFieldInterceptor InjectFieldInterceptor(object entity, string entityName, 
 			System.Type mappedClass,
 			ISet<string> uninitializedFieldNames, 
@@ -48,6 +52,7 @@ namespace NHibernate.Intercept
 			return null;
 		}
 
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public static void ClearDirty(object entity)
 		{
 			IFieldInterceptor interceptor = ExtractFieldInterceptor(entity);
@@ -57,6 +62,7 @@ namespace NHibernate.Intercept
 			}
 		}
 
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public static void MarkDirty(object entity)
 		{
 			IFieldInterceptor interceptor = ExtractFieldInterceptor(entity);

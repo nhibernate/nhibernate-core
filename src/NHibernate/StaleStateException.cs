@@ -9,6 +9,9 @@ namespace NHibernate
 		public StaleStateException(string message) : base(message)
 		{
 		}
+		public StaleStateException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
 
 		protected StaleStateException(SerializationInfo info, StreamingContext context)
 			: base(info, context)

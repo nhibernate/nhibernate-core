@@ -9,7 +9,7 @@ namespace NHibernate.Test.GenericTest.Overall
 	[TestFixture]
 	public class Fixture : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "GenericTest.Overall.Mappings.hbm.xml" }; }
 		}
@@ -42,6 +42,9 @@ namespace NHibernate.Test.GenericTest.Overall
 		[Test]
 		public void CRUDAB()
 		{
+			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
+				Assert.Ignore("Support of empty inserts is required");
+
 			var entity = new A<B>
 			{
 				Property = new B { Prop = 2 },
@@ -65,5 +68,4 @@ namespace NHibernate.Test.GenericTest.Overall
 			}
 		}
 	}
-
 }

@@ -1,18 +1,50 @@
 using System;
+#if !NETSTANDARD2_0 && !NETCOREAPP2_0 
+using System.Runtime.Remoting.Messaging;
+#else
 using System.Threading;
+#endif
 
 namespace NHibernate.Impl
 {
 	public class SessionIdLoggingContext : IDisposable
 	{
-		private static readonly AsyncLocal<Guid?> _currentSessionId = new AsyncLocal<Guid?>();
+#if NETSTANDARD2_0 || NETCOREAPP2_0
+		private static readonly Lazy<AsyncLocal<Guid?>> _currentSessionId =
+			new Lazy<AsyncLocal<Guid?>>(() => new AsyncLocal<Guid?>(), true);
+#else
+		private const string LogicalCallContextVariableName = "__" + nameof(SessionIdLoggingContext) + "__";
+#endif
+		private readonly Guid? _oldSessionId;
+		private bool _hasChanged;
 
-		private readonly Guid? _oldSessonId;
-
+		[Obsolete("Please use SessionIdLoggingContext.CreateOrNull instead.")]
 		public SessionIdLoggingContext(Guid id)
 		{
-			_oldSessonId = SessionId;
+			if (id == Guid.Empty) return;
+			_oldSessionId = SessionId;
+			if (id == _oldSessionId) return;
+			_hasChanged = true;
 			SessionId = id;
+		}
+
+		private SessionIdLoggingContext(Guid newId, Guid? oldId)
+		{
+			SessionId = newId;
+			_oldSessionId = oldId;
+			_hasChanged = true;
+		}
+
+		public static IDisposable CreateOrNull(Guid id)
+		{
+			if (id == Guid.Empty)
+				return null;
+			var oldId = SessionId;
+
+			if (oldId == id)
+				return null;
+
+			return new SessionIdLoggingContext(id, oldId);
 		}
 
 		/// <summary>
@@ -24,17 +56,31 @@ namespace NHibernate.Impl
 		/// </summary>
 		public static Guid? SessionId
 		{
-			get => _currentSessionId.Value;
-			set => _currentSessionId.Value = value;
+			get
+			{
+#if NETSTANDARD2_0 || NETCOREAPP2_0
+				return _currentSessionId.IsValueCreated ? _currentSessionId.Value.Value : null;
+#else
+				return (Guid?) CallContext.LogicalGetData(LogicalCallContextVariableName);
+#endif
+			}
+			set
+			{
+#if NETSTANDARD2_0 || NETCOREAPP2_0
+				_currentSessionId.Value.Value = value;
+#else
+				CallContext.LogicalSetData(LogicalCallContextVariableName, value);
+#endif
+			}
 		}
-
-		#region IDisposable Members
 
 		public void Dispose()
 		{
-			SessionId = _oldSessonId;
+			if (_hasChanged)
+			{
+				SessionId = _oldSessionId;
+				_hasChanged = false;
+			}
 		}
-
-		#endregion
 	}
 }

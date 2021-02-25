@@ -39,7 +39,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Parent(string notVisiblePropertyOrFieldName, Action<IComponentParentMapper> parentMapping)
 		{
-			MemberInfo member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
+			MemberInfo member = GetRequiredPropertyOrFieldByName(notVisiblePropertyOrFieldName);
 			AddCustomizer(m => m.Parent(member, parentMapping));
 		}
 
@@ -62,6 +62,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Lazy(bool isLazy)
 		{
 			AddCustomizer(m => m.Lazy(isLazy));
+		}
+
+		public void LazyGroup(string name)
+		{
+			AddCustomizer(m => m.LazyGroup(name));
 		}
 
 		public void Unique(bool unique)

@@ -84,10 +84,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3918
 			try
 			{
 				var t = new Entity
-			{
-				Name = name,
-				Owner = owner,
-			};
+				{
+					Name = name,
+					Owner = owner,
+				};
 				return session.SaveAsync(t, cancellationToken);
 			}
 			catch (Exception ex)
@@ -141,10 +141,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3918
 		}
 
 		[Test]
-		public Task EntityComparisonTestAgainAsync()
+		public async Task EntityComparisonTestAgainAsync()
 		{
 			// When the entire fixture is run this will execute the test again within the same ISessionFactory which will test caching
-			return EntityComparisonTestAsync();
+			await (EntityComparisonTestAsync());
 		}
 
 		protected Expression<Func<Entity, bool>> WhereExpression(Owner owner)

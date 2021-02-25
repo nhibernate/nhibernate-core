@@ -5,6 +5,7 @@ using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Type;
 using NHibernate.UserTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -86,23 +87,30 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException("persistentType");
 			}
-			if (!typeof (IUserType).IsAssignableFrom(persistentType) && !typeof (IType).IsAssignableFrom(persistentType))
+
+			if (!typeof(IUserType).IsAssignableFrom(persistentType) &&
+				!typeof(IType).IsAssignableFrom(persistentType) &&
+				!typeof(ICompositeUserType).IsAssignableFrom(persistentType))
 			{
-				throw new ArgumentOutOfRangeException("persistentType", "Expected type implementing IUserType or IType.");
+				throw new ArgumentOutOfRangeException(
+					nameof(persistentType),
+					"Expected type implementing IUserType, ICompositeUserType or IType.");
 			}
+
 			if (parameters != null)
 			{
 				propertyMapping.type1 = null;
 				var hbmType = new HbmType
-				              {
-				              	name = persistentType.AssemblyQualifiedName,
-				              	param = (from pi in parameters.GetType().GetProperties()
-				              	         let pname = pi.Name
-				              	         let pvalue = pi.GetValue(parameters, null)
-				              	         select
-				              	         	new HbmParam {name = pname, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}})
-				              		.ToArray()
-				              };
+				{
+					name = persistentType.AssemblyQualifiedName,
+					param = parameters.GetType().GetProperties().ToArray(
+						pi =>
+						{
+							var pvalue = pi.GetValue(parameters, null);
+							return
+								new HbmParam {name = pi.Name, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
+						})
+				};
 				propertyMapping.type = hbmType;
 			}
 			else

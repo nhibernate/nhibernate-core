@@ -1,14 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace NHibernate.Util
 {
+	[Serializable]
 	public class ParserException : Exception
 	{
 		public ParserException(string message) : base(message) { }
+
+		protected ParserException(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
+		}
 	}
 
 	public class TypeNameParser
@@ -212,7 +218,7 @@ namespace NHibernate.Util
 
 		private static bool NeedDefaultNamespaceOrDefaultAssembly(string typeFullName)
 		{
-			return !typeFullName.StartsWith("System."); // ugly
+			return !typeFullName.StartsWith("System.", StringComparison.Ordinal); // ugly
 		}
 
 		private static bool NeedDefaultNamespace(string typeFullName)

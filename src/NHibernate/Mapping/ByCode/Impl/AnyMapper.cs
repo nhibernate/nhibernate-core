@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -144,7 +145,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			System.Type metavalueType = value.GetType();
 			if (any.metavalue == null)
 			{
-				any.metavalue = new HbmMetaValue[0];
+				any.metavalue = System.Array.Empty<HbmMetaValue>();
 			}
 			Dictionary<string, string> values = any.metavalue.ToDictionary(mv => mv.value, mv => mv.@class);
 			MetaType(metavalueType);
@@ -159,7 +160,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 						metavalueKey, existingClassMetavalue, newClassMetavalue));
 			}
 			values[metavalueKey] = newClassMetavalue;
-			any.metavalue = values.Select(vd => new HbmMetaValue {value = vd.Key, @class = vd.Value}).ToArray();
+			any.metavalue = values.ToArray(vd => new HbmMetaValue {value = vd.Key, @class = vd.Value});
 		}
 
 		public void Cascade(Cascade cascadeStyle)

@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Loader;
@@ -303,6 +306,11 @@ namespace NHibernate.Collection
 		/// <summary> Get the "queued" orphans</summary>
 		ICollection GetQueuedOrphans(string entityName);
 
+		// Since 5.3
+		/// <summary> Get the "queued" orphans</summary>
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken);
+		
 		/// <summary>
 		/// Clear the dirty flag, after flushing changes
 		/// to the database.
@@ -336,5 +344,56 @@ namespace NHibernate.Collection
 		/// that have been orphaned.
 		/// </returns>
 		ICollection GetOrphans(object snapshot, string entityName);
+
+		//Since 5.3
+		/// <summary>
+		/// Get all "orphaned" elements
+		/// </summary>
+		/// <param name="snapshot">The snapshot of the collection.</param>
+		/// <param name="entityName">The persistent class whose objects
+		/// the collection is expected to contain.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>
+		/// An <see cref="ICollection"/> that contains all of the elements
+		/// that have been orphaned.
+		/// </returns>
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken);
+	}
+
+	// 6.0 TODO: merge into IPersistentCollection
+	public static class PersistentCollectionExtensions
+	{
+		private static readonly INHibernateLogger Logger = NHibernateLogger.For(typeof(PersistentCollectionExtensions));
+
+		/// <summary>
+		/// After reading all existing elements from the database, do the queued operations
+		/// (adds or removes) on the underlying collection.
+		/// </summary>
+		/// <param name="collection">The collection.</param>
+		public static void ApplyQueuedOperations(this IPersistentCollection collection)
+		{
+			if (collection is AbstractPersistentCollection baseImpl)
+			{
+				baseImpl.ApplyQueuedOperations();
+				return;
+			}
+
+			// Fallback on reflection for custom implementations
+			var collectionType = collection.GetType();
+			var applyQueuedOperationsMethod = collectionType.GetMethod(
+				nameof(AbstractPersistentCollection.ApplyQueuedOperations),
+				Array.Empty<System.Type>());
+			if (applyQueuedOperationsMethod != null)
+			{
+				applyQueuedOperationsMethod.Invoke(collection, Array.Empty<object>());
+				return;
+			}
+
+			Logger.Warn(
+				"{0} does not implement 'void ApplyQueuedOperations()'. It should move any queued operations" +
+				"processing out of 'AfterInitialize' and put it in a 'public void ApplyQueuedOperations()'.",
+				collectionType);
+		}
 	}
 }

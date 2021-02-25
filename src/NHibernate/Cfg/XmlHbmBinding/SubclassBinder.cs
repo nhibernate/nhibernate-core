@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
@@ -7,11 +8,25 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class SubclassBinder : ClassBinder
 	{
+		public SubclassBinder(Binder parent)
+			: base(parent.Mappings)
+		{
+		}
+
+		public SubclassBinder(Mappings mappings)
+			: base(mappings)
+		{
+		}
+
+		//Since v5.2
+		[Obsolete("Please use constructor without a dialect parameter.")]
 		public SubclassBinder(Binder parent, Dialect.Dialect dialect)
 			: base(parent.Mappings, dialect)
 		{
 		}
 
+		//Since v5.2
+		[Obsolete("Please use constructor that accepts mappings parameter instead.")]
 		public SubclassBinder(ClassBinder parent)
 			: base(parent)
 		{
@@ -33,10 +48,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (subclass.EntityPersisterClass == null)
 				subclass.RootClazz.EntityPersisterClass = typeof(SingleTableEntityPersister);
 
-			log.InfoFormat("Mapping subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
+			log.Info("Mapping subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
 
 			// properties
-			new PropertiesBinder(mappings, subclass, dialect).Bind(subClassMapping.Properties, inheritedMetas);
+			new PropertiesBinder(mappings, subclass).Bind(subClassMapping.Properties, inheritedMetas);
 			BindJoins(subClassMapping.Joins, subclass, inheritedMetas);
 			BindSubclasses(subClassMapping.Subclasses, subclass, inheritedMetas);
 
@@ -45,6 +60,5 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
             new FiltersBinder(model, Mappings).Bind(subClassMapping.filter);
         }
-
 	}
 }

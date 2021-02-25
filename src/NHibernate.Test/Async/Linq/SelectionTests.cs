@@ -11,7 +11,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NHibernate.DomainModel.NHSpecific;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Type;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -288,6 +290,14 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task CanSelectNotMappedEntityPropertyAsync()
+		{
+			var list = await (db.Animals.Where(o => o.Mother != null).Select(o => o.FatherOrMother.SerialNumber).ToListAsync());
+
+			Assert.That(list, Has.Count.GreaterThan(0));
+		}
+
+		[Test]
 		public async Task CanProjectWithCastAsync()
 		{
 			// NH-2463
@@ -307,6 +317,10 @@ namespace NHibernate.Test.Linq
 
 			var names5 = await (db.Users.Select(p => new { p1 = (p as IUser).Name }).ToListAsync());
 			Assert.AreEqual(3, names5.Count);
+
+			var names6 = await (db.Users.Select(p => new { p1 = (long) p.Id }).ToListAsync());
+			Assert.AreEqual(3, names6.Count);
+
 			// ReSharper restore RedundantCast
 		}
 
@@ -440,10 +454,43 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public Task CanSelectConditionalEntityValueWithEntityComparisonRepeatAsync()
+		public async Task CanExecuteMethodWithNullObjectAndSubselectAsync()
+		{
+			var list1 = await (db.Animals.Select(
+				              a => new
+				              {
+					              NullableId = (int?) a.Father.Father.Id,
+				              })
+			              .ToListAsync());
+			Assert.That(list1, Has.Count.GreaterThan(0));
+			Assert.That(list1[0].NullableId, Is.Null);
+
+			var list2 = await (db.Animals.Select(
+				              a => new
+				              {
+					              Descriptions = a.Children.Select(z => z.Description)
+				              })
+			              .ToListAsync());
+			Assert.That(list2, Has.Count.GreaterThan(0));
+			Assert.That(list2[0].Descriptions, Is.Not.Null);
+
+			var list3 = await (db.Animals.Select(
+				              a => new
+				              {
+					              NullableId = (int?) a.Father.Father.Id,
+					              Descriptions = a.Children.Select(z => z.Description)
+				              })
+			              .ToListAsync());
+			Assert.That(list3, Has.Count.GreaterThan(0));
+			Assert.That(list3[0].NullableId, Is.Null);
+			Assert.That(list3[0].Descriptions, Is.Not.Null);
+		}
+
+		[Test]
+		public async Task CanSelectConditionalEntityValueWithEntityComparisonRepeatAsync()
 		{
 			// Check again in the same ISessionFactory to ensure caching doesn't cause failures
-			return CanSelectConditionalEntityValueWithEntityComparisonAsync();
+			await (CanSelectConditionalEntityValueWithEntityComparisonAsync());
 		}
 
 		[Test]
@@ -451,6 +498,23 @@ namespace NHibernate.Test.Linq
 		{
 			var fatherIsKnown = await (db.Animals.Select(a => new { a.SerialNumber, Superior = a.Father.SerialNumber, FatherIsKnown = a.Father.SerialNumber == "5678" ? (object)true : (object)false }).ToListAsync());
 			Assert.That(fatherIsKnown, Has.Exactly(1).With.Property("FatherIsKnown").True);
+		}
+
+		[Test]
+		public async Task CanCastToDerivedTypeAsync()
+		{
+			var dogs = await (db.Animals
+			                      .Where(a => ((Dog) a).Pregnant)
+			                      .Select(a => new {a.SerialNumber})
+			                      .ToListAsync());
+			Assert.That(dogs, Has.Exactly(1).With.Property("SerialNumber").Not.Null);
+		}
+
+		[Test]
+		public async Task CanCastToCustomRegisteredTypeAsync()
+		{
+			TypeFactory.RegisterType(typeof(NullableInt32), new NullableInt32Type(), Enumerable.Empty<string>());
+			Assert.That(await (db.Users.Where(o => (NullableInt32) o.Id == 1).ToListAsync()), Has.Count.EqualTo(1));
 		}
 
 		public class Wrapper<T>

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
@@ -82,7 +83,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 	[TestFixture]
 	public class DeleteOneToOneOrphansTestHbm : DeleteOneToOneOrphansTest
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Cascade.OneToOneCascadeDelete.Fk.Composite.Mappings.hbm.xml" }; }
 		}
@@ -91,11 +92,10 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 	[TestFixture]
 	public class DeleteOneToOneOrphansTestByCode : DeleteOneToOneOrphansTest
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
-
 
 		protected override void AddMappings(Cfg.Configuration configuration)
 		{

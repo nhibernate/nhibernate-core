@@ -12,7 +12,7 @@ namespace NHibernate.Test.Classic
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Classic.EntityWithLifecycle.hbm.xml" }; }
 		}
@@ -97,7 +97,6 @@ namespace NHibernate.Test.Classic
 			}
 			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(0));
 			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(0));
-
 
 			// cleanup
 			using (ISession s = OpenSession())

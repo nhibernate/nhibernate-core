@@ -1,11 +1,12 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 //using NHibernate.Dialect.Schema;
 
@@ -45,13 +46,13 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Binary, 2147483647, "BYTE");
 			RegisterColumnType(DbType.Binary, "BYTE");
 			RegisterColumnType(DbType.Boolean, "BOOLEAN");
-			RegisterColumnType(DbType.Currency, "DECIMAL(16,4)");
+			RegisterColumnType(DbType.Currency, "DECIMAL(18,4)");
 			RegisterColumnType(DbType.Byte, "SMALLINT");
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "datetime year to fraction(5)");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19, 5)");
 			// Informix max precision is 32, but .Net is limited to 28-29.
-			RegisterColumnType(DbType.Decimal, 28, "DECIMAL($p, $s)");
+			RegisterColumnType(DbType.Decimal, 29, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INTEGER");
@@ -67,7 +68,7 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("substr", new StandardSQLFunction("substr"));
 			//			RegisterFunction("trim", new AnsiTrimFunction()); // defined in base class
-			//			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));  // defined in base class
+			//			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32)); // defined in base class
 			RegisterFunction("coalesce", new NvlFunction()); // base class override
 			//			RegisterFunction("abs", new StandardSQLFunction("abs")); 
 			//			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
@@ -77,7 +78,8 @@ namespace NHibernate.Dialect
 			//			RegisterFunction("cast", new CastFunction());
 			//			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "||", ")"));
 
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("current", NHibernateUtil.DateTime, false));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current", NHibernateUtil.LocalDateTime, false));
+			RegisterFunction("current_date", new NoArgSQLFunction("today", NHibernateUtil.LocalDate, false));
 			RegisterFunction("sysdate", new NoArgSQLFunction("today", NHibernateUtil.DateTime, false));
 			RegisterFunction("current", new NoArgSQLFunction("current", NHibernateUtil.DateTime, false));
 			RegisterFunction("today", new NoArgSQLFunction("today", NHibernateUtil.DateTime, false));
@@ -175,12 +177,18 @@ namespace NHibernate.Dialect
 		//    throw new NotSupportedException();
 		//}
 
-		/// <summary> Is <tt>FOR UPDATE OF</tt> syntax supported? </summary>
-		/// <value> True if the database supports <tt>FOR UPDATE OF</tt> syntax; false otherwise. </value>
+		/// <inheritdoc />
+		// Since v5.1
+		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
 		public override bool ForUpdateOfColumns
 		{
 			get { return true; }
 		}
+
+		/* 6.0 TODO: uncomment once ForUpdateOfColumns is removed.
+		/// <inheritdoc />
+		public override bool UsesColumnsWithForUpdateOf => true;
+		*/
 
 		/// <summary> 
 		/// Does this dialect support <tt>FOR UPDATE</tt> in conjunction with outer joined rows?
@@ -268,14 +276,7 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		/// <summary> 
-		/// Get the select command to use to retrieve the last generated IDENTITY
-		/// value for a particular table 
-		/// </summary>
-		/// <param name="tableName">The table into which the insert was done </param>
-		/// <param name="identityColumn">The PK column. </param>
-		/// <param name="type">The <see cref="DbType"/> type code. </param>
-		/// <returns> The appropriate select command </returns>
+		/// <inheritdoc />
 		public override string GetIdentitySelectString(string identityColumn, string tableName, DbType type)
 		{
 			return type == DbType.Int64
@@ -337,7 +338,7 @@ namespace NHibernate.Dialect
 		/// <returns> The appropriate SQL literal. </returns>
 		public override string ToBooleanValueString(bool value)
 		{
-			return value ? "t" : "f";
+			return value ? "'t'" : "'f'";
 		}
 
 		/// <summary>
@@ -441,14 +442,14 @@ namespace NHibernate.Dialect
 			var res = new StringBuilder(200);
 
 			res.Append(" add constraint foreign key (")
-				.Append(StringHelper.Join(StringHelper.CommaSpace, foreignKey))
+				.Append(string.Join(StringHelper.CommaSpace, foreignKey))
 				.Append(") references ")
 				.Append(referencedTable);
 
 			if (!referencesPrimaryKey)
 			{
 				res.Append(" (")
-					.Append(StringHelper.Join(StringHelper.CommaSpace, primaryKey))
+					.Append(string.Join(StringHelper.CommaSpace, primaryKey))
 					.Append(')');
 			}
 
@@ -457,6 +458,10 @@ namespace NHibernate.Dialect
 
 			return res.ToString();
 		}
+
+		// Informix 7 is said on Internet to be limited to 18. (http://www.justskins.com/forums/length-of-columns-names-143294.html)
+		/// <inheritdoc />
+		public override int MaxAliasLength => 18;
 	}
 
 	public class IfxViolatedConstraintExtracter : TemplatedViolatedConstraintNameExtracter

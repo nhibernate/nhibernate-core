@@ -20,7 +20,7 @@ namespace NHibernate.Test.SubclassFilterTest
 	[TestFixture]
 	public class DiscrimSubclassFilterTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"SubclassFilterTest.discrim-subclass.hbm.xml"}; }
 		}

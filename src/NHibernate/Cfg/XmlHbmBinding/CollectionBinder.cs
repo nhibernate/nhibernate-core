@@ -12,7 +12,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class CollectionBinder : ClassBinder
 	{
+		//Since v5.2
+		[Obsolete("Please use constructor without a dialect parameter.")]
 		public CollectionBinder(Mappings mappings, Dialect.Dialect dialect) : base(mappings, dialect)
+		{
+		}
+		
+		public CollectionBinder(Mappings mappings) : base(mappings)
 		{
 		}
 
@@ -201,7 +207,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				// TODO NH : add schema-action to the xsd
 				model.CollectionTable = mappings.AddTable(schema, catalog, tableName, collectionMapping.Subselect, false, "all");
 
-				log.InfoFormat("Mapping collection: {0} -> {1}", model.Role, model.CollectionTable.Name);
+				log.Info("Mapping collection: {0} -> {1}", model.Role, model.CollectionTable.Name);
 			}
 
 			//SORT
@@ -221,7 +227,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			//ORPHAN DELETE (used for programmer error detection)
 			var cascadeAtt = collectionMapping.Cascade;
-			if (!string.IsNullOrEmpty(cascadeAtt) && cascadeAtt.IndexOf("delete-orphan") >= 0)
+			if (!string.IsNullOrEmpty(cascadeAtt) && cascadeAtt.IndexOf("delete-orphan", StringComparison.Ordinal) >= 0)
 				model.HasOrphanDelete = true;
 
 			// GENERIC
@@ -482,27 +488,27 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private static void PreCollectionSecondPass(Mapping.Collection collection)
 		{
-			if (log.IsDebugEnabled)
-				log.Debug("Second pass for collection: " + collection.Role);
+			if (log.IsDebugEnabled())
+				log.Debug("Second pass for collection: {0}", collection.Role);
 		}
 
 		private static void PostCollectionSecondPass(Mapping.Collection collection)
 		{
 			collection.CreateAllKeys();
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				string msg = "Mapped collection key: " + string.Join(",", collection.Key.ColumnIterator.Select(c => c.Text).ToArray());
+				string info = "";
 				if (collection.IsIndexed)
-					msg += ", index: " + string.Join(",", ((IndexedCollection)collection).Index.ColumnIterator.Select(c => c.Text).ToArray());
+					info += ", index: " + string.Join(",", ((IndexedCollection)collection).Index.ColumnIterator.Select(c => c.Text).ToArray());
 				if (collection.IsOneToMany)
-					msg += ", one-to-many: " + collection.Element.Type.Name;
+					info += ", one-to-many: " + collection.Element.Type.Name;
 				else
 				{
-					msg += ", element: " + string.Join(",", collection.Element.ColumnIterator.Select(c => c.Text).ToArray());
-					msg += ", type: " + collection.Element.Type.Name;
+					info += ", element: " + string.Join(",", collection.Element.ColumnIterator.Select(c => c.Text).ToArray());
+					info += ", type: " + collection.Element.Type.Name;
 				}
-				log.Debug(msg);
+				log.Debug("Mapped collection key: {0}{1}", string.Join(",", collection.Key.ColumnIterator.Select(c => c.Text).ToArray()), info);
 			}
 		}
 
@@ -753,8 +759,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					}
 				}
 
-				if (log.IsInfoEnabled)
-					log.Info("mapping collection: " + model.Role + " -> " + model.CollectionTable.Name);
+				if (log.IsInfoEnabled())
+					log.Info("mapping collection: {0} -> {1}", model.Role, model.CollectionTable.Name);
 			}
 
 			//CHECK
@@ -815,12 +821,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			var restrictedLaziness = manyToManyMapping.lazySpecified ? manyToManyMapping.lazy : (HbmRestrictedLaziness?) null;
 			InitLaziness(restrictedLaziness, manyToMany, true);
 
-			if(!string.IsNullOrEmpty(manyToManyMapping.propertyref))
+			manyToMany.ReferencedEntityName = GetEntityName(manyToManyMapping, mappings);
+
+			if (!string.IsNullOrEmpty(manyToManyMapping.propertyref))
 			{
 				manyToMany.ReferencedPropertyName = manyToManyMapping.propertyref;
+				mappings.AddUniquePropertyReference(manyToMany.ReferencedEntityName, manyToMany.ReferencedPropertyName);
 			}
-
-			manyToMany.ReferencedEntityName = GetEntityName(manyToManyMapping, mappings);
 
 			manyToMany.IsIgnoreNotFound = manyToManyMapping.NotFoundMode == HbmNotFoundMode.Ignore;
 
@@ -898,6 +905,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			else
 			{
 				keyValue = (IKeyValue) model.Owner.GetProperty(propRef).Value;
+				mappings.AddUniquePropertyReference(model.OwnerEntityName, propRef);
 			}
 			var key = new DependantValue(model.CollectionTable, keyValue)
 						{IsCascadeDeleteEnabled = keyMapping.ondelete == HbmOndelete.Cascade};
@@ -934,7 +942,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					string.Format(
 						"many-to-many defining filter or where without join fetching not valid within collection using join fetching [{0}]",
 						collection.Role));
-
 			}
 
 			new FiltersBinder(collection, Mappings).Bind(filters, collection.AddManyToManyFilter);

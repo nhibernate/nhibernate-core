@@ -39,7 +39,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3993
 			// Component element component
 			var componentMapping = elementMapping.Properties.SingleOrDefault(p => p.Name == "_component");
 			Assert.IsNotNull(componentMapping, "Component Element did not private component");
-
 		}
 
 		[Test]

@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader.Collection;
@@ -28,9 +27,9 @@ namespace NHibernate.Persister.Collection
 			}
 			try
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug(string.Format("initializing collection: {0} using named query: {1}", persister.Role, queryName));
+					log.Debug("initializing collection: {0} using named query: {1}", persister.Role, queryName);
 				}
 
 				//TODO: is there a more elegant way than downcasting?

@@ -7,7 +7,8 @@
 		<id name="Id">
 			<generator class="native"/>
 		</id>
-    <property name="Name"/>
+		<property name="Name"/>
+		<property name="Age"/>
 		<many-to-one name="Parent" />
 		<list name="Children" cascade="all">
 			<key column="parent_id" />
@@ -19,5 +20,17 @@
 			<index column="friend_index" />
 			<one-to-many class="Person" />
 		</list>
+	</class>
+
+	<class name="PolymorphicA">
+		<id name="Id">
+			<generator class="guid.comb"/>
+		</id>
+	</class>
+
+	<class name="PolymorphicB">
+		<id name="Id">
+			<generator class="guid.comb"/>
+		</id>
 	</class>
 </hibernate-mapping>

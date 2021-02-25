@@ -15,39 +15,24 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
-	/// <summary>
-	/// Summary description for TicksTypeFixture.
-	/// </summary>
 	[TestFixture]
-	public class TicksTypeFixtureAsync
+	public class TicksTypeFixtureAsync : AbstractDateTimeTypeFixtureAsync
 	{
-		[Test]
-		public async Task NextAsync()
-		{
-			TicksType type = (TicksType) NHibernateUtil.Ticks;
-			object current = new DateTime(2004, 1, 1, 1, 1, 1, 1);
-			object next = await (type.NextAsync(current, null, CancellationToken.None));
+		protected override string TypeName => "Ticks";
+		protected override AbstractDateTimeType Type => NHibernateUtil.Ticks;
 
-			Assert.IsTrue(next is DateTime, "Next should be DateTime");
-			Assert.IsTrue((DateTime) next > (DateTime) current,
-			              "next should be greater than current (could be equal depending on how quickly this occurs)");
+		[Test]
+		[TestCase("0")]
+		[Obsolete]
+		[Ignore("Ticks parse integer representations to date instead of date representations")]
+		public override void FromStringValue_ParseValidValues(string timestampValue)
+		{
 		}
 
-		[Test]
-		public async Task SeedAsync()
+		[Ignore("Test relevant for datetime, not for ticks.")]
+		public override Task QueryUseExpectedSqlTypeAsync()
 		{
-			TicksType type = (TicksType) NHibernateUtil.Ticks;
-			Assert.IsTrue(await (type.SeedAsync(null, CancellationToken.None)) is DateTime, "seed should be DateTime");
-		}
-
-		[Test]
-		public async Task ComparerAsync()
-		{
-			var type = (IVersionType)NHibernateUtil.Ticks;
-			object v1 = await (type.SeedAsync(null, CancellationToken.None));
-			var v2 = v1;
-			Assert.DoesNotThrow(() => type.Comparator.Compare(v1, v2));
+			return Task.CompletedTask;
 		}
 	}
 }

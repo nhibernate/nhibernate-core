@@ -48,9 +48,10 @@ namespace NHibernate
 		IDetachedQuery SetReadOnly(bool readOnly);
 
 		/// <summary>
-		/// The timeout for the underlying ADO query
+		/// Set a timeout for the underlying ADO.NET query.
 		/// </summary>
-		/// <param name="timeout"></param>
+		/// <param name="timeout">The timeout in seconds.</param>
+		/// <returns><see langword="this" /> (for method chaining).</returns>
 		IDetachedQuery SetTimeout(int timeout);
 
 		/// <summary> Set a fetch size for the underlying ADO query.</summary>

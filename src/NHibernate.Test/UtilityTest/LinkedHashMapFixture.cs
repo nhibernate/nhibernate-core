@@ -62,7 +62,6 @@ namespace NHibernate.Test.UtilityTest
 			Assert.AreEqual(players[1], lhm.FirstValue);
 		}
 
-
 		[Test]
 		public void Clear()
 		{
@@ -237,7 +236,12 @@ namespace NHibernate.Test.UtilityTest
 			Fill(lhm);
 
 			MemoryStream stream = new MemoryStream();
-			BinaryFormatter f = new BinaryFormatter();
+			var f = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			f.Serialize(stream, lhm);
 			stream.Position = 0;
 
@@ -255,7 +259,6 @@ namespace NHibernate.Test.UtilityTest
 
 			Assert.AreEqual(6, index);
 		}
-
 
 		[Test, Explicit]
 		public void ShowDiff()
@@ -410,4 +413,3 @@ namespace NHibernate.Test.UtilityTest
 		}
 	}
 }
-

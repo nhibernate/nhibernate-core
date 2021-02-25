@@ -1,6 +1,5 @@
 using System;
 using log4net;
-using log4net.Repository.Hierarchy;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -12,11 +11,6 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class TypeFactoryFixture
 	{
-		public TypeFactoryFixture()
-		{
-			log4net.Config.XmlConfigurator.Configure(LogManager.GetRepository(typeof(TypeFactoryFixture).Assembly));
-		}
-
 		private static readonly ILog log = LogManager.GetLogger(typeof(TypeFactoryFixture));
 
 		/// <summary>
@@ -56,9 +50,9 @@ namespace NHibernate.Test.TypesTest
 			//Assert.AreEqual(int64Type, TypeFactory.HeuristicType("Int64?"), "'Int64?' should return a NH Int64Type");
 
 			System.Type reflectedType = Util.ReflectHelper.ReflectedPropertyClass( typeof(GenericPropertyClass), "GenericInt64", "property" );
+			Assert.AreEqual( int64Type, TypeFactory.HeuristicType( reflectedType ), "using System.Type should return nh Int64Type" );
 			Assert.AreEqual( int64Type, TypeFactory.HeuristicType( reflectedType.AssemblyQualifiedName ), "using AQN should return nh Int64Type" );
 			Assert.AreEqual( int64Type, TypeFactory.HeuristicType( reflectedType.FullName ), "using FullName should return nh Int64Type" );
-
 		}
 
 		public class GenericPropertyClass
@@ -73,42 +67,28 @@ namespace NHibernate.Test.TypesTest
 		}
 
 		private readonly Random rnd = new Random();
-		private int totalCall;
 
-		[Test, Explicit]
+		[Test]
 		public void MultiThreadAccess()
 		{
 			// Test added for NH-1251
-			// If one thread break the test you can see the result in the console.
-			((Logger) log.Logger).Level = log4net.Core.Level.Debug;
-			MultiThreadRunner<object>.ExecuteAction[] actions = new MultiThreadRunner<object>.ExecuteAction[]
+			var mtr = new MultiThreadRunner<object>(
+				100,
+				o => TypeFactory.GetStringType(rnd.Next(1, 50)),
+				o => TypeFactory.GetBinaryType(rnd.Next(1, 50)),
+				o => TypeFactory.GetSerializableType(rnd.Next(1, 50)),
+				o => TypeFactory.GetTypeType(rnd.Next(1, 20)))
 			{
-				delegate(object o)
-					{
-						TypeFactory.GetStringType(rnd.Next(1, 50));
-						totalCall++;
-					},
-				delegate(object o)
-					{
-						TypeFactory.GetBinaryType(rnd.Next(1, 50));
-						totalCall++;
-					},
-				delegate(object o)
-					{
-						TypeFactory.GetSerializableType(rnd.Next(1, 50));
-						totalCall++;
-					},
-				delegate(object o)
-					{
-						TypeFactory.GetTypeType(rnd.Next(1, 20));
-						totalCall++;
-					},
+				EndTimeout = 2000,
+				TimeoutBetweenThreadStart = 2
 			};
-			MultiThreadRunner<object> mtr = new MultiThreadRunner<object>(100, actions);
-			mtr.EndTimeout = 2000;
-			mtr.TimeoutBetweenThreadStart = 2;
-			mtr.Run(null);
-			log.DebugFormat("{0} calls", totalCall);
+			var totalCalls = mtr.Run(null);
+			log.DebugFormat("{0} calls", totalCalls);
+			var errors = mtr.GetErrors();
+			if (errors.Length > 0)
+			{
+				Assert.Fail("One or more thread failed, found {0} errors. First exception: {1}", errors.Length, errors[0]);
+			}
 		}
 
 		[Test]
@@ -155,6 +135,20 @@ namespace NHibernate.Test.TypesTest
 		public void WhenUseNullableEnumThenReturnGenericEnumType()
 		{
 			var iType = TypeFactory.HeuristicType(typeof(MyEnum?).AssemblyQualifiedName);
+			Assert.That(iType, Is.TypeOf<EnumType<MyEnum>>());
+		}
+		
+		[Test]
+		public void WhenUseEnumTypeThenReturnGenericEnumType()
+		{
+			var iType = TypeFactory.HeuristicType(typeof (MyEnum));
+			Assert.That(iType, Is.TypeOf<EnumType<MyEnum>>());
+		}
+
+		[Test]
+		public void WhenUseNullableEnumTypeThenReturnGenericEnumType()
+		{
+			var iType = TypeFactory.HeuristicType(typeof(MyEnum?));
 			Assert.That(iType, Is.TypeOf<EnumType<MyEnum>>());
 		}
 	}

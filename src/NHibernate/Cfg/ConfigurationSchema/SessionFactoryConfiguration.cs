@@ -8,7 +8,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// </summary>
 	public class SessionFactoryConfiguration : SessionFactoryConfigurationBase
 	{
-		//private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SessionFactoryConfiguration));
+		//private static readonly ILogger log = NHibernateLogger.For(typeof(SessionFactoryConfiguration));
 
 		internal SessionFactoryConfiguration(XPathNavigator hbConfigurationSection)
 		{
@@ -83,7 +83,6 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			}
 		}
 
-
 		private void ParseCollectionsCache(XPathNavigator navigator)
 		{
 			XPathNodeIterator xpni = navigator.Select(CfgXmlHelper.SessionFactoryCollectionsCacheExpression);
@@ -92,7 +91,6 @@ namespace NHibernate.Cfg.ConfigurationSchema
 				CollectionsCache.Add(new CollectionCacheConfiguration(xpni.Current));
 			}
 		}
-
 
 		private void ParseListeners(XPathNavigator navigator)
 		{

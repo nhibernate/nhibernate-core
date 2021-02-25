@@ -12,6 +12,8 @@ using System.Reflection;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
+	// Since v5.2
+	[Obsolete("DynamicProxy namespace has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	public delegate object InterceptorHandler(object proxy, MethodInfo targetMethod,
 																						StackTrace trace, System.Type[] genericTypeArgs, object[] args);
 }

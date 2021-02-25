@@ -50,9 +50,9 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Currency, "DECIMAL(18,4)");
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP");
-			RegisterColumnType(DbType.Decimal, "DECIMAL(18,5)"); // NUMERIC(18,5) is equivalent to DECIMAL(18,5)
+			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)"); // NUMERIC(18,5) is equivalent to DECIMAL(18,5)
 			// Sybase max precision is 38, but .Net is limited to 28-29.
-			RegisterColumnType(DbType.Decimal, 28, "DECIMAL($p,$s)");
+			RegisterColumnType(DbType.Decimal, 29, "DECIMAL($p,$s)");
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Guid, "CHAR(16)");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
@@ -72,7 +72,7 @@ namespace NHibernate.Dialect
 			//RegisterColumnType(DbType.Xml, "TEXT");
 
 			// Override standard HQL function
-			RegisterFunction("current_timestamp", new StandardSQLFunction("current_timestamp"));
+			RegisterFunction("current_timestamp", new StandardSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime));
 			RegisterFunction("length", new StandardSafeSQLFunction("length", NHibernateUtil.String, 1));
 			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));
 			RegisterFunction("lower", new StandardSafeSQLFunction("lower", NHibernateUtil.String, 1));
@@ -96,6 +96,9 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false;
 
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{

@@ -1,5 +1,3 @@
-using log4net;
-using log4net.Config;
 using log4net.Core;
 using NHibernate.Cfg;
 using NUnit.Framework;
@@ -12,7 +10,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1587
 		[Test]
 		public void Bug()
 		{
-			XmlConfigurator.Configure(LogManager.GetRepository(typeof(Fixture).Assembly));
 			var cfg = new Configuration();
 			if (TestConfigurationHelper.hibernateConfigFile != null)
 				cfg.Configure(TestConfigurationHelper.hibernateConfigFile);
@@ -25,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1587
 				cfg.BuildSessionFactory();
 				foreach (LoggingEvent loggingEvent in ls.Appender.GetEvents())
 				{
-					if (((string)(loggingEvent.MessageObject)).StartsWith("Create Instantiator using optimizer"))
+					if (loggingEvent.RenderedMessage.StartsWith("Create Instantiator using optimizer"))
 					{
 						useOptimizer = true;
 						break;

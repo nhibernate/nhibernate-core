@@ -7,46 +7,96 @@ using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
+using NHibernate.Persister.Entity;
 using NHibernate_Persister_Entity = NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Loader.Criteria
 {
-	public class CriteriaQueryTranslator : ICriteriaQuery
+	public class CriteriaQueryTranslator : ICriteriaQuery, ISupportEntityProjectionCriteriaQuery
 	{
+		public class EntityJoinInfo
+		{
+			public ICriteria Criteria;
+			public IQueryable Persister;
+		}
+
 		public static readonly string RootSqlAlias = CriteriaSpecification.RootAlias + '_';
-		private static readonly IInternalLogger logger = LoggerProvider.LoggerFor(typeof(CriteriaQueryTranslator));
+		private static readonly INHibernateLogger logger = NHibernateLogger.For(typeof(CriteriaQueryTranslator));
 		
 		private const int AliasCount = 0;
 		
 		private readonly ICriteriaQuery outerQueryTranslator;
 		private readonly CriteriaImpl rootCriteria;
-		private readonly string rootEntityName;
 		private readonly string rootSQLAlias;
 		private int indexForAlias = 0;
+		private readonly List<EntityProjection> entityProjections = new List<EntityProjection>();
 
-		private readonly IDictionary<ICriteria, ICriteriaInfoProvider> criteriaInfoMap =
+		private readonly Dictionary<ICriteria, ICriteriaInfoProvider> criteriaInfoMap =
 			new Dictionary<ICriteria, ICriteriaInfoProvider>();
 
-		private readonly IDictionary<String, ICriteriaInfoProvider> nameCriteriaInfoMap =
+		private readonly Dictionary<String, ICriteriaInfoProvider> nameCriteriaInfoMap =
 			new Dictionary<string, ICriteriaInfoProvider>();
 
-		private readonly ISet<ICollectionPersister> criteriaCollectionPersisters = new HashSet<ICollectionPersister>();
-		private readonly IDictionary<ICriteria, string> criteriaSQLAliasMap = new Dictionary<ICriteria, string>();
-		private readonly IDictionary<string, ICriteria> aliasCriteriaMap = new Dictionary<string, ICriteria>();
-		private readonly IDictionary<string, ICriteria> associationPathCriteriaMap = new LinkedHashMap<string, ICriteria>();
-		private readonly IDictionary<string, JoinType> associationPathJoinTypesMap = new LinkedHashMap<string, JoinType>();
-		private readonly IDictionary<string, ICriterion> withClauseMap = new Dictionary<string, ICriterion>();
+		private readonly HashSet<ICollectionPersister> uncacheableCollectionPersisters = new HashSet<ICollectionPersister>();
+		private readonly HashSet<ICollectionPersister> criteriaCollectionPersisters = new HashSet<ICollectionPersister>();
+		private readonly Dictionary<ICriteria, string> criteriaSQLAliasMap = new Dictionary<ICriteria, string>();
+		private readonly Dictionary<string, string> sqlAliasToCriteriaAliasMap = new Dictionary<string, string>();
+		private readonly Dictionary<string, HashSet<string>> associationAliasToChildrenAliasesMap = new Dictionary<string, HashSet<string>>();
+		private readonly Dictionary<string, ICriteria> aliasCriteriaMap = new Dictionary<string, ICriteria>();
+		private readonly Dictionary<AliasKey, CriteriaImpl.Subcriteria> associationPathCriteriaMap = new Dictionary<AliasKey, CriteriaImpl.Subcriteria>();
+		private readonly Dictionary<AliasKey, JoinType> associationPathJoinTypesMap = new Dictionary<AliasKey, JoinType>();
+		private readonly Dictionary<AliasKey, ICriterion> withClauseMap = new Dictionary<AliasKey, ICriterion>();
 		private readonly ISessionFactoryImplementor sessionFactory;
 		private SessionFactoryHelper helper;
 
 		private readonly ICollection<IParameterSpecification> collectedParameterSpecifications;
 		private readonly ICollection<NamedParameter> namedParameters;
-		private readonly ISet<string> subQuerySpaces = new HashSet<string>();
+		private readonly HashSet<string> subQuerySpaces = new HashSet<string>();
 
-		
+		private Dictionary<string, EntityJoinInfo> entityJoins = new Dictionary<string, EntityJoinInfo>();
+		private readonly IQueryable rootPersister;
+
+		//Key for the dictionary sub-criteria
+		private class AliasKey : IEquatable<AliasKey>
+		{
+			public AliasKey(string alias, string path)
+			{
+				Alias = alias;
+				Path = path;
+			}
+
+			public string Alias { get; }
+			public string Path { get; }
+
+			public bool Equals(AliasKey other)
+			{
+				return other != null && string.Equals(Alias, other.Alias) && string.Equals(Path, other.Path);
+			}
+
+			public override int GetHashCode()
+			{
+				unchecked
+				{
+					return ((Alias != null ? Alias.GetHashCode() : 0) * 397) ^ (Path != null ? Path.GetHashCode() : 0);
+				}
+			}
+
+			public override bool Equals(object obj)
+			{
+				if (ReferenceEquals(this, obj))
+					return true;
+				return Equals(obj as AliasKey);
+			}
+
+			public override string ToString()
+			{
+				return $"path: {Path}; alias: {Alias}";
+			}
+		}
 
 		public CriteriaQueryTranslator(ISessionFactoryImplementor factory, CriteriaImpl criteria, string rootEntityName,
 									   string rootSQLAlias, ICriteriaQuery outerQuery)
@@ -61,8 +111,9 @@ namespace NHibernate.Loader.Criteria
 									   string rootSQLAlias)
 		{
 			rootCriteria = criteria;
-			this.rootEntityName = rootEntityName;
+
 			sessionFactory = factory;
+			rootPersister = GetQueryablePersister(rootEntityName);
 			this.rootSQLAlias = rootSQLAlias;
 			helper = new SessionFactoryHelper(factory);
 
@@ -71,6 +122,7 @@ namespace NHibernate.Loader.Criteria
 
 			CreateAliasCriteriaMap();
 			CreateAssociationPathCriteriaMap();
+			CreateEntityJoinMap();
 			CreateCriteriaEntityNameMap();
 			CreateCriteriaCollectionPersisters();
 			CreateCriteriaSQLAliasMap();
@@ -112,6 +164,13 @@ namespace NHibernate.Loader.Criteria
 			get { return rootCriteria; }
 		}
 
+		ICriteria ISupportEntityProjectionCriteriaQuery.RootCriteria => rootCriteria;
+
+		internal IReadOnlyDictionary<string, EntityJoinInfo> GetEntityJoins()
+		{
+			return entityJoins;
+		}
+
 		public QueryParameters GetQueryParameters()
 		{
 			RowSelection selection = new RowSelection();
@@ -149,7 +208,10 @@ namespace NHibernate.Loader.Criteria
 					rootCriteria.CacheRegion,
 					rootCriteria.Comment,
 					rootCriteria.LookupByNaturalKey,
-					rootCriteria.ResultTransformer);
+					rootCriteria.ResultTransformer)
+				{
+					CacheMode = rootCriteria.CacheMode
+				};
 		}
 		
 		public SqlString GetGroupBy()
@@ -175,7 +237,6 @@ namespace NHibernate.Loader.Criteria
 			//return Factory.getTypeResolver().getTypeFactory().manyToOne(getEntityName(criteria));
 		}
 
-
 		public IType[] ProjectedTypes
 		{
 			get { return rootCriteria.Projection.GetTypes(rootCriteria, this); }
@@ -189,6 +250,18 @@ namespace NHibernate.Loader.Criteria
 		public string[] ProjectedAliases
 		{
 			get { return rootCriteria.Projection.Aliases; }
+		}
+
+		public ISet<ICollectionPersister> UncacheableCollectionPersisters => uncacheableCollectionPersisters;
+
+		public IList<EntityProjection> GetEntityProjections()
+		{
+			return entityProjections;
+		}
+
+		public void RegisterEntityProjection(EntityProjection projection)
+		{
+			entityProjections.Add(projection);
 		}
 
 		public SqlString GetWhereCondition()
@@ -246,24 +319,76 @@ namespace NHibernate.Loader.Criteria
 			return result;
 		}
 
+		// Since v5.2
+		[Obsolete("Use overload with a critAlias additional parameter", true)]
 		public bool IsJoin(string path)
 		{
-			return associationPathCriteriaMap.ContainsKey(path);
+			return associationPathCriteriaMap.Keys.Any(k => k.Path == path);
 		}
 
+		public bool IsJoin(string path, string critAlias)
+		{
+			return associationPathCriteriaMap.ContainsKey(new AliasKey(critAlias, path));
+		}
+
+		/// <summary>
+		/// Returns the child criteria aliases for a parent SQL alias and a child path.
+		/// </summary>
+		public IReadOnlyCollection<string> GetChildAliases(string parentSqlAlias, string childPath)
+		{
+			var alias = new List<string>();
+
+			if (!sqlAliasToCriteriaAliasMap.TryGetValue(parentSqlAlias, out var parentAlias))
+				parentAlias = rootCriteria.Alias;
+
+			if (!associationAliasToChildrenAliasesMap.TryGetValue(parentAlias, out var children))
+				return alias;
+
+			foreach (var child in children)
+			{
+				if (associationPathJoinTypesMap.ContainsKey(new AliasKey(child, childPath)))
+					alias.Add(child);
+			}
+
+			return alias;
+		}
+
+		// Since v5.2
+		[Obsolete("Use overload with a critAlias additional parameter", true)]
 		public JoinType GetJoinType(string path)
 		{
-			JoinType result;
-			if (associationPathJoinTypesMap.TryGetValue(path, out result))
+			return
+				associationPathJoinTypesMap
+					.Where(kv => kv.Key.Path == path)
+					.Select(kv => (JoinType?) kv.Value)
+					.SingleOrDefault() ?? JoinType.InnerJoin;
+		}
+
+		public JoinType GetJoinType(string path, string critAlias)
+		{
+			if (associationPathJoinTypesMap.TryGetValue(new AliasKey(critAlias, path), out var result))
 				return result;
 			return JoinType.InnerJoin;
 		}
 
+		// Since v5.2
+		[Obsolete("Use overload with a critAlias additional parameter", true)]
 		public ICriteria GetCriteria(string path)
 		{
-			ICriteria result;
-			associationPathCriteriaMap.TryGetValue(path, out result);
-			logger.DebugFormat("getCriteria for path={0} crit={1}", path, result);
+			var result =
+				associationPathCriteriaMap
+					.Where(kv => kv.Key.Path == path)
+					.Select(kv => kv.Value)
+					.SingleOrDefault();
+			logger.Debug("getCriteria for path {0}: crit={1}", path, result);
+			return result;
+		}
+
+		public ICriteria GetCriteria(string path, string critAlias)
+		{
+			var key = new AliasKey(critAlias, path);
+			associationPathCriteriaMap.TryGetValue(key, out var result);
+			logger.Debug("getCriteria for {0}: crit={1}", key, result);
 			return result;
 		}
 
@@ -289,52 +414,59 @@ namespace NHibernate.Loader.Criteria
 
 		private void CreateAssociationPathCriteriaMap()
 		{
-			foreach (CriteriaImpl.Subcriteria crit in rootCriteria.IterateSubcriteria())
+			foreach (var crit in rootCriteria.IterateSubcriteria())
 			{
-				string wholeAssociationPath = GetWholeAssociationPath(crit);
+				var wholeAssociationPath = GetWholeAssociationPath(crit, out var parentAlias);
+				if (parentAlias == null)
+					parentAlias = rootCriteria.Alias;
+
+				if (!associationAliasToChildrenAliasesMap.TryGetValue(parentAlias, out var children))
+				{
+					children = new HashSet<string>();
+					associationAliasToChildrenAliasesMap.Add(parentAlias, children);
+				}
+				children.Add(crit.Alias);
+
+				var key = new AliasKey(crit.Alias, wholeAssociationPath);
 				try
 				{
-					associationPathCriteriaMap.Add(wholeAssociationPath, crit);
+					associationPathCriteriaMap.Add(key, crit);
 				}
 				catch (ArgumentException ae)
 				{
-					throw new QueryException("duplicate association path: " + wholeAssociationPath, ae);
+					throw new QueryException("duplicate association path: " + key, ae);
 				}
 
 				try
 				{
-					associationPathJoinTypesMap.Add(wholeAssociationPath, crit.JoinType);
+					associationPathJoinTypesMap.Add(key, crit.JoinType);
 				}
 				catch (ArgumentException ae)
 				{
-					throw new QueryException("duplicate association path: " + wholeAssociationPath, ae);
+					throw new QueryException("duplicate association path: " + key, ae);
 				}
 
 				try
 				{
-					if (crit.WithClause != null)
-					{
-						withClauseMap.Add(wholeAssociationPath, crit.WithClause);
-					}
+					withClauseMap.Add(key, crit.WithClause);
 				}
 				catch (ArgumentException ae)
 				{
-					throw new QueryException("duplicate association path: " + wholeAssociationPath, ae);
+					throw new QueryException("duplicate association path: " + key, ae);
 				}
 			}
 		}
 
-		private string GetWholeAssociationPath(CriteriaImpl.Subcriteria subcriteria)
+		private string GetWholeAssociationPath(CriteriaImpl.Subcriteria subcriteria, out string parentAlias)
 		{
 			string path = subcriteria.Path;
 
 			// some messy, complex stuff here, since createCriteria() can take an
 			// aliased path, or a path rooted at the creating criteria instance
 			ICriteria parent = null;
-			if (path.IndexOf('.') > 0)
+			if (StringHelper.IsNotRoot(path, out var testAlias))
 			{
 				// if it is a compound path
-				string testAlias = StringHelper.Root(path);
 				if (!testAlias.Equals(subcriteria.Alias))
 				{
 					// and the qualifier is not the alias of this criteria
@@ -353,6 +485,8 @@ namespace NHibernate.Loader.Criteria
 				path = StringHelper.Unroot(path);
 			}
 
+			parentAlias = parent.Alias;
+
 			if (parent.Equals(rootCriteria))
 			{
 				// if its the root criteria, we are done
@@ -361,50 +495,80 @@ namespace NHibernate.Loader.Criteria
 			else
 			{
 				// otherwise, recurse
-				return GetWholeAssociationPath((CriteriaImpl.Subcriteria)parent) + '.' + path;
+				return GetWholeAssociationPath((CriteriaImpl.Subcriteria) parent, out _) + '.' + path;
 			}
 		}
 
 		private void CreateCriteriaEntityNameMap()
 		{
 			// initialize the rootProvider first
-			ICriteriaInfoProvider rootProvider = new EntityCriteriaInfoProvider((NHibernate_Persister_Entity.IQueryable)sessionFactory.GetEntityPersister(rootEntityName));
+			ICriteriaInfoProvider rootProvider = new EntityCriteriaInfoProvider(rootPersister);
 			criteriaInfoMap.Add(rootCriteria, rootProvider);
 			nameCriteriaInfoMap.Add(rootProvider.Name, rootProvider);
 
-
-			foreach (KeyValuePair<string, ICriteria> me in associationPathCriteriaMap)
+			foreach (var me in associationPathCriteriaMap)
 			{
-				ICriteriaInfoProvider info = GetPathInfo(me.Key);
+				var info = GetPathInfo(me.Key.Path, rootProvider);
 				criteriaInfoMap.Add(me.Value, info);
-				nameCriteriaInfoMap[info.Name] =  info;
+				nameCriteriaInfoMap[info.Name] = info;
 			}
 		}
 
+		//explicit joins with not associated entities
+		private void CreateEntityJoinMap()
+		{
+			foreach (var criteria in rootCriteria.IterateSubcriteria())
+			{
+				if (criteria.IsEntityJoin)
+				{
+					var entityJoinPersister = GetQueryablePersister(criteria.JoinEntityName);
+					entityJoins[criteria.Alias] = new EntityJoinInfo
+					{
+						Persister = entityJoinPersister,
+						Criteria = criteria,
+					};
+				}
+			}
+		}
 
 		private void CreateCriteriaCollectionPersisters()
 		{
-			foreach (KeyValuePair<string, ICriteria> me in associationPathCriteriaMap)
+			foreach (var me in associationPathCriteriaMap)
 			{
-				NHibernate_Persister_Entity.IJoinable joinable = GetPathJoinable(me.Key);
-				if (joinable != null && joinable.IsCollection)
+				if (GetPathJoinable(me.Key.Path) is ICollectionPersister collectionPersister)
 				{
-					criteriaCollectionPersisters.Add((ICollectionPersister)joinable);
+					criteriaCollectionPersisters.Add(collectionPersister);
+
+					if (collectionPersister.HasCache && me.Value.HasRestrictions)
+					{
+						uncacheableCollectionPersisters.Add(collectionPersister);
+					}
 				}
 			}
 		}
 
 		private Persister.Entity.IJoinable GetPathJoinable(string path)
 		{
-			NHibernate_Persister_Entity.IJoinable last = (NHibernate_Persister_Entity.IJoinable)Factory.GetEntityPersister(rootEntityName);
-			NHibernate_Persister_Entity.IPropertyMapping lastEntity = (NHibernate_Persister_Entity.IPropertyMapping)last;
-
-			string componentPath = "";
-
-			StringTokenizer tokens = new StringTokenizer(path, ".", false);
-			foreach (string token in tokens)
+			// start with the root
+			IJoinable last = rootPersister;
+			
+			var tokens = path.Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
+			if (tokens.Length == 0)
+				return last;
+			
+			IPropertyMapping lastEntity = rootPersister;
+			int i = 0;
+			if (entityJoins.TryGetValue(tokens[0], out var entityJoinInfo))
 			{
-				componentPath += token;
+				last = entityJoinInfo.Persister;
+				lastEntity = (IPropertyMapping) last;
+				i++;
+			}
+
+			string componentPath = string.Empty;
+			for (; i < tokens.Length; i++)
+			{
+				componentPath += tokens[i];
 				IType type = lastEntity.ToType(componentPath);
 				if (type.IsAssociationType)
 				{
@@ -434,21 +598,26 @@ namespace NHibernate.Loader.Criteria
 			return last;
 		}
 
-		private ICriteriaInfoProvider GetPathInfo(string path)
+		private ICriteriaInfoProvider GetPathInfo(string path, ICriteriaInfoProvider rootProvider)
 		{
-			StringTokenizer tokens = new StringTokenizer(path, ".", false);
-			string componentPath = string.Empty;
+			var tokens = path.Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
+			// start with the root
+			ICriteriaInfoProvider provider = rootProvider;
+			if (tokens.Length == 0)
+				return provider;
 
-			// start with the 'rootProvider'
-			ICriteriaInfoProvider provider;
-			if (nameCriteriaInfoMap.TryGetValue(rootEntityName, out provider) == false)
-				throw new ArgumentException("Could not find ICriteriaInfoProvider for: " + path);
-
-
-			foreach (string token in tokens)
+			int i = 0;
+			if (entityJoins.TryGetValue(tokens[0], out var entityJoinInfo))
 			{
-				componentPath += token;
-				logger.DebugFormat("searching for {0}", componentPath);
+				provider = new EntityCriteriaInfoProvider(entityJoinInfo.Persister);
+				i++;
+			}
+
+			string componentPath = string.Empty;
+			for (; i < tokens.Length; i++)
+			{
+				componentPath += tokens[i];
+				logger.Debug("searching for {0}", componentPath);
 				IType type = provider.GetType(componentPath);
 				if (type.IsAssociationType)
 				{
@@ -468,10 +637,8 @@ namespace NHibernate.Loader.Criteria
 					}
 					else
 					{
-						provider = new EntityCriteriaInfoProvider((NHibernate_Persister_Entity.IQueryable)sessionFactory.GetEntityPersister(
-																				   atype.GetAssociatedEntityName(
-																					   sessionFactory)
-																				   ));
+						provider = new EntityCriteriaInfoProvider(
+							GetQueryablePersister(atype.GetAssociatedEntityName(sessionFactory)));
 					}
 
 					componentPath = string.Empty;
@@ -486,7 +653,7 @@ namespace NHibernate.Loader.Criteria
 				}
 			}
 
-			logger.DebugFormat("returning entity name={0} for path={1} class={2}",
+			logger.Debug("returning entity name={0} for path={1} class={2}",
 				provider.Name, path, provider.GetType().Name);
 			return provider;
 		}
@@ -503,11 +670,14 @@ namespace NHibernate.Loader.Criteria
 				{
 					alias = me.Value.Name; // the entity name
 				}
-				criteriaSQLAliasMap[crit] = StringHelper.GenerateAlias(alias, i++);
-				logger.DebugFormat("put criteria={0} alias={1}",
-					crit, criteriaSQLAliasMap[crit]);
+				var sqlAlias = StringHelper.GenerateAlias(alias, i++);
+				criteriaSQLAliasMap[crit] = sqlAlias;
+				logger.Debug("put criteria={0} alias={1}", crit, sqlAlias);
+				if (!string.IsNullOrEmpty(crit.Alias))
+					sqlAliasToCriteriaAliasMap[sqlAlias] = alias;
 			}
 			criteriaSQLAliasMap[rootCriteria] = rootSQLAlias;
+			sqlAliasToCriteriaAliasMap[rootSQLAlias] = rootCriteria.Alias;
 		}
 
 		public bool HasProjection
@@ -518,7 +688,7 @@ namespace NHibernate.Loader.Criteria
 		public string GetSQLAlias(ICriteria criteria)
 		{
 			String alias = criteriaSQLAliasMap[criteria];
-			logger.DebugFormat("returning alias={0} for criteria={1}", alias, criteria);
+			logger.Debug("returning alias={0} for criteria={1}", alias, criteria);
 			return alias;
 		}
 
@@ -546,22 +716,14 @@ namespace NHibernate.Loader.Criteria
 		public string[] GetColumnsUsingProjection(ICriteria subcriteria, string propertyName)
 		{
 			// NH Different behavior: we don't use the projection alias for NH-1023
-			try
-			{
-				return GetColumns(subcriteria, propertyName);
-			}
-			catch (HibernateException)
-			{
-				//not found in inner query , try the outer query
-				if (outerQueryTranslator != null)
-				{
-					return outerQueryTranslator.GetColumnsUsingProjection(subcriteria, propertyName);
-				}
-				else
-				{
-					throw;
-				}
-			}
+			if (TryGetColumns(subcriteria, propertyName, outerQueryTranslator != null, out var columns))
+				return columns;
+
+			//not found in inner query , try the outer query
+			if (outerQueryTranslator != null)
+				return outerQueryTranslator.GetColumnsUsingProjection(subcriteria, propertyName);
+
+			throw new QueryException("Could not find property " + propertyName);
 		}
 
 		public string[] GetIdentifierColumns(ICriteria subcriteria)
@@ -583,12 +745,29 @@ namespace NHibernate.Loader.Criteria
 
 		public string[] GetColumns(ICriteria subcriteria, string propertyName)
 		{
-			string entName = GetEntityName(subcriteria, propertyName);
-			if (entName == null)
+			if (TryGetColumns(subcriteria, propertyName, false, out var columns))
+				return columns;
+
+			throw new QueryException("Could not find property " + propertyName);
+		}
+
+		private bool TryGetColumns(ICriteria subcriteria, string path, bool verifyPropertyName, out string[] columns)
+		{
+			if (!TryParseCriteriaPath(subcriteria, path, out var entName, out var propertyName, out var pathCriteria))
 			{
-				throw new QueryException("Could not find property " + propertyName);
+				columns = null;
+				return false;
 			}
-			return GetPropertyMapping(entName).ToColumns(GetSQLAlias(subcriteria, propertyName), GetPropertyName(propertyName));
+			var propertyMapping = GetPropertyMapping(entName);
+
+			if (verifyPropertyName && !propertyMapping.TryToType(propertyName, out var type))
+			{
+				columns = null;
+				return false;
+			}
+
+			columns = propertyMapping.ToColumns(GetSQLAlias(pathCriteria), propertyName);
+			return true;
 		}
 
 		public IType GetTypeUsingProjection(ICriteria subcriteria, string propertyName)
@@ -599,24 +778,8 @@ namespace NHibernate.Loader.Criteria
 
 			if (projectionTypes == null)
 			{
-				try
-				{
-					//it does not refer to an alias of a projection,
-					//look for a property
-					return GetType(subcriteria, propertyName);
-				}
-				catch (HibernateException)
-				{
-					//not found in inner query , try the outer query
-					if (outerQueryTranslator != null)
-					{
-						return outerQueryTranslator.GetType(subcriteria, propertyName);
-					}
-					else
-					{
-						throw;
-					}
-				}
+				//it does not refer to an alias of a projection, look for a property
+				return GetType(subcriteria, propertyName);
 			}
 			else
 			{
@@ -631,7 +794,24 @@ namespace NHibernate.Loader.Criteria
 
 		public IType GetType(ICriteria subcriteria, string propertyName)
 		{
-			return GetPropertyMapping(GetEntityName(subcriteria, propertyName)).ToType(GetPropertyName(propertyName));
+			if (TryGetType(subcriteria, propertyName, out var resultType))
+				return resultType;
+
+			if (outerQueryTranslator != null)
+				return outerQueryTranslator.GetType(subcriteria, propertyName);
+
+			throw new QueryException("Could not find property " + propertyName);
+		}
+
+		public bool TryGetType(ICriteria subcriteria, string propertyName, out IType type)
+		{
+			if (!TryParseCriteriaPath(subcriteria, propertyName, out var entityName, out var entityPropName, out _))
+			{
+				type = null;
+				return false;
+			}
+
+			return GetPropertyMapping(entityName).TryToType(entityPropName, out type);
 		}
 
 		/// <summary>
@@ -657,17 +837,16 @@ namespace NHibernate.Loader.Criteria
 
 		private Persister.Entity.IPropertyMapping GetPropertyMapping(string entityName)
 		{
-			ICriteriaInfoProvider info ;
-			if (nameCriteriaInfoMap.TryGetValue(entityName, out info)==false)
+			ICriteriaInfoProvider info;
+			if (nameCriteriaInfoMap.TryGetValue(entityName, out info) == false)
 				throw new InvalidOperationException("Could not find criteria info provider for: " + entityName);
 			return info.PropertyMapping;
 		}
 
 		public string GetEntityName(ICriteria subcriteria, string propertyName)
 		{
-			if (propertyName.IndexOf('.') > 0)
+			if (StringHelper.IsNotRoot(propertyName, out var root))
 			{
-				string root = StringHelper.Root(propertyName);
 				ICriteria crit = GetAliasedCriteria(root);
 				if (crit != null)
 				{
@@ -677,11 +856,27 @@ namespace NHibernate.Loader.Criteria
 			return GetEntityName(subcriteria);
 		}
 
+		/// <summary> 
+		/// Substitute the SQL aliases in <see cref="SqlString"/> template.
+		/// </summary>
+		public SqlString RenderSQLAliases(SqlString sqlTemplate)
+		{
+			var result = criteriaSQLAliasMap
+				.Where(p => !string.IsNullOrEmpty(p.Key.Alias))
+				.Aggregate(sqlTemplate, (current, p) => current.Replace("{" + p.Key.Alias + "}", p.Value));
+
+			if (outerQueryTranslator != null)
+			{
+				return outerQueryTranslator.RenderSQLAliases(result);
+			}
+
+			return result;
+		}
+
 		public string GetSQLAlias(ICriteria criteria, string propertyName)
 		{
-			if (propertyName.IndexOf('.') > 0)
+			if (StringHelper.IsNotRoot(propertyName, out var root))
 			{
-				string root = StringHelper.Root(propertyName);
 				ICriteria subcriteria = GetAliasedCriteria(root);
 				if (subcriteria != null)
 				{
@@ -693,9 +888,8 @@ namespace NHibernate.Loader.Criteria
 
 		public string GetPropertyName(string propertyName)
 		{
-			if (propertyName.IndexOf('.') > 0)
+			if (StringHelper.IsNotRoot(propertyName, out var root))
 			{
-				string root = StringHelper.Root(propertyName);
 				ICriteria crit = GetAliasedCriteria(root);
 				if (crit != null)
 				{
@@ -705,14 +899,25 @@ namespace NHibernate.Loader.Criteria
 			return propertyName;
 		}
 
+		// Since v5.2
+		[Obsolete("Use overload with a critAlias additional parameter", true)]
 		public SqlString GetWithClause(string path)
 		{
-			ICriterion crit;
-			if (withClauseMap.TryGetValue(path, out crit))
-			{
-				return crit == null ? null : crit.ToSqlString(GetCriteria(path), this);
-			}
-			return null;
+			var crit =
+				withClauseMap
+					.Where(kv => kv.Key.Path == path)
+					.Select(kv => kv.Value)
+					.SingleOrDefault();
+
+			return crit?.ToSqlString(GetCriteria(path), this);
+		}
+
+		public SqlString GetWithClause(string path, string pathAlias)
+		{
+			var key = new AliasKey(pathAlias, path);
+			withClauseMap.TryGetValue(key, out var crit);
+
+			return crit?.ToSqlString(GetCriteria(path, key.Alias), this);
 		}
 
 		#region NH specific
@@ -761,13 +966,13 @@ namespace NHibernate.Loader.Criteria
 
 		public Parameter CreateSkipParameter(int value)
 		{
-			var typedValue = new TypedValue(NHibernateUtil.Int32, value);
+			var typedValue = new TypedValue(NHibernateUtil.Int32, value, false);
 			return NewQueryParameter("skip_", typedValue).Single();
 		}
 		
 		public Parameter CreateTakeParameter(int value)
 		{
-			var typedValue = new TypedValue(NHibernateUtil.Int32, value);
+			var typedValue = new TypedValue(NHibernateUtil.Int32, value, false);
 			return NewQueryParameter("take_",typedValue).Single();
 		}
 
@@ -823,22 +1028,7 @@ namespace NHibernate.Loader.Criteria
 			{
 				//it does not refer to an alias of a projection,
 				//look for a property
-				try
-				{
-					return GetColumns(subcriteria, propertyName);
-				}
-				catch (HibernateException)
-				{
-					//not found in inner query , try the outer query
-					if (outerQueryTranslator != null)
-					{
-						return outerQueryTranslator.GetColumnAliasesUsingProjection(subcriteria, propertyName);
-					}
-					else
-					{
-						throw;
-					}
-				}
+				return GetColumnsUsingProjection(subcriteria, propertyName);
 			}
 			else
 			{
@@ -851,7 +1041,6 @@ namespace NHibernate.Loader.Criteria
 		
 		private void CreateSubQuerySpaces()
 		{
-
 			var subQueries =
 				rootCriteria.IterateExpressionEntries()
 				            .Select(x => x.Criterion)
@@ -865,7 +1054,30 @@ namespace NHibernate.Loader.Criteria
 				var translator = new CriteriaQueryTranslator(sessionFactory, criteriaImpl, criteriaImpl.EntityOrClassName, RootSqlAlias);
 				subQuerySpaces.UnionWith(translator.GetQuerySpaces());
 			}
+		}
 
-		}	
+		private IQueryable GetQueryablePersister(string entityName)
+		{
+			return (IQueryable) sessionFactory.GetEntityPersister(entityName);
+		}
+
+		private bool TryParseCriteriaPath(ICriteria subcriteria, string path, out string entityName, out string propertyName, out ICriteria pathCriteria)
+		{
+			if(StringHelper.IsNotRoot(path, out var root, out var unrootPath))
+			{
+				ICriteria crit = GetAliasedCriteria(root);
+				if (crit != null)
+				{
+					propertyName = unrootPath;
+					entityName = GetEntityName(crit);
+					pathCriteria = crit;
+					return entityName != null;
+				}
+			}
+			pathCriteria = subcriteria;
+			propertyName = path;
+			entityName = GetEntityName(subcriteria);
+			return entityName != null;
+		}
 	}
 }

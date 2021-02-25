@@ -1,21 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading;
-
-using NHibernate.Cache;
 using NHibernate.Engine;
-using NHibernate.Util;
 using System.Linq;
 
 namespace NHibernate.Stat
 {
 	public class StatisticsImpl : IStatistics, IStatisticsImplementor
 	{
-		private object _syncRoot;
+		private readonly object _syncRoot = new object();
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(StatisticsImpl));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(StatisticsImpl));
 		private readonly ISessionFactoryImplementor sessionFactory;
 		private long entityDeleteCount;
 		private long entityInsertCount;
@@ -79,17 +74,6 @@ namespace NHibernate.Stat
 			: this()
 		{
 			this.sessionFactory = sessionFactory;
-		}
-
-		private object SyncRoot
-		{
-			get
-			{
-				if (_syncRoot == null)
-					Interlocked.CompareExchange(ref _syncRoot, new object(), null);
-
-				return _syncRoot;
-			}
 		}
 
 		#region IStatistics Members
@@ -305,10 +289,9 @@ namespace NHibernate.Stat
 			get { return optimisticFailureCount; }
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Clear()
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				secondLevelCacheHitCount = 0;
 				secondLevelCacheMissCount = 0;
@@ -355,10 +338,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public EntityStatistics GetEntityStatistics(string entityName)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				EntityStatistics es;
 				if (!entityStatistics.TryGetValue(entityName, out es))
@@ -370,10 +352,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public CollectionStatistics GetCollectionStatistics(string role)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				CollectionStatistics cs;
 				if (!collectionStatistics.TryGetValue(role, out cs))
@@ -385,10 +366,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public SecondLevelCacheStatistics GetSecondLevelCacheStatistics(string regionName)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				SecondLevelCacheStatistics slcs;
 
@@ -396,7 +376,7 @@ namespace NHibernate.Stat
 				{
 					if (sessionFactory == null)
 						return null;
-					ICache cache = sessionFactory.GetSecondLevelCacheRegion(regionName);
+					var cache = sessionFactory.GetSecondLevelCacheRegion(regionName);
 					if (cache == null)
 						return null;
 					slcs = new SecondLevelCacheStatistics(cache);
@@ -406,10 +386,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public QueryStatistics GetQueryStatistics(string queryString)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				QueryStatistics qs;
 				if (!queryStatistics.TryGetValue(queryString, out qs))
@@ -424,34 +403,34 @@ namespace NHibernate.Stat
 		public void LogSummary()
 		{
 			log.Info("Logging statistics....");
-			log.Info(string.Format("start time: {0}", startTime.ToString("o")));
-			log.Info("sessions opened: " + sessionOpenCount);
-			log.Info("sessions closed: " + sessionCloseCount);
-			log.Info("transactions: " + transactionCount);
-			log.Info("successful transactions: " + commitedTransactionCount);
-			log.Info("optimistic lock failures: " + optimisticFailureCount);
-			log.Info("flushes: " + flushCount);
-			log.Info("connections obtained: " + connectCount);
-			log.Info("statements prepared: " + prepareStatementCount);
-			log.Info("statements closed: " + closeStatementCount);
-			log.Info("second level cache puts: " + secondLevelCachePutCount);
-			log.Info("second level cache hits: " + secondLevelCacheHitCount);
-			log.Info("second level cache misses: " + secondLevelCacheMissCount);
-			log.Info("entities loaded: " + entityLoadCount);
-			log.Info("entities updated: " + entityUpdateCount);
-			log.Info("entities inserted: " + entityInsertCount);
-			log.Info("entities deleted: " + entityDeleteCount);
-			log.Info("entities fetched (minimize this): " + entityFetchCount);
-			log.Info("collections loaded: " + collectionLoadCount);
-			log.Info("collections updated: " + collectionUpdateCount);
-			log.Info("collections removed: " + collectionRemoveCount);
-			log.Info("collections recreated: " + collectionRecreateCount);
-			log.Info("collections fetched (minimize this): " + collectionFetchCount);
-			log.Info("queries executed to database: " + queryExecutionCount);
-			log.Info("query cache puts: " + queryCachePutCount);
-			log.Info("query cache hits: " + queryCacheHitCount);
-			log.Info("query cache misses: " + queryCacheMissCount);
-			log.Info("max query time: " + queryExecutionMaxTime.TotalMilliseconds.ToString("0") + " ms");
+			log.Info("start time: {0:o}", startTime);
+			log.Info("sessions opened: {0}", sessionOpenCount);
+			log.Info("sessions closed: {0}", sessionCloseCount);
+			log.Info("transactions: {0}", transactionCount);
+			log.Info("successful transactions: {0}", commitedTransactionCount);
+			log.Info("optimistic lock failures: {0}", optimisticFailureCount);
+			log.Info("flushes: {0}", flushCount);
+			log.Info("connections obtained: {0}", connectCount);
+			log.Info("statements prepared: {0}", prepareStatementCount);
+			log.Info("statements closed: {0}", closeStatementCount);
+			log.Info("second level cache puts: {0}", secondLevelCachePutCount);
+			log.Info("second level cache hits: {0}", secondLevelCacheHitCount);
+			log.Info("second level cache misses: {0}", secondLevelCacheMissCount);
+			log.Info("entities loaded: {0}", entityLoadCount);
+			log.Info("entities updated: {0}", entityUpdateCount);
+			log.Info("entities inserted: {0}", entityInsertCount);
+			log.Info("entities deleted: {0}", entityDeleteCount);
+			log.Info("entities fetched (minimize this): {0}", entityFetchCount);
+			log.Info("collections loaded: {0}", collectionLoadCount);
+			log.Info("collections updated: {0}", collectionUpdateCount);
+			log.Info("collections removed: {0}", collectionRemoveCount);
+			log.Info("collections recreated: {0}", collectionRecreateCount);
+			log.Info("collections fetched (minimize this): {0}", collectionFetchCount);
+			log.Info("queries executed to database: {0}", queryExecutionCount);
+			log.Info("query cache puts: {0}", queryCachePutCount);
+			log.Info("query cache hits: {0}", queryCacheHitCount);
+			log.Info("query cache misses: {0}", queryCacheMissCount);
+			log.Info("max query time: {0:0} ms", queryExecutionMaxTime.TotalMilliseconds);
 		}
 
 		public TimeSpan OperationThreshold
@@ -460,10 +439,9 @@ namespace NHibernate.Stat
 			{
 				return operationThreshold;
 			}
-			[MethodImpl(MethodImplOptions.Synchronized)]
 			set
 			{
-				lock (SyncRoot)
+				lock (_syncRoot)
 				{
 					operationThreshold = value;
 				}
@@ -474,46 +452,41 @@ namespace NHibernate.Stat
 
 		#region IStatisticsImplementor Members
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void OpenSession()
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				sessionOpenCount++;
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void CloseSession()
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				sessionCloseCount++;
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Flush()
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				flushCount++;
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void Connect()
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				connectCount++;
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void LoadEntity(string entityName, TimeSpan time)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				entityLoadCount++;
 				GetEntityStatistics(entityName).loadCount++;
@@ -524,10 +497,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void FetchEntity(string entityName, TimeSpan time)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				entityFetchCount++;
 				GetEntityStatistics(entityName).fetchCount++;
@@ -538,10 +510,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void UpdateEntity(string entityName, TimeSpan time)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				entityUpdateCount++;
 				GetEntityStatistics(entityName).updateCount++;
@@ -552,10 +523,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void InsertEntity(string entityName, TimeSpan time)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				entityInsertCount++;
 				GetEntityStatistics(entityName).insertCount++;
@@ -566,10 +536,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void DeleteEntity(string entityName, TimeSpan time)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				entityDeleteCount++;
 				GetEntityStatistics(entityName).deleteCount++;
@@ -580,10 +549,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void LoadCollection(string role, TimeSpan time)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				collectionLoadCount++;
 				GetCollectionStatistics(role).loadCount++;
@@ -594,10 +562,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void FetchCollection(string role, TimeSpan time)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				collectionFetchCount++;
 				GetCollectionStatistics(role).fetchCount++;
@@ -608,10 +575,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void UpdateCollection(string role, TimeSpan time)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				collectionUpdateCount++;
 				GetCollectionStatistics(role).updateCount++;
@@ -622,10 +588,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void RecreateCollection(string role, TimeSpan time)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				collectionRecreateCount++;
 				GetCollectionStatistics(role).recreateCount++;
@@ -636,24 +601,22 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void RemoveCollection(string role, TimeSpan time)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				collectionRemoveCount++;
 				GetCollectionStatistics(role).removeCount++;
 			}
 			if (operationThreshold < time)
 			{
-				LogOperation(OperationRecreateCollection, role, time);
+				LogOperation(OperationRemoveCollection, role, time);
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void SecondLevelCachePut(string regionName)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				SecondLevelCacheStatistics slc = GetSecondLevelCacheStatistics(regionName);
 				if (slc != null)
@@ -664,10 +627,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void SecondLevelCacheHit(string regionName)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				SecondLevelCacheStatistics slc = GetSecondLevelCacheStatistics(regionName);
 				if (slc != null)
@@ -678,10 +640,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void SecondLevelCacheMiss(string regionName)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				SecondLevelCacheStatistics slc = GetSecondLevelCacheStatistics(regionName);
 				if (slc != null)
@@ -692,10 +653,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void QueryExecuted(string hql, int rows, TimeSpan time)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				queryExecutionCount++;
 				if (queryExecutionMaxTime < time)
@@ -715,10 +675,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void QueryCacheHit(string hql, string regionName)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				queryCacheHitCount++;
 				if (hql != null)
@@ -734,10 +693,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void QueryCacheMiss(string hql, string regionName)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				queryCacheMissCount++;
 				if (hql != null)
@@ -753,10 +711,9 @@ namespace NHibernate.Stat
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void QueryCachePut(string hql, string regionName)
 		{
-			lock (SyncRoot)
+			lock (_syncRoot)
 			{
 				queryCachePutCount++;
 				if (hql != null)
@@ -800,7 +757,7 @@ namespace NHibernate.Stat
 		private static void LogOperation(string operation, string entityName, TimeSpan time)
 		{
 			if (entityName != null)
-				log.Info(operation + entityName + " " + time.Milliseconds + "ms");
+				log.Info("{0}{1} {2}ms", operation, entityName, time.Milliseconds);
 			else
 				log.Info(operation); // just log that the event occurred
 		}

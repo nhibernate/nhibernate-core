@@ -12,6 +12,7 @@ namespace NHibernate.Type
 	/// It work like a MetaType where the key is the entity-name it self
 	/// </remarks>
 	[Serializable]
+	[Obsolete("Use MetaType without meta-values instead.")]
 	public partial class ClassMetaType : AbstractType
 	{
 		public override SqlType[] SqlTypes(IMapping mapping)
@@ -98,7 +99,7 @@ namespace NHibernate.Type
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
-			throw new NotSupportedException();
+			return NHibernateUtil.String.ToColumnNullness(value, mapping);
 		}
 	}
 }

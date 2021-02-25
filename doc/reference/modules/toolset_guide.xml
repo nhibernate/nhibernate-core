@@ -66,7 +66,7 @@
         
         <para>
             You <emphasis>must</emphasis> specify a SQL <literal>Dialect</literal> via the 
-            <literal>hibernate.dialect</literal> property when using this tool.
+            <literal>dialect</literal> configuration property when using this tool.
         </para>
 
         <sect2 id="toolsetguide-s1-2" revision="1">
@@ -262,23 +262,23 @@ new SchemaExport(cfg).Create(false, true);]]></programlisting>
                     </thead>
                     <tbody>
                     <row>
-                        <entry><literal>hibernate.connection.driver_class</literal></entry>
+                        <entry><literal>connection.driver_class</literal></entry>
                         <entry>jdbc driver class</entry>
                     </row>
                     <row>
-                        <entry><literal>hibernate.connection.url</literal></entry>
+                        <entry><literal>connection.url</literal></entry>
                         <entry>jdbc url</entry>
                     </row>
                     <row>
-                        <entry><literal>hibernate.connection.username</literal></entry>
+                        <entry><literal>connection.username</literal></entry>
                         <entry>database user</entry>
                     </row>
                     <row>
-                        <entry><literal>hibernate.connection.password</literal></entry>
+                        <entry><literal>connection.password</literal></entry>
                         <entry>user password</entry>
                     </row>
                     <row>
-                        <entry><literal>hibernate.dialect</literal></entry>
+                        <entry><literal>dialect</literal></entry>
                         <entry>dialect</entry>
                     </row>
                     </tbody>
@@ -370,7 +370,7 @@ new SchemaExport(cfg).Create(false, true);]]></programlisting>
         </table>
       <para>
         A more detailed guide of <literal>hbm2net</literal> is available in
-        http://nhibernate.info/blog/2009/12/12/t4-hbm2net-alpha-2.html
+        https://nhibernate.info/blog/2009/12/12/t4-hbm2net-alpha-2.html
       </para>
 
 

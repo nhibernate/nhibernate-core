@@ -8,16 +8,18 @@
 //------------------------------------------------------------------------------
 
 
-
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using NHibernate.Criterion.Lambda;
 using NHibernate.Engine;
 using NHibernate.Impl;
+using NHibernate.Loader;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {
@@ -60,7 +62,6 @@ namespace NHibernate.Criterion
 			}
 			return criteria.UniqueResultAsync<U>(cancellationToken);
 		}
-
 
 		Task<IList<TRoot>> IQueryOver<TRoot>.ListAsync(CancellationToken cancellationToken)
 		{
@@ -129,7 +130,5 @@ namespace NHibernate.Criterion
 			}
 			return SingleOrDefaultAsync<U>(cancellationToken);
 		}
-
 	}
-
 }

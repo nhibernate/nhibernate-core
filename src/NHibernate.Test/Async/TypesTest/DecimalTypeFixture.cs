@@ -8,7 +8,8 @@
 //------------------------------------------------------------------------------
 
 
-using System;
+using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -21,34 +22,128 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class DecimalTypeFixtureAsync : TypeFixtureBase
 	{
-		protected override string TypeName
+		protected override string TypeName => "Decimal";
+		private const int _highScaleId = 2;
+		private const decimal _highScaleTestedValue = 123456789.123456789m;
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			get { return "Decimal"; }
+			return base.AppliesTo(dialect) && !TestDialect.HasBrokenDecimalType;
+		}
+
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+
+			if (Dialect is FirebirdDialect)
+			{
+				configuration.SetProperty(Environment.QueryDefaultCastPrecision, "18");
+				configuration.SetProperty(Environment.QueryDefaultCastScale, "9");
+			}
+		}
+
+		protected override void OnSetUp()
+		{
+			base.OnSetUp();
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Save(new DecimalClass { Id = _highScaleId, HighScaleDecimalValue = _highScaleTestedValue });
+				t.Commit();
+			}
+		}
+
+		protected override void OnTearDown()
+		{
+			base.OnTearDown();
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.CreateQuery("delete from DecimalClass").ExecuteUpdate();
+				t.Commit();
+			}
 		}
 
 		[Test]
 		public async Task ReadWriteAsync()
 		{
-			decimal expected = 5.64351M;
+			const decimal expected = 5.64351M;
 
-			DecimalClass basic = new DecimalClass();
-			basic.Id = 1;
-			basic.DecimalValue = expected;
+			var basic = new DecimalClass
+			{
+				Id = 1,
+				DecimalValue = expected
+			};
 
-			ISession s = OpenSession();
-			await (s.SaveAsync(basic));
-			await (s.FlushAsync());
-			s.Close();
+			using (var s = OpenSession())
+			{
+				await (s.SaveAsync(basic));
+				await (s.FlushAsync());
+			}
 
-			s = OpenSession();
-			basic = (DecimalClass) await (s.LoadAsync(typeof(DecimalClass), 1));
+			using (var s = OpenSession())
+			{
+				basic = await (s.LoadAsync<DecimalClass>(1));
 
-			Assert.AreEqual(expected, basic.DecimalValue);
-			Assert.AreEqual(5.643510M, basic.DecimalValue);
+				Assert.That(basic.DecimalValue, Is.EqualTo(expected));
+				Assert.That(basic.DecimalValue, Is.EqualTo(5.643510M));
+			}
+		}
 
-			await (s.DeleteAsync(basic));
-			await (s.FlushAsync());
-			s.Close();
+		[Test]
+		public async Task HighScaleParameterSelectAsync()
+		{
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var selectedValue = await (s
+					.CreateQuery("select dc.HighScaleDecimalValue + :d1 from DecimalClass dc")
+					.SetMaxResults(1)
+					.SetDecimal("d1", _highScaleTestedValue)
+					.UniqueResultAsync<object>());
+				Assert.That(selectedValue, Is.EqualTo(_highScaleTestedValue * 2));
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task HighScaleParameterFilterAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var count = await (s
+					.CreateQuery("select count(*) from DecimalClass dc where dc.HighScaleDecimalValue = :d1")
+					.SetDecimal("d1", _highScaleTestedValue)
+					.UniqueResultAsync<long>());
+				Assert.That(count, Is.GreaterThanOrEqualTo(1));
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task HighScaleParameterInequalityAsync()
+		{
+			if (!TestDialect.SupportsNonDataBoundCondition)
+				Assert.Ignore("Dialect does not support parameters comparison.");
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var count = await (s
+					.CreateQuery("select count(*) from DecimalClass dc where :d1 != :d2")
+					.SetDecimal("d1", 123456789.123456789m)
+					// If truncation occurs before the last digit, the test will fail.
+					.SetDecimal("d2", 123456789.123456780m)
+					.UniqueResultAsync<long>());
+				Assert.That(count, Is.GreaterThanOrEqualTo(1));
+				await (t.CommitAsync());
+			}
 		}
 	}
 }

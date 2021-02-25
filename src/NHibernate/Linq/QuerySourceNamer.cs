@@ -10,8 +10,8 @@ namespace NHibernate.Linq
 	/// </summary>
 	public class QuerySourceNamer
 	{
-		private readonly IDictionary<IQuerySource, string> _map = new Dictionary<IQuerySource, string>();
-		private readonly IList<string> _names = new List<string>();
+		private readonly Dictionary<IQuerySource, string> _map = new Dictionary<IQuerySource, string>();
+		private readonly List<string> _names = new List<string>();
 		private int _differentiator = 1;
 
 		public void Add(IQuerySource querySource)
@@ -20,6 +20,14 @@ namespace NHibernate.Linq
 				return;
 
 			_map.Add(querySource, CreateUniqueName(querySource.ItemName));
+		}
+
+		internal void Add(IQuerySource querySource, string name)
+		{
+			if (_map.ContainsKey(querySource))
+				return;
+
+			_map.Add(querySource, name);
 		}
 
 		public string GetName(IQuerySource querySource)

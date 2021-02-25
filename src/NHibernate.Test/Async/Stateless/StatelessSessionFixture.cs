@@ -27,7 +27,7 @@ namespace NHibernate.Test.Stateless
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"Stateless.Document.hbm.xml"}; }
 		}
@@ -59,7 +59,7 @@ namespace NHibernate.Test.Stateless
 					Assert.IsTrue(initVersion.HasValue);
 					await (tx.CommitAsync());
 				}
-				Thread.Sleep(1100); // Ensure version increment (some dialects lack fractional seconds).
+				await (Task.Delay(1100)); // Ensure version increment (some dialects lack fractional seconds).
 				using (tx = ss.BeginTransaction())
 				{
 					doc.Text = "blah blah blah .... blah";

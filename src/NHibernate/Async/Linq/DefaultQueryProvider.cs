@@ -20,6 +20,8 @@ using NHibernate.Impl;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Threading.Tasks;
+using NHibernate.Multi;
+using NHibernate.Param;
 
 namespace NHibernate.Linq
 {
@@ -28,15 +30,34 @@ namespace NHibernate.Linq
 		Task<int> ExecuteDmlAsync<T>(QueryMode queryMode, Expression expression, CancellationToken cancellationToken);
 	}
 
-	public partial class DefaultQueryProvider : INhQueryProvider
+	public partial class DefaultQueryProvider : INhQueryProvider, IQueryProviderWithOptions, ISupportFutureBatchNhQueryProvider
 	{
 
+		//TODO 6.0: Add to INhQueryProvider interface 
+		public virtual async Task<IList<TResult>> ExecuteListAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var linqExpression = PrepareQuery(expression, out var query);
+			var resultTransformer = linqExpression.ExpressionToHqlTranslationResults?.PostExecuteTransformer;
+			if (resultTransformer == null)
+			{
+				return await (query.ListAsync<TResult>(cancellationToken)).ConfigureAwait(false);
+			}
+
+			return new List<TResult>
+			{
+				(TResult) resultTransformer.DynamicInvoke((await (query.ListAsync(cancellationToken)).ConfigureAwait(false)).AsQueryable())
+			};
+		}
+
+		// Since v5.1
+		[Obsolete("Use ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query) instead")]
 		protected virtual async Task<object> ExecuteQueryAsync(NhLinqExpression nhLinqExpression, IQuery query, NhLinqExpression nhQuery, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IList results = await (query.ListAsync(cancellationToken)).ConfigureAwait(false);
 
-			if (nhQuery.ExpressionToHqlTranslationResults.PostExecuteTransformer != null)
+			if (nhQuery.ExpressionToHqlTranslationResults?.PostExecuteTransformer != null)
 			{
 				try
 				{
@@ -44,7 +65,7 @@ namespace NHibernate.Linq
 				}
 				catch (TargetInvocationException e)
 				{
-					throw e.InnerException;
+					throw ReflectHelper.UnwrapTargetInvocationException(e);
 				}
 			}
 
@@ -56,20 +77,35 @@ namespace NHibernate.Linq
 			return results[0];
 		}
 
+		protected virtual Task<object> ExecuteQueryAsync(NhLinqExpression nhLinqExpression, IQuery query, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			// For avoiding breaking derived classes, call the obsolete method until it is dropped.
+#pragma warning disable 618
+			return ExecuteQueryAsync(nhLinqExpression, query, nhLinqExpression, cancellationToken);
+#pragma warning restore 618
+		}
+
 		public Task<int> ExecuteDmlAsync<T>(QueryMode queryMode, Expression expression, CancellationToken cancellationToken)
 		{
+			if (Collection != null)
+				throw new NotSupportedException("DML operations are not supported for filters.");
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<int>(cancellationToken);
 			}
 			try
 			{
+
 				var nhLinqExpression = new NhLinqDmlExpression<T>(queryMode, expression, Session.Factory);
 
 				var query = Session.CreateQuery(nhLinqExpression);
 
-				SetParameters(query, nhLinqExpression.ParameterValuesByName);
-
+				SetParameters(query, nhLinqExpression.NamedParameters);
+				_options?.Apply(query);
 				return query.ExecuteUpdateAsync(cancellationToken);
 			}
 			catch (Exception ex)

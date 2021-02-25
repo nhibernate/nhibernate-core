@@ -3,48 +3,51 @@ namespace NHibernate.Cache
 	/// <summary>
 	/// Used by <see cref="NoCacheProvider"/>
 	/// </summary>
-	public partial class FakeCache : ICache
+	public partial class FakeCache : CacheBase
 	{
 		public FakeCache(string regionName)
 		{
 			RegionName = regionName;
 		}
 
-		public object Get(object key)
+		public override bool PreferMultipleGet => false;
+
+		public override object Get(object key)
 		{
 			return null;
 		}
 
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 		}
 
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 		}
 
-		public void Clear()
+		public override void Clear()
 		{
 		}
 
-		public void Destroy()
+		public override void Destroy()
 		{
 		}
 
-		public void Lock(object key)
+		public override object Lock(object key)
+		{
+			return null;
+		}
+
+		public override void Unlock(object key, object lockValue)
 		{
 		}
 
-		public void Unlock(object key)
-		{
-		}
-
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
-		public int Timeout { get; private set; }
-		public string RegionName { get; private set; }
+		public override int Timeout => 0;
+		public override string RegionName { get; }
 	}
 }

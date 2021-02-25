@@ -44,10 +44,16 @@ namespace NHibernate.Mapping
 
 		public static string BuildSqlDropIndexString(Dialect.Dialect dialect, Table table, string name, string defaultCatalog, string defaultSchema)
 		{
-			string ifExists = dialect.GetIfExistsDropConstraint(table, name);
-			string drop = string.Format("drop index {0}", StringHelper.Qualify(table.GetQualifiedName(dialect, defaultCatalog, defaultSchema), name));
-			string end = dialect.GetIfExistsDropConstraintEnd(table, name);
-			return ifExists + Environment.NewLine + drop + Environment.NewLine + end;
+			var catalog = table.GetQuotedCatalog(dialect, defaultCatalog);
+			var schema = table.GetQuotedSchema(dialect, defaultSchema);
+			var tableName = table.GetQuotedName(dialect);
+
+			return new StringBuilder()
+				.AppendLine(dialect.GetIfExistsDropConstraint(catalog, schema, tableName, name))
+				.Append("drop index ")
+				.AppendLine(StringHelper.Qualify(table.GetQualifiedName(dialect, defaultCatalog, defaultSchema), name))
+				.Append(dialect.GetIfExistsDropConstraintEnd(catalog, schema, tableName, name))
+				.ToString();
 		}
 
 		/// <summary>
@@ -62,7 +68,8 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
 		{
-			return BuildSqlCreateIndexString(dialect, Name, Table, ColumnIterator, false, defaultCatalog, defaultSchema);
+			var indexName = IsInherited ? Table.Name + Name : Name;
+			return BuildSqlCreateIndexString(dialect, indexName, Table, ColumnIterator, false, defaultCatalog, defaultSchema);
 		}
 
 		/// <summary>
@@ -137,6 +144,11 @@ namespace NHibernate.Mapping
 			get { return name; }
 			set { name = value; }
 		}
+
+		/// <summary>
+		/// Is this index inherited from the base class mapping 
+		/// </summary>
+		public bool IsInherited { get; set; }
 
 		public bool ContainsColumn(Column column)
 		{

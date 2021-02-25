@@ -5,7 +5,6 @@ using System.Data.Common;
 using System.Text.RegularExpressions;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
-using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
@@ -42,6 +41,16 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class MsSql2000Dialect : Dialect
 	{
+		public const int MaxSizeForAnsiClob = 2147483647; // int.MaxValue
+		public const int MaxSizeForClob = 1073741823; // int.MaxValue / 2
+		public const int MaxSizeForBlob = 2147483647; // int.MaxValue
+
+		public const int MaxSizeForLengthLimitedAnsiString = 8000;
+		public const int MaxSizeForLengthLimitedString = 4000;
+		public const int MaxSizeForLengthLimitedBinary = 8000;
+		public const byte MaxDateTime2 = 8;
+		public const byte MaxDateTimeOffset = 10;
+
 		public MsSql2000Dialect()
 		{
 			RegisterCharacterTypeMappings();
@@ -277,16 +286,18 @@ namespace NHibernate.Dialect
 
 		protected virtual void RegisterFunctions()
 		{
-			RegisterFunction("count", new CountBigQueryFunction());
+			RegisterFunction("count", new CountQueryFunction());
+			RegisterFunction("count_big", new CountBigQueryFunction());
 
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
 			RegisterFunction("absval", new StandardSQLFunction("absval"));
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
 
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
-			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
+			RegisterFunction("ceil", new StandardSQLFunction("ceiling"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
-			RegisterFunction("round", new StandardSQLFunction("round"));
+			RegisterFunction("round", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0"}));
+			RegisterFunction("truncate", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0", "1"}));
 
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 
@@ -302,9 +313,11 @@ namespace NHibernate.Dialect
 			RegisterFunction("ln", new StandardSQLFunction("ln", NHibernateUtil.Double));
 			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Double));
 			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
-			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
+			RegisterFunction("mod", new ModulusFunctionTemplate(true));
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
+			// SQL Server rand returns the same value for each row, unless hacking it with a random seed per row
+			RegisterFunction("random", new SQLFunctionTemplate(NHibernateUtil.Double, "rand(checksum(newid()))"));
 			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
 			RegisterFunction("soundex", new StandardSQLFunction("soundex", NHibernateUtil.String));
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
@@ -316,7 +329,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("right", new SQLFunctionTemplate(NHibernateUtil.String, "right(?1, ?2)"));
 			RegisterFunction("locate", new StandardSQLFunction("charindex", NHibernateUtil.Int32));
 
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.LocalDateTime, true));
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.LocalDate, "dateadd(dd, 0, datediff(dd, 0, getdate()))"));
+			RegisterFunction("current_utctimestamp", new NoArgSQLFunction("getutcdate", NHibernateUtil.UtcDateTime, true));
 			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
 			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));
 			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(hour, ?1)"));
@@ -326,7 +341,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "dateadd(dd, 0, datediff(dd, 0, ?1))"));
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
 			RegisterFunction("digits", new StandardSQLFunction("digits", NHibernateUtil.String));
-			RegisterFunction("chr", new StandardSQLFunction("chr", NHibernateUtil.Character));
+			RegisterFunction("ascii", new StandardSQLFunction("ascii", NHibernateUtil.Int32));
+			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.Character));
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("ucase", new StandardSQLFunction("ucase"));
 			RegisterFunction("lcase", new StandardSQLFunction("lcase"));
@@ -335,17 +351,20 @@ namespace NHibernate.Dialect
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
 
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
-			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+			RegisterFunction("iif", new IifSQLFunction());
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
 
 			// Casting to CHAR (without specified length) truncates to 30 characters. 
 			// A longer version would be safer, but 50 is enough to prevent errors when casting uniqueidentifer to a string representation (NH-2858)
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar(50))"));
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char(36))"));
 
 			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
 
 			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "datalength(?1) * 8"));
 			RegisterFunction("extract", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(?1, ?3)"));
+
+			RegisterFunction("new_uuid", new NoArgSQLFunction("newid", NHibernateUtil.Guid));
 		}
 
 		protected virtual void RegisterGuidTypeMapping()
@@ -356,8 +375,8 @@ namespace NHibernate.Dialect
 		protected virtual void RegisterLargeObjectTypeMappings()
 		{
 			RegisterColumnType(DbType.Binary, "VARBINARY(8000)");
-			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForLengthLimitedBinary, "VARBINARY($l)");
-			RegisterColumnType(DbType.Binary, SqlClientDriver.MaxSizeForBlob, "IMAGE");
+			RegisterColumnType(DbType.Binary, MaxSizeForLengthLimitedBinary, "VARBINARY($l)");
+			RegisterColumnType(DbType.Binary, MaxSizeForBlob, "IMAGE");
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()
@@ -374,7 +393,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Currency, "MONEY");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
 			// SQL Server max precision is 38, but .Net is limited to 28-29.
-			RegisterColumnType(DbType.Decimal, 28, "DECIMAL($p, $s)");
+			RegisterColumnType(DbType.Decimal, 29, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Double, "FLOAT(53)");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INT");
@@ -387,13 +406,13 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "CHAR($l)");
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
-			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForLengthLimitedAnsiString, "VARCHAR($l)");
-			RegisterColumnType(DbType.AnsiString, SqlClientDriver.MaxSizeForAnsiClob, "TEXT");
+			RegisterColumnType(DbType.AnsiString, MaxSizeForLengthLimitedAnsiString, "VARCHAR($l)");
+			RegisterColumnType(DbType.AnsiString, MaxSizeForAnsiClob, "TEXT");
 			RegisterColumnType(DbType.StringFixedLength, "NCHAR(255)");
-			RegisterColumnType(DbType.StringFixedLength, SqlClientDriver.MaxSizeForLengthLimitedString, "NCHAR($l)");
+			RegisterColumnType(DbType.StringFixedLength, MaxSizeForLengthLimitedString, "NCHAR($l)");
 			RegisterColumnType(DbType.String, "NVARCHAR(255)");
-			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForLengthLimitedString, "NVARCHAR($l)");
-			RegisterColumnType(DbType.String, SqlClientDriver.MaxSizeForClob, "NTEXT");
+			RegisterColumnType(DbType.String, MaxSizeForLengthLimitedString, "NVARCHAR($l)");
+			RegisterColumnType(DbType.String, MaxSizeForClob, "NTEXT");
 		}
 
 		public override string AddColumnString
@@ -424,6 +443,16 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSQLFunctionName => "GETUTCDATE()";
+
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSelectString =>
+			"SELECT " + CurrentUtcTimestampSQLFunctionName;
+
+		/// <inheritdoc />
+		public override bool SupportsCurrentUtcTimestampSelection => true;
+
 		public override bool QualifyIndexName
 		{
 			get { return false; }
@@ -445,7 +474,7 @@ namespace NHibernate.Dialect
 				"if exists (select * from dbo.sysobjects where id = object_id(N'{0}') and OBJECTPROPERTY(id, N'IsUserTable') = 1)" +
 				" drop table {0}";
 
-			return String.Format(dropTable, tableName);
+			return string.Format(dropTable, tableName);
 		}
 
 		public override string ForUpdateString
@@ -554,6 +583,19 @@ namespace NHibernate.Dialect
 			return true;
 		}
 
+		public override string Qualify(string catalog, string schema, string name)
+		{
+			if (!string.IsNullOrEmpty(catalog))
+			{
+				return string.Join(".", catalog, schema, name);
+			}
+			if (!string.IsNullOrEmpty(schema))
+			{
+				return string.Join(".", schema, name);
+			}
+			return name;
+		}
+
 		/// <summary />
 		/// <param name="name"></param>
 		/// <returns></returns>
@@ -621,33 +663,57 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		public override string GetIfExistsDropConstraint(Table table, string name)
+		public override string GetIfExistsDropConstraint(string catalog, string schema, string tableName, string name)
 		{
-			string selectExistingObject = GetSelectExistingObject(name, table);
+			string selectExistingObject = GetSelectExistingObject(catalog, schema, tableName, name);
 			return string.Format(@"if exists ({0})", selectExistingObject);
 		}
 
-		protected virtual string GetSelectExistingObject(string name, Table table)
+		public override string GetIfNotExistsCreateConstraint(string catalog, string schema, string table, string name)
 		{
-			string objName = table.GetQuotedSchemaName(this) + Quote(name);
-			return string.Format("select 1 from sysobjects where id = OBJECT_ID(N'{0}') AND parent_obj = OBJECT_ID('{1}')",
-								 objName, table.GetQuotedName(this));
-		}
-
-		public override string GetIfNotExistsCreateConstraint(Table table, string name)
-		{
-			string selectExistingObject = GetSelectExistingObject(name, table);
+			string selectExistingObject = GetSelectExistingObject(catalog, schema, table, name);
 			return string.Format(@"if not exists ({0})", selectExistingObject);
 		}
-		
+
+		// Since v5.1
+		[Obsolete("Please use overload with catalog and schema parameters")]
+		protected virtual string GetSelectExistingObject(string name, Table table)
+		{
+			var catalog = table.GetQuotedCatalog(this, null);
+			var schema = table.GetQuotedSchema(this, null);
+			return GetSelectExistingObject(catalog, schema, table.GetQuotedName(), name);
+		}
+
+		/// <summary>
+		/// Returns a string containing the query to check if an object exists
+		/// </summary>
+		/// <param name="catalog">The catalong name</param>
+		/// <param name="schema">The schema name</param>
+		/// <param name="table">The table name</param>
+		/// <param name="name">The name of the object</param>
+		/// <returns></returns>
+		protected virtual string GetSelectExistingObject(string catalog, string schema, string table, string name)
+		{
+			return
+				string.Format(
+					"select 1 from {0} where id = OBJECT_ID(N'{1}') and parent_obj = OBJECT_ID(N'{2}')",
+					Qualify(catalog, "dbo", "sysobjects"),
+					Qualify(catalog, schema, Quote(name)),
+					Qualify(catalog, schema, table));
+		}
+
 		[Serializable]
 		protected class CountBigQueryFunction : ClassicAggregateFunction
 		{
-			public CountBigQueryFunction() : base("count_big", true) { }
+			public CountBigQueryFunction() : base("count_big", true, NHibernateUtil.Int64) { }
+		}
 
-			public override IType ReturnType(IType columnType, IMapping mapping)
+		[Serializable]
+		private class CountQueryFunction : CountQueryFunctionInfo
+		{
+			public override IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
 			{
-				return NHibernateUtil.Int64;
+				return NHibernateUtil.Int32;
 			}
 		}
 
@@ -676,6 +742,18 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+
+		// Was 30 in "earlier version", without telling to which version the document apply.
+		// https://msdn.microsoft.com/en-us/library/ms191240.aspx#Anchor_3
+		/// <inheritdoc />
+		public override int MaxAliasLength => 30;
+
+		/// <summary>
+		/// On SQL Server there is a limit of 2100 parameters, but two are reserved for sp_executesql
+		/// and three for sp_prepexec (used when preparing is enabled). Set the number to 2097
+		/// as the worst case scenario.
+		/// </summary>
+		public override int? MaxNumberOfParameters => 2097;
 
 		#region Overridden informational metadata
 
@@ -722,13 +800,13 @@ namespace NHibernate.Dialect
 
 				// Regex matching any alias out of those given. Aliases should contain
 				// no dangerous characters (they are identifiers) so they are not escaped.
-				var aliasesPattern = StringHelper.Join("|", aliasedLockModes.Keys);
+				var aliasesPattern = string.Join("|", aliasedLockModes.Keys);
 
 				// Match < alias >, < alias,>, or < alias$>, the intent is to capture alias names
 				// in various kinds of "FROM table1 alias1, table2 alias2".
 				_matchRegex = new Regex(" (" + aliasesPattern + ")([, ]|$)");
 				_unionSubclassRegex = new Regex(@"from\s+\(((?:.|\r|\n)*)\)(?:\s+as)?\s+(?<alias>" + aliasesPattern + ")", RegexOptions.IgnoreCase | RegexOptions.Multiline);
-	}
+			}
 
 			public SqlString AppendLockHint(SqlString sql)
 			{
@@ -738,11 +816,11 @@ namespace NHibernate.Dialect
 				{
 					if (part == Parameter.Placeholder)
 					{
-						result.Add((Parameter)part);
+						result.Add((Parameter) part);
 						continue;
-}
+					}
 
-					result.Add(ProcessUnionSubclassCase((string)part) ?? _matchRegex.Replace((string)part, ReplaceMatch));
+					result.Add(ProcessUnionSubclassCase((string) part) ?? _matchRegex.Replace((string) part, ReplaceMatch));
 				}
 
 				return result.ToSqlString();

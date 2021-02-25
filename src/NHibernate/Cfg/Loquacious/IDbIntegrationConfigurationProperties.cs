@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using NHibernate.AdoNet;
 using NHibernate.Connection;
@@ -8,6 +9,8 @@ using NHibernate.Transaction;
 
 namespace NHibernate.Cfg.Loquacious
 {
+	//Since 5.3
+	[Obsolete("Replaced by direct class usage")]
 	public interface IDbIntegrationConfigurationProperties
 	{
 		void Dialect<TDialect>() where TDialect : Dialect.Dialect;
@@ -29,6 +32,9 @@ namespace NHibernate.Cfg.Loquacious
 		void TransactionFactory<TFactory>() where TFactory : ITransactionFactory;
 
 		bool PrepareCommands { set; }
+		/// <summary>
+		/// Set the default timeout in seconds for ADO.NET queries.
+		/// </summary>
 		byte Timeout { set; }
 		void ExceptionConverter<TExceptionConverter>() where TExceptionConverter : ISQLExceptionConverter;
 		bool AutoCommentSql { set; }

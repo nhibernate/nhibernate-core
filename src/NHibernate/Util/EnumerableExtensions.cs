@@ -1,138 +1,121 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Util
 {
+	//TODO 6.0: Make internal
 	public static class EnumerableExtensions
 	{
+		//Since v5.1
+		[Obsolete("Please use Enumerable.Any<T>(IEnumerable<T>) instead.")]
 		public static bool Any(this IEnumerable source)
 		{
-			if (source == null)
-			{
-				throw new ArgumentNullException("source");
-			}
-			using (DisposableEnumerator enumerator = source.GetDisposableEnumerator())
-			{
-				if (enumerator.MoveNext())
-				{
-					return true;
-				}
-			}
-			return false;
+			return Enumerable.Any(source.Cast<object>());
 		}
 
+		//Since v5.1
+		[Obsolete("Please use Enumerable.First<T>(IEnumerable<T>) instead.")]
 		public static object First(this IEnumerable source)
 		{
-			if (source == null)
-			{
-				throw new ArgumentNullException("source");
-			}
-			IList collection = source as IList;
-			if (collection != null)
-			{
-				if (collection.Count > 0)
-				{
-					return collection[0];
-				}
-			}
-			else
-			{
-				using (DisposableEnumerator enumerator = source.GetDisposableEnumerator())
-				{
-					if (enumerator.MoveNext())
-					{
-						return enumerator.Current;
-					}
-				}
-			}
-			throw new InvalidOperationException("Sequence contains no elements");
+			return Enumerable.First(source.Cast<object>());
 		}
 
+		//Since v5.1
+		[Obsolete("Please use Enumerable.FirstOrDefault<T>(IEnumerable<T>) instead.")]
 		public static object FirstOrNull(this IEnumerable source)
 		{
-			if (source == null)
-			{
-				throw new ArgumentNullException("source");
-			}
-			IList collection = source as IList;
-			if (collection != null)
-			{
-				if (collection.Count > 0)
-				{
-					return collection[0];
-				}
-			}
-			else
-			{
-				using (DisposableEnumerator enumerator = source.GetDisposableEnumerator())
-				{
-					if (enumerator.MoveNext())
-					{
-						return enumerator.Current;
-					}
-				}
-			}
-			return null;
+			return Enumerable.FirstOrDefault(source.Cast<object>());
 		}
 
+		//Since v5.1
+		[Obsolete("Please use a loop instead.")]
 		public static void ForEach<T>(this IEnumerable<T> query, Action<T> method)
 		{
-			foreach (T item in query)
+			foreach (var item in query)
 			{
 				method(item);
 			}
 		}
 
-		private static DisposableEnumerator GetDisposableEnumerator(this IEnumerable source)
+		internal static TOutput[] ToArray<TInput, TOutput>(this ICollection<TInput> input, Func<TInput, TOutput> converter)
 		{
-			return new DisposableEnumerator(source);
+			var results = new TOutput[input.Count];
+
+			int i = 0;
+			foreach (var value in input)
+			{
+				results[i++] = converter(value);
+			}
+
+			return results;
 		}
 
-		#region Nested type: DisposableEnumerator
-
-		internal class DisposableEnumerator : IDisposable, IEnumerator
+		internal static TOutput[] ToArray<TInput, TOutput>(this List<TInput> input, Func<TInput, TOutput> converter)
 		{
-			private readonly IEnumerator wrapped;
+			var results = new TOutput[input.Count];
 
-			public DisposableEnumerator(IEnumerable source)
+			for (var i = 0; i < input.Count; i++)
 			{
-				wrapped = source.GetEnumerator();
+				results[i] = converter(input[i]);
 			}
 
-			#region IDisposable Members
-
-			public void Dispose()
-			{
-				var disposable = wrapped as IDisposable;
-				if (disposable != null)
-				{
-					disposable.Dispose();
-				}
-			}
-
-			#endregion
-
-			#region IEnumerator Members
-
-			public bool MoveNext()
-			{
-				return wrapped.MoveNext();
-			}
-
-			public void Reset()
-			{
-				wrapped.Reset();
-			}
-
-			public object Current
-			{
-				get { return wrapped.Current; }
-			}
-
-			#endregion
+			return results;
 		}
 
-		#endregion
+		internal static TOutput[] ToArray<TInput, TOutput>(this TInput[] input, Converter<TInput, TOutput> converter)
+		{
+			return Array.ConvertAll(input, converter);
+		}
+
+		internal static List<TOutput> ToList<TInput, TOutput>(this ICollection<TInput> input, Func<TInput, TOutput> converter)
+		{
+			var results = new List<TOutput>(input.Count);
+
+			foreach (var value in input)
+			{
+				results.Add(converter(value));
+			}
+
+			return results;
+		}
+
+		internal static List<TOutput> ToList<TInput, TOutput>(this TInput[] input, Func<TInput, TOutput> converter)
+		{
+			var results = new List<TOutput>(input.Length);
+
+			foreach (var value in input)
+			{
+				results.Add(converter(value));
+			}
+
+			return results;
+		}
+
+		internal static List<TOutput> ToList<TInput, TOutput>(this List<TInput> input, Converter<TInput, TOutput> converter)
+		{
+			return input.ConvertAll(converter);
+		}
+
+		internal static IList ToIList<T>(this IEnumerable<T> list)
+		{
+			return list as IList ?? list.ToList();
+		}
+		
+		internal static IReadOnlyList<T> EmptyIfNull<T>(this IReadOnlyList<T> list)
+		{
+			return list ?? Array.Empty<T>();
+		}
+
+		internal static IEnumerable<T> CastOrDefault<T>(this IEnumerable list)
+		{
+			foreach (var obj in list)
+			{
+				yield return obj == null
+					? default(T)
+					: (T) obj;
+			}
+		}
 	}
 }

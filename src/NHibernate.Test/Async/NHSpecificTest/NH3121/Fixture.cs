@@ -7,7 +7,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
 using System;
 using System.Drawing;
 using System.Linq;
@@ -58,13 +57,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 						Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));
 		}
 
-
 		[Test]
 		public void ShouldThrowWhenImageTooLargeAsync()
 		{
-			Assembly assembly = Assembly.Load(MappingsAssembly);
-			var stream = assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
-			var image = Bitmap.FromStream(stream);
+			var stream = typeof(FixtureAsync).Assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
+			var image = Image.FromStream(stream);
 
 			var report = new Report { Image = image };
 
@@ -76,13 +73,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 						Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));
 		}
 
-
 		[Test]
 		public void ShouldThrowWhenImageAsISerializableTooLargeAsync()
 		{
-			Assembly assembly = Assembly.Load(MappingsAssembly);
-			var stream = assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
-			var image = Bitmap.FromStream(stream);
+			var stream = typeof(FixtureAsync).Assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
+			var image = Image.FromStream(stream);
 
 			var report = new Report { SerializableImage = image };
 
@@ -93,7 +88,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 			Assert.That(ex.InnerException.Message,
 						Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));
 		}
-
 
 		private async Task PersistReportAsync(Report report, CancellationToken cancellationToken = default(CancellationToken))
 		{

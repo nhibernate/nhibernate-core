@@ -20,7 +20,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 	[TestFixture]
 	public class GeneratedBinaryVersionFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "VersionTest.Db.MsSQL.SimpleVersioned.hbm.xml" }; }
 		}

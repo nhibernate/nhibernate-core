@@ -16,7 +16,7 @@ namespace NHibernate.Loader.Collection
 	/// <seealso cref="BasicCollectionLoader"/>
 	public class OneToManyLoader : CollectionLoader
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (OneToManyLoader));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (OneToManyLoader));
 
 		public OneToManyLoader(IQueryableCollection oneToManyPersister, ISessionFactoryImplementor session,
 							   IDictionary<string, IFilter> enabledFilters)
@@ -40,7 +40,7 @@ namespace NHibernate.Loader.Collection
 
 			PostInstantiate();
 
-			log.Debug("Static select for one-to-many " + oneToManyPersister.Role + ": " + SqlString);
+			log.Debug("Static select for one-to-many {0}: {1}", oneToManyPersister.Role, SqlString);
 		}
 	}
 }

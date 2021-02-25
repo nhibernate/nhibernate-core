@@ -13,7 +13,7 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public abstract class PropertyExpression : AbstractCriterion
 	{
-		private static readonly TypedValue[] NoTypedValues = new TypedValue[0];
+		private static readonly TypedValue[] NoTypedValues = Array.Empty<TypedValue>();
 		private readonly string _lhsPropertyName;
 		private readonly string _rhsPropertyName;
 		private readonly IProjection _lhsProjection;
@@ -70,31 +70,28 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(_lhsPropertyName, _lhsProjection, criteriaQuery, criteria);
-			SqlString[] otherColumnNames =
-				CriterionUtil.GetColumnNames(_rhsPropertyName, _rhsProjection, criteriaQuery, criteria);
+			var columnNames =
+				CriterionUtil.GetColumnNamesAsSqlStringParts(_lhsPropertyName, _lhsProjection, criteriaQuery, criteria);
+			var otherColumnNames =
+				CriterionUtil.GetColumnNamesAsSqlStringParts(_rhsPropertyName, _rhsProjection, criteriaQuery, criteria);
 
-			SqlStringBuilder sb = new SqlStringBuilder();
-			if (columnNames.Length > 1)
+			switch (columnNames.Length)
 			{
-				sb.Add(StringHelper.OpenParen);
-			}
-			bool first = true;
-			foreach (SqlString sqlString in SqlStringHelper.Add(columnNames, Op, otherColumnNames))
-			{
-				if (first == false)
-				{
-					sb.Add(" and ");
-				}
-				first = false;
-				sb.Add(sqlString);
+				case 1:
+					return new SqlString(columnNames[0], Op, otherColumnNames[0]);
+				case 0:
+					return SqlString.Empty;
 			}
 
-			if (columnNames.Length > 1)
+			var sb = new SqlStringBuilder();
+			sb.Add(StringHelper.OpenParen);
+			sb.AddObject(columnNames[0]).Add(Op).AddObject(otherColumnNames[0]);
+			for (var i = 1; i < columnNames.Length; i++)
 			{
-				sb.Add(StringHelper.ClosedParen);
+				sb.Add(" and ");
+				sb.AddObject(columnNames[i]).Add(Op).AddObject(otherColumnNames[i]);
 			}
+			sb.Add(StringHelper.ClosedParen);
 
 			return sb.ToSqlString();
 		}

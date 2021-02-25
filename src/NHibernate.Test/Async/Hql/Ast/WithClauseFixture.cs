@@ -52,34 +52,22 @@ namespace NHibernate.Test.Hql.Ast
 		}
 
 		[Test]
-		public async Task InvalidWithSemanticsAsync()
+		public async Task WithClauseOnSubclassesAsync()
 		{
-			ISession s = OpenSession();
-			ITransaction txn = s.BeginTransaction();
+			using (var s = OpenSession())
+			{
+				await (s.CreateQuery(
+					"from Animal a inner join a.offspring o inner join o.mother as m inner join m.father as f with o.bodyWeight > 1").ListAsync());
 
-			// PROBLEM : f.bodyWeight is a reference to a column on the Animal table; however, the 'f'
-			// alias relates to the Human.friends collection which the aonther Human entity.  The issue
-			// here is the way JoinSequence and Joinable (the persister) interact to generate the
-			// joins relating to the sublcass/superclass tables
-			Assert.ThrowsAsync<InvalidWithClauseException>(
-				() =>
-				s.CreateQuery("from Human h inner join h.friends as f with f.bodyWeight < :someLimit").SetDouble("someLimit", 1).
-					ListAsync());
+				// f.bodyWeight is a reference to a column on the Animal table; however, the 'f'
+				// alias relates to the Human.friends collection which the aonther Human entity.
+				// Group join allows us to use such constructs
+				await (s.CreateQuery("from Human h inner join h.friends as f with f.bodyWeight < :someLimit").SetDouble("someLimit", 1).ListAsync());
 
-			Assert.ThrowsAsync<InvalidWithClauseException>(
-				() =>
-				s.CreateQuery(
-					"from Animal a inner join a.offspring o inner join o.mother as m inner join m.father as f with o.bodyWeight > 1").
-					ListAsync());
-
-			Assert.ThrowsAsync<InvalidWithClauseException>(
-				async () =>
-				await (s.CreateQuery("from Human h inner join h.offspring o with o.mother.father = :cousin").SetEntity("cousin",
-				                                                                                                await (s.LoadAsync<Human>(123L)))
-					.ListAsync()));
-
-			await (txn.CommitAsync());
-			s.Close();
+				await (s.CreateQuery("from Human h inner join h.offspring o with o.mother.father = :cousin")
+				.SetInt32("cousin", 123)
+				.ListAsync());
+			}
 		}
 
 		[Test]

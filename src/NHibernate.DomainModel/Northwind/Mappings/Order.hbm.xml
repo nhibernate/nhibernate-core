@@ -17,6 +17,9 @@
 		<property name="OrderDate" column="OrderDate" type="DateTime"
 							access="field.camelcase-underscore"/>
 
+
+		<property name="RequiredOrderDate" formula="OrderDate" insert="false" update="false" />
+
 		<property name="RequiredDate" column="RequiredDate" type="DateTime"
 							access="field.camelcase-underscore"/>
 

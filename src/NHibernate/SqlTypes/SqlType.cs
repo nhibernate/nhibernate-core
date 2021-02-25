@@ -21,7 +21,7 @@ namespace NHibernate.SqlTypes
 	/// </p>
 	/// </remarks>
 	[Serializable]
-	public class SqlType
+	public class SqlType : IEquatable<SqlType>
 	{
 		private readonly DbType dbType;
 		private readonly int length;
@@ -125,24 +125,34 @@ namespace NHibernate.SqlTypes
 
 		public bool Equals(SqlType rhsSqlType)
 		{
-			if (rhsSqlType == null)
-			{
-				return false;
-			}
+			if (ReferenceEquals(this, rhsSqlType))
+				return true;
 
-			if (LengthDefined)
-			{
-				return (DbType.Equals(rhsSqlType.DbType)) && (Length == rhsSqlType.Length);
-			}
-			if (PrecisionDefined)
-			{
-				return (DbType.Equals(rhsSqlType.DbType)) && (Precision == rhsSqlType.Precision) && (Scale == rhsSqlType.Scale);
-			}
-			if (ScaleDefined)
-			{
-				return DbType.Equals(rhsSqlType.DbType) && Scale == rhsSqlType.Scale;
-			}
-			return (DbType.Equals(rhsSqlType.DbType));
+			if (rhsSqlType == null)
+				return false;
+
+			if (DbType != rhsSqlType.DbType)
+				return false;
+
+			if (LengthDefined != rhsSqlType.LengthDefined)
+				return false;
+
+			if (PrecisionDefined != rhsSqlType.PrecisionDefined)
+				return false;
+
+			if (ScaleDefined != rhsSqlType.ScaleDefined)
+				return false;
+
+			if (Length != rhsSqlType.Length)
+				return false;
+
+			if (Precision != rhsSqlType.Precision)
+				return false;
+
+			if (Scale != rhsSqlType.Scale)
+				return false;
+
+			return true;
 		}
 
 		public override string ToString()

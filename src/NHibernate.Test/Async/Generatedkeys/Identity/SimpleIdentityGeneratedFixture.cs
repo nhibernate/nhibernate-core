@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Generatedkeys.Identity
@@ -20,7 +19,7 @@ namespace NHibernate.Test.Generatedkeys.Identity
 		// This test is to check the support of identity generator
 		// NH should choose one of the identity-style generation where the Dialect are supporting one of them
 		// as identity, sequence-identity (identity.sequence), generated (identity.sequence)
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Generatedkeys.Identity.MyEntityIdentity.hbm.xml" }; }
 		}
@@ -33,18 +32,19 @@ namespace NHibernate.Test.Generatedkeys.Identity
 		[Test]
 		public async Task SequenceIdentityGeneratorAsync()
 		{
-			ISession session = OpenSession();
-			session.BeginTransaction();
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				var e = new MyEntityIdentity { Name = "entity-1" };
+				await (session.SaveAsync(e));
 
-			var e = new MyEntityIdentity { Name = "entity-1" };
-			await (session.SaveAsync(e));
+				// this insert should happen immediately!
+				Assert.AreEqual(1, e.Id, "id not generated through forced insertion");
 
-			// this insert should happen immediately!
-			Assert.AreEqual(1, e.Id, "id not generated through forced insertion");
-
-			await (session.DeleteAsync(e));
-			await (session.Transaction.CommitAsync());
-			session.Close();
+				await (session.DeleteAsync(e));
+				await (tran.CommitAsync());
+				session.Close();
+			}
 		}
 	}
 }

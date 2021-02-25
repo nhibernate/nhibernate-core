@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using NHibernate.Engine;
@@ -54,7 +55,7 @@ namespace NHibernate.Id.Insert
 				}
 
 				var selectSql = SelectSQL;
-				using (new SessionIdLoggingContext(session.SessionId))
+				using (session.BeginProcess())
 				{
 					try
 					{
@@ -62,7 +63,7 @@ namespace NHibernate.Id.Insert
 						var idSelect = session.Batcher.PrepareCommand(CommandType.Text, selectSql, ParametersTypes);
 						try
 						{
-							BindParameters(session, idSelect, binder.Entity);
+							BindParameters(session, idSelect, binder);
 							var rs = session.Batcher.ExecuteReader(idSelect);
 							try
 							{
@@ -109,7 +110,21 @@ namespace NHibernate.Id.Insert
 		/// <param name="session">The session </param>
 		/// <param name="ps">The prepared <see cref="SelectSQL"/> command </param>
 		/// <param name="entity">The entity being saved. </param>
+		// Since 5.2
+		[Obsolete("Use or override BindParameters(ISessionImplementor session, DbCommand ps, IBinder binder) instead.")]
 		protected internal virtual void BindParameters(ISessionImplementor session, DbCommand ps, object entity) { }
+
+		/// <summary>Bind any required parameter values into the SQL command <see cref="SelectSQL"/>.</summary>
+		/// <param name="session">The session.</param>
+		/// <param name="ps">The prepared <see cref="SelectSQL"/> command.</param>
+		/// <param name="binder">The binder for the entity or collection being saved.</param>
+		protected internal virtual void BindParameters(ISessionImplementor session, DbCommand ps, IBinder binder)
+		{
+			// 6.0 TODO: remove the call to the obsoleted method.
+#pragma warning disable 618
+			BindParameters(session, ps, binder.Entity);
+#pragma warning restore 618
+		}
 
 		#region NH Specific
 

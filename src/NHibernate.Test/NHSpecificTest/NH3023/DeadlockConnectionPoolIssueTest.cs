@@ -31,11 +31,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 		}
 
 		// Uses directly SqlConnection.
-		protected override bool AppliesTo(ISessionFactoryImplementor factory)
-			=> factory.ConnectionProvider.Driver is SqlClientDriver && base.AppliesTo(factory);
+		protected override bool AppliesTo(ISessionFactoryImplementor factory) =>
+			factory.ConnectionProvider.Driver is SqlClientDriver &&
+			factory.ConnectionProvider.Driver.SupportsSystemTransactions;
 
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-			=> dialect is MsSql2000Dialect && base.AppliesTo(dialect);
+		protected override bool AppliesTo(Dialect.Dialect dialect) =>
+			dialect is MsSql2000Dialect;
 
 		protected override void OnSetUp()
 		{
@@ -91,7 +92,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 						_log.Debug("Session enlisted");
 						try
 						{
-							new DeadlockHelper().ForceDeadlockOnConnection((SqlConnection)session.Connection);
+							new DeadlockHelper().ForceDeadlockOnConnection(
+								(SqlConnection)session.Connection,
+								GetConnectionString());
 						}
 						catch (SqlException x)
 						{
@@ -245,7 +248,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 								? "Deadlock not reported on initial request, and initial request failed"
 								: "Initial request failed",
 							subsequentFailedRequests);
-
 			} while (tryCount < 3);
 			//
 			// I'll change this to while(true) sometimes so I don't have to keep running the test
@@ -264,7 +266,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 
 		private void RunScript(string script)
 		{
-			var cxnString = cfg.Properties["connection.connection_string"] + "; Pooling=No";
+			var cxnString = GetConnectionString() + "; Pooling=No";
 			// Disable connection pooling so this won't be hindered by
 			// problems encountered during the actual test
 
@@ -281,13 +283,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 				foreach (var batch in Regex.Split(sql, @"^go\s*$", RegexOptions.IgnoreCase | RegexOptions.Multiline)
 					.Where(b => !string.IsNullOrEmpty(b)))
 				{
-
 					using (var cmd = new System.Data.SqlClient.SqlCommand(batch, cxn))
 					{
 						cmd.ExecuteNonQuery();
 					}
 				}
 			}
+		}
+
+		private string GetConnectionString()
+		{
+			return cfg.Properties["connection.connection_string"];
 		}
 	}
 

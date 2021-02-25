@@ -10,7 +10,7 @@ namespace NHibernate.Test.CollectionFilterTest
 	[TestFixture]
 	public class CollectionFilterQueriesTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

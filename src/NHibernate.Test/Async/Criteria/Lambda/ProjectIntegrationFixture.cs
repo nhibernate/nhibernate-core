@@ -25,7 +25,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Criteria.Lambda.Mappings.hbm.xml" }; }
 		}
@@ -99,6 +99,8 @@ namespace NHibernate.Test.Criteria.Lambda
 				var actual = await (s.QueryOver<Person>()
 					.SelectList(list => list
 						.SelectGroup(p => p.Name).WithAlias(() => summary.Name)
+						//GH1985: DateTime.xxxx are not supported in SelectGroup
+						.SelectGroup(p => p.BirthDate.Year).WithAlias(() => summary.BirthYear)
 						.Select(Projections.RowCount()).WithAlias(() => summary.Count))
 					.OrderByAlias(() => summary.Name).Asc
 					.TransformUsing(Transformers.AliasToBean<PersonSummary>())
@@ -109,6 +111,65 @@ namespace NHibernate.Test.Criteria.Lambda
 				Assert.That(actual[0].Count, Is.EqualTo(2));
 				Assert.That(actual[1].Name, Is.EqualTo("test person 2"));
 				Assert.That(actual[1].Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public async Task ProjecionCountDistinctAsync()
+		{
+			if (!TestDialect.SupportsCountDistinct)
+				Assert.Ignore("Dialect does not support count distinct");
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var actual
+					= (await (s.QueryOver<Person>()
+					.SelectList(l =>
+					l.SelectCountDistinct(p => p.BirthDate.Year)
+					.SelectCountDistinct(p => p.Name))
+					.ListAsync<object[]>())).FirstOrDefault();
+
+				Assert.That((int) actual[0], Is.EqualTo(1), "distinct count by birth year");
+				Assert.That((int) actual[1], Is.EqualTo(2), "distinct count by name");
+			}
+		}
+
+		[Test]
+		public async Task ProjectionCanCoalesceInSelectAsync()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var actual
+					= (await (s.QueryOver<Person>()
+						.Select(x => x.Age.Coalesce(0))
+						.Where(x => x.Age == 20)
+						.ListAsync<int>())).FirstOrDefault();
+
+				Assert.That(actual, Is.EqualTo(20));
+			}
+		}
+
+		//NH-2983
+		[Test]
+		public async Task ProjectionSelectSumOnCoalesceAsync()
+		{
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var actual
+					= (await (s.QueryOver<Person>()
+						.SelectList(
+							l =>
+								l
+									.SelectSum(xx => xx.Age.Coalesce(0))
+									.SelectSum(xx => xx.Age.Coalesce(1)))
+						.Where(x => x.Age == 20)
+						.ListAsync<object[]>())).FirstOrDefault();
+
+				Assert.That(actual[0], Is.EqualTo(20));
+				Assert.That(actual[1], Is.EqualTo(20));
 			}
 		}
 	}

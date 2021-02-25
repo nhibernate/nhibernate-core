@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
-
 	/// <summary>
 	/// Base class for enum types.
 	/// </summary>
@@ -34,9 +31,11 @@ namespace NHibernate.Type
 			get { return enumType; }
 		}
 
-
 		#region IIdentifierType Members
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc />
 		public object StringToObject(string xml)
 		{
 			return Enum.Parse(enumType, xml);
@@ -44,7 +43,8 @@ namespace NHibernate.Type
 
 		#endregion
 
-
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
 			return StringToObject(xml);

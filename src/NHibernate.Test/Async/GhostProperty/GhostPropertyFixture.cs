@@ -27,7 +27,7 @@ namespace NHibernate.Test.GhostProperty
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "GhostProperty.Mappings.hbm.xml" }; }
 		}
@@ -47,6 +47,11 @@ namespace NHibernate.Test.GhostProperty
 					Id = 1
 				};
 				s.Persist(wireTransfer);
+				var creditCard = new CreditCard
+				{
+					Id = 2
+				};
+				s.Persist(creditCard);
 				s.Persist(new Order
 				{
 					Id = 1,
@@ -54,7 +59,6 @@ namespace NHibernate.Test.GhostProperty
 				});
 				tx.Commit();
 			}
-
 		}
 
 		protected override void OnTearDown()
@@ -90,6 +94,71 @@ namespace NHibernate.Test.GhostProperty
 		}
 
 		[Test]
+		public async Task CanGetInitializedLazyManyToOneAfterClosedSessionAsync()
+		{
+			Order order;
+			Payment payment;
+
+			using (var s = OpenSession())
+			{
+				order = await (s.GetAsync<Order>(1));
+				payment = order.Payment; // Initialize Payment
+			}
+
+			Assert.That(order.Payment, Is.EqualTo(payment));
+			Assert.That(order.Payment is WireTransfer, Is.True);
+		}
+
+		[Test]
+		public async Task InitializedLazyManyToOneBeforeParentShouldNotBeAProxyAsync()
+		{
+			Order order;
+			Payment payment;
+
+			using (var s = OpenSession())
+			{
+				payment = await (s.LoadAsync<Payment>(1));
+				await (NHibernateUtil.InitializeAsync(payment));
+				order = await (s.GetAsync<Order>(1));
+				// Here the Payment property should be unwrapped
+				payment = order.Payment;
+			}
+
+			Assert.That(order.Payment, Is.EqualTo(payment));
+			Assert.That(order.Payment is WireTransfer, Is.True);
+		}
+
+		[Test]
+		public async Task SetUninitializedProxyShouldNotTriggerPropertyInitializationAsync()
+		{
+			using (var s = OpenSession())
+			{
+				var order = await (s.GetAsync<Order>(1));
+				Assert.That(order.Payment is WireTransfer, Is.True); // Load property
+				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.True);
+				order.Payment = await (s.LoadAsync<Payment>(2));
+				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(order.Payment), Is.False);
+				Assert.That(order.Payment is WireTransfer, Is.False);
+			}
+		}
+
+		[Test]
+		public async Task SetInitializedProxyShouldNotResetPropertyInitializationAsync()
+		{
+			using (var s = OpenSession())
+			{
+				var order = await (s.GetAsync<Order>(1));
+				var payment = await (s.LoadAsync<Payment>(2));
+				Assert.That(order.Payment is WireTransfer, Is.True); // Load property
+				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.True);
+				await (NHibernateUtil.InitializeAsync(payment));
+				order.Payment = payment;
+				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "Payment"), Is.True);
+			}
+		}
+
+		[Test]
 		public async Task WillNotLoadGhostPropertyByDefaultAsync()
 		{
 			using (ISession s = OpenSession())
@@ -107,18 +176,6 @@ namespace NHibernate.Test.GhostProperty
 				var order = await (s.GetAsync<Order>(1));
 
 				Assert.AreSame(order.Payment, await (s.LoadAsync<Payment>(1)));
-			}
-		}
-
-		[Test, Ignore("This shows an expected edge case")]
-		public async Task GhostPropertyMaintainIdentityMapUsingGetAsync()
-		{
-			using (ISession s = OpenSession())
-			{
-				var payment = await (s.LoadAsync<Payment>(1));
-				var order = await (s.GetAsync<Order>(1));
-
-				Assert.AreSame(order.Payment, payment);
 			}
 		}
 
@@ -167,6 +224,34 @@ namespace NHibernate.Test.GhostProperty
 				}
 				Assert.That(NHibernateUtil.IsPropertyInitialized(order, "ALazyProperty"), Is.True);
 			}
-		} 
+		}
+
+		[Test]
+		public async Task AcceptPropertySetWithTransientObjectAsync()
+		{
+			Order order;
+			using (var s = OpenSession())
+			{
+				order = await (s.GetAsync<Order>(1));
+			}
+
+			var newPayment = new WireTransfer();
+			order.Payment = newPayment;
+
+			Assert.That(order.Payment, Is.EqualTo(newPayment));
+		}
+
+		[Test]
+		public async Task WillFetchJoinInSingleHqlQueryAsync()
+		{
+			Order order = null;
+
+			using (ISession s = OpenSession())
+			{
+				order = (await (s.CreateQuery("from Order o left join fetch o.Payment where o.Id = 1").ListAsync<Order>()))[0];
+			}
+
+			Assert.DoesNotThrow(() => { var x = order.Payment; });
+		}
 	}
 }

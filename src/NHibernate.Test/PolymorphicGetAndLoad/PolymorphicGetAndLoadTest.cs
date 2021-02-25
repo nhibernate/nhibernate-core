@@ -14,7 +14,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "PolymorphicGetAndLoad.Mappings.hbm.xml" }; }
 		}
@@ -102,7 +102,6 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 					s.Flush();
 				}
 			}, Throws.Nothing);
-
 		}
 
 		[Test]

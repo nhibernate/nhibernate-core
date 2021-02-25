@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using NHibernate.Impl;
+using NHibernate.Multi;
 using NHibernate.Type;
 using NHibernate.Util;
 using Remotion.Linq.Parsing.ExpressionVisitors;
 using System.Threading;
 using System.Threading.Tasks;
+using NHibernate.Engine;
+using static NHibernate.Util.ReflectionCache.QueryableMethods;
 
 namespace NHibernate.Linq
 {
@@ -2388,8 +2390,11 @@ namespace NHibernate.Linq
 
 			async Task<List<TSource>> InternalToListAsync()
 			{
-				var result = await provider.ExecuteAsync<IEnumerable<TSource>>(source.Expression, cancellationToken).ConfigureAwait(false);
-				return result.ToList();
+				//TODO 6.0: Replace with provider.ExecuteListAsync
+				var result = provider is DefaultQueryProvider nhQueryProvider
+					? await nhQueryProvider.ExecuteListAsync<TSource>(source.Expression, cancellationToken).ConfigureAwait(false)
+					: await provider.ExecuteAsync<IEnumerable<TSource>>(source.Expression, cancellationToken).ConfigureAwait(false);
+				return (result as List<TSource>) ?? result.ToList();
 			}
 		}
 
@@ -2405,8 +2410,14 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IFutureEnumerable<TSource> ToFuture<TSource>(this IQueryable<TSource> source)
 		{
+			if (source.Provider is ISupportFutureBatchNhQueryProvider batchProvider)
+			{
+				return batchProvider.Session.GetFutureBatch().AddAsFuture(source);
+			}
+#pragma warning disable CS0618 // Type or member is obsolete
 			var provider = GetNhProvider(source);
 			return provider.ExecuteFuture<TSource>(source.Expression);
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		/// <summary>
@@ -2420,9 +2431,15 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IFutureValue<TSource> ToFutureValue<TSource>(this IQueryable<TSource> source)
 		{
+			if (source.Provider is ISupportFutureBatchNhQueryProvider batchProvider)
+			{
+				return batchProvider.Session.GetFutureBatch().AddAsFutureValue(source);
+			}
+#pragma warning disable CS0618, CS0612// Type or member is obsolete
 			var provider = GetNhProvider(source);
 			var future = provider.ExecuteFuture<TSource>(source.Expression);
 			return new FutureValue<TSource>(future.GetEnumerable, future.GetEnumerableAsync);
+#pragma warning restore CS0618, CS0612// Type or member is obsolete
 		}
 
 		/// <summary>
@@ -2438,51 +2455,151 @@ namespace NHibernate.Linq
 		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
 		public static IFutureValue<TResult> ToFutureValue<TSource, TResult>(this IQueryable<TSource> source, Expression<Func<IQueryable<TSource>, TResult>> selector)
 		{
-			var provider = GetNhProvider(source);
-
+			if (source.Provider is ISupportFutureBatchNhQueryProvider batchProvider)
+			{
+				return batchProvider.Session.GetFutureBatch().AddAsFutureValue(source, selector);
+			}
+#pragma warning disable CS0618 // Type or member is obsolete
 			var expression = ReplacingExpressionVisitor
 				.Replace(selector.Parameters.Single(), source.Expression, selector.Body);
-
+			var provider = GetNhProvider(source);
 			return provider.ExecuteFutureValue<TResult>(expression);
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
+		#region LeftJoin
 
-		internal static readonly MethodInfo SetOptionsDefinition =
-			ReflectHelper.GetMethodDefinition(() => SetOptions<object>(null, null));
+		// Code based on: https://stackoverflow.com/a/18782867
+		/// <summary>
+		/// Correlates the elements of two sequences based on matching keys. The default equality comparer is used to compare keys.
+		/// </summary>
+		/// <param name="outer">The first sequence to join.</param>
+		/// <param name="inner">The sequence to join to the first sequence.</param>
+		/// <param name="outerKeySelector">A dynamic function to extract the join key from each element of the first sequence.</param>
+		/// <param name="innerKeySelector">A dynamic function to extract the join key from each element of the second sequence.</param>
+		/// <param name="resultSelector">A dynamic function to create a result element from two matching elements.</param>
+		/// <returns>An <see cref="IQueryable"/> obtained by performing a left join on two sequences.</returns>
+		public static IQueryable<TResult> LeftJoin<TOuter, TInner, TKey, TResult>(
+			this IQueryable<TOuter> outer,
+			IQueryable<TInner> inner,
+			Expression<Func<TOuter, TKey>> outerKeySelector,
+			Expression<Func<TInner, TKey>> innerKeySelector,
+			Expression<Func<TOuter, TInner, TResult>> resultSelector)
+		{
+			outer = outer ?? throw new ArgumentNullException(nameof(outer));
+			inner = inner ?? throw new ArgumentNullException(nameof(inner));
+			outerKeySelector = outerKeySelector ?? throw new ArgumentNullException(nameof(outerKeySelector));
+			innerKeySelector = innerKeySelector ?? throw new ArgumentNullException(nameof(innerKeySelector));
+			resultSelector = resultSelector ?? throw new ArgumentNullException(nameof(resultSelector));
+
+			Expression<Func<TOuter, IEnumerable<TInner>, LeftJoinIntermediate<TOuter, TInner>>> groupJoinResultSelector =
+				(oneOuter, manyInners) => new LeftJoinIntermediate<TOuter, TInner>
+				{
+					OneOuter = oneOuter,
+					ManyInners = manyInners
+				};
+			var groupJoin = GroupJoinDefinition.MakeGenericMethod(
+				typeof(TOuter),
+				typeof(TInner),
+				typeof(TKey),
+				typeof(LeftJoinIntermediate<TOuter, TInner>));
+			var selectMany = SelectManyDefinition.MakeGenericMethod(
+				typeof(LeftJoinIntermediate<TOuter, TInner>),
+				typeof(TInner),
+				typeof(TResult));
+			var exprGroupJoin = Expression.Call(
+				groupJoin,
+				outer.Expression,
+				inner.Expression,
+				outerKeySelector,
+				innerKeySelector,
+				groupJoinResultSelector);
+			var selectManyCollectionSelector = (Expression<Func<LeftJoinIntermediate<TOuter, TInner>, IEnumerable<TInner>>>)
+				(t => t.ManyInners.DefaultIfEmpty());
+			var outerParameter = resultSelector.Parameters[0];
+			var paramNew = Expression.Parameter(typeof(LeftJoinIntermediate<TOuter, TInner>));
+			var outerProperty = Expression.Property(paramNew, nameof(LeftJoinIntermediate<TOuter, TInner>.OneOuter));
+			var selectManyResultSelector = Expression.Lambda(
+				ReplacingExpressionVisitor.Replace(outerParameter, outerProperty, resultSelector.Body),
+				paramNew,
+				resultSelector.Parameters[1]);
+
+			return outer.Provider.CreateQuery<TResult>(
+				Expression.Call(selectMany, exprGroupJoin, selectManyCollectionSelector, selectManyResultSelector));
+		}
+
+		private class LeftJoinIntermediate<TOuter, TInner>
+		{
+			public TOuter OneOuter { get; set; }
+			public IEnumerable<TInner> ManyInners { get; set; }
+		}
+
+		#endregion
 
 		/// <summary>
-		/// Allow to set NHibernate query options.
+		/// Allows to set NHibernate query options.
 		/// </summary>
 		/// <typeparam name="T">The type of the queried elements.</typeparam>
 		/// <param name="query">The query on which to set options.</param>
 		/// <param name="setOptions">The options setter.</param>
 		/// <returns>The query altered with the options.</returns>
+		//Since v5.1
+		[Obsolete("Please use WithOptions instead.")]
 		public static IQueryable<T> SetOptions<T>(this IQueryable<T> query, Action<IQueryableOptions> setOptions)
 		{
-			var method = SetOptionsDefinition.MakeGenericMethod(typeof(T));
-			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(setOptions));
-			return new NhQueryable<T>(query.Provider, callExpression);
+			return WithOptions(query, setOptions);
+		}
+
+		/// <summary>
+		/// Allows to set NHibernate query options.
+		/// </summary>
+		/// <typeparam name="T">The type of the queried elements.</typeparam>
+		/// <param name="query">The query on which to set options.</param>
+		/// <param name="setOptions">The options setter.</param>
+		/// <returns>The query altered with the options.</returns>
+		public static IQueryable<T> WithOptions<T>(this IQueryable<T> query, Action<NhQueryableOptions> setOptions)
+		{
+			if (!(query.Provider is IQueryProviderWithOptions queryProvider))
+				throw new NotSupportedException(
+					$"The query.Provider does not support setting options. Please implement {nameof(IQueryProviderWithOptions)}.");
+
+			return queryProvider.WithOptions(setOptions).CreateQuery<T>(query.Expression);
 		}
 
 		// Since v5
-		[Obsolete("Please use SetOptions instead.")]
+		[Obsolete("Please use WithOptions instead.")]
 		public static IQueryable<T> Cacheable<T>(this IQueryable<T> query)
-			=> query.SetOptions(o => o.SetCacheable(true));
+			=> query.WithOptions(o => o.SetCacheable(true));
 
 		// Since v5
-		[Obsolete("Please use SetOptions instead.")]
+		[Obsolete("Please use WithOptions instead.")]
 		public static IQueryable<T> CacheMode<T>(this IQueryable<T> query, CacheMode cacheMode)
-			=> query.SetOptions(o => o.SetCacheMode(cacheMode));
+			=> query.WithOptions(o => o.SetCacheMode(cacheMode));
 
 		// Since v5
-		[Obsolete("Please use SetOptions instead.")]
+		[Obsolete("Please use WithOptions instead.")]
 		public static IQueryable<T> CacheRegion<T>(this IQueryable<T> query, string region)
-			=> query.SetOptions(o => o.SetCacheRegion(region));
+			=> query.WithOptions(o => o.SetCacheRegion(region));
 
 		// Since v5
-		[Obsolete("Please use SetOptions instead.")]
+		[Obsolete("Please use WithOptions instead.")]
 		public static IQueryable<T> Timeout<T>(this IQueryable<T> query, int timeout)
-			=> query.SetOptions(o => o.SetTimeout(timeout));
+			=> query.WithOptions(o => o.SetTimeout(timeout));
+
+		public static IQueryable<T> WithLock<T>(this IQueryable<T> query, LockMode lockMode)
+		{
+			var method = ReflectHelper.FastGetMethod(WithLock, query, lockMode);
+
+			var callExpression = Expression.Call(method, query.Expression, Expression.Constant(lockMode));
+
+			return new NhQueryable<T>(query.Provider, callExpression);
+		}
+
+		public static IEnumerable<T> WithLock<T>(this IEnumerable<T> query, LockMode lockMode)
+		{
+			throw new InvalidOperationException(
+				"The NHibernate.Linq.LinqExtensionMethods.WithLock(IEnumerable<T>, LockMode) method can only be used in a Linq expression.");
+		}
 
 		/// <summary>
 		/// Allows to specify the parameter NHibernate type to use for a literal in a queryable expression.

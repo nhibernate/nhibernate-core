@@ -9,7 +9,8 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class PropertyMapper : IPropertyMapper
+	// 6.0 TODO: remove IColumnsAndFormulasMapper once IPropertyMapper inherits it.
+	public class PropertyMapper : IPropertyMapper, IColumnsAndFormulasMapper
 	{
 		private readonly IAccessorPropertyMapper entityPropertyMapper;
 		private readonly MemberInfo member;
@@ -106,15 +107,15 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				propertyMapping.type1 = null;
 				var hbmType = new HbmType
-				              {
-				              	name = persistentType.AssemblyQualifiedName,
-				              	param = (from pi in parameters.GetType().GetProperties()
-				              	         let pname = pi.Name
-				              	         let pvalue = pi.GetValue(parameters, null)
-				              	         select
-				              	         	new HbmParam {name = pname, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}})
-				              		.ToArray()
-				              };
+				{
+					name = persistentType.AssemblyQualifiedName,
+					param = parameters.GetType().GetProperties().ToArray(
+						pi =>
+						{
+							var pvalue = pi.GetValue(parameters, null);
+							return new HbmParam {name = pi.Name, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
+						})
+				};
 				propertyMapping.type = hbmType;
 			}
 			else
@@ -171,16 +172,15 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Columns(params Action<IColumnMapper>[] columnMapper)
 		{
 			ResetColumnPlainValues();
-			int i = 1;
-			var columns = new List<HbmColumn>(columnMapper.Length);
-			foreach (var action in columnMapper)
+			var columns = new HbmColumn[columnMapper.Length];
+			for (var i = 0; i < columnMapper.Length; i++)
 			{
 				var hbm = new HbmColumn();
-				string defaultColumnName = (member != null ? member.Name : "unnamedcolumn") + i++;
-				action(new ColumnMapper(hbm, defaultColumnName));
-				columns.Add(hbm);
+				string defaultColumnName = (member != null ? member.Name : "unnamedcolumn") + i + 1;
+				columnMapper[i](new ColumnMapper(hbm, defaultColumnName));
+				columns[i] = hbm;
 			}
-			propertyMapping.Items = columns.ToArray();
+			propertyMapping.Items = columns;
 		}
 
 		public void Column(string name)
@@ -223,26 +223,6 @@ namespace NHibernate.Mapping.ByCode.Impl
 			Column(x => x.Index(indexName));
 		}
 
-		public void Formula(string formula)
-		{
-			if (formula == null)
-			{
-				return;
-			}
-
-			ResetColumnPlainValues();
-			propertyMapping.Items = null;
-			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
-			if (formulaLines.Length > 1)
-			{
-				propertyMapping.Items = new[] {new HbmFormula {Text = formulaLines}};
-			}
-			else
-			{
-				propertyMapping.formula = formula;
-			}
-		}
-
 		public void Update(bool consideredInUpdateQuery)
 		{
 			propertyMapping.update = consideredInUpdateQuery;
@@ -258,6 +238,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Lazy(bool isLazy)
 		{
 			propertyMapping.lazy = isLazy;
+		}
+
+		public void FetchGroup(string name)
+		{
+			propertyMapping.lazygroup = name;
 		}
 
 		public void Generated(PropertyGeneration generation)
@@ -280,6 +265,54 @@ namespace NHibernate.Mapping.ByCode.Impl
 			propertyMapping.uniquekey = null;
 			propertyMapping.index = null;
 			propertyMapping.formula = null;
+		}
+
+		#endregion
+
+		#region Implementation of IColumnsAndFormulasMapper
+
+		/// <inheritdoc />
+		public void ColumnsAndFormulas(params Action<IColumnOrFormulaMapper>[] columnOrFormulaMapper)
+		{
+			ResetColumnPlainValues();
+
+			propertyMapping.Items = ColumnOrFormulaMapper.GetItemsFor(
+				columnOrFormulaMapper,
+				member != null ? member.Name : "unnamedcolumn");
+		}
+
+		/// <inheritdoc cref="IColumnsAndFormulasMapper.Formula" />
+		public void Formula(string formula)
+		{
+			if (formula == null)
+			{
+				return;
+			}
+
+			ResetColumnPlainValues();
+			propertyMapping.Items = null;
+			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
+			if (formulaLines.Length > 1)
+			{
+				propertyMapping.Items = new object[] {new HbmFormula {Text = formulaLines}};
+			}
+			else
+			{
+				propertyMapping.formula = formula;
+			}
+		}
+
+		/// <inheritdoc />
+		public void Formulas(params string[] formulas)
+		{
+			if (formulas == null)
+				throw new ArgumentNullException(nameof(formulas));
+
+			ResetColumnPlainValues();
+			propertyMapping.Items =
+				formulas
+					.ToArray(
+						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) });
 		}
 
 		#endregion

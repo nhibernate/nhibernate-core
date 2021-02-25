@@ -62,14 +62,18 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
-			rs.Parameters[index].Value = value;
+			rs.Parameters[index].Value = Convert.ToSingle(value);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public object StringToObject(string xml)
 		{
 			return FromStringValue(xml);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
 			return Single.Parse(xml);

@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1421
 			using (var s = OpenSession())
 			{
 				var query = s.CreateQuery("from AnEntity a where a.id in (:myList)");
-				Assert.That(() => query.SetParameterList("myList", new long[0]), Throws.Exception.Not.InstanceOf<NullReferenceException>());
+				Assert.That(() => query.SetParameterList("myList", Array.Empty<long>()), Throws.Exception.Not.InstanceOf<NullReferenceException>());
 			}
 		}
 
@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1421
 			using (var s = OpenSession())
 			{
 				var query = s.CreateQuery("from AnEntity a where a.id in (:myList)");
-				Assert.That(() => query.SetParameterList("myList", new long[0]).List(), Throws.Exception.Not.InstanceOf<NullReferenceException>());
+				Assert.That(() => query.SetParameterList("myList", Array.Empty<long>()).List(), Throws.Exception.Not.InstanceOf<NullReferenceException>());
 			}
 		}
 	}

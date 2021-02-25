@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Test.DynamicEntity
 {
+	[Obsolete("Require dynamic proxies")]
 	public sealed class DataProxyHandler : Proxy.DynamicProxy.IInterceptor
 	{
 		private readonly Hashtable data = new Hashtable();

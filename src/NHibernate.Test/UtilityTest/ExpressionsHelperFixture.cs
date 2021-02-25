@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Util;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace NHibernate.Test.UtilityTest
 
 		public IEnumerable<string> CollectionProp
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 	}
 

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using NHibernate.Util;
@@ -86,11 +85,18 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public override string SqlDropString(Dialect.Dialect dialect, string defaultCatalog, string defaultSchema)
 		{
-			string ifExists = dialect.GetIfExistsDropConstraint(Table, Name);
-			string drop = string.Format("alter table {0} {1}", Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema),
-																	dialect.GetDropForeignKeyConstraintString(Name));
-			string end = dialect.GetIfExistsDropConstraintEnd(Table, Name);
-			return ifExists + System.Environment.NewLine + drop + System.Environment.NewLine + end;
+			var catalog = Table.GetQuotedCatalog(dialect, defaultCatalog);
+			var schema = Table.GetQuotedSchema(dialect, defaultSchema);
+			var quotedName = Table.GetQuotedName(dialect);
+
+			return new StringBuilder()
+				.AppendLine(dialect.GetIfExistsDropConstraint(catalog, schema, quotedName, Name))
+				.AppendFormat("alter table ")
+				.Append(Table.GetQualifiedName(dialect, defaultCatalog, defaultSchema))
+				.Append(" ")
+				.AppendLine(dialect.GetDropForeignKeyConstraintString(Name))
+				.Append(dialect.GetIfExistsDropConstraintEnd(catalog, schema, quotedName, Name))
+				.ToString();
 		}
 
 		#endregion
@@ -190,10 +196,10 @@ namespace NHibernate.Mapping
 				result.Append(GetType().FullName)
 					.Append('(')
 					.Append(Table.Name)
-					.Append(StringHelper.Join(", " , Columns))
+					.Append(string.Join(", ", Columns))
 					.Append(" ref-columns:")
 					.Append('(')
-					.Append(StringHelper.Join(", ", ReferencedColumns))
+					.Append(string.Join(", ", ReferencedColumns))
 					.Append(") as ")
 					.Append(Name);
 				return result.ToString();
@@ -225,6 +231,23 @@ namespace NHibernate.Mapping
 		public bool IsReferenceToPrimaryKey
 		{
 			get { return referencedColumns.Count == 0; }
+		}
+
+		public string GeneratedConstraintNamePrefix => "FK_";
+
+		public override bool IsGenerated(Dialect.Dialect dialect)
+		{
+			if (!HasPhysicalConstraint)
+				return false;
+			if (dialect.SupportsNullInUnique || IsReferenceToPrimaryKey)
+				return true;
+
+			foreach (var column in ReferencedColumns)
+			{
+				if (column.IsNullable)
+					return false;
+			}
+			return true;
 		}
 	}
 }

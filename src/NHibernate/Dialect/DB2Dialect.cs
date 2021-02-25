@@ -1,7 +1,9 @@
 using System.Data;
+using System.Data.Common;
 using System.Text;
 using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
+using NHibernate.Dialect.Schema;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
@@ -32,15 +34,16 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(254)");
 			RegisterColumnType(DbType.AnsiString, 8000, "VARCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 2147483647, "CLOB");
+			RegisterColumnType(DbType.Binary, "BLOB");
 			RegisterColumnType(DbType.Binary, 2147483647, "BLOB");
 			RegisterColumnType(DbType.Boolean, "SMALLINT");
 			RegisterColumnType(DbType.Byte, "SMALLINT");
-			RegisterColumnType(DbType.Currency, "DECIMAL(16,4)");
+			RegisterColumnType(DbType.Currency, "DECIMAL(18,4)");
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
 			// DB2 max precision is 31, but .Net is 28-29 anyway.
-			RegisterColumnType(DbType.Decimal, 28, "DECIMAL($p, $s)");
+			RegisterColumnType(DbType.Decimal, 29, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INTEGER");
@@ -52,6 +55,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 8000, "VARCHAR($l)");
 			RegisterColumnType(DbType.String, 2147483647, "CLOB");
 			RegisterColumnType(DbType.Time, "TIME");
+			RegisterColumnType(DbType.Guid, "CHAR(16) FOR BIT DATA");
 
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
 			RegisterFunction("absval", new StandardSQLFunction("absval"));
@@ -60,7 +64,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
 			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
-			RegisterFunction("round", new StandardSQLFunction("round"));
+			RegisterFunction("round", new StandardSQLFunctionWithRequiredParameters("round", new object[] { null, "0" }));
 
 			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
 			RegisterFunction("asin", new StandardSQLFunction("asin", NHibernateUtil.Double));
@@ -76,6 +80,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
+			RegisterFunction("random", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
 			RegisterFunction("soundex", new StandardSQLFunction("soundex", NHibernateUtil.String));
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
@@ -83,6 +88,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
 			RegisterFunction("variance", new StandardSQLFunction("variance", NHibernateUtil.Double));
 
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime, false));
+			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
 			RegisterFunction("julian_day", new StandardSQLFunction("julian_day", NHibernateUtil.Int32));
 			RegisterFunction("microsecond", new StandardSQLFunction("microsecond", NHibernateUtil.Int32));
 			RegisterFunction("midnight_seconds", new StandardSQLFunction("midnight_seconds", NHibernateUtil.Int32));
@@ -115,6 +122,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("smallint", new StandardSQLFunction("smallint", NHibernateUtil.Int16));
 
 			RegisterFunction("digits", new StandardSQLFunction("digits", NHibernateUtil.String));
+			RegisterFunction("ascii", new StandardSQLFunction("ascii", NHibernateUtil.Int32));
 			RegisterFunction("chr", new StandardSQLFunction("chr", NHibernateUtil.Character));
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("ucase", new StandardSQLFunction("ucase"));
@@ -123,10 +131,15 @@ namespace NHibernate.Dialect
 			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
 
-			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
+			RegisterFunction("mod", new ModulusFunction(true, false));
 
-			// DB2 does not support ANSI substring syntax.
-			RegisterFunction("substring", new SQLFunctionTemplate(NHibernateUtil.String, "substring(?1, ?2, ?3)"));
+			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
+
+			// Bitwise operations
+			RegisterFunction("band", new Function.BitwiseFunctionOperation("bitand"));
+			RegisterFunction("bor", new Function.BitwiseFunctionOperation("bitor"));
+			RegisterFunction("bxor", new Function.BitwiseFunctionOperation("bitxor"));
+			RegisterFunction("bnot", new Function.BitwiseFunctionOperation("bitnot"));
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.DB2Driver";
 		}
@@ -167,7 +180,6 @@ namespace NHibernate.Dialect
 			get { return "default"; }
 		}
 
-
 		public override string GetSelectSequenceNextValString(string sequenceName)
 		{
 			return "nextval for " + sequenceName;
@@ -189,6 +201,11 @@ namespace NHibernate.Dialect
 		public override string GetDropSequenceString(string sequenceName)
 		{
 			return string.Concat("drop sequence ", sequenceName, " restrict");
+		}
+
+		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			return new DB2MetaData(connection);
 		}
 
 		/// <summary></summary>
@@ -215,28 +232,29 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
+		public override SqlString GetLimitString(SqlString sql, SqlString offset, SqlString limit)
 		{
 			if (offset == null)
 			{
-				return new SqlString(querySqlString,
-									 " fetch first ",
-									 limit,
-									 " rows only");
+				return new SqlString(sql, " fetch first ", limit, " rows only");
 			}
+
+			ExtractColumnOrAliasNames(sql, out var selectColumns, out _, out _);
 
 			/*
 			 * "select * from (select row_number() over(orderby_clause) as rownum, "
 			 * querySqlString_without select
 			 * " ) as tempresult where rownum between ? and ?"
 			 */
-			string rownumClause = GetRowNumber(querySqlString);
+			string rownumClause = GetRowNumber(sql);
 
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
 			pagingBuilder
-				.Add("select * from (select ")
+				.Add("select " )
+				.Add(string.Join(",", selectColumns))
+				.Add(" from (select ")
 				.Add(rownumClause)
-				.Add(querySqlString.Substring(7))
+				.Add(sql.Substring(7))
 				.Add(") as tempresult where rownum ");
 
 			if (limit != null)
@@ -272,11 +290,22 @@ namespace NHibernate.Dialect
 			get { return " for read only with rs"; }
 		}
 
+		// As of DB2 9.5 documentation, limit is 128 bytes which with Unicode names could mean only 32 characters.
+		/// <inheritdoc />
+		public override int MaxAliasLength => 32;
+
+		public override long TimestampResolutionInTicks => 10L; // Microseconds.
+
 		#region Overridden informational metadata
+
+		public override bool SupportsNullInUnique => false;
 
 		public override bool SupportsEmptyInList => false;
 
 		public override bool SupportsResultSetPositionQueryMethodsOnForwardOnlyCursor => false;
+
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false; // DB2 v9.1 doesn't support 'cross join' syntax
 
 		public override bool SupportsLobValueChangePropogation => false;
 

@@ -1,4 +1,3 @@
-using System.Collections;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Any
@@ -11,7 +10,7 @@ namespace NHibernate.Test.Any
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Any.Person.hbm.xml"}; }
 		}
@@ -24,30 +23,36 @@ namespace NHibernate.Test.Any
 		[Test]
 		public void FlushProcessing()
 		{
+			var person = new Person();
+			var address = new Address();
 			//http://opensource.atlassian.com/projects/hibernate/browse/HHH-1663
-			ISession session = OpenSession();
-			session.BeginTransaction();
-			Person person = new Person();
-			Address address = new Address();
-			person.Data = address;
-			session.SaveOrUpdate(person);
-			session.SaveOrUpdate(address);
-			session.Transaction.Commit();
-			session.Close();
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				person.Data = address;
+				session.SaveOrUpdate(person);
+				session.SaveOrUpdate(address);
+				tran.Commit();
+				session.Close();
+			}
 
-			session = OpenSession();
-			session.BeginTransaction();
-			person = (Person) session.Load(typeof (Person), person.Id);
-			person.Name = "makingpersondirty";
-			session.Transaction.Commit();
-			session.Close();
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				person = (Person) session.Load(typeof(Person), person.Id);
+				person.Name = "makingpersondirty";
+				tran.Commit();
+				session.Close();
+			}
 
-			session = OpenSession();
-			session.BeginTransaction();
-			session.Delete(person);
-			session.Delete(address);
-			session.Transaction.Commit();
-			session.Close();
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				session.Delete(person);
+				session.Delete(address);
+				tran.Commit();
+				session.Close();
+			}
 		}
 	}
 }

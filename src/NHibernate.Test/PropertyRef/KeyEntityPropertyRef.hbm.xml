@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.PropertyRef">
+  <class name="A" lazy="false">
+    <id name="Id" generator="assigned"/>
+    <property name="Name"/>
+    <set name="CItems">
+      <key column="cid" property-ref="C"/>
+      <one-to-many class="B"/>
+    </set>
+    <!-- Having it mapped after the collection referencing it was causing trouble when resolving the collection -->
+    <many-to-one name="C"/>
+  </class>
+
+  <class name="B">
+    <id name="Id" generator="assigned"/>
+    <property name="Name"/>
+  </class>
+
+  <class name="C">
+    <id name="Id" generator="guid.comb"/>
+    <property name="Name"/>
+  </class>
+</hibernate-mapping>

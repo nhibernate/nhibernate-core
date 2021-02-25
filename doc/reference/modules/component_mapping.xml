@@ -10,21 +10,20 @@
         <title>Dependent objects</title>
 
         <para>
-            A component is a contained object that is persisted as a value type, not an entity.
-            The term "component" refers to the object-oriented notion of composition
-            (not to architecture-level components). For example, you might model a person like this:
+            A component is a contained object that is persisted as a value type and not an entity
+            reference. The term "component" refers to the object-oriented notion of composition and
+            not to architecture-level components. For example, you can model a person like this:
         </para>
 
         <programlisting><![CDATA[public class Person
 {
-    public string Key { get; set; }
+    public virtual string Key { get; set; }
 
-    public DateTime Birthday { get; set; }
+    public virtual DateTime Birthday { get; set; }
 
-    public Name Name { get; set; }
+    public virtual Name Name { get; set; }
 
-    ......
-    ......
+    ...
 }]]></programlisting>
 
 <programlisting><![CDATA[public class Name
@@ -38,8 +37,8 @@
 
         <para>
             Now <literal>Name</literal> may be persisted as a component of
-            <literal>Person</literal>. Notice that <literal>Name</literal> defines getter
-            and setter methods for its persistent properties, but doesn't need to declare
+            <literal>Person</literal>. <literal>Name</literal> defines getter
+            and setter methods for its persistent properties, but it does not need to declare
             any interfaces or identifier properties.
         </para>
 
@@ -68,16 +67,18 @@
         </para>
 
         <para>
-            Like all value types, components do not support shared references. The null
+            Like value types, components do not support shared references. In other words, two
+            persons could have the same name, but the two person objects would contain two
+            independent name objects that were only "the same" by value. The null
             value semantics of a component are <emphasis>ad hoc</emphasis>. When reloading the
             containing object, NHibernate will assume that if all component columns are
-            null, then the entire component is null. This should be okay for most purposes.
+            null, then the entire component is null. This is suitable for most purposes.
         </para>
 
         <para>
-            The properties of a component may be of any NHibernate type (collections, many-to-one 
+            The properties of a component can be of any NHibernate type (collections, many-to-one 
             associations, other components, etc). Nested components should <emphasis>not</emphasis> 
-            be considered an exotic usage. NHibernate is intended to support a very fine-grained 
+            be considered an exotic usage. NHibernate is intended to support a fine-grained 
             object model.
         </para>
 
@@ -112,7 +113,7 @@
             <literal>&lt;composite-element&gt;</literal> tag.
         </para>
 
-        <programlisting><![CDATA[<set name="SomeNames" table="some_names" lazy="true">
+        <programlisting><![CDATA[<set name="SomeNames" table="some_names">
     <key column="id"/>
     <composite-element class="Eg.Name, Eg"> <!-- class attribute required -->
         <property name="Initial"/>
@@ -128,41 +129,28 @@
         </para>
 
         <para>
-            Composite elements may contain components but not collections. If your
-            composite element itself contains 
-            components, use the <literal>&lt;nested-composite-element&gt;</literal> 
-            tag. This is a pretty exotic case - a collection of components which 
-            themselves have components. By this stage you should be asking yourself 
-            if a one-to-many association is more appropriate. Try remodelling the 
-            composite element as an entity - but note that even though the object model 
-            is the same, the relational model and persistence semantics are still 
-            slightly different.
-        </para>
-
-        <para>
-            Please note that a composite element mapping doesn't support null-able properties
-            if you're using a <literal>&lt;set&gt;</literal>. NHibernate
-            has to use each columns value to identify a record when deleting objects
-            (there is no separate primary key column in the composite element table),
-            which is not possible with null values. You have to either use only
-            not-null properties in a composite-element or choose a
-            <literal>&lt;list&gt;</literal>, <literal>&lt;map&gt;</literal>,
-            <literal>&lt;bag&gt;</literal> or <literal>&lt;idbag&gt;</literal>.
+            Composite elements can contain components but not collections. If your composite
+            element contains components, use the
+            <literal>&lt;nested-composite-element&gt;</literal> tag. This case is a collection
+            of components which themselves have components. You may want to consider if a
+            one-to-many association is more appropriate. Remodel the composite element as an
+            entity, but be aware that even though the .Net model is the same, the relational
+            model and persistence semantics are still slightly different.
         </para>
 
         <para>
             A special case of a composite element is a composite element with a nested
-            <literal>&lt;many-to-one&gt;</literal> element. A mapping like this allows
-            you to map extra columns of a many-to-many association table to the
-            composite element class. The following is a many-to-many association
-            from <literal>Order</literal> to <literal>Item</literal> where 
+            <literal>&lt;many-to-one&gt;</literal> element. This mapping allows you to map extra
+            columns of a many-to-many association table to the composite element class. The
+            following is a many-to-many association from
+            <literal>Order</literal> to <literal>Item</literal> where
             <literal>PurchaseDate</literal>, <literal>Price</literal> and
             <literal>Quantity</literal> are properties of the association:
         </para>
 
-        <programlisting><![CDATA[<class name="Order" .... >
-    ....
-    <set name="PurchasedItems" table="purchase_items" lazy="true">
+        <programlisting><![CDATA[<class name="Order" ... >
+    ...
+    <set name="PurchasedItems" table="purchase_items">
         <key column="order_id">
         <composite-element class="Purchase">
             <property name="PurchaseDate"/>
@@ -173,11 +161,18 @@
     </set>
 </class>]]></programlisting>
 
+        <para>
+            There cannot be a reference to the purchase on the other side for bidirectional association
+            navigation. Components are value types and do not allow shared references. A single
+            <literal>Purchase</literal> can be in the set of an <literal>Order</literal>, but it cannot
+            be referenced by the <literal>Item</literal> at the same time.
+        </para>
+
         <para>Even ternary (or quaternary, etc) associations are possible:</para>
 
-        <programlisting><![CDATA[<class name="Order" .... >
-    ....
-    <set name="PurchasedItems" table="purchase_items" lazy="true">
+        <programlisting><![CDATA[<class name="Order" ... >
+    ...
+    <set name="PurchasedItems" table="purchase_items">
         <key column="order_id">
         <composite-element class="OrderLine">
             <many-to-one name="PurchaseDetails class="Purchase"/>
@@ -187,7 +182,7 @@
 </class>]]></programlisting>
 
         <para>
-            Composite elements may appear in queries using the same syntax as
+            Composite elements can appear in queries using the same syntax as
             associations to other entities.
         </para>
 
@@ -197,10 +192,12 @@
         <title>Components as IDictionary indices</title>
 
         <para>
-            The <literal>&lt;composite-index&gt;</literal> element lets you map a
+            The <literal>&lt;composite-map-key&gt;</literal> element lets you map a
             component class as the key of an <literal>IDictionary</literal>. Make sure
             you override <literal>GetHashCode()</literal> and <literal>Equals()</literal>
-            correctly on the component class.
+            correctly on the component class. See <xref linkend="collections-indexed"/>
+            for more information on the <literal>&lt;composite-map-key&gt;</literal>
+            element.
         </para>
     </sect1>
 
@@ -208,7 +205,7 @@
         <title>Components as composite identifiers</title>
 
         <para>
-            You may use a component as an identifier of an entity class. Your component
+            You can use a component as an identifier of an entity class. Your component
             class must satisfy certain requirements:
         </para>
 
@@ -225,94 +222,116 @@
                     notion of composite key equality.
                 </para>
             </listitem>
+            <listitem>
+                <para>
+                    It should re-implement <literal>ToString()</literal> if you consider
+                    using the second level cache. See <xref linkend="NHibernate.Caches-howto" />.
+                </para>
+            </listitem>
         </itemizedlist>
 
         <para>
-            You can't use an <literal>IIdentifierGenerator</literal> to generate composite keys.
+            You cannot use an <literal>IIdentifierGenerator</literal> to generate composite keys.
             Instead the application must assign its own identifiers.
         </para>
 
         <para>
             Since a composite identifier must be assigned to the object before saving it,
-            we can't use <literal>unsaved-value</literal> of the identifier to distinguish
+            you cannot use <literal>unsaved-value</literal> of the identifier to distinguish
             between newly instantiated instances and instances saved in a previous session.
+            See <xref linkend="mapping-declaration-id-assigned"/> for more information.
         </para>
 
         <para>
-            You may instead implement <literal>IInterceptor.IsTransient()</literal> if
-            you wish to use <literal>SaveOrUpdate()</literal> or cascading save / update.
-            As an alternative, you may also set the <literal>unsaved-value</literal>
-            attribute on a <literal>&lt;version&gt;</literal> (or
-            <literal>&lt;timestamp&gt;</literal>) element to specify a
-            value that indicates a new transient instance. In this case, the version
-            of the entity is used instead of the (assigned) identifier and you don't have
-            to implement <literal>IInterceptor.IsTransient()</literal> yourself.
+            Use the <literal>&lt;composite-id&gt;</literal> tag, with nested
+            <literal>&lt;key-property&gt;</literal> or <literal>&lt;key-many-to-one&gt;</literal>
+            elements, in place of the usual <literal>&lt;id&gt;</literal> declaration. For example,
+            the following <literal>OrderLine</literal> class has a primary key that depends upon
+            the (composite) primary key of <literal>Order</literal>.
         </para>
 
-        <para>
-            Use the <literal>&lt;composite-id&gt;</literal> tag (same attributes and
-            elements as <literal>&lt;component&gt;</literal>) in place of
-            <literal>&lt;id&gt;</literal> for the declaration of a composite identifier
-            class:
-        </para>
-
-        <programlisting><![CDATA[<class name="Foo" table="FOOS">
-    <composite-id name="CompId" class="FooCompositeID">
-        <key-property name="String"/>
-        <key-property name="Short"/>
-        <key-property name="Date" column="date_" type="Date"/>
+        <programlisting><![CDATA[<class name="OrderLine">
+    <composite-id name="Id" class="OrderLineId">
+        <key-property name="lineId"/>
+        <key-property name="orderId"/>
+        <key-property name="customerId"/>
     </composite-id>
+
     <property name="Name"/>
-    ....
+
+    <many-to-one name="Order" class="Order"
+            insert="false" update="false">
+        <column name="orderId"/>
+        <column name="customerId"/>
+    </many-to-one>
+    ...
 </class>]]></programlisting>
 
         <para>
-            Now, any foreign keys into the table <literal>FOOS</literal> are also composite.
-            You must declare this in your mappings for other classes. An association to
-            <literal>Foo</literal> would be declared like this:
+            Any foreign keys referencing the <literal>OrderLine</literal> table are now composite.
+            Declare this in your mappings for other classes. An association to
+            <literal>OrderLine</literal> is mapped like this:
         </para>
 
-        <programlisting><![CDATA[<many-to-one name="Foo" class="Foo">
+        <programlisting><![CDATA[<many-to-one name="OrderLine" class="OrderLine">
 <!-- the "class" attribute is optional, as usual -->
-    <column name="foo_string"/>
-    <column name="foo_short"/>
-    <column name="foo_date"/>
+    <column name="lineId"/>
+    <column name="orderId"/>
+    <column name="customerId"/>
 </many-to-one>]]></programlisting>
 
-    <para>
-        This new <literal>&lt;column&gt;</literal> tag is also used by multi-column custom types.
-        Actually it is an alternative to the <literal>column</literal> attribute everywhere. A
-        collection with elements of type <literal>Foo</literal> would use:
-    </para>
+        <para>
+            The <literal>&lt;column&gt;</literal> element is an alternative to the <literal>column</literal>
+            attribute everywhere. Using the <literal>&lt;column&gt;</literal> element is required for
+            composite keys, but also gives more declaration options, which are mostly useful when using
+            <literal>hbm2ddl</literal>. See <xref linkend="mapping-column" />.
+        </para>
 
-    <programlisting><![CDATA[<set name="Foos">
-    <key column="owner_id"/>
-    <many-to-many class="Foo">
-        <column name="foo_string"/>
-        <column name="foo_short"/>
-        <column name="foo_date"/>
+        <para>
+            A many-to-many association to <literal>OrderLine</literal> also uses the composite foreign key:
+        </para>
+
+        <programlisting><![CDATA[<set name="UndeliveredOrderLines">
+    <key column name="warehouseId"/>
+    <many-to-many class="OrderLine">
+        <column name="lineId"/>
+        <column name="orderId"/>
+        <column name="customerId"/>
     </many-to-many>
 </set>]]></programlisting>
 
         <para>
-            On the other hand, <literal>&lt;one-to-many&gt;</literal>, as usual, declares no columns.
+            The collection of <literal>OrderLine</literal> in <literal>Order</literal> would use:
+        </para>
+
+        <programlisting><![CDATA[<set name="OrderLines" inverse="true">
+    <key>
+        <column name="orderId"/>
+        <column name="customerId"/>
+    </key>
+    <one-to-many class="OrderLine"/>
+</set>]]></programlisting>
+
+        <para>
+            The <literal>&lt;one-to-many&gt;</literal> element declares no columns.
         </para>
 
         <para>
-            If <literal>Foo</literal> itself contains collections, they will also need a
-            composite foreign key.
+            If <literal>OrderLine</literal> itself owns a collection, it also has a composite foreign key.
         </para>
 
-        <programlisting><![CDATA[<class name="Foo">
-    ....
-    ....
-    <set name="Dates" lazy="true">
+        <programlisting><![CDATA[<class name="OrderLine">
+    ...
+    <list name="DeliveryAttempts">
         <key>   <!-- a collection inherits the composite key type -->
-            <column name="foo_string"/>
-            <column name="foo_short"/>
-            <column name="foo_date"/>
+            <column name="lineId"/>
+            <column name="orderId"/>
+            <column name="customerId"/>
         </key>
-        <element column="foo_date" type="Date"/>
+        <list-index column="attemptId" base="1"/>
+        <composite-element class="DeliveryAttempt">
+            ...
+        </composite-element>
     </set>
 </class>]]></programlisting>
 
@@ -322,21 +341,24 @@
         <title>Dynamic components</title>
 
         <para>
-            You may even map a property of type <literal>IDictionary</literal>:
+            You can also map a property of type <literal>IDictionary</literal> or
+            <literal>IDictionary&lt;string, object&gt;</literal>, or declared as a C#
+            <literal>dynamic</literal>:
         </para>
 
     <programlisting><![CDATA[<dynamic-component name="UserAttributes">
     <property name="Foo" column="FOO"/>
     <property name="Bar" column="BAR"/>
-    <many-to-one name="Baz" class="Baz" column="BAZ"/>
+    <many-to-one name="Baz" class="Baz" column="BAZ_ID"/>
 </dynamic-component>]]></programlisting>
 
         <para>
             The semantics of a <literal>&lt;dynamic-component&gt;</literal> mapping are identical
-            to <literal>&lt;component&gt;</literal>. The advantage of this kind of mapping is 
+            to <literal>&lt;component&gt;</literal>. The advantage of this kind of mapping is
             the ability to determine the actual properties of the component at deployment time, just
-            by editing the mapping document. (Runtime manipulation of the mapping document is 
-            also possible, using a DOM parser.)
+            by editing the mapping document. Runtime manipulation of the mapping document is also
+            possible, using a DOM parser. You can also access, and change, NHibernate's
+            configuration-time metamodel via the <literal>Configuration</literal> object.
         </para>
 
     </sect1>

@@ -59,7 +59,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2378
 					.Where(o => o.PersonId == 2)
 					.ToList();
 
-
 				Assert.That(m.Count, Is.EqualTo(1));
 			}
 		}

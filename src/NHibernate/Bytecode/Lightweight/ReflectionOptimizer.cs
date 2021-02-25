@@ -1,8 +1,8 @@
+using System;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Security;
 using System.Security.Permissions;
-using NHibernate.Linq;
 using NHibernate.Properties;
 using NHibernate.Util;
 
@@ -33,7 +33,18 @@ namespace NHibernate.Bytecode.Lightweight
 		/// <summary>
 		/// Class constructor.
 		/// </summary>
+		[Obsolete("This constructor has no usages and will be removed in a future version")]
 		public ReflectionOptimizer(System.Type mappedType, IGetter[] getters, ISetter[] setters)
+			: this(mappedType, getters, setters, null, null)
+		{
+		}
+
+		/// <summary>
+		/// Class constructor.
+		/// </summary>
+		public ReflectionOptimizer(
+			System.Type mappedType, IGetter[] getters, ISetter[] setters,
+			IGetter specializedGetter, ISetter specializedSetter)
 		{
 			// save off references
 			this.mappedType = mappedType;
@@ -44,7 +55,26 @@ namespace NHibernate.Bytecode.Lightweight
 			GetPropertyValuesInvoker getInvoker = GenerateGetPropertyValuesMethod(getters);
 			SetPropertyValuesInvoker setInvoker = GenerateSetPropertyValuesMethod(setters);
 
-			accessOptimizer = new AccessOptimizer(getInvoker, setInvoker, getters, setters);
+			var getMethods = new GetPropertyValueInvoker[getters.Length];
+			for (var i = 0; i < getters.Length; i++)
+			{
+				getMethods[i] = GenerateGetPropertyValueMethod(getters[i]);
+			}
+
+			var setMethods = new SetPropertyValueInvoker[setters.Length];
+			for (var i = 0; i < setters.Length; i++)
+			{
+				setMethods[i] = GenerateSetPropertyValueMethod(setters[i]);
+			}
+
+			accessOptimizer = new AccessOptimizer(
+				getInvoker,
+				setInvoker,
+				getMethods,
+				setMethods,
+				GenerateGetPropertyValueMethod(specializedGetter),
+				GenerateSetPropertyValueMethod(specializedSetter)
+			);
 
 			createInstanceMethod = CreateCreateInstanceMethod(mappedType);
 		}
@@ -100,11 +130,20 @@ namespace NHibernate.Bytecode.Lightweight
 
 		protected DynamicMethod CreateDynamicMethod(System.Type returnType, System.Type[] argumentTypes)
 		{
-			System.Type owner = mappedType.IsInterface ? typeof (object) : mappedType;
-#pragma warning disable 618
-			bool canSkipChecks = SecurityManager.IsGranted(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
-#pragma warning restore 618
+			var owner = mappedType.IsInterface ? typeof (object) : mappedType;
+			var canSkipChecks = CanSkipVisibilityChecks();
 			return new DynamicMethod(string.Empty, returnType, argumentTypes, owner, canSkipChecks);
+		}
+
+		private static bool CanSkipVisibilityChecks()
+		{
+#if NETFX
+			var permissionSet = new PermissionSet(PermissionState.None);
+			permissionSet.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
+			return permissionSet.IsSubsetOf(AppDomain.CurrentDomain.PermissionSet);
+#else
+			return false;
+#endif
 		}
 
 		private static void EmitCastToReference(ILGenerator il, System.Type type)
@@ -121,6 +160,46 @@ namespace NHibernate.Bytecode.Lightweight
 
 		private static readonly MethodInfo GetterCallbackInvoke = ReflectHelper.GetMethod<GetterCallback>(
 			g => g.Invoke(null, 0));
+
+		private GetPropertyValueInvoker GenerateGetPropertyValueMethod(IGetter getter)
+		{
+			if (getter == null)
+				return null;
+			if (!(getter is IOptimizableGetter optimizableGetter))
+				return getter.Get;
+
+			var method = CreateDynamicMethod(typeof(object), new[] { typeof(object) });
+			var il = method.GetILGenerator();
+
+			// object (target) { (object) ((ClassType) target).GetMethod(); }
+			il.Emit(OpCodes.Ldarg_0);
+			EmitCastToReference(il, mappedType);
+			optimizableGetter.Emit(il);
+			EmitUtil.EmitBoxIfNeeded(il, getter.ReturnType);
+			il.Emit(OpCodes.Ret);
+
+			return (GetPropertyValueInvoker) method.CreateDelegate(typeof(GetPropertyValueInvoker));
+		}
+
+		private SetPropertyValueInvoker GenerateSetPropertyValueMethod(ISetter setter)
+		{
+			if (setter == null)
+				return null;
+			if (!(setter is IOptimizableSetter optimizableSetter))
+				return setter.Set;
+
+			// void (target, value) { ((ClassType) target).SetMethod((FieldType) value); }
+			var method = CreateDynamicMethod(null, new[] { typeof(object), typeof(object) });
+			var il = method.GetILGenerator();
+			il.Emit(OpCodes.Ldarg_0);
+			EmitCastToReference(il, mappedType);
+			il.Emit(OpCodes.Ldarg_1);
+			EmitUtil.PreparePropertyForSet(il, optimizableSetter.Type);
+			optimizableSetter.Emit(il);
+			il.Emit(OpCodes.Ret);
+
+			return (SetPropertyValueInvoker) method.CreateDelegate(typeof(SetPropertyValueInvoker));
+		}
 
 		/// <summary>
 		/// Generates a dynamic method on the given type.

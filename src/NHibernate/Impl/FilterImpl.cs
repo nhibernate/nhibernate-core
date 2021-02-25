@@ -15,7 +15,8 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private FilterDefinition definition;
 
-		private readonly IDictionary<string, object> parameters = new Dictionary<string, object>();
+		private readonly Dictionary<string, object> parameters = new Dictionary<string, object>();
+		private readonly Dictionary<string, int> _parameterSpans = new Dictionary<string, int>();
 
 		public void AfterDeserialize(FilterDefinition factoryDefinition)
 		{
@@ -75,20 +76,21 @@ namespace NHibernate.Impl
 		/// <param name="name">The parameter's name.</param>
 		/// <param name="values">The values to be expanded into an SQL IN list.</param>
 		/// <returns>This FilterImpl instance (for method chaining).</returns>
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="name"/> or <paramref name="values"/> are <see langword="null" />.</exception>
 		public IFilter SetParameterList<T>(string name, ICollection<T> values)
 		{
+			if (values == null)
+				throw new ArgumentNullException(nameof(values), "Collection must be not null!");
+
 			var type = definition.GetParameterType(name);
 			if (type == null)
-			{
 				throw new HibernateException("Undefined filter parameter [" + name + "]");
-			}
 
 			if (!type.ReturnedClass.IsAssignableFrom(typeof(T)))
-			{
 				throw new HibernateException("Incorrect type for parameter [" + name + "]");
-			}
 
-			parameters[name] = values ?? throw new ArgumentException("Collection must be not null!", nameof(values));
+			_parameterSpans[name] = values.Count;
+			parameters[name] = values;
 			return this;
 		}
 
@@ -97,6 +99,18 @@ namespace NHibernate.Impl
 			object result;
 			parameters.TryGetValue(name, out result);
 			return result;
+		}
+
+		/// <summary>
+		/// Get the span of a value list parameter by name. <see langword="null" /> if the parameter is not a value list
+		/// or if there is no such parameter.
+		/// </summary>
+		/// <param name="name">The parameter name.</param>
+		/// <returns>The parameter span, or <see langword="null" /> if the parameter is not a value list or
+		/// if there is no such parameter.</returns>
+		public int? GetParameterSpan(string name)
+		{
+			return _parameterSpans.TryGetValue(name, out var result) ? result : default(int?);
 		}
 
 		/// <summary>

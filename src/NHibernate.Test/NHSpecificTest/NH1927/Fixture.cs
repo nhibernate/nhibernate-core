@@ -60,14 +60,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1927
                 Assert.That(queryFactoryFunc(session), Is.Not.Null, "failed with filter on");
                 tx.Commit();
             }
-
-        }
+		}
 
         [Test]
         public void CriteriaWithEagerFetch()
         {
             TestQuery(s => s.CreateCriteria(typeof (Customer))
-				.SetFetchMode("Invoices", FetchMode.Eager)
+				.Fetch("Invoices")
 				.UniqueResult<Customer>()
 				);
         }

@@ -23,7 +23,7 @@ namespace NHibernate.Test.Stateless
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Stateless.Naturalness.hbm.xml" }; }
 		}
@@ -97,6 +97,5 @@ namespace NHibernate.Test.Stateless
 				await (tx.CommitAsync());
 			}
 		}
-
 	}
 }

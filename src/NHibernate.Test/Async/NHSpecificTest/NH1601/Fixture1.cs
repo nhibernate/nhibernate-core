@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1601
@@ -18,72 +17,49 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
     [TestFixture]
     public class Fixture1Async : BugTestCase
     {
+        protected override bool AppliesTo(Dialect.Dialect dialect)
+        {
+            return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+        }
+
         /// <summary>
         /// Loads the project do not call Count on the list assigned.
         /// </summary>
         [Test]
-        public Task TestSaveAndLoadWithoutCountAsync()
+        public async Task TestSaveAndLoadWithoutCountAsync()
         {
-            try
-            {
-                ProjectWithOneList.TestAccessToList = false;
-                return SaveAndLoadProjectWithOneListAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
+            ProjectWithOneList.TestAccessToList = false;
+            await (SaveAndLoadProjectWithOneListAsync());
         }
 
         /// <summary>
         /// Refreshes the project do not call Count on the list assigned.
         /// </summary>     
         [Test]
-        public Task TestRefreshWithoutCountAsync()
+        public async Task TestRefreshWithoutCountAsync()
         {
-            try
-            {
-                ProjectWithOneList.TestAccessToList = false;
-                return SaveLoadAndRefreshProjectWithOneListAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
+            ProjectWithOneList.TestAccessToList = false;
+            await (SaveLoadAndRefreshProjectWithOneListAsync());
         }
 
         /// <summary>
         /// Loads the project and when Scenario1 is assigned call Count on the list.
         /// </summary>
         [Test]
-        public Task TestSaveAndLoadWithCountAsync()
+        public async Task TestSaveAndLoadWithCountAsync()
         {
-            try
-            {
-                ProjectWithOneList.TestAccessToList = true;
-                return SaveAndLoadProjectWithOneListAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
+            ProjectWithOneList.TestAccessToList = true;
+            await (SaveAndLoadProjectWithOneListAsync());
         }
 
         /// <summary>
         /// Refreshes the project and when Scenario1 is assigned call Count on the list.
         /// </summary>     
         [Test]
-        public Task TestRefreshWithCountAsync()
+        public async Task TestRefreshWithCountAsync()
         {
-            try
-            {
-                ProjectWithOneList.TestAccessToList = true;
-                return SaveLoadAndRefreshProjectWithOneListAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
+            ProjectWithOneList.TestAccessToList = true;
+            await (SaveLoadAndRefreshProjectWithOneListAsync());
         }
 
         /// <summary>
@@ -132,7 +108,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             return project;
         }
 
-
         public async Task<ProjectWithOneList> LoadProjectAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             ProjectWithOneList project;
@@ -151,7 +126,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
 
         public async Task RefreshProjectAsync(ProjectWithOneList project, CancellationToken cancellationToken = default(CancellationToken))
         {
-
             using (ISession session = OpenSession())
             using (ITransaction tx = session.BeginTransaction())
             {

@@ -14,6 +14,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3731
@@ -93,9 +94,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3731
 					await (transaction.CommitAsync());
 				}
 
-				using (MemoryStream stream = new MemoryStream())
+				var formatter = new BinaryFormatter
 				{
-					BinaryFormatter formatter = new BinaryFormatter();
+#if !NETFX
+					SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+				};
+				using (var stream = new MemoryStream())
+				{
 					formatter.Serialize(stream, session);
 
 					Assert.AreNotEqual(0, stream.Length);
@@ -116,9 +122,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3731
 					await (transaction.CommitAsync());
 				}
 
-				using (MemoryStream stream = new MemoryStream())
+				var formatter = new BinaryFormatter
 				{
-					BinaryFormatter formatter = new BinaryFormatter();
+#if !NETFX
+					SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+				};
+				using (var stream = new MemoryStream())
+				{
 					formatter.Serialize(stream, session);
 
 					Assert.AreNotEqual(0, stream.Length);
@@ -144,9 +155,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3731
 					await (transaction.CommitAsync());
 				}
 
-				using (MemoryStream stream = new MemoryStream())
+				var formatter = new BinaryFormatter
 				{
-					BinaryFormatter formatter = new BinaryFormatter();
+#if !NETFX
+					SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+				};
+				using (var stream = new MemoryStream())
+				{
 					formatter.Serialize(stream, session);
 
 					Assert.AreNotEqual(0, stream.Length);

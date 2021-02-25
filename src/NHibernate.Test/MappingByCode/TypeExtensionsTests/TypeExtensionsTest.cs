@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
+using TypeExtensions = NHibernate.Mapping.ByCode.TypeExtensions;
 
 namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 {
@@ -47,7 +48,6 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		
 		private class MyClass : MyBaseClass
 		{
-			
 		}
 
 		[Test]
@@ -180,7 +180,6 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 
 		private interface IMyEntity : IEntity<Guid>
 		{
-
 		}
 
 		[Test]

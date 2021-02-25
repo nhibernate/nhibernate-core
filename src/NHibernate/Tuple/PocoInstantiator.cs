@@ -13,24 +13,28 @@ namespace NHibernate.Tuple
 	[Serializable]
 	public class PocoInstantiator : IInstantiator, IDeserializationCallback
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(PocoInstantiator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(PocoInstantiator));
 
 		private readonly System.Type mappedClass;
 
 		[NonSerialized]
 		private IInstantiationOptimizer optimizer;
 
-		private readonly IProxyFactory proxyFactory;
+		private readonly IProxyFactory proxyFactory; // 6.0 TODO: remove
 
-		private readonly bool generateFieldInterceptionProxy;
+		private readonly bool generateFieldInterceptionProxy; // 6.0 TODO: remove
 
 		private readonly bool embeddedIdentifier;
+
+		private readonly bool _isAbstract;
 
 		[NonSerialized]
 		private ConstructorInfo constructor;
 
-		private readonly System.Type proxyInterface;
+		private readonly System.Type proxyInterface; // 6.0 TODO: remove
 
+		// Since 5.3
+		[Obsolete("This constructor has no more usage in NHibernate and will be removed in a future version.")]
 		public PocoInstantiator()
 		{
 		}
@@ -49,19 +53,27 @@ namespace NHibernate.Tuple
 			}
 			catch (PropertyNotFoundException)
 			{
-				log.Info(string.Format("no default (no-argument) constructor for class: {0} (class must be instantiated by Interceptor)", mappedClass.FullName));
+				log.Info("no default (no-argument) constructor for class: {0} (class must be instantiated by Interceptor)", mappedClass.FullName);
 				constructor = null;
 			}
 		}
 
+		// Since 5.3
+		[Obsolete("Use PocoEntityInstantiator class instead.")]
 		public PocoInstantiator(PersistentClass persistentClass, IInstantiationOptimizer optimizer, IProxyFactory proxyFactory, bool generateFieldInterceptionProxy)
+			: this(persistentClass.MappedClass, optimizer, persistentClass.HasEmbeddedIdentifier)
 		{
-			mappedClass = persistentClass.MappedClass;
 			proxyInterface = persistentClass.ProxyInterface;
-			embeddedIdentifier = persistentClass.HasEmbeddedIdentifier;
-			this.optimizer = optimizer;
 			this.proxyFactory = proxyFactory;
 			this.generateFieldInterceptionProxy = generateFieldInterceptionProxy;
+		}
+
+		public PocoInstantiator(System.Type mappedClass, IInstantiationOptimizer optimizer, bool embeddedIdentifier)
+		{
+			this.mappedClass = mappedClass;
+			this.optimizer = optimizer;
+			this.embeddedIdentifier = embeddedIdentifier;
+			_isAbstract = ReflectHelper.IsAbstractClass(mappedClass);
 
 			try
 			{
@@ -69,7 +81,7 @@ namespace NHibernate.Tuple
 			}
 			catch (PropertyNotFoundException)
 			{
-				log.Info(string.Format("no default (no-argument) constructor for class: {0} (class must be instantiated by Interceptor)", mappedClass.FullName));
+				log.Info("no default (no-argument) constructor for class: {0} (class must be instantiated by Interceptor)", mappedClass.FullName);
 				constructor = null;
 			}
 		}
@@ -84,18 +96,19 @@ namespace NHibernate.Tuple
 
 		public object Instantiate()
 		{
-			if (ReflectHelper.IsAbstractClass(mappedClass))
+			if (_isAbstract)
 			{
 				throw new InstantiationException("Cannot instantiate abstract class or interface: ", mappedClass);
 			}
+			// 6.0 TODO: Remove if statement
 			if (generateFieldInterceptionProxy)
 			{
-				return proxyFactory.GetFieldInterceptionProxy(GetInstance());
+				return proxyFactory.GetFieldInterceptionProxy(CreateInstance);
 			}
-			return GetInstance();
+			return CreateInstance();
 		}
 
-		private object GetInstance()
+		protected virtual object CreateInstance()
 		{
 			if (optimizer != null)
 			{
@@ -103,7 +116,7 @@ namespace NHibernate.Tuple
 			}
 			if (mappedClass.IsValueType)
 			{
-				return Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(mappedClass, true);
+				return Activator.CreateInstance(mappedClass, true);
 			}
 			if (constructor == null)
 			{
@@ -119,8 +132,9 @@ namespace NHibernate.Tuple
 			}
 		}
 
-		public bool IsInstance(object obj)
+		public virtual bool IsInstance(object obj)
 		{
+			// 6.0 TODO: Remove the proxyInterface check
 			return mappedClass.IsInstanceOfType(obj) || (proxyInterface != null && proxyInterface.IsInstanceOfType(obj)); //this one needed only for guessEntityMode()
 		}
 

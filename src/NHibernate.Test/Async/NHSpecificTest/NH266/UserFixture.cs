@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecificTest.NH266.User.hbm.xml"}; }
 		}
@@ -58,7 +58,6 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			s.Flush();
 			s.Close();
 		}
-
 
 		/// <summary>
 		/// This is testing problems that existed in 0.8.0-2 with extra "AND"
@@ -92,7 +91,6 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			list = await (q.ListAsync());
 			Assert.AreEqual(0, list.Count, "no 'inactive user' according to where clause");
 			s.Close();
-
 
 //			// load a instance of B through hql
 //			s = OpenSession();

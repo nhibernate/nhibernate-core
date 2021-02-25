@@ -7,14 +7,14 @@ namespace NHibernate.Linq
 {
 	internal static class LinqLogging
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor("NHibernate.Linq");
+		private static readonly INHibernateLogger Log = NHibernateLogger.For("NHibernate.Linq");
 
 		/// <summary>
 		/// If debug logging is enabled, log a string such as "msg: expression.ToString()".
 		/// </summary>
 		internal static void LogExpression(string msg, Expression expression)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				// If the expression contains NHibernate proxies, those will be initialized
 				// when we call ToString() on the exception. The string representation is
@@ -24,10 +24,9 @@ namespace NHibernate.Linq
 				var visitor = new ProxyReplacingExpressionVisitor();
 				var preparedExpression = visitor.Visit(expression);
 
-				Log.DebugFormat("{0}: {1}", msg, preparedExpression.ToString());
+				Log.Debug("{0}: {1}", msg, preparedExpression.ToString());
 			}
 		}
-
 
 		/// <summary>
 		/// Replace all occurrences of ConstantExpression where the value is an NHibernate

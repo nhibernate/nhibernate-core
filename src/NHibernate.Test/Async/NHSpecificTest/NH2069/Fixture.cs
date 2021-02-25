@@ -8,13 +8,7 @@
 //------------------------------------------------------------------------------
 
 
-using System;
-using System.Collections.Generic;
-using System.Transactions;
-using NHibernate;
-using NHibernate.Impl;
 using NHibernate.Proxy;
-using NHibernate.Criterion;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2069
@@ -26,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2069
         protected override void OnSetUp()
         {
             using (var s = OpenSession())
-            using (s.BeginTransaction())
+            using (var t = s.BeginTransaction())
             {
                 var test2 = new Test2();
                 test2.Cid = 5;
@@ -40,19 +34,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2069
                 s.Save(test2);
                 s.Save(test);
 
-                s.Transaction.Commit();
-            }            
+                t.Commit();
+            }
         }
 
         protected override void OnTearDown()
         {
             using (var s = OpenSession())
-            using (s.BeginTransaction())
+            using (var t = s.BeginTransaction())
             {
                 s.Delete("from Test");
                 s.Delete("from Test2");
-                s.Transaction.Commit();
-            }            
+                t.Commit();
+            }
          }
 
         [Test]

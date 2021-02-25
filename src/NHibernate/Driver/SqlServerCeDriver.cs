@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Reflection;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
@@ -12,6 +11,11 @@ namespace NHibernate.Driver
 	/// </summary>
 	public class SqlServerCeDriver : ReflectionBasedDriver
 	{
+		private static readonly Action<object, SqlDbType> SetSqlDbType =
+			DelegateHelper.BuildPropertySetter<SqlDbType>(
+				ReflectHelper.TypeFromAssembly("System.Data.SqlServerCe.SqlCeParameter", "System.Data.SqlServerCe", true),
+				"SqlDbType");
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlServerCeDriver"/> class.
 		/// </summary>
@@ -23,29 +27,13 @@ namespace NHibernate.Driver
 		{
 		}
 
-		private PropertyInfo dbParamSqlDbTypeProperty;
-
-		public override void Configure(IDictionary<string, string> settings)
-		{
-			base.Configure(settings);
-
-			using (var cmd = CreateCommand())
-			{
-				var dbParam = cmd.CreateParameter();
-				dbParamSqlDbTypeProperty = dbParam.GetType().GetProperty("SqlDbType");
-			}
-		}
-
 		/// <summary>
 		/// MsSql requires the use of a Named Prefix in the SQL statement.  
 		/// </summary>
 		/// <remarks>
 		/// <see langword="true" /> because MsSql uses "<c>@</c>".
 		/// </remarks>
-		public override bool UseNamedPrefixInSql
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInSql => true;
 
 		/// <summary>
 		/// MsSql requires the use of a Named Prefix in the Parameter.  
@@ -53,10 +41,7 @@ namespace NHibernate.Driver
 		/// <remarks>
 		/// <see langword="true" /> because MsSql uses "<c>@</c>".
 		/// </remarks>
-		public override bool UseNamedPrefixInParameter
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInParameter => true;
 
 		/// <summary>
 		/// The Named Prefix for parameters.  
@@ -64,10 +49,7 @@ namespace NHibernate.Driver
 		/// <value>
 		/// Sql Server uses <c>"@"</c>.
 		/// </value>
-		public override string NamedPrefix
-		{
-			get { return "@"; }
-		}
+		public override string NamedPrefix => "@";
 
 		/// <summary>
 		/// The SqlClient driver does NOT support more than 1 open DbDataReader
@@ -79,10 +61,7 @@ namespace NHibernate.Driver
 		/// attempted to be Opened.  When Yukon comes out a new Driver will be 
 		/// created for Yukon because it is supposed to support it.
 		/// </remarks>
-		public override bool SupportsMultipleOpenReaders
-		{
-			get { return false; }
-		}
+		public override bool SupportsMultipleOpenReaders => false;
 
 		protected override void SetCommandTimeout(DbCommand cmd)
 		{
@@ -96,6 +75,12 @@ namespace NHibernate.Driver
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			base.InitializeParameter(dbParam, name, AdjustSqlType(sqlType));
+			// For types that are using one character (CharType, AnsiCharType, TrueFalseType, YesNoType and EnumCharType),
+			// we have to specify the length otherwise sql function like charindex won't work as expected.
+			if (sqlType.LengthDefined && sqlType.Length == 1)
+			{
+				dbParam.Size = sqlType.Length;
+			}
 
 			AdjustDbParamTypeForLargeObjects(dbParam, sqlType);
 		}
@@ -121,11 +106,11 @@ namespace NHibernate.Driver
 		{
 			if (sqlType is BinaryBlobSqlType)
 			{
-				dbParamSqlDbTypeProperty.SetValue(dbParam, SqlDbType.Image, null);
+				SetSqlDbType(dbParam, SqlDbType.Image);
 			}
 			else if (sqlType is StringClobSqlType)
 			{
-				dbParamSqlDbTypeProperty.SetValue(dbParam, SqlDbType.NText, null);
+				SetSqlDbType(dbParam, SqlDbType.NText);
 			}
 		}
 

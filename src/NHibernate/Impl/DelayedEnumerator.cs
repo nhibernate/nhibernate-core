@@ -1,11 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
+	//Since 5.2
+	[Obsolete]
 	internal class DelayedEnumerator<T> : IFutureEnumerable<T>, IDelayedValue
 	{
 		public delegate IEnumerable<T> GetResult();
@@ -24,13 +27,7 @@ namespace NHibernate.Impl
 
 		public IEnumerable<T> GetEnumerable()
 		{
-			var value = _result();
-			if (ExecuteOnEval != null)
-				value = (IEnumerable<T>) ExecuteOnEval.DynamicInvoke(value);
-			foreach (T item in value)
-			{
-				yield return item;
-			}
+			return _result();
 		}
 
 		// Remove in 6.0
@@ -59,27 +56,31 @@ namespace NHibernate.Impl
 			}
 			try
 			{
-				if (ExecuteOnEval == null)
-					return _resultAsync(cancellationToken);
-				return getEnumerableAsync();
+				return _resultAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{
 				return Task.FromException<IEnumerable<T>>(ex);
 			}
-
-			async Task<IEnumerable<T>> getEnumerableAsync()
-			{
-				var result = await _resultAsync(cancellationToken).ConfigureAwait(false);
-				return (IEnumerable<T>)ExecuteOnEval.DynamicInvoke(result);
-			}
 		}
 
 		#endregion
+
+		public IList TransformList(IList collection)
+		{
+			if (ExecuteOnEval == null)
+				return collection;
+
+			return ((IEnumerable) ExecuteOnEval.DynamicInvoke(collection)).Cast<T>().ToList();
+		}
 	}
 
+	//Since 5.2
+	[Obsolete]
 	internal interface IDelayedValue
 	{
 		Delegate ExecuteOnEval { get; set; }
+
+		IList TransformList(IList collection);
 	}
 }

@@ -1,43 +1,51 @@
 using System;
-using System.Linq.Expressions;
-
-using NHibernate.Impl;
 
 namespace NHibernate.Criterion
 {
 	public static class QueryOverBuilderExtensions
 	{
 		// Fetch builder
+		// Since v5.2
+		[Obsolete("Use Fetch(SelectMode.Default, Expression<Func<TSubType, object>> path) instead")]
 		public static QueryOver<TRoot, TSubType> Default<TRoot, TSubType>(this Lambda.QueryOverFetchBuilder<TRoot, TSubType> builder)
 		{
 			return builder.Default;
 		}
 
+		// Since v5.2
+		[Obsolete("Use Fetch(SelectMode.Fetch, Expression<Func<TSubType, object>> path) instead")]
 		public static QueryOver<TRoot, TSubType> Eager<TRoot, TSubType>(this Lambda.QueryOverFetchBuilder<TRoot, TSubType> builder)
 		{
 			return builder.Eager;
 		}
 
+		// Since v5.2
+		[Obsolete("Use Fetch(SelectMode.SkipJoin, Expression<Func<TSubType, object>> path) instead")]
 		public static QueryOver<TRoot, TSubType> Lazy<TRoot, TSubType>(this Lambda.QueryOverFetchBuilder<TRoot, TSubType> builder)
 		{
 			return builder.Lazy;
 		}
 
+		// Since v5.2
+		[Obsolete("Use Fetch(SelectMode.Default, Expression<Func<TSubType, object>> path) instead")]
 		public static IQueryOver<TRoot, TSubType> Default<TRoot, TSubType>(this Lambda.IQueryOverFetchBuilder<TRoot, TSubType> builder)
 		{
 			return builder.Default;
 		}
 
+		// Since v5.2
+		[Obsolete("Use Fetch(SelectMode.Fetch, Expression<Func<TSubType, object>> path) instead")]
 		public static IQueryOver<TRoot, TSubType> Eager<TRoot, TSubType>(this Lambda.IQueryOverFetchBuilder<TRoot, TSubType> builder)
 		{
 			return builder.Eager;
 		}
 
+		// Since v5.2
+		[Obsolete("Use Fetch(SelectMode.SkipJoin, Expression<Func<TSubType, object>> path) instead")]
 		public static IQueryOver<TRoot, TSubType> Lazy<TRoot, TSubType>(this Lambda.IQueryOverFetchBuilder<TRoot, TSubType> builder)
 		{
 			return builder.Lazy;
 		}
-
 
 		// Lock builder
 		public static QueryOver<TRoot, TSubType> Force<TRoot, TSubType>(this Lambda.QueryOverLockBuilder<TRoot, TSubType> builder)
@@ -100,7 +108,6 @@ namespace NHibernate.Criterion
 			return builder.Write;
 		}
 
-
 		// Order builder
 		public static QueryOver<TRoot, TSubType> Asc<TRoot, TSubType>(this Lambda.QueryOverOrderBuilder<TRoot, TSubType> builder)
 		{
@@ -121,7 +128,6 @@ namespace NHibernate.Criterion
 		{
 			return builder.Desc;
 		}
-
 
 		// Restriction builder
 		public static QueryOver<TRoot, TSubType> IsEmpty<TRoot, TSubType>(this Lambda.QueryOverRestrictionBuilder<TRoot, TSubType> builder)
@@ -163,6 +169,5 @@ namespace NHibernate.Criterion
 		{
 			return builder.IsNull;
 		}
-
 	}
 }

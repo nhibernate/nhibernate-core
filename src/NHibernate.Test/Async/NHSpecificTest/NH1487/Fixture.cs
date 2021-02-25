@@ -25,7 +25,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1487
 	[TestFixture]
 	public class FixtureAsync
 	{
-
 		public Configuration GetConf()
 		{
 			var cfg = new Configuration();
@@ -35,16 +34,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1487
 		}
 
 		[Test]
-		public Task GenerateSchemaMultipleUniqueKeysAsync()
+		public async Task GenerateSchemaMultipleUniqueKeysAsync()
 		{
-			try
+			var cfg = GetConf();
+			if(!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
 			{
-				var cfg = GetConf();
-				if(!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
-				{
-					Assert.Ignore("Specific for MsSql2000Dialect");
-				}
-				const string hbm = @"<?xml version='1.0' encoding='utf-8' ?>
+				Assert.Ignore("Specific for MsSql2000Dialect");
+			}
+			const string hbm = @"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'
 namespace='NHibernate.Test.NHSpecificTest.NH1487'
 assembly='NHibernate.Test'>
@@ -58,35 +55,28 @@ assembly='NHibernate.Test'>
     </class>
 </hibernate-mapping>";
 
-				cfg.AddXmlString(hbm);
+			cfg.AddXmlString(hbm);
 
-				// Can create the schema
-				var scriptB = new StringBuilder();
-				new SchemaExport(cfg).Create(sl => scriptB.Append(sl), true);
-				var script = scriptB.ToString();
-				Assert.That(script, Does.Contain("unique (A, C)"));
-				Assert.That(script, Does.Contain("unique (B, C)"));
-				Assert.That(script, Does.Not.Contain("unique (C)"));
+			// Can create the schema
+			var scriptB = new StringBuilder();
+			await (new SchemaExport(cfg).CreateAsync(sl => scriptB.Append(sl), true));
+			var script = scriptB.ToString();
+			Assert.That(script, Does.Contain("unique (A, C)"));
+			Assert.That(script, Does.Contain("unique (B, C)"));
+			Assert.That(script, Does.Not.Contain("unique (C)"));
 
-				return new SchemaExport(cfg).DropAsync(false, true);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (new SchemaExport(cfg).DropAsync(false, true));
 		}
 
 		[Test]
-		public Task GenerateSchemaMultipleIndexAsync()
+		public async Task GenerateSchemaMultipleIndexAsync()
 		{
-			try
+			var cfg = GetConf();
+			if (!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
 			{
-				var cfg = GetConf();
-				if (!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
-				{
-					Assert.Ignore("Specific for MsSql2000Dialect");
-				}
-				const string hbm = @"<?xml version='1.0' encoding='utf-8' ?>
+				Assert.Ignore("Specific for MsSql2000Dialect");
+			}
+			const string hbm = @"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'
 namespace='NHibernate.Test.NHSpecificTest.NH1487'
 assembly='NHibernate.Test'>
@@ -100,33 +90,26 @@ assembly='NHibernate.Test'>
     </class>
 </hibernate-mapping>";
 
-				cfg.AddXmlString(hbm);
+			cfg.AddXmlString(hbm);
 
-				var scriptB = new StringBuilder();
-				new SchemaExport(cfg).Create(sl => scriptB.Append(sl), true);
-				var script = scriptB.ToString();
-				Assert.That(script, Does.Contain("create index AC on Entity (A, C)"));
-				Assert.That(script, Does.Contain("create index BC on Entity (B, C)"));
+			var scriptB = new StringBuilder();
+			await (new SchemaExport(cfg).CreateAsync(sl => scriptB.Append(sl), true));
+			var script = scriptB.ToString();
+			Assert.That(script, Does.Contain("create index AC on Entity (A, C)"));
+			Assert.That(script, Does.Contain("create index BC on Entity (B, C)"));
 
-				return new SchemaExport(cfg).DropAsync(false, true);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (new SchemaExport(cfg).DropAsync(false, true));
 		}
 
 		[Test]
-		public Task GenerateSchemaMultipleIndexOnColumnAsync()
+		public async Task GenerateSchemaMultipleIndexOnColumnAsync()
 		{
-			try
+			var cfg = GetConf();
+			if (!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
 			{
-				var cfg = GetConf();
-				if (!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
-				{
-					Assert.Ignore("Specific for MsSql2000Dialect");
-				}
-				const string hbm = @"<?xml version='1.0' encoding='utf-8' ?>
+				Assert.Ignore("Specific for MsSql2000Dialect");
+			}
+			const string hbm = @"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'
 namespace='NHibernate.Test.NHSpecificTest.NH1487'
 assembly='NHibernate.Test'>
@@ -146,32 +129,25 @@ assembly='NHibernate.Test'>
     </class>
 </hibernate-mapping>";
 
-				cfg.AddXmlString(hbm);
+			cfg.AddXmlString(hbm);
 
-				var scriptB = new StringBuilder();
-				new SchemaExport(cfg).Create(sl => scriptB.Append(sl), true);
-				var script = scriptB.ToString();
-				Assert.That(script, Does.Contain("create index AC on Entity (A, C)"));
-				Assert.That(script, Does.Contain("create index BC on Entity (B, C)"));
+			var scriptB = new StringBuilder();
+			await (new SchemaExport(cfg).CreateAsync(sl => scriptB.Append(sl), true));
+			var script = scriptB.ToString();
+			Assert.That(script, Does.Contain("create index AC on Entity (A, C)"));
+			Assert.That(script, Does.Contain("create index BC on Entity (B, C)"));
 
-				return new SchemaExport(cfg).DropAsync(false, true);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (new SchemaExport(cfg).DropAsync(false, true));
 		}
 		[Test]
-		public Task GenerateSchemaIndexOnIdAsync()
+		public async Task GenerateSchemaIndexOnIdAsync()
 		{
-			try
+			var cfg = GetConf();
+			if (!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
 			{
-				var cfg = GetConf();
-				if (!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
-				{
-					Assert.Ignore("Specific for MsSql2000Dialect");
-				}
-				const string hbm = @"<?xml version='1.0' encoding='utf-8' ?>
+				Assert.Ignore("Specific for MsSql2000Dialect");
+			}
+			const string hbm = @"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'
 namespace='NHibernate.Test.NHSpecificTest.NH1487'
 assembly='NHibernate.Test'>
@@ -186,33 +162,26 @@ assembly='NHibernate.Test'>
     </class>
 </hibernate-mapping>";
 
-				cfg.AddXmlString(hbm);
+			cfg.AddXmlString(hbm);
 
-				var scriptB = new StringBuilder();
-				new SchemaExport(cfg).Create(sl => scriptB.Append(sl), true);
-				var script = scriptB.ToString();
-				Assert.That(script, Does.Contain("create index IdxId1 on Entity (Id)"));
-				Assert.That(script, Does.Contain("create index IdxId2 on Entity (Id)"));
+			var scriptB = new StringBuilder();
+			await (new SchemaExport(cfg).CreateAsync(sl => scriptB.Append(sl), true));
+			var script = scriptB.ToString();
+			Assert.That(script, Does.Contain("create index IdxId1 on Entity (Id)"));
+			Assert.That(script, Does.Contain("create index IdxId2 on Entity (Id)"));
 
-				return new SchemaExport(cfg).DropAsync(false, true);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (new SchemaExport(cfg).DropAsync(false, true));
 		}
 
 		[Test]
-		public Task GenerateSchemaUniqueOnIdAsync()
+		public async Task GenerateSchemaUniqueOnIdAsync()
 		{
-			try
+			var cfg = GetConf();
+			if (!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
 			{
-				var cfg = GetConf();
-				if (!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
-				{
-					Assert.Ignore("Specific for MsSql2000Dialect");
-				}
-				const string hbm = @"<?xml version='1.0' encoding='utf-8' ?>
+				Assert.Ignore("Specific for MsSql2000Dialect");
+			}
+			const string hbm = @"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'
 namespace='NHibernate.Test.NHSpecificTest.NH1487'
 assembly='NHibernate.Test'>
@@ -227,26 +196,20 @@ assembly='NHibernate.Test'>
     </class>
 </hibernate-mapping>";
 
-				cfg.AddXmlString(hbm);
+			cfg.AddXmlString(hbm);
 
-				var scriptB = new StringBuilder();
-				new SchemaExport(cfg).Create(sl => scriptB.AppendLine(sl), true);
-				var script = scriptB.ToString().Split(new[] { System.Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries);
-				int count=0;
-				foreach (var s in script)
-				{
-					if (s.Contains("unique (Id)"))
-						count++;
-				}
-				Assert.That(count, Is.EqualTo(2));
-
-				return new SchemaExport(cfg).DropAsync(false, true);
-			}
-			catch (Exception ex)
+			var scriptB = new StringBuilder();
+			await (new SchemaExport(cfg).CreateAsync(sl => scriptB.AppendLine(sl), true));
+			var script = scriptB.ToString().Split(new[] { System.Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries);
+			int count=0;
+			foreach (var s in script)
 			{
-				return Task.FromException<object>(ex);
+				if (s.Contains("unique (Id)"))
+					count++;
 			}
-		}
+			Assert.That(count, Is.EqualTo(2));
 
+			await (new SchemaExport(cfg).DropAsync(false, true));
+		}
 	}
 }

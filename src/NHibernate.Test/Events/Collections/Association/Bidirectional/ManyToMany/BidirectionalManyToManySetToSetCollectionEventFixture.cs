@@ -7,7 +7,7 @@ namespace NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMan
 	[TestFixture]
 	public class BidirectionalManyToManySetToSetCollectionEventFixture : AbstractAssociationCollectionEventFixture
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Events.Collections.Association.Bidirectional.ManyToMany.BidirectionalManyToManySetToSetMapping.hbm.xml" }; }
 		}

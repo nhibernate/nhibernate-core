@@ -13,7 +13,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultReplicateEventListener : AbstractSaveEventListener, IReplicateEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultReplicateEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultReplicateEventListener));
 
 		public virtual void OnReplicate(ReplicateEvent @event)
 		{
@@ -60,9 +60,9 @@ namespace NHibernate.Event.Default
 
 			if (oldVersion != null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("found existing row for " + MessageHelper.InfoString(persister, id, source.Factory));
+					log.Debug("found existing row for {0}", MessageHelper.InfoString(persister, id, source.Factory));
 				}
 
 				// HHH-2378
@@ -89,9 +89,9 @@ namespace NHibernate.Event.Default
 			else
 			{
 				// no existing row - do an insert
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("no existing row, replicating new instance " + MessageHelper.InfoString(persister, id, source.Factory));
+					log.Debug("no existing row, replicating new instance {0}", MessageHelper.InfoString(persister, id, source.Factory));
 				}
 
 				bool regenerate = persister.IsIdentifierAssignedByInsert; // prefer re-generation of identity!
@@ -103,9 +103,9 @@ namespace NHibernate.Event.Default
 
 		private void PerformReplication(object entity, object id, object version, IEntityPersister persister, ReplicationMode replicationMode, IEventSource source)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("replicating changes to " + MessageHelper.InfoString(persister, id, source.Factory));
+				log.Debug("replicating changes to {0}", MessageHelper.InfoString(persister, id, source.Factory));
 			}
 
 			new OnReplicateVisitor(source, id, entity, true).Process(entity, persister);
@@ -119,8 +119,7 @@ namespace NHibernate.Event.Default
 				LockMode.None, 
 				true, 
 				persister,
-				true, 
-				false);
+				true);
 
 			CascadeAfterReplicate(entity, persister, replicationMode, source);
 		}

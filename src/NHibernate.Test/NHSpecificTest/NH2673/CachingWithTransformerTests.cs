@@ -52,7 +52,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 					blog.Posts.Add(new Post { Title = "Second post", Body = "Some other text" });
 					blog.Posts.Add(new Post { Title = "Third post", Body = "Third post text" });
 
-
 					blog.Comments.Add(new Comment { Title = "First comment", Body = "Some text" });
 					blog.Comments.Add(new Comment { Title = "Second comment", Body = "Some other text" });
 					session.Save(blog);
@@ -166,7 +165,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = session.CreateCriteria<Blog>()
-					                   .SetFetchMode("Posts", FetchMode.Eager)
+					                   .Fetch("Posts")
 					                   .SetCacheable(true)
 					                   .List<Blog>();
 					tx.Commit();
@@ -183,7 +182,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = session.CreateCriteria<Blog>()
-					                   .SetFetchMode("Posts", FetchMode.Eager)
+					                   .Fetch("Posts")
 					                   .SetCacheable(true)
 					                   .Future<Blog>()
 					                   .GetEnumerable()
@@ -210,7 +209,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			}
 		}
 
-		
 		[Test(Description = "NH2961/3311")]
 		public void CanCacheCriteriaWithLeftJoinAndResultTransformer()
 		{
@@ -228,7 +226,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			}
 		}
 
-
 		[Test(Description = "NH2961/3311")]
 		public void CanCacheCriteriaWithEagerLoadAndResultTransformer()
 		{
@@ -237,14 +234,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			using (session.BeginTransaction())
 			{
 				var result = session.QueryOver<Blog>().Where(x => x.Author == "Gabriel")
-									.Fetch(x => x.Posts).Eager
+									.Fetch(SelectMode.Fetch, x => x.Posts)
 									.TransformUsing(new DistinctRootEntityResultTransformer())
 									.Cacheable()
 									.List<Blog>();
 			}
 		}
 
-		
 		[Test(Description = "NH2961/3311")]
 		public void CanCacheCriteriaWithLeftJoin()
 		{

@@ -10,9 +10,6 @@ using NHibernate.Util;
 
 namespace NHibernate
 {
-	using System.Collections.Generic;
-	using System.Reflection;
-
 	/// <summary>
 	/// Provides access to the full range of NHibernate built-in types.
 	/// IType instances may be used to bind values to query parameters.
@@ -21,26 +18,6 @@ namespace NHibernate
 	/// </summary>
 	public static partial class NHibernateUtil
 	{
-		static private readonly Dictionary<System.Type, IType> clrTypeToNHibernateType = new Dictionary<System.Type, IType>();
-
-		static NHibernateUtil()
-		{
-			FieldInfo[] fields = typeof(NHibernateUtil).GetFields();
-			foreach (FieldInfo info in fields)
-			{
-				if (typeof(IType).IsAssignableFrom(info.FieldType) == false)
-					continue;
-				IType type = (IType)info.GetValue(null);
-				clrTypeToNHibernateType[type.ReturnedClass] = type;
-			}
-
-			// There are multiple possibilites for boolean, strings and datetime.
-			// Override so that we use the most natural mapping.
-			clrTypeToNHibernateType[Boolean.ReturnedClass] = Boolean;
-			clrTypeToNHibernateType[String.ReturnedClass] = String;
-			clrTypeToNHibernateType[DateTime.ReturnedClass] = DateTime;
-		}
-
 		/// <summary>
 		/// Guesses the IType of this object
 		/// </summary>
@@ -61,8 +38,8 @@ namespace NHibernate
 		{
 			type = type.UnwrapIfNullable();
 
-			IType value;
-			if (clrTypeToNHibernateType.TryGetValue(type, out value))
+			var value = TypeFactory.GetDefaultTypeFor(type);
+			if (value != null)
 				return value;
 			
 			if (type.IsEnum)
@@ -73,7 +50,7 @@ namespace NHibernate
 			{
 				return Custom(type);
 			}
-			
+
 			return Entity(type);
 		}
 
@@ -161,6 +138,11 @@ namespace NHibernate
 		public static readonly DateType Date = new DateType();
 
 		/// <summary>
+		/// NHibernate local date type
+		/// </summary>
+		public static readonly DateType LocalDate = new LocalDateType();
+
+		/// <summary>
 		/// NHibernate decimal type
 		/// </summary>
 		public static readonly DecimalType Decimal = new DecimalType();
@@ -241,6 +223,11 @@ namespace NHibernate
 		public static readonly TicksType Ticks = new TicksType();
 
 		/// <summary>
+		/// NHibernate UTC Ticks type
+		/// </summary>
+		public static readonly UtcTicksType UtcTicks = new UtcTicksType();
+
+		/// <summary>
 		/// NHibernate TimeAsTimeSpan type
 		/// </summary>
 		public static readonly TimeAsTimeSpanType TimeAsTimeSpan = new TimeAsTimeSpanType();
@@ -263,6 +250,11 @@ namespace NHibernate
 		public static readonly DbTimestampType DbTimestamp = new DbTimestampType();
 
 		/// <summary>
+		/// NHibernate Timestamp type, seeded db side, in UTC.
+		/// </summary>
+		public static readonly UtcDbTimestampType UtcDbTimestamp = new UtcDbTimestampType();
+
+		/// <summary>
 		/// NHibernate TrueFalse type
 		/// </summary>
 		public static readonly TrueFalseType TrueFalse = new TrueFalseType();
@@ -281,7 +273,14 @@ namespace NHibernate
 		/// NHibernate class meta type for association of kind <code>any</code>.
 		/// </summary>
 		/// <seealso cref="AnyType"/>
+		[Obsolete("Use MetaType without meta-values instead.")]
 		public static readonly ClassMetaType ClassMetaType = new ClassMetaType();
+
+		/// <summary>
+		/// NHibernate meta type for association of kind <code>any</code> without meta-values.
+		/// </summary>
+		/// <seealso cref="AnyType"/>
+		public static readonly MetaType MetaType = new MetaType(null, String);
 
 		/// <summary>
 		/// NHibernate serializable type
@@ -292,7 +291,6 @@ namespace NHibernate
 		/// NHibernate System.Object type
 		/// </summary>
 		public static readonly AnyType Object = new AnyType();
-
 
 		//		/// <summary>
 		//		/// NHibernate blob type
@@ -389,7 +387,6 @@ namespace NHibernate
 			}
 		}
 
-
 		/// <summary>
 		/// Force initialization of a proxy or persistent collection.
 		/// </summary>
@@ -401,13 +398,18 @@ namespace NHibernate
 			{
 				return;
 			}
-			else if (proxy.IsProxy())
+			if (proxy.IsProxy())
 			{
 				((INHibernateProxy)proxy).HibernateLazyInitializer.Initialize();
 			}
-			else if (proxy is IPersistentCollection)
+			else if (proxy is ILazyInitializedCollection coll)
 			{
-				((IPersistentCollection)proxy).ForceInitialization();
+				coll.ForceInitialization();
+			}
+			// 6.0 TODO: remove once IPersistentCollection derives from ILazyInitializedCollection
+			else if (proxy is IPersistentCollection persistent)
+			{
+				persistent.ForceInitialization();
 			}
 		}
 
@@ -422,9 +424,14 @@ namespace NHibernate
 			{
 				return !((INHibernateProxy)proxy).HibernateLazyInitializer.IsUninitialized;
 			}
-			else if (proxy is IPersistentCollection)
+			else if (proxy is ILazyInitializedCollection coll)
 			{
-				return ((IPersistentCollection)proxy).WasInitialized;
+				return coll.WasInitialized;
+			}
+			// 6.0 TODO: remove once IPersistentCollection derives from ILazyInitializedCollection
+			else if (proxy is IPersistentCollection persistent)
+			{
+				return persistent.WasInitialized;
 			}
 			else
 			{
@@ -533,7 +540,7 @@ namespace NHibernate
 			EnumerableImpl hibernateEnumerator = enumerator as EnumerableImpl;
 			if (hibernateEnumerator == null)
 			{
-				throw new ArgumentException("Not a NHibernate enumerator", "enumerator");
+				throw new ArgumentException("Not a NHibernate enumerator", nameof(enumerator));
 			}
 			hibernateEnumerator.Dispose();
 		}
@@ -547,11 +554,10 @@ namespace NHibernate
 			EnumerableImpl hibernateEnumerable = enumerable as EnumerableImpl;
 			if (hibernateEnumerable == null)
 			{
-				throw new ArgumentException("Not a NHibernate enumerable", "enumerable");
+				throw new ArgumentException("Not a NHibernate enumerable", nameof(enumerable));
 			}
 			hibernateEnumerable.Dispose();
 		}
-
 
 		/// <summary> 
 		/// Check if the property is initialized. If the named property does not exist
@@ -583,9 +589,9 @@ namespace NHibernate
 				entity = proxy;
 			}
 
-			if (FieldInterceptionHelper.IsInstrumented(entity))
+			if (entity is IFieldInterceptorAccessor interceptorAccessor)
 			{
-				IFieldInterceptor interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(entity);
+				var interceptor = interceptorAccessor.FieldInterceptor;
 				return interceptor == null || interceptor.IsInitializedField(propertyName);
 			}
 			else

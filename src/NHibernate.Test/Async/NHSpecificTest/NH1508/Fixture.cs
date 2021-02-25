@@ -8,7 +8,9 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using NUnit.Framework;
+using NHibernate.Multi;
 
 namespace NHibernate.Test.NHSpecificTest.NH1508
 {
@@ -54,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public async Task DoesntThrowExceptionWhenHqlQueryIsGivenAsync()
 		{
 			using (var session = OpenSession())
@@ -65,6 +67,20 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 					.CreateMultiQuery()
 					.Add(sqlQuery);
 				await (q.ListAsync());
+			}
+		}
+
+		[Test]
+		public async Task DoesntThrowExceptionWhenHqlQueryIsGivenToQueryBatchAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var sqlQuery = session.CreateQuery("from Document");
+				var q = session
+				        .CreateQueryBatch()
+				        .Add<Document>(sqlQuery);
+				await (q.ExecuteAsync());
 			}
 		}
 	}

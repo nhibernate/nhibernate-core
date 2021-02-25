@@ -43,10 +43,13 @@ namespace NHibernate.Type
 			try
 			{
 				var value = rs[index];
-				if(value is TimeSpan time) //For those dialects where DbType.Time means TimeSpan.
+				if (value is TimeSpan time) //For those dialects where DbType.Time means TimeSpan.
 					return time;
-                
-				return ((DateTime)value).TimeOfDay;
+
+				// Todo: investigate if this convert should be made culture invariant, here and in other NHibernate types,
+				// such as AbstractDateTimeType and TimeType, or even in all other places doing such converts in NHibernate.
+				var dbValue = Convert.ToDateTime(value);
+				return dbValue.TimeOfDay;
 			}
 			catch (Exception ex)
 			{
@@ -72,6 +75,18 @@ namespace NHibernate.Type
 			get { return typeof(TimeSpan); }
 		}
 
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val)
 		{
 			return ((TimeSpan)val).Ticks.ToString();
@@ -89,6 +104,8 @@ namespace NHibernate.Type
 			return new TimeSpan(DateTime.Now.Ticks);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public object StringToObject(string xml)
 		{
 			return TimeSpan.Parse(xml);
@@ -101,7 +118,13 @@ namespace NHibernate.Type
 
 		#endregion
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior. Replace override keyword by virtual after having
+		// removed the obsoleted base.
+		/// <inheritdoc cref="IVersionType.FromStringValue"/>
+#pragma warning disable 672
 		public override object FromStringValue(string xml)
+#pragma warning restore 672
 		{
 			return TimeSpan.Parse(xml);
 		}

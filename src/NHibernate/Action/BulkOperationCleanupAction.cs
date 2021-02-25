@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Action
 {
@@ -10,7 +14,7 @@ namespace NHibernate.Action
 	/// Implementation of BulkOperationCleanupAction.
 	/// </summary>
 	[Serializable]
-	public partial class BulkOperationCleanupAction: IExecutable
+	public partial class BulkOperationCleanupAction : IAsyncExecutable, IAfterTransactionCompletionProcess
 	{
 		private readonly ISessionImplementor session;
 		private readonly HashSet<string> affectedEntityNames = new HashSet<string>();
@@ -84,14 +88,7 @@ namespace NHibernate.Action
 				return true;
 			}
 
-			for (int i = 0; i < entitySpaces.Length; i++)
-			{
-				if (querySpaces.Contains(entitySpaces[i]))
-				{
-					return true;
-				}
-			}
-			return false;
+			return entitySpaces.Any(querySpaces.Contains);
 		}
 
 		#region IExecutable Members
@@ -111,54 +108,60 @@ namespace NHibernate.Action
 			// nothing to do
 		}
 
-		public BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess
-		{
-			get 
-			{ 
-				return null;
-			}
-		}
+		//Since v5.2
+		[Obsolete("This property is not used and will be removed in a future version.")]
+		public BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess =>
+			null;
 
-		public AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess
+		//Since v5.2
+		[Obsolete("This property is not used and will be removed in a future version.")]
+		public AfterTransactionCompletionProcessDelegate AfterTransactionCompletionProcess =>
+			ExecuteAfterTransactionCompletion;
+
+		IBeforeTransactionCompletionProcess IAsyncExecutable.BeforeTransactionCompletionProcess =>
+			null;
+
+		IAfterTransactionCompletionProcess IAsyncExecutable.AfterTransactionCompletionProcess => 
+			this;
+
+		public void ExecuteAfterTransactionCompletion(bool success)
 		{
-			get
-			{
-				return new AfterTransactionCompletionProcessDelegate((success) =>
-				{
-					this.EvictEntityRegions();
-					this.EvictCollectionRegions();
-				});
-			}
+			EvictEntityRegions();
+			EvictCollectionRegions();
 		}
 
 		private void EvictCollectionRegions()
 		{
-			if (affectedCollectionRoles != null)
+			if (affectedCollectionRoles != null && affectedCollectionRoles.Any())
 			{
-				foreach (string roleName in affectedCollectionRoles)
-				{
-					session.Factory.EvictCollection(roleName);
-				}
+				session.Factory.EvictCollection(affectedCollectionRoles);
 			}
 		}
 
 		private void EvictEntityRegions()
 		{
-			if (affectedEntityNames != null)
+			if (affectedEntityNames != null && affectedEntityNames.Any())
 			{
-				foreach (string entityName in affectedEntityNames)
-				{
-					session.Factory.EvictEntity(entityName);
-				}
+				session.Factory.EvictEntity(affectedEntityNames);
 			}
 		}
 
 		#endregion
 
+		// Since v5.2
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public virtual void Init()
 		{
 			EvictEntityRegions();
 			EvictCollectionRegions();
+		}
+
+		// Since v5.2
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
+		public virtual async Task InitAsync(CancellationToken cancellationToken)
+		{
+			await EvictEntityRegionsAsync(cancellationToken);
+			await EvictCollectionRegionsAsync(cancellationToken);
 		}
 	}
 }

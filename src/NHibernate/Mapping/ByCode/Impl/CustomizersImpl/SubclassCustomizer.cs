@@ -27,6 +27,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.Extends(baseType));
 		}
 
+		public void Extends(string entityOrClassName)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.Extends(entityOrClassName));
+		}
+
 		public void Abstract(bool isAbstract)
 		{
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.Abstract(isAbstract));

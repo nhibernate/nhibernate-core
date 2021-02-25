@@ -19,12 +19,14 @@ namespace NHibernate.Linq.Functions
 			{
 				return treeBuilder.Dot(visitor.Visit(targetObject).AsExpression(), treeBuilder.Ident(memberName));
 			}
-			return treeBuilder.DictionaryItem(visitor.Visit(targetObject).AsExpression(), visitor.Visit(arguments[0]).AsExpression());
+			return treeBuilder.Index(visitor.Visit(targetObject).AsExpression(), visitor.Visit(arguments[0]).AsExpression());
 		}
 	}
 
 	public class DictionaryContainsKeyGenerator : BaseHqlGeneratorForMethod
 	{
+		public override bool AllowsNullableReturnType(MethodInfo method) => false;
+
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			return treeBuilder.In(visitor.Visit(arguments[0]).AsExpression(), treeBuilder.Indices(visitor.Visit(targetObject).AsExpression()));

@@ -8,10 +8,9 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
-using System.Collections.Generic;
-using NHibernate.Driver;
+using System;
 using NUnit.Framework;
+using NHibernate.Multi;
 
 namespace NHibernate.Test.NHSpecificTest.NH1253
 {
@@ -81,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public async Task MultiQuerySingleInListAsync()
 		{
 			var driver = Sfi.ConnectionProvider.Driver;
@@ -97,6 +96,29 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 					.SetParameterList("param11", new string[] {"Model1", "Model2"})
 					.SetParameterList("param1", new string[] {"Make1", "Make2"})
 					.ListAsync());
+
+				await (tx.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task QueryBatchSingleInListAsync()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var q1 = s
+					.CreateQuery("from Car c where c.Make in (:param1) or c.Model in (:param11)")
+					.SetParameterList("param11", new[] {"Model1", "Model2"})
+					.SetParameterList("param1", new[] {"Make1", "Make2"});
+				var q2 = s
+					.CreateQuery("from Car c where c.Make in (:param1) or c.Model in (:param11)")
+					.SetParameterList("param11", new[] {"Model1", "Model2"})
+					.SetParameterList("param1", new[] {"Make1", "Make2"});
+				await (s.CreateQueryBatch()
+				 .Add<Car>(q1)
+				 .Add<Car>(q2)
+				 .ExecuteAsync());
 
 				await (tx.CommitAsync());
 			}

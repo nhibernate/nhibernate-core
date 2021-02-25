@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Antlr.Runtime;
 
 using NHibernate.Dialect.Function;
@@ -16,7 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class MethodNode : AbstractSelectExpression 
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(MethodNode));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(MethodNode));
 
 		private string[] _selectColumns;
 		private string _methodName;
@@ -146,9 +147,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			var expr = ( SqlNode ) path;
 			IType type = expr.DataType;
 
-			if ( Log.IsDebugEnabled ) 
+			if ( Log.IsDebugEnabled() ) 
 			{
-				Log.Debug( "collectionProperty() :  name=" + name + " type=" + type );
+				Log.Debug("collectionProperty() :  name={0} type={1}", name, type);
 			}
 
 			ResolveCollectionProperty( expr );
@@ -176,7 +177,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			IQueryableCollection queryableCollection = collectionFromElement.QueryableCollection;
 
 			String path = collectionNode.Path + "[]." + propertyName;
-			Log.Debug("Creating elements for " + path);
+			Log.Debug("Creating elements for {0}", path);
 
 			_fromElement = collectionFromElement;
 			if (!collectionFromElement.IsCollectionOfValuesOrComponents)
@@ -194,14 +195,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if (_function != null)
 			{
-				IASTNode child = null;
-
-				if (exprList != null)
-				{
-					child = _methodName == "iif" ? exprList.GetChild(1) : exprList.GetChild(0);
-				}
-
-				DataType = SessionFactoryHelper.FindFunctionReturnType(_methodName, child);
+				DataType = SessionFactoryHelper.FindFunctionReturnType(_methodName, (IEnumerable<IASTNode>) exprList);
 			}
 			//TODO:
 			/*else {

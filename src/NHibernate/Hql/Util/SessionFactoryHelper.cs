@@ -14,7 +14,7 @@ namespace NHibernate.Hql.Util
 	public class SessionFactoryHelper
 	{
 		private readonly ISessionFactoryImplementor sfi;
-		private readonly IDictionary<string,CollectionPropertyMapping> collectionPropertyMappingByRole = 
+		private readonly Dictionary<string,CollectionPropertyMapping> collectionPropertyMappingByRole = 
 			new Dictionary<string,CollectionPropertyMapping>();
 
 		public SessionFactoryHelper(ISessionFactoryImplementor sfi)
@@ -74,8 +74,6 @@ namespace NHibernate.Hql.Util
 			return TypeNameParser.Parse(assemblyQualifiedName).Type;
 		}
 
-
-
 		/// <summary>
 		/// Locate the collection persister by the collection role.
 		/// </summary>
@@ -87,13 +85,13 @@ namespace NHibernate.Hql.Util
 			{
 				return (IQueryableCollection)sfi.GetCollectionPersister(role);
 			}
-			catch (InvalidCastException)
+			catch (InvalidCastException ice)
 			{
-				throw new QueryException("collection is not queryable: " + role);
+				throw new QueryException("collection is not queryable: " + role, ice);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				throw new QueryException("collection not found: " + role);
+				throw new QueryException("collection not found: " + role, ex);
 			}
 		}
 
@@ -140,7 +138,6 @@ namespace NHibernate.Hql.Util
 			return sfi.GetEntityPersister(importedClassName);
 		}
 
-
 		public System.Type GetImportedClass(string className)
 		{
 			string importedName = sfi.GetImportedClassName(className);
@@ -154,7 +151,6 @@ namespace NHibernate.Hql.Util
 			return System.Type.GetType(importedName, false);
 		}
 
-
 		/// <summary>
 		/// Retrieve a PropertyMapping describing the given collection role.
 		/// </summary>
@@ -164,7 +160,6 @@ namespace NHibernate.Hql.Util
 		{
 			return collectionPropertyMappingByRole[role];
 		}
-
 
 		/* Locate the collection persister by the collection role, requiring that
 		* such a persister exist.
@@ -186,15 +181,15 @@ namespace NHibernate.Hql.Util
 				}
 				return queryableCollection;
 			}
-			catch (InvalidCastException)
+			catch (InvalidCastException ice)
 			{
 				throw new QueryException(
-						"collection role is not queryable: " + role);
+						"collection role is not queryable: " + role, ice);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
 				throw new QueryException("collection role not found: "
-						+ role);
+						+ role, ex);
 			}
 		}
 	}

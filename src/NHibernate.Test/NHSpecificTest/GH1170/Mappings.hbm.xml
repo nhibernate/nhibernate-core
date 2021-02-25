@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1170">
+  <class name="Parent">
+    <id name="Id" column="id_column_of_parent">
+      <generator class="guid" />
+    </id>
+    <set name="ChildComponents">
+      <key column="key_column_of_child" />
+      <composite-element class="ChildComponent">
+        <property name="SomeBool" />
+        <property name="SomeString" />
+      </composite-element>
+    </set>
+  </class>
+</hibernate-mapping>

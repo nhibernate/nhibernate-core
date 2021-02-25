@@ -11,7 +11,7 @@
 using System;
 using System.Data.Common;
 using NHibernate.Engine;
-using NHibernate.Persister.Entity;
+using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -55,7 +55,7 @@ namespace NHibernate.Type
 			// NOTE: the owner of the association is not really the owner of the id!
 			object id = await (GetIdentifierOrUniqueKeyType(session.Factory)
 				.NullSafeGetAsync(rs, names, session, owner, cancellationToken)).ConfigureAwait(false);
-			ScheduleBatchLoadIfNeeded(id, session);
+			ScheduleBatchLoadIfNeeded(id, session, false);
 			return id;
 		}
 
@@ -70,8 +70,10 @@ namespace NHibernate.Type
 			{
 				return true;
 			}
+			var oldIdentifier = IsIdentifier(old, session) ? old : await (GetIdentifierAsync(old, session, cancellationToken)).ConfigureAwait(false);
+			var currentIdentifier = await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false);
 			// the ids are fully resolved, so compare them with isDirty(), not isModified()
-			return await (GetIdentifierOrUniqueKeyType(session.Factory).IsDirtyAsync(old, await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false), session, cancellationToken)).ConfigureAwait(false);
+			return await (GetIdentifierOrUniqueKeyType(session.Factory).IsDirtyAsync(oldIdentifier, currentIdentifier, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
@@ -115,7 +117,7 @@ namespace NHibernate.Type
 		public override async Task BeforeAssembleAsync(object oid, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			ScheduleBatchLoadIfNeeded(await (AssembleIdAsync(oid, session, cancellationToken)).ConfigureAwait(false), session);
+			ScheduleBatchLoadIfNeeded(await (AssembleIdAsync(oid, session, cancellationToken)).ConfigureAwait(false), session, true);
 		}
 
 		private Task<object> AssembleIdAsync(object oid, ISessionImplementor session, CancellationToken cancellationToken)
@@ -135,7 +137,25 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override async Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
+		public override Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
+			return IsDirtyManyToOneAsync(old, current, null, session, cancellationToken);
+		}
+
+		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
+			return IsDirtyManyToOneAsync(old, current, IsAlwaysDirtyChecked ? null : checkable, session, cancellationToken);
+		}
+
+		private async Task<bool> IsDirtyManyToOneAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (IsSame(old, current))
@@ -143,29 +163,23 @@ namespace NHibernate.Type
 				return false;
 			}
 
+			if (old == null || current == null)
+			{
+				return true;
+			}
+
+			if ((await (ForeignKeys.IsTransientFastAsync(GetAssociatedEntityName(), current, session, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault())
+			{
+				return true;
+			}
+
 			object oldid = await (GetIdentifierAsync(old, session, cancellationToken)).ConfigureAwait(false);
 			object newid = await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false);
-			return await (GetIdentifierType(session).IsDirtyAsync(oldid, newid, session, cancellationToken)).ConfigureAwait(false);
-		}
+			IType identifierType = GetIdentifierType(session);
 
-		public override async Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (IsAlwaysDirtyChecked)
-			{
-				return await (IsDirtyAsync(old, current, session, cancellationToken)).ConfigureAwait(false);
-			}
-			else
-			{
-				if (IsSame(old, current))
-				{
-					return false;
-				}
-
-				object oldid = await (GetIdentifierAsync(old, session, cancellationToken)).ConfigureAwait(false);
-				object newid = await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false);
-				return await (GetIdentifierType(session).IsDirtyAsync(oldid, newid, checkable, session, cancellationToken)).ConfigureAwait(false);
-			}
+			return checkable == null
+				? await (identifierType.IsDirtyAsync(oldid, newid, session, cancellationToken)).ConfigureAwait(false)
+				: await (identifierType.IsDirtyAsync(oldid, newid, checkable, session, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }

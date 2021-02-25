@@ -9,7 +9,7 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.QueryTest
 {
-	[TestFixture]
+	[TestFixture, Obsolete]
 	public class MultiCriteriaFixture : TestCase
 	{
 		protected override string MappingsAssembly
@@ -17,7 +17,7 @@ namespace NHibernate.Test.QueryTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "SecondLevelCacheTest.Item.hbm.xml" }; }
 		}
@@ -485,6 +485,65 @@ namespace NHibernate.Test.QueryTest
 
 				Assert.That(results[0], Is.InstanceOf<List<object>>());
 				Assert.That(results[1], Is.InstanceOf<List<int>>());
+			}
+		}
+
+		[Test]
+		public void UsingManyParametersAndQueries_DoesNotCauseParameterNameCollisions()
+		{
+			//GH-1357
+			using (var s = OpenSession())
+			{
+				var item = new Item {Id = 15};
+				s.Save(item);
+				s.Flush();
+			}
+
+			using (var s = OpenSession())
+			{
+				var multi = s.CreateMultiCriteria();
+
+				for (var i = 0; i < 12; i++)
+				{
+					var criteria = s.CreateCriteria(typeof(Item));
+					for (var j = 0; j < 12; j++)
+					{
+						criteria = criteria.Add(Restrictions.Gt("id", j));
+					}
+					multi.Add(criteria);
+				}
+				//Parameter combining is only used for cacheable queries
+				multi.SetCacheable(true);
+				foreach (IList result in multi.List())
+				{
+					Assert.That(result.Count, Is.EqualTo(1));
+				}
+			}
+		}
+
+		//NH-2428 - Session.MultiCriteria and FlushMode.Auto inside transaction (GH865)
+		[Test]
+		public void MultiCriteriaAutoFlush()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.FlushMode = FlushMode.Auto;
+				var p1 = new Item
+				{
+					Name = "Person name",
+					Id = 15
+				};
+				s.Save(p1);
+				s.Flush();
+
+				s.Delete(p1);
+				var multi = s.CreateMultiCriteria();
+				multi.Add<int>(s.QueryOver<Item>().ToRowCountQuery());
+				var count = (int) ((IList) multi.List()[0])[0];
+				tx.Commit();
+
+				Assert.That(count, Is.EqualTo(0), "Session wasn't auto flushed.");
 			}
 		}
 	}

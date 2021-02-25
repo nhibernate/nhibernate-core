@@ -8,9 +8,11 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class MapKeyMapper : IMapKeyMapper
+	// 6.0 TODO: remove IColumnsAndFormulasMapper once IMapKeyMapper inherits it.
+	public class MapKeyMapper : IMapKeyMapper, IColumnsAndFormulasMapper
 	{
 		private readonly HbmMapKey hbmMapKey;
+		private const string DefaultColumnName = "mapKey";
 
 		public MapKeyMapper(HbmMapKey hbmMapKey)
 		{
@@ -39,8 +41,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			      	name = hbmMapKey.column,
 			      	length = hbmMapKey.length,
 			      };
-			string defaultColumnName = "mapKey";
-			columnMapper(new ColumnMapper(hbm, defaultColumnName));
+			columnMapper(new ColumnMapper(hbm, DefaultColumnName));
 			if (ColumnTagIsRequired(hbm))
 			{
 				hbmMapKey.Items = new[] {hbm};
@@ -48,7 +49,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			else
 			{
-				hbmMapKey.column = !defaultColumnName.Equals(hbm.name) ? hbm.name : null;
+				hbmMapKey.column = !DefaultColumnName.Equals(hbm.name) ? hbm.name : null;
 				hbmMapKey.length = hbm.length;
 			}
 		}
@@ -56,16 +57,15 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Columns(params Action<IColumnMapper>[] columnMapper)
 		{
 			ResetColumnPlainValues();
-			int i = 1;
-			var columns = new List<HbmColumn>(columnMapper.Length);
-			foreach (var action in columnMapper)
+			var columns = new HbmColumn[columnMapper.Length];
+			for (var i = 0; i < columnMapper.Length; i++)
 			{
 				var hbm = new HbmColumn();
-				string defaultColumnName = "mapKey" + i++;
-				action(new ColumnMapper(hbm, defaultColumnName));
-				columns.Add(hbm);
+				string defaultColumnName = DefaultColumnName + i + 1;
+				columnMapper[i](new ColumnMapper(hbm, defaultColumnName));
+				columns[i] = hbm;
 			}
-			hbmMapKey.Items = columns.ToArray();
+			hbmMapKey.Items = columns;
 		}
 
 		public void Column(string name)
@@ -92,10 +92,16 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException("persistentType");
 			}
-			if (!typeof (IUserType).IsAssignableFrom(persistentType) && !typeof (IType).IsAssignableFrom(persistentType))
+
+			if (!typeof(IUserType).IsAssignableFrom(persistentType) &&
+				!typeof(IType).IsAssignableFrom(persistentType) &&
+				!typeof(ICompositeUserType).IsAssignableFrom(persistentType))
 			{
-				throw new ArgumentOutOfRangeException("persistentType", "Expected type implementing IUserType or IType.");
+				throw new ArgumentOutOfRangeException(
+					nameof(persistentType),
+					"Expected type implementing IUserType, ICompositeUserType or IType.");
 			}
+
 			hbmMapKey.type = persistentType.AssemblyQualifiedName;
 		}
 
@@ -104,6 +110,19 @@ namespace NHibernate.Mapping.ByCode.Impl
 			Column(x => x.Length(length));
 		}
 
+		#endregion
+
+		#region Implementation of IColumnsAndFormulasMapper
+
+		/// <inheritdoc />
+		public void ColumnsAndFormulas(params Action<IColumnOrFormulaMapper>[] columnOrFormulaMapper)
+		{
+			ResetColumnPlainValues();
+
+			hbmMapKey.Items = ColumnOrFormulaMapper.GetItemsFor(columnOrFormulaMapper, DefaultColumnName);
+		}
+
+		/// <inheritdoc cref="IColumnsAndFormulasMapper.Formula" />
 		public void Formula(string formula)
 		{
 			if (formula == null)
@@ -116,12 +135,25 @@ namespace NHibernate.Mapping.ByCode.Impl
 			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
 			if (formulaLines.Length > 1)
 			{
-				hbmMapKey.Items = new[] {new HbmFormula {Text = formulaLines}};
+				hbmMapKey.Items = new object[] {new HbmFormula {Text = formulaLines}};
 			}
 			else
 			{
 				hbmMapKey.formula = formula;
 			}
+		}
+
+		/// <inheritdoc />
+		public void Formulas(params string[] formulas)
+		{
+			if (formulas == null)
+				throw new ArgumentNullException(nameof(formulas));
+
+			ResetColumnPlainValues();
+			hbmMapKey.Items =
+				formulas
+					.ToArray(
+						f => (object) new HbmFormula {Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None)});
 		}
 
 		#endregion

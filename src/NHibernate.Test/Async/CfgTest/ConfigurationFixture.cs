@@ -11,6 +11,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using NHibernate.Cfg;
 using NHibernate.DomainModel;
@@ -65,11 +66,9 @@ namespace NHibernate.Test.CfgTest
 		/// <see cref="Configuration" /> works as intended.
 		/// </summary>
 		[Test]
-		public Task SetDefaultAssemblyAndNamespaceAsync()
+		public async Task SetDefaultAssemblyAndNamespaceAsync()
 		{
-			try
-			{
-				string hbmFromDomainModel =
+			string hbmFromDomainModel =
 				@"<?xml version='1.0' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
 	<class name='A'>
@@ -79,7 +78,7 @@ namespace NHibernate.Test.CfgTest
 	</class>
 </hibernate-mapping>";
 
-				string hbmFromTest =
+			string hbmFromTest =
 				@"<?xml version='1.0' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.2'>
 	<class name='LocatedInTestAssembly' lazy='false'>
@@ -89,32 +88,34 @@ namespace NHibernate.Test.CfgTest
 	</class>
 </hibernate-mapping>";
 
-				Configuration cfg = new Configuration();
-				cfg
+			Configuration cfg = new Configuration();
+			cfg
 				.SetDefaultAssembly("NHibernate.DomainModel")
 				.SetDefaultNamespace("NHibernate.DomainModel")
 				.AddXmlString(hbmFromDomainModel);
 
-				cfg
+			cfg
 				.SetDefaultAssembly("NHibernate.Test")
 				.SetDefaultNamespace(typeof(LocatedInTestAssembly).Namespace)
 				.AddXmlString(hbmFromTest);
 
-				return cfg.BuildSessionFactory().CloseAsync();
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (cfg.BuildSessionFactory().CloseAsync());
 		}
 
 		public class SampleQueryProvider : DefaultQueryProvider
 		{
 			public SampleQueryProvider(ISessionImplementor session) : base(session)
 			{
+			}
 
+			protected SampleQueryProvider(ISessionImplementor session, object collection,  NhQueryableOptions options) : base(session, collection, options)
+			{
+			}
+
+			protected override IQueryProvider CreateWithOptions(NhQueryableOptions options)
+			{
+				return new SampleQueryProvider(Session, Collection, options);
 			}
 		}
-
 	}
 }

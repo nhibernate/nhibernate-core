@@ -20,8 +20,7 @@ namespace NHibernate.Test.GenericTest.ListGeneric
 	[TestFixture]
 	public class ListGenericFixtureAsync : TestCase
 	{
-
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "GenericTest.ListGeneric.ListGenericFixture.hbm.xml" }; }
 		}

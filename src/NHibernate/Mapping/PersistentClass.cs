@@ -4,6 +4,7 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace NHibernate.Mapping
@@ -40,8 +41,8 @@ namespace NHibernate.Mapping
 		private IDictionary<string, MetaAttribute> metaAttributes;
 		private readonly List<Join> joins = new List<Join>();
 		private readonly List<Join> subclassJoins = new List<Join>();
-		private readonly IDictionary<string, string> filters = new Dictionary<string, string>();
-		private readonly ISet<string> synchronizedTables = new HashSet<string>();
+		private readonly Dictionary<string, string> filters = new Dictionary<string, string>();
+		private readonly HashSet<string> synchronizedTables = new HashSet<string>();
 		private string loaderName;
 		private bool? isAbstract;
 		private bool hasSubselectLoadableCollections;
@@ -214,13 +215,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				IEnumerable<Subclass>[] iters = new IEnumerable<Subclass>[subclasses.Count + 1];
-				int i = 0;
-				foreach (Subclass subclass in subclasses)
-					iters[i++] = subclass.SubclassIterator;
-
-				iters[i] = subclasses;
-				return new JoinedEnumerable<Subclass>(iters);
+				return subclasses.SelectMany(s => s.SubclassIterator).Concat(subclasses);
 			}
 		}
 
@@ -228,14 +223,8 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				List<IEnumerable<PersistentClass>> iters = new List<IEnumerable<PersistentClass>>();
-				iters.Add(new SingletonEnumerable<PersistentClass>(this));
-				foreach (Subclass clazz in SubclassIterator)
-					iters.Add(clazz.SubclassClosureIterator);
-
-				return new JoinedEnumerable<PersistentClass>(iters);
+				return new[] {this}.Concat(SubclassIterator.SelectMany(x => x.SubclassClosureIterator));
 			}
-
 		}
 
 		public virtual Table IdentityTable
@@ -322,19 +311,15 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				List<IEnumerable<Property>> iters = new List<IEnumerable<Property>>();
-				iters.Add(PropertyClosureIterator);
-				iters.Add(subclassProperties);
-				foreach (Join join in subclassJoins)
-					iters.Add(join.PropertyIterator);
-
-				return new JoinedEnumerable<Property>(iters);
+				return PropertyClosureIterator
+						.Concat(subclassProperties)
+						.Concat(subclassJoins.SelectMany(x => x.PropertyIterator));
 			}
 		}
 
 		public virtual IEnumerable<Join> SubclassJoinClosureIterator
 		{
-			get { return new JoinedEnumerable<Join>(JoinClosureIterator, subclassJoins); }
+			get { return JoinClosureIterator.Concat(subclassJoins); }
 		}
 
 		/// <summary>
@@ -345,7 +330,7 @@ namespace NHibernate.Mapping
 		/// <remarks>It adds the TableClosureIterator and the subclassTables into the IEnumerable.</remarks>
 		public virtual IEnumerable<Table> SubclassTableClosureIterator
 		{
-			get { return new JoinedEnumerable<Table>(TableClosureIterator, subclassTables); }
+			get { return TableClosureIterator.Concat(subclassTables); }
 		}
 
 		public bool IsLazy
@@ -455,12 +440,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				List<IEnumerable<Property>> iterators = new List<IEnumerable<Property>>();
-				iterators.Add(properties);
-				foreach (Join join in joins)
-					iterators.Add(join.PropertyIterator);
-
-				return new JoinedEnumerable<Property>(iterators);
+				return properties.Concat(joins.SelectMany(x => x.PropertyIterator));
 			}
 		}
 
@@ -560,7 +540,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				return tuplizerImpls == null ? null : new UnmodifiableDictionary<EntityMode, string>(tuplizerImpls);
+				return tuplizerImpls == null ? null : new ReadOnlyDictionary<EntityMode, string>(tuplizerImpls);
 			}
 		}
 
@@ -770,16 +750,30 @@ namespace NHibernate.Mapping
 		/// this type is persisted in.
 		/// </summary>
 		/// <param name="dialect">The <see cref="Dialect.Dialect"/> that is used to Alias columns.</param>
+		//Since v5.2
+		[Obsolete("Please use overload without delegate parameter")]
 		public virtual void CreatePrimaryKey(Dialect.Dialect dialect)
 		{
 			//Primary key constraint
 			PrimaryKey pk = new PrimaryKey();
 			Table table = Table;
 			pk.Table = table;
-			pk.Name = PKAlias.ToAliasString(table.Name, dialect);
+			pk.Name = PKAlias.ToAliasString(table.Name);
 			table.PrimaryKey = pk;
 
-			pk.AddColumns(new SafetyEnumerable<Column>(Key.ColumnIterator));
+			pk.AddColumns(Key.ColumnIterator);
+		}
+
+		/// <summary>
+		/// Creates the <see cref="PrimaryKey"/> for the <see cref="Table"/>
+		/// this type is persisted in.
+		/// </summary>
+		public virtual void CreatePrimaryKey()
+		{
+			//6.0 TODO: Inline the following method call and remove the obsolete method.
+#pragma warning disable 618
+			CreatePrimaryKey(null);
+#pragma warning restore 618
 		}
 
 		/// <summary>
@@ -889,9 +883,9 @@ namespace NHibernate.Mapping
 					}
 				}
 			}
-			catch (MappingException)
+			catch (MappingException ex)
 			{
-				throw new MappingException("property [" + propertyPath + "] not found on entity [" + EntityName + "]");
+				throw new MappingException("property [" + propertyPath + "] not found on entity [" + EntityName + "]", ex);
 			}
 
 			return property;
@@ -1089,7 +1083,6 @@ namespace NHibernate.Mapping
 						CheckColumnDuplication(distinctColumns, prop.ColumnIterator);
 				}
 			}
-
 		}
 
 		protected internal virtual void CheckColumnDuplication()
@@ -1171,6 +1164,5 @@ namespace NHibernate.Mapping
 		}
 
 		public abstract bool IsLazyPropertiesCacheable { get; }
-
 	}
 }

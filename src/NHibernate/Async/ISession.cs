@@ -14,13 +14,89 @@ using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
+using NHibernate.Event;
+using NHibernate.Event.Default;
+using NHibernate.Impl;
+using NHibernate.Multi;
 using NHibernate.Stat;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+	public static partial class SessionExtensions
+	{
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <param name="lockMode">The lock mode to use for getting the entity.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
+		public static Task<object> GetAsync(this ISession session, string entityName, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				return
+					ReflectHelper
+						.CastOrThrow<SessionImpl>(session, "Get with entityName and lockMode")
+						.GetAsync(entityName, id, lockMode, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		//NOTE: Keep it as extension
+		/// <summary>
+		/// Return the persistent instance of the given entity name with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <typeparam name="T">The entity class.</typeparam>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <param name="lockMode">The lock mode to use for getting the entity.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
+		public static async Task<T> GetAsync<T>(this ISession session, string entityName, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			return (T) await (session.GetAsync(entityName, id, lockMode, cancellationToken)).ConfigureAwait(false);
+		}
+
+		//NOTE: Keep it as extension
+		/// <summary>
+		/// Return the persistent instance of the given entity name with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <typeparam name="T">The entity class.</typeparam>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
+		public static async Task<T> GetAsync<T>(this ISession session, string entityName, object id, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			return (T) await (session.GetAsync(entityName, id, cancellationToken)).ConfigureAwait(false);
+		}
+	}
+
 	public partial interface ISession : IDisposable
 	{
 
@@ -38,9 +114,25 @@ namespace NHibernate
 		/// <summary>
 		/// Does this <c>ISession</c> contain any changes which must be
 		/// synchronized with the database? Would any SQL be executed if
-		/// we flushed this session?
+		/// we flushed this session? May trigger save cascades, which could
+		/// cause themselves some SQL to be executed, especially if the
+		/// <c>identity</c> id generator is used.
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <remarks>
+		/// <para>
+		/// The default implementation first checks if it contains saved or deleted entities to be flushed. If not, it
+		/// then delegate the check to its <see cref="IDirtyCheckEventListener" />, which by default is
+		/// <see cref="DefaultDirtyCheckEventListener" />.
+		/// </para>
+		/// <para>
+		/// <see cref="DefaultDirtyCheckEventListener" /> replicates all the beginning of the flush process, checking
+		/// dirtiness of entities loaded in the session and triggering their pending cascade operations in order to
+		/// detect new and removed children. This can have the side effect of performing the <see cref="Save(object)"/>
+		/// of children, causing their id to be generated. Depending on their id generator, this can trigger calls to
+		/// the database and even actually insert them if using an <c>identity</c> generator.
+		/// </para>
+		/// </remarks>
 		Task<bool> IsDirtyAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>

@@ -4,11 +4,103 @@ using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
+using NHibernate.Event;
+using NHibernate.Event.Default;
+using NHibernate.Impl;
+using NHibernate.Multi;
 using NHibernate.Stat;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate
 {
+	// 6.0 TODO: Convert most of these extensions to interface methods
+	public static partial class SessionExtensions
+	{
+		/// <summary>
+		/// Obtain a <see cref="IStatelessSession"/> builder with the ability to grab certain information from
+		/// this session. The built <c>IStatelessSession</c> will require its own disposal.
+		/// </summary>
+		/// <param name="session">The session from which to build a stateless session.</param>
+		/// <returns>The session builder.</returns>
+		public static ISharedStatelessSessionBuilder StatelessSessionWithOptions(this ISession session)
+		{
+			var impl = session as SessionImpl ?? throw new NotSupportedException("Only SessionImpl sessions are supported.");
+			return impl.StatelessSessionWithOptions();
+		}
+
+		/// <summary>
+		/// Creates a <see cref="IQueryBatch"/> for the session. Batch extension methods are available in the
+		/// <c>NHibernate.Multi</c> namespace.
+		/// </summary>
+		/// <param name="session">The session.</param>
+		/// <returns>A query batch.</returns>
+		public static IQueryBatch CreateQueryBatch(this ISession session)
+		{
+			return ReflectHelper.CastOrThrow<AbstractSessionImpl>(session, "query batch").CreateQueryBatch();
+		}
+
+		// 6.0 TODO: consider if it should be added as a property on ISession then obsolete this, or if it should stay here as an extension method.
+		/// <summary>
+		/// Get the current transaction if any is ongoing, else <see langword="null" />.
+		/// </summary>
+		/// <param name="session">The session.</param>
+		/// <returns>The current transaction or <see langword="null" />..</returns>
+		public static ITransaction GetCurrentTransaction(this ISession session)
+			=> session.GetSessionImplementation().ConnectionManager.CurrentTransaction;
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <param name="lockMode">The lock mode to use for getting the entity.</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
+		public static object Get(this ISession session, string entityName, object id, LockMode lockMode)
+		{
+			return
+				ReflectHelper
+					.CastOrThrow<SessionImpl>(session, "Get with entityName and lockMode")
+					.Get(entityName, id, lockMode);
+		}
+
+		//NOTE: Keep it as extension
+		/// <summary>
+		/// Return the persistent instance of the given entity name with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <typeparam name="T">The entity class.</typeparam>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <param name="lockMode">The lock mode to use for getting the entity.</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
+		public static T Get<T>(this ISession session, string entityName, object id, LockMode lockMode)
+		{
+			return (T) session.Get(entityName, id, lockMode);
+		}
+
+		//NOTE: Keep it as extension
+		/// <summary>
+		/// Return the persistent instance of the given entity name with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <typeparam name="T">The entity class.</typeparam>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
+		public static T Get<T>(this ISession session, string entityName, object id)
+		{
+			return (T) session.Get(entityName, id);
+		}
+	}
+
 	/// <summary>
 	/// The main runtime interface between a .NET application and NHibernate. This is the central
 	/// API class abstracting the notion of a persistence service.
@@ -172,15 +264,39 @@ namespace NHibernate
 		bool IsOpen { get; }
 
 		/// <summary>
-		/// Is the <c>ISession</c> currently connected?
+		/// Is the session connected?
 		/// </summary>
+		/// <value>
+		/// <see langword="true" /> if the session is connected.
+		/// </value>
+		/// <remarks>
+		/// A session is considered connected if there is a <see cref="DbConnection"/> (regardless
+		/// of its state) or if the field <c>connect</c> is true. Meaning that it will connect
+		/// at the next operation that requires a connection.
+		/// </remarks>
 		bool IsConnected { get; }
 
 		/// <summary>
 		/// Does this <c>ISession</c> contain any changes which must be
 		/// synchronized with the database? Would any SQL be executed if
-		/// we flushed this session?
+		/// we flushed this session? May trigger save cascades, which could
+		/// cause themselves some SQL to be executed, especially if the
+		/// <c>identity</c> id generator is used.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// The default implementation first checks if it contains saved or deleted entities to be flushed. If not, it
+		/// then delegate the check to its <see cref="IDirtyCheckEventListener" />, which by default is
+		/// <see cref="DefaultDirtyCheckEventListener" />.
+		/// </para>
+		/// <para>
+		/// <see cref="DefaultDirtyCheckEventListener" /> replicates all the beginning of the flush process, checking
+		/// dirtiness of entities loaded in the session and triggering their pending cascade operations in order to
+		/// detect new and removed children. This can have the side effect of performing the <see cref="Save(object)"/>
+		/// of children, causing their id to be generated. Depending on their id generator, this can trigger calls to
+		/// the database and even actually insert them if using an <c>identity</c> generator.
+		/// </para>
+		/// </remarks>
 		bool IsDirty();
 
 		/// <summary>
@@ -706,6 +822,8 @@ namespace NHibernate
 		/// <summary>
 		/// Get the current Unit of Work and return the associated <c>ITransaction</c> object.
 		/// </summary>
+		// Since v5.3
+		[Obsolete("Use GetCurrentTransaction extension method instead, and check for null.")]
 		ITransaction Transaction { get; }
 
 		/// <summary>
@@ -715,7 +833,8 @@ namespace NHibernate
 		/// <para>
 		/// Sessions auto-join current transaction by default on their first usage within a scope.
 		/// This can be disabled with <see cref="ISessionBuilder{T}.AutoJoinTransaction(bool)"/> from
-		/// a session builder obtained with <see cref="ISessionFactory.WithOptions()"/>.
+		/// a session builder obtained with <see cref="ISessionFactory.WithOptions()"/>, or with the
+		/// auto-join transaction configuration setting.
 		/// </para>
 		/// <para>
 		/// This method allows to explicitly join the current transaction. It does nothing if it is already
@@ -921,6 +1040,8 @@ namespace NHibernate
 		/// a list of all the results of all the queries.
 		/// Note that each query result is itself usually a list.
 		/// </returns>
+		// Since v5.2
+		[Obsolete("Use ISession.CreateQueryBatch instead.")]
 		IMultiQuery CreateMultiQuery();
 
 		/// <summary>
@@ -947,6 +1068,8 @@ namespace NHibernate
 		/// of all the criterias.
 		/// </summary>
 		/// <returns></returns>
+		// Since v5.2
+		[Obsolete("Use ISession.CreateQueryBatch instead.")]
 		IMultiCriteria CreateMultiCriteria();
 
 		/// <summary> Get the statistics for this session.</summary>

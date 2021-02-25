@@ -123,6 +123,21 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		}
 
 		[Test]
+		public void CanSetMultipleFormulas()
+		{
+			var member = For<MyClass>.Property(c => c.Relation);
+			var mapping = new HbmOneToOne();
+			var mapper = new OneToOneMapper(member, mapping);
+
+			mapper.Formulas("formula1", "formula2", "formula3");
+			Assert.That(mapping.formula1, Is.Null);
+			Assert.That(mapping.formula, Has.Length.EqualTo(3));
+			Assert.That(
+				mapping.formula.Select(f => f.Text.Single()),
+				Is.EquivalentTo(new[] { "formula1", "formula2", "formula3" }));
+		}
+
+		[Test]
 		public void WhenSetFormulaWithNullThenSetFormulaWithNull()
 		{
 			var member = For<MyClass>.Property(c => c.Relation);
@@ -148,6 +163,32 @@ Line2";
 			Assert.That(hbmFormula.Text[0], Is.EqualTo("Line1"));
 			Assert.That(hbmFormula.Text[1], Is.EqualTo("Line2"));
 			Assert.That(mapping.formula1, Is.Null);
+		}
+		
+		[Test]
+		public void WhenSetFetchModeToJoinThenSetFetch()
+		{
+			var member = For<MyClass>.Property(c => c.Relation);
+			var mapping = new HbmOneToOne();
+			var mapper = new OneToOneMapper(member, mapping);
+
+			mapper.Fetch(FetchKind.Join);
+
+			Assert.That(mapping.fetch, Is.EqualTo(HbmFetchMode.Join));
+			Assert.That(mapping.fetchSpecified, Is.True);
+		}
+
+		[Test]
+		public void WhenSetFetchModeToSelectThenSetFetch()
+		{
+			var member = For<MyClass>.Property(c => c.Relation);
+			var mapping = new HbmOneToOne();
+			var mapper = new OneToOneMapper(member, mapping);
+
+			mapper.Fetch(FetchKind.Select);
+
+			Assert.That(mapping.fetch, Is.EqualTo(HbmFetchMode.Select));
+			Assert.That(mapping.fetchSpecified, Is.True);
 		}
 	}
 }

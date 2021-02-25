@@ -7,11 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1178
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1178"; }
-		}
-
 		protected override void OnSetUp()
 		{
 			using (ISession s = OpenSession())

@@ -4,6 +4,8 @@ using System.Reflection.Emit;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
+	// Since v5.2
+	[Obsolete("DynamicProxy namespace has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	public static class OpCodesMap
 	{
 		private static readonly Dictionary<System.Type, OpCode> LdindMap = new Dictionary<System.Type, OpCode>

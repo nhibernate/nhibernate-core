@@ -18,6 +18,11 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 	[TestFixture]
 	public class DynamicEntityTestAsync : BugTestCase
 	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsFKOnCompositeKeyWithBoolean;
+		}
+
 		protected override void OnSetUp()
 		{
 			using (var s = OpenSession())

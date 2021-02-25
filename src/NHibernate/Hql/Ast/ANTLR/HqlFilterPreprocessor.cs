@@ -13,7 +13,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 {
 	internal static class HqlFilterPreprocessor
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(HqlFilterPreprocessor));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(HqlFilterPreprocessor));
 
 		/// <summary>
 		/// Handles HQL AST transformation for collection filters (which are created with <see cref="ISession.CreateFilter"/>).
@@ -67,7 +67,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			fromClause.AddChild(alias);
 
 			// Show the modified AST.
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				log.Debug("AddImpliedFormToFromNode() : Filter - Added 'this' as a from element...");
 			}

@@ -17,7 +17,7 @@ namespace NHibernate.Test.DialectTest
 		{
 			var d = new MsSql2005Dialect();
 
-			SqlString str = d.GetLimitString(new SqlString("select distinct c.Contact_Id as Contact1_19_0_, c.Rating as Rating2_19_0_, c.Last_Name as Last_Name3_19_0, c.First_Name as First_Name4_19_0 from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"), new SqlString("111"), new SqlString("222"));
+			var str = d.GetLimitString(new SqlString("select distinct c.Contact_Id as Contact1_19_0_, c.Rating as Rating2_19_0_, c.Last_Name as Last_Name3_19_0, c.First_Name as First_Name4_19_0 from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"), new SqlString("111"), new SqlString("222"));
 			Assert.AreEqual(
 				"SELECT TOP (222) Contact1_19_0_, Rating2_19_0_, Last_Name3_19_0, First_Name4_19_0 FROM (SELECT *, ROW_NUMBER() OVER(ORDER BY q_.Rating2_19_0_ DESC, q_.Last_Name3_19_0, q_.First_Name4_19_0) as __hibernate_sort_row  FROM (select distinct c.Contact_Id as Contact1_19_0_, c.Rating as Rating2_19_0_, c.Last_Name as Last_Name3_19_0, c.First_Name as First_Name4_19_0 from dbo.Contact c where COALESCE(c.Rating, 0) > 0) as q_) as query WHERE query.__hibernate_sort_row > 111 ORDER BY query.__hibernate_sort_row",
 				str.ToString());
@@ -74,19 +74,19 @@ namespace NHibernate.Test.DialectTest
 		{
 			var d = new MsSql2005Dialect();
 
-			SqlString str = d.GetLimitString(new SqlString("select distinct c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"), null, new SqlString("10"));
+			var str = d.GetLimitString(new SqlString("select distinct c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"), null, new SqlString("10"));
 			Assert.That(str.ToString(), Is.EqualTo("select distinct TOP (10) c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"));
 		}
 
 		[Test]
 		public void NH1187()
 		{
-			MsSql2005Dialect d = new MsSql2005Dialect();
-			SqlString result = d.GetLimitString(new SqlString("select concat(a.Description,', ', a.Description) as desc from Animal a"), new SqlString("111"), new SqlString("222"));
+			var d = new MsSql2005Dialect();
+			var result = d.GetLimitString(new SqlString("select concat(a.Description,', ', a.Description) as desc from Animal a"), new SqlString("111"), new SqlString("222"));
 			Assert.AreEqual("SELECT TOP (222) desc FROM (select concat(a.Description,', ', a.Description) as desc, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row from Animal a) as query WHERE query.__hibernate_sort_row > 111 ORDER BY query.__hibernate_sort_row", result.ToString());
 
 			// The test use the function "cast" because cast need the keyWork "as" too
-			SqlString str = d.GetLimitString(new SqlString("SELECT fish.id, cast('astring, with,comma' as string) as bar FROM fish"), new SqlString("111"), new SqlString("222"));
+			var str = d.GetLimitString(new SqlString("SELECT fish.id, cast('astring, with,comma' as string) as bar FROM fish"), new SqlString("111"), new SqlString("222"));
 			Assert.AreEqual(
 				"SELECT TOP (222) id, bar FROM (SELECT fish.id, cast('astring, with,comma' as string) as bar, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row FROM fish) as query WHERE query.__hibernate_sort_row > 111 ORDER BY query.__hibernate_sort_row",
 				str.ToString());
@@ -97,26 +97,26 @@ namespace NHibernate.Test.DialectTest
 		{
 			var d = new MsSql2005Dialect();
 
-			string t = d.GetTypeName(new BinarySqlType());
+			var t = d.GetTypeName(new BinarySqlType());
 			Assert.That(t, Is.EqualTo("VARBINARY(MAX)"));
 
-			t = d.GetTypeName(new BinarySqlType(), SqlClientDriver.MaxSizeForLengthLimitedBinary - 1, 0, 0);
-			Assert.That(t, Is.EqualTo(String.Format("VARBINARY({0})", SqlClientDriver.MaxSizeForLengthLimitedBinary - 1)));
+			t = d.GetTypeName(new BinarySqlType(), MsSql2000Dialect.MaxSizeForLengthLimitedBinary - 1, 0, 0);
+			Assert.That(t, Is.EqualTo(String.Format("VARBINARY({0})", MsSql2000Dialect.MaxSizeForLengthLimitedBinary - 1)));
 
-			t = d.GetTypeName(new BinarySqlType(), SqlClientDriver.MaxSizeForLengthLimitedBinary, 0, 0);
-			Assert.That(t, Is.EqualTo(String.Format("VARBINARY({0})", SqlClientDriver.MaxSizeForLengthLimitedBinary)));
+			t = d.GetTypeName(new BinarySqlType(), MsSql2000Dialect.MaxSizeForLengthLimitedBinary, 0, 0);
+			Assert.That(t, Is.EqualTo(String.Format("VARBINARY({0})", MsSql2000Dialect.MaxSizeForLengthLimitedBinary)));
 
-			t = d.GetTypeName(new BinarySqlType(), SqlClientDriver.MaxSizeForLengthLimitedBinary + 1, 0, 0);
+			t = d.GetTypeName(new BinarySqlType(), MsSql2000Dialect.MaxSizeForLengthLimitedBinary + 1, 0, 0);
 			Assert.That(t, Is.EqualTo("VARBINARY(MAX)"));
 		}
 
 		[Test]
 		public void QuotedAndParenthesisStringTokenizerTests_WithComma_InQuotes()
 		{
-			MsSql2005Dialect.QuotedAndParenthesisStringTokenizer tokenizier =
-				new MsSql2005Dialect.QuotedAndParenthesisStringTokenizer(
+			var tokenizier =
+				new Dialect.Dialect.QuotedAndParenthesisStringTokenizer(
 					new SqlString("select concat(a.Description,', ', a.Description) from Animal a"));
-			string[] expected = new string[]
+			var expected = new string[]
 				{
 					"select",
 					"concat(a.Description,', ', a.Description)",
@@ -124,7 +124,7 @@ namespace NHibernate.Test.DialectTest
 					"Animal",
 					"a"
 				};
-			int current = 0;
+			var current = 0;
 			foreach (SqlString token in tokenizier)
 			{
 				Assert.AreEqual(expected[current], token.ToString());
@@ -136,10 +136,10 @@ namespace NHibernate.Test.DialectTest
 		[Test]
 		public void QuotedAndParenthesisStringTokenizerTests_WithFunctionCallContainingComma()
 		{
-			MsSql2005Dialect.QuotedAndParenthesisStringTokenizer tokenizier =
-				new MsSql2005Dialect.QuotedAndParenthesisStringTokenizer(
+			var tokenizier =
+				new Dialect.Dialect.QuotedAndParenthesisStringTokenizer(
 					new SqlString("SELECT fish.id, cast('astring, with,comma' as string) as bar, f FROM fish"));
-			string[] expected = new string[]
+			var expected = new string[]
 				{
 					"SELECT",
 					"fish.id",
@@ -152,9 +152,9 @@ namespace NHibernate.Test.DialectTest
 					"FROM",
 					"fish"
 				};
-			int current = 0;
-			IList<SqlString> tokens = tokenizier.GetTokens();
-			foreach (SqlString token in tokens)
+			var current = 0;
+			var tokens = tokenizier.GetTokens();
+			foreach (var token in tokens)
 			{
 				Assert.AreEqual(expected[current], token.ToString());
 				current += 1;
@@ -165,10 +165,10 @@ namespace NHibernate.Test.DialectTest
 		[Test]
 		public void QuotedStringTokenizerTests()
 		{
-			MsSql2005Dialect.QuotedAndParenthesisStringTokenizer tokenizier =
-				new MsSql2005Dialect.QuotedAndParenthesisStringTokenizer(
+			var tokenizier =
+				new Dialect.Dialect.QuotedAndParenthesisStringTokenizer(
 					new SqlString("SELECT fish.\"id column\", fish.'fish name' as 'bar\\' column', f FROM fish"));
-			string[] expected = new string[]
+			var expected = new string[]
 				{
 					"SELECT",
 					"fish.\"id column\"",
@@ -181,41 +181,104 @@ namespace NHibernate.Test.DialectTest
 					"FROM",
 					"fish"
 				};
-			int current = 0;
-			IList<SqlString> tokens = tokenizier.GetTokens();
-			foreach (SqlString token in tokens)
+			var current = 0;
+			var tokens = tokenizier.GetTokens();
+			foreach (var token in tokens)
 			{
 				Assert.AreEqual(expected[current], token.ToString());
 				current += 1;
 			}
-			Assert.AreEqual(current, expected.Length);
+			Assert.That(expected, Has.Length.EqualTo(current));
 		}
 
 		[Test]
-		public void GetIfExistsDropConstraintTest_without_schema()
+		public void GetIfExistsDropConstraintTest_without_catalog_without_schema()
 		{
-			MsSql2005Dialect dialect = new MsSql2005Dialect();
-			Table foo = new Table("Foo");
-			string expected = "if exists (select 1 from sys.objects" +
-							  " where object_id = OBJECT_ID(N'[Bar]')" +
-							  " AND parent_object_id = OBJECT_ID('Foo'))";
-			string ifExistsDropConstraint = dialect.GetIfExistsDropConstraint(foo, "Bar");
-			System.Console.WriteLine(ifExistsDropConstraint);
-			Assert.AreEqual(expected, ifExistsDropConstraint);
+			var dialect = new MsSql2005Dialect();
+
+			const string expected = "if exists (select 1 from sys.objects" +
+									" where object_id = OBJECT_ID(N'[Bar]')" +
+									" and parent_object_id = OBJECT_ID(N'Foo'))";
+			var ifExistsDropConstraint = dialect.GetIfExistsDropConstraint(null, null, "Foo", "Bar");
+			Assert.That(ifExistsDropConstraint, Is.EqualTo(expected));
 		}
 
 		[Test]
-		public void GetIfExistsDropConstraintTest_For_Schema_other_than_dbo()
+		public void GetIfExistsDropConstraintTest_without_catalog_without_schema_with_quoted_table()
 		{
-			MsSql2005Dialect dialect = new MsSql2005Dialect();
-			Table foo = new Table("Foo");
-			foo.Schema = "Other";
-			string expected = "if exists (select 1 from sys.objects" +
-							  " where object_id = OBJECT_ID(N'Other.[Bar]')" +
-							  " AND parent_object_id = OBJECT_ID('Other.Foo'))";
-			string ifExistsDropConstraint = dialect.GetIfExistsDropConstraint(foo, "Bar");
-			System.Console.WriteLine(ifExistsDropConstraint);
-			Assert.AreEqual(expected, ifExistsDropConstraint);
+			var dialect = new MsSql2005Dialect();
+
+			const string expected = "if exists (select 1 from sys.objects" +
+									" where object_id = OBJECT_ID(N'[Bar]')" +
+									" and parent_object_id = OBJECT_ID(N'[Foo]'))";
+			var ifExistsDropConstraint = dialect.GetIfExistsDropConstraint(null, null, "[Foo]", "Bar");
+			Assert.That(ifExistsDropConstraint, Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void GetIfExistsDropConstraintTest_with_schema()
+		{
+			var dialect = new MsSql2005Dialect();
+			const string expected = "if exists (select 1 from sys.objects" +
+									" where object_id = OBJECT_ID(N'Other.[Bar]')" +
+									" and parent_object_id = OBJECT_ID(N'Other.Foo'))";
+			var ifExistsDropConstraint = dialect.GetIfExistsDropConstraint(null, "Other", "Foo", "Bar");
+			Assert.That(ifExistsDropConstraint, Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void GetIfExistsDropConstraintTest_with_quoted_schema()
+		{
+			var dialect = new MsSql2005Dialect();
+			const string expected = "if exists (select 1 from sys.objects" +
+									" where object_id = OBJECT_ID(N'[Other].[Bar]')" +
+									" and parent_object_id = OBJECT_ID(N'[Other].Foo'))";
+			var ifExistsDropConstraint = dialect.GetIfExistsDropConstraint(null, "[Other]", "Foo", "Bar");
+			Assert.That(ifExistsDropConstraint, Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void GetIfExistsDropConstraintTest_with_catalog_without_schema()
+		{
+			var dialect = new MsSql2005Dialect();
+			const string expected = "if exists (select 1 from Catalog.sys.objects" +
+									" where object_id = OBJECT_ID(N'Catalog..[Bar]')" +
+									" and parent_object_id = OBJECT_ID(N'Catalog..Foo'))";
+			var ifExistsDropConstraint = dialect.GetIfExistsDropConstraint("Catalog", null, "Foo", "Bar");
+			Assert.That(ifExistsDropConstraint, Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void GetIfExistsDropConstraintTest_with_quoted_catalog_without_schema()
+		{
+			var dialect = new MsSql2005Dialect();
+			const string expected = "if exists (select 1 from [Catalog].sys.objects" +
+									" where object_id = OBJECT_ID(N'[Catalog]..[Bar]')" +
+									" and parent_object_id = OBJECT_ID(N'[Catalog]..Foo'))";
+			var ifExistsDropConstraint = dialect.GetIfExistsDropConstraint("[Catalog]", null, "Foo", "Bar");
+			Assert.That(ifExistsDropConstraint, Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void GetIfExistsDropConstraintTest_with_catalog_with_schema()
+		{
+			var dialect = new MsSql2005Dialect();
+			const string expected = "if exists (select 1 from Catalog.sys.objects" +
+									" where object_id = OBJECT_ID(N'Catalog.Schema.[Bar]')" +
+									" and parent_object_id = OBJECT_ID(N'Catalog.Schema.Foo'))";
+			var ifExistsDropConstraint = dialect.GetIfExistsDropConstraint("Catalog", "Schema", "Foo", "Bar");
+			Assert.That(ifExistsDropConstraint, Is.EqualTo(expected));
+		}
+
+		[Test]
+		public void GetIfExistsDropConstraintTest_with_quoted_catalog_quoted_schema_quoted_table()
+		{
+			var dialect = new MsSql2005Dialect();
+			const string expected = "if exists (select 1 from [Catalog].sys.objects" +
+									" where object_id = OBJECT_ID(N'[Catalog].[Schema].[Bar]')" +
+									" and parent_object_id = OBJECT_ID(N'[Catalog].[Schema].[Foo]'))";
+			var ifExistsDropConstraint = dialect.GetIfExistsDropConstraint("[Catalog]", "[Schema]", "[Foo]", "Bar");
+			Assert.That(ifExistsDropConstraint, Is.EqualTo(expected));
 		}
 
 		[Test]
@@ -301,6 +364,35 @@ namespace NHibernate.Test.DialectTest
 
 			limitSql = d.GetLimitString(new SqlString(sql), new SqlString("10"), new SqlString("2"));
 			Assert.That(limitSql, Is.Null, "Limit and Offset: {0}", sql);
+		}
+
+		[Test]
+		public void QualifyTableWithCatalogAndWithoutSchema()
+		{
+			var d = new MsSql2005Dialect();
+
+			var t = new Table
+			{
+				Name = "name",
+				Catalog = "catalog"
+			};
+
+			Assert.That(t.GetQualifiedName(d), Is.EqualTo("catalog..name"));
+			Assert.That(d.Qualify("catalog", null, "table"), Is.EqualTo("catalog..table"));
+		}
+
+		[Test]
+		public void QualifyTableWithoutCatalogAndWithoutSchema()
+		{
+			var d = new MsSql2005Dialect();
+
+			var t = new Table
+			{
+				Name = "name"
+			};
+
+			Assert.That(t.GetQualifiedName(d), Is.EqualTo("name"));
+			Assert.That(d.Qualify(null, null, "table"), Is.EqualTo("table"));
 		}
 	}
 }

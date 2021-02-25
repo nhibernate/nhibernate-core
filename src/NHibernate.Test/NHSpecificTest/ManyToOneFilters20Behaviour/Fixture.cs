@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 
 		private static IList<Parent> JoinGraphUsingCriteria(ISession s)
 		{
-			return s.CreateCriteria(typeof(Parent)).SetFetchMode("Child", FetchMode.Join).List<Parent>();
+			return s.CreateCriteria(typeof(Parent)).Fetch("Child").List<Parent>();
 		}
 
 		private static Parent CreateParent()
@@ -110,7 +110,7 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 				EnableFilters(s);
 				resCriteria = s.CreateCriteria(typeof(Parent), "p")
 				               .CreateCriteria("Child", "c")
-				               .SetFetchMode("Child", FetchMode.Join)
+				               .Fetch("Child")
 				               .Add(Restrictions.Eq("p.ParentString", "a"))
 				               .Add(Restrictions.Eq("c.ChildString", "b"))
 				               .List<Parent>();
@@ -204,7 +204,7 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			{
 				var f = s.EnableFilter("active");
 				f.SetParameter("active", true);
-				var resCriteria = s.CreateCriteria(typeof(Parent)).SetFetchMode("Children", FetchMode.Join).List<Parent>();
+				var resCriteria = s.CreateCriteria(typeof(Parent)).Fetch("Children").List<Parent>();
 				var resHql = s.CreateQuery("select p from Parent p join fetch p.Children").List<Parent>();
 
 				Assert.That(resCriteria[0].Children.Count, Is.EqualTo(2));
@@ -228,7 +228,7 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 				 .SetParameter("active", true);
 
 				var resCriteria = s.CreateCriteria(typeof(Parent))
-				                   .SetFetchMode("Address", FetchMode.Join)
+				                   .Fetch("Address")
 				                   .List<Parent>();
 
 				var resHql = s.CreateQuery("select p from Parent p join p.Address")
@@ -241,6 +241,5 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 				Assert.That(resHql[0].Address, Is.Not.Null);
 			}
 		}
-
 	}
 }

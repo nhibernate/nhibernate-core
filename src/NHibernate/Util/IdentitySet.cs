@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NHibernate.Util
 {
 	/// <summary> 
 	/// Set implementation that use reference equals instead of Equals() as its comparison mechanism.
 	/// </summary>
+	// Since 5.3
+	[Obsolete("This class has no more usages and will be removed in a future version")]
 	public class IdentitySet : ISet<object>
 	{
 		private IDictionary map;
@@ -25,7 +26,6 @@ namespace NHibernate.Util
 				Add(member);
 		}
 
-
 		#region Implementation of ICollection<object>
 
 		void ICollection<object>.Add(object item)
@@ -35,14 +35,12 @@ namespace NHibernate.Util
 
 		#endregion
 
-
 		public bool Add(object o)
 		{
 			object tempObject = map[o];
 			map[o] = DumpValue;
 			return tempObject == null;
 		}
-
 
 		public void Clear()
 		{
@@ -85,7 +83,6 @@ namespace NHibernate.Util
 		{
 			get { return false; }
 		}
-
 
 		#region Implementation of ISet<object>
 
@@ -154,6 +151,5 @@ namespace NHibernate.Util
 		}
 
 		#endregion
-
 	}
 }

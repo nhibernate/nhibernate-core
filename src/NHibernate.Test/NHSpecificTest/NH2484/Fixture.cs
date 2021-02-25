@@ -18,9 +18,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 		[Test]
 		public void TestPersistenceOfClassWithUnknownSerializableType()
 		{
-			Assembly assembly = Assembly.Load(MappingsAssembly);
-			var stream = assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
-			var image = Bitmap.FromStream(stream);
+			var stream = typeof(Fixture).Assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
+			var image = Image.FromStream(stream);
 			
 			var model = new ClassWithImage() { Image = image };
 			var imageSize = model.Image.Size;
@@ -50,9 +49,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 		[Test]
 		public void TestPersistenceOfClassWithSerializableType()
 		{
-			Assembly assembly = Assembly.Load(MappingsAssembly);
-			var stream = assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
-			var image = Bitmap.FromStream(stream);
+			var stream = typeof(Fixture).Assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
+			var image = Image.FromStream(stream);
 			
 			var model = new ClassWithSerializableType() { Image = image };
 			var imageSize = ((Image)model.Image).Size;

@@ -1,5 +1,3 @@
-using System;
-
 namespace NHibernate.Test.Hql
 {
 	public class MaterialResource
@@ -13,7 +11,6 @@ namespace NHibernate.Test.Hql
 
 		public MaterialResource()
 		{
-
 		}
 
 		public MaterialResource(string description, string serialNumber, MaterialState state)
@@ -51,5 +48,6 @@ namespace NHibernate.Test.Hql
 			set { _state = value; }
 		}
 
+		public virtual decimal? Cost { get; set; }
 	}
 }

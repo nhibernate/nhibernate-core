@@ -8,7 +8,6 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class EnumCharType<T> : AbstractEnumType
 	{
-
 		public EnumCharType() : base(new StringFixedLengthSqlType(1),typeof(T))
 		{
 		}
@@ -94,7 +93,6 @@ namespace NHibernate.Type
 			}
 		}
 
-
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			var par = cmd.Parameters[index];
@@ -131,6 +129,18 @@ namespace NHibernate.Type
 			get { return "enumchar - " + this.ReturnedClass.Name; }
 		}
 
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object value)
 		{
 			return (value == null) ? null : GetValue(value).ToString();
@@ -153,7 +163,8 @@ namespace NHibernate.Type
 			return (value == null) ? null : GetValue(value);
 		}
 
-
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
 			return GetInstance(xml);

@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -10,7 +9,6 @@ using NHibernate.Transform;
 
 namespace NHibernate
 {
-
 	public interface IQueryOver
 	{
 		/// <summary>
@@ -159,7 +157,6 @@ namespace NHibernate
 		/// (see <see cref="ICriteria.SetReadOnly" />).
 		/// </summary>
 		IQueryOver<TRoot> ReadOnly();
-
 	}
 
 	/// <summary>
@@ -176,7 +173,6 @@ namespace NHibernate
 	/// </remarks>
 	public interface IQueryOver<TRoot,TSubType> : IQueryOver<TRoot>
 	{
-
 		/// <summary>
 		/// Add criterion expressed as a lambda expression
 		/// </summary>
@@ -366,6 +362,8 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="path">A lambda expression path (e.g., ChildList[0].Granchildren[0].Pets).</param>
 		/// <returns></returns>
+		// Since 5.2
+		[Obsolete("Use Fetch(SelectMode mode, Expression<Func<TSubType, object>> path) instead")]
 		IQueryOverFetchBuilder<TRoot,TSubType> Fetch(Expression<Func<TRoot, object>> path);
 
 		/// <summary>
@@ -656,7 +654,5 @@ namespace NHibernate
 		IQueryOverJoinBuilder<TRoot,TSubType> Left	{ get; }
 		IQueryOverJoinBuilder<TRoot,TSubType> Right	{ get; }
 		IQueryOverJoinBuilder<TRoot,TSubType> Full	{ get; }
-
 	}
-
 }

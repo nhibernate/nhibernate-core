@@ -11,6 +11,7 @@
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3487
@@ -21,11 +22,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 	{
 		private Key _key1;
 		private Key _key2;
-
-		public override string BugNumber
-		{
-			get { return "NH3487"; }
-		}
 
 		protected override void OnSetUp()
 		{
@@ -64,7 +60,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 		[Test]
 		public async Task CanDeserializeSessionWithEntityHashCollisionAsync()
 		{
-			IFormatter formatter = new BinaryFormatter();
+			var formatter = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			byte[] serializedSessionArray;
 
 			using (ISession session = OpenSession())
@@ -88,7 +89,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 			{
 				formatter.Deserialize(serializationStream);
 			}
-
 		}
 	}
 }

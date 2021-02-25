@@ -69,8 +69,21 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 				Assert.IsTrue(s.Contains("drop table Home_All"));
 			}
 
-			Assert.IsTrue(s.Contains("create table Home_All"));
-			Assert.IsTrue(s.Contains("create table Home_Export"));
+			Assert.That(s, Does.Match("create ((column|row) )?table Home_All"));
+			Assert.That(s, Does.Match("create ((column|row) )?table Home_Export"));
+		}
+
+		[Test]
+		public async Task SchemaExport_Update_CreatesUpdateScriptAsync()
+		{
+			Configuration configuration = GetConfiguration();
+			SchemaUpdate update = new SchemaUpdate(configuration);
+			TextWriter tw = new StringWriter();
+			await (update.ExecuteAsync(tw.WriteLine, false));
+
+			string s = tw.ToString();
+			Assert.That(s, Does.Match("create ((column|row) )?table Home_Update"));
+			Assert.That(s, Does.Match("create ((column|row) )?table Home_All"));
 		}
 
 		[Test]
@@ -100,7 +113,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			}
 			return cfg;
 		}
-
 
 		protected static string MappingsAssembly
 		{

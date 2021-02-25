@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Hql;
 using NHibernate.Linq;
@@ -11,7 +13,7 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public class QueryPlanCache
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(QueryPlanCache));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(QueryPlanCache));
 
 		private readonly ISessionFactoryImplementor factory;
 
@@ -21,14 +23,20 @@ namespace NHibernate.Engine.Query
 		// unnecessary cache entries.
 		// Used solely for caching param metadata for native-sql queries, see
 		// getSQLParameterMetadata() for a discussion as to why...
-		private readonly SimpleMRUCache sqlParamMetadataCache = new SimpleMRUCache();
+		private readonly SimpleMRUCache sqlParamMetadataCache;
 
 		// the cache of the actual plans...
-		private readonly SoftLimitMRUCache planCache = new SoftLimitMRUCache(128);
+		private readonly SoftLimitMRUCache planCache;
+		
+		internal const int DefaultParameterMetadataMaxCount = 128;
+		internal const int DefaultQueryPlanMaxCount = 128;
 
 		public QueryPlanCache(ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
+
+			sqlParamMetadataCache = new SimpleMRUCache(factory.Settings.QueryPlanCacheParameterMetadataMaxSize);
+			planCache = new SoftLimitMRUCache(factory.Settings.QueryPlanCacheMaxSize);
 		}
 
 		public ParameterMetadata GetSQLParameterMetadata(string query)
@@ -54,18 +62,22 @@ namespace NHibernate.Engine.Query
 
 			if (plan == null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("unable to locate HQL query plan in cache; generating (" + queryExpression.Key + ")");
+					log.Debug("unable to locate HQL query plan in cache; generating ({0})", queryExpression.Key);
 				}
 				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
-				planCache.Put(key, plan);
+				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
+				if (!(queryExpression is ICacheableQueryExpression linqExpression) || linqExpression.CanCachePlan)
+					planCache.Put(key, plan);
+				else
+					log.Debug("Query plan not cacheable");
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("located HQL query plan in cache (" + queryExpression.Key + ")");
+					log.Debug("located HQL query plan in cache ({0})", queryExpression.Key);
 				}
 				plan = CopyIfRequired(plan, queryExpression);
 			}
@@ -108,13 +120,17 @@ namespace NHibernate.Engine.Query
 
 			if (plan == null)
 			{
-				log.DebugFormat("unable to locate collection-filter query plan in cache; generating ({0} : {1})", collectionRole, queryExpression.Key);
+				log.Debug("unable to locate collection-filter query plan in cache; generating ({0} : {1})", collectionRole, queryExpression.Key);
 				plan = new FilterQueryPlan(queryExpression, collectionRole, shallow, enabledFilters, factory);
-				planCache.Put(key, plan);
+				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
+				if (!(queryExpression is ICacheableQueryExpression linqExpression) || linqExpression.CanCachePlan)
+					planCache.Put(key, plan);
+				else
+					log.Debug("Query plan not cacheable");
 			}
 			else
 			{
-				log.DebugFormat("located collection-filter query plan in cache ({0} : {1})", collectionRole, queryExpression.Key);
+				log.Debug("located collection-filter query plan in cache ({0} : {1})", collectionRole, queryExpression.Key);
 				plan = CopyIfRequired(plan, queryExpression);
 			}
 
@@ -127,18 +143,18 @@ namespace NHibernate.Engine.Query
 
 			if (plan == null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("unable to locate native-sql query plan in cache; generating (" + spec.QueryString + ")");
+					log.Debug("unable to locate native-sql query plan in cache; generating ({0})", spec.QueryString);
 				}
 				plan = new NativeSQLQueryPlan(spec, factory);
 				planCache.Put(spec, plan);
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("located native-sql query plan in cache (" + spec.QueryString + ")");
+					log.Debug("located native-sql query plan in cache ({0})", spec.QueryString);
 				}
 			}
 
@@ -170,12 +186,22 @@ namespace NHibernate.Engine.Query
 		}
 
 		[Serializable]
-		private class HQLQueryPlanKey : IEquatable<HQLQueryPlanKey>
+		private class HQLQueryPlanKey : IEquatable<HQLQueryPlanKey>, IDeserializationCallback
 		{
 			private readonly string query;
 			private readonly bool shallow;
-			private readonly HashSet<string> filterNames;
-			private readonly int hashCode;
+
+			// Sets and dictionaries are populated last during deserialization, causing them to be potentially empty
+			// during the deserialization callback. This causes them to be unreliable when used in hashcode or equals
+			// computations. These computations occur during the deserialization callback for example when another
+			// serialized set or dictionary contain an instance of this class.
+			// So better serialize them as other structures, so long for Equals implementation which actually needs a
+			// set.
+			private readonly string[] _filterNames;
+
+			// hashcode may vary among processes, they cannot be stored and have to be re-computed after deserialization
+			[NonSerialized]
+			private int? _hashCode;
 			private readonly System.Type queryTypeDiscriminator;
 
 			public HQLQueryPlanKey(string query, bool shallow, IDictionary<string, IFilter> enabledFilters)
@@ -194,23 +220,16 @@ namespace NHibernate.Engine.Query
 				this.query = query;
 				this.shallow = shallow;
 
-				if (enabledFilters == null || (enabledFilters.Count == 0))
+				if (enabledFilters == null || enabledFilters.Count == 0)
 				{
-					filterNames = new HashSet<string>();
+					_filterNames = Array.Empty<string>();
 				}
 				else
 				{
-					filterNames = new HashSet<string>(enabledFilters.Keys);
+					_filterNames = enabledFilters.Keys.ToArray();
 				}
 
-				unchecked
-				{
-					var hash = query.GetHashCode();
-					hash = 29*hash + (shallow ? 1 : 0);
-					hash = 29*hash + CollectionHelper.GetHashCode(filterNames);
-					hash = 29*hash + queryTypeDiscriminator.GetHashCode();
-					hashCode = hash;
-				}
+				_hashCode = GenerateHashCode();
 			}
 
 			public override bool Equals(object obj)
@@ -230,10 +249,12 @@ namespace NHibernate.Engine.Query
 					return false;
 				}
 
-				if (!filterNames.SetEquals(that.filterNames))
-				{
+				// BagEquals is less efficient than a SetEquals, but serializing dictionaries causes
+				// issues on deserialization if GetHashCode or Equals are called in its deserialization callback. And
+				// building sets on the fly will in most cases be worst than BagEquals, unless re-coding
+				// its short-circuits.
+				if (!CollectionHelper.BagEquals(_filterNames, that._filterNames))
 					return false;
-				}
 
 				if (!query.Equals(that.query))
 				{
@@ -250,18 +271,50 @@ namespace NHibernate.Engine.Query
 
 			public override int GetHashCode()
 			{
-				return hashCode;
+				// If the object is put in a set or dictionary during deserialization, the hashcode will not yet be
+				// computed. Compute the hashcode on the fly. So long as this happens only during deserialization, there
+				// will be no thread safety issues. For the hashcode to be always defined after deserialization, the
+				// deserialization callback is used.
+				return _hashCode ?? GenerateHashCode();
+			}
+
+			/// <inheritdoc />
+			public void OnDeserialization(object sender)
+			{
+				_hashCode = GenerateHashCode();
+			}
+
+			private int GenerateHashCode()
+			{
+				unchecked
+				{
+					var hash = query.GetHashCode();
+					hash = 29 * hash + (shallow ? 1 : 0);
+					hash = 29 * hash + CollectionHelper.GetHashCode(_filterNames);
+					hash = 29 * hash + queryTypeDiscriminator.GetHashCode();
+					return hash;
+				}
 			}
 		}
 
 		[Serializable]
-		private class FilterQueryPlanKey
+		private class FilterQueryPlanKey : IDeserializationCallback
 		{
 			private readonly string query;
 			private readonly string collectionRole;
 			private readonly bool shallow;
-			private readonly HashSet<string> filterNames;
-			private readonly int hashCode;
+
+			// Sets and dictionaries are populated last during deserialization, causing them to be potentially empty
+			// during the deserialization callback. This causes them to be unreliable when used in hashcode or equals
+			// computations. These computations occur during the deserialization callback for example when another
+			// serialized set or dictionary contain an instance of this class.
+			// So better serialize them as other structures, so long for Equals implementation which actually needs a
+			// set.
+			private readonly string[] _filterNames;
+
+			// hashcode may vary among processes, they cannot be stored and have to be re-computed after deserialization
+			[NonSerialized]
+			private int? _hashCode;
 
 			public FilterQueryPlanKey(string query, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
 			{
@@ -269,20 +322,16 @@ namespace NHibernate.Engine.Query
 				this.collectionRole = collectionRole;
 				this.shallow = shallow;
 
-				if (enabledFilters == null || (enabledFilters.Count == 0))
+				if (enabledFilters == null || enabledFilters.Count == 0)
 				{
-					filterNames = new HashSet<string>();
+					_filterNames = Array.Empty<string>();
 				}
 				else
 				{
-					filterNames = new HashSet<string>(enabledFilters.Keys);
+					_filterNames = enabledFilters.Keys.ToArray();
 				}
 
-				int hash = query.GetHashCode();
-				hash = 29 * hash + collectionRole.GetHashCode();
-				hash = 29 * hash + (shallow ? 1 : 0);
-				hash = 29 * hash + CollectionHelper.GetHashCode(filterNames);
-				hashCode = hash;
+				_hashCode = GenerateHashCode();
 			}
 
 			public override bool Equals(object obj)
@@ -300,10 +349,14 @@ namespace NHibernate.Engine.Query
 				{
 					return false;
 				}
-				if (!filterNames.SetEquals(that.filterNames))
-				{
+
+				// BagEquals is less efficient than a SetEquals, but serializing dictionaries causes
+				// issues on deserialization if GetHashCode or Equals are called in its deserialization callback. And
+				// building sets on the fly will in most cases be worst than BagEquals, unless re-coding
+				// its short-circuits.
+				if (!CollectionHelper.BagEquals(_filterNames, that._filterNames))
 					return false;
-				}
+
 				if (!query.Equals(that.query))
 				{
 					return false;
@@ -318,7 +371,29 @@ namespace NHibernate.Engine.Query
 
 			public override int GetHashCode()
 			{
-				return hashCode;
+				// If the object is put in a set or dictionary during deserialization, the hashcode will not yet be
+				// computed. Compute the hashcode on the fly. So long as this happens only during deserialization, there
+				// will be no thread safety issues. For the hashcode to be always defined after deserialization, the
+				// deserialization callback is used.
+				return _hashCode ?? GenerateHashCode();
+			}
+
+			/// <inheritdoc />
+			public void OnDeserialization(object sender)
+			{
+				_hashCode = GenerateHashCode();
+			}
+
+			private int GenerateHashCode()
+			{
+				unchecked
+				{
+					var hash = query.GetHashCode();
+					hash = 29 * hash + collectionRole.GetHashCode();
+					hash = 29 * hash + (shallow ? 1 : 0);
+					hash = 29 * hash + CollectionHelper.GetHashCode(_filterNames);
+					return hash;
+				}
 			}
 		}
 	}

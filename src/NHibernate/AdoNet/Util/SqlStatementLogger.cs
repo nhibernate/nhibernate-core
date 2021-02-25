@@ -8,7 +8,7 @@ namespace NHibernate.AdoNet.Util
 	/// <summary> Centralize logging handling for SQL statements. </summary>
 	public class SqlStatementLogger
 	{
-		private static readonly IInternalLogger Logger = LoggerProvider.LoggerFor("NHibernate.SQL");
+		private static readonly INHibernateLogger Logger = NHibernateLogger.For("NHibernate.SQL");
 
 		/// <summary> Constructs a new SqlStatementLogger instance.</summary>
 		public SqlStatementLogger() : this(false, false)
@@ -30,7 +30,7 @@ namespace NHibernate.AdoNet.Util
 
 		public bool IsDebugEnabled
 		{
-			get { return Logger.IsDebugEnabled; }
+			get { return Logger.IsDebugEnabled(); }
 		}
 
 		/// <summary> Log a DbCommand. </summary>
@@ -39,7 +39,7 @@ namespace NHibernate.AdoNet.Util
 		/// <param name="style">The requested formatting style. </param>
 		public virtual void LogCommand(string message, DbCommand command, FormatStyle style)
 		{
-			if (!Logger.IsDebugEnabled && !LogToStdout || string.IsNullOrEmpty(command.CommandText))
+			if (!Logger.IsDebugEnabled() && !LogToStdout || string.IsNullOrEmpty(command.CommandText))
 			{
 				return;
 			}
@@ -118,7 +118,7 @@ namespace NHibernate.AdoNet.Util
 
 			if (IsStringType(parameter.DbType))
 			{
-				return string.Concat("'", TruncateWithEllipsis(parameter.Value.ToString(), maxLoggableStringLength), "'");
+				return $"'{TruncateWithEllipsis(parameter.Value.ToString(), maxLoggableStringLength).Replace("'", "''")}'";
 			}
 
 			if (parameter.Value is DateTime)
@@ -134,7 +134,6 @@ namespace NHibernate.AdoNet.Util
 			}
 
 			return parameter.Value.ToString();
-
 		}
 
 		private static string GetBufferAsHexString(byte[] buffer)

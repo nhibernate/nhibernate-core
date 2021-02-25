@@ -35,9 +35,9 @@ namespace NHibernate.Event.Default
 		protected async Task<EntityEntry> ReassociateAsync(AbstractEvent @event, object entity, object id, IEntityPersister persister, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Reassociating transient instance: " + MessageHelper.InfoString(persister, id, @event.Session.Factory));
+				log.Debug("Reassociating transient instance: {0}", MessageHelper.InfoString(persister, id, @event.Session.Factory));
 			}
 
 			IEventSource source = @event.Session;
@@ -59,8 +59,7 @@ namespace NHibernate.Event.Default
 				LockMode.None,
 				true,
 				persister,
-				false,
-				true);
+				false);
 
 			await (new OnLockVisitor(source, id, entity).ProcessAsync(entity, persister, cancellationToken)).ConfigureAwait(false);
 

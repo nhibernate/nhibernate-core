@@ -92,7 +92,10 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)"); // Precision ranges from 0-127
 			// Anywhere max precision is 127, but .Net is limited to 28-29.
-			RegisterColumnType(DbType.Decimal, 28, "NUMERIC($p, $s)"); // Precision ranges from 0-127
+			RegisterColumnType(DbType.Decimal, 29, "NUMERIC($p, $s)"); // Precision ranges from 0-127
+			RegisterColumnType(DbType.Byte, "TINYINT");
+			RegisterColumnType(DbType.SByte, "UNSIGNED TINYINT");
+			RegisterColumnType(DbType.Currency, "MONEY"); // Implemented by the database as NUMERIC(19,4)
 		}
 
 		protected virtual void RegisterDateTimeTypeMappings()
@@ -134,18 +137,20 @@ namespace NHibernate.Dialect
 			RegisterFunction("floor", new StandardSQLFunction("floor", NHibernateUtil.Double));
 			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Double));
 			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
-			RegisterFunction("mod", new StandardSQLFunction("mod"));
+			RegisterFunction("mod", new ModulusFunction(false, false));
 			RegisterFunction("pi", new NoArgSQLFunction("pi", NHibernateUtil.Double, true));
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("rand", new StandardSQLFunction("rand", NHibernateUtil.Double));
+			RegisterFunction("random", new StandardSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("remainder", new StandardSQLFunction("remainder"));
-			RegisterFunction("round", new StandardSQLFunction("round"));
+			RegisterFunction("round", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0"}));
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
 			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
-			RegisterFunction("truncate", new StandardSQLFunction("truncate"));
+			RegisterFunction("truncnum", new StandardSQLFunctionWithRequiredParameters("truncnum", new object[] {null, "0"}));
+			RegisterFunction("truncate", new StandardSQLFunctionWithRequiredParameters("truncnum", new object[] {null, "0"}));
 		}
 
 		protected virtual void RegisterXmlFunctions()
@@ -191,6 +196,11 @@ namespace NHibernate.Dialect
 
 		protected virtual void RegisterBitFunctions()
 		{
+			// SQL Anywhere does not respect usual priorities with the bitwise not. Unfortunately the HQL parser
+			// furthermore remove "undue" parenthesis according to usual rules. As the bitwise not should have maximal
+			// priority, we can work around this by using a template forcing parenthesis around it.
+			RegisterFunction("bnot", new VarArgsSQLFunction(NHibernateUtil.Int64, "(~", "", ")"));
+
 			RegisterFunction("bit_length", new StandardSQLFunction("bit_length", NHibernateUtil.Int32));
 			RegisterFunction("bit_substr", new StandardSQLFunction("bit_substr"));
 			RegisterFunction("get_bit", new StandardSQLFunction("get_bit", NHibernateUtil.Boolean));
@@ -229,9 +239,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("ymd", new StandardSQLFunction("ymd", NHibernateUtil.Date));
 
 			// compatibility functions
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.DateTime, true));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("getdate", NHibernateUtil.LocalDateTime, true));
 			RegisterFunction("current_time", new NoArgSQLFunction("getdate", NHibernateUtil.Time, true));
-			RegisterFunction("current_date", new NoArgSQLFunction("getdate", NHibernateUtil.Date, true));
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.LocalDate, "date(getdate())"));
 		}
 
 		protected virtual void RegisterStringFunctions()
@@ -242,6 +252,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("byte_length", new StandardSQLFunction("byte_length", NHibernateUtil.Int32));
 			RegisterFunction("byte_substr", new VarArgsSQLFunction(NHibernateUtil.String, "byte_substr(", ",", ")"));
 			RegisterFunction("char", new StandardSQLFunction("char", NHibernateUtil.String));
+			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.Character));
 			RegisterFunction("charindex", new StandardSQLFunction("charindex", NHibernateUtil.Int32));
 			RegisterFunction("char_length", new StandardSQLFunction("char_length", NHibernateUtil.Int32));
 			RegisterFunction("compare", new VarArgsSQLFunction(NHibernateUtil.Int32, "compare(", ",", ")"));
@@ -283,7 +294,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("to_char", new VarArgsSQLFunction(NHibernateUtil.String, "to_char(", ",", ")"));
 			RegisterFunction("to_nchar", new VarArgsSQLFunction(NHibernateUtil.String, "to_nchar(", ",", ")"));
 
-			RegisterFunction("trim", new StandardSQLFunction("trim", NHibernateUtil.String));
+			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 			RegisterFunction("ucase", new StandardSQLFunction("ucase", NHibernateUtil.String));
 			RegisterFunction("unicode", new StandardSQLFunction("unicode", NHibernateUtil.Int32));
 			RegisterFunction("unistr", new StandardSQLFunction("unistr", NHibernateUtil.String));
@@ -328,6 +339,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("isnull", new VarArgsSQLFunction("isnull(", ",", ")"));
 			RegisterFunction("lesser", new StandardSQLFunction("lesser"));
 			RegisterFunction("newid", new NoArgSQLFunction("newid", NHibernateUtil.String, true));
+			RegisterFunction("new_uuid", new NoArgSQLFunction("newid", NHibernateUtil.Guid));
 			RegisterFunction("nullif", new StandardSQLFunction("nullif"));
 			RegisterFunction("number", new NoArgSQLFunction("number", NHibernateUtil.Int32));
 			RegisterFunction("plan", new VarArgsSQLFunction(NHibernateUtil.String, "plan(", ",", ")"));
@@ -343,6 +355,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("transactsql", new StandardSQLFunction("transactsql", NHibernateUtil.String));
 			RegisterFunction("varexists", new StandardSQLFunction("varexists", NHibernateUtil.Int32));
 			RegisterFunction("watcomsql", new StandardSQLFunction("watcomsql", NHibernateUtil.String));
+			RegisterFunction("iif", new IifSQLFunction());
 		}
 
 		#region private static readonly string[] DialectKeywords = { ... }
@@ -530,7 +543,7 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
-		private static int GetAfterSelectInsertPoint(SqlString sql)
+		protected static int GetAfterSelectInsertPoint(SqlString sql)
 		{
 			// Assume no common table expressions with the statement.
 			if (sql.StartsWithCaseInsensitive("select distinct"))
@@ -555,6 +568,11 @@ namespace NHibernate.Dialect
 
 			if (insertionPoint > 0)
 			{
+				if (limit == null && offset == null)
+					throw new ArgumentException("Cannot limit with neither a limit nor an offset");
+				if (limit == null)
+					throw new NotSupportedException($"Dialect {this} does not support setting an offset without a limit");
+
 				SqlStringBuilder limitBuilder = new SqlStringBuilder();
 				limitBuilder.Add("select");
 				if (insertionPoint > 6)
@@ -642,10 +660,28 @@ namespace NHibernate.Dialect
 		/// In this dialect, we avoid this issue by supporting only
 		/// <tt>FOR UPDATE BY LOCK</tt>.
 		/// </summary>
+		// Since v5.1
+		[Obsolete("Use UsesColumnsWithForUpdateOf instead")]
 		public override bool ForUpdateOfColumns
 		{
 			get { return false; }
 		}
+
+		/* 6.0 TODO: uncomment once ForUpdateOfColumns is removed.
+		/// <summary>
+		/// SQL Anywhere does support <c>FOR UPDATE OF</c> syntax. However,
+		/// in SQL Anywhere one cannot specify both <c>FOR UPDATE OF</c> syntax
+		/// and <c>FOR UPDATE BY LOCK</c> in the same statement. To achieve INTENT
+		/// locking when using <c>FOR UPDATE OF</c> syntax one must use a table hint
+		/// in the query's FROM clause, ie.
+		/// <code>
+		/// SELECT * FROM FOO WITH( UPDLOCK ) FOR UPDATE OF ( column-list ).
+		/// </code>
+		/// In this dialect, we avoid this issue by supporting only
+		/// <c>FOR UPDATE BY LOCK</c>.
+		/// </summary>
+		public override bool UsesColumnsWithForUpdateOf => false;
+		*/
 
 		/// <summary>
 		/// SQL Anywhere supports <tt>FOR UPDATE</tt> over cursors containing
@@ -929,5 +965,9 @@ namespace NHibernate.Dialect
 		{
 			return new SybaseAnywhereDataBaseMetaData(connection);
 		}
+
+		/// <inheritdoc />
+		/// <remarks>SQL Anywhere has a micro-second resolution.</remarks>
+		public override long TimestampResolutionInTicks => 10L;
 	}
 }

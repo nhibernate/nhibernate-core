@@ -6,7 +6,8 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class ManyToManyMapper : IManyToManyMapper
+	// 6.0 TODO: remove IColumnsAndFormulasMapper once IManyToManyMapper inherits it.
+	public class ManyToManyMapper : IManyToManyMapper, IColumnsAndFormulasMapper
 	{
 		private readonly System.Type elementType;
 		private readonly HbmManyToMany manyToMany;
@@ -61,16 +62,15 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Columns(params Action<IColumnMapper>[] columnMapper)
 		{
 			ResetColumnPlainValues();
-			int i = 1;
-			var columns = new List<HbmColumn>(columnMapper.Length);
-			foreach (var action in columnMapper)
+			var columns = new HbmColumn[columnMapper.Length];
+			for (var i = 0; i < columnMapper.Length; i++)
 			{
 				var hbm = new HbmColumn();
-				string defaultColumnName = elementType.Name + i++;
-				action(new ColumnMapper(hbm, defaultColumnName));
-				columns.Add(hbm);
+				string defaultColumnName = elementType.Name + i + 1;
+				columnMapper[i](new ColumnMapper(hbm, defaultColumnName));
+				columns[i] = hbm;
 			}
-			manyToMany.Items = columns.ToArray();
+			manyToMany.Items = columns;
 		}
 
 		public void Column(string name)
@@ -89,6 +89,52 @@ namespace NHibernate.Mapping.ByCode.Impl
 			manyToMany.column = null;
 			manyToMany.unique = false;
 			manyToMany.formula = null;
+		}
+
+		#endregion
+
+		#region Implementation of IColumnsAndFormulasMapper
+
+		/// <inheritdoc />
+		public void ColumnsAndFormulas(params Action<IColumnOrFormulaMapper>[] columnOrFormulaMapper)
+		{
+			ResetColumnPlainValues();
+
+			manyToMany.Items = ColumnOrFormulaMapper.GetItemsFor(columnOrFormulaMapper, elementType.Name);
+		}
+
+		/// <inheritdoc cref="IColumnsAndFormulasMapper.Formula" />
+		public void Formula(string formula)
+		{
+			if (formula == null)
+			{
+				return;
+			}
+
+			ResetColumnPlainValues();
+			manyToMany.Items = null;
+			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
+			if (formulaLines.Length > 1)
+			{
+				manyToMany.Items = new object[] {new HbmFormula {Text = formulaLines}};
+			}
+			else
+			{
+				manyToMany.formula = formula;
+			}
+		}
+
+		/// <inheritdoc />
+		public void Formulas(params string[] formulas)
+		{
+			if (formulas == null)
+				throw new ArgumentNullException(nameof(formulas));
+
+			ResetColumnPlainValues();
+			manyToMany.Items =
+				formulas
+					.ToArray(
+						f => (object) new HbmFormula {Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None)});
 		}
 
 		#endregion
@@ -118,26 +164,6 @@ namespace NHibernate.Mapping.ByCode.Impl
 				return;
 			}
 			manyToMany.notfound = mode.ToHbm();
-		}
-
-		public void Formula(string formula)
-		{
-			if (formula == null)
-			{
-				return;
-			}
-
-			ResetColumnPlainValues();
-			manyToMany.Items = null;
-			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
-			if (formulaLines.Length > 1)
-			{
-				manyToMany.Items = new[] {new HbmFormula {Text = formulaLines}};
-			}
-			else
-			{
-				manyToMany.formula = formula;
-			}
 		}
 
 		public void Lazy(LazyRelation lazyRelation)

@@ -9,15 +9,15 @@ namespace NHibernate.Stat
 	public interface ISessionStatistics
 	{
 		/// <summary> Get the number of entity instances associated with the session</summary>
-		int EntityCount { get;}
+		int EntityCount { get; }
 
 		/// <summary> Get the number of collection instances associated with the session</summary>
-		int CollectionCount { get;}
+		int CollectionCount { get; }
 
 		/// <summary> Get the set of all <see cref="EntityKey">EntityKeys</see>.</summary>
-		IList<EntityKey> EntityKeys { get;}
+		IList<EntityKey> EntityKeys { get; }
 
 		/// <summary> Get the set of all <see cref="CollectionKey">CollectionKeys</see>.</summary>
-		IList<CollectionKey> CollectionKeys { get;}
+		IList<CollectionKey> CollectionKeys { get; }
 	}
 }

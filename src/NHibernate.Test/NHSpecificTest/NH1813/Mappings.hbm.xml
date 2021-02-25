@@ -5,6 +5,6 @@
 				   default-lazy="false">
 	<class name="EntityWithUnique">
 		<id name="Id"/>
-		<property name="Description" unique-key="ewu_description"/>
+		<property name="Description" unique-key="ewu_description" not-null="true"/>
 	</class>
 </hibernate-mapping>

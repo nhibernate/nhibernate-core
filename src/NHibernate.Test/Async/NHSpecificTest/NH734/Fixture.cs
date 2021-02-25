@@ -17,33 +17,17 @@ namespace NHibernate.Test.NHSpecificTest.NH734
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH734"; }
-		}
-
 		[TestAttribute]
 		public async Task LimitProblemAsync()
 		{
-			using (ISession session = Sfi.OpenSession())
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
 				ICriteria criteria = session.CreateCriteria(typeof(MyClass));
 				criteria.SetMaxResults(100);
 				criteria.SetFirstResult(0);
-				try
-				{
-					session.BeginTransaction();
-					IList result = await (criteria.ListAsync());
-					await (session.Transaction.CommitAsync());
-				}
-				catch
-				{
-					if (session.Transaction != null)
-					{
-						await (session.Transaction.RollbackAsync());
-					}
-					throw;
-				}
+				IList result = await (criteria.ListAsync());
+				await (tran.CommitAsync());
 			}
 		}
 	}

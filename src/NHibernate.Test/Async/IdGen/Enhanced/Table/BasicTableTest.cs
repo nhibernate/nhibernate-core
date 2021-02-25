@@ -18,7 +18,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 	[TestFixture]
 	public class BasicTableTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "IdGen.Enhanced.Table.Basic.hbm.xml" }; }
 		}
@@ -27,7 +27,6 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 		{
 			get { return "NHibernate.Test"; }
 		}
-
 
 		[Test]
 		public async Task TestNormalBoundaryAsync()
@@ -52,11 +51,9 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 						Assert.That(entities[i].Id, Is.EqualTo(expectedId));
 						Assert.That(generator.TableAccessCount, Is.EqualTo(expectedId));
 						Assert.That(generator.Optimizer.LastSourceValue, Is.EqualTo(expectedId));
-
 					}
 					await (transaction.CommitAsync());
 				}
-
 
 				using (ITransaction transaction = s.BeginTransaction())
 				{

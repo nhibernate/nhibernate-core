@@ -58,7 +58,7 @@ namespace NHibernate.AdoNet
 					cmd.Connection = sessionConnection;
 				}
 
-				_connectionManager.Transaction.Enlist(cmd);
+				_connectionManager.EnlistInTransaction(cmd);
 				Driver.PrepareCommand(cmd);
 			}
 			catch (InvalidOperationException ioe)
@@ -72,14 +72,14 @@ namespace NHibernate.AdoNet
 			cancellationToken.ThrowIfCancellationRequested();
 			if (sql.Equals(_batchCommandSql) && ArrayHelper.ArrayEquals(parameterTypes, _batchCommandParameterTypes))
 			{
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
-					Log.Debug("reusing command " + _batchCommand.CommandText);
+					Log.Debug("reusing command {0}", _batchCommand.CommandText);
 				}
 			}
 			else
 			{
-				_batchCommand = await (PrepareCommandAsync(type, sql, parameterTypes, cancellationToken)).ConfigureAwait(false); // calls ExecuteBatch()
+				_batchCommand = await (PrepareCommandAsync(type, sql, parameterTypes, true, cancellationToken)).ConfigureAwait(false); // calls ExecuteBatch()
 				_batchCommandSql = sql;
 				_batchCommandParameterTypes = parameterTypes;
 			}
@@ -87,7 +87,16 @@ namespace NHibernate.AdoNet
 			return _batchCommand;
 		}
 
-		public async Task<DbCommand> PrepareCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken)
+		public Task<DbCommand> PrepareCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<DbCommand>(cancellationToken);
+			}
+			return PrepareCommandAsync(type, sql, parameterTypes, false, cancellationToken);
+		}
+
+		private async Task<DbCommand> PrepareCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, bool batch, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			await (OnPreparedCommandAsync(cancellationToken)).ConfigureAwait(false);
@@ -96,7 +105,7 @@ namespace NHibernate.AdoNet
 			// if the command is associated with an ADO.NET Transaction/Connection while
 			// another open one Command is doing something then an exception will be 
 			// thrown.
-			return Generate(type, sql, parameterTypes);
+			return Generate(type, sql, parameterTypes, batch);
 		}
 
 		protected virtual Task OnPreparedCommandAsync(CancellationToken cancellationToken)
@@ -117,22 +126,23 @@ namespace NHibernate.AdoNet
 			LogCommand(cmd);
 			await (PrepareAsync(cmd, cancellationToken)).ConfigureAwait(false);
 			Stopwatch duration = null;
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 				duration = Stopwatch.StartNew();
 			try
 			{
 				return await (cmd.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				e.Data["actual-sql-query"] = cmd.CommandText;
-				Log.Error("Could not execute command: " + cmd.CommandText, e);
+				Log.Error(e, "Could not execute command: {0}", cmd.CommandText);
 				throw;
 			}
 			finally
 			{
-				if (Log.IsDebugEnabled && duration != null)
-					Log.DebugFormat("ExecuteNonQuery took {0} ms", duration.ElapsedMilliseconds);
+				if (duration != null)
+					Log.Debug("ExecuteNonQuery took {0} ms", duration.ElapsedMilliseconds);
 			}
 		}
 
@@ -142,37 +152,33 @@ namespace NHibernate.AdoNet
 			await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
 			LogCommand(cmd);
 			await (PrepareAsync(cmd, cancellationToken)).ConfigureAwait(false);
-			Stopwatch duration = null;
-			if (Log.IsDebugEnabled)
-				duration = Stopwatch.StartNew();
-			DbDataReader reader = null;
+
+			var duration = Log.IsDebugEnabled() ? Stopwatch.StartNew() : null;
+
+			var reader = await (DoExecuteReaderAsync(cmd, cancellationToken)).ConfigureAwait(false);
+
+			_readersToClose.Add(reader);
+			LogOpenReader(duration , reader);
+			return reader;
+		}
+
+		private async Task<DbDataReader> DoExecuteReaderAsync(DbCommand cmd, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
-				reader = await (cmd.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false);
+				var reader = await (cmd.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false);
+				return _factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders
+					? reader
+					: await (NHybridDataReader.CreateAsync(reader, cancellationToken)).ConfigureAwait(false);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				e.Data["actual-sql-query"] = cmd.CommandText;
-				Log.Error("Could not execute query: " + cmd.CommandText, e);
+				Log.Error(e, "Could not execute query: {0}", cmd.CommandText);
 				throw;
 			}
-			finally
-			{
-				if (Log.IsDebugEnabled && duration != null && reader != null)
-				{
-					Log.DebugFormat("ExecuteReader took {0} ms", duration.ElapsedMilliseconds);
-					_readersDuration[reader] = duration;
-				}
-			}
-
-			if (!_factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
-			{
-				reader = await (NHybridDataReader.CreateAsync(reader, cancellationToken)).ConfigureAwait(false);
-			}
-
-			_readersToClose.Add(reader);
-			LogOpenReader();
-			return reader;
 		}
 
 		/// <summary>
@@ -219,12 +225,12 @@ namespace NHibernate.AdoNet
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Stopwatch duration = null;
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 				duration = Stopwatch.StartNew();
 			var countBeforeExecutingBatch = CountOfStatementsInCurrentBatch;
 			await (DoExecuteBatchAsync(ps, cancellationToken)).ConfigureAwait(false);
-			if (Log.IsDebugEnabled && duration != null)
-				Log.DebugFormat("ExecuteBatch for {0} statements took {1} ms",
+			if (duration != null)
+				Log.Debug("ExecuteBatch for {0} statements took {1} ms",
 					countBeforeExecutingBatch,
 					duration.ElapsedMilliseconds);
 		}

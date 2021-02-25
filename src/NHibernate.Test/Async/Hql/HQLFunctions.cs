@@ -10,12 +10,16 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Hql
 {
-	using System.Threading.Tasks;
+	using System.Linq;
 	/// <summary>
 	/// This test run each HQL function separately so is easy to know which function need
 	/// an override in the specific dialect implementation.
@@ -23,48 +27,12 @@ namespace NHibernate.Test.Hql
 	[TestFixture]
 	public class HQLFunctionsAsync : TestCase
 	{
-		static readonly Hashtable notSupportedStandardFunction;
-		static HQLFunctionsAsync()
-		{
-			notSupportedStandardFunction =
-				new Hashtable
-					{
-						{"locate", new[] {typeof (SQLiteDialect)}},
-						{"bit_length", new[] {typeof (SQLiteDialect)}},
-						{"extract", new[] {typeof (SQLiteDialect)}},
-						{
-							"nullif",
-							new[]
-							{
-								typeof (Oracle8iDialect),
-								// Actually not supported by the db engine. (Well, could likely still be done with a case when override.)
-								typeof (MsSqlCeDialect),
-								typeof (MsSqlCe40Dialect)
-							}}
-					};
-		}
-
-		private bool IsOracleDialect()
-		{
-			return Dialect is Oracle8iDialect;
-		}
-
-		private void IgnoreIfNotSupported(string functionName)
-		{
-			if (notSupportedStandardFunction.ContainsKey(functionName))
-			{
-				IList dialects = (IList)notSupportedStandardFunction[functionName];
-				if(dialects.Contains(Dialect.GetType()))
-					Assert.Ignore(Dialect + " doesn't support "+functionName+" function.");
-			}
-		}
-
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Hql.Animal.hbm.xml", "Hql.MaterialResource.hbm.xml" }; }
 		}
@@ -75,6 +43,7 @@ namespace NHibernate.Test.Hql
 			{
 				s.Delete("from Human");
 				s.Delete("from Animal");
+				s.Delete("from MaterialResource");
 				s.Flush();
 			}
 		}
@@ -246,8 +215,7 @@ namespace NHibernate.Test.Hql
 				Assert.DoesNotThrowAsync(() => s.CreateQuery("select a.Id, sum(BodyWeight)/avg(BodyWeight) from Animal a group by a.Id having sum(BodyWeight)>0").ListAsync());
 			}			
 		}
-
-
+		
 		[Test]
 		public async Task SubStringTwoParametersAsync()
 		{
@@ -255,7 +223,7 @@ namespace NHibernate.Test.Hql
 			// the two-parameter overload - emulating it by generating the 
 			// third parameter (length) if the database requires three parameters.
 
-			IgnoreIfNotSupported("substring");
+			AssumeFunctionSupported("substring");
 
 			using (ISession s = OpenSession())
 			{
@@ -288,12 +256,11 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
-
-
+		
 		[Test]
 		public async Task SubStringAsync()
 		{
-			IgnoreIfNotSupported("substring");
+			AssumeFunctionSupported("substring");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -314,7 +281,6 @@ namespace NHibernate.Test.Hql
 					.UniqueResultAsync());
 				Assert.AreEqual("abcdef", result.Description);
 
-
 				// Following tests verify that parameters can be used.
 
 				hql = "from Animal a where substring(a.Description, 2, ?) = 'bcd'";
@@ -322,7 +288,6 @@ namespace NHibernate.Test.Hql
 					.SetParameter(0, 3)
 					.UniqueResultAsync());
 				Assert.AreEqual("abcdef", result.Description);
-
 
 				hql = "from Animal a where substring(a.Description, ?, ?) = ?";
 				result = (Animal)await (s.CreateQuery(hql)
@@ -345,7 +310,6 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task LocateAsync()
 		{
-			IgnoreIfNotSupported("locate");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -367,7 +331,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task TrimAsync()
 		{
-			IgnoreIfNotSupported("trim");
+			AssumeFunctionSupported("trim");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abc   ", 1);
@@ -425,7 +389,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task LengthAsync()
 		{
-			IgnoreIfNotSupported("length");
+			AssumeFunctionSupported("length");
 
 			using (ISession s = OpenSession())
 			{
@@ -450,7 +414,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task Bit_lengthAsync()
 		{
-			IgnoreIfNotSupported("bit_length");
+			AssumeFunctionSupported("bit_length");
 
 			// test only the parser
 			using (ISession s = OpenSession())
@@ -466,7 +430,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task CoalesceAsync()
 		{
-			IgnoreIfNotSupported("coalesce");
+			AssumeFunctionSupported("coalesce");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -481,9 +445,9 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task NullifAsync()
 		{
-			IgnoreIfNotSupported("nullif");
+			AssumeFunctionSupported("nullif");
 			string hql1, hql2;
-			if(!IsOracleDialect())
+			if(!(Dialect is Oracle8iDialect))
 			{
 				hql1 = "select nullif(h.NickName, '1e1') from Human h";
 				hql2 = "from Human h where not(nullif(h.NickName, '1e1') is null)";
@@ -505,7 +469,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task AbsAsync()
 		{
-			IgnoreIfNotSupported("abs");
+			AssumeFunctionSupported("abs");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("Dog", 9);
@@ -532,9 +496,151 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public async Task CeilingAsync()
+		{
+			AssumeFunctionSupported("ceiling");
+
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("a1", 1.3f);
+				await (s.SaveAsync(a1));
+				await (s.FlushAsync());
+			}
+			using (var s = OpenSession())
+			{
+				var ceiling = await (s.CreateQuery("select ceiling(a.BodyWeight) from Animal a").UniqueResultAsync<float>());
+				Assert.That(ceiling, Is.EqualTo(2));
+				var count =
+					await (s
+						.CreateQuery("select count(*) from Animal a where ceiling(a.BodyWeight) = :c")
+						.SetInt32("c", 2)
+						.UniqueResultAsync<long>());
+				Assert.That(count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public async Task RoundAsync()
+		{
+			AssumeFunctionSupported("round");
+
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("a1", 1.87f);
+				await (s.SaveAsync(a1));
+				var m1 = new MaterialResource("m1", "18", MaterialResource.MaterialState.Available) { Cost = 51.76m };
+				await (s.SaveAsync(m1));
+				await (s.FlushAsync());
+			}
+			using (var s = OpenSession())
+			{
+				var roundF = await (s.CreateQuery("select round(a.BodyWeight) from Animal a").UniqueResultAsync<float>());
+				Assert.That(roundF, Is.EqualTo(2), "Selecting round(double) failed.");
+				var countF =
+					await (s
+						.CreateQuery("select count(*) from Animal a where round(a.BodyWeight) = :c")
+						.SetInt32("c", 2)
+						.UniqueResultAsync<long>());
+				Assert.That(countF, Is.EqualTo(1), "Filtering round(double) failed.");
+				
+				roundF = await (s.CreateQuery("select round(a.BodyWeight, 1) from Animal a").UniqueResultAsync<float>());
+				Assert.That(roundF, Is.EqualTo(1.9f).Within(0.01f), "Selecting round(double, 1) failed.");
+				countF =
+					await (s
+						.CreateQuery("select count(*) from Animal a where round(a.BodyWeight, 1) between :c1 and :c2")
+						.SetDouble("c1", 1.89)
+						.SetDouble("c2", 1.91)
+						.UniqueResultAsync<long>());
+				Assert.That(countF, Is.EqualTo(1), "Filtering round(double, 1) failed.");
+
+				var roundD = await (s.CreateQuery("select round(m.Cost) from MaterialResource m").UniqueResultAsync<decimal?>());
+				Assert.That(roundD, Is.EqualTo(52), "Selecting round(decimal) failed.");
+				var count =
+					await (s
+						.CreateQuery("select count(*) from MaterialResource m where round(m.Cost) = :c")
+						.SetInt32("c", 52)
+						.UniqueResultAsync<long>());
+				Assert.That(count, Is.EqualTo(1), "Filtering round(decimal) failed.");
+
+				roundD = await (s.CreateQuery("select round(m.Cost, 1) from MaterialResource m").UniqueResultAsync<decimal?>());
+				Assert.That(roundD, Is.EqualTo(51.8m), "Selecting round(decimal, 1) failed.");
+
+				if (TestDialect.HasBrokenDecimalType)
+					// SQLite fails the equality test due to using double instead, wich requires a tolerance.
+					return;
+
+				count =
+					await (s
+						.CreateQuery("select count(*) from MaterialResource m where round(m.Cost, 1) = :c")
+						.SetDecimal("c", 51.8m)
+						.UniqueResultAsync<long>());
+				Assert.That(count, Is.EqualTo(1), "Filtering round(decimal, 1) failed.");
+			}
+		}
+
+		[Test]
+		public async Task TruncateAsync()
+		{
+			AssumeFunctionSupported("truncate");
+
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("a1", 1.87f);
+				await (s.SaveAsync(a1));
+				var m1 = new MaterialResource("m1", "18", MaterialResource.MaterialState.Available) { Cost = 51.76m };
+				await (s.SaveAsync(m1));
+				await (s.FlushAsync());
+			}
+			using (var s = OpenSession())
+			{
+				var roundF = await (s.CreateQuery("select truncate(a.BodyWeight) from Animal a").UniqueResultAsync<float>());
+				Assert.That(roundF, Is.EqualTo(1), "Selecting truncate(double) failed.");
+				var countF =
+					await (s
+						.CreateQuery("select count(*) from Animal a where truncate(a.BodyWeight) = :c")
+						.SetInt32("c", 1)
+						.UniqueResultAsync<long>());
+				Assert.That(countF, Is.EqualTo(1), "Filtering truncate(double) failed.");
+				
+				roundF = await (s.CreateQuery("select truncate(a.BodyWeight, 1) from Animal a").UniqueResultAsync<float>());
+				Assert.That(roundF, Is.EqualTo(1.8f).Within(0.01f), "Selecting truncate(double, 1) failed.");
+				countF =
+					await (s
+						.CreateQuery("select count(*) from Animal a where truncate(a.BodyWeight, 1) between :c1 and :c2")
+						.SetDouble("c1", 1.79)
+						.SetDouble("c2", 1.81)
+						.UniqueResultAsync<long>());
+				Assert.That(countF, Is.EqualTo(1), "Filtering truncate(double, 1) failed.");
+
+				var roundD = await (s.CreateQuery("select truncate(m.Cost) from MaterialResource m").UniqueResultAsync<decimal?>());
+				Assert.That(roundD, Is.EqualTo(51), "Selecting truncate(decimal) failed.");
+				var count =
+					await (s
+						.CreateQuery("select count(*) from MaterialResource m where truncate(m.Cost) = :c")
+						.SetInt32("c", 51)
+						.UniqueResultAsync<long>());
+				Assert.That(count, Is.EqualTo(1), "Filtering truncate(decimal) failed.");
+
+				roundD = await (s.CreateQuery("select truncate(m.Cost, 1) from MaterialResource m").UniqueResultAsync<decimal?>());
+				Assert.That(roundD, Is.EqualTo(51.7m), "Selecting truncate(decimal, 1) failed.");
+
+				if (TestDialect.HasBrokenDecimalType)
+					// SQLite fails the equality test due to using double instead, wich requires a tolerance.
+					return;
+
+				count =
+					await (s
+						.CreateQuery("select count(*) from MaterialResource m where truncate(m.Cost, 1) = :c")
+						.SetDecimal("c", 51.7m)
+						.UniqueResultAsync<long>());
+				Assert.That(count, Is.EqualTo(1), "Filtering truncate(decimal, 1) failed.");
+			}
+		}
+
+		[Test]
 		public async Task ModAsync()
 		{
-			IgnoreIfNotSupported("mod");
+			AssumeFunctionSupported("mod");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -560,7 +666,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task SqrtAsync()
 		{
-			IgnoreIfNotSupported("sqrt");
+			AssumeFunctionSupported("sqrt");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 65536f);
@@ -582,7 +688,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task UpperAsync()
 		{
-			IgnoreIfNotSupported("upper");
+			AssumeFunctionSupported("upper");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1f);
@@ -611,7 +717,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task LowerAsync()
 		{
-			IgnoreIfNotSupported("lower");
+			AssumeFunctionSupported("lower");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("ABCDEF", 1f);
@@ -638,11 +744,59 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public async Task AsciiAsync()
+		{
+			AssumeFunctionSupported("ascii");
+
+			using (var s = OpenSession())
+			{
+				var m = new MaterialResource(" ", "000", MaterialResource.MaterialState.Available);
+				await (s.SaveAsync(m));
+				await (s.FlushAsync());
+			}
+			using (var s = OpenSession())
+			{
+				var space = await (s.CreateQuery("select ascii(m.Description) from MaterialResource m").UniqueResultAsync<int>());
+				Assert.That(space, Is.EqualTo(32));
+				var count =
+					await (s
+						.CreateQuery("select count(*) from MaterialResource m where ascii(m.Description) = :c")
+						.SetInt32("c", 32)
+						.UniqueResultAsync<long>());
+				Assert.That(count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public async Task ChrAsync()
+		{
+			AssumeFunctionSupported("chr");
+
+			using (var s = OpenSession())
+			{
+				var m = new MaterialResource("Blah", "000", (MaterialResource.MaterialState)32);
+				await (s.SaveAsync(m));
+				await (s.FlushAsync());
+			}
+			using (var s = OpenSession())
+			{
+				var space = await (s.CreateQuery("select chr(m.State) from MaterialResource m").UniqueResultAsync<char>());
+				Assert.That(space, Is.EqualTo(' '));
+				var count =
+					await (s
+						.CreateQuery("select count(*) from MaterialResource m where chr(m.State) = :c")
+						.SetCharacter("c", ' ')
+						.UniqueResultAsync<long>());
+				Assert.That(count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
 		public async Task CastAsync()
 		{
 			const double magicResult = 7 + 123 - 5*1.3d;
 
-			IgnoreIfNotSupported("cast");
+			AssumeFunctionSupported("cast");
 			// The cast is used to test various cases of a function render
 			// Cast was selected because represent a special case for:
 			// 1) Has more then 1 argument
@@ -792,6 +946,13 @@ namespace NHibernate.Test.Hql
 								throw;
 							}
 						}
+						else if (Dialect is HanaDialectBase)
+						{
+							string msgToCheck =
+								"not a GROUP BY expression: 'ANIMAL0_.BODYWEIGHT' must be in group by clause";
+							if (!ex.InnerException.Message.Contains(msgToCheck))
+								throw;
+						}
 						else
 						{
 							string msgToCheck =
@@ -820,7 +981,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task CastNH1446Async()
 		{
-			IgnoreIfNotSupported("cast");
+			AssumeFunctionSupported("cast");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1.3f);
@@ -840,7 +1001,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task CastNH1979Async()
 		{
-			IgnoreIfNotSupported("cast");
+			AssumeFunctionSupported("cast");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1.3f);
@@ -858,7 +1019,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task Current_TimeStampAsync()
 		{
-			IgnoreIfNotSupported("current_timestamp");
+			AssumeFunctionSupported("current_timestamp");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1.3f);
@@ -878,9 +1039,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task Current_TimeStamp_OffsetAsync()
 		{
-			if (!Dialect.Functions.ContainsKey("current_timestamp_offset"))
-				Assert.Ignore(Dialect + " doesn't support current_timestamp_offset function");
-			IgnoreIfNotSupported("current_timestamp_offset");
+			AssumeFunctionSupported("current_timestamp_offset");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1.3f);
@@ -895,10 +1054,57 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public async Task Current_DateAsync()
+		{
+			AssumeFunctionSupported("current_date");
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("abcdef", 1.3f);
+				await (s.SaveAsync(a1));
+				await (s.FlushAsync());
+			}
+			using (var s = OpenSession())
+			{
+				var hql = "select current_date() from Animal";
+				await (s.CreateQuery(hql).ListAsync());
+			}
+		}
+
+		[Test]
+		public async Task Current_Date_IsLowestTimeOfDayAsync()
+		{
+			AssumeFunctionSupported("current_date");
+			if (!TestDialect.SupportsNonDataBoundCondition)
+				Assert.Ignore("Test is not supported by the target database");
+			var now = DateTime.Now;
+			if (now.TimeOfDay < TimeSpan.FromMinutes(5) || now.TimeOfDay > TimeSpan.Parse("23:55"))
+				Assert.Ignore("Test is unreliable around midnight");
+
+			var lowTimeDate = now.Date.AddSeconds(1);
+
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("abcdef", 1.3f);
+				await (s.SaveAsync(a1));
+				await (s.FlushAsync());
+			}
+			using (var s = OpenSession())
+			{
+				var hql = "from Animal where current_date() < :lowTimeDate";
+				var result =
+					await (s
+						.CreateQuery(hql)
+						.SetDateTime("lowTimeDate", lowTimeDate)
+						.ListAsync());
+				Assert.That(result, Has.Count.GreaterThan(0));
+			}
+		}
+
+		[Test]
 		public async Task ExtractAsync()
 		{
-			IgnoreIfNotSupported("extract");
-			IgnoreIfNotSupported("current_timestamp");
+			AssumeFunctionSupported("extract");
+			AssumeFunctionSupported("current_timestamp");
 
 			// test only the parser and render
 			using (ISession s = OpenSession())
@@ -914,7 +1120,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task ConcatAsync()
 		{
-			IgnoreIfNotSupported("concat");
+			AssumeFunctionSupported("concat");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 1f);
@@ -940,10 +1146,10 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task HourMinuteSecondAsync()
 		{
-			IgnoreIfNotSupported("second");
-			IgnoreIfNotSupported("minute");
-			IgnoreIfNotSupported("hour");
-			IgnoreIfNotSupported("current_timestamp");
+			AssumeFunctionSupported("second");
+			AssumeFunctionSupported("minute");
+			AssumeFunctionSupported("hour");
+			AssumeFunctionSupported("current_timestamp");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -955,9 +1161,9 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task DayMonthYearAsync()
 		{
-			IgnoreIfNotSupported("day");
-			IgnoreIfNotSupported("month");
-			IgnoreIfNotSupported("year");
+			AssumeFunctionSupported("day");
+			AssumeFunctionSupported("month");
+			AssumeFunctionSupported("year");
 			// test only the parser and render
 			using (ISession s = OpenSession())
 			{
@@ -969,7 +1175,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task StrAsync()
 		{
-			IgnoreIfNotSupported("str");
+			AssumeFunctionSupported("str");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -984,6 +1190,7 @@ namespace NHibernate.Test.Hql
 
 				hql = "from Animal a where str(123) = '123'";
 				Animal result = (Animal) await (s.CreateQuery(hql).UniqueResultAsync());
+				Assert.That(result, Is.Not.Null);
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
@@ -991,8 +1198,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task IifAsync()
 		{
-			if (!Dialect.Functions.ContainsKey("iif"))
-				Assert.Ignore(Dialect + "doesn't support iif function.");
+			AssumeFunctionSupported("iif");
 			using (ISession s = OpenSession())
 			{
 				await (s.SaveAsync(new MaterialResource("Flash card 512MB", "A001/07", MaterialResource.MaterialState.Available)));
@@ -1035,7 +1241,7 @@ group by mr.Description";
 		[Test]
 		public async Task NH1725Async()
 		{
-			IgnoreIfNotSupported("iif");
+			AssumeFunctionSupported("iif");
 			// Only to test the parser
 			using (ISession s = OpenSession())
 			{
@@ -1046,37 +1252,186 @@ group by mr.Description";
 			}
 		}
 
-		[Test, Ignore("Not supported yet!")]
-		public async Task ParameterLikeArgumentAsync()
+		[Test]
+		public async Task BitwiseAndAsync()
 		{
-			using (ISession s = OpenSession())
+			AssumeFunctionSupported("band");
+			await (CreateMaterialResourcesAsync());
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
-				Animal a1 = new Animal("abcdef", 1.3f);
-				await (s.SaveAsync(a1));
-				await (s.FlushAsync());
+				var query = s.CreateQuery("from MaterialResource m where (m.State & 1) > 0");
+				var result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(1), "& 1");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State & 2) > 0");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(1), "& 2");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State & 3) > 0");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(2), "& 3");
+
+				await (tx.CommitAsync());
 			}
+		}
 
-			using (ISession s = OpenSession())
+		[Test]
+		public async Task BitwiseOrAsync()
+		{
+			AssumeFunctionSupported("bor");
+			await (CreateMaterialResourcesAsync());
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
-				string hql;
-				IList l;
-				Animal result;
+				var query = s.CreateQuery("from MaterialResource m where (m.State | 1) > 0");
+				var result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(3), "| 1) > 0");
 
-				// Render in WHERE
-				hql = "from Animal a where cast(:aParam as Double)>0";
-				result = (Animal)await (s.CreateQuery(hql).SetDouble("aParam", 2D).UniqueResultAsync());
-				Assert.IsNotNull(result);
+				query = s.CreateQuery("from MaterialResource m where (m.State | 1) > 1");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(1), "| 1) > 1");
 
-				// Render in WHERE with math operation
-				hql = "from Animal a where cast(:aParam+a.BodyWeight as Double)>3";
-				result = (Animal) await (s.CreateQuery(hql).SetDouble("aParam", 2D).UniqueResultAsync());
-				Assert.IsNotNull(result);
+				query = s.CreateQuery("from MaterialResource m where (m.State | 0) > 0");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(2), "| 0) > 0");
 
-				// Render in all clauses
-				hql =
-					"select cast(:aParam+a.BodyWeight as int) from Animal a group by cast(:aParam+a.BodyWeight as int) having cast(:aParam+a.BodyWeight as Double)>0";
-				l = await (s.CreateQuery(hql).SetInt32("aParam", 10).ListAsync());
-				Assert.AreEqual(1, l.Count);
+				await (tx.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task BitwiseXorAsync()
+		{
+			AssumeFunctionSupported("bxor");
+			await (CreateMaterialResourcesAsync());
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var query = s.CreateQuery("from MaterialResource m where (m.State ^ 1) > 0");
+				var result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(2), "^ 1");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State ^ 2) > 0");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(2), "^ 2");
+
+				query = s.CreateQuery("from MaterialResource m where (m.State ^ 3) > 0");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(3), "^ 3");
+
+				await (tx.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task BitwiseNotAsync()
+		{
+			AssumeFunctionSupported("bnot");
+			AssumeFunctionSupported("band");
+			await (CreateMaterialResourcesAsync());
+
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				// The bitwise "not" should take precedence over the bitwise "and", but when it is implemented as a
+				// function, its argument is the whole following statement, unless parenthesis are used to prevent this.
+				var query = s.CreateQuery("from MaterialResource m where ((!m.State) & 3) = 3");
+				var result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(1), "((!m.State) & 3) = 3");
+
+				query = s.CreateQuery("from MaterialResource m where ((!m.State) & 3) = 2");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(1), "((!m.State) & 3) = 2");
+
+				query = s.CreateQuery("from MaterialResource m where ((!m.State) & 3) = 1");
+				result = await (query.ListAsync());
+				Assert.That(result, Has.Count.EqualTo(1), "((!m.State) & 3) = 1");
+
+				await (tx.CommitAsync());
+			}
+		}
+
+		// #1670
+		[Test]
+		public async Task BitwiseIsThreadsafeAsync()
+		{
+			AssumeFunctionSupported("band");
+			AssumeFunctionSupported("bor");
+			AssumeFunctionSupported("bxor");
+			AssumeFunctionSupported("bnot");
+			var queries = new List<Tuple<string, int>>
+			{
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State & 1) > 0", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State & 2) > 0", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State & 3) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State | 1) > 0", 3),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State | 1) > 1", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State | 0) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State ^ 1) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State ^ 2) > 0", 2),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where (m.State ^ 3) > 0", 3),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 3", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 2", 1),
+				new Tuple<string, int> ("select count(*) from MaterialResource m where ((!m.State) & 3) = 1", 1)
+			};
+
+			if (TestDialect.MaxNumberOfConnections < queries.Count)
+				Assert.Ignore("Current database has a too low connection count limit.");
+
+			// Do not use a ManualResetEventSlim, it does not support async and exhausts the task thread pool in the
+			// async counterparts of this test. SemaphoreSlim has the async support and release the thread when waiting.
+			var semaphore = new SemaphoreSlim(0);
+			var failures = new ConcurrentBag<Exception>();
+
+			await (CreateMaterialResourcesAsync());
+
+			await (Task.WhenAll(
+				Enumerable.Range(0, queries.Count + 1 - 0).Select(async i =>
+				{
+					if (i >= queries.Count)
+					{
+						// Give some time to threads for reaching the wait, having all of them ready to do the
+						// critical part of their job concurrently.
+						await (Task.Delay(100));
+						semaphore.Release(queries.Count);
+						return;
+					}
+
+					try
+					{
+						var query = queries[i];
+						using (var s = OpenSession())
+						using (var tx = s.BeginTransaction())
+						{
+							await (semaphore.WaitAsync());
+							var q = s.CreateQuery(query.Item1);
+							var result = await (q.UniqueResultAsync<long>());
+							Assert.That(result, Is.EqualTo(query.Item2), query.Item1);
+							await (tx.CommitAsync());
+						}
+					}
+					catch (Exception e)
+					{
+						failures.Add(e);
+					}
+				})));
+
+			Assert.That(failures, Is.Empty, $"{failures.Count} task(s) failed.");
+		}
+
+		private async Task CreateMaterialResourcesAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				await (s.SaveAsync(new MaterialResource("m1", "18", MaterialResource.MaterialState.Available) { Cost = 51.76m }, cancellationToken));
+				await (s.SaveAsync(new MaterialResource("m2", "19", MaterialResource.MaterialState.Reserved) { Cost = 15.24m }, cancellationToken));
+				await (s.SaveAsync(new MaterialResource("m3", "20", MaterialResource.MaterialState.Discarded) { Cost = 21.54m }, cancellationToken));
+				await (tx.CommitAsync(cancellationToken));
 			}
 		}
 	}

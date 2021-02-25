@@ -9,6 +9,7 @@ using NHibernate.Dialect;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Driver
 {
@@ -18,11 +19,29 @@ namespace NHibernate.Driver
 	/// </summary>
 	public class FirebirdClientDriver : ReflectionBasedDriver
 	{
-		private const string SELECT_CLAUSE_EXP = @"(?<=\bselect|\bwhere).*";
-		private const string CAST_PARAMS_EXP = @"(?<![=<>]\s?|first\s?|skip\s?|between\s|between\s@\bp\w+\b\sand\s)@\bp\w+\b(?!\s?[=<>])";
-		private readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
-		private readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
+		private const string SELECT_CLAUSE_EXP = @"(?<=\bselect\b|\bwhere\b).*";
+		private const string CAST_PARAMS_EXP =
+			// Zero-width negative look-behind: the match must not be preceded by
+			@"(?<!" +
+			// a comparison,
+			@"[=<>]\s*" +
+			// or a paging instruction,
+			@"|\bfirst\s+|\bskip\s+" +
+			// or a "between" condition,
+			@"|\bbetween\s+|\bbetween\s+@p\w+\s+and\s+" +
+			// or a "in" condition.
+			@"|\bin\s*\([@\w\s,]*)" +
+			// Match a parameter
+			@"@p\w+\b" +
+			// Zero-width negative look-ahead: the match must not be followed by
+			@"(?!" +
+			// a comparison.
+			@"\s*[=<>])";
+		private static readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
+		private static readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
 		private readonly FirebirdDialect _fbDialect = new FirebirdDialect();
+
+		private bool _disableParameterCasting;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FirebirdClientDriver"/> class.
@@ -37,35 +56,27 @@ namespace NHibernate.Driver
 				"FirebirdSql.Data.FirebirdClient.FbConnection",
 				"FirebirdSql.Data.FirebirdClient.FbCommand")
 		{
-
 		}
 
 		public override void Configure(IDictionary<string, string> settings)
 		{
 			base.Configure(settings);
 			_fbDialect.Configure(settings);
+
+			_disableParameterCasting = PropertiesHelper.GetBoolean(Environment.FirebirdDisableParameterCasting, settings);
 		}
 
-		public override bool UseNamedPrefixInSql
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInSql => true;
 
-		public override bool UseNamedPrefixInParameter
-		{
-			get { return true; }
-		}
+		public override bool UseNamedPrefixInParameter => true;
 
-		public override string NamedPrefix
-		{
-			get { return "@"; }
-		}
+		public override string NamedPrefix => "@";
 
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			var convertedSqlType = sqlType;
 			if (convertedSqlType.DbType == DbType.Currency)
-				convertedSqlType = new SqlType(DbType.Decimal);
+				convertedSqlType = SqlTypeFactory.Decimal;
 
 			base.InitializeParameter(dbParam, name, convertedSqlType);
 		}
@@ -74,16 +85,28 @@ namespace NHibernate.Driver
 		{
 			var command = base.GenerateCommand(type, sqlString, parameterTypes);
 
+			if (_disableParameterCasting)
+				return command;
+
 			var expWithParams = GetStatementsWithCastCandidates(command.CommandText);
 			if (!string.IsNullOrWhiteSpace(expWithParams))
 			{
 				var candidates = GetCastCandidates(expWithParams);
 
 				var index = 0;
+				
 				foreach (DbParameter p in command.Parameters)
 				{
 					if (candidates.Contains(p.ParameterName))
-						TypeCastParam(p, command, parameterTypes[index]);
+					{
+						var castType = GetFbTypeForParam(parameterTypes[index]);
+
+						command.CommandText = Regex.Replace(
+							command.CommandText,
+							Regex.Escape(p.ParameterName) + @"\b",
+							$"cast({p.ParameterName} as {castType})");
+					}
+
 					index++;
 				}
 			}
@@ -96,7 +119,7 @@ namespace NHibernate.Driver
 			return _statementRegEx.Match(commandText).Value;
 		}
 
-		private HashSet<string> GetCastCandidates(string statement)
+		private static HashSet<string> GetCastCandidates(string statement)
 		{
 			var candidates =
 				_castCandidateRegEx
@@ -104,14 +127,6 @@ namespace NHibernate.Driver
 					.Cast<Match>()
 					.Select(match => match.Value);
 			return new HashSet<string>(candidates);
-		}
-
-		private void TypeCastParam(DbParameter param, DbCommand command, SqlType sqlType)
-		{
-			var castType = GetFbTypeForParam(sqlType);
-			command.CommandText = command.CommandText.ReplaceWholeWord(
-				param.ParameterName,
-				$"cast({param.ParameterName} as {castType})");
 		}
 
 		private string GetFbTypeForParam(SqlType sqlType)
@@ -160,7 +175,7 @@ namespace NHibernate.Driver
 				return;
 			}
 
-			_clearAllPools.Invoke(null, new object[0]);
+			_clearAllPools.Invoke(null, Array.Empty<object>());
 		}
 
 		/// <summary>

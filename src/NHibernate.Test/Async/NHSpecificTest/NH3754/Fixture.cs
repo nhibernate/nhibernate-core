@@ -20,11 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3754
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH3754"; }
-		}
-
 		private class TestEntity
 		{
 			public string Name { get; set; }

@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest
 		private DateTime testDateTime = new DateTime(2003, 8, 16);
 		private DateTime updateDateTime = new DateTime(2003, 8, 17);
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -46,7 +46,6 @@ namespace NHibernate.Test.NHSpecificTest
 				session.Flush();
 			}
 		}
-
 
 		[Test]
 		public void TestSelect()

@@ -8,8 +8,12 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
+using System;
+using System.Data;
 using System.Data.Common;
+using NHibernate.Cfg;
+using NHibernate.Mapping.ByCode;
+using NHibernate.Transaction;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TransactionTest
@@ -19,9 +23,26 @@ namespace NHibernate.Test.TransactionTest
 	[TestFixture]
 	public class TransactionNotificationFixtureAsync : TestCase
 	{
-		protected override IList Mappings
+		public class Entity
 		{
-			get { return new string[] {}; }
+			public virtual int Id { get; set; }
+			public virtual string Name { get; set; }
+		}
+
+		protected override string[] Mappings => null;
+
+		protected override void AddMappings(Configuration configuration)
+		{
+			var modelMapper = new ModelMapper();
+			modelMapper.Class<Entity>(
+				x =>
+				{
+					x.Id(e => e.Id);
+					x.Property(e => e.Name);
+					x.Table(nameof(Entity));
+				});
+
+			configuration.AddMapping(modelMapper.CompileMappingForAllExplicitlyAddedEntities());
 		}
 
 		[Test]
@@ -29,12 +50,16 @@ namespace NHibernate.Test.TransactionTest
 		{
 			var interceptor = new RecordingInterceptor();
 			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
-				ITransaction tx = session.BeginTransaction();
+				var synchronisation = new Synchronization();
+				tx.RegisterSynchronization(synchronisation);
 				await (tx.CommitAsync());
-				Assert.That(interceptor.afterTransactionBeginCalled, Is.EqualTo(1));
-				Assert.That(interceptor.beforeTransactionCompletionCalled, Is.EqualTo(1));
-				Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));
+				Assert.That(interceptor.afterTransactionBeginCalled, Is.EqualTo(1), "interceptor begin");
+				Assert.That(interceptor.beforeTransactionCompletionCalled, Is.EqualTo(1), "interceptor before");
+				Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1), "interceptor after");
+				Assert.That(synchronisation.BeforeExecutions, Is.EqualTo(1), "sync before");
+				Assert.That(synchronisation.AfterExecutions, Is.EqualTo(1), "sync after");
 			}
 		}
 
@@ -43,26 +68,31 @@ namespace NHibernate.Test.TransactionTest
 		{
 			var interceptor = new RecordingInterceptor();
 			using (var session = Sfi.WithOptions().Interceptor(interceptor).OpenSession())
+			using (var tx = session.BeginTransaction())
 			{
-				ITransaction tx = session.BeginTransaction();
+				var synchronisation = new Synchronization();
+				tx.RegisterSynchronization(synchronisation);
 				await (tx.RollbackAsync());
-				Assert.That(interceptor.afterTransactionBeginCalled, Is.EqualTo(1));
-				Assert.That(interceptor.beforeTransactionCompletionCalled, Is.EqualTo(0));
-				Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));
+				Assert.That(interceptor.afterTransactionBeginCalled, Is.EqualTo(1), "interceptor begin");
+				Assert.That(interceptor.beforeTransactionCompletionCalled, Is.EqualTo(0), "interceptor before");
+				Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1), "interceptor after");
+				Assert.That(synchronisation.BeforeExecutions, Is.EqualTo(0), "sync before");
+				Assert.That(synchronisation.AfterExecutions, Is.EqualTo(1), "sync after");
 			}
 		}
-
 
 		[Theory]
 		[Description("NH2128")]
 		public async Task ShouldNotifyAfterTransactionAsync(bool usePrematureClose)
 		{
 			var interceptor = new RecordingInterceptor();
+			var synchronisation = new Synchronization();
 			ISession s;
 
 			using (s = OpenSession(interceptor))
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
+				t.RegisterSynchronization(synchronisation);
 				await (s.CreateCriteria<object>().ListAsync());
 
 				// Call session close while still inside transaction?
@@ -71,22 +101,24 @@ namespace NHibernate.Test.TransactionTest
 			}
 
 			Assert.That(s.IsOpen, Is.False);
-			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));
+			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1), "interceptor");
+			Assert.That(synchronisation.AfterExecutions, Is.EqualTo(1), "sync");
 		}
-
 
 		[Description("NH2128")]
 		[Theory]
 		public async Task ShouldNotifyAfterTransactionWithOwnConnectionAsync(bool usePrematureClose)
 		{
 			var interceptor = new RecordingInterceptor();
+			var synchronisation = new Synchronization();
 			ISession s;
 
 			using (var ownConnection = await (Sfi.ConnectionProvider.GetConnectionAsync(CancellationToken.None)))
 			{
 				using (s = Sfi.WithOptions().Connection(ownConnection).Interceptor(interceptor).OpenSession())
-				using (s.BeginTransaction())
+				using (var t = s.BeginTransaction())
 				{
+					t.RegisterSynchronization(synchronisation);
 					await (s.CreateCriteria<object>().ListAsync());
 
 					// Call session close while still inside transaction?
@@ -96,7 +128,42 @@ namespace NHibernate.Test.TransactionTest
 			}
 
 			Assert.That(s.IsOpen, Is.False);
-			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));
+			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1), "interceptor");
+			Assert.That(synchronisation.AfterExecutions, Is.EqualTo(1), "sync");
 		}
 	}
+
+	#region Synchronization classes
+
+	public partial class CustomTransaction : ITransaction
+	{
+
+		public Task CommitAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task RollbackAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			throw new NotImplementedException();
+		}
+	}
+
+	public partial class Synchronization : ITransactionCompletionSynchronization
+	{
+
+		public Task ExecuteBeforeTransactionCompletionAsync(CancellationToken cancellationToken)
+		{
+			BeforeExecutions += 1;
+			return Task.CompletedTask;
+		}
+
+		public Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
+		{
+			AfterExecutions += 1;
+			return Task.CompletedTask;
+		}
+	}
+
+	#endregion
 }

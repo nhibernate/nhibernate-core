@@ -78,8 +78,23 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     set(await (bo.GetOrCreateBO1Async(s, cancellationToken)), 1);
                     break;
                 default:
-                    throw new Exception("Value " + value + " not handled in code");
+                    throw new NotImplementedException("Value " + value + " not handled in code");
             }
+        }
+
+        public static Task SetBO1_I1Async(MyBO bo, ISession s, TBO1_I value, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return SetBO1_IAsync(bo, s, value, (b, i) => b.I1 = i, cancellationToken);
+        }
+
+        public static Task SetBO1_I2Async(MyBO bo, ISession s, TBO1_I value, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return SetBO1_IAsync(bo, s, value, (b, i) => b.I2 = i ?? 0, cancellationToken);
+        }
+
+        public static Task SetBO1_I3Async(MyBO bo, ISession s, TBO1_I value, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return SetBO1_IAsync(bo, s, value, (b, i) => b.I3 = i ?? 0, cancellationToken);
         }
 
         private static async Task SetBO2_JAsync(MyBO bo, ISession s, TBO2_J value, Action<MyRef2, int?> set, CancellationToken cancellationToken = default(CancellationToken))
@@ -99,8 +114,23 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     set(await (bo.GetOrCreateBO2Async(s, cancellationToken)), 1);
                     break;
                 default:
-                    throw new Exception("Value " + value + " not handled in code");
+                    throw new NotImplementedException("Value " + value + " not handled in code");
             }
+        }
+
+        public static Task SetBO2_J1Async(MyBO bo, ISession s, TBO2_J value, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return SetBO2_JAsync(bo, s, value, (b, i) => b.J1 = i, cancellationToken);
+        }
+
+        public static Task SetBO2_J2Async(MyBO bo, ISession s, TBO2_J value, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return SetBO2_JAsync(bo, s, value, (b, i) => b.J2 = i ?? 0, cancellationToken);
+        }
+
+        public static Task SetBO2_J3Async(MyBO bo, ISession s, TBO2_J value, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return SetBO2_JAsync(bo, s, value, (b, i) => b.J3 = i ?? 0, cancellationToken);
         }
 
         private static async Task SetBO1_BO2_JAsync(MyBO bo, ISession s, TBO1_BO2_J value, Action<MyRef2, int?> set, CancellationToken cancellationToken = default(CancellationToken))
@@ -123,8 +153,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     set(await ((await (bo.GetOrCreateBO1Async(s, cancellationToken))).GetOrCreateBO2Async(s, cancellationToken)), 1);
                     break;
                 default:
-                    throw new Exception("Value " + value + " not handled in code");
+                    throw new NotImplementedException("Value " + value + " not handled in code");
             }
+        }
+
+        public static Task SetBO1_BO2_J1Async(MyBO bo, ISession s, TBO1_BO2_J value, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return SetBO1_BO2_JAsync(bo, s, value, (b, i) => b.J1 = i, cancellationToken);
+        }
+
+        public static Task Set_BO1_BO2_J2Async(MyBO bo, ISession s, TBO1_BO2_J value, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return SetBO1_BO2_JAsync(bo, s, value, (b, i) => b.J2 = i ?? 0, cancellationToken);
         }
 
         public static async Task SetBO1_BO3_L1Async(MyBO bo, ISession s, TBO1_BO3_L value, CancellationToken cancellationToken = default(CancellationToken))
@@ -147,7 +187,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     (await ((await (bo.GetOrCreateBO1Async(s, cancellationToken))).GetOrCreateBO3Async(s, cancellationToken))).L1 = 1;
                     break;
                 default:
-                    throw new Exception("Value " + value + " not handled in code");
+                    throw new NotImplementedException("Value " + value + " not handled in code");
             }
         }
     }

@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -26,14 +27,53 @@ namespace NHibernate.Engine.Loading
 	public partial class CollectionLoadContext
 	{
 
-		/// <summary> 
-		/// Finish the process of collection-loading for this bound result set.  Mainly this
+		/// <summary>
+		/// Finish the process of collection-loading for this bound result set. Mainly this
 		/// involves cleaning up resources and notifying the collections that loading is
-		/// complete. 
+		/// complete.
 		/// </summary>
-		/// <param name="persister">The persister for which to complete loading. </param>
+		/// <param name="persister">The persister for which to complete loading.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public async Task EndLoadingCollectionsAsync(ICollectionPersister persister, CancellationToken cancellationToken)
+		// Since v5.2
+		[Obsolete("Please use overload with skipCache and cacheBatcher parameter instead.")]
+		public Task EndLoadingCollectionsAsync(ICollectionPersister persister, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return EndLoadingCollectionsAsync(persister, false, cancellationToken);
+		}
+
+		/// <summary>
+		/// Finish the process of collection-loading for this bound result set. Mainly this
+		/// involves cleaning up resources and notifying the collections that loading is
+		/// complete.
+		/// </summary>
+		/// <param name="persister">The persister for which to complete loading.</param>
+		/// <param name="skipCache">Indicates if collection must not be put in cache.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		// Since v5.3
+		[Obsolete("Please use overload with cacheBatcher parameter instead.")]
+		public Task EndLoadingCollectionsAsync(ICollectionPersister persister, bool skipCache, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return EndLoadingCollectionsAsync(persister, skipCache, null, cancellationToken);
+		}
+
+		/// <summary>
+		/// Finish the process of collection-loading for this bound result set. Mainly this
+		/// involves cleaning up resources and notifying the collections that loading is
+		/// complete.
+		/// </summary>
+		/// <param name="persister">The persister for which to complete loading.</param>
+		/// <param name="skipCache">Indicates if collection must not be put in cache.</param>
+		/// <param name="cacheBatcher">The cache batcher used to batch put the collections into the cache.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public async Task EndLoadingCollectionsAsync(ICollectionPersister persister, bool skipCache, CacheBatcher cacheBatcher, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
@@ -56,7 +96,8 @@ namespace NHibernate.Engine.Loading
 				LoadingCollectionEntry lce = loadContexts.LocateLoadingCollectionEntry(collectionKey);
 				if (lce == null)
 				{
-					log.Warn("In CollectionLoadContext#endLoadingCollections, localLoadingCollectionKeys contained [" + collectionKey + "], but no LoadingCollectionEntry was found in loadContexts");
+					log.Warn("In CollectionLoadContext#endLoadingCollections, localLoadingCollectionKeys contained [{0}], but no LoadingCollectionEntry was found in loadContexts", 
+						collectionKey);
 				}
 				else if (lce.ResultSet == resultSet && lce.Persister == persister)
 				{
@@ -66,9 +107,9 @@ namespace NHibernate.Engine.Loading
 						session.PersistenceContext.AddUnownedCollection(new CollectionKey(persister, lce.Key),
 																		lce.Collection);
 					}
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("removing collection load entry [" + lce + "]");
+						log.Debug("removing collection load entry [{0}]", lce);
 					}
 
 					// todo : i'd much rather have this done from #endLoadingCollection(CollectionPersister,LoadingCollectionEntry)...
@@ -78,7 +119,7 @@ namespace NHibernate.Engine.Loading
 			}
 			localLoadingCollectionKeys.ExceptWith(toRemove);
 
-			await (EndLoadingCollectionsAsync(persister, matches, cancellationToken)).ConfigureAwait(false);
+			await (EndLoadingCollectionsAsync(persister, matches, skipCache, cacheBatcher, cancellationToken)).ConfigureAwait(false);
 			if ((localLoadingCollectionKeys.Count == 0))
 			{
 				// todo : hack!!!
@@ -91,101 +132,123 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private async Task EndLoadingCollectionsAsync(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, CancellationToken cancellationToken)
+		private async Task EndLoadingCollectionsAsync(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, bool skipCache,
+		                                   CacheBatcher cacheBatcher = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("no collections were found in result set for role: " + persister.Role);
+					log.Debug("no collections were found in result set for role: {0}", persister.Role);
 				}
 				return;
 			}
 
 			int count = matchedCollectionEntries.Count;
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug(count + " collections were found in result set for role: " + persister.Role);
+				log.Debug("{0} collections were found in result set for role: {1}", count, persister.Role);
 			}
 
+			var ownCacheBatcher = cacheBatcher == null;
+			if (ownCacheBatcher)
+				cacheBatcher = new CacheBatcher(LoadContext.PersistenceContext.Session);
 			for (int i = 0; i < count; i++)
 			{
-				await (EndLoadingCollectionAsync(matchedCollectionEntries[i], persister, cancellationToken)).ConfigureAwait(false);
+				await (EndLoadingCollectionAsync(
+					matchedCollectionEntries[i], 
+					persister,
+					data => cacheBatcher.AddToBatch(persister, data),
+					skipCache, cancellationToken)).ConfigureAwait(false);
 			}
+			if (ownCacheBatcher)
+				await (cacheBatcher.ExecuteBatchAsync(cancellationToken)).ConfigureAwait(false);
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug(count + " collections initialized for role: " + persister.Role);
+				log.Debug("{0} collections initialized for role: {1}", count, persister.Role);
 			}
 		}
 
-		private async Task EndLoadingCollectionAsync(LoadingCollectionEntry lce, ICollectionPersister persister, CancellationToken cancellationToken)
+		private async Task EndLoadingCollectionAsync(
+			LoadingCollectionEntry lce, 
+			ICollectionPersister persister,
+			Action<CachePutData> cacheBatchingHandler,
+			bool skipCache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("ending loading collection [" + lce + "]");
-			}
-			ISessionImplementor session = LoadContext.PersistenceContext.Session;
-
-			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
-			if (statsEnabled)
-			{
-				stopWath.Start();
+				log.Debug("ending loading collection [{0}]", lce);
 			}
 
-			bool hasNoQueuedAdds = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
+			var persistenceContext = LoadContext.PersistenceContext;
+			var session = persistenceContext.Session;
+
+			Stopwatch stopWatch = null;
+			if (session.Factory.Statistics.IsStatisticsEnabled)
+			{
+				stopWatch = Stopwatch.StartNew();
+			}
+
+			bool hasNoQueuedOperations = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
 
 			if (persister.CollectionType.HasHolder())
 			{
-				LoadContext.PersistenceContext.AddCollectionHolder(lce.Collection);
+				persistenceContext.AddCollectionHolder(lce.Collection);
 			}
 
-			CollectionEntry ce = LoadContext.PersistenceContext.GetCollectionEntry(lce.Collection);
+			CollectionEntry ce = persistenceContext.GetCollectionEntry(lce.Collection);
 			if (ce == null)
 			{
-				ce = LoadContext.PersistenceContext.AddInitializedCollection(persister, lce.Collection, lce.Key);
+				ce = persistenceContext.AddInitializedCollection(persister, lce.Collection, lce.Key);
 			}
 			else
 			{
-				ce.PostInitialize(lce.Collection);
+				ce.PostInitialize(lce.Collection, persistenceContext);
 			}
 
-			bool addToCache = hasNoQueuedAdds && persister.HasCache && 
-				session.CacheMode.HasFlag(CacheMode.Put) && !ce.IsDoremove; // and this is not a forced initialization during flush
+			bool addToCache = hasNoQueuedOperations && !skipCache && persister.HasCache &&
+				session.CacheMode.HasFlag(CacheMode.Put) &&
+				// and this is not a forced initialization during flush
+				!ce.IsDoremove;
 
 			if (addToCache)
 			{
-				await (AddCollectionToCacheAsync(lce, persister, cancellationToken)).ConfigureAwait(false);
+				await (AddCollectionToCacheAsync(lce, persister, cacheBatchingHandler, cancellationToken)).ConfigureAwait(false);
 			}
 
-			if (log.IsDebugEnabled)
+			if (!hasNoQueuedOperations)
+				lce.Collection.ApplyQueuedOperations();
+
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("collection fully initialized: " + MessageHelper.CollectionInfoString(persister, lce.Collection, lce.Key, session));
+				log.Debug("collection fully initialized: {0}", MessageHelper.CollectionInfoString(persister, lce.Collection, lce.Key, session));
 			}
 
-			if (statsEnabled)
+			if (stopWatch != null)
 			{
-				stopWath.Stop();
-				session.Factory.StatisticsImplementor.LoadCollection(persister.Role, stopWath.Elapsed);
+				stopWatch.Stop();
+				session.Factory.StatisticsImplementor.LoadCollection(persister.Role, stopWatch.Elapsed);
 			}
 		}
 
 		/// <summary> Add the collection to the second-level cache </summary>
 		/// <param name="lce">The entry representing the collection to add </param>
 		/// <param name="persister">The persister </param>
+		/// <param name="cacheBatchingHandler">The action for handling cache batching</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		private async Task AddCollectionToCacheAsync(LoadingCollectionEntry lce, ICollectionPersister persister, CancellationToken cancellationToken)
+		private async Task AddCollectionToCacheAsync(LoadingCollectionEntry lce, ICollectionPersister persister,
+		                                  Action<CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
 			ISessionFactoryImplementor factory = session.Factory;
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Caching collection: " + MessageHelper.CollectionInfoString(persister, lce.Collection, lce.Key, session));
+				log.Debug("Caching collection: {0}", MessageHelper.CollectionInfoString(persister, lce.Collection, lce.Key, session));
 			}
 
 			if (!(session.EnabledFilters.Count == 0) && persister.IsAffectedByEnabledFilters(session))
@@ -206,6 +269,8 @@ namespace NHibernate.Engine.Loading
 			{
 				versionComparator = persister.OwnerEntityPersister.VersionType.Comparator;
 				object collectionOwner = LoadContext.PersistenceContext.GetCollectionOwner(lce.Key, persister);
+				if (collectionOwner == null)
+					return;
 				version = LoadContext.PersistenceContext.GetEntry(collectionOwner).Version;
 			}
 			else
@@ -214,15 +279,29 @@ namespace NHibernate.Engine.Loading
 				versionComparator = null;
 			}
 
-			CollectionCacheEntry entry = new CollectionCacheEntry(lce.Collection, persister);
+			CollectionCacheEntry entry = await (CollectionCacheEntry.CreateAsync(lce.Collection, persister, cancellationToken)).ConfigureAwait(false);
 			CacheKey cacheKey = session.GenerateCacheKey(lce.Key, persister.KeyType, persister.Role);
-			bool put = await (persister.Cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(entry), 
-								session.Timestamp, version, versionComparator,
-													factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh, cancellationToken)).ConfigureAwait(false);
 
-			if (put && factory.Statistics.IsStatisticsEnabled)
+			if (persister.GetBatchSize() > 1)
 			{
-				factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+				cacheBatchingHandler(
+					new CachePutData(
+						cacheKey,
+						persister.CacheEntryStructure.Structure(entry),
+						version,
+						versionComparator,
+						factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh));
+			}
+			else
+			{
+				bool put = await (persister.Cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(entry),
+				                               session.Timestamp, version, versionComparator,
+				                               factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh, cancellationToken)).ConfigureAwait(false);
+
+				if (put && factory.Statistics.IsStatisticsEnabled)
+				{
+					factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+				}
 			}
 		}
 	}

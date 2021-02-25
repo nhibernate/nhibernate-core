@@ -1,4 +1,3 @@
-
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -12,7 +11,7 @@ namespace NHibernate.Event.Default
 	/// </summary>
 	public partial class WrapVisitor : ProxyVisitor
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(WrapVisitor));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(WrapVisitor));
 		private bool substitute = false;
 
 		public WrapVisitor(IEventSource session) : base(session) { }
@@ -85,8 +84,8 @@ namespace NHibernate.Event.Default
 				IPersistentCollection persistentCollection = collectionType.Wrap(session, collection);
 				persistenceContext.AddNewCollection(persister, persistentCollection);
 
-				if (log.IsDebugEnabled)
-					log.Debug("Wrapped collection in role: " + collectionType.Role);
+				if (log.IsDebugEnabled())
+					log.Debug("Wrapped collection in role: {0}", collectionType.Role);
 
 				return persistentCollection; //Force a substitution!
 			}

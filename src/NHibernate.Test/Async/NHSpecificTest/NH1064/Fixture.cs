@@ -20,11 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1064
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1064"; }
-		}
-
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();
@@ -59,8 +54,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1064
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				ICriteria crit = s.CreateCriteria(typeof(TypeA))
-					.SetFetchMode("Bs", FetchMode.Join)
-					.SetFetchMode("C", FetchMode.Join);
+					.Fetch("Bs")
+					.Fetch("C");
 				// According to the issue description, the following line
 				// would have thown an NHibernate.ADOException before the fix
 				IList result = await (crit.ListAsync());

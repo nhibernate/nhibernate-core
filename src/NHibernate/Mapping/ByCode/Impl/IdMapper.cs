@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Type;
+using NHibernate.UserTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -62,6 +64,38 @@ namespace NHibernate.Mapping.ByCode.Impl
 			if (persistentType != null)
 			{
 				hbmId.type1 = persistentType.Name;
+				hbmId.type = null;
+			}
+		}
+
+		public void Type(System.Type persistentType, object parameters)
+		{
+			if (persistentType == null)
+			{
+				throw new ArgumentNullException(nameof(persistentType));
+			}
+			if (!typeof (IUserType).IsAssignableFrom(persistentType) && !typeof (IType).IsAssignableFrom(persistentType) && !typeof (ICompositeUserType).IsAssignableFrom(persistentType))
+			{
+				throw new ArgumentOutOfRangeException(nameof(persistentType), "Expected type implementing IUserType, ICompositeUserType or IType.");
+			}
+			if (parameters != null)
+			{
+				hbmId.type1 = null;
+				var hbmType = new HbmType
+				{
+					name = persistentType.AssemblyQualifiedName,
+					param = parameters.GetType().GetProperties().ToArray(
+							pi =>
+							{
+								object pvalue = pi.GetValue(parameters, null);
+								return new HbmParam {name = pi.Name, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
+							})
+				};
+				hbmId.type = hbmType;
+			}
+			else
+			{
+				hbmId.type1 = persistentType.AssemblyQualifiedName;
 				hbmId.type = null;
 			}
 		}
@@ -151,12 +185,13 @@ namespace NHibernate.Mapping.ByCode.Impl
 			object generatorParameters = generator.Params;
 			if (generatorParameters != null)
 			{
-				hbmGenerator.param = (from pi in generatorParameters.GetType().GetProperties()
-									  let pname = pi.Name
-									  let pvalue = pi.GetValue(generatorParameters, null)
-									  select
-										new HbmParam {name = pname, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}}).
-					ToArray();
+				hbmGenerator.param = generatorParameters.GetType().GetProperties().ToArray(
+					pi =>
+					{
+						var pvalue = pi.GetValue(generatorParameters, null);
+						return
+							new HbmParam {name = pi.Name, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
+					});
 			}
 			else
 			{

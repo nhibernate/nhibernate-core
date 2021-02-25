@@ -5,11 +5,6 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH364"; }
-		}
-
 		[Test]
 		public void IdBagIdentity()
 		{

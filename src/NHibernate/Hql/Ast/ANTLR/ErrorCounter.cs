@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Antlr.Runtime;
 
-
 namespace NHibernate.Hql.Ast.ANTLR
 {
 	/// <summary>
@@ -11,8 +10,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// </summary>
 	internal class ErrorCounter : IParseErrorHandler 
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ErrorCounter));
-		private static readonly IInternalLogger hqlLog = LoggerProvider.LoggerFor("NHibernate.Hql.Parser");
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ErrorCounter));
+		private static readonly INHibernateLogger hqlLog = NHibernateLogger.For("NHibernate.Hql.Parser");
 
 		private readonly List<string> _errorList = new List<string>();
 		private readonly List<string> _warningList = new List<string>();
@@ -22,8 +21,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			ReportError( e.ToString() );
 			_recognitionExceptions.Add( e );
-			if ( log.IsDebugEnabled ) {
-				log.Debug( e.ToString(), e );
+			if ( log.IsDebugEnabled() ) {
+				log.Debug(e, e.ToString());
 			}
 		}
 
@@ -55,8 +54,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 				if (!first) buf.Append('\n');
 
 				first = false;
-
 			}
+			
 			return buf.ToString();
 		}
 
@@ -76,12 +75,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 			else 
 			{
 				// all clear
-				if ( log.IsDebugEnabled ) 
+				if ( log.IsDebugEnabled() ) 
 				{
 					log.Debug( "throwQueryException() : no errors" );
 				}
 			}
 		}
 	}
-
 }

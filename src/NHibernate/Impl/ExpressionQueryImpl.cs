@@ -21,7 +21,16 @@ namespace NHibernate.Impl
 			QueryExpression = queryExpression;
 		}
 
+		protected ExpressionQueryImpl(
+			IQueryExpression queryExpression, ISessionImplementor session, ParameterMetadata parameterMetadata, bool isFilter)
+			: this(queryExpression, session, parameterMetadata)
+		{
+			_isFilter = isFilter;
+		}
+
 		public IQueryExpression QueryExpression { get; private set; }
+
+		protected readonly bool _isFilter;
 
 		/// <summary> 
 		/// Warning: adds new parameters to the argument by side-effect, as well as mutating the query expression tree!
@@ -44,7 +53,7 @@ namespace NHibernate.Impl
 				var type = me.Value.Type;
 
 				var typedValues = (from object value in vals
-								   select new TypedValue(type, value))
+								   select new TypedValue(type, value, false))
 					.ToList();
 
 				if (typedValues.Count == 1)
@@ -66,12 +75,21 @@ namespace NHibernate.Impl
 				map.Add(name, aliases);
 			}
 
+			if (map.Count == 0)
+			{
+				// No list parameter needs to be replaced: they are all single valued. They just need
+				// to be retyped, which has been done above.
+				return QueryExpression;
+			}
+
 			//TODO: Do we need to translate expression one more time here?
-			var newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory, false), map);
+			// This is not much an issue anymore: ExpressionQueryImpl are currently created only with NhLinqExpression
+			// which do cache their translation.
+			var newTree = ParameterExpander.Expand(QueryExpression.Translate(Session.Factory, _isFilter), map);
 			var key = new StringBuilder(QueryExpression.Key);
 
 			foreach (var pair in map)
-							   {
+			{
 				key.Append(' ');
 				key.Append(pair.Key);
 				key.Append(':');
@@ -83,12 +101,12 @@ namespace NHibernate.Impl
 		}
 	}
 
-	partial class ExpressionFilterImpl : ExpressionQueryImpl
+	internal partial class ExpressionFilterImpl : ExpressionQueryImpl
 	{
 		private readonly object collection;
 
 		public ExpressionFilterImpl(IQueryExpression queryExpression, object collection, ISessionImplementor session, ParameterMetadata parameterMetadata) 
-			: base(queryExpression, session, parameterMetadata)
+			: base(queryExpression, session, parameterMetadata, true)
 		{
 			this.collection = collection;
 		}
@@ -106,6 +124,47 @@ namespace NHibernate.Impl
 			{
 				After();
 			}
+		}
+
+		public override IList<T> List<T>()
+		{
+			VerifyParameters();
+			var namedParams = NamedParams;
+			Before();
+			try
+			{
+				//6.0 TODO: Add Session.ListFilter<T> that accepts IQueryExpression
+				var result = Session.ListFilter(collection, ExpandParameters(namedParams), GetQueryParameters(namedParams));
+
+				return result as IList<T> ?? result.Cast<T>().ToList();
+			}
+			finally
+			{
+				After();
+			}
+		}
+
+		public override void List(IList results)
+		{
+			ArrayHelper.AddAll(results, List());
+		}
+
+		public override IEnumerable Enumerable()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override IEnumerable<T> Enumerable<T>()
+		{
+			throw new NotImplementedException();
+		}
+
+		protected internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor session, QueryParameters queryParameters)
+		{
+			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
+			var queryExpression = ExpandParameters(queryParameters.NamedParameters);
+
+			return CollectionFilterImpl.GetTranslators(session, queryParameters, queryExpression, collection);
 		}
 
 		public override IType[] TypeArray()
@@ -133,9 +192,10 @@ namespace NHibernate.Impl
 		}
 	}
 
-	internal class ExpandedQueryExpression : IQueryExpression
+	internal class ExpandedQueryExpression : IQueryExpression, ICacheableQueryExpression
 	{
 		private readonly IASTNode _tree;
+		private ICacheableQueryExpression _cacheableExpression;
 
 		public ExpandedQueryExpression(IQueryExpression queryExpression, IASTNode tree, string key)
 		{
@@ -143,6 +203,7 @@ namespace NHibernate.Impl
 			Key = key;
 			Type = queryExpression.Type;
 			ParameterDescriptors = queryExpression.ParameterDescriptors;
+			 _cacheableExpression = queryExpression as ICacheableQueryExpression;
 		}
 
 		#region IQueryExpression Members
@@ -159,6 +220,8 @@ namespace NHibernate.Impl
 		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
 
 		#endregion
+
+		public bool CanCachePlan => _cacheableExpression?.CanCachePlan ?? true;
 	}
 
 	internal class ParameterExpander
@@ -268,7 +331,7 @@ namespace NHibernate.Impl
 			return detector.LocateParameters();
 		}
 
-		private IList<IASTNode> LocateParameters()
+		private List<IASTNode> LocateParameters()
 		{
 			var nodeTraverser = new NodeTraverser(this);
 			nodeTraverser.TraverseDepthFirst(_tree);

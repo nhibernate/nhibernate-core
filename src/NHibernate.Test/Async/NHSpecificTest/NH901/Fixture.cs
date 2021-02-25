@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using NHibernate.Cfg;
 using NHibernate.Mapping.ByCode;
@@ -107,7 +108,7 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"NHSpecificTest.NH901.Mappings.hbm.xml"}; }
 		}
@@ -116,9 +117,9 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 	[TestFixture]
 	public class FixtureByCodeAsync : FixtureBaseAsync
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 
 		protected override string MappingsAssembly

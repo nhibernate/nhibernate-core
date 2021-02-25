@@ -7,7 +7,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class ClassIdBinder : ClassBinder
 	{
+		//Since v5.2
+		[Obsolete("Please use constructor that accepts mappings parameter instead.")]
 		public ClassIdBinder(ClassBinder parent) : base(parent) { }
+		public ClassIdBinder(Mappings mappings) : base(mappings) { }
 
 		public void BindId(HbmId idSchema, PersistentClass rootClass, Table table)
 		{

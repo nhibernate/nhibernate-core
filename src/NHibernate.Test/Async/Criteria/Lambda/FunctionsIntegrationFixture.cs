@@ -21,7 +21,7 @@ namespace NHibernate.Test.Criteria.Lambda
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings => new[] { "Criteria.Lambda.Mappings.hbm.xml" };
+		protected override string[] Mappings => new[] { "Criteria.Lambda.Mappings.hbm.xml" };
 
 		protected override void OnTearDown()
 		{
@@ -61,7 +61,6 @@ namespace NHibernate.Test.Criteria.Lambda
 				Assert.That(string.Format("{0:0.00}", sqrtOfAge), Is.EqualTo((9.49).ToString()));
 			}
 		}
-
 
 		[Test]
 		public async Task RoundDoubleWithOneArgumentAsync()
@@ -146,6 +145,9 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public async Task ConcatAsync()
 		{
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
 			{

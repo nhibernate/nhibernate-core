@@ -15,7 +15,7 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class RootClass : PersistentClass, ITableOwner
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(RootClass));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(RootClass));
 
 		/// <summary>
 		/// The default name of the column for the Identifier
@@ -89,12 +89,12 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public override IEnumerable<Table> TableClosureIterator
 		{
-			get { return new SingletonEnumerable<Table>(Table); }
+			get { return new[] {Table}; }
 		}
 
 		public override IEnumerable<IKeyValue> KeyClosureIterator
 		{
-			get { return new SingletonEnumerable<IKeyValue>(Key); }
+			get { return new[] {Key}; }
 		}
 
 		/// <summary>
@@ -170,7 +170,6 @@ namespace NHibernate.Mapping
 				}
 				return tables;
 			}
-
 		}
 
 		internal override int NextSubclassId()
@@ -387,11 +386,11 @@ namespace NHibernate.Mapping
 					System.Type idClass = id.ComponentClass;
 					if (idClass != null && !ReflectHelper.OverridesEquals(idClass))
 					{
-						log.Warn("composite-id class does not override Equals(): " + id.ComponentClass.FullName);
+						log.Warn("composite-id class does not override Equals(): {0}", id.ComponentClass.FullName);
 					}
 					if (!ReflectHelper.OverridesGetHashCode(idClass))
 					{
-						log.Warn("composite-id class does not override GetHashCode(): " + id.ComponentClass.FullName);
+						log.Warn("composite-id class does not override GetHashCode(): {0}", id.ComponentClass.FullName);
 					}
 					// NH: Not ported
 					//if (!typeof(System.Runtime.Serialization.ISerializable).IsAssignableFrom(idClass))

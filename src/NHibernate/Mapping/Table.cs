@@ -26,14 +26,11 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class Table : IRelationalModel
 	{
-		[ThreadStatic]
-		private static int tableCounter;
-
 		private readonly List<string> checkConstraints = new List<string>();
 		private readonly LinkedHashMap<string, Column> columns = new LinkedHashMap<string, Column>();
 		private readonly Dictionary<ForeignKeyKey, ForeignKey> foreignKeys = new Dictionary<ForeignKeyKey, ForeignKey>();
 		private readonly Dictionary<string, Index> indexes = new Dictionary<string, Index>();
-		private readonly int uniqueInteger;
+		private int? uniqueInteger;
 		private readonly Dictionary<string, UniqueKey> uniqueKeys = new Dictionary<string, UniqueKey>();
 		private string catalog;
 		private string comment;
@@ -41,6 +38,7 @@ namespace NHibernate.Mapping
 		private IKeyValue idValue;
 		private bool isAbstract;
 		private bool isSchemaQuoted;
+		private bool isCatalogQuoted;
 		private string name;
 		private bool quoted;
 		private string schema;
@@ -52,7 +50,6 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public Table()
 		{
-			uniqueInteger = tableCounter++;
 		}
 
 		public Table(string name) : this()
@@ -189,11 +186,13 @@ namespace NHibernate.Mapping
 
 		/// <summary>
 		/// Gets the unique number of the Table.
+		/// Used for SQL alias generation
 		/// </summary>
 		/// <value>The unique number of the Table.</value>
 		public int UniqueInteger
 		{
-			get { return uniqueInteger; }
+			get { return uniqueInteger ?? throw new InvalidOperationException(nameof(UniqueInteger) + " has not been supplied"); }
+			set { uniqueInteger = value; }
 		}
 
 		/// <summary>
@@ -274,7 +273,18 @@ namespace NHibernate.Mapping
 		public string Catalog
 		{
 			get { return catalog; }
-			set { catalog = value; }
+			set
+			{
+				if (value != null && value[0] == '`')
+				{
+					isCatalogQuoted = true;
+					catalog = value.Substring(1, value.Length - 2);
+				}
+				else
+				{
+					catalog = value;
+				}
+			}
 		}
 
 		public string Comment
@@ -316,6 +326,11 @@ namespace NHibernate.Mapping
 		public bool IsSchemaQuoted
 		{
 			get { return isSchemaQuoted; }
+		}
+
+		public bool IsCatalogQuoted
+		{
+			get { return isCatalogQuoted; }
 		}
 
 		#region IRelationalModel Members
@@ -391,7 +406,7 @@ namespace NHibernate.Mapping
 
 				if (col.IsUnique)
 				{
-					if (dialect.SupportsUnique)
+					if (dialect.SupportsUnique && (!col.IsNullable || dialect.SupportsNullInUnique))
 					{
 						buf.Append(" unique");
 					}
@@ -419,7 +434,11 @@ namespace NHibernate.Mapping
 
 			foreach (UniqueKey uk in UniqueKeyIterator)
 			{
-				buf.Append(',').Append(uk.SqlConstraintString(dialect));
+				string ukSql = uk.SqlConstraintString(dialect);
+				if (!string.IsNullOrEmpty(ukSql))
+				{
+					buf.Append(',').Append(ukSql);
+				}
 			}
 
 			if (dialect.SupportsTableCheck)
@@ -434,7 +453,7 @@ namespace NHibernate.Mapping
 			{
 				foreach (ForeignKey foreignKey in ForeignKeyIterator)
 				{
-					if (foreignKey.HasPhysicalConstraint)
+					if (foreignKey.IsGenerated(dialect))
 					{
 						buf.Append(",").Append(foreignKey.SqlConstraintString(dialect, foreignKey.Name, defaultCatalog, defaultSchema));
 					}
@@ -493,9 +512,9 @@ namespace NHibernate.Mapping
 			{
 				return "( " + subselect + " )";
 			}
-			string quotedName = GetQuotedName(dialect);
-			string usedSchema = schema == null ? defaultSchema : GetQuotedSchema(dialect);
-			string usedCatalog = catalog ?? defaultCatalog;
+			var quotedName = GetQuotedName(dialect);
+			var usedSchema = GetQuotedSchema(dialect, defaultSchema);
+			var usedCatalog = GetQuotedCatalog(dialect, defaultCatalog);
 			return dialect.Qualify(usedCatalog, usedSchema, quotedName);
 		}
 
@@ -528,19 +547,44 @@ namespace NHibernate.Mapping
 
 		public string GetQuotedSchema(Dialect.Dialect dialect)
 		{
-			return IsSchemaQuoted ? dialect.OpenQuote + schema + dialect.CloseQuote : schema;
+			return IsSchemaQuoted ? dialect.QuoteForSchemaName(schema) : schema;
+		}
+
+		public string GetQuotedSchema(Dialect.Dialect dialect, string defaultQuotedSchema)
+		{
+			return schema == null ? defaultQuotedSchema :
+				GetQuotedSchema(dialect);
+		}
+
+		/// <summary> returns quoted name as it is in the mapping file.</summary>
+		public string GetQuotedCatalog()
+		{
+			return IsCatalogQuoted ? "`" + catalog + "`" : catalog;
+		}
+
+		public string GetQuotedCatalog(Dialect.Dialect dialect)
+		{
+			return IsCatalogQuoted ? dialect.QuoteForCatalogName(catalog) : catalog;
+		}
+
+		public string GetQuotedCatalog(Dialect.Dialect dialect, string defaultQuotedCatalog)
+		{
+			return catalog == null ? defaultQuotedCatalog :
+				GetQuotedCatalog(dialect);
 		}
 
 		/// <summary>
 		/// Gets the schema for this table in quoted form if it is necessary.
 		/// </summary>
 		/// <param name="dialect">
-		/// The <see cref="Dialect.Dialect" /> that knows how to quote the table name.
+		/// The <see cref="Dialect.Dialect" /> that knows how to quote the schema name.
 		/// </param>
 		/// <returns>
 		/// The schema name for this table in a form that is safe to use inside
 		/// of a SQL statement. Quoted if it needs to be, not quoted if it does not need to be.
 		/// </returns>
+		// Since v5.1; back-tilts are removed when storing schema: this thing is non-sens.
+		[Obsolete("This method is no-op and has no usages")]
 		public string GetQuotedSchemaName(Dialect.Dialect dialect)
 		{
 			if (schema == null)
@@ -548,7 +592,7 @@ namespace NHibernate.Mapping
 				return null;
 			}
 
-			if (schema.StartsWith("`"))
+			if (schema.StartsWith('`'))
 			{
 				return dialect.QuoteForSchemaName(schema.Substring(1, schema.Length - 2));
 			}
@@ -625,7 +669,7 @@ namespace NHibernate.Mapping
 				}
 
 				bool useUniqueConstraint = column.Unique && dialect.SupportsUnique
-										   && (!column.IsNullable || dialect.SupportsNotNullUnique);
+										   && (!column.IsNullable || dialect.SupportsNullInUnique);
 				if (useUniqueConstraint)
 				{
 					alter.Append(" unique");
@@ -642,6 +686,7 @@ namespace NHibernate.Mapping
 					alter.Append(dialect.GetColumnComment(columnComment));
 				}
 
+				alter.Append(dialect.AddColumnSuffixString);
 				results.Add(alter.ToString());
 			}
 
@@ -727,7 +772,7 @@ namespace NHibernate.Mapping
 			return uk;
 		}
 
-		public virtual void CreateForeignKeys() {}
+		public virtual void CreateForeignKeys() { }
 
 		public virtual ForeignKey CreateForeignKey(string keyName, IEnumerable<Column> keyColumns, string referencedEntityName)
 		{
@@ -763,15 +808,9 @@ namespace NHibernate.Mapping
 			if (fk == null)
 			{
 				fk = new ForeignKey();
-				if (!string.IsNullOrEmpty(keyName))
-				{
-					fk.Name = keyName;
-				}
-				else
-				{
-					fk.Name = "FK" + UniqueColumnString(kCols, referencedEntityName);
-					//TODO: add referencedClass to disambiguate to FKs on the same columns, pointing to different tables
-				}
+				// NOTE : if the name is null, we will generate an implicit name during second pass processing
+				// after we know the referenced table name (which might not be resolved yet).
+				fk.Name = keyName;
 				fk.Table = this;
 				foreignKeys.Add(key, fk);
 				fk.ReferencedEntityName = referencedEntityName;
@@ -792,8 +831,8 @@ namespace NHibernate.Mapping
 
 		public virtual UniqueKey CreateUniqueKey(IList<Column> keyColumns)
 		{
-			string keyName = "UK" + UniqueColumnString(keyColumns);
-			UniqueKey uk = GetOrCreateUniqueKey(keyName);
+			var keyName = Constraint.GenerateName( "UK_", this, null, keyColumns);
+			var uk = GetOrCreateUniqueKey(keyName);
 			uk.AddColumns(keyColumns);
 			return uk;
 		}
@@ -806,11 +845,15 @@ namespace NHibernate.Mapping
 		/// <returns>
 		/// An unique string for the <see cref="Column"/> objects.
 		/// </returns>
+		// Since v5.2
+		[Obsolete("Use Constraint.GenerateName instead.")]
 		public string UniqueColumnString(IEnumerable uniqueColumns)
 		{
 			return UniqueColumnString(uniqueColumns, null);
 		}
 
+		// Since v5.2
+		[Obsolete("Use Constraint.GenerateName instead.")]
 		public string UniqueColumnString(IEnumerable iterator, string referencedEntityName)
 		{
 			// NH Different implementation (NH-1399)
@@ -1009,7 +1052,6 @@ namespace NHibernate.Mapping
 			return validationErrors;
 		}
 
-
 		#region Nested type: ForeignKeyKey
 		[Serializable]
 		internal class ForeignKeyKey : IEqualityComparer<ForeignKeyKey>
@@ -1038,14 +1080,13 @@ namespace NHibernate.Mapping
 			{
 				// NH : Different implementation to prevent NH930 (look test)
 				return //y.referencedClassName.Equals(x.referencedClassName) &&
-					CollectionHelper.SequenceEquals<Column>(y.columns, x.columns)
-					&& CollectionHelper.SequenceEquals<Column>(y.referencedColumns, x.referencedColumns);
+					CollectionHelper.SequenceEquals(y.columns, x.columns)
+					&& CollectionHelper.SequenceEquals(y.referencedColumns, x.referencedColumns);
 			}
 
 			public int GetHashCode(ForeignKeyKey obj)
 			{
-				int result = CollectionHelper.GetHashCode(obj.columns) ^ CollectionHelper.GetHashCode(obj.referencedColumns);
-				return result;
+				return CollectionHelper.GetHashCode(obj.columns) ^ CollectionHelper.GetHashCode(obj.referencedColumns);
 			}
 
 			#endregion

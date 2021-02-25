@@ -23,7 +23,7 @@ namespace NHibernate.Test.Interceptor
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1264
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] {"NHSpecificTest.NH1264.Passenger.hbm.xml", "NHSpecificTest.NH1264.Reservation.hbm.xml",}; }
 		}
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1264
 
 			s = OpenSession();
 
-			DetachedCriteria dc = DetachedCriteria.For<Reservation>().SetFetchMode("Passengers", FetchMode.Eager);
+			DetachedCriteria dc = DetachedCriteria.For<Reservation>().Fetch("Passengers");
 
 			dc.CreateCriteria("Passengers").Add(Property.ForName("FrequentFlyerNumber").Eq("1234"));
 

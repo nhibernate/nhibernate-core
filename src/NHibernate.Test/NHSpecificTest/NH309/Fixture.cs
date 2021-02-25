@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -69,7 +69,6 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 			menu2.Nodes.Remove(nodeToBeRemoved);
 			Assert.AreEqual(2, menu2.Nodes.Count, "Test count after removal");
 			Assert.AreEqual(rootNode, menu2.Nodes[0], "Test identity first node in menu");
-
 
 			s.Delete("from Node");
 			s.Delete("from Menu");

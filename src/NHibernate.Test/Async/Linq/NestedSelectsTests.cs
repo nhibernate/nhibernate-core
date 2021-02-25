@@ -11,6 +11,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
+using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -361,6 +363,101 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(orders.Count, Is.EqualTo(830));
 			Assert.That(orders[0].OrderLinesIds, Is.Empty);
+		}
+
+		[Test]
+		public async Task NoNestedSelects_AnyOnGroupBySubqueryAsync()
+		{
+			var subQuery = from vms in db.Animals
+							group vms by vms.Father
+							into vmReqs
+							select vmReqs.Max(x => x.Id);
+
+			var outerQuery = from vm in db.Animals
+							where subQuery.Any(x => vm.Id == x)
+							select vm;
+			var animals = await (outerQuery.ToListAsync());
+			Assert.That(animals.Count, Is.EqualTo(2));
+		}
+
+		//NH-3155
+		[Test]
+		public async Task NoNestedSelects_ContainsOnGroupBySubqueryAsync()
+		{
+			var subQuery = from vms in db.Animals
+							where vms.BodyWeight > 0
+							group vms by vms.Father
+							into vmReqs
+							select vmReqs.Max(x => x.Id);
+
+			var outerQuery = from vm in db.Animals
+							where subQuery.Contains(vm.Id)
+							select vm;
+
+			var animals = await (outerQuery.ToListAsync());
+			Assert.That(animals.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public async Task CanSelectWithWhereSubQueryAsync()
+		{
+			var query = from timesheet in db.Timesheets
+						select new
+						{
+							timesheet.Id,
+							Entries = timesheet.Entries.Where(e => e.NumberOfHours >= 0).ToList()
+						};
+
+			var list = await (query.ToListAsync());
+
+			Assert.AreEqual(3, list.Count);
+		}
+
+		[Test(Description = "GH-2540")]
+		public async Task CanSelectWithAsQueryableAndWhereSubQueryAsync()
+		{
+			var query = from timesheet in db.Timesheets
+						select new
+						{
+							timesheet.Id,
+							Entries = timesheet.Entries.AsQueryable().Where(e => e.NumberOfHours >= 0).ToList()
+						};
+
+			var list = await (query.ToListAsync());
+
+			Assert.AreEqual(3, list.Count);
+		}
+
+		[Test(Description = "GH-2540")]
+		public async Task CanSelectWithAsQueryableAndWhereSubQueryToArrayAsync()
+		{
+			var query = from timesheet in db.Timesheets
+						select new
+						{
+							timesheet.Id,
+							Entries = timesheet.Entries.AsQueryable().Where(e => e.NumberOfHours >= 0).ToArray()
+						};
+
+			var list = await (query.ToListAsync());
+
+			Assert.AreEqual(3, list.Count);
+		}
+
+		[Test(Description = "GH-2540")]
+		public async Task CanSelectWithAsQueryableAndWhereSubQueryWithExternalPredicateAsync()
+		{
+			Expression<Func<TimesheetEntry, bool>> predicate = e => e.NumberOfHours >= 0;
+
+			var query = from timesheet in db.Timesheets
+						select new
+						{
+							timesheet.Id,
+							Entries = timesheet.Entries.AsQueryable().Where(predicate).ToList()
+						};
+
+			var list = await (query.ToListAsync());
+
+			Assert.AreEqual(3, list.Count);
 		}
 	}
 }

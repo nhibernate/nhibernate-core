@@ -8,11 +8,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 	[TestFixture]
 	public class NH1291AnonExampleFixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1291AnonExample"; }
-		}
-
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();
@@ -62,8 +57,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 				set { _iq = value; }
 			}
 		}
-
-
 
 		[Test]
 		public void CanCreateAnonExampleForInt()

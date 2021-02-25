@@ -4,9 +4,68 @@ using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
+using NHibernate.Impl;
+using NHibernate.Multi;
+using NHibernate.Util;
 
 namespace NHibernate
 {
+	// 6.0 TODO: Convert most of these extensions to interface methods
+	public static partial class StatelessSessionExtensions
+	{
+		/// <summary>
+		/// Creates a <see cref="IQueryBatch"/> for the session.
+		/// </summary>
+		/// <param name="session">The session</param>
+		/// <returns>A query batch.</returns>
+		public static IQueryBatch CreateQueryBatch(this IStatelessSession session)
+		{
+			return ReflectHelper.CastOrThrow<AbstractSessionImpl>(session, "query batch").CreateQueryBatch();
+		}
+
+		// 6.0 TODO: consider if it should be added as a property on IStatelessSession then obsolete this, or if it should stay here as an extension method.
+		/// <summary>
+		/// Get the current transaction if any is ongoing, else <see langword="null" />.
+		/// </summary>
+		/// <param name="session">The session.</param>
+		/// <returns>The current transaction or <see langword="null" />..</returns>
+		public static ITransaction GetCurrentTransaction(this IStatelessSession session)
+			=> session.GetSessionImplementation().ConnectionManager.CurrentTransaction;
+
+		//NOTE: Keep it as extension
+		/// <summary>
+		/// Return the persistent instance of the given entity name with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <typeparam name="T">The entity class.</typeparam>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <param name="lockMode">The lock mode to use for getting the entity.</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
+		public static T Get<T>(this IStatelessSession session, string entityName, object id, LockMode lockMode)
+		{
+			return (T) session.Get(entityName, id, lockMode);
+		}
+
+		//NOTE: Keep it as extension
+		/// <summary>
+		/// Return the persistent instance of the given entity name with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <typeparam name="T">The entity class.</typeparam>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
+		public static T Get<T>(this IStatelessSession session, string entityName, object id)
+		{
+			return (T) session.Get(entityName, id);
+		}
+	}
+
 	/// <summary>
 	/// A command-oriented API for performing bulk operations against a database.
 	/// </summary>
@@ -37,6 +96,8 @@ namespace NHibernate
 		DbConnection Connection { get; }
 		
 		/// <summary>Get the current NHibernate transaction.</summary>
+		// Since v5.3
+		[Obsolete("Use GetCurrentTransaction extension method instead, and check for null.")]
 		ITransaction Transaction { get; }
 		
 		/// <summary>
@@ -45,8 +106,16 @@ namespace NHibernate
 		bool IsOpen { get; }
 
 		/// <summary>
-		/// Is the <c>IStatelessSession</c> currently connected?
+		/// Is the session connected?
 		/// </summary>
+		/// <value>
+		/// <see langword="true" /> if the session is connected.
+		/// </value>
+		/// <remarks>
+		/// A session is considered connected if there is a <see cref="DbConnection"/> (regardless
+		/// of its state) or if the field <c>connect</c> is true. Meaning that it will connect
+		/// at the next operation that requires a connection.
+		/// </remarks>
 		bool IsConnected { get; }
 
 		/// <summary>

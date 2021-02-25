@@ -34,24 +34,11 @@ namespace NHibernate.Engine.Query
 	public partial class NativeSQLQueryPlan
 	{
 
-		private async Task CoordinateSharedCacheCleanupAsync(ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			BulkOperationCleanupAction action = new BulkOperationCleanupAction(session, CustomQuery.QuerySpaces);
-
-			await (action.InitAsync(cancellationToken)).ConfigureAwait(false);
-
-			if (session.IsEventSource)
-			{
-				await (((IEventSource)session).ActionQueue.AddActionAsync(action, cancellationToken)).ConfigureAwait(false);
-			}
-		}
-
 		// DONE : H3.2 Executable query (now can be supported for named SQL query/ storedProcedure)
 		public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			await (CoordinateSharedCacheCleanupAsync(session, cancellationToken)).ConfigureAwait(false);
+			CoordinateSharedCacheCleanup(session);
 
 			if (queryParameters.Callable)
 			{
@@ -64,7 +51,7 @@ namespace NHibernate.Engine.Query
 			try
 			{
 				var parametersSpecifications = customQuery.CollectedParametersSpecifications.ToList();
-				SqlString sql = ExpandDynamicFilterParameters(customQuery.SQL, parametersSpecifications, session);
+				SqlString sql = FilterHelper.ExpandDynamicFilterParameters(customQuery.SQL, parametersSpecifications, session);
 				// After the last modification to the SqlString we can collect all parameters types.
 				parametersSpecifications.ResetEffectiveExpectedType(queryParameters);
 
@@ -96,6 +83,7 @@ namespace NHibernate.Engine.Query
 					}
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				throw;

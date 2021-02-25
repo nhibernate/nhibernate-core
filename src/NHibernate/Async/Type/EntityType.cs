@@ -218,12 +218,14 @@ namespace NHibernate.Type
 
 			//TODO: implement caching?! proxies?!
 
+			var keyType = GetIdentifierOrUniqueKeyType(factory)
+				.GetSemiResolvedType(factory);
 			EntityUniqueKey euk =
 				new EntityUniqueKey(
 					entityName,
 					uniqueKeyPropertyName,
 					key,
-					GetIdentifierOrUniqueKeyType(factory),
+					keyType,
 					session.Factory);
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;
@@ -233,9 +235,14 @@ namespace NHibernate.Type
 				if (result == null)
 				{
 					result = await (persister.LoadByUniqueKeyAsync(uniqueKeyPropertyName, key, session, cancellationToken)).ConfigureAwait(false);
+					if (result == null && !IsNullable)
+					{
+						factory.EntityNotFoundDelegate.HandleEntityNotFound(entityName, uniqueKeyPropertyName, key);
+					}
 				}
 				return result == null ? null : persistenceContext.ProxyFor(result);
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
 			{
 				// Do not call Convert on HibernateExceptions

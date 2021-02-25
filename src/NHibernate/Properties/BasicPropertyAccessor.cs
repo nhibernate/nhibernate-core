@@ -196,7 +196,7 @@ namespace NHibernate.Properties
 			{
 				try
 				{
-					return property.GetValue(target, new object[0]);
+					return property.GetValue(target, Array.Empty<object>());
 				}
 				catch (Exception e)
 				{
@@ -293,7 +293,7 @@ namespace NHibernate.Properties
 			{
 				try
 				{
-					property.SetValue(target, value, new object[0]);
+					property.SetValue(target, value, Array.Empty<object>());
 				}
 				catch (ArgumentException ae)
 				{

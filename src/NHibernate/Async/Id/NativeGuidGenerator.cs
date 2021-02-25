@@ -48,7 +48,7 @@ namespace NHibernate.Id
 					{
 						reader.Close();
 					}
-					log.Debug("GUID identifier generated: " + result);
+					log.Debug("GUID identifier generated: {0}", result);
 					return result;
 				}
 				finally
@@ -56,6 +56,7 @@ namespace NHibernate.Id
 					session.Batcher.CloseCommand(st, reader);
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception sqle)
 			{
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not retrieve GUID", sql);

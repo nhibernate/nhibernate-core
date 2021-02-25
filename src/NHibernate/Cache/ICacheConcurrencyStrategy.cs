@@ -1,6 +1,7 @@
 using System.Collections;
 using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
+using NHibernate.Util;
 
 namespace NHibernate.Cache
 {
@@ -123,9 +124,12 @@ namespace NHibernate.Cache
 		void Clear();
 
 		/// <summary>
-		/// Clean up all resources.
+		/// Clean up resources.
 		/// </summary>
 		/// <exception cref="CacheException"></exception>
+		/// <remarks>
+		/// This method should not destroy <see cref="Cache" />. The session factory is responsible for it.
+		/// </remarks>
 		void Destroy();
 
 		/// <summary>
@@ -133,10 +137,79 @@ namespace NHibernate.Cache
 		/// </summary>
 		string RegionName { get; }
 
+		// 6.0 TODO: type as CacheBase instead
+#pragma warning disable 618
 		/// <summary>
 		/// Gets or sets the <see cref="ICache"/> for this strategy to use.
 		/// </summary>
 		/// <value>The <see cref="ICache"/> for this strategy to use.</value>
 		ICache Cache { get; set; }
+#pragma warning restore 618
+	}
+
+	// 6.0 TODO: remove
+	internal static partial class CacheConcurrencyStrategyExtensions
+	{
+		/// <summary>
+		/// Attempt to retrieve multiple objects from the Cache
+		/// </summary>
+		/// <param name="cache">The cache concurrency strategy.</param>
+		/// <param name="keys">The keys (id) of the objects to get out of the Cache.</param>
+		/// <param name="timestamp">A timestamp prior to the transaction start time</param>
+		/// <returns>An array of cached objects or <see langword="null" /></returns>
+		/// <exception cref="CacheException"></exception>
+		public static object[] GetMany(this ICacheConcurrencyStrategy cache, CacheKey[] keys, long timestamp)
+		{
+			// PreferMultipleGet yields false if !IBatchableCacheConcurrencyStrategy, no GetMany call should be done
+			// in such case.
+			return ReflectHelper
+				.CastOrThrow<IBatchableCacheConcurrencyStrategy>(cache, "batching")
+				.GetMany(keys, timestamp);
+		}
+
+		/// <summary>
+		/// Attempt to cache objects, after loading them from the database.
+		/// </summary>
+		/// <param name="cache">The cache concurrency strategy.</param>
+		/// <param name="keys">The keys (id) of the objects to put in the Cache.</param>
+		/// <param name="values">The objects to put in the cache.</param>
+		/// <param name="timestamp">A timestamp prior to the transaction start time.</param>
+		/// <param name="versions">The version numbers of the objects we are putting.</param>
+		/// <param name="versionComparers">The comparers to be used to compare version numbers</param>
+		/// <param name="minimalPuts">Indicates that the cache should avoid a put if the item is already cached.</param>
+		/// <returns><see langword="true" /> if the objects were successfully cached.</returns>
+		/// <exception cref="CacheException"></exception>
+		public static bool[] PutMany(this ICacheConcurrencyStrategy cache, CacheKey[] keys, object[] values, long timestamp,
+		                          object[] versions, IComparer[] versionComparers, bool[] minimalPuts)
+		{
+			if (cache is IBatchableCacheConcurrencyStrategy batchableCache)
+			{
+				return batchableCache.PutMany(keys, values, timestamp, versions, versionComparers, minimalPuts);
+			}
+
+			var result = new bool[keys.Length];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				result[i] = cache.Put(keys[i], values[i], timestamp, versions[i], versionComparers[i], minimalPuts[i]);
+			}
+
+			return result;
+		}
+
+		// 6.0 TODO: remove
+		internal static bool PreferMultipleGet(this ICacheConcurrencyStrategy cache)
+		{
+			if (cache is IBatchableCacheConcurrencyStrategy batchableCache)
+				return batchableCache.Cache.PreferMultipleGet;
+			return false;
+		}
+
+		// 6.0 TODO: remove
+		internal static CacheBase GetCacheBase(this ICacheConcurrencyStrategy cache)
+		{
+			if (cache is IBatchableCacheConcurrencyStrategy batchableCache)
+				return batchableCache.Cache;
+			return cache.Cache?.AsCacheBase();
+		}
 	}
 }

@@ -14,13 +14,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1289
 
 		#endregion
 
-
 		public virtual PurchaseOrder PurchaseOrder
 		{
 			get;
 			set;
 		}
-
 
 		public virtual Product Product
 		{

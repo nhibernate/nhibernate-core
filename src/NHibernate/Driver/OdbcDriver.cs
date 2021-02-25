@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.Odbc;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
@@ -15,12 +14,16 @@ namespace NHibernate.Driver
 	/// <remarks>
 	/// Always look for a native .NET DataProvider before using the Odbc DataProvider.
 	/// </remarks>
-	public class OdbcDriver : DriverBase
+	public class OdbcDriver 
+#if NETFX
+		: DriverBase
+#else
+		: ReflectionBasedDriver
+#endif
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(OdbcDriver));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(OdbcDriver));
 
 		private byte? _dbDateTimeScale;
-
 
 		public override void Configure(IDictionary<string, string> settings)
 		{
@@ -28,21 +31,28 @@ namespace NHibernate.Driver
 
 			// Explicit scale for DbType.DateTime. Seems required for at least MS SQL Server 2008+.
 			_dbDateTimeScale = PropertiesHelper.GetByte(Environment.OdbcDateTimeScale, settings, null);
-			if (_dbDateTimeScale != null && Log.IsInfoEnabled)
+			if (_dbDateTimeScale != null && Log.IsInfoEnabled())
 			{
-				Log.Info(string.Format("Will use scale {0} for DbType.DateTime parameters.", _dbDateTimeScale));
+				Log.Info("Will use scale {0} for DbType.DateTime parameters.", _dbDateTimeScale);
 			}
 		}
 
+#if !NETFX
+		public OdbcDriver() 
+			: base("System.Data.Odbc", "System.Data.Odbc.OdbcConnection", "System.Data.Odbc.OdbcCommand")
+		{
+		}
+#else
 		public override DbConnection CreateConnection()
 		{
-			return new OdbcConnection();
+			return new System.Data.Odbc.OdbcConnection();
 		}
 
 		public override DbCommand CreateCommand()
 		{
-			return new OdbcCommand();
+			return new System.Data.Odbc.OdbcCommand();
 		}
+#endif
 
 		public override bool UseNamedPrefixInSql
 		{
@@ -68,10 +78,18 @@ namespace NHibernate.Driver
 			{
 				switch (dbParam.DbType)
 				{
-					case DbType.AnsiString:
-					case DbType.AnsiStringFixedLength:
-					case DbType.String:
 					case DbType.StringFixedLength:
+					case DbType.AnsiStringFixedLength:
+						// For types that are using one character (CharType, AnsiCharType, TrueFalseType, YesNoType and EnumCharType),
+						// we have to specify the length otherwise sql function like charindex won't work as expected.
+						if (sqlType.Length == 1)
+						{
+							dbParam.Size = sqlType.Length;
+						}
+
+						break;
+					case DbType.String:
+					case DbType.AnsiString:
 						// NH-4083: do not limit to column length if above 2000. Setting size may trigger conversion from
 						// nvarchar to ntext when size is superior or equal to 2000, causing some queries to fail:
 						// https://stackoverflow.com/q/8569844/1178314

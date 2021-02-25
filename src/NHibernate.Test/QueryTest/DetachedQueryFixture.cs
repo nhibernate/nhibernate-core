@@ -17,7 +17,7 @@ namespace NHibernate.Test.QueryTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "QueryTest.DetachedQueryTest.hbm.xml" }; }
 		}
@@ -82,7 +82,7 @@ namespace NHibernate.Test.QueryTest
 			Assert.IsTrue(tdq.OptionalUntypeParams[1].Equals(new Foo("Fulano", "De Tal")));
 
 			tdq.SetAnsiString(1, "");
-			tdq.SetBinary(2, new byte[] { });
+			tdq.SetBinary(2, Array.Empty<byte>());
 			tdq.SetBoolean(3, false);
 			tdq.SetByte(4, 255);
 			tdq.SetCharacter(5, 'A');
@@ -119,7 +119,7 @@ namespace NHibernate.Test.QueryTest
 			Assert.IsTrue(tdq.PosParams[18].Type.Equals(NHibernateUtil.Guid));
 
 			tdq.SetAnsiString("1", "");
-			tdq.SetBinary("2", new byte[] { });
+			tdq.SetBinary("2", Array.Empty<byte>());
 			tdq.SetBoolean("3", false);
 			tdq.SetByte("4", 255);
 			tdq.SetCharacter("5", 'A');
@@ -181,7 +181,7 @@ namespace NHibernate.Test.QueryTest
 			origin.SetLockMode("LM1", LockMode.Upgrade);
 			origin.SetProperties(new Foo("Pallino", "Pinco"));
 			origin.SetInt64(1, 1);
-			origin.SetBinary(2, new byte[] { });
+			origin.SetBinary(2, Array.Empty<byte>());
 			origin.SetBoolean(3, false);
 			origin.SetDateTime(6, DateTime.MaxValue);
 			origin.SetCharacter("5", 'A');
@@ -443,7 +443,6 @@ namespace NHibernate.Test.QueryTest
 		[Test, Explicit]
 		public void PerformanceDiffSimplyQuery()
 		{
-
 			DateTime sDQStart = DateTime.Now;
 			DetachedQuery dq = new DetachedQuery("from Foo f where f.Name=:pn and f.Description=:pd");
 			dq.SetString("pn", "N2").SetString("pd", "D2");
@@ -459,7 +458,6 @@ namespace NHibernate.Test.QueryTest
 				IQuery q = s.CreateQuery("from Foo f where f.Name=:pn and f.Description=:pd").SetString("pn", "N2").SetString("pd", "D2");
 			}
 			DateTime sQStop = DateTime.Now;
-
 
 			Console.WriteLine("DetachedQueryCycle={0} QueryCycl={1}  Diff={2}", sDQStop - sDQStart, sQStop - sQStart,
 												(sDQStop - sDQStart) - (sQStop - sQStart));
@@ -544,7 +542,7 @@ namespace NHibernate.Test.QueryTest
 
 			public override IQuery GetExecutableQuery(ISession session)
 			{
-				throw new Exception("The method or operation is not implemented.");
+				throw new NotImplementedException("The method or operation is not implemented.");
 			}
 
 			public new void CopyTo(IDetachedQuery destination)

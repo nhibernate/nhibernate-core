@@ -7,11 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1643
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1643"; }
-		}
-
 		[Test]
 		public void Test()
 		{
@@ -46,8 +41,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1643
 
                 tx.Commit();
             }
-
-
 
 			using (ISession sess = OpenSession())
 			using (ITransaction tx = sess.BeginTransaction())

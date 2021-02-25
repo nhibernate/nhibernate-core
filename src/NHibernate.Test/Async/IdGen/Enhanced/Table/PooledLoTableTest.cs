@@ -18,7 +18,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 	[TestFixture]
 	public class PooledLoTableTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "IdGen.Enhanced.Table.PooledLo.hbm.xml" }; }
 		}
@@ -27,7 +27,6 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 		{
 			get { return "NHibernate.Test"; }
 		}
-
 
 		[Test]
 		public async Task TestNormalBoundaryAsync()
@@ -51,7 +50,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 						entities[i] = new Entity("" + (i + 1));
 						await (s.SaveAsync(entities[i]));
 						Assert.That(generator.TableAccessCount, Is.EqualTo(1)); // initialization
-						Assert.That(optimizer.LastSourceValue, Is.EqualTo(1));  // initialization
+						Assert.That(optimizer.LastSourceValue, Is.EqualTo(1)); // initialization
 						Assert.That(optimizer.LastValue, Is.EqualTo(i + 1));
 					}
 

@@ -51,11 +51,20 @@ namespace NHibernate.Dialect
 			{
 				RegisterFunction(
 					"current_timestamp",
-					new NoArgSQLFunction("sysdatetime", NHibernateUtil.DateTime, true));
+					new NoArgSQLFunction("sysdatetime", NHibernateUtil.LocalDateTime, true));
+				RegisterFunction(
+					"current_utctimestamp",
+					new NoArgSQLFunction("sysutcdatetime", NHibernateUtil.UtcDateTime, true));
 			}
+
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.LocalDate, "cast(getdate() as date)"));
 			RegisterFunction(
 				"current_timestamp_offset",
 				new NoArgSQLFunction("sysdatetimeoffset", NHibernateUtil.DateTimeOffset, true));
+			RegisterFunction(
+				"current_utctimestamp_offset",
+				new SQLFunctionTemplate(NHibernateUtil.DateTimeOffset, "todatetimeoffset(sysutcdatetime(), 0)"));
+			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
 		}
 
 		protected override void RegisterKeywords()
@@ -74,6 +83,10 @@ namespace NHibernate.Dialect
 
 		public override string CurrentTimestampSQLFunctionName =>
 			KeepDateTime ? base.CurrentTimestampSQLFunctionName : "SYSDATETIME()";
+
+		/// <inheritdoc />
+		public override string CurrentUtcTimestampSQLFunctionName =>
+			KeepDateTime ? base.CurrentUtcTimestampSQLFunctionName : "SYSUTCDATETIME()";
 
 		public override long TimestampResolutionInTicks =>
 			KeepDateTime

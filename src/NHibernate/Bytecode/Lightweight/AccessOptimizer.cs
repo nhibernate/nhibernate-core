@@ -1,4 +1,8 @@
+using System;
+using System.Linq;
+using System.Security;
 using NHibernate.Properties;
+using NHibernate.Util;
 
 namespace NHibernate.Bytecode.Lightweight
 {
@@ -6,20 +10,45 @@ namespace NHibernate.Bytecode.Lightweight
 	{
 		private readonly GetPropertyValuesInvoker getDelegate;
 		private readonly SetPropertyValuesInvoker setDelegate;
-		private readonly IGetter[] getters;
-		private readonly ISetter[] setters;
 		private readonly GetterCallback getterCallback;
 		private readonly SetterCallback setterCallback;
+		private readonly GetPropertyValueInvoker[] _getters;
+		private readonly SetPropertyValueInvoker[] _setters;
+		private readonly GetPropertyValueInvoker _specializedGetter;
+		private readonly SetPropertyValueInvoker _specializedSetter;
 
-		public AccessOptimizer(GetPropertyValuesInvoker getDelegate, SetPropertyValuesInvoker setDelegate,
-		                       IGetter[] getters, ISetter[] setters)
+		// Since 5.3
+		[Obsolete("This constructor has no usages and will be removed in a future version")]
+		public AccessOptimizer(
+			GetPropertyValuesInvoker getDelegate,
+			SetPropertyValuesInvoker setDelegate,
+			IGetter[] getters,
+			ISetter[] setters)
+			: this(
+				getDelegate,
+				setDelegate,
+				getters.ToArray(o => (GetPropertyValueInvoker) o.Get),
+				setters.ToArray(o => (SetPropertyValueInvoker) o.Set),
+				null,
+				null)
+		{
+		}
+
+		public AccessOptimizer(GetPropertyValuesInvoker getDelegate,
+								SetPropertyValuesInvoker setDelegate,
+								GetPropertyValueInvoker[] getters,
+								SetPropertyValueInvoker[] setters,
+								GetPropertyValueInvoker specializedGetter,
+								SetPropertyValueInvoker specializedSetter)
 		{
 			this.getDelegate = getDelegate;
 			this.setDelegate = setDelegate;
-			this.getters = getters;
-			this.setters = setters;
-			getterCallback = OnGetterCallback;
-			setterCallback = OnSetterCallback;
+			_getters = getters;
+			_setters = setters;
+			_specializedGetter = specializedGetter;
+			_specializedSetter = specializedSetter;
+			getterCallback = GetPropertyValue;
+			setterCallback = SetPropertyValue;
 		}
 
 		public object[] GetPropertyValues(object target)
@@ -32,14 +61,24 @@ namespace NHibernate.Bytecode.Lightweight
 			setDelegate(target, values, setterCallback);
 		}
 
-		private object OnGetterCallback(object target, int i)
+		public void SetPropertyValue(object target, int i, object value)
 		{
-			return getters[i].Get(target);
+			_setters[i](target, value);
 		}
 
-		private void OnSetterCallback(object target, int i, object value)
+		public object GetPropertyValue(object target, int i)
 		{
-			setters[i].Set(target, value);
+			return _getters[i](target);
+		}
+
+		internal void SetSpecializedPropertyValue(object target, object value)
+		{
+			_specializedSetter(target, value);
+		}
+
+		internal object GetSpecializedPropertyValue(object target)
+		{
+			return _specializedGetter(target);
 		}
 	}
 }

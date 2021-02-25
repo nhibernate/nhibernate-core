@@ -25,7 +25,7 @@ namespace NHibernate.Test.ExpressionTest.Projection
             get { return "NHibernate.Test"; }
         }
 
-        protected override IList Mappings
+        protected override string[] Mappings
         {
             get
             {
@@ -92,7 +92,7 @@ namespace NHibernate.Test.ExpressionTest.Projection
                     .Add(Projections.Max("Pay"))
                     .Add(Projections.Min("Pay")))
                     ;
-                IList result = await (c.ListAsync());// c.UniqueResult();
+				IList result = await (c.ListAsync()); // c.UniqueResult();
                 Assert.IsTrue(result.Count == 1, "More than one record was found, while just one was expected");
                 Assert.IsTrue(result[0] is object[], 
                     "expected object[] as result, but found " + result[0].GetType().Name);
@@ -116,7 +116,7 @@ namespace NHibernate.Test.ExpressionTest.Projection
                     new string[] { "MyPay" },
                     new IType[] { NHibernateUtil.Double })));
 
-                IList result = await (c.ListAsync());// c.UniqueResult();
+                IList result = await (c.ListAsync()); // c.UniqueResult();
                 Assert.IsTrue(result.Count == 1);
                 object results = result[0];
                 Assert.AreEqual(results, 2.5);

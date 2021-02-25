@@ -11,7 +11,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultAutoFlushEventListener : AbstractFlushingEventListener, IAutoFlushEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultAutoFlushEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultAutoFlushEventListener));
 
 		#region IAutoFlushEventListener Members
 
@@ -33,7 +33,7 @@ namespace NHibernate.Event.Default
 
 					if (FlushIsReallyNeeded(@event, source))
 					{
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 							log.Debug("Need to execute flush");
 
 						PerformExecutions(source);
@@ -48,8 +48,7 @@ namespace NHibernate.Event.Default
 					}
 					else
 					{
-
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 							log.Debug("Dont need to execute flush");
 						source.ActionQueue.ClearFromFlushNeededCheck(oldSize);
 					}

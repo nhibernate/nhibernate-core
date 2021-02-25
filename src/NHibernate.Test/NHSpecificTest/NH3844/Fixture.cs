@@ -54,7 +54,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3844
 				session.Save(compP3_x);
 				session.Save(compP3_y);
 
-
 				session.Save(new TimeRecord { TimeInHours = 1, Project = project1, Components = { } });
 				session.Save(new TimeRecord { TimeInHours = 2, Project = project1, Components = { compP1_x } });
 				session.Save(new TimeRecord { TimeInHours = 3, Project = project1, Components = { compP1_y } });

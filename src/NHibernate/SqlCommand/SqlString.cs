@@ -199,13 +199,13 @@ namespace NHibernate.SqlCommand
 			: this((IEnumerable<object>)parts)
 		{ }
 
-		private SqlString(IEnumerable<object> parts)
+		internal SqlString(IEnumerable<object> parts)
 		{
 			_parts = new List<Part>();
 			_parameters = new SortedList<int, Parameter>();
 
 			var sqlIndex = 0;
-			var pendingContent = new StringBuilder();  // Collect adjoining string parts (the compaction).
+			var pendingContent = new StringBuilder(); // Collect adjoining string parts (the compaction).
 			foreach (var part in parts)
 			{
 				Add(part, pendingContent, ref sqlIndex);
@@ -347,7 +347,23 @@ namespace NHibernate.SqlCommand
 		{
 			if (string.IsNullOrEmpty(text)) return this;
 			if (_length == 0) return new SqlString(text);
-			return new SqlString(new object[] { this, text });
+			return new SqlString(this, text);
+		}
+
+		public SqlString Append(params object[] parts)
+		{
+			return _length == 0
+				? new SqlString(parts)
+				: new SqlString(GetAppendParts(parts));
+		}
+
+		private IEnumerable<object> GetAppendParts(object[] parts)
+		{
+			yield return this;
+			foreach (var part in parts)
+			{
+				yield return part;
+			}
 		}
 
 		/// <summary>
@@ -374,7 +390,7 @@ namespace NHibernate.SqlCommand
 		{
 			return value != null
 				&& value.Length <= _length
-				&& IndexOf(value, _length - value.Length, value.Length, StringComparison.CurrentCultureIgnoreCase) >= 0;
+				&& IndexOf(value, _length - value.Length, value.Length, StringComparison.InvariantCultureIgnoreCase) >= 0;
 		}
 
 		public IEnumerable<Parameter> GetParameters()
@@ -402,6 +418,16 @@ namespace NHibernate.SqlCommand
 		public int IndexOfCaseInsensitive(string text)
 		{
 			return IndexOf(text, 0, _length, StringComparison.InvariantCultureIgnoreCase);
+		}
+
+		internal int IndexOfOrdinal(string text)
+		{
+			return IndexOf(text, 0, _length, StringComparison.Ordinal);
+		}
+
+		internal bool Contains(string text)
+		{
+			return IndexOfOrdinal(text) >= 0;
 		}
 
 		/// <summary>
@@ -648,6 +674,18 @@ namespace NHibernate.SqlCommand
 		}
 
 		/// <summary>
+		/// Returns true if content is empty or white space characters only
+		/// </summary>
+		public bool IsEmptyOrWhitespace()
+		{
+			if (Length <= 0)
+				return true;
+
+			GetTrimmedIndexes(out _, out var newLength);
+			return newLength <= 0;
+		}
+
+		/// <summary>
 		/// Removes all occurrences of white space characters from the beginning and end of this instance.
 		/// </summary>
 		/// <returns>
@@ -658,6 +696,14 @@ namespace NHibernate.SqlCommand
 		{
 			if (_firstPartIndex < 0) return this;
 
+			GetTrimmedIndexes(out var sqlStartIndex, out var length);
+			return length > 0
+				? new SqlString(this, sqlStartIndex, length)
+				: Empty;
+		}
+
+		private void GetTrimmedIndexes(out int sqlStartIndex, out int length)
+		{
 			var firstPart = _parts[_firstPartIndex];
 			var firstPartOffset = _sqlStartIndex - firstPart.SqlIndex;
 			var firstPartLength = Math.Min(firstPart.Length - firstPartOffset, _length);
@@ -676,11 +722,8 @@ namespace NHibernate.SqlCommand
 				lastPartLength--;
 			}
 
-			var sqlStartIndex = firstPart.SqlIndex + firstPartOffset;
-			var length = lastPart.SqlIndex + lastPartOffset + 1 - sqlStartIndex;
-			return length > 0
-				? new SqlString(this, sqlStartIndex, length)
-				: Empty;
+			sqlStartIndex = firstPart.SqlIndex + firstPartOffset;
+			length = lastPart.SqlIndex + lastPartOffset + 1 - sqlStartIndex;
 		}
 
 		public void Visit(ISqlStringVisitor visitor)
@@ -984,6 +1027,22 @@ namespace NHibernate.SqlCommand
 		public SqlString GetSubselectString()
 		{
 			return new SubselectClauseExtractor(this).GetSqlString();
+		}
+
+		internal void SubstituteBogusParameters(IReadOnlyList<Parameter> actualParams, Parameter bogusParam)
+		{
+			int index = 0;
+			var keys = _parameters.Keys;
+			// The loop below is technically not altering the keys collection on which we iterate, but
+			// the underlying implementation still throws on foreach iterations over keys even if we
+			// have only changed the associated value.
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (var i = 0; i < keys.Count; i++)
+			{
+				var key = keys[i];
+				if (ReferenceEquals(_parameters[key], bogusParam))
+					_parameters[key] = actualParams[index++];
+			}
 		}
 
 		[Serializable]

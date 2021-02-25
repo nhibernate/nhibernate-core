@@ -10,11 +10,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1332
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(Fixture));
 
-		public override string BugNumber
-		{
-			get { return "NH1332"; }
-		}
-
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Environment.UseSecondLevelCache, "false");
@@ -30,7 +25,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1332
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				
 				s.Save(a);
 				tx.Commit();
 			}

@@ -52,7 +52,6 @@ namespace NHibernate.Test.UtilityTest
 
 			_shm.Add(newKey, newValue);
 
-
 			int i = 0;
 			foreach (DictionaryEntry de in _shm)
 			{
@@ -290,7 +289,6 @@ namespace NHibernate.Test.UtilityTest
 			Assert.IsNull(_emptyShm.LastValue);
 		}
 
-
 		[Test, Explicit]
 		public void Performance()
 		{
@@ -381,7 +379,6 @@ namespace NHibernate.Test.UtilityTest
 
 				listItemTicks[runIndex] = DateTime.Now.Ticks - listStart;
 
-
 				list.Clear();
 			}
 
@@ -423,7 +420,12 @@ namespace NHibernate.Test.UtilityTest
 		public void Serialize()
 		{
 			MemoryStream stream = new MemoryStream();
-			BinaryFormatter f = new BinaryFormatter();
+			var f = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			f.Serialize(stream, _shm);
 			stream.Position = 0;
 

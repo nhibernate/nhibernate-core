@@ -7,7 +7,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
 using System;
 using System.Drawing;
 using System.Reflection;
@@ -29,9 +28,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 		[Test]
 		public async Task TestPersistenceOfClassWithUnknownSerializableTypeAsync()
 		{
-			Assembly assembly = Assembly.Load(MappingsAssembly);
-			var stream = assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
-			var image = Bitmap.FromStream(stream);
+			var stream = typeof(FixtureAsync).Assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
+			var image = Image.FromStream(stream);
 			
 			var model = new ClassWithImage() { Image = image };
 			var imageSize = model.Image.Size;
@@ -61,9 +59,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 		[Test]
 		public async Task TestPersistenceOfClassWithSerializableTypeAsync()
 		{
-			Assembly assembly = Assembly.Load(MappingsAssembly);
-			var stream = assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
-			var image = Bitmap.FromStream(stream);
+			var stream = typeof(FixtureAsync).Assembly.GetManifestResourceStream("NHibernate.Test.NHSpecificTest.NH2484.food-photo.jpg");
+			var image = Image.FromStream(stream);
 			
 			var model = new ClassWithSerializableType() { Image = image };
 			var imageSize = ((Image)model.Image).Size;

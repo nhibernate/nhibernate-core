@@ -36,7 +36,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (TableGenerator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (TableGenerator));
 
 		/// <summary>
 		/// An additional where clause that is added to 
@@ -70,6 +70,7 @@ namespace NHibernate.Id
 
 		private SqlString updateSql;
 		private SqlType[] parameterTypes;
+		private readonly AsyncLock _asyncLock = new AsyncLock();
 
 		#region IConfigurable Members
 
@@ -151,13 +152,15 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref="short"/>, <see cref="int"/>, or <see cref="long"/>.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual object Generate(ISessionImplementor session, object obj)
 		{
-			// This has to be done using a different connection to the containing
-			// transaction becase the new hi value must remain valid even if the
-			// containing transaction rolls back.
-			return DoWorkInNewTransaction(session);
+			using (_asyncLock.Lock())
+			{
+				// This has to be done using a different connection to the containing
+				// transaction becase the new hi value must remain valid even if the
+				// containing transaction rolls back.
+				return DoWorkInNewTransaction(session);
+			}
 		}
 
 		#endregion
@@ -218,7 +221,7 @@ namespace NHibernate.Id
 			do
 			{
 				//the loop ensure atomicitiy of the 
-				//select + uspdate even for no transaction
+				//select + update even for no transaction
 				//or read committed isolation level (needed for .net?)
 
 				var qps = conn.CreateCommand();
@@ -232,23 +235,17 @@ namespace NHibernate.Id
 					rs = qps.ExecuteReader();
 					if (!rs.Read())
 					{
-						string err;
-						if (string.IsNullOrEmpty(whereClause))
-						{
-							err = "could not read a hi value - you need to populate the table: " + tableName;
-						}
-						else
-						{
-							err = string.Format("could not read a hi value from table '{0}' using the where clause ({1})- you need to populate the table.", tableName, whereClause);
-						}
-						log.Error(err);
-						throw new IdentifierGenerationException(err);
+						var errFormat = string.IsNullOrEmpty(whereClause) 
+							? "could not read a hi value - you need to populate the table: {0}" 
+							: "could not read a hi value from table '{0}' using the where clause ({1})- you need to populate the table.";
+						log.Error(errFormat, tableName, whereClause);
+						throw new IdentifierGenerationException(string.Format(errFormat, tableName, whereClause));
 					}
 					result = Convert.ToInt64(columnType.Get(rs, 0, session));
 				}
 				catch (Exception e)
 				{
-					log.Error("could not read a hi value", e);
+					log.Error(e, "could not read a hi value");
 					throw;
 				}
 				finally
@@ -275,7 +272,7 @@ namespace NHibernate.Id
 				}
 				catch (Exception e)
 				{
-					log.Error("could not update hi value in: " + tableName, e);
+					log.Error(e, "could not update hi value in: {0}", tableName);
 					throw;
 				}
 				finally

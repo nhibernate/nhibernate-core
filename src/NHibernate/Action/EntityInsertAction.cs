@@ -9,22 +9,15 @@ using NHibernate.Persister.Entity;
 namespace NHibernate.Action
 {
 	[Serializable]
-	public sealed partial class EntityInsertAction : EntityAction
+	public sealed partial class EntityInsertAction : AbstractEntityInsertAction
 	{
-		private readonly object[] state;
 		private object version;
 		private object cacheEntry;
 
 		public EntityInsertAction(object id, object[] state, object instance, object version, IEntityPersister persister, ISessionImplementor session)
-			: base(session, id, instance, persister)
+			: base(id, state, instance, persister, session)
 		{
-			this.state = state;
 			this.version = version;
-		}
-
-		public object[] State
-		{
-			get { return state; }
 		}
 
 		protected internal override bool HasPostCommitEventListeners
@@ -51,12 +44,20 @@ namespace NHibernate.Action
 
 			bool veto = PreInsert();
 
+			var wasDelayed = false;
 			// Don't need to lock the cache here, since if someone
 			// else inserted the same pk first, the insert would fail
 			if (!veto)
 			{
-
-				persister.Insert(id, state, instance, Session);
+				// The identifier may be a foreign delayed identifier, which at this point should have been resolved.
+				if (id is DelayedPostInsertIdentifier delayed)
+				{
+					wasDelayed = true;
+					id = delayed.ActualId ??
+						throw new InvalidOperationException(
+							$"The delayed foreign identifier {delayed} has not been resolved before insertion of a {instance}");
+				}
+				persister.Insert(id, State, instance, Session);
 
 				EntityEntry entry = Session.PersistenceContext.GetEntry(instance);
 				if (entry == null)
@@ -65,15 +66,19 @@ namespace NHibernate.Action
 				}
 
 				entry.PostInsert();
+				if (wasDelayed)
+				{
+					Session.PersistenceContext.ReplaceDelayedEntityIdentityInsertKeys(entry.EntityKey, id);
+				}
 
 				if (persister.HasInsertGeneratedProperties)
 				{
-					persister.ProcessInsertGeneratedProperties(id, instance, state, Session);
+					persister.ProcessInsertGeneratedProperties(id, instance, State, Session);
 					if (persister.IsVersionPropertyGenerated)
 					{
-						version = Versioning.GetVersion(state, persister);
+						version = Versioning.GetVersion(State, persister);
 					}
-					entry.PostUpdate(instance, state, version);
+					entry.PostUpdate(instance, State, version);
 				}
 			}
 
@@ -81,7 +86,7 @@ namespace NHibernate.Action
 
 			if (IsCachePutEnabled(persister))
 			{
-				CacheEntry ce = new CacheEntry(state, persister, persister.HasUninitializedLazyProperties(instance), version, session, instance);
+				CacheEntry ce = CacheEntry.Create(State, persister, version, session, instance);
 				cacheEntry = persister.CacheEntryStructure.Structure(ce);
 
 				CacheKey ck = Session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
@@ -127,7 +132,7 @@ namespace NHibernate.Action
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostInsertEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostInsertEvent postEvent = new PostInsertEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				PostInsertEvent postEvent = new PostInsertEvent(Instance, Id, State, Persister, (IEventSource)Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
 					listener.OnPostInsert(postEvent);
@@ -140,7 +145,7 @@ namespace NHibernate.Action
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostCommitInsertEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostInsertEvent postEvent = new PostInsertEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				PostInsertEvent postEvent = new PostInsertEvent(Instance, Id, State, Persister, (IEventSource)Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
 					listener.OnPostInsert(postEvent);
@@ -154,7 +159,7 @@ namespace NHibernate.Action
 			bool veto = false;
 			if (preListeners.Length > 0)
 			{
-				var preEvent = new PreInsertEvent(Instance, Id, state, Persister, (IEventSource) Session);
+				var preEvent = new PreInsertEvent(Instance, Id, State, Persister, (IEventSource) Session);
 				foreach (IPreInsertEventListener listener in preListeners)
 				{
 					veto |= listener.OnPreInsert(preEvent);

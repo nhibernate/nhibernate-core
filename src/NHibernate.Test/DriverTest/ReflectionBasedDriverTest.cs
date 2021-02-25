@@ -33,13 +33,20 @@ namespace NHibernate.Test.DriverTest
 				get { throw new NotImplementedException(); }
 			}
 		}
+		
 		private class MyDriverWithNoDbProviderFactory : ReflectionBasedDriver
 		{
-			public MyDriverWithNoDbProviderFactory():
-			base(null,
-				"System.Data.OracleClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", 
-			"System.Data.OracleClient.OracleConnection", 
-			"System.Data.OracleClient.OracleCommand") { }
+			public MyDriverWithNoDbProviderFactory() : base(
+				null,
+#if NETFX
+				"System.Data.OracleClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+#else
+				"System.Data.OracleClient",				
+#endif
+				"System.Data.OracleClient.OracleConnection",
+				"System.Data.OracleClient.OracleCommand")
+			{
+			}
 
 			public override bool UseNamedPrefixInSql
 			{
@@ -57,19 +64,19 @@ namespace NHibernate.Test.DriverTest
 			}
 		}
 
-		[Test]
+		[Test, NetFxOnly]
 		public void WhenCreatedWithGoodDbProviderThenNotThrows()
 		{
 			Assert.That(() => new MyDriverWithWrongClassesAndGoodDbProviderFactory(), Throws.Nothing);
 		}
 
-		[Test]
+		[Test, NetFxOnly]
 		public void WhenCreatedWithNullAssemblyAndGoodDbProviderThenNotThrows()
 		{
 			Assert.That(() => new MyDriverWithWrongClassesAndGoodDbProviderFactory(null), Throws.Nothing);
 		}
 
-		[Test]
+		[Test, NetFxOnly]
 		public void WhenCreatedWithDbFactoryThenCanReturnConnection()
 		{
 			var provider = new MyDriverWithWrongClassesAndGoodDbProviderFactory();
@@ -79,7 +86,7 @@ namespace NHibernate.Test.DriverTest
 			}
 		}
 
-		[Test]
+		[Test, NetFxOnly]
 		public void WhenCreatedWithDbFactoryThenCanReturnCommand()
 		{
 			var provider = new MyDriverWithWrongClassesAndGoodDbProviderFactory();

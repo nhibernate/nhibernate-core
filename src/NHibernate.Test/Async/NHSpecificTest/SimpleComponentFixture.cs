@@ -21,7 +21,12 @@ namespace NHibernate.Test.NHSpecificTest
 	{
 		private DateTime testDateTime = new DateTime(2003, 8, 16);
 
-		protected override IList Mappings
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsSquareBracketInIdentifiers;
+		}
+
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecific.SimpleComponent.hbm.xml"}; }
 		}
@@ -42,7 +47,6 @@ namespace NHibernate.Test.NHSpecificTest
 				simpleComp.Audit.UpdatedDate = DateTime.Now;
 				simpleComp.Audit.UpdatedUserId = "TestUpdated";
 
-
 				s.Save(simpleComp, 10L);
 
 				t.Commit();
@@ -57,7 +61,6 @@ namespace NHibernate.Test.NHSpecificTest
 				s.Flush();
 			}
 		}
-
 
 		[Test]
 		public async Task TestLoadAsync()

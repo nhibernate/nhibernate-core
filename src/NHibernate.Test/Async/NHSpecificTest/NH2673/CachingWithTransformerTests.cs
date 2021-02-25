@@ -63,7 +63,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 					blog.Posts.Add(new Post { Title = "Second post", Body = "Some other text" });
 					blog.Posts.Add(new Post { Title = "Third post", Body = "Third post text" });
 
-
 					blog.Comments.Add(new Comment { Title = "First comment", Body = "Some text" });
 					blog.Comments.Add(new Comment { Title = "Second comment", Body = "Some other text" });
 					session.Save(blog);
@@ -177,7 +176,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = await (session.CreateCriteria<Blog>()
-					                   .SetFetchMode("Posts", FetchMode.Eager)
+					                   .Fetch("Posts")
 					                   .SetCacheable(true)
 					                   .ListAsync<Blog>());
 					await (tx.CommitAsync());
@@ -194,7 +193,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = (await (session.CreateCriteria<Blog>()
-					                   .SetFetchMode("Posts", FetchMode.Eager)
+					                   .Fetch("Posts")
 					                   .SetCacheable(true)
 					                   .Future<Blog>()
 					                   .GetEnumerableAsync()))
@@ -221,7 +220,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			}
 		}
 
-		
 		[Test(Description = "NH2961/3311")]
 		public async Task CanCacheCriteriaWithLeftJoinAndResultTransformerAsync()
 		{
@@ -239,7 +237,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			}
 		}
 
-
 		[Test(Description = "NH2961/3311")]
 		public async Task CanCacheCriteriaWithEagerLoadAndResultTransformerAsync()
 		{
@@ -248,14 +245,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			using (session.BeginTransaction())
 			{
 				var result = await (session.QueryOver<Blog>().Where(x => x.Author == "Gabriel")
-									.Fetch(x => x.Posts).Eager
+									.Fetch(SelectMode.Fetch, x => x.Posts)
 									.TransformUsing(new DistinctRootEntityResultTransformer())
 									.Cacheable()
 									.ListAsync<Blog>());
 			}
 		}
 
-		
 		[Test(Description = "NH2961/3311")]
 		public async Task CanCacheCriteriaWithLeftJoinAsync()
 		{

@@ -1,9 +1,11 @@
+using System;
 using NHibernate.Proxy.DynamicProxy;
 using NUnit.Framework;
 
 namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 {
 	[TestFixture]
+	[Obsolete]
 	public class GenericMethodShouldBeProxied
 	{
 		[Test]

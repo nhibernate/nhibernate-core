@@ -10,7 +10,7 @@ namespace NHibernate.Test.Legacy
 	[TestFixture]
 	public class CriteriaTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -162,7 +162,7 @@ namespace NHibernate.Test.Legacy
 				s.Flush();
 				Assert.AreEqual(1, s.CreateCriteria(typeof(Master))
 				                   	.CreateAlias("Details", "detail", JoinType.LeftOuterJoin)
-				                   	.SetFetchMode("Details", FetchMode.Join)
+				                   	.Fetch("Details")
 				                   	.List().Count);
 				s.Delete("from Master");
 				s.Flush();
@@ -187,6 +187,5 @@ namespace NHibernate.Test.Legacy
 				DetachedCriteria.For<Master>().GetRootEntityTypeIfAvailable()
 				);
 		}
-
 	}
 }

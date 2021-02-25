@@ -32,12 +32,10 @@ namespace NHibernate.Test.UtilityTest
 
 		public interface IEmpty
 		{
-
 		}
 
 		public interface IComplex: IEmpty, IMyInheritedWithEqual
 		{
-			
 		}
 
 		[Test]
@@ -82,7 +80,7 @@ namespace NHibernate.Test.UtilityTest
 			Assert.IsNull(noType);
 		}
 
-		[Test]
+		[Test, NetFxOnly]
 		public void TypeFoundInNotLoadedAssembly()
 		{
 			System.Type httpRequest = ReflectHelper.TypeFromAssembly("System.Web.HttpRequest", "System.Web", false);

@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using NHibernate.Util;
+
 namespace NHibernate.Persister.Entity
 {
 	public enum Declarer
@@ -5,6 +9,19 @@ namespace NHibernate.Persister.Entity
 		Class,
 		SubClass,
 		SuperClass
+	}
+
+	internal static class AbstractEntityPersisterExtensions
+	{
+		/// <summary>
+		/// Given a query alias and an identifying suffix, render the property select fragment.
+		/// </summary>
+		//6.0 TODO: Merge into IQueryable
+		public static string PropertySelectFragment(this IQueryable query, string alias, string suffix, ICollection<string> fetchProperties)
+		{
+			return ReflectHelper.CastOrThrow<AbstractEntityPersister>(query, "individual lazy property fetches")
+			                    .PropertySelectFragment(alias, suffix, fetchProperties);
+		}
 	}
 
 	/// <summary>
@@ -39,14 +56,14 @@ namespace NHibernate.Persister.Entity
 		/// multiple tables? 
 		/// </summary>
 		/// <returns> True if the inheritance hierarchy is spread across multiple tables; false otherwise. </returns>
-		bool IsMultiTable { get;}
+		bool IsMultiTable { get; }
 
 		/// <summary> 
 		/// Get the names of all tables used in the hierarchy (up and down) ordered such
 		/// that deletes in the given order would not cause constraint violations. 
 		/// </summary>
 		/// <returns> The ordered array of table names. </returns>
-		string[] ConstraintOrderedTableNameClosure { get;}
+		string[] ConstraintOrderedTableNameClosure { get; }
 
 		/// <summary> 
 		/// For each table specified in <see cref="ConstraintOrderedTableNameClosure"/>, get
@@ -59,24 +76,24 @@ namespace NHibernate.Persister.Entity
 		/// The second dimension should have the same length across all the elements in
 		/// the first dimension.  If not, that'd be a problem ;) 
 		/// </returns>
-		string[][] ConstraintOrderedTableKeyColumnClosure { get;}
+		string[][] ConstraintOrderedTableKeyColumnClosure { get; }
 
 		/// <summary> 
 		/// Get the name of the temporary table to be used to (potentially) store id values
 		/// when performing bulk update/deletes. 
 		/// </summary>
 		/// <returns> The appropriate temporary table name. </returns>
-		string TemporaryIdTableName { get;}
+		string TemporaryIdTableName { get; }
 
 		/// <summary> 
 		/// Get the appropriate DDL command for generating the temporary table to
 		/// be used to (potentially) store id values when performing bulk update/deletes. 
 		/// </summary>
 		/// <returns> The appropriate temporary table creation command. </returns>
-		string TemporaryIdTableDDL { get;}
+		string TemporaryIdTableDDL { get; }
 
 		/// <summary> Is the version property included in insert statements?</summary>
-		bool VersionPropertyInsertable { get;}
+		bool VersionPropertyInsertable { get; }
 
 		/// <summary>
 		/// Given a query alias and an identifying suffix, render the identifier select fragment.

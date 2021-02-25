@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Text;
 using NHibernate.Util;
 
@@ -6,6 +6,8 @@ namespace NHibernate.AdoNet.Util
 {
 	public class DdlFormatter: IFormatter
 	{
+		private static readonly INHibernateLogger Logger = NHibernateLogger.For(typeof(DdlFormatter));
+
 		private const string Indent1 = "\n    ";
 		private const string Indent2 = "\n      ";
 		private const string Indent3 = "\n        ";
@@ -18,21 +20,20 @@ namespace NHibernate.AdoNet.Util
 		/// </summary>
 		public virtual string Format(string sql)
 		{
-			if (sql.ToLowerInvariant().StartsWith("create table"))
+			try
 			{
-				return FormatCreateTable(sql);
-			}
-			else if (sql.ToLowerInvariant().StartsWith("alter table"))
-			{
-				return FormatAlterTable(sql);
-			}
-			else if (sql.ToLowerInvariant().StartsWith("comment on"))
-			{
-				return FormatCommentOn(sql);
-			}
-			else
-			{
+				if (sql.StartsWith("create table", StringComparison.OrdinalIgnoreCase))
+					return FormatCreateTable(sql);
+				if (sql.StartsWith("alter table", StringComparison.OrdinalIgnoreCase))
+					return FormatAlterTable(sql);
+				if (sql.StartsWith("comment on", StringComparison.OrdinalIgnoreCase))
+					return FormatCommentOn(sql);
 				return Indent1 + sql;
+			}
+			catch (Exception e)
+			{
+				Logger.Warn(e, "Unable to format provided SQL: {0}", sql);
+				return sql;
 			}
 		}
 

@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// <see cref="DbType.String" /> column.
 	/// </summary>
 	[Serializable]
-	public class TypeType : ImmutableType
+	public partial class TypeType : ImmutableType
 	{
 		/// <summary></summary>
 		internal TypeType()
@@ -43,22 +43,7 @@ namespace NHibernate.Type
 		/// </exception>
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			string str = (string)NHibernateUtil.String.Get(rs, index, session);
-			if (string.IsNullOrEmpty(str))
-			{
-				return null;
-			}
-			else
-			{
-				try
-				{
-					return ReflectHelper.ClassForFullName(str);
-				}
-				catch (Exception cnfe)
-				{
-					throw new HibernateException("Class not found: " + str, cnfe);
-				}
-			}
+			return ParseStringRepresentation(NHibernateUtil.String.Get(rs, index, session));
 		}
 
 		/// <summary>
@@ -95,7 +80,17 @@ namespace NHibernate.Type
 		/// </remarks>
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			NHibernateUtil.String.Set(cmd, ((System.Type)value).AssemblyQualifiedName, index, session);
+			NHibernateUtil.String.Set(cmd, GetStringRepresentation(value), index, session);
+		}
+
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
 		}
 
 		/// <summary>
@@ -104,9 +99,11 @@ namespace NHibernate.Type
 		/// <param name="value">The <see cref="System.Type"/> that contains the values.
 		/// </param>
 		/// <returns>An Xml formatted string that contains the Assembly Qualified Name.</returns>
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object value)
 		{
-			return ((System.Type)value).AssemblyQualifiedName;
+			return GetStringRepresentation(value);
 		}
 
 		/// <summary>
@@ -121,21 +118,51 @@ namespace NHibernate.Type
 			get { return typeof(System.Type); }
 		}
 
-		/// <summary></summary>
+		/// <inheritdoc />
 		public override string Name
 		{
 			get { return "Type"; }
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
+			return ParseStringRepresentation(xml);
+		}
+
+		/// <inheritdoc />
+		public override object Assemble(object cached, ISessionImplementor session, object owner)
+		{
+			return ParseStringRepresentation(cached);
+		}
+
+		/// <inheritdoc />
+		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		{
+			return GetStringRepresentation(value);
+		}
+
+		private static string GetStringRepresentation(object value)
+		{
+			return ((System.Type) value)?.AssemblyQualifiedName;
+		}
+
+		private static object ParseStringRepresentation(object value)
+		{
+			var str = value as string;
+			if (string.IsNullOrEmpty(str))
+			{
+				return null;
+			}
+
 			try
 			{
-				return ReflectHelper.ClassForFullName(xml);
+				return ReflectHelper.ClassForFullName(str);
 			}
-			catch (Exception tle)
+			catch (Exception cnfe)
 			{
-				throw new HibernateException("could not parse xml:" + xml, tle);
+				throw new HibernateException("Class not found: " + str, cnfe);
 			}
 		}
 	}

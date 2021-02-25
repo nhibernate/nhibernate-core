@@ -9,6 +9,7 @@ using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -22,16 +23,17 @@ namespace NHibernate.Id
 	/// java author Gavin King, .NET port Mark Holden
 	/// </para>
 	/// <para>
-	/// Mapping parameters supported, but not usually needed: table, column.
+	/// Mapping parameters supported, but not usually needed: tables, column, schema, catalog.
 	/// </para>
 	/// </remarks>
 	public partial class IncrementGenerator : IIdentifierGenerator, IConfigurable
 	{
-		private static readonly IInternalLogger Logger = LoggerProvider.LoggerFor(typeof(IncrementGenerator));
+		private static readonly INHibernateLogger Logger = NHibernateLogger.For(typeof(IncrementGenerator));
 
 		private long _next;
 		private SqlString _sql;
 		private System.Type _returnClass;
+		private readonly AsyncLock _asyncLock = new AsyncLock();
 
 		/// <summary>
 		///
@@ -85,19 +87,22 @@ namespace NHibernate.Id
 		/// <param name="session"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public object Generate(ISessionImplementor session, object obj)
 		{
-			if (_sql != null)
+			using (_asyncLock.Lock())
 			{
-				GetNext(session);
+				if (_sql != null)
+				{
+					GetNext(session);
+				}
+
+				return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
 			}
-			return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
 		}
 
 		private void GetNext(ISessionImplementor session)
 		{
-			Logger.Debug("fetching initial value: " + _sql);
+			Logger.Debug("fetching initial value: {0}", _sql);
 
 			try
 			{
@@ -117,7 +122,7 @@ namespace NHibernate.Id
 							_next = 1L;
 						}
 						_sql = null;
-						Logger.Debug("first free id: " + _next);
+						Logger.Debug("first free id: {0}", _next);
 					}
 					finally
 					{
@@ -131,7 +136,7 @@ namespace NHibernate.Id
 			}
 			catch (DbException sqle)
 			{
-				Logger.Error("could not get increment value", sqle);
+				Logger.Error(sqle, "could not get increment value");
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
 												 "could not fetch initial value for increment generator");
 			}

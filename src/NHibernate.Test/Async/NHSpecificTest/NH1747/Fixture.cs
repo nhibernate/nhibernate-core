@@ -8,6 +8,8 @@
 //------------------------------------------------------------------------------
 
 
+using System.Linq;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1747
@@ -51,6 +53,25 @@ namespace NHibernate.Test.NHSpecificTest.NH1747
 				Assert.AreEqual(1, paymentBatch.Payments.Count);
 			}
 		}
-	}
 
+		[Test]
+		public async Task TraversingBagToJoinChildElementShouldWorkLinqFetchAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				var paymentBatch = await (session.Query<PaymentBatch>().Fetch(x => x.Payments).SingleOrDefaultAsync());
+				Assert.AreEqual(1, paymentBatch.Payments.Count);
+			}
+		}
+
+		[Test]
+		public async Task TraversingBagToJoinChildElementShouldWorkQueryOverFetchAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				var paymentBatch = await (session.Query<PaymentBatch>().Fetch(x => x.Payments).SingleOrDefaultAsync());
+				Assert.AreEqual(1, paymentBatch.Payments.Count);
+			}
+		}
+	}
 }

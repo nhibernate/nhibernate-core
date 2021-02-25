@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using NHibernate.Dialect.Function;
+using NHibernate.Engine;
+using NHibernate.Hql;
 using NHibernate.Impl;
+using NHibernate.Param;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 
 namespace NHibernate.Util
 {
@@ -20,13 +24,12 @@ namespace NHibernate.Util
 			filterNames = new string[filterCount];
 			filterConditions = new string[filterCount];
 			filterCount = 0;
-			foreach (KeyValuePair<string, string> entry in filters)
+			foreach (var entry in filters)
 			{
 				filterNames[filterCount] = entry.Key;
 				filterConditions[filterCount] =
-					Template.RenderWhereStringTemplate(entry.Value, FilterImpl.MARKER, dialect, sqlFunctionRegistry);
-				filterConditions[filterCount] =
-					StringHelper.Replace(filterConditions[filterCount], ":", ":" + filterNames[filterCount] + ".");
+					Template.RenderWhereStringTemplate(entry.Value, FilterImpl.MARKER, dialect, sqlFunctionRegistry)?
+						.Replace(":", ":" + entry.Key + ".");
 				filterCount++;
 			}
 		}
@@ -52,27 +55,20 @@ namespace NHibernate.Util
 
 		public void Render(StringBuilder buffer, string alias, IDictionary<string, IFilter> enabledFilters)
 		{
-			Render(buffer, alias, new Dictionary<string, string>(), enabledFilters);
+			Render(buffer, alias, CollectionHelper.EmptyDictionary<string, string>(), enabledFilters);
 		}
 
 		public void Render(StringBuilder buffer, string defaultAlias, IDictionary<string, string> propMap, IDictionary<string, IFilter> enabledFilters)
 		{
-			if (filterNames != null)
+			for (int i = 0; i < filterNames.Length; i++)
 			{
-				int max = filterNames.Length;
-				if (max > 0)
+				if (enabledFilters.ContainsKey(filterNames[i]))
 				{
-					for (int i = 0; i < max; i++)
+					string condition = filterConditions[i];
+					if (!string.IsNullOrEmpty(condition))
 					{
-						if (enabledFilters.ContainsKey(filterNames[i]))
-						{
-							string condition = filterConditions[i];
-							if (StringHelper.IsNotEmpty(condition))
-							{
-								buffer.Append(" and ");
-								AddFilterString(buffer, defaultAlias, propMap, condition);
-							}
-						}
+						buffer.Append(" and ");
+						AddFilterString(buffer, defaultAlias, propMap, condition);
 					}
 				}
 			}
@@ -80,22 +76,23 @@ namespace NHibernate.Util
 
 		private static void AddFilterString(StringBuilder buffer, string defaultAlias, IDictionary<string, string> propMap, string condition)
 		{
-			int i = condition.IndexOf(FilterImpl.MARKER);
+			int i;
 			int upTo = 0;
-			while (i > -1 && upTo < condition.Length)
+			while ((i = condition.IndexOf(FilterImpl.MARKER, upTo, StringComparison.Ordinal)) >= 0 && upTo < condition.Length)
 			{
-				buffer.Append(condition.Substring(upTo, i - upTo));
+				buffer.Append(condition, upTo, i - upTo);
 				int startOfProperty = i + FilterImpl.MARKER.Length + 1;
 
-				upTo = condition.IndexOf(" ", startOfProperty);
+				upTo = condition.IndexOf(' ', startOfProperty);
 				upTo = upTo >= 0 ? upTo : condition.Length;
 				string property = condition.Substring(startOfProperty, upTo - startOfProperty);
 
-				string fullColumn = propMap.ContainsKey(property) ? propMap[property] : string.Format(string.Format("{0}.{1}", defaultAlias, property));
+				if (!propMap.TryGetValue(property, out var fullColumn))
+					fullColumn = string.IsNullOrEmpty(defaultAlias)
+						? property
+						: defaultAlias + "." + property;
 
 				buffer.Append(fullColumn);
-
-				i = condition.IndexOf(FilterImpl.MARKER, upTo);
 			}
 			buffer.Append(condition.Substring(upTo));
 		}
@@ -114,6 +111,79 @@ namespace NHibernate.Util
 					enabledFiltersForManyToOne.Add(enabledFilter.Key, enabledFilter.Value);
 			}
 			return enabledFiltersForManyToOne;
+		}
+
+		internal static SqlString ExpandDynamicFilterParameters(SqlString sqlString, ICollection<IParameterSpecification> parameterSpecs, ISessionImplementor session)
+		{
+			var enabledFilters = session.EnabledFilters;
+			if (enabledFilters.Count == 0 || !ParserHelper.HasHqlVariable(sqlString))
+			{
+				return sqlString;
+			}
+
+			Dialect.Dialect dialect = session.Factory.Dialect;
+			string symbols = ParserHelper.HqlSeparators + dialect.OpenQuote + dialect.CloseQuote;
+
+			var result = new SqlStringBuilder();
+			foreach (var sqlPart in sqlString)
+			{
+				var parameter = sqlPart as Parameter;
+				if (parameter != null)
+				{
+					result.Add(parameter);
+					continue;
+				}
+
+				var sqlFragment = sqlPart.ToString();
+				var tokens = new StringTokenizer(sqlFragment, symbols, true);
+
+				foreach (string token in tokens)
+				{
+					if (ParserHelper.IsHqlVariable(token))
+					{
+						string filterParameterName = token.Substring(1);
+						string[] parts = StringHelper.ParseFilterParameterName(filterParameterName);
+						string filterName = parts[0];
+						string parameterName = parts[1];
+						var filter = (FilterImpl) enabledFilters[filterName];
+
+						int? collectionSpan = filter.GetParameterSpan(parameterName);
+						IType type = filter.FilterDefinition.GetParameterType(parameterName);
+						int parameterColumnSpan = type.GetColumnSpan(session.Factory);
+
+						// Add query chunk
+						string typeBindFragment = string.Join(", ", Enumerable.Repeat("?", parameterColumnSpan));
+						string bindFragment;
+						if (collectionSpan.HasValue && !type.ReturnedClass.IsArray)
+						{
+							bindFragment = string.Join(", ", Enumerable.Repeat(typeBindFragment, collectionSpan.Value));
+						}
+						else
+						{
+							bindFragment = typeBindFragment;
+						}
+
+						// dynamic-filter parameter tracking
+						var filterParameterFragment = SqlString.Parse(bindFragment);
+						var dynamicFilterParameterSpecification = new DynamicFilterParameterSpecification(filterName, parameterName, type, collectionSpan);
+						var parameters = filterParameterFragment.GetParameters().ToArray();
+						var sqlParameterPos = 0;
+						var paramTrackers = dynamicFilterParameterSpecification.GetIdsForBackTrack(session.Factory);
+						foreach (var paramTracker in paramTrackers)
+						{
+							parameters[sqlParameterPos++].BackTrack = paramTracker;
+						}
+
+						parameterSpecs.Add(dynamicFilterParameterSpecification);
+						result.Add(filterParameterFragment);
+					}
+					else
+					{
+						result.Add(token);
+					}
+				}
+			}
+			return result.ToSqlString();
 		}
 	}
 }

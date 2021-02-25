@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 
 using NUnit.Framework;
 
@@ -8,35 +7,21 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
-
 	[TestFixture]
 	public class CriteriaAssertFixture : LambdaFixtureBase
 	{
-
 		private void AssertCriteriaAreNotEqual(ICriteria expected, ICriteria actual)
 		{
-			try
-			{
-				AssertCriteriaAreEqual(expected, actual);
-				Assert.Fail("No exception thrown");
-			}
-			catch
-			{
-				Assert.Pass();
-			}
+			Assert.Throws<AssertionException>(
+				() => { AssertCriteriaAreEqual(expected, actual); },
+				"No exception thrown");
 		}
 
 		private void AssertCriteriaAreNotEqual(DetachedCriteria expected, DetachedCriteria actual)
 		{
-			try
-			{
-				AssertCriteriaAreEqual(expected, actual);
-				Assert.Fail("No exception thrown");
-			}
-			catch
-			{
-				Assert.Pass();
-			}
+			Assert.Throws<AssertionException>(
+				() => { AssertCriteriaAreEqual(expected, actual); },
+				"No exception thrown");
 		}
 
 		[Test]
@@ -168,11 +153,11 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			DetachedCriteria expected =
 				DetachedCriteria.For<Person>()
-					.SetFetchMode("Father", FetchMode.Eager);
+					.Fetch("Father");
 
 			DetachedCriteria actual =
 				DetachedCriteria.For<Person>()
-					.SetFetchMode("Father", FetchMode.Lazy);
+					.Fetch(SelectMode.Skip, "Father");
 
 			AssertCriteriaAreNotEqual(expected, actual);
 		}
@@ -236,7 +221,5 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			AssertCriteriaAreNotEqual(expected, actual);
 		}
-
 	}
-
 }

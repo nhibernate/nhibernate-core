@@ -62,7 +62,6 @@ namespace NHibernate.Type
 			{
 				return Task.FromException<object>(ex);
 			}
-			// NOOP
 		}
 
 		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
@@ -82,34 +81,43 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
+		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				//remember the uk value
+			cancellationToken.ThrowIfCancellationRequested();
+			//remember the uk value
 
-				//This solution would allow us to eliminate the owner arg to disassemble(), but
-				//what if the collection was null, and then later had elements added? seems unsafe
-				//session.getPersistenceContext().getCollectionEntry( (PersistentCollection) value ).getKey();
+			//This solution would allow us to eliminate the owner arg to disassemble(), but
+			//what if the collection was null, and then later had elements added? seems unsafe
+			//session.getPersistenceContext().getCollectionEntry( (PersistentCollection) value ).getKey();
 
-				object key = GetKeyOfOwner(owner, session);
-				if (key == null)
-				{
-					return Task.FromResult<object>(null);
-				}
-				else
-				{
-					return GetPersister(session).KeyType.DisassembleAsync(key, session, owner, cancellationToken);
-				}
-			}
-			catch (Exception ex)
+			object key = await (GetKeyOfOwnerAsync(owner, session, cancellationToken)).ConfigureAwait(false);
+			if (key == null)
 			{
-				return Task.FromException<object>(ex);
+				return null;
 			}
+			else
+			{
+				return await (GetPersister(session).KeyType.DisassembleAsync(key, session, owner, cancellationToken)).ConfigureAwait(false);
+			}
+		}
+
+		public override async Task BeforeAssembleAsync(object oid, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (oid == null)
+			{
+				return;
+			}
+
+			var queryCacheQueue = session.PersistenceContext.BatchFetchQueue.QueryCacheQueue;
+			if (queryCacheQueue == null)
+			{
+				return;
+			}
+
+			var persister = GetPersister(session);
+			var key = await (persister.KeyType.AssembleAsync(oid, session, null, cancellationToken)).ConfigureAwait(false);
+			queryCacheQueue.AddCollection(persister, new CollectionKey(persister, key));
 		}
 
 		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
@@ -153,20 +161,10 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> ResolveIdentifierAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken)
+		public override async Task<object> ResolveIdentifierAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				return ResolveKeyAsync(GetKeyOfOwner(owner, session), session, owner, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			return await (ResolveKeyAsync(await (GetKeyOfOwnerAsync(owner, session, cancellationToken)).ConfigureAwait(false), session, owner, cancellationToken)).ConfigureAwait(false);
 		}
 
 		private Task<object> ResolveKeyAsync(object key, ISessionImplementor session, object owner, CancellationToken cancellationToken)
@@ -214,9 +212,9 @@ namespace NHibernate.Type
 					}
 				}
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Created collection wrapper: " + MessageHelper.CollectionInfoString(persister, collection, key, session));
+					log.Debug("Created collection wrapper: {0}", MessageHelper.CollectionInfoString(persister, collection, key, session));
 				}
 			}
 			collection.Owner = owner;
@@ -310,6 +308,76 @@ namespace NHibernate.Type
 			{
 				return Task.FromException<bool>(ex);
 			}
+		}
+
+		/// <summary>
+		/// Get the key value from the owning entity instance. It is usually the identifier, but it might be some
+		/// other unique key, in the case of a property-ref.
+		/// </summary>
+		public async Task<object> GetKeyOfOwnerAsync(object owner, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var entityEntry = session.PersistenceContext.GetEntry(owner);
+			if (entityEntry == null)
+			{
+				// This just handles a particular case of component
+				// projection, perhaps get rid of it and throw an exception
+				return null;
+			}
+
+			if (foreignKeyPropertyName == null)
+			{
+				return entityEntry.Id;
+			}
+
+			var key = entityEntry.LoadedState != null
+				? entityEntry.GetLoadedValue(foreignKeyPropertyName)
+				: entityEntry.Persister.GetPropertyValue(owner, foreignKeyPropertyName);
+
+			// At the point where we are resolving collection references for loading
+			// a collection element from an entity query with eager loads, the uk value
+			// is not yet resolved in the entity state. This means that an uk value being
+			// a component will be represented by just its properties values, and an uk value
+			// being an entity (one-to-one or many-to-one) will be represented by just its
+			// identifier.
+			// We detect this by checking the type of the key value.
+			// (This condition was also occuring with simple entity load previously, when the
+			// property-ref target was mapped after the collection. But TwoPhaseLoad has been
+			// adjusted for resolving collections after all other properties, avoiding this
+			// trouble when initializing the entities. (It occurs after having processed each row of the
+			// row of the result set.) Unfortunately for eager loads, we must resolve the collection
+			// earlier, during the row processing, for associating a read collection element
+			// to its collection.)
+			var keyType = GetPersister(session).KeyType;
+			if (keyType.ReturnedClass.IsInstanceOfType(key))
+				return key;
+
+			// key value is not yet resolved
+			var resolvedKey = await (keyType.SemiResolveAsync(key, session, owner, cancellationToken)).ConfigureAwait(false);
+			if (key != resolvedKey)
+				return resolvedKey;
+
+			// The key type SemiResolve was a no-op, which happens with entity types.
+			// We have to fully resolve it here, potentially causing n+1 loads. (It happens if
+			// the entity has lazy loading disabled while being a key property-ref for a collection:
+			// quite a special case mapping.)
+			// But anyway, Loader.ReadCollectionElement does already that some instructions later, when
+			// there is a collection element. This is due to its "collectionRowKey = persister.ReadKey"
+			// call which does a keyType.NullSafeGet which ends up calling keyType.ResolveIdentifier for
+			// entity types.
+			// So better do it here too, otherwise when there are no collection element, the logic
+			// handling empty collections fail by having a wrong key. (When there are collection elements,
+			// they supply the right key by the way, and the key resolved here is ignored.)
+			resolvedKey = await (keyType.ResolveIdentifierAsync(key, session, owner, cancellationToken)).ConfigureAwait(false);
+
+			if (key != resolvedKey)
+				return resolvedKey;
+
+			// This should not happen. If that changes, at least yield null, instead of yielding
+			// a value of an unexpected type.
+			throw new AssertionFailure(
+				$"Unable to correctly resolve the owner key, property {foreignKeyPropertyName} for " +
+				$"collection {role}. Unresolved value '{key}', key type '{keyType}', owner '{owner}'.");
 		}
 	}
 }

@@ -19,7 +19,7 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public abstract class Collection : IFetchable, IValue, IFilterable
 	{
-		private static readonly IEnumerable<ISelectable> EmptyColumns = new ISelectable[0];
+		private static readonly IEnumerable<ISelectable> EmptyColumns = System.Array.Empty<ISelectable>();
 
 		public const string DefaultElementColumnName = "elt";
 		public const string DefaultKeyColumnName = "id";
@@ -74,7 +74,6 @@ namespace NHibernate.Mapping
 		private bool optimisticLocked;
 		private readonly HashSet<string> synchronizedTables = new HashSet<string>();
 		private IDictionary<string, string> typeParameters;
-
 
 		protected Collection(PersistentClass owner)
 		{
@@ -152,11 +151,11 @@ namespace NHibernate.Mapping
 				{
 					try
 					{
-						comparer = Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(ComparerClassName));
+						comparer = Cfg.Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(ComparerClassName));
 					}
-					catch
+					catch (Exception ex)
 					{
-						throw new MappingException("Could not instantiate comparator class [" + ComparerClassName + "] for collection " + Role);
+						throw new MappingException("Could not instantiate comparator class [" + ComparerClassName + "] for collection " + Role, ex);
 					}
 				}
 				return comparer;
@@ -398,12 +397,12 @@ namespace NHibernate.Mapping
 
 		public bool[] ColumnInsertability
 		{
-			get { return ArrayHelper.EmptyBoolArray; }
+			get { return System.Array.Empty<bool>(); }
 		}
 
 		public bool[] ColumnUpdateability
 		{
-			get { return ArrayHelper.EmptyBoolArray; }
+			get { return System.Array.Empty<bool>(); }
 		}
 
 		public string TypeName

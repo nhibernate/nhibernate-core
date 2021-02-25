@@ -85,15 +85,22 @@ namespace NHibernate.Mapping
 			}
 		}
 
+		//Since v5.2
+		[Obsolete("Please use overload without dialect parameter.")]
 		public void CreatePrimaryKey(Dialect.Dialect dialect)
+		{
+			CreatePrimaryKey();
+		}
+
+		public void CreatePrimaryKey()
 		{
 			//Primary key constraint
 			PrimaryKey pk = new PrimaryKey();
 			pk.Table = table;
-			pk.Name = PK_ALIAS.ToAliasString(table.Name, dialect);
+			pk.Name = PK_ALIAS.ToAliasString(table.Name);
 			table.PrimaryKey = pk;
 
-			pk.AddColumns(Key.ColumnIterator.OfType<Column>());
+			pk.AddColumns(Key.ColumnIterator);
 		}
 
 		public int PropertySpan
@@ -157,7 +164,6 @@ namespace NHibernate.Mapping
 				}
 				return isLazy.Value;
 			}
-
 		}
 
 		public virtual bool IsOptional

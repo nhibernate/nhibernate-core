@@ -19,18 +19,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1347
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-
-		public override string BugNumber
+		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			get { return "NH1347"; }
+			return Dialect is SQLiteDialect;
 		}
 
 		[Test]
 		public async Task BugAsync()
 		{
-			if((Dialect is SQLiteDialect)==false)
-				Assert.Ignore("NH-1347 is sqlite specific");
-
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
@@ -49,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1347
 					.UniqueResultAsync<A>());
 				Assert.AreEqual("1", a.Name);
 				Assert.IsTrue(
-					spy.Appender.GetEvents()[0].MessageObject.ToString().Contains("limit")
+					spy.Appender.GetEvents()[0].RenderedMessage.Contains("limit")
 					);
 			}
 

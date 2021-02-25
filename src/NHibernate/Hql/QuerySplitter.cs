@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine;
@@ -10,7 +9,7 @@ namespace NHibernate.Hql
 {
 	public class QuerySplitter
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(QuerySplitter));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(QuerySplitter));
 
 		private static readonly HashSet<string> beforeClassTokens = new HashSet<string>();
 		private static readonly HashSet<string> notAfterClassTokens = new HashSet<string>();
@@ -22,6 +21,7 @@ namespace NHibernate.Hql
 			beforeClassTokens.Add("update");
 			//beforeClassTokens.Add("new"); DEFINITELY DON'T HAVE THIS!! (form H3.2)
 			beforeClassTokens.Add(",");
+			beforeClassTokens.Add("join");
 			notAfterClassTokens.Add("in");
 			//notAfterClassTokens.Add(",");
 			notAfterClassTokens.Add("from");
@@ -60,7 +60,6 @@ namespace NHibernate.Hql
 			string next = null;
 
 			templateQuery.Append(tokens[0]);
-			bool isSelectClause = StringHelper.EqualsCaseInsensitive("select", tokens[0]);
 
 			for (int i = 1; i < tokens.Length; i++)
 			{
@@ -69,9 +68,6 @@ namespace NHibernate.Hql
 				{
 					last = tokens[i - 1].ToLowerInvariant();
 				}
-
-				// select-range is terminated by declaration of "from"
-				isSelectClause = !StringHelper.EqualsCaseInsensitive("from", tokens[i]);
 
 				string token = tokens[i];
 				if (!ParserHelper.IsWhitespace(token) || last == null)
@@ -116,15 +112,9 @@ namespace NHibernate.Hql
 				StringHelper.Multiply(templateQuery.ToString(), placeholders, replacements);
 			if (results.Length == 0)
 			{
-				log.Warn("no persistent classes found for query class: " + query);
+				log.Warn("no persistent classes found for query class: {0}", query);
 			}
 			return results;
-		}
-
-		private static bool IsPossiblyClassName(string last, string next)
-		{
-			return ParserHelper.EntityClass.Equals(last) ||
-				   (beforeClassTokens.Contains(last) && !notAfterClassTokens.Contains(next));
 		}
 	}
 }

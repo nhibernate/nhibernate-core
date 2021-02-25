@@ -16,7 +16,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class AbstractLockUpgradeEventListener : AbstractReassociateEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractLockUpgradeEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AbstractLockUpgradeEventListener));
 
 		/// <summary> 
 		/// Performs a pessimistic lock upgrade on a given entity, if needed. 
@@ -38,9 +38,9 @@ namespace NHibernate.Event.Default
 
 				IEntityPersister persister = entry.Persister;
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug(string.Format("locking {0} in mode: {1}", MessageHelper.InfoString(persister, entry.Id, source.Factory), requestedLockMode));
+					log.Debug("locking {0} in mode: {1}", MessageHelper.InfoString(persister, entry.Id, source.Factory), requestedLockMode);
 				}
 
 				ISoftLock slock;

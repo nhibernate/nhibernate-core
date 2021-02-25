@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 
-
 namespace NHibernate.SqlCommand
 {
 	public class InsertSelect : ISqlStringBuilder
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(InsertSelect));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(InsertSelect));
 
 		private string tableName;
 		private string comment;

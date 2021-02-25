@@ -21,7 +21,7 @@ namespace NHibernate.Test.CollectionFilterTest
 	[TestFixture]
 	public class CollectionFilterQueriesTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

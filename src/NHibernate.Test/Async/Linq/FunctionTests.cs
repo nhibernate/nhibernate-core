@@ -13,8 +13,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.Northwind.Entities;
-using NHibernate.Linq;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.Linq
 {
@@ -46,7 +46,6 @@ namespace NHibernate.Test.Linq
 
 				await (session.SaveAsync(new Employee { FirstName = employeeName, LastName = "LastName" }));
 				await (session.FlushAsync());
-
 
 				var query = await ((from e in db.Employees
 				             where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, escapeChar)
@@ -109,6 +108,19 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(query.Count, Is.EqualTo(1));
 			Assert.That(query[0].FirstName, Is.EqualTo("Andrew"));
+		}
+
+		[Test]
+		public async Task GetCharsFunctionAsync()
+		{
+			var query = await ((
+				from e in db.Employees
+				where e.FirstName[2] == 'e'
+				select e
+			).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(1));
+			Assert.That(query[0].FirstName, Is.EqualTo("Steven"));
 		}
 
 		[Test]
@@ -183,9 +195,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CharIndexFunctionAsync()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a') == 0).ToList();
 
@@ -202,9 +211,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CharIndexOffsetNegativeFunctionAsync()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a', 2) == -1).ToList();
 
@@ -221,9 +227,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task IndexOfFunctionExpressionAsync()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf("an") == 0).ToList();
 
@@ -240,9 +243,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task IndexOfFunctionProjectionAsync()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.Contains("a")).Select(x => x.IndexOf("a", 1)).ToList();
 
@@ -257,23 +257,13 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public Task TwoFunctionExpressionAsync()
+		public async Task TwoFunctionExpressionAsync()
 		{
-			try
-			{
-				if (!TestDialect.SupportsLocate)
-					Assert.Ignore("Locate function not supported.");
-
-				var query = from e in db.Employees
+			var query = from e in db.Employees
 						where e.FirstName.IndexOf("A") == e.BirthDate.Value.Month 
 						select e.FirstName;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
@@ -322,6 +312,12 @@ namespace NHibernate.Test.Linq
 				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.Trim('h') == "e")));
 				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimStart('h') == "eh")));
 				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimEnd('h') == "he")));
+
+				// Check when passed as array
+				// (the single character parameter is a new overload in .netcoreapp2.0, but not net461 or .netstandard2.0).
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.Trim(new [] { 'h' }) == "e")));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimStart(new[] { 'h' }) == "eh")));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimEnd(new[] { 'h' }) == "he")));
 
 				// Let it rollback to get rid of temporary changes.
 			}
@@ -372,226 +368,105 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public Task WhereShortEqualAsync()
+		public async Task WhereBoolConstantEqualAsync()
 		{
-			try
-			{
-				var query = from item in session.Query<Foo>()
-						where item.Short.Equals(-1)
-						select item;
-
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
-		[Test]
-		public Task WhereBoolConstantEqualAsync()
-		{
-			try
-			{
-				var query = from item in db.Role
+			var query = from item in db.Role
 						where item.IsActive.Equals(true)
 						select item;
-				
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task WhereBoolConditionEqualsAsync()
+		public async Task WhereBoolConditionEqualsAsync()
 		{
-			try
-			{
-				var query = from item in db.Role
+			var query = from item in db.Role
 						where item.IsActive.Equals(item.Name != null)
 						select item;
-				
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task WhereBoolParameterEqualAsync()
+		public async Task WhereBoolParameterEqualAsync()
 		{
-			try
-			{
-				var query = from item in db.Role
+			var query = from item in db.Role
 						where item.IsActive.Equals(1 == 1)
 						select item;
-				
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task WhereBoolFuncEqualAsync()
+		public async Task WhereBoolFuncEqualAsync()
 		{
-			try
-			{
-				Func<bool> f = () => 1 == 1;
+			Func<bool> f = () => 1 == 1;
 
-				var query = from item in db.Role
+			var query = from item in db.Role
 						where item.IsActive.Equals(f())
 						select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task WhereLongEqualAsync()
+		public async Task WhereLongEqualAsync()
 		{
-			try
-			{
-				var query = from item in db.PatientRecords
+			var query = from item in db.PatientRecords
 						 where item.Id.Equals(-1)
 						 select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}
 
 		[Test]
-		public Task WhereDateTimeEqualAsync()
+		public async Task WhereDateTimeEqualAsync()
 		{
-			try
-			{
-				var query = from item in db.Users
+			var query = from item in db.Users
 						where item.RegisteredAt.Equals(DateTime.Today)
 						select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}
 		
 		[Test]
-		public Task WhereGuidEqualAsync()
+		public async Task WhereGuidEqualAsync()
 		{
-			try
-			{
-				var query = from item in db.Shippers
+			var query = from item in db.Shippers
 						where item.Reference.Equals(Guid.Empty)
 						select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}		
 
 		[Test]
-		public Task WhereDoubleEqualAsync()
+		public async Task WhereDoubleEqualAsync()
 		{
-			try
-			{
-				var query = from item in db.Animals
+			var query = from item in db.Animals
 						where item.BodyWeight.Equals(-1)
 						select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}	
-	
-		[Test]
-		public Task WhereFloatEqualAsync()
-		{
-			try
-			{
-				var query = from item in session.Query<Foo>()
-						where item.Float.Equals(-1)
-						select item;
-
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
 		}	
 
 		[Test]
-		public Task WhereCharEqualAsync()
+		public async Task WhereDecimalEqualAsync()
 		{
-			try
-			{
-				var query = from item in session.Query<Foo>()
-						where item.Char.Equals('A')
-						select item;
-
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
-		[Test]
-		public Task WhereByteEqualAsync()
-		{
-			try
-			{
-				var query = from item in session.Query<Foo>()
-						where item.Byte.Equals(1)
-						select item;
-
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
-		[Test]
-		public Task WhereDecimalEqualAsync()
-		{
-			try
-			{
-				var query = from item in db.OrderLines
+			var query = from item in db.OrderLines
 						where item.Discount.Equals(-1)
 						select item;
 
-				return ObjectDumper.WriteAsync(query);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			await (ObjectDumper.WriteAsync(query));
+		}
+
+		[Test]
+		public async Task WhereEquatableEqualAsync()
+		{
+			var query = from item in db.Shippers
+			            where ((IEquatable<Guid>) item.Reference).Equals(Guid.Empty)
+			            select item;
+
+			await (ObjectDumper.WriteAsync(query));
 		}
 	}
 }

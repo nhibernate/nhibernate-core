@@ -39,7 +39,7 @@ namespace NHibernate.Linq.GroupBy
 				typeof(SingleResultOperator),
 				typeof(AnyResultOperator),
 				typeof(AllResultOperator),
-				typeof(OptionsResultOperator)
+				typeof(ContainsResultOperator),
 			};
 
 		public static void ReWrite(QueryModel queryModel)
@@ -83,8 +83,7 @@ namespace NHibernate.Linq.GroupBy
 				var whereClause = clause as WhereClause;
 				if (whereClause != null)
 				{
-					queryModel.BodyClauses.RemoveAt(i);
-					queryModel.BodyClauses.Insert(i, new NhHavingClause(whereClause.Predicate));
+					queryModel.BodyClauses[i] = new NhHavingClause(whereClause.Predicate);
 				}
 			}
 

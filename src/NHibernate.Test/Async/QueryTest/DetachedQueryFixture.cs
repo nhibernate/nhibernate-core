@@ -28,7 +28,7 @@ namespace NHibernate.Test.QueryTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "QueryTest.DetachedQueryTest.hbm.xml" }; }
 		}
@@ -260,7 +260,7 @@ namespace NHibernate.Test.QueryTest
 
 			public override IQuery GetExecutableQuery(ISession session)
 			{
-				throw new Exception("The method or operation is not implemented.");
+				throw new NotImplementedException("The method or operation is not implemented.");
 			}
 
 			public new void CopyTo(IDetachedQuery destination)

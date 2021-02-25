@@ -1,13 +1,5 @@
 <?xml version="1.0" ?>
 <project xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
-
-	<!-- 
-		Use this to determine if the key file NHibernate.snk should be used to 
-		sign the assemblies. Defaults to true since private key is present
-		in CVS.
-	-->
-	<property name="sign" value="true" overwrite="false" />
-
 	<!--
 		if Visual Studio Help Integration Kit has been installed
 		then change this to true or include -D:vshik.installed=true in the command line.
@@ -16,177 +8,52 @@
 	<property name="vshik.installed" value="false" overwrite="false" />
 	<property name="vshik.path" value="${environment::get-folder-path('ProgramFiles')}/Microsoft Help 2.0 SDK" />
 
-	<!-- 
-		if nunit2report tasks from http://nunit2report.sourceforge.net/ has been installed
-		then change this to true.  It generates a nice looking html report for the test files
-	-->
-	<property name="nunit2report.installed" value="false" overwrite="false" />
-
-	<property name="nant-version.current" value="${assemblyname::get-version(assembly::get-name(nant::get-assembly()))}" />
-	<property name="nant-version.required" value="0.91.4312.0" /> <!-- Nant 0.91 release version -->
-	
-	<!-- 
-		Path to the folder that contain the external assemblies.  For net-2.0 the values will
-		be lib, lib/net, and lib/net/2.0 respectively.
-	-->
+	<!-- Path to the folder that contain the external assemblies -->
 	<property name="lib.dir" value="lib" dynamic="true" />
-	<property name="lib.family.dir" value="${path::combine(lib.dir, framework::get-family(framework::get-target-framework()))}" dynamic="true" />
-	<property name="lib.framework.dir" value="${path::combine(lib.family.dir, version::to-string(framework::get-version()))}" dynamic="true" />
 
-	<!-- This is used only for build folder -->
-	<!-- TODO: Either remove or refactor to use NHibernate.props -->
-	<property name="project.version" value="5.0.0" overwrite="false" />
-	<property name="project.version.numeric" value="5.0.0" overwrite="false" />
-
-	<!-- debug|release -->
-	<property name="build.defines" value="" />
-
-	<!-- platform specific properties. These are the defaults -->
-	<property name="current.build.defines" value="${build.defines}" />
+  <!-- This is used for build folder and also for "API Reference" docs (not active task, see doc/NHibernate.shfbproj.template) -->
+  <target name="get-project-version">
+    <xmlpeek
+      file="${root.dir}/build-common/NHibernate.props"
+      xpath="/Project/PropertyGroup/NhVersion"
+      property="version.short" />
+    <xmlpeek
+      file="${root.dir}/build-common/NHibernate.props"
+      xpath="/Project/PropertyGroup/VersionPatch"
+      property="version.patch" />
+    <property name="project.version" value="${version.short}.${version.patch}" />
+  </target>
+  
+  <target name="set-doc-version">
+    <copy file="${root.dir}/doc/reference/master.template.xml" tofile="${root.dir}/doc/reference/master.xml" overwrite="true" />
+    <xmlpoke
+      file="${root.dir}/doc/reference/master.xml"
+      xpath="/book/bookinfo/releaseinfo"
+      value="${version.short}" />
+  </target>
 
 	<!-- properties used to connect to database for testing -->
 	<include buildfile="nhibernate-properties.xml" />
 
-	<!-- named project configurations -->
-	<target name="set-debug-project-configuration" description="Perform a 'debug' build">
-		<property name="build.release" value="false" />
-		<property name="build.debug" value="true" />
-		<property name="build.name" value="NHibernate-${project.version}-${project.config}" />
-	</target>
-	
-	<target name="set-release-project-configuration" description="Perform a 'release' build">
-		<property name="build.release" value="true" />
-		<property name="build.debug" value="pdbonly" />
-		<property name="build.name" value="NHibernate-${project.version}" />
-	</target>
-
-	<target name="set-project-configuration">
+	<target name="common.init" depends="get-project-version" description="Initializes build properties">
 		<property name="project.config" value="debug" overwrite="false" />
-		<if test="${not(target::exists('set-' + project.config + '-project-configuration'))}">
-			<fail message="Unknown configuration: '${project.config}'" />
-		</if>
-
-		<call target="set-${project.config}-project-configuration" />
-
+		<property name="build.name" value="NHibernate-${project.version}" if="${project.config == 'release'}"/>
+		<property name="build.name" value="NHibernate-${project.version}-${project.config}" unless="${project.config == 'release'}" />
+		<property name="build.config" value="Release" if="${project.config == 'release'}"/>
+		<property name="build.config" value="Debug" unless="${project.config == 'release'}" />
 		<property name="build.root.dir" value="${root.dir}/build/${build.name}" />
 		<property name="build.dir" value="${build.root.dir}" />
-		<property name="bin.dir" value="${build.dir}/bin/${nant.settings.currentframework}" />
-		<property name="testresults.dir" 	value="${bin.dir}/test-results" />
+		<property name="testresults.dir" 	value="${build.dir}/bin/test-results" />
 		<property name="tools.dir" value="${root.dir}/Tools"/>
 	</target>
-	
 
-
-	<target name="set-framework-configuration">
-		<if test="${not(target::exists('set-'+framework::get-target-framework()+'-framework-configuration'))}">
-			<fail message="The '${framework::get-target-framework()}' framework is not supported by this version of NHibernate." />
-		</if>
-		<call target="set-${framework::get-target-framework()}-framework-configuration" />
+	<target name="common.tools-restore" depends="common.init">
+		<exec workingdir="${root.dir}" program="dotnet" verbose="true">
+			<arg line="tool restore" />
+		</exec> 
+		<exec workingdir="${root.dir}/Tools" program="dotnet" verbose="true">
+			<arg line="restore ./packages.csproj --packages ." />
+		</exec> 
 	</target>
-
-	<target name="set-net-4.0-framework-configuration">
-		<property name="nant.settings.currentframework" value="net-4.0" />
-		<property name="current.build.defines" value="${build.defines}NET,NET_2_0,NET_3_5,NET_4_0" />
-		<!-- not using SDK_v2_0 because ndoc throws an exception -->
-		<property name="link.sdkdoc.version" value="SDK_v1_1" />
-		<!-- merge should work with 4.0 when compiling for 4.0 -->
-		<property name="merge.targetplatform" value="v4" />
-		<property name="referenceassemblies.dir" value="${environment::get-folder-path('ProgramFiles')}\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1" />
-	</target>
-	
-	<target name="set-net-3.5-framework-configuration">
-		<property name="nant.settings.currentframework" value="net-3.5" />
-		<property name="current.build.defines" value="${build.defines}NET,NET_2_0,NET_3_5" />
-		<!-- not using SDK_v2_0 because ndoc throws an exception -->
-		<property name="link.sdkdoc.version" value="SDK_v1_1" />
-		<!-- merge should work with 2.0 when compiling for 3.5 -->
-		<property name="merge.targetplatform" value="v2" />
-		<property name="referenceassemblies.dir" value="${environment::get-folder-path('ProgramFiles')}\Reference Assemblies\Microsoft\Framework\v3.5" />
-	</target>
-
-	<target name="set-net-2.0-framework-configuration">
-		<property name="nant.settings.currentframework" value="net-2.0" />
-		<property name="current.build.defines" value="${build.defines}NET,NET_2_0" />
-		<!-- not using SDK_v2_0 because ndoc throws an exception -->
-		<property name="link.sdkdoc.version" value="SDK_v1_1" />
-		<property name="merge.targetplatform" value="v2" />
-	</target>
-
-
-	<target name="set-mono-3.5-framework-configuration">
-		<property name="nant.settings.currentframework" value="mono-3.5" />
-		<property name="current.build.defines" value="${build.defines}NET,NET_2_0,NET_3_5,MONO" />
-		<!-- not using SDK_v2_0 because ndoc throws an exception -->
-		<property name="link.sdkdoc.version" value="SDK_v1_1" />
-		<!-- merge should work with 2.0 when compiling for 3.5 -->
-		<property name="merge.targetplatform" value="v2" />
-	</target>
-
-	<target name="set-mono-2.0-framework-configuration">
-		<property name="nant.settings.currentframework" value="mono-2.0" />
-		<property name="current.build.defines" value="${build.defines}NET,NET_2_0,MONO" />
-		<!-- not using SDK_v2_0 because ndoc throws an exception -->
-		<property name="link.sdkdoc.version" value="SDK_v1_1" />
-		<property name="merge.targetplatform" value="v2" />
-	</target>
-
-	<target name="display-current-runtime">
-		<echo message="" />
-		<echo message="----------------------------------------------------------" />
-		<echo message=" ${framework::get-description(framework::get-target-framework())}" />
-		<echo message="----------------------------------------------------------" />
-		<echo message="" />
-		<echo message="framework : ${framework::get-target-framework()}" />
-		<echo message="description : ${framework::get-description(framework::get-target-framework())}" />
-		<echo message="sdk directory : ${framework::get-sdk-directory(framework::get-target-framework())}" />
-		<echo message="framework directory : ${framework::get-framework-directory(framework::get-target-framework())}" />
-		<echo message="assembly directory : ${framework::get-assembly-directory(framework::get-target-framework())}" />
-		<echo message="runtime engine : ${framework::get-runtime-engine(framework::get-target-framework())}" />
-		<echo message="" />
-	</target>
-
-	<target name="common.init"
-		depends="set-framework-configuration set-project-configuration"
-		description="Initializes build properties">
-
-		<fileset id="project.sources" failonempty="true">
-			<include name="**/*.cs" />
-		</fileset>
-		<resourcefileset id="project.resources" />
-	</target>
-
-	<target name="common.get-nuget-package-path">
-		<xmlpeek 
-			file="${tools.dir}/packages.config" 
-			xpath="/packages/package[@id = '${nuget-package-id}']/@version"
-			property="nuget-package-version" />
-		<property name="nuget-package-path" value="${tools.dir}/${nuget-package-id}.${nuget-package-version}/" />
-	</target>
-
-	<target name="common.find-async-generator-console">
-		<property name="nuget-package-id" value="CSharpAsyncGenerator.CommandLine" />
-		<call target="common.get-nuget-package-path" />
-		<property name="async-generator-console"  value="${nuget-package-path}/tools/AsyncGenerator.CommandLine.exe" />
-	</target>
-
-	<target name="common.find-nunit">
-		<property name="nuget-package-id" value="NUnit.ConsoleRunner" />
-		<call target="common.get-nuget-package-path" />
-		<property name="nunit-console" value="${nuget-package-path}/tools/nunit3-console.exe" />
-	</target>
-
-	<target name="common.find-ndoc">
-		<property name="ndoc-console" value="${tools.dir}/ndoc/NDocConsole.exe" />
-	</target>
-  
-  <target name="nuget.set-properties">
-    <property name="nuget.nupackages.relative-dir" value="nuget_gallery" />
-    <!-- The nuget.workingdir is the directory from where all *.nuspec files will work. 
-    This is to simplify the compilation of *.nuspec.template files (see section 'files')-->
-    <property name="nuget.workingdir" value="${build.dir}/tmp_nugetdeploy" />
-
-    <property name="nuget.nupackages.dir" value="${build.dir}/${nuget.nupackages.relative-dir}" />
-    <property name="nuget.nupackages.pushbatfile" value="${nuget.nupackages.dir}/NuGetPush.bat" />
-  </target>
 
 </project>

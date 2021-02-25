@@ -17,11 +17,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1179
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1179"; }
-		}
-
 		[Test]
 		public async Task ApplyFilterExplicitJoinAsync()
 		{
@@ -72,7 +67,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1179
 				await (s.DeleteAsync("from RelatedClass"));
 				await (tx.CommitAsync());
 			}
-
 		}
 	}
 }

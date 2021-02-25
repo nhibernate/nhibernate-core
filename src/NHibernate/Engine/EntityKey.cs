@@ -1,106 +1,100 @@
 using System;
+using System.Runtime.Serialization;
+using System.Security;
 using NHibernate.Impl;
 using NHibernate.Persister.Entity;
-using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
+	//TODO 6.0: Remove IDeserializationCallback interface
 	/// <summary>
 	/// A globally unique identifier of an instance, consisting of the user-visible identifier
 	/// and the identifier space (eg. tablename)
 	/// </summary>
 	[Serializable]
-	public sealed class EntityKey
+	public sealed class EntityKey : IDeserializationCallback, ISerializable, IEquatable<EntityKey>
 	{
 		private readonly object identifier;
-		private readonly string rootEntityName;
-		private readonly string entityName;
-		private readonly IType identifierType;
-		private readonly bool isBatchLoadable;
-
-		[NonSerialized]
-		private ISessionFactoryImplementor factory;
-		private int hashCode;
+		private readonly IEntityPersister _persister;
+		// hashcode may vary among processes, they cannot be stored and have to be re-computed after deserialization
+		private readonly int _hashCode;
 
 		/// <summary> Construct a unique identifier for an entity class instance</summary>
 		public EntityKey(object id, IEntityPersister persister)
-			: this(id, persister.RootEntityName, persister.EntityName, persister.IdentifierType, persister.IsBatchLoadable, persister.Factory) {}
-
-		/// <summary> Used to reconstruct an EntityKey during deserialization. </summary>
-		/// <param name="identifier">The identifier value </param>
-		/// <param name="rootEntityName">The root entity name </param>
-		/// <param name="entityName">The specific entity name </param>
-		/// <param name="identifierType">The type of the identifier value </param>
-		/// <param name="batchLoadable">Whether represented entity is eligible for batch loading </param>
-		/// <param name="factory">The session factory </param>
-		private EntityKey(object identifier, string rootEntityName, string entityName, IType identifierType, bool batchLoadable, ISessionFactoryImplementor factory)
 		{
-			if (identifier == null)
-				throw new AssertionFailure("null identifier");
-
-			this.identifier = identifier;
-			this.rootEntityName = rootEntityName;
-			this.entityName = entityName;
-			this.identifierType = identifierType;
-			isBatchLoadable = batchLoadable;
-			this.factory = factory;
-			hashCode = GenerateHashCode();
+			identifier = id ?? throw new AssertionFailure("null identifier");
+			_persister = persister;
+			_hashCode = GenerateHashCode(persister, id);
 		}
 
-		public bool IsBatchLoadable
+		private EntityKey(SerializationInfo info, StreamingContext context)
 		{
-			get { return isBatchLoadable; }
+			identifier = info.GetValue(nameof(Identifier), typeof(object));
+			var factory = (ISessionFactoryImplementor) info.GetValue(nameof(_persister.Factory), typeof(ISessionFactoryImplementor));
+			var entityName = (string) info.GetValue(nameof(EntityName), typeof(string));
+			_persister = factory.GetEntityPersister(entityName);
+			_hashCode = GenerateHashCode(_persister, identifier);
 		}
+
+		public bool IsBatchLoadable => _persister.IsBatchLoadable;
 
 		public object Identifier
 		{
 			get { return identifier; }
 		}
 
-		public string EntityName
-		{
-			get { return entityName; }
-		}
+		public string EntityName => _persister.EntityName;
+
+		internal string RootEntityName => _persister.RootEntityName;
 
 		public override bool Equals(object other)
 		{
-			var otherKey = other as EntityKey;
-			if(otherKey==null) return false;
-
-			return
-				otherKey.rootEntityName.Equals(rootEntityName)
-				&& identifierType.IsEqual(otherKey.Identifier, Identifier, factory);
+			return other is EntityKey otherKey && Equals(otherKey);
 		}
 
-		private int GenerateHashCode()
+		public bool Equals(EntityKey other)
 		{
-			int result = 17;
-			unchecked
+			if (other == null)
 			{
-				result = 37 * result + rootEntityName.GetHashCode();
-				result = 37 * result + identifierType.GetHashCode(identifier, factory);
+				return false;
 			}
-			return result;
+
+			return
+				other.RootEntityName.Equals(RootEntityName)
+				&& _persister.IdentifierType.IsEqual(other.Identifier, Identifier, _persister.Factory);
 		}
 
 		public override int GetHashCode()
 		{
-			return hashCode;
+			return _hashCode;
+		}
+
+		private static int GenerateHashCode(IEntityPersister persister, object id)
+		{
+			int result = 17;
+			unchecked
+			{
+				result = 37 * result + persister.RootEntityName.GetHashCode();
+				result = 37 * result + persister.IdentifierType.GetHashCode(id, persister.Factory);
+			}
+			return result;
 		}
 
 		public override string ToString()
 		{
-			return "EntityKey" + MessageHelper.InfoString(factory.GetEntityPersister(EntityName), Identifier, factory);
+			return "EntityKey" + MessageHelper.InfoString(_persister, Identifier, _persister.Factory);
 		}
 
-		/// <summary>
-		/// To use in deserialization callback
-		/// </summary>
-		/// <param name="sessionFactory"></param>
-		internal void SetSessionFactory(ISessionFactoryImplementor sessionFactory)
+		[SecurityCritical]
+		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			factory = sessionFactory;
-			hashCode = GetHashCode();
+			info.AddValue(nameof(Identifier), identifier);
+			info.AddValue(nameof(_persister.Factory), _persister.Factory);
+			info.AddValue(nameof(EntityName), EntityName);
 		}
+
+		[Obsolete("IDeserializationCallback interface has no usages and will be removed in a future version")]
+		public void OnDeserialization(object sender)
+		{}
 	}
 }

@@ -11,13 +11,11 @@ namespace NHibernate.SqlCommand
 		{
 		}
 
-
 		public DisjunctionFragment(IEnumerable<ConditionalFragment> fragments)
 		{
 			foreach (var conditionalFragment in fragments)
 				AddCondition(conditionalFragment);
 		}
-
 
 		public DisjunctionFragment AddCondition(ConditionalFragment fragment)
 		{

@@ -20,7 +20,7 @@ namespace NHibernate.Collection
 	[DebuggerTypeProxy(typeof (CollectionProxy))]
 	public partial class PersistentArrayHolder : AbstractPersistentCollection, ICollection
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (PersistentArrayHolder));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (PersistentArrayHolder));
 
 		private Array array;
 
@@ -80,7 +80,7 @@ namespace NHibernate.Collection
 				}
 				catch (Exception e)
 				{
-					log.Error("Array element type error", e);
+					log.Error(e, "Array element type error");
 					throw new HibernateException("Array element type error", e);
 				}
 			}
@@ -94,14 +94,7 @@ namespace NHibernate.Collection
 
 		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
-			object[] sn = (object[]) snapshot;
-			object[] arr = (object[]) array;
-			List<object> result = new List<object>(sn);
-			for (int i = 0; i < sn.Length; i++)
-			{
-				IdentityRemove(result, arr[i], entityName, Session);
-			}
-			return result;
+			return GetOrphans((object[]) snapshot, (object[]) array, entityName, Session);
 		}
 
 		public override bool IsWrapper(object collection)

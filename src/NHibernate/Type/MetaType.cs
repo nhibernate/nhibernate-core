@@ -9,29 +9,45 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class MetaType : AbstractType
 	{
-		private readonly IDictionary<object, string> values;
-		private readonly IDictionary<string, object> keys;
-		private readonly IType baseType;
+		private readonly IDictionary<object, string> _values;
+		private readonly IDictionary<string, object> _keys;
+		private readonly IType _baseType;
+		private readonly ILiteralType _baseLiteralType;
 
 		public MetaType(IDictionary<object, string> values, IType baseType)
 		{
-			this.baseType = baseType;
-			this.values = values;
-			keys = new Dictionary<string, object>();
-			foreach (KeyValuePair<object, string> me in values)
+			_baseType = baseType ?? throw new ArgumentNullException(nameof(baseType));
+			_baseLiteralType = baseType as ILiteralType;
+			_values = values;
+
+			if (_values == null)
 			{
-				keys[me.Value] = me.Key;
+				if (baseType.ReturnedClass != typeof(string))
+					throw new ArgumentException(
+						$"Meta type base type {baseType} does not yield string but {baseType.ReturnedClass}, while no " +
+						"meta-value mapping has been provided",
+						nameof(baseType));
+				if (_baseLiteralType == null)
+					_baseLiteralType = NHibernateUtil.String;
+			}
+			else
+			{
+				_keys = new Dictionary<string, object>();
+				foreach (var me in values)
+				{
+					_keys[me.Value] = me.Key;
+				}
 			}
 		}
 
 		public override SqlType[] SqlTypes(IMapping mapping)
 		{
-			return baseType.SqlTypes(mapping);
+			return _baseType.SqlTypes(mapping);
 		}
 
 		public override int GetColumnSpan(IMapping mapping)
 		{
-			return baseType.GetColumnSpan(mapping);
+			return _baseType.GetColumnSpan(mapping);
 		}
 
 		public override System.Type ReturnedClass
@@ -41,14 +57,20 @@ namespace NHibernate.Type
 
 		public override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			object key = baseType.NullSafeGet(rs, names, session, owner);
-			return key == null ? null : values[key];
+			return GetValueForKey(_baseType.NullSafeGet(rs, names, session, owner));
 		}
 
-		public override object NullSafeGet(DbDataReader rs,string name,ISessionImplementor session,object owner)
+		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			object key = baseType.NullSafeGet(rs, name, session, owner);
-			return key == null ? null : values[key];
+			return GetValueForKey(_baseType.NullSafeGet(rs, name, session, owner));
+		}
+
+		private object GetValueForKey(object key)
+		{
+			// "_values?[key]" is valid code provided "_values[key]" can never yield null. It is the case because we
+			// use a dictionary interface which throws in case of missing key, and because a key associated to a null
+			// value would cause the building of the _keys dictionaries to fail.
+			return key == null ? null : _values?[key] ?? key;
 		}
 
 		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
@@ -56,9 +78,14 @@ namespace NHibernate.Type
 			if (settable[0]) NullSafeSet(st, value, index, session);
 		}
 
-		public override void NullSafeSet(DbCommand st,object value,int index,ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			baseType.NullSafeSet(st, value == null ? null : keys[(string)value], index, session);
+			// "_keys?[(string) value]" is valid code provided "_keys[(string) value]" can never yield null. It is the
+			// case because we use a dictionary interface which throws in case of missing key, and because it is not
+			// possible to have a value associated to a null key since generic dictionaries do not support null keys.
+			var key = value == null ? null : _keys?[(string) value] ?? value;
+
+			_baseType.NullSafeSet(st, key, index, session);
 		}
 
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
@@ -68,7 +95,7 @@ namespace NHibernate.Type
 
 		public override string Name
 		{
-			get { return baseType.Name; } //TODO!
+			get { return _baseType.Name; } //TODO!
 		}
 
 		public override object DeepCopy(object value, ISessionFactoryImplementor factory)
@@ -93,12 +120,18 @@ namespace NHibernate.Type
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
-			return baseType.ToColumnNullness(value, mapping);
+			return _baseType.ToColumnNullness(value, mapping);
 		}
 
-		internal object GetMetaValue(string className)
+		internal string GetMetaValue(string className, Dialect.Dialect dialect)
 		{
-			return keys[className];
+			var raw = _keys?[className] ?? className;
+			if (_baseLiteralType != null)
+			{
+				return _baseLiteralType.ObjectToSQLString(raw, dialect);
+			}
+
+			return raw?.ToString();
 		}
 	}
 }

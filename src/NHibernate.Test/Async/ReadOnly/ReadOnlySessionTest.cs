@@ -10,15 +10,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using NHibernate.Cfg;
-using NHibernate.Criterion;
-using NHibernate.Dialect;
-using NHibernate.Engine;
 using NHibernate.Proxy;
-using NHibernate.SqlCommand;
-using NHibernate.Transform;
-using NHibernate.Type;
-using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ReadOnly
@@ -33,7 +25,7 @@ namespace NHibernate.Test.ReadOnly
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -42,7 +34,7 @@ namespace NHibernate.Test.ReadOnly
 				if (TextHolder.SupportedForDialect(Dialect))
 					mappings.Add("ReadOnly.TextHolder.hbm.xml");
 
-				return mappings;
+				return mappings.ToArray();
 			}
 		}
 		
@@ -52,10 +44,10 @@ namespace NHibernate.Test.ReadOnly
 			DataPoint dp = null;
 			long dpId = -1;
 			
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				s.BeginTransaction();
 			
 				dp = new DataPoint();
 				dp.X = 0.1M;
@@ -63,13 +55,13 @@ namespace NHibernate.Test.ReadOnly
 				dp.Description = "original";
 				await (s.SaveAsync(dp));
 				dpId = dp.Id;
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				s.BeginTransaction();
 				s.DefaultReadOnly = true;
 				Assert.That(s.DefaultReadOnly, Is.True);
 				dp = (DataPoint)await (s.LoadAsync<DataPoint>(dpId));
@@ -81,16 +73,16 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(NHibernateUtil.IsInitialized(dp), Is.True, "was not initialized during mod");
 				Assert.That(dp.Description, Is.EqualTo("changed"), "desc not changed in memory");
 				await (s.FlushAsync());
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
-	
-			using (ISession s = OpenSession())
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				s.BeginTransaction();
 				IList list = await (s.CreateQuery("from DataPoint where description = 'changed'").ListAsync());
 				Assert.That(list.Count, Is.EqualTo(0), "change written to database");
 				await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		}
 		
@@ -1043,7 +1035,6 @@ namespace NHibernate.Test.ReadOnly
 					await (t.CommitAsync());
 				}
 			}
-	
 		}
 	
 		[Test]

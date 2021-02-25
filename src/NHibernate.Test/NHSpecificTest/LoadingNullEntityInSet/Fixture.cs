@@ -10,8 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 	[TestFixture]
     public class Fixture : TestCase
     {
-
-        protected override IList Mappings
+        protected override string[] Mappings
         {
             get { return new string[] { "NHSpecificTest.LoadingNullEntityInSet.Mappings.hbm.xml" }; }
         }
@@ -20,6 +19,11 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
         {
             get { return "NHibernate.Test"; }
         }
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
 
 		protected override DebugSessionFactory BuildSessionFactory()
 		{
@@ -67,7 +71,6 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 				criteria.CreateCriteria("Secondaries", JoinType.LeftOuterJoin);
             	criteria.List();
             }
-
 
         	using (ISession sess = OpenSession())
             {

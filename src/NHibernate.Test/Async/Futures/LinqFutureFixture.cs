@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System.Collections.Generic;
 using NHibernate.Driver;
 using NHibernate.Linq;
 using NUnit.Framework;
@@ -19,9 +20,21 @@ namespace NHibernate.Test.Futures
 	[TestFixture]
 	public class LinqFutureFixtureAsync : FutureFixture
 	{
+		protected override void OnTearDown()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				session.Delete("from Person");
+				transaction.Commit();
+			}
+		}
+
 		[Test]
 		public async Task DefaultReadOnlyTestAsync()
 		{
+			CreatePersons();
+
 			//NH-3575
 			using (var s = Sfi.OpenSession())
 			{
@@ -54,13 +67,6 @@ namespace NHibernate.Test.Futures
 			{
 				var person = s.Query<Person>().Where(p => (p.Name ?? "e") == "e").ToFutureValue();
 				Assert.AreEqual(personId, (await (person.GetValueAsync())).Id);
-			}
-
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				await (s.DeleteAsync("from Person"));
-				await (tx.CommitAsync());
 			}
 		}
 
@@ -136,13 +142,6 @@ namespace NHibernate.Test.Futures
 					Assert.AreEqual(1, events.Length);
 				}
 			}
-
-			using (ISession s = OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				await (s.DeleteAsync("from Person"));
-				await (tx.CommitAsync());
-			}
 		}
 
 		[Test]
@@ -158,6 +157,36 @@ namespace NHibernate.Test.Futures
 				var persons5 = s.Query<Person>()
 					.Take(5)
 					.ToFuture();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					foreach (var person in await (persons5.GetEnumerableAsync()))
+					{
+					}
+
+					foreach (var person in await (persons10.GetEnumerableAsync()))
+					{
+					}
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+				}
+			}
+		}
+
+		[Test]
+		public async Task CanUseFutureQueryAndQueryOverForSatelessSessionAsync()
+		{
+			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+			using (var s = Sfi.OpenStatelessSession())
+			{
+				var persons10 = s.Query<Person>()
+					.Take(10)
+					.ToFuture();
+				var persons5 = s.QueryOver<Person>()
+					.Take(5)
+					.Future();
 
 				using (var logSpy = new SqlLogSpy())
 				{
@@ -205,7 +234,7 @@ namespace NHibernate.Test.Futures
 		public async Task CanUseFutureFetchQueryAsync()
 		{
 			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-			
+
 			using (var s = Sfi.OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
@@ -231,20 +260,12 @@ namespace NHibernate.Test.Futures
 
 				using (var logSpy = new SqlLogSpy())
 				{
-
 					Assert.That((await (persons.GetEnumerableAsync())).Any(x => x.Children.Any()), "No children found");
 					Assert.That((await (persons10.GetEnumerableAsync())).Any(x => x.Children.Any()), "No children found");
 
 					var events = logSpy.Appender.GetEvents();
 					Assert.AreEqual(1, events.Length);
 				}
-			}
-
-			using (var s = OpenSession())
-			using (var tx = s.BeginTransaction())
-			{
-				await (s.DeleteAsync("from Person"));
-				await (tx.CommitAsync());
 			}
 		}
 
@@ -279,7 +300,7 @@ namespace NHibernate.Test.Futures
 		public async Task CanCombineSingleFutureValueWithEnumerableFuturesAsync()
 		{
 			IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-			
+
 			using (var s = Sfi.OpenSession())
 			{
 				var persons = s.Query<Person>()
@@ -329,13 +350,6 @@ namespace NHibernate.Test.Futures
 
 				Assert.AreEqual(personId, (await (meContainer.GetValueAsync())).Id);
 			}
-
-			using (var s = OpenSession())
-			using (var tx = s.BeginTransaction())
-			{
-				await (s.DeleteAsync("from Person"));
-				await (tx.CommitAsync());
-			}
 		}
 
 		[Test]
@@ -364,11 +378,170 @@ namespace NHibernate.Test.Futures
 					var events = logSpy.Appender.GetEvents();
 					Assert.AreEqual(1, events.Length);
 					var wholeLog = logSpy.GetWholeLog();
-					string paramPrefix = ((DriverBase)Sfi.ConnectionProvider.Driver).NamedPrefix;
+					string paramPrefix = ((DriverBase) Sfi.ConnectionProvider.Driver).NamedPrefix;
 					Assert.That(
 						wholeLog,
 						Does.Contain(paramPrefix + "p0 = 1 [Type: Int32 (0:0:0)], " + paramPrefix + "p1 = 2 [Type: Int32 (0:0:0)]"));
 				}
+			}
+		}
+
+		[Test]
+		public async Task UsingManyParametersAndQueries_DoesNotCauseParameterNameCollisionsAsync()
+		{
+			//GH-1357
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var p1 = new Person { Name = "Person name", Age = 15};
+				var p2 = new Person { Name = "Person name", Age = 5 };
+
+				await (s.SaveAsync(p1));
+				await (s.SaveAsync(p2));
+				await (tx.CommitAsync());
+			}
+			using (var s = Sfi.OpenSession())
+			{
+				var list = new List<IFutureEnumerable<Person>>();
+				for (var i = 0; i < 12; i++)
+				{
+					var query = s.Query<Person>();
+					for (var j = 0; j < 12; j++)
+					{
+						query = query.Where(x => x.Age > j);
+					}
+					list.Add(query.WithOptions(x => x.SetCacheable(true)).ToFuture());
+				}
+				foreach (var query in list)
+				{
+					var result = query.ToList();
+					Assert.That(result.Count,Is.EqualTo(1));
+				}
+			}
+		}
+
+		[Test]
+		public async Task FutureCombineCachedAndNonCachedQueriesAsync()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var p1 = new Person
+				{
+					Name = "Person name",
+					Age = 15
+				};
+				var p2 = new Person
+				{
+					Name = "Person name",
+					Age = 20
+				};
+
+				await (s.SaveAsync(p1));
+				await (s.SaveAsync(p2));
+				await (tx.CommitAsync());
+			}
+
+			using (var s = Sfi.OpenSession())
+			{
+				var list = new List<IFutureEnumerable<Person>>();
+				for (var i = 0; i < 5; i++)
+				{
+					var i1 = i;
+					var query = s.Query<Person>().Where(x => x.Age > i1);
+					list.Add(query.WithOptions(x => x.SetCacheable(true)).ToFuture());
+				}
+
+				foreach (var query in list)
+				{
+					var result = (await (query.GetEnumerableAsync())).ToList();
+					Assert.That(result.Count, Is.EqualTo(2));
+				}
+			}
+
+			//Check query.List returns data from cache
+			Sfi.Statistics.IsStatisticsEnabled = true;
+			using (var s = Sfi.OpenSession())
+			{
+				var list = new List<IEnumerable<Person>>();
+				for (var i = 0; i < 5; i++)
+				{
+					var i1 = i;
+					var query = s.Query<Person>().Where(x => x.Age > i1);
+
+					list.Add(await (query.WithOptions(x => x.SetCacheable(true)).ToListAsync()));
+				}
+
+				foreach (var query in list)
+				{
+					var result = query.ToList();
+					Assert.That(result.Count, Is.EqualTo(2));
+				}
+
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Queries must be retrieved from cache");
+			}
+
+			//Check another Future returns data from cache
+			Sfi.Statistics.Clear();
+			using (var s = Sfi.OpenSession())
+			{
+				var list = new List<IFutureEnumerable<Person>>();
+				//Reverse order of queries added to cache
+				for (var i = 5 - 1; i >= 0; i--)
+				{
+					var i1 = i;
+					var query = s.Query<Person>().Where(x => x.Age > i1);
+
+					list.Add(query.WithOptions(x => x.SetCacheable(true)).ToFuture());
+				}
+
+				foreach (var query in list)
+				{
+					var result = (await (query.GetEnumerableAsync())).ToList();
+					Assert.That(result.Count, Is.EqualTo(2));
+				}
+
+				Assert.That(Sfi.Statistics.PrepareStatementCount , Is.EqualTo(0), "Future queries must be retrieved from cache");
+			}
+		}
+
+		[Test]
+		public async Task FutureAutoFlushAsync()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.FlushMode = FlushMode.Auto;
+				var p1 = new Person
+				{
+					Name = "Person name",
+					Age = 15
+				};
+				await (s.SaveAsync(p1));
+				await (s.FlushAsync());
+
+				await (s.DeleteAsync(p1));
+				var count = await (s.QueryOver<Person>().ToRowCountQuery().FutureValue<int>().GetValueAsync());
+				await (tx.CommitAsync());
+
+				Assert.That(count, Is.EqualTo(0), "Session wasn't auto flushed.");
+			}
+		}
+
+		[Test]
+		public async Task FutureOnQueryableFilterAsync()
+		{
+			CreatePersons();
+
+			using (var s = Sfi.OpenSession())
+			{
+				var person = await (s.Query<Person>().Where(n => n.Name == "ParentTwoChildren").FirstOrDefaultAsync());
+				var f1 = person.Children.AsQueryable().Where(p => p.Age > 30).ToFuture();
+				var f2 = person.Children.AsQueryable().Where(p => p.Age > 5).ToFuture();
+
+				Assert.That(person.Children.Count, Is.EqualTo(2), "invalid test set up");
+				Assert.That((await (f1.GetEnumerableAsync())).ToList().Count, Is.EqualTo(0), "Invalid filtered results");
+				Assert.That((await (f2.GetEnumerableAsync())).ToList().Count, Is.EqualTo(1), "Invalid filtered results");
 			}
 		}
 	}

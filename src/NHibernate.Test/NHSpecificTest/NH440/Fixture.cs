@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using NUnit.Framework;
 
@@ -11,16 +10,16 @@ namespace NHibernate.Test.NHSpecificTest.NH440
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		public override string BugNumber
+		protected override string[] Mappings => new[]
 		{
-			get { return "NH440"; }
-		}
+			"Fruit.hbm.xml",
+			"Apple.hbm.xml"
+		};
 
-		protected override IList Mappings
+		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			get { return new string[] {"NHSpecificTest.NH440.Fruit.hbm.xml", "NHSpecificTest.NH440.Apple.hbm.xml"}; }
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
 		}
-
 
 		protected override void OnSetUp()
 		{

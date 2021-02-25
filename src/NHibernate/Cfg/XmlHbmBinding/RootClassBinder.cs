@@ -8,6 +8,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class RootClassBinder : ClassBinder
 	{
+		public RootClassBinder(Mappings mappings)
+			: base(mappings)
+		{
+		}
+
+		//Since v5.2
+		[Obsolete("Please use constructor without a dialect parameter.")]
 		public RootClassBinder(Mappings mappings, Dialect.Dialect dialect)
 			: base(mappings, dialect)
 		{
@@ -37,7 +44,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			Table table = mappings.AddTable(schema, catalog, tableName, classSchema.Subselect, rootClass.IsAbstract.GetValueOrDefault(), classSchema.schemaaction);
 			((ITableOwner) rootClass).Table = table;
 
-			log.InfoFormat("Mapping class: {0} -> {1}", rootClass.EntityName, rootClass.Table.Name);
+			log.Info("Mapping class: {0} -> {1}", rootClass.EntityName, rootClass.Table.Name);
 
 			rootClass.IsMutable = classSchema.mutable;
 			rootClass.Where = classSchema.where ?? rootClass.Where;
@@ -48,15 +55,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			rootClass.IsExplicitPolymorphism = classSchema.polymorphism == HbmPolymorphismType.Explicit;
 
 			BindCache(classSchema.cache, rootClass);
-			new ClassIdBinder(this).BindId(classSchema.Id, rootClass, table);
-			new ClassCompositeIdBinder(this).BindCompositeId(classSchema.CompositeId, rootClass);
+			new ClassIdBinder(Mappings).BindId(classSchema.Id, rootClass, table);
+			new ClassCompositeIdBinder(Mappings).BindCompositeId(classSchema.CompositeId, rootClass);
 			new ClassDiscriminatorBinder(rootClass, Mappings).BindDiscriminator(classSchema.discriminator, table);
 			BindTimestamp(classSchema.Timestamp, rootClass, table, inheritedMetas);
 			BindVersion(classSchema.Version, rootClass, table, inheritedMetas);
 
-			rootClass.CreatePrimaryKey(dialect);
+			rootClass.CreatePrimaryKey();
 			BindNaturalId(classSchema.naturalid, rootClass, inheritedMetas);
-			new PropertiesBinder(mappings, rootClass, dialect).Bind(classSchema.Properties, inheritedMetas);
+			new PropertiesBinder(mappings, rootClass).Bind(classSchema.Properties, inheritedMetas);
 
 			BindJoins(classSchema.Joins, rootClass, inheritedMetas);
 			BindSubclasses(classSchema.Subclasses, rootClass, inheritedMetas);
@@ -75,7 +82,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return;
 			}
 			//by default, natural-ids are "immutable" (constant)
-			var propBinder = new PropertiesBinder(mappings, rootClass, dialect);
+			var propBinder = new PropertiesBinder(mappings, rootClass);
 			var uk = new UniqueKey { Name = "_UniqueKey", Table = rootClass.Table };
 			propBinder.Bind(naturalid.Properties, inheritedMetas, property =>
 				{
@@ -83,7 +90,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						property.IsUpdateable = false;
 					property.IsNaturalIdentifier = true;
 
-					uk.AddColumns(property.ColumnIterator.OfType<Column>());
+					uk.AddColumns(property.ColumnIterator);
 				});
 
 			rootClass.Table.AddUniqueKey(uk);	
@@ -261,6 +268,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				rootClass.CacheConcurrencyStrategy = cacheSchema.usage.ToCacheConcurrencyStrategy();
 				rootClass.CacheRegionName = cacheSchema.region;
+				rootClass.SetLazyPropertiesCacheable(cacheSchema.include == HbmCacheInclude.All);
 			}
 		}
 	}

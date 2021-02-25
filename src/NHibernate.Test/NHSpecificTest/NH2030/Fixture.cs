@@ -12,7 +12,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2030
 	[TestFixture]
 	public class Fixture
 	{
-
 		[Test]
 		public void GetTypeWithLenShouldBeThreadSafe()
 		{
@@ -60,7 +59,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2030
 
 				throw exceptions[0];
 			}
-
 		}
 	}
 }

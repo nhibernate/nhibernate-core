@@ -12,20 +12,80 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Collection.Generic;
+using NHibernate.Collection.Trackers;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
+using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Collection
 {
-	using System.Threading.Tasks;
-	using System.Threading;
-	public abstract partial class AbstractPersistentCollection : IPersistentCollection
+	public abstract partial class AbstractPersistentCollection : IPersistentCollection, ILazyInitializedCollection
 	{
+
+		protected virtual async Task<bool?> ReadKeyExistenceAsync<TKey, TValue>(TKey elementKey, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (!initialized)
+			{
+				ThrowLazyInitializationExceptionIfNotConnected();
+				CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(this);
+				ICollectionPersister persister = entry.LoadedPersister;
+				if (persister.IsExtraLazy)
+				{
+					var queueOperationTracker = (AbstractMapQueueOperationTracker<TKey, TValue>) GetOrCreateQueueOperationTracker();
+					if (queueOperationTracker == null)
+					{
+						if (HasQueuedOperations)
+						{
+							await (session.FlushAsync(cancellationToken)).ConfigureAwait(false);
+						}
+
+						return persister.IndexExists(entry.LoadedKey, elementKey, session);
+					}
+
+					if (queueOperationTracker.ContainsKey(elementKey))
+					{
+						return true;
+					}
+
+					if (queueOperationTracker.Cleared)
+					{
+						return false;
+					}
+
+					if (queueOperationTracker.IsElementKeyQueuedForDelete(elementKey))
+					{
+						return false;
+					}
+
+					// As keys are unordered we don't have to calculate the current order of the key
+					return persister.IndexExists(entry.LoadedKey, elementKey, session);
+				}
+				Read();
+			}
+			return null;
+		}
+
+		internal async Task<bool> CanSkipElementExistenceCheckAsync(object element, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var queryableCollection = (IQueryableCollection) Session.Factory.GetCollectionPersister(Role);
+			return
+				queryableCollection != null &&
+				queryableCollection.ElementType.IsEntityType &&
+				!queryableCollection.ElementPersister.EntityMetamodel.OverridesEquals &&
+				!element.IsProxy() &&
+				!Session.PersistenceContext.IsEntryFor(element) &&
+				await (ForeignKeys.IsTransientFastAsync(queryableCollection.ElementPersister.EntityName, element, Session, cancellationToken)).ConfigureAwait(false) == true;
+		}
 
 		/// <summary>
 		/// Initialize the collection, if possible, wrapping any exceptions
@@ -73,65 +133,23 @@ namespace NHibernate.Collection
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
+			if (!initialized)
 			{
-				if (!initialized)
+				if (initializing)
 				{
-					if (initializing)
-					{
-						return Task.FromException<object>(new AssertionFailure("force initialize loading collection"));
-					}
-					if (session == null)
-					{
-						return Task.FromException<object>(new HibernateException("collection is not associated with any session"));
-					}
-					if (!session.IsConnected)
-					{
-						return Task.FromException<object>(new HibernateException("disconnected session"));
-					}
-					return session.InitializeCollectionAsync(this, false, cancellationToken);
+					return Task.FromException<object>(new AssertionFailure("force initialize loading collection"));
 				}
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
-		public Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<ICollection>(cancellationToken);
-			}
-			try
-			{
-				if (HasQueuedOperations)
+				if (session == null)
 				{
-					List<object> additions = new List<object>(operationQueue.Count);
-					List<object> removals = new List<object>(operationQueue.Count);
-					for (int i = 0; i < operationQueue.Count; i++)
-					{
-						IDelayedOperation op = operationQueue[i];
-						if (op.AddedInstance != null)
-						{
-							additions.Add(op.AddedInstance);
-						}
-						if (op.Orphan != null)
-						{
-							removals.Add(op.Orphan);
-						}
-					}
-					return GetOrphansAsync(removals, additions, entityName, session, cancellationToken);
+					return Task.FromException<object>(new HibernateException("collection is not associated with any session"));
 				}
-
-				return Task.FromResult<ICollection>(CollectionHelper.EmptyCollection);
+				if (!session.IsConnected)
+				{
+					return Task.FromException<object>(new HibernateException("disconnected session"));
+				}
+				return session.InitializeCollectionAsync(this, false, cancellationToken);
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<ICollection>(ex);
-			}
+			return Task.CompletedTask;
 		}
 
 		/// <summary>
@@ -156,60 +174,8 @@ namespace NHibernate.Collection
 			}
 		}
 
-		/// <summary>
-		/// Get all "orphaned" elements
-		/// </summary>
-		public abstract Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken);
-
-		/// <summary> 
-		/// Given a collection of entity instances that used to
-		/// belong to the collection, and a collection of instances
-		/// that currently belong, return a collection of orphans
-		/// </summary>
-		protected virtual async Task<ICollection> GetOrphansAsync(ICollection oldElements, ICollection currentElements, string entityName, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			// short-circuit(s)
-			if (currentElements.Count == 0)
-			{
-				// no new elements, the old list contains only Orphans
-				return oldElements;
-			}
-			if (oldElements.Count == 0)
-			{
-				// no old elements, so no Orphans neither
-				return oldElements;
-			}
-
-			IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
-
-			// create the collection holding the orphans
-			List<object> res = new List<object>();
-
-			// collect EntityIdentifier(s) of the *current* elements - add them into a HashSet for fast access
-			var currentIds = new HashSet<TypedValue>();
-			foreach (object current in currentElements)
-			{
-				if (current != null && await (ForeignKeys.IsNotTransientSlowAsync(entityName, current, session, cancellationToken)).ConfigureAwait(false))
-				{
-					object currentId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, current, session, cancellationToken)).ConfigureAwait(false);
-					currentIds.Add(new TypedValue(idType, currentId));
-				}
-			}
-
-			// iterate over the *old* list
-			foreach (object old in oldElements)
-			{
-				object oldId = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(entityName, old, session, cancellationToken)).ConfigureAwait(false);
-				if (!currentIds.Contains(new TypedValue(idType, oldId)))
-				{
-					res.Add(old);
-				}
-			}
-
-			return res;
-		}
-
+		// Since 5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public async Task IdentityRemoveAsync(IList list, object obj, string entityName, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

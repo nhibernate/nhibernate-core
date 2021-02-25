@@ -8,9 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System;
-using System.Collections;
-
 using log4net;
 using NHibernate.Criterion;
 using NUnit.Framework;
@@ -26,7 +23,7 @@ namespace NHibernate.Test.Unconstrained
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Unconstrained.PersonNoLazy.hbm.xml"}; }
 		}
@@ -80,7 +77,7 @@ namespace NHibernate.Test.Unconstrained
 			session = OpenSession();
 			tx = session.BeginTransaction();
 			p = (Person) await (session.CreateCriteria(typeof(Person))
-			             	.SetFetchMode("Employee", FetchMode.Join)
+			             	.Fetch("Employee")
 			             	.Add(Expression.Eq("Name", "gavin"))
 			             	.UniqueResultAsync());
 			Assert.IsNull(p.Employee);
@@ -93,7 +90,7 @@ namespace NHibernate.Test.Unconstrained
 			session = OpenSession();
 			tx = session.BeginTransaction();
 			p = (Person) await (session.CreateCriteria(typeof(Person))
-			             	.SetFetchMode("Employee", FetchMode.Join)
+			             	.Fetch("Employee")
 			             	.Add(Expression.Eq("Name", "gavin"))
 			             	.UniqueResultAsync());
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Employee));
@@ -146,30 +143,39 @@ namespace NHibernate.Test.Unconstrained
 		[Test]
 		public async Task ManyToOneUpdateFalseAsync()
 		{
-			ISession session = OpenSession();
-			ITransaction tx = session.BeginTransaction();
-			Person p = new Person("gavin");
-			p.EmployeeId = "123456";
-			p.Unrelated = 10;
-			await (session.SaveAsync(p));
-			await (tx.CommitAsync());
+			using (var session = OpenSession())
+			{
+				Person p = new Person("gavin");
+				using (var tx = session.BeginTransaction())
+				{
+					p.EmployeeId = "123456";
+					p.Unrelated = 10;
+					await (session.SaveAsync(p));
+					await (tx.CommitAsync());
+				}
 
-			session.BeginTransaction();
-			p.Employee = new Employee("456123");
-			p.Unrelated = 235; // Force update of the object
-			await (session.SaveAsync(p.Employee));
-			await (session.Transaction.CommitAsync());
-			session.Close();
+				using (var tx = session.BeginTransaction())
+				{
+					p.Employee = new Employee("456123");
+					p.Unrelated = 235; // Force update of the object
+					await (session.SaveAsync(p.Employee));
+					await (tx.CommitAsync());
+				}
 
-			session = OpenSession();
-			session.BeginTransaction();
-			p = (Person) await (session.LoadAsync(typeof (Person), "gavin"));
-			// Should be null, not Employee#456123
-			Assert.IsNull(p.Employee);
-			await (session.DeleteAsync(p));
-			await (session.DeleteAsync("from Employee"));
-			await (session.Transaction.CommitAsync());
-			session.Close();
+				session.Close();
+			}
+
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				var p = (Person) await (session.LoadAsync(typeof(Person), "gavin"));
+				// Should be null, not Employee#456123
+				Assert.IsNull(p.Employee);
+				await (session.DeleteAsync(p));
+				await (session.DeleteAsync("from Employee"));
+				await (tx.CommitAsync());
+				session.Close();
+			}
 		}
 	}
 }

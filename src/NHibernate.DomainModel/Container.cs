@@ -80,7 +80,6 @@ namespace NHibernate.DomainModel
 			}
 		}
 
-
 		private IList<Simple> _oneToMany;
 		private IList<ContainerInnerClass> _components;
 		private IList<Simple> _manyToMany;
@@ -93,7 +92,6 @@ namespace NHibernate.DomainModel
 		private IDictionary<string, Ternary> _ternaryMap;
 		//<set> mapping
 		private ISet<Ternary> _ternarySet;
-
 
 		public virtual IList<Simple> OneToMany
 		{

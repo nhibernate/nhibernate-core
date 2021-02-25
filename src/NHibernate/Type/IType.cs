@@ -5,6 +5,16 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
+	internal static class TypeExtensions
+	{
+		public static int GetOwnerColumnSpan(this IType type, IMapping sessionFactory)
+		{
+			return type.IsEntityType
+				? ((EntityType) type).GetOwnerColumnSpan(sessionFactory)
+				: type.GetColumnSpan(sessionFactory);
+		}
+	}
+
 	/// <summary>
 	/// Defines a mapping from a .NET <see cref="System.Type"/> to a SQL data-type.
 	/// This interface is intended to be implemented by applications that need custom types.
@@ -326,10 +336,11 @@ namespace NHibernate.Type
 
 		/// <summary>
 		/// Given an instance of the type, return an array of boolean, indicating
-		/// which mapped columns would be null.
+		/// which mapped columns would be null. <see langword="true" /> indicates
+		/// a non-null column, <see langword="false" /> indicates a null column.
 		/// </summary>
-		/// <param name="value">an instance of the type </param>
-		/// <param name="mapping"></param>
+		/// <param name="value">An instance of the type.</param>
+		/// <param name="mapping">The mapping.</param>
 		bool[] ToColumnNullness(object value, IMapping mapping);
 	}
 }

@@ -18,7 +18,7 @@ namespace NHibernate.Test.Unconstrained
 	[TestFixture]
 	public class UnconstrainedTestAsync : UnconstrainedNoLazyTestAsync
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"Unconstrained.Person.hbm.xml"}; }
 		}

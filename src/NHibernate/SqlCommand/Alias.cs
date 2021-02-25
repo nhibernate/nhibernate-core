@@ -15,6 +15,7 @@ namespace NHibernate.SqlCommand
 	{
 		private readonly int length;
 		private readonly string suffix;
+		private static readonly char[] Quotes = (Dialect.Dialect.PossibleQuoteChars + Dialect.Dialect.PossibleClosedQuoteChars).ToCharArray();
 
 		/// <summary>
 		/// 
@@ -82,6 +83,55 @@ namespace NHibernate.SqlCommand
 			}
 		}
 
+		public string ToAliasString(string sqlIdentifier)
+		{
+			var isQuoted = IsQuoted(sqlIdentifier, out var openQuote, out var closeQuote);
+
+			var unquoted = isQuoted ? sqlIdentifier.Substring(1, sqlIdentifier.Length - 2) : sqlIdentifier;
+
+			// Oracle doesn't like underscores at the start of identifiers (NH-320).
+			// It should be safe to trim them here, because the aliases are postfixed
+			// with a unique number anyway, so they won't collide.
+			unquoted = unquoted.TrimStart('_');
+
+			if (unquoted.Length > length)
+			{
+				unquoted = unquoted.Substring(0, length);
+				unquoted = unquoted.TrimEnd(Quotes);
+			}
+
+			if (!string.IsNullOrEmpty(suffix))
+			{
+				unquoted += suffix;
+			}
+
+			if (isQuoted)
+			{
+				return openQuote +
+				       unquoted +
+				       closeQuote;
+			}
+
+			return unquoted;
+		}
+
+		private static bool IsQuoted(string sqlIdentifier, out char openQuote, out char closeQuote)
+		{
+			if (sqlIdentifier == null || sqlIdentifier.Length < 2)
+			{
+				openQuote = default(char);
+				closeQuote = default(char);
+				return false;
+			}
+
+			openQuote = sqlIdentifier[0];
+			closeQuote = sqlIdentifier[sqlIdentifier.Length - 1];
+			var quoteType = Dialect.Dialect.PossibleQuoteChars.IndexOf(openQuote);
+
+			return quoteType >= 0 &&
+			       closeQuote == Dialect.Dialect.PossibleClosedQuoteChars[quoteType];
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -124,7 +174,6 @@ namespace NHibernate.SqlCommand
 
 			return aliases;
 		}
-
 
 		/// <summary>
 		/// 

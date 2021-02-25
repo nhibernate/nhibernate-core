@@ -6,7 +6,6 @@ namespace NHibernate.Cfg.MappingSchema
 {
 	public partial class HbmKeyManyToOne : AbstractDecoratable, IColumnsMapping, IRelationship, IEntityPropertyMapping
 	{
-
 		#region Implementation of IColumnsMapping
 
 		[XmlIgnore]
@@ -36,7 +35,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		protected override HbmMeta[] Metadatas
 		{
-			get { return meta ?? new HbmMeta[0]; }
+			get { return meta ?? Array.Empty<HbmMeta>(); }
 		}
 
 		#endregion

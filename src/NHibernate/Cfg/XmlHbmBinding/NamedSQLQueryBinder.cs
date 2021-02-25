@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
@@ -32,8 +33,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 												? querySchema.cachemode.ToCacheMode()
 												: null;
 
-					IDictionary<string,string> parameterTypes = new LinkedHashMap<string,string>();
-					IList<string> synchronizedTables = GetSynchronizedTables(querySchema);
+					var parameterTypes = new LinkedHashMap<string,string>();
+					var synchronizedTables = GetSynchronizedTables(querySchema);
 
 					NamedSQLQueryDefinition namedQuery;
 
@@ -52,16 +53,16 @@ namespace NHibernate.Cfg.XmlHbmBinding
 							resultSetRef, synchronizedTables, cacheable, region, timeout, fetchSize,
 							flushMode, cacheMode, readOnly, comment, parameterTypes, callable);
 
-					log.DebugFormat("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
+					log.Debug("Named SQL query: {0} -> {1}", queryName, namedQuery.QueryString);
 					mappings.AddSQLQuery(queryName, namedQuery);
 				});
 		}
 
-		private static IList<string> GetSynchronizedTables(HbmSqlQuery querySchema)
+		private static List<string> GetSynchronizedTables(HbmSqlQuery querySchema)
 		{
-			IList<string> synchronizedTables = new List<string>();
+			var synchronizedTables = new List<string>();
 
-			foreach (object item in querySchema.Items ?? new object[0])
+			foreach (object item in querySchema.Items ?? Array.Empty<object>())
 			{
 				HbmSynchronize synchronizeSchema = item as HbmSynchronize;
 

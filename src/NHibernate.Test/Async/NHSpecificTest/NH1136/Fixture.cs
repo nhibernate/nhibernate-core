@@ -17,11 +17,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1136
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1136"; }
-		}
-		
 		protected override void OnTearDown()
 		{
 			using (ISession s = OpenSession())

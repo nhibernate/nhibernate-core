@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1635
 		protected override void CreateSchema()
 		{
 			var script = new StringBuilder();
-			new SchemaExport(cfg).Create(sl=> script.Append(sl) , true);
+			SchemaExport.Create(sl => script.Append(sl), true);
 			Assert.That(script.ToString(), Does.Not.Contain("LatestMessage"));
 		}
 

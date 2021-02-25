@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using NHibernate.Hql.Ast.ANTLR;
 using System.Collections.Generic;
@@ -7,13 +8,13 @@ namespace NHibernate.Test.BulkManipulation
 {
 	public class BaseFixture: TestCase
 	{
-		private readonly IDictionary<string, IFilter> emptyfilters = new CollectionHelper.EmptyMapClass<string, IFilter>();
+		private readonly IDictionary<string, IFilter> emptyfilters = CollectionHelper.EmptyDictionary<string, IFilter>();
 
 		#region Overrides of TestCase
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
-			get { return new string[0]; }
+			get { return Array.Empty<string>(); }
 		}
 
 		#endregion

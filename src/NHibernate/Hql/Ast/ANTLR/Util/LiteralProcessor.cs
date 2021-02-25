@@ -17,7 +17,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 		public const string ErrorCannotDetermineType = "Could not determine type of: ";
 		public const string ErrorCannotFormatLiteral = "Could not format constant value to SQL literal: ";
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(LiteralProcessor));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(LiteralProcessor));
 
 		private readonly HqlSqlWalker _walker;
 		private static readonly IDecimalFormatter[] _formatters = new IDecimalFormatter[] {
@@ -43,7 +43,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 		/// See #EXACT, #APPROXIMATE
 		/// </summary>
 		public static readonly int DECIMAL_LITERAL_FORMAT = EXACT;
-
 
 		public LiteralProcessor(HqlSqlWalker walker)
 		{
@@ -95,7 +94,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			}
 			else
 			{
-				log.Warn("Unexpected literal token type [" + literal.Type + "] passed for numeric processing");
+				log.Warn("Unexpected literal token type [{0}] passed for numeric processing", literal.Type);
 			}
 		}
 
@@ -123,14 +122,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			{
 				constant.Text = replacement;
 			}
-			else 
+			else
 			{
-				bool value = "true" == constant.Text.ToLowerInvariant();
+				bool value = string.Equals("true", constant.Text, StringComparison.OrdinalIgnoreCase);
 				Dialect.Dialect dialect = _walker.SessionFactoryHelper.Factory.Dialect;
 				constant.Text = dialect.ToBooleanValueString(value);
 			}
 		}
-
 
 		public void ProcessConstant(SqlNode constant, bool resolveIdent)
 		{
@@ -223,13 +221,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 					}
 					catch (FormatException)
 					{
-						log.Info("could not format incoming text [" + text
-								 + "] as a NUM_INT; assuming numeric overflow and attempting as NUM_LONG");
+						log.Info("could not format incoming text [{0}] as a NUM_INT; assuming numeric overflow and attempting as NUM_LONG", text);
 					}
 					catch (OverflowException)
 					{
-						log.Info("could not format incoming text [" + text
-								 + "] as a NUM_INT; assuming numeric overflow and attempting as NUM_LONG");
+						log.Info("could not format incoming text [{0}] as a NUM_INT; assuming numeric overflow and attempting as NUM_LONG", text);
 					}
 				}
 
@@ -249,9 +245,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			{
 				if (replacement != null)
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("processConstant() : Replacing '" + constant.Text + "' with '" + replacement + "'");
+						log.Debug("processConstant() : Replacing '{0}' with '{1}'", constant.Text, replacement);
 					}
 					constant.Text = replacement;
 				}
@@ -260,9 +256,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 		private static void SetSQLValue(DotNode node, string text, string value)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("setSQLValue() " + text + " -> " + value);
+				log.Debug("setSQLValue() {0} -> {1}", text, value);
 			}
 			node.ClearChildren(); // Chop off the rest of the tree.
 			node.Type = HqlSqlWalker.SQL_TOKEN;
@@ -272,9 +268,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 		private void SetConstantValue(DotNode node, string text, object value)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("setConstantValue() " + text + " -> " + value + " " + value.GetType().Name);
+				log.Debug("setConstantValue() {0} -> {1} {2}", text, value, value.GetType().Name);
 			}
 
 			node.ClearChildren();	// Chop off the rest of the tree.
@@ -371,7 +367,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				try
 				{
 					return number.ToString(FORMAT_STRING);
-
 				}
 				catch (Exception t)
 				{

@@ -18,11 +18,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1643
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1643"; }
-		}
-
 		[Test]
 		public async Task TestAsync()
 		{
@@ -57,8 +52,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1643
 
                 await (tx.CommitAsync());
             }
-
-
 
 			using (ISession sess = OpenSession())
 			using (ITransaction tx = sess.BeginTransaction())

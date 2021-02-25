@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using NHibernate.Action;
 using NHibernate.Cache;
 using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
@@ -19,7 +21,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultLoadEventListener : AbstractLockUpgradeEventListener, ILoadEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultLoadEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultLoadEventListener));
 		public static readonly object RemovedEntityMarker = new object();
 		public static readonly object InconsistentRTNClassMarker= new object();
 		public static readonly LockMode DefaultLockMode = LockMode.None;
@@ -41,7 +43,6 @@ namespace NHibernate.Event.Default
 
 			if (persister == null)
 			{
-
 				var message = new StringBuilder(512);
 				message.AppendLine(string.Format("Unable to locate persister for the entity named '{0}'.", @event.EntityClassName));
 				message.AppendLine("The persister define the persistence strategy for an entity.");
@@ -59,7 +60,8 @@ namespace NHibernate.Event.Default
 			else
 			{
 				System.Type idClass = persister.IdentifierType.ReturnedClass;
-				if (idClass != null && !idClass.IsInstanceOfType(@event.EntityId))
+				if (idClass != null && !idClass.IsInstanceOfType(@event.EntityId) &&
+					!(@event.EntityId is DelayedPostInsertIdentifier))
 				{
 					throw new TypeMismatchException("Provided id of the wrong type. Expected: " + idClass + ", got " + @event.EntityId.GetType());
 				}
@@ -89,7 +91,7 @@ namespace NHibernate.Event.Default
 			}
 			catch (HibernateException e)
 			{
-				log.Info("Error performing load command", e);
+				log.Info(e, "Error performing load command");
 				throw;
 			}
 		}
@@ -134,9 +136,9 @@ namespace NHibernate.Event.Default
 		/// <returns> The result of the proxy/load operation.</returns>
 		protected virtual object ProxyOrLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("loading entity: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+				log.Debug("loading entity: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 			}
 
 			if (!persister.HasProxy)
@@ -286,9 +288,9 @@ namespace NHibernate.Event.Default
 		/// <returns> The loaded entity, or null. </returns>
 		protected virtual object DoLoad(LoadEvent @event, IEntityPersister persister, EntityKey keyToLoad, LoadType options)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("attempting to resolve: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+				log.Debug("attempting to resolve: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 			}
 
 			object entity = LoadFromSessionCache(@event, keyToLoad, options);
@@ -304,9 +306,9 @@ namespace NHibernate.Event.Default
 			}
 			if (entity != null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("resolved object in session cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+					log.Debug("resolved object in session cache: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 				}
 				return entity;
 			}
@@ -314,16 +316,16 @@ namespace NHibernate.Event.Default
 			entity = LoadFromSecondLevelCache(@event, persister, options);
 			if (entity != null)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("resolved object in second-level cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+					log.Debug("resolved object in second-level cache: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 				}
 				return entity;
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("object not resolved in any cache: " + MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
+				log.Debug("object not resolved in any cache: {0}", MessageHelper.InfoString(persister, @event.EntityId, @event.Session.Factory));
 			}
 
 			return LoadFromDatasource(@event, persister, keyToLoad, options);
@@ -341,19 +343,18 @@ namespace NHibernate.Event.Default
 		{
 			ISessionImplementor source = @event.Session;
 
-			bool statsEnabled = source.Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (source.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWath.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 
 			object entity = persister.Load(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source);
 
-			if (@event.IsAssociationFetch && statsEnabled)
+			if (stopWatch != null && @event.IsAssociationFetch)
 			{
-				stopWath.Stop();
-				source.Factory.StatisticsImplementor.FetchEntity(@event.EntityClassName, stopWath.Elapsed);
+				stopWatch.Stop();
+				source.Factory.StatisticsImplementor.FetchEntity(@event.EntityClassName, stopWatch.Elapsed);
 			}
 
 			return entity;
@@ -404,7 +405,6 @@ namespace NHibernate.Event.Default
 			return old;
 		}
 
-
 		/// <summary> Attempts to load the entity from the second-level cache. </summary>
 		/// <param name="event">The load event </param>
 		/// <param name="persister">The persister for the entity being requested for load </param>
@@ -416,24 +416,72 @@ namespace NHibernate.Event.Default
 			bool useCache = persister.HasCache && source.CacheMode .HasFlag(CacheMode.Get)
 				&& @event.LockMode.LessThan(LockMode.Read);
 
-			if (useCache)
+			if (!useCache)
 			{
-				ISessionFactoryImplementor factory = source.Factory;
+				return null;
+			}
+			ISessionFactoryImplementor factory = source.Factory;
+			var batchSize = persister.GetBatchSize();
+			var entityBatch = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue
+			                        ?.GetEntityBatch(persister, @event.EntityId);
+			if (entityBatch != null || batchSize > 1 && persister.Cache.PreferMultipleGet())
+			{
+				// The first item in the array is the item that we want to load
+				if (entityBatch != null)
+				{
+					if (entityBatch.Length == 0)
+					{
+						return null; // The key was already checked
+					}
 
-				CacheKey ck = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
-				object ce = persister.Cache.Get(ck, source.Timestamp);
+					batchSize = entityBatch.Length;
+				}
 
-				if (factory.Statistics.IsStatisticsEnabled)
+				if (entityBatch == null)
+				{
+					entityBatch = source.PersistenceContext.BatchFetchQueue.GetEntityBatch(persister, @event.EntityId, batchSize, false);
+				}
+
+				// Ignore null values as the retrieved batch may contains them when there are not enough
+				// uninitialized entities in the queue
+				var keys = new List<CacheKey>(batchSize);
+				for (var i = 0; i < entityBatch.Length; i++)
+				{
+					var key = entityBatch[i];
+					if (key == null)
+					{
+						break;
+					}
+					keys.Add(source.GenerateCacheKey(key, persister.IdentifierType, persister.RootEntityName));
+				}
+				var cachedObjects = persister.Cache.GetMany(keys.ToArray(), source.Timestamp);
+				for (var i = 1; i < cachedObjects.Length; i++)
+				{
+					Assemble(
+						keys[i],
+						cachedObjects[i],
+						new LoadEvent(entityBatch[i], @event.EntityClassName, @event.LockMode, @event.Session),
+						false);
+				}
+				return Assemble(keys[0], cachedObjects[0], @event, true);
+			}
+			var cacheKey = source.GenerateCacheKey(@event.EntityId, persister.IdentifierType, persister.RootEntityName);
+			var cachedObject = persister.Cache.Get(cacheKey, source.Timestamp);
+			return Assemble(cacheKey, cachedObject, @event, true);
+
+			object Assemble(CacheKey ck, object ce, LoadEvent evt, bool alterStatistics)
+			{
+				if (factory.Statistics.IsStatisticsEnabled && alterStatistics)
 				{
 					if (ce == null)
 					{
 						factory.StatisticsImplementor.SecondLevelCacheMiss(persister.Cache.RegionName);
-						log.DebugFormat("Entity cache miss: {0}", ck);
+						log.Debug("Entity cache miss: {0}", ck);
 					}
 					else
 					{
 						factory.StatisticsImplementor.SecondLevelCacheHit(persister.Cache.RegionName);
-						log.DebugFormat("Entity cache hit: {0}", ck);
+						log.Debug("Entity cache hit: {0}", ck);
 					}
 				}
 
@@ -445,12 +493,12 @@ namespace NHibernate.Event.Default
 					// NH: Different behavior (take a look to options.ExactPersister (NH-295))
 					if (!options.ExactPersister || persister.EntityMetamodel.SubclassEntityNames.Contains(entry.Subclass))
 					{
-						return AssembleCacheEntry(entry, @event.EntityId, persister, @event);
+						return AssembleCacheEntry(entry, evt.EntityId, persister, evt);
 					}
 				}
-			}
 
-			return null;
+				return null;
+			}
 		}
 
 		private object AssembleCacheEntry(CacheEntry entry, object id, IEntityPersister persister, LoadEvent @event)
@@ -459,9 +507,9 @@ namespace NHibernate.Event.Default
 			IEventSource session = @event.Session;
 			ISessionFactoryImplementor factory = session.Factory;
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("assembling entity from second-level cache: " + MessageHelper.InfoString(persister, id, factory));
+				log.Debug("assembling entity from second-level cache: {0}", MessageHelper.InfoString(persister, id, factory));
 			}
 
 			IEntityPersister subclassPersister = factory.GetEntityPersister(entry.Subclass);
@@ -469,16 +517,16 @@ namespace NHibernate.Event.Default
 
 			// make it circular-reference safe
 			EntityKey entityKey = session.GenerateEntityKey(id, subclassPersister);
-			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, session);
+			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.Version, session);
 
 			IType[] types = subclassPersister.PropertyTypes;
 			object[] values = entry.Assemble(result, id, subclassPersister, session.Interceptor, session); // intializes result by side-effect
 			TypeHelper.DeepCopy(values, types, subclassPersister.PropertyUpdateability, values, session);
 
 			object version = Versioning.GetVersion(values, subclassPersister);
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Cached Version: " + version);
+				log.Debug("Cached Version: {0}", version);
 			}
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;
@@ -507,10 +555,9 @@ namespace NHibernate.Event.Default
 				LockMode.None,
 				true,
 				subclassPersister,
-				false,
-				entry.AreLazyPropertiesUnfetched);
+				false);
 			
-			subclassPersister.AfterInitialize(result, entry.AreLazyPropertiesUnfetched, session);
+			subclassPersister.AfterInitialize(result, session);
 			persistenceContext.InitializeNonLazyCollections();
 			// upgrade the lock if necessary:
 			//lock(result, lockMode);

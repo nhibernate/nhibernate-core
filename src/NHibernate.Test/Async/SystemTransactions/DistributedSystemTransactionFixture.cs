@@ -13,12 +13,11 @@ using System.Linq;
 using System.Threading;
 using System.Transactions;
 using log4net;
-using log4net.Repository.Hierarchy;
 using NHibernate.Cfg;
 using NHibernate.Engine;
-using NHibernate.Linq;
 using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.SystemTransactions
 {
@@ -376,7 +375,7 @@ namespace NHibernate.Test.SystemTransactions
 				}
 			}
 
-			DodgeTransactionCompletionDelayIfRequired();
+			await (DodgeTransactionCompletionDelayIfRequiredAsync());
 
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
@@ -399,7 +398,7 @@ namespace NHibernate.Test.SystemTransactions
 				}
 			}
 
-			DodgeTransactionCompletionDelayIfRequired();
+			await (DodgeTransactionCompletionDelayIfRequiredAsync());
 
 			AssertNoPersons();
 		}
@@ -459,7 +458,7 @@ namespace NHibernate.Test.SystemTransactions
 					tx.Complete();
 				}
 
-				DodgeTransactionCompletionDelayIfRequired();
+				await (DodgeTransactionCompletionDelayIfRequiredAsync());
 
 				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
@@ -484,7 +483,7 @@ namespace NHibernate.Test.SystemTransactions
 					// No complete for rollback-ing.
 				}
 
-				DodgeTransactionCompletionDelayIfRequired();
+				await (DodgeTransactionCompletionDelayIfRequiredAsync());
 
 				// Do not reuse the session after a rollback, its state does not allow it.
 				// http://nhibernate.info/doc/nhibernate-reference/manipulatingdata.html#manipulatingdata-endingsession-commit
@@ -578,7 +577,7 @@ namespace NHibernate.Test.SystemTransactions
 						// a global locking mechanism causing any subsequent use to wait for the end of the commit phase,
 						// but this is not the usual case. Some other, as Npgsql < v3.2.5, may crash due to this, because
 						// they re-use the connection for the second phase.
-						Thread.Sleep(100);
+						await (Task.Delay(100));
 						var countSecondTry = await (controlSession.Query<Person>().CountAsync());
 						Assert.Warn($"Unexpected entity count: {count} instead of {i}. " +
 							"This may mean current data provider has a delayed commit, occurring after scope disposal. " +
@@ -610,7 +609,7 @@ namespace NHibernate.Test.SystemTransactions
 				tx.Complete();
 			}
 
-			DodgeTransactionCompletionDelayIfRequired();
+			await (DodgeTransactionCompletionDelayIfRequiredAsync());
 
 			using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 			{
@@ -686,6 +685,13 @@ namespace NHibernate.Test.SystemTransactions
 			}
 			// Currently always forbidden, whatever UseConnectionOnSystemTransactionEvents.
 			Assert.That(interceptor.AfterException, Is.TypeOf<HibernateException>());
+		}
+
+		private Task DodgeTransactionCompletionDelayIfRequiredAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (Sfi.ConnectionProvider.Driver.HasDelayedDistributedTransactionCompletion)
+				return Task.Delay(500, cancellationToken);
+			return Task.CompletedTask;
 		}
 
 		private void DodgeTransactionCompletionDelayIfRequired()

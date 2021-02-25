@@ -260,7 +260,6 @@ namespace NHibernate.DomainModel
 			set { _stringArray = value; }
 		}
 
-
 		/// <summary>
 		/// Gets or sets the fooArray
 		/// </summary> 
@@ -269,7 +268,6 @@ namespace NHibernate.DomainModel
 			get { return _fooArray; }
 			set { _fooArray = value; }
 		}
-
 
 		/// <summary>
 		/// Get/set for fooSet
@@ -396,7 +394,7 @@ namespace NHibernate.DomainModel
 			StringArray = StringSet.ToArray();
 			StringList = new List<string>(StringArray);
 			IntArray = new int[] {1, 3, 3, 7};
-			FooArray = new Foo[0];
+			FooArray = Array.Empty<Foo>();
 			
 			Customs = new List<string[]>();
 			Customs.Add(new String[] {"foo", "bar"});

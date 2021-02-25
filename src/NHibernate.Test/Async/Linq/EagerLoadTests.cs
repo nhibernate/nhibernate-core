@@ -35,6 +35,48 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task CanSelectAndFetchManyAsync()
+		{
+			var result = await (db.OrderLines
+							.Select(o => o.Product)
+							.FetchMany(o => o.OrderLines)
+							.ToListAsync());
+
+			session.Close();
+
+			Assert.IsNotEmpty(result);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].OrderLines));
+		}
+
+		[Test]
+		public async Task CanSelectManyAndFetchAsync()
+		{
+			var result = await (db.Orders
+							.SelectMany(o => o.OrderLines)
+							.Fetch(o => o.Product)
+							.ToListAsync());
+
+			session.Close();
+
+			Assert.IsNotEmpty(result);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].Product));
+		}
+
+		[Test]
+		public async Task CanSelectManyAndFetchManyAsync()
+		{
+			var result = await (db.Employees
+							.SelectMany(o => o.Orders)
+							.FetchMany(o => o.OrderLines)
+							.ToListAsync());
+
+			session.Close();
+
+			Assert.IsNotEmpty(result);
+			Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].OrderLines));
+		}
+
+		[Test]
 		public async Task CanSelectAndFetchHqlAsync()
 		{
 			//NH-3075
@@ -102,104 +144,62 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public Task FetchWithWhereAsync()
+		public async Task FetchWithWhereAsync()
 		{
-			try
-			{
-				// NH-2381 NH-2362
-				return (from p in session.Query<Product>().Fetch(a => a.Supplier)
+			// NH-2381 NH-2362
+			await ((from p in session.Query<Product>().Fetch(a => a.Supplier)
 			 where p.ProductId == 1
-			 select p).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			 select p).ToListAsync());
 		}
 
 		[Test]
-		public Task FetchManyWithWhereAsync()
+		public async Task FetchManyWithWhereAsync()
 		{
-			try
-			{
-						// NH-2381 NH-2362
-				return (from s
+					// NH-2381 NH-2362
+			await ((from s
 				in session.Query<Supplier>().FetchMany(a => a.Products)
 			 where s.SupplierId == 1
-			 select s).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			 select s).ToListAsync());
 		}
 
 		[Test]
-		public Task FetchAndThenFetchWithWhereAsync()
+		public async Task FetchAndThenFetchWithWhereAsync()
 		{
-			try
-			{
-				// NH-2362
-				return (from p
+			// NH-2362
+			await ((from p
 				in session.Query<User>().Fetch(a => a.Role).ThenFetch(a => a.Entity)
 			 where p.Id == 1
-			 select p).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			 select p).ToListAsync());
 		}
 
 		[Test]
-		public Task FetchAndThenFetchManyWithWhereAsync()
+		public async Task FetchAndThenFetchManyWithWhereAsync()
 		{
-			try
-			{
-				// NH-2362
-				return (from p
+			// NH-2362
+			await ((from p
 				in session.Query<Employee>().Fetch(a => a.Superior).ThenFetchMany(a => a.Orders)
 			 where p.EmployeeId == 1
-			 select p).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			 select p).ToListAsync());
 		}
 
 		[Test]
-		public Task FetchManyAndThenFetchWithWhereAsync()
+		public async Task FetchManyAndThenFetchWithWhereAsync()
 		{
-			try
-			{
-				// NH-2362
-				return (from s
+			// NH-2362
+			await ((from s
 				in session.Query<Supplier>().FetchMany(a => a.Products).ThenFetch(a => a.Category)
 			 where s.SupplierId == 1
-			 select s).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			 select s).ToListAsync());
 		}
 
 		[Test]
-		public Task FetchManyAndThenFetchManyWithWhereAsync()
+		public async Task FetchManyAndThenFetchManyWithWhereAsync()
 		{
-			try
-			{
-				// NH-2362
-				return (from s
+			// NH-2362
+			await ((from s
 				in session.Query<Supplier>().FetchMany(a => a.Products).ThenFetchMany(a => a.OrderLines)
 			 where s.SupplierId == 1
-			 select s).ToListAsync();
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			 select s).ToListAsync());
 		}
 
 		[Test]
@@ -380,6 +380,232 @@ namespace NHibernate.Test.Linq
 				.SingleOrDefaultAsync(x => x.OrderId == firstOrderId));
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(order.Shipper));
+		}
+
+		[Test]
+		public async Task WhereReuseJoinsAsync()
+		{
+			OrderLine orderLine;
+			using (var logSpy = new SqlLogSpy())
+			{
+				orderLine = (await (db.OrderLines
+				              .Where(o => o.Order.Customer.ContactName == "Maria Anders")
+				              .Fetch(o => o.Order).ThenFetch(o => o.Customer)
+				              .ToListAsync()))
+				              .First();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order.Customer), Is.True);
+			}
+
+			session.Clear();
+			using (var logSpy = new SqlLogSpy())
+			{
+				orderLine = (await (db.OrderLines
+				              .Where(o => o.Order.Customer.ContactName == "Maria Anders")
+				              .Fetch(o => o.Order)
+				              .ToListAsync()))
+				              .First();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order.Customer), Is.False);
+			}
+
+			session.Clear();
+			using (var logSpy = new SqlLogSpy())
+			{
+				orderLine = (await (db.OrderLines
+				              .Where(o => o.Order.OrderLines.Any(l => l.Product.Name == "Tofu"))
+				              .Fetch(o => o.Order).ThenFetch(o => o.Customer)
+				              .ToListAsync()))
+				              .First();
+
+				var sql = logSpy.GetWholeLog();
+				sql = sql.Substring(0, sql.IndexOf("where"));
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order.Customer), Is.True);
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			{
+				(await (db.Employees
+				  .Where(o => o.Superior.Superior.Superior.FirstName != null)
+				  .Fetch(o => o.Superior)
+				  .ToListAsync()))
+				  .FirstOrDefault();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, ","), Is.EqualTo(31), "Only the first level should be fetched.");
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(3));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(3));
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			{
+				(await (db.Employees
+				  .Where(o => o.Superior.FirstName != null)
+				  .Fetch(o => o.Superior).ThenFetch(o => o.Superior).ThenFetch(o => o.Superior)
+				  .ToListAsync()))
+				  .FirstOrDefault();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(3));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public async Task OrderByReuseJoinsAsync()
+		{
+			OrderLine orderLine;
+			using (var logSpy = new SqlLogSpy())
+			{
+				orderLine = (await (db.OrderLines
+				              .Where(o => o.Order.OrderId == 10248)
+				              .OrderBy(o => o.Order.Customer.ContactName)
+				              .Fetch(o => o.Order).ThenFetch(o => o.Customer)
+				              .ToListAsync()))
+				              .First();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order.Customer), Is.True);
+			}
+
+			session.Clear();
+			using (var logSpy = new SqlLogSpy())
+			{
+				orderLine = (await (db.OrderLines
+				              .Where(o => o.Order.OrderId == 10248)
+				              .OrderBy(o => o.Order.Customer.ContactName)
+				              .Fetch(o => o.Order)
+				              .ToListAsync()))
+				              .First();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order.Customer), Is.False);
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			{
+				(await (db.Employees
+				  .OrderBy(o => o.Superior.Superior.Superior.FirstName)
+				  .Fetch(o => o.Superior)
+				  .ToListAsync()))
+				  .FirstOrDefault();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, ","), Is.EqualTo(31), "Only the first level should be fetched.");
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(3));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(3));
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			{
+				(await (db.Employees
+				  .OrderBy(o => o.Superior.FirstName)
+				  .Fetch(o => o.Superior).ThenFetch(o => o.Superior).ThenFetch(o => o.Superior)
+				  .ToListAsync()))
+				  .FirstOrDefault();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(3));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(3));
+			}
+		}
+
+		[Test]
+		public async Task WhereAndOrderByReuseJoinsAsync()
+		{
+			OrderLine orderLine;
+			using (var logSpy = new SqlLogSpy())
+			{
+				orderLine = (await (db.OrderLines
+				              .Where(o => o.Order.Customer.ContactName == "Maria Anders")
+				              .OrderBy(o => o.Order.Customer.ContactName)
+				              .Fetch(o => o.Order).ThenFetch(o => o.Customer)
+				              .ToListAsync()))
+				              .First();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order.Customer), Is.True);
+			}
+
+			session.Clear();
+			using (var logSpy = new SqlLogSpy())
+			{
+				orderLine = (await (db.OrderLines
+				              .Where(o => o.Order.Customer.ContactName == "Maria Anders")
+				              .OrderBy(o => o.Order.Customer.ContactName)
+				              .Fetch(o => o.Order)
+				              .ToListAsync()))
+				              .First();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(2));
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(orderLine.Order.Customer), Is.False);
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			{
+				(await (db.Employees
+				  .Where(o => o.Superior.Superior.Superior.FirstName != null)
+				  .OrderBy(o => o.Superior.Superior.Superior.FirstName)
+				  .Fetch(o => o.Superior)
+				  .ToListAsync()))
+				  .FirstOrDefault();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, ","), Is.EqualTo(31), "Only the first level should be fetched.");
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(3));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(3));
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			{
+				(await (db.Employees
+				  .Where(o => o.Superior.FirstName != null)
+				  .OrderBy(o => o.Superior.FirstName)
+				  .Fetch(o => o.Superior).ThenFetch(o => o.Superior).ThenFetch(o => o.Superior)
+				  .ToListAsync()))
+				  .FirstOrDefault();
+
+				var sql = logSpy.GetWholeLog();
+				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(3));
+				Assert.That(GetTotalOccurrences(sql, "inner join"), Is.EqualTo(1));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public async Task FetchBeforeSelectAsync()
+		{
+			var result = await (db.Orders
+			               .Where(o => o.OrderId == 10248)
+			               .Fetch(x => x.Customer)
+			               .Select(x => new {x.Customer.ContactName})
+			               .ToListAsync());
+
+			Assert.True(result.Any());
 		}
 	}
 }

@@ -7,7 +7,6 @@ using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
@@ -17,11 +16,11 @@ namespace NHibernate.Engine
 	[Serializable]
 	public sealed class QueryParameters
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (QueryParameters));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (QueryParameters));
 
 		private bool readOnly;
 
-		public QueryParameters() : this(TypeHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray) {}
+		public QueryParameters() : this(TypeHelper.EmptyTypeArray, Array.Empty<object>()) {}
 
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, object optionalObject, string optionalEntityName, object optionalObjectId)
 			: this(positionalParameterTypes, postionalParameterValues)
@@ -50,7 +49,7 @@ namespace NHibernate.Engine
 		public QueryParameters(IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized,
 		                       bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
 			: this(
-				TypeHelper.EmptyTypeArray, ArrayHelper.EmptyObjectArray, namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null,
+				TypeHelper.EmptyTypeArray, Array.Empty<object>(), namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null,
 				transformer)
 		{
 			// used by CriteriaTranslator
@@ -61,8 +60,8 @@ namespace NHibernate.Engine
 		                       IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion,
 		                       string comment, object[] collectionKeys, IResultTransformer transformer)
 		{
-			PositionalParameterTypes = positionalParameterTypes ?? new IType[0];
-			PositionalParameterValues = positionalParameterValues ?? new object[0];
+			PositionalParameterTypes = positionalParameterTypes ?? Array.Empty<IType>();
+			PositionalParameterValues = positionalParameterValues ?? Array.Empty<object>();
 			NamedParameters = namedParameters ?? new Dictionary<string, TypedValue>(1);
 			LockModes = lockModes;
 			RowSelection = rowSelection;
@@ -124,6 +123,8 @@ namespace NHibernate.Engine
 
 		public string CacheRegion { get; set; }
 
+		public CacheMode? CacheMode { get; set; }
+
 		public string Comment { get; set; }
 
 		public bool ForceCacheRefresh { get; set; }
@@ -171,12 +172,12 @@ namespace NHibernate.Engine
 			var print = new Printer(factory);
 			if (PositionalParameterValues.Length != 0)
 			{
-				log.Debug("parameters: " + print.ToString(PositionalParameterTypes, PositionalParameterValues));
+				log.Debug("parameters: {0}", print.ToString(PositionalParameterTypes, PositionalParameterValues));
 			}
 
 			if (NamedParameters != null)
 			{
-				log.Debug("named parameters: " + print.ToString(NamedParameters));
+				log.Debug("named parameters: {0}", print.ToString(NamedParameters));
 			}
 		}
 
@@ -201,19 +202,31 @@ namespace NHibernate.Engine
 
 		public QueryParameters CreateCopyUsing(RowSelection selection)
 		{
-			var copy = new QueryParameters(PositionalParameterTypes, PositionalParameterValues, NamedParameters, LockModes,
-			                               selection, IsReadOnlyInitialized, readOnly, Cacheable, CacheRegion, Comment, CollectionKeys,
-			                               OptionalObject, OptionalEntityName, OptionalId, ResultTransformer)
-			           {
-			           	ProcessedSql = ProcessedSql,
-			            ProcessedSqlParameters = ProcessedSqlParameters != null ? ProcessedSqlParameters.ToList() : null
-			           };
+			var copy = new QueryParameters(
+				PositionalParameterTypes, PositionalParameterValues, NamedParameters, LockModes, selection,
+				IsReadOnlyInitialized, readOnly, Cacheable, CacheRegion, Comment, CollectionKeys, OptionalObject,
+				OptionalEntityName, OptionalId, ResultTransformer)
+			{
+				ProcessedSql = ProcessedSql,
+				ProcessedSqlParameters = ProcessedSqlParameters != null ? ProcessedSqlParameters.ToList() : null,
+				CacheMode = CacheMode
+			};
 			return copy;
 		}
 
 		public bool IsReadOnly(ISessionImplementor session)
 		{
 			return IsReadOnlyInitialized ? ReadOnly : session.PersistenceContext.DefaultReadOnly;
+		}
+
+		public bool CanGetFromCache(ISessionImplementor session)
+		{
+			return !ForceCacheRefresh && (CacheMode ?? session.CacheMode).HasFlag(NHibernate.CacheMode.Get);
+		}
+
+		public bool CanPutToCache(ISessionImplementor session)
+		{
+			return (CacheMode ?? session.CacheMode).HasFlag(NHibernate.CacheMode.Put);
 		}
 	}
 }

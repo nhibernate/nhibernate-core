@@ -111,7 +111,7 @@ namespace NHibernate.SqlCommand
 		private int FindFromClauseInPart(string part)
 		{
 			int afterLastClosingParenIndex = 0;
-			int fromIndex = StringHelper.IndexOfCaseInsensitive(part, FromClauseToken);
+			int fromIndex = part.IndexOf(FromClauseToken, StringComparison.OrdinalIgnoreCase);
 			
 			for (int i = 0; i < part.Length; i++)
 			{
@@ -133,13 +133,13 @@ namespace NHibernate.SqlCommand
 					}
 
 					afterLastClosingParenIndex = i + 1;
-					fromIndex = StringHelper.IndexOfCaseInsensitive(part, FromClauseToken, afterLastClosingParenIndex);
+					fromIndex = part.IndexOf(FromClauseToken, afterLastClosingParenIndex, StringComparison.OrdinalIgnoreCase);
 				}
 			}
 
 			if (afterLastClosingParenIndex == 0)
 			{
-				fromIndex = StringHelper.IndexOfCaseInsensitive(part, FromClauseToken);
+				fromIndex = part.IndexOf(FromClauseToken, StringComparison.OrdinalIgnoreCase);
 			}
 
 			if(parenNestCount > 0)
@@ -163,7 +163,7 @@ namespace NHibernate.SqlCommand
 			}
 
 			string partString = part as string;
-			int index = StringHelper.LastIndexOfCaseInsensitive(partString, OrderByToken);
+			int index = partString.LastIndexOf(OrderByToken, StringComparison.OrdinalIgnoreCase);
 			if (index >= 0)
 			{
 				lastOrderByPartIndex = builder.Count - 1;
@@ -175,8 +175,7 @@ namespace NHibernate.SqlCommand
 
 		private void IgnoreOrderByInSubselect(string partString)
 		{
-			int index;
-			index = StringHelper.LastIndexOfCaseInsensitive(partString, ")");
+			var index = partString.LastIndexOf(")", StringComparison.Ordinal);
 			if (index >= 0 && ParenIsAfterLastOrderBy(index))
 			{
 				lastOrderByPartIndex = -1;

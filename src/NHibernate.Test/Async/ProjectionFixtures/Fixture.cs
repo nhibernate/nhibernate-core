@@ -21,7 +21,7 @@ namespace NHibernate.Test.ProjectionFixtures
     [TestFixture]
     public class FixtureAsync : TestCase
     {
-        protected override System.Collections.IList Mappings
+        protected override string[] Mappings
         {
             get { return new string[] { "ProjectionFixtures.Mapping.hbm.xml" }; }
         }
@@ -75,7 +75,6 @@ namespace NHibernate.Test.ProjectionFixtures
             }
         }
 
-
 	    [Test]
 	    public void ErrorFromDBWillGiveTheActualSQLExecutedAsync()
 	    {
@@ -100,7 +99,6 @@ namespace NHibernate.Test.ProjectionFixtures
 			                                                             .Add(Projections.Count("child.Key.Area"))
 			    );
 
-
 		    var e = Assert.ThrowsAsync<GenericADOException>(async () =>
 		    {
 			    using (var s = Sfi.OpenSession())
@@ -118,10 +116,10 @@ namespace NHibernate.Test.ProjectionFixtures
 
 	    [Test]
         public async Task AggregatingHirearchyWithCountAsync()
-     {
-         var root = new Key {Id = 1, Area = 2};
+        {
+            var root = new Key {Id = 1, Area = 2};
 
-         DetachedCriteria projection = DetachedCriteria.For<TreeNode>("child")
+            DetachedCriteria projection = DetachedCriteria.For<TreeNode>("child")
                 .Add(Restrictions.Eq("Parent.id", root))
                 .Add(Restrictions.Gt("Key.Id", 0))
                 .Add(Restrictions.Eq("Type", NodeType.Blue))
@@ -133,19 +131,19 @@ namespace NHibernate.Test.ProjectionFixtures
                     .Add(Projections.Count(Projections.Property("grandchild.Key.Id")))
                 );
 
-         using(var s = Sfi.OpenSession())
-         using(var tx = s.BeginTransaction())
-         {
-             var criteria = projection.GetExecutableCriteria(s);
-             var list = await (criteria.ListAsync());
-             Assert.AreEqual(1, list.Count);
-             var tuple = (object[]) list[0];
-             Assert.AreEqual(11, tuple[0]);
-             Assert.AreEqual(2, tuple[1]);
-             Assert.AreEqual(1, tuple[2]);
-             await (tx.CommitAsync());
-         }
-     }
+            using(var s = Sfi.OpenSession())
+            using(var tx = s.BeginTransaction())
+            {
+                var criteria = projection.GetExecutableCriteria(s);
+                var list = await (criteria.ListAsync());
+                Assert.AreEqual(1, list.Count);
+                var tuple = (object[]) list[0];
+                Assert.AreEqual(11, tuple[0]);
+                Assert.AreEqual(2, tuple[1]);
+                Assert.AreEqual(1, tuple[2]);
+                await (tx.CommitAsync());
+            }
+        }
 
         [Test]
         public async Task LimitingResultSetOnQueryThatIsOrderedByProjectionAsync()

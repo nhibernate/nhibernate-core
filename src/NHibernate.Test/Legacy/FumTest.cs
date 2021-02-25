@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.DomainModel;
 using NHibernate.Criterion;
 using NHibernate.Type;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Legacy
@@ -18,7 +19,7 @@ namespace NHibernate.Test.Legacy
 	{
 		protected static short fumKeyShort = 1;
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -75,7 +76,7 @@ namespace NHibernate.Test.Legacy
 				Assert.IsTrue(b.MapComponent.Stringmap.Count == 2);
 
 				int none = s.CreateCriteria(typeof(Fum))
-					.Add(Expression.In("FumString", new string[0]))
+					.Add(Expression.In("FumString", Array.Empty<string>()))
 					.List().Count;
 				Assert.AreEqual(0, none);
 
@@ -133,7 +134,7 @@ namespace NHibernate.Test.Legacy
 				baseCriteria = s.CreateCriteria(typeof(Fum))
 					.Add(Expression.Like("FumString", "f%"))
 					.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
-					.SetFetchMode("Friends", FetchMode.Eager);
+					.Fetch("Friends");
 				baseCriteria.CreateCriteria("Fo", "fo")
 					.Add(Expression.Eq("FumString", fum.Fo.FumString));
 				map = (IDictionary) baseCriteria.List()[0];
@@ -535,7 +536,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public void KeyManyToOne()
 		{
@@ -586,7 +586,6 @@ namespace NHibernate.Test.Legacy
 			s.Flush();
 			s.Close();
 		}
-
 
 		[Test]
 		public void CompositeKeyPathExpressions()
@@ -707,7 +706,12 @@ namespace NHibernate.Test.Legacy
 
 		private ISession SpoofSerialization(ISession session)
 		{
-			BinaryFormatter formatter = new BinaryFormatter();
+			var formatter = new BinaryFormatter
+			{
+#if !NETFX
+				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
+#endif
+			};
 			MemoryStream stream = new MemoryStream();
 			formatter.Serialize(stream, session);
 

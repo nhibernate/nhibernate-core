@@ -27,7 +27,7 @@ namespace NHibernate.Test.Immutable
 			get { return "NHibernate.Test"; }
 		}
 		
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Immutable.ContractVariation.hbm.xml" }; }
 		}
@@ -1038,7 +1038,6 @@ namespace NHibernate.Test.Immutable
 	
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
-	
 		}
 	
 		[Test]

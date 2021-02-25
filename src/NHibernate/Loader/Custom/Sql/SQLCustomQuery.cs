@@ -15,17 +15,17 @@ namespace NHibernate.Loader.Custom.Sql
 	///<remarks>This support is built on top of the notion of "custom queries"...</remarks>
 	public class SQLCustomQuery : ICustomQuery
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (SQLCustomQuery));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (SQLCustomQuery));
 
 		private readonly List<IReturn> customQueryReturns = new List<IReturn>();
-		private readonly ISet<string> querySpaces = new HashSet<string>();
+		private readonly HashSet<string> querySpaces = new HashSet<string>();
 		private readonly SqlString sql;
 		private readonly List<IParameterSpecification> parametersSpecifications;
 
 		public SQLCustomQuery(INativeSQLQueryReturn[] queryReturns, string sqlQuery, ICollection<string> additionalQuerySpaces,
 		                      ISessionFactoryImplementor factory)
 		{
-			log.Debug("starting processing of sql query [" + sqlQuery + "]");
+			log.Debug("starting processing of sql query [{0}]", sqlQuery);
 			SQLQueryReturnProcessor processor = new SQLQueryReturnProcessor(queryReturns, factory);
 			SQLQueryReturnProcessor.ResultAliasContext aliasContext = processor.Process();
 

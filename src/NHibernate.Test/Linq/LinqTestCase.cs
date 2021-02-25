@@ -12,7 +12,7 @@ namespace NHibernate.Test.Linq
 		private Northwind _northwind;
 		private ISession _session;
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -29,11 +29,14 @@ namespace NHibernate.Test.Linq
 					"Northwind.Mappings.Supplier.hbm.xml",
 					"Northwind.Mappings.Territory.hbm.xml",
 					"Northwind.Mappings.AnotherEntity.hbm.xml",
+					"Northwind.Mappings.AnotherEntityRequired.hbm.xml",
 					"Northwind.Mappings.Role.hbm.xml",
 					"Northwind.Mappings.User.hbm.xml",
 					"Northwind.Mappings.TimeSheet.hbm.xml",
 					"Northwind.Mappings.Animal.hbm.xml",
-					"Northwind.Mappings.Patient.hbm.xml"
+					"Northwind.Mappings.Patient.hbm.xml",
+					"Northwind.Mappings.DynamicUser.hbm.xml",
+					"Northwind.Mappings.NumericEntity.hbm.xml"
 				};
 			}
 		}

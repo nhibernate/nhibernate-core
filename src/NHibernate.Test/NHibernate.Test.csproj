@@ -2,12 +2,14 @@
   <Import Project="../../build-common/NHibernate.props" />
   <PropertyGroup>
     <Description>The Unit Tests for NHibernate.</Description>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>$(NhAppTargetFrameworks)</TargetFrameworks>
+    <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
+    <ContentSQLiteInteropFiles>true</ContentSQLiteInteropFiles>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <TreatSpecificWarningsAsErrors />
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <OutputType>Exe</OutputType>
+    <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="**\*.hbm.xml" />
@@ -23,6 +25,7 @@
     <None Remove="NHSpecificTest\NH3023\db-teardown.sql" />
     <EmbeddedResource Include="NHSpecificTest\NH3023\db-seed.sql" />
     <EmbeddedResource Include="NHSpecificTest\NH3023\db-teardown.sql" />
+    <EmbeddedResource Include="log4net.xml" />
     <EmbeddedResource Include="TestEmbeddedConfig.cfg.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -32,26 +35,65 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+    <Compile Remove="**\CfgTest\DefaultNsAssmFixture.cs" />
+    <Compile Remove="**\CfgTest\HbmOrderingFixture.cs" />
+    <Compile Remove="**\DynamicProxyTests\PeVerifyFixture.cs" />
+    <Compile Remove="**\Insertordering\**" />
+    <Compile Remove="**\NHSpecificTest\NH1850\**" />
+    <Compile Remove="**\NHSpecificTest\NH2484\**" />
+    <Compile Remove="**\NHSpecificTest\NH2188\**" />
+    <Compile Remove="**\NHSpecificTest\NH3121\**" />
+  </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Antlr3.Runtime" Version="3.5.1" />
-    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
-    <PackageReference Include="log4net" Version="2.0.8" />
-    <PackageReference Include="nunit" Version="3.7.1" />
-    <PackageReference Include="Remotion.Linq" Version="2.1.2" />
-    <PackageReference Include="Remotion.Linq.EagerFetching" Version="2.1.0" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.7.6" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.3.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <Compile Include="..\NHibernate\Util\AsyncReaderWriterLock.cs">
+      <Link>UtilityTest\AsyncReaderWriterLock.cs</Link>
+    </Compile>
+    <Compile Include="..\NHibernate\Collection\Generic\SetHelpers\SetSnapShot.cs">
+      <Link>UtilityTest\SetSnapShot.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="2.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.3.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="1.0.19269.1" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.109.2" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.8.11" />
+    <PackageReference Include="NSubstitute" Version="3.1.0" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.3.0" />
+    <PackageReference Include="Npgsql" Version="4.0.3" />
+    <PackageReference Include="MySql.Data" Version="8.0.22" />
+  </ItemGroup>
+  <ItemGroup Condition="$(NhNetFx)">
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Threading.Tasks" />
+    <Reference Include="System.Data.OracleClient" />
+    <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
+    <PackageReference Include="Oracle.ManagedDataAccess" Version="12.1.2400" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+    <PackageReference Include="System.CodeDom" Version="4.4.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
+    <PackageReference Include="System.Data.OracleClient" Version="1.0.8" />
+    <PackageReference Include="System.Data.Odbc" Version="4.5.0" />
+    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
+    <PackageReference Include="NUnitLite" Version="3.12.0" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(NuGetPackageRoot)' != '' ">
+    <NativeBinaries Include="$(NuGetPackageRoot)microsoft.sqlserver.compact\4.0.8876.1\NativeBinaries\**\*.*" />
+    <Content Include="@(NativeBinaries)">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.DomainModel\NHibernate.DomainModel.csproj" />
     <ProjectReference Include="..\NHibernate\NHibernate.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data.OracleClient" />
-    <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />

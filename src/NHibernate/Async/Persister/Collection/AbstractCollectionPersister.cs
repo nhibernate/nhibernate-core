@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -32,14 +33,14 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
-using Array=NHibernate.Mapping.Array;
+using Array = NHibernate.Mapping.Array;
 
 namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
 	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
-														IPostInsertIdentityPersister
+		IPostInsertIdentityPersister, ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable
 	{
 
 		public Task InitializeAsync(object key, ISessionImplementor session, CancellationToken cancellationToken)
@@ -138,7 +139,7 @@ namespace NHibernate.Persister.Collection
 			return i + ArrayHelper.CountTrue(indexColumnIsSettable);
 		}
 
-		protected Task<int> WriteElementToWhereAsync(DbCommand st, object elt, int i, ISessionImplementor session, CancellationToken cancellationToken)
+		protected Task<int> WriteElementToWhereAsync(DbCommand st, object elt, bool[] columnNullness, int i, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (elementIsPureFormula)
 			{
@@ -152,11 +153,26 @@ namespace NHibernate.Persister.Collection
 			async Task<int> InternalWriteElementToWhereAsync()
 			{
 
-				await (ElementType.NullSafeSetAsync(st, elt, i, elementColumnIsInPrimaryKey, session, cancellationToken)).ConfigureAwait(false);
-				return i + elementColumnAliases.Length;
+				var settable = Combine(elementColumnIsInPrimaryKey, columnNullness);
+
+				await (ElementType.NullSafeSetAsync(st, elt, i, settable, session, cancellationToken)).ConfigureAwait(false);
+				return i + settable.Count(s => s);
 			}
 		}
 
+		// Since v5.2
+		[Obsolete("Use overload with columnNullness instead")]
+		protected Task<int> WriteElementToWhereAsync(DbCommand st, object elt, int i, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<int>(cancellationToken);
+			}
+			return WriteElementToWhereAsync(st, elt, null, i, session, cancellationToken);
+		}
+
+		// No column nullness handling here: although a composite index could have null columns, the mapping
+		// current implementation forbirds this by forcing not-null to true on all columns.
 		protected Task<int> WriteIndexToWhereAsync(DbCommand st, object index, int i, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (indexContainsFormula)
@@ -188,9 +204,9 @@ namespace NHibernate.Persister.Collection
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && RowDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Deleting collection: " + MessageHelper.CollectionInfoString(this, id, Factory));
+					log.Debug("Deleting collection: {0}", MessageHelper.CollectionInfoString(this, id, Factory));
 				}
 
 				// Remove all the old entries
@@ -217,6 +233,7 @@ namespace NHibernate.Persister.Collection
 							expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 						}
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (Exception e)
 					{
 						if (useBatch)
@@ -233,7 +250,7 @@ namespace NHibernate.Persister.Collection
 						}
 					}
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						log.Debug("done deleting collection");
 					}
@@ -251,9 +268,9 @@ namespace NHibernate.Persister.Collection
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && RowInsertEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Inserting collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
+					log.Debug("Inserting collection: {0}", MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				try
@@ -293,10 +310,10 @@ namespace NHibernate.Persister.Collection
 						i++;
 					}
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						if (count > 0)
-							log.Debug(string.Format("done inserting collection: {0} rows inserted", count));
+							log.Debug("done inserting collection: {0} rows inserted", count);
 						else
 							log.Debug("collection was empty");
 					}
@@ -314,9 +331,9 @@ namespace NHibernate.Persister.Collection
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && RowDeleteEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Deleting rows of collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
+					log.Debug("Deleting rows of collection: {0}", MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				bool deleteByIndex = !IsOneToMany && hasIndex && !indexContainsFormula;
@@ -332,19 +349,18 @@ namespace NHibernate.Persister.Collection
 						DbCommand st;
 						var expectation = Expectations.AppropriateExpectation(deleteCheckStyle);
 						//var callable = DeleteCallable;
+						var commandInfo = GetDeleteCommand(deleteByIndex, entry, out var columnNullness);
 
 						var useBatch = expectation.CanBeBatched;
 						if (useBatch)
 						{
-							st =
-								await (session.Batcher.PrepareBatchCommandAsync(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
-																	SqlDeleteRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+							st = await (session.Batcher.PrepareBatchCommandAsync(
+								commandInfo.CommandType, commandInfo.Text, commandInfo.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 						}
 						else
 						{
-							st =
-								await (session.Batcher.PrepareCommandAsync(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
-																SqlDeleteRowString.ParameterTypes, cancellationToken)).ConfigureAwait(false);
+							st = await (session.Batcher.PrepareCommandAsync(
+								commandInfo.CommandType, commandInfo.Text, commandInfo.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 						}
 						try
 						{
@@ -363,7 +379,7 @@ namespace NHibernate.Persister.Collection
 								}
 								else
 								{
-									await (WriteElementToWhereAsync(st, entry, loc, session, cancellationToken)).ConfigureAwait(false);
+									await (WriteElementToWhereAsync(st, entry, columnNullness, loc, session, cancellationToken)).ConfigureAwait(false);
 								}
 							}
 							if (useBatch)
@@ -376,6 +392,7 @@ namespace NHibernate.Persister.Collection
 							}
 							count++;
 						}
+						catch (OperationCanceledException) { throw; }
 						catch (Exception e)
 						{
 							if (useBatch)
@@ -393,10 +410,10 @@ namespace NHibernate.Persister.Collection
 						}
 					}
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
 						if (count > 0)
-							log.Debug("done deleting collection rows: " + count + " deleted");
+							log.Debug("done deleting collection rows: {0} deleted", count);
 						else
 							log.Debug("no rows to delete");
 					}
@@ -414,9 +431,9 @@ namespace NHibernate.Persister.Collection
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && RowInsertEnabled)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("Inserting rows of collection: " + MessageHelper.CollectionInfoString(this, collection, id, session));
+					log.Debug("Inserting rows of collection: {0}", MessageHelper.CollectionInfoString(this, collection, id, session));
 				}
 
 				try
@@ -450,9 +467,9 @@ namespace NHibernate.Persister.Collection
 						i++;
 					}
 
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug(string.Format("done inserting rows: {0} inserted", count));
+						log.Debug("done inserting rows: {0} inserted", count);
 					}
 				}
 				catch (DbException sqle)
@@ -468,17 +485,17 @@ namespace NHibernate.Persister.Collection
 			cancellationToken.ThrowIfCancellationRequested();
 			if (!isInverse && collection.RowUpdatePossible)
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug(string.Format("Updating rows of collection: {0}#{1}", role, id));
+					log.Debug("Updating rows of collection: {0}#{1}", role, id);
 				}
 
 				// update all the modified entries
 				int count = await (DoUpdateRowsAsync(id, collection, session, cancellationToken)).ConfigureAwait(false);
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug(string.Format("done updating rows: {0} updated", count));
+					log.Debug("done updating rows: {0} updated", count);
 				}
 			}
 		}
@@ -517,6 +534,7 @@ namespace NHibernate.Persister.Collection
 					expectation.VerifyOutcomeNonBatched(await (session.Batcher.ExecuteNonQueryAsync(st, cancellationToken)).ConfigureAwait(false), st);
 				}
 			}
+			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
 			{
 				if (useBatch)
@@ -537,6 +555,21 @@ namespace NHibernate.Persister.Collection
 
 		#region NH specific
 
+		#region IPostInsertIdentityPersister Members
+
+		public Task BindSelectByUniqueKeyAsync(
+			ISessionImplementor session,
+			DbCommand selectCommand,
+			IBinder binder,
+			string[] suppliedPropertyNames, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return binder.BindValuesAsync(selectCommand, cancellationToken);
+		}
+		#endregion
 
 		/// <summary>
 		/// Perform an SQL INSERT, and then retrieve a generated identifier.
@@ -552,15 +585,8 @@ namespace NHibernate.Persister.Collection
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				IBinder binder = new GeneratedIdentifierBinder(ownerId, collection, entry, index, session, this);
-				return identityDelegate.PerformInsertAsync(SqlInsertRowString, session, binder, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			IBinder binder = new GeneratedIdentifierBinder(ownerId, collection, entry, index, session, this);
+			return identityDelegate.PerformInsertAsync(SqlInsertRowString, session, binder, cancellationToken);
 		}
 
 		protected partial class GeneratedIdentifierBinder : IBinder

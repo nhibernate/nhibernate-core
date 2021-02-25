@@ -10,15 +10,15 @@
 
 using System;
 using System.Collections;
-
+using System.Threading;
+using System.Threading.Tasks;
+using NHibernate.Action;
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 
 namespace NHibernate.Engine
 {
-	using System.Threading.Tasks;
-	using System.Threading;
 	public partial class CollectionEntry
 	{
 
@@ -57,9 +57,9 @@ namespace NHibernate.Engine
 			}
 			await (DirtyAsync(collection, cancellationToken)).ConfigureAwait(false);
 
-			if (log.IsDebugEnabled && collection.IsDirty && loadedPersister != null)
+			if (log.IsDebugEnabled() && collection.IsDirty && loadedPersister != null)
 			{
-				log.Debug("Collection dirty: " + MessageHelper.CollectionInfoString(loadedPersister, loadedKey));
+				log.Debug("Collection dirty: {0}", MessageHelper.CollectionInfoString(loadedPersister, loadedKey));
 			}
 
 			// reset all of these values so any previous flush status 
@@ -69,19 +69,6 @@ namespace NHibernate.Engine
 			dorecreate = false;
 			reached = false;
 			processed = false;
-		}
-
-		public Task<ICollection> GetOrphansAsync(string entityName, IPersistentCollection collection, CancellationToken cancellationToken)
-		{
-			if (snapshot == null)
-			{
-				throw new AssertionFailure("no collection snapshot for orphan delete");
-			}
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<ICollection>(cancellationToken);
-			}
-			return collection.GetOrphansAsync(snapshot, entityName, cancellationToken);
 		}
 	}
 }

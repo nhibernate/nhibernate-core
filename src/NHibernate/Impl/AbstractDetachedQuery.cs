@@ -145,7 +145,7 @@ namespace NHibernate.Impl
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
-			namedListParams[name] = new TypedValue(type, vals);
+			namedListParams[name] = new TypedValue(type, vals, true);
 			return this;
 		}
 
@@ -619,6 +619,5 @@ namespace NHibernate.Impl
 			(this as IDetachedQueryImplementor).OverrideParametersFrom(origin);
 			return this;
 		}
-
 	}
 }

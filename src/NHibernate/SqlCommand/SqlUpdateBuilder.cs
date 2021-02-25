@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Engine;
@@ -12,7 +13,7 @@ namespace NHibernate.SqlCommand
 	/// </summary>
 	public class SqlUpdateBuilder : SqlBaseBuilder, ISqlStringBuilder
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SqlUpdateBuilder));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SqlUpdateBuilder));
 
 		private string tableName;
 		private string comment;
@@ -51,7 +52,6 @@ namespace NHibernate.SqlCommand
 			return AddColumn(columnName, literalType.ObjectToSQLString(val, Dialect));
 		}
 
-
 		/// <summary>
 		/// Add a column with a specific value to the UPDATE sql
 		/// </summary>
@@ -60,7 +60,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlUpdateBuilder.</returns>
 		public SqlUpdateBuilder AddColumn(string columnName, string val)
 		{
-			columns[columnName] = val;
+			AddColumnWithValueOrType(columnName, val);
 			return this;
 		}
 
@@ -73,7 +73,7 @@ namespace NHibernate.SqlCommand
 		public SqlUpdateBuilder AddColumns(string[] columnsName, string val)
 		{
 			foreach (string columnName in columnsName)
-				columns[columnName] = val;
+				AddColumnWithValueOrType(columnName, val);
 
 			return this;
 		}
@@ -83,7 +83,7 @@ namespace NHibernate.SqlCommand
 			SqlType[] sqlTypes = propertyType.SqlTypes(Mapping);
 			if (sqlTypes.Length > 1)
 				throw new AssertionFailure("Adding one column for a composed IType.");
-			columns[columnName] = sqlTypes[0];
+			AddColumnWithValueOrType(columnName, sqlTypes[0]);
 			return this;
 		}
 
@@ -114,20 +114,31 @@ namespace NHibernate.SqlCommand
 				{
 					if (i >= sqlTypes.Length)
 						throw new AssertionFailure("Different columns and it's IType.");
-					columns[columnNames[i]] = sqlTypes[i];
+					AddColumnWithValueOrType(columnNames[i], sqlTypes[i]);
 				}
 			}
 
 			return this;
 		}
 
+		private void AddColumnWithValueOrType(string columnName, object valueOrType)
+		{
+			if (columns.ContainsKey(columnName))
+				throw new ArgumentException(
+					$"The column '{columnName}' has already been added in this SQL builder",
+					nameof(columnName));
+			columns.Add(columnName, valueOrType);
+		}
+
 		public SqlUpdateBuilder AppendAssignmentFragment(SqlString fragment)
 		{
 			// SqlString is immutable
-			assignments = assignments == null ? fragment : assignments.Append(", ").Append(fragment);
+			assignments = assignments == null ? fragment : assignments.Append(", ", fragment);
 			return this;
 		}
 
+		// Since v5.2
+		[Obsolete("This method has no more usage.")]
 		public SqlUpdateBuilder SetJoin(string joinTableName, string[] keyColumnNames, IType identityType, string[] lhsColumnNames, string[] rhsColumnNames)
 		{
 			var sqlBuilder = new SqlStringBuilder()
@@ -289,7 +300,6 @@ namespace NHibernate.SqlCommand
 					sqlBuilder.Add(StringHelper.CommaSpace);
 				commaNeeded = true;
 
-
 				sqlBuilder.Add(valuePair.Key)
 					.Add(" = ");
 
@@ -309,7 +319,6 @@ namespace NHibernate.SqlCommand
 				sqlBuilder.Add(assignments);
 			}
 
-
 			sqlBuilder.Add(" WHERE ");
 			bool andNeeded = false;
 			foreach (SqlString whereString in whereStrings)
@@ -321,19 +330,21 @@ namespace NHibernate.SqlCommand
 				sqlBuilder.Add(whereString);
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				if (initialCapacity < sqlBuilder.Count)
 				{
-					log.Debug(
-						"The initial capacity was set too low at: " + initialCapacity + " for the UpdateSqlBuilder " +
-						"that needed a capacity of: " + sqlBuilder.Count + " for the table " + tableName);
+					log.Debug("The initial capacity was set too low at: {0} for the UpdateSqlBuilder that needed a capacity of: {1} for the table {2}",
+					          initialCapacity,
+					          sqlBuilder.Count,
+					          tableName);
 				}
 				else if (initialCapacity > 16 && ((float) initialCapacity / sqlBuilder.Count) > 1.2)
 				{
-					log.Debug(
-						"The initial capacity was set too high at: " + initialCapacity + " for the UpdateSqlBuilder " +
-						"that needed a capacity of: " + sqlBuilder.Count + " for the table " + tableName);
+					log.Debug("The initial capacity was set too high at: {0} for the UpdateSqlBuilder that needed a capacity of: {1} for the table {2}",
+					          initialCapacity,
+					          sqlBuilder.Count,
+					          tableName);
 				}
 			}
 
@@ -345,7 +356,8 @@ namespace NHibernate.SqlCommand
 		public SqlCommandInfo ToSqlCommandInfo()
 		{
 			SqlString text = ToSqlString();
-			List<SqlType> parameterTypes = new List<SqlType>(new SafetyEnumerable<SqlType>(columns.Values));
+
+			var parameterTypes = columns.Values.OfType<SqlType>().ToList(); 
 			parameterTypes.AddRange(whereParameterTypes);
 			return new SqlCommandInfo(text, parameterTypes.ToArray());
 		}

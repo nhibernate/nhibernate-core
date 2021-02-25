@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest
 	[TestFixture]
 	public class GetTestAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{

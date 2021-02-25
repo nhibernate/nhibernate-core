@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,16 +9,17 @@ using NHibernate.Mapping;
 using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Tuple.Entity
 {
 	/// <summary> Support for tuplizers relating to entities. </summary>
 	public abstract class AbstractEntityTuplizer : IEntityTuplizer
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractEntityTuplizer));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AbstractEntityTuplizer));
 		private readonly EntityMetamodel entityMetamodel;
-		private readonly IGetter idGetter;
-		private readonly ISetter idSetter;
+		protected readonly IGetter idGetter;
+		protected readonly ISetter idSetter;
 
 		protected int propertySpan;
 		protected IGetter[] getters;
@@ -59,9 +61,9 @@ namespace NHibernate.Tuple.Entity
 					foundCustomAccessor = true;
 				i++;				
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.DebugFormat("{0} accessors found for entity: {1}", foundCustomAccessor ? "Custom" : "No custom",
+				log.Debug("{0} accessors found for entity: {1}", foundCustomAccessor ? "Custom" : "No custom",
 				                mappingInfo.EntityName);
 			}
 			hasCustomAccessors = foundCustomAccessor;
@@ -136,7 +138,7 @@ namespace NHibernate.Tuple.Entity
 				}
 				else
 				{
-					id = idGetter.Get(entity);
+					id = GetIdentifierPropertyValue(entity);
 				}
 			}
 
@@ -155,7 +157,7 @@ namespace NHibernate.Tuple.Entity
 			}
 			else if (idSetter != null)
 			{
-				idSetter.Set(entity, id);
+				SetIdentifierPropertyValue(entity, id);
 			}
 		}
 
@@ -179,17 +181,17 @@ namespace NHibernate.Tuple.Entity
 		{
 			if (!entityMetamodel.IsVersioned)
 				return null;
-			return getters[entityMetamodel.VersionPropertyIndex].Get(entity);
+			return GetPropertyValue(entity, entityMetamodel.VersionPropertyIndex);
 		}
 
-		public void SetPropertyValue(object entity, int i, object value)
+		public virtual void SetPropertyValue(object entity, int i, object value)
 		{
 			setters[i].Set(entity, value);
 		}
 
 		public void SetPropertyValue(object entity, string propertyName, object value)
 		{
-			setters[entityMetamodel.GetPropertyIndex(propertyName)].Set(entity, value);
+			SetPropertyValue(entity, entityMetamodel.GetPropertyIndex(propertyName), value);
 		}
 
 		public virtual object[] GetPropertyValuesToInsert(object entity, IDictionary mergeMap, ISessionImplementor session)
@@ -222,7 +224,14 @@ namespace NHibernate.Tuple.Entity
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("Use overload without lazyPropertiesAreUnfetched parameter")]
 		public virtual void AfterInitialize(object entity, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
+		{
+			AfterInitialize(entity, session);
+		}
+
+		public virtual void AfterInitialize(object entity, ISessionImplementor session)
 		{
 		}
 
@@ -242,6 +251,11 @@ namespace NHibernate.Tuple.Entity
 			return false;
 		}
 
+		internal virtual ISet<string> GetUninitializedLazyProperties(object entity)
+		{
+			return CollectionHelper.EmptySet<string>();
+		}
+
 		#endregion
 
 		#region ITuplizer Members
@@ -250,16 +264,16 @@ namespace NHibernate.Tuple.Entity
 
 		public virtual object[] GetPropertyValues(object entity)
 		{
-			bool getAll = ShouldGetAllProperties(entity);
+			var uninitializedPropNames = GetUninitializedLazyProperties(entity);
 			int span = entityMetamodel.PropertySpan;
 			object[] result = new object[span];
 
 			for (int j = 0; j < span; j++)
 			{
 				StandardProperty property = entityMetamodel.Properties[j];
-				if (getAll || !property.IsLazy)
+				if (!uninitializedPropNames.Contains(property.Name) || !property.IsLazy)
 				{
-					result[j] = getters[j].Get(entity);
+					result[j] = GetPropertyValue(entity, j);
 				}
 				else
 				{
@@ -277,7 +291,7 @@ namespace NHibernate.Tuple.Entity
 			{
 				if (setAll || !Equals(LazyPropertyInitializer.UnfetchedProperty, values[j]))
 				{
-					setters[j].Set(entity, values[j]);
+					SetPropertyValue(entity, j, values[j]);
 				}
 			}
 		}
@@ -299,8 +313,18 @@ namespace NHibernate.Tuple.Entity
 
 		#endregion
 
+		protected virtual object GetIdentifierPropertyValue(object entity)
+		{
+			return idGetter.Get(entity);
+		}
+
+		protected virtual void SetIdentifierPropertyValue(object entity, object value)
+		{
+			idSetter.Set(entity, value);
+		}
+
 		/// <summary> Return the entity-mode handled by this tuplizer instance. </summary>
-		public abstract EntityMode EntityMode { get;}
+		public abstract EntityMode EntityMode { get; }
 
 		protected virtual IInstantiator Instantiator { get; set; }
 
@@ -384,13 +408,17 @@ namespace NHibernate.Tuple.Entity
 
 		protected virtual bool ShouldGetAllProperties(object entity)
 		{
-			return !HasUninitializedLazyProperties(entity);
+			if (!EntityMetamodel.BytecodeEnhancementMetadata.EnhancedForLazyLoading)
+			{
+				return true;
+			}
+
+			return !EntityMetamodel.BytecodeEnhancementMetadata.HasAnyUninitializedLazyProperties(entity);
 		}
 
 		protected EntityMetamodel EntityMetamodel
 		{
 			get { return entityMetamodel; }
 		}
-
 	}
 }

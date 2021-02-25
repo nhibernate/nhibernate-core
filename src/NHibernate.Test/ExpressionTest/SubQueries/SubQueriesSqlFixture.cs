@@ -16,7 +16,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"ExpressionTest.SubQueries.Mappings.hbm.xml"}; }
 		}
@@ -44,7 +44,6 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 				comment.Post = post1;
 				comment.IndexInPost = 0;
 				post1.Comments.Add(comment);
-
 
 				session.Save(category);
 				session.Save(author);

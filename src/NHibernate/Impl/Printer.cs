@@ -1,6 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Intercept;
 using NHibernate.Metadata;
@@ -13,7 +12,7 @@ namespace NHibernate.Impl
 	public sealed class Printer
 	{
 		private readonly ISessionFactoryImplementor _factory;
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Printer));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(Printer));
 
 		/// <summary>
 		/// 
@@ -83,9 +82,18 @@ namespace NHibernate.Impl
 			return CollectionPrinter.ToString(result);
 		}
 
+		internal string ToString(IEnumerable<KeyValuePair<string, TypedValue>> namedTypedValues)
+		{
+			return CollectionPrinter.ToString(
+				namedTypedValues.Select(
+					ntv => new KeyValuePair<string, string>(
+						ntv.Key,
+						ntv.Value.Type.ToLoggableString(ntv.Value.Value, _factory))));
+		}
+
 		public void ToString(object[] entities)
 		{
-			if (!log.IsDebugEnabled || entities.Length == 0)
+			if (!log.IsDebugEnabled() || entities.Length == 0)
 			{
 				return;
 			}

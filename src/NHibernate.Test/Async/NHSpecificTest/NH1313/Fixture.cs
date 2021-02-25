@@ -21,12 +21,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1313
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-
-		public override string BugNumber
-		{
-			get { return "NH1313"; }
-		}
-
 		protected override void Configure(Configuration configuration)
 		{
 			Dialect.Dialect d = Dialect;
@@ -56,6 +50,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1313
 				await (tx.CommitAsync());
 			}
 		}
-
 	}
 }

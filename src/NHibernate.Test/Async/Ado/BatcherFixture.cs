@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NUnit.Framework;
@@ -25,7 +24,7 @@ namespace NHibernate.Test.Ado
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "Ado.VerySimple.hbm.xml", "Ado.AlmostSimple.hbm.xml" }; }
 		}
@@ -56,11 +55,11 @@ namespace NHibernate.Test.Ado
 		private async Task CleanupAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (ISession s = Sfi.OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.CreateQuery("delete from VerySimple").ExecuteUpdateAsync(cancellationToken));
 				await (s.CreateQuery("delete from AlmostSimple").ExecuteUpdateAsync(cancellationToken));
-				await (s.Transaction.CommitAsync(cancellationToken));
+				await (t.CommitAsync(cancellationToken));
 			}
 		}
 
@@ -71,6 +70,7 @@ namespace NHibernate.Test.Ado
 			{
 				await (s.SaveAsync(new VerySimple {Id = 1, Name = "Fabio", Weight = 119.5}, cancellationToken));
 				await (s.SaveAsync(new VerySimple {Id = 2, Name = "Fiamma", Weight = 9.8}, cancellationToken));
+				await (s.SaveAsync(new VerySimple {Id = 3, Name = "Roberto", Weight = 98.8 }, cancellationToken));
 				await (tx.CommitAsync(cancellationToken));
 			}
 		}
@@ -86,11 +86,14 @@ namespace NHibernate.Test.Ado
 			{
 				var vs1 = await (s.GetAsync<VerySimple>(1));
 				var vs2 = await (s.GetAsync<VerySimple>(2));
+				var vs3 = await (s.GetAsync<VerySimple>(3));
 				vs1.Weight -= 10;
 				vs2.Weight -= 1;
+				vs3.Weight -= 5;
 				Sfi.Statistics.Clear();
 				await (s.UpdateAsync(vs1));
 				await (s.UpdateAsync(vs2));
+				await (s.UpdateAsync(vs3));
 				await (tx.CommitAsync());
 			}
 
@@ -98,50 +101,14 @@ namespace NHibernate.Test.Ado
 			await (CleanupAsync());
 		}
 
-		[Test, Ignore("Not fixed yet.")]
-		[Description("SqlClient: The batcher should run all different INSERT queries in only one roundtrip.")]
-		public async Task SqlClientOneRoundTripForUpdateAndInsertAsync()
-		{
-			if (Sfi.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
-				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
-
-			await (FillDbAsync());
-
-			using(var sqlLog = new SqlLogSpy())
-			using (ISession s = Sfi.OpenSession())
-			using (ITransaction tx = s.BeginTransaction())
-			{
-				await (s.SaveAsync(new VerySimple
-				{
-					Name = "test441",
-					Weight = 894
-				}));
-
-				await (s.SaveAsync(new AlmostSimple
-				{
-					Name = "test441",
-					Weight = 894
-				}));
-
-				await (tx.CommitAsync());
-
-				var log = sqlLog.GetWholeLog();
-				//log should only contain NHibernate.SQL once, because that means 
-				//that we ony generated a single batch (NHibernate.SQL log will output
-				//once per batch)
-				Assert.AreEqual(0, log.IndexOf("NHibernate.SQL"), "log should start with NHibernate.SQL");
-				Assert.AreEqual(-1, log.IndexOf("NHibernate.SQL", "NHibernate.SQL".Length), "NHibernate.SQL should only appear once in the log");
-			}
-
-			await (CleanupAsync());
-		}
-
-		[Test]
+		[Test, NetFxOnly]
 		[Description("SqlClient: The batcher log output should be formatted")]
 		public async Task BatchedoutputShouldBeFormattedAsync()
 		{
+#if NETFX
 			if (Sfi.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
 				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
+#endif
 
 			using (var sqlLog = new SqlLogSpy())
 			{
@@ -152,7 +119,6 @@ namespace NHibernate.Test.Ado
 
 			await (CleanupAsync());
 		}
-
 
 		[Test]
 		[Description("The batcher should run all DELETE queries in only one roundtrip.")]
@@ -165,9 +131,11 @@ namespace NHibernate.Test.Ado
 			{
 				var vs1 = await (s.GetAsync<VerySimple>(1));
 				var vs2 = await (s.GetAsync<VerySimple>(2));
+				var vs3 = await (s.GetAsync<VerySimple>(3));
 				Sfi.Statistics.Clear();
 				await (s.DeleteAsync(vs1));
 				await (s.DeleteAsync(vs2));
+				await (s.DeleteAsync(vs3));
 				await (tx.CommitAsync());
 			}
 

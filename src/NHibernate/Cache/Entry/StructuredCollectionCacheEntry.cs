@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,8 +19,8 @@ namespace NHibernate.Cache.Entry
 			var collection = item as IEnumerable;
 			var objects = collection != null
 							  ? collection.Cast<object>().ToArray()
-							  : new object[0];
-			return new CollectionCacheEntry(objects);
+							  : Array.Empty<object>();
+			return new CollectionCacheEntry {State = objects};
 		}
 	}
 }

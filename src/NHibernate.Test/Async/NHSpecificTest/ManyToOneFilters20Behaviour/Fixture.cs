@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 		{
 			try
 			{
-				return s.CreateCriteria(typeof(Parent)).SetFetchMode("Child", FetchMode.Join).ListAsync<Parent>(cancellationToken);
+				return s.CreateCriteria(typeof(Parent)).Fetch("Child").ListAsync<Parent>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -136,7 +136,7 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 				EnableFilters(s);
 				resCriteria = await (s.CreateCriteria(typeof(Parent), "p")
 				               .CreateCriteria("Child", "c")
-				               .SetFetchMode("Child", FetchMode.Join)
+				               .Fetch("Child")
 				               .Add(Restrictions.Eq("p.ParentString", "a"))
 				               .Add(Restrictions.Eq("c.ChildString", "b"))
 				               .ListAsync<Parent>());
@@ -230,7 +230,7 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			{
 				var f = s.EnableFilter("active");
 				f.SetParameter("active", true);
-				var resCriteria = await (s.CreateCriteria(typeof(Parent)).SetFetchMode("Children", FetchMode.Join).ListAsync<Parent>());
+				var resCriteria = await (s.CreateCriteria(typeof(Parent)).Fetch("Children").ListAsync<Parent>());
 				var resHql = await (s.CreateQuery("select p from Parent p join fetch p.Children").ListAsync<Parent>());
 
 				Assert.That(resCriteria[0].Children.Count, Is.EqualTo(2));
@@ -254,7 +254,7 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 				 .SetParameter("active", true);
 
 				var resCriteria = await (s.CreateCriteria(typeof(Parent))
-				                   .SetFetchMode("Address", FetchMode.Join)
+				                   .Fetch("Address")
 				                   .ListAsync<Parent>());
 
 				var resHql = await (s.CreateQuery("select p from Parent p join p.Address")
@@ -267,6 +267,5 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 				Assert.That(resHql[0].Address, Is.Not.Null);
 			}
 		}
-
 	}
 }

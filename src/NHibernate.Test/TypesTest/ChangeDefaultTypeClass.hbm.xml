@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+
+  <class
+    name="NHibernate.Test.TypesTest.ChangeDefaultTypeClass, NHibernate.Test"
+    table="bc_datetime"
+  >
+
+    <id name="Id" column="id">
+      <generator class="assigned"/>
+    </id>
+
+    <property name="NormalDateTimeValue"/>
+    <property name="StringTypeExplicitLength20" column="string20" length="20"/>
+    <property name="StringTypeLengthInType25" column="string25" type="string(25)" />
+    <property name="CurrencyTypePrecisionInType5And2" column="currency1" type="currency(5,2)" /> 
+    <property name="CurrencyTypeExplicitPrecision6And3" column="currency2" type="currency" precision="6" scale="3" /> 
+  </class>
+</hibernate-mapping>

@@ -11,7 +11,7 @@ namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "UnionsubclassPolymorphicFormula.Party.hbm.xml" }; }
 		}
@@ -37,7 +37,6 @@ namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 					s.Delete(result);
 					t.Commit();
 				}
-				
 			}
 		}
 
@@ -58,7 +57,6 @@ namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 					var result = s.QueryOver<Party>().Where(p => p.Name == "Limited").SingleOrDefault();
 					Assert.NotNull(result);
 				}
-
 			}
 		}
 	}

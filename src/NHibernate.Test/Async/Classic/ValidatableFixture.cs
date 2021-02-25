@@ -23,7 +23,7 @@ namespace NHibernate.Test.Classic
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] { "Classic.Video.hbm.xml" }; }
 		}
@@ -144,7 +144,6 @@ namespace NHibernate.Test.Classic
 				// Ok
 			}
 
-
 			// cleanup
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
@@ -167,6 +166,5 @@ namespace NHibernate.Test.Classic
 				await (s.FlushAsync());
 			}
 		}
-
 	}
 }

@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1601
@@ -18,55 +17,39 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
     [TestFixture]
     public class Fixture2Async : BugTestCase
     {
+        protected override bool AppliesTo(Dialect.Dialect dialect)
+        {
+            return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+        }
+
         /// <summary>
         /// Loads the project and when Scenario2 and Scenario3 are set calls Count on the list assigned.
         /// </summary>
         [Test]
-        public Task TestSaveAndLoadWithTwoCountsAsync()
+        public async Task TestSaveAndLoadWithTwoCountsAsync()
         {
-            try
-            {
-                Project.TestAccessToList = false;
-                return SaveAndLoadProjectAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
+            Project.TestAccessToList = false;
+            await (SaveAndLoadProjectAsync());
         }
 
         /// <summary>
         /// Refreshes the project and when Scenario2 and Scenario3 are set calls Count on the list assigned.
         /// </summary>     
         [Test]
-        public Task TestRefreshWithTwoCountsAsync()
+        public async Task TestRefreshWithTwoCountsAsync()
         {
-            try
-            {
-                Project.TestAccessToList = false;
-                return SaveLoadAndRefreshProjectAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
+            Project.TestAccessToList = false;
+            await (SaveLoadAndRefreshProjectAsync());
         }
 
         /// <summary>
         /// Loads the project and when Scenario1, Scenario2 and Scenario3 are set calls Count on the list assigned.
         /// </summary>
         [Test]
-        public Task TestTestSaveAndLoadWithThreeCountsAsync()
+        public async Task TestTestSaveAndLoadWithThreeCountsAsync()
         {
-            try
-            {
-                Project.TestAccessToList = true;
-                return SaveAndLoadProjectAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
+            Project.TestAccessToList = true;
+            await (SaveAndLoadProjectAsync());
         }
 
         /// <summary>
@@ -74,19 +57,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
         /// Throws an exception on calling Count on Scenario1.
         /// </summary>     
         [Test]
-        public Task TestRefreshWithThreeCountsAsync()
+        public async Task TestRefreshWithThreeCountsAsync()
         {
-            try
-            {
-                Project.TestAccessToList = true;
-                return SaveLoadAndRefreshProjectAsync();
-            }
-            catch (System.Exception ex)
-            {
-                return Task.FromException<object>(ex);
-            }
+            Project.TestAccessToList = true;
+            await (SaveLoadAndRefreshProjectAsync());
         }
-
 
         /// <summary>
         /// Create and save a Project
@@ -109,7 +84,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             await (RefreshProjectAsync(project, cancellationToken));
         }
 
-
         public async Task<Project> SaveProjectAsync( CancellationToken cancellationToken = default(CancellationToken))
         {
             Project project;
@@ -123,12 +97,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
                 Scenario scenario2 = new Scenario();
                 Scenario scenario3 = new Scenario();
 
-               
                 //Add the scenario to all lists 
                 project.ScenarioList1.Add(scenario1);
                 project.ScenarioList2.Add(scenario2);
                 project.ScenarioList3.Add(scenario3);
-
 
                 //Set the primary key on the project
                 project.Name = "Test";
@@ -140,7 +112,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             }
             return project;
         }
-
 
         public async Task<Project> LoadProjectAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -160,7 +131,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
 
         public async Task RefreshProjectAsync(Project project, CancellationToken cancellationToken = default(CancellationToken))
         {
-
             using (ISession session = OpenSession())
             using (ITransaction tx = session.BeginTransaction())
             {

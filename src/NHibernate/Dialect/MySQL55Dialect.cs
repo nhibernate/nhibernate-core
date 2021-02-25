@@ -1,5 +1,5 @@
-
 using System.Data;
+using NHibernate.Dialect.Function;
 
 namespace NHibernate.Dialect
 {
@@ -8,6 +8,14 @@ namespace NHibernate.Dialect
 		public MySQL55Dialect()
 		{
 			RegisterColumnType(DbType.Guid, "CHAR(36)");
+			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "?1"));
+		}
+
+		protected override void RegisterFunctions()
+		{
+			base.RegisterFunctions();
+
+			RegisterFunction("current_utctimestamp", new NoArgSQLFunction("UTC_TIMESTAMP", NHibernateUtil.UtcDateTime, true));
 		}
 	}
 }

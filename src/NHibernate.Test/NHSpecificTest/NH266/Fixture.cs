@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new string[] {"NHSpecificTest.NH266.Mappings.hbm.xml"}; }
 		}
@@ -54,7 +54,6 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			s.Close();
 		}
 
-
 		[Test]
 		public void BaseClassLoad()
 		{
@@ -63,7 +62,6 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			A a = s.Load(typeof(A), aId) as A;
 			Assert.AreEqual("the a", a.Name);
 			s.Close();
-
 
 			// load instance through hql
 			s = OpenSession();

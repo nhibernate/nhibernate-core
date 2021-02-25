@@ -18,26 +18,21 @@ namespace NHibernate.SqlCommand
 		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
 		                             SqlString on)
 		{
-			string joinString;
-			switch (joinType)
+			var joinString = GetJoinString(joinType);
+
+			_fromFragment.Add(joinString).Add(tableName).Add(" ").Add(alias).Add(" ");
+			if (joinType == JoinType.CrossJoin)
 			{
-				case JoinType.InnerJoin:
-					joinString = " inner join ";
-					break;
-				case JoinType.LeftOuterJoin:
-					joinString = " left outer join ";
-					break;
-				case JoinType.RightOuterJoin:
-					joinString = " right outer join ";
-					break;
-				case JoinType.FullJoin:
-					joinString = " full outer join ";
-					break;
-				default:
-					throw new AssertionFailure("undefined join type");
+				// Cross join does not have an 'on' statement
+				return;
 			}
 
-			_fromFragment.Add(joinString + tableName + ' ' + alias + " on ");
+			_fromFragment.Add("on ");
+			if (fkColumns.Length == 0)
+			{
+				AddBareCondition(_fromFragment, on);
+				return;
+			}
 
 			for (int j = 0; j < fkColumns.Length; j++)
 			{
@@ -49,6 +44,25 @@ namespace NHibernate.SqlCommand
 			}
 
 			AddCondition(_fromFragment, on);
+		}
+
+		internal static string GetJoinString(JoinType joinType)
+		{
+			switch (joinType)
+			{
+				case JoinType.InnerJoin:
+					return " inner join ";
+				case JoinType.LeftOuterJoin:
+					return " left outer join ";
+				case JoinType.RightOuterJoin:
+					return " right outer join ";
+				case JoinType.FullJoin:
+					return " full outer join ";
+				case JoinType.CrossJoin:
+					return " cross join ";
+				default:
+					throw new AssertionFailure("undefined join type");
+			}
 		}
 
 		public override SqlString ToFromFragmentString

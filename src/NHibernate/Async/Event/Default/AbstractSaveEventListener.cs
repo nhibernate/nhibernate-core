@@ -91,11 +91,11 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug(string.Format("generated identifier: {0}, using strategy: {1}",
-						persister.IdentifierType.ToLoggableString(generatedId, source.Factory),
-						persister.IdentifierGenerator.GetType().FullName));
+					log.Debug("generated identifier: {0}, using strategy: {1}", 
+						persister.IdentifierType.ToLoggableString(generatedId, source.Factory), 
+						persister.IdentifierGenerator.GetType().FullName);
 				}
 				return await (PerformSaveAsync(entity, generatedId, persister, false, anything, source, true, cancellationToken)).ConfigureAwait(false);
 			}
@@ -125,9 +125,9 @@ namespace NHibernate.Event.Default
 		protected virtual async Task<object> PerformSaveAsync(object entity, object id, IEntityPersister persister, bool useIdentityColumn, object anything, IEventSource source, bool requiresImmediateIdAccess, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("saving " + MessageHelper.InfoString(persister, id, source.Factory));
+				log.Debug("saving {0}", MessageHelper.InfoString(persister, id, source.Factory));
 			}
 
 			EntityKey key;
@@ -146,7 +146,8 @@ namespace NHibernate.Event.Default
 						throw new NonUniqueObjectException(id, persister.EntityName);
 					}
 				}
-				persister.SetIdentifier(entity, id);
+				if (!(id is DelayedPostInsertIdentifier))
+					persister.SetIdentifier(entity, id);
 			}
 			else
 			{
@@ -186,15 +187,12 @@ namespace NHibernate.Event.Default
 
 			object id = key == null ? null : key.Identifier;
 
-			// NH Different behavior (shouldDelayIdentityInserts=false anyway)
-			//bool inTxn = source.ConnectionManager.IsInActiveTransaction;
-			//bool shouldDelayIdentityInserts = !inTxn && !requiresImmediateIdAccess;
-			bool shouldDelayIdentityInserts = false;
+			bool shouldDelayIdentityInserts = !requiresImmediateIdAccess;
 
 			// Put a placeholder in entries, so we don't recurse back and try to save() the
 			// same object again. QUESTION: should this be done before onSave() is called?
 			// likewise, should it be done before onUpdate()?
-			source.PersistenceContext.AddEntry(entity, Status.Saving, null, null, id, null, LockMode.Write, useIdentityColumn, persister, false, false);
+			source.PersistenceContext.AddEntry(entity, Status.Saving, null, null, id, null, LockMode.Write, useIdentityColumn, persister, false);
 
 			await (CascadeBeforeSaveAsync(source, persister, entity, anything, cancellationToken)).ConfigureAwait(false);
 
@@ -256,8 +254,7 @@ namespace NHibernate.Event.Default
 				LockMode.Write, 
 				useIdentityColumn, 
 				persister, 
-				VersionIncrementDisabled, 
-				false);
+				VersionIncrementDisabled);
 			//source.getPersistenceContext().removeNonExist( new EntityKey( id, persister, source.getEntityMode() ) );
 
 			if (!useIdentityColumn)
@@ -371,18 +368,18 @@ namespace NHibernate.Event.Default
 				if (entry.Status != Status.Deleted)
 				{
 					// do nothing for persistent instances
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("persistent instance of: " + GetLoggableName(entityName, entity));
+						log.Debug("persistent instance of: {0}", GetLoggableName(entityName, entity));
 					}
 					return EntityState.Persistent;
 				}
 				else
 				{
 					//ie. e.status==DELETED
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("deleted instance of: " + GetLoggableName(entityName, entity));
+						log.Debug("deleted instance of: {0}", GetLoggableName(entityName, entity));
 					}
 					return EntityState.Deleted;
 				}
@@ -397,17 +394,17 @@ namespace NHibernate.Event.Default
 					? (await (ForeignKeys.IsTransientFastAsync(entityName, entity, source, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault(assumed.Value)
 					: await (ForeignKeys.IsTransientSlowAsync(entityName, entity, source, cancellationToken)).ConfigureAwait(false))
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("transient instance of: " + GetLoggableName(entityName, entity));
+						log.Debug("transient instance of: {0}", GetLoggableName(entityName, entity));
 					}
 					return EntityState.Transient;
 				}
 				else
 				{
-					if (log.IsDebugEnabled)
+					if (log.IsDebugEnabled())
 					{
-						log.Debug("detached instance of: " + GetLoggableName(entityName, entity));
+						log.Debug("detached instance of: {0}", GetLoggableName(entityName, entity));
 					}
 					return EntityState.Detached;
 				}

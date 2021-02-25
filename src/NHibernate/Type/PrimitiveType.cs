@@ -1,4 +1,5 @@
 using System;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -16,9 +17,9 @@ namespace NHibernate.Type
 		protected PrimitiveType(SqlType sqlType)
 			: base(sqlType) {}
 
-		public abstract System.Type PrimitiveClass { get;}
+		public abstract System.Type PrimitiveClass { get; }
 
-		public abstract object DefaultValue { get;}
+		public abstract object DefaultValue { get; }
 
 		#region ILiteralType Members
 
@@ -33,6 +34,16 @@ namespace NHibernate.Type
 
 		#endregion
 
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
 		/// <summary>
 		/// A representation of the value to be embedded in an XML element 
 		/// </summary>
@@ -44,7 +55,8 @@ namespace NHibernate.Type
 		/// a possibility of this PrimitiveType having any characters
 		/// that need to be encoded then this method should be overridden.
 		/// </remarks>
-		// TODO: figure out if this is used to build Xml strings or will have encoding done automatically.
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val)
 		{
 			return val.ToString();

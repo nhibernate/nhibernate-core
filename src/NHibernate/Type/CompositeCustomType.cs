@@ -7,6 +7,7 @@ using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 using System.Collections.Generic;
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -28,7 +29,7 @@ namespace NHibernate.Type
 
 			try
 			{
-				userType = (ICompositeUserType) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(userTypeClass);
+				userType = (ICompositeUserType) Cfg.Environment.ObjectsFactory.CreateInstance(userTypeClass);
 			}
 			catch (MethodAccessException mae)
 			{
@@ -49,7 +50,7 @@ namespace NHibernate.Type
 			TypeFactory.InjectParameters(userType, parameters);
 			if (!userType.ReturnedClass.IsSerializable)
 			{
-				LoggerProvider.LoggerFor(typeof(CustomType)).WarnFormat("the custom composite class '{0}' handled by '{1}' is not Serializable: ", userType.ReturnedClass, userTypeClass);
+				NHibernateLogger.For(typeof(CustomType)).Warn("the custom composite class '{0}' handled by '{1}' is not Serializable: ", userType.ReturnedClass, userTypeClass);
 			}
 
 			// This is to be nice to an application developer.
@@ -179,7 +180,7 @@ namespace NHibernate.Type
 
 		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			bool[] settable = Enumerable.Repeat(true, GetColumnSpan(session.Factory)).ToArray();
+			bool[] settable = ArrayHelper.Fill(true, GetColumnSpan(session.Factory));
 			userType.NullSafeSet(cmd, value, index, settable, session);
 		}
 
@@ -260,6 +261,5 @@ namespace NHibernate.Type
 			}
 			return result;
 		}
-
 	}
 }

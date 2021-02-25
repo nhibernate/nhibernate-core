@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-
 namespace NHibernate.Impl
 {
 	/// <summary>
@@ -20,7 +19,7 @@ namespace NHibernate.Impl
 	/// </remarks>
 	public static class SessionFactoryObjectFactory
 	{
-		private static readonly IInternalLogger log;
+		private static readonly INHibernateLogger log;
 
 		private static readonly IDictionary<string, ISessionFactory> Instances = new Dictionary<string, ISessionFactory>();
 		private static readonly IDictionary<string, ISessionFactory> NamedInstances = new Dictionary<string, ISessionFactory>();
@@ -28,7 +27,7 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		static SessionFactoryObjectFactory()
 		{
-			log = LoggerProvider.LoggerFor(typeof(SessionFactoryObjectFactory));
+			log = NHibernateLogger.For(typeof(SessionFactoryObjectFactory));
 			log.Debug("initializing class SessionFactoryObjectFactory");
 		}
 
@@ -42,17 +41,17 @@ namespace NHibernate.Impl
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static void AddInstance(string uid, string name, ISessionFactory instance, IDictionary<string, string> properties)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				string nameMsg = ((!string.IsNullOrEmpty(name)) ? name : "unnamed");
 
-				log.Debug("registered: " + uid + "(" + nameMsg + ")");
+				log.Debug("registered: {0}({1})", uid, nameMsg);
 			}
 
 			Instances[uid] = instance;
 			if (!string.IsNullOrEmpty(name))
 			{
-				log.Info("Factory name:" + name);
+				log.Info("Factory name:{0}", name);
 				NamedInstances[name] = instance;
 			}
 			else
@@ -72,7 +71,7 @@ namespace NHibernate.Impl
 		{
 			if (!string.IsNullOrEmpty(name))
 			{
-				log.Info("unbinding factory: " + name);
+				log.Info("unbinding factory: {0}", name);
 				NamedInstances.Remove(name);
 			}
 			Instances.Remove(uid);
@@ -86,12 +85,12 @@ namespace NHibernate.Impl
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static ISessionFactory GetNamedInstance(string name)
 		{
-			log.Debug("lookup: name=" + name);
+			log.Debug("lookup: name={0}", name);
 			ISessionFactory factory;
 			bool found=NamedInstances.TryGetValue(name, out factory);
 			if (!found)
 			{
-				log.Warn("Not found: " + name);
+				log.Warn("Not found: {0}", name);
 			}
 			return factory;
 		}
@@ -104,12 +103,12 @@ namespace NHibernate.Impl
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static ISessionFactory GetInstance(string uid)
 		{
-			log.Debug("lookup: uid=" + uid);
+			log.Debug("lookup: uid={0}", uid);
 			ISessionFactory factory;
 			bool found = Instances.TryGetValue(uid, out factory);
 			if (!found)
 			{
-				log.Warn("Not found: " + uid);
+				log.Warn("Not found: {0}", uid);
 			}
 			return factory;
 		}

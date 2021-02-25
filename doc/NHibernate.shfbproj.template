@@ -18,18 +18,16 @@
     <HtmlHelpName>NHibernateAPI</HtmlHelpName>
     <HelpFileFormat>HtmlHelp1x</HelpFileFormat>
     <CopyrightText>NHibernate</CopyrightText>
-    <CopyrightHref>nhibernate.info</CopyrightHref>
-    <FeedbackEMailAddress>http://groups.google.com/group/nhibernate-development</FeedbackEMailAddress>
+    <CopyrightHref>https://nhibernate.info</CopyrightHref>
+    <FeedbackEMailAddress>https://groups.google.com/group/nhibernate-development</FeedbackEMailAddress>
     <FeedbackEMailLinkText>nhibernate team</FeedbackEMailLinkText>
     <HelpTitle>NHibernate API Reference</HelpTitle>
     <IndentHtml>False</IndentHtml>
-    <HelpFileVersion>${project.version.numeric}</HelpFileVersion>
+    <HelpFileVersion>${project.version}</HelpFileVersion>
     <DocumentationSources>
-      <DocumentationSource sourceFile="${bin.dir}/Iesi.Collections.dll" />
-		<DocumentationSource sourceFile="${bin.dir}/Iesi.Collections.xml" />
-		<DocumentationSource sourceFile="${bin.dir}/NHibernate.dll" />
-		<DocumentationSource sourceFile="${bin.dir}/Nhibernate.xml" />
-	 </DocumentationSources>
+      <DocumentationSource sourceFile="${root.dir}/src/NHibernate/bin/${build.config}/net461/NHibernate.dll" />
+      <DocumentationSource sourceFile="${root.dir}/src/NHibernate/bin/${build.config}/net461/Nhibernate.xml" />
+    </DocumentationSources>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->

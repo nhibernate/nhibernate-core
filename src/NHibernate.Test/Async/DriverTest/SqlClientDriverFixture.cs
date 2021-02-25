@@ -10,9 +10,13 @@
 
 using System;
 using System.Collections;
+using System.Data;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Engine;
+using NHibernate.SqlTypes;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.DriverTest
 {
@@ -21,19 +25,30 @@ namespace NHibernate.Test.DriverTest
 	[TestFixture]
 	public class SqlClientDriverFixtureAsync : TestCase
 	{
-		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
+		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override IList Mappings
-		{
-			get { return new[] { "DriverTest.MultiTypeEntity.hbm.xml" }; }
-		}
+		protected override string[] Mappings => new[] { "DriverTest.MultiTypeEntity.hbm.xml" };
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return dialect is MsSql2008Dialect;
+		}
+
+		protected override bool AppliesTo(ISessionFactoryImplementor factory)
+		{
+			return factory.ConnectionProvider.Driver is SqlClientDriver;
+		}
+
+		protected override void OnTearDown()
+		{
+			base.OnTearDown();
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.CreateQuery("delete from MultiTypeEntity").ExecuteUpdate();
+				t.Commit();
+			}
 		}
 
 		[Test]
@@ -42,40 +57,63 @@ namespace NHibernate.Test.DriverTest
 			// Should use default dimension for CRUD op because the mapping does not 
 			// have dimensions specified.
 			object savedId;
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				savedId = await (s.SaveAsync(new MultiTypeEntity
-									{
-										StringProp = "a",
-										StringClob = "a",
-										BinaryBlob = new byte[]{1,2,3},
-										Binary = new byte[] { 4, 5, 6 },
-										Currency = 123.4m,
-										Double = 123.5d,
-										Decimal = 789.5m
-									}));
+				savedId = await (s.SaveAsync(
+					new MultiTypeEntity
+					{
+						StringProp = "a",
+						StringClob = "a",
+						BinaryBlob = new byte[] { 1, 2, 3 },
+						Binary = new byte[] { 4, 5, 6 },
+						Currency = 123.4m,
+						Double = 123.5d,
+						Decimal = 789.5m,
+						DecimalHighScale = 1234567890.0123456789m
+					}));
 				await (t.CommitAsync());
 			}
 
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				var m = await (s.GetAsync<MultiTypeEntity>(savedId));
+
+				Assert.That(m.StringProp, Is.EqualTo("a"), "StringProp");
+				Assert.That(m.StringClob, Is.EqualTo("a"), "StringClob");
+				Assert.That(m.BinaryBlob, Is.EqualTo(new byte[] { 1, 2, 3 }), "BinaryBlob");
+				Assert.That(m.Binary, Is.EqualTo(new byte[] { 4, 5, 6 }), "BinaryBlob");
+				Assert.That(m.Currency, Is.EqualTo(123.4m), "Currency");
+				Assert.That(m.Double, Is.EqualTo(123.5d).Within(0.0001d), "Double");
+				Assert.That(m.Decimal, Is.EqualTo(789.5m), "Decimal");
+				Assert.That(m.DecimalHighScale, Is.EqualTo(1234567890.0123456789m), "DecimalHighScale");
+
 				m.StringProp = "b";
 				m.StringClob = "b";
-				m.BinaryBlob = new byte[] {4,5,6};
-				m.Binary = new byte[] {7,8,9};
+				m.BinaryBlob = new byte[] { 4, 5, 6 };
+				m.Binary = new byte[] { 7, 8, 9 };
 				m.Currency = 456.78m;
 				m.Double = 987.6d;
 				m.Decimal = 1323456.45m;
+				m.DecimalHighScale = 9876543210.0123456789m;
 				await (t.CommitAsync());
 			}
 
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				await (s.CreateQuery("delete from MultiTypeEntity").ExecuteUpdateAsync());
+				var m = await (s.LoadAsync<MultiTypeEntity>(savedId));
+
+				Assert.That(m.StringProp, Is.EqualTo("b"), "StringProp");
+				Assert.That(m.StringClob, Is.EqualTo("b"), "StringClob");
+				Assert.That(m.BinaryBlob, Is.EqualTo(new byte[] { 4, 5, 6 }), "BinaryBlob");
+				Assert.That(m.Binary, Is.EqualTo(new byte[] { 7, 8, 9 }), "BinaryBlob");
+				Assert.That(m.Currency, Is.EqualTo(456.78m), "Currency");
+				Assert.That(m.Double, Is.EqualTo(987.6d).Within(0.0001d), "Double");
+				Assert.That(m.Decimal, Is.EqualTo(1323456.45m), "Decimal");
+				Assert.That(m.DecimalHighScale, Is.EqualTo(9876543210.0123456789m), "DecimalHighScale");
+
 				await (t.CommitAsync());
 			}
 		}
@@ -83,9 +121,6 @@ namespace NHibernate.Test.DriverTest
 		[Test]
 		public async Task QueryPlansAreReusedAsync()
 		{
-			if (!(Sfi.ConnectionProvider.Driver is SqlClientDriver))
-				Assert.Ignore("Test designed for SqlClientDriver only");
-
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -102,7 +137,7 @@ namespace NHibernate.Test.DriverTest
 				var beforeCount = await (countPlansCommand.UniqueResultAsync<int>());
 
 				var insertCount = 10;
-				for (var i=0; i<insertCount; i++)
+				for (var i = 0; i < insertCount; i++)
 				{
 					await (s.SaveAsync(new MultiTypeEntity() { StringProp = new string('x', i + 1) }));
 					await (s.FlushAsync());
@@ -110,8 +145,10 @@ namespace NHibernate.Test.DriverTest
 
 				var afterCount = await (countPlansCommand.UniqueResultAsync<int>());
 
-				Assert.That(afterCount - beforeCount, Is.LessThan(insertCount - 1),
-					string.Format("Excessive query plans created: before={0} after={1}", beforeCount, afterCount));
+				Assert.That(
+					afterCount - beforeCount,
+					Is.LessThan(insertCount - 1),
+					$"Excessive query plans created: before={beforeCount} after={afterCount}");
 
 				await (t.RollbackAsync());
 			}

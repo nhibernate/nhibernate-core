@@ -7,7 +7,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 	[TestFixture]
 	public class HiLoTableTest : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "IdGen.Enhanced.Table.HiLo.hbm.xml" }; }
 		}
@@ -53,7 +53,6 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 					Assert.That(optimizer.HiValue, Is.EqualTo((increment * 2) + 1));
 					transaction.Commit();
 				}
-
 
 				using (ITransaction transaction = s.BeginTransaction())
 				{

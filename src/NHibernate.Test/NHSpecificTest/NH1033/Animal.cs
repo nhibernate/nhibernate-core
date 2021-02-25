@@ -14,6 +14,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1033
 			get; 
 			set;
 		}
-
 	}
 }

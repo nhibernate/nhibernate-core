@@ -22,7 +22,7 @@ namespace NHibernate.Test.Join
 	[TestFixture]
 	public class JoinedFiltersAsync : TestCase
 	{
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get 
 			{ 

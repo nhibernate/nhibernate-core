@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-
+using NHibernate.Bytecode;
 using NHibernate.Engine;
 using NHibernate.Intercept;
 using NHibernate.Mapping;
@@ -14,7 +14,7 @@ namespace NHibernate.Tuple.Entity
 	[Serializable]
 	public class EntityMetamodel
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(EntityMetamodel));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(EntityMetamodel));
 
 		private const int NoVersionIndex = -66;
 
@@ -49,11 +49,12 @@ namespace NHibernate.Tuple.Entity
 		private readonly bool[] propertyVersionability;
 		private readonly CascadeStyle[] cascadeStyles;
 
-		private readonly IDictionary<string, int?> propertyIndexes = new Dictionary<string, int?>();
+		private readonly Dictionary<string, int?> propertyIndexes = new Dictionary<string, int?>();
+		private readonly IDictionary<string, IType> _identifierPropertyTypes = new Dictionary<string, IType>();
+		private readonly IDictionary<string, IType> _propertyTypes = new Dictionary<string, IType>();
 		private readonly bool hasCollections;
 		private readonly bool hasMutableProperties;
 		private readonly bool hasLazyProperties;
-
 
 		private readonly int[] naturalIdPropertyNumbers;
 
@@ -83,16 +84,17 @@ namespace NHibernate.Tuple.Entity
 		{
 			this.sessionFactory = sessionFactory;
 
-
 			name = persistentClass.EntityName;
 			rootName = persistentClass.RootClazz.EntityName;
 			entityType = TypeFactory.ManyToOne(name);
 			type = persistentClass.MappedClass;
 			rootType = persistentClass.RootClazz.MappedClass;
 			rootTypeAssemblyQualifiedName = rootType == null ? null : rootType.AssemblyQualifiedName;
+			OverridesEquals = type != null && ReflectHelper.OverridesEquals(type); // type will be null for dynamic entities
 
 			identifierProperty = PropertyFactory.BuildIdentifierProperty(persistentClass,
 			                                                             sessionFactory.GetIdentifierGenerator(rootName));
+			MapIdentifierPropertyTypes(identifierProperty);
 
 			versioned = persistentClass.IsVersioned;
 
@@ -103,6 +105,8 @@ namespace NHibernate.Tuple.Entity
 			propertySpan = persistentClass.PropertyClosureSpan;
 			properties = new StandardProperty[propertySpan];
 			List<int> naturalIdNumbers = new List<int>();
+			var lazyPropertyDescriptors = new List<LazyPropertyDescriptor>();
+			var unwrapProxyPropertyDescriptors = new List<UnwrapProxyPropertyDescriptor>();
 
 			propertyNames = new string[propertySpan];
 			propertyTypes = new IType[propertySpan];
@@ -155,7 +159,7 @@ namespace NHibernate.Tuple.Entity
 					var getter = prop.GetGetter(persistentClass.MappedClass);
 					if (getter.Method == null || getter.Method.IsDefined(typeof(CompilerGeneratedAttribute), false) == false)
 					{
-						log.ErrorFormat("Lazy or no-proxy property {0}.{1} is not an auto property, which may result in uninitialized property access", persistentClass.EntityName, prop.Name);
+						log.Error("Lazy or no-proxy property {0}.{1} is not an auto property, which may result in uninitialized property access", persistentClass.EntityName, prop.Name);
 					}
 				}
 
@@ -182,10 +186,12 @@ namespace NHibernate.Tuple.Entity
 				if (islazyProperty)
 				{
 					hasLazy = true;
+					lazyPropertyDescriptors.Add(LazyPropertyDescriptor.From(prop, i, lazyPropertyDescriptors.Count));
 				}
 				if (isUnwrapProxy)
 				{
 					hasUnwrapProxyForProperties = true;
+					unwrapProxyPropertyDescriptors.Add(UnwrapProxyPropertyDescriptor.From(prop, i));
 				}
 
 				propertyLaziness[i] = islazyProperty;
@@ -255,20 +261,20 @@ namespace NHibernate.Tuple.Entity
 
 			if(hadLazyProperties && !hasLazy)
 			{
-				log.WarnFormat("Disabled lazy property fetching for {0} because it does not support lazy at the entity level", name);
+				log.Warn("Disabled lazy property fetching for {0} because it does not support lazy at the entity level", name);
 			}
 			if (hasLazy)
 			{
-				log.Info("lazy property fetching available for: " + name);
+				log.Info("lazy property fetching available for: {0}", name);
 			}
 
 			if(hadNoProxyRelations && !hasUnwrapProxyForProperties)
 			{
-				log.WarnFormat("Disabled ghost property fetching for {0} because it does not support lazy at the entity level", name);
+				log.Warn("Disabled ghost property fetching for {0} because it does not support lazy at the entity level", name);
 			}
 			if (hasUnwrapProxyForProperties)
 			{
-				log.Info("no-proxy property fetching available for: " + name);
+				log.Info("no-proxy property fetching available for: {0}", name);
 			}
 
 			mutable = persistentClass.IsMutable;
@@ -284,8 +290,8 @@ namespace NHibernate.Tuple.Entity
 				if (!isAbstract && persistentClass.HasPocoRepresentation
 				    && ReflectHelper.IsAbstractClass(persistentClass.MappedClass))
 				{
-					log.Warn("entity [" + type.FullName
-					         + "] is abstract-class/interface explicitly mapped as non-abstract; be sure to supply entity-names");
+					log.Warn("entity [{0}] is abstract-class/interface explicitly mapped as non-abstract; be sure to supply entity-names",
+						type.FullName);
 				}
 			}
 			selectBeforeUpdate = persistentClass.SelectBeforeUpdate;
@@ -315,6 +321,16 @@ namespace NHibernate.Tuple.Entity
 			subclassEntityNames.Add(name);
 
 			EntityMode = persistentClass.HasPocoRepresentation ? EntityMode.Poco : EntityMode.Map;
+
+			if (persistentClass.HasPocoRepresentation)
+			{
+				BytecodeEnhancementMetadata = BytecodeEnhancementMetadataPocoImpl
+					.From(persistentClass, lazyPropertyDescriptors, unwrapProxyPropertyDescriptors);
+			}
+			else
+			{
+				BytecodeEnhancementMetadata = new BytecodeEnhancementMetadataNonPocoImpl(persistentClass.EntityName);
+			}
 
 			var entityTuplizerFactory = new EntityTuplizerFactory();
 			var tuplizerClassName = persistentClass.GetTuplizerImplClassName(EntityMode);
@@ -397,13 +413,44 @@ namespace NHibernate.Tuple.Entity
 
 		private void MapPropertyToIndex(Mapping.Property prop, int i)
 		{
-			propertyIndexes[prop.Name] = i;
-			Mapping.Component comp = prop.Value as Mapping.Component;
-			if (comp != null)
+			MapPropertyToIndex(null, prop, i);
+		}
+
+		private void MapPropertyToIndex(string path, Mapping.Property prop, int i)
+		{
+			var propPath = !string.IsNullOrEmpty(path) ? $"{path}.{prop.Name}" : prop.Name;
+			propertyIndexes[propPath] = i;
+			_propertyTypes[propPath] = prop.Type;
+			if (!(prop.Value is Mapping.Component comp))
 			{
-				foreach (Mapping.Property subprop in comp.PropertyIterator)
+				return;
+			}
+
+			foreach (var subprop in comp.PropertyIterator)
+			{
+				MapPropertyToIndex(propPath, subprop, i);
+			}
+		}
+
+		private void MapIdentifierPropertyTypes(IdentifierProperty identifier)
+		{
+			MapIdentifierPropertyTypes(identifier.Name, identifier.Type);
+		}
+
+		private void MapIdentifierPropertyTypes(string path, IType propertyType)
+		{
+			if (!string.IsNullOrEmpty(path))
+			{
+				_identifierPropertyTypes[path] = propertyType;
+			}
+
+			if (propertyType is IAbstractComponentType componentType)
+			{
+				for (var i = 0; i < componentType.PropertyNames.Length; i++)
 				{
-					propertyIndexes[prop.Name + '.' + subprop.Name] = i;
+					MapIdentifierPropertyTypes(
+						!string.IsNullOrEmpty(path) ? $"{path}.{componentType.PropertyNames[i]}" : componentType.PropertyNames[i],
+						componentType.Subtypes[i]);
 				}
 			}
 		}
@@ -503,6 +550,8 @@ namespace NHibernate.Tuple.Entity
 			get { return properties; }
 		}
 
+		internal bool OverridesEquals { get; private set; }
+
 		public int GetPropertyIndex(string propertyName)
 		{
 			int? index = GetPropertyIndexOrNull(propertyName);
@@ -520,6 +569,18 @@ namespace NHibernate.Tuple.Entity
 				return result;
 			else
 				return null;
+		}
+
+		internal IType GetIdentifierPropertyType(string memberPath)
+		{
+			return _identifierPropertyTypes.TryGetValue(memberPath, out var propertyType) ? propertyType : null;
+		}
+
+		internal IType GetPropertyType(string memberPath)
+		{
+			return _propertyTypes.TryGetValue(memberPath, out var propertyType)
+				? propertyType
+				: GetIdentifierPropertyType(memberPath);
 		}
 
 		public bool HasCollections
@@ -716,5 +777,7 @@ namespace NHibernate.Tuple.Entity
 		{
 			get { return naturalIdPropertyNumbers; }
 		}
+
+		public IBytecodeEnhancementMetadata BytecodeEnhancementMetadata { get; }
 	}
 }

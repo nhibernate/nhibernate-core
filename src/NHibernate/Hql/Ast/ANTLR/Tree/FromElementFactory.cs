@@ -13,7 +13,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class FromElementFactory
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(FromElementFactory));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(FromElementFactory));
 
 		private readonly FromClause _fromClause;
 		private readonly FromElement _origin;
@@ -25,7 +25,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private bool _inElementsFunction;
 		private IQueryableCollection _queryableCollection;
 		private CollectionType _collectionType;
-
 
 		/// <summary>
 		/// Creates entity from elements.
@@ -107,9 +106,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				FromElement parentFromElement,
 				string classAlias)
 		{
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug("createFromElementInSubselect() : path = " + path);
+				Log.Debug("createFromElementInSubselect() : path = {0}", path);
 			}
 
 			// Create an DotNode AST for the path and resolve it.
@@ -126,7 +125,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// If the from element isn't in the same clause, create a new from element.
 			if (fromElement.FromClause != _fromClause)
 			{
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("createFromElementInSubselect() : creating a new FROM element...");
 				}
@@ -141,9 +140,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 								tableAlias
 				);
 			}
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug("createFromElementInSubselect() : " + path + " -> " + fromElement);
+				Log.Debug("createFromElementInSubselect() : {0} -> {1}", path, fromElement);
 			}
 
 			return fromElement;
@@ -280,7 +279,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return elem;
 		}
 
-
 		public FromElement CreateEntityJoin(
 				string entityClass,
 				string tableAlias,
@@ -298,7 +296,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// multi-table entity
 			if (_implied && !elem.UseFromFragment)
 			{
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("createEntityJoin() : Implied entity join");
 				}
@@ -343,9 +341,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// Get the class name of the associated entity.
 			if (_queryableCollection.IsOneToMany)
 			{
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
-					Log.Debug("createEntityAssociation() : One to many - path = " + _path + " role = " + role + " associatedEntityName = " + associatedEntityName);
+					Log.Debug("createEntityAssociation() : One to many - path = {0} role = {1} associatedEntityName = {2}", _path, role, associatedEntityName);
 				}
 
 				var joinSequence = CreateJoinSequence(roleAlias, joinType);
@@ -355,9 +353,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else
 			{
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
-					Log.Debug("createManyToMany() : path = " + _path + " role = " + role + " associatedEntityName = " + associatedEntityName);
+					Log.Debug("createManyToMany() : path = {0} role = {1} associatedEntityName = {2}", _path, role, associatedEntityName);
 				}
 
 				elem = CreateManyToMany(role, associatedEntityName, roleAlias, entityPersister, (EntityType)_queryableCollection.ElementType, joinType);
@@ -429,7 +427,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			return elem;
 		}
-
 
 		private JoinSequence CreateJoinSequence(string roleAlias, JoinType joinType)
 		{

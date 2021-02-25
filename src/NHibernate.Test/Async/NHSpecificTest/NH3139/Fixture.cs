@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3139
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get
 			{
@@ -75,7 +75,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3139
 					tran.Commit();
 				}
 			}
-
 		}
 
 		[Test]

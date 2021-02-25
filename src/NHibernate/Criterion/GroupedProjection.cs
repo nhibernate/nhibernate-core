@@ -23,6 +23,9 @@ namespace NHibernate.Criterion
 
 		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
+			if (projection is IPropertyProjection propertyProjection)
+				return new SqlString(string.Join(", ", criteriaQuery.GetColumns(criteria, propertyProjection.PropertyName)));
+
 			//This is kind of a hack. The hack is based on the fact that ToGroupSqlString always called after ToSqlString.
 			return SqlStringHelper.RemoveAsAliasesFromSql(renderedProjection);
 		}
@@ -49,7 +52,7 @@ namespace NHibernate.Criterion
 
 		public virtual string[] Aliases
 		{
-			get { return new string[] {}; }
+			get { return Array.Empty<string>(); }
 		}
 
 		public virtual bool IsGrouped

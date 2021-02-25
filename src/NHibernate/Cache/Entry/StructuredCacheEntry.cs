@@ -18,7 +18,6 @@ namespace NHibernate.Cache.Entry
 		public object Destructure(object item, ISessionFactoryImplementor factory)
 		{
 			IDictionary map = (IDictionary)item;
-			bool lazyPropertiesUnfetched = ((bool)map["_lazyPropertiesUnfetched"]);
 			string subclass = (string)map["_subclass"];
 			object version = map["_version"];
 			IEntityPersister subclassPersister = factory.GetEntityPersister(subclass);
@@ -28,7 +27,12 @@ namespace NHibernate.Cache.Entry
 			{
 				state[i] = map[names[i]];
 			}
-			return new CacheEntry(state, subclass, lazyPropertiesUnfetched, version);
+			return new CacheEntry
+			{
+				Subclass = subclass,
+				DisassembledState = state,
+				Version = version
+			};
 		}
 
 		public object Structure(object item)
@@ -38,7 +42,6 @@ namespace NHibernate.Cache.Entry
 			IDictionary map = new Hashtable(names.Length + 2);
 			map["_subclass"] = entry.Subclass;
 			map["_version"] = entry.Version;
-			map["_lazyPropertiesUnfetched"] = entry.AreLazyPropertiesUnfetched;
 			for (int i = 0; i < names.Length; i++)
 			{
 				map[names[i]] = entry.DisassembledState[i];

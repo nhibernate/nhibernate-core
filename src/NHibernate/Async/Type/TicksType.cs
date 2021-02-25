@@ -9,8 +9,6 @@
 
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using NHibernate.Engine;
@@ -20,21 +18,12 @@ namespace NHibernate.Type
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class TicksType : PrimitiveType, IVersionType, ILiteralType
+	public partial class TicksType : AbstractDateTimeType
 	{
 
 		#region IVersionType Members
 
-		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			return SeedAsync(session, cancellationToken);
-		}
-
-		public virtual Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
+		public override Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

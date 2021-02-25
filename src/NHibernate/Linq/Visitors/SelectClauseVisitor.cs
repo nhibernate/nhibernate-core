@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Expressions;
+using NHibernate.Util;
 using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
@@ -83,11 +85,28 @@ namespace NHibernate.Linq.Visitors
 				// Pure HQL evaluation
 				_hqlTreeNodes.Add(_hqlVisitor.Visit(expression).AsExpression());
 
-				return Expression.Convert(Expression.ArrayIndex(_inputParameter, Expression.Constant(_iColumn++)), expression.Type);
+				return Convert(Expression.ArrayIndex(_inputParameter, Expression.Constant(_iColumn++)), expression.Type);
 			}
 
 			// Can't handle this node with HQL.  Just recurse down, and emit the expression
 			return base.Visit(expression);
+		}
+
+		private static readonly MethodInfo ConvertChangeType =
+			ReflectHelper.FastGetMethod(System.Convert.ChangeType, default(object), default(System.Type));
+
+		private static Expression Convert(Expression expression, System.Type type)
+		{
+			//#1121
+			if (type.IsEnum)
+			{
+				expression = Expression.Call(
+					ConvertChangeType,
+					expression,
+					Expression.Constant(Enum.GetUnderlyingType(type)));
+			}
+
+			return Expression.Convert(expression, type);
 		}
 	}
 

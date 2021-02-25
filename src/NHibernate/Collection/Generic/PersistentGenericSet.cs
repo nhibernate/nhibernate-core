@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Collection.Generic.SetHelpers;
+using NHibernate.Collection.Trackers;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Linq;
@@ -21,7 +22,7 @@ namespace NHibernate.Collection.Generic
 	/// </summary>
 	[Serializable]
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
-	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IQueryable<T>
+	public partial class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, IReadOnlyCollection<T>, IQueryable<T>
 	{
 		/// <summary>
 		/// The <see cref="ISet{T}"/> that NHibernate is wrapping.
@@ -38,13 +39,12 @@ namespace NHibernate.Collection.Generic
 		/// process.
 		/// </remarks>
 		[NonSerialized]
-		private IList<T> _tempList;
+		private List<T> _tempList;
 
 		// needed for serialization
 		public PersistentGenericSet()
 		{
 		}
-
 
 		/// <summary> 
 		/// Constructor matching super.
@@ -72,6 +72,12 @@ namespace NHibernate.Collection.Generic
 			WrappedSet = original;
 			SetInitialized();
 			IsDirectlyAccessible = true;
+		}
+
+		internal override AbstractQueueOperationTracker CreateQueueOperationTracker()
+		{
+			var entry = Session.PersistenceContext.GetCollectionEntry(this);
+			return new SetQueueOperationTracker<T>(entry.LoadedPersister);
 		}
 
 		public override bool RowUpdatePossible
@@ -104,12 +110,11 @@ namespace NHibernate.Collection.Generic
 		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
 			var elementType = persister.ElementType;
-			var snapshot = (ISetSnapshot<T>)GetSnapshot();
+			var snapshot = (SetSnapShot<T>)GetSnapshot();
 			if (((ICollection)snapshot).Count != WrappedSet.Count)
 			{
 				return false;
 			}
-
 
 			foreach (T obj in WrappedSet)
 			{
@@ -129,6 +134,13 @@ namespace NHibernate.Collection.Generic
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
 			WrappedSet = (ISet<T>)persister.CollectionType.Instantiate(anticipatedSize);
+		}
+
+		public override void ApplyQueuedOperations()
+		{
+			var queueOperation = (SetQueueOperationTracker<T>) QueueOperationTracker;
+			queueOperation?.ApplyChanges(WrappedSet);
+			QueueOperationTracker = null;
 		}
 
 		/// <summary>
@@ -191,13 +203,12 @@ namespace NHibernate.Collection.Generic
 		/// </summary>
 		public override bool EndRead(ICollectionPersister persister)
 		{
-			foreach (T item in _tempList)
+			foreach (var item in _tempList)
 			{
 				WrappedSet.Add(item);
 			}
 			_tempList = null;
-			SetInitialized();
-			return true;
+			return base.EndRead(persister);
 		}
 
 		public override IEnumerable Entries(ICollectionPersister persister)
@@ -220,11 +231,10 @@ namespace NHibernate.Collection.Generic
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			IType elementType = persister.ElementType;
-			var sn = (ISetSnapshot<T>)GetSnapshot();
+			var sn = (SetSnapShot<T>)GetSnapshot();
 			var deletes = new List<T>(((ICollection<T>)sn).Count);
 
 			deletes.AddRange(sn.Where(obj => !WrappedSet.Contains(obj)));
-
 
 			foreach (var obj in WrappedSet)
 			{
@@ -238,7 +248,7 @@ namespace NHibernate.Collection.Generic
 
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			var sn = (ISetSnapshot<T>)GetSnapshot();
+			var sn = (SetSnapShot<T>)GetSnapshot();
 			T oldKey;
 
 			// note that it might be better to iterate the snapshot but this is safe,
@@ -267,23 +277,6 @@ namespace NHibernate.Collection.Generic
 			throw new NotSupportedException("Sets don't support updating by element");
 		}
 
-		public override bool Equals(object other)
-		{
-			var that = other as ISet<T>;
-			if (that == null)
-			{
-				return false;
-			}
-			Read();
-			return WrappedSet.SequenceEqual(that);
-		}
-
-		public override int GetHashCode()
-		{
-			Read();
-			return WrappedSet.GetHashCode();
-		}
-
 		public override bool EntryExists(object entry, int i)
 		{
 			return true;
@@ -296,34 +289,36 @@ namespace NHibernate.Collection.Generic
 
 		#region ISet<T> Members
 
-
 		public bool Contains(T item)
 		{
-			bool? exists = ReadElementExistence(item);
-			return exists == null ? WrappedSet.Contains(item) : exists.Value;
+			return ReadElementExistence(item, out _) ?? WrappedSet.Contains(item);
 		}
-
 
 		public bool Add(T o)
 		{
-			bool? exists = IsOperationQueueEnabled ? ReadElementExistence(o) : null;
-			if (!exists.HasValue)
+			// Skip checking the element existence in the database if we know that the element
+			// is transient, the mapped class does not override Equals method and the operation queue is enabled
+			if (WasInitialized || !IsOperationQueueEnabled || !CanSkipElementExistenceCheck(o))
 			{
-				Initialize(true);
-				if (WrappedSet.Add(o))
+				var exists = IsOperationQueueEnabled ? ReadElementExistence(o, out _) : null;
+				if (!exists.HasValue)
 				{
-					Dirty();
-					return true;
+					Initialize(true);
+					if (WrappedSet.Add(o))
+					{
+						Dirty();
+						return true;
+					}
+					return false;
 				}
-				return false;
+
+				if (exists.Value)
+				{
+					return false;
+				}
 			}
 
-			if (exists.Value)
-			{
-				return false;
-			}
-			QueueOperation(new SimpleAddDelayedOperation(this, o));
-			return true;
+			return QueueAddElement(o);
 		}
 
 		public void UnionWith(IEnumerable<T> other)
@@ -426,7 +421,8 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(T o)
 		{
-			bool? exists = PutQueueEnabled ? ReadElementExistence(o) : null;
+			var existsInDb = default(bool?);
+			var exists = PutQueueEnabled ? ReadElementExistence(o, out existsInDb) : null;
 			if (!exists.HasValue)
 			{
 				Initialize(true);
@@ -440,9 +436,11 @@ namespace NHibernate.Collection.Generic
 
 			if (exists.Value)
 			{
-				QueueOperation(new SimpleRemoveDelayedOperation(this, o));
+				QueueRemoveExistingElement(o, existsInDb);
+
 				return true;
 			}
+
 			return false;
 		}
 
@@ -450,7 +448,7 @@ namespace NHibernate.Collection.Generic
 		{
 			if (ClearQueueEnabled)
 			{
-				QueueOperation(new ClearDelayedOperation(this));
+				QueueClearCollection();
 			}
 			else
 			{
@@ -469,7 +467,6 @@ namespace NHibernate.Collection.Generic
 
 		public void CopyTo(T[] array, int arrayIndex)
 		{
-			// NH : we really need to initialize the set ?
 			Read();
 			WrappedSet.CopyTo(array, arrayIndex);
 		}
@@ -538,6 +535,8 @@ namespace NHibernate.Collection.Generic
 
 		#region DelayedOperations
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class ClearDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericSet<T> _enclosingInstance;
@@ -563,6 +562,8 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class SimpleAddDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericSet<T> _enclosingInstance;
@@ -590,6 +591,8 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class SimpleRemoveDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericSet<T> _enclosingInstance;

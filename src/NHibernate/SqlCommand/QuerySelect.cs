@@ -289,7 +289,7 @@ namespace NHibernate.SqlCommand
 				//TODO: seems HACKish to cast between String and SqlString
 				if (tokenString != null)
 				{
-					quoted = tokenString.StartsWith("'");
+					quoted = tokenString.StartsWith('\'');
 				}
 				else
 				{

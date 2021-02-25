@@ -12,9 +12,12 @@ namespace NHibernate.Dialect.Function
 		{
 			this.dialect = dialect;
 			this.userFunctions = new Dictionary<string, ISQLFunction>(userFunctions,
-				StringComparer.InvariantCultureIgnoreCase);
+				StringComparer.OrdinalIgnoreCase);
 		}
 
+		/// <summary>
+		/// Find function by function name ignoring case
+		/// </summary>
 		public ISQLFunction FindSQLFunction(string functionName)
 		{
 			ISQLFunction result;

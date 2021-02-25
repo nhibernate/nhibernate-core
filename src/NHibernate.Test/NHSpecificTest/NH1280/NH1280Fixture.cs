@@ -8,11 +8,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 	[TestFixture]
 	public class NH1280Fixture : BugTestCase
 	{
-		public override string BugNumber
-		{
-			get { return "NH1280"; }
-		}
-
 		protected override void OnSetUp()
 		{
 			using (ISession s = OpenSession())
@@ -46,6 +41,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 		[Test]
 		public void HavingUsingSqlFunctions_Concat()
 		{
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{

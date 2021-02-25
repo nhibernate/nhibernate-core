@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.Serialization;
 
-
 namespace NHibernate
 {
 	/// <summary>
@@ -17,7 +16,7 @@ namespace NHibernate
 		/// </summary>
 		public AssertionFailure() : base(String.Empty)
 		{
-			LoggerProvider.LoggerFor(typeof(AssertionFailure)).Error(DefaultMessage);
+			NHibernateLogger.For(typeof(AssertionFailure)).Error(DefaultMessage);
 		}
 
 		/// <summary>
@@ -26,7 +25,7 @@ namespace NHibernate
 		/// <param name="message">The message that describes the error. </param>
 		public AssertionFailure(string message) : base(message)
 		{
-			LoggerProvider.LoggerFor(typeof(AssertionFailure)).Error(DefaultMessage, this);
+			NHibernateLogger.For(typeof(AssertionFailure)).Error(this, DefaultMessage);
 		}
 
 		/// <summary>
@@ -40,7 +39,7 @@ namespace NHibernate
 		/// </param>
 		public AssertionFailure(string message, Exception innerException) : base(message, innerException)
 		{
-			LoggerProvider.LoggerFor(typeof(AssertionFailure)).Error(DefaultMessage, innerException);
+			NHibernateLogger.For(typeof(AssertionFailure)).Error(innerException, DefaultMessage);
 		}
 
 		/// <summary>

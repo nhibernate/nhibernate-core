@@ -10,7 +10,7 @@ namespace NHibernate.Util
 	/// </summary>
 	public class JoinedEnumerable : IEnumerable
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(JoinedEnumerable));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(JoinedEnumerable));
 
 		private readonly IEnumerable[] _enumerables;
 
@@ -34,7 +34,6 @@ namespace NHibernate.Util
 		{
 		}
 
-
 		#region System.Collections.IEnumerable Members
 
 		/// <summary></summary>
@@ -45,8 +44,6 @@ namespace NHibernate.Util
 		}
 
 		#endregion
-
-
 
 		#region Nested class JoinedEnumerator
 
@@ -60,7 +57,6 @@ namespace NHibernate.Util
 				_enumerators = enumerators.ToArray();
 				_current = 0;
 			}
-
 
 			#region System.Collections.IEnumerator Members
 
@@ -86,14 +82,12 @@ namespace NHibernate.Util
 				return false;
 			}
 
-
 			public void Reset()
 			{
 				foreach (var enumerator in _enumerators)
 					enumerator.Reset();
 				_current = 0;
 			}
-
 
 			public object Current
 			{
@@ -127,7 +121,6 @@ namespace NHibernate.Util
 				Dispose(true);
 			}
 
-
 			/// <summary>
 			/// Takes care of freeing the managed and unmanaged resources that 
 			/// this class is responsible for.
@@ -159,13 +152,13 @@ namespace NHibernate.Util
 							currentDisposable.Dispose();
 						}
 					}
+					// nothing for Finalizer to do - so tell the GC to ignore it
+					GC.SuppressFinalize(this);
 				}
 
 				// free unmanaged resources here
 
 				_isAlreadyDisposed = true;
-				// nothing for Finalizer to do - so tell the GC to ignore it
-				GC.SuppressFinalize(this);
 			}
 
 			#endregion
@@ -174,9 +167,8 @@ namespace NHibernate.Util
 		#endregion
 	}
 
-
-
-
+	// Since 5.3
+	[Obsolete("This class has no more usages and will be removed in a future version")]
 	public class JoinedEnumerable<T> : IEnumerable<T>
 	{
 		private readonly IEnumerable<T>[] enumerables;
@@ -241,7 +233,6 @@ namespace NHibernate.Util
 			public void Dispose()
 			{
 				Dispose(true);
-				GC.SuppressFinalize(this);
 			}
 
 			private void Dispose(bool disposing)
@@ -249,9 +240,11 @@ namespace NHibernate.Util
 				if (!disposed)
 				{
 					if (disposing)
+					{
 						for (; currentEnumIdx < enumerators.Length; currentEnumIdx++)
 							enumerators[currentEnumIdx].Dispose();
-					GC.SuppressFinalize(this);
+						GC.SuppressFinalize(this);
+					}
 					disposed = true;
 				}
 			}

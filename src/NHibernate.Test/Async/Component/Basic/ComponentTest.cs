@@ -30,9 +30,9 @@ namespace NHibernate.Test.Component.Basic
 			get { return "NHibernate.Test"; }
 		}		
 
-		protected override System.Collections.IList Mappings
+		protected override string[] Mappings
 		{
-			get { return new string[] { }; }
+			get { return Array.Empty<string>(); }
 		}
 		
 		protected override void Configure(Configuration configuration)
@@ -162,78 +162,6 @@ namespace NHibernate.Test.Component.Basic
 				await (s.FlushAsync());
 				Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(intialUpdateCount + 1));
 				await (s.DeleteAsync(u));
-				await (t.CommitAsync());
-				s.Close();
-			}
-		}
-		
-		[Test]
-		[Ignore("Ported from Hibernate. Read properties not supported in NH yet.")]
-		public async Task TestCustomColumnReadAndWriteAsync() 
-		{
-			const double HEIGHT_INCHES = 73;
-			const double HEIGHT_CENTIMETERS = HEIGHT_INCHES * 2.54d;
-			
-			using (ISession s = Sfi.OpenSession())
-			using (ITransaction t = s.BeginTransaction())
-			{
-				User u = new User("steve", "hibernater", new Person( "Steve Ebersole", new DateTime(1999, 12, 31), "Main St"));
-				u.Person.HeightInches = HEIGHT_INCHES;
-				await (s.PersistAsync(u));
-				await (s.FlushAsync());
-			
-				// Test value conversion during insert
-				double heightViaSql = (double)await (s.CreateSQLQuery("select height_centimeters from t_user where t_user.username='steve'").UniqueResultAsync());
-				Assert.That(heightViaSql, Is.EqualTo(HEIGHT_CENTIMETERS).Within(0.01d));
-		
-				// Test projection
-				double heightViaHql = (double)await (s.CreateQuery("select u.Person.HeightInches from User u where u.Id = 'steve'").UniqueResultAsync());
-				Assert.That(heightViaHql, Is.EqualTo(HEIGHT_INCHES).Within(0.01d));
-				
-				// Test restriction and entity load via criteria
-				u = (User)await (s.CreateCriteria(typeof(User))
-					.Add(Restrictions.Between("Person.HeightInches", HEIGHT_INCHES - 0.01d, HEIGHT_INCHES + 0.01d))
-					.UniqueResultAsync());
-				Assert.That(u.Person.HeightInches, Is.EqualTo(HEIGHT_INCHES).Within(0.01d));
-
-					// Test predicate and entity load via HQL
-				u = (User)await (s.CreateQuery("from User u where u.Person.HeightInches between ? and ?")
-					.SetDouble(0, HEIGHT_INCHES - 0.01d)
-					.SetDouble(1, HEIGHT_INCHES + 0.01d)
-					.UniqueResultAsync());
-				
-				Assert.That(u.Person.HeightInches, Is.EqualTo(HEIGHT_INCHES).Within(0.01d));
-				
-				// Test update
-				u.Person.HeightInches = 1;
-				await (s.FlushAsync());
-				heightViaSql = (double)await (s.CreateSQLQuery("select height_centimeters from t_user where t_user.username='steve'").UniqueResultAsync());
-				Assert.That(heightViaSql, Is.EqualTo(2.54d).Within(0.01d));
-				await (s.DeleteAsync(u));
-				await (t.CommitAsync());
-				s.Close();
-			}
-		}
-	
-		[Test]
-		[Ignore("Ported from Hibernate - failing in NH")]
-		public async Task TestComponentQueriesAsync() 
-		{
-			using (ISession s = Sfi.OpenSession())
-			using (ITransaction t = s.BeginTransaction())
-			{
-				Employee emp = new Employee();
-				emp.HireDate = new DateTime(1999, 12, 31);
-				emp.Person = new Person();
-				emp.Person.Name = "steve";
-				emp.Person.Dob = new DateTime(1999, 12, 31);
-				await (s.SaveAsync(emp));
-		
-				await (s.CreateQuery("from Employee e where e.Person = :p and 1=1 and 2=2").SetParameter("p", emp.Person).ListAsync());
-				await (s.CreateQuery("from Employee e where :p = e.Person").SetParameter("p", emp.Person).ListAsync());
-				await (s.CreateQuery("from Employee e where e.Person = ('steve', current_timestamp)").ListAsync());
-		
-				await (s.DeleteAsync( emp ));
 				await (t.CommitAsync());
 				s.Close();
 			}

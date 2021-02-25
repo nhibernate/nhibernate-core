@@ -26,7 +26,7 @@ namespace NHibernate.Test.DriverTest
 			get { return "NHibernate.Test"; }
 		}
 
-		protected override IList Mappings
+		protected override string[] Mappings
 		{
 			get { return new[] { "DriverTest.EntityForMs2008.hbm.xml" }; }
 		}
@@ -69,6 +69,5 @@ namespace NHibernate.Test.DriverTest
 				t.Commit();
 			}
 		}
-
 	}
 }

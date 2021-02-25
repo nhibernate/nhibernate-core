@@ -26,9 +26,6 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public async Task ReadWriteAsync()
 		{
-			if (Dialect is Oracle8iDialect)
-				Assert.Ignore("The Oracle dialect maps currency as Number(20, 2), this test can only fail.");
-
 			const decimal expected = 5.6435M;
 
 			var basic = new CurrencyClass {CurrencyValue = expected};
@@ -46,6 +43,5 @@ namespace NHibernate.Test.TypesTest
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 	}
 }

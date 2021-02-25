@@ -2,13 +2,12 @@ using System;
 using System.Text;
 using Antlr.Runtime;
 
-
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
 	public abstract class FromReferenceNode : AbstractSelectExpression, IResolvableNode, IDisplayableNode, IPathNode
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(FromReferenceNode));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(FromReferenceNode));
 
 		public const int RootLevel = 0;
 		private FromElement _fromElement;
@@ -35,9 +34,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set
 			{
 				_resolved = true;
-				if (Log.IsDebugEnabled)
+				if (Log.IsDebugEnabled())
 				{
-					Log.Debug("Resolved :  " + Path + " -> " + Text);
+					Log.Debug("Resolved :  {0} -> {1}", Path, Text);
 				}
 			}
 		}

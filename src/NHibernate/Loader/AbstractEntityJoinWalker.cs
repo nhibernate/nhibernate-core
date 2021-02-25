@@ -1,6 +1,7 @@
+using System;
 using System.Collections.Generic;
+using NHibernate.Criterion;
 using NHibernate.Engine;
-using NHibernate.Loader.Criteria;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -29,44 +30,111 @@ namespace NHibernate.Loader
 
 		protected virtual void InitAll(SqlString whereString, SqlString orderByString, LockMode lockMode)
 		{
-			WalkEntityTree(persister, Alias);
+			AddAssociations();
 			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
-			allAssociations.Add(
-				new OuterJoinableAssociation(persister.EntityType, null, null, alias, JoinType.LeftOuterJoin, null, Factory,
-											 new CollectionHelper.EmptyMapClass<string, IFilter>()));
+			var rootAssociation = CreateRootAssociation();
+			allAssociations.Add(rootAssociation);
 
 			InitPersisters(allAssociations, lockMode);
-			InitStatementString(whereString, orderByString, lockMode);
+			InitStatementString(rootAssociation, null, whereString, orderByString, null, null, lockMode);
 		}
 
+		protected virtual OuterJoinableAssociation CreateRootAssociation()
+		{
+			return CreateAssociation(persister.EntityType, Alias);
+		}
+
+		//Since v5.1
+		[Obsolete("Please use InitProjection(SqlString projectionString, SqlString whereString, SqlString orderByString, SqlString groupByString, SqlString havingString, IDictionary<string, IFilter> enabledFilters, LockMode lockMode, IList<EntityProjection> entityProjections) instead")]
 		protected void InitProjection(SqlString projectionString, SqlString whereString, SqlString orderByString, SqlString groupByString, SqlString havingString, IDictionary<string, IFilter> enabledFilters, LockMode lockMode)
 		{
+			InitProjection(projectionString, whereString, orderByString, groupByString, havingString, enabledFilters, lockMode, Array.Empty<EntityProjection>());
+		}
+
+		protected void InitProjection(SqlString projectionString, SqlString whereString, SqlString orderByString, SqlString groupByString, SqlString havingString, IDictionary<string, IFilter> enabledFilters, LockMode lockMode, IList<EntityProjection> entityProjections)
+		{
+			AddAssociations();
+
+			int countEntities = entityProjections.Count;
+			if (countEntities > 0)
+			{
+				var associations = new OuterJoinableAssociation[countEntities];
+				var eagerProps = new bool[countEntities];
+				var suffixes = new string[countEntities];
+				var fetchLazyProperties = new ISet<string>[countEntities];
+				for (var i = 0; i < countEntities; i++)
+				{
+					var e = entityProjections[i];
+					associations[i] = CreateAssociation(e.Persister.EntityMetamodel.EntityType, e.TableAlias);
+					if (e.FetchLazyProperties)
+					{
+						eagerProps[i] = true;
+					}
+
+					if (e.FetchLazyPropertyGroups?.Count > 0)
+					{
+						fetchLazyProperties[i] = new HashSet<string>(e.FetchLazyPropertyGroups);
+					}
+					suffixes[i] = e.ColumnAliasSuffix;
+				}
+
+				InitPersisters(associations, lockMode);
+
+				Suffixes = suffixes;
+				EagerPropertyFetches = eagerProps;
+				EntityFetchLazyProperties = fetchLazyProperties;
+			}
+			else
+			{
+				Persisters = Array.Empty<ILoadable>();
+				Suffixes = Array.Empty<string>();
+			}
+
+			InitStatementString(null, projectionString, whereString, orderByString, groupByString, havingString, lockMode);
+		}
+
+		protected virtual void AddAssociations()
+		{
 			WalkEntityTree(persister, Alias);
-			Persisters = new ILoadable[0];
-			InitStatementString(projectionString, whereString, orderByString, groupByString, havingString, lockMode);
 		}
 
-		private void InitStatementString(SqlString condition, SqlString orderBy, LockMode lockMode)
+		private OuterJoinableAssociation CreateAssociation(EntityType entityType, string tableAlias)
 		{
-			InitStatementString(null, condition, orderBy, null, null, lockMode);
+			return new OuterJoinableAssociation(
+				entityType,
+				null,
+				null,
+				tableAlias,
+				JoinType.LeftOuterJoin,
+				null,
+				Factory,
+				CollectionHelper.EmptyDictionary<string, IFilter>());
 		}
 
-		private void InitStatementString(SqlString projection,SqlString condition, SqlString orderBy, SqlString groupBy, SqlString having, LockMode lockMode)
+		private void InitStatementString(OuterJoinableAssociation rootAssociation, SqlString projection, SqlString condition, SqlString orderBy, SqlString groupBy, SqlString having, LockMode lockMode)
 		{
-			int joins = CountEntityPersisters(associations);
-			Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
+			SqlString selectClause = projection;
+			if (selectClause == null)
+			{
+				int joins = CountEntityPersisters(associations);
+
+				Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
+				var suffix = Suffixes[joins];
+				selectClause = new SqlString(rootAssociation.GetSelectFragment(suffix, null, null) + SelectString(associations));
+			}
+
 			JoinFragment ojf = MergeOuterJoins(associations);
 
-			SqlString selectClause = 
-				projection ?? new SqlString(persister.SelectFragment(alias, Suffixes[joins]) + SelectString(associations));
-			
 			SqlSelectBuilder select = new SqlSelectBuilder(Factory)
-				.SetLockMode(lockMode)
+				.SetLockMode(lockMode, alias)
 				.SetSelectClause(selectClause)
 				.SetFromClause(Dialect.AppendLockHint(lockMode, persister.FromTableFragment(alias)) +persister.FromJoinFragment(alias, true, true))
 				.SetWhereClause(condition)
 				.SetOuterJoins(ojf.ToFromFragmentString,ojf.ToWhereFragmentString + WhereFragment)
-				.SetOrderByClause(OrderBy(associations, orderBy))
+				.SetOrderByClause(
+					projection == null
+						? OrderBy(associations, orderBy)
+						: orderBy)
 				.SetGroupByClause(groupBy)
 				.SetHavingClause(having);
 

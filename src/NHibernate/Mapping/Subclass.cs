@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Util;
@@ -57,7 +58,7 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public override IEnumerable<Property> PropertyClosureIterator
 		{
-			get { return new JoinedEnumerable<Property>(Superclass.PropertyClosureIterator, PropertyIterator); }
+			get { return Superclass.PropertyClosureIterator.Concat(PropertyIterator); }
 		}
 
 		/// <summary>
@@ -74,12 +75,12 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public override IEnumerable<Table> TableClosureIterator
 		{
-			get { return new JoinedEnumerable<Table>(Superclass.TableClosureIterator, new SingletonEnumerable<Table>(Table)); }
+			get { return Superclass.TableClosureIterator.Concat(new[] {Table}); }
 		}
 
 		public override IEnumerable<IKeyValue> KeyClosureIterator
 		{
-			get { return new JoinedEnumerable<IKeyValue>(Superclass.KeyClosureIterator, new SingletonEnumerable<IKeyValue>(Key)); }
+			get { return Superclass.KeyClosureIterator.Concat(new[] {Key}); }
 		}
 
 		/// <summary>
@@ -142,7 +143,7 @@ namespace NHibernate.Mapping
 
 		public override IEnumerable<Join> JoinClosureIterator
 		{
-			get { return new JoinedEnumerable<Join>(Superclass.JoinClosureIterator, base.JoinClosureIterator); }
+			get { return Superclass.JoinClosureIterator.Concat(base.JoinClosureIterator); }
 		}
 
 		public override ISet<string> SynchronizedTables
@@ -189,7 +190,7 @@ namespace NHibernate.Mapping
 					{
 						ArrayHelper.AddAll(combined, specificTuplizerDefs);
 					}
-					return new UnmodifiableDictionary<EntityMode, string>(combined);
+					return new ReadOnlyDictionary<EntityMode, string>(combined);
 				}
 			}
 		}

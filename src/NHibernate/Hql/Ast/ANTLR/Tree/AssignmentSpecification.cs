@@ -67,7 +67,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if (rhs == null)
 			{
-				_hqlParameters = new IParameterSpecification[0];
+				_hqlParameters = Array.Empty<IParameterSpecification>();
 			}
 			else if (IsParam(rhs))
 			{
@@ -75,7 +75,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else
 			{
-				var parameterList = ASTUtil.CollectChildren(rhs, IsParam);
+				var parameterList = ASTUtil.CollectChildren<ParameterNode>(rhs, IsParam);
 				_hqlParameters = new IParameterSpecification[parameterList.Count];
 				int i = 0;
 				foreach (ParameterNode parameterNode in parameterList)
@@ -147,7 +147,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 				return _sqlAssignmentString;
 			}
-
 		}
 	}
 }

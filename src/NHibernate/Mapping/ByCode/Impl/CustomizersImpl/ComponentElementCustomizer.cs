@@ -65,6 +65,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Lazy(isLazy));
 		}
 
+		public void LazyGroup(string name)
+		{
+			_customizersHolder.AddCustomizer(typeof(TComponent), x => x.LazyGroup(name));
+		}
+
 		public void Unique(bool unique)
 		{
 			_customizersHolder.AddCustomizer(typeof(TComponent), (IComponentAttributesMapper x) => x.Unique(unique));
@@ -92,7 +97,6 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			}
 			return result;
 		}
-
 
 		public void Property<TProperty>(Expression<Func<TComponent, TProperty>> property, Action<IPropertyMapper> mapping)
 		{

@@ -8,7 +8,10 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
+using System.Linq;
+using NHibernate.Multi;
 using NHibernate.Transform;
 using NUnit.Framework;
 
@@ -35,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1836
 			}
 		}
 
-		[Test]
+		[Test, Obsolete]
 		public void AliasToBeanTransformerShouldApplyCorrectlyToMultiQueryAsync()
 		{
 			using (var s = OpenSession())
@@ -50,6 +53,25 @@ namespace NHibernate.Test.NHSpecificTest.NH1836
 				Assert.That(async () => results = await (multiQuery.ListAsync()), Throws.Nothing);
 				var elementOfFirstResult = ((IList)results[0])[0];
 				Assert.That(elementOfFirstResult, Is.TypeOf<EntityDTO>().And.Property("EntityId").EqualTo(1));
+			}
+		}
+
+		[Test]
+		public async Task AliasToBeanTransformerShouldApplyCorrectlyToQueryBatchAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var multiQuery = s
+				                 .CreateQueryBatch()
+				                 .Add<EntityDTO>(s
+				                                 .CreateQuery("select entity.Id as EntityId from Entity entity")
+				                                 .SetResultTransformer(Transformers.AliasToBean(typeof(EntityDTO))));
+
+				Assert.That(multiQuery.Execute, Throws.Nothing);
+				var results = await (multiQuery.GetResultAsync<EntityDTO>(0));
+				Assert.That(results.First(), Is.TypeOf<EntityDTO>().And.Property("EntityId").EqualTo(1));
+				await (t.CommitAsync());
 			}
 		}
 

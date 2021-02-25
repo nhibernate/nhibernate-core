@@ -11,9 +11,11 @@ using NHibernate.Type;
 
 namespace NHibernate.Linq
 {
-	public class NhLinqExpression : IQueryExpression
+	public class NhLinqExpression : IQueryExpression, ICacheableQueryExpression
 	{
 		public string Key { get; protected set; }
+
+		public bool CanCachePlan { get; private set; } = true;
 
 		public System.Type Type { get; private set; }
 
@@ -30,14 +32,25 @@ namespace NHibernate.Linq
 
 		public ExpressionToHqlTranslationResults ExpressionToHqlTranslationResults { get; private set; }
 
-		protected virtual QueryMode QueryMode => QueryMode.Select;
+		protected virtual QueryMode QueryMode { get; }
+
+		internal IDictionary<string, NamedParameter> NamedParameters { get; }
 
 		private readonly Expression _expression;
 		private readonly IDictionary<ConstantExpression, NamedParameter> _constantToParameterMap;
 
 		public NhLinqExpression(Expression expression, ISessionFactoryImplementor sessionFactory)
+			: this(QueryMode.Select, expression, sessionFactory)
 		{
-			_expression = NhRelinqQueryParser.PreTransform(expression);
+		}
+
+		internal NhLinqExpression(QueryMode queryMode, Expression expression, ISessionFactoryImplementor sessionFactory)
+		{
+			QueryMode = queryMode;
+			var preTransformResult = NhRelinqQueryParser.PreTransform(
+				expression,
+				new PreTransformationParameters(queryMode, sessionFactory));
+			_expression = preTransformResult.Expression;
 
 			// We want logging to be as close as possible to the original expression sent from the
 			// application. But if we log before partial evaluation done in PreTransform, the log won't
@@ -45,12 +58,12 @@ namespace NHibernate.Linq
 			// referenced from the main query.
 			LinqLogging.LogExpression("Expression (partially evaluated)", _expression);
 
-			_constantToParameterMap = ExpressionParameterVisitor.Visit(ref _expression, sessionFactory);
+			_constantToParameterMap = ExpressionParameterVisitor.Visit(preTransformResult);
 
-			ParameterValuesByName = _constantToParameterMap.Values.ToDictionary(p => p.Name,
-																				p => System.Tuple.Create(p.Value, p.Type));
-
-			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap);
+			ParameterValuesByName = _constantToParameterMap.Values.Distinct().ToDictionary(p => p.Name,
+			                                                                               p => System.Tuple.Create(p.Value, p.Type));
+			NamedParameters = _constantToParameterMap.Values.Distinct().ToDictionary(p => p.Name);
+			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap, sessionFactory);
 
 			Type = _expression.Type;
 
@@ -66,8 +79,18 @@ namespace NHibernate.Linq
 
 		public IASTNode Translate(ISessionFactoryImplementor sessionFactory, bool filter)
 		{
+			if (ExpressionToHqlTranslationResults != null)
+			{
+				// Query has already been translated. Arguments do not really matter, because queries are anyway tied
+				// to a single session factory and cannot switch from being a filter query (query on a mapped collection)
+				// or not.
+				return DuplicateTree(ExpressionToHqlTranslationResults.Statement.AstNode);
+			}
+
 			var requiredHqlParameters = new List<NamedParameterDescriptor>();
 			var queryModel = NhRelinqQueryParser.Parse(_expression);
+			queryModel.TransformExpressions(TransparentIdentifierRemovingExpressionVisitor.ReplaceTransparentIdentifiers);
+			ParameterTypeLocator.SetParameterTypes(_constantToParameterMap, queryModel, TargetType, sessionFactory, true);
 			var visitorParameters = new VisitorParameters(sessionFactory, _constantToParameterMap, requiredHqlParameters,
 				new QuerySourceNamer(), TargetType, QueryMode);
 
@@ -78,7 +101,16 @@ namespace NHibernate.Linq
 
 			ParameterDescriptors = requiredHqlParameters.AsReadOnly();
 
-			return ExpressionToHqlTranslationResults.Statement.AstNode;
+			CanCachePlan = CanCachePlan && visitorParameters.CanCachePlan &&
+				// If some constants do not have matching HQL parameters, their values from first query will
+				// be embedded in the plan and reused for subsequent queries: do not cache the plan.
+				!ParameterValuesByName
+					.Keys
+					.Except(requiredHqlParameters.Select(p => p.Name))
+					.Any();
+
+			// The ast node may be altered by caller, duplicate it for preserving the original one.
+			return DuplicateTree(ExpressionToHqlTranslationResults.Statement.AstNode);
 		}
 
 		internal void CopyExpressionTranslation(NhLinqExpression other)
@@ -87,6 +119,16 @@ namespace NHibernate.Linq
 			ParameterDescriptors = other.ParameterDescriptors;
 			// Type could have been overridden by translation.
 			Type = other.Type;
+		}
+
+		private static IASTNode DuplicateTree(IASTNode ast)
+		{
+			var thisNode = ast.DupNode();
+			foreach (var child in ast)
+			{
+				thisNode.AddChild(DuplicateTree(child));
+			}
+			return thisNode;
 		}
 	}
 }

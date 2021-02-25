@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3414
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			// Test ordering by a scalar sub-select.
-			return Dialect.SupportsScalarSubSelects;
+			return TestDialect.SupportsAggregatingScalarSubSelectsInOrderBy;
 		}
 
 		protected override HbmMapping GetMappings()

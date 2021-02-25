@@ -1,43 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../build-common/NHibernate.props" />
-
   <PropertyGroup>
     <Title>NHibernate.TestDatabaseSetup</Title>
     <Description>Test Database Setup for NHibernate.</Description>
-
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>$(NhAppTargetFrameworks)</TargetFrameworks>
+    <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005</NoWarn>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <TreatSpecificWarningsAsErrors />
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <OutputType>Exe</OutputType>
+    <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="nunit" Version="3.7.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.Test\NHibernate.Test.csproj" />
   </ItemGroup>
-
   <ItemGroup>
-    <Reference Include="FirebirdSql.Data.FirebirdClient">
-      <HintPath>..\..\lib\teamcity\firebird\FirebirdSql.Data.FirebirdClient.dll</HintPath>
-    </Reference>
-    <Reference Include="Npgsql">
-      <HintPath>..\..\lib\teamcity\postgresql\Npgsql.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data.SqlServerCe">
-      <HintPath>..\..\lib\teamcity\sqlServerCe\System.Data.SqlServerCe.dll</HintPath>
-    </Reference>
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
   </ItemGroup>
-
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <PackageReference Include="NUnitLite" Version="3.12.0" />
+  </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
-
 </Project>

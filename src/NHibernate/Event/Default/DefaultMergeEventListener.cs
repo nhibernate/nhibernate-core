@@ -9,7 +9,6 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 
-
 namespace NHibernate.Event.Default
 {
 	/// <summary>
@@ -18,7 +17,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public partial class DefaultMergeEventListener : AbstractSaveEventListener, IMergeEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultMergeEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultMergeEventListener));
 
 		protected override CascadingAction CascadeAction
 		{
@@ -76,7 +75,7 @@ namespace NHibernate.Event.Default
 						
 						transientEntityNames.Add(transientEntityName);
 						
-						log.InfoFormat(
+						log.Info(
 							"transient instance could not be processed by merge: {0} [{1}]",
 							transientEntityName,
 							transientEntity.ToString());
@@ -254,23 +253,23 @@ namespace NHibernate.Event.Default
 
 				if (propertyFromCopy == null || !propertyType.IsEntityType)
 				{
-					log.InfoFormat("property '{0}.{1}' is null or not an entity; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromCopy);
+					log.Info("property '{0}.{1}' is null or not an entity; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromCopy);
 					throw;
 				}
 
 				if (!copyCache.Contains(propertyFromEntity))
 				{
-					log.InfoFormat("property '{0}.{1}' from original entity is not in copyCache; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromEntity);
+					log.Info("property '{0}.{1}' from original entity is not in copyCache; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromEntity);
 					throw;
 				}
 				
 				if (((EventCache)copyCache).IsOperatedOn(propertyFromEntity))
 				{
-					log.InfoFormat("property '{0}.{1}' from original entity is in copyCache and is in the process of being merged; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromEntity);
+					log.Info(ex, "property '{0}.{1}' from original entity is in copyCache and is in the process of being merged; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromEntity);
 				}
 				else
 				{
-					log.InfoFormat("property '{0}.{1}' from original entity is in copyCache and is not in the process of being merged; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromEntity);
+					log.Info(ex, "property '{0}.{1}' from original entity is in copyCache and is not in the process of being merged; {1} =[{2}]", copyEntry.EntityName, propertyName, propertyFromEntity);
 				}
 				
 				// continue...; we'll find out if it ends up not getting saved later
@@ -380,7 +379,7 @@ namespace NHibernate.Event.Default
 				CopyValues(persister, entity, target, source, copyCache);
 
 				//copyValues works by reflection, so explicitly mark the entity instance dirty
-				MarkInterceptorDirty(entity, target);
+				MarkInterceptorDirty(entity, persister, target);
 
 				@event.Result = result;
 			}
@@ -400,15 +399,12 @@ namespace NHibernate.Event.Default
 			return false;
 		}
 
-		private void MarkInterceptorDirty(object entity, object target)
+		private void MarkInterceptorDirty(object entity, IEntityPersister persister, object target)
 		{
-			if (FieldInterceptionHelper.IsInstrumented(entity))
+			if (persister.IsInstrumented)
 			{
-				IFieldInterceptor interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(target);
-				if (interceptor != null)
-				{
-					interceptor.MarkDirty();
-				}
+				var interceptor = persister.EntityMetamodel.BytecodeEnhancementMetadata.ExtractInterceptor(target);
+				interceptor?.MarkDirty();
 			}
 		}
 
@@ -547,7 +543,7 @@ namespace NHibernate.Event.Default
 				{
 					// entity name will not be available for non-POJO entities
 					// TODO: cache the entity name somewhere so that it is available to this exception
-					log.InfoFormat(
+					log.Info(
 						"transient instance could not be processed by merge: {0} [{1}]",
 						@event.Session.GuessEntityName(entityCopy),
 						entity);

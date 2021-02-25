@@ -7,7 +7,7 @@ namespace NHibernate.DomainModel.NHSpecific
 	/// A nullable type that wraps an <see cref="Int32"/> value.
 	/// </summary>
 	[TypeConverter(typeof(NullableInt32Converter)), Serializable()]
-	public struct NullableInt32 : IFormattable, IComparable
+	public struct NullableInt32 : IFormattable, IComparable, IConvertible
 	{
 		public static readonly NullableInt32 Default = new NullableInt32();
 
@@ -214,7 +214,7 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		public static NullableInt32 Parse(string s)
 		{
-			if ((s == null) || (s.Trim().Length == 0))
+			if (string.IsNullOrWhiteSpace(s))
 			{
 				return new NullableInt32();
 			}
@@ -232,6 +232,95 @@ namespace NHibernate.DomainModel.NHSpecific
 		}
 
 		// TODO: implement the rest of the Parse overloads found in Int32
+
+		#endregion
+
+		#region IConvertible
+
+		public TypeCode GetTypeCode()
+		{
+			return _value.GetTypeCode();
+		}
+
+		public bool ToBoolean(IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToBoolean(provider);
+		}
+
+		public char ToChar(IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToChar(provider);
+		}
+
+		public sbyte ToSByte(IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToSByte(provider);
+		}
+
+		public byte ToByte(IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToByte(provider);
+		}
+
+		public short ToInt16(IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToInt16(provider);
+		}
+
+		public ushort ToUInt16(IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToUInt16(provider);
+		}
+
+		public int ToInt32(IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToInt32(provider);
+		}
+
+		public uint ToUInt32(IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToUInt32(provider);
+		}
+
+		public long ToInt64(IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToInt64(provider);
+		}
+
+		public ulong ToUInt64(IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToUInt64(provider);
+		}
+
+		public float ToSingle(IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToSingle(provider);
+		}
+
+		public double ToDouble(IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToDouble(provider);
+		}
+
+		public decimal ToDecimal(IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToDecimal(provider);
+		}
+
+		public DateTime ToDateTime(IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToDateTime(provider);
+		}
+
+		public string ToString(IFormatProvider provider)
+		{
+			return _value.ToString(provider);
+		}
+
+		public object ToType(System.Type conversionType, IFormatProvider provider)
+		{
+			return ((IConvertible) _value).ToType(conversionType, provider);
+		}
 
 		#endregion
 	}

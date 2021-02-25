@@ -6,7 +6,6 @@ namespace NHibernate.Cfg.MappingSchema
 {
 	public partial class HbmManyToAny : IColumnsMapping, IAnyMapping
 	{
-
 		#region Implementation of IColumnsMapping
 
 		[XmlIgnore]
@@ -43,7 +42,7 @@ namespace NHibernate.Cfg.MappingSchema
 		{
 			get
 			{
-				return metavalue ?? new HbmMetaValue[0];
+				return metavalue ?? Array.Empty<HbmMetaValue>();
 			}
 		}
 

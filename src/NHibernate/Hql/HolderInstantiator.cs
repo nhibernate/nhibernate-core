@@ -1,8 +1,11 @@
+using System;
 using System.Reflection;
 using NHibernate.Transform;
 
 namespace NHibernate.Hql
 {
+	//Since v5.2
+	[Obsolete("This class has no more usages and will be removed in a future version.")]
 	public sealed class HolderInstantiator
 	{
 		public static readonly HolderInstantiator NoopInstantiator = new HolderInstantiator(null, null);
@@ -17,7 +20,6 @@ namespace NHibernate.Hql
 			return new HolderInstantiator(ResolveResultTransformer(selectNewTransformer, customTransformer),
 			                              queryReturnAliases);
 		}
-
 
 		public static IResultTransformer ResolveResultTransformer(IResultTransformer selectNewTransformer, IResultTransformer customTransformer)
 		{

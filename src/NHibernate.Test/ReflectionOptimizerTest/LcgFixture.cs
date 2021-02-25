@@ -29,7 +29,7 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 					new BasicPropertyAccessor.BasicSetter(typeof (NoSetterClass), typeof (NoSetterClass).GetProperty("Property"), "Property")
 				};
 
-			Assert.Throws<PropertyNotFoundException>(() => new ReflectionOptimizer(typeof(NoSetterClass), getters, setters));
+			Assert.Throws<PropertyNotFoundException>(() => new ReflectionOptimizer(typeof(NoSetterClass), getters, setters, null, null));
 		}
 
 		public class NoGetterClass
@@ -52,7 +52,7 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 					new BasicPropertyAccessor.BasicSetter(typeof (NoGetterClass), typeof (NoGetterClass).GetProperty("Property"), "Property")
 				};
 
-			Assert.Throws<PropertyNotFoundException>(() => new ReflectionOptimizer(typeof (NoGetterClass), getters, setters));
+			Assert.Throws<PropertyNotFoundException>(() => new ReflectionOptimizer(typeof (NoGetterClass), getters, setters, null, null));
 		}
 
 		public class GetterTypeMismatchClass
@@ -83,7 +83,9 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 			ReflectionOptimizer reflectionOptimizer = new ReflectionOptimizer(
 				obj.GetType(),
 				new[] { accessor.GetGetter(obj.GetType(), property) },
-				new[] { accessor.GetSetter(obj.GetType(), property) });
+				new[] { accessor.GetSetter(obj.GetType(), property) },
+				null,
+				null);
 
 			IAccessOptimizer accessOptimizer = reflectionOptimizer.AccessOptimizer;
 
@@ -92,6 +94,5 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 
 			Assert.AreEqual("str", values[0]);
 		}
-
 	}
 }

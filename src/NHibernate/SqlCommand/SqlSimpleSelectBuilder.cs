@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -12,8 +13,8 @@ namespace NHibernate.SqlCommand
 	{
 		private string tableName;
 
-		private readonly IList<string> columnNames = new List<string>();
-		private readonly IDictionary<string, string> aliases = new Dictionary<string, string>(); //key=column Name, value=column Alias
+		private readonly List<string> columnNames = new List<string>();
+		private readonly Dictionary<string, string> aliases = new Dictionary<string, string>(); //key=column Name, value=column Alias
 		private LockMode lockMode = LockMode.Read;
 		private string comment;
 
@@ -37,7 +38,6 @@ namespace NHibernate.SqlCommand
 			this.tableName = tableName;
 			return this;
 		}
-
 
 		/// <summary>
 		/// Adds a columnName to the SELECT fragment.
@@ -170,6 +170,23 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
+		/// <summary>
+		/// Adds an arbitrary where fragment.
+		/// </summary>
+		/// <param name="fragment">The fragment.</param>
+		/// <returns>The SqlSimpleSelectBuilder</returns>
+		public SqlSimpleSelectBuilder AddWhereFragment(string fragment)
+		{
+			if (string.IsNullOrWhiteSpace(fragment))
+				return this;
+
+			if (fragment.Trim().StartsWith("and ", StringComparison.OrdinalIgnoreCase))
+				fragment = fragment.Substring(fragment.IndexOf("and", StringComparison.OrdinalIgnoreCase) + 3);
+
+			whereStrings.Add(new SqlString(fragment));
+			return this;
+		}
+
 		public virtual SqlSimpleSelectBuilder SetComment(System.String comment)
 		{
 			this.comment = comment;
@@ -211,7 +228,6 @@ namespace NHibernate.SqlCommand
 
 				commaNeeded = true;
 			}
-
 
 			sqlBuilder.Add(" FROM ")
 				.Add(Dialect.AppendLockHint(lockMode, tableName));

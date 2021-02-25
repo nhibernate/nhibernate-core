@@ -1,7 +1,7 @@
 using System;
-using System.Collections;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Mapping
 {
@@ -18,7 +18,7 @@ namespace NHibernate.Mapping
 
 		public override IEnumerable<Column> ColumnIterator
 		{
-			get { return new JoinedEnumerable<Column>(includedTable.ColumnIterator, base.ColumnIterator); }
+			get { return includedTable.ColumnIterator.Concat(base.ColumnIterator); }
 		}
 
 		public override IEnumerable<UniqueKey> UniqueKeyIterator
@@ -39,36 +39,45 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				List<Index> indexes = new List<Index>();
 				IEnumerable<Index> includedIdxs = includedTable.IndexIterator;
 				foreach (Index parentIndex in includedIdxs)
 				{
+					var sharedIndex = GetIndex(parentIndex.Name);
+					if (sharedIndex != null)
+					{
+						sharedIndex.AddColumns(parentIndex.ColumnIterator);
+						sharedIndex.IsInherited = true;
+						continue;
+					}
 					Index index = new Index();
-					index.Name = Name + parentIndex.Name;
+					index.Name = parentIndex.Name;
+					index.IsInherited = true;
 					index.Table = this;
 					index.AddColumns(parentIndex.ColumnIterator);
-					indexes.Add(index);
+					yield return index;
 				}
-				return new JoinedEnumerable<Index>(indexes, base.IndexIterator);
+
+				foreach (var index in base.IndexIterator)
+				{
+					yield return index;
+				}
 			}
 		}
 
 		public override void CreateForeignKeys()
 		{
 			includedTable.CreateForeignKeys();
-			IEnumerable includedFks = includedTable.ForeignKeyIterator;
-			foreach (ForeignKey fk in includedFks)
+			var includedFks = includedTable.ForeignKeyIterator;
+			foreach (var fk in includedFks)
 			{
-				// NH Different behaviour (fk name)
-				CreateForeignKey(GetForeignKeyName(fk), fk.Columns, fk.ReferencedEntityName);
+				CreateForeignKey(
+					Constraint.GenerateName(
+						fk.GeneratedConstraintNamePrefix,
+						this,
+						null,
+						fk.Columns),
+					fk.Columns, fk.ReferencedEntityName);
 			}
-		}
-
-		private string GetForeignKeyName(ForeignKey fk)
-		{
-			// (the FKName length, of H3.2 implementation, may be too long for some RDBMS so we implement something different) 
-			int hash = fk.Name.GetHashCode() ^ Name.GetHashCode();
-			return string.Format("KF{0}", hash.ToString("X"));
 		}
 
 		public override Column GetColumn(Column column)

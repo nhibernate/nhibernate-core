@@ -21,7 +21,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3252
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-
 				session.Save(new Note { Text = new String('0', 9000) });
 				transaction.Commit();
 			}
@@ -29,7 +28,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3252
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-
 				var note = session.Query<Note>().First();
 				Assert.AreEqual(9000, note.Text.Length);
 			}
