@@ -386,7 +386,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string property = _propertyName;
 			bool joinIsNeeded;
 
-			//For nullable entity comparisons we always need to add join (like not constrained one-to-one or not-found ignore associations) 
+			//For nullable entity comparisons we always need to add join (like not constrained one-to-one or not-found ignore associations)
+			//NOTE: This fix is not fully correct. It doesn't work for comparisons with null (where e.OneToOneProp is null)
+			// as by default implicit join is generated and to work propelry left join is required (see GH-2611)
 			bool comparisonWithNullableEntity = false;
 
 			if ( IsDotNode( parent ) ) 
@@ -396,7 +398,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// entity's PK (because 'our' table would know the FK).
 				parentAsDotNode = ( DotNode ) parent;
 				property = parentAsDotNode._propertyName;
-				joinIsNeeded = generateJoin && (entityType.IsNullable || !IsReferenceToPrimaryKey( parentAsDotNode._propertyName, entityType ));
+				joinIsNeeded = generateJoin && ((Walker.IsSelectStatement && entityType.IsNullable) || !IsReferenceToPrimaryKey( parentAsDotNode._propertyName, entityType ));
 			}
 			else if ( ! Walker.IsSelectStatement ) 
 			{
