@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Text.RegularExpressions;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
@@ -230,6 +231,21 @@ namespace NHibernate.Test.Hql
 
 				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "PropRefEntity").Count, Is.EqualTo(1));
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test(Description = "GH-2688")]
+		public async Task NullableManyToOneDeleteQueryAsync()
+		{
+			using (var session = OpenSession())
+			{
+				await (session
+					.CreateQuery(
+						"delete "
+						+ "from NullableOwner ex "
+						+ "where ex.ManyToOne.id = :id"
+					).SetParameter("id", Guid.Empty)
+					.ExecuteUpdateAsync());
 			}
 		}
 
@@ -515,6 +531,7 @@ namespace NHibernate.Test.Hql
 							m.ForeignKey("none");
 							m.NotFound(NotFoundMode.Ignore);
 						});
+					rc.ManyToOne(e => e.ManyToOne, m => m.NotFound(NotFoundMode.Ignore));
 				});
 
 
