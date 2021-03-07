@@ -343,6 +343,7 @@ namespace NHibernate.Linq.Visitors
 			private void AddRelatedExpression(Expression node, Expression left, Expression right)
 			{
 				if (left.NodeType == ExpressionType.MemberAccess ||
+					left.NodeType == ExpressionType.ArrayIndex || // e.g. group.Key[0] == variable
 					IsDynamicMember(left) ||
 					left is QuerySourceReferenceExpression)
 				{

@@ -372,6 +372,40 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
+		public void GroupByWithStringEnumParameter()
+		{
+			db.Users
+			  .GroupBy(p => p.Enum1)
+			  .Select(g => g.Key == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new StringEnumGroup {Enum = p.Enum1})
+			  .Select(g => g.Key.Enum == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new[] {p.Enum1})
+			  .Select(g => g.Key[0] == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new {p.Enum1})
+			  .Select(g => g.Key.Enum1 == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new {Test = new {Test2 = p.Enum1}})
+			  .Select(g => g.Key.Test.Test2 == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new {Test = new[] {p.Enum1}})
+			  .Select(g => g.Key.Test[0] == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+		}
+
+		private class StringEnumGroup
+		{
+			public EnumStoredAsString Enum { get; set; }
+		}
+
+		[Test]
 		public void SelectFirstElementFromProductsGroupedByUnitPrice()
 		{
 			//NH-3180
