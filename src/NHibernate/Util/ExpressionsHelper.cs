@@ -17,7 +17,7 @@ using NHibernate.Type;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
-using Remotion.Linq.Parsing;
+using TransparentIdentifierRemovingExpressionVisitor = NHibernate.Linq.Visitors.TransparentIdentifierRemovingExpressionVisitor;
 
 namespace NHibernate.Util
 {
@@ -594,6 +594,43 @@ namespace NHibernate.Util
 				: TypeFactory.GetDefaultTypeFor(member.ConvertType); // (long)q.OneToMany[0]
 		}
 
+		private class GroupingKeyFlattener : NhExpressionVisitor
+		{
+			private bool _flattened;
+
+			public static Expression FlattenGroupingKey(Expression expression)
+			{
+				var visitor = new GroupingKeyFlattener();
+				expression = visitor.Visit(expression);
+				if (visitor._flattened)
+				{
+					expression = TransparentIdentifierRemovingExpressionVisitor.ReplaceTransparentIdentifiers(expression);
+					// When the grouping key is an array we have to unwrap it (e.g. group.Key[0] == variable)
+					if (expression.NodeType == ExpressionType.ArrayIndex &&
+					    expression is BinaryExpression binaryExpression &&
+					    binaryExpression.Left is NewArrayExpression newArray &&
+					    binaryExpression.Right is ConstantExpression indexExpression &&
+					    indexExpression.Value is int index)
+					{
+						return newArray.Expressions[index];
+					}
+				}
+
+				return expression;
+			}
+
+			protected override Expression VisitMember(MemberExpression node)
+			{
+				if (node.TryGetGroupResultOperator(out var groupBy))
+				{
+					_flattened = true;
+					return groupBy.KeySelector;
+				}
+
+				return base.VisitMember(node);
+			}
+		}
+
 		private class MemberMetadataExtractor : NhExpressionVisitor
 		{
 			private readonly List<MemberMetadataResult> _childrenResults = new List<MemberMetadataResult>();
@@ -639,6 +676,8 @@ namespace NHibernate.Util
 				bool hasIndexer,
 				out MemberMetadataResult results)
 			{
+				expression = GroupingKeyFlattener.FlattenGroupingKey(expression);
+
 				var extractor = new MemberMetadataExtractor(memberPaths, convertType, hasIndexer);
 				extractor.Accept(expression);
 				results = extractor._entityName != null || extractor._childrenResults.Count > 0
