@@ -1,4 +1,22 @@
-﻿Build 5.3.6
+﻿Build 5.3.7
+=============================
+
+Release notes - NHibernate - Version 5.3.7
+
+5 issues were resolved in this release.
+
+** Bug
+
+   * #2704 IEnhancedUserType from string to bool fails in some circumstances
+   * #2702 LINQ projection of nullable enum with list fails
+   * #2693 Invalid parameter conversion with group by
+   * #2688 NoViableAltException in a delete on a many-to-one id
+
+** Task
+
+   * #2701 Release 5.3.7
+
+Build 5.3.6
 =============================
 
 Release notes - NHibernate - Version 5.3.6
