@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
 
@@ -41,6 +42,10 @@ namespace NHibernate.Linq.NestedSelects
 		protected override Expression VisitUnary(UnaryExpression node)
 		{
 			if (node.NodeType == ExpressionType.Convert &&
+				// We can skip a convert node only when the underlying types are equal otherwise it
+				// will throw an exception when trying to convert the value from an object
+				// (e.g. (int?)(Enum?) input[0] -> (Enum?) cast cannot be skipped)
+				node.Type.UnwrapIfNullable() == node.Operand.Type.UnwrapIfNullable() &&
 				(node.Operand is MemberExpression || node.Operand is QuerySourceReferenceExpression))
 			{
 				return AddAndConvertExpression(node.Operand, node.Type);

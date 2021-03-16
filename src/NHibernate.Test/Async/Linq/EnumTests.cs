@@ -9,6 +9,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
@@ -50,7 +51,22 @@ namespace NHibernate.Test.Linq
 						m.Type(_enumType);
 						m.Formula($"(case when Enum1 = {_unspecifiedValue} then null else Enum1 end)");
 					});
+					rc.Bag(x => x.Children, m => 
+						{
+							m.Cascade(Mapping.ByCode.Cascade.All);
+							m.Inverse(true);
+						},
+						a => a.OneToMany()
+					);
 					rc.ManyToOne(x => x.Other, m => m.Cascade(Mapping.ByCode.Cascade.All));
+				});
+
+			mapper.Class<EnumEntityChild>(
+				rc =>
+				{
+					rc.Table("EnumEntityChild");
+					rc.Id(x => x.Id, m => m.Generator(Generators.Guid));
+					rc.Property(x => x.Name);
 				});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
@@ -182,6 +198,26 @@ namespace NHibernate.Test.Linq
 							 }).ToListAsync());
 
 				Assert.That(query.Count, Is.EqualTo(0));
+			}
+		}
+
+		[Test]
+		public async Task CanProjectWithListTransformationAsync()
+		{
+			using (var session = OpenSession())
+			using (var trans = session.BeginTransaction())
+			{
+				var entities = session.Query<EnumEntity>();
+
+				var query = await (entities.Select(user => new
+				{
+					user.Name,
+					simple = user.Enum1,
+					children = user.Children,
+					nullableEnum1IsLarge = user.NullableEnum1 == TestEnum.Large
+				}).ToListAsync());
+
+				Assert.That(query.Count, Is.EqualTo(10));
 			}
 		}
 	}
