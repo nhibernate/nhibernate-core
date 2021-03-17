@@ -21,9 +21,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2704
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.CreateSQLQuery(
-					@"insert into TA (id,ischiusa) values ('id1','S');
-insert into TA (id,ischiusa) values ('id2','N');").ExecuteUpdate();
+				session.Save(new Entity1() {Id = "id1", IsChiusa = true});
+				session.Save(new Entity1() {Id = "id2", IsChiusa = false});
 				transaction.Commit();
 			}
 		}
