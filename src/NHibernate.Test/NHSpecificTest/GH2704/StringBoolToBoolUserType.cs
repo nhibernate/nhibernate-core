@@ -6,8 +6,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Test.NHSpecificTest.GH2704
 {
-	public class StringBoolToBoolUserType
-		: IEnhancedUserType
+	public class StringBoolToBoolUserType : IEnhancedUserType
 	{
 		public object Assemble(object cached, object owner) => cached;
 
@@ -25,7 +24,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2704
 
 		public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-
 			var value = NHibernateUtil.String.NullSafeGet(rs, names[0], session);
 			if (value == null) return false;
 
@@ -34,7 +32,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2704
 
 		public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-
 			if (value == null)
 			{
 				NHibernateUtil.String.NullSafeSet(cmd, null, index, session);
