@@ -31,6 +31,7 @@ namespace NHibernate.Test.Hql.EntityJoinHqlTestEntities
 		public virtual string Name { get; set; }
 		public virtual OneToOneEntity OneToOne { get; set; }
 		public virtual PropRefEntity PropRef { get; set; }
+		public virtual OneToOneEntity ManyToOne { get; set; }
 	}
 
 	public class EntityWithCompositeId
