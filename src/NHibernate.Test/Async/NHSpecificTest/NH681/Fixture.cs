@@ -19,7 +19,6 @@ namespace NHibernate.Test.NHSpecificTest.NH681
 	{
 		protected override void Configure(NHibernate.Cfg.Configuration cfg)
 		{
-			
 		}
 
 		[Test]

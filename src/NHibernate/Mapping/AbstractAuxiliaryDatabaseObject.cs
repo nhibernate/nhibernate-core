@@ -56,6 +56,5 @@ namespace NHibernate.Mapping
 		{
 			this.parameters = parameters;
 		}
-
 	}
 }

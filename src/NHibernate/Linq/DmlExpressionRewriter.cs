@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using NHibernate.Linq.Visitors;
 using NHibernate.Util;
 
@@ -10,10 +9,6 @@ namespace NHibernate.Linq
 {
 	public class DmlExpressionRewriter
 	{
-		static readonly ConstructorInfo DictionaryConstructorInfo = typeof(Dictionary<string, object>).GetConstructor(new[] {typeof(int)});
-
-		static readonly MethodInfo DictionaryAddMethodInfo = ReflectHelper.GetMethod<Dictionary<string, object>>(d => d.Add(null, null));
-
 		readonly IReadOnlyCollection<ParameterExpression> _parameters;
 		readonly Dictionary<string, Expression> _assignments = new Dictionary<string, Expression>();
 
@@ -80,39 +75,25 @@ namespace NHibernate.Linq
 		}
 
 		/// <summary>
-		///     Converts the assignments into a lambda expression, which creates a Dictionary&lt;string,object%gt;.
+		///     Converts the assignments into block of assignments
 		/// </summary>
 		/// <param name="assignments"></param>
 		/// <returns>A lambda expression representing the assignments.</returns>
-		static LambdaExpression ConvertAssignmentsToDictionaryExpression<TSource>(IReadOnlyDictionary<string, Expression> assignments)
+		static LambdaExpression ConvertAssignmentsToBlockExpression<TSource>(IReadOnlyDictionary<string, Expression> assignments)
 		{
 			var param = Expression.Parameter(typeof(TSource));
-			var inits = new List<ElementInit>();
+			var variableAndAssignmentDic = new Dictionary<ParameterExpression, Expression>(assignments.Count);
 			foreach (var set in assignments)
 			{
 				var setter = set.Value;
 				if (setter is LambdaExpression setterLambda)
 					setter = setterLambda.Body.Replace(setterLambda.Parameters.First(), param);
-				inits.Add(
-					Expression.ElementInit(
-						DictionaryAddMethodInfo,
-						Expression.Constant(set.Key),
-						Expression.Convert(setter, typeof(object))));
+
+				var var = Expression.Variable(typeof(object), set.Key);
+				variableAndAssignmentDic[var] = Expression.Assign(var, Expression.Convert(setter, typeof(object)));
 			}
 
-			//The ListInit is intentionally "infected" with the lambda parameter (param), in the form of an IIF. 
-			//The only relevance is to make sure that the ListInit is not evaluated by the PartialEvaluatingExpressionTreeVisitor,
-			//which could turn it into a Constant
-			var listInit = Expression.ListInit(
-				Expression.New(
-					DictionaryConstructorInfo,
-					Expression.Condition(
-						Expression.Equal(param, Expression.Constant(null, typeof(TSource))),
-						Expression.Constant(assignments.Count),
-						Expression.Constant(assignments.Count))),
-				inits);
-
-			return Expression.Lambda(listInit, param);
+			return Expression.Lambda(Expression.Block(variableAndAssignmentDic.Keys, variableAndAssignmentDic.Values), param);
 		}
 
 		public static Expression PrepareExpression<TSource, TTarget>(Expression sourceExpression, Expression<Func<TSource, TTarget>> expression)
@@ -151,7 +132,7 @@ namespace NHibernate.Linq
 
 		public static Expression PrepareExpression<TSource>(Expression sourceExpression, IReadOnlyDictionary<string, Expression> assignments)
 		{
-			var lambda = ConvertAssignmentsToDictionaryExpression<TSource>(assignments);
+			var lambda = ConvertAssignmentsToBlockExpression<TSource>(assignments);
 
 			return Expression.Call(
 				ReflectionCache.QueryableMethods.SelectDefinition.MakeGenericMethod(typeof(TSource), lambda.Body.Type),

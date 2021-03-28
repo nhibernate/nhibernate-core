@@ -26,7 +26,6 @@ namespace NHibernate.Param
 		//  return bindCount;
 		//}
 
-
 		public void Bind(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session)
 		{
 			throw new NotImplementedException();
@@ -43,10 +42,9 @@ namespace NHibernate.Param
 			set { }
 		}
 
-		public string RenderDisplayInfo() 
-		
+		public string RenderDisplayInfo()
 		{
-			return "index-selector [" + CollectDisplayInfo() + "]" ;
+			return "index-selector [" + CollectDisplayInfo() + "]";
 		}
 
 		public IEnumerable<string> GetIdsForBackTrack(IMapping sessionFactory)

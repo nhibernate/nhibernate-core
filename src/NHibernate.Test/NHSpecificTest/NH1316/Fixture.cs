@@ -51,7 +51,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1316
 			}
 		}
 
-
 		[Test]
 		public void Correct_Id_Returned_When_Using_Trigger()
 		{

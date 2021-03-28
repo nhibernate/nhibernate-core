@@ -7,7 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1939
 {
 	public class AuxType : AbstractAuxiliaryDatabaseObject
 	{
-
 		override public string SqlCreateString(Dialect.Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
 		{
 			return "select '" + Parameters["scriptParameter"] + "'";
@@ -17,6 +16,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1939
 		{
 			return "select 'drop script'";
 		}
-
 	}
 }

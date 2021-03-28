@@ -35,13 +35,13 @@ namespace NHibernate.Test.CacheTest
 			f.SetParameter("pLike", "so%");
 			var fk =  new FilterKey(f);
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk };
-			qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null);
+			qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
 
 			var f1 = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f1.SetParameter("pLike", sameValue ? "so%" : "%ing");
 			var fk1 = new FilterKey(f1);
 			fks = new HashSet<FilterKey> { fk1 };
-			qk1 = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null);
+			qk1 = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
 		}
 
 		private void QueryKeyFilterDescValueToCompare(out QueryKey qk, out QueryKey qk1, bool sameValue)
@@ -52,13 +52,13 @@ namespace NHibernate.Test.CacheTest
 			f.SetParameter("pDesc", "something").SetParameter("pValue", 10);
 			var fk = new FilterKey(f);
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk };
-			qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null);
+			qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
 
 			var f1 = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f1.SetParameter("pDesc", "something").SetParameter("pValue", sameValue ? 10 : 11);
 			var fk1 = new FilterKey(f1);
 			fks = new HashSet<FilterKey> { fk1 };
-			qk1 = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null);
+			qk1 = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
 		}
 
 		[Test]
@@ -122,7 +122,7 @@ namespace NHibernate.Test.CacheTest
 			f.SetParameter("pLike", "so%");
 			var fk = new FilterKey(f);
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk };
-			var qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null);
+			var qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
 			Assert.That(qk.ToString(), Does.Contain($"filters: ['{fk}']"), "Like");
 
 			filterName = "DescriptionEqualAndValueGT";
@@ -130,7 +130,7 @@ namespace NHibernate.Test.CacheTest
 			f.SetParameter("pDesc", "something").SetParameter("pValue", 10);
 			fk = new FilterKey(f);
 			fks = new HashSet<FilterKey> { fk };
-			qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null);
+			qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
 			Assert.That(qk.ToString(), Does.Contain($"filters: ['{fk}']"), "Value");
 		}
 
@@ -148,7 +148,7 @@ namespace NHibernate.Test.CacheTest
 			var fvk = new FilterKey(fv);
 
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk, fvk };
-			var qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null);
+			var qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
 			Assert.That(qk.ToString(), Does.Contain($"filters: ['{fk}', '{fvk}']"));
 		}
 	}

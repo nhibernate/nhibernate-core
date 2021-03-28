@@ -389,7 +389,6 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-
 				int[] dirtyProperties = @event.DirtyProperties;
 				if (dirtyProperties != null && dirtyProperties.Length != 0)
 				{
@@ -496,7 +495,6 @@ namespace NHibernate.Event.Default
 			@event.DirtyCheckPossible = !cannotDirtyCheck;
 		}
 
-
 		private object[] GetDatabaseSnapshot(ISessionImplementor session, IEntityPersister persister, object id)
 		{
 			if (persister.IsSelectBeforeUpdateRequired)
@@ -523,6 +521,5 @@ namespace NHibernate.Event.Default
 				return session.PersistenceContext.GetCachedDatabaseSnapshot(entityKey);
 			}
 		}
-
 	}
 }

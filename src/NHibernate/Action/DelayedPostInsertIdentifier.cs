@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 
 namespace NHibernate.Action
 {
@@ -15,20 +16,12 @@ namespace NHibernate.Action
 	[Serializable]
 	public class DelayedPostInsertIdentifier
 	{
-		[ThreadStatic]
-		private static long _Sequence = 0;
+		private static long GlobalSequence = 0;
 		private readonly long sequence;
 
 		public DelayedPostInsertIdentifier()
 		{
-			lock (typeof(DelayedPostInsertIdentifier))
-			{
-				if (_Sequence == long.MaxValue)
-				{
-					_Sequence = 0;
-				}
-				sequence = _Sequence++;
-			}
+			sequence = Interlocked.Increment(ref GlobalSequence);
 		}
 
 		public override bool Equals(object obj)
@@ -52,5 +45,10 @@ namespace NHibernate.Action
 		{
 			return string.Format("<delayed:{0}>", sequence);
 		}
+
+		/// <summary>
+		/// The actual identifier value that has been generated.
+		/// </summary>
+		public object ActualId { get; set; }
 	}
 }

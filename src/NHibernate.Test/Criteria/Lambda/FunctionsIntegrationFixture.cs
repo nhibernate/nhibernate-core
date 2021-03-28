@@ -51,7 +51,6 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
-
 		[Test]
 		public void RoundDoubleWithOneArgument()
 		{

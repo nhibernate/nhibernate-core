@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH3079">
+  <class name="Person" table="T_PERSON">
+    <composite-id name="CpId" class="PersonCpId">
+      <key-property name="IdA" column="C_P_ID_A"/>
+      <key-property name="IdB" column="C_P_ID_B"/>
+    </composite-id>
+    <property name="Name" column="C_P_NAME"/>
+    <set name="EmploymentList" inverse="true" cascade="all-delete-orphan">
+      <key>
+        <column name="C_ET_P_ID_A"/>
+        <column name="C_ET_P_ID_B"/>
+      </key>
+      <one-to-many class="Employment"/>
+      <loader query-ref="employmentsOfPerson"/>
+    </set>
+
+    <loader query-ref="person"/>
+  </class>
+
+  <class name="Employer" table="T_EMPLOYER">
+    <composite-id name="CpId" class="EmployerCpId">
+      <key-property name="IdA" column="C_E_ID_A"/>
+      <key-property name="IdB" column="C_E_ID_B"/>
+    </composite-id>
+    <property name="Name" column="C_E_NAME"/>
+    <set name="EmploymentList" inverse="true" cascade="all-delete-orphan">
+      <key>
+        <column name="C_ET_E_ID_A"/>
+        <column name="C_ET_E_ID_B"/>
+      </key>
+      <one-to-many class="Employment"/>
+      <loader query-ref="employmentsOfEmployer"/>
+    </set>
+
+    <loader query-ref="employer"/>
+  </class>
+
+  <class name="Employment" table="T_EMPLOYMENT">
+    <composite-id name="CpId" class="EmploymentCpId">
+      <key-property name="Id" column="C_ET_ID"/>
+      <key-many-to-one name="PersonObj">
+        <column name="C_ET_P_ID_A"/>
+        <column name="C_ET_P_ID_B"/>
+      </key-many-to-one>
+      <key-many-to-one name="EmployerObj">
+        <column name="C_ET_E_ID_A"/>
+        <column name="C_ET_E_ID_B"/>
+      </key-many-to-one>
+    </composite-id>
+    <property name="Name" column="C_ET_NAME"/>
+
+    <loader query-ref="employment"/>
+  </class>
+
+  <class name="PersonNoComponent" table="T_PERSON_NO_COMP">
+    <composite-id>
+      <key-property name="IdA" column="C_PNC_ID_A"/>
+      <key-property name="IdB" column="C_PNC_ID_B"/>
+    </composite-id>
+    <property name="Name" column="C_PNC_NAME"/>
+    <loader query-ref="personNoComponent"/>
+  </class>
+
+  <sql-query name="personNoComponent">
+    <return alias="persNoComp" class="PersonNoComponent"/>
+    <![CDATA[
+    SELECT {persNoComp.*}
+    FROM T_PERSON_NO_COMP persNoComp
+    WHERE C_PNC_ID_A=?
+      AND C_PNC_ID_B=?
+    ]]>
+  </sql-query>
+
+  <sql-query name="person">
+    <return alias="pers" class="Person"/>
+    <![CDATA[
+    SELECT {pers.*}
+    FROM T_PERSON pers
+    WHERE C_P_ID_A=?
+      AND C_P_ID_B=?
+    ]]>
+  </sql-query>
+
+  <sql-query name="employer">
+    <return alias="emps" class="Employer"/>
+    <![CDATA[
+    SELECT {emps.*}
+    FROM T_EMPLOYER emps
+    WHERE C_E_ID_A=?
+      AND C_E_ID_B=?
+    ]]>
+  </sql-query>
+
+  <sql-query name="employmentsOfPerson">
+    <load-collection alias="empsOfPerson" role="Person.EmploymentList"/>
+    <![CDATA[
+    SELECT {empsOfPerson.*}
+    FROM T_EMPLOYMENT empsOfPerson
+    WHERE C_ET_P_ID_A=?
+      AND C_ET_P_ID_B=?
+    order by C_ET_NAME
+    ]]>
+  </sql-query>
+  <sql-query name="employmentsOfEmployer">
+    <load-collection alias="empsOfEmployer" role="Employer.EmploymentList"/>
+    <![CDATA[
+    SELECT {empsOfEmployer.*}
+    FROM T_EMPLOYMENT empsOfEmployer
+    WHERE C_ET_E_ID_A=?
+      AND C_ET_E_ID_B=?
+    order by C_ET_NAME
+    ]]>
+  </sql-query>
+
+  <sql-query name="employment">
+    <return alias="empts" class="Employment"/>
+    <![CDATA[
+    SELECT {empts.*}
+    FROM T_EMPLOYMENT empts
+    WHERE C_ET_ID=?
+      AND C_ET_P_ID_A=?
+      AND C_ET_P_ID_B=?
+      AND C_ET_E_ID_A=?
+      AND C_ET_E_ID_B=?
+    order by C_ET_NAME
+    ]]>
+  </sql-query>
+
+  <query name="personPositional">
+    <![CDATA[
+    from Person as per
+    where per.CpId = ?
+      or per.CpId = ?
+    order by per.Name
+    ]]>
+  </query>
+
+  <query name="personNamed">
+    <query-param name="id1" type="PersonCpId"/>
+    <query-param name="id2" type="PersonCpId"/>
+    <![CDATA[
+    from Person as per
+    where per.CpId = :id1
+      or per.CpId = :id2
+    order by per.Name
+    ]]>
+  </query>
+
+  <sql-query name="personNoComponentSql">
+    <return alias="per" class="PersonNoComponent"/>
+    <![CDATA[
+    select {per.*}
+    from T_PERSON_NO_COMP per
+    where C_PNC_ID_A = ?
+      and C_PNC_ID_B = ?
+      or C_PNC_ID_A = ?
+      and C_PNC_ID_B = ?
+    order by C_PNC_NAME
+    ]]>
+  </sql-query>
+</hibernate-mapping>

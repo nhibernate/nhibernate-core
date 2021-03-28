@@ -50,7 +50,6 @@ namespace NHibernate.Stat
 				.Append(",removeCount=").Append(removeCount)
 				.Append(",updateCount=").Append(updateCount)
 				.Append(']').ToString();
-
 		}
 	}
 }

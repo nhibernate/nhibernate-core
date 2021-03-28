@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace NHibernate.Mapping.ByCode
 {
 	public static class ModelExplicitDeclarationsHolderExtensions
@@ -11,34 +9,34 @@ namespace NHibernate.Mapping.ByCode
 				return;
 			}
 
-			System.Array.ForEach(source.RootEntities.ToArray(), destination.AddAsRootEntity);
-			System.Array.ForEach(source.Components.ToArray(), destination.AddAsComponent);
-			System.Array.ForEach(source.TablePerClassEntities.ToArray(), destination.AddAsTablePerClassEntity);
-			System.Array.ForEach(source.TablePerClassHierarchyEntities.ToArray(), destination.AddAsTablePerClassHierarchyEntity);
-			System.Array.ForEach(source.TablePerConcreteClassEntities.ToArray(), destination.AddAsTablePerConcreteClassEntity);
+			foreach (var o in source.RootEntities) destination.AddAsRootEntity(o);
+			foreach (var o in source.Components) destination.AddAsComponent(o);
+			foreach (var o in source.TablePerClassEntities) destination.AddAsTablePerClassEntity(o);
+			foreach (var o in source.TablePerClassHierarchyEntities) destination.AddAsTablePerClassHierarchyEntity(o);
+			foreach (var o in source.TablePerConcreteClassEntities) destination.AddAsTablePerConcreteClassEntity(o);
 
-			System.Array.ForEach(source.OneToOneRelations.ToArray(), destination.AddAsOneToOneRelation);
-			System.Array.ForEach(source.ManyToOneRelations.ToArray(), destination.AddAsManyToOneRelation);
-			System.Array.ForEach(source.KeyManyToManyRelations.ToArray(), destination.AddAsManyToManyKeyRelation);
-			System.Array.ForEach(source.ItemManyToManyRelations.ToArray(), destination.AddAsManyToManyItemRelation);
-			System.Array.ForEach(source.ManyToAnyRelations.ToArray(), destination.AddAsManyToAnyRelation);
-			System.Array.ForEach(source.OneToManyRelations.ToArray(), destination.AddAsOneToManyRelation);
-			System.Array.ForEach(source.Any.ToArray(), destination.AddAsAny);
+			foreach (var o in source.OneToOneRelations) destination.AddAsOneToOneRelation(o);
+			foreach (var o in source.ManyToOneRelations) destination.AddAsManyToOneRelation(o);
+			foreach (var o in source.KeyManyToManyRelations) destination.AddAsManyToManyKeyRelation(o);
+			foreach (var o in source.ItemManyToManyRelations) destination.AddAsManyToManyItemRelation(o);
+			foreach (var o in source.ManyToAnyRelations) destination.AddAsManyToAnyRelation(o);
+			foreach (var o in source.OneToManyRelations) destination.AddAsOneToManyRelation(o);
+			foreach (var o in source.Any) destination.AddAsAny(o);
 
-			System.Array.ForEach(source.Poids.ToArray(), destination.AddAsPoid);
-			System.Array.ForEach(source.ComposedIds.ToArray(), destination.AddAsPartOfComposedId);
-			System.Array.ForEach(source.VersionProperties.ToArray(), destination.AddAsVersionProperty);
-			System.Array.ForEach(source.NaturalIds.ToArray(), destination.AddAsNaturalId);
+			foreach (var o in source.Poids) destination.AddAsPoid(o);
+			foreach (var o in source.ComposedIds) destination.AddAsPartOfComposedId(o);
+			foreach (var o in source.VersionProperties) destination.AddAsVersionProperty(o);
+			foreach (var o in source.NaturalIds) destination.AddAsNaturalId(o);
 
-			System.Array.ForEach(source.Sets.ToArray(), destination.AddAsSet);
-			System.Array.ForEach(source.Bags.ToArray(), destination.AddAsBag);
-			System.Array.ForEach(source.IdBags.ToArray(), destination.AddAsIdBag);
-			System.Array.ForEach(source.Lists.ToArray(), destination.AddAsList);
-			System.Array.ForEach(source.Arrays.ToArray(), destination.AddAsArray);
-			System.Array.ForEach(source.Dictionaries.ToArray(), destination.AddAsMap);
-			System.Array.ForEach(source.Properties.ToArray(), destination.AddAsProperty);
-			System.Array.ForEach(source.PersistentMembers.ToArray(), destination.AddAsPersistentMember);
-			System.Array.ForEach(source.SplitDefinitions.ToArray(), destination.AddAsPropertySplit);
+			foreach (var o in source.Sets) destination.AddAsSet(o);
+			foreach (var o in source.Bags) destination.AddAsBag(o);
+			foreach (var o in source.IdBags) destination.AddAsIdBag(o);
+			foreach (var o in source.Lists) destination.AddAsList(o);
+			foreach (var o in source.Arrays) destination.AddAsArray(o);
+			foreach (var o in source.Dictionaries) destination.AddAsMap(o);
+			foreach (var o in source.Properties) destination.AddAsProperty(o);
+			foreach (var o in source.PersistentMembers) destination.AddAsPersistentMember(o);
+			foreach (var o in source.SplitDefinitions) destination.AddAsPropertySplit(o);
 			foreach (var dynamicComponent in source.DynamicComponents)
 			{
 				var template = source.GetDynamicComponentTemplate(dynamicComponent);

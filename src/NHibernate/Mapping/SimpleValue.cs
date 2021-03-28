@@ -37,10 +37,7 @@ namespace NHibernate.Mapping
 			this.table = table;
 		}
 
-		public virtual IEnumerable<Column> ConstraintColumns
-		{
-			get { return new SafetyEnumerable<Column>(columns); }
-		}
+		public virtual IEnumerable<Column> ConstraintColumns => columns.OfType<Column>();
 
 		public string ForeignKeyName
 		{
@@ -324,7 +321,7 @@ namespace NHibernate.Mapping
 
 		public virtual bool IsValid(IMapping mapping)
 		{
-			return ColumnSpan == Type.GetColumnSpan(mapping);
+			return ColumnSpan == Type.GetOwnerColumnSpan(mapping);
 		}
 
 		public virtual void CreateForeignKey()

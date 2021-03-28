@@ -67,7 +67,6 @@ namespace NHibernate.Util
 
 		#endregion
 
-
 		private class StringTokenizerEnumerator : IEnumerator<string>
 		{
 			private StringTokenizer _stokenizer;

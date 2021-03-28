@@ -187,6 +187,5 @@ namespace NHibernate.Test.Legacy
 				DetachedCriteria.For<Master>().GetRootEntityTypeIfAvailable()
 				);
 		}
-
 	}
 }

@@ -12,13 +12,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NHibernate.Dialect;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class NullComparisonTestsAsync : LinqTestCase
 	{
@@ -27,6 +30,350 @@ namespace NHibernate.Test.Linq
 		private static readonly AnotherEntity BothSame = new AnotherEntity {Input = "i/o", Output = "i/o"};
 		private static readonly AnotherEntity BothNull = new AnotherEntity();
 		private static readonly AnotherEntity BothDifferent = new AnotherEntity {Input = "input", Output = "output"};
+
+		[Test]
+		public async Task NullInequalityWithNotNullAsync()
+		{
+			var q = session.Query<AnotherEntityRequired>().Where(o => o.Input != null);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, InputSet, BothSame, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => null != o.Input);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, InputSet, BothSame, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.InputNullability != AnotherEntityNullability.True);
+			await (ExpectAsync(q, Does.Not.Contain("end is null").IgnoreCase, InputSet, BothSame, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => AnotherEntityNullability.True != o.InputNullability);
+			await (ExpectAsync(q, Does.Not.Contain("end is null").IgnoreCase, InputSet, BothSame, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => "input" != o.Input);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothSame));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Input != "input");
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothSame));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Input != o.Output);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Output != o.Input);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Input != o.NullableOutput);
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase, BothDifferent, InputSet, BothNull));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput != o.Input);
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase, BothDifferent, InputSet, BothNull));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequired.Output != o.Input);
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase, BothDifferent, InputSet, BothNull));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Input != o.NullableAnotherEntityRequired.Output);
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase, BothDifferent, InputSet, BothNull));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequired.Input != o.Output);
+			await (ExpectAsync(q, Does.Contain("Input is null").IgnoreCase, BothDifferent, OutputSet, BothNull));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Output != o.NullableAnotherEntityRequired.Input);
+			await (ExpectAsync(q, Does.Contain("Input is null").IgnoreCase, BothDifferent, OutputSet, BothNull));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => 3 != o.NullableOutput.Length);
+			await (ExpectAsync(q, Does.Contain("is null").IgnoreCase, InputSet, BothDifferent, BothNull, OutputSet));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput.Length != 3);
+			await (ExpectAsync(q, Does.Contain("is null").IgnoreCase, InputSet, BothDifferent, BothNull, OutputSet));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => 3 != o.Input.Length);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, InputSet, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Input.Length != 3);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, InputSet, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => (o.NullableAnotherEntityRequiredId ?? 0) != (o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId ?? 0));
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => (o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId ?? 0) != (o.NullableAnotherEntityRequiredId ?? 0));
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.GetValueOrDefault() != o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.GetValueOrDefault());
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.GetValueOrDefault() != o.NullableAnotherEntityRequiredId.GetValueOrDefault());
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequiredId.Value != o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.Value);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.Value != o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.Value && o.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.HasValue);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequiredId.Value != 0);
+			await (ExpectAllAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.Value != 0 && o.NullableAnotherEntityRequiredId.HasValue);
+			await (ExpectAllAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.HasValue || o.NullableAnotherEntityRequiredId.Value != 0);
+			await (ExpectAllAsync(q, Does.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.Value != 0 || o.NullableAnotherEntityRequiredId.HasValue);
+			await (ExpectAllAsync(q, Does.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput != null && o.NullableOutput != "test");
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothDifferent, BothSame, OutputSet));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput != "test" && o.NullableOutput != null);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothDifferent, BothSame, OutputSet));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput != null || o.NullableOutput != "test");
+			await (ExpectAllAsync(q, Does.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput != "test" || o.NullableOutput != null);
+			await (ExpectAllAsync(q, Does.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput != "test" && (o.NullableAnotherEntityRequiredId > 0 && o.NullableOutput != null));
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothDifferent, BothSame, OutputSet));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput != null && (o.NullableAnotherEntityRequiredId > 0 && o.NullableOutput != "test"));
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothDifferent, BothSame, OutputSet));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.Value != o.NullableAnotherEntityRequiredId.Value);
+			await (ExpectAsync(q, Does.Contain("or case").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Any(r => r.Output != o.Input));
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase.And.Contain("Output is null").IgnoreCase, BothDifferent, InputSet, BothNull));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.All(r => r.Output != o.Input));
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase.And.Contain("Output is null").IgnoreCase, InputSet, OutputSet, BothDifferent, BothNull));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.All(r => r.Output != null && r.Output != o.Input));
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase.And.Not.Contain("Output is null").IgnoreCase, BothDifferent, OutputSet));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => (o.NullableOutput + o.Output) != o.Output);
+			await (ExpectAllAsync(q, Does.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => (o.Input + o.Output) != o.Output);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothSame, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Address.Street != o.Output);
+			await (ExpectAsync(q, Does.Contain("Input is null").IgnoreCase, BothDifferent, OutputSet, BothNull));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Address.City != o.Output);
+			await (ExpectAsync(q, Does.Contain("Output is null").IgnoreCase, InputSet, BothNull));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Address.City != null && o.Address.City != o.Output);
+			await (ExpectAsync(q, Does.Not.Contain("Output is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Address.Street != null && o.Address.Street != o.NullableOutput);
+			await (ExpectAsync(q, Does.Contain("Output is null").IgnoreCase, InputSet, BothDifferent));
+
+			await (ExpectAsync(session.Query<Customer>().Where(o => o.CustomerId != null), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<Customer>().Where(o => null != o.CustomerId), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<Customer>().Where(o => o.CustomerId != "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<Customer>().Where(o => "test" != o.CustomerId), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.CustomerId != "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" != o.Order.Customer.CustomerId), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.CompanyName != "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" != o.Order.Customer.CompanyName), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.CreatedBy.CreatedBy.Name != "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => "test" != o.CreatedBy.CreatedBy.CreatedBy.Name), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.CreatedBy.Id != 5), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => 5 != o.CreatedBy.CreatedBy.Id), Does.Not.Contain("is null").IgnoreCase));
+		}
+
+		[Test]
+		public async Task NullInequalityWithNotNullSubSelectAsync()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+			{
+				Assert.Ignore("Dialect does not support scalar subselects");
+			}
+
+			var q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Count != 1);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Max(r => r.Id) != 0);
+			await (ExpectAllAsync(q, Does.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.All(r => r.Output != null) != o.NullableBool);
+			await (ExpectAllAsync(q, Does.Not.Contain("or case").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Where(r => r.Id == 0).Sum(r => r.Input.Length) != 5);
+			await (ExpectAllAsync(q, Does.Contain("or (").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.All(r => r.Output != null) != (o.NullableOutput.Length > 0));
+			await (ExpectAsync(q, Does.Not.Contain("or case").IgnoreCase));
+		}
+
+		[Test]
+		public async Task NullEqualityWithNotNullAsync()
+		{
+			var q = session.Query<AnotherEntityRequired>().Where(o => o.Input == null);
+			await (ExpectAsync(q, Does.Contain("is null").IgnoreCase, OutputSet, BothNull));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => null == o.Input);
+			await (ExpectAsync(q, Does.Contain("is null").IgnoreCase, OutputSet, BothNull));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.InputNullability == AnotherEntityNullability.True);
+			await (ExpectAsync(q, Does.Not.Contain("end is null").IgnoreCase, BothNull, OutputSet));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => AnotherEntityNullability.True == o.InputNullability);
+			await (ExpectAsync(q, Does.Not.Contain("end is null").IgnoreCase, BothNull, OutputSet));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => "input" == o.Input);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, InputSet, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Input == "input");
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, InputSet, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Input == o.Output);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothSame));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Output == o.Input);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothSame));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Input == o.NullableOutput);
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase, BothSame));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput == o.Input);
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase, BothSame));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequired.Output == o.Input);
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase, BothSame));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Input == o.NullableAnotherEntityRequired.Output);
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase, BothSame));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequired.Input == o.Output);
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase, BothSame));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Output == o.NullableAnotherEntityRequired.Input);
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase, BothSame));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => 3 == o.Input.Length);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothSame));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Input.Length == 3);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothSame));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => (o.NullableAnotherEntityRequiredId ?? 0) == (o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId ?? 0));
+			await (ExpectAllAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => (o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId ?? 0) == (o.NullableAnotherEntityRequiredId ?? 0));
+			await (ExpectAllAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.GetValueOrDefault() == o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.GetValueOrDefault());
+			await (ExpectAllAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.GetValueOrDefault() == o.NullableAnotherEntityRequiredId.GetValueOrDefault());
+			await (ExpectAllAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequiredId.Value == o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.Value);
+			await (ExpectAllAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.Value == o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.Value && o.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.HasValue);
+			await (ExpectAllAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.HasValue && o.NullableAnotherEntityRequiredId.Value == 0);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.Value == 0 && o.NullableAnotherEntityRequiredId.HasValue);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.HasValue || o.NullableAnotherEntityRequiredId.Value == 0);
+			await (ExpectAllAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequiredId.Value == 0 || o.NullableAnotherEntityRequiredId.HasValue);
+			await (ExpectAllAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput == "test");
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableOutput != null || o.NullableOutput == "test");
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, OutputSet, BothDifferent, BothSame));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.NullableAnotherEntityRequired.NullableAnotherEntityRequiredId.Value == o.NullableAnotherEntityRequiredId.Value);
+			await (ExpectAllAsync(q, Does.Contain("Id is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Any(r => r.Output == o.Input));
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase.And.Not.Contain("Output is null").IgnoreCase, BothSame));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.All(r => r.Output == o.Input));
+			await (ExpectAsync(q, Does.Not.Contain("Input is null").IgnoreCase.And.Not.Contain("Output is null").IgnoreCase, BothSame, BothNull, InputSet, OutputSet));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.All(r => r.Output == o.NullableOutput));
+			await (ExpectAllAsync(q, Does.Contain("Output is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.All(r => r.Output != null && o.NullableOutput != null && r.Output == o.NullableOutput));
+			await (ExpectAsync(q, Does.Not.Contain("Output is null").IgnoreCase, BothSame, BothDifferent, OutputSet));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => (o.NullableOutput + o.Output) == o.Output);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => (o.Output + o.Output) == o.Output);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => !o.Input.Equals(o.Output));
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => !o.Output.Equals(o.Input));
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => !o.Input.Equals(o.NullableOutput));
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => !o.NullableOutput.Equals(o.Input));
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase, BothDifferent));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => !o.NullableOutput.Equals(o.NullableOutput));
+			await (ExpectAsync(q, Does.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => !o.NullableOutput.Equals(o.NullableOutput));
+			await (ExpectAsync(q, Does.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Address.City == o.NullableOutput);
+			await (ExpectAllAsync(q, Does.Contain("Output is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.Address.Street != null && o.Address.Street == o.NullableOutput);
+			await (ExpectAsync(q, Does.Not.Contain("Output is null").IgnoreCase, BothSame));
+
+			await (ExpectAsync(session.Query<Customer>().Where(o => o.CustomerId == null), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<Customer>().Where(o => null == o.CustomerId), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<Customer>().Where(o => o.CustomerId == "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<Customer>().Where(o => "test" == o.CustomerId), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.CustomerId == "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" == o.Order.Customer.CustomerId), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.CompanyName == "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" == o.Order.Customer.CompanyName), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.CreatedBy.CreatedBy.Name == "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => "test" == o.CreatedBy.CreatedBy.CreatedBy.Name), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.CreatedBy.Id == 5), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => 5 == o.CreatedBy.CreatedBy.Id), Does.Not.Contain("is null").IgnoreCase));
+		}
+
+		[Test]
+		public async Task NullEqualityWithNotNullSubSelectAsync()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+			{
+				Assert.Ignore("Dialect does not support scalar subselects");
+			}
+
+			var q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Count == 1);
+			await (ExpectAllAsync(q, Does.Not.Contain("is null").IgnoreCase));
+
+			q = session.Query<AnotherEntityRequired>().Where(o => o.RelatedItems.Max(r => r.Id) == 0);
+			await (ExpectAsync(q, Does.Not.Contain("is null").IgnoreCase));
+		}
 
 		[Test]
 		public async Task NullEqualityAsync()
@@ -96,6 +443,63 @@ namespace NHibernate.Test.Linq
 			// Columns against columns
 			q = from x in session.Query<AnotherEntity>() where x.Input == x.Output select x;
 			await (ExpectAsync(q, BothSame, BothNull));
+
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.ContactName == null), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => null == o.Order.Customer.ContactName), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.ContactName == "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" == o.Order.Customer.ContactName), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => null == o.Component.Property1), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.Property1 == null), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => "test" == o.Component.Property1), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.Property1 == "test"), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => null == o.Component.OtherComponent.OtherProperty1), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.OtherComponent.OtherProperty1 == null), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => "test" == o.Component.OtherComponent.OtherProperty1), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.OtherComponent.OtherProperty1 == "test"), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.CreatedBy.Name == "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => "test" == o.CreatedBy.ModifiedBy.CreatedBy.Name), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.CreatedBy.Component.OtherComponent.OtherProperty1 == "test"), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => "test" == o.CreatedBy.CreatedBy.Component.OtherComponent.OtherProperty1), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.ModifiedBy.CreatedBy.Id == 5), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => 5 == o.ModifiedBy.CreatedBy.Id), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.Id == 5), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => 5 == o.CreatedBy.ModifiedBy.Id), Does.Not.Contain("is null").IgnoreCase));
+
+			if (Sfi.Dialect is FirebirdDialect)
+			{
+				return;
+			}
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort == o.NullableShort), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short == o.Short), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort == o.Short), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short == o.NullableShort), WithoutIsNullAndWithoutCast()));
+
+			short value = 3;
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort == value), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => value == o.NullableShort), WithoutIsNullAndWithoutCast()));
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort.Value == value), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => value == o.NullableShort.Value), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short == value), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => value == o.Short), WithoutIsNullAndWithoutCast()));
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort == 3L), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L == o.NullableShort), WithoutIsNullAndWithoutCast()));
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort.Value == 3L), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L == o.NullableShort.Value),  WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short == 3L), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L == o.Short), WithoutIsNullAndWithoutCast()));
 		}
 
 		[Test]
@@ -154,6 +558,73 @@ namespace NHibernate.Test.Linq
 			// Columns against columns
 			q = from x in session.Query<AnotherEntity>() where x.Input != x.Output select x;
 			await (ExpectAsync(q, BothDifferent, InputSet, OutputSet));
+
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.ContactName != null), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => null != o.Order.Customer.ContactName), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => o.Order.Customer.ContactName != "test"), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<OrderLine>().Where(o => "test" != o.Order.Customer.ContactName), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => null != o.Component.Property1), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.Property1 != null), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => "test" != o.Component.Property1), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.Property1 != "test"), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => null != o.Component.OtherComponent.OtherProperty1), Does.Not.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.OtherComponent.OtherProperty1 != null), Does.Not.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => "test" != o.Component.OtherComponent.OtherProperty1), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => o.Component.OtherComponent.OtherProperty1 != "test"), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.CreatedBy.Name != "test"), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => "test" != o.CreatedBy.ModifiedBy.CreatedBy.Name), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.CreatedBy.Component.OtherComponent.OtherProperty1 != "test"), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => "test" != o.CreatedBy.CreatedBy.Component.OtherComponent.OtherProperty1), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.ModifiedBy.CreatedBy.Id != 5), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => 5 != o.ModifiedBy.CreatedBy.Id), Does.Contain("is null").IgnoreCase));
+
+			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.Id != 5), Does.Contain("is null").IgnoreCase));
+			await (ExpectAsync(session.Query<User>().Where(o => 5 != o.CreatedBy.ModifiedBy.Id), Does.Contain("is null").IgnoreCase));
+
+			if (Sfi.Dialect is FirebirdDialect)
+			{
+				return;
+			}
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort != o.NullableShort), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short != o.Short), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort != o.Short), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short != o.NullableShort), WithIsNullAndWithoutCast()));
+
+			short value = 3;
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort != value), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => value != o.NullableShort), WithIsNullAndWithoutCast()));
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort.Value != value), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => value != o.NullableShort.Value), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short != value), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => value != o.Short), WithoutIsNullAndWithoutCast()));
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort != 3L), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3 != o.NullableShort), WithIsNullAndWithoutCast()));
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort.Value != 3L), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L != o.NullableShort.Value), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short != 3L), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L != o.Short), WithoutIsNullAndWithoutCast()));
+		}
+
+		private IResolveConstraint WithIsNullAndWithoutCast()
+		{
+			return Does.Contain("is null").IgnoreCase.And.Not.Contain("cast").IgnoreCase;
+		}
+
+		private IResolveConstraint WithoutIsNullAndWithoutCast()
+		{
+			return Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast").IgnoreCase;
 		}
 
 		[Test]
@@ -313,6 +784,55 @@ namespace NHibernate.Test.Linq
 		}
 
 		private string Key(AnotherEntity e)
+		{
+			return "Input=" + (e.Input ?? "NULL") + ", Output=" + (e.Output ?? "NULL");
+		}
+
+		private Task ExpectAllAsync(IQueryable<AnotherEntityRequired> q, IResolveConstraint sqlConstraint)
+		{
+			return ExpectAsync(q, sqlConstraint, BothNull, BothSame, BothDifferent, InputSet, OutputSet);
+		}
+
+		private async Task ExpectAsync(IQueryable<AnotherEntityRequired> q, IResolveConstraint sqlConstraint, params AnotherEntity[] entities)
+		{
+			IList<AnotherEntityRequired> results;
+			if (sqlConstraint == null)
+			{
+				results = await (GetResultsAsync(q));
+			}
+			else
+			{
+				using (var sqlLog = new SqlLogSpy())
+				{
+					results = await (GetResultsAsync(q));
+					Assert.That(sqlLog.GetWholeLog(), sqlConstraint);
+				}
+			}
+
+			IList<AnotherEntity> check = entities.OrderBy(Key).ToList();
+
+			Assert.That(results.Count, Is.EqualTo(check.Count));
+			for (var i = 0; i < check.Count; i++)
+			{
+				Assert.That(Key(results[i]), Is.EqualTo(Key(check[i])));
+			}
+		}
+
+		private async Task<IList<AnotherEntityRequired>> GetResultsAsync(IQueryable<AnotherEntityRequired> q, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return (await (q.ToListAsync(cancellationToken))).OrderBy(Key).ToList();
+		}
+
+		private static async Task ExpectAsync<T>(IQueryable<T> query, IResolveConstraint sqlConstraint, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			using (var sqlLog = new SqlLogSpy())
+			{
+				var list = await (query.ToListAsync(cancellationToken));
+				Assert.That(sqlLog.GetWholeLog(), sqlConstraint);
+			}
+		}
+
+		private static string Key(AnotherEntityRequired e)
 		{
 			return "Input=" + (e.Input ?? "NULL") + ", Output=" + (e.Output ?? "NULL");
 		}

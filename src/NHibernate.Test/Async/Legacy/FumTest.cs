@@ -547,7 +547,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task KeyManyToOneAsync()
 		{
@@ -598,7 +597,6 @@ namespace NHibernate.Test.Legacy
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 
 		[Test]
 		public async Task CompositeKeyPathExpressionsAsync()

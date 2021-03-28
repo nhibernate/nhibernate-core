@@ -57,11 +57,22 @@ namespace NHibernate.Dialect
 		/// <returns>the default type name associated with the specified key</returns>
 		public string Get(DbType typecode)
 		{
-			if (!defaults.TryGetValue(typecode, out var result))
+			if (!TryGet(typecode, out var result))
 			{
 				throw new ArgumentException("Dialect does not support DbType." + typecode, nameof(typecode));
 			}
 			return result;
+		}
+
+		/// <summary>
+		/// Get default type name for specified type.
+		/// </summary>
+		/// <param name="typecode">The type key.</param>
+		/// <param name="typeName">The default type name that will be set in case it was found.</param>
+		/// <returns>Whether the default type name was found.</returns>
+		public bool TryGet(DbType typecode, out string typeName)
+		{
+			return defaults.TryGetValue(typecode, out typeName);
 		}
 
 		/// <summary>
@@ -77,6 +88,28 @@ namespace NHibernate.Dialect
 		/// </returns>
 		public string Get(DbType typecode, int size, int precision, int scale)
 		{
+			if (!TryGet(typecode, size, precision, scale, out var result))
+			{
+				throw new ArgumentException("Dialect does not support DbType." + typecode, nameof(typecode));
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get the type name specified type and size.
+		/// </summary>
+		/// <param name="typecode">The type key.</param>
+		/// <param name="size">The SQL length.</param>
+		/// <param name="scale">The SQL scale.</param>
+		/// <param name="precision">The SQL precision.</param>
+		/// <param name="typeName">
+		/// The associated name with smallest capacity >= size (or precision for decimal, or scale for date time types)
+		/// if available, otherwise the default type name.
+		/// </param>
+		/// <returns>Whether the type name was found.</returns>
+		public bool TryGet(DbType typecode, int size, int precision, int scale, out string typeName)
+		{
 			weighted.TryGetValue(typecode, out var map);
 			if (map != null && map.Count > 0)
 			{
@@ -88,7 +121,8 @@ namespace NHibernate.Dialect
 				{
 					if (requiredCapacity <= entry.Key)
 					{
-						return Replace(entry.Value, size, precision, scale);
+						typeName = Replace(entry.Value, size, precision, scale);
+						return true;
 					}
 				}
 				if (isPrecisionType && precision != 0)
@@ -102,11 +136,12 @@ namespace NHibernate.Dialect
 					// But if the type is used for storing amounts, this may cause losing the ability to store cents...
 					// So better just reduce as few as possible.
 					var adjustedScale = Math.Min(scale, adjustedPrecision);
-					return Replace(maxEntry.Value, size, adjustedPrecision, adjustedScale);
+					typeName = Replace(maxEntry.Value, size, adjustedPrecision, adjustedScale);
+					return true;
 				}
 			}
 			//Could not find a specific type for the capacity, using the default
-			return Get(typecode);
+			return TryGet(typecode, out typeName);
 		}
 
 		/// <summary>

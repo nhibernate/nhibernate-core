@@ -55,6 +55,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2490
 				}
 			}
 		}
-
 	}
 }

@@ -11,7 +11,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2113
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-
         [Test]
         public void ShouldNotEagerLoadKeyManyToOneWhenOverridingGetHashCode()
         {
@@ -41,7 +40,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2113
 
                 tx.Commit();
             }
-
 
             using (var s = OpenSession())
             using (var tx = s.BeginTransaction())

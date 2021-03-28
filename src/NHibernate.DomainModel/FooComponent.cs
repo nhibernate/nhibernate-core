@@ -92,6 +92,8 @@ namespace NHibernate.DomainModel
 			set { _count = value; }
 		}
 
+		public int NotMapped { get; set; }
+
 		public DateTime[] ImportantDates
 		{
 			get { return _importantDates; }

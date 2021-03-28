@@ -27,7 +27,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3392
             using (ISession s = OpenSession())
             using (var tx = s.BeginTransaction())
             {
-
 	            var jenny = new Mum {Name = "Jenny"};
 	            s.Save(jenny);
 	            var benny = new Dad {Name = "Benny"};
@@ -56,7 +55,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3392
             using (ISession s = OpenSession())
 			using (var tx = s.BeginTransaction())
             {
-
                 var jenny = new Mum { Name = "Jenny" };
                 s.Save(jenny);
                 var benny = new Dad { Name = "Benny" };
@@ -78,7 +76,5 @@ namespace NHibernate.Test.NHSpecificTest.NH3392
                 Assert.That(result[0].x.Friends, Is.EquivalentTo(result[0].Friends));
             }
         }
-
-		
 	}
 }

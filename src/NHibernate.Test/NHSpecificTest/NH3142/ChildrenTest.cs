@@ -57,7 +57,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3142
 			}
 		}
 
-
 		[Test]
 		public void ChildrenCollectionOfAllParentsShouldContainsThreeElements()
 		{

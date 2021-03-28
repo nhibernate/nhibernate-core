@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using NHibernate.Type;
-using NHibernate.Util;
 using System;
+using System.Linq;
 
 namespace NHibernate.Mapping
 {
@@ -77,8 +77,7 @@ namespace NHibernate.Mapping
 
 				if (!HasFormula && !"none".Equals(ForeignKeyName, StringComparison.OrdinalIgnoreCase))
 				{
-
-					IEnumerable<Column> ce = new SafetyEnumerable<Column>(property.ColumnIterator);
+					IEnumerable<Column> ce = property.ColumnIterator.OfType<Column>();
 
 					// NH : Ensure that related columns have same length
 					ForeignKey.AlignColumns(ConstraintColumns, ce);

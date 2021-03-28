@@ -1,11 +1,29 @@
 using System.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Loader.Criteria;
 using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Criterion
 {
+	//TODO 6.0: Add to ICriteriaQuery interface
+	internal static class CriteriaQueryExtensions
+	{
+		/// <summary> 
+		/// Substitute the SQL aliases in <see cref="SqlString"/> template.
+		/// </summary>
+		public static SqlString RenderSQLAliases(this ICriteriaQuery criteriaQuery, SqlString sqlTemplate)
+		{
+			if (criteriaQuery is CriteriaQueryTranslator translator)
+			{
+				return translator.RenderSQLAliases(sqlTemplate);
+			}
+
+			return sqlTemplate;
+		}
+	}
+
 	/// <summary> 
 	/// An instance of <see cref="ICriteriaQuery"/> is passed to criterion, 
 	/// order and projection instances when actually compiling and

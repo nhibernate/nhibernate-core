@@ -8,7 +8,6 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 	{
 		private class MyComponent
 		{
-			
 		}
 
 		[Test]

@@ -28,25 +28,25 @@ namespace NHibernate.Test.NHSpecificTest.ElementsEnums
 		{
 			object savedId;
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				savedId = await (s.SaveAsync(new SimpleWithEnums { Things = new List<Something> { Something.B, Something.C, Something.D, Something.E } }));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				var swe = await (s.GetAsync<SimpleWithEnums>(savedId));
 				Assert.That(swe.Things, Is.EqualTo(new[] { Something.B, Something.C, Something.D, Something.E }));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.DeleteAsync("from SimpleWithEnums"));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		}
 	}

@@ -89,7 +89,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1549
 		protected override void OnTearDown()
 		{
 			using (ISession session = OpenSession()) {
-
 				using (ITransaction trans = session.BeginTransaction()) 
 				{
 					session.Delete("from ProductWithId");

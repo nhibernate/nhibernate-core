@@ -2,7 +2,6 @@ using System;
 using System.Xml;
 using System.Xml.XPath;
 
-
 namespace NHibernate.Cfg.ConfigurationSchema
 {
 	/// <summary>

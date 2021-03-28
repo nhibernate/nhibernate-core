@@ -11,6 +11,8 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using NHibernate.Cfg;
+using NHibernate.Mapping.ByCode;
 using NHibernate.Transaction;
 using NUnit.Framework;
 
@@ -21,7 +23,27 @@ namespace NHibernate.Test.TransactionTest
 	[TestFixture]
 	public class TransactionNotificationFixtureAsync : TestCase
 	{
-		protected override string[] Mappings => Array.Empty<string>();
+		public class Entity
+		{
+			public virtual int Id { get; set; }
+			public virtual string Name { get; set; }
+		}
+
+		protected override string[] Mappings => null;
+
+		protected override void AddMappings(Configuration configuration)
+		{
+			var modelMapper = new ModelMapper();
+			modelMapper.Class<Entity>(
+				x =>
+				{
+					x.Id(e => e.Id);
+					x.Property(e => e.Name);
+					x.Table(nameof(Entity));
+				});
+
+			configuration.AddMapping(modelMapper.CompileMappingForAllExplicitlyAddedEntities());
+		}
 
 		[Test]
 		public async Task CommitAsync()

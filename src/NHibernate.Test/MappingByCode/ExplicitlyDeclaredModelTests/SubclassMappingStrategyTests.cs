@@ -8,15 +8,12 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 	{
 		private class MyClass
 		{
-
 		}
 		private class Inherited1 : MyClass
 		{
-
 		}
 		private class Inherited2 : Inherited1
 		{
-
 		}
 
 		[Test]

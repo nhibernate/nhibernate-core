@@ -86,6 +86,5 @@ namespace NHibernate.Test.Stateless
 				tx.Commit();
 			}
 		}
-
 	}
 }

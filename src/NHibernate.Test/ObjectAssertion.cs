@@ -24,7 +24,6 @@ namespace NHibernate.Test
 			}
 		}
 
-
 		/// <summary>
 		/// Compares one dimensional arrays for equality.
 		/// </summary>
@@ -59,7 +58,6 @@ namespace NHibernate.Test
 			}
 		}
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -78,7 +76,6 @@ namespace NHibernate.Test
 			}
 		}
 
-
 		[Test]
 		public void TestIDictionaryEqual()
 		{
@@ -93,7 +90,6 @@ namespace NHibernate.Test
 
 			AreEqual(expected, actualWithEqualValues, true);
 		}
-
 
 		public static void AreEqual(DateTime expected, DateTime actual, bool useMilliseconds)
 		{

@@ -55,7 +55,6 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 		}
 
-
 		public void Columns(params Action<IColumnMapper>[] columnMapper)
 		{
 			ResetColumnPlainValues();

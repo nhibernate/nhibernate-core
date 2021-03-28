@@ -26,19 +26,15 @@ namespace NHibernate.Id.Enhanced
 	using System.Threading;
 	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
-		private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
-
-		[MethodImpl()]
 		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (await _generate.LockAsync())
+			using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
 			{
 				return await (Optimizer.GenerateAsync(new TableAccessCallback(session, this), cancellationToken)).ConfigureAwait(false);
 			}
 		}
-
 
 		private partial class TableAccessCallback : IAccessCallback
 		{
@@ -53,7 +49,6 @@ namespace NHibernate.Id.Enhanced
 
 			#endregion
 		}
-
 
 		public override async Task<object> DoWorkInCurrentTransactionAsync(ISessionImplementor session, DbConnection conn, DbTransaction transaction, CancellationToken cancellationToken)
 		{
@@ -107,7 +102,6 @@ namespace NHibernate.Id.Enhanced
 					log.Error(ex, "Unable to read or initialize hi value in {0}", TableName);
 					throw;
 				}
-
 
 				try
 				{

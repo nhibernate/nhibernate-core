@@ -24,7 +24,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 		public virtual string Body { get; set; }
 	}
 
-
 	public class Comment
 	{
 		public virtual int Id { get; protected set; }

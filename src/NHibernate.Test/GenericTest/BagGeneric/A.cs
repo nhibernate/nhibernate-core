@@ -29,6 +29,5 @@ namespace NHibernate.Test.GenericTest.BagGeneric
 			get { return _items; }
 			set { _items = value; }
 		}
-
 	}
 }

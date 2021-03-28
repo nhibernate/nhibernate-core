@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -8,21 +7,16 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion.Lambda
 {
-
 	public class QueryOverSubqueryPropertyBuilder<TRoot,TSubType> : QueryOverSubqueryPropertyBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
-
 		public QueryOverSubqueryPropertyBuilder()
 			: base() { }
-
 	}
 
 	public class IQueryOverSubqueryPropertyBuilder<TRoot,TSubType> : QueryOverSubqueryPropertyBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
-
 		public IQueryOverSubqueryPropertyBuilder()
 			: base() { }
-
 	}
 
 	public abstract class QueryOverSubqueryPropertyBuilderBase
@@ -35,7 +29,6 @@ namespace NHibernate.Criterion.Lambda
 	public class QueryOverSubqueryPropertyBuilderBase<TReturn, TRoot, TSubType> : QueryOverSubqueryPropertyBuilderBase
 		where TReturn : IQueryOver<TRoot,TSubType>
 	{
-
 		protected TReturn root;
 		protected string path;
 		protected object value;
@@ -236,7 +229,5 @@ namespace NHibernate.Criterion.Lambda
 			AddSubquery(Subqueries.PropertyNotIn, Subqueries.NotIn, detachedCriteria);
 			return root;
 		}
-
 	}
-
 }

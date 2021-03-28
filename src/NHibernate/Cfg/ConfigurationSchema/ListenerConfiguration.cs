@@ -84,6 +84,5 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		{
 			get { return type; }
 		}
-
 	}
 }

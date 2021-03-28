@@ -33,7 +33,6 @@ namespace NHibernate.Linq.GroupJoin
 
 				expression.QueryModel.MainFromClause.FromExpression = groupJoin.JoinClause.InnerSequence;
 
-
 				// TODO - this only works if the key selectors are not composite.  Needs improvement...
 				expression.QueryModel.BodyClauses.Add(new WhereClause(Expression.Equal(innerSelector, groupJoin.JoinClause.OuterKeySelector)));
 			}

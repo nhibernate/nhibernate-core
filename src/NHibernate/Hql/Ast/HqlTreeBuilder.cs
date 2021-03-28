@@ -307,6 +307,11 @@ namespace NHibernate.Hql.Ast
 			return new HqlCount(_factory, child);
 		}
 
+		public HqlCountBig CountBig(HqlExpression child)
+		{
+			return new HqlCountBig(_factory, child);
+		}
+
 		public HqlRowStar RowStar()
 		{
 			return new HqlRowStar(_factory);
@@ -478,9 +483,19 @@ namespace NHibernate.Hql.Ast
 			return new HqlIn(_factory, itemExpression, source);
 		}
 
+		public HqlInnerJoin InnerJoin(HqlExpression expression, HqlAlias @alias)
+		{
+			return new HqlInnerJoin(_factory, expression, @alias);
+		}
+
 		public HqlLeftJoin LeftJoin(HqlExpression expression, HqlAlias @alias)
 		{
 			return new HqlLeftJoin(_factory, expression, @alias);
+		}
+
+		public HqlCrossJoin CrossJoin(HqlExpression expression, HqlAlias @alias)
+		{
+			return new HqlCrossJoin(_factory, expression, @alias);
 		}
 
 		public HqlFetchJoin FetchJoin(HqlExpression expression, HqlAlias @alias)

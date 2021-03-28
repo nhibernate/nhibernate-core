@@ -14,7 +14,7 @@ namespace NHibernate.Linq.Visitors
 	/// the HQL expression tree) means a query source may be referenced by a <c>QuerySourceReference</c>
 	/// before it has been identified - and named.
 	/// </remarks>
-	public class QuerySourceIdentifier : NhQueryModelVisitorBase
+	public class QuerySourceIdentifier : NhQueryModelVisitorBase, INhQueryModelVisitorExtended
 	{
 		private readonly QuerySourceNamer _namer;
 
@@ -56,6 +56,12 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitNhJoinClause(NhJoinClause joinClause, QueryModel queryModel, int index)
 		{
 			_namer.Add(joinClause);
+		}
+
+		public void VisitNhOuterJoinClause(NhOuterJoinClause outerJoinClause, QueryModel queryModel, int index)
+		{
+			_namer.Add(outerJoinClause);
+			_namer.Add(outerJoinClause.JoinClause, _namer.GetName(outerJoinClause));
 		}
 
 		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)

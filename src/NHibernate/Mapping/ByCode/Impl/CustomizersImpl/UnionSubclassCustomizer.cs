@@ -102,6 +102,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.Extends(baseType));
 		}
 
+		public void Extends(string entityOrClassName)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.Extends(entityOrClassName));
+		}
+
 		public void Abstract(bool isAbstract)
 		{
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.Abstract(isAbstract));

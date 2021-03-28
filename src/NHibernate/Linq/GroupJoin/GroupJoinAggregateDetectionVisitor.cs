@@ -79,6 +79,12 @@ namespace NHibernate.Linq.GroupJoin
 					}
 				}
 			}
+			// In order to detect a left join (e.g. from a in A join b in B on a.Id equals b.Id into c from b in c.DefaultIfEmpty())
+			// we have to visit the subquery in order to find the group join
+			else if (fromClause.FromExpression is SubQueryExpression subQuery)
+			{
+				VisitSubQuery(subQuery);
+			}
 
 			return base.VisitQuerySourceReference(expression);
 		}

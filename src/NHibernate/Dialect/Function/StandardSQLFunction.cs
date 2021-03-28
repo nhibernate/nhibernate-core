@@ -4,6 +4,8 @@ using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Dialect.Function
 {
@@ -16,7 +18,7 @@ namespace NHibernate.Dialect.Function
 	/// for processing of the associated function.
 	/// </remarks>
 	[Serializable]
-	public class StandardSQLFunction : ISQLFunction
+	public class StandardSQLFunction : ISQLFunction, ISQLFunctionExtended
 	{
 		private IType returnType = null;
 		protected readonly string name;
@@ -43,10 +45,29 @@ namespace NHibernate.Dialect.Function
 
 		#region ISQLFunction Members
 
+		// Since v5.3
+		[Obsolete("Use GetReturnType method instead.")]
 		public virtual IType ReturnType(IType columnType, IMapping mapping)
 		{
 			return returnType ?? columnType;
 		}
+
+		/// <inheritdoc />
+		public virtual IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+		{
+#pragma warning disable 618
+			return ReturnType(argumentTypes.FirstOrDefault(), mapping);
+#pragma warning restore 618
+		}
+
+		/// <inheritdoc />
+		public virtual IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+		{
+			return GetReturnType(argumentTypes, mapping, throwOnError);
+		}
+
+		/// <inheritdoc />
+		public string Name => name;
 
 		public bool HasArguments
 		{

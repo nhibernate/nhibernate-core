@@ -156,11 +156,7 @@ namespace NHibernate.Criterion
 		public TypedValue GetParameterTypedValue(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			object icvalue = ignoreCase ? value.ToString().ToLower() : value;
-			if (_projection != null)
-			{
-				return CriterionUtil.GetTypedValues(criteriaQuery, criteria, _projection, null, icvalue).Single();
-			}
-			return criteriaQuery.GetTypedValue(criteria, propertyName, icvalue);
+			return CriterionUtil.GetTypedValue(criteriaQuery, criteria, _projection, propertyName, icvalue);
 		}
 
 		public override IProjection[] GetProjections()

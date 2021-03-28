@@ -9,6 +9,8 @@ namespace NHibernate.Test.DriverTest
 	/// Summary description for OracleClientDriverFixture.
 	/// </summary>
 	[TestFixture]
+	// Since v5.3
+	[Obsolete]
 	public class OracleClientDriverFixture
 	{
 		/// <summary>

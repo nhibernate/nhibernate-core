@@ -9,7 +9,7 @@ namespace NHibernate.Loader.Criteria
 	public class ComponentCollectionCriteriaInfoProvider : ICriteriaInfoProvider
 	{
 		private readonly IQueryableCollection persister;
-		private readonly IDictionary<string, IType> subTypes = new Dictionary<string, IType>();
+		private readonly Dictionary<string, IType> subTypes = new Dictionary<string, IType>();
 
 		public ComponentCollectionCriteriaInfoProvider(IQueryableCollection persister)
 		{

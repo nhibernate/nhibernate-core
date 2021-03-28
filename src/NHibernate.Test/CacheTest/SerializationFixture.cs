@@ -108,7 +108,6 @@ namespace NHibernate.Test.CacheTest
 			CheckObjectTypeCacheEntry(item, copy);
 		}
 
-
 		[Serializable]
 		public class MyEntity
 		{

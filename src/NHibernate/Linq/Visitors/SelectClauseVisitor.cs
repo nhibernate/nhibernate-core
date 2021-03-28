@@ -93,7 +93,7 @@ namespace NHibernate.Linq.Visitors
 		}
 
 		private static readonly MethodInfo ConvertChangeType =
-			ReflectHelper.GetMethod(() => System.Convert.ChangeType(default(object), default(System.Type)));
+			ReflectHelper.FastGetMethod(System.Convert.ChangeType, default(object), default(System.Type));
 
 		private static Expression Convert(Expression expression, System.Type type)
 		{

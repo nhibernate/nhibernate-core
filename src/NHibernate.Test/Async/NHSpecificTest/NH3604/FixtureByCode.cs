@@ -52,7 +52,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3604
 				var e1 = new Entity { Name = "Bob" };
 				session.Save(e1);
 
-
 				var e2 = new Entity { Name = "Sally" };
 				var ed2 = new EntityDetail(e2) { ExtraInfo = "Jo" };
 				e2.Detail = ed2;

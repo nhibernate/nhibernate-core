@@ -135,7 +135,7 @@ namespace NHibernate.Cfg.MappingSchema
 		
 		public HbmLaziness? Lazy
 		{
-			get { return lazySpecified ? lazy : (HbmLaziness?) null;}
+			get { return lazySpecified ? lazy : (HbmLaziness?) null; }
 		}
 	}
 }

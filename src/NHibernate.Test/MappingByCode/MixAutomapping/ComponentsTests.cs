@@ -25,7 +25,6 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 
 		private enum Something
 		{
-
 		}
 
 		[Test]

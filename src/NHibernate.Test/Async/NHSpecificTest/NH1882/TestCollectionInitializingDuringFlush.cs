@@ -123,29 +123,29 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 			Assert.False(listener.FoundAny);
 
 			using (var s1 = OpenSession())
+			using (var t1 = s1.BeginTransaction())
 			{
-				s1.BeginTransaction();
 				var publisher = new Publisher("acme");
 				var author = new Author("john");
 				author.Publisher = publisher;
 				publisher.Authors.Add(author);
 				author.Books.Add(new Book("Reflections on a Wimpy Kid", author));
 				await (s1.SaveAsync(author));
-				await (s1.Transaction.CommitAsync());
+				await (t1.CommitAsync());
 				s1.Clear();
 				using (var s2 = OpenSession())
+				using (var t2 = s2.BeginTransaction())
 				{
-					s2.BeginTransaction();
 					publisher = await (s2.GetAsync<Publisher>(publisher.Id));
 					publisher.Name = "random nally";
 					await (s2.FlushAsync());
-					await (s2.Transaction.CommitAsync());
+					await (t2.CommitAsync());
 					s2.Clear();
 					using (var s3 = OpenSession())
+					using (var t3 = s3.BeginTransaction())
 					{
-						s3.BeginTransaction();
 						await (s3.DeleteAsync(author));
-						await (s3.Transaction.CommitAsync());
+						await (t3.CommitAsync());
 						s3.Clear();
 						s3.Close();
 					}

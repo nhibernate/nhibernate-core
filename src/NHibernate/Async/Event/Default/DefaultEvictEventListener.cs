@@ -65,7 +65,6 @@ namespace NHibernate.Event.Default
 		protected virtual async Task DoEvictAsync(object obj, EntityKey key, IEntityPersister persister, IEventSource session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("evicting {0}", MessageHelper.InfoString(persister));

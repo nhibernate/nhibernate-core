@@ -2,7 +2,6 @@
 {
 	public class Entity
 	{
-
 		// Assigned by reflection
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 		private long _id;

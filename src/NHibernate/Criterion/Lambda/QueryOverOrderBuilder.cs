@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -8,10 +7,8 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion.Lambda
 {
-
 	public class QueryOverOrderBuilder<TRoot,TSubType> : QueryOverOrderBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
-
 		public QueryOverOrderBuilder(QueryOver<TRoot,TSubType> root, Expression<Func<TSubType, object>> path) : base(root, path)
 		{}
 
@@ -20,12 +17,10 @@ namespace NHibernate.Criterion.Lambda
 
 		public QueryOverOrderBuilder(QueryOver<TRoot,TSubType> root, ExpressionProcessor.ProjectionInfo projection) : base(root, projection)
 		{}
-
 	}
 
 	public class IQueryOverOrderBuilder<TRoot,TSubType> : QueryOverOrderBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
-
 		public IQueryOverOrderBuilder(IQueryOver<TRoot,TSubType> root, Expression<Func<TSubType, object>> path) : base(root, path)
 		{}
 
@@ -34,12 +29,10 @@ namespace NHibernate.Criterion.Lambda
 
 		public IQueryOverOrderBuilder(IQueryOver<TRoot,TSubType> root, ExpressionProcessor.ProjectionInfo projection) : base(root, projection)
 		{}
-
 	}
 
 	public class QueryOverOrderBuilderBase<TReturn, TRoot, TSubType> where TReturn : IQueryOver<TRoot, TSubType>
 	{
-
 		protected TReturn root;
 		protected LambdaExpression path;
 		protected bool isAlias;
@@ -93,7 +86,5 @@ namespace NHibernate.Criterion.Lambda
 				return this.root;
 			}
 		}
-
 	}
-
 }

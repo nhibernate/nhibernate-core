@@ -18,6 +18,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1579
 		}
 
 		public Entity Container { get; private set; }
-
 	}
 }

@@ -9,7 +9,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1447
 	{
 		public Person()
 		{
-
 		}
 
 		public Person(string name, bool wantsNewsLetter)
@@ -33,7 +32,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1447
 			get;
 			set;
 		}
-
 	}
-
 }

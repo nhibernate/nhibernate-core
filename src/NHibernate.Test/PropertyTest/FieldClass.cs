@@ -89,7 +89,6 @@ namespace NHibernate.Test.PropertyTest
 			}
 		}
 
-
 		public int Blah
 		{
 			get

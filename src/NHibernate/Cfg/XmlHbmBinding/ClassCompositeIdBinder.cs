@@ -153,12 +153,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				return ClassForNameChecked(idSchema.@class, mappings, "could not find class: {0}");
 			}
-
 			else if (containingType == null)
 			{
 				return null;
 			}
-
 			else
 			{
 				string access = idSchema.access ?? mappings.DefaultAccess;

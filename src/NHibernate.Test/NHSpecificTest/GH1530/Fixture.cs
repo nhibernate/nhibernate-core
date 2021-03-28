@@ -101,5 +101,4 @@ namespace NHibernate.Test.NHSpecificTest.GH1530
 	{
 		protected override string[] Mappings => new[] { "NonInverseMappings.hbm.xml" };
 	}
-
 }

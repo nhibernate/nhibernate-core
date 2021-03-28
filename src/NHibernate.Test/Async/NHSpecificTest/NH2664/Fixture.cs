@@ -87,7 +87,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2664
 					tran.Commit();
 				}
 			}
-
 		}
 
 		[Test]

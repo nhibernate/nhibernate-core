@@ -15,12 +15,11 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <summary>
 		/// Get a reference to the connection we are using.
 		/// </summary>
-		DbConnection Connection { get;}
+		DbConnection Connection { get; }
 
 		/// <summary>
 		/// Release any resources held by this helper.
 		/// </summary>
 		void Release();
 	}
-
 }

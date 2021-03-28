@@ -7,11 +7,9 @@ namespace NHibernate.Test.MappingByCode
 {
 	public class MyEntity
 	{
-
 	}
 	public class MyGenericEntity<T>
 	{
-
 	}
 
 	[TestFixture]

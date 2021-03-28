@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-
 using System;
 using NUnit.Framework;
 using NHibernate.Mapping.ByCode;
@@ -23,7 +22,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3046
 		[Test, Explicit]
 		public async Task MemoryLeakAsync()
 		{
-
 			long initialMemory = GC.GetTotalMemory(true);
 			long nextId = 1;
 			long nextIdChild = 1;

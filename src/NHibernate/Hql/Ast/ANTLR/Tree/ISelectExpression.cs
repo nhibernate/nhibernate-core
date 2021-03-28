@@ -60,4 +60,3 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		string Alias { get; set; }
 	}	
 }
-

@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Action;
 using NHibernate.Collection;
 using NHibernate.Impl;
@@ -387,6 +389,23 @@ namespace NHibernate.Engine
 				throw new AssertionFailure("no collection snapshot for orphan delete");
 			}
 			return collection.GetOrphans(snapshot, entityName);
+		}
+
+		//Since 5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
+		public Task<ICollection> GetOrphansAsync(string entityName, IPersistentCollection collection, CancellationToken cancellationToken)
+		{
+			if (snapshot == null)
+			{
+				throw new AssertionFailure("no collection snapshot for orphan delete");
+			}
+			
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<ICollection>(cancellationToken);
+			}
+
+			return collection.GetOrphansAsync(snapshot, entityName, cancellationToken);
 		}
 
 		public bool IsSnapshotEmpty(IPersistentCollection collection)

@@ -442,7 +442,6 @@ namespace NHibernate.Test.Join
 			return result;
 		}
 
-
 		[Test]
 		public async Task TestSimpleInsertAndRetrieveEmployeeAsync()
 		{

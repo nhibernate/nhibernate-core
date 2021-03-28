@@ -39,7 +39,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Parent(string notVisiblePropertyOrFieldName, Action<IComponentParentMapper> parentMapping)
 		{
-			MemberInfo member = GetPropertyOrFieldMatchingNameOrThrow(notVisiblePropertyOrFieldName);
+			MemberInfo member = GetRequiredPropertyOrFieldByName(notVisiblePropertyOrFieldName);
 			AddCustomizer(m => m.Parent(member, parentMapping));
 		}
 

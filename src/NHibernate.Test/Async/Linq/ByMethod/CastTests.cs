@@ -57,14 +57,5 @@ namespace NHibernate.Test.Linq.ByMethod
 			var query = session.Query<Dog>().Cast<Animal>().OrderBy(a=> a.BodyWeight);
 			Assert.That(() => query.ToListAsync(), Throws.Nothing);
 		}
-
-		[Test, Ignore("Not fixed yet. The method OfType does not work as expected.")]
-		public void CastDowncastUsingOfTypeAsync()
-		{
-			var query = session.Query<Animal>().OfType<Mammal>().Cast<Dog>();
-			// the list contains at least one Cat then should Throws
-			// Do not use bare Throws.Exception due to https://github.com/nunit/nunit/issues/1899
-			Assert.That(() => query.ToListAsync(), Throws.InstanceOf<Exception>());
-		}
 	}
 }

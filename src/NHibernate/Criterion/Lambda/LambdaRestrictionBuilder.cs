@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +8,6 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion.Lambda
 {
-
 	public class LambdaRestrictionBuilder
 	{
 		public class LambdaBetweenBuilder
@@ -167,7 +165,5 @@ namespace NHibernate.Criterion.Lambda
 		{
 			return Process(Restrictions.Like(projection.AsProperty(), value, matchMode, escapeChar));
 		}
-		
 	}
-
 }

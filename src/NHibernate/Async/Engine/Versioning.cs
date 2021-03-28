@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 

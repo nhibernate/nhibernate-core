@@ -7,7 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2031
 {
 	public class MyClass
 	{
-		
 	}
 
 	[TestFixture]

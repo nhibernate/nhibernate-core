@@ -8,7 +8,6 @@
 
 		public Employee()
 		{
-
 		}
 	}
 
@@ -19,7 +18,6 @@
 
 		public EmployeeInfo()
 		{
-
 		}
 
 		public EmployeeInfo(Employee employee)

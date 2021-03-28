@@ -76,7 +76,6 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Synchronize(params string[] table)
 		{
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinedSubclassAttributesMapper m) => m.Synchronize(table));
-
 		}
 
 		#endregion
@@ -114,6 +113,11 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Extends(System.Type baseType)
 		{
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinedSubclassAttributesMapper m) => m.Extends(baseType));
+		}
+
+		public void Extends(string entityOrClassName)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinedSubclassAttributesMapper m) => m.Extends(entityOrClassName));
 		}
 
 		public void Abstract(bool isAbstract)

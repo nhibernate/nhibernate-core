@@ -347,8 +347,8 @@ namespace NHibernate.DomainModel
 			_long = 696969696969696969L - count++;
 			_short = 42;
 			_float = 6666.66f;
-			//_double = new Double( 1.33e-69 );  // this double is too big for the sap db jdbc driver
-//			_double = 1.12e-36;
+			//_double = new Double( 1.33e-69 ); // this double is too big for the sap db jdbc driver
+			//_double = 1.12e-36;
 			_boolean = true;
 			_byte = 127;
 			_int = 2;
@@ -397,7 +397,6 @@ namespace NHibernate.DomainModel
 				}
 			}
 
-
 			return (_bool == other.Bool)
 			       && ((_boolean == other.Boolean) || (_boolean.Equals(other.Boolean)))
 			       && ((_byte == other.Byte) || (_byte.Equals(other.Byte)))
@@ -428,7 +427,6 @@ namespace NHibernate.DomainModel
 //		{
 //			return key.GetHashCode() - _string.GetHashCode();
 //		}
-
 
 		private static int count = 0;
 	}

@@ -17,8 +17,7 @@ namespace NHibernate.Criterion
 
 		public virtual SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
-			return new SqlString("distinct ")
-				.Append(projection.ToSqlString(criteria, position, criteriaQuery));
+			return new SqlString("distinct ", projection.ToSqlString(criteria, position, criteriaQuery));
 		}
 
 		public virtual SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)

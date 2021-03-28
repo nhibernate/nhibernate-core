@@ -127,7 +127,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 			}
 		}
 
-
 		[Test]
 		public void CanPageAndSortResultsWithParametersAndFilters()
 		{

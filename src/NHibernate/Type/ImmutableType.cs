@@ -43,6 +43,5 @@ namespace NHibernate.Type
 		{
 			return value;
 		}
-
 	}
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 
-
 namespace NHibernate.Dialect.Schema
 {
 	// Metadata for connections using the Sap.Data.SQLAnywhere.v4.5 ADO.NET provider

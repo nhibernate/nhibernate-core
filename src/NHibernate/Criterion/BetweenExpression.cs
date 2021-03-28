@@ -53,13 +53,13 @@ namespace NHibernate.Criterion
 			var parametersTypes = GetTypedValues(criteria, criteriaQuery).ToArray();
 			var lowType = parametersTypes[0];
 			var highType = parametersTypes[1];
-			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria);
+			var columnNames =
+				CriterionUtil.GetColumnNamesAsSqlStringParts(_propertyName, _projection, criteriaQuery, criteria);
 
 			if (columnNames.Length == 1)
 			{
 				sqlBuilder
-					.Add(columnNames[0])
+					.AddObject(columnNames[0])
 					.Add(" between ")
 					.Add(criteriaQuery.NewQueryParameter(lowType).Single())
 					.Add(" and ")
@@ -78,7 +78,7 @@ namespace NHibernate.Criterion
 					}
 					andNeeded = true;
 
-					sqlBuilder.Add(columnNames[i])
+					sqlBuilder.AddObject(columnNames[i])
 						.Add(" >= ")
 						.Add(lowParameters[i]);
 				}
@@ -87,7 +87,7 @@ namespace NHibernate.Criterion
 				for (int i = 0; i < columnNames.Length; i++)
 				{
 					sqlBuilder.Add(" AND ")
-						.Add(columnNames[i])
+						.AddObject(columnNames[i])
 						.Add(" <= ")
 						.Add(highParameters[i]);
 				}

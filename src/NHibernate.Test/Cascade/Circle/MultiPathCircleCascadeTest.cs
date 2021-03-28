@@ -4,7 +4,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Cascade.Circle
 {
-
 	/**
 	* The test case uses the following model:
 	*
@@ -154,21 +153,21 @@ namespace NHibernate.Test.Cascade.Circle
 			ClearCounts();
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.Merge(route);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 
 			AssertInsertCount(4);
 			AssertUpdateCount(1);
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				route = s.Get<Route>(route.RouteId);
 				CheckResults(route, true);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 
@@ -180,23 +179,23 @@ namespace NHibernate.Test.Cascade.Circle
 			ClearCounts();
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				Node pickupNode = route.Nodes.First(n => n.Name == "pickupNodeB");
 				pickupNode = (Node) s.Merge(pickupNode);
 
-				s.Transaction.Commit();
+				t.Commit();
 			}
 
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				route = s.Get<Route>(route.RouteId);
 				CheckResults(route, false);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 
@@ -208,22 +207,22 @@ namespace NHibernate.Test.Cascade.Circle
 			ClearCounts();
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				Node deliveryNode = route.Nodes.First(n => n.Name == "deliveryNodeB");
 				deliveryNode = (Node) s.Merge(deliveryNode);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				route = s.Get<Route>(route.RouteId);
 				CheckResults(route, false);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 
@@ -235,21 +234,21 @@ namespace NHibernate.Test.Cascade.Circle
 			ClearCounts();
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				Tour tour = s.Merge(route.Nodes.First().Tour);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				route = s.Get<Route>(route.RouteId);
 				CheckResults(route, false);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 		
@@ -261,7 +260,7 @@ namespace NHibernate.Test.Cascade.Circle
 			ClearCounts();
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				Node node = route.Nodes.First();
 				Transport transport = null;
@@ -273,18 +272,18 @@ namespace NHibernate.Test.Cascade.Circle
 
 				transport = (Transport) s.Merge(transport);
 
-				s.Transaction.Commit();
+				t.Commit();
 			}
 	
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				route = s.Get<Route>(route.RouteId);
 				CheckResults(route, false);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 
@@ -292,12 +291,12 @@ namespace NHibernate.Test.Cascade.Circle
 		{
 			Route route = new Route();
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				route.Name = "routeA";
 
 				s.Save(route);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 			route.Name = "new routeA";
 			route.TransientField = "sfnaouisrbn";

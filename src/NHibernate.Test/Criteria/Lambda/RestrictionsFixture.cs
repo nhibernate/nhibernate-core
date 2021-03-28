@@ -7,11 +7,9 @@ using NHibernate.Criterion;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
-
 	[TestFixture]
 	public class RestrictionsFixture : LambdaFixtureBase
 	{
-
 		[Test]
 		public void ArbitraryCriterion()
 		{
@@ -284,11 +282,15 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Eq(Projections.SqlFunction("length", NHibernateUtil.String, Projections.Property("Name")), 4))
 					.Add(Restrictions.Eq(Projections.SqlFunction("bit_length", NHibernateUtil.String, Projections.Property("Name")), 32))
 					.Add(Restrictions.Eq(Projections.SqlFunction("substring", NHibernateUtil.String, Projections.Property("Name"), Projections.Constant(1), Projections.Constant(2)), "te"))
+					.Add(Restrictions.Eq(Projections.SqlFunction("substring", NHibernateUtil.String, Projections.Property("Name"), Projections.Property("Age"), Projections.Constant(2)), "te"))
 					.Add(Restrictions.Eq(Projections.SqlFunction("locate", NHibernateUtil.String, Projections.Constant("e"), Projections.Property("Name"), Projections.Constant(1)), 2))
-					.Add(Restrictions.Eq(Projections.SqlFunction("coalesce", NHibernateUtil.Object, Projections.Property("Name"), Projections.Constant("not-null-val")), "test"))
-					.Add(Restrictions.Eq(Projections.SqlFunction("coalesce", NHibernateUtil.Object, Projections.Property("NullableIsParent"), Projections.Constant(true)), true))
+					.Add(Restrictions.Eq(Projections.SqlFunction("locate", NHibernateUtil.String, Projections.Constant("e"), Projections.Property("Name"), Projections.Property("Age")), 2))
+					.Add(Restrictions.Eq(new SqlFunctionProjection("coalesce", Projections.Property("Name"), Projections.Property("Name"), Projections.Constant("not-null-val")), "test"))
+					.Add(Restrictions.Eq(new SqlFunctionProjection("coalesce", Projections.Property("Name"), Projections.Property("Name"), Projections.Property("Nickname")), "test"))
+					.Add(Restrictions.Eq(new SqlFunctionProjection("coalesce", Projections.Property("NullableIsParent"), Projections.Property("NullableIsParent"), Projections.Constant(true)), true))
 					.Add(Restrictions.Eq(Projections.SqlFunction("concat", NHibernateUtil.String, Projections.Property("Name"), Projections.Constant(", "), Projections.Property("Name")), "test, test"))
-					.Add(Restrictions.Eq(Projections.SqlFunction("mod", NHibernateUtil.Int32, Projections.Property("Height"), Projections.Constant(10)), 0));
+					.Add(Restrictions.Eq(Projections.SqlFunction("mod", NHibernateUtil.Int32, Projections.Property("Height"), Projections.Constant(10)), 0))
+					.Add(Restrictions.Eq(Projections.SqlFunction("mod", NHibernateUtil.Int32, Projections.Property("Height"), Projections.Property("Age")), 0));
 
 			IQueryOver<Person> actual =
 				CreateTestQueryOver<Person>()
@@ -314,11 +316,15 @@ namespace NHibernate.Test.Criteria.Lambda
 					.And(p => p.Name.StrLength() == 4)
 					.And(p => p.Name.BitLength() == 32)
 					.And(p => p.Name.Substr(1, 2) == "te")
+					.And(p => p.Name.Substr(p.Age, 2) == "te")
 					.And(p => p.Name.CharIndex("e", 1) == 2)
+					.And(p => p.Name.CharIndex("e", p.Age) == 2)
 					.And(p => p.Name.Coalesce("not-null-val") == "test")
+					.And(p => p.Name.Coalesce(p.Nickname) == "test")
 					.And(p => p.NullableIsParent.Coalesce(true) == true)
 					.And(p => Projections.Concat(p.Name, ", ", p.Name) == "test, test")
-					.And(p => p.Height.Mod(10) == 0);
+					.And(p => p.Height.Mod(10) == 0)
+					.And(p => p.Height.Mod(p.Age) == 0);
 
 			AssertCriteriaAreEqual(expected, actual);
 		}

@@ -10,7 +10,6 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 	[TestFixture]
     public class Fixture : TestCase
     {
-
         protected override string[] Mappings
         {
             get { return new string[] { "NHSpecificTest.LoadingNullEntityInSet.Mappings.hbm.xml" }; }
@@ -72,7 +71,6 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 				criteria.CreateCriteria("Secondaries", JoinType.LeftOuterJoin);
             	criteria.List();
             }
-
 
         	using (ISession sess = OpenSession())
             {

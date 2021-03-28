@@ -22,7 +22,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.Futures
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class QueryBatchFixtureAsync : TestCaseMappingByCode
 	{
@@ -81,10 +80,10 @@ namespace NHibernate.Test.Futures
 
 				using (var sqlLog = new SqlLogSpy())
 				{
-					await (batch.GetResultAsync<int>(0, CancellationToken.None));
-					await (batch.GetResultAsync<EntityComplex>("queryOver", CancellationToken.None));
-					await (batch.GetResultAsync<EntityComplex>(2, CancellationToken.None));
-					await (batch.GetResultAsync<EntitySimpleChild>("sql", CancellationToken.None));
+					await (batch.GetResultAsync<int>(0));
+					await (batch.GetResultAsync<EntityComplex>("queryOver"));
+					await (batch.GetResultAsync<EntityComplex>(2));
+					await (batch.GetResultAsync<EntitySimpleChild>("sql"));
 					if (SupportsMultipleQueries)
 						Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1));
 				}
@@ -142,7 +141,7 @@ namespace NHibernate.Test.Futures
 
 				batch.Add(q1);
 				batch.Add(session.Query<EntityComplex>().Fetch(c => c.ChildrenList));
-				await (batch.ExecuteAsync(CancellationToken.None));
+				await (batch.ExecuteAsync());
 
 				var parent = await (session.LoadAsync<EntityComplex>(_parentId));
 				Assert.That(NHibernateUtil.IsInitialized(parent), Is.True);
@@ -162,7 +161,7 @@ namespace NHibernate.Test.Futures
 				int count = 0;
 				batch.Add(session.Query<EntityComplex>().WithOptions(o => o.SetCacheable(true)), r => results = r);
 				batch.Add(session.Query<EntityComplex>().WithOptions(o => o.SetCacheable(true)), ec => ec.Count(), r => count = r);
-				await (batch.ExecuteAsync(CancellationToken.None));
+				await (batch.ExecuteAsync());
 
 				Assert.That(results, Is.Not.Null);
 				Assert.That(count, Is.GreaterThan(0));
@@ -177,7 +176,7 @@ namespace NHibernate.Test.Futures
 				batch.Add(session.Query<EntityComplex>().WithOptions(o => o.SetCacheable(true)), r => results = r);
 				batch.Add(session.Query<EntityComplex>().WithOptions(o => o.SetCacheable(true)), ec => ec.Count(), r => count = r);
 
-				await (batch.ExecuteAsync(CancellationToken.None));
+				await (batch.ExecuteAsync());
 
 				Assert.That(results, Is.Not.Null);
 				Assert.That(count, Is.GreaterThan(0));
@@ -205,7 +204,6 @@ namespace NHibernate.Test.Futures
 				Assert.That(NHibernateUtil.IsInitialized(parent), Is.True);
 				Assert.That(NHibernateUtil.IsInitialized(parent.ChildrenList), Is.True);
 				Assert.That(parent.ChildrenList.Count, Is.EqualTo(2));
-				
 			}
 		}
 
@@ -498,6 +496,35 @@ namespace NHibernate.Test.Futures
 			}
 		}
 
+		//GH-2173
+		[Test]
+		public async Task CanFetchNonLazyEntitiesInSubsequentQueryAsync()
+		{
+			Sfi.Statistics.IsStatisticsEnabled = true;
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(
+					new EntityEager
+					{
+						Name = "EagerManyToOneAssociation",
+						EagerEntity = new EntityEagerChild {Name = "association"}
+					}));
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				Sfi.Statistics.Clear();
+				//EntityEager.EagerEntity is lazy initialized instead of being loaded by the second query 
+				s.QueryOver<EntityEager>().Fetch(SelectMode.Skip, x => x.EagerEntity).Future();
+				await (s.QueryOver<EntityEager>().Fetch(SelectMode.Fetch, x => x.EagerEntity).Future().GetEnumerableAsync());
+
+				if(SupportsMultipleQueries)
+					Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			}
+		}
+
 		#region Test Setup
 
 		protected override HbmMapping GetMappings()
@@ -543,6 +570,10 @@ namespace NHibernate.Test.Futures
 					rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 					rc.Property(x => x.Name);
 
+					rc.ManyToOne(x => x.EagerEntity, m =>
+					{
+						m.Cascade(Mapping.ByCode.Cascade.Persist);
+					});
 					rc.Bag(ep => ep.ChildrenListSubselect,
 							m =>
 							{
@@ -559,6 +590,14 @@ namespace NHibernate.Test.Futures
 								m.Lazy(CollectionLazy.NoLazy);
 							},
 							a => a.OneToMany());
+				});
+			mapper.Class<EntityEagerChild>(
+				rc =>
+				{
+					rc.Lazy(false);
+
+					rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
+					rc.Property(x => x.Name);
 				});
 			mapper.Class<EntitySubselectChild>(
 				rc =>

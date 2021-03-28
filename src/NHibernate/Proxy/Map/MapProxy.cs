@@ -112,7 +112,7 @@ namespace NHibernate.Proxy.Map
 		public object this[object key]
 		{
 			get { return li.Map[key]; }
-			set { li.Map[key] = value;}
+			set { li.Map[key] = value; }
 		}
 
 		public ICollection Keys

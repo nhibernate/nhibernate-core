@@ -11,6 +11,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
@@ -98,6 +99,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
+				ComputeFlattenedParameters();
 				return await (Session.ExecuteNativeUpdateAsync(GenerateQuerySpecification(namedParams), GetQueryParameters(namedParams), cancellationToken)).ConfigureAwait(false);
 			}
 			finally
@@ -107,6 +109,7 @@ namespace NHibernate.Impl
 		}
 
 		// Since v5.2
+		/// <inheritdoc />
 		[Obsolete("This method has no usages and will be removed in a future version")]
 		protected internal override Task<IEnumerable<ITranslator>> GetTranslatorsAsync(ISessionImplementor sessionImplementor, QueryParameters queryParameters, CancellationToken cancellationToken)
 		{

@@ -1,5 +1,4 @@
-﻿
-namespace NHibernate.Test.FetchLazyProperties
+﻿namespace NHibernate.Test.FetchLazyProperties
 {
 	public class Dog : Animal
 	{

@@ -12,7 +12,6 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return dialect is MsSql2000Dialect;
@@ -68,7 +67,6 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 			get { return typeof (string); }
 		}
 
-		
 		public new bool Equals(object x, object y)
 		{
 			return StringComparer.InvariantCultureIgnoreCase.Equals((string)x, (string)y);

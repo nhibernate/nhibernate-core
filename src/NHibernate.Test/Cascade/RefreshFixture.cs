@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Data;
-using System.Data.Common;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Cascade
@@ -56,7 +54,7 @@ namespace NHibernate.Test.Cascade
 			var cmd = conn.CreateCommand();
 			cmd.CommandText = "UPDATE T_JOB SET JOB_STATUS = 1";
 			cmd.CommandType = CommandType.Text;
-			session.Transaction.Enlist(cmd);
+			session.GetSessionImplementation().ConnectionManager.EnlistInTransaction(cmd);
 			cmd.ExecuteNonQuery();
 		}
 
@@ -83,7 +81,6 @@ namespace NHibernate.Test.Cascade
 			{
 				using (ITransaction txn = session.BeginTransaction())
 				{
-
 					var batch = new JobBatch(DateTime.Now);
 					batch.CreateJob().ProcessingInstructions = "Just do it!";
 					session.Persist(batch);
@@ -116,6 +113,5 @@ namespace NHibernate.Test.Cascade
 				session.Close();
 			}
 		}
-
 	}
 }

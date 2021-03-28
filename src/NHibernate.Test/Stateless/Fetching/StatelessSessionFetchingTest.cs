@@ -71,5 +71,4 @@ namespace NHibernate.Test.Stateless.Fetching
 			}
 		}
 	}
-
 }

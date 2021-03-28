@@ -10,8 +10,8 @@ namespace NHibernate.Test.NHSpecificTest.BagWithLazyExtraAndFilter
 		public void CanUseFilterForLazyExtra()
 		{
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				s.BeginTransaction();
 				var machineRequest = new MachineRequest { EnvId = 1L, Id = 2L };
 				s.Save(new Env
 				{
@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.BagWithLazyExtraAndFilter
 					}
 				});
 				s.Save(machineRequest);
-				s.Transaction.Commit();
+				t.Commit();
 			}
 
 			using (var s = OpenSession())
@@ -39,11 +39,11 @@ namespace NHibernate.Test.NHSpecificTest.BagWithLazyExtraAndFilter
 			}
 
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				s.BeginTransaction();
 				s.Delete(s.Load<MachineRequest>(2L));
 				s.Delete(s.Load<Env>(1L));
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 	}

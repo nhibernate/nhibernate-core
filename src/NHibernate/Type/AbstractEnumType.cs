@@ -3,7 +3,6 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
-
 	/// <summary>
 	/// Base class for enum types.
 	/// </summary>

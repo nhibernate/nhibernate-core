@@ -43,8 +43,7 @@ namespace NHibernate.Linq.Visitors
 
 			queryModel.TransformExpressions(ex => ReferenceReplacingExpressionVisitor.ReplaceClauseReferences(ex, innerSelectorMapping, false));
 
-			queryModel.BodyClauses.RemoveAt(index);
-			queryModel.BodyClauses.Insert(index, @join);
+			queryModel.BodyClauses[index] = @join;
 			InsertBodyClauses(subQueryModel.BodyClauses.Where(b => !(b is WhereClause)), queryModel, index + 1);
 
 			var innerBodyClauseMapping = new QuerySourceMapping();

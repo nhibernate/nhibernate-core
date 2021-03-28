@@ -20,7 +20,6 @@ namespace NHibernate.DomainModel
 			set { _foos = value; }
 		}
 
-
 		/// <summary>
 		/// Holds the _str
 		/// </summary> 

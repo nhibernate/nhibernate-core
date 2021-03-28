@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -8,7 +7,6 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion.Lambda
 {
-
 	public class LambdaSubqueryBuilder
 	{
 		private string propertyName;
@@ -189,7 +187,5 @@ namespace NHibernate.Criterion.Lambda
 		{
 			return CreatePropertyCriterion(Subqueries.PropertyNotIn, Subqueries.NotIn, detachedCriteria);
 		}
-
 	}
-
 }

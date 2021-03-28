@@ -86,7 +86,6 @@ namespace NHibernate.Stat
 				.Append(",executionMaxTime=").Append(executionMaxTime)
 				.Append(",executionMinTime=").Append(executionMinTime)
 				.Append(']').ToString();
-
 		}
 	}
 }

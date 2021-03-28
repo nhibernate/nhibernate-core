@@ -37,7 +37,6 @@ namespace NHibernate.Test.NHSpecificTest
 				simpleComp.Audit.UpdatedDate = DateTime.Now;
 				simpleComp.Audit.UpdatedUserId = "TestUpdated";
 
-
 				s.Save(simpleComp, 10L);
 
 				t.Commit();
@@ -52,7 +51,6 @@ namespace NHibernate.Test.NHSpecificTest
 				s.Flush();
 			}
 		}
-
 
 		[Test]
 		public void TestLoad()

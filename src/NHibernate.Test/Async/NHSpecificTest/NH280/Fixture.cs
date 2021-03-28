@@ -60,7 +60,6 @@ namespace NHibernate.Test.NHSpecificTest.NH280
 				Assert.AreEqual(123, result[0]);
 				Assert.AreEqual("Fiammy", (result[1] as Foo).Description);
 
-
 				l = await (s.CreateQuery("select 123, f.Description from Foo f").ListAsync());
 				result = l[0] as IList;
 				Assert.AreEqual(123, result[0]);

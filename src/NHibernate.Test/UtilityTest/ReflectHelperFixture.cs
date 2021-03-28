@@ -32,12 +32,10 @@ namespace NHibernate.Test.UtilityTest
 
 		public interface IEmpty
 		{
-
 		}
 
 		public interface IComplex: IEmpty, IMyInheritedWithEqual
 		{
-			
 		}
 
 		[Test]
@@ -82,8 +80,7 @@ namespace NHibernate.Test.UtilityTest
 			Assert.IsNull(noType);
 		}
 
-#if NETFX
-		[Test]
+		[Test, NetFxOnly]
 		public void TypeFoundInNotLoadedAssembly()
 		{
 			System.Type httpRequest = ReflectHelper.TypeFromAssembly("System.Web.HttpRequest", "System.Web", false);
@@ -92,7 +89,6 @@ namespace NHibernate.Test.UtilityTest
 			System.Type sameType = ReflectHelper.TypeFromAssembly("System.Web.HttpRequest", "System.Web", false);
 			Assert.AreEqual(httpRequest, sameType, "should be the exact same Type");
 		}
-#endif
 
 		[Test]
 		public void SystemTypes()

@@ -1,5 +1,4 @@
-﻿
-namespace NHibernate.DomainModel.Northwind.Entities
+﻿namespace NHibernate.DomainModel.Northwind.Entities
 {
 	public class Role
 	{

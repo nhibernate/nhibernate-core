@@ -51,7 +51,6 @@ namespace NHibernate.Test.NHSpecificTest.NH521
 					NHibernateUtil.IsInitialized(uninitEntity),
 					"session.GetCurrentLockMode() causes initialization of an unitialized entity.");
 
-
 				session.Delete("from System.Object");
 				transaction.Commit();
 			}

@@ -4,7 +4,6 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 {
-	
 	public class Employee
 	{
 		private int id;

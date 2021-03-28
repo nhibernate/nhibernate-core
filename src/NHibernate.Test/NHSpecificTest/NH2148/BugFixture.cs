@@ -17,7 +17,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2148
 				});
 				tx.Commit();
 			}
-
 		}
 
 		protected override void OnTearDown()

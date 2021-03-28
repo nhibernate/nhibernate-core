@@ -75,7 +75,6 @@ namespace NHibernate.Mapping
 		private readonly HashSet<string> synchronizedTables = new HashSet<string>();
 		private IDictionary<string, string> typeParameters;
 
-
 		protected Collection(PersistentClass owner)
 		{
 			this.owner = owner;

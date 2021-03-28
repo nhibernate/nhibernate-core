@@ -10,9 +10,9 @@
 
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH2691
 {
@@ -33,11 +33,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2691
 		public async Task WhenUseCountWithOrderThenCutTheOrderAsync()
 		{
 			using (var session = OpenSession())
-			using (session.BeginTransaction())
+			using (var tran = session.BeginTransaction())
 			{
 				var baseQuery = from cat in session.Query<Cat>() orderby cat.BirthDate select cat;
 				Assert.That(() => baseQuery.CountAsync(), Throws.Nothing);
-				await (session.Transaction.CommitAsync());
+				await (tran.CommitAsync());
 			}
 		}
 
@@ -45,11 +45,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2691
 		public async Task WhenUseLongCountWithOrderThenCutTheOrderAsync()
 		{
 			using (var session = OpenSession())
-			using (session.BeginTransaction())
+			using (var tran = session.BeginTransaction())
 			{
 				var baseQuery = from cat in session.Query<Cat>() orderby cat.BirthDate select cat;
 				Assert.That(() => baseQuery.LongCountAsync(), Throws.Nothing);
-				await (session.Transaction.CommitAsync());
+				await (tran.CommitAsync());
 			}
 		}
 	}

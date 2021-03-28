@@ -38,7 +38,6 @@ namespace NHibernate.DomainModel
 			set { this._version = value; }
 		}
 
-
 		/// <summary>
 		/// Gets or sets the _next
 		/// </summary> 
@@ -47,7 +46,6 @@ namespace NHibernate.DomainModel
 			get { return _next; }
 			set { _next = value; }
 		}
-
 
 		/// <summary>
 		/// Gets or sets the _order
@@ -58,7 +56,6 @@ namespace NHibernate.DomainModel
 			set { _order = value; }
 		}
 
-
 		/// <summary>
 		/// Gets or sets the _strings
 		/// </summary> 
@@ -67,7 +64,6 @@ namespace NHibernate.DomainModel
 			get { return _strings; }
 			set { _strings = value; }
 		}
-
 
 		/// <summary>
 		/// Gets or sets the _stringSets
@@ -79,7 +75,6 @@ namespace NHibernate.DomainModel
 			set { _stringSets = value; }
 		}
 
-
 		/// <summary>
 		/// Gets or sets the _fooComponents
 		/// </summary> 
@@ -89,7 +84,6 @@ namespace NHibernate.DomainModel
 			set { _fooComponents = value; }
 		}
 
-
 		/// <summary>
 		/// Gets or sets the _proxyArray
 		/// </summary> 
@@ -98,7 +92,6 @@ namespace NHibernate.DomainModel
 			get { return _proxyArray; }
 			set { _proxyArray = value; }
 		}
-
 
 		/// <summary>
 		/// Gets or sets the _proxySet

@@ -41,7 +41,6 @@ namespace NHibernate.Criterion
 		/// </summary>
 		/// <returns>An array of IProjection used by the Expression.</returns>
 		public abstract IProjection[] GetProjections();
-		
 
 		#endregion
 
@@ -57,7 +56,6 @@ namespace NHibernate.Criterion
 			return new OrExpression(lhs, rhs);
 		}
 
-
 		public static AbstractCriterion operator &(AbstractCriterion lhs, AbstractEmptinessExpression rhs)
 		{
 			return new AndExpression(lhs, rhs);
@@ -67,7 +65,6 @@ namespace NHibernate.Criterion
 		{
 			return new OrExpression(lhs, rhs);
 		}
-
 
 		public static AbstractCriterion operator !(AbstractCriterion crit)
 		{

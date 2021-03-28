@@ -5,7 +5,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 	[Serializable]
 	public class Contact
 	{
-
 		private bool isChanged;
 		private Int64 id;
 		private string forename;
@@ -30,7 +29,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 			this.preferredname = String.Empty;
 		}
 
-
 		#region Public Properties
 
 		public virtual Int64 Id
@@ -41,7 +39,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				isChanged |= (id != value);
 				id = value;
 			}
-
 		}
 
 		public virtual string Forename
@@ -117,7 +114,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 		/// </summary>
 		public override int GetHashCode()
 		{
-
 			int hash = 57;
 			hash = 27 * hash * id.GetHashCode();
 			return hash;

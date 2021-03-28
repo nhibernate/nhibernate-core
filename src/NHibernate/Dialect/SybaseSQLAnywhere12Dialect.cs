@@ -77,9 +77,16 @@ namespace NHibernate.Dialect
 		protected override void RegisterDateFunctions()
 		{
 			base.RegisterDateFunctions();
+
+			RegisterFunction(
+				"current_utctimestamp",
+				new SQLFunctionTemplate(NHibernateUtil.UtcDateTime, "cast(current UTC timestamp as timestamp)"));
 			RegisterFunction(
 				"current_timestamp_offset",
 				new NoArgSQLFunction("sysdatetimeoffset", NHibernateUtil.DateTimeOffset, true));
+			RegisterFunction(
+				"current_utctimestamp_offset",
+				new SQLFunctionTemplate(NHibernateUtil.DateTimeOffset, "(current UTC timestamp)"));
 		}
 
 		/// <summary>

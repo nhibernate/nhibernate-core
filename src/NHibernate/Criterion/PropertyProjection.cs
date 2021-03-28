@@ -72,7 +72,7 @@ namespace NHibernate.Criterion
 			{
 				throw new InvalidOperationException("not a grouping projection");
 			}
-			return new SqlString(StringHelper.Join(",", criteriaQuery.GetColumns(criteria, propertyName)));
+			return new SqlString(string.Join(",", criteriaQuery.GetColumns(criteria, propertyName)));
 		}
 	}
 }

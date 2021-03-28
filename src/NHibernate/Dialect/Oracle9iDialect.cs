@@ -1,4 +1,5 @@
 using System.Data;
+using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 
@@ -41,6 +42,15 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Xml, "XMLTYPE");
 		}
 
+		protected override void RegisterFunctions()
+		{
+			base.RegisterFunctions();
+
+			RegisterFunction(
+				"current_utctimestamp",
+				new SQLFunctionTemplate(NHibernateUtil.UtcDateTime, "SYS_EXTRACT_UTC(current_timestamp)"));
+		}
+
 		public override long TimestampResolutionInTicks => 1;
 
 		public override string GetSelectClauseNullString(SqlType sqlType)
@@ -56,5 +66,8 @@ namespace NHibernate.Dialect
 
 		/// <inheritdoc />
 		public override bool SupportsDateTimeScale => true;
+
+		/// <inheritdoc />
+		public override bool SupportsRowValueConstructorSyntaxInInList => true;
 	}
 }

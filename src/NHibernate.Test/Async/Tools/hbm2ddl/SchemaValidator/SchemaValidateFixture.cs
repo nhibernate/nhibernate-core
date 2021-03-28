@@ -52,8 +52,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 			await (validator.ValidateAsync());
 		}
 
-#if NETFX
-		[Test, SetCulture("tr-TR"), SetUICulture("tr-TR")]
+		[Test, SetCulture("tr-TR"), SetUICulture("tr-TR"), NetFxOnly]
 		public async Task ShouldVerifySameTableTurkishAsync()
 		{
 			//NH-3063
@@ -81,7 +80,6 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 				await (export.DropAsync(true, true));
 			}
 		}
-#endif
 
 		[Test]
 		public void ShouldNotVerifyModifiedTableAsync()

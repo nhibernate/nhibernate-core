@@ -24,11 +24,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				return
-				session
-					.CreateCriteria<Customer>()
-					.Fetch("Orders")
-					.SetResultTransformer(new DistinctRootEntityResultTransformer())
-					.ListAsync<Customer>(cancellationToken);
+					session
+						.CreateCriteria<Customer>()
+						.Fetch("Orders")
+						.SetResultTransformer(new DistinctRootEntityResultTransformer())
+						.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -41,10 +41,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				return
-				session
-					.CreateCriteria<Customer>()
-					.CreateAlias("Orders", "order", JoinType.LeftOuterJoin, Restrictions.Eq("Number", orderNumber))
-					.ListAsync<Customer>(cancellationToken);
+					session
+						.CreateCriteria<Customer>()
+						.CreateAlias("Orders", "order", JoinType.LeftOuterJoin, Restrictions.Eq("Number", orderNumber))
+						.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -57,11 +57,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				return
-				session
-					.CreateCriteria<Customer>()
-					.CreateAlias("Orders", "order", JoinType.InnerJoin, Restrictions.Eq("Number", orderNumber))
-					.Fetch(SelectMode.Fetch, "Orders")
-					.ListAsync<Customer>(cancellationToken);
+					session
+						.CreateCriteria<Customer>()
+						.CreateAlias("Orders", "order", JoinType.InnerJoin, Restrictions.Eq("Number", orderNumber))
+						.Fetch(SelectMode.Fetch, "Orders")
+						.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -74,12 +74,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				return
-				session
-					.CreateCriteria<Customer>()
-					.Fetch(SelectMode.Fetch, "Orders")
-					.CreateCriteria("Orders", JoinType.InnerJoin)
-					.Add(Restrictions.Eq("Number", orderNumber))
-					.ListAsync<Customer>(cancellationToken);
+					session
+						.CreateCriteria<Customer>()
+						.Fetch(SelectMode.Fetch, "Orders")
+						.CreateCriteria("Orders", JoinType.InnerJoin)
+						.Add(Restrictions.Eq("Number", orderNumber))
+						.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -92,12 +92,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				return
-				session
-					.CreateCriteria<Customer>()
-					.CreateAlias("Orders", "order", JoinType.InnerJoin, Restrictions.Eq("Number", orderNumber))
-					.Fetch(SelectMode.Fetch, "Orders")
-					.CreateAlias("Companies", "company", JoinType.LeftOuterJoin, Restrictions.Eq("Name", name))
-					.ListAsync<Customer>(cancellationToken);
+					session
+						.CreateCriteria<Customer>()
+						.CreateAlias("Orders", "order", JoinType.InnerJoin, Restrictions.Eq("Number", orderNumber))
+						.Fetch(SelectMode.Fetch, "Orders")
+						.CreateAlias("Companies", "company", JoinType.LeftOuterJoin, Restrictions.Eq("Name", name))
+						.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -110,12 +110,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				return
-				session
-					.CreateCriteria<Customer>()
-					.Fetch(SelectMode.Fetch, "Orders")
-					.CreateAlias("Orders", "order", JoinType.InnerJoin)
-					.CreateAlias("Companies", "company", JoinType.LeftOuterJoin)
-					.ListAsync<Customer>(cancellationToken);
+					session
+						.CreateCriteria<Customer>()
+						.Fetch(SelectMode.Fetch, "Orders")
+						.CreateAlias("Orders", "order", JoinType.InnerJoin)
+						.CreateAlias("Companies", "company", JoinType.LeftOuterJoin)
+						.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -130,11 +130,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				return
-				session
-					.CreateCriteria<Customer>()
-					.CreateAlias("Orders", "order", JoinType.LeftOuterJoin, Restrictions.Eq("Number", orderNumber))
-					.CreateAlias("Companies", "company", JoinType.LeftOuterJoin)
-					.ListAsync<Customer>(cancellationToken);
+					session
+						.CreateCriteria<Customer>()
+						.CreateAlias("Orders", "order", JoinType.LeftOuterJoin, Restrictions.Eq("Number", orderNumber))
+						.CreateAlias("Companies", "company", JoinType.LeftOuterJoin)
+						.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -147,12 +147,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				return
-				session
-					.CreateCriteria<Customer>()
-					.CreateCriteria("Orders", "Order", JoinType.LeftOuterJoin)
-					.Add(Restrictions.Eq("Number", orderNumber))
-					.SetResultTransformer(new DistinctRootEntityResultTransformer())
-					.ListAsync<Customer>(cancellationToken);
+					session
+						.CreateCriteria<Customer>()
+						.CreateCriteria("Orders", "Order", JoinType.LeftOuterJoin)
+						.Add(Restrictions.Eq("Number", orderNumber))
+						.SetResultTransformer(new DistinctRootEntityResultTransformer())
+						.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -165,12 +165,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				return
-				session
-					.CreateCriteria<Customer>()
-					.CreateAlias("Orders", "order", JoinType.LeftOuterJoin)
-					.Add(Restrictions.Eq("Name", "First Customer"))
-					.SetResultTransformer(new DistinctRootEntityResultTransformer())
-					.ListAsync<Customer>(cancellationToken);
+					session
+						.CreateCriteria<Customer>()
+						.CreateAlias("Orders", "order", JoinType.LeftOuterJoin)
+						.Add(Restrictions.Eq("Name", "First Customer"))
+						.SetResultTransformer(new DistinctRootEntityResultTransformer())
+						.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -186,19 +186,19 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				var detachedCriteria =
-				DetachedCriteria
-					.For<Customer>()
-					.CreateAlias("Orders", "order", JoinType.LeftOuterJoin, Restrictions.Eq("Number", orderNumber))
-					.SetProjection(Projections.Id());
+					DetachedCriteria
+						.For<Customer>()
+						.CreateAlias("Orders", "order", JoinType.LeftOuterJoin, Restrictions.Eq("Number", orderNumber))
+						.SetProjection(Projections.Id());
 
 				return
-				session
-					.CreateCriteria<Customer>()
-					.CreateAlias("Orders", "order1", JoinType.LeftOuterJoin)
-					.Add(Subqueries.PropertyIn("Id", detachedCriteria))
-					.Add(Restrictions.Eq("Name", customerName))
-					.SetResultTransformer(new DistinctRootEntityResultTransformer())
-					.ListAsync<Customer>(cancellationToken);
+					session
+						.CreateCriteria<Customer>()
+						.CreateAlias("Orders", "order1", JoinType.LeftOuterJoin)
+						.Add(Subqueries.PropertyIn("Id", detachedCriteria))
+						.Add(Restrictions.Eq("Name", customerName))
+						.SetResultTransformer(new DistinctRootEntityResultTransformer())
+						.ListAsync<Customer>(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{

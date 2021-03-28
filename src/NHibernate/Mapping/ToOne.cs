@@ -72,7 +72,7 @@ namespace NHibernate.Mapping
 			return base.IsValid(mapping);
 		}
 
-		public override abstract IType Type { get;}
+		public override abstract IType Type { get; }
 
 		public override bool IsTypeSpecified
 		{

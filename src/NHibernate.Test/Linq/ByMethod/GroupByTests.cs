@@ -128,7 +128,6 @@ namespace NHibernate.Test.Linq.ByMethod
 			AssertOrderedBy.Descending(orderCounts, oc => oc.OrderCount);
 		}
 
-
 		[Test]
 		public void SingleKeyPropertyGroupAndOrderByCountBeforeProjection()
 		{
@@ -370,6 +369,40 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-2566
 			var namesAreNotEmpty = !db.Users.GroupBy(p => p.Name).Select(g => g.Key).Any(name => name.Length == 0);
 			Assert.That(namesAreNotEmpty, Is.True);
+		}
+
+		[Test]
+		public void GroupByWithStringEnumParameter()
+		{
+			db.Users
+			  .GroupBy(p => p.Enum1)
+			  .Select(g => g.Key == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new StringEnumGroup {Enum = p.Enum1})
+			  .Select(g => g.Key.Enum == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new[] {p.Enum1})
+			  .Select(g => g.Key[0] == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new {p.Enum1})
+			  .Select(g => g.Key.Enum1 == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new {Test = new {Test2 = p.Enum1}})
+			  .Select(g => g.Key.Test.Test2 == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new {Test = new[] {p.Enum1}})
+			  .Select(g => g.Key.Test[0] == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+		}
+
+		private class StringEnumGroup
+		{
+			public EnumStoredAsString Enum { get; set; }
 		}
 
 		[Test]
@@ -891,7 +924,6 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 		}
 
-
 		[Test(Description = "NH-3446"), KnownBug("NH-3446", "NHibernate.HibernateException")]
 		public void GroupByOrderByKeySelectToClass()
 		{
@@ -900,7 +932,6 @@ namespace NHibernate.Test.Linq.ByMethod
 				.Select(x => new GroupInfo {Key = x.Key, ItemCount = x.Count(), HasSubgroups = false, Items = x})
 				.ToList();
 		}
-
 
 		[Test(Description = "NH-3743")]
 		public void FetchBeforeGroupBy()
@@ -913,6 +944,48 @@ namespace NHibernate.Test.Linq.ByMethod
 				.ToArray();
 
 			Assert.True(result.Any());
+		}
+
+		[Test]
+		public void SelectArrayIndexBeforeGroupBy()
+		{
+			var result = db.Orders
+							.SelectMany(o => o.OrderLines.Select(c => c.Id).DefaultIfEmpty().Select(c => new object[] {c, o}))
+							.GroupBy(g => g[0], g => (Order) g[1])
+							.Select(g => new[] {g.Key, g.Count(), g.Max(x => x.OrderDate)});
+
+			Assert.True(result.Any());
+		}
+
+		[Test]
+		public void SelectMemberInitBeforeGroupBy()
+		{
+			var result = db.Orders
+							.Select(o => new OrderGroup {OrderId = o.OrderId, OrderDate = o.OrderDate})
+							.GroupBy(o => o.OrderId)
+							.Select(g => new OrderGroup {OrderId = g.Key, OrderDate = g.Max(o => o.OrderDate)})
+							.ToList();
+
+			Assert.True(result.Any());
+		}
+
+		[Test]
+		public void SelectNewBeforeGroupBy()
+		{
+			var result = db.Orders
+							.Select(o => new {o.OrderId, o.OrderDate})
+							.GroupBy(o => o.OrderId)
+							.Select(g => new {OrderId = g.Key, OrderDate = g.Max(o => o.OrderDate)})
+							.ToList();
+
+			Assert.True(result.Any());
+		}
+
+		private class OrderGroup
+		{
+			public int OrderId { get; set; }
+
+			public DateTime? OrderDate { get; set; }
 		}
 
 		private class GroupInfo

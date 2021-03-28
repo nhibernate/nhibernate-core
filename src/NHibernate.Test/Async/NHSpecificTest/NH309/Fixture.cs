@@ -81,7 +81,6 @@ namespace NHibernate.Test.NHSpecificTest.NH309
 			Assert.AreEqual(2, menu2.Nodes.Count, "Test count after removal");
 			Assert.AreEqual(rootNode, menu2.Nodes[0], "Test identity first node in menu");
 
-
 			await (s.DeleteAsync("from Node"));
 			await (s.DeleteAsync("from Menu"));
 			await (s.FlushAsync());

@@ -13,6 +13,6 @@ namespace NHibernate.AdoNet
 		/// <summary>
 		/// The <see cref="IBatcherFactory"/> class type.
 		/// </summary>
-		System.Type BatcherFactoryClass { get;}
+		System.Type BatcherFactoryClass { get; }
 	}
 }

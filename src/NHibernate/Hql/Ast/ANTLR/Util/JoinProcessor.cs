@@ -1,16 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
-using NHibernate.Impl;
-using NHibernate.Param;
 using NHibernate.SqlCommand;
-using NHibernate.Type;
-using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
@@ -56,6 +49,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 					return JoinType.RightOuterJoin;
 				case HqlSqlWalker.FULL:
 					return JoinType.FullJoin;
+				case HqlSqlWalker.CROSS:
+					return JoinType.CrossJoin;
 				default:
 					throw new AssertionFailure("undefined join type " + astJoinType);
 			}
@@ -72,9 +67,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 		public void ProcessJoins(IRestrictableStatement query) 
 		{
 			FromClause fromClause = query.FromClause;
-			var supportRootAlias = !(query is DeleteStatement || query is UpdateStatement);
-
-			IList<IASTNode> fromElements;
+			IList<FromElement> fromElements;
 			if ( DotNode.UseThetaStyleImplicitJoins ) 
 			{
 				// for regression testing against output from the old parser...
@@ -83,22 +76,58 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				// expected by the old parser; this is definitely another of those "only needed
 				// for regression purposes".  The SyntheticAndFactory, then, simply injects them as it
 				// encounters them.
-				fromElements = new List<IASTNode>();
-				IList<IASTNode> t = fromClause.GetFromElements();
+				fromElements = new List<FromElement>();
+				var t = fromClause.GetFromElementsTyped();
 
 				for (int i = t.Count - 1; i >= 0; i--)
 				{
 					fromElements.Add(t[i]);
 				}
 			}
-			else 
+			else
 			{
-				fromElements = fromClause.GetFromElements();
+				fromElements = fromClause.GetFromElementsTyped();
+
+				for (var index = fromElements.Count - 1; index >= 0; index--)
+				{
+					var fromElement = fromElements[index];
+					// We found an implied from element that is used in the WITH clause of another from element, so it need to become part of it's join sequence
+					if (fromElement.IsImplied && fromElement.IsPartOfJoinSequence == null)
+					{
+						var origin = fromElement.Origin;
+						while(origin.IsImplied)
+						{
+							origin = origin.Origin;
+							origin.IsPartOfJoinSequence = false;
+						}
+
+						if (origin.WithClauseFragment?.Contains(fromElement.TableAlias + ".") == true)
+						{
+							List<FromElement> elements = new List<FromElement>();
+							while(fromElement.IsImplied)
+							{
+								elements.Add(fromElement);
+								// This from element will be rendered as part of the origins join sequence
+								fromElement.Text = string.Empty;
+								fromElement.IsPartOfJoinSequence = true;
+								fromElement = fromElement.Origin;
+							}
+
+							for (var i = elements.Count - 1; i >= 0; i--)
+							{
+								origin.JoinSequence.AddJoin(elements[i]);
+							}
+						}
+					}
+				}
 			}
 
 			// Iterate through the alias,JoinSequence pairs and generate SQL token nodes.
 			foreach (FromElement fromElement in fromElements)
 			{
+				if(fromElement.IsPartOfJoinSequence == true)
+					continue;
+
 				JoinSequence join = fromElement.JoinSequence;
 
 				join.SetSelector(new JoinSequenceSelector(_walker, fromClause, fromElement));
@@ -106,18 +135,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				// the delete and update statements created here will never be executed when IsMultiTable is true,
 				// only the where clause will be used by MultiTableUpdateExecutor/MultiTableDeleteExecutor. In that case
 				// we have to use the alias from the persister.
-				AddJoinNodes( query, join, fromElement, supportRootAlias || fromElement.Queryable.IsMultiTable);
+				AddJoinNodes( query, join, fromElement);
 			}
 		}
 
-		private void AddJoinNodes(IRestrictableStatement query, JoinSequence join, FromElement fromElement, bool supportRootAlias)
+		private void AddJoinNodes(IRestrictableStatement query, JoinSequence join, FromElement fromElement)
 		{
 			JoinFragment joinFragment = join.ToJoinFragment(
 					_walker.EnabledFilters,
 					fromElement.UseFromFragment || fromElement.IsDereferencedBySuperclassOrSubclassProperty,
-					fromElement.WithClauseFragment,
-					fromElement.WithClauseJoinAlias,
-					supportRootAlias ? join.RootAlias : string.Empty
+					fromElement.WithClauseFragment
 			);
 
 			SqlString frag = joinFragment.ToFromFragmentString;

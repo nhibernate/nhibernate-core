@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Reflection;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
@@ -12,6 +11,11 @@ namespace NHibernate.Driver
 	/// </summary>
 	public class SqlServerCeDriver : ReflectionBasedDriver
 	{
+		private static readonly Action<object, SqlDbType> SetSqlDbType =
+			DelegateHelper.BuildPropertySetter<SqlDbType>(
+				ReflectHelper.TypeFromAssembly("System.Data.SqlServerCe.SqlCeParameter", "System.Data.SqlServerCe", true),
+				"SqlDbType");
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlServerCeDriver"/> class.
 		/// </summary>
@@ -21,19 +25,6 @@ namespace NHibernate.Driver
 				"System.Data.SqlServerCe.SqlCeConnection",
 				"System.Data.SqlServerCe.SqlCeCommand")
 		{
-		}
-
-		private PropertyInfo dbParamSqlDbTypeProperty;
-
-		public override void Configure(IDictionary<string, string> settings)
-		{
-			base.Configure(settings);
-
-			using (var cmd = CreateCommand())
-			{
-				var dbParam = cmd.CreateParameter();
-				dbParamSqlDbTypeProperty = dbParam.GetType().GetProperty("SqlDbType");
-			}
 		}
 
 		/// <summary>
@@ -84,6 +75,12 @@ namespace NHibernate.Driver
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			base.InitializeParameter(dbParam, name, AdjustSqlType(sqlType));
+			// For types that are using one character (CharType, AnsiCharType, TrueFalseType, YesNoType and EnumCharType),
+			// we have to specify the length otherwise sql function like charindex won't work as expected.
+			if (sqlType.LengthDefined && sqlType.Length == 1)
+			{
+				dbParam.Size = sqlType.Length;
+			}
 
 			AdjustDbParamTypeForLargeObjects(dbParam, sqlType);
 		}
@@ -109,11 +106,11 @@ namespace NHibernate.Driver
 		{
 			if (sqlType is BinaryBlobSqlType)
 			{
-				dbParamSqlDbTypeProperty.SetValue(dbParam, SqlDbType.Image, null);
+				SetSqlDbType(dbParam, SqlDbType.Image);
 			}
 			else if (sqlType is StringClobSqlType)
 			{
-				dbParamSqlDbTypeProperty.SetValue(dbParam, SqlDbType.NText, null);
+				SetSqlDbType(dbParam, SqlDbType.NText);
 			}
 		}
 

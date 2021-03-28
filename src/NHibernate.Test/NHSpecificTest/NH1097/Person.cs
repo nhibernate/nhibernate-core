@@ -8,6 +8,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1097
 	{
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
-
 	}
 }

@@ -197,7 +197,6 @@ namespace NHibernate.Test.Criteria
 					.UniqueResultAsync<string>());
 				Assert.AreEqual("yes", result);
 
-
 				result = await (session.CreateCriteria(typeof(Student))
 					.SetProjection(
 						Projections.Conditional(
@@ -221,7 +220,6 @@ namespace NHibernate.Test.Criteria
 				Assert.AreEqual(27L, list[0].StudentNumber);
 			}
 		}
-
 
 		[Test]
 		public async Task UseLikeWithProjectionAsync()
@@ -270,7 +268,6 @@ namespace NHibernate.Test.Criteria
 				Assert.AreEqual(27L, list[0].StudentNumber);
 			}
 		}
-
 
 		[Test]
 		public async Task UseGtWithProjectionAsync()

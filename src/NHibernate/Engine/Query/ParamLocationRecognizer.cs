@@ -117,6 +117,5 @@ namespace NHibernate.Engine.Query
 				get { return jpaStyle; }
 			}
 		}
-
 	}
 }

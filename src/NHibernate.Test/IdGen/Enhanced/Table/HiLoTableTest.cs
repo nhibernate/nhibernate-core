@@ -54,7 +54,6 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 					transaction.Commit();
 				}
 
-
 				using (ITransaction transaction = s.BeginTransaction())
 				{
 					for (int i = 0; i < entities.Length; i++)

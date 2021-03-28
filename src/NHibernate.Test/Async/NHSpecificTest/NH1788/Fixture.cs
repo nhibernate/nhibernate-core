@@ -37,7 +37,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1788
 				await (tx.CommitAsync());
 			}
 
-
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
@@ -46,14 +45,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1788
 				await (tx.CommitAsync());
 			} 
 
-
 			using (ISession session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
 				await (session.DeleteAsync(await (session.GetAsync<Person>(1))));
 				await (tx.CommitAsync());
 			}
-			
 		}
 	}
 }

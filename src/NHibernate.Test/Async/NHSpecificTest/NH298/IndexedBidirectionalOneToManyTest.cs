@@ -17,10 +17,8 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH298 {
 	using System.Threading.Tasks;
-
 	[TestFixture]
 	public class IndexedBidirectionalOneToManyTestAsync : BugTestCase {
-
 		protected override void OnSetUp() {
 			base.OnSetUp();
 			using ( ISession session = this.OpenSession() ) {

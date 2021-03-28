@@ -37,7 +37,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 		[Test]
 		public void ExecutesOneQueryWithUniqueResultWithChildCriteriaNonGeneric()
 		{
-	
 			Sfi.Statistics.Clear();
 			using (ISession session = this.OpenSession())
 			{

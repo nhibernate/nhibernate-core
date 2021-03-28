@@ -88,7 +88,6 @@ namespace NHibernate.Action
 				return true;
 			}
 
-
 			return entitySpaces.Any(querySpaces.Contains);
 		}
 

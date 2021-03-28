@@ -16,35 +16,35 @@ namespace NHibernate.Engine
 		/// Used to hold information about the entities that are currently eligible for batch-fetching. Ultimately
 		/// used by <see cref="GetEntityBatch" /> to build entity load batches.
 		/// </summary>
-		private readonly IDictionary<string, HashSet<EntityKey>> _queryEntityKeys;
+		private readonly Dictionary<string, HashSet<EntityKey>> _queryEntityKeys;
 
 		/// <summary>
 		/// Used to hold information about entity keys that were checked in the cache.
 		/// </summary>
-		private readonly IDictionary<string, HashSet<EntityKey>> _queryCheckedEntityKeys;
+		private readonly Dictionary<string, HashSet<EntityKey>> _queryCheckedEntityKeys;
 
 		/// <summary>
 		/// Used to hold information about collection entries that are currently eligible for batch-fetching. Ultimately
 		/// used by <see cref="GetCollectionBatch" /> to build collection load batches.
 		/// </summary>
-		private readonly IDictionary<string, IDictionary<CollectionKey, CollectionEntry>> _queryCollectionKeys;
+		private readonly Dictionary<string, Dictionary<CollectionKey, CollectionEntry>> _queryCollectionKeys;
 
 		/// <summary>
 		/// Used to hold information about collection keys that were checked in the cache.
 		/// </summary>
-		private readonly IDictionary<string, HashSet<CollectionKey>> _queryCheckedCollectionKeys;
+		private readonly Dictionary<string, HashSet<CollectionKey>> _queryCheckedCollectionKeys;
 
 		/// <summary>
 		/// Used to hold information about collection entries that were checked in the cache.
 		/// </summary>
-		private readonly IDictionary<string, HashSet<CollectionEntry>> _queryCheckedCollectionEntries;
+		private readonly Dictionary<string, HashSet<CollectionEntry>> _queryCheckedCollectionEntries;
 
 		internal QueryCacheBatchQueue(IPersistenceContext persistenceContext)
 		{
 			_persistenceContext = persistenceContext;
 			_queryEntityKeys = new Dictionary<string, HashSet<EntityKey>>();
 			_queryCheckedEntityKeys = new Dictionary<string, HashSet<EntityKey>>();
-			_queryCollectionKeys = new Dictionary<string, IDictionary<CollectionKey, CollectionEntry>>();
+			_queryCollectionKeys = new Dictionary<string, Dictionary<CollectionKey, CollectionEntry>>();
 			_queryCheckedCollectionKeys = new Dictionary<string, HashSet<CollectionKey>>();
 			_queryCheckedCollectionEntries = new Dictionary<string, HashSet<CollectionEntry>>();
 		}

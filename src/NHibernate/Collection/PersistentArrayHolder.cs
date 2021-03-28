@@ -94,14 +94,7 @@ namespace NHibernate.Collection
 
 		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
-			object[] sn = (object[]) snapshot;
-			object[] arr = (object[]) array;
-			List<object> result = new List<object>(sn);
-			for (int i = 0; i < sn.Length; i++)
-			{
-				IdentityRemove(result, arr[i], entityName, Session);
-			}
-			return result;
+			return GetOrphans((object[]) snapshot, (object[]) array, entityName, Session);
 		}
 
 		public override bool IsWrapper(object collection)

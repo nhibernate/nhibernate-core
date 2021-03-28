@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace NHibernate.Test.NHSpecificTest.GH1486
 {
 	public class Person

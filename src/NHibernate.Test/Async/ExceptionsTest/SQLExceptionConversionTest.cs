@@ -9,7 +9,6 @@
 
 
 using System;
-using System.Collections;
 using System.Data;
 using System.Data.Common;
 using NHibernate.Dialect;
@@ -80,65 +79,68 @@ namespace NHibernate.Test.ExceptionsTest
 		[Test]
 		public async Task IntegrityViolationAsync()
 		{
-
 			//ISQLExceptionConverter converter = Dialect.BuildSQLExceptionConverter();
 			ISQLExceptionConverter converter = Sfi.Settings.SqlExceptionConverter;
 
-			ISession session = OpenSession();
-			session.BeginTransaction();
-			var connection = session.Connection;
-
-			// Attempt to insert some bad values into the T_MEMBERSHIP table that should
-			// result in a constraint violation
-			DbCommand ps = null;
-			try
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
-				ps = connection.CreateCommand();
-				ps.CommandType = CommandType.Text;
-				ps.CommandText = "INSERT INTO T_MEMBERSHIP (user_id, group_id) VALUES (@p1, @p2)";
-				var pr = ps.CreateParameter();
-				pr.ParameterName = "p1";
-				pr.DbType = DbType.Int64;
-				pr.Value = 52134241L; // Non-existent user_id
-				ps.Parameters.Add(pr);
+				var connection = session.Connection;
 
-				pr = ps.CreateParameter();
-				pr.ParameterName = "p2";
-				pr.DbType = DbType.Int64;
-				pr.Value = 5342L; // Non-existent group_id
-				ps.Parameters.Add(pr);
-
-				session.Transaction.Enlist(ps);
-				await (ps.ExecuteNonQueryAsync());
-
-				Assert.Fail("INSERT should have failed");
-			}
-			catch (Exception sqle)
-			{
-				ADOExceptionReporter.LogExceptions(sqle, "Just output!!!!");
-				Exception adoException = converter.Convert(new AdoExceptionContextInfo{SqlException  = sqle});
-				Assert.AreEqual(typeof(ConstraintViolationException), adoException.GetType(),
-												"Bad conversion [" + sqle.Message + "]");
-				ConstraintViolationException ex = (ConstraintViolationException)adoException;
-				Console.WriteLine("Violated constraint name: " + ex.ConstraintName);
-			}
-			finally
-			{
-				if (ps != null)
+				// Attempt to insert some bad values into the T_MEMBERSHIP table that should
+				// result in a constraint violation
+				DbCommand ps = null;
+				try
 				{
-					try
+					ps = connection.CreateCommand();
+					ps.CommandType = CommandType.Text;
+					ps.CommandText = "INSERT INTO T_MEMBERSHIP (user_id, group_id) VALUES (@p1, @p2)";
+					var pr = ps.CreateParameter();
+					pr.ParameterName = "p1";
+					pr.DbType = DbType.Int64;
+					pr.Value = 52134241L; // Non-existent user_id
+					ps.Parameters.Add(pr);
+
+					pr = ps.CreateParameter();
+					pr.ParameterName = "p2";
+					pr.DbType = DbType.Int64;
+					pr.Value = 5342L; // Non-existent group_id
+					ps.Parameters.Add(pr);
+
+					tran.Enlist(ps);
+					await (ps.ExecuteNonQueryAsync());
+
+					Assert.Fail("INSERT should have failed");
+				}
+				catch (Exception sqle)
+				{
+					ADOExceptionReporter.LogExceptions(sqle, "Just output!!!!");
+					Exception adoException = converter.Convert(new AdoExceptionContextInfo { SqlException = sqle });
+					Assert.AreEqual(
+						typeof(ConstraintViolationException),
+						adoException.GetType(),
+						"Bad conversion [" + sqle.Message + "]");
+					ConstraintViolationException ex = (ConstraintViolationException) adoException;
+					Console.WriteLine("Violated constraint name: " + ex.ConstraintName);
+				}
+				finally
+				{
+					if (ps != null)
 					{
-						ps.Dispose();
-					}
-					catch (Exception)
-					{
-						// ignore...
+						try
+						{
+							ps.Dispose();
+						}
+						catch (Exception)
+						{
+							// ignore...
+						}
 					}
 				}
-			}
 
-			await (session.Transaction.RollbackAsync());
-			session.Close();
+				await (tran.RollbackAsync());
+				session.Close();
+			}
 		}
 
 		[Test]

@@ -101,7 +101,6 @@ namespace NHibernate.SqlCommand
 			return false;
 		}
 
-
 		public override bool AddCondition(SqlString condition)
 		{
 			//TODO: this seems hackish

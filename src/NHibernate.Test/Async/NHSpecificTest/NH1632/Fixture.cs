@@ -74,7 +74,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			Assert.AreNotEqual(scalar1, scalar2, "HiLo must run with in its own transaction");
 		}
 
-
 		[Test]
 		public async Task When_commiting_items_in_DTC_transaction_will_add_items_to_2nd_level_cacheAsync()
 		{
@@ -88,7 +87,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			}
 			try
 			{
-
 				using (var tx = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
 				{
 					using (var s = OpenSession())
@@ -189,7 +187,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				using (ISession s1 = Sfi.OpenSession())
 				using (ISession s2 = Sfi.OpenSession())
 				{
-
 					id1 = await (s1.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 5 }));
 					await (s1.FlushAsync());
 
@@ -229,7 +226,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				using (ISession s1 = Sfi.OpenSession())
 				using (ISession s2 = Sfi.OpenSession())
 				{
-
 					id1 = await (s1.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 5 }));
 
 					id2 = await (s2.SaveAsync(new Nums { NumA = 1, NumB = 2, ID = 6 }));

@@ -56,7 +56,6 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 		}
 
-
 		[Test]
 		public async Task TestSelectAsync()
 		{

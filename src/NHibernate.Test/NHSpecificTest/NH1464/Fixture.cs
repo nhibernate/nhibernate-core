@@ -14,14 +14,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1464
 		{
 			public virtual void Dispose()
 			{
-				
 			}
 		}
 		public class CPPMimic : CPPMimicBase
 		{
 			public sealed override void Dispose()
 			{
-
 			}
 		}
 
@@ -29,7 +27,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1464
 		{
 			protected void Dispose(bool disposing)
 			{
-
 			}
 
 			public void Dispose()
@@ -38,7 +35,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1464
 
 			~Another()
 			{
-				
 			}
 		}
 
@@ -46,7 +42,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1464
 		{
 			public void Dispose(bool disposing)
 			{
-
 			}
 
 			public void Dispose()
@@ -55,7 +50,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1464
 
 			~OneMore()
 			{
-
 			}
 		}
 

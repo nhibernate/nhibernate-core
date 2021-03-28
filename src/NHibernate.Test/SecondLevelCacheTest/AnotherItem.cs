@@ -8,7 +8,6 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		
 		public AnotherItem()
 		{
-
 		}
 
 		public AnotherItem(string name)

@@ -14,7 +14,6 @@ namespace NHibernate.Test.TypesTest
 
 		protected override void OnSetUp()
 		{
-
 			EnumCharClass basic = new EnumCharClass();
 			basic.Id = 1;
 			basic.EnumValue = SampleCharEnum.Dimmed;

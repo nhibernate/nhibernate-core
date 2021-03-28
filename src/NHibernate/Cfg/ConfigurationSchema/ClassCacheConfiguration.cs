@@ -127,7 +127,6 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			get { return region; }
 		}
 
-
 		private EntityCacheUsage usage;
 		/// <summary>
 		/// Cache strategy.
@@ -149,6 +148,5 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		{
 			get { return include; }
 		}
-
 	}
 }

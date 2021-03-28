@@ -146,8 +146,8 @@ namespace NHibernate.Cache
 				// PreferMultipleGet yields false if !IBatchableCacheConcurrencyStrategy, no GetMany call should be done
 				// in such case.
 				return ReflectHelper
-				.CastOrThrow<IBatchableCacheConcurrencyStrategy>(cache, "batching")
-				.GetManyAsync(keys, timestamp, cancellationToken);
+					.CastOrThrow<IBatchableCacheConcurrencyStrategy>(cache, "batching")
+					.GetManyAsync(keys, timestamp, cancellationToken);
 			}
 			catch (System.Exception ex)
 			{

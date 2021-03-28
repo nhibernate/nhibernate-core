@@ -12,8 +12,14 @@ namespace NHibernate.Dialect
 			// My SQL supports precision up to 65, but .Net is limited to 28-29.
 			RegisterColumnType(DbType.Decimal, 29, "DECIMAL($p, $s)");
 			RegisterColumnType(DbType.Guid, "BINARY(16)");
+		}
+
+		protected override void RegisterFunctions()
+		{
+			base.RegisterFunctions();
 			
 			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "concat(hex(reverse(substr(?1, 1, 4))), '-', hex(reverse(substring(?1, 5, 2))), '-', hex(reverse(substr(?1, 7, 2))), '-', hex(substr(?1, 9, 2)), '-', hex(substr(?1, 11)))"));
+			RegisterFunction("new_uuid", new NoArgSQLFunction("uuid", NHibernateUtil.Guid));
 		}
 
 		protected override void RegisterCastTypes() 

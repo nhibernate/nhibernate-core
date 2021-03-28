@@ -69,8 +69,7 @@ namespace NHibernate.Criterion
 			}
 			else
 			{
-				SqlString sql = _projection.ToSqlString(criteria, GetHashCode(), criteriaQuery);
-				result.Add(SqlStringHelper.RemoveAsAliasesFromSql(sql));
+				result.AddObject(CriterionUtil.GetColumnNameAsSqlStringPart(_projection, criteriaQuery, criteria));
 			}
 		}
 

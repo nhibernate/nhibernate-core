@@ -8,7 +8,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 
 		public Home()
 		{
-
 		}
 
 		public Home(string city, int zip)

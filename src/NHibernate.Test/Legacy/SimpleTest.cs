@@ -100,7 +100,6 @@ namespace NHibernate.Test.Legacy
 			s4.Close();
 		}
 
-
 		[Test]
 		public void SetPropertiesOnQuery()
 		{

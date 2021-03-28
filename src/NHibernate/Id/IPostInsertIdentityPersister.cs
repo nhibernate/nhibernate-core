@@ -7,6 +7,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -32,7 +33,7 @@ namespace NHibernate.Id
 			{
 				var uniqueKeyPropertyNames = suppliedPropertyNames ?? DetermineNameOfPropertiesToUse(entityPersister);
 
-				parameterTypes = uniqueKeyPropertyNames.Select(p => entityPersister.GetPropertyType(p)).ToArray();
+				parameterTypes = uniqueKeyPropertyNames.ToArray(p => entityPersister.GetPropertyType(p));
 			}
 			else if (persister is IQueryableCollection collectionPersister)
 			{
@@ -89,11 +90,11 @@ namespace NHibernate.Id
 		/// Get the database-specific SQL command to retrieve the last
 		/// generated IDENTITY value.
 		/// </summary>
-		string IdentitySelectString { get;}
+		string IdentitySelectString { get; }
 
 		/// <summary> The names of the primary key columns in the root table. </summary>
 		/// <returns> The primary key column names. </returns>
-		string[] RootTableKeyColumnNames { get;}
+		string[] RootTableKeyColumnNames { get; }
 
 		/// <summary> 
 		/// Get a SQL select string that performs a select based on a unique

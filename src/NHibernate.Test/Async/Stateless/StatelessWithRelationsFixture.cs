@@ -97,6 +97,5 @@ namespace NHibernate.Test.Stateless
 				await (tx.CommitAsync());
 			}
 		}
-
 	}
 }

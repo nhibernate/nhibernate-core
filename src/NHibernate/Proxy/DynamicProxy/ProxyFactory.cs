@@ -226,7 +226,6 @@ namespace NHibernate.Proxy.DynamicProxy
 
 			constructor.SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed);
 
-
 			IL.Emit(OpCodes.Ldtoken, typeof (IInterceptor));
 			IL.Emit(OpCodes.Call, ReflectionCache.TypeMethods.GetTypeFromHandle);
 			IL.Emit(OpCodes.Stloc, interceptorType);

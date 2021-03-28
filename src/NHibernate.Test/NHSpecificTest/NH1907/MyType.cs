@@ -30,7 +30,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1907
 	{
 		private static readonly SqlType[] ReturnSqlTypes = { SqlTypeFactory.Int32 };
 
-
 		#region IUserType Members
 
 		public new bool Equals(object x, object y)
@@ -112,5 +111,4 @@ namespace NHibernate.Test.NHSpecificTest.NH1907
 
 		#endregion
 	}
-
 }

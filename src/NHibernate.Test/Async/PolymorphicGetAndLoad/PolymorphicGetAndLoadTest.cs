@@ -113,7 +113,6 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 					await (s.FlushAsync());
 				}
 			}, Throws.Nothing);
-
 		}
 
 		[Test]

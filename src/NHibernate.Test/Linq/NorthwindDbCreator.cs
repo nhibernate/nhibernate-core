@@ -70,6 +70,11 @@ namespace NHibernate.Test.Linq
 				}
 			};
 
+			foreach (var user in users)
+			{
+				user.CreatedBy = users[0];
+			}
+
 			var timesheets = new[]
 			{
 				new Timesheet

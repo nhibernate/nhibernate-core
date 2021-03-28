@@ -13,11 +13,13 @@
         
         <para>
             Note that, even though many NHibernate users choose to define XML mappings by hand,
-            a number of tools exist to generate the mapping document, including
-            NHibernate.Mapping.Attributes library and various template-based code
-            generators (CodeSmith, MyGeneration). You may also use
-            <literal>NHibernate.Mapping.ByCode</literal> available since NHibernate 3.2, or
-            <ulink url="https://github.com/jagregory/fluent-nhibernate">Fluent NHibernate</ulink>.
+            a number of tools exist to generate the mapping document, even transparently at runtime.
+            This includes the <link linkend="mapping-attributes">NHibernate.Mapping.Attributes
+            library</link> which allows to directly annotate your entities with mapping declarations,
+            various template-based code generators (CodeSmith, MyGeneration), the built-in
+            <literal>NHibernate.Mapping.ByCode</literal> API available since NHibernate 3.2, or
+            the <ulink url="https://github.com/jagregory/fluent-nhibernate">Fluent NHibernate</ulink>
+            independent library.
         </para>
 
         <para>

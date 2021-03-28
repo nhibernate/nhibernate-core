@@ -13,7 +13,6 @@ namespace NHibernate.DomainModel
 		private Top _top;
 		private Lower _lower;
 
-
 		public long Id
 		{
 			get { return _id; }

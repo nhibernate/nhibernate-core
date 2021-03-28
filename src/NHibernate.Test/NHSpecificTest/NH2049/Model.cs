@@ -1,6 +1,4 @@
-﻿
-
-namespace NHibernate.Test.NHSpecificTest.NH2049
+﻿namespace NHibernate.Test.NHSpecificTest.NH2049
 {
 	public abstract class Customer
 	{

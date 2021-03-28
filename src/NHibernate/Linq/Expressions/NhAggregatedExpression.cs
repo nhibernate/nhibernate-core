@@ -16,6 +16,8 @@ namespace NHibernate.Linq.Expressions
 			Type = type;
 		}
 
+		public virtual bool AllowsNullableReturnType => true;
+
 		public sealed override System.Type Type { get; }
 
 		public Expression Expression { get; }

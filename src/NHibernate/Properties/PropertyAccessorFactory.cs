@@ -275,6 +275,5 @@ namespace NHibernate.Properties
 		{
 			get { return MapAccessor; }
 		}
-
 	}
 }

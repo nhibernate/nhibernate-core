@@ -1,6 +1,4 @@
-﻿
-
-namespace NHibernate.Test.NHSpecificTest.NH1689
+﻿namespace NHibernate.Test.NHSpecificTest.NH1689
 {
 	using System.Collections.Generic;
 

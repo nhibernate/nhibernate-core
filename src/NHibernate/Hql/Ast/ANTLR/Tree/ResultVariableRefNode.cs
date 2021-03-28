@@ -35,7 +35,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_selectExpression = selectExpression;
 		}
 
-
 		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
 		{
 			int scalarColumnIndex = _selectExpression.ScalarColumnIndex;

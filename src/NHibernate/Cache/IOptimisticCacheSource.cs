@@ -15,10 +15,10 @@ namespace NHibernate.Cache
 		/// Does this source represent versioned (i.e., and thus optimistically lockable) data? 
 		/// </summary>
 		/// <returns> True if this source represents versioned data; false otherwise. </returns>
-		bool IsVersioned { get;}
+		bool IsVersioned { get; }
 
 		/// <summary> Get the comparator used to compare two different version values together. </summary>
 		/// <returns> An appropriate comparator. </returns>
-		IComparer VersionComparator { get;}
+		IComparer VersionComparator { get; }
 	}
 }

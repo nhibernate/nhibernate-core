@@ -83,7 +83,6 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			}
 		}
 
-
 		private void ParseCollectionsCache(XPathNavigator navigator)
 		{
 			XPathNodeIterator xpni = navigator.Select(CfgXmlHelper.SessionFactoryCollectionsCacheExpression);
@@ -92,7 +91,6 @@ namespace NHibernate.Cfg.ConfigurationSchema
 				CollectionsCache.Add(new CollectionCacheConfiguration(xpni.Current));
 			}
 		}
-
 
 		private void ParseListeners(XPathNavigator navigator)
 		{

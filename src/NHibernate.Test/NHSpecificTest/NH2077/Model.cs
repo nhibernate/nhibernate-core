@@ -8,5 +8,4 @@ namespace NHibernate.Test.NHSpecificTest.NH2077
 		public virtual string Name { get; set; }
         public virtual ICollection<Person> Children { get; set; }
 	} 
-
 }

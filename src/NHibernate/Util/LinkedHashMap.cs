@@ -349,15 +349,12 @@ namespace NHibernate.Util
 
 		private bool RemoveImpl(TKey key)
 		{
-			Entry e;
-			bool result = false;
-			if (entries.TryGetValue(key, out e))
-			{
-				result = entries.Remove(key);
-				version++;
-				RemoveEntry(e);
-			}
-			return result;
+			if (!entries.Remove(key, out var e)) 
+				return false;
+
+			version++;
+			RemoveEntry(e);
+			return true;
 		}
 
 		void IDeserializationCallback.OnDeserialization(object sender)
@@ -691,6 +688,5 @@ namespace NHibernate.Util
 
 			#endregion
 		}
-
 	}
 }

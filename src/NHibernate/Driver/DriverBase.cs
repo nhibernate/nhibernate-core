@@ -249,7 +249,7 @@ namespace NHibernate.Driver
 		public virtual void ExpandQueryParameters(DbCommand cmd, SqlString sqlString, SqlType[] parameterTypes)
 		{
 			if (UseNamedPrefixInSql)
-				return;  // named parameters are ok
+				return; // named parameters are ok
 
 			var expandedParameters = new List<DbParameter>();
 			foreach (object part in sqlString)

@@ -12,7 +12,7 @@ namespace NHibernate.Persister.Collection
 		/// Get the index formulas if this is an indexed collection 
 		/// (optional operation)
 		/// </summary>
-		string[] IndexFormulas { get;}
+		string[] IndexFormulas { get; }
 
 		/// <summary>
 		/// Get the persister of the element class, if this is a

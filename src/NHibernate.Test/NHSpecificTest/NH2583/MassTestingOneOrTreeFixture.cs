@@ -87,7 +87,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     Setters<TK, TK, TBO1_I, TBO2_J>(MyBO.SetK1, MyBO.SetK2, MyBO.SetBO1_I1, MyBO.SetBO2_J1));
         }
 
-
         #endregion 1b. Two paths
 
         #region 1c. Path and subpath

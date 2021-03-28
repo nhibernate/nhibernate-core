@@ -46,7 +46,5 @@ namespace NHibernate.Test.NHSpecificTest.GH1515
 
 			collection.Received().ForceInitialization();
 		}
-
-
 	}
 }

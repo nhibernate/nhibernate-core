@@ -17,6 +17,7 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Metadata;
 using NHibernate.Stat;
+using NHibernate.Util;
 
 namespace NHibernate
 {
@@ -24,6 +25,44 @@ namespace NHibernate
 	using System.Threading;
 	public static partial class SessionFactoryExtension
 	{
+		/// <summary> 
+		/// Evict an entry from the second-level  cache. This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy. Use with care.
+		/// </summary>
+		/// <param name="factory">The session factory.</param>
+		/// <param name="entityName">The name of the entity to evict.</param>
+		/// <param name="id"></param>
+		/// <param name="tenantIdentifier">Tenant identifier</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public static async Task EvictEntityAsync(this ISessionFactory factory, string entityName, object id, string tenantIdentifier, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (tenantIdentifier == null)
+				await (factory.EvictEntityAsync(entityName, id, cancellationToken)).ConfigureAwait(false);
+
+			await (ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictEntityAsync(entityName, id, tenantIdentifier, cancellationToken)).ConfigureAwait(false);
+		}
+
+		/// <summary>
+		/// Evict an entry from the process-level cache.  This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy.  Use with care.
+		/// </summary>
+		/// <param name="factory">The session factory.</param>
+		/// <param name="roleName">Collection role name.</param>
+		/// <param name="id">Collection id</param>
+		/// <param name="tenantIdentifier">Tenant identifier</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public static async Task EvictCollectionAsync(this ISessionFactory factory, string roleName, object id, string tenantIdentifier, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (tenantIdentifier == null)
+				await (factory.EvictCollectionAsync(roleName, id, cancellationToken)).ConfigureAwait(false);
+
+			await (ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictCollectionAsync(roleName, id, tenantIdentifier, cancellationToken)).ConfigureAwait(false);
+		}
+
 		/// <summary>
 		/// Evict all entries from the process-level cache. This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect

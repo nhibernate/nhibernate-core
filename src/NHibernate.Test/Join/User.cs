@@ -14,6 +14,5 @@ namespace NHibernate.Test.Join
 			get { return _Login; }
 			set { _Login = value; }
 		}
-
 	}
 }

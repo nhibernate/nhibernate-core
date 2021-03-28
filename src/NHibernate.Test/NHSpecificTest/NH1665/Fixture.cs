@@ -13,16 +13,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1665
 		[Test]
 		public void SupportsHibernateQuotingSequenceName()
 		{
-			ISession session = OpenSession();
-			session.BeginTransaction();
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				var e = new MyEntity { Name = "entity-1" };
+				session.Save(e);
+				Assert.AreEqual(1, (int) session.GetIdentifier(e));
 
-			var e = new MyEntity { Name = "entity-1" };
-			session.Save(e);
-			Assert.AreEqual(1, (int)session.GetIdentifier(e));
-
-			session.Delete(e);
-			session.Transaction.Commit();
-			session.Close();
+				session.Delete(e);
+				tran.Commit();
+				session.Close();
+			}
 		}
 	}
 }

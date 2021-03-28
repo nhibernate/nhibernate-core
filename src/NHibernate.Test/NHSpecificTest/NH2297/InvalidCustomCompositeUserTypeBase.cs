@@ -15,7 +15,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 		}
 	}
 
-
 	public class InvalidTypesCustomCompositeUserType : InvalidCustomCompositeUserTypeBase
 	{
 		public override Type.IType[] PropertyTypes
@@ -24,7 +23,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 			get { return null; }
 		}
 	}
-
 
 	/// <summary>
 	/// An invalid custom user type mapper.
@@ -91,7 +89,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 
 		public void SetPropertyValue(Object object1, int i, Object object2)
 		{
-
 		}
 
 		public int GetHashCode(object x)

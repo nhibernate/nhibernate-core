@@ -1,6 +1,6 @@
 using System;
-using System.Linq;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -31,8 +31,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.naturalid = naturalIdmapping;
 			}
-			var toAdd = new[] {property};
-			naturalIdmapping.Items = naturalIdmapping.Items == null ? toAdd : naturalIdmapping.Items.Concat(toAdd).ToArray();
+
+			naturalIdmapping.Items = ArrayHelper.Append(naturalIdmapping.Items, property);
 		}
 
 		#endregion

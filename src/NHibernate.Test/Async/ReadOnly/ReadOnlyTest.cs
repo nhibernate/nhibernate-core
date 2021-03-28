@@ -8,10 +8,8 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using NHibernate.Dialect;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ReadOnly
@@ -38,45 +36,52 @@ namespace NHibernate.Test.ReadOnly
 		public async Task ReadOnlyOnProxiesAsync()
 		{
 			ClearCounts();
-	
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			DataPoint dp = new DataPoint();
-			dp.X = 0.1M;
-			dp.Y = (decimal)System.Math.Cos((double)dp.X);
-			dp.Description = "original";
-			await (s.SaveAsync(dp));
-			long dpId = dp.Id;
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
+			long dpId;
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				DataPoint dp = new DataPoint();
+				dp.X = 0.1M;
+				dp.Y = (decimal) System.Math.Cos((double) dp.X);
+				dp.Description = "original";
+				await (s.SaveAsync(dp));
+				dpId = dp.Id;
+				await (t.CommitAsync());
+				s.Close();
+			}
+
 			AssertInsertCount(1);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
-			s = OpenSession();
-			s.BeginTransaction();
-			dp = await (s.LoadAsync<DataPoint>(dpId));
-			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False, "was initialized");
-			s.SetReadOnly(dp, true);
-			Assert.That(NHibernateUtil.IsInitialized(dp), Is.False, "was initialized during SetReadOnly");
-			dp.Description = "changed";
-			Assert.That(NHibernateUtil.IsInitialized(dp), Is.True, "was not initialized during mod");
-			Assert.That(dp.Description, Is.EqualTo("changed"), "desc not changed in memory");
-			await (s.FlushAsync());
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var dp = await (s.LoadAsync<DataPoint>(dpId));
+				Assert.That(NHibernateUtil.IsInitialized(dp), Is.False, "was initialized");
+				s.SetReadOnly(dp, true);
+				Assert.That(NHibernateUtil.IsInitialized(dp), Is.False, "was initialized during SetReadOnly");
+				dp.Description = "changed";
+				Assert.That(NHibernateUtil.IsInitialized(dp), Is.True, "was not initialized during mod");
+				Assert.That(dp.Description, Is.EqualTo("changed"), "desc not changed in memory");
+				await (s.FlushAsync());
+				await (t.CommitAsync());
+				s.Close();
+			}
+
 			AssertUpdateCount(0);
-	
-			s = OpenSession();
-			s.BeginTransaction();
-			IList list = await (s.CreateQuery("from DataPoint where Description = 'changed'").ListAsync());
-			Assert.That(list.Count, Is.EqualTo(0), "change written to database");
-			Assert.That(await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync()), Is.EqualTo(1));
-			await (s.Transaction.CommitAsync());
-			s.Close();
-			
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				IList list = await (s.CreateQuery("from DataPoint where Description = 'changed'").ListAsync());
+				Assert.That(list.Count, Is.EqualTo(0), "change written to database");
+				Assert.That(await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync()), Is.EqualTo(1));
+				await (t.CommitAsync());
+				s.Close();
+			}
+
 			AssertUpdateCount(0);
 			//deletes from Query.executeUpdate() are not tracked
 			//AssertDeleteCount(1);
@@ -556,38 +561,45 @@ namespace NHibernate.Test.ReadOnly
 			string newText = "some even bigger text string";
 	
 			ClearCounts();
-	
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			TextHolder holder = new TextHolder(origText);
-			await (s.SaveAsync(holder));
-			long id = holder.Id;
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
+			long id;
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				TextHolder holder = new TextHolder(origText);
+				await (s.SaveAsync(holder));
+				id = holder.Id;
+				await (t.CommitAsync());
+				s.Close();
+			}
+
 			AssertInsertCount(1);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
-			s = OpenSession();
-			s.BeginTransaction();
-			holder = await (s.GetAsync<TextHolder>(id));
-			s.SetReadOnly(holder, true);
-			holder.TheText = newText;
-			await (s.FlushAsync());
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var holder = await (s.GetAsync<TextHolder>(id));
+				s.SetReadOnly(holder, true);
+				holder.TheText = newText;
+				await (s.FlushAsync());
+				await (t.CommitAsync());
+				s.Close();
+			}
+
 			AssertUpdateCount(0);
-	
-			s = OpenSession();
-			s.BeginTransaction();
-			holder = await (s.GetAsync<TextHolder>(id));
-			Assert.That(origText, Is.EqualTo(holder.TheText), "change written to database");
-			await (s.DeleteAsync(holder));
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var holder = await (s.GetAsync<TextHolder>(id));
+				Assert.That(origText, Is.EqualTo(holder.TheText), "change written to database");
+				await (s.DeleteAsync(holder));
+				await (t.CommitAsync());
+				s.Close();
+			}
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}

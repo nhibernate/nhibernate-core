@@ -78,12 +78,12 @@ namespace NHibernate.Test.QueryTest
 				var queries = s.CreateQueryBatch()
 				               .Add<Item>(getItems)
 				               .Add<int>(countItems);
-				var items = await (queries.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (queries.GetResultAsync<Item>(0));
 				var fromDb = items.First();
 				Assert.That(fromDb.Id, Is.EqualTo(1));
 				Assert.That(fromDb.Name, Is.EqualTo("foo"));
 
-				var count = (await (queries.GetResultAsync<int>(1, CancellationToken.None))).Single();
+				var count = (await (queries.GetResultAsync<int>(1))).Single();
 				Assert.That(count, Is.EqualTo(1));
 
 				await (transaction.CommitAsync());
@@ -109,11 +109,11 @@ namespace NHibernate.Test.QueryTest
 				var queries = s.CreateQueryBatch()
 				               .Add<Item>(getItems)
 				               .Add<int>(countItems);
-				var items = await (queries.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (queries.GetResultAsync<Item>(0));
 				var fromDb = items.First();
 				Assert.That(fromDb.Id, Is.EqualTo(1));
 
-				var count = (await (queries.GetResultAsync<int>(1, CancellationToken.None))).Single();
+				var count = (await (queries.GetResultAsync<int>(1))).Single();
 				Assert.That(count, Is.EqualTo(1));
 			}
 		}
@@ -176,9 +176,9 @@ namespace NHibernate.Test.QueryTest
 				               .Add<int>(
 					               CriteriaTransformer
 						               .Clone(criteria).SetProjection(Projections.RowCount()).SetCacheable(true));
-				var items = await (queries.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (queries.GetResultAsync<Item>(0));
 				Assert.That(items.Count, Is.EqualTo(89));
-				var count = (await (queries.GetResultAsync<int>(1, CancellationToken.None))).Single();
+				var count = (await (queries.GetResultAsync<int>(1))).Single();
 				Assert.That(count, Is.EqualTo(99));
 			}
 
@@ -191,12 +191,12 @@ namespace NHibernate.Test.QueryTest
 				               .Add<int>(
 					               CriteriaTransformer
 						               .Clone(criteria).SetProjection(Projections.RowCount()).SetCacheable(true));
-				var items = await (queries.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (queries.GetResultAsync<Item>(0));
 				Assert.That(
 					items.Count,
 					Is.EqualTo(79),
 					"Should have gotten different result here, because the paging is different");
-				var count = (await (queries.GetResultAsync<int>(1, CancellationToken.None))).Single();
+				var count = (await (queries.GetResultAsync<int>(1))).Single();
 				Assert.That(count, Is.EqualTo(99));
 			}
 		}
@@ -218,9 +218,9 @@ namespace NHibernate.Test.QueryTest
 				               .Add<int>(
 					               CriteriaTransformer.Clone(criteria)
 					                                  .SetProjection(Projections.RowCount()));
-				var items = await (queries.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (queries.GetResultAsync<Item>(0));
 				Assert.That(items.Count, Is.EqualTo(89));
-				var count = (await (queries.GetResultAsync<int>(1, CancellationToken.None))).Single();
+				var count = (await (queries.GetResultAsync<int>(1))).Single();
 				Assert.That(count, Is.EqualTo(99));
 			}
 		}
@@ -248,11 +248,11 @@ namespace NHibernate.Test.QueryTest
 					               CriteriaTransformer.Clone(criteria)
 					                                  .SetProjection(Projections.RowCount()));
 
-				var items = await (queries.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (queries.GetResultAsync<Item>(0));
 				var fromDb = items.First();
 				Assert.That(fromDb.Id, Is.EqualTo(1));
 
-				var count = (await (queries.GetResultAsync<int>(1, CancellationToken.None))).Single();
+				var count = (await (queries.GetResultAsync<int>(1))).Single();
 				Assert.That(count, Is.EqualTo(1));
 			}
 		}
@@ -274,8 +274,8 @@ namespace NHibernate.Test.QueryTest
 				multiCriteria.Add<Item>("firstCriteria", firstCriteria);
 				multiCriteria.Add<Item>("secondCriteria", secondCriteria);
 
-				var secondResult = await (multiCriteria.GetResultAsync<Item>("secondCriteria", CancellationToken.None));
-				var firstResult = await (multiCriteria.GetResultAsync<Item>("firstCriteria", CancellationToken.None));
+				var secondResult = await (multiCriteria.GetResultAsync<Item>("secondCriteria"));
+				var firstResult = await (multiCriteria.GetResultAsync<Item>("firstCriteria"));
 
 				Assert.That(secondResult.Count, Is.GreaterThan(firstResult.Count));
 			}
@@ -298,8 +298,8 @@ namespace NHibernate.Test.QueryTest
 				multiCriteria.Add<Item>("firstCriteria", firstCriteria);
 				multiCriteria.Add<Item>("secondCriteria", secondCriteria);
 
-				var secondResult = await (multiCriteria.GetResultAsync<Item>("secondCriteria", CancellationToken.None));
-				var firstResult = await (multiCriteria.GetResultAsync<Item>("firstCriteria", CancellationToken.None));
+				var secondResult = await (multiCriteria.GetResultAsync<Item>("secondCriteria"));
+				var firstResult = await (multiCriteria.GetResultAsync<Item>("firstCriteria"));
 
 				Assert.That(secondResult.Count, Is.GreaterThan(firstResult.Count));
 			}
@@ -317,7 +317,7 @@ namespace NHibernate.Test.QueryTest
 				                      .SetResultTransformer(transformer);
 				var multiCriteria = session.CreateQueryBatch()
 				                           .Add<object[]>(criteria);
-				await (multiCriteria.GetResultAsync<object[]>(0, CancellationToken.None));
+				await (multiCriteria.GetResultAsync<object[]>(0));
 
 				Assert.That(transformer.WasTransformTupleCalled, Is.True, "Transform Tuple was not called");
 				Assert.That(transformer.WasTransformListCalled, Is.True, "Transform List was not called");
@@ -356,7 +356,7 @@ namespace NHibernate.Test.QueryTest
 
 				for (var i = 0; i < 12; i++)
 				{
-					Assert.That((await (multi.GetResultAsync<Item>(i, CancellationToken.None))).Count, Is.EqualTo(1));
+					Assert.That((await (multi.GetResultAsync<Item>(i))).Count, Is.EqualTo(1));
 				}
 			}
 		}
@@ -380,7 +380,7 @@ namespace NHibernate.Test.QueryTest
 				await (s.DeleteAsync(p1));
 				var multi = s.CreateQueryBatch();
 				multi.Add<int>(s.QueryOver<Item>().ToRowCountQuery());
-				var count = (await (multi.GetResultAsync<int>(0, CancellationToken.None))).Single();
+				var count = (await (multi.GetResultAsync<int>(0))).Single();
 				await (tx.CommitAsync());
 
 				Assert.That(count, Is.EqualTo(0), "Session wasn't auto flushed.");
@@ -441,9 +441,9 @@ namespace NHibernate.Test.QueryTest
 					                  s.CreateQuery("select count(*) from Item i where i.Id > ?")
 					                   .SetInt32(0, 50)
 					                   .SetCacheable(true));
-				var items = await (multiQuery.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (multiQuery.GetResultAsync<Item>(0));
 				Assert.That(items.Count, Is.EqualTo(89));
-				var count = (await (multiQuery.GetResultAsync<long>(1, CancellationToken.None))).Single();
+				var count = (await (multiQuery.GetResultAsync<long>(1))).Single();
 				Assert.That(count, Is.EqualTo(99L));
 			}
 
@@ -459,12 +459,12 @@ namespace NHibernate.Test.QueryTest
 					                  s.CreateQuery("select count(*) from Item i where i.Id > ?")
 					                   .SetInt32(0, 50)
 					                   .SetCacheable(true));
-				var items = await (multiQuery.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (multiQuery.GetResultAsync<Item>(0));
 				Assert.That(
 					items.Count,
 					Is.EqualTo(79),
 					"Should have gotten different result here, because the paging is different");
-				var count = (await (multiQuery.GetResultAsync<long>(1, CancellationToken.None))).Single();
+				var count = (await (multiQuery.GetResultAsync<long>(1))).Single();
 				Assert.That(count, Is.EqualTo(99L));
 			}
 		}
@@ -472,7 +472,6 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanUseSecondLevelCacheWithPositionalParametersAndHqlAsync()
 		{
-			
 			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
 			await (CreateItemsAsync());
@@ -500,9 +499,9 @@ namespace NHibernate.Test.QueryTest
 				var queries = s.CreateQueryBatch()
 				               .Add<Item>(getItems)
 				               .Add<long>(countItems);
-				var items = await (queries.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (queries.GetResultAsync<Item>(0));
 				Assert.That(items.Count, Is.EqualTo(89));
-				var count = (await (queries.GetResultAsync<long>(1, CancellationToken.None))).Single();
+				var count = (await (queries.GetResultAsync<long>(1))).Single();
 				Assert.That(count, Is.EqualTo(99L));
 			}
 		}
@@ -531,10 +530,10 @@ namespace NHibernate.Test.QueryTest
 						                "items",
 						                new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }));
 
-				var items = await (queries.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (queries.GetResultAsync<Item>(0));
 				Assert.That(items.First().Id, Is.EqualTo(1));
 
-				var count = (await (queries.GetResultAsync<long>(1, CancellationToken.None))).Single();
+				var count = (await (queries.GetResultAsync<long>(1))).Single();
 				Assert.That(count, Is.EqualTo(1L));
 			}
 		}
@@ -557,11 +556,11 @@ namespace NHibernate.Test.QueryTest
 				var queries = s.CreateQueryBatch()
 				               .Add<Item>(getItems)
 				               .Add<long>(countItems);
-				var items = await (queries.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (queries.GetResultAsync<Item>(0));
 				var fromDb = items.First();
 				Assert.That(fromDb.Id, Is.EqualTo(1));
 
-				var count = (await (queries.GetResultAsync<long>(1, CancellationToken.None))).Single();
+				var count = (await (queries.GetResultAsync<long>(1))).Single();
 				Assert.That(count, Is.EqualTo(1L));
 			}
 		}
@@ -582,8 +581,8 @@ namespace NHibernate.Test.QueryTest
 
 				multiQuery.Add<Item>("first", firstQuery).Add<Item>("second", secondQuery);
 
-				var secondResult = await (multiQuery.GetResultAsync<Item>("second", CancellationToken.None));
-				var firstResult = await (multiQuery.GetResultAsync<Item>("first", CancellationToken.None));
+				var secondResult = await (multiQuery.GetResultAsync<Item>("second"));
+				var firstResult = await (multiQuery.GetResultAsync<Item>("first"));
 
 				Assert.That(secondResult.Count, Is.GreaterThan(firstResult.Count));
 			}
@@ -601,7 +600,7 @@ namespace NHibernate.Test.QueryTest
 				                      .SetResultTransformer(transformer);
 				await (session.CreateQueryBatch()
 				       .Add<object[]>(criteria)
-				       .GetResultAsync<object[]>(0, CancellationToken.None));
+				       .GetResultAsync<object[]>(0));
 
 				Assert.That(transformer.WasTransformTupleCalled, Is.True, "Transform Tuple was not called");
 				Assert.That(transformer.WasTransformListCalled, Is.True, "Transform List was not called");
@@ -643,7 +642,7 @@ namespace NHibernate.Test.QueryTest
 					                  s.CreateSQLQuery("select * from ITEM where Id in (:ids)")
 					                   .AddEntity(typeof(Item)))
 				                  .Add<Item>(s.CreateQuery("from Item i where i.Id in (:ids2)"));
-				var e = Assert.ThrowsAsync<QueryException>(() => multiQuery.ExecuteAsync(CancellationToken.None));
+				var e = Assert.ThrowsAsync<QueryException>(() => multiQuery.ExecuteAsync());
 				Assert.That(
 					e.Message,
 					Is.EqualTo(
@@ -682,7 +681,7 @@ namespace NHibernate.Test.QueryTest
 				 .Add<Item>(
 					 s.CreateQuery("from Item i where i.Id = :id2")
 					  .SetInt32("id2", 5))
-				 .ExecuteAsync(CancellationToken.None));
+				 .ExecuteAsync());
 			}
 		}
 
@@ -704,9 +703,9 @@ namespace NHibernate.Test.QueryTest
 					                   .SetInt32(0, 50)
 					                   .SetCacheable(true));
 
-				var items = await (multiQuery.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (multiQuery.GetResultAsync<Item>(0));
 				Assert.That(items.Count, Is.EqualTo(89));
-				var count = (await (multiQuery.GetResultAsync<long>(1, CancellationToken.None))).Single();
+				var count = (await (multiQuery.GetResultAsync<long>(1))).Single();
 				Assert.That(count, Is.EqualTo(99L));
 			}
 
@@ -723,12 +722,12 @@ namespace NHibernate.Test.QueryTest
 					                   .AddScalar("itemCount", NHibernateUtil.Int64)
 					                   .SetInt32(0, 50)
 					                   .SetCacheable(true));
-				var items = await (multiQuery.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (multiQuery.GetResultAsync<Item>(0));
 				Assert.That(
 					items.Count,
 					Is.EqualTo(79),
 					"Should have gotten different result here, because the paging is different");
-				var count = (await (multiQuery.GetResultAsync<long>(1, CancellationToken.None))).Single();
+				var count = (await (multiQuery.GetResultAsync<long>(1))).Single();
 				Assert.That(count, Is.EqualTo(99L));
 			}
 		}
@@ -736,7 +735,6 @@ namespace NHibernate.Test.QueryTest
 		[Test]
 		public async Task CanUseSecondLevelCacheWithPositionalParametersAsync()
 		{
-			
 			await (Sfi.QueryCache.ClearAsync(CancellationToken.None));
 
 			await (CreateItemsAsync());
@@ -765,9 +763,9 @@ namespace NHibernate.Test.QueryTest
 				var queries = s.CreateQueryBatch()
 				               .Add<Item>(getItems)
 				               .Add<long>(countItems);
-				var items = await (queries.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (queries.GetResultAsync<Item>(0));
 				Assert.That(items.Count, Is.EqualTo(89));
-				var count = (await (queries.GetResultAsync<long>(1, CancellationToken.None))).Single();
+				var count = (await (queries.GetResultAsync<long>(1))).Single();
 				Assert.That(count, Is.EqualTo(99L));
 			}
 		}
@@ -796,11 +794,11 @@ namespace NHibernate.Test.QueryTest
 					                     "items",
 					                     new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }));
 
-				var items = await (queries.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (queries.GetResultAsync<Item>(0));
 				var fromDb = items.First();
 				Assert.That(fromDb.Id, Is.EqualTo(1));
 
-				var count = (await (queries.GetResultAsync<long>(1, CancellationToken.None))).Single();
+				var count = (await (queries.GetResultAsync<long>(1))).Single();
 				Assert.That(count, Is.EqualTo(1L));
 			}
 		}
@@ -823,11 +821,11 @@ namespace NHibernate.Test.QueryTest
 				var queries = s.CreateQueryBatch()
 				               .Add<Item>(getItems)
 				               .Add<long>(countItems);
-				var items = await (queries.GetResultAsync<Item>(0, CancellationToken.None));
+				var items = await (queries.GetResultAsync<Item>(0));
 				var fromDb = items.First();
 				Assert.That(fromDb.Id, Is.EqualTo(1));
 
-				var count = (await (queries.GetResultAsync<long>(1, CancellationToken.None))).Single();
+				var count = (await (queries.GetResultAsync<long>(1))).Single();
 				Assert.That(count, Is.EqualTo(1L));
 			}
 		}
@@ -849,8 +847,8 @@ namespace NHibernate.Test.QueryTest
 
 				multiQuery.Add<Item>("first", firstQuery).Add<Item>("second", secondQuery);
 
-				var secondResult = await (multiQuery.GetResultAsync<Item>("second", CancellationToken.None));
-				var firstResult = await (multiQuery.GetResultAsync<Item>("first", CancellationToken.None));
+				var secondResult = await (multiQuery.GetResultAsync<Item>("second"));
+				var firstResult = await (multiQuery.GetResultAsync<Item>("first"));
 
 				Assert.That(secondResult.Count, Is.GreaterThan(firstResult.Count));
 			}
@@ -869,7 +867,7 @@ namespace NHibernate.Test.QueryTest
 				                   .SetResultTransformer(transformer);
 				await (session.CreateQueryBatch()
 				       .Add<object[]>(query)
-				       .GetResultAsync<object[]>(0, CancellationToken.None));
+				       .GetResultAsync<object[]>(0));
 
 				Assert.That(transformer.WasTransformTupleCalled, Is.True, "Transform Tuple was not called");
 				Assert.That(transformer.WasTransformListCalled, Is.True, "Transform List was not called");
@@ -891,7 +889,7 @@ namespace NHibernate.Test.QueryTest
 				multiCriteria.Add<Item>("firstCriteria", firstCriteria);
 
 				Assert.That(
-					() => multiCriteria.GetResultAsync<Item>("unknownKey", CancellationToken.None),
+					() => multiCriteria.GetResultAsync<Item>("unknownKey"),
 					Throws.InstanceOf<KeyNotFoundException>());
 			}
 		}

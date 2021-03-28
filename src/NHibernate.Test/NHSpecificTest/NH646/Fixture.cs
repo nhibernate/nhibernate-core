@@ -62,7 +62,6 @@ namespace NHibernate.Test.NHSpecificTest.NH646
 			{
 				var station = session.Query<Station>().Single();
 
-
 				Assert.AreEqual(2, station.Policemen.Count());
 				Assert.That(station.Policemen, Is.Ordered.By("Name"));
 			}

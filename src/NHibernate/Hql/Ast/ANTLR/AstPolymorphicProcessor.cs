@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
@@ -9,7 +9,7 @@ namespace NHibernate.Hql.Ast.ANTLR
     {
         private readonly IASTNode _ast;
         private readonly ISessionFactoryImplementor _factory;
-        private IEnumerable<KeyValuePair<IASTNode, IASTNode[]>> _nodeMapping;
+        private Dictionary<IASTNode, IASTNode[]> _nodeMapping;
 
         private AstPolymorphicProcessor(IASTNode ast, ISessionFactoryImplementor factory)
         {
@@ -29,28 +29,27 @@ namespace NHibernate.Hql.Ast.ANTLR
             // Find all the polymorphic query sources
             _nodeMapping = new PolymorphicQuerySourceDetector(_factory).Process(_ast);
 
-            if (_nodeMapping.Count() > 0)
+            if (_nodeMapping.Count == 0)
+                return new[] {_ast};
+
+            var parsers = DuplicateTree();
+
+            if (parsers.Length == 0)
             {
-                return DuplicateTree().ToArray();
+                var entityNames = _nodeMapping.Keys.ToArray(x => PolymorphicQuerySourceDetector.GetClassName(x));
+                throw new QuerySyntaxException(
+                    entityNames.Length == 1
+                        ? entityNames[0] + " is not mapped"
+                        : string.Join(", ", entityNames) + " are not mapped");
             }
-            else
-            {
-                return new[] { _ast };
-            }
+
+            return parsers;
         }
 
-        private IEnumerable<IASTNode> DuplicateTree()
+        private IASTNode[] DuplicateTree()
         {
             var replacements = CrossJoinDictionaryArrays.PerformCrossJoin(_nodeMapping);
-
-            var dups = new IASTNode[replacements.Count()];
-
-            for (var i = 0; i < replacements.Count(); i++)
-            {
-                dups[i] = DuplicateTree(_ast, replacements[i]);
-            }
-
-            return dups;
+            return replacements.ToArray(x => DuplicateTree(_ast, x));
         }
 
         private static IASTNode DuplicateTree(IASTNode ast, IDictionary<IASTNode, IASTNode> nodeMapping)

@@ -36,7 +36,17 @@ namespace NHibernate.Test.Criteria
 
 					rc.Property(x => x.Name);
 
-					rc.Property(ep => ep.LazyProp, m => m.Lazy(true));
+					rc.Property(ep => ep.LazyProp, m =>
+					{
+						m.Lazy(true);
+						m.FetchGroup("LazyProp1");
+					});
+
+					rc.Property(ep => ep.LazyProp2, m =>
+					{
+						m.Lazy(true);
+						m.FetchGroup("LazyProp2");
+					});
 
 					rc.ManyToOne(ep => ep.Child1, m => m.Column("Child1Id"));
 					rc.ManyToOne(ep => ep.Child2, m => m.Column("Child2Id"));
@@ -50,7 +60,6 @@ namespace NHibernate.Test.Criteria
 							m.Inverse(true);
 						},
 						a => a.OneToMany());
-
 				});
 
 			mapper.Class<EntitySimpleChild>(
@@ -180,7 +189,6 @@ namespace NHibernate.Test.Criteria
 					.QueryOver<EntityComplex>()
 					.Select(Projections.RootEntity().SetLazy(true))
 					.Take(1).SingleOrDefault();
-
 
 				Assert.That(NHibernateUtil.IsInitialized(entityRoot), Is.False, "Object must be lazy loaded.");
 			}
@@ -314,7 +322,6 @@ namespace NHibernate.Test.Criteria
 				//make sure objects are populated from different aliases for the same types
 				Assert.That(root.Id, Is.Not.EqualTo(sameTypeChild.Id), "Different objects are expected for root and sameTypeChild.");
 				Assert.That(child1.Id, Is.Not.EqualTo(child2.Id), "Different objects are expected for child1 and child2.");
-
 			}
 		}
 
@@ -332,6 +339,26 @@ namespace NHibernate.Test.Criteria
 				Assert.That(entityRoot, Is.Not.Null);
 				Assert.That(NHibernateUtil.IsInitialized(entityRoot), Is.True, "Object must be initialized");
 				Assert.That(NHibernateUtil.IsPropertyInitialized(entityRoot, nameof(entityRoot.LazyProp)), Is.True, "Lazy property must be initialized");
+				Assert.That(NHibernateUtil.IsPropertyInitialized(entityRoot, nameof(entityRoot.LazyProp2)), Is.True, "Lazy property must be initialized");
+			}
+		}
+		
+		[Test]
+		public void EntityProjectionWithLazyPropertiesSinglePropertyFetch()
+		{
+			using (var session = OpenSession())
+			{
+				EntityComplex entityRoot;
+				entityRoot = session
+							.QueryOver<EntityComplex>()
+							.Where(ec => ec.LazyProp != null)
+							.Select(Projections.RootEntity().SetFetchLazyPropertyGroups(nameof(entityRoot.LazyProp)))
+							.Take(1).SingleOrDefault();
+
+				Assert.That(entityRoot, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(entityRoot), Is.True, "Object must be initialized");
+				Assert.That(NHibernateUtil.IsPropertyInitialized(entityRoot, nameof(entityRoot.LazyProp)), Is.True, "Lazy property must be initialized");
+				Assert.That(NHibernateUtil.IsPropertyInitialized(entityRoot, nameof(entityRoot.LazyProp2)), Is.False, "Property must be lazy");
 			}
 		}
 
@@ -444,7 +471,6 @@ namespace NHibernate.Test.Criteria
 			}
 		}
 
-
 		[Test]
 		public void ReadOnlyProjection()
 		{
@@ -476,7 +502,6 @@ namespace NHibernate.Test.Criteria
 				Assert.That(composite, Is.EqualTo(_entityWithCompositeId).Using((EntityWithCompositeId x, EntityWithCompositeId y) => (Equals(x.Key, y.Key) && Equals(x.Name, y.Name)) ? 0 : 1));
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
-
 		}
 
 		[Test]

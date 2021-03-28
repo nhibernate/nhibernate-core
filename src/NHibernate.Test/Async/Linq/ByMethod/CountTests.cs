@@ -11,6 +11,7 @@
 using System;
 using System.Linq;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -33,6 +34,21 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-2722
 			var result = await (db.Orders
 				.Select(x => x.ShippingDate)
+				.Distinct()
+				.CountAsync());
+
+			Assert.That(result, Is.EqualTo(387));
+		}
+
+		//NH-3249 (GH-1285)
+		[Test]
+		public async Task CountDistinctFunc_ReturnsNumberOfDistinctEntriesForThatFuncAsync()
+		{
+			if (!TestDialect.SupportsCountDistinct)
+				Assert.Ignore("Dialect does not support count distinct");
+
+			var result = await (db.Orders
+				.Select(x => x.ShippingDate.Value.Date)
 				.Distinct()
 				.CountAsync());
 
@@ -109,6 +125,51 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = await (query.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(77));
+		}
+
+		[Test]
+		public async Task CheckSqlFunctionNameLongCountAsync()
+		{
+			var name = Dialect is MsSql2000Dialect ? "count_big" : "count";
+			using (var sqlLog = new SqlLogSpy())
+			{
+				var result = await (db.Orders.LongCountAsync());
+				Assert.That(result, Is.EqualTo(830));
+
+				var log = sqlLog.GetWholeLog();
+				Assert.That(log, Does.Contain($"{name}("));
+			}
+		}
+
+		[Test]
+		public async Task CheckSqlFunctionNameForCountAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			{
+				var result = await (db.Orders.CountAsync());
+				Assert.That(result, Is.EqualTo(830));
+
+				var log = sqlLog.GetWholeLog();
+				Assert.That(log, Does.Contain("count("));
+			}
+		}
+
+		[Test]
+		public async Task CheckMssqlCountCastAsync()
+		{
+			if (!(Dialect is MsSql2000Dialect))
+			{
+				Assert.Ignore();
+			}
+
+			using (var sqlLog = new SqlLogSpy())
+			{
+				var result = await (db.Orders.CountAsync());
+				Assert.That(result, Is.EqualTo(830));
+
+				var log = sqlLog.GetWholeLog();
+				Assert.That(log, Does.Not.Contain("cast("));
+			}
 		}
 	}
 }

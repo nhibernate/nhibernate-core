@@ -17,7 +17,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1908
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-
 		[Test]
 		public async Task QueryPropertyInBothFilterAndQueryAsync()
 		{

@@ -47,6 +47,5 @@ namespace NHibernate.Loader.Criteria
 			//not sure what things are going to be passed here, how about 'id', maybe 'index' or 'key' or 'elements' ???
 			return PropertyMapping.ToType(relativePath);
 		}
-
 	}
 }

@@ -30,7 +30,7 @@ namespace NHibernate.Engine
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	internal static partial class SessionImplementorExtensions
+	public static partial class SessionImplementorExtensions
 	{
 
 		internal static async Task AutoFlushIfRequiredAsync(this ISessionImplementor implementor, ISet<string> querySpaces, CancellationToken cancellationToken)

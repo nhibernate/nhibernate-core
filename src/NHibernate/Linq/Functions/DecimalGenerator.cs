@@ -14,7 +14,7 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			{
-				ReflectHelper.GetMethodDefinition(() => decimal.Add(default(decimal), default(decimal)))
+				ReflectHelper.FastGetMethod(decimal.Add, default(decimal), default(decimal))
 			};
 		}
 
@@ -30,7 +30,7 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			{
-				ReflectHelper.GetMethodDefinition(() => decimal.Divide(default(decimal), default(decimal)))
+				ReflectHelper.FastGetMethod(decimal.Divide, default(decimal), default(decimal))
 			};
 		}
 
@@ -46,7 +46,7 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			{
-				ReflectHelper.GetMethodDefinition(() => decimal.Multiply(default(decimal), default(decimal)))
+				ReflectHelper.FastGetMethod(decimal.Multiply, default(decimal), default(decimal))
 			};
 		}
 
@@ -62,7 +62,7 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			{
-				ReflectHelper.GetMethodDefinition(() => decimal.Subtract(default(decimal), default(decimal)))
+				ReflectHelper.FastGetMethod(decimal.Subtract, default(decimal), default(decimal))
 			};
 		}
 
@@ -78,7 +78,7 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			{
-				ReflectHelper.GetMethodDefinition(() => decimal.Remainder(default(decimal), default(decimal)))
+				ReflectHelper.FastGetMethod(decimal.Remainder, default(decimal), default(decimal))
 			};
 		}
 
@@ -94,7 +94,7 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			{
-				ReflectHelper.GetMethodDefinition(() => decimal.Negate(default(decimal)))
+				ReflectHelper.FastGetMethod(decimal.Negate, default(decimal))
 			};
 		}
 

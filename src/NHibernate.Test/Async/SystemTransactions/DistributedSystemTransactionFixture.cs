@@ -13,12 +13,11 @@ using System.Linq;
 using System.Threading;
 using System.Transactions;
 using log4net;
-using log4net.Repository.Hierarchy;
 using NHibernate.Cfg;
 using NHibernate.Engine;
-using NHibernate.Linq;
 using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.SystemTransactions
 {

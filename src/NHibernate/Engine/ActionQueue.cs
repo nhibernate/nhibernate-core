@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NHibernate.Action;
 using NHibernate.Cache;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
@@ -156,14 +156,13 @@ namespace NHibernate.Engine
 			RegisterProcess(new AfterTransactionCompletionDelegatedProcess(process));
 		}
 
-		private void ExecuteActions(IList list)
+		private void ExecuteActions<T>(List<T> list) where T: IExecutable
 		{
 			// Actions may raise events to which user code can react and cause changes to action list.
 			// It will then fail here due to list being modified. (Some previous code was dodging the
 			// trouble with a for loop which was not failing provided the list was not getting smaller.
 			// But then it was clearing it without having executed added actions (if any), ...)
-			
-			foreach (IExecutable executable in list)
+			foreach (var executable in list)
 			{
 				InnerExecute(executable);
 			}
@@ -173,7 +172,7 @@ namespace NHibernate.Engine
 
 		private void PreInvalidateCaches()
 		{
-			if (session.Factory.Settings.IsQueryCacheEnabled)
+			if (session.Factory.Settings.IsQueryCacheEnabled && executedSpaces.Count > 0)
 			{
 				session.Factory.UpdateTimestampsCache.PreInvalidate(executedSpaces);
 			}
@@ -258,9 +257,9 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private static void PrepareActions(IList queue)
+		private static void PrepareActions<T>(List<T> queue) where T: IExecutable
 		{
-			foreach (IExecutable executable in queue)
+			foreach (var executable in queue)
 				executable.BeforeExecutions();
 		}
 
@@ -295,7 +294,7 @@ namespace NHibernate.Engine
 
 		private void InvalidateCaches()
 		{
-			if (session.Factory.Settings.IsQueryCacheEnabled)
+			if (session.Factory.Settings.IsQueryCacheEnabled && executedSpaces.Count > 0)
 			{
 				session.Factory.UpdateTimestampsCache.Invalidate(executedSpaces);
 			}
@@ -329,9 +328,9 @@ namespace NHibernate.Engine
 			get { return (insertions.Count > 0 || deletions.Count > 0); }
 		}
 
-		private static bool AreTablesToUpdated(IList executables, ICollection<string> tablespaces)
+		private static bool AreTablesToUpdated<T>(List<T> executables, ISet<string> tablespaces) where T: IExecutable
 		{
-			foreach (IExecutable exec in executables)
+			foreach (var exec in executables)
 			{
 				var spaces = exec.PropertySpaces;
 				foreach (string o in spaces)
@@ -605,7 +604,7 @@ namespace NHibernate.Engine
 			// The map of entities to their batch.
 			private readonly Dictionary<object, int> _entityBatchNumber;
 			// The map of entities to the latest batch (of another entities) they depend on.
-			private readonly Dictionary<object, int> _entityBatchDependency = new Dictionary<object, int>();
+			private readonly Dictionary<object, int> _entityBatchDependency = new Dictionary<object, int>(ReferenceComparer<object>.Instance);
 
 			// the map of batch numbers to EntityInsertAction lists
 			private readonly Dictionary<int, List<AbstractEntityInsertAction>> _actionBatches = new Dictionary<int, List<AbstractEntityInsertAction>>();
@@ -619,7 +618,7 @@ namespace NHibernate.Engine
 				_actionQueue = actionQueue;
 
 				//optimize the hash size to eliminate a rehash.
-				_entityBatchNumber = new Dictionary<object, int>(actionQueue.insertions.Count + 1);
+				_entityBatchNumber = new Dictionary<object, int>(actionQueue.insertions.Count + 1, ReferenceComparer<object>.Instance);
 			}
 
 			// This sorting does not actually optimize some features like mapped inheritance or joined-table,

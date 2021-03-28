@@ -240,6 +240,7 @@ constructor
 aggregateExpr
 	: expr //p:propertyRef { resolve(#p); }
 	| collectionFunction
+	| selectStatement
 	;
 
 propertyFetch
@@ -304,6 +305,9 @@ joinType returns [int j]
 	}
 	| INNER {
 		$j = INNER;
+	}
+	| CROSS {
+		$j = CROSS;
 	}
 	;
 
@@ -432,8 +436,28 @@ arithmeticExpr
 	;
 
 caseExpr
-	: ^(CASE { _inCase = true; } (^(WHEN logicalExpr expr))+ (^(ELSE expr))?) { _inCase = false; }
-	| ^(CASE2 { _inCase = true; } expr (^(WHEN expr expr))+ (^(ELSE expr))?) { _inCase = false; }
+	: simpleCaseExpression
+	| searchedCaseExpression
+	;
+
+simpleCaseExpression
+	: ^(CASE2 {_inCase=true;} exprOrSubquery (simpleCaseWhenClause)+ (elseClause)?) {_inCase=false;}
+	;
+
+simpleCaseWhenClause
+	: ^(WHEN exprOrSubquery exprOrSubquery)
+	;
+
+elseClause
+	: ^(ELSE exprOrSubquery)
+	;
+
+searchedCaseExpression
+	: ^(CASE {_inCase = true;} (searchedCaseWhenClause)+ (elseClause)?) {_inCase = false;}
+	;
+
+searchedCaseWhenClause
+	: ^(WHEN logicalExpr exprOrSubquery)
 	;
 
 //TODO: I don't think we need this anymore .. how is it different to 

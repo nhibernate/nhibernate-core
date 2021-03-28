@@ -25,7 +25,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1487
 	[TestFixture]
 	public class FixtureAsync
 	{
-
 		public Configuration GetConf()
 		{
 			var cfg = new Configuration();
@@ -212,6 +211,5 @@ assembly='NHibernate.Test'>
 
 			await (new SchemaExport(cfg).DropAsync(false, true));
 		}
-
 	}
 }

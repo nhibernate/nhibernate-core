@@ -89,7 +89,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 			{
 				formatter.Deserialize(serializationStream);
 			}
-
 		}
 	}
 }

@@ -53,6 +53,5 @@ namespace NHibernate.Test.NHSpecificTest.NH3372
 				Assert.That(entity.ShardId, Is.Not.Null & Has.Length.GreaterThan(0));
 			}
 		}
-
 	}
 }

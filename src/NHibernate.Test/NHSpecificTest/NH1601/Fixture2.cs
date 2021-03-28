@@ -51,7 +51,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             SaveLoadAndRefreshProject();
         }
 
-
         /// <summary>
         /// Create and save a Project
         /// </summary>
@@ -71,7 +70,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             RefreshProject(project);
         }
 
-
         public Project SaveProject( )
         {
             Project project;
@@ -85,12 +83,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
                 Scenario scenario2 = new Scenario();
                 Scenario scenario3 = new Scenario();
 
-               
                 //Add the scenario to all lists 
                 project.ScenarioList1.Add(scenario1);
                 project.ScenarioList2.Add(scenario2);
                 project.ScenarioList3.Add(scenario3);
-
 
                 //Set the primary key on the project
                 project.Name = "Test";
@@ -102,7 +98,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             }
             return project;
         }
-
 
         public Project LoadProject()
         {
@@ -122,7 +117,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
 
         public void RefreshProject(Project project)
         {
-
             using (ISession session = OpenSession())
             using (ITransaction tx = session.BeginTransaction())
             {

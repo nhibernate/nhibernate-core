@@ -107,15 +107,15 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				propertyMapping.type1 = null;
 				var hbmType = new HbmType
-				              {
-				              	name = persistentType.AssemblyQualifiedName,
-				              	param = (from pi in parameters.GetType().GetProperties()
-				              	         let pname = pi.Name
-				              	         let pvalue = pi.GetValue(parameters, null)
-				              	         select
-				              	         	new HbmParam {name = pname, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}})
-				              		.ToArray()
-				              };
+				{
+					name = persistentType.AssemblyQualifiedName,
+					param = parameters.GetType().GetProperties().ToArray(
+						pi =>
+						{
+							var pvalue = pi.GetValue(parameters, null);
+							return new HbmParam {name = pi.Name, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
+						})
+				};
 				propertyMapping.type = hbmType;
 			}
 			else
@@ -172,16 +172,15 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Columns(params Action<IColumnMapper>[] columnMapper)
 		{
 			ResetColumnPlainValues();
-			int i = 1;
-			var columns = new List<HbmColumn>(columnMapper.Length);
-			foreach (var action in columnMapper)
+			var columns = new HbmColumn[columnMapper.Length];
+			for (var i = 0; i < columnMapper.Length; i++)
 			{
 				var hbm = new HbmColumn();
-				string defaultColumnName = (member != null ? member.Name : "unnamedcolumn") + i++;
-				action(new ColumnMapper(hbm, defaultColumnName));
-				columns.Add(hbm);
+				string defaultColumnName = (member != null ? member.Name : "unnamedcolumn") + i + 1;
+				columnMapper[i](new ColumnMapper(hbm, defaultColumnName));
+				columns[i] = hbm;
 			}
-			propertyMapping.Items = columns.ToArray();
+			propertyMapping.Items = columns;
 		}
 
 		public void Column(string name)
@@ -312,9 +311,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 			ResetColumnPlainValues();
 			propertyMapping.Items =
 				formulas
-					.Select(
-						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) })
-					.ToArray();
+					.ToArray(
+						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) });
 		}
 
 		#endregion

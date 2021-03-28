@@ -27,7 +27,6 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3105
 			Assert.That(key.Columns.Single().name, Is.EqualTo("IdColumn"));
 		}
 
-
 		[Test]
 		public void CanMapIdWhenIdIsDeclaredInBaseClass()
 		{

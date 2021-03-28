@@ -25,7 +25,7 @@ namespace NHibernate.Test.ConnectionTest
 		protected override void Release(ISession session)
 		{
 			long initialCount = Sfi.Statistics.SessionCloseCount;
-			session.Transaction.Commit();
+			session.GetCurrentTransaction()?.Commit();
 			long subsequentCount = Sfi.Statistics.SessionCloseCount;
 			Assert.AreEqual(initialCount + 1, subsequentCount, "Session still open after commit");
 			// also make sure it was cleaned up from the internal ThreadLocal...
@@ -37,8 +37,8 @@ namespace NHibernate.Test.ConnectionTest
 		public void ContextCleanup()
 		{
 			ISession session = Sfi.OpenSession();
-			session.BeginTransaction();
-			session.Transaction.Commit();
+			using(var t = session.BeginTransaction())
+				t.Commit();
 			Assert.IsFalse(session.IsOpen, "session open after txn completion");
 			Assert.IsFalse(TestableThreadLocalContext.IsSessionBound(session), "session still bound after txn completion");
 			

@@ -22,7 +22,7 @@ namespace NHibernate.Cfg
 			FilterName = filterName;
 		}
 
-		public IFilterable Filterable{ get; private set;}
+		public IFilterable Filterable{ get; private set; }
 		public string FilterName { get; private set; } 
 	}
 }

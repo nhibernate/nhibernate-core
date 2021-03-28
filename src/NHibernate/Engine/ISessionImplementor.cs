@@ -18,9 +18,34 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
-	// 6.0 TODO: Convert to interface methods, excepted SwitchCacheMode
-	internal static partial class SessionImplementorExtensions
+	// 6.0 TODO: Convert to interface methods, excepted SwitchCacheMode, GetTenantIdentifier
+	public static partial class SessionImplementorExtensions
 	{
+		//NOTE: Keep it as extension
+		/// <summary>
+		/// Obtain the tenant identifier associated with this session.
+		/// </summary>
+		/// <returns> The tenant identifier associated with this session or null </returns>
+		public static string GetTenantIdentifier(this ISessionImplementor session)
+		{
+			if (session is AbstractSessionImpl sessionImpl)
+			{
+				return sessionImpl.TenantConfiguration?.TenantIdentifier;
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Instantiate the entity class, initializing with the given identifier
+		/// </summary>
+		internal static object Instantiate(this ISessionImplementor session, IEntityPersister persister, object id)
+		{
+			if(session is AbstractSessionImpl impl)
+				return impl.Instantiate(persister, id);
+			return session.Instantiate(persister.EntityName, id);
+		}
+
 		internal static IDisposable BeginContext(this ISessionImplementor session)
 		{
 			if (session == null)
@@ -249,6 +274,8 @@ namespace NHibernate.Engine
 		/// </summary>
 		object GetContextEntityIdentifier(object obj);
 
+		//Since 5.3
+		//TODO 6.0 Remove (see SessionImplementorExtensions.Instantiate for replacement)
 		/// <summary>
 		/// Instantiate the entity class, initializing with the given identifier
 		/// </summary>

@@ -99,9 +99,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			return null;
 		}
 
+		//Since 5.3
+		[Obsolete("Use generic version instead")]
 		public static IList<IASTNode> CollectChildren(IASTNode root, FilterPredicate predicate)
 		{
-			return new CollectingNodeVisitor(predicate).Collect(root);
+			return new CollectingNodeVisitor<IASTNode>(predicate).Collect(root);
+		}
+
+		public static IList<TNode> CollectChildren<TNode>(IASTNode root, FilterPredicate predicate) where TNode : IASTNode
+		{
+			return new CollectingNodeVisitor<TNode>(predicate).Collect(root);
 		}
 
 		/// <summary>

@@ -29,7 +29,6 @@ namespace NHibernate.Test.NHSpecificTest.NH401
 			set { m_ProfileId = value; }
 		}
 
-
 		/*public Accountdistribution Accountdistribution
         {
             get

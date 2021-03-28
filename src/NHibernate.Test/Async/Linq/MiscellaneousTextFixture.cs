@@ -26,13 +26,14 @@ namespace NHibernate.Test.Linq
 		[Category("COUNT/SUM/MIN/MAX/AVG")]
         [Test(Description = "This sample uses Count to find the number of Orders placed before yesterday in the database.")]
         public async Task CountWithWhereClauseAsync()
-  {
-      var q = from o in db.Orders where o.OrderDate <= DateTime.Today.AddDays(-1) select o;
+        {
+            var yesterday = DateTime.Today.AddDays(-1);
+            var q = from o in db.Orders where o.OrderDate <= yesterday select o;
 
-      var count = await (q.CountAsync());
+            var count = await (q.CountAsync());
 
-      Console.WriteLine(count);
-  }
+            Console.WriteLine(count);
+        }
 
         [Category("From NHUser list")]
         [Test(Description = "Telerik grid example, http://www.telerik.com/community/forums/aspnet-mvc/grid/grid-and-nhibernate-linq.aspx")]
@@ -136,17 +137,17 @@ namespace NHibernate.Test.Linq
 
 		[Test]
         public async Task SelectFromObjectAsync()
-  {
-      using (var s = OpenSession())
-      {
-          var hql = await (s.CreateQuery("from System.Object o").ListAsync());
+        {
+            using (var s = OpenSession())
+            {
+                var hql = await (s.CreateQuery("from System.Object o").ListAsync());
 
-          var r = from o in s.Query<object>() select o;
+                var r = from o in s.Query<object>() select o;
 
-          var l = await (r.ToListAsync());
+                var l = await (r.ToListAsync());
 
-          Assert.AreEqual(hql.Count, l.Count);
-      } 
-  }
+                Assert.AreEqual(hql.Count, l.Count);
+            } 
+        }
 	}
 }

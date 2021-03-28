@@ -14,16 +14,16 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			{
-				ReflectHelper.GetMethodDefinition(() => Math.Round(default(double))),
-				ReflectHelper.GetMethodDefinition(() => Math.Round(default(double), default(int))),
-				ReflectHelper.GetMethodDefinition(() => Math.Round(default(decimal))),
-				ReflectHelper.GetMethodDefinition(() => Math.Round(default(decimal), default(int))),
-				ReflectHelper.GetMethodDefinition(() => decimal.Round(default(decimal))),
-				ReflectHelper.GetMethodDefinition(() => decimal.Round(default(decimal), default(int))),
+				ReflectHelper.FastGetMethod(Math.Round, default(double)),
+				ReflectHelper.FastGetMethod(Math.Round, default(double), default(int)),
+				ReflectHelper.FastGetMethod(Math.Round, default(decimal)),
+				ReflectHelper.FastGetMethod(Math.Round, default(decimal), default(int)),
+				ReflectHelper.FastGetMethod(decimal.Round, default(decimal)),
+				ReflectHelper.FastGetMethod(decimal.Round, default(decimal), default(int)),
 
 #if NETCOREAPP2_0
-				ReflectHelper.GetMethodDefinition(() => MathF.Round(default(float))),
-				ReflectHelper.GetMethodDefinition(() => MathF.Round(default(float), default(int))),
+				ReflectHelper.FastGetMethod(MathF.Round, default(float)),
+				ReflectHelper.FastGetMethod(MathF.Round, default(float), default(int)),
 #endif
 			};
 		}

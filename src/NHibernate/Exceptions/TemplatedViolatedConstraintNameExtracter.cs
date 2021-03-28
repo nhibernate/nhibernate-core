@@ -8,7 +8,6 @@ namespace NHibernate.Exceptions
     /// </summary>
     public abstract class TemplatedViolatedConstraintNameExtracter : IViolatedConstraintNameExtracter
     {
-
         /// <summary>
         /// Extracts the constraint name based on a template (i.e., <i>templateStart</i><b>constraintName</b><i>templateEnd</i>).
         /// </summary>

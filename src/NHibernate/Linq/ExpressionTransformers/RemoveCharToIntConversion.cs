@@ -35,6 +35,19 @@ namespace NHibernate.Linq.ExpressionTransformers
 
 			if (!lhsIsConvertExpression && !rhsIsConvertExpression) return expression;
 
+			// Variables are not converted to constants (E.g: o.CharProperty == charVariable)
+			if (lhsIsConvertExpression && rhsIsConvertExpression)
+			{
+				var lhsConvertExpression = (UnaryExpression) lhs;
+				var rhsConvertExpression = (UnaryExpression) rhs;
+				if (!IsConvertCharToInt(lhsConvertExpression) || !IsConvertCharToInt(rhsConvertExpression))
+				{
+					return expression;
+				}
+
+				return Expression.MakeBinary(expression.NodeType, lhsConvertExpression.Operand, rhsConvertExpression.Operand);
+			}
+
 			var lhsIsConstantExpression = IsConstantExpression(lhs);
 			var rhsIsConstantExpression = IsConstantExpression(rhs);
 
@@ -43,7 +56,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 			var convertExpression = lhsIsConvertExpression ? (UnaryExpression)lhs : (UnaryExpression)rhs;
 			var constantExpression = lhsIsConstantExpression ? (ConstantExpression)lhs : (ConstantExpression)rhs;
 
-			if (convertExpression.Type == typeof(int) && convertExpression.Operand.Type == typeof(char) && constantExpression.Type == typeof(int))
+			if (IsConvertCharToInt(convertExpression) && constantExpression.Type == typeof(int))
 			{
 				var constant = Expression.Constant(Convert.ToChar((int)constantExpression.Value));
 
@@ -54,6 +67,11 @@ namespace NHibernate.Linq.ExpressionTransformers
 			}
 
 			return expression;
+		}
+
+		private static bool IsConvertCharToInt(UnaryExpression expression)
+		{
+			return expression.Type == typeof(int) && expression.Operand.Type == typeof(char);
 		}
 
 		private static bool IsConvertExpression(Expression expression)

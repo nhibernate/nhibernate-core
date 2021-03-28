@@ -221,7 +221,6 @@ namespace NHibernate.Type
 			return converter.ToEnumValue(code);
 		}
 
-
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			cmd.Parameters[index].Value = value != null ? GetValue(value) : DBNull.Value;

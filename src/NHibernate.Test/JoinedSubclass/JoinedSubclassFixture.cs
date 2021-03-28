@@ -21,7 +21,6 @@ namespace NHibernate.Test.JoinedSubclass
 			get { return new string[] {"JoinedSubclass.JoinedSubclass.hbm.xml"}; }
 		}
 
-
 		private DateTime testDateTime = new DateTime(2003, 8, 16);
 		private DateTime updateDateTime = new DateTime(2003, 8, 17);
 

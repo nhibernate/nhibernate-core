@@ -60,22 +60,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2846
 			}
 		}
 
-
 		[Test]
 		public void FetchOnCountWorks()
 		{
 			using (var session = OpenSession())
 			{
-
 				var count = session.Query<Post>()
 					.Fetch(p => p.Category)
 					.FetchMany(p => p.Comments)
 					.Count();
 
 				Assert.AreEqual(1, count);
-
 			}
 		}
-
 	}
 }

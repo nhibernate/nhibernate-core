@@ -1,5 +1,4 @@
-﻿
-namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
+﻿namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
 	internal class ProcessFetchLazyProperties : IResultOperatorProcessor<FetchLazyPropertiesResultOperator>
 	{

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH298 {
-
 	public class Category {
 		private int id;
 		private string name;

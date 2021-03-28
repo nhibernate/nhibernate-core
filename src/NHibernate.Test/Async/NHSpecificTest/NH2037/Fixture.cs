@@ -8,17 +8,18 @@
 //------------------------------------------------------------------------------
 
 
- using NUnit.Framework;
+using NUnit.Framework;
+
 namespace NHibernate.Test.NHSpecificTest.NH2037
 {
- 	using System.Threading.Tasks;
- 	[TestFixture]
- 	public class FixtureAsync : BugTestCase
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class FixtureAsync : BugTestCase
 	{
- 		[Test]
- 		public async Task TestAsync()
- 		{
-			var country = new Country {Name = "Argentina"};
+		[Test]
+		public async Task TestAsync()
+		{
+			var country = new Country { Name = "Argentina" };
 
 			var city = new City
 			           	{
@@ -27,41 +28,40 @@ namespace NHibernate.Test.NHSpecificTest.NH2037
 			           		Name = "Cordoba"
 			           	};
 
-		
+
 			using (ISession session = OpenSession())
-			using(var tx = session.BeginTransaction())
+			using (var tx = session.BeginTransaction())
 			{
 				await (session.SaveAsync(city.Country));
 				await (session.SaveAsync(city));
 				await (tx.CommitAsync());
- 			}
- 
-			using(ISession session = OpenSession())
+			}
+
+			using (ISession session = OpenSession())
 			using (var tx = session.BeginTransaction())
- 			{
+			{
 				//THROW
 				await (session.SaveOrUpdateAsync(city));
 				await (tx.CommitAsync());
- 			}
- 
+			}
+
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
- 			{
+			{
 				Assert.IsNotNull(await (session.GetAsync<City>(city.Id)));
 				await (tx.CommitAsync());
- 			}
+			}
 		}
- 
+
 		protected override void OnTearDown()
 		{
-			using(var session = OpenSession())
-			using(var tx = session.BeginTransaction())
- 			{
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
 				session.Delete("from City");
 				session.Delete("from Country");
 				tx.Commit();
 			}
 		}
-
- 	}
- }
+	}
+}

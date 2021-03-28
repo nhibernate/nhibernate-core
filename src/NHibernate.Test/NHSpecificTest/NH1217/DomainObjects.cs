@@ -7,7 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 	{
 		private Int32 _id;
 
-
 		private Int32 _versionNumber;
 
 		#region IDomainBase Members
@@ -18,7 +17,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 			set { _id = value; }
 		}
 
-
 		public virtual Int32 VersionNumber
 		{
 			get { return _versionNumber; }
@@ -28,11 +26,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 		#endregion
 	}
 
-
 	public class Root : DomainBase, IRoot
 	{
 		private String _name;
-
 
 		private IList<INode> _nodes;
 
@@ -44,7 +40,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 			set { _name = value; }
 		}
 
-
 		public virtual IList<INode> Nodes
 		{
 			get
@@ -54,7 +49,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 			}
 			set { _nodes = value; }
 		}
-
 
 		public virtual INode AddNode(string label)
 		{
@@ -97,13 +91,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 			set { _root = value; }
 		}
 
-
 		public virtual String Label
 		{
 			get { return _label; }
 			set { _label = value; }
 		}
-
 
 		public virtual ISet<IEdge> FromEdges
 		{
@@ -114,7 +106,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 			}
 			set { _fromEdges = value; }
 		}
-
 
 		public virtual ISet<IEdge> ToEdges
 		{
@@ -128,7 +119,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 
 		#endregion
 	}
-
 
 	public class Edge : DomainBase, IEdge
 	{
@@ -149,7 +139,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 			get { return _fromNode; }
 			set { _fromNode = value; }
 		}
-
 
 		public virtual INode ToNode
 		{

@@ -179,6 +179,5 @@ namespace NHibernate.Test.Legacy
 				await (s.FlushAsync());
 			}
 		}
-
 	}
 }

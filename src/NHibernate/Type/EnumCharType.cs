@@ -8,7 +8,6 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class EnumCharType<T> : AbstractEnumType
 	{
-
 		public EnumCharType() : base(new StringFixedLengthSqlType(1),typeof(T))
 		{
 		}
@@ -93,7 +92,6 @@ namespace NHibernate.Type
 				return (Char) (Int32) instance;
 			}
 		}
-
 
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{

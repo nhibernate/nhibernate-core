@@ -17,7 +17,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public IList<string> FindDialectScopeNames()
 		{
-			IList<string> dialectScopeNames = new List<string>();
+			var dialectScopeNames = new List<string>();
 
 			if (dialectscope != null)
 				foreach (HbmDialectScope dialectScopeSchema in dialectscope)

@@ -37,7 +37,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1332
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				
 				await (s.SaveAsync(a));
 				await (tx.CommitAsync());
 			}

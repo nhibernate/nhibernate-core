@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cd "$(dirname "$0")"
+SCRIPT_PATH="$(pwd)"
 BUILD_TOOL_PATH="./Tools/BuildTool/bin/BuildTool.dll"
 BUILD_TOOL="dotnet $BUILD_TOOL_PATH"
 AVAILABLE_CONFIGURATIONS="available-test-configurations"
@@ -10,11 +12,14 @@ LIB_FILES2=""
 CURRENT_CONFIGURATION="./current-test-configuration"
 OPTION=0
 async_generator_path=""
+async_generator_version=""
 
 if [ ! -f $BUILD_TOOL_PATH ]
 then
-	dotnet build ./Tools/BuildTool/BuildTool.sln -c Release -o bin
+	cd ./Tools/BuildTool
+	dotnet build BuildTool.sln -c Release -o bin 
 fi
+cd "$SCRIPT_PATH"
 
 buildDebug(){
 	dotnet build ./src/NHibernate.sln
@@ -173,46 +178,13 @@ testRun(){
 }
 
 generateAsync(){
-	dotnet msbuild /t:Restore ./src/NHibernate.sln
-
-	getAsyncGeneratorPath
 	cd src
-	mono ../"$async_generator_path"
+	dotnet tool restore
+	dotnet restore ./NHibernate.sln
+	dotnet async-generator
 	cd ..
 
 	mainMenu
-}
-
-getAsyncGeneratorPath(){
-	if [ "$async_generator_path" ]
-	then
-		return
-	fi
-
-	cd Tools
-
-	if [ ! -f nuget.exe ]
-	then
-		wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-	fi
-
-	async_generator_path="CSharpAsyncGenerator.CommandLine.$(cat packages.config | grep id=\"CSharpAsyncGenerator.CommandLine | cut -d\" -f4)/tools"
-
-	if [ ! -d $async_generator_path ]
-	then
-		mono nuget.exe install
-	fi
-
-	if [ ! -f $async_generator_path/SQLitePCLRaw.core.dll ]
-	then
-		# This "hidden" dependency causes a failure under some Mono setup, add it explicitly
-		mono nuget.exe install SQLitePCLRaw.core -Version 1.0.0
-		cp SQLitePCLRaw.core.1.0.0/lib/net45/SQLitePCLRaw.core.dll $async_generator_path/
-	fi
-
-	async_generator_path="Tools/$async_generator_path/AsyncGenerator.CommandLine.exe"
-
-	cd ..
 }
 
 mainMenu() {

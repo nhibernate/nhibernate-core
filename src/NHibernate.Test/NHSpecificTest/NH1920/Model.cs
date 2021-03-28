@@ -9,7 +9,6 @@ using NHibernate.Classic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1920
 {
-
 	public class Customer 
 	{ 
 		public virtual int Id { get; set; } 
@@ -24,5 +23,4 @@ namespace NHibernate.Test.NHSpecificTest.NH1920
 		public virtual string Memo { get; set; } 
 		public virtual Customer Customer { get; set; } 
 	} 
-
 }

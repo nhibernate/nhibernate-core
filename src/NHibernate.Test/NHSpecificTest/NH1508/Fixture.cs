@@ -104,7 +104,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-
 				var multiquery = session.CreateMultiQuery();
 				Assert.That(() => multiquery.AddNamedQuery("SampleSqlQuery"), Throws.Nothing);
 			}
@@ -116,7 +115,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-
 				var multiquery = session.CreateQueryBatch();
 				var q = session.GetNamedQuery("SampleSqlQuery");
 				Assert.That(() => multiquery.Add<int>(q), Throws.Nothing);

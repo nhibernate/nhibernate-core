@@ -48,7 +48,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 		[Test]
 		public async Task ExecutesOneQueryWithUniqueResultWithChildCriteriaNonGenericAsync()
 		{
-	
 			Sfi.Statistics.Clear();
 			using (ISession session = this.OpenSession())
 			{

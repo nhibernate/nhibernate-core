@@ -619,6 +619,5 @@ namespace NHibernate.Impl
 			(this as IDetachedQueryImplementor).OverrideParametersFrom(origin);
 			return this;
 		}
-
 	}
 }

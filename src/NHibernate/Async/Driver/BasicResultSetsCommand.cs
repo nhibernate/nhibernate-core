@@ -31,7 +31,7 @@ namespace NHibernate.Driver
 			var batcher = Session.Batcher;
 			SqlType[] sqlTypes = Commands.SelectMany(c => c.ParameterTypes).ToArray();
 			ForEachSqlCommand((sqlLoaderCommand, offset) => sqlLoaderCommand.ResetParametersIndexesForTheCommand(offset));
-			var command = batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlTypes);
+			var command = batcher.PrepareQueryCommand(CommandType.Text, Sql, sqlTypes);
 			if (commandTimeout.HasValue)
 			{
 				command.CommandTimeout = commandTimeout.Value;

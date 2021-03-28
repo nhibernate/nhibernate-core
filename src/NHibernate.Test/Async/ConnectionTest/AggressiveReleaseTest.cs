@@ -230,30 +230,31 @@ namespace NHibernate.Test.ConnectionTest
 		{
 			Prepare();
 			ISession s = GetSessionUnderTest();
-			s.BeginTransaction();
-
-			IList<Silly> entities = new List<Silly>();
-			for (int i = 0; i < 10; i++)
+			using (var t = s.BeginTransaction())
 			{
-				Other other = new Other("other-" + i);
-				Silly silly = new Silly("silly-" + i, other);
-				entities.Add(silly);
-				await (s.SaveAsync(silly));
-			}
-			await (s.FlushAsync());
+				IList<Silly> entities = new List<Silly>();
+				for (int i = 0; i < 10; i++)
+				{
+					Other other = new Other("other-" + i);
+					Silly silly = new Silly("silly-" + i, other);
+					entities.Add(silly);
+					await (s.SaveAsync(silly));
+				}
+				await (s.FlushAsync());
 
-			foreach (Silly silly in entities)
-			{
-				silly.Name = "new-" + silly.Name;
-				silly.Other.Name = "new-" + silly.Other.Name;
-			}
-//			long initialCount = sessions.Statistics.getConnectCount();
-			await (s.FlushAsync());
-//			Assert.AreEqual(initialCount + 1, sessions.Statistics.getConnectCount(), "connection not maintained through Flush");
+				foreach (Silly silly in entities)
+				{
+					silly.Name = "new-" + silly.Name;
+					silly.Other.Name = "new-" + silly.Other.Name;
+				}
+				// long initialCount = sessions.Statistics.getConnectCount();
+				await (s.FlushAsync());
+				//Assert.AreEqual(initialCount + 1, sessions.Statistics.getConnectCount(), "connection not maintained through Flush");
 
-			await (s.DeleteAsync("from Silly"));
-			await (s.DeleteAsync("from Other"));
-			await (s.Transaction.CommitAsync());
+				await (s.DeleteAsync("from Silly"));
+				await (s.DeleteAsync("from Other"));
+				await (t.CommitAsync());
+			}
 			Release(s);
 			Done();
 		}

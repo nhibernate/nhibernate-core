@@ -633,9 +633,11 @@ finally
                     will then fail to use it.
                 </para>
                 <para>
-                    As of NHibernate v5.0, session auto-enlistment can be disabled from the session builder
+                    Session auto-enlistment can be controlled from the session builder
                     obtained with <literal>ISessionFactory.WithOptions()</literal>, using the
-                    <literal>AutoJoinTransaction</literal> option. The connection may still enlist itself
+                    <literal>AutoJoinTransaction</literal> option. It can also be controlled at the configuration level,
+                    see <literal>transaction.auto_join</literal> in <xref linkend="configuration-optional"/>.
+                    When auto-join is disabled, the connection may still enlist itself
                     if connection string <literal>Enlist</literal> setting is not <literal>false</literal>.
                     A session can explicitly join the current system transaction by calling
                     <literal>ISession.JoinTransaction()</literal>.

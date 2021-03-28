@@ -138,6 +138,11 @@ namespace NHibernate
 		public static readonly DateType Date = new DateType();
 
 		/// <summary>
+		/// NHibernate local date type
+		/// </summary>
+		public static readonly DateType LocalDate = new LocalDateType();
+
+		/// <summary>
 		/// NHibernate decimal type
 		/// </summary>
 		public static readonly DecimalType Decimal = new DecimalType();
@@ -287,7 +292,6 @@ namespace NHibernate
 		/// </summary>
 		public static readonly AnyType Object = new AnyType();
 
-
 		//		/// <summary>
 		//		/// NHibernate blob type
 		//		/// </summary>
@@ -383,7 +387,6 @@ namespace NHibernate
 			}
 		}
 
-
 		/// <summary>
 		/// Force initialization of a proxy or persistent collection.
 		/// </summary>
@@ -408,7 +411,6 @@ namespace NHibernate
 			{
 				persistent.ForceInitialization();
 			}
-
 		}
 
 		/// <summary>
@@ -556,7 +558,6 @@ namespace NHibernate
 			}
 			hibernateEnumerable.Dispose();
 		}
-
 
 		/// <summary> 
 		/// Check if the property is initialized. If the named property does not exist

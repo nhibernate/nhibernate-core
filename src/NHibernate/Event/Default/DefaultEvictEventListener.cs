@@ -59,7 +59,6 @@ namespace NHibernate.Event.Default
 
 		protected virtual void DoEvict(object obj, EntityKey key, IEntityPersister persister, IEventSource session)
 		{
-
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("evicting {0}", MessageHelper.InfoString(persister));

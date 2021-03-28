@@ -1,5 +1,4 @@
-﻿
-namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2728
+﻿namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2728
 {
 	public interface IAnimal
 	{

@@ -23,12 +23,10 @@ namespace NHibernate.Transform
 
 		#endregion
 
-
 		public bool IsTransformedValueATupleElement(string[] aliases, int tupleLength)
 		{
 			return tupleLength == 1;
 		}
-
 
 		public bool[] IncludeInTransform(string[] aliases, int tupleLength)
 		{
@@ -36,7 +34,6 @@ namespace NHibernate.Transform
 			ArrayHelper.Fill(includeInTransformedResult, true);
 			return includeInTransformedResult;
 		}
-
 
 		internal IList UntransformToTuples(IList results, bool isSingleResult)
 		{
@@ -51,7 +48,6 @@ namespace NHibernate.Transform
 			}
 			return results;
 		}
-
 
 		internal object[] UntransformToTuple(object transformed, bool isSingleResult)
 		{

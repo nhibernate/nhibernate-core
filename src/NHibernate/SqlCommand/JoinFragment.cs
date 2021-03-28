@@ -10,7 +10,8 @@ namespace NHibernate.SqlCommand
 		InnerJoin = 0,
 		FullJoin = 4,
 		LeftOuterJoin = 1,
-		RightOuterJoin = 2
+		RightOuterJoin = 2,
+		CrossJoin = 8
 	}
 
 	/// <summary>

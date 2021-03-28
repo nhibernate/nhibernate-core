@@ -103,6 +103,8 @@ namespace NHibernate.DomainModel.Northwind.Entities
 			set { _shippingWeight = value; }
 		}
 
+		public virtual int NotMapped => 1;
+
 		public virtual ReadOnlyCollection<OrderLine> OrderLines
 		{
 			get { return new ReadOnlyCollection<OrderLine>(_orderLines); }

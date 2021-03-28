@@ -50,12 +50,10 @@ namespace NHibernate.Test.Futures
                 {
                     foreach (var person in await (persons5.GetEnumerableAsync()))
                     {
-
                     }
 
                     foreach (var person in await (persons10.GetEnumerableAsync()))
                     {
-
                     }
 
                     var events = logSpy.Appender.GetEvents();
@@ -66,30 +64,30 @@ namespace NHibernate.Test.Futures
 
     	[Test]
         public async Task TwoFuturesRunInTwoRoundTripsAsync()
-     {
-         using (var s = Sfi.OpenSession())
-         {
-	IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+        {
+            using (var s = Sfi.OpenSession())
+            {
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
-             using (var logSpy = new SqlLogSpy())
-             {
-                 var persons10 = s.CreateCriteria(typeof(Person))
+                using (var logSpy = new SqlLogSpy())
+                {
+                    var persons10 = s.CreateCriteria(typeof(Person))
                         .SetMaxResults(10)
                         .Future<Person>();
 
-                 foreach (var person in await (persons10.GetEnumerableAsync())) { } // fire first future round-trip
+                    foreach (var person in await (persons10.GetEnumerableAsync())) { } // fire first future round-trip
 
-                 var persons5 = s.CreateCriteria(typeof(Person))
+                    var persons5 = s.CreateCriteria(typeof(Person))
                         .SetMaxResults(5)
                         .Future<int>();
 
-                 foreach (var person in await (persons5.GetEnumerableAsync())) { } // fire second future round-trip
+                    foreach (var person in await (persons5.GetEnumerableAsync())) { } // fire second future round-trip
 
-                 var events = logSpy.Appender.GetEvents();
-                 Assert.AreEqual(2, events.Length);
-             }
-         }
-     }
+                    var events = logSpy.Appender.GetEvents();
+                    Assert.AreEqual(2, events.Length);
+                }
+            }
+        }
 
 		[Test]
 		public async Task CanCombineSingleFutureValueWithEnumerableFuturesAsync()
@@ -112,7 +110,6 @@ namespace NHibernate.Test.Futures
 
 					foreach (var person in await (persons.GetEnumerableAsync()))
 					{
-
 					}
 
 					var events = logSpy.Appender.GetEvents();

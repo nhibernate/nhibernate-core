@@ -29,6 +29,5 @@ namespace NHibernate.Test.Unionsubclass2
 		{
 			get { return address; }
 		}
-
 	}
 }

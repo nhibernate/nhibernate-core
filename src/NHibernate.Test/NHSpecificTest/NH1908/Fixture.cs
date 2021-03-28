@@ -6,7 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1908
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-
 		[Test]
 		public void QueryPropertyInBothFilterAndQuery()
 		{

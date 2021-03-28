@@ -26,7 +26,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private IQueryableCollection _queryableCollection;
 		private CollectionType _collectionType;
 
-
 		/// <summary>
 		/// Creates entity from elements.
 		/// </summary>
@@ -280,7 +279,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return elem;
 		}
 
-
 		public FromElement CreateEntityJoin(
 				string entityClass,
 				string tableAlias,
@@ -429,7 +427,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			return elem;
 		}
-
 
 		private JoinSequence CreateJoinSequence(string roleAlias, JoinType joinType)
 		{

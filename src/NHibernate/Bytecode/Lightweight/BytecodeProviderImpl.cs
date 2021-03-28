@@ -12,7 +12,6 @@ namespace NHibernate.Bytecode.Lightweight
 	/// </remarks>
 	public class BytecodeProviderImpl : AbstractBytecodeProvider
 	{
-
 		#region IBytecodeProvider Members
 
 		/// <summary>

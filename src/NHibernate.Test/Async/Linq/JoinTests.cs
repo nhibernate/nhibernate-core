@@ -285,21 +285,6 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		[Test(Description = "NH-3801"), Ignore("This is an ideal case, but not possible without better join detection")]
-		public async Task OrderLinesWithSelectingCustomerInCaseShouldProduceOneJoinAsync()
-		{
-			using (var spy = new SqlLogSpy())
-			{
-				// Without nominating the conditional to the select clause (and placing it in SQL)
-				// [l.Order.Customer] will be selected in its entirety, creating a second join 
-				await ((from l in db.OrderLines
-				 select new { CustomerKnown = l.Order.Customer == null ? 0 : 1, l.Order.OrderDate }).ToListAsync());
-
-				var countJoins = CountJoins(spy);
-				Assert.That(countJoins, Is.EqualTo(1));
-			}
-		}
-
 		[Test(Description = "NH-3801")]
 		public async Task OrderLinesWithSelectingCustomerNameInCaseShouldProduceTwoJoinsAsync()
 		{
@@ -307,21 +292,6 @@ namespace NHibernate.Test.Linq
 			{
 				await ((from l in db.OrderLines
 				 select new { CustomerKnown = l.Order.Customer.CustomerId == null ? "unknown" : l.Order.Customer.CompanyName, l.Order.OrderDate }).ToListAsync());
-
-				var countJoins = CountJoins(spy);
-				Assert.That(countJoins, Is.EqualTo(2));
-			}
-		}
-
-		[Test(Description = "NH-3801"), Ignore("This is an ideal case, but not possible without better join detection")]
-		public async Task OrderLinesWithSelectingCustomerNameInCaseShouldProduceTwoJoinsAlternateAsync()
-		{
-			using (var spy = new SqlLogSpy())
-			{
-				// Without nominating the conditional to the select clause (and placing it in SQL)
-				// [l.Order.Customer] will be selected in its entirety, creating a second join 
-				await ((from l in db.OrderLines
-				 select new { CustomerKnown = l.Order.Customer == null ? "unknown" : l.Order.Customer.CompanyName, l.Order.OrderDate }).ToListAsync());
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(2));

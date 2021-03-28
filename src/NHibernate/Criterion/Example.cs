@@ -345,7 +345,6 @@ namespace NHibernate.Criterion
 			return builder.ToSqlString();
 		}
 
-
 		//note: now that Criterion are adding typed values via ICriteriaQuery.AddUsedTypedValues this function is never called.
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{

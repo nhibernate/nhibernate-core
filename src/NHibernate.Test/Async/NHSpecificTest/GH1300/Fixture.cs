@@ -25,7 +25,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.GH1300
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -121,7 +120,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1300
 
 		[TestCase("Name", SqlDbType.NVarChar)]
 		[TestCase("AnsiName", SqlDbType.VarChar)]
-		public async Task LinqEqualsShouldUseMappedSizeAsync(string property, SqlDbType expectedDbType, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task LinqEqualsShouldUseMappedSizeAsync(string property, SqlDbType expectedDbType)
 		{
 			Driver.ClearCommands();
 
@@ -130,11 +129,11 @@ namespace NHibernate.Test.NHSpecificTest.GH1300
 			{
 				if (property == "Name")
 				{
-					await (session.Query<Entity>().Where(x => x.Name == "Bob").ToListAsync(cancellationToken));
+					await (session.Query<Entity>().Where(x => x.Name == "Bob").ToListAsync());
 				}
 				else
 				{
-					await (session.Query<Entity>().Where(x => x.AnsiName == "Bob").ToListAsync(cancellationToken));
+					await (session.Query<Entity>().Where(x => x.AnsiName == "Bob").ToListAsync());
 				}
 				Assert.That(Driver.LastCommandParameters.First().Size, Is.EqualTo(3));
 				Assert.That(Driver.LastCommandParameters.First().SqlDbType, Is.EqualTo(expectedDbType));
@@ -158,14 +157,14 @@ namespace NHibernate.Test.NHSpecificTest.GH1300
 		
 		[TestCase("Name", SqlDbType.NVarChar)]
 		[TestCase("AnsiName", SqlDbType.VarChar)]
-		public async Task HqlLikeShouldUseLargerSizeAsync(string property, SqlDbType expectedDbType, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task HqlLikeShouldUseLargerSizeAsync(string property, SqlDbType expectedDbType)
 		{
 			Driver.ClearCommands();
 
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				await (session.CreateQuery("from Entity where " + property + " like :name").SetParameter("name", "%Bob%").ListAsync<Entity>(cancellationToken));
+				await (session.CreateQuery("from Entity where " + property + " like :name").SetParameter("name", "%Bob%").ListAsync<Entity>());
 
 				Assert.That(Driver.LastCommandParameters.First().Size, Is.GreaterThanOrEqualTo(5));
 				Assert.That(Driver.LastCommandParameters.First().SqlDbType, Is.EqualTo(expectedDbType));
@@ -174,7 +173,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1300
 
 		[TestCase("Name", SqlDbType.NVarChar)]
 		[TestCase("AnsiName", SqlDbType.VarChar)]
-		public async Task CriteriaEqualsShouldUseMappedSizeAsync(string property, SqlDbType expectedDbType, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task CriteriaEqualsShouldUseMappedSizeAsync(string property, SqlDbType expectedDbType)
 		{
 			Driver.ClearCommands();
 
@@ -184,7 +183,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1300
 				Driver.ClearCommands();
 
 				await (session.CreateCriteria<Entity>().Add(Restrictions.Eq(property, "Bob"))
-								  .ListAsync<Entity>(cancellationToken));
+								  .ListAsync<Entity>());
 
 				Assert.That(Driver.LastCommandParameters.First().Size, Is.GreaterThanOrEqualTo(3));
 				Assert.That(Driver.LastCommandParameters.First().SqlDbType, Is.EqualTo(expectedDbType));
@@ -193,7 +192,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1300
 
 		[TestCase("Name", SqlDbType.NVarChar)]
 		[TestCase("AnsiName", SqlDbType.VarChar)]
-		public async Task CriteriaLikeShouldUseLargerSizeAsync(string property, SqlDbType expectedDbType, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task CriteriaLikeShouldUseLargerSizeAsync(string property, SqlDbType expectedDbType)
 		{
 			Driver.ClearCommands();
 
@@ -201,7 +200,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1300
 			using (var transaction = session.BeginTransaction())
 			{
 				await (session.CreateCriteria<Entity>().Add(Restrictions.Like(property, "%Bob%"))
-								  .ListAsync<Entity>(cancellationToken));
+								  .ListAsync<Entity>());
 
 				Assert.That(Driver.LastCommandParameters.First().Size, Is.GreaterThanOrEqualTo(5));
 				Assert.That(Driver.LastCommandParameters.First().SqlDbType, Is.EqualTo(expectedDbType));

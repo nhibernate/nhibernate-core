@@ -582,7 +582,6 @@ namespace NHibernate.Test.SystemTransactions
 					}
 					else
 						_log.Info("Scope not completed for triggering rollback");
-
 				}
 			}
 			catch (TransactionAbortedException)

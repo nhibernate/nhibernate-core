@@ -204,6 +204,23 @@ namespace NHibernate.Hql.Ast
 
 	public class HqlIdent : HqlExpression
 	{
+		private static readonly Dictionary<TypeCode, string> SupportedIdentTypes = new Dictionary<TypeCode, string>
+		{
+			{TypeCode.Boolean, "bool"},
+			{TypeCode.Int16, "short"},
+			{TypeCode.Int32, "integer"},
+			{TypeCode.Int64, "long"},
+			{TypeCode.UInt16, "ushort"},
+			{TypeCode.UInt32, "uint"},
+			{TypeCode.UInt64, "ulong"},
+			{TypeCode.Decimal, "decimal"},
+			{TypeCode.Single, "single"},
+			{TypeCode.DateTime, "datetime"},
+			{TypeCode.String, "string"},
+			{TypeCode.Char, "char"},
+			{TypeCode.Double, "double"}
+		};
+
 		internal HqlIdent(IASTFactory factory, string ident)
 			: base(HqlSqlWalker.IDENT, ident, factory)
 		{
@@ -212,50 +229,37 @@ namespace NHibernate.Hql.Ast
 		internal HqlIdent(IASTFactory factory, System.Type type)
 			: base(HqlSqlWalker.IDENT, "", factory)
 		{
-			type = type.UnwrapIfNullable();
-
-			switch (System.Type.GetTypeCode(type))
+			if (!TryGetTypeName(type, out var typeName))
 			{
-				case TypeCode.Boolean:
-					SetText("bool");
-					break;
-				case TypeCode.Int16:
-					SetText("short");
-					break;
-				case TypeCode.Int32:
-					SetText("integer");
-					break;
-				case TypeCode.Int64:
-					SetText("long");
-					break;
-				case TypeCode.Decimal:
-					SetText("decimal");
-					break;
-				case TypeCode.Single:
-					SetText("single");
-					break;
-				case TypeCode.DateTime:
-					SetText("datetime");
-					break;
-				case TypeCode.String:
-					SetText("string");
-					break;
-				case TypeCode.Double:
-					SetText("double");
-					break;
-				default:
-					if (type == typeof(Guid))
-					{
-						SetText("guid");
-						break;
-					}
-					if (type == typeof(DateTimeOffset))
-					{
-						SetText("datetimeoffset");
-						break;
-					}
-					throw new NotSupportedException(string.Format("Don't currently support idents of type {0}", type.Name));
+				throw new NotSupportedException($"Don't currently support idents of type {type.Name}");
 			}
+
+			SetText(typeName);
+		}
+
+		internal static bool SupportsType(System.Type type)
+		{
+			return TryGetTypeName(type, out _);
+		}
+
+		private static bool TryGetTypeName(System.Type type, out string typeName)
+		{
+			type = type.UnwrapIfNullable();
+			if (SupportedIdentTypes.TryGetValue(System.Type.GetTypeCode(type), out typeName))
+			{
+				return true;
+			}
+
+			if (type == typeof(Guid))
+			{
+				typeName = "guid";
+			}
+			else if (type == typeof(DateTimeOffset))
+			{
+				typeName = "datetimeoffset";
+			}
+
+			return typeName != null;
 		}
 	}
 
@@ -675,6 +679,19 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	public class HqlCountBig : HqlExpression
+	{
+		public HqlCountBig(IASTFactory factory)
+			: base(HqlSqlWalker.COUNT, "count_big", factory)
+		{
+		}
+
+		public HqlCountBig(IASTFactory factory, HqlExpression child)
+			: base(HqlSqlWalker.COUNT, "count_big", factory, child)
+		{
+		}
+	}
+
 	public class HqlAs : HqlExpression
 	{
 		public HqlAs(IASTFactory factory, HqlExpression expression, System.Type type)
@@ -822,9 +839,24 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	public class HqlInnerJoin : HqlTreeNode
+	{
+		public HqlInnerJoin(IASTFactory factory, HqlExpression expression, HqlAlias alias)
+			: base(HqlSqlWalker.JOIN, "join", factory, new HqlInner(factory), expression, alias)
+		{
+		}
+	}
+
 	public class HqlLeftJoin : HqlTreeNode
 	{
 		public HqlLeftJoin(IASTFactory factory, HqlExpression expression, HqlAlias @alias) : base(HqlSqlWalker.JOIN, "join", factory, new HqlLeft(factory), expression, @alias)
+		{
+		}
+	}
+
+	public class HqlCrossJoin : HqlTreeNode
+	{
+		public HqlCrossJoin(IASTFactory factory, HqlExpression expression, HqlAlias @alias) : base(HqlSqlWalker.JOIN, "join", factory, new HqlCross(factory), expression, @alias)
 		{
 		}
 	}
@@ -876,10 +908,26 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	public class HqlInner : HqlTreeNode
+	{
+		public HqlInner(IASTFactory factory)
+			: base(HqlSqlWalker.INNER, "inner", factory)
+		{
+		}
+	}
+
 	public class HqlLeft : HqlTreeNode
 	{
 		public HqlLeft(IASTFactory factory)
 			: base(HqlSqlWalker.LEFT, "left", factory)
+		{
+		}
+	}
+
+	public class HqlCross : HqlTreeNode
+	{
+		public HqlCross(IASTFactory factory)
+			: base(HqlSqlWalker.CROSS, "cross", factory)
 		{
 		}
 	}

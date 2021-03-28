@@ -35,7 +35,7 @@ namespace NHibernate.Type
 
 		/// <inheritdoc />
 		protected override DateTime AdjustDateTime(DateTime dateValue) =>
-			dateValue.Date;
+			Kind == DateTimeKind.Unspecified ? dateValue.Date : DateTime.SpecifyKind(dateValue.Date, Kind);
 
 		/// <inheritdoc />
 		public override bool IsEqual(object x, object y)

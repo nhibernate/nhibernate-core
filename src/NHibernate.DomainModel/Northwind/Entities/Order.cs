@@ -47,6 +47,8 @@ namespace NHibernate.DomainModel.Northwind.Entities
             set { _orderDate = value; }
         }
 
+        public virtual DateTime RequiredOrderDate { get; set; }
+
         public virtual DateTime? RequiredDate
         {
             get { return _requiredDate; }

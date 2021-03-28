@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -12,27 +11,22 @@ namespace NHibernate.Criterion.Lambda
 	[Obsolete]
 	public class QueryOverFetchBuilder<TRoot,TSubType> : QueryOverFetchBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
-
 		public QueryOverFetchBuilder(QueryOver<TRoot,TSubType> root, Expression<Func<TRoot, object>> path)
 			: base(root, path) { }
-
 	}
 
 	//Since 5.2
 	[Obsolete]
 	public class IQueryOverFetchBuilder<TRoot,TSubType> : QueryOverFetchBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
 	{
-
 		public IQueryOverFetchBuilder(IQueryOver<TRoot,TSubType> root, Expression<Func<TRoot, object>> path)
 			: base(root, path) { }
-
 	}
 
 	//Since 5.2
 	[Obsolete]
 	public class QueryOverFetchBuilderBase<TReturn, TRoot, TSubType> where TReturn : IQueryOver<TRoot,TSubType>
 	{
-
 		protected TReturn root;
 		protected string path;
 
@@ -68,7 +62,5 @@ namespace NHibernate.Criterion.Lambda
 				return this.root;
 			}
 		}
-
 	}
-
 }

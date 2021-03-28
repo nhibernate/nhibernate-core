@@ -21,7 +21,6 @@ namespace NHibernate.Hql
 			                              queryReturnAliases);
 		}
 
-
 		public static IResultTransformer ResolveResultTransformer(IResultTransformer selectNewTransformer, IResultTransformer customTransformer)
 		{
 			return selectNewTransformer ?? customTransformer;

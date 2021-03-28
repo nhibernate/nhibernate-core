@@ -223,7 +223,6 @@ namespace NHibernate.Id.Enhanced
 			return (initialValue > 1 || sourceIncrementSize > 1);
 		}
 
-
 		#endregion
 
 		#region Implementation of IIdentifierGenerator

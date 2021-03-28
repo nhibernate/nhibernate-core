@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -61,8 +62,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException("property");
 			}
-			var toAdd = new[] { property };
-			hbmJoin.Items = hbmJoin.Items == null ? toAdd : hbmJoin.Items.Concat(toAdd).ToArray();
+			hbmJoin.Items = ArrayHelper.Append(hbmJoin.Items, property);
 		}
 
 		public void Loader(string namedQueryReference)

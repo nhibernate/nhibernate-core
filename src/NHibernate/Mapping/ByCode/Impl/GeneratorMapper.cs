@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
@@ -30,14 +31,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 				return;
 			}
 
-			_generator.param = (from pi in generatorParameters
-			                    let pname = pi.Key
-			                    let pvalue = pi.Value
-			                    select new HbmParam
-			                    {
-				                    name = pname,
-				                    Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}
-			                    }).ToArray();
+			_generator.param = generatorParameters.ToArray(
+				pi =>
+				{
+					object pvalue = pi.Value;
+					return new HbmParam {name = pi.Key, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
+				});
 		}
 
 		#endregion

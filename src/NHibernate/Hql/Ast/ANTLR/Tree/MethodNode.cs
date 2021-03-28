@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Antlr.Runtime;
 
 using NHibernate.Dialect.Function;
@@ -194,14 +195,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if (_function != null)
 			{
-				IASTNode child = null;
-
-				if (exprList != null)
-				{
-					child = _methodName == "iif" ? exprList.GetChild(1) : exprList.GetChild(0);
-				}
-
-				DataType = SessionFactoryHelper.FindFunctionReturnType(_methodName, child);
+				DataType = SessionFactoryHelper.FindFunctionReturnType(_methodName, (IEnumerable<IASTNode>) exprList);
 			}
 			//TODO:
 			/*else {

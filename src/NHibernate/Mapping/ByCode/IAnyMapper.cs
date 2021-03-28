@@ -22,7 +22,6 @@ namespace NHibernate.Mapping.ByCode
 		/// <param name="entityType">The class associated to the specific <paramref name="value"/>. </param>
 		void MetaValue(object value, System.Type entityType);
 
-
 		void Cascade(Cascade cascadeStyle);
 		void Index(string indexName);
 		void Lazy(bool isLazy);

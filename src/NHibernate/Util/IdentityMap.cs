@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-
 namespace NHibernate.Util
 {
 	/// <summary>
@@ -40,7 +39,7 @@ namespace NHibernate.Util
 		/// <returns>A new IdentityMap based on a Hashtable.</returns>
 		public static IDictionary Instantiate(int size)
 		{
-			return new IdentityMap(new Hashtable(size, new IdentityEqualityComparer()));
+			return new IdentityMap(new Hashtable(size, ReferenceComparer<object>.Instance));
 		}
 
 		/// <summary>
@@ -51,7 +50,7 @@ namespace NHibernate.Util
 		/// <returns>A new IdentityMap based on ListDictionary.</returns>
 		public static IDictionary InstantiateSequenced(int size)
 		{
-			return new IdentityMap(new SequencedHashMap(size, new IdentityEqualityComparer()));
+			return new IdentityMap(new SequencedHashMap(size, ReferenceComparer<object>.Instance));
 		}
 
 		/// <summary>
@@ -203,7 +202,6 @@ namespace NHibernate.Util
 		{
 			get { return map.Values; }
 		}
-
 
 		/// <summary>
 		/// <see cref="ICollection.CopyTo"/>

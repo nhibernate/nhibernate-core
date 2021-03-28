@@ -39,45 +39,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 
 			ExecuteStatement("DELETE FROM DomainClass WHERE Id=1;");
 		}
-
-		[Test]
-		[Ignore("It is valid to delete immutable entities")]
-		public async Task AttemptToDeleteImmutableObjectShouldThrowAsync()
-		{
-			using (ISession session = OpenSession())
-			{
-				Assert.ThrowsAsync<HibernateException>(async () =>
-					{
-						using (ITransaction trans = session.BeginTransaction())
-						{
-							var entity = await (session.GetAsync<DomainClass>(1));
-							await (session.DeleteAsync(entity));
-
-							await (trans.CommitAsync()); // This used to throw...
-						}
-					});
-			}
-
-			using (IConnectionProvider prov = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
-			{
-				var conn = await (prov.GetConnectionAsync(CancellationToken.None));
-
-				try
-				{
-					using (var comm = conn.CreateCommand())
-					{
-						comm.CommandText = "SELECT Id FROM DomainClass WHERE Id=1 AND Label='TEST record'";
-						object result = await (comm.ExecuteScalarAsync());
-
-						Assert.That(result != null, "Immutable object has been deleted!");
-					}
-				}
-				finally
-				{
-					prov.CloseConnection(conn);
-				}
-			}
-		}
 		
 		[Test]
 		public async Task AllowDeletionOfImmutableObjectAsync()

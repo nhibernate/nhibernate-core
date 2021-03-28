@@ -32,17 +32,16 @@ namespace NHibernate.Context
 
 				try
 				{
-					if (orphan.Transaction != null && orphan.Transaction.IsActive)
+					try
 					{
-						try
-						{
-							await (orphan.Transaction.RollbackAsync(cancellationToken)).ConfigureAwait(false);
-						}
-						catch (OperationCanceledException) { throw; }
-						catch (Exception ex)
-						{
-							log.Debug(ex, "Unable to rollback transaction for orphaned session");
-						}
+						var transaction = orphan.GetCurrentTransaction();
+						if (transaction?.IsActive == true)
+							await (transaction.RollbackAsync(cancellationToken)).ConfigureAwait(false);
+					}
+					catch (OperationCanceledException) { throw; }
+					catch (Exception ex)
+					{
+						log.Debug(ex, "Unable to rollback transaction for orphaned session");
 					}
 					orphan.Close();
 				}

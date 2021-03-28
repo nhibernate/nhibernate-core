@@ -42,7 +42,7 @@ namespace NHibernate.Criterion
 		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
 		{
 			return _subQuery.ToSqlString(criteria, criteriaQuery)
-				.Append(new SqlString(" as y", loc.ToString(), "_"));
+				.Append(" as y", loc.ToString(), "_");
 		}
 
 		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)

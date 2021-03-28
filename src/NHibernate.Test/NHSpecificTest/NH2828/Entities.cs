@@ -91,7 +91,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 			}
 			return false;
 		}
-
 	}
 
 	public class Address
@@ -118,7 +117,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 		{
 			this.Company = null;
 		}
-
 	}
 
 	public class BankAccount
@@ -128,7 +126,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 		public virtual string Name { get; set; }
 
 		public virtual Company Company { get; set; }
-
 	}
-		
 }

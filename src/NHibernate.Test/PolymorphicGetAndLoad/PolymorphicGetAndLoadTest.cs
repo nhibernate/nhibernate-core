@@ -102,7 +102,6 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 					s.Flush();
 				}
 			}, Throws.Nothing);
-
 		}
 
 		[Test]

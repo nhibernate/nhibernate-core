@@ -29,5 +29,4 @@ namespace NHibernate.Mapping.ByCode
 
 	public interface IComponentAsIdMapper<TComponent> : IComponentAsIdAttributesMapper<TComponent>, IMinimalPlainPropertyContainerMapper<TComponent>
 	{ }
-
 }

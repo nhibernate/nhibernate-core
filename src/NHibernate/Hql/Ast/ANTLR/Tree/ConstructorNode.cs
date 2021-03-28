@@ -133,13 +133,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private IType[] ResolveConstructorArgumentTypes()
 		{
 			ISelectExpression[] argumentExpressions = CollectSelectExpressions();
-			
-			if ( argumentExpressions == null ) 
-			{
-				// return an empty Type array
-				return Array.Empty<IType>();
-			}
-
 			IType[] types = new IType[argumentExpressions.Length];
 			for ( int x = 0; x < argumentExpressions.Length; x++ ) 
 			{

@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NUnit.Framework;
@@ -41,31 +40,31 @@ namespace NHibernate.Test.Naturalid.Immutable
 		{
 			// prepare some test data...
 			User user;
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
-				session.BeginTransaction();
 				user = new User();
 				user.UserName = "steve";
 				user.Email = "steve@hibernate.org";
 				user.Password = "brewhaha";
 				await (session.SaveAsync(user));
-				await (session.Transaction.CommitAsync());
+				await (tran.CommitAsync());
 			}
 			// 'user' is now a detached entity, so lets change a property and reattch...
 			user.Password = "homebrew";
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
-				session.BeginTransaction();
 				await (session.UpdateAsync(user));
-				await (session.Transaction.CommitAsync());
+				await (tran.CommitAsync());
 			}
 
 			// clean up
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
-				session.BeginTransaction();
 				await (session.DeleteAsync(user));
-				await (session.Transaction.CommitAsync());
+				await (tran.CommitAsync());
 			}
 		}
 
@@ -93,62 +92,72 @@ namespace NHibernate.Test.Naturalid.Immutable
 		[Test]
 		public async Task NaturalIdCacheAsync()
 		{
-			ISession s = OpenSession();
-			s.BeginTransaction();
-			User u = new User("steve", "superSecret");
-			await (s.PersistAsync(u));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				User u = new User("steve", "superSecret");
+				await (s.PersistAsync(u));
+				await (t.CommitAsync());
+				s.Close();
+			}
 
 			Sfi.Statistics.Clear();
 
-			s = OpenSession();
-			s.BeginTransaction();
-			u =
-				(User)
-				await (s.CreateCriteria(typeof (User)).Add(Restrictions.NaturalId().Set("UserName", "steve")).SetCacheable(true).
-					UniqueResultAsync());
-			Assert.That(u, Is.Not.Null);
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var u =
+					(User)
+					await (s.CreateCriteria(typeof(User)).Add(Restrictions.NaturalId().Set("UserName", "steve"))
+					 .SetCacheable(true).UniqueResultAsync());
+				Assert.That(u, Is.Not.Null);
+				await (t.CommitAsync());
+				s.Close();
+			}
 
 			Assert.AreEqual(1, Sfi.Statistics.QueryExecutionCount);
 			Assert.AreEqual(0, Sfi.Statistics.QueryCacheHitCount);
 			Assert.AreEqual(1, Sfi.Statistics.QueryCachePutCount);
 
-			s = OpenSession();
-			s.BeginTransaction();
-			User v = new User("gavin", "supsup");
-			await (s.PersistAsync(v));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				User v = new User("gavin", "supsup");
+				await (s.PersistAsync(v));
+				await (t.CommitAsync());
+				s.Close();
+			}
 
 			Sfi.Statistics.Clear();
 
-			s = OpenSession();
-			s.BeginTransaction();
-			u =
-				(User)
-				await (s.CreateCriteria(typeof(User)).Add(Restrictions.NaturalId().Set("UserName", "steve")).SetCacheable(true).
-					UniqueResultAsync());
-			Assert.That(u, Is.Not.Null);
-			Assert.AreEqual(0, Sfi.Statistics.QueryExecutionCount);
-			Assert.AreEqual(1, Sfi.Statistics.QueryCacheHitCount);
-			u =
-				(User)
-				await (s.CreateCriteria(typeof(User)).Add(Restrictions.NaturalId().Set("UserName", "steve")).SetCacheable(true).
-					UniqueResultAsync());
-			Assert.That(u, Is.Not.Null);
-			Assert.AreEqual(0, Sfi.Statistics.QueryExecutionCount);
-			Assert.AreEqual(2, Sfi.Statistics.QueryCacheHitCount);
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var u =
+					(User)
+					await (s.CreateCriteria(typeof(User)).Add(Restrictions.NaturalId().Set("UserName", "steve"))
+					 .SetCacheable(true).UniqueResultAsync());
+				Assert.That(u, Is.Not.Null);
+				Assert.AreEqual(0, Sfi.Statistics.QueryExecutionCount);
+				Assert.AreEqual(1, Sfi.Statistics.QueryCacheHitCount);
+				u =
+					(User)
+					await (s.CreateCriteria(typeof(User)).Add(Restrictions.NaturalId().Set("UserName", "steve"))
+					 .SetCacheable(true).UniqueResultAsync());
+				Assert.That(u, Is.Not.Null);
+				Assert.AreEqual(0, Sfi.Statistics.QueryExecutionCount);
+				Assert.AreEqual(2, Sfi.Statistics.QueryCacheHitCount);
+				await (t.CommitAsync());
+				s.Close();
+			}
 
-			s = OpenSession();
-			s.BeginTransaction();
-			await (s.DeleteAsync("from User"));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.DeleteAsync("from User"));
+				await (t.CommitAsync());
+				s.Close();
+			}
 		}
 	}
 }

@@ -62,7 +62,6 @@ namespace NHibernate.Test.Criteria.Lambda
 			}
 		}
 
-
 		[Test]
 		public async Task RoundDoubleWithOneArgumentAsync()
 		{

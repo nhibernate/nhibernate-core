@@ -15,6 +15,9 @@ namespace NHibernate.Mapping.ByCode
 		void Formula(string formula);
 		void ForeignKey(string foreignKeyName);
 		void Class(System.Type clazz);
+
+		//6.0 TODO: Uncomment
+		//void Fetch(FetchKind fetchMode);
 	}
 
 	public interface IOneToOneMapper<T> : IOneToOneMapper
@@ -34,6 +37,12 @@ namespace NHibernate.Mapping.ByCode
 		{
 			var o2oMapper = ReflectHelper.CastOrThrow<OneToOneMapper>(mapper, "Setting many formula");
 			o2oMapper.Formulas(formulas);
+		}
+
+		public static void Fetch(this IOneToOneMapper mapper, FetchKind fetchMode)
+		{
+			var o2oMapper = ReflectHelper.CastOrThrow<OneToOneMapper>(mapper, "Setting fetch");
+			o2oMapper.Fetch(fetchMode);
 		}
 	}
 }

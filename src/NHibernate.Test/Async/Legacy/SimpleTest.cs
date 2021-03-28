@@ -111,7 +111,6 @@ namespace NHibernate.Test.Legacy
 			s4.Close();
 		}
 
-
 		[Test]
 		public async Task SetPropertiesOnQueryAsync()
 		{

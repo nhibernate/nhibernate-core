@@ -40,7 +40,7 @@ namespace NHibernate.Persister.Entity
 	/// </remarks>
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
-		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable
 	{
 		#region InclusionChecker
 
@@ -133,7 +133,7 @@ namespace NHibernate.Persister.Entity
 		private readonly bool hasSubselectLoadableCollections;
 		protected internal string rowIdName;
 
-		private readonly ISet<string> lazyProperties;
+		private readonly HashSet<string> lazyProperties;
 
 		private readonly string sqlWhereString;
 		private readonly string sqlWhereStringTemplate;
@@ -552,8 +552,8 @@ namespace NHibernate.Persister.Entity
 
 		protected abstract int[] SubclassColumnTableNumberClosure { get; }
 		protected abstract int[] SubclassFormulaTableNumberClosure { get; }
-		protected internal abstract int[] PropertyTableNumbersInSelect { get;}
-		protected internal abstract int[] PropertyTableNumbers { get;}
+		protected internal abstract int[] PropertyTableNumbersInSelect { get; }
+		protected internal abstract int[] PropertyTableNumbers { get; }
 
 		public virtual string DiscriminatorColumnName
 		{
@@ -1052,13 +1052,13 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.NaturalIdentifierProperties; }
 		}
 
-		public abstract string[][] ConstraintOrderedTableKeyColumnClosure { get;}
-		public abstract IType DiscriminatorType { get;}
-		public abstract string[] ConstraintOrderedTableNameClosure { get;}
-		public abstract string DiscriminatorSQLValue { get;}
-		public abstract object DiscriminatorValue { get;}
+		public abstract string[][] ConstraintOrderedTableKeyColumnClosure { get; }
+		public abstract IType DiscriminatorType { get; }
+		public abstract string[] ConstraintOrderedTableNameClosure { get; }
+		public abstract string DiscriminatorSQLValue { get; }
+		public abstract object DiscriminatorValue { get; }
 		public abstract string[] SubclassClosure { get; }
-		public abstract string[] PropertySpaces { get;}
+		public abstract string[] PropertySpaces { get; }
 
 		protected virtual void AddDiscriminatorToInsert(SqlInsertBuilder insert) { }
 
@@ -1395,7 +1395,7 @@ namespace NHibernate.Persister.Entity
 		}
 
 		public void InitializeLazyProperties(
-			DbDataReader rs, object id, object entity, ILoadable rootPersister, string[][] suffixedPropertyColumns,
+			DbDataReader rs, object id, object entity, string[][] suffixedPropertyColumns,
 			string[] uninitializedLazyProperties, bool allLazyProperties, ISessionImplementor session)
 		{
 			if (!HasLazyProperties)
@@ -1413,7 +1413,12 @@ namespace NHibernate.Persister.Entity
 			int[] lazyIndexes;
 			if (allLazyProperties)
 			{
-				lazyIndexes = indexes = lazyPropertyNumbers;
+				indexes = lazyPropertyNumbers;
+				lazyIndexes = new int[lazyPropertyNumbers.Length];
+				for(var i = 0; i < lazyIndexes.Length; i++)
+				{
+					lazyIndexes[i] = i;
+				}
 			}
 			else
 			{
@@ -1641,12 +1646,12 @@ namespace NHibernate.Persister.Entity
 			return PropertySelectFragment(name, suffix, null, allProperties);
 		}
 
-		public string PropertySelectFragment(string name, string suffix, string[] fetchProperties)
+		public string PropertySelectFragment(string name, string suffix, ICollection<string> fetchProperties)
 		{
 			return PropertySelectFragment(name, suffix, fetchProperties, false);
 		}
 
-		private string PropertySelectFragment(string name, string suffix, string[] fetchProperties, bool allProperties)
+		private string PropertySelectFragment(string name, string suffix, ICollection<string> fetchProperties, bool allProperties)
 		{
 			SelectFragment select = new SelectFragment(Factory.Dialect)
 				.SetSuffix(suffix)
@@ -1859,7 +1864,6 @@ namespace NHibernate.Persister.Entity
 			return frag.ToFragmentString();
 		}
 
-
 		protected virtual SqlString GenerateSnapshotSelectString()
 		{
 			//TODO: should we use SELECT .. FOR UPDATE?
@@ -1872,7 +1876,7 @@ namespace NHibernate.Persister.Entity
 			}
 
 			string[] aliasedIdColumns = StringHelper.Qualify(RootAlias, IdentifierColumnNames);
-			string selectClause = StringHelper.Join(StringHelper.CommaSpace, aliasedIdColumns)
+			string selectClause = string.Join(StringHelper.CommaSpace, aliasedIdColumns)
 														+ ConcretePropertySelectFragment(RootAlias, PropertyUpdateability);
 
 			SqlString fromClause = new SqlString(
@@ -2134,14 +2138,20 @@ namespace NHibernate.Persister.Entity
 
 		public virtual string GenerateTableAliasForColumn(string rootAlias, string column)
 		{
-			int propertyIndex = Array.IndexOf(SubclassColumnClosure, column);
+			return GenerateTableAlias(rootAlias, GetColumnTableNumber(column));
+		}
+
+		private int GetColumnTableNumber(string column)
+		{
+			if (SubclassTableSpan == 1)
+				return 0;
+
+			int i = Array.IndexOf(SubclassColumnClosure, column);
 
 			// The check for KeyColumnNames was added to fix NH-2491
-			if (propertyIndex < 0 || Array.IndexOf(KeyColumnNames, column) >= 0)
-			{
-				return rootAlias;
-			}
-			return GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[propertyIndex]);
+			return i < 0 || Array.IndexOf(KeyColumnNames, column) >= 0 
+				? 0
+				: SubclassColumnTableNumberClosure[i];
 		}
 
 		public string GenerateTableAlias(string rootAlias, int tableNumber)
@@ -2149,13 +2159,18 @@ namespace NHibernate.Persister.Entity
 			if (tableNumber == 0)
 				return rootAlias;
 
-			StringBuilder buf = new StringBuilder().Append(rootAlias);
-			if (!rootAlias.EndsWith("_"))
-			{
-				buf.Append('_');
-			}
+			string x = rootAlias.EndsWith('_')
+				? string.Empty
+				: "_";
+			return string.Concat(rootAlias, x, tableNumber.ToString(), "_");
+		}
 
-			return buf.Append(tableNumber).Append('_').ToString();
+		private string GetSubclassAliasedColumn(string rootAlias, int tableNumber, string columnName)
+		{
+			if (string.IsNullOrEmpty(rootAlias))
+				return columnName;
+
+			return GenerateTableAlias(rootAlias, tableNumber) + "." + columnName;
 		}
 
 		public string[] ToColumns(string name, int i)
@@ -2169,7 +2184,7 @@ namespace NHibernate.Persister.Entity
 			{
 				if (cols[j] == null)
 				{
-					result[j] = templates[j]?.Replace(Template.Placeholder, alias);
+					result[j] = Template.ReplacePlaceholder(templates[j], alias);
 				}
 				else
 				{
@@ -2432,7 +2447,7 @@ namespace NHibernate.Persister.Entity
 
 		protected string GetSQLWhereString(string alias)
 		{
-			return sqlWhereStringTemplate?.Replace(Template.Placeholder, alias);
+			return Template.ReplacePlaceholder(sqlWhereStringTemplate, alias);
 		}
 
 		protected bool HasWhere
@@ -2983,7 +2998,7 @@ namespace NHibernate.Persister.Entity
 		public virtual SqlString GetSelectByUniqueKeyString(string[] suppliedPropertyNames, out IType[] parameterTypes)
 		{
 			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
-			parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+			parameterTypes = propertyNames.ToArray(p => GetPropertyType(p));
 
 			// 6.0 TODO: remove the next if block
 			if (propertyNames.Length == 1)
@@ -3014,7 +3029,7 @@ namespace NHibernate.Persister.Entity
 			string[] suppliedPropertyNames)
 		{
 			var propertyNames = GetUniqueKeyPropertyNames(suppliedPropertyNames);
-			var parameterTypes = propertyNames.Select(GetPropertyType).ToArray();
+			var parameterTypes = propertyNames.ToArray(p => GetPropertyType(p));
 			var entity = binder.Entity;
 			for (var i = 0; i < propertyNames.Length; i++)
 			{
@@ -3338,7 +3353,7 @@ namespace NHibernate.Persister.Entity
 						IType[] types = PropertyTypes;
 						for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 						{
-							if (IsPropertyOfTable(i, j) && versionability[i])
+							if (IsPropertyOfTable(i, j) && versionability[i] && types[i].GetOwnerColumnSpan(Factory) > 0)
 							{
 								// this property belongs to the table and it is not specifically
 								// excluded from optimistic locking by optimistic-lock="false"
@@ -3574,13 +3589,13 @@ namespace NHibernate.Persister.Entity
 				{
 					delete.SetComment("delete " + EntityName + " [" + j + "]");
 				}
-
 				bool[] versionability = PropertyVersionability;
 				IType[] types = PropertyTypes;
 				for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 				{
 					bool include = versionability[i] &&
-												 IsPropertyOfTable(i, j);
+												 IsPropertyOfTable(i, j) 
+												&& types[i].GetOwnerColumnSpan(Factory) > 0;
 
 					if (include)
 					{
@@ -3656,16 +3671,21 @@ namespace NHibernate.Persister.Entity
 
 		public virtual string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
-			StringBuilder sessionFilterFragment = new StringBuilder();
+			var filterFragment = FilterFragment(alias);
+			if (!filterHelper.IsAffectedBy(enabledFilters))
+				return filterFragment;
 
+			var sessionFilterFragment = new StringBuilder();
 			filterHelper.Render(sessionFilterFragment, GenerateFilterConditionAlias(alias), GetColumnsToTableAliasMap(alias), enabledFilters);
-
-			return sessionFilterFragment.Append(FilterFragment(alias)).ToString();
+			return sessionFilterFragment.Append(filterFragment).ToString();
 		}
 
 		private IDictionary<string, string> GetColumnsToTableAliasMap(string rootAlias)
 		{
-			IDictionary<PropertyKey, string> propDictionary = new Dictionary<PropertyKey, string>();
+			if (SubclassTableSpan < 2)
+				return CollectionHelper.EmptyDictionary<string, string>();
+
+			var propDictionary = new Dictionary<PropertyKey, string>();
 			for (int i =0; i < SubclassPropertyNameClosure.Length; i++)
 			{
 				string property = SubclassPropertyNameClosure[i];
@@ -3678,20 +3698,11 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 
-			IDictionary<string, string> dict = new Dictionary<string, string>();
+			var dict = new Dictionary<string, string>();
 			for (int i = 0; i < SubclassColumnTableNumberClosure.Length; i++ )
 			{
-				string fullColumn;
 				string col = SubclassColumnClosure[i];
-				if (!string.IsNullOrEmpty(rootAlias))
-				{
-					string alias = GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[i]);
-					fullColumn = string.Format("{0}.{1}", alias, col);
-				}
-				else
-				{
-					fullColumn = col;
-				}
+				var fullColumn = GetSubclassAliasedColumn(rootAlias, SubclassColumnTableNumberClosure[i], col);
 
 				PropertyKey key = new PropertyKey(col, SubclassColumnTableNumberClosure[i]);
 				if (propDictionary.ContainsKey(key))
@@ -3702,6 +3713,15 @@ namespace NHibernate.Persister.Entity
 				if (!dict.ContainsKey(col))
 				{
 					dict[col] = fullColumn;	
+				}
+			}
+
+			//Reversed loop to prefer root columns in case same key names for subclasses
+			for (int i = SubclassTableSpan - 1; i >= 0; i--)
+			{
+				foreach (var key in GetSubclassTableKeyColumns(i))
+				{
+					dict[key] = GetSubclassAliasedColumn(rootAlias, i, key);
 				}
 			}
 
@@ -3744,7 +3764,7 @@ namespace NHibernate.Persister.Entity
 		public virtual SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
 			return SubclassTableSpan == 1
-				? new SqlString(string.Empty) // just a performance opt!
+				? SqlString.Empty // just a performance opt!
 				: CreateJoin(alias, innerJoin, includeSubclasses).ToFromFragmentString;
 		}
 
@@ -3765,12 +3785,10 @@ namespace NHibernate.Persister.Entity
 			int tableSpan = SubclassTableSpan;
 			for (int j = 1; j < tableSpan; j++) //notice that we skip the first table; it is the driving table!
 			{
-				string[] idCols = StringHelper.Qualify(name, GetJoinIdKeyColumns(j)); //some joins may be to non primary keys
-
-				bool joinIsIncluded = IsClassOrSuperclassTable(j) ||
-					(includeSubclasses && !IsSubclassTableSequentialSelect(j) && !IsSubclassTableLazy(j));
+				var joinIsIncluded = IsJoinIncluded(includeSubclasses, j);
 				if (joinIsIncluded)
 				{
+					string[] idCols = StringHelper.Qualify(name, GetJoinIdKeyColumns(j)); //some joins may be to non primary keys
 					join.AddJoin(GetSubclassTableName(j),
 						GenerateTableAlias(name, j),
 						idCols,
@@ -3782,6 +3800,36 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 			return join;
+		}
+
+		internal bool ColumnsDependOnSubclassJoins(string[] columns)
+		{
+			foreach (var column in columns)
+			{
+				if (GetColumnTableNumber(column) > 0)
+					return true;
+			}
+			return false;
+		}
+
+		internal bool HasSubclassJoins(bool includeSubclasses)
+		{
+			if (SubclassTableSpan == 1)
+				return false;
+
+			for (int i = 1; i < SubclassTableSpan; ++i)
+			{
+				if (IsJoinIncluded(includeSubclasses, i))
+					return true;
+			}
+
+			return false;
+		}
+
+		private bool IsJoinIncluded(bool includeSubclasses, int j)
+		{
+			return IsClassOrSuperclassTable(j) ||
+					(includeSubclasses && !IsSubclassTableSequentialSelect(j) && !IsSubclassTableLazy(j));
 		}
 
 		private JoinFragment CreateJoin(int[] tableNumbers, string drivingAlias)
@@ -3840,7 +3888,7 @@ namespace NHibernate.Persister.Entity
 		protected SqlString CreateWhereByKey(int tableNumber, string alias)
 		{
 			//TODO: move to .sql package, and refactor with similar things!
-			//return new SqlString(StringHelper.Join("= ? and ",
+			//return new SqlString(string.Join("= ? and ",
 			//        StringHelper.Qualify(alias, GetSubclassTableKeyColumns(tableNumber))) + "= ?");
 			string[] subclauses = StringHelper.Qualify(alias, GetSubclassTableKeyColumns(tableNumber));
 			SqlStringBuilder builder = new SqlStringBuilder(subclauses.Length * 4);
@@ -4143,7 +4191,6 @@ namespace NHibernate.Persister.Entity
 			return EntityTuplizer;
 		}
 
-
 		public virtual bool HasCache
 		{
 			get { return cache != null; }
@@ -4323,18 +4370,27 @@ namespace NHibernate.Persister.Entity
 
 		// 6.0 TODO: Remove (to inline usages)
 		// Since v5.2
-		[Obsolete("Use overload taking includeLazyProperties parameter")]
+		[Obsolete("Use overload taking entityInfo parameter")]
 		public string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias,
 			string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
 		{
 			return SelectFragment(rhs, rhsAlias, lhsAlias, entitySuffix, collectionSuffix, includeCollectionColumns, false);
 		}
 
+		// 6.0 TODO: Remove (to inline usages)
+		// Since v5.3
+		[Obsolete("Use overload taking entityInfo parameter")]
 		public string SelectFragment(
 			IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix,
 			bool includeCollectionColumns, bool includeLazyProperties)
 		{
-			return SelectFragment(lhsAlias, entitySuffix, includeLazyProperties);
+			return SelectFragment(rhs, rhsAlias, lhsAlias, collectionSuffix, includeCollectionColumns, new EntityLoadInfo(entitySuffix) {IncludeLazyProps = includeLazyProperties});
+		}
+
+		public string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
+		{
+			return IdentifierSelectFragment(lhsAlias, entityInfo.EntitySuffix)
+					+ PropertySelectFragment(lhsAlias, entityInfo.EntitySuffix, entityInfo.LazyProperties, entityInfo.IncludeLazyProps);
 		}
 
 		public bool IsInstrumented

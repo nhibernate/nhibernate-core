@@ -73,7 +73,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 			base.OnTearDown();
 		}
 
-
 		[Test]
 		public async Task OffsetNotStartingAtOneSetsParameterToSkipValueAsync()
 		{

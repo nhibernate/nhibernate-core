@@ -71,22 +71,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2846
 			}
 		}
 
-
 		[Test]
 		public async Task FetchOnCountWorksAsync()
 		{
 			using (var session = OpenSession())
 			{
-
 				var count = await (session.Query<Post>()
 					.Fetch(p => p.Category)
 					.FetchMany(p => p.Comments)
 					.CountAsync());
 
 				Assert.AreEqual(1, count);
-
 			}
 		}
-
 	}
 }

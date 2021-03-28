@@ -7,11 +7,9 @@ using NHibernate.Criterion;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
-
 	[TestFixture]
 	public class ProjectionsFixture : LambdaFixtureBase
 	{
-
 		private Child _subqueryChildAlias = null;
 
 		private DetachedCriteria DetachedCriteriaAge
@@ -202,7 +200,5 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
-
 	}
-
 }

@@ -74,22 +74,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 					Assert.That(() => s.Query<ItemBase>()
 									   .Fetch(p => p.SubItem).ToListAsync(), Throws.Nothing);
 
-
 					// fetching second level properties should work too
 					Assert.That(() => s.Query<ItemWithComponentSubItem>()
 									   .Fetch(p => p.SubItem).ThenFetch(p => p.Details).ToListAsync(), Throws.Nothing);
-				}
-			}
-		}
-
-		[Test, Ignore("Locked by re-linq")]
-		public void LinqQueryWithFetch_WhenDerivedClassesUseComponentAndEagerFetchManyToOne_DoesNotGenerateInvalidSqlAsync()
-		{
-			using (ISession s = OpenSession())
-			{
-				using (var log = new SqlLogSpy())
-				{
-					Assert.That(() => s.Query<ItemWithComponentSubItem>().Fetch(p => p.SubItem.Details).ToListAsync(), Throws.Nothing);
 				}
 			}
 		}

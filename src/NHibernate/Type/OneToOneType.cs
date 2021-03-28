@@ -13,20 +13,24 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class OneToOneType : EntityType, IAssociationType
 	{
-		private static readonly SqlType[] NoSqlTypes = Array.Empty<SqlType>();
-
 		private readonly ForeignKeyDirection foreignKeyDirection;
 		private readonly string propertyName;
 		private readonly string entityName;
 
-		public override int GetColumnSpan(IMapping session)
+		public override int GetColumnSpan(IMapping mapping)
+		{
+			// our column span is the number of columns in the PK
+			return GetIdentifierOrUniqueKeyType(mapping).GetColumnSpan(mapping);
+		}
+		
+		public override int GetOwnerColumnSpan(IMapping mapping)
 		{
 			return 0;
 		}
 
 		public override SqlType[] SqlTypes(IMapping mapping)
 		{
-			return NoSqlTypes;
+			return GetIdentifierOrUniqueKeyType(mapping).SqlTypes(mapping);
 		}
 
 		public OneToOneType(string referencedEntityName, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, string entityName, string propertyName)
@@ -44,7 +48,8 @@ namespace NHibernate.Type
 
 		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			//nothing to do
+			GetIdentifierOrUniqueKeyType(session.Factory)
+				.NullSafeSet(cmd, GetReferenceValue(value, session), index, session);
 		}
 
 		public override bool IsOneToOne
@@ -54,22 +59,62 @@ namespace NHibernate.Type
 
 		public override bool IsDirty(object old, object current, ISessionImplementor session)
 		{
-			return false;
+			if (IsSame(old, current))
+			{
+				return false;
+			}
+
+			if (old == null || current == null)
+			{
+				return true;
+			}
+
+			if (ForeignKeys.IsTransientFast(GetAssociatedEntityName(), current, session).GetValueOrDefault())
+			{
+				return true;
+			}
+
+			object oldId = GetIdentifier(old, session);
+			object newId = GetIdentifier(current, session);
+			IType identifierType = GetIdentifierType(session);
+
+			return identifierType.IsDirty(oldId, newId, session);
 		}
 
 		public override bool IsDirty(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return false;
+			return this.IsDirty(old, current, session);
 		}
 
 		public override bool IsModified(object old, object current, bool[] checkable, ISessionImplementor session)
 		{
-			return false;
+			if (current == null)
+			{
+				return old != null;
+			}
+			if (old == null)
+			{
+				return true;
+			}
+			var oldIdentifier = IsIdentifier(old, session) ? old : GetIdentifier(old, session);
+			var currentIdentifier = GetIdentifier(current, session);
+			// the ids are fully resolved, so compare them with isDirty(), not isModified()
+			return GetIdentifierOrUniqueKeyType(session.Factory).IsDirty(oldIdentifier, currentIdentifier, session);
+		}
+
+		private bool IsIdentifier(object value, ISessionImplementor session)
+		{
+			var identifierType = GetIdentifierType(session);
+			if (identifierType == null)
+			{
+				return false;
+			}
+			return value.GetType() == identifierType.ReturnedClass;
 		}
 
 		public override bool IsNull(object owner, ISessionImplementor session)
 		{
-			if (propertyName != null)
+			if (propertyName != null && owner != null)
 			{
 				IEntityPersister ownerPersister = session.Factory.GetEntityPersister(entityName);
 				object id = session.GetContextEntityIdentifier(owner);
@@ -91,12 +136,18 @@ namespace NHibernate.Type
 
 		public override object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
+			if (owner == null && names.Length > 0)
+			{
+				// return the (fully resolved) identifier value, but do not resolve
+				// to the actual referenced entity instance
+				return GetIdentifierOrUniqueKeyType(session.Factory)
+					.NullSafeGet(rs, names, session, null);
+			}
 			IType type = GetIdentifierOrUniqueKeyType(session.Factory);
 			object identifier = session.GetContextEntityIdentifier(owner);
 
 			//This ugly mess is only used when mapping one-to-one entities with component ID types
-			EmbeddedComponentType componentType = type as EmbeddedComponentType;
-			if (componentType != null)
+			if (type.IsComponentType && type is EmbeddedComponentType componentType)
 			{
 				EmbeddedComponentType ownerIdType = session.GetEntityPersister(null, owner).IdentifierType as EmbeddedComponentType;
 				if (ownerIdType != null)
@@ -111,6 +162,7 @@ namespace NHibernate.Type
 			return identifier;
 		}
 
+		/// <inheritdoc />
 		public override bool IsNullable
 		{
 			get { return foreignKeyDirection.Equals(ForeignKeyDirection.ForeignKeyToParent); }
@@ -123,25 +175,40 @@ namespace NHibernate.Type
 
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			return null;
+			if (value == null)
+			{
+				return null;
+			}
+
+			object id = ForeignKeys.GetEntityIdentifierIfNotUnsaved(GetAssociatedEntityName(), value, session);
+
+			if (id == null)
+			{
+				throw new AssertionFailure("cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
+			}
+
+			return GetIdentifierType(session).Disassemble(id, session, owner);
 		}
 
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
 		{
-			//this should be a call to resolve(), not resolveIdentifier(), 
-			//'cos it might be a property-ref, and we did not cache the
-			//referenced value
-			return ResolveIdentifier(session.GetContextEntityIdentifier(owner), session, owner);
+			// the owner of the association is not the owner of the id
+			object id = GetIdentifierType(session).Assemble(cached, session, null);
+
+			if (id == null)
+			{
+				return null;
+			}
+
+			return ResolveIdentifier(id, session);
 		}
 
 		/// <summary>
-		/// We don't need to dirty check one-to-one because of how 
-		/// assemble/disassemble is implemented and because a one-to-one 
-		/// association is never dirty
+		/// We only need to dirty check when the identifier can be null.
 		/// </summary>
 		public override bool IsAlwaysDirtyChecked
 		{
-			get { return false; } //TODO: this is kinda inconsistent with CollectionType
+			get { return IsNullable; }
 		}
 
 		public override string PropertyName
@@ -151,7 +218,12 @@ namespace NHibernate.Type
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
-			return Array.Empty<bool>();
+			bool[] result = new bool[GetColumnSpan(mapping)];
+			if (value != null)
+			{
+				ArrayHelper.Fill(result, true);
+			}
+			return result;
 		}
 	}
 }

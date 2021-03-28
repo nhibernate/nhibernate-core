@@ -44,7 +44,7 @@ namespace NHibernate.SqlCommand
 
 		public InFragment SetFormula(string alias, string formulaTemplate)
 		{
-			columnName = formulaTemplate?.Replace(Template.Placeholder, alias);
+			columnName = Template.ReplacePlaceholder(formulaTemplate, alias);
 			return this;
 		}
 

@@ -108,7 +108,7 @@ namespace NHibernate.Tuple.Entity
 
 		/// <summary> Does this entity, for this mode, present a possibility for proxying? </summary>
 		/// <value> True if this tuplizer can generate proxies for this entity. </value>
-		bool HasProxy { get;}
+		bool HasProxy { get; }
 
 		/// <summary> 
 		/// Generates an appropriate proxy representation of this entity for this entity-mode.

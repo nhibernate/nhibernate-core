@@ -9,7 +9,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 	[TestFixture]
 	public class Fixture:BugTestCase
 	{
-
 		protected override void  OnSetUp()
 		{
 			using (ISession session = OpenSession())
@@ -20,8 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				tran.Commit();
 			}
 			HibernateInterceptor.CallCount = 0;
-
-        }
+		}
 
 		protected override void OnTearDown()
 		{
@@ -50,9 +48,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
-				ICriteria query = session.CreateCriteria(typeof(ContactTitle));
+				ICriteria query = session.CreateCriteria(typeof(Contact));
 				query.Add(Expression.Eq("Id", (Int64)1));
-				query.UniqueResult<ContactTitle>();
+				query.UniqueResult<Contact>();
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
@@ -80,9 +78,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
-				ICriteria query = session.CreateCriteria(typeof(ContactTitle));
+				ICriteria query = session.CreateCriteria(typeof(Contact));
 				query.Add(Expression.Eq("Id", (Int64)1));
-				query.UniqueResult<ContactTitle>();
+				query.UniqueResult<Contact>();
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
@@ -111,9 +109,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
-				ICriteria query = session.CreateCriteria(typeof(ContactTitle));
+				ICriteria query = session.CreateCriteria(typeof(Contact));
 				query.Add(Expression.Eq("Id", (Int64)1));
-				query.UniqueResult<ContactTitle>();
+				query.UniqueResult<Contact>();
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(2));
 

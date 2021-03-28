@@ -6,7 +6,6 @@ namespace NHibernate.Cfg.MappingSchema
 {
 	public partial class HbmManyToAny : IColumnsMapping, IAnyMapping
 	{
-
 		#region Implementation of IColumnsMapping
 
 		[XmlIgnore]

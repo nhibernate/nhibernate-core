@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH2626">
+
+  <class name="CapabilityAssignment" table="CapabilityAssignments" discriminator-value="null" abstract="true">
+    <id name="Id" generator="guid.comb" />
+    <discriminator type="int" column="Type" not-null="true" />
+
+    <property name="Name" length="256" not-null="true" />
+
+    <subclass name="UserCapabilityAssignment" discriminator-value="1">
+      <property name="UserId" not-null="true" />
+    </subclass>
+    <subclass name="RoleCapabilityAssignment" discriminator-value="2">
+      <property name="RoleId" not-null="true" />
+    </subclass>
+  </class>
+
+  <class name="ApplicationUser" table="AspNetUsers" dynamic-insert="true" dynamic-update="true">
+    <id name="Id" generator="guid.comb" />
+    <property name="UserName" length="256" not-null="true" />
+  </class>
+  
+</hibernate-mapping>

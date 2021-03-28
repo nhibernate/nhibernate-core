@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NHibernate.Collection;
-using NHibernate.Engine;
-using NHibernate.Persister.Collection;
 using NHibernate.Type;
 
 namespace NHibernate.Cache
@@ -17,56 +12,34 @@ namespace NHibernate.Cache
 	public sealed class QueryCacheResultBuilder
 	{
 		private readonly IType[] _resultTypes;
-		private readonly IType[] _cacheTypes;
-		private readonly List<int> _entityFetchIndexes = new List<int>();
-		private readonly List<int> _collectionFetchIndexes = new List<int>();
-		private readonly bool _hasFetches;
+		private readonly Loader.Loader.QueryCacheInfo _cacheInfo;
 
+		public static bool IsCacheWithFetches(Loader.Loader loader)
+		{
+			return loader.CacheTypes.Length > loader.ResultTypes.Length;
+		}
+		
 		internal QueryCacheResultBuilder(Loader.Loader loader)
 		{
 			_resultTypes = loader.ResultTypes;
-			_cacheTypes = loader.CacheTypes;
 
-			if (loader.EntityFetches != null)
+			if (IsCacheWithFetches(loader))
 			{
-				for (var i = 0; i < loader.EntityFetches.Length; i++)
-				{
-					if (loader.EntityFetches[i])
-					{
-						_entityFetchIndexes.Add(i);
-					}
-				}
-
-				_hasFetches = _entityFetchIndexes.Count > 0;
+				_cacheInfo = loader.CacheInfo;
 			}
-
-			if (loader.CollectionFetches == null)
-			{
-				return;
-			}
-
-			for (var i = 0; i < loader.CollectionFetches.Length; i++)
-			{
-				if (loader.CollectionFetches[i])
-				{
-					_collectionFetchIndexes.Add(i);
-				}
-			}
-
-			_hasFetches = _hasFetches || _collectionFetchIndexes.Count > 0;
 		}
 
 		internal IList Result { get; } = new List<object>();
 
 		internal void AddRow(object result, object[] entities, IPersistentCollection[] collections)
 		{
-			if (!_hasFetches)
+			if (_cacheInfo == null)
 			{
 				Result.Add(result);
 				return;
 			}
 
-			var row = new object[_cacheTypes.Length];
+			var row = new object[_cacheInfo.CacheTypes.Length];
 			if (_resultTypes.Length == 1)
 			{
 				row[0] = result;
@@ -77,14 +50,17 @@ namespace NHibernate.Cache
 			}
 
 			var i = _resultTypes.Length;
-			foreach (var index in _entityFetchIndexes)
+			foreach (var index in _cacheInfo.AdditionalEntities)
 			{
 				row[i++] = entities[index];
 			}
 
-			foreach (var index in _collectionFetchIndexes)
+			if (collections != null)
 			{
-				row[i++] = collections[index];
+				foreach (var collection in collections)
+				{
+					row[i++] = collection;
+				}
 			}
 
 			Result.Add(row);
@@ -92,7 +68,7 @@ namespace NHibernate.Cache
 
 		internal IList GetResultList(IList cacheList)
 		{
-			if (!_hasFetches)
+			if (_cacheInfo == null)
 			{
 				return cacheList;
 			}

@@ -47,6 +47,5 @@ namespace NHibernate.Type
 		{
 			return (value == null) ? null : DeepCopyNotNull(value);
 		}
-
 	}
 }

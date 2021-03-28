@@ -164,7 +164,6 @@ namespace NHibernate.SqlCommand
 			return this;
 		}
 
-
 		/// <summary>
 		/// Adds an existing SqlString to this SqlStringBuilder
 		/// </summary>
@@ -312,7 +311,7 @@ namespace NHibernate.SqlCommand
 		/// <returns>The SqlString that was built.</returns>
 		public SqlString ToSqlString()
 		{
-			return new SqlString(sqlParts.ToArray());
+			return new SqlString(sqlParts);
 		}
 
 		public override string ToString()

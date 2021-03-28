@@ -8,7 +8,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3909
 		public virtual string Name { get; set; }
 	}
 
-
 	public class ChildEntity
 	{
 		public virtual Guid Id { get; set; }

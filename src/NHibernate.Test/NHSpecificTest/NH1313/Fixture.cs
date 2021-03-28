@@ -39,6 +39,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1313
 				tx.Commit();
 			}
 		}
-
 	}
 }

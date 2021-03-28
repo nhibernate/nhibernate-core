@@ -28,7 +28,6 @@ namespace NHibernate.Test.UserCollection
 			get { return new string[] {"UserCollection.UserPermissions.hbm.xml"}; }
 		}
 
-
 		[Test]
 		public async Task BasicOperationAsync()
 		{

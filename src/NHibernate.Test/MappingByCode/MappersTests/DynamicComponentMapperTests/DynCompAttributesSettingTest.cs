@@ -75,6 +75,5 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 
 			Assert.That(component.Properties.Single(), Is.TypeOf<HbmProperty>().And.Property("Name").EqualTo("Pizza"));
 		}
-
 	}
 }

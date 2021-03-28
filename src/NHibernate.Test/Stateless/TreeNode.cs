@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 
-
 namespace NHibernate.Test.Stateless
 {
 	public class TreeNode

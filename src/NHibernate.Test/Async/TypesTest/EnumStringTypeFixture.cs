@@ -48,7 +48,6 @@ namespace NHibernate.Test.TypesTest
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task ReadFromLoadAsync()
 		{

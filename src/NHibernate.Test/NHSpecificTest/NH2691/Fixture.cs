@@ -1,6 +1,5 @@
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -22,11 +21,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2691
 		public void WhenUseCountWithOrderThenCutTheOrder()
 		{
 			using (var session = OpenSession())
-			using (session.BeginTransaction())
+			using (var tran = session.BeginTransaction())
 			{
 				var baseQuery = from cat in session.Query<Cat>() orderby cat.BirthDate select cat;
 				Assert.That(() => baseQuery.Count(), Throws.Nothing);
-				session.Transaction.Commit();
+				tran.Commit();
 			}
 		}
 
@@ -34,11 +33,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2691
 		public void WhenUseLongCountWithOrderThenCutTheOrder()
 		{
 			using (var session = OpenSession())
-			using (session.BeginTransaction())
+			using (var tran = session.BeginTransaction())
 			{
 				var baseQuery = from cat in session.Query<Cat>() orderby cat.BirthDate select cat;
 				Assert.That(() => baseQuery.LongCount(), Throws.Nothing);
-				session.Transaction.Commit();
+				tran.Commit();
 			}
 		}
 	}

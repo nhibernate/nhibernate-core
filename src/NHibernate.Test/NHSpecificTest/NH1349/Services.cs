@@ -44,8 +44,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1349
 		public override string ToString()
 		{
 			return (this.id + "] [" + this.accountNumber + "]  [" + this.name + "] [" + this.type + "]  [" + this.CompanyCount + "]");
-
 		}
 	}
-
 }

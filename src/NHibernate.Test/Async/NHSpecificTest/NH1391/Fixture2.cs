@@ -53,7 +53,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1391
 			}
 		}
 
-
 		[Test]
 		public async Task Can_discriminate_subclass_on_list_with_lazy_loading_when_used_and_person_had_multiple_listAsync()
 		{

@@ -28,7 +28,6 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 				Assert.Fail(string.Format("Expected {0} but was {1}", dt1, dt2));
 		}
 
-
 		public static void AreEqual(DateTimeOffset dt1, DateTimeOffset dt2)
 		{
 			bool areEqual = new DateTimeOffsetType().IsEqual(dt1, dt2);

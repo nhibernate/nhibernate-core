@@ -10,7 +10,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1939
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-
 		private StringBuilder schemaBuilder;
 
 		private void AddString(string sqlString)
@@ -22,7 +21,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1939
 		{
 			return (dialect is Dialect.MsSql2000Dialect);
 		}
-
 
 		[Test] 
 		public void Can_Parameterise_Auxiliary_Database_Objects() 
@@ -40,6 +38,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1939
 			Assert.That(schema.Contains("select 'create script'"), Is.True,
 				"parameterised schema create script not exported");
 		} 
-
 	}
 }

@@ -218,6 +218,5 @@ namespace NHibernate.Type
 			}
 			return entityName == null || id == null ? Task.FromResult<object>(null ): session.InternalLoadAsync(entityName, id, false, false, cancellationToken);
 		}
-
 	}
 }

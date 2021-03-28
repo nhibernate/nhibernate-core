@@ -355,7 +355,6 @@ namespace NHibernate.Test.Hql.Ast
 											Zoo zooExpected,
 											HashSet<Zoo> zoosUnordered)
 		{
-
 			Assert.IsInstanceOf<object[]>(result);
 			var resultArray = (object[]) result;
 			Assert.AreEqual(2, resultArray.Length);
@@ -375,7 +374,6 @@ namespace NHibernate.Test.Hql.Ast
 				Assert.AreEqual(zooExpected.Address, resultArray[1]);
 			}
 		}
-
 
 		private class TestData
 		{

@@ -12,7 +12,7 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public class ProjectionList : IProjection
 	{
-		private IList<IProjection> elements = new List<IProjection>();
+		private List<IProjection> elements = new List<IProjection>();
 
 		protected internal ProjectionList()
 		{
@@ -41,7 +41,7 @@ namespace NHibernate.Criterion
 
 		public IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			IList<IType> types = new List<IType>(Length);
+			var types = new List<IType>(Length);
 			
 			for (int i = 0; i < Length; i++)
 			{

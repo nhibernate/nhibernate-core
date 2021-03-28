@@ -27,5 +27,8 @@ namespace NHibernate.Dialect
 		{
 			return string.Concat("drop sequence if exists ", sequenceName);
 		}
+
+		/// <inheritdoc />
+		public override bool SupportsRowValueConstructorSyntaxInInList => true;
 	}
 }

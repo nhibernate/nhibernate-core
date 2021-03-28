@@ -9,6 +9,7 @@ using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Id
 {
@@ -32,6 +33,7 @@ namespace NHibernate.Id
 		private long _next;
 		private SqlString _sql;
 		private System.Type _returnClass;
+		private readonly AsyncLock _asyncLock = new AsyncLock();
 
 		/// <summary>
 		///
@@ -85,14 +87,17 @@ namespace NHibernate.Id
 		/// <param name="session"></param>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public object Generate(ISessionImplementor session, object obj)
 		{
-			if (_sql != null)
+			using (_asyncLock.Lock())
 			{
-				GetNext(session);
+				if (_sql != null)
+				{
+					GetNext(session);
+				}
+
+				return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
 			}
-			return IdentifierGeneratorFactory.CreateNumber(_next++, _returnClass);
 		}
 
 		private void GetNext(ISessionImplementor session)

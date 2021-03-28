@@ -121,6 +121,5 @@ namespace NHibernate.Tuple.Component
 		protected internal abstract IInstantiator BuildInstantiator(Mapping.Component component);
 		protected internal abstract IGetter BuildGetter(Mapping.Component component, Mapping.Property prop);
 		protected internal abstract ISetter BuildSetter(Mapping.Component component, Mapping.Property prop);
-
 	}
 }

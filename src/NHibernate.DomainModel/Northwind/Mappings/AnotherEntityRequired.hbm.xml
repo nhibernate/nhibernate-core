@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.DomainModel.Northwind.Entities" assembly="NHibernate.DomainModel">
+  <class name="AnotherEntityRequired" table="AnotherEntity" mutable="false" schema-action="none">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <property name="Output" not-null="true" />
+    <property name="Input" not-null="true" />
+    <property name="NullableOutput" formula="Output" lazy="true" />
+    <property name="InputNullability" formula="case when Input is not null then 0 else 1 end" lazy="true" />
+    <property name="NullableAnotherEntityRequiredId" formula="Id" lazy="true" />
+    <property name="NullableBool" formula="null" lazy="true" />
+    <component name="Address" insert="false" update="false" lazy="true">
+      <property name="Street" formula="Input" access="field.camelcase-underscore" />
+      <property name="City" formula="Output" access="field.camelcase-underscore" />
+    </component>
+    <many-to-one name="NullableAnotherEntityRequired" formula="Id" />
+    <set name="RelatedItems" lazy="true" inverse="true">
+      <key column="Id"/>
+      <one-to-many class="AnotherEntity"/>
+    </set>
+    <set name="RequiredRelatedItems" lazy="true" inverse="true">
+      <key column="Id"/>
+      <one-to-many class="AnotherEntityRequired"/>
+    </set>
+  </class>
+</hibernate-mapping>

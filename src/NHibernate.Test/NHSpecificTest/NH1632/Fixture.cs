@@ -71,14 +71,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			{
 				using (s = Sfi.OpenSession())
 				{
-
 				}
 				tx.Complete();
 			}
 
 			Assert.IsFalse(s.IsOpen);
 		}
-
 
 		[Test]
 		public void When_commiting_items_in_DTC_transaction_will_add_items_to_2nd_level_cache()
@@ -93,7 +91,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 			}
 			try
 			{
-
 				using (var tx = new TransactionScope())
 				{
 					using (var s = OpenSession())
@@ -194,7 +191,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				using (ISession s1 = Sfi.OpenSession())
 				using (ISession s2 = Sfi.OpenSession())
 				{
-
 					id1 = s1.Save(new Nums { NumA = 1, NumB = 2, ID = 5 });
 					s1.Flush();
 
@@ -234,7 +230,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				using (ISession s1 = Sfi.OpenSession())
 				using (ISession s2 = Sfi.OpenSession())
 				{
-
 					id1 = s1.Save(new Nums { NumA = 1, NumB = 2, ID = 5 });
 
 					id2 = s2.Save(new Nums { NumA = 1, NumB = 2, ID = 6 });

@@ -1,4 +1,3 @@
-
 namespace NHibernate.Test.NHSpecificTest.NH1502
 {
 	public class Person
@@ -42,6 +41,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1502
 			get { return shoeSize; }
 			set { shoeSize = value; }
 		}
-
 	}
 }

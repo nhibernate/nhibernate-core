@@ -189,6 +189,5 @@ namespace NHibernate.Cfg.MappingSchema
 		}
 
 		#endregion
-
 	}
 }

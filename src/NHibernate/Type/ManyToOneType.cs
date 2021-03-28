@@ -1,7 +1,7 @@
 using System;
 using System.Data.Common;
 using NHibernate.Engine;
-using NHibernate.Persister.Entity;
+using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -34,9 +34,7 @@ namespace NHibernate.Type
 		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
 			: this(entityName, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null)
 		{
-			
 		}
-
 
 		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne, string propertyName)
 			: base(entityName, uniqueKeyPropertyName, !lazy, unwrapProxy)
@@ -164,14 +162,24 @@ namespace NHibernate.Type
 
 		public override bool IsNull(object owner, ISessionImplementor session)
 		{
-			if (IsNullable && !string.IsNullOrEmpty(PropertyName))
-			{
-				EntityEntry entry = session.PersistenceContext.GetEntry(owner);
+			if (!IsNullable || string.IsNullOrEmpty(PropertyName) || owner == null)
+				return false;
 
-				return session.PersistenceContext.IsPropertyNull(entry.EntityKey, PropertyName);
-			}
+			var entityKey = GetEntityKey(owner, session);
+			if (entityKey == null)
+				return false;
 
-			return false;
+			return session.PersistenceContext.IsPropertyNull(entityKey, PropertyName);
+		}
+
+		private static EntityKey GetEntityKey(object owner, ISessionImplementor session)
+		{
+			var entry = session.PersistenceContext.GetEntry(owner);
+			if (entry != null)
+				return entry.EntityKey;
+			if (owner is INHibernateProxy proxy)
+				return session.GenerateEntityKey(proxy.HibernateLazyInitializer.Identifier, session.Factory.GetEntityPersister(proxy.HibernateLazyInitializer.EntityName));
+			return null;
 		}
 
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
@@ -236,7 +244,7 @@ namespace NHibernate.Type
 			return IsDirtyManyToOne(old, current, IsAlwaysDirtyChecked ? null : checkable, session);
 		}
 
-
+		/// <inheritdoc />
 		public override bool IsNullable
 		{
 			get { return ignoreNotFound; }

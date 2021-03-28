@@ -33,7 +33,7 @@ namespace NHibernate
 				case ConnectionReleaseMode.AfterStatement:
 					return "after_statement";
 				case ConnectionReleaseMode.AfterTransaction:
-					return "after_transaction" ;
+					return "after_transaction";
 				case ConnectionReleaseMode.OnClose:
 					return "on_close";
 				default:

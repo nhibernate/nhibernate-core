@@ -33,7 +33,7 @@ namespace NHibernate.Id
 			// one year Count only serves to avoid collision for entities persisted in the same 100ns. Maybe it should
 			// have been (DateTime.Now.Ticks && 0xffff) instead, with count serving to avoid collision for up to 37767
 			// entities in the same 6.5535ms. But changing this would be a breaking change for existing values.
-			return unchecked ((DateTime.Now.Ticks << 16) + Count);
+			return unchecked ((DateTime.UtcNow.Ticks << 16) + Count);
 		}
 	}
 }

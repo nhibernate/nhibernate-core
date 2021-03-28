@@ -1,5 +1,4 @@
-﻿
-namespace NHibernate.Transform
+﻿namespace NHibernate.Transform
 {
 	/// <summary>
 	/// A ResultTransformer that operates on "well-defined" and consistent
@@ -47,7 +46,6 @@ namespace NHibernate.Transform
 		/// <returns>True, if the transformed value is a single element of the tuple;
 		///        false, otherwise.</returns>
 		bool IsTransformedValueATupleElement(string[] aliases, int tupleLength);
-
 
 		/// <summary>
 		/// Returns an array with the i-th element indicating whether the i-th

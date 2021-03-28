@@ -90,7 +90,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3909
 				//select b;
 
 				Assert.AreEqual(2, (await (q.ToListAsync())).Count);
-
 			}
 		}
 	}

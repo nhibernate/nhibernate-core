@@ -153,7 +153,6 @@ namespace NHibernate.Criterion
 			return new AggregateProjection("max", projection);
 		}
 
-
 		/// <summary>
 		/// A property minimum value
 		/// </summary>
@@ -300,7 +299,6 @@ namespace NHibernate.Criterion
 			return new CastProjection(type, projection);
 		}
 
-
 		/// <summary>
 		/// Return a constant value
 		/// </summary>
@@ -321,7 +319,6 @@ namespace NHibernate.Criterion
 		{
 			return new ConstantProjection(obj,type);
 		}
-
 
 		/// <summary>
 		/// Calls the named <see cref="ISQLFunction"/>
@@ -521,6 +518,22 @@ namespace NHibernate.Criterion
 		public static string Concat(params string[] strings)
 		{
 			throw QueryOver.GetDirectUsageException();
+		}
+
+		/// <summary>
+		/// Projects given lambda expression
+		/// </summary>
+		public static IProjection Select(Expression<Func<object>> expression)
+		{
+			return ExpressionProcessor.FindMemberProjection(expression.Body).AsProjection();
+		}
+
+		/// <summary>
+		/// Projects given lambda expression
+		/// </summary>
+		public static IProjection Select<TEntity>(Expression<Func<TEntity, object>> expression)
+		{
+			return ExpressionProcessor.FindMemberProjection(expression.Body).AsProjection();
 		}
 
 		internal static IProjection ProcessConcat(MethodCallExpression methodCallExpression)

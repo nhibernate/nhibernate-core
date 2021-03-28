@@ -52,7 +52,6 @@ namespace NHibernate.Test.TypesTest
 			}
 		}
 
-
 		[Test(Description = "NH-2887")]
 		public async Task ReadWriteRelativeUriAsync()
 		{
@@ -101,6 +100,5 @@ namespace NHibernate.Test.TypesTest
 				await (s.FlushAsync());
 			}
 		}
-
 	}
 }

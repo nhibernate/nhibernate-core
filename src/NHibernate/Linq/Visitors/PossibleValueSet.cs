@@ -314,7 +314,6 @@ namespace NHibernate.Linq.Visitors
 
         #endregion
 
-
         /// <summary>
         /// Verify that ExpressionType of both this and the other set is bool or nullable bool,
         /// and return the negotiated type (nullable bool if either side is nullable).
@@ -330,7 +329,6 @@ namespace NHibernate.Linq.Visitors
 
             return typeof(bool);
         }
-
 
         /// <summary>
         /// Verify that ExpressionType is bool or nullable bool.

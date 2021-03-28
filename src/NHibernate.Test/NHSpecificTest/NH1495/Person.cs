@@ -2,7 +2,7 @@
 {
 	public interface IPerson
 	{
-		object Id { get;}
+		object Id { get; }
 		string Name { get; set; }
 	}
 

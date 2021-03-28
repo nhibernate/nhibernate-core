@@ -28,6 +28,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1301
 			get { return id; }
 			set { id = value; }
 		}
-
 	}
 }

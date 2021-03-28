@@ -91,7 +91,7 @@ namespace NHibernate.Action
 			get { return persister; }
 		}
 
-		protected internal abstract bool HasPostCommitEventListeners { get;}
+		protected internal abstract bool HasPostCommitEventListeners { get; }
 
 		#region IExecutable Members
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Collection;
@@ -26,30 +27,12 @@ namespace NHibernate.Test.Events.Collections
 
 		protected override void OnTearDown()
 		{
-			IParentWithCollection dummyParent = CreateParent("dummyParent");
-			dummyParent.NewChildren(CreateCollection());
-			IChild dummyChild = dummyParent.AddChild("dummyChild");
-
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
-				using (ITransaction tx = s.BeginTransaction())
-				{
-					IList children = s.CreateCriteria(dummyChild.GetType()).List();
-					IList parents = s.CreateCriteria(dummyParent.GetType()).List();
-					foreach (IParentWithCollection parent in parents)
-					{
-						parent.ClearChildren();
-						s.Delete(parent);
-					}
-					foreach (IChild child in children)
-					{
-						s.Delete(child);
-					}
-
-					tx.Commit();
-				}
+				s.Delete("from System.Object");
+				tx.Commit();
 			}
-			base.OnTearDown();
 		}
 
 		[Test]

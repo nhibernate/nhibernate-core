@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using NHibernate.SqlCommand;
 using NHibernate.Engine.Query;
@@ -15,7 +14,7 @@ namespace NHibernate.Driver
 		private readonly string multipleQueriesSeparator;
 		private bool hasReturnParameter;
 		private bool foundReturnParameter = false;
-		private IList<string> assignedParameterNames = new List<string>();
+		private readonly List<string> assignedParameterNames = new List<string>();
 
 		public SqlStringFormatter(ISqlParameterFormatter formatter, string multipleQueriesSeparator)
 		{

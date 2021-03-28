@@ -98,7 +98,6 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			return result;
 		}
 
-
 		public void Property<TProperty>(Expression<Func<TComponent, TProperty>> property, Action<IPropertyMapper> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);

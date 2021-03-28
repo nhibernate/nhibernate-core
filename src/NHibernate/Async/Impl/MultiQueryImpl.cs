@@ -76,11 +76,10 @@ namespace NHibernate.Impl
 		protected async Task<List<object>> DoListAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
-			var stopWatch = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (session.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWatch.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 			int rowCount = 0;
 
@@ -192,7 +191,7 @@ namespace NHibernate.Impl
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi query", resultSetsCommand.Sql);
 			}
 
-			if (statsEnabled)
+			if (stopWatch != null)
 			{
 				stopWatch.Stop();
 				session.Factory.StatisticsImplementor.QueryExecuted(string.Format("{0} queries (MultiQuery)", translators.Count), rowCount, stopWatch.Elapsed);

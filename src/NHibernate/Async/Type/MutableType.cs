@@ -36,6 +36,5 @@ namespace NHibernate.Type
 				return Task.FromException<object>(ex);
 			}
 		}
-
 	}
 }

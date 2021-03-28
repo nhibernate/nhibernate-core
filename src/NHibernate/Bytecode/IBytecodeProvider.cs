@@ -10,7 +10,7 @@ namespace NHibernate.Bytecode
 		/// The specific factory for this provider capable of
 		/// generating run-time proxies for lazy-loading purposes.
 		///  </summary>
-		IProxyFactoryFactory ProxyFactoryFactory { get;}
+		IProxyFactoryFactory ProxyFactoryFactory { get; }
 
 		/// <summary>
 		/// Retrieve the <see cref="IReflectionOptimizer" /> delegate for this provider

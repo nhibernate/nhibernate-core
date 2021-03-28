@@ -10,7 +10,7 @@ namespace NHibernate.Intercept
 	{
 		/// <summary> Is the entity considered dirty? </summary>
 		/// <value> True if the entity is dirty; otherwise false. </value>
-		bool IsDirty { get;}
+		bool IsDirty { get; }
 
 		/// <summary> Use to associate the entity to which we are bound to the given session. </summary>
 		ISessionImplementor Session { get; set; }
@@ -18,7 +18,7 @@ namespace NHibernate.Intercept
 		/// <summary> Is the entity to which we are bound completely initialized? </summary>
 		// Since 5.3
 		[Obsolete("This property is not used and will be removed in a future version.")]
-		bool IsInitialized { get;}
+		bool IsInitialized { get; }
 
 		/// <summary> The the given field initialized for the entity to which we are bound? </summary>
 		/// <param name="field">The name of the field to check </param>

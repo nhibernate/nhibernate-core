@@ -52,7 +52,6 @@ namespace NHibernate.Test.UtilityTest
 			}
 		}
 
-
 		[Test, Explicit]
 		public async Task PerformanceAsync()
 		{
@@ -142,7 +141,6 @@ namespace NHibernate.Test.UtilityTest
 				}
 
 				listItemTicks[runIndex] = DateTime.Now.Ticks - listStart;
-
 
 				list.Clear();
 			}

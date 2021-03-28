@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -66,7 +65,5 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task<U> SingleOrDefaultAsync<U>(CancellationToken cancellationToken = default(CancellationToken));
-
 	}
-
 }

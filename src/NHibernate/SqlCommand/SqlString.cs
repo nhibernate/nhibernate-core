@@ -199,13 +199,13 @@ namespace NHibernate.SqlCommand
 			: this((IEnumerable<object>)parts)
 		{ }
 
-		private SqlString(IEnumerable<object> parts)
+		internal SqlString(IEnumerable<object> parts)
 		{
 			_parts = new List<Part>();
 			_parameters = new SortedList<int, Parameter>();
 
 			var sqlIndex = 0;
-			var pendingContent = new StringBuilder();  // Collect adjoining string parts (the compaction).
+			var pendingContent = new StringBuilder(); // Collect adjoining string parts (the compaction).
 			foreach (var part in parts)
 			{
 				Add(part, pendingContent, ref sqlIndex);
@@ -347,7 +347,23 @@ namespace NHibernate.SqlCommand
 		{
 			if (string.IsNullOrEmpty(text)) return this;
 			if (_length == 0) return new SqlString(text);
-			return new SqlString(new object[] { this, text });
+			return new SqlString(this, text);
+		}
+
+		public SqlString Append(params object[] parts)
+		{
+			return _length == 0
+				? new SqlString(parts)
+				: new SqlString(GetAppendParts(parts));
+		}
+
+		private IEnumerable<object> GetAppendParts(object[] parts)
+		{
+			yield return this;
+			foreach (var part in parts)
+			{
+				yield return part;
+			}
 		}
 
 		/// <summary>
@@ -407,6 +423,11 @@ namespace NHibernate.SqlCommand
 		internal int IndexOfOrdinal(string text)
 		{
 			return IndexOf(text, 0, _length, StringComparison.Ordinal);
+		}
+
+		internal bool Contains(string text)
+		{
+			return IndexOfOrdinal(text) >= 0;
 		}
 
 		/// <summary>
@@ -1006,6 +1027,22 @@ namespace NHibernate.SqlCommand
 		public SqlString GetSubselectString()
 		{
 			return new SubselectClauseExtractor(this).GetSqlString();
+		}
+
+		internal void SubstituteBogusParameters(IReadOnlyList<Parameter> actualParams, Parameter bogusParam)
+		{
+			int index = 0;
+			var keys = _parameters.Keys;
+			// The loop below is technically not altering the keys collection on which we iterate, but
+			// the underlying implementation still throws on foreach iterations over keys even if we
+			// have only changed the associated value.
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (var i = 0; i < keys.Count; i++)
+			{
+				var key = keys[i];
+				if (ReferenceEquals(_parameters[key], bogusParam))
+					_parameters[key] = actualParams[index++];
+			}
 		}
 
 		[Serializable]

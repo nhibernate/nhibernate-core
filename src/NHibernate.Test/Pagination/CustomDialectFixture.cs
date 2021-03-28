@@ -68,7 +68,6 @@ namespace NHibernate.Test.Pagination
 
 		protected override void OnTearDown()
 		{
-
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{

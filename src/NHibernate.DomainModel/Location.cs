@@ -40,7 +40,6 @@ namespace NHibernate.DomainModel
 			set { _countryCode = value; }
 		}
 
-
 		public string Description
 		{
 			get { return _description; }

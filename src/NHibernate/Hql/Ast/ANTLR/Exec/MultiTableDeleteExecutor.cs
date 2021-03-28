@@ -51,7 +51,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				//          defining all the needed attributes), then we could then get an array of those
 				SqlDeleteBuilder delete = new SqlDeleteBuilder(Factory.Dialect, Factory)
 					.SetTableName(tableNames[i])
-					.SetWhere("(" + StringHelper.Join(", ", columnNames[i]) + ") IN (" + idSubselect + ")");
+					.SetWhere("(" + string.Join(", ", columnNames[i]) + ") IN (" + idSubselect + ")");
 				if (Factory.Settings.IsCommentsEnabled)
 				{
 					delete.SetComment("bulk delete");

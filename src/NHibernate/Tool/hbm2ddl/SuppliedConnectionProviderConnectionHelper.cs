@@ -3,7 +3,6 @@ using NHibernate.Connection;
 
 namespace NHibernate.Tool.hbm2ddl
 {
-
 	/// <summary>
 	/// A <seealso cref="IConnectionHelper"/> implementation based on a provided
 	/// <seealso cref="IConnectionProvider"/>.  Essentially, ensures that the connection

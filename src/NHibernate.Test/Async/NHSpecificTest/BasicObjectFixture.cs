@@ -60,7 +60,6 @@ namespace NHibernate.Test.NHSpecificTest
 			s = OpenSession();
 			bo = (BasicObject) await (s.LoadAsync(typeof(BasicObject), bo.Id));
 
-
 			Assert.IsNotNull(bo.AnyWithProxy, "AnyWithProxy should not be null");
 			Assert.IsTrue(bo.AnyWithProxy is IBasicObjectProxy, "AnyWithProxy should have been a IBasicObjectProxy instance");
 			Assert.AreEqual(anyProxy.Id, ((IBasicObjectProxy) bo.AnyWithProxy).Id);

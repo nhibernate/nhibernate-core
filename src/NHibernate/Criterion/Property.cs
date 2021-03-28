@@ -191,7 +191,6 @@ namespace NHibernate.Criterion
 			return ForName(PropertyName + '.' + propertyName);
 		}
 
-
 		public AbstractCriterion Eq(DetachedCriteria subselect)
 		{
 			return Subqueries.PropertyEq(PropertyName, subselect);

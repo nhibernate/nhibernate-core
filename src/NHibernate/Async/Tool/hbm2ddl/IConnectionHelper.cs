@@ -22,5 +22,4 @@ namespace NHibernate.Tool.hbm2ddl
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task PrepareAsync(CancellationToken cancellationToken);
 	}
-
 }

@@ -4,6 +4,6 @@ namespace NHibernate.Test.UserCollection.Parameterized
 {
 	public interface IDefaultableList : IList<string>
 	{
-		string DefaultValue { get;}
+		string DefaultValue { get; }
 	}
 }

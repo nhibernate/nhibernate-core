@@ -95,5 +95,4 @@ namespace NHibernate.Dialect.Schema
 			Name = Convert.ToString(rs["CONSTRAINT_NAME"]);
 		}
 	}
-
 }

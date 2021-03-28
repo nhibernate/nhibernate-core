@@ -36,21 +36,20 @@ namespace NHibernate.Test.Cascade
 			A a = new A();
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
-			
 				a.Data = "Anna";
 				await (s.SaveAsync(a));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 			// modify detached entity
 			this.ModifyEntity(a);
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a = await (s.MergeAsync(a));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 	
 			await (this.VerifyModificationsAsync(a.Id));
@@ -62,22 +61,22 @@ namespace NHibernate.Test.Cascade
 			// persist a simple A in the database
 			A a = new A();
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a.Data = "Anna";
 				await (s.SaveAsync(a));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 			// modify detached entity
 			this.ModifyEntity(a);
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				A aLoaded = await (s.LoadAsync<A>(a.Id));
 				Assert.That(aLoaded, Is.InstanceOf<INHibernateProxy>());
 				Assert.That(await (s.MergeAsync(a)), Is.SameAs(aLoaded));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 	
 			await (this.VerifyModificationsAsync(a.Id));
@@ -90,21 +89,21 @@ namespace NHibernate.Test.Cascade
 			A a = new A();
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a.Data = "Anna";
 				await (s.SaveAsync(a));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 	
 			// modify detached entity
 			this.ModifyEntity(a);
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.UpdateAsync(a));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 			await (this.VerifyModificationsAsync(a.Id));
 		}
@@ -116,20 +115,20 @@ namespace NHibernate.Test.Cascade
 			A a = new A();
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a.Data = "Anna";
 				await (s.SaveAsync(a));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				// retrieve the previously saved instance from the database, and update it
 				a = await (s.GetAsync<A>(a.Id));
 				this.ModifyEntity(a);
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 			await (this.VerifyModificationsAsync(a.Id));
 		}
@@ -141,20 +140,20 @@ namespace NHibernate.Test.Cascade
 			A a = new A();
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a.Data = "Anna";
 				await (s.SaveAsync(a));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}	
 			// modify detached entity
 			this.ModifyEntity(a);
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a = await (s.MergeAsync(a));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 			await (this.VerifyModificationsAsync(a.Id));
 	
@@ -168,7 +167,7 @@ namespace NHibernate.Test.Cascade
 			h.Gs.Add(gNew);
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				try
 				{
@@ -190,20 +189,20 @@ namespace NHibernate.Test.Cascade
 			A a = new A();
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a.Data = "Anna";
 				await (s.SaveAsync(a));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 			// modify detached entity
 			this.ModifyEntity(a);
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a = (A) await (s.MergeAsync(a));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 			await (this.VerifyModificationsAsync(a.Id));
 	
@@ -239,20 +238,20 @@ namespace NHibernate.Test.Cascade
 			A a = new A();
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a.Data = "Anna";
 				await (s.SaveAsync(a));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 			// modify detached entity
 			this.ModifyEntity(a);
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				a = (A) await (s.MergeAsync(a));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 			await (this.VerifyModificationsAsync(a.Id));
 	
@@ -318,7 +317,7 @@ namespace NHibernate.Test.Cascade
 		private async Task VerifyModificationsAsync(long aId, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				// retrieve the A object and check it
 				A a = await (s.GetAsync<A>(aId, cancellationToken));
@@ -345,7 +344,7 @@ namespace NHibernate.Test.Cascade
 				Assert.That(hFromA.Gs.Count, Is.EqualTo(1));
 				Assert.That(hFromA.Gs.First(), Is.SameAs(gFromA));
 
-				await (s.Transaction.CommitAsync(cancellationToken));
+				await (t.CommitAsync(cancellationToken));
 			}
 		}
 	}

@@ -14,7 +14,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.GH1920
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -35,15 +34,15 @@ namespace NHibernate.Test.NHSpecificTest.GH1920
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public async Task CanLoadEntityAsync(bool loadProxyOfOtherEntity, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task CanLoadEntityAsync(bool loadProxyOfOtherEntity)
 		{
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
 				if (loadProxyOfOtherEntity)
-					await (session.LoadAsync<EntityWithBatchSize>(someOtherEntityId, cancellationToken));
+					await (session.LoadAsync<EntityWithBatchSize>(someOtherEntityId));
 
-				var result = await (session.GetAsync<EntityWithBatchSize>(entityId, cancellationToken));
+				var result = await (session.GetAsync<EntityWithBatchSize>(entityId));
 
 				Assert.That(result.Name, Is.Not.Null);
 			}

@@ -190,7 +190,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			                                        		name = mappings.NamingStrategy.PropertyToColumnName(propertyPath),
 			                                        		length = mapKeyManyToManyMapping.length,
 			                                        	});
-
 		}
 
 		public void BindSimpleValue(HbmKeyManyToOne mapKeyManyToManyMapping, string propertyPath, bool isNullable)

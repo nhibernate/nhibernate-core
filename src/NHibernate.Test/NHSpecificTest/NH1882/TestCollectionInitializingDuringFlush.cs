@@ -89,29 +89,29 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 			Assert.False(listener.FoundAny);
 
 			using (var s1 = OpenSession())
+			using (var t1 = s1.BeginTransaction())
 			{
-				s1.BeginTransaction();
 				var publisher = new Publisher("acme");
 				var author = new Author("john");
 				author.Publisher = publisher;
 				publisher.Authors.Add(author);
 				author.Books.Add(new Book("Reflections on a Wimpy Kid", author));
 				s1.Save(author);
-				s1.Transaction.Commit();
+				t1.Commit();
 				s1.Clear();
 				using (var s2 = OpenSession())
+				using (var t2 = s2.BeginTransaction())
 				{
-					s2.BeginTransaction();
 					publisher = s2.Get<Publisher>(publisher.Id);
 					publisher.Name = "random nally";
 					s2.Flush();
-					s2.Transaction.Commit();
+					t2.Commit();
 					s2.Clear();
 					using (var s3 = OpenSession())
+					using (var t3 = s3.BeginTransaction())
 					{
-						s3.BeginTransaction();
 						s3.Delete(author);
-						s3.Transaction.Commit();
+						t3.Commit();
 						s3.Clear();
 						s3.Close();
 					}

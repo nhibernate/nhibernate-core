@@ -30,7 +30,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 			Assert.IsNotNull(extendedProperty, "Sub class mapping did not map extended (class not mapped) class property");
 			var topLevelProperty = targetMapping.Properties.SingleOrDefault(p => p.Name == "TopLevelField");
 			Assert.IsNotNull(topLevelProperty, "Sub class mapping did not map base class property");
-
 		}
 
 		[Test]
@@ -54,7 +53,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 			Assert.IsNotNull(extendedProperty, "Sub class mapping did not map extended (class not mapped) class property");
 			var topLevelProperty = targetMapping.Properties.SingleOrDefault(p => p.Name == "TopLevelField");
 			Assert.IsNotNull(topLevelProperty, "Sub class mapping did not map base class property");
-
 		}
 
 		[Test]
@@ -78,7 +76,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 			Assert.IsNotNull(extendedProperty, "Sub class mapping did not map extended (class not mapped) class property");
 			var topLevelProperty = targetMapping.Properties.SingleOrDefault(p => p.Name == "TopLevelField");
 			Assert.IsNotNull(topLevelProperty, "Sub class mapping did not map base class property");
-
 		}
 
 		[Test]
@@ -102,7 +99,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 			Assert.IsNotNull(extendedProperty, "Sub class mapping did not map extended (class not mapped) class property");
 			var topLevelProperty = targetMapping.Properties.SingleOrDefault(p => p.Name == "TopLevelField");
 			Assert.IsNotNull(topLevelProperty, "Sub class mapping did not map base class property");
-
 		}
 
 		[Test]
@@ -126,7 +122,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 			Assert.IsNotNull(extendedProperty, "Sub class mapping did not map extended (class not mapped) class property");
 			var topLevelProperty = targetMapping.Properties.SingleOrDefault(p => p.Name == "TopLevelField");
 			Assert.IsNotNull(topLevelProperty, "Sub class mapping did not map base class property");
-
 		}
 
 		[Test]
@@ -150,7 +145,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 			Assert.IsNotNull(extendedProperty, "Sub class mapping did not map extended (class not mapped) class property");
 			var topLevelProperty = targetMapping.Properties.SingleOrDefault(p => p.Name == "TopLevelField");
 			Assert.IsNotNull(topLevelProperty, "Sub class mapping did not map base class property");
-
 		}
 
 		[Test]

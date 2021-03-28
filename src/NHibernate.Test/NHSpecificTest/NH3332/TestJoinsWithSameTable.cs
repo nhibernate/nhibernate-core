@@ -71,12 +71,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 			}
 		}
 
-
 		private void CreateObjects(ISession session)
 		{
 			// Create the English culture
 			Culture englishCulture = new Culture();
-
 
 			englishCulture.CountryCode = "CA";
 			englishCulture.LanguageCode = "en";
@@ -104,8 +102,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 
 			dataType1.DataTypeDescriptions.Add(dataTypeDescription1);
 
-
-
 			// Create a State and attach it an English description and a Spanish description
 
 			State state1 = new State();
@@ -124,7 +120,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 			//      spanishStateDescription.Description = "Development - Spanish";
 
 			state1.StateDescriptions.Add(spanishStateDescription);
-
 
 			MasterEntity masterEntity = new MasterEntity();
 

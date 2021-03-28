@@ -37,7 +37,6 @@ namespace NHibernate.Test.TypesTest
 			s.Close();
 		}
 
-
 		[Test]
 		public void ReadFromLoad()
 		{

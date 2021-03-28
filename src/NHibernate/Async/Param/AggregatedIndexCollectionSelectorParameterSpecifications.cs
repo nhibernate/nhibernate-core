@@ -34,7 +34,6 @@ namespace NHibernate.Param
 		//  return bindCount;
 		//}
 
-
 		public Task BindAsync(DbCommand command, IList<Parameter> sqlQueryParametersList, QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			throw new NotImplementedException();

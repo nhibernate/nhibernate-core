@@ -4,12 +4,9 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1601
 {
-
     public class Scenario
     {
-
         protected int _id;
-
 
         public virtual int id
         {
@@ -17,11 +14,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             set { _id = value; }
         }
 
-
         public Scenario( )
         {
         }
-
-    }
-
+	}
 }

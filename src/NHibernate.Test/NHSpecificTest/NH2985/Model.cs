@@ -12,8 +12,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 		public virtual String Name { get; set; }
 
 		public virtual IList<WebImage> Childs { get; set; }
-
-		
 	}
 
 	/// <summary>
@@ -23,7 +21,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 	{
 		public WebImage()
 		{
-
 			OldPosition = -1; //di base un immagine è nuova.
 		}
 		/// <summary>
@@ -67,12 +64,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 		/// </summary>
 		public virtual Int32 Height { get; set; }
 
-
 		/// <summary>
 		/// 
 		/// </summary>
 		public virtual Int32? ImgEval { get; set; }
-
 
 		/// <summary>
 		/// 
@@ -143,9 +138,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 			{
 				return null;
 			}
-
 		}
 #endif
 	}
-
 }

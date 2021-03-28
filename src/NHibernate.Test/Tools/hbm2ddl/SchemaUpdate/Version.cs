@@ -25,7 +25,6 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaUpdate
 			set { description = value; }
 		}
 
-
 		public virtual Version Previous
 		{
 			get { return previous; }

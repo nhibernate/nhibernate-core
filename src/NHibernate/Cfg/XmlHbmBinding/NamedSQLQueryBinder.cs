@@ -33,8 +33,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 												? querySchema.cachemode.ToCacheMode()
 												: null;
 
-					IDictionary<string,string> parameterTypes = new LinkedHashMap<string,string>();
-					IList<string> synchronizedTables = GetSynchronizedTables(querySchema);
+					var parameterTypes = new LinkedHashMap<string,string>();
+					var synchronizedTables = GetSynchronizedTables(querySchema);
 
 					NamedSQLQueryDefinition namedQuery;
 
@@ -58,9 +58,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				});
 		}
 
-		private static IList<string> GetSynchronizedTables(HbmSqlQuery querySchema)
+		private static List<string> GetSynchronizedTables(HbmSqlQuery querySchema)
 		{
-			IList<string> synchronizedTables = new List<string>();
+			var synchronizedTables = new List<string>();
 
 			foreach (object item in querySchema.Items ?? Array.Empty<object>())
 			{

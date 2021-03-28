@@ -1,5 +1,3 @@
-
-
 namespace NHibernate.Engine
 {
 	/// <summary>

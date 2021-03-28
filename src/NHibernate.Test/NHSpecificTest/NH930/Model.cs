@@ -28,5 +28,4 @@ namespace NHibernate.Test.NHSpecificTest.NH930
 	public class NFilterUDV : NVariable
 	{
 	}
-
 }

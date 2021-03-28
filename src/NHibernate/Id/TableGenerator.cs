@@ -70,6 +70,7 @@ namespace NHibernate.Id
 
 		private SqlString updateSql;
 		private SqlType[] parameterTypes;
+		private readonly AsyncLock _asyncLock = new AsyncLock();
 
 		#region IConfigurable Members
 
@@ -151,13 +152,15 @@ namespace NHibernate.Id
 		/// <param name="session">The <see cref="ISessionImplementor"/> this id is being generated in.</param>
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <returns>The new identifier as a <see cref="short"/>, <see cref="int"/>, or <see cref="long"/>.</returns>
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual object Generate(ISessionImplementor session, object obj)
 		{
-			// This has to be done using a different connection to the containing
-			// transaction becase the new hi value must remain valid even if the
-			// containing transaction rolls back.
-			return DoWorkInNewTransaction(session);
+			using (_asyncLock.Lock())
+			{
+				// This has to be done using a different connection to the containing
+				// transaction becase the new hi value must remain valid even if the
+				// containing transaction rolls back.
+				return DoWorkInNewTransaction(session);
+			}
 		}
 
 		#endregion

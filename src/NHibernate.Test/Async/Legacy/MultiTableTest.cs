@@ -40,7 +40,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public async Task JoinsAsync()
 		{

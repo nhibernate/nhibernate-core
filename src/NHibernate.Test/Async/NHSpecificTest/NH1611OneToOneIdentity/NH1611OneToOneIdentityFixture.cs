@@ -51,7 +51,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 			}
 		}
 
-
 		[Test]
 		public async Task CanQueryOneToOneWithCompositeIdAsync()
 		{
@@ -63,10 +62,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 					IList<Primary> list = await (criteria.ListAsync<Primary>());
 					Assert.AreEqual("blarg", list[0].Description);
 					Assert.AreEqual("nuts", list[0].Adjunct.AdjunctDescription);
-
 				}
 			}
 		}
-	
 	}
 }

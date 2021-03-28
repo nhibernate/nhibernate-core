@@ -20,6 +20,7 @@ namespace NHibernate.Cache
 		[NonSerialized]
 		private int? _hashCode;
 		private readonly ISessionFactoryImplementor _factory;
+		private readonly string _tenantIdentifier;
 
 		/// <summary> 
 		/// Construct a new key for a collection or entity instance.
@@ -30,28 +31,40 @@ namespace NHibernate.Cache
 		/// <param name="type">The Hibernate type mapping </param>
 		/// <param name="entityOrRoleName">The entity or collection-role name. </param>
 		/// <param name="factory">The session factory for which we are caching </param>
-		public CacheKey(object id, IType type, string entityOrRoleName, ISessionFactoryImplementor factory)
+		/// <param name="tenantIdentifier"></param>
+		public CacheKey(object id, IType type, string entityOrRoleName, ISessionFactoryImplementor factory, string tenantIdentifier) 
 		{
 			key = id;
 			this.type = type;
 			this.entityOrRoleName = entityOrRoleName;
 			_factory = factory;
+			_tenantIdentifier = tenantIdentifier;
 
 			_hashCode = GenerateHashCode();
+		}
+
+		//Since 5.3
+		[Obsolete("Use constructor with tenantIdentifier")]
+		public CacheKey(object id, IType type, string entityOrRoleName, ISessionFactoryImplementor factory)
+			: this(id, type, entityOrRoleName, factory, null)
+		{
 		}
 
 		//Mainly for SysCache and Memcache
 		public override String ToString()
 		{
 			// For Component the user can override ToString
-			return entityOrRoleName + '#' + key;
+			return
+				string.IsNullOrEmpty(_tenantIdentifier)
+					? entityOrRoleName + "#" + key
+					: string.Join("#", entityOrRoleName, key, _tenantIdentifier);
 		}
 
 		public override bool Equals(object obj)
 		{
 			CacheKey that = obj as CacheKey;
 			if (that == null) return false;
-			return entityOrRoleName.Equals(that.entityOrRoleName) && type.IsEqual(key, that.key);
+			return entityOrRoleName.Equals(that.entityOrRoleName) && type.IsEqual(key, that.key) && _tenantIdentifier == that._tenantIdentifier;
 		}
 
 		public override int GetHashCode()
@@ -71,7 +84,14 @@ namespace NHibernate.Cache
 
 		private int GenerateHashCode()
 		{
-			return type.GetHashCode(key, _factory);
+			var hashCode = type.GetHashCode(key, _factory);
+
+			if (_tenantIdentifier != null)
+			{
+				hashCode = (37 * hashCode) + _tenantIdentifier.GetHashCode();
+			}
+
+			return hashCode;
 		}
 
 		public object Key

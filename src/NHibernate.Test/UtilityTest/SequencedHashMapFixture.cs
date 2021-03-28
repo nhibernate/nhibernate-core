@@ -52,7 +52,6 @@ namespace NHibernate.Test.UtilityTest
 
 			_shm.Add(newKey, newValue);
 
-
 			int i = 0;
 			foreach (DictionaryEntry de in _shm)
 			{
@@ -290,7 +289,6 @@ namespace NHibernate.Test.UtilityTest
 			Assert.IsNull(_emptyShm.LastValue);
 		}
 
-
 		[Test, Explicit]
 		public void Performance()
 		{
@@ -380,7 +378,6 @@ namespace NHibernate.Test.UtilityTest
 				}
 
 				listItemTicks[runIndex] = DateTime.Now.Ticks - listStart;
-
 
 				list.Clear();
 			}

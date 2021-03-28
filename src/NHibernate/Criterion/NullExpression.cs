@@ -38,8 +38,8 @@ namespace NHibernate.Criterion
 			//TODO: add default capacity
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			SqlString[] columnNames =
-				CriterionUtil.GetColumnNames(_propertyName, _projection, criteriaQuery, criteria);
+			var columnNames =
+				CriterionUtil.GetColumnNamesAsSqlStringParts(_propertyName, _projection, criteriaQuery, criteria);
 
 			for (int i = 0; i < columnNames.Length; i++)
 			{
@@ -48,7 +48,7 @@ namespace NHibernate.Criterion
 					sqlBuilder.Add(" and ");
 				}
 
-				sqlBuilder.Add(columnNames[i])
+				sqlBuilder.AddObject(columnNames[i])
 					.Add(" is null");
 			}
 

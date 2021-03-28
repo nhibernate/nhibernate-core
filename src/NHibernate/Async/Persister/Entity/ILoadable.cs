@@ -50,12 +50,12 @@ namespace NHibernate.Persister.Entity
 				if (loadable is AbstractEntityPersister abstractEntityPersister)
 				{
 					return abstractEntityPersister.HydrateAsync(
-					rs, id, obj, suffixedPropertyColumns, fetchedLazyProperties, allProperties, session, cancellationToken);
+						rs, id, obj, suffixedPropertyColumns, fetchedLazyProperties, allProperties, session, cancellationToken);
 				}
 				
 				var rootLoadable = loadable.RootEntityName == loadable.EntityName
-				? loadable
-				: (ILoadable) loadable.Factory.GetEntityPersister(loadable.RootEntityName);
+					? loadable
+					: (ILoadable) loadable.Factory.GetEntityPersister(loadable.RootEntityName);
 
 #pragma warning disable 618
 				// Fallback to the old behavior
@@ -73,7 +73,7 @@ namespace NHibernate.Persister.Entity
 		/// </summary>
 		//6.0 TODO: Change to void and merge into ILoadable
 		internal static async Task<bool> InitializeLazyPropertiesAsync(
-			this ILoadable loadable, DbDataReader rs, object id, object entity, ILoadable rootPersister, string[][] suffixedPropertyColumns,
+			this ILoadable loadable, DbDataReader rs, object id, object entity, string[][] suffixedPropertyColumns,
 			string[] uninitializedLazyProperties, bool allLazyProperties, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -83,7 +83,6 @@ namespace NHibernate.Persister.Entity
 					rs,
 					id,
 					entity,
-					rootPersister,
 					suffixedPropertyColumns,
 					uninitializedLazyProperties,
 					allLazyProperties,

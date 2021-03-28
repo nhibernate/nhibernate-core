@@ -13,7 +13,6 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Pk.Unidirectional
 			get { return "NHibernate.Test"; }
 		}
 
-
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();

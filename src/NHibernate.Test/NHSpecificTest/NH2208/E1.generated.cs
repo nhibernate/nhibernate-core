@@ -16,7 +16,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2208
 	/// </summary>
 	public  partial class E1 
 	{
-
 	#region private fields
 		Int32 _id;	
 		String _p1;

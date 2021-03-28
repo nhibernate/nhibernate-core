@@ -78,7 +78,6 @@ namespace NHibernate
 		IInternalLogger LoggerFor(System.Type type);
 	}
 
-
 	[Obsolete("Use NHibernateLogger instead.")]
 	public class LoggerProvider
 	{
@@ -346,7 +345,7 @@ namespace NHibernate
 	{
 		public bool IsErrorEnabled
 		{
-			get { return false;}
+			get { return false; }
 		}
 
 		public bool IsFatalEnabled

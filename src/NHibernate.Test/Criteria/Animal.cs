@@ -61,9 +61,9 @@ namespace NHibernate.Test.Criteria
 			set { serialNumber = value; }
 		}
 
-		private bool howHappyIsHe;
+		private string howHappyIsHe;
 
-		public virtual bool HowHappyIsHe
+		public virtual string HowHappyIsHe
 		{
 			get { return howHappyIsHe; }
 			set { howHappyIsHe = value; }
@@ -85,6 +85,8 @@ namespace NHibernate.Test.Criteria
 			{
 				this.Offspring = new HashSet<Animal>();
 			}
+
+			offspring.Mother = this;
 			this.Offspring.Add(offspring);
 		}
 	}

@@ -108,7 +108,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
             return project;
         }
 
-
         public async Task<ProjectWithOneList> LoadProjectAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             ProjectWithOneList project;
@@ -127,7 +126,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1601
 
         public async Task RefreshProjectAsync(ProjectWithOneList project, CancellationToken cancellationToken = default(CancellationToken))
         {
-
             using (ISession session = OpenSession())
             using (ITransaction tx = session.BeginTransaction())
             {

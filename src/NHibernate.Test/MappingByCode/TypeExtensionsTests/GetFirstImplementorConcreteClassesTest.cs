@@ -8,19 +8,15 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 	{
 		private class MyClass1
 		{
-
 		}
 		private class MyClass2 : MyClass1
 		{
-
 		}
 		private class MyClass3 : MyClass2
 		{
-
 		}
 		private class MyClass4 : MyClass3
 		{
-
 		}
 
 		[Test]

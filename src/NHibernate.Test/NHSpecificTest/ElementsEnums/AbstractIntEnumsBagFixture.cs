@@ -17,25 +17,25 @@ namespace NHibernate.Test.NHSpecificTest.ElementsEnums
 		{
 			object savedId;
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				savedId = s.Save(new SimpleWithEnums { Things = new List<Something> { Something.B, Something.C, Something.D, Something.E } });
-				s.Transaction.Commit();
+				t.Commit();
 			}
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				var swe = s.Get<SimpleWithEnums>(savedId);
 				Assert.That(swe.Things, Is.EqualTo(new[] { Something.B, Something.C, Something.D, Something.E }));
-				s.Transaction.Commit();
+				t.Commit();
 			}
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.Delete("from SimpleWithEnums");
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 	}

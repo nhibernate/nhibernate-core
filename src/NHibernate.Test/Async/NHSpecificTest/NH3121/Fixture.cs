@@ -7,7 +7,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
 using System;
 using System.Drawing;
 using System.Linq;
@@ -58,7 +57,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 						Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));
 		}
 
-
 		[Test]
 		public void ShouldThrowWhenImageTooLargeAsync()
 		{
@@ -75,7 +73,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 						Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));
 		}
 
-
 		[Test]
 		public void ShouldThrowWhenImageAsISerializableTooLargeAsync()
 		{
@@ -91,7 +88,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3121
 			Assert.That(ex.InnerException.Message,
 						Is.EqualTo("The length of the byte[] value exceeds the length configured in the mapping/parameter."));
 		}
-
 
 		private async Task PersistReportAsync(Report report, CancellationToken cancellationToken = default(CancellationToken))
 		{

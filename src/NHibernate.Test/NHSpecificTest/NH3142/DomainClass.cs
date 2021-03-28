@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
 
-
 namespace NHibernate.Test.NHSpecificTest.NH3142
 {
 	public class DomainParent

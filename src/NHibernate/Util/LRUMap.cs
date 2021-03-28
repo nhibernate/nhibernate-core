@@ -105,6 +105,5 @@ namespace NHibernate.Util
 					RemoveLRU();
 			}
 		}
-
 	}
 }

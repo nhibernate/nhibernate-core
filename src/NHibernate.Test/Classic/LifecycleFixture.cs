@@ -98,7 +98,6 @@ namespace NHibernate.Test.Classic
 			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(0));
 			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(0));
 
-
 			// cleanup
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())

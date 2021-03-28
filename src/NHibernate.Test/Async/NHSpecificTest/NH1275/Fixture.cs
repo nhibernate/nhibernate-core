@@ -53,6 +53,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1275
 					string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
 					Assert.That(sql.IndexOf(Dialect.ForUpdateString, StringComparison.Ordinal), Is.GreaterThan(0));
 				}
+				s.Clear();
+				using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
+				{
+					await (s.GetAsync<A>(typeof(A).FullName, savedId, LockMode.Upgrade));
+					string sql = sqlLogSpy.Appender.GetEvents()[0].RenderedMessage;
+					Assert.That(sql.IndexOf(Dialect.ForUpdateString, StringComparison.Ordinal), Is.GreaterThan(0));
+				}
 				using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
 				{
 					await (s.CreateQuery("from A a where a.Id= :pid").SetLockMode("a", LockMode.Upgrade).SetParameter("pid", savedId).

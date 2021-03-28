@@ -16,7 +16,6 @@ using System.Transactions;
 using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
-using NHibernate.Impl;
 using NHibernate.Util;
 
 namespace NHibernate.Transaction

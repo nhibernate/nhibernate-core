@@ -23,14 +23,20 @@ namespace NHibernate.Engine.Query
 		// unnecessary cache entries.
 		// Used solely for caching param metadata for native-sql queries, see
 		// getSQLParameterMetadata() for a discussion as to why...
-		private readonly SimpleMRUCache sqlParamMetadataCache = new SimpleMRUCache();
+		private readonly SimpleMRUCache sqlParamMetadataCache;
 
 		// the cache of the actual plans...
-		private readonly SoftLimitMRUCache planCache = new SoftLimitMRUCache(128);
+		private readonly SoftLimitMRUCache planCache;
+		
+		internal const int DefaultParameterMetadataMaxCount = 128;
+		internal const int DefaultQueryPlanMaxCount = 128;
 
 		public QueryPlanCache(ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
+
+			sqlParamMetadataCache = new SimpleMRUCache(factory.Settings.QueryPlanCacheParameterMetadataMaxSize);
+			planCache = new SoftLimitMRUCache(factory.Settings.QueryPlanCacheMaxSize);
 		}
 
 		public ParameterMetadata GetSQLParameterMetadata(string query)
@@ -62,7 +68,7 @@ namespace NHibernate.Engine.Query
 				}
 				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
 				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
-				if (!(queryExpression is NhLinqExpression linqExpression) || linqExpression.CanCachePlan)
+				if (!(queryExpression is ICacheableQueryExpression linqExpression) || linqExpression.CanCachePlan)
 					planCache.Put(key, plan);
 				else
 					log.Debug("Query plan not cacheable");
@@ -117,7 +123,7 @@ namespace NHibernate.Engine.Query
 				log.Debug("unable to locate collection-filter query plan in cache; generating ({0} : {1})", collectionRole, queryExpression.Key);
 				plan = new FilterQueryPlan(queryExpression, collectionRole, shallow, enabledFilters, factory);
 				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
-				if (!(queryExpression is NhLinqExpression linqExpression) || linqExpression.CanCachePlan)
+				if (!(queryExpression is ICacheableQueryExpression linqExpression) || linqExpression.CanCachePlan)
 					planCache.Put(key, plan);
 				else
 					log.Debug("Query plan not cacheable");

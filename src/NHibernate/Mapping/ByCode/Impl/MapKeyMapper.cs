@@ -57,16 +57,15 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Columns(params Action<IColumnMapper>[] columnMapper)
 		{
 			ResetColumnPlainValues();
-			int i = 1;
-			var columns = new List<HbmColumn>(columnMapper.Length);
-			foreach (var action in columnMapper)
+			var columns = new HbmColumn[columnMapper.Length];
+			for (var i = 0; i < columnMapper.Length; i++)
 			{
 				var hbm = new HbmColumn();
-				string defaultColumnName = DefaultColumnName + i++;
-				action(new ColumnMapper(hbm, defaultColumnName));
-				columns.Add(hbm);
+				string defaultColumnName = DefaultColumnName + i + 1;
+				columnMapper[i](new ColumnMapper(hbm, defaultColumnName));
+				columns[i] = hbm;
 			}
-			hbmMapKey.Items = columns.ToArray();
+			hbmMapKey.Items = columns;
 		}
 
 		public void Column(string name)
@@ -153,9 +152,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 			ResetColumnPlainValues();
 			hbmMapKey.Items =
 				formulas
-					.Select(
-						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) })
-					.ToArray();
+					.ToArray(
+						f => (object) new HbmFormula {Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None)});
 		}
 
 		#endregion

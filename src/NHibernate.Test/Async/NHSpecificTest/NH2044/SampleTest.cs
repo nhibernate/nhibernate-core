@@ -45,7 +45,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2044
             }
         }
 
-
         [Test]
         public async Task IgnoreCaseShouldWorkWithCharCorrectlyAsync()
         {
@@ -56,8 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2044
                 IList<DomainClass> list = await (criteria.ListAsync<DomainClass>());
 
                 Assert.AreEqual(1, list.Count);
-                
-            }
+			}
         }
     }
 }

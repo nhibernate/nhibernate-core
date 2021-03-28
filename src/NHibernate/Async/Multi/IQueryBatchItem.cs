@@ -36,4 +36,9 @@ namespace NHibernate.Multi
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task ExecuteNonBatchedAsync(CancellationToken cancellationToken);
 	}
+
+	internal partial interface IQueryBatchItemWithAsyncProcessResults
+	{
+		Task ProcessResultsAsync(CancellationToken cancellationToken);
+	}
 }

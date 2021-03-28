@@ -1,6 +1,5 @@
 using System;
 using NHibernate.Engine;
-using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -40,10 +39,10 @@ namespace NHibernate.Mapping
 			if (!IsOneToMany)
 			{
 				PrimaryKey pk = new PrimaryKey();
-				pk.AddColumns(new SafetyEnumerable<Column>(Identifier.ColumnIterator));
+				pk.AddColumns(Identifier.ColumnIterator);
 				CollectionTable.PrimaryKey = pk;
 			}
-			//else  // Create an index on the key columns?
+			//else // Create an index on the key columns?
 		}
 
 		/// <summary>

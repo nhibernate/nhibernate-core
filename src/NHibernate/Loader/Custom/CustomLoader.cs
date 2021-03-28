@@ -24,7 +24,7 @@ namespace NHibernate.Loader.Custom
 		// the types will also have to be discovered at cache hit, from the cache results.
 
 		private readonly SqlString sql;
-		private readonly ISet<string> querySpaces = new HashSet<string>();
+		private readonly HashSet<string> querySpaces = new HashSet<string>();
 		private List<IParameterSpecification> parametersSpecifications;
 
 		private readonly IQueryable[] entityPersisters;
@@ -179,6 +179,7 @@ namespace NHibernate.Loader.Custom
 			transformerAliases = specifiedAliases.ToArray();
 			rowProcessor = new ResultRowProcessor(hasScalars, resultColumnProcessors.ToArray());
 			includeInResultRow = includeInResultRowList.ToArray();
+			ResultRowAliases = transformerAliases.Where((a, i) => includeInResultRowList[i]).ToArray();
 		}
 
 		public ISet<string> QuerySpaces
@@ -274,7 +275,7 @@ namespace NHibernate.Loader.Custom
 			get { return entityPersisters; }
 		}
 
-		protected override ICollectionPersister[] CollectionPersisters
+		protected internal override ICollectionPersister[] CollectionPersisters
 		{
 			get { return collectionPersisters; }
 		}
@@ -297,7 +298,7 @@ namespace NHibernate.Loader.Custom
 			return rowProcessor.BuildResultRow(row, rs, session);
 		}
 
-		protected override string[] ResultRowAliases => transformerAliases;
+		protected override string[] ResultRowAliases { get; }
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
 		{

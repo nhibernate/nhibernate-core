@@ -23,8 +23,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 		// string.Compare(a, b) < 0    =>    a < b
 		// a.CompareTo(b) op 0         =>    a op b
 
-
-		private static readonly IDictionary<ExpressionType, ExpressionType> ActingOperators = new Dictionary
+		private static readonly Dictionary<ExpressionType, ExpressionType> ActingOperators = new Dictionary
 			<ExpressionType, ExpressionType>
 			{
 				{ExpressionType.LessThan, ExpressionType.GreaterThan},
@@ -35,12 +34,10 @@ namespace NHibernate.Linq.ExpressionTransformers
 				{ExpressionType.NotEqual, ExpressionType.NotEqual},
 			};
 
-
 		public ExpressionType[] SupportedExpressionTypes
 		{
 			get { return ActingOperators.Keys.ToArray(); }
 		}
-
 
 		public Expression Transform(BinaryExpression expression)
 		{
@@ -59,7 +56,6 @@ namespace NHibernate.Linq.ExpressionTransformers
 			return expression;
 		}
 
-
 		private static bool IsConstantZero(Expression expression)
 		{
 			var constantExpr = expression as ConstantExpression;
@@ -75,7 +71,6 @@ namespace NHibernate.Linq.ExpressionTransformers
 			return false;
 		}
 
-
 		private static bool IsCompare(Expression expression)
 		{
 			var methodCall = expression as MethodCallExpression;
@@ -84,7 +79,6 @@ namespace NHibernate.Linq.ExpressionTransformers
 
 			return CompareGenerator.IsCompareMethod(methodCall.Method);
 		}
-
 
 		private Expression Build(ExpressionType et, Expression expression)
 		{
@@ -102,19 +96,17 @@ namespace NHibernate.Linq.ExpressionTransformers
 			return Expression.MakeBinary(et, lhs, rhs);
 		}
 
-
-		private static readonly IDictionary<System.Type, MethodInfo> dummies = new Dictionary<System.Type, MethodInfo>
+		private static readonly Dictionary<System.Type, MethodInfo> dummies = new Dictionary<System.Type, MethodInfo>
 			{
 				// Corresponds to string.Compare(a, b).
-				{typeof (string), ReflectHelper.GetMethod(() => DummyComparison<string>(null, null))},
+				{typeof (string), ReflectHelper.FastGetMethod(DummyComparison, default(string), default(string))},
 
 				// System.Data.Services.Providers.DataServiceProviderMethods has Compare methods for these types.
-				{typeof (bool), ReflectHelper.GetMethod(() => DummyComparison<bool>(false, false))},
-				{typeof (bool?), ReflectHelper.GetMethod(() => DummyComparison<bool?>(null, null))},
-				{typeof (Guid), ReflectHelper.GetMethod(() => DummyComparison<Guid>(Guid.Empty, Guid.Empty))},
-				{typeof (Guid?), ReflectHelper.GetMethod(() => DummyComparison<Guid?>(null, null))},
+				{typeof (bool), ReflectHelper.FastGetMethod(DummyComparison, false, false)},
+				{typeof (bool?), ReflectHelper.FastGetMethod(DummyComparison, default(bool?), default(bool?))},
+				{typeof (Guid), ReflectHelper.FastGetMethod(DummyComparison, default(Guid), default(Guid))},
+				{typeof (Guid?), ReflectHelper.FastGetMethod(DummyComparison, default(Guid?), default(Guid?))},
 			};
-
 
 		private static bool DummyComparison<T>(T lhs, T rhs)
 		{

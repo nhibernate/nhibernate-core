@@ -8,7 +8,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1478
 	{
 		public Person()
 		{
-
 		}
 
 		public Person(string name, string bio)
@@ -33,6 +32,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1478
 			get;
 			set;
 		}
-
 	}
 }

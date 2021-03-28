@@ -103,7 +103,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2969
 			}
 		}
 
-
 		[Test]
 		public void CanGetParrot()
 		{

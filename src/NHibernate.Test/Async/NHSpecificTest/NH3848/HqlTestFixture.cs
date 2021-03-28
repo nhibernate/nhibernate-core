@@ -68,9 +68,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				var query = session.CreateQuery(
-				"from Customer as c " +
-				"left join fetch c.Orders as o " +
-				"where o.Number = :number");
+					"from Customer as c " +
+					"left join fetch c.Orders as o " +
+					"where o.Number = :number");
 				query.SetParameter("number", orderNumber);
 				return query.ListAsync<Customer>(cancellationToken);
 			}
@@ -85,9 +85,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				var query = session.CreateQuery(
-				"from Customer as c " +
-				"left join fetch c.Orders as o " +
-				"where c.Name = :name");
+					"from Customer as c " +
+					"left join fetch c.Orders as o " +
+					"where c.Name = :name");
 				query.SetParameter("name", customerName);
 				query.SetResultTransformer(new DistinctRootEntityResultTransformer());
 				return query.ListAsync<Customer>(cancellationToken);
@@ -109,9 +109,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				var query = session.CreateQuery(
-				"from Customer as c " +
-				"inner join fetch c.Orders as o " +
-				"where o.Number = :number");
+					"from Customer as c " +
+					"inner join fetch c.Orders as o " +
+					"where o.Number = :number");
 				query.SetParameter("number", orderNumber);
 				return query.ListAsync<Customer>(cancellationToken);
 			}
@@ -132,9 +132,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				var query = session.CreateQuery(
-				"from Customer as c " +
-				"inner join fetch c.Orders as o " +
-				"left join fetch c.Companies as cmp");
+					"from Customer as c " +
+					"inner join fetch c.Orders as o " +
+					"left join fetch c.Companies as cmp");
 				return query.ListAsync<Customer>(cancellationToken);
 			}
 			catch (Exception ex)
@@ -148,10 +148,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				var query = session.CreateQuery(
-				"from Customer as c " +
-				"left join fetch c.Orders as o " +
-				"where c.Name = :name and " +
-				"c.Id in (select c1.Id from Customer as c1 left join c1.Orders as o2 where o2.Number = :number)");
+					"from Customer as c " +
+					"left join fetch c.Orders as o " +
+					"where c.Name = :name and " +
+					"c.Id in (select c1.Id from Customer as c1 left join c1.Orders as o2 where o2.Number = :number)");
 				query.SetParameter("name", customerName);
 				query.SetParameter("number", orderNumber);
 				query.SetResultTransformer(new DistinctRootEntityResultTransformer());

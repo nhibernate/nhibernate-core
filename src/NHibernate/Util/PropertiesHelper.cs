@@ -55,6 +55,17 @@ namespace NHibernate.Util
 			return value ?? defaultValue;
 		}
 
+		public static TEnum GetEnum<TEnum>(string property, IDictionary<string, string> properties, TEnum defaultValue) where TEnum : struct
+		{
+			var enumValue = GetString(property, properties, null);
+			if (enumValue == null)
+			{
+				return defaultValue;
+			}
+
+			return (TEnum) Enum.Parse(typeof(TEnum), enumValue, false);
+		}
+
 		public static IDictionary<string, string> ToDictionary(string property, string delim, IDictionary<string, string> properties)
 		{
 			IDictionary<string, string> map = new Dictionary<string, string>();

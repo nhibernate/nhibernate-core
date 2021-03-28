@@ -9,7 +9,6 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 
-
 namespace NHibernate.Event.Default
 {
 	/// <summary>

@@ -22,7 +22,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2113
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-
         [Test]
         public async Task ShouldNotEagerLoadKeyManyToOneWhenOverridingGetHashCodeAsync()
         {
@@ -52,7 +51,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2113
 
                 await (tx.CommitAsync());
             }
-
 
             using (var s = OpenSession())
             using (var tx = s.BeginTransaction())

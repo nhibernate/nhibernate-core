@@ -5,15 +5,33 @@ namespace NHibernate.Test.Hql.EntityJoinHqlTestEntities
 	public class EntityComplex
 	{
 		public virtual Guid Id { get; set; }
-
 		public virtual int Version { get; set; }
-
 		public virtual string Name { get; set; }
-
 		public virtual string LazyProp { get; set; }
-
 		public virtual EntityComplex SameTypeChild { get; set; }
+		public virtual EntityComplex SameTypeChild2 { get; set; }
+	}
 
+	public class OneToOneEntity
+	{
+		public virtual Guid Id { get; set; }
+		public virtual string Name { get; set; }
+	}
+	
+	public class PropRefEntity
+	{
+		public virtual Guid Id { get; set; }
+		public virtual string Name { get; set; }
+		public virtual string PropertyRef { get; set; }
+	}
+
+	public class NullableOwner
+	{
+		public virtual Guid Id { get; set; }
+		public virtual string Name { get; set; }
+		public virtual OneToOneEntity OneToOne { get; set; }
+		public virtual PropRefEntity PropRef { get; set; }
+		public virtual OneToOneEntity ManyToOne { get; set; }
 	}
 
 	public class EntityWithCompositeId
@@ -21,6 +39,7 @@ namespace NHibernate.Test.Hql.EntityJoinHqlTestEntities
 		public virtual CompositeKey Key { get; set; }
 		public virtual string Name { get; set; }
 	}
+
 	public class CompositeKey
 	{
 		public int Id1 { get; set; }

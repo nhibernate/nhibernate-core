@@ -14,6 +14,7 @@ namespace NHibernate.Linq
 		protected int? Timeout { get; private set; }
 		protected bool? ReadOnly { get; private set; }
 		protected string Comment { get; private set; }
+		protected FlushMode? FlushMode { get; private set; }
 
 #pragma warning disable 618
 		/// <inheritdoc />
@@ -112,6 +113,17 @@ namespace NHibernate.Linq
 			Comment = comment;
 			return this;
 		}
+		
+		/// <summary>
+		/// Override the current session flush mode, just for this query.
+		/// </summary>
+		/// <param name="flushMode">The flush mode to use for the query.</param>
+		/// <returns><see langword="this"/> (for method chaining).</returns>
+		public NhQueryableOptions SetFlushMode(FlushMode flushMode)
+		{
+			FlushMode = flushMode;
+			return this;
+		}
 
 		protected internal NhQueryableOptions Clone()
 		{
@@ -122,7 +134,8 @@ namespace NHibernate.Linq
 				CacheRegion = CacheRegion,
 				Timeout = Timeout,
 				ReadOnly = ReadOnly,
-				Comment = Comment
+				Comment = Comment,
+				FlushMode = FlushMode
 			};
 		}
 
@@ -145,6 +158,9 @@ namespace NHibernate.Linq
 			
 			if (!string.IsNullOrEmpty(Comment))
 				query.SetComment(Comment);
+
+			if (FlushMode.HasValue)
+				query.SetFlushMode(FlushMode.Value);
 		}
 	}
 }

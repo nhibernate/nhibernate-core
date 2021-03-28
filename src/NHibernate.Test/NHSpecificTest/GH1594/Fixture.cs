@@ -50,8 +50,13 @@ namespace NHibernate.Test.NHSpecificTest.GH1594
 			{
 				RunInTransaction(session);
 				var localValuesCountAfterFirstCall = ExecutionContext.Capture().LocalValuesCount();
+				if (!localValuesCountAfterFirstCall.HasValue)
+					Assert.Ignore("Unable to get async local values count");
 				RunInTransaction(session);
 				var localValuesCountAfterSecondCall = ExecutionContext.Capture().LocalValuesCount();
+				if (!localValuesCountAfterSecondCall.HasValue)
+					Assert.Ignore("Unable to get async local values count");
+
 				Assert.AreEqual(localValuesCountAfterFirstCall, localValuesCountAfterSecondCall);
 			}
 		}

@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Generatedkeys.ByTrigger
@@ -35,18 +34,19 @@ namespace NHibernate.Test.Generatedkeys.ByTrigger
 		[Test]
 		public async Task GetGeneratedKeysSupportAsync()
 		{
-			ISession session = OpenSession();
-			session.BeginTransaction();
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				var e = new MyEntity { Name = "entity-1" };
+				await (session.SaveAsync(e));
 
-			var e = new MyEntity { Name = "entity-1" };
-			await (session.SaveAsync(e));
+				// this insert should happen immediately!
+				Assert.AreEqual(1, e.Id, "id not generated through forced insertion");
 
-			// this insert should happen immediately!
-			Assert.AreEqual(1, e.Id, "id not generated through forced insertion");
-
-			await (session.DeleteAsync(e));
-			await (session.Transaction.CommitAsync());
-			session.Close();
+				await (session.DeleteAsync(e));
+				await (tran.CommitAsync());
+				session.Close();
+			}
 		}
 	}
 }

@@ -6,7 +6,6 @@ namespace NHibernate.Test.Futures
 	[TestFixture]
 	public class FutureQueryOverFixture : FutureFixture
 	{
-
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
@@ -130,7 +129,6 @@ namespace NHibernate.Test.Futures
 
 					foreach (var person in persons.GetEnumerable())
 					{
-
 					}
 
 					var events = logSpy.Appender.GetEvents();

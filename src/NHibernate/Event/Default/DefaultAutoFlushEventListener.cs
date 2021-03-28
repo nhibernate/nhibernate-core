@@ -48,7 +48,6 @@ namespace NHibernate.Event.Default
 					}
 					else
 					{
-
 						if (log.IsDebugEnabled())
 							log.Debug("Dont need to execute flush");
 						source.ActionQueue.ClearFromFlushNeededCheck(oldSize);

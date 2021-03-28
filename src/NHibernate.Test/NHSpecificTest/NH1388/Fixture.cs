@@ -114,9 +114,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 		protected override void OnTearDown()
 		{
 			// clean up the database
-			using (ISession session = OpenSession())
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
-				session.BeginTransaction();
 				foreach (var student in session.CreateCriteria(typeof (Student)).List<Student>())
 				{
 					session.Delete(student);
@@ -125,7 +125,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 				{
 					session.Delete(subject);
 				}
-				session.Transaction.Commit();
+				tran.Commit();
 			}
 		}
 

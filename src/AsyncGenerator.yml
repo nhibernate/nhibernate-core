@@ -1,10 +1,16 @@
 ﻿projects:
 - filePath: NHibernate/NHibernate.csproj
-  targetFramework: net461
+  targetFramework: netcoreapp2.0
   concurrentRun: true
   applyChanges: true
+  suppressDiagnosticFailures:
+  - pattern: ^.*(Hql\.g).*$
   analyzation:
     methodConversion:
+#TODO 6.0: Remove ignore rule for IQueryBatchItem.ProcessResults
+    - conversion: Ignore
+      name: ProcessResults
+      containingTypeName: IQueryBatchItem
     - conversion: Ignore
       name: PostProcessInsert
       containingTypeName: HqlSqlWalker
@@ -104,6 +110,10 @@
     - conversion: Ignore
       name: GetEnumerator
       containingTypeName: IFutureEnumerable
+# TODO 6.0: Consider if ComputeFlattenedParameters should remain ignored or not
+    - conversion: Ignore
+      name: ComputeFlattenedParameters
+      containingTypeName: SqlQueryImpl
     - conversion: ToAsync
       name: ExecuteReader
       containingTypeName: IBatcher
@@ -115,7 +125,7 @@
     - conversion: ToAsync
       rule: Cache
     - conversion: ToAsync
-      rule: TransactionCompletion      
+      rule: TransactionCompletion
     typeConversion:
     - conversion: Ignore
       name: EnumerableImpl
@@ -150,9 +160,6 @@
   transformation:
     configureAwaitArgument: false
     localFunctions: true
-    asyncLock:
-      type: NHibernate.Util.AsyncLock
-      methodName: LockAsync
     documentationComments:
       addOrReplaceMethodSummary:
         - name: Commit
@@ -166,45 +173,41 @@
   - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
     assemblyName: AsyncGenerator.Core
 - filePath: NHibernate.DomainModel/NHibernate.DomainModel.csproj
-  targetFramework: net461
+  targetFramework: netcoreapp2.0
   concurrentRun: true
   applyChanges: true
+  suppressDiagnosticFailures:
+  - pattern: ^.*(Hql\.g).*$
   analyzation:
     scanMethodBody: true
     scanForMissingAsyncMembers:
     - all: true
 - filePath: NHibernate.Test/NHibernate.Test.csproj
-  targetFramework: net461
+  targetFramework: netcoreapp2.0
   concurrentRun: true
   applyChanges: true
+  suppressDiagnosticFailures:
+  - pattern: ^.*(Hql\.g).*$
   analyzation:
     methodConversion:
+    - conversion: Ignore
+      name: CanUseDependentTransaction
+      containingTypeName: DistributedSystemTransactionFixture
+    - conversion: Ignore
+      name: CanUseSessionWithManyDependentTransaction
+      containingTypeName: DistributedSystemTransactionFixture
+    - conversion: Ignore
+      name: CanUseDependentTransaction
+      containingTypeName: SystemTransactionFixture
+    - conversion: Ignore
+      name: CanUseSessionWithManyDependentTransaction
+      containingTypeName: SystemTransactionFixture
     - conversion: Copy
       name: AfterTransactionCompletionProcess_EvictsFromCache
-    - conversion: Copy
-      hasAttributeName: OneTimeSetUpAttribute
-    - conversion: Copy
-      hasAttributeName: OneTimeTearDownAttribute
-    - conversion: Copy
-      hasAttributeName: SetUpAttribute
-    - conversion: Copy
-      hasAttributeName: TearDownAttribute
-    - conversion: Smart
-      hasAttributeName: TestAttribute
-    - conversion: Smart
-      hasAttributeName: TheoryAttribute
     asyncExtensionMethods:
       projectFiles:
       - fileName: LinqExtensionMethods.cs
         projectName: NHibernate
-    preserveReturnType:
-    - hasAttributeName: TestAttribute
-    - hasAttributeName: TheoryAttribute
-    alwaysAwait:
-    - hasAttributeName: TestAttribute
-    - hasAttributeName: TheoryAttribute
-    - hasAttributeName: SetUpAttribute
-    - hasAttributeName: TearDownAttribute
     typeConversion:
     - conversion: Ignore
       name: ObjectAssert
@@ -215,31 +218,24 @@
     - conversion: Ignore
       name: PeVerifier
     - conversion: Ignore
-      hasAttributeName: IgnoreAttribute
-    - conversion: NewType
-      hasAttributeName: TestFixtureAttribute
-    - conversion: NewType
-      anyBaseTypeRule: HasTestFixtureAttribute
-    - conversion: Ignore
       rule: IsTestCase
     - conversion: Ignore
       anyBaseTypeRule: IsTestCase
-    ignoreSearchForMethodReferences:
-    - hasAttributeName: TheoryAttribute
-    - hasAttributeName: TestAttribute
+      executionPhase: PostProviders
     ignoreDocuments:
     - filePathEndsWith: Linq/MathTests.cs
     - filePathEndsWith: Linq/ExpressionSessionLeakTest.cs
     - filePathEndsWith: Linq/NorthwindDbCreator.cs
     cancellationTokens:
-      withoutCancellationToken:
-      - hasAttributeName: TestAttribute
-      - hasAttributeName: TheoryAttribute
+      enabled: true
     scanMethodBody: true
     scanForMissingAsyncMembers:
     - all: true
   registerPlugin:
-  - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
+  - type: AsyncGenerator.Core.Plugins.NUnitPlugin
+    parameters:
+    - name: createNewTypes
+      value: true
     assemblyName: AsyncGenerator.Core
   - type: AsyncGenerator.Core.Plugins.TransactionScopeAsyncFlowAdder
     assemblyName: AsyncGenerator.Core
@@ -281,7 +277,7 @@ methodRules:
   - containingType: NHibernate.Action.IAfterTransactionCompletionProcess
   - containingType: NHibernate.Action.IBeforeTransactionCompletionProcess
   - containingType: NHibernate.Action.EntityAction
-    name: BeforeTransactionCompletionProcessImpl  
+    name: BeforeTransactionCompletionProcessImpl
   name: TransactionCompletion
 - filters:
   - containingNamespace: NHibernate
@@ -291,6 +287,7 @@ methodRules:
   - containingType: NHibernate.Linq.DmlExtensionMethods
   - containingType: NHibernate.Linq.InsertBuilder<TSource, TTarget>
   - containingType: NHibernate.Linq.UpdateBuilder<TSource>
+  - containingType: NHibernate.Multi.IQueryBatch 
   name: PubliclyExposedType
 - filters:
   - hasAttributeName: ObsoleteAttribute
@@ -302,6 +299,3 @@ typeRules:
 - filters:
   - name: TestCase
   name: IsTestCase
-- filters:
-  - hasAttributeName: TestFixtureAttribute
-  name: HasTestFixtureAttribute

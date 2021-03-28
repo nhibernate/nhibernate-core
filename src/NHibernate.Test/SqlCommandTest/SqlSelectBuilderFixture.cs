@@ -44,7 +44,6 @@ namespace NHibernate.Test.SqlCommandTest
 				.Append("ORDER BY column1 DESC")
 				.ToString();
 
-
 			Assert.AreEqual(expectedSql, sqlString.ToString(), "SQL String");
 			Assert.AreEqual(1, sqlString.GetParameterCount(), "One parameter");
 		}

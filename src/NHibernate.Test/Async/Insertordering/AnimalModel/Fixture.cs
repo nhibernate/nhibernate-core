@@ -7,7 +7,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-
 using System.Collections;
 using NHibernate.Cfg;
 using NUnit.Framework;
@@ -161,6 +160,30 @@ namespace NHibernate.Test.Insertordering.AnimalModel
 				// be an optimization, but it may cause regressions for some edge case mappings, like one having an
 				// inverse one-to-many with no matching many-to-one but a basic type property for the foreign key
 				// instead.)
+			}
+		}
+
+		// #2141
+		[Test]
+		public async System.Threading.Tasks.Task InsertShouldNotDependOnEntityEqualsImplementationAsync()
+		{
+			var person = new PersonWithWrongEquals { Name = "AnimalOwner" };
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(person));
+				await (t.CommitAsync());
+			}
+			await (Sfi.EvictAsync(typeof(PersonWithWrongEquals)));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var personProxy = await (s.GetAsync<PersonWithWrongEquals>(person.Id));
+
+				await (s.SaveAsync(new Cat { Name = "Felix", Owner = personProxy }));
+				await (s.SaveAsync(new Cat { Name = "Loustic", Owner = personProxy }));
+				Assert.DoesNotThrowAsync(() => { return t.CommitAsync(); });
 			}
 		}
 	}

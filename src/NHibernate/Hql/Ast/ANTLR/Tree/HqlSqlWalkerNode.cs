@@ -37,7 +37,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return _walker.SessionFactoryHelper; }
 		}
 
-		
 		public IASTFactory ASTFactory
 		{
 			get { return _walker.ASTFactory; }

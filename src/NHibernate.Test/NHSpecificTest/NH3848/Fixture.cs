@@ -274,7 +274,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			}
 		}
 
-
 		[Test]
 		public void ChildCollectionsFromLeftOuterJoinWithWhereClauseRestrictionOnCollectionShouldNotBeInSecondLevelCache()
 		{

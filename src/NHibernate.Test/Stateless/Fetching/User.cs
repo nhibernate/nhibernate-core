@@ -1,4 +1,3 @@
-
 namespace NHibernate.Test.Stateless.Fetching
 {
 	public class User
@@ -40,6 +39,5 @@ namespace NHibernate.Test.Stateless.Fetching
 				this.name = value;
 			}
 		}
-
 	}
 }

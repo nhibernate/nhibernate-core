@@ -43,7 +43,6 @@ namespace NHibernate.Event.Default
 
 			if (persister == null)
 			{
-
 				var message = new StringBuilder(512);
 				message.AppendLine(string.Format("Unable to locate persister for the entity named '{0}'.", @event.EntityClassName));
 				message.AppendLine("The persister define the persistence strategy for an entity.");
@@ -344,19 +343,18 @@ namespace NHibernate.Event.Default
 		{
 			ISessionImplementor source = @event.Session;
 
-			bool statsEnabled = source.Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (source.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWath.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 
 			object entity = persister.Load(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source);
 
-			if (@event.IsAssociationFetch && statsEnabled)
+			if (stopWatch != null && @event.IsAssociationFetch)
 			{
-				stopWath.Stop();
-				source.Factory.StatisticsImplementor.FetchEntity(@event.EntityClassName, stopWath.Elapsed);
+				stopWatch.Stop();
+				source.Factory.StatisticsImplementor.FetchEntity(@event.EntityClassName, stopWatch.Elapsed);
 			}
 
 			return entity;
@@ -406,7 +404,6 @@ namespace NHibernate.Event.Default
 			}
 			return old;
 		}
-
 
 		/// <summary> Attempts to load the entity from the second-level cache. </summary>
 		/// <param name="event">The load event </param>

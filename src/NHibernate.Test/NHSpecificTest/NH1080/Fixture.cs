@@ -34,9 +34,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
             c.ID = 1;
             c.Value = "OneToOne";
 
-           
-
-          
             A a = new A();
             a.ID = 1;
             a.Value = "Parent";
@@ -51,7 +48,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
 
             try
             {
-
                 using (ISession s = Sfi.OpenSession())
                 {
                     s.Save(c);
@@ -74,7 +70,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
             {
                 using (ISession s = Sfi.OpenSession())
                 {
-                    
                     s.Delete(a);
                     s.Delete(b1);
                     s.Delete(c);

@@ -26,7 +26,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2386
             protected set { responsibleLegalPersonId = value; }
         }
 
-
         public virtual Organisation Organisation {
             get { return organisation; }
             protected set { organisation = value; }

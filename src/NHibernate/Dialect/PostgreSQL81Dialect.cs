@@ -1,4 +1,5 @@
 using System.Data;
+using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
@@ -40,6 +41,11 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Time, 6, "time($s)");
 			// Not overriding default scale: Posgres doc writes it means "no explicit limit", so max of what it can support,
 			// which suits our needs.
+
+			// timezone seems not available prior to version 8.0
+			RegisterFunction(
+				"current_utctimestamp",
+				new SQLFunctionTemplate(NHibernateUtil.UtcDateTime, "timezone('UTC', current_timestamp)"));
 		}
 
 		public override string ForUpdateNowaitString
@@ -111,7 +117,7 @@ namespace NHibernate.Dialect
 
 		public override SqlString AppendIdentitySelectToInsert(SqlString insertString, string identifierColumnName)
 		{
-			return insertString.Append(" returning ").Append(identifierColumnName);
+			return insertString.Append(" returning ", identifierColumnName);
 		}
 
 		public override bool SupportsInsertSelectIdentity

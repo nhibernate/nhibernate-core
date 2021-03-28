@@ -219,7 +219,6 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 
-
 			HbmBag bag1 = mappings
 								.Items.Cast<HbmClass>()
 								.Where(c => c.Name == typeof(OwnerChildOne).FullName)
@@ -242,7 +241,5 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			HbmProperty propertyMapping2 = childElement2.Properties.Cast<HbmProperty>().Single();
 			Assert.That(propertyMapping2.Columns.Single().name, Is.EqualTo("OwnerChildTwo_CustomColumnName"));
 		}
-
-
 	}
 }

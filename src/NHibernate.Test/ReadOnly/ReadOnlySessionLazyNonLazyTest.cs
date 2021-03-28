@@ -273,7 +273,6 @@ namespace NHibernate.Test.ReadOnly
 		[Test]
 		public void ExistingReadOnlyAfterSetSessionModifiableExisting()
 		{
-	
 			Container cOrig = CreateContainer();
 			ISet<object> expectedInitializedObjects =
 					new HashSet<object>(
@@ -365,13 +364,11 @@ namespace NHibernate.Test.ReadOnly
 			s.CreateQuery("delete from Owner").ExecuteUpdate();
 			t.Commit();
 			s.Close();
-	
 		}
 	
 		[Test]
 		public void ExistingReadOnlyAfterSetSessionModifiableExistingEntityReadOnly()
 		{
-	
 			Container cOrig = CreateContainer();
 			ISet<object> expectedInitializedObjects =
 					new HashSet<object>(
@@ -472,7 +469,6 @@ namespace NHibernate.Test.ReadOnly
 		[Test]
 		public void ExistingReadOnlyAfterSetSessionModifiableProxyExisting()
 		{
-	
 			Container cOrig = CreateContainer();
 			ISet<object> expectedInitializedObjects =
 					new HashSet<object>(
@@ -565,7 +561,6 @@ namespace NHibernate.Test.ReadOnly
 			s.CreateQuery("delete from Owner").ExecuteUpdate();
 			t.Commit();
 			s.Close();
-	
 		}
 	
 		[Test]
@@ -1387,8 +1382,7 @@ namespace NHibernate.Test.ReadOnly
 			t.Commit();
 			s.Close();
 		}
-			
-		
+
 		private Container CreateContainer()
 		{
 			Container c = new Container("container");

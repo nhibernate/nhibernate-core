@@ -22,7 +22,6 @@ namespace NHibernate.Tuple
 		private readonly bool identifierAssignedByInsert;
 		private readonly bool hasIdentifierMapper;
 
-
 		/// <summary>
 		/// Construct a non-virtual identifier property. 
 		/// </summary>

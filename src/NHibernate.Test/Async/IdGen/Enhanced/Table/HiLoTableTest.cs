@@ -65,7 +65,6 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 					await (transaction.CommitAsync());
 				}
 
-
 				using (ITransaction transaction = s.BeginTransaction())
 				{
 					for (int i = 0; i < entities.Length; i++)

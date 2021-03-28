@@ -20,6 +20,11 @@ namespace NHibernate.Type
 			return GetIdentifierOrUniqueKeyType(mapping).GetColumnSpan(mapping);
 		}
 
+		public override int GetOwnerColumnSpan(Engine.IMapping mapping)
+		{
+			return GetColumnSpan(mapping);
+		}
+
 		public override SqlTypes.SqlType[] SqlTypes(Engine.IMapping mapping)
 		{
 			return GetIdentifierOrUniqueKeyType(mapping).SqlTypes(mapping);

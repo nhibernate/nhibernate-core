@@ -43,6 +43,5 @@ namespace NHibernate.Test.TypesTest
 			await (s.FlushAsync());
 			s.Close();
 		}
-
 	}
 }

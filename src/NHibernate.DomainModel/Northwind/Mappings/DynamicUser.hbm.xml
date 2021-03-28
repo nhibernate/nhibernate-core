@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.DomainModel.Northwind.Entities" assembly="NHibernate.DomainModel">
+  <class name="DynamicUser" mutable="false">
+    <subselect>
+      select * from Users
+    </subselect>
+
+    <id name="Id" column="UserId" type="Int32">
+      <generator class="assigned" />
+    </id>
+
+    <dynamic-component name="Properties">
+      <property name="Name" type="AnsiString" />
+      <property name="Enum1" type="NHibernate.DomainModel.Northwind.Entities.EnumStoredAsStringType, NHibernate.DomainModel">
+        <column name="Enum1" length="12" />
+      </property>
+      <many-to-one name="CreatedBy" class="User" not-null="true" lazy="false">
+        <column name="CreatedById" not-null="true" />
+      </many-to-one>
+    </dynamic-component>
+
+    <dynamic-component name="Settings">
+      <property name="Property1" type="AnsiString" />
+      <property name="Property2" type="AnsiString" />
+      <many-to-one name="ModifiedBy" class="User" lazy="false">
+        <column name="ModifiedById" />
+      </many-to-one>
+    </dynamic-component>
+  </class>
+</hibernate-mapping>

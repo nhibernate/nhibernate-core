@@ -34,7 +34,7 @@ namespace NHibernate.Cache
 			{
 				// Ticks is accurate down to 100 nanoseconds - hibernate uses milliseconds
 				// to help calculate next time so drop the nanoseconds portion.(1ms==1000000ns)
-				long newTime = ((DateTime.Now.Ticks / 10000) - baseDateMs) << BinDigits;
+				long newTime = ((DateTime.UtcNow.Ticks / 10000) - baseDateMs) << BinDigits;
 				if (time < newTime)
 				{
 					time = newTime;

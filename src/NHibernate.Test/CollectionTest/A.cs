@@ -28,6 +28,5 @@ namespace NHibernate.Test.CollectionTest
 			get { return _items; }
 			set { _items = value; }
 		}
-
 	}
 }

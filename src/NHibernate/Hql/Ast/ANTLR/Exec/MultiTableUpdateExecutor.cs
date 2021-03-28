@@ -54,7 +54,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				SqlUpdateBuilder update =
 					new SqlUpdateBuilder(Factory.Dialect, Factory).SetTableName(tableNames[tableIndex])
 					.SetWhere(
-						string.Format("({0}) IN ({1})", StringHelper.Join(", ", columnNames[tableIndex]), idSubselect));
+						string.Format("({0}) IN ({1})", string.Join(", ", columnNames[tableIndex]), idSubselect));
 
 				if (Factory.Settings.IsCommentsEnabled)
 				{

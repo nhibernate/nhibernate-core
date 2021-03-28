@@ -136,7 +136,13 @@ namespace NHibernate.Mapping.ByCode.Impl
 				                                      	"The collection type should be an implementation of IUserCollectionType.({0})",
 				                                      	collectionType));
 			}
+
 			mapping.collectiontype = collectionType.AssemblyQualifiedName;
+		}
+
+		public void Type(string collectionType)
+		{
+			mapping.collectiontype = collectionType ?? throw new ArgumentNullException(nameof(collectionType));
 		}
 
 		public void Table(string tableName)

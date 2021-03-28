@@ -297,6 +297,14 @@ namespace NHibernate.SqlCommand
 			return result.ToString();
 		}
 
+		internal static string ReplacePlaceholder(string template, string alias)
+		{
+			// We have to remove the dot when the alias is empty in order to avoid generating an invalid sql statement.
+			// Alias will be empty for DML statements that do not support aliases.
+			var toReplace = !string.IsNullOrEmpty(alias) ? Placeholder : Placeholder + StringHelper.Dot;
+			return template?.Replace(toReplace, alias);
+		}
+
 		private static bool IsNamedParameter(string token)
 		{
 			return token.StartsWith(':');

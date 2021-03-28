@@ -54,5 +54,4 @@ namespace NHibernate.Test.NHSpecificTest.NH1689
 			}
 		}
 	}
-
 }

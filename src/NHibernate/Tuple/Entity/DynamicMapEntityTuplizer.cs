@@ -60,21 +60,9 @@ namespace NHibernate.Tuple.Entity
 			return new DynamicEntityInstantiator(mappingInfo);
 		}
 
-		protected override IProxyFactory BuildProxyFactory(PersistentClass mappingInfo, IGetter idGetter,
-		                                                            ISetter idSetter)
+		protected override IProxyFactory BuildProxyFactory(PersistentClass mappingInfo, IGetter idGetter, ISetter idSetter)
 		{
-			IProxyFactory pf = new MapProxyFactory();
-			try
-			{
-				//TODO: design new lifecycle for ProxyFactory
-				pf.PostInstantiate(EntityName, null, null, null, null, null);
-			}
-			catch (HibernateException he)
-			{
-				log.Warn(he, "could not create proxy factory for:{0}", EntityName);
-				pf = null;
-			}
-			return pf;
+			return new MapProxyFactory(EntityName);
 		}
 	}
 }

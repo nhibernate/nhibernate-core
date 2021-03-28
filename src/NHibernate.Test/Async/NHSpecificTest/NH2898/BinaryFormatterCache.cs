@@ -32,11 +32,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 					return Task.FromResult<object>(null);
 
 				var fmt = new BinaryFormatter
-			{
+				{
 #if !NETFX
 					SurrogateSelector = new SerializationHelper.SurrogateSelector()	
 #endif
-			};
+				};
 				using (var stream = new MemoryStream(entry))
 				{
 					return Task.FromResult<object>(fmt.Deserialize(stream));
@@ -53,11 +53,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 			try
 			{
 				var fmt = new BinaryFormatter
-			{
+				{
 #if !NETFX
 					SurrogateSelector = new SerializationHelper.SurrogateSelector()	
 #endif
-			};
+				};
 				using (var stream = new MemoryStream())
 				{
 					fmt.Serialize(stream, value);

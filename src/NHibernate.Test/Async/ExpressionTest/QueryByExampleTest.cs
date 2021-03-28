@@ -110,7 +110,6 @@ namespace NHibernate.Test.ExpressionTest
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
 				Example ex = Example.Create(master).EnableLike();
 
-
 				crit.Add(Expression.Or(Expression.Not(ex), ex));
 
 				IList result = await (crit.ListAsync());

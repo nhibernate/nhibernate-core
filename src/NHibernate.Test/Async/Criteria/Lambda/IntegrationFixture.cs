@@ -428,8 +428,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					 .Add("page", query)
 					 .Add<int>("count", query.ToRowCountQuery());
 
-				var pageResults = await (multiQuery.GetResultAsync<Person>("page", CancellationToken.None));
-				var countResults = await (multiQuery.GetResultAsync<int>("count", CancellationToken.None));
+				var pageResults = await (multiQuery.GetResultAsync<Person>("page"));
+				var countResults = await (multiQuery.GetResultAsync<int>("count"));
 
 				Assert.That(pageResults.Count, Is.EqualTo(1));
 				Assert.That(pageResults[0].Name, Is.EqualTo("Name 3"));
@@ -451,8 +451,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					 .Add("page", query)
 					 .Add<int>("count", query.ToRowCountQuery());
 
-				var pageResults = await (multiCriteria.GetResultAsync<Person>("page", CancellationToken.None));
-				var countResults = await (multiCriteria.GetResultAsync<int>("count", CancellationToken.None));
+				var pageResults = await (multiCriteria.GetResultAsync<Person>("page"));
+				var countResults = await (multiCriteria.GetResultAsync<int>("count"));
 
 				Assert.That(pageResults.Count, Is.EqualTo(1));
 				Assert.That(pageResults[0].Name, Is.EqualTo("Name 3"));
@@ -508,6 +508,41 @@ namespace NHibernate.Test.Criteria.Lambda
 					.ListAsync()))[0];
 
 				Assert.That(statelessPerson2.Id, Is.EqualTo(personId));
+			}
+		}
+
+		[Test]
+		public async Task QueryOverArithmeticAsync()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(new Person() {Name = "test person 1", Age = 20}));
+				await (s.SaveAsync(new Person() {Name = "test person 2", Age = 50}));
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				var persons1 = await (s.QueryOver<Person>().Where(p => ((p.Age * 2) / 2) + 20 - 20 == 20).ListAsync());
+				var persons2 = await (s.QueryOver<Person>().Where(p => (-(-p.Age)) > 20).ListAsync());
+				var persons3 = await (s.QueryOver<Person>().WhereRestrictionOn(p => ((p.Age * 2) / 2) + 20 - 20).IsBetween(19).And(21).ListAsync());
+				var persons4 = await (s.QueryOver<Person>().WhereRestrictionOn(p => -(-p.Age)).IsBetween(19).And(21).ListAsync());
+				var persons5 = await (s.QueryOver<Person>().WhereRestrictionOn(p => ((p.Age * 2) / 2) + 20 - 20).IsBetween(19).And(51).ListAsync());
+				var persons6 = await (s.QueryOver<Person>().Where(p => ((p.Age * 2) / 2) + 20 - 20 == p.Age - p.Age + 20).ListAsync());
+#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+				var persons7 = await (s.QueryOver<Person>().Where(p => ((p.Age * 2) / 2) + 20 - 20 == null || p.Age * 2 == 20 * 1).ListAsync());
+#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+				var val1 = await (s.QueryOver<Person>().Select(p => p.Age * 2).Where(p => p.Age == 20).SingleOrDefaultAsync<int>());
+
+				Assert.That(persons1.Count, Is.EqualTo(1));
+				Assert.That(persons2.Count, Is.EqualTo(1));
+				Assert.That(persons3.Count, Is.EqualTo(1));
+				Assert.That(persons4.Count, Is.EqualTo(1));
+				Assert.That(persons5.Count, Is.EqualTo(2));
+				Assert.That(persons6.Count, Is.EqualTo(1));
+				Assert.That(persons7.Count, Is.EqualTo(0));
+				Assert.That(val1, Is.EqualTo(40));
 			}
 		}
 	}

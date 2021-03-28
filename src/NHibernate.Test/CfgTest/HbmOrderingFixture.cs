@@ -7,7 +7,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.CfgTest
 {
-
 	#region Classes used by the mappings defined in the Dynamic Assembly
 
 	public class A

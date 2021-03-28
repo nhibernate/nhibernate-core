@@ -10,7 +10,6 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 
 		public Employee()
 		{
-
 		}
 	}
 
@@ -23,7 +22,6 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 
 			public Identifier()
 			{
-
 			}
 
 			public Identifier(long companyId, long personId)
@@ -31,7 +29,6 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 				this.CompanyId = companyId;
 				this.PersonId = personId;
 			}
-
 
 			public override bool Equals(Object o)
 			{
@@ -43,7 +40,6 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 				var t = this.GetType();
 				var u = o.GetType();
 
-
 				if (o == null || !t.IsAssignableFrom(u) || !u.IsAssignableFrom(t))
 				{
 					return false;
@@ -53,7 +49,6 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 
 				return CompanyId.Equals(id.CompanyId)
 						&& PersonId.Equals(id.PersonId);
-
 			}
 
 			public override int GetHashCode()
@@ -67,7 +62,6 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 
 		public EmployeeInfo()
 		{
-
 		}
 
 		public EmployeeInfo(long companyId, long personId)

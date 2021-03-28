@@ -21,7 +21,6 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 	[TestFixture]
     public class FixtureAsync : TestCase
     {
-
         protected override string[] Mappings
         {
             get { return new string[] { "NHSpecificTest.LoadingNullEntityInSet.Mappings.hbm.xml" }; }
@@ -83,7 +82,6 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 				criteria.CreateCriteria("Secondaries", JoinType.LeftOuterJoin);
             	await (criteria.ListAsync());
             }
-
 
         	using (ISession sess = OpenSession())
             {

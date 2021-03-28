@@ -18,7 +18,7 @@ namespace NHibernate.Loader.Custom.Sql
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (SQLCustomQuery));
 
 		private readonly List<IReturn> customQueryReturns = new List<IReturn>();
-		private readonly ISet<string> querySpaces = new HashSet<string>();
+		private readonly HashSet<string> querySpaces = new HashSet<string>();
 		private readonly SqlString sql;
 		private readonly List<IParameterSpecification> parametersSpecifications;
 

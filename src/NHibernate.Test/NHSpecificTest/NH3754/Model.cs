@@ -24,5 +24,4 @@ namespace NHibernate.Test.NHSpecificTest.NH3754
 			set { _isActive = value; }
 		}
 	}
-
 }

@@ -19,7 +19,6 @@ using NHibernate.Exceptions;
 using NHibernate.Linq;
 using NUnit.Framework;
 
-
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
@@ -211,18 +210,18 @@ namespace NHibernate.Test.Linq
 				{
 					// TODO: We should try to verify that the exception actually IS a locking failure and not something unrelated.
 					Assert.ThrowsAsync<GenericADOException>(
-					async () =>
+						async () =>
 						{
 							var result2 = await ((
-								from e in s2.Query<Customer>()
-								where e.CustomerId == customerId
-								select e
-							).WithLock(LockMode.UpgradeNoWait)
-							 .WithOptions(o => o.SetTimeout(5))
-							 .ToListAsync(cancellationToken));
+									from e in s2.Query<Customer>()
+									where e.CustomerId == customerId
+									select e
+								).WithLock(LockMode.UpgradeNoWait)
+								 .WithOptions(o => o.SetTimeout(5))
+								 .ToListAsync(cancellationToken));
 							Assert.That(result2, Is.Not.Null);
 						},
-					"Expected an exception to indicate locking failure due to already locked.");
+						"Expected an exception to indicate locking failure due to already locked.");
 				}
 				return Task.CompletedTask;
 			}

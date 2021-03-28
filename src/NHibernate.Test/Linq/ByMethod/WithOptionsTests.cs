@@ -23,6 +23,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			var query = Substitute.For<IQuery>();
 
 			query.List().Returns(new List<Order>());
+			query.List<Order>().Returns(new List<Order>());
 
 			session.CreateQuery(Arg.Any<IQueryExpression>()).Returns(query);
 
@@ -56,6 +57,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			var query = Substitute.For<IQuery>();
 
 			query.List().Returns(new List<Order>());
+			query.List<Order>().Returns(new List<Order>());
 
 			session.CreateQuery(Arg.Any<IQueryExpression>()).Returns(query);
 

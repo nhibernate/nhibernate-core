@@ -39,7 +39,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// Gets a <see cref="bool"/> indicating if this Value is unique.
 		/// </summary>
-		bool IsAlternateUniqueKey { get;}
+		bool IsAlternateUniqueKey { get; }
 
 		/// <summary>
 		/// Gets a <see cref="bool"/> indicating if this Value can have

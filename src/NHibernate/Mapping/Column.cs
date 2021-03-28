@@ -181,7 +181,6 @@ namespace NHibernate.Mapping
 			return GetAlias(maxAliasLength) + suffix;
 		}
 
-
 		/// <summary>
 		/// Gets or sets if the column can have null values in it.
 		/// </summary>

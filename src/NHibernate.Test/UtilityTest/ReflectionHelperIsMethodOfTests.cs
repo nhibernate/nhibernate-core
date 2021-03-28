@@ -31,7 +31,6 @@ namespace NHibernate.Test.UtilityTest
 
 		private class MyCollection: List<int>
 		{
-			
 		}
 
 		[Test]
@@ -73,7 +72,7 @@ namespace NHibernate.Test.UtilityTest
 
 		private class MyClass : MyAbstractClass<int>
 		{
-			public override int MyMethod() {return 0;}
+			public override int MyMethod() {return 0; }
 		}
 
 		[Test]

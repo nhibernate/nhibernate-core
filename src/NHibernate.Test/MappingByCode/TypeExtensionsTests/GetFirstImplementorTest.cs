@@ -9,35 +9,27 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 	{
 		private interface IInterfaceNoImpl
 		{
-
 		}
 		private interface IInterface1
 		{
-			
 		}
 		private interface IInterface2
 		{
-
 		}
 		private interface IInterface3
 		{
-
 		}
 		private class MyClassNoInterface
 		{
-
 		}
 		private class MyClass1: IInterface1
 		{
-			
 		}
 		private class MyClass2: MyClass1, IInterface2
 		{
-
 		}
 		private class MyClass3 : MyClass2, IInterface3
 		{
-
 		}
 
 		[Test]

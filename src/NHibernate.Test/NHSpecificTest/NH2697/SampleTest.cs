@@ -48,7 +48,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 		{
 			base.OnTearDown();
 
-
 			using (ISession session = this.OpenSession()) {
 				IList<ArticleItem> list = session.CreateCriteria("Article").List<ArticleItem>();
 				foreach (ArticleItem item in list)
@@ -68,7 +67,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 				session.Delete(hql);
 				session.Flush();
 			}
-
 		}
 
 		[Test]
@@ -115,8 +113,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			Assert.That(result.Count, Is.GreaterThan(0));
 		}
 
-
-
 		[Test]
 		public void Can_SetArticleFavoriteWithHQL_NamedParam()
 		{
@@ -142,7 +138,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 				result = session.CreateQuery(HQL).List<ArticleItem>();
 			}
 			Assert.That(result.Count, Is.GreaterThan(0));
-
-		}
+}
 	}
 }

@@ -31,5 +31,4 @@ namespace NHibernate.Test.NHSpecificTest.NH1039Generic
 			set { _Properties = value; }
 		}
 	}
-
 }

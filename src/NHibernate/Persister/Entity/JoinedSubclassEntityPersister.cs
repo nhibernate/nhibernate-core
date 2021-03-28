@@ -140,8 +140,7 @@ namespace NHibernate.Persister.Entity
 					tables.Add(tabname);
 
 					var keyCols = new List<string>(idColumnSpan);
-					var enumerableKCols = new SafetyEnumerable<Column>(key.ColumnIterator);
-					foreach (var kcol in enumerableKCols)
+					foreach (var kcol in key.ColumnIterator.OfType<Column>())
 						keyCols.Add(kcol.GetQuotedName(factory.Dialect));
 
 					keyColumns.Add(keyCols.ToArray());

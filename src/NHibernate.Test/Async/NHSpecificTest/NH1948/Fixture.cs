@@ -17,7 +17,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1948
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-
 		[Test]
 		public async Task CanUseDecimalScaleZeroAsync()
 		{

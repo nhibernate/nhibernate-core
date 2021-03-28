@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Tuple.Component;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -72,12 +73,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				List<IEnumerable<ISelectable>> iters = new List<IEnumerable<ISelectable>>();
-				foreach (Property property in PropertyIterator)
-				{
-					iters.Add(property.ColumnIterator);
-				}
-				return new JoinedEnumerable<ISelectable>(iters);
+				return PropertyIterator.SelectMany(x => x.ColumnIterator);
 			}
 		}
 

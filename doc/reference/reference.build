@@ -8,7 +8,7 @@
 	<property name="root.dir" value="../.." />
 	<include buildfile="${root.dir}/build-common/common.xml" />
 
-	<target name="init" depends="common.init">
+	<target name="init" depends="common.init set-doc-version">
 		<property name="lang" value="en" />
 
 		<property name="output.dir" value="${build.dir}/doc" />

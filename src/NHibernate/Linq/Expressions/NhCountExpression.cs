@@ -10,6 +10,8 @@ namespace NHibernate.Linq.Expressions
 		{
 		}
 
+		public override bool AllowsNullableReturnType => false;
+
 		protected override Expression Accept(NhExpressionVisitor visitor)
 		{
 			return visitor.VisitNhCount(this);

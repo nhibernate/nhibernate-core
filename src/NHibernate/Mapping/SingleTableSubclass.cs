@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Util;
 
 namespace NHibernate.Mapping
@@ -12,7 +13,7 @@ namespace NHibernate.Mapping
 
 		protected internal override IEnumerable<Property> NonDuplicatedPropertyIterator
 		{
-			get { return new JoinedEnumerable<Property>(Superclass.UnjoinedPropertyIterator, UnjoinedPropertyIterator); }
+			get { return Superclass.UnjoinedPropertyIterator.Concat(UnjoinedPropertyIterator); }
 		}
 
 		protected internal override IEnumerable<ISelectable> DiscriminatorColumnIterator

@@ -22,16 +22,16 @@ namespace NHibernate.Engine
 		/// A Map structure is used to segment the keys by entity type since loading can only be done for a particular entity
 		/// type at a time.
 		/// </remarks>
-		private readonly IDictionary<string, LinkedHashSet<EntityKey>> batchLoadableEntityKeys = new Dictionary<string, LinkedHashSet<EntityKey>>(8);
+		private readonly Dictionary<string, LinkedHashSet<EntityKey>> batchLoadableEntityKeys = new Dictionary<string, LinkedHashSet<EntityKey>>(8);
 
 		/// <summary>
 		/// A map of <see cref="SubselectFetch">subselect-fetch descriptors</see>
 		/// keyed by the <see cref="EntityKey" /> against which the descriptor is
 		/// registered.
 		/// </summary>
-		private readonly IDictionary<EntityKey, SubselectFetch> subselectsByEntityKey = new Dictionary<EntityKey, SubselectFetch>(8);
+		private readonly Dictionary<EntityKey, SubselectFetch> subselectsByEntityKey = new Dictionary<EntityKey, SubselectFetch>(8);
 
-		private readonly IDictionary<string, LinkedHashMap<CollectionEntry, IPersistentCollection>> batchLoadableCollections = new Dictionary<string, LinkedHashMap<CollectionEntry, IPersistentCollection>>(8);
+		private readonly Dictionary<string, LinkedHashMap<CollectionEntry, IPersistentCollection>> batchLoadableCollections = new Dictionary<string, LinkedHashMap<CollectionEntry, IPersistentCollection>>(8);
 		/// <summary>
 		/// The owning persistence context.
 		/// </summary>

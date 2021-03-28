@@ -41,7 +41,6 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 			string Blah { get; set; }
 		}
 
-
 		[Test]
 		public void WhenNullArgumentThenThrows()
 		{

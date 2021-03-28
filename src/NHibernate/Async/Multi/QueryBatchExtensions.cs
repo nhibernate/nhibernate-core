@@ -61,6 +61,16 @@ namespace NHibernate.Multi
 			}
 		}
 
+		partial class FutureEnumerable<TResult> : IFutureEnumerable<TResult>
+		{
+
+			public async Task<IEnumerable<TResult>> GetEnumerableAsync(CancellationToken cancellationToken = default(CancellationToken))
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+				return await (_result.GetValueAsync(cancellationToken)).ConfigureAwait(false);
+			}
+		}
+
 		#endregion Helper classes
 	}
 }

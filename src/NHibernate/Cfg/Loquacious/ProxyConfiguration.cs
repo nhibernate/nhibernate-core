@@ -2,7 +2,10 @@ using NHibernate.Bytecode;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	internal class ProxyConfiguration : IProxyConfiguration
+	public class ProxyConfiguration 
+#pragma warning disable 618
+		: IProxyConfiguration
+#pragma warning restore 618
 	{
 		private readonly FluentSessionFactoryConfiguration fc;
 
@@ -11,26 +14,41 @@ namespace NHibernate.Cfg.Loquacious
 			fc = parent;
 		}
 
-		#region Implementation of IProxyConfiguration
-
-		public IProxyConfiguration DisableValidation()
+		public ProxyConfiguration DisableValidation()
 		{
 			fc.Configuration.SetProperty(Environment.UseProxyValidator, "false");
 			return this;
 		}
 
-		public IFluentSessionFactoryConfiguration Through<TProxyFactoryFactory>()
+		public FluentSessionFactoryConfiguration Through<TProxyFactoryFactory>()
 			where TProxyFactoryFactory : IProxyFactoryFactory
 		{
 			fc.Configuration.SetProperty(Environment.ProxyFactoryFactoryClass,
-																	 typeof(TProxyFactoryFactory).AssemblyQualifiedName);
+										typeof(TProxyFactoryFactory).AssemblyQualifiedName);
 			return fc;
 		}
 
+		#region Implementation of IProxyConfiguration
+#pragma warning disable 618
+
+		IProxyConfiguration IProxyConfiguration.DisableValidation()
+		{
+			return DisableValidation();
+		}
+
+		IFluentSessionFactoryConfiguration IProxyConfiguration.Through<TProxyFactoryFactory>()
+		{
+			return Through<TProxyFactoryFactory>();
+		}
+
+#pragma warning restore 618
 		#endregion
 	}
 
-	internal class ProxyConfigurationProperties: IProxyConfigurationProperties
+	public class ProxyConfigurationProperties
+#pragma warning disable 618
+		: IProxyConfigurationProperties
+#pragma warning restore 618
 	{
 		private readonly Configuration configuration;
 

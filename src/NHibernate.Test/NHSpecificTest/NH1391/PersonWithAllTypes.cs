@@ -10,5 +10,4 @@ namespace NHibernate.Test.NHSpecificTest.NH1391
 		public virtual IList<SivasKangal> SivasKangalsGeneric { get; set; }
 		public virtual IList<Cat> CatsGeneric { get; set; }
 	}
-
 }

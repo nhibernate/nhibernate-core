@@ -11,8 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2386
     public class TradingName  {
         private Organisation organisation;
         
-        public virtual Guid TradingNameId { get; protected set;}
-        
+        public virtual Guid TradingNameId { get; protected set; }
 
         public TradingName(Organisation organisation)  {
             if (organisation == null) {
@@ -41,8 +40,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2386
         public override string ToString() {
             return Name;
         }
-
-    }
-
-       
+	}
 }

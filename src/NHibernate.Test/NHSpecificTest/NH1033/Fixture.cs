@@ -15,7 +15,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1033
 			{
 				using (var tran = session.BeginTransaction())
 				{
-
 					var animal0 = new Animal();
 					var animal1 = new Reptile();
 

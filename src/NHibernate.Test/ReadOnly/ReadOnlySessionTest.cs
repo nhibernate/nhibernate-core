@@ -1,14 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using NHibernate.Cfg;
-using NHibernate.Criterion;
-using NHibernate.Dialect;
-using NHibernate.Engine;
 using NHibernate.Proxy;
-using NHibernate.SqlCommand;
-using NHibernate.Transform;
-using NHibernate.Type;
-using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ReadOnly
@@ -40,10 +32,10 @@ namespace NHibernate.Test.ReadOnly
 			DataPoint dp = null;
 			long dpId = -1;
 			
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				s.BeginTransaction();
 			
 				dp = new DataPoint();
 				dp.X = 0.1M;
@@ -51,13 +43,13 @@ namespace NHibernate.Test.ReadOnly
 				dp.Description = "original";
 				s.Save(dp);
 				dpId = dp.Id;
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				s.BeginTransaction();
 				s.DefaultReadOnly = true;
 				Assert.That(s.DefaultReadOnly, Is.True);
 				dp = (DataPoint)s.Load<DataPoint>(dpId);
@@ -69,16 +61,16 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(NHibernateUtil.IsInitialized(dp), Is.True, "was not initialized during mod");
 				Assert.That(dp.Description, Is.EqualTo("changed"), "desc not changed in memory");
 				s.Flush();
-				s.Transaction.Commit();
+				t.Commit();
 			}
-	
-			using (ISession s = OpenSession())
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				s.BeginTransaction();
 				IList list = s.CreateQuery("from DataPoint where description = 'changed'").List();
 				Assert.That(list.Count, Is.EqualTo(0), "change written to database");
 				s.CreateQuery("delete from DataPoint").ExecuteUpdate();
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 		
@@ -1079,7 +1071,6 @@ namespace NHibernate.Test.ReadOnly
 					t.Commit();
 				}
 			}
-	
 		}
 	
 		[Test]

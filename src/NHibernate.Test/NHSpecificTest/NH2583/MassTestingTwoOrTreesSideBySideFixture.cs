@@ -86,7 +86,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
                     Setters<TK, TK, TBO1_I, TBO2_J>(MyBO.SetK1, MyBO.SetK2, MyBO.SetBO1_I1, MyBO.SetBO2_J1));
         }
 
-
         [Test]
         public void Test_xyP_in_A_C_D__rsQ_in_A_B_D____xy_IJ_rs_IJ()
         {

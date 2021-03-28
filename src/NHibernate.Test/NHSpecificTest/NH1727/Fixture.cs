@@ -13,7 +13,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1727
          * The second test passes where I've just switched the order in the where clause
           */
 
-
 		[Test]
 		public void VerifyFilterAndInAndProperty_DoesNotWorkToday()
 		{
@@ -36,7 +35,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1727
 					.List<ClassA>();
 			}
 		}
-
 
 		[Test]
 		public void VerifyFilterAndInAndProperty_WorksToday()
@@ -71,6 +69,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1727
 				t.Commit();
 			}
 		}
-        
 	}
 }

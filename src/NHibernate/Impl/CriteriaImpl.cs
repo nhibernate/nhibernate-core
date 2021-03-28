@@ -22,6 +22,8 @@ namespace NHibernate.Impl
 		private readonly List<OrderEntry> orderEntries = new List<OrderEntry>(10);
 		private readonly Dictionary<string, SelectMode> selectModes = new Dictionary<string, SelectMode>();
 		private readonly Dictionary<string, LockMode> lockModes = new Dictionary<string, LockMode>();
+		private readonly Dictionary<string, HashSet<string>> _entityFetchLazyProperties = new Dictionary<string, HashSet<string>>();
+
 		private int maxResults = RowSelection.NoValue;
 		private int firstResult;
 		private int timeout = RowSelection.NoValue;
@@ -167,6 +169,15 @@ namespace NHibernate.Impl
 			return result;
 		}
 
+		public HashSet<string> GetEntityFetchLazyProperties(string path)
+		{
+			if (_entityFetchLazyProperties.TryGetValue(path, out var result))
+			{
+				return result;
+			}
+			return null;
+		}
+
 		public IResultTransformer ResultTransformer
 		{
 			get { return resultTransformer; }
@@ -269,29 +280,25 @@ namespace NHibernate.Impl
 
 		public IList List()
 		{
-			var results = new List<object>();
-			List(results);
-			return results;
+			return List<object>().ToIList();
 		}
 
 		public void List(IList results)
 		{
+			ArrayHelper.AddAll(results, List());
+		}
+
+		public IList<T> List<T>()
+		{
 			Before();
 			try
 			{
-				session.List(this, results);
+				return session.List<T>(this);
 			}
 			finally
 			{
 				After();
 			}
-		}
-
-		public IList<T> List<T>()
-		{
-			List<T> results = new List<T>();
-			List(results);
-			return results;
 		}
 
 		public T UniqueResult<T>()
@@ -364,6 +371,19 @@ namespace NHibernate.Impl
 				var criteriaByAlias = GetCriteriaByAlias(alias);
 				criteriaByAlias.Fetch(selectMode, associationPath, null);
 				return this;
+			}
+
+			if (selectMode == SelectMode.FetchLazyPropertyGroup)
+			{
+				StringHelper.ParsePathAndPropertyName(associationPath, out associationPath, out var propertyName);
+				if (_entityFetchLazyProperties.TryGetValue(associationPath, out var propertyNames))
+				{
+					propertyNames.Add(propertyName);
+				}
+				else
+				{
+					_entityFetchLazyProperties[associationPath] = new HashSet<string> {propertyName};
+				}
 			}
 
 			selectModes[associationPath] = selectMode;

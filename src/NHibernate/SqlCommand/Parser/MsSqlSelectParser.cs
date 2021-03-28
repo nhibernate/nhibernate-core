@@ -55,7 +55,7 @@ namespace NHibernate.SqlCommand.Parser
 		public SqlString Sql { get; }
 		public int SelectIndex { get; }
 		public int FromIndex { get; }
-		public int OrderByIndex { get;}
+		public int OrderByIndex { get; }
 		public bool IsDistinct { get; }
 
 		/// <summary>

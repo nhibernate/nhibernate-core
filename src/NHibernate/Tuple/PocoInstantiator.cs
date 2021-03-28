@@ -20,7 +20,7 @@ namespace NHibernate.Tuple
 		[NonSerialized]
 		private IInstantiationOptimizer optimizer;
 
-		private readonly IProxyFactory proxyFactory;  // 6.0 TODO: remove
+		private readonly IProxyFactory proxyFactory; // 6.0 TODO: remove
 
 		private readonly bool generateFieldInterceptionProxy; // 6.0 TODO: remove
 

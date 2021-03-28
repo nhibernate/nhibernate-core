@@ -41,7 +41,6 @@ namespace NHibernate.Test.DialectTest
 		// be.
 		protected string[] tableThatNeedsToBeQuoted;
 
-
 		[SetUp]
 		public virtual void SetUp()
 		{

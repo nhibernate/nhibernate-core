@@ -17,8 +17,8 @@ namespace NHibernate.AdoNet
 		private int _countOfCommands;
 		private int _totalExpectedRowsAffected;
 		private DbCommand _currentBatch;
-		private IDictionary<string, List<object>> _parameterValueListHashTable;
-		private IDictionary<string, bool> _parameterIsAllNullsHashTable;
+		private Dictionary<string, List<object>> _parameterValueListHashTable;
+		private Dictionary<string, bool> _parameterIsAllNullsHashTable;
 		private StringBuilder _currentBatchCommandsLog;
 
 		public OracleDataClientBatchingBatcher(ConnectionManager connectionManager, IInterceptor interceptor)

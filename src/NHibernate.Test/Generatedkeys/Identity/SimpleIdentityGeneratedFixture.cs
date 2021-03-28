@@ -1,4 +1,3 @@
-using System.Collections;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Generatedkeys.Identity
@@ -22,18 +21,19 @@ namespace NHibernate.Test.Generatedkeys.Identity
 		[Test]
 		public void SequenceIdentityGenerator()
 		{
-			ISession session = OpenSession();
-			session.BeginTransaction();
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
+			{
+				var e = new MyEntityIdentity { Name = "entity-1" };
+				session.Save(e);
 
-			var e = new MyEntityIdentity { Name = "entity-1" };
-			session.Save(e);
+				// this insert should happen immediately!
+				Assert.AreEqual(1, e.Id, "id not generated through forced insertion");
 
-			// this insert should happen immediately!
-			Assert.AreEqual(1, e.Id, "id not generated through forced insertion");
-
-			session.Delete(e);
-			session.Transaction.Commit();
-			session.Close();
+				session.Delete(e);
+				tran.Commit();
+				session.Close();
+			}
 		}
 	}
 }

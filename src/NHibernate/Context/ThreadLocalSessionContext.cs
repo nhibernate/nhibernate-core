@@ -40,7 +40,6 @@ namespace NHibernate.Context
 
 		protected readonly ISessionFactoryImplementor factory;
 
-
 		public ThreadLocalSessionContext(ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
@@ -78,16 +77,15 @@ namespace NHibernate.Context
 
 				try
 				{
-					if (orphan.Transaction != null && orphan.Transaction.IsActive)
+					try
 					{
-						try
-						{
-							orphan.Transaction.Rollback();
-						}
-						catch (Exception ex)
-						{
-							log.Debug(ex, "Unable to rollback transaction for orphaned session");
-						}
+						var transaction = orphan.GetCurrentTransaction();
+						if (transaction?.IsActive == true)
+							transaction.Rollback();
+					}
+					catch (Exception ex)
+					{
+						log.Debug(ex, "Unable to rollback transaction for orphaned session");
 					}
 					orphan.Close();
 				}

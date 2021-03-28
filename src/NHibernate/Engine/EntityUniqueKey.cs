@@ -112,6 +112,5 @@ namespace NHibernate.Engine
 		{
 			return string.Format("EntityUniqueKey{0}", MessageHelper.InfoString(entityName, uniqueKeyName, key));
 		}
-
 	}
 }

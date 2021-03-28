@@ -14,10 +14,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2459
     }
 
     public class SkillSet : TrainingComponent {
-        
     }
 
     public class Qualification : TrainingComponent {
-        
     }
 }

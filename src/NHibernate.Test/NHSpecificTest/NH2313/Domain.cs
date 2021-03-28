@@ -7,6 +7,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2313
 
 	public class TheOtherPart
 	{
-		
 	}
 }

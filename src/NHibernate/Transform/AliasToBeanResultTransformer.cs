@@ -109,6 +109,11 @@ namespace NHibernate.Transform
 			return collection;
 		}
 
+		protected virtual void OnPropertyNotFound(string propertyName)
+		{
+			throw new PropertyNotFoundException(_resultClass.GetType(), propertyName, "setter");
+		}
+
 		#region Setter resolution
 
 		/// <summary>
@@ -136,7 +141,7 @@ namespace NHibernate.Transform
 			if (TrySet(alias, value, resultObj, _fieldsByNameCaseInsensitive))
 				return;
 
-			throw new PropertyNotFoundException(resultObj.GetType(), alias, "setter");
+			OnPropertyNotFound(alias);
 		}
 
 		private bool TrySet(string alias, object value, object resultObj, Dictionary<string, NamedMember<FieldInfo>> fieldsMap)

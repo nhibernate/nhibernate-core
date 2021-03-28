@@ -26,6 +26,76 @@ namespace NHibernate
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+	public static partial class SessionExtensions
+	{
+
+		/// <summary>
+		/// Return the persistent instance of the given entity class with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <param name="lockMode">The lock mode to use for getting the entity.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
+		public static Task<object> GetAsync(this ISession session, string entityName, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				return
+					ReflectHelper
+						.CastOrThrow<SessionImpl>(session, "Get with entityName and lockMode")
+						.GetAsync(entityName, id, lockMode, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		//NOTE: Keep it as extension
+		/// <summary>
+		/// Return the persistent instance of the given entity name with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <typeparam name="T">The entity class.</typeparam>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <param name="lockMode">The lock mode to use for getting the entity.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
+		public static async Task<T> GetAsync<T>(this ISession session, string entityName, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			return (T) await (session.GetAsync(entityName, id, lockMode, cancellationToken)).ConfigureAwait(false);
+		}
+
+		//NOTE: Keep it as extension
+		/// <summary>
+		/// Return the persistent instance of the given entity name with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <typeparam name="T">The entity class.</typeparam>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
+		public static async Task<T> GetAsync<T>(this ISession session, string entityName, object id, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			return (T) await (session.GetAsync(entityName, id, cancellationToken)).ConfigureAwait(false);
+		}
+	}
 
 	public partial interface ISession : IDisposable
 	{

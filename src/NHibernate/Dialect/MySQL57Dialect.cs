@@ -16,5 +16,8 @@ namespace NHibernate.Dialect
 
 		/// <inheritdoc />
 		public override bool SupportsDateTimeScale => true;
+
+		/// <inheritdoc />
+		public override bool SupportsRowValueConstructorSyntaxInInList => true;
 	}
 }

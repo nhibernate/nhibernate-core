@@ -48,7 +48,6 @@ namespace NHibernate.Test.EngineTest
 		{
 			byte[] value = new byte[]{1,2,3};
 
-
 			var tv = new TypedValue(NHibernateUtil.BinaryBlob, value);
 
 			Assert.That(tv.Comparer, Is.TypeOf<TypedValue.DefaultComparer>());

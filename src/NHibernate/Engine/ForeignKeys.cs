@@ -1,4 +1,3 @@
-
 using NHibernate.Id;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -98,7 +97,6 @@ namespace NHibernate.Engine
 			/// </summary>
 			private bool IsNullifiable(string entityName, object obj)
 			{
-
 				//if (obj == org.hibernate.intercept.LazyPropertyInitializer_Fields.UNFETCHED_PROPERTY)
 				//  return false; //this is kinda the best we can do...
 
@@ -155,10 +153,6 @@ namespace NHibernate.Engine
 		/// </remarks>
 		public static bool IsNotTransientSlow(string entityName, object entity, ISessionImplementor session)
 		{
-			if (entity.IsProxy())
-				return true;
-			if (session.PersistenceContext.IsEntryFor(entity))
-				return true;
 			return !IsTransientSlow(entityName, entity, session);
 		}
 
@@ -178,10 +172,29 @@ namespace NHibernate.Engine
 				return false;
 			}
 
+			var proxy = entity as INHibernateProxy;
+			if (proxy?.HibernateLazyInitializer.IsUninitialized == true)
+			{
+				return false;
+			}
+
 			// let the interceptor inspect the instance to decide
+			var interceptorResult = session.Interceptor.IsTransient(entity);
+			if (interceptorResult.HasValue)
+				return interceptorResult;
+
 			// let the persister inspect the instance to decide
-			return session.Interceptor.IsTransient(entity) ??
-			       session.GetEntityPersister(entityName, entity).IsTransient(entity, session);
+			if (proxy != null)
+			{
+				// The persister only deals with unproxied entities.
+				entity = proxy.HibernateLazyInitializer.GetImplementation();
+			}
+
+			return session
+				.GetEntityPersister(
+					entityName,
+					entity)
+				.IsTransient(entity, session);
 		}
 
 		/// <summary> 
@@ -212,6 +225,11 @@ namespace NHibernate.Engine
 			System.Object[] snapshot =
 				session.PersistenceContext.GetDatabaseSnapshot(persister.GetIdentifier(entity), persister);
 			return snapshot == null;
+		}
+
+		internal static object GetIdentifier(IEntityPersister persister, object entity)
+		{
+			return entity is INHibernateProxy proxy ? proxy.HibernateLazyInitializer.Identifier : persister.GetIdentifier(entity);
 		}
 
 		/// <summary> 
@@ -246,21 +264,10 @@ namespace NHibernate.Engine
 
 					if (IsTransientFast(entityName, entity, session).GetValueOrDefault())
 					{
-						/***********************************************/
-						// TODO NH verify the behavior of NH607 test
-						// these lines are only to pass test NH607 during PersistenceContext porting
-						// i'm not secure that NH607 is a test for a right behavior
-						EntityEntry entry = session.PersistenceContext.GetEntry(entity);
-						if (entry != null)
-							return entry.Id;
-						// the check was put here to have les possible impact
-						/**********************************************/
-
 						entityName = entityName ?? session.GuessEntityName(entity);
 						string entityString = entity.ToString();
 						throw new TransientObjectException(
 							string.Format("object references an unsaved transient instance - save the transient instance before flushing or set cascade action for the property to something that would make it autosave. Type: {0}, Entity: {1}", entityName, entityString));
-
 					}
 					id = session.GetEntityPersister(entityName, entity).GetIdentifier(entity);
 				}

@@ -23,7 +23,6 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return dialect is MsSql2000Dialect;

@@ -24,7 +24,6 @@ namespace NHibernate.Dialect.Function
 		{
 		}
 
-
 		#region ISQLFunction Members
 
 		public override SqlString Render(IList args, ISessionFactoryImplementor factory)
@@ -48,6 +47,5 @@ namespace NHibernate.Dialect.Function
 		}
 
 		#endregion
-
 	}
 }

@@ -138,7 +138,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 			}
 		}
 
-
 		[Test]
 		public async Task CanPageAndSortResultsWithParametersAndFiltersAsync()
 		{

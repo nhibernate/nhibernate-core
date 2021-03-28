@@ -20,8 +20,5 @@ namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
             get { return id; }
             set { id = value; }
         }
-
-       
-
-    }
+	}
 }

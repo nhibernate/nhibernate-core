@@ -14,7 +14,7 @@ namespace NHibernate.Hql.Util
 	public class SessionFactoryHelper
 	{
 		private readonly ISessionFactoryImplementor sfi;
-		private readonly IDictionary<string,CollectionPropertyMapping> collectionPropertyMappingByRole = 
+		private readonly Dictionary<string,CollectionPropertyMapping> collectionPropertyMappingByRole = 
 			new Dictionary<string,CollectionPropertyMapping>();
 
 		public SessionFactoryHelper(ISessionFactoryImplementor sfi)
@@ -73,8 +73,6 @@ namespace NHibernate.Hql.Util
 			 */
 			return TypeNameParser.Parse(assemblyQualifiedName).Type;
 		}
-
-
 
 		/// <summary>
 		/// Locate the collection persister by the collection role.
@@ -140,7 +138,6 @@ namespace NHibernate.Hql.Util
 			return sfi.GetEntityPersister(importedClassName);
 		}
 
-
 		public System.Type GetImportedClass(string className)
 		{
 			string importedName = sfi.GetImportedClassName(className);
@@ -154,7 +151,6 @@ namespace NHibernate.Hql.Util
 			return System.Type.GetType(importedName, false);
 		}
 
-
 		/// <summary>
 		/// Retrieve a PropertyMapping describing the given collection role.
 		/// </summary>
@@ -164,7 +160,6 @@ namespace NHibernate.Hql.Util
 		{
 			return collectionPropertyMappingByRole[role];
 		}
-
 
 		/* Locate the collection persister by the collection role, requiring that
 		* such a persister exist.

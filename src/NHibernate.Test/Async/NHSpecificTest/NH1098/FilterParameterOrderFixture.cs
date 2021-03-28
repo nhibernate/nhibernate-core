@@ -24,7 +24,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1098
 		{
 			using (ISession session = OpenSession())
 			{
-
 				var a1 = new A { Id = 1, ValueA = 5, Enabled = false };
 				session.Save(a1);
 

@@ -24,6 +24,5 @@ namespace NHibernate.Test.Hql
 			get { return _birthdate; }
 			set { _birthdate = value; }
 		}
-
 	}
 }

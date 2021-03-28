@@ -26,7 +26,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1289
 				              		ImageName = "abc"
 				              	};
 
-
 				var purchaseItem = new Cons_PurchaseItem
 				                   	{
 				                   		Product = product,
@@ -39,9 +38,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1289
 
 				tran.Commit();
 			}
-				
-			
 		}
+		
 		protected override void OnTearDown()
 		{
 			using (var ses = OpenSession())

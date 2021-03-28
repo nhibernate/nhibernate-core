@@ -203,6 +203,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
         {
             return new string('a', 12000);
         }
-
-    }
+	}
 }

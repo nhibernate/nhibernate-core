@@ -29,7 +29,6 @@ namespace NHibernate.Id
 	using System.Threading;
 	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
-		private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
 		#region IIdentifierGenerator Members
 
@@ -41,11 +40,10 @@ namespace NHibernate.Id
 		/// <param name="obj">The entity for which the id is being generated.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The new identifier as a <see cref="short"/>, <see cref="int"/>, or <see cref="long"/>.</returns>
-		[MethodImpl()]
 		public virtual async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (await _generate.LockAsync())
+			using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
 			{
 				// This has to be done using a different connection to the containing
 				// transaction becase the new hi value must remain valid even if the

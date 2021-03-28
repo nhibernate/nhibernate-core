@@ -1,5 +1,4 @@
-﻿
-namespace NHibernate.Test.NHSpecificTest.NH3641
+﻿namespace NHibernate.Test.NHSpecificTest.NH3641
 {
 	public interface IEntity
 	{

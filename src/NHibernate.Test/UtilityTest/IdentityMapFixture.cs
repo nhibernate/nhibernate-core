@@ -191,7 +191,6 @@ namespace NHibernate.Test.UtilityTest
 			Assert.IsFalse(map.Contains(item2), "Even though item1.Equals(item2) IdentityMap should not find by item2");
 		}
 
-
 		/// <summary>
 		/// Add the same MutableHashCode class twice and ensure there is only
 		/// one item in the IdentityMap.

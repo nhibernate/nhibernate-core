@@ -56,11 +56,10 @@ namespace NHibernate.Engine
 			cancellationToken.ThrowIfCancellationRequested();
 			//TODO: Should this be an InitializeEntityEventListener??? (watch out for performance!)
 
-			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (session.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWath.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;
@@ -201,10 +200,10 @@ namespace NHibernate.Engine
 			if (log.IsDebugEnabled())
 				log.Debug("done materializing entity {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
-			if (statsEnabled)
+			if (stopWatch != null)
 			{
-				stopWath.Stop();
-				factory.StatisticsImplementor.LoadEntity(persister.EntityName, stopWath.Elapsed);
+				stopWatch.Stop();
+				factory.StatisticsImplementor.LoadEntity(persister.EntityName, stopWatch.Elapsed);
 			}
 		}
 	}

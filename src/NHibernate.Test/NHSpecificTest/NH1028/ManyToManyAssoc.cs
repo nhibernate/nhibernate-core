@@ -64,7 +64,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1028
             set { name = value; }
         }
 
-
 	    public virtual ISet<Container> Containers
 	    {
 	        get { return containers; }
@@ -112,6 +111,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1028
             get { return id; }
             set { id = value; }
         }
-
-    }
+	}
 }

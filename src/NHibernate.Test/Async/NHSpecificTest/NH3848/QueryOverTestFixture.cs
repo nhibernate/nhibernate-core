@@ -24,11 +24,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			try
 			{
 				return
-				session
-					.QueryOver<Customer>()
-					.Fetch(SelectMode.Fetch, n => n.Orders)
-					.TransformUsing(new DistinctRootEntityResultTransformer())
-					.ListAsync(cancellationToken);
+					session
+						.QueryOver<Customer>()
+						.Fetch(SelectMode.Fetch, n => n.Orders)
+						.TransformUsing(new DistinctRootEntityResultTransformer())
+						.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -42,14 +42,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			{
 				Order ordersAlias = null;
 				return
-				session
-					.QueryOver<Customer>()
-					.JoinAlias(
-						n => n.Orders,
-						() => ordersAlias,
-						JoinType.LeftOuterJoin,
-						Restrictions.Eq("Number", orderNumber))
-					.ListAsync(cancellationToken);
+					session
+						.QueryOver<Customer>()
+						.JoinAlias(
+							n => n.Orders,
+							() => ordersAlias,
+							JoinType.LeftOuterJoin,
+							Restrictions.Eq("Number", orderNumber))
+						.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -64,12 +64,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 				Order ordersAlias = null;
 
 				return
-				session
-					.QueryOver<Customer>()
-					.JoinQueryOver(ec => ec.Orders, () => ordersAlias, JoinType.InnerJoin, Restrictions.Eq("Number", orderNumber))
-					.Fetch(SelectMode.Fetch, () => ordersAlias)
-					.TransformUsing(Transformers.DistinctRootEntity)
-					.ListAsync(cancellationToken);
+					session
+						.QueryOver<Customer>()
+						.JoinQueryOver(ec => ec.Orders, () => ordersAlias, JoinType.InnerJoin, Restrictions.Eq("Number", orderNumber))
+						.Fetch(SelectMode.Fetch, () => ordersAlias)
+						.TransformUsing(Transformers.DistinctRootEntity)
+						.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -84,13 +84,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 				Order ordersAlias = null;
 
 				return
-				session
-					.QueryOver<Customer>()
-					.JoinQueryOver(ec => ec.Orders, () => ordersAlias, JoinType.InnerJoin)
-					.Where(Restrictions.Eq("Number", orderNumber))
-					.Fetch(SelectMode.Fetch, () => ordersAlias)
-					.TransformUsing(Transformers.DistinctRootEntity)
-					.ListAsync(cancellationToken);
+					session
+						.QueryOver<Customer>()
+						.JoinQueryOver(ec => ec.Orders, () => ordersAlias, JoinType.InnerJoin)
+						.Where(Restrictions.Eq("Number", orderNumber))
+						.Fetch(SelectMode.Fetch, () => ordersAlias)
+						.TransformUsing(Transformers.DistinctRootEntity)
+						.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -106,20 +106,20 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 				Company companiesAlias = null;
 
 				return
-				session
-					.QueryOver<Customer>()
-					.JoinAlias(
-						n => n.Orders,
-						() => ordersAlias,
-						JoinType.InnerJoin,
-						Restrictions.Eq("Number", orderNumber))
-					.Fetch(SelectMode.Fetch, () => ordersAlias)
-					.JoinAlias(
-						n => n.Companies,
-						() => companiesAlias,
-						JoinType.LeftOuterJoin,
-						Restrictions.Eq("Name", name))
-					.ListAsync(cancellationToken);
+					session
+						.QueryOver<Customer>()
+						.JoinAlias(
+							n => n.Orders,
+							() => ordersAlias,
+							JoinType.InnerJoin,
+							Restrictions.Eq("Number", orderNumber))
+						.Fetch(SelectMode.Fetch, () => ordersAlias)
+						.JoinAlias(
+							n => n.Companies,
+							() => companiesAlias,
+							JoinType.LeftOuterJoin,
+							Restrictions.Eq("Name", name))
+						.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -135,18 +135,18 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 				Company companiesAlias = null;
 
 				return
-				session
-					.QueryOver<Customer>()
-					.JoinAlias(
-						n => n.Orders,
-						() => ordersAlias,
-						JoinType.InnerJoin)
-					.Fetch(SelectMode.Fetch, () => ordersAlias)
-					.JoinAlias(
-						n => n.Companies,
-						() => companiesAlias,
-						JoinType.LeftOuterJoin)
-					.ListAsync(cancellationToken);
+					session
+						.QueryOver<Customer>()
+						.JoinAlias(
+							n => n.Orders,
+							() => ordersAlias,
+							JoinType.InnerJoin)
+						.Fetch(SelectMode.Fetch, () => ordersAlias)
+						.JoinAlias(
+							n => n.Companies,
+							() => companiesAlias,
+							JoinType.LeftOuterJoin)
+						.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -164,18 +164,18 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 				Company companiesAlias = null;
 
 				return
-				session
-					.QueryOver<Customer>()
-					.JoinAlias(
-						n => n.Orders,
-						() => ordersAlias,
-						JoinType.LeftOuterJoin,
-						Restrictions.Eq("Number", orderNumber))
-					.JoinAlias(
-						n => n.Companies,
-						() => companiesAlias,
-						JoinType.LeftOuterJoin)
-					.ListAsync(cancellationToken);
+					session
+						.QueryOver<Customer>()
+						.JoinAlias(
+							n => n.Orders,
+							() => ordersAlias,
+							JoinType.LeftOuterJoin,
+							Restrictions.Eq("Number", orderNumber))
+						.JoinAlias(
+							n => n.Companies,
+							() => companiesAlias,
+							JoinType.LeftOuterJoin)
+						.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -189,11 +189,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			{
 				Order ordersAlias = null;
 				return
-				session
-					.QueryOver<Customer>()
-					.JoinQueryOver(n => n.Orders, () => ordersAlias, JoinType.LeftOuterJoin)
-					.Where(Restrictions.Eq("Number", orderNumber))
-					.ListAsync(cancellationToken);
+					session
+						.QueryOver<Customer>()
+						.JoinQueryOver(n => n.Orders, () => ordersAlias, JoinType.LeftOuterJoin)
+						.Where(Restrictions.Eq("Number", orderNumber))
+						.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -207,15 +207,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			{
 				Order ordersAlias = null;
 				return
-				session
-					.QueryOver<Customer>()
-					.JoinAlias(
-						n => n.Orders,
-						() => ordersAlias,
-						JoinType.LeftOuterJoin)
-					.Where(Restrictions.Eq("Name", customerName))
-					.TransformUsing(new DistinctRootEntityResultTransformer())
-					.ListAsync(cancellationToken);
+					session
+						.QueryOver<Customer>()
+						.JoinAlias(
+							n => n.Orders,
+							() => ordersAlias,
+							JoinType.LeftOuterJoin)
+						.Where(Restrictions.Eq("Name", customerName))
+						.TransformUsing(new DistinctRootEntityResultTransformer())
+						.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -233,23 +233,23 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 				Order ordersAlias = null;
 				Order ordersAlias2 = null;
 				var subquery =
-				QueryOver
-					.Of<Customer>()
-					.JoinAlias(
-						n => n.Orders,
-						() => ordersAlias,
-						JoinType.LeftOuterJoin,
-						Restrictions.Eq("Number", orderNumber))
-					.Select(n => n.Id);
+					QueryOver
+						.Of<Customer>()
+						.JoinAlias(
+							n => n.Orders,
+							() => ordersAlias,
+							JoinType.LeftOuterJoin,
+							Restrictions.Eq("Number", orderNumber))
+						.Select(n => n.Id);
 
 				return
-				session
-					.QueryOver<Customer>()
-					.JoinAlias(n => n.Orders, () => ordersAlias2, JoinType.LeftOuterJoin)
-					.WithSubquery.WhereProperty(n => n.Id).In(subquery)
-					.Where(Restrictions.Eq("Name", customerName))
-					.TransformUsing(new DistinctRootEntityResultTransformer())
-					.ListAsync(cancellationToken);
+					session
+						.QueryOver<Customer>()
+						.JoinAlias(n => n.Orders, () => ordersAlias2, JoinType.LeftOuterJoin)
+						.WithSubquery.WhereProperty(n => n.Id).In(subquery)
+						.Where(Restrictions.Eq("Name", customerName))
+						.TransformUsing(new DistinctRootEntityResultTransformer())
+						.ListAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{

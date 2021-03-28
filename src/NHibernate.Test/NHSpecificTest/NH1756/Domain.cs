@@ -1,10 +1,8 @@
-
 using System;
 using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1756
 {
-
 	public class Book
 	{
 		private DateTime _version;
@@ -39,5 +37,4 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 		public virtual string			Name	{ get; set; }
 		public virtual IList<Page>		Pages	{ get; set; }
 	}
-
 }

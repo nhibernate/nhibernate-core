@@ -84,10 +84,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3918
 			try
 			{
 				var t = new Entity
-			{
-				Name = name,
-				Owner = owner,
-			};
+				{
+					Name = name,
+					Owner = owner,
+				};
 				return session.SaveAsync(t, cancellationToken);
 			}
 			catch (Exception ex)

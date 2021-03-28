@@ -1,4 +1,3 @@
-using System.Configuration;
 using NHibernate.Event;
 using NUnit.Framework;
 using NHibernate.Cfg;
@@ -26,9 +25,7 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void FromAppConfigTest()
 		{
-			Assume.That(TestsContext.ExecutingWithVsTest, Is.False);
-
-			IHibernateConfiguration hc = ConfigurationManager.GetSection("hibernate-configuration") as IHibernateConfiguration;
+			IHibernateConfiguration hc = ConfigurationProvider.Current.GetConfiguration();
 			Assert.That(hc.ByteCodeProviderType, Is.EqualTo("lcg"));
 			Assert.IsTrue(hc.UseReflectionOptimizer);
 			Assert.AreEqual("NHibernate.Test", hc.SessionFactory.Name);
@@ -37,8 +34,6 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void ByteCodeProvider()
 		{
-			Assume.That(TestsContext.ExecutingWithVsTest, Is.False);
-
 			var xml =
 				@"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
@@ -54,9 +49,7 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void IgnoreSystemOutOfAppConfig()
 		{
-			Assume.That(TestsContext.ExecutingWithVsTest, Is.False);
-
-			IHibernateConfiguration hc = ConfigurationManager.GetSection("hibernate-configuration") as IHibernateConfiguration;
+			IHibernateConfiguration hc = ConfigurationProvider.Current.GetConfiguration();
 			string xml =
 			@"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
@@ -75,8 +68,6 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void ObjectsFactory()
 		{
-			Assume.That(TestsContext.ExecutingWithVsTest, Is.False);
-
 			var xml =
 				@"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>

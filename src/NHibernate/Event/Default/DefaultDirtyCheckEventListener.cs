@@ -1,6 +1,5 @@
 using System;
 
-
 namespace NHibernate.Event.Default
 {
 	/// <summary> 

@@ -62,7 +62,6 @@ namespace NHibernate.Cfg.MappingSchema
 
 		#endregion
 
-
 		#region Implementation of ITypeMapping
 
 		public HbmType Type

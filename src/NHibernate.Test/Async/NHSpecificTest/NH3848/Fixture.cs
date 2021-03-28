@@ -286,7 +286,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3848
 			}
 		}
 
-
 		[Test]
 		public async Task ChildCollectionsFromLeftOuterJoinWithWhereClauseRestrictionOnCollectionShouldNotBeInSecondLevelCacheAsync()
 		{

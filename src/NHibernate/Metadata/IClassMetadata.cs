@@ -56,13 +56,13 @@ namespace NHibernate.Metadata
 		bool[] PropertyNullability { get; }
 
 		/// <summary> Get the "laziness" of the properties of this class</summary>
-		bool[] PropertyLaziness { get;}
+		bool[] PropertyLaziness { get; }
 
 		/// <summary> Which properties hold the natural id?</summary>
-		int[] NaturalIdentifierProperties { get;}
+		int[] NaturalIdentifierProperties { get; }
 
 		/// <summary> Does this entity extend a mapped superclass?</summary>
-		bool IsInherited { get;}
+		bool IsInherited { get; }
 
 		#region stuff that is persister-centric and/or EntityInfo-centric
 

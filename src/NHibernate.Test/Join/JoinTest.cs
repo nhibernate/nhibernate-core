@@ -431,7 +431,6 @@ namespace NHibernate.Test.Join
 			return result;
 		}
 
-
 		[Test]
 		public void TestSimpleInsertAndRetrieveEmployee()
 		{

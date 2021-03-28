@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Util;
@@ -6,6 +7,8 @@ using NUnit.Framework;
 namespace NHibernate.Test.UtilityTest
 {
 	// This test is the same of JoinedEnumerableFixture but for generic version.
+	// Since 5.3
+	[Obsolete]
 	[TestFixture]
 	public class JoinedEnumerableGenericFixture
 	{
@@ -101,7 +104,6 @@ namespace NHibernate.Test.UtilityTest
 			Assert.IsTrue(first.WasDisposed, "first should have been disposed of.");
 			Assert.IsTrue(second.WasDisposed, "second should have been disposed of. ");
 		}
-
 
 		private static JoinedEnumerable<int> InitSingle(out EnumerableTester<int> first)
 		{

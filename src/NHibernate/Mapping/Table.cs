@@ -1052,7 +1052,6 @@ namespace NHibernate.Mapping
 			return validationErrors;
 		}
 
-
 		#region Nested type: ForeignKeyKey
 		[Serializable]
 		internal class ForeignKeyKey : IEqualityComparer<ForeignKeyKey>

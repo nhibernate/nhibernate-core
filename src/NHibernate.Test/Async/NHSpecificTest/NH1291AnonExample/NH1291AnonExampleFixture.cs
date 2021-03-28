@@ -69,8 +69,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1291AnonExample
 			}
 		}
 
-
-
 		[Test]
 		public async Task CanCreateAnonExampleForIntAsync()
 		{

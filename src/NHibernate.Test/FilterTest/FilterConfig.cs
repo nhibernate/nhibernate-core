@@ -53,7 +53,6 @@ namespace NHibernate.Test.FilterTest
 			filter2.Validate();
 		}
 
-
 		[Test]
 		public void TestFilterThrowsWithNoParameterSet()
 		{

@@ -218,30 +218,31 @@ namespace NHibernate.Test.ConnectionTest
 		{
 			Prepare();
 			ISession s = GetSessionUnderTest();
-			s.BeginTransaction();
-
-			IList<Silly> entities = new List<Silly>();
-			for (int i = 0; i < 10; i++)
+			using (var t = s.BeginTransaction())
 			{
-				Other other = new Other("other-" + i);
-				Silly silly = new Silly("silly-" + i, other);
-				entities.Add(silly);
-				s.Save(silly);
-			}
-			s.Flush();
+				IList<Silly> entities = new List<Silly>();
+				for (int i = 0; i < 10; i++)
+				{
+					Other other = new Other("other-" + i);
+					Silly silly = new Silly("silly-" + i, other);
+					entities.Add(silly);
+					s.Save(silly);
+				}
+				s.Flush();
 
-			foreach (Silly silly in entities)
-			{
-				silly.Name = "new-" + silly.Name;
-				silly.Other.Name = "new-" + silly.Other.Name;
-			}
-//			long initialCount = sessions.Statistics.getConnectCount();
-			s.Flush();
-//			Assert.AreEqual(initialCount + 1, sessions.Statistics.getConnectCount(), "connection not maintained through Flush");
+				foreach (Silly silly in entities)
+				{
+					silly.Name = "new-" + silly.Name;
+					silly.Other.Name = "new-" + silly.Other.Name;
+				}
+				// long initialCount = sessions.Statistics.getConnectCount();
+				s.Flush();
+				//Assert.AreEqual(initialCount + 1, sessions.Statistics.getConnectCount(), "connection not maintained through Flush");
 
-			s.Delete("from Silly");
-			s.Delete("from Other");
-			s.Transaction.Commit();
+				s.Delete("from Silly");
+				s.Delete("from Other");
+				t.Commit();
+			}
 			Release(s);
 			Done();
 		}

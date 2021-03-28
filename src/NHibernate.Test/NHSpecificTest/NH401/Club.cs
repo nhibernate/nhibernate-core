@@ -10,7 +10,6 @@ namespace NHibernate.Test.NHSpecificTest.NH401
 		private Boolean m_Freelpcmember;
 		private DateTime m_Lastupdated;
 
-
 		public Club()
 		{
 			this.Active = true;

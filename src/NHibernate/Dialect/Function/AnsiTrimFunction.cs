@@ -11,7 +11,6 @@ namespace NHibernate.Dialect.Function
 		{
 		}
 
-
 		#region IFunctionGrammar Members
 
 		bool IFunctionGrammar.IsSeparator(string token)

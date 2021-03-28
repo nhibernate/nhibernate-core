@@ -94,7 +94,7 @@ namespace NHibernate.Loader
 			get { return aliases; }
 		}
 
-		protected override ICollectionPersister[] CollectionPersisters
+		protected internal override ICollectionPersister[] CollectionPersisters
 		{
 			get { return collectionPersisters; }
 		}

@@ -48,7 +48,6 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			s.Close();
 		}
 
-
 		/// <summary>
 		/// This is testing problems that existed in 0.8.0-2 with extra "AND"
 		/// being added to the sql when there was an attribute <c>where="some sql"</c>.
@@ -81,7 +80,6 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			list = q.List();
 			Assert.AreEqual(0, list.Count, "no 'inactive user' according to where clause");
 			s.Close();
-
 
 //			// load a instance of B through hql
 //			s = OpenSession();

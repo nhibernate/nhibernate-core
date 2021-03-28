@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -7,6 +8,8 @@ namespace NHibernate.Util
 	/// Used to ensure a collection filtering a given IEnumerable by a certain type.
 	/// </summary>
 	/// <typeparam name="T">The type used like filter.</typeparam>
+	// Since v5.3 
+	[Obsolete("This class has no more usages and will be removed in a future version")]
 	public class SafetyEnumerable<T> : IEnumerable<T>
 	{
 		/*
@@ -25,8 +28,8 @@ namespace NHibernate.Util
 			{
 				if (element == null)
 					yield return default(T);
-				else if (element is T)
-					yield return (T) element;
+				else if (element is T elem)
+					yield return elem;
 			}
 		}
 

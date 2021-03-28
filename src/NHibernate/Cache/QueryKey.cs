@@ -13,7 +13,7 @@ using NHibernate.Util;
 namespace NHibernate.Cache
 {
 	[Serializable]
-	public class QueryKey : IDeserializationCallback
+	public class QueryKey : IDeserializationCallback, IEquatable<QueryKey>
 	{
 		private readonly ISessionFactoryImplementor _factory;
 		private readonly SqlString _sqlQueryString;
@@ -21,6 +21,7 @@ namespace NHibernate.Cache
 		private readonly object[] _values;
 		private readonly int _firstRow = RowSelection.NoValue;
 		private readonly int _maxRows = RowSelection.NoValue;
+		private readonly string _tenantIdentifier;
 
 		// Sets and dictionaries are populated last during deserialization, causing them to be potentially empty
 		// during the deserialization callback. This causes them to be unreliable when used in hashcode or equals
@@ -47,8 +48,9 @@ namespace NHibernate.Cache
 		/// <param name="queryParameters">The query parameters.</param>
 		/// <param name="filters">The filters.</param>
 		/// <param name="customTransformer">The result transformer; should be null if data is not transformed before being cached.</param>
+		/// <param name="tenantIdentifier">Tenant identifier or null</param>
 		public QueryKey(ISessionFactoryImplementor factory, SqlString queryString, QueryParameters queryParameters,
-		                ISet<FilterKey> filters, CacheableResultTransformer customTransformer)
+						ISet<FilterKey> filters, CacheableResultTransformer customTransformer, string tenantIdentifier)
 		{
 			_factory = factory;
 			_sqlQueryString = queryString;
@@ -70,8 +72,17 @@ namespace NHibernate.Cache
 			_namedParameters = queryParameters.NamedParameters?.ToArray();
 			_filters = filters?.ToArray();
 			_customTransformer = customTransformer;
+			_tenantIdentifier = tenantIdentifier;
 
 			_hashCode = ComputeHashCode();
+		}
+
+		//Since 5.3
+		[Obsolete("Please use overload with tenantIdentifier")]
+		public QueryKey(ISessionFactoryImplementor factory, SqlString queryString, QueryParameters queryParameters,
+		                ISet<FilterKey> filters, CacheableResultTransformer customTransformer)
+			: this(factory, queryString, queryParameters, filters, customTransformer, null)
+		{
 		}
 
 		public CacheableResultTransformer ResultTransformer
@@ -93,47 +104,51 @@ namespace NHibernate.Cache
 
 		public override bool Equals(object other)
 		{
-			QueryKey that = (QueryKey)other;
-			if (!_sqlQueryString.Equals(that._sqlQueryString))
-			{
-				return false;
-			}
-			if (_firstRow != that._firstRow
-				|| _maxRows != that._maxRows)
+			return Equals(other as QueryKey);
+		}
+
+		public bool Equals(QueryKey other)
+		{
+			if (other == null || !_sqlQueryString.Equals(other._sqlQueryString))
 			{
 				return false;
 			}
 
-			if (!Equals(_customTransformer, that._customTransformer))
+			if (_firstRow != other._firstRow || _maxRows != other._maxRows)
+			{
+				return false;
+			}
+
+			if (!Equals(_customTransformer, other._customTransformer))
 			{
 				return false;
 			}
 
 			if (_types == null)
 			{
-				if (that._types != null)
+				if (other._types != null)
 				{
 					return false;
 				}
 			}
 			else
 			{
-				if (that._types == null)
+				if (other._types == null)
 				{
 					return false;
 				}
-				if (_types.Length != that._types.Length)
+				if (_types.Length != other._types.Length)
 				{
 					return false;
 				}
 
 				for (int i = 0; i < _types.Length; i++)
 				{
-					if (!_types[i].Equals(that._types[i]))
+					if (!_types[i].Equals(other._types[i]))
 					{
 						return false;
 					}
-					if (!Equals(_values[i], that._values[i]))
+					if (!Equals(_values[i], other._values[i]))
 					{
 						return false;
 					}
@@ -144,16 +159,21 @@ namespace NHibernate.Cache
 			// issues on deserialization if GetHashCode or Equals are called in its deserialization callback. And
 			// building sets or dictionaries on the fly will in most cases be worst than BagEquals, unless re-coding
 			// its short-circuits.
-			if (!CollectionHelper.BagEquals(_filters, that._filters))
+			if (!CollectionHelper.BagEquals(_filters, other._filters))
 				return false;
-			if (!CollectionHelper.BagEquals(_namedParameters, that._namedParameters, NamedParameterComparer.Instance))
+			if (!CollectionHelper.BagEquals(_namedParameters, other._namedParameters, NamedParameterComparer.Instance))
 				return false;
 
-			if (!CollectionHelper.SequenceEquals<int>(_multiQueriesFirstRows, that._multiQueriesFirstRows))
+			if (!CollectionHelper.SequenceEquals(_multiQueriesFirstRows, other._multiQueriesFirstRows))
 			{
 				return false;
 			}
-			if (!CollectionHelper.SequenceEquals<int>(_multiQueriesMaxRows, that._multiQueriesMaxRows))
+			if (!CollectionHelper.SequenceEquals(_multiQueriesMaxRows, other._multiQueriesMaxRows))
+			{
+				return false;
+			}
+
+			if (_tenantIdentifier != other._tenantIdentifier)
 			{
 				return false;
 			}
@@ -219,6 +239,10 @@ namespace NHibernate.Cache
 
 				result = 37 * result + (_customTransformer == null ? 0 : _customTransformer.GetHashCode());
 				result = 37 * result + _sqlQueryString.GetHashCode();
+				if (_tenantIdentifier != null)
+				{
+					result = (37 * result) + _tenantIdentifier.GetHashCode();
+				}
 				return result;
 			}
 		}
@@ -280,6 +304,10 @@ namespace NHibernate.Cache
 				buf.Append("; ");
 			}
 
+			if (_tenantIdentifier != null)
+			{
+				buf.Append("; tenantIdentifier=").Append(_tenantIdentifier).Append("; ");
+			}
 
 			return buf.ToString();
 		}

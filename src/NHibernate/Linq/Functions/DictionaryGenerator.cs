@@ -25,6 +25,8 @@ namespace NHibernate.Linq.Functions
 
 	public class DictionaryContainsKeyGenerator : BaseHqlGeneratorForMethod
 	{
+		public override bool AllowsNullableReturnType(MethodInfo method) => false;
+
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			return treeBuilder.In(visitor.Visit(arguments[0]).AsExpression(), treeBuilder.Indices(visitor.Visit(targetObject).AsExpression()));

@@ -275,7 +275,7 @@ namespace NHibernate.Test.Stats
 					await (s.CreateQueryBatch()
 					 .Add<Country>(s.CreateQuery("from Country"))
 					 .Add<Continent>(s.CreateQuery("from Continent"))
-					 .ExecuteAsync(CancellationToken.None));
+					 .ExecuteAsync());
 				}
 				Assert.That(stats.QueryExecutionCount, Is.EqualTo(1));
 
@@ -285,7 +285,7 @@ namespace NHibernate.Test.Stats
 					await (s.CreateQueryBatch()
 					 .Add<Country>(DetachedCriteria.For<Country>())
 					 .Add<Continent>(DetachedCriteria.For<Continent>())
-					 .ExecuteAsync(CancellationToken.None));
+					 .ExecuteAsync());
 				}
 				Assert.That(stats.QueryExecutionCount, Is.EqualTo(1));
 			}

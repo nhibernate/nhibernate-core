@@ -97,7 +97,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 			public virtual string MappedExtensionField { get; set; }
 		}
 
-
 		public class TopLevel : MappedExtension
 		{
 			public virtual string TopLevelExtensionField { get; set; }
@@ -133,5 +132,4 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 			public virtual string TopLevelExtensionField { get; set; }
 		}
 	}
-
 }

@@ -56,7 +56,7 @@ namespace NHibernate.Dialect.Schema
 		/// The name of the column that represent the TABLE_NAME in the <see cref="DataTable"/>
 		/// returned by <see cref="GetTables"/>.
 		/// </summary>
-		string ColumnNameForTableName { get;}
+		string ColumnNameForTableName { get; }
 
 		/// <summary>
 		/// Get the Table MetaData.

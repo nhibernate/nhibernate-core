@@ -19,7 +19,6 @@ namespace NHibernate.Test.Futures
 
 		public virtual IList<EntitySimpleChild> ChildrenList { get; set; } = new List<EntitySimpleChild>();
 		public virtual IList<EntityComplex> ChildrenListEmpty { get; set; } = new List<EntityComplex>();
-
 	}
 
 	public class EntitySimpleChild
@@ -36,11 +35,18 @@ namespace NHibernate.Test.Futures
 		public virtual EntityEager Parent { get; set; }
 	}
 
+	public class EntityEagerChild
+	{
+		public Guid Id { get; set; }
+		public string Name { get; set; }
+	}
+	
 	public class EntityEager
 	{
 		public Guid Id { get; set; }
 		public string Name { get; set; }
 
+		public EntityEagerChild EagerEntity { get; set; }
 		public IList<EntitySubselectChild> ChildrenListSubselect { get; set; }
 		public IList<EntitySimpleChild> ChildrenListEager { get; set; } //= new HashSet<EntitySimpleChild>();
 	}

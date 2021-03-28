@@ -23,7 +23,6 @@
 		public virtual Company Company { get; set; }
 
 		public virtual string AddressLine1 { get; set; }
-
 	}
 
 	public class CompanyO2O
@@ -46,6 +45,5 @@
 			Company = company;
 			company.Address = this;
 		}
-
 	}
 }

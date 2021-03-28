@@ -1,5 +1,4 @@
-﻿
-namespace NHibernate.Test.NHSpecificTest.NH1533
+﻿namespace NHibernate.Test.NHSpecificTest.NH1533
 {
 	public class Person
 	{

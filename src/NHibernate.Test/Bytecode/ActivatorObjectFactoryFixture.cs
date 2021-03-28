@@ -43,8 +43,6 @@ namespace NHibernate.Test.Bytecode
 			Assert.That(instance, Is.InstanceOf<PublicParameterLessCtor>());
 		}
 
-
-
 		[Test, Obsolete]
 		public void CreateInstanceWithNoPublicCtor()
 		{

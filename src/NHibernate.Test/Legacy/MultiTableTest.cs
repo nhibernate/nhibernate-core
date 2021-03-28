@@ -29,7 +29,6 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
-
 		[Test]
 		public void Joins()
 		{
@@ -50,7 +49,6 @@ namespace NHibernate.Test.Legacy
 			s.CreateQuery("from SubMulti m where m.Derived like 'F%'").List();
 			s.Close();
 		}
-
 
 		[Test]
 		public void JoinOpenBug()

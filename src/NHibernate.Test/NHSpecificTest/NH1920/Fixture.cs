@@ -7,7 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1920
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-
 		[Test] 
 		public void Can_Query_Without_Collection_Size_Condition() 
 		{ 
@@ -66,6 +65,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1920
 				tx.Commit(); 
 			} 
 		} 
-
 	}
 }

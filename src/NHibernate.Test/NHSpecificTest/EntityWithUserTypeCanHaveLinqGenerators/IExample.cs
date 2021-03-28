@@ -1,4 +1,3 @@
-
 namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 {
 	public interface IExample

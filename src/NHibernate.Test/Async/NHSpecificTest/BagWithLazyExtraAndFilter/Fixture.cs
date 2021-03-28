@@ -21,8 +21,8 @@ namespace NHibernate.Test.NHSpecificTest.BagWithLazyExtraAndFilter
 		public async Task CanUseFilterForLazyExtraAsync()
 		{
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				s.BeginTransaction();
 				var machineRequest = new MachineRequest { EnvId = 1L, Id = 2L };
 				await (s.SaveAsync(new Env
 				{
@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.BagWithLazyExtraAndFilter
 					}
 				}));
 				await (s.SaveAsync(machineRequest));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			using (var s = OpenSession())
@@ -50,11 +50,11 @@ namespace NHibernate.Test.NHSpecificTest.BagWithLazyExtraAndFilter
 			}
 
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				s.BeginTransaction();
 				await (s.DeleteAsync(await (s.LoadAsync<MachineRequest>(2L))));
 				await (s.DeleteAsync(await (s.LoadAsync<Env>(1L))));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		}
 	}

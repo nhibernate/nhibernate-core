@@ -26,7 +26,7 @@ namespace NHibernate.Test.DialectTest
 
 			SqlString limited = dialect.GetLimitString(sql, new SqlString("111"), new SqlString("222"));
 			Assert.AreEqual(
-				"select * from (select rownumber() over(order by a, x) as rownum, a, b, c from d where X = ? and Z = ? order by a, x) as tempresult where rownum between 111+1 and 222",
+				"select a,b,c from (select rownumber() over(order by a, x) as rownum, a, b, c from d where X = ? and Z = ? order by a, x) as tempresult where rownum between 111+1 and 222",
 				limited.ToString());
 			Assert.AreEqual(2, limited.GetParameterCount());
 		}

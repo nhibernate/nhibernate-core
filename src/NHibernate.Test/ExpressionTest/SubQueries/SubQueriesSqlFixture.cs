@@ -45,7 +45,6 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 				comment.IndexInPost = 0;
 				post1.Comments.Add(comment);
 
-
 				session.Save(category);
 				session.Save(author);
 				session.Save(commenter);

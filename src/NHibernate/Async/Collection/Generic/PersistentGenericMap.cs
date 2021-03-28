@@ -15,6 +15,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Collection.Trackers;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Linq;
@@ -27,9 +28,12 @@ namespace NHibernate.Collection.Generic
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, ICollection
+	public partial class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>, ICollection
 	{
 
+		//Since 5.3
+		/// <inheritdoc />
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public override Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -38,8 +42,7 @@ namespace NHibernate.Collection.Generic
 			}
 			try
 			{
-				var sn = (IDictionary<TKey, TValue>) snapshot;
-				return GetOrphansAsync((ICollection)sn.Values, (ICollection)WrappedMap.Values, entityName, Session, cancellationToken);
+				return Task.FromResult<ICollection>(GetOrphans(snapshot, entityName));
 			}
 			catch (Exception ex)
 			{

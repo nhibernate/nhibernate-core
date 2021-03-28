@@ -68,7 +68,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.MarkLabel(skipBaseCall);
 
 			// Push arguments for InvocationInfo constructor.
-			IL.Emit(OpCodes.Ldarg_0);  // 'this' pointer
+			IL.Emit(OpCodes.Ldarg_0); // 'this' pointer
 			PushTargetMethodInfo(IL, proxyMethod, method);
 			PushTargetMethodInfo(IL, callbackMethod, callbackMethod);
 			PushStackTrace(IL);

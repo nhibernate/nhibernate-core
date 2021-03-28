@@ -8,7 +8,6 @@
 
 		public Employee()
 		{
-
 		}
 	}
 
@@ -18,7 +17,6 @@
 
 		public EmployeeInfo()
 		{
-
 		}
 
 		public EmployeeInfo(long id)

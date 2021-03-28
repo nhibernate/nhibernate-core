@@ -19,7 +19,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH3037
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture, Explicit("This is a performance test and may take a while.")]
 	public class ByCodeFixtureAsync : TestCaseMappingByCode
 	{
@@ -42,14 +41,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3037
 		[TestCase(20000)]
 		[TestCase(30000)]
 		[TestCase(40000)]
-		public async Task SortInsertionActionsAsync(int iterations, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task SortInsertionActionsAsync(int iterations)
 		{
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
 				for (int i = 1; i <= iterations; i++)
 				{
-					await (session.SaveAsync(new Entity() { Id = i, Name = i.ToString() }, cancellationToken));
+					await (session.SaveAsync(new Entity() { Id = i, Name = i.ToString() }));
 				}
 
 				var impl = ((NHibernate.Impl.SessionImpl)session);

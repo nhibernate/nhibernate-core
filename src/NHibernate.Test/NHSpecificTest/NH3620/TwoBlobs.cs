@@ -6,6 +6,5 @@ namespace NHibernate.Test.NHSpecificTest.NH3620 {
         public virtual byte[] Blob1 { get; set; }
         public virtual byte[] Blob2 { get; set; }
         public virtual DateTime TheDate { get; set; }
-
-    }
+	}
 }

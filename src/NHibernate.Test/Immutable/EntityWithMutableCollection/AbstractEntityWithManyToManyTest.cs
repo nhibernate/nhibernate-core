@@ -485,7 +485,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			s.Close();
 	
 			AssertInsertCount(1);
-			AssertUpdateCount(isContractVersioned && isPlanVersioned ? 1 : 0);  // NH-specific: Hibernate issues a separate UPDATE for the version number
+			AssertUpdateCount(isContractVersioned && isPlanVersioned ? 1 : 0); // NH-specific: Hibernate issues a separate UPDATE for the version number
 			ClearCounts();
 	
 			s = OpenSession();

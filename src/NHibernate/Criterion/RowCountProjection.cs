@@ -38,7 +38,6 @@ namespace NHibernate.Criterion
 
 		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-
 			throw new InvalidOperationException("not a grouping projection");
 		}
 	}

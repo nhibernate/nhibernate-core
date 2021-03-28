@@ -35,7 +35,7 @@ namespace NHibernate.Event.Default
 			get { return null; }
 		}
 
-		protected abstract CascadingAction CascadeAction { get;}
+		protected abstract CascadingAction CascadeAction { get; }
 
 		/// <summary> 
 		/// After the save, will te version number be incremented
@@ -173,7 +173,8 @@ namespace NHibernate.Event.Default
 						throw new NonUniqueObjectException(id, persister.EntityName);
 					}
 				}
-				persister.SetIdentifier(entity, id);
+				if (!(id is DelayedPostInsertIdentifier))
+					persister.SetIdentifier(entity, id);
 			}
 			else
 			{

@@ -20,7 +20,6 @@ namespace NHibernate
 
 		public ADOException()
 		{
-			
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ADOException"/> class.

@@ -174,9 +174,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 			ResetColumnPlainValues();
 			_manyToOne.Items =
 				formulas
-					.Select(
-						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) })
-					.ToArray();
+					.ToArray(
+						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) });
 		}
 
 		#endregion
@@ -224,16 +223,16 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Columns(params Action<IColumnMapper>[] columnMapper)
 		{
 			ResetColumnPlainValues();
-			int i = 1;
-			var columns = new List<HbmColumn>(columnMapper.Length);
-			foreach (var action in columnMapper)
+			
+			var columns = new HbmColumn[columnMapper.Length];
+			for (var i = 0; i < columnMapper.Length; i++)
 			{
 				var hbm = new HbmColumn();
-				string defaultColumnName = (_member != null ? _member.Name : "unnamedcolumn") + i++;
-				action(new ColumnMapper(hbm, defaultColumnName));
-				columns.Add(hbm);
+				string defaultColumnName = (_member != null ? _member.Name : "unnamedcolumn") + i + 1;
+				columnMapper[i](new ColumnMapper(hbm, defaultColumnName));
+				columns[i] = hbm;
 			}
-			_manyToOne.Items = columns.ToArray();
+			_manyToOne.Items = columns;
 		}
 
 		public void Column(string name)

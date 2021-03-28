@@ -1,4 +1,3 @@
-
 namespace NHibernate.Test.NHSpecificTest.NH2490
 {
     public class Base

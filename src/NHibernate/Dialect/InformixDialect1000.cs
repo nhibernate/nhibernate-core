@@ -7,7 +7,6 @@ using NHibernate.Util;
 //using NHibernate.Dialect.Schema;
 using Environment = NHibernate.Cfg.Environment;
 
-
 namespace NHibernate.Dialect
 {
     /// <summary>

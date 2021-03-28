@@ -69,6 +69,5 @@ namespace NHibernate.Test.DriverTest
 				t.Commit();
 			}
 		}
-
 	}
 }

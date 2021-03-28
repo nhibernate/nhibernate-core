@@ -1,4 +1,3 @@
-
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -20,7 +19,6 @@ namespace NHibernate.Event.Default
 
 		internal override object ProcessCollection(object collection, CollectionType type)
 		{
-
 			if (collection != null)
 				EvictCollection(collection, type);
 

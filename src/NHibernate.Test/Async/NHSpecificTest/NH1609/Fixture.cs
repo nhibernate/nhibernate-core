@@ -86,9 +86,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1609
 					session.CreateCriteria(typeof (EntityB)).Add(Restrictions.Eq("A.Id", a1.Id)).Add(Restrictions.Eq("C.Id", c.Id)).
 					        SetFirstResult(0).SetMaxResults(1));
 
-				Assert.That(await (multi.GetResultAsync<EntityA>(0, CancellationToken.None)), Has.Count.EqualTo(1));
-				Assert.That(await (multi.GetResultAsync<EntityA>(1, CancellationToken.None)), Has.Count.EqualTo(1));
-				Assert.That(await (multi.GetResultAsync<EntityB>(2, CancellationToken.None)), Has.Count.EqualTo(1));
+				Assert.That(await (multi.GetResultAsync<EntityA>(0)), Has.Count.EqualTo(1));
+				Assert.That(await (multi.GetResultAsync<EntityA>(1)), Has.Count.EqualTo(1));
+				Assert.That(await (multi.GetResultAsync<EntityB>(2)), Has.Count.EqualTo(1));
 			}
 		}
 

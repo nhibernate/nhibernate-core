@@ -62,7 +62,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 			base.OnTearDown();
 		}
 
-
 		[Test]
 		public void OffsetNotStartingAtOneSetsParameterToSkipValue()
 		{
@@ -103,7 +102,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 		public bool ForceOffsetStartsAtOne { get; set; }
 		public override bool OffsetStartsAtOne { get { return ForceOffsetStartsAtOne; } }
 	}
-
 
 	public class OffsetTestDriver : SqlClientDriver
 	{

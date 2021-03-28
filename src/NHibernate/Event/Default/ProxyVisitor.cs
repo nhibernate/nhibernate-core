@@ -19,7 +19,6 @@ namespace NHibernate.Event.Default
 		/// <returns></returns>
 		internal override object ProcessEntity(object value, EntityType entityType)
 		{
-
 			if (value != null)
 			{
 				Session.PersistenceContext.ReassociateIfUninitializedProxy(value);

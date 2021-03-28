@@ -186,11 +186,10 @@ namespace NHibernate.Engine.Loading
 			var persistenceContext = LoadContext.PersistenceContext;
 			var session = persistenceContext.Session;
 
-			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (session.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWath.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 
 			bool hasNoQueuedOperations = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
@@ -228,10 +227,10 @@ namespace NHibernate.Engine.Loading
 				log.Debug("collection fully initialized: {0}", MessageHelper.CollectionInfoString(persister, lce.Collection, lce.Key, session));
 			}
 
-			if (statsEnabled)
+			if (stopWatch != null)
 			{
-				stopWath.Stop();
-				session.Factory.StatisticsImplementor.LoadCollection(persister.Role, stopWath.Elapsed);
+				stopWatch.Stop();
+				session.Factory.StatisticsImplementor.LoadCollection(persister.Role, stopWatch.Elapsed);
 			}
 		}
 

@@ -74,8 +74,6 @@ namespace NHibernate.Test.Hql.Ast
 	//  [Test]
 	//  public void BasicQuery()
 	//  {
-	//    XmlConfigurator.Configure();
-
 	//    string input = "select o.id, li.id from NHibernate.Test.CompositeId.Order o join o.LineItems li";// join o.LineItems li";
 
 	//    ISessionFactoryImplementor sfi = SetupSFI();

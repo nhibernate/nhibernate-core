@@ -25,7 +25,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1332
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				
 				s.Save(a);
 				tx.Commit();
 			}

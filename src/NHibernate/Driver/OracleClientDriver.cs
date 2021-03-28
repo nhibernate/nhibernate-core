@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using NHibernate.Engine.Query;
@@ -8,6 +9,9 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// A NHibernate Driver for using the Oracle DataProvider.
 	/// </summary>
+	// Since v5.3
+	// Deprecated by Microsoft: https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/oracle-and-adonet
+	[Obsolete("Use OracleManagedDataClientDriver or OracleDataClientDriver driver instead.")]
 	public class OracleClientDriver : ReflectionBasedDriver
 	{
 		private static readonly SqlType GuidSqlType = new SqlType(DbType.Binary, 16);

@@ -71,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1526
 
 		private static string GetCacheKey(Expression exp)
 		{
-			return ExpressionKeyVisitor.Visit(exp, new Dictionary<ConstantExpression, NamedParameter>());
+			return ExpressionKeyVisitor.Visit(exp, new Dictionary<ConstantExpression, NamedParameter>(), null);
 		}
 	}
 }

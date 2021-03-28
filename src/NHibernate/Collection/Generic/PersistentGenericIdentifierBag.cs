@@ -12,6 +12,7 @@ using NHibernate.Linq;
 using NHibernate.Loader;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Collection.Generic
 {
@@ -32,7 +33,7 @@ namespace NHibernate.Collection.Generic
 	/// </remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
-	public partial class PersistentIdentifierBag<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
+	public partial class PersistentIdentifierBag<T> : AbstractPersistentCollection, IList<T>, IReadOnlyList<T>, IList, IQueryable<T>
 	{
 		/* NH considerations:
 		 * For various reason we know that the underlining type will be a List<T> or a 
@@ -159,7 +160,7 @@ namespace NHibernate.Collection.Generic
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			var snap = (ISet<SnapshotElement>)GetSnapshot();
-			ArrayList deletes = new ArrayList(snap.Select(x => x.Id).ToArray());
+			var deletes = snap.ToList(x => x.Id);
 			for (int i = 0; i < _values.Count; i++)
 			{
 				if (_values[i] != null)
@@ -245,7 +246,7 @@ namespace NHibernate.Collection.Generic
 		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
 			var sn = (ISet<SnapshotElement>)GetSnapshot();
-			return GetOrphans(sn.Select(x => x.Value).ToArray(), (ICollection) _values, entityName, Session);
+			return GetOrphans(sn.ToArray(x => x.Value), (ICollection) _values, entityName, Session);
 		}
 
 		public override void PreInsert(ICollectionPersister persister)

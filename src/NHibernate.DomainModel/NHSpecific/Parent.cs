@@ -13,7 +13,6 @@ namespace NHibernate.DomainModel.NHSpecific
 		private ISet<object> _children;
 		private ISet<Parent> _adultFriends;
 
-
 		public Parent()
 		{
 			_adultFriends = new SortedSet<Parent>(new ParentComparer());

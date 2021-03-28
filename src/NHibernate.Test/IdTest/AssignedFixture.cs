@@ -6,11 +6,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.IdTest
 {
-
 	[TestFixture]
 	public class AssignedFixture : IdFixtureBase
 	{
-
 		private string[] GetAssignedIdentifierWarnings(LogSpy ls)
 		{
 			List<string> warnings = new List<string>();
@@ -249,7 +247,5 @@ namespace NHibernate.Test.IdTest
 				Assert.That(warnings.Length, Is.EqualTo(0));
 			}
 		}
-
 	}
-
 }

@@ -17,6 +17,5 @@ namespace NHibernate.Test.Join
 			get { return _Comments; }
 			set { _Comments = value; }
 		}
-
 	}
 }

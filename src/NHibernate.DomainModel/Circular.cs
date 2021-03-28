@@ -18,7 +18,6 @@ namespace NHibernate.DomainModel
 			set { _id = value; }
 		}
 
-
 		public System.Type Clazz
 		{
 			get { return _clazz; }

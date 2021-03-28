@@ -69,6 +69,16 @@ namespace NHibernate.DomainModel.Northwind.Entities
             get { return _session.Query<User>(); }
         }
 
+        public IQueryable<NumericEntity> NumericEntities
+        {
+            get { return _session.Query<NumericEntity>(); }
+        }
+
+        public IQueryable<DynamicUser> DynamicUsers
+        {
+            get { return _session.Query<DynamicUser>(); }
+        }
+
         public IQueryable<PatientRecord> PatientRecords
         {
             get { return _session.Query<PatientRecord>(); }
@@ -94,7 +104,7 @@ namespace NHibernate.DomainModel.Northwind.Entities
             get { return _session.Query<Role>(); }
         }
 
-        public IEnumerable<IUser> IUsers
+        public IQueryable<IUser> IUsers
         {
             get { return _session.Query<IUser>(); }
         }

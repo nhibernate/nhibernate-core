@@ -1,10 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using System.Threading;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
@@ -78,8 +76,8 @@ namespace NHibernate.Test.Insertordering
 		[Test]
 		public void BatchOrdering()
 		{
-			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				for (int i = 0; i < instancesPerEach; i++)
 				{
@@ -90,7 +88,7 @@ namespace NHibernate.Test.Insertordering
 					user.AddMembership(group);
 				}
 				StatsBatcher.Reset();
-				s.Transaction.Commit();
+				t.Commit();
 			}
 
 			int expectedBatchesPerEntity = (instancesPerEach / batchSize) + ((instancesPerEach % batchSize) == 0 ? 0 : 1);

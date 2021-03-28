@@ -133,7 +133,6 @@ namespace NHibernate.Test.Classic
 				// Ok
 			}
 
-
 			// cleanup
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
@@ -156,6 +155,5 @@ namespace NHibernate.Test.Classic
 				s.Flush();
 			}
 		}
-
 	}
 }

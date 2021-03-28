@@ -38,7 +38,6 @@ namespace NHibernate.DomainModel
 			return true;
 		}
 
-
 		public override int GetHashCode()
 		{
 			unchecked

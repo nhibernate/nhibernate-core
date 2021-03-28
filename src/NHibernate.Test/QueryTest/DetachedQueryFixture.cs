@@ -443,7 +443,6 @@ namespace NHibernate.Test.QueryTest
 		[Test, Explicit]
 		public void PerformanceDiffSimplyQuery()
 		{
-
 			DateTime sDQStart = DateTime.Now;
 			DetachedQuery dq = new DetachedQuery("from Foo f where f.Name=:pn and f.Description=:pd");
 			dq.SetString("pn", "N2").SetString("pd", "D2");
@@ -459,7 +458,6 @@ namespace NHibernate.Test.QueryTest
 				IQuery q = s.CreateQuery("from Foo f where f.Name=:pn and f.Description=:pd").SetString("pn", "N2").SetString("pd", "D2");
 			}
 			DateTime sQStop = DateTime.Now;
-
 
 			Console.WriteLine("DetachedQueryCycle={0} QueryCycl={1}  Diff={2}", sDQStop - sDQStart, sQStop - sQStart,
 												(sDQStop - sDQStart) - (sQStop - sQStart));

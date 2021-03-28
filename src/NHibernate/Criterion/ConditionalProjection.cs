@@ -5,7 +5,6 @@ namespace NHibernate.Criterion
 	using Engine;
 	using SqlCommand;
 	using Type;
-	using Util;
 
 	[Serializable]
 	public class ConditionalProjection : SimpleProjection
@@ -45,12 +44,10 @@ namespace NHibernate.Criterion
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
 			SqlString condition = criterion.ToSqlString(criteria, criteriaQuery);
-			SqlString ifTrue = whenTrue.ToSqlString(criteria, position + GetHashCode() + 1, criteriaQuery);
-			ifTrue = SqlStringHelper.RemoveAsAliasesFromSql(ifTrue);
-			SqlString ifFalse = whenFalse.ToSqlString(criteria, position + GetHashCode() + 2, criteriaQuery);
-			ifFalse = SqlStringHelper.RemoveAsAliasesFromSql(ifFalse);
+			var ifTrue = CriterionUtil.GetColumnNameAsSqlStringPart(whenTrue, criteriaQuery, criteria);
+			var ifFalse = CriterionUtil.GetColumnNameAsSqlStringPart(whenFalse, criteriaQuery, criteria);
 			return new SqlString("(case when ", condition, " then ", ifTrue, " else ", ifFalse, " end) as ",
-			                     GetColumnAliases(position, criteria, criteriaQuery)[0]);
+			                     GetColumnAlias(position));
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -59,11 +56,11 @@ namespace NHibernate.Criterion
 			IType[] falseTypes = whenFalse.GetTypes(criteria, criteriaQuery);
 
 			bool areEqual = trueTypes.Length == falseTypes.Length;
-			if (trueTypes.Length == falseTypes.Length)
+			if (areEqual)
 			{
 				for (int i = 0; i < trueTypes.Length; i++)
 				{
-					if(trueTypes[i].Equals(falseTypes[i]) == false)
+					if(trueTypes[i].ReturnedClass != falseTypes[i].ReturnedClass)
 					{
 						areEqual = false;
 						break;
@@ -73,8 +70,8 @@ namespace NHibernate.Criterion
 			if(areEqual == false)
 			{
 				string msg = "Both true and false projections must return the same types."+ Environment.NewLine +
-				             "But True projection returns: ["+StringHelper.Join(", ", trueTypes) +"] "+ Environment.NewLine+
-				             "And False projection returns: ["+StringHelper.Join(", ", falseTypes)+ "]";
+				             "But True projection returns: ["+string.Join<IType>(", ", trueTypes) +"] "+ Environment.NewLine+
+				             "And False projection returns: ["+string.Join<IType>(", ", falseTypes)+ "]";
 
 				throw new HibernateException(msg);
 			}

@@ -45,6 +45,5 @@ namespace NHibernate.Test.Unionsubclass
 			get { return null; }
 			set { throw new System.NotSupportedException(); }
 		}
-
 	}
 }

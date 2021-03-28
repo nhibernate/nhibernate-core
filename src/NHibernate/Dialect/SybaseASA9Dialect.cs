@@ -72,7 +72,7 @@ namespace NHibernate.Dialect
 			//RegisterColumnType(DbType.Xml, "TEXT");
 
 			// Override standard HQL function
-			RegisterFunction("current_timestamp", new StandardSQLFunction("current_timestamp"));
+			RegisterFunction("current_timestamp", new StandardSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime));
 			RegisterFunction("length", new StandardSafeSQLFunction("length", NHibernateUtil.String, 1));
 			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));
 			RegisterFunction("lower", new StandardSafeSQLFunction("lower", NHibernateUtil.String, 1));
@@ -96,6 +96,9 @@ namespace NHibernate.Dialect
 		{
 			get { return true; }
 		}
+
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false;
 
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{

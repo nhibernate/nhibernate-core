@@ -9,11 +9,9 @@ using NHibernate.Classic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1938
 {
-
 	public class Person
 	{ 
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
 	} 
-
 }

@@ -1,9 +1,13 @@
+using System;
+
 namespace NHibernate.Cfg.Loquacious
 {
 	/// <summary>
 	/// Properties of TypeDef configuration.
 	/// </summary>
 	/// <seealso cref="ConfigurationExtensions.TypeDefinition{TDef}"/>
+	//Since 5.3
+	[Obsolete("Replaced by direct class usage")]
 	public interface ITypeDefConfigurationProperties
 	{
 		/// <summary>
@@ -30,12 +34,18 @@ namespace NHibernate.Cfg.Loquacious
 		object Properties { get; set; }
 	}
 
-	internal class TypeDefConfigurationProperties<T> : ITypeDefConfigurationProperties
-		where T: class
+	/// <summary>
+	/// Properties of TypeDef configuration.
+	/// </summary>
+	/// <seealso cref="ConfigurationExtensions.TypeDefinition{TDef}"/>
+	public class TypeDefConfigurationProperties 
+#pragma warning disable 618
+		: ITypeDefConfigurationProperties
+#pragma warning restore 618
 	{
-		public TypeDefConfigurationProperties()
+		internal static TypeDefConfigurationProperties Create<T>()
 		{
-			Alias = typeof(T).Name;
+			return new TypeDefConfigurationProperties {Alias = typeof(T).Name};
 		}
 
 		#region Implementation of ITypeDefConfigurationProperties

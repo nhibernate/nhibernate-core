@@ -10,8 +10,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1192
 		Bold=1,
 		Italic=2,
 		Underlined=4
-
 	}
+	
 	public class ObjectA
 	{
 		public virtual int Id { get; set; }

@@ -6,7 +6,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1948
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-
 		[Test]
 		public void CanUseDecimalScaleZero()
 		{

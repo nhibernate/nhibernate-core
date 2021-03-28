@@ -37,7 +37,6 @@ namespace NHibernate.Test.Hql.Ast
 
 				this.key1 = key1;
 				this.key2 = key2;
-
 			}
 
 			public virtual KeyManyToOneKeyEntity Key1

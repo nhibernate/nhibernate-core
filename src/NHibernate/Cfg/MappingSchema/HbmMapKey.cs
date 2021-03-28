@@ -7,7 +7,6 @@ namespace NHibernate.Cfg.MappingSchema
 {
 	public partial class HbmMapKey: IColumnsMapping, ITypeMapping
 	{
-
 		#region Implementation of IColumnsMapping
 
 		[XmlIgnore]

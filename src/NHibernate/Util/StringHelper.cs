@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-
 namespace NHibernate.Util
 {
 	/// <summary></summary>
@@ -43,6 +42,8 @@ namespace NHibernate.Util
 
 		public const int AliasTruncateLength = 10;
 
+		//Since 5.3
+		[Obsolete("Please use string.Join instead")]
 		public static string Join(string separator, IEnumerable objects)
 		{
 			StringBuilder buf = new StringBuilder();
@@ -60,11 +61,6 @@ namespace NHibernate.Util
 			}
 
 			return buf.ToString();
-		}
-
-		internal static string Join<T>(string separator, IEnumerable<T> objects)
-		{
-			return string.Join(separator, objects);
 		}
 
 		/// <summary>
@@ -383,6 +379,24 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
+		/// Returns true if supplied fullPath has non empty pathToProperty
+		/// "alias.Entity.Value" -> pathToProperty = "alias.Entity", propertyName = "Value"
+		/// </summary>
+		internal static bool ParsePathAndPropertyName(string fullPath, out string pathToProperty, out string propertyName)
+		{
+			propertyName = fullPath;
+			pathToProperty = string.Empty;
+			int loc = fullPath.LastIndexOf('.');
+			if (loc < 0)
+				return false;
+
+			propertyName = fullPath.Substring(loc + 1);
+			pathToProperty = fullPath.Substring(0, loc);
+			return true;
+		}
+		
+		
+		/// <summary>
 		/// Converts a <see cref="String"/> in the format of "true", "t", "false", or "f" to
 		/// a <see cref="Boolean"/>.
 		/// </summary>
@@ -531,7 +545,6 @@ namespace NHibernate.Util
 		{
 			return !IsEmpty(str);
 		}
-
 
 		/// <summary>
 		/// 
@@ -813,7 +826,6 @@ namespace NHibernate.Util
 			return new[] { filterName, parameterName };
 		}
 
-
 		/// <summary>
 		/// Return the index of the next line separator, starting at startIndex. If will match
 		/// the first CRLF or LF line separator. If there is no match, -1 will be returned. When
@@ -835,7 +847,6 @@ namespace NHibernate.Util
 
 			return matchStartIdx;
 		}
-
 
 		/// <summary>
 		/// Check if the given index points to a line separator in the string. Both CRLF and LF

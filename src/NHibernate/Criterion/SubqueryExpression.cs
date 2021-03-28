@@ -98,7 +98,6 @@ namespace NHibernate.Criterion
 			return buf.ToSqlString();
 		}
 
-
 		public override string ToString()
 		{
 			if (prefixOp)

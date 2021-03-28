@@ -54,7 +54,6 @@ namespace NHibernate.DomainModel.NHSpecific
 			set { Siblings.Insert(0, value); }
 		}
 
-
 		public Child SecondSibling
 		{
 			get { return (Child) Siblings[1]; }
@@ -114,7 +113,6 @@ namespace NHibernate.DomainModel.NHSpecific
 			get { return _friends; }
 			set { _friends = value; }
 		}
-
 
 		public DateTime FavoriteDate
 		{

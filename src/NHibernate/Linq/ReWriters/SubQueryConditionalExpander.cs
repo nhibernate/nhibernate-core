@@ -24,6 +24,14 @@ namespace NHibernate.Linq.ReWriters
 			_expander.Transform(selectClause);
 		}
 
+		public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
+		{
+			if (fromClause.FromExpression is SubQueryExpression subqueryExpression)
+			{
+				VisitQueryModel(subqueryExpression.QueryModel);
+			}
+		}
+
 		public override void VisitOrdering(Ordering ordering, QueryModel queryModel, OrderByClause orderByClause, int index)
 		{
 			_expander.Transform(ordering);
@@ -94,7 +102,6 @@ namespace NHibernate.Linq.ReWriters
 				_nominate.Push(false);
 				var newTest = Visit(node.Test);
 				_nominate.Pop();
-
 
 				_nominate.Push(false);
 				var newTrue = Visit(node.IfTrue);

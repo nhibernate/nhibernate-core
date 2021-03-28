@@ -20,6 +20,5 @@ namespace NHibernate.Collection
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task ForceInitializationAsync(CancellationToken cancellationToken);
-
 	}
 }

@@ -89,7 +89,6 @@ namespace NHibernate.Id.Enhanced
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SequenceStyleGenerator));
 
-
 		public const string ConfigPreferSegmentPerEntity = "prefer_entity_table_as_segment_value";
 
 		public const string TableParam = "table_name";
@@ -115,18 +114,15 @@ namespace NHibernate.Id.Enhanced
 
 		public const string OptimizerParam = "optimizer";
 
-
 		/// <summary>
 		/// Type mapping for the identifier.
 		/// </summary>
 		public IType IdentifierType { get; private set; }
 
-
 		/// <summary>
 		/// The name of the table in which we store this generator's persistent state.
 		/// </summary>
 		public string TableName { get; private set; }
-
 
 		/// <summary>
 		/// The name of the column in which we store the segment to which each row
@@ -134,14 +130,12 @@ namespace NHibernate.Id.Enhanced
 		/// </summary>
 		public string SegmentColumnName { get; private set; }
 
-
 		/// <summary>
 		/// The value in the column identified by <see cref="SegmentColumnName"/> which
 		/// corresponds to this generator instance.  In other words, this value
 		/// indicates the row in which this generator instance will store values.
 		/// </summary>
 		public string SegmentValue { get; private set; }
-
 
 		/// <summary>
 		/// The size of the column identified by <see cref="SegmentColumnName"/>
@@ -152,12 +146,10 @@ namespace NHibernate.Id.Enhanced
 		/// </remarks>
 		public int SegmentValueLength { get; private set; }
 
-
 		/// <summary>
 		/// The name of the column in which we store our persistent generator value.
 		/// </summary>
 		public string ValueColumnName { get; private set; }
-
 
 		/// <summary>
 		/// The initial value to use when we find no previous state in the
@@ -165,13 +157,11 @@ namespace NHibernate.Id.Enhanced
 		/// </summary>
 		public int InitialValue { get; private set; }
 
-
 		/// <summary>
 		/// The amount of increment to use.  The exact implications of this
 		/// depends on the optimizer being used, see <see cref="Optimizer"/>.
 		/// </summary>
 		public int IncrementSize { get; private set; }
-
 
 		/// <summary>
 		/// The optimizer being used by this generator. This mechanism
@@ -180,12 +170,10 @@ namespace NHibernate.Id.Enhanced
 		/// </summary>
 		public IOptimizer Optimizer { get; private set; }
 
-
 		/// <summary>
 		/// The table access count. Only really useful for unit test assertions.
 		/// </summary>
 		public long TableAccessCount { get; private set; }
-
 
 		private SqlString selectQuery;
 		private SqlTypes.SqlType[] selectParameterTypes;
@@ -193,13 +181,12 @@ namespace NHibernate.Id.Enhanced
 		private SqlTypes.SqlType[] insertParameterTypes;
 		private SqlString updateQuery;
 		private SqlTypes.SqlType[] updateParameterTypes;
-
+		private readonly AsyncLock _asyncLock = new AsyncLock();
 
 		public virtual string GeneratorKey()
 		{
 			return TableName;
 		}
-
 
 		#region Implementation of IConfigurable
 
@@ -221,7 +208,6 @@ namespace NHibernate.Id.Enhanced
 			BuildUpdateQuery();
 			BuildInsertQuery();
 
-
 			// if the increment size is greater than one, we prefer pooled optimization; but we
 			// need to see if the user prefers POOL or POOL_LO...
 			string defaultPooledOptimizerStrategy = PropertiesHelper.GetBoolean(Cfg.Environment.PreferPooledValuesLo, parms, false)
@@ -234,7 +220,7 @@ namespace NHibernate.Id.Enhanced
 					optimizationStrategy,
 					IdentifierType.ReturnedClass,
 					IncrementSize,
-					PropertiesHelper.GetInt32(InitialParam, parms, -1)  // Use -1 as default initial value here to signal that it's not set.
+					PropertiesHelper.GetInt32(InitialParam, parms, -1) // Use -1 as default initial value here to signal that it's not set.
 				);
 		}
 
@@ -288,7 +274,6 @@ namespace NHibernate.Id.Enhanced
 			//return dialect.quote( normalizer.normalizeIdentifierQuoting( name ) );
 		}
 
-
 		/// <summary>
 		/// Determine the name of the column in which we will store the generator persistent value.
 		/// Called during configuration.
@@ -303,7 +288,6 @@ namespace NHibernate.Id.Enhanced
 			return dialect.QuoteForColumnName(name);
 		}
 
-
 		/// <summary>
 		/// Determine the segment value corresponding to this generator instance. Called during configuration.
 		/// </summary>
@@ -314,7 +298,6 @@ namespace NHibernate.Id.Enhanced
 				segmentValue = DetermineDefaultSegmentValue(parms);
 			return segmentValue;
 		}
-
 
 		/// <summary>
 		/// Used in the cases where <see cref="DetermineSegmentValue"/> is unable to
@@ -330,7 +313,6 @@ namespace NHibernate.Id.Enhanced
 			return defaultToUse;
 		}
 
-
 		/// <summary>
 		/// Determine the size of the <see cref="SegmentColumnName"/> segment column.
 		/// Called during configuration.
@@ -340,18 +322,15 @@ namespace NHibernate.Id.Enhanced
 			return PropertiesHelper.GetInt32(SegmentLengthParam, parms, DefaultSegmentLength);
 		}
 
-
 		protected int DetermineInitialValue(IDictionary<string, string> parms)
 		{
 			return PropertiesHelper.GetInt32(InitialParam, parms, DefaltInitialValue);
 		}
 
-
 		protected int DetermineIncrementSize(IDictionary<string, string> parms)
 		{
 			return PropertiesHelper.GetInt32(IncrementParam, parms, DefaultIncrementSize);
 		}
-
 
 		protected void BuildSelectQuery(Dialect.Dialect dialect)
 		{
@@ -373,7 +352,6 @@ namespace NHibernate.Id.Enhanced
 			selectParameterTypes = new[] { SqlTypes.SqlTypeFactory.GetAnsiString(SegmentValueLength) };
 		}
 
-
 		protected void BuildUpdateQuery()
 		{
 			updateQuery = new SqlString(
@@ -389,7 +367,6 @@ namespace NHibernate.Id.Enhanced
 			};
 		}
 
-
 		protected void BuildInsertQuery()
 		{
 			insertQuery = new SqlString(
@@ -402,13 +379,13 @@ namespace NHibernate.Id.Enhanced
 			};
 		}
 
-
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual object Generate(ISessionImplementor session, object obj)
 		{
-			return Optimizer.Generate(new TableAccessCallback(session, this));
+			using (_asyncLock.Lock())
+			{
+				return Optimizer.Generate(new TableAccessCallback(session, this));
+			}
 		}
-
 
 		private partial class TableAccessCallback : IAccessCallback
 		{
@@ -430,7 +407,6 @@ namespace NHibernate.Id.Enhanced
 
 			#endregion
 		}
-
 
 		public override object DoWorkInCurrentTransaction(ISessionImplementor session, DbConnection conn, DbTransaction transaction)
 		{
@@ -483,7 +459,6 @@ namespace NHibernate.Id.Enhanced
 					throw;
 				}
 
-
 				try
 				{
 					var updateCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, updateQuery, updateParameterTypes);
@@ -513,7 +488,6 @@ namespace NHibernate.Id.Enhanced
 			return result;
 		}
 
-
 		public virtual string[] SqlCreateStrings(Dialect.Dialect dialect)
 		{
 			string createString = dialect.CreateTableString + " " + TableName
@@ -525,7 +499,6 @@ namespace NHibernate.Id.Enhanced
 
 			return new string[] { createString };
 		}
-
 
 		public virtual string[] SqlDropString(Dialect.Dialect dialect)
 		{

@@ -280,5 +280,4 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			}
 		}
 	}
-
 }

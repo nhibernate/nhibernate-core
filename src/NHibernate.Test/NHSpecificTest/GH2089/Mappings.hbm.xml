@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   namespace="NHibernate.Test.NHSpecificTest.GH2089"
+				   assembly="NHibernate.Test">
+
+	<class name="Parent">
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name" />
+		<list name="Children" cascade="all-delete-orphan" inverse="true">
+			<key column="parent_id" not-null="true"/>
+			<index column="child_index" />
+			<one-to-many class="Child" />
+		</list>
+	</class>
+  
+  <class name="Child">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="Name" />
+    <many-to-one name="Parent" class="Parent" column="parent_id"/>
+    <property name="OrderIndex" access="readonly" column="child_index" />
+  </class>
+</hibernate-mapping>

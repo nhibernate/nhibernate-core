@@ -55,7 +55,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 
 				Assert.That(hasCategoryResult.Count, Is.EqualTo(1));
 			}
-
 		}
 
 		[Test]
@@ -87,7 +86,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 
 				Assert.That(hasNoCategoryResult.Count, Is.EqualTo(1));
 			}
-
 		}
 
 		[Test]
@@ -103,7 +101,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 
 				Assert.That(hasNoCategoryResult.Count, Is.EqualTo(1));
 			}
-
 		}
 	}
 }

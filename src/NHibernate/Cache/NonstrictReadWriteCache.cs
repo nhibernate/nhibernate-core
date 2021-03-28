@@ -53,15 +53,12 @@ namespace NHibernate.Cache
 				log.Debug("Cache lookup: {0}", key);
 			}
 
-			object result = Cache.Get(key);
-			if (result != null)
+			var result = Cache.Get(key);
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Cache hit");
+				log.Debug(result != null ? "Cache hit: {0}" : "Cache miss: {0}", key);
 			}
-			else
-			{
-				log.Debug("Cache miss");
-			}
+
 			return result;
 		}
 
@@ -71,15 +68,14 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
-			var results = _cache.GetMany(keys.Select(o => (object) o).ToArray());
-			if (!log.IsDebugEnabled())
+
+			var results = _cache.GetMany(keys);
+			if (log.IsDebugEnabled())
 			{
-				return results;
+				log.Debug("Cache hit: {0}", string.Join(",", keys.Where((k, i) => results != null)));
+				log.Debug("Cache miss: {0}", string.Join(",", keys.Where((k, i) => results == null)));
 			}
-			for (var i = 0; i < keys.Length; i++)
-			{
-				log.Debug(results[i] != null ? $"Cache hit: {keys[i]}" : $"Cache miss: {keys[i]}");
-			}
+
 			return results;
 		}
 

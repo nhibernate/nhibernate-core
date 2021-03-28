@@ -1,4 +1,3 @@
-
 namespace NHibernate.Test.Stateless.Fetching
 {
 	public class Resource
