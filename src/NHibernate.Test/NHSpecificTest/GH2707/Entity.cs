@@ -25,7 +25,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2707
 			Property(x => x.IsChiusa);
 			Property(x => x.CustomType, m => m.Type<SimpleCustomType>());
 			ManyToOne(x => x.Parent, x => x.ForeignKey("none"));
-
 		}
 	}
 
