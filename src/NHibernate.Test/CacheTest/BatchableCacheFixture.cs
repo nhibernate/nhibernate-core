@@ -1539,7 +1539,7 @@ namespace NHibernate.Test.CacheTest
 			Assert.That(cache.PutMultipleCalls, Has.Count.EqualTo(clearEntityCacheAfterQuery ? 9 : 0), "Unexpected entity cache PutMultipleCalls");
 			Assert.That(parentCache.PutMultipleCalls, Has.Count.EqualTo(clearEntityCacheAfterQuery ? 2 : 0), "Unexpected parent cache PutMultipleCalls");
 			Assert.That(items, Has.Count.EqualTo(future ? 18 : 36));
-			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(0), "Unexpected execution count");
+			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(clearEntityCacheAfterQuery ? 11 : 0), "Unexpected execution count");
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(0), "Unexpected cache put count");
 			Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(0), "Unexpected cache miss count");
 			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(future ? 2 : 1), "Unexpected cache hit count");
