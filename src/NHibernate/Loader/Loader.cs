@@ -493,6 +493,12 @@ namespace NHibernate.Loader
 		{
 			using (session.BeginProcess())
 			{
+				Stopwatch stopWatch = null;
+				if (session.Factory.Statistics.IsStatisticsEnabled)
+				{
+					stopWatch = Stopwatch.StartNew();
+				}
+
 				RowSelection selection = queryParameters.RowSelection;
 				int maxRows = HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
 
@@ -568,6 +574,12 @@ namespace NHibernate.Loader
 				if (createSubselects)
 				{
 					CreateSubselects(subselectResultKeys, queryParameters, session);
+				}
+
+				if (stopWatch != null)
+				{
+					stopWatch.Stop();
+					Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, results.Count, stopWatch.Elapsed);
 				}
 
 				return results;
@@ -1960,12 +1972,6 @@ namespace NHibernate.Loader
 		protected IList DoList(ISessionImplementor session, QueryParameters queryParameters, IResultTransformer forcedResultTransformer,
 		                       QueryCacheResultBuilder queryCacheResultBuilder)
 		{
-			Stopwatch stopWatch = null;
-			if (session.Factory.Statistics.IsStatisticsEnabled)
-			{
-				stopWatch = Stopwatch.StartNew();
-			}
-
 			IList result;
 			try
 			{
@@ -1980,11 +1986,6 @@ namespace NHibernate.Loader
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "could not execute query", SqlString,
 												 queryParameters.PositionalParameterValues, queryParameters.NamedParameters);
-			}
-			if (stopWatch != null)
-			{
-				stopWatch.Stop();
-				Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, result.Count, stopWatch.Elapsed);
 			}
 			return result;
 		}
