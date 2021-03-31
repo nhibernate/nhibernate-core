@@ -622,7 +622,7 @@ possible solutions:
 			// If both operands are parameters, HQL will not be able to determine the resulting type before
 			// parameters binding. But it has to compute result set columns type before parameters are bound,
 			// so an artificial cast is introduced to hint HQL at the resulting type.
-			return expression.Type == typeof(bool) || expression.Type == typeof(bool?)
+			return expression.Type == typeof(bool) || expression.Type == typeof(bool?) || !HqlIdent.SupportsType(expression.Type)
 				? @case
 				: _hqlTreeBuilder.TransparentCast(@case, expression.Type);
 		}
