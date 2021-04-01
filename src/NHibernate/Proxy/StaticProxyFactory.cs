@@ -18,17 +18,23 @@ namespace NHibernate.Proxy
 
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(StaticProxyFactory));
 
-		private NHibernateProxyFactoryInfo _proxyFactoryInfo;
 		private ProxyCacheEntry _cacheEntry;
 
 		public override INHibernateProxy GetProxy(object id, ISessionImplementor session)
 		{
 			try
 			{
-				var proxyActivator = Cache.GetOrAdd(_cacheEntry, pke => CreateProxyActivator(pke));
+				var proxyActivator = Cache.GetOrAdd(_cacheEntry, CreateProxyActivator);
 				return proxyActivator(
 					new LiteLazyInitializer(EntityName, id, session, PersistentClass),
-					_proxyFactoryInfo);
+					new NHibernateProxyFactoryInfo(
+						EntityName,
+						PersistentClass,
+						Interfaces,
+						GetIdentifierMethod,
+						SetIdentifierMethod,
+						ComponentIdType,
+						IsClassProxy));
 			}
 			catch (Exception ex)
 			{
@@ -48,14 +54,6 @@ namespace NHibernate.Proxy
 		{
 			base.PostInstantiate(entityName, persistentClass, interfaces, getIdentifierMethod, setIdentifierMethod, componentIdType, isClassProxy);
 
-			_proxyFactoryInfo = new NHibernateProxyFactoryInfo(
-				EntityName,
-				PersistentClass,
-				Interfaces,
-				GetIdentifierMethod,
-				SetIdentifierMethod,
-				ComponentIdType,
-				IsClassProxy);
 			_cacheEntry = new ProxyCacheEntry(IsClassProxy ? PersistentClass : typeof(object), Interfaces);
 		}
 
@@ -79,7 +77,15 @@ namespace NHibernate.Proxy
 		public object GetFieldInterceptionProxy()
 		{
 			var proxyActivator = FieldInterceptorCache.GetOrAdd(PersistentClass, CreateFieldInterceptionProxyActivator);
-			return proxyActivator(_proxyFactoryInfo);
+			return proxyActivator(
+				new NHibernateProxyFactoryInfo(
+					EntityName,
+					PersistentClass,
+					Interfaces,
+					GetIdentifierMethod,
+					SetIdentifierMethod,
+					ComponentIdType,
+					IsClassProxy));
 		}
 
 		private Func<NHibernateProxyFactoryInfo, IFieldInterceptorAccessor> CreateFieldInterceptionProxyActivator(System.Type baseType)

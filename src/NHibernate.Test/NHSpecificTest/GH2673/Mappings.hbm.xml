@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH2673">
+
+  <class name="Role" table="Roles">
+    <id name="Key">
+      <column name="RoleID" not-null="true"/>
+      <generator class="assigned" />
+    </id>
+    <property name="Name"/>
+  </class>
+
+  <class name="Resource" table="Resources" dynamic-insert="true">
+    <id name="Key" column="ResourceID" >
+      <generator class="assigned" />
+    </id>
+    <property name="Name"/>
+    <many-to-one name="Manager" class="Resource" column="ManagerID"/>
+    <many-to-one name="ResourceRole" class="Role" column="RoleID"/>
+  </class>
+
+</hibernate-mapping>
