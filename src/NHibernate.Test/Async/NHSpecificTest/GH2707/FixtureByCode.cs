@@ -59,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2707
 			using (var s = OpenSession())
 				await ((from x in s.Query<Entity1>()
 				let parent = x.Parent
-				//NH-3005 - Contditional on custom type
+				//NH-3005 - Conditional with custom type
 				where (parent.IsChiusa ? x.CustomType : parent.CustomType) == x.CustomType
 				select new
 				{
