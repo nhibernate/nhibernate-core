@@ -128,6 +128,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2673
 			mapper.Class<Resource>(
 				m =>
 				{
+					m.Table("ResTable");
 					m.Id(x => x.Id, (i) => i.Generator(Generators.Assigned));
 					m.Property(x => x.Name, x => x.Lazy(_withLazyProperties));
 					m.ManyToOne(x => x.Manager, x => x.ForeignKey("none"));
@@ -136,6 +137,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2673
 			mapper.Class<Role>(
 				m =>
 				{
+					m.Table("RoleTable");
 					m.Id(x => x.Id, (i) => i.Generator(Generators.Assigned));
 					m.Property(x => x.Name);
 				});
