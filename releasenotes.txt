@@ -1,4 +1,23 @@
-﻿Build 5.3.7
+﻿Build 5.3.8
+=============================
+
+Release notes - NHibernate - Version 5.3.8
+
+6 issues were resolved in this release.
+
+** Bug
+
+   * #2710 Filtered Entity Dml Update Throws Collection was modified
+   * #2708 MappedAs throws when called on a Convert UnaryExpression
+   * #2707 Don't currently support idents of type X
+   * #2673 Exception when using BinaryFormatter to deserialize entities with initialized proxies in associations
+   * #1264 NH-3005 - NHibernate.Hql.Ast.HqlIdent..ctor throws Don't currently support idents of type Date
+
+** Task
+
+   * #2721 Release 5.3.8
+
+Build 5.3.7
 =============================
 
 Release notes - NHibernate - Version 5.3.7
