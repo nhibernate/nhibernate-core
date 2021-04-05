@@ -81,7 +81,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				{
 					try
 					{
-						var paramsSpec = Walker.Parameters;
+						// Create a copy of Parameters as ExpandDynamicFilterParameters may modify it
+						var paramsSpec = Walker.Parameters.ToList();
 						var sqlString = FilterHelper.ExpandDynamicFilterParameters(idInsertSelect, paramsSpec, session);
 						var sqlQueryParametersList = sqlString.GetParameters().ToList();
 						SqlType[] parameterTypes = paramsSpec.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
