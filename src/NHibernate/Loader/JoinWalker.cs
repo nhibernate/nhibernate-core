@@ -797,8 +797,15 @@ namespace NHibernate.Loader
 		/// </summary>
 		protected virtual bool IsDuplicateAssociation(string foreignKeyTable, string[] foreignKeyColumns)
 		{
-			AssociationKey associationKey = new AssociationKey(foreignKeyColumns, foreignKeyTable);
-			return !visitedAssociationKeys.Add(associationKey);
+			bool detectFetchLoops = Factory.Settings.DetectFetchLoops;
+
+			if (detectFetchLoops)
+			{
+				AssociationKey associationKey = new AssociationKey(foreignKeyColumns, foreignKeyTable);
+				return !visitedAssociationKeys.Add(associationKey);
+			}
+
+			return false;
 		}
 
 		/// <summary>

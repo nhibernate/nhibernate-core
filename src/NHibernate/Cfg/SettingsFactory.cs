@@ -92,6 +92,10 @@ namespace NHibernate.Cfg
 				log.Info("Maximum outer join fetch depth: {0}", maxFetchDepth);
 			}
 
+			bool detectFetchLoops = PropertiesHelper.GetBoolean(Environment.DetectFetchLoops, properties, true);
+			log.Info("Detect fetch loops: {0}", EnabledDisabled(detectFetchLoops));
+			settings.DetectFetchLoops = detectFetchLoops;
+
 			IConnectionProvider connectionProvider = ConnectionProviderFactory.NewConnectionProvider(properties);
 			ITransactionFactory transactionFactory = CreateTransactionFactory(properties);
 			// TransactionManagerLookup transactionManagerLookup = TransactionManagerLookupFactory.GetTransactionManagerLookup( properties );
