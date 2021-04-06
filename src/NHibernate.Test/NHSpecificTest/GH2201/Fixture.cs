@@ -13,6 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2201
 		protected override void Configure(NHCfg.Configuration configuration)
 		{
 			configuration.SetProperty(NHCfg.Environment.GenerateStatistics, "true");
+			configuration.SetProperty(NHCfg.Environment.DetectFetchLoops, "false");
 		}
 
 		protected override void OnTearDown()
