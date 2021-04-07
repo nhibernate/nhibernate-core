@@ -1052,7 +1052,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			);
 
 			parameter.HqlParameterSpecification = paramSpec;
-			if (_namedParameters != null && _namedParameters.TryGetValue(name, out var namedParameter))
+			if (_namedParameters != null && _namedParameters.TryGetValue(name, out var namedParameter) && namedParameter.IsGuessedType == false)
 			{
 				// Add the parameter type information so that we are able to calculate functions return types
 				// when the parameter is used as an argument.

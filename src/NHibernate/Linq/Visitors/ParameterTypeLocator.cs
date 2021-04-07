@@ -93,7 +93,8 @@ namespace NHibernate.Linq.Visitors
 					continue;
 				}
 
-				namedParameter.Type = GetParameterType(sessionFactory, constantExpressions, visitor, namedParameter);
+				namedParameter.Type = GetParameterType(sessionFactory, constantExpressions, visitor, namedParameter, out var isGuessedType);
+				namedParameter.IsGuessedType = isGuessedType;
 			}
 		}
 
@@ -145,8 +146,10 @@ namespace NHibernate.Linq.Visitors
 			ISessionFactoryImplementor sessionFactory,
 			HashSet<ConstantExpression> constantExpressions,
 			ConstantTypeLocatorVisitor visitor,
-			NamedParameter namedParameter)
+			NamedParameter namedParameter,
+			out bool isGuessedType)
 		{
+			isGuessedType = false;
 			// All constant expressions have the same type/value
 			var constantExpression = constantExpressions.First();
 			var constantType = constantExpression.Type.UnwrapIfNullable();
@@ -156,6 +159,7 @@ namespace NHibernate.Linq.Visitors
 				return candidateType;
 			}
 
+			isGuessedType = true;
 			// No related MemberExpressions was found, guess the type by value or its type when null.
 			// When a numeric parameter is compared to different columns with different types (e.g. Where(o => o.Single >= singleParam || o.Double <= singleParam))
 			// do not change the parameter type, but instead cast the parameter when comparing with different column types.
