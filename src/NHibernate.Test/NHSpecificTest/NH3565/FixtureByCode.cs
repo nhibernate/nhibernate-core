@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3565
 							 select e;
 
 				Assert.That(result.ToList(), Has.Count.EqualTo(1));
-				Assert.That(logSpy.GetWholeLog().Contains("Type: AnsiString (10"));
+				Assert.That(logSpy.GetWholeLog(), Does.Contain("Type: AnsiString (10"));
 			}
 		}
 
@@ -77,7 +77,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3565
 							 select e;
 
 				Assert.That(result.ToList(), Has.Count.EqualTo(1));
-				Assert.That(logSpy.GetWholeLog().Contains("Type: AnsiString (10"));
+				Assert.That(logSpy.GetWholeLog(), Does.Contain("Type: AnsiString (10"));
 			}
 		}
 
@@ -93,7 +93,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3565
 							 select e;
 
 				Assert.That(result.ToList(), Has.Count.EqualTo(1));
-				Assert.That(logSpy.GetWholeLog().Contains("Type: AnsiString (10"));
+				Assert.That(logSpy.GetWholeLog(), Does.Contain("Type: AnsiString (10"));
 			}
 		}
 	}
