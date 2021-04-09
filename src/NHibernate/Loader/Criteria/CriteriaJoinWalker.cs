@@ -86,15 +86,15 @@ namespace NHibernate.Loader.Criteria
 				AddExplicitEntityJoinAssociation(persister, tableAlias, translator.GetJoinType(criteriaPath, criteriaPathAlias), criteriaPath, criteriaPathAlias);
 				IncludeInResultIfNeeded(persister, entityJoinInfo.Criteria, tableAlias, criteriaPath);
 				//collect mapped associations for entity join
-				WalkEntityTree(persister, tableAlias, criteriaPath, 1);
+				WalkEntityTree(persister, tableAlias, criteriaPath);
 			}
 		}
 
-		protected override void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
+		protected override void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path)
 		{
 			// NH different behavior (NH-1476, NH-1760, NH-1785)
-			base.WalkEntityTree(persister, alias, path, currentDepth);
-			WalkCompositeComponentIdTree(persister, alias, path, currentDepth);
+			base.WalkEntityTree(persister, alias, path);
+			WalkCompositeComponentIdTree(persister, alias, path);
 		}
 
 		protected override OuterJoinableAssociation CreateRootAssociation()
@@ -130,14 +130,14 @@ namespace NHibernate.Loader.Criteria
 			return translator.RootCriteria.GetEntityFetchLazyProperties(path);
 		}
 
-		private void WalkCompositeComponentIdTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
+		private void WalkCompositeComponentIdTree(IOuterJoinLoadable persister, string alias, string path)
 		{
 			IType type = persister.IdentifierType;
 			string propertyName = persister.IdentifierPropertyName;
 			if (type != null && type.IsComponentType)
 			{
 				ILhsAssociationTypeSqlInfo associationTypeSQLInfo = JoinHelper.GetIdLhsSqlInfo(alias, persister, Factory);
-				WalkComponentTree((IAbstractComponentType) type, 0, alias, SubPath(path, propertyName), currentDepth, associationTypeSQLInfo);
+				WalkComponentTree((IAbstractComponentType) type, 0, alias, SubPath(path, propertyName), associationTypeSQLInfo);
 			}
 		}
 
