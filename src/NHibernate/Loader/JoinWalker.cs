@@ -433,7 +433,7 @@ namespace NHibernate.Loader
 		}
 
 		private void WalkEntityAssociationTree(IAssociationType associationType, IOuterJoinLoadable persister,
-											   int propertyNumber, string alias, string path, bool nullable, int currentDepth,
+											   int propertyNumber, string alias, string path, bool nullable,
 											   ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
 		{
 			string[] aliasedLhsColumns = associationTypeSQLInfo.GetAliasedColumnNames(associationType, 0);
@@ -454,7 +454,7 @@ namespace NHibernate.Loader
 					lhsTable,
 					lhsColumns,
 					nullable,
-					currentDepth,
+					depth,
 					persister.GetCascadeStyle(propertyNumber));
 
 				AddAssociationToJoinTreeIfNecessary(
@@ -498,7 +498,7 @@ namespace NHibernate.Loader
 				if (type.IsAssociationType)
 				{
 					WalkEntityAssociationTree((IAssociationType) type, persister, i, alias, path,
-											  persister.IsSubclassPropertyNullable(i), currentDepth, associationTypeSQLInfo);
+											  persister.IsSubclassPropertyNullable(i), associationTypeSQLInfo);
 				}
 				else if (type.IsComponentType)
 				{
