@@ -399,8 +399,7 @@ namespace NHibernate.Loader
 						persister.ElementColumnNames,
 						persister,
 						alias,
-						path,
-						depth);
+						path);
 				}
 			}
 		}
@@ -582,7 +581,7 @@ namespace NHibernate.Loader
 		/// For a composite element, add to a list of associations to be fetched by outerjoin
 		/// </summary>
 		private void WalkCompositeElementTree(IAbstractComponentType compositeType, string[] cols,
-			IQueryableCollection persister, string alias, string path, int currentDepth)
+			IQueryableCollection persister, string alias, string path)
 		{
 			IType[] types = compositeType.Subtypes;
 			string[] propertyNames = compositeType.PropertyNames;
@@ -614,7 +613,7 @@ namespace NHibernate.Loader
 								persister.TableName,
 								lhsColumns,
 								propertyNullability == null || propertyNullability[i],
-								currentDepth,
+								depth,
 								compositeType.GetCascadeStyle(i));
 
 						AddAssociationToJoinTreeIfNecessary(
@@ -634,8 +633,7 @@ namespace NHibernate.Loader
 						lhsColumns,
 						persister,
 						alias,
-						subpath,
-						currentDepth);
+						subpath);
 				}
 				begin += length;
 			}
