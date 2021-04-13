@@ -321,7 +321,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		protected void WalkCollectionTree(IQueryableCollection persister, string alias)
 		{
-			WalkCollectionTree(persister, alias, String.Empty, String.Empty, depth);
+			WalkCollectionTree(persister, alias, String.Empty, String.Empty);
 			ProcessJoins();
 		}
 
@@ -334,7 +334,7 @@ namespace NHibernate.Loader
 				switch(entry)
 				{
 					case CollectionQueueEntry ce:
-						WalkCollectionTree(ce.Persister, ce.Alias, ce.Path, ce.PathAlias, depth);
+						WalkCollectionTree(ce.Persister, ce.Alias, ce.Path, ce.PathAlias);
 						break;
 					case EntityQueueEntry eqe:
 						WalkEntityTree(eqe.Persister, eqe.Alias, eqe.Path);
@@ -349,7 +349,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// For a collection role, return a list of associations to be fetched by outerjoin
 		/// </summary>
-		private void WalkCollectionTree(IQueryableCollection persister, string alias, string path, string pathAlias, int currentDepth)
+		private void WalkCollectionTree(IQueryableCollection persister, string alias, string path, string pathAlias)
 		{
 			if (persister.IsOneToMany)
 			{
@@ -370,7 +370,7 @@ namespace NHibernate.Loader
 					// if the current depth is 0, the root thing being loaded is the
 					// many-to-many collection itself.  Here, it is alright to use
 					// an inner join...
-					bool useInnerJoin = currentDepth == 0;
+					bool useInnerJoin = depth == 0;
 
 					var joinType =
 						GetJoinType(
@@ -381,7 +381,7 @@ namespace NHibernate.Loader
 							persister.TableName,
 							lhsColumns,
 							!useInnerJoin,
-							currentDepth - 1,
+							depth - 1,
 							null);
 
 					AddAssociationToJoinTreeIfNecessary(
@@ -390,7 +390,7 @@ namespace NHibernate.Loader
 						alias,
 						path,
 						pathAlias,
-						currentDepth - 1,
+						depth - 1,
 						joinType);
 				}
 				else if (type.IsComponentType)
@@ -401,7 +401,7 @@ namespace NHibernate.Loader
 						persister,
 						alias,
 						path,
-						currentDepth);
+						depth);
 				}
 			}
 		}
