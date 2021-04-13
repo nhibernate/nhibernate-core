@@ -503,7 +503,7 @@ namespace NHibernate.Loader
 				else if (type.IsComponentType)
 				{
 					WalkComponentTree((IAbstractComponentType) type, 0, alias, SubPath(path, persister.GetSubclassPropertyName(i)),
-									  currentDepth, associationTypeSQLInfo);
+									  associationTypeSQLInfo);
 				}
 			}
 		}
@@ -571,7 +571,7 @@ namespace NHibernate.Loader
 				{
 					string subpath = SubPath(path, propertyNames[i]);
 
-					WalkComponentTree((IAbstractComponentType) types[i], begin, alias, subpath, currentDepth, associationTypeSQLInfo);
+					WalkComponentTree((IAbstractComponentType) types[i], begin, alias, subpath, associationTypeSQLInfo);
 				}
 				begin += types[i].GetColumnSpan(Factory);
 			}
