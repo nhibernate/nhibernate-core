@@ -138,11 +138,11 @@ namespace NHibernate.Loader
 		/// of associations to be fetched by outerjoin (if necessary)
 		/// </summary>
 		private void AddAssociationToJoinTreeIfNecessary(IAssociationType type, string[] aliasedLhsColumns,
-			string alias, string path, string pathAlias, int currentDepth, JoinType joinType)
+			string alias, string path, string pathAlias, JoinType joinType)
 		{
 			if (joinType >= JoinType.InnerJoin)
 			{
-				AddAssociationToJoinTree(type, aliasedLhsColumns, alias, path, pathAlias, currentDepth, joinType);
+				AddAssociationToJoinTree(type, aliasedLhsColumns, alias, path, pathAlias, joinType);
 			}
 		}
 
@@ -166,7 +166,7 @@ namespace NHibernate.Loader
 		/// of associations to be fetched by outerjoin
 		/// </summary>
 		private void AddAssociationToJoinTree(IAssociationType type, string[] aliasedLhsColumns, string alias,
-			string path, string pathAlias, int currentDepth, JoinType joinType)
+			string path, string pathAlias, JoinType joinType)
 		{
 			IJoinable joinable = type.GetAssociatedJoinable(Factory);
 
@@ -390,7 +390,6 @@ namespace NHibernate.Loader
 						alias,
 						path,
 						pathAlias,
-						depth - 1,
 						joinType);
 				}
 				else if (type.IsComponentType)
@@ -465,7 +464,6 @@ namespace NHibernate.Loader
 					alias,
 					subpath,
 					subPathAlias,
-					currentDepth,
 					joinType);
 			}
 		}
@@ -567,7 +565,6 @@ namespace NHibernate.Loader
 							alias,
 							subpath,
 							subPathAlias,
-							currentDepth,
 							joinType);
 					}
 				}
@@ -626,7 +623,6 @@ namespace NHibernate.Loader
 							alias,
 							subpath,
 							subPathAlias,
-							currentDepth,
 							joinType);
 					}
 				}
