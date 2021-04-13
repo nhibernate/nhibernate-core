@@ -555,7 +555,7 @@ namespace NHibernate.Loader
 							lhsTable,
 							lhsColumns,
 							propertyNullability == null || propertyNullability[i],
-							currentDepth,
+							depth,
 							componentType.GetCascadeStyle(i));
 
 						AddAssociationToJoinTreeIfNecessary(
