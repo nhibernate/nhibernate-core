@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Visitors;
+using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 
@@ -34,6 +36,7 @@ namespace NHibernate.Linq.GroupJoin
 
 		protected override Expression VisitSubQuery(SubQueryExpression expression)
 		{
+			//Visit the entire query model?
 			Visit(expression.QueryModel.SelectClause.Selector);
 			return expression;
 		}

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using NHibernate.Cfg;
-using NHibernate.Engine.Query;
+﻿using System.Linq;
 using NHibernate.Linq;
 using NHibernate.Util;
 using NSubstitute;
@@ -99,6 +95,99 @@ namespace NHibernate.Test.Linq.ByMethod
 				var sql = sqlSpy.GetWholeLog();
 				Assert.That(orders.Count, Is.EqualTo(830));
 				Assert.IsTrue(orders.All(x => x.FirstId == x.SecondId));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public void LeftJoinExtensionMethodWithOuterReferenceInWhereClauseOnly()
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var animals = db.Animals
+							   .LeftJoin(
+								   db.Mammals,
+								   x => x.Id,
+								   x => x.Id,
+								   (animal, mammal) => new { animal, mammal })
+							   .Where(x => x.mammal.SerialNumber.StartsWith("9"))
+							   .Select(x => new { SerialNumber = x.animal.SerialNumber })
+							   .ToList();
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(animals.Count, Is.EqualTo(1));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
+		}
+
+		[KnownBug("GH-XXXX")]
+		public void NestedLeftJoinExtensionMethodWithOuterReferenceInWhereClauseOnly()
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var innerAnimals = db.Animals
+							   .LeftJoin(
+								   db.Mammals,
+								   x => x.Id,
+								   x => x.Id,
+								   (animal, mammal) => new { animal, mammal })
+							   .Where(x => x.mammal.SerialNumber.StartsWith("9"))
+							   .Select(x=>x.animal);
+				
+				var animals = db.Animals
+							   .LeftJoin(
+								   innerAnimals,
+								   x => x.Id,
+								   x => x.Id,
+								   (animal, animal2) => new { animal, animal2 })
+							   .Select(x => new { SerialNumber = x.animal2.SerialNumber })
+							   .ToList();
+
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(animals.Count, Is.EqualTo(1));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
+		}
+
+		[KnownBug("GH-XXXX")]
+		public void LeftJoinExtensionMethodWithNoUseOfOuterReference()
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var animals = db.Animals
+							   .LeftJoin(
+								   db.Mammals,
+								   x => x.Id,
+								   x => x.Id,
+								   (animal, mammal) => new { animal, mammal })
+							   .Select(x => x.animal)
+							   .ToList();
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(animals.Count, Is.EqualTo(1));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(6));
+			}
+		}
+
+		[Test]
+		public void LeftJoinExtensionMethodWithOuterReferenceInOrderByClauseOnly()
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var animals = db.Animals
+							   .LeftJoin(
+								   db.Mammals,
+								   x => x.Id,
+								   x => x.Id,
+								   (animal, mammal) => new { animal, mammal })
+							   .OrderBy(x => x.mammal.SerialNumber ?? "z")
+							   .Select(x => new { SerialNumber = x.animal.SerialNumber })
+							   .ToList();
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(animals.Count, Is.EqualTo(6));
+				Assert.That(animals[0].SerialNumber, Is.EqualTo("1121"));
 				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
 			}
 		}

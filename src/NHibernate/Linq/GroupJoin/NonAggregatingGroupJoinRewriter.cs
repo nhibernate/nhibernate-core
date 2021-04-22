@@ -159,7 +159,7 @@ namespace NHibernate.Linq.Visitors
 		// TODO - rename this and share with the AggregatingGroupJoinRewriter
 		private IsAggregatingResults GetGroupJoinInformation(IEnumerable<GroupJoinClause> clause)
 		{
-			return GroupJoinAggregateDetectionVisitor.Visit(clause, _model.SelectClause.Selector);
+			return GroupJoinAggregateDetectionQueryModelVisitor.Visit(clause, _model);
 		}
 	}
 
