@@ -16,7 +16,6 @@ namespace NHibernate.Linq.GroupJoin
 		{
 			_groupJoinClauses = new HashSet<GroupJoinClause>(groupJoinClauses);
 		}
-
 		public static IsAggregatingResults Visit(IEnumerable<GroupJoinClause> groupJoinClause, QueryModel queryModel)
 		{
 			var visitor = new GroupJoinAggregateDetectionQueryModelVisitor(groupJoinClause);
@@ -30,7 +29,6 @@ namespace NHibernate.Linq.GroupJoin
 			var results = GroupJoinAggregateDetectionVisitor.Visit(_groupJoinClauses, whereClause.Predicate);
 			AddResults(results);
 		}
-
 		public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
 		{
 			var results = GroupJoinAggregateDetectionVisitor.Visit(_groupJoinClauses, selectClause.Selector);
@@ -42,7 +40,6 @@ namespace NHibernate.Linq.GroupJoin
 			var results = GroupJoinAggregateDetectionVisitor.Visit(_groupJoinClauses, ordering.Expression);
 			AddResults(results);
 		}
-
 
 		private void AddResults(IsAggregatingResults results)
 		{

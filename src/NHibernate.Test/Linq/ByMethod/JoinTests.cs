@@ -120,7 +120,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 		}
 
-		[KnownBug("GH-XXXX")]
+		[KnownBug("GH-2379")]
 		public void NestedLeftJoinExtensionMethodWithOuterReferenceInWhereClauseOnly()
 		{
 			using (var sqlSpy = new SqlLogSpy())
@@ -143,14 +143,13 @@ namespace NHibernate.Test.Linq.ByMethod
 							   .Select(x => new { SerialNumber = x.animal2.SerialNumber })
 							   .ToList();
 
-
 				var sql = sqlSpy.GetWholeLog();
 				Assert.That(animals.Count, Is.EqualTo(1));
 				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
 			}
 		}
 
-		[KnownBug("GH-XXXX")]
+		[KnownBug("GH-2738")]
 		public void LeftJoinExtensionMethodWithNoUseOfOuterReference()
 		{
 			using (var sqlSpy = new SqlLogSpy())
