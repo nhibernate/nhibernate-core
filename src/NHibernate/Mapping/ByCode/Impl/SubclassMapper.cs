@@ -7,7 +7,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class SubclassMapper : AbstractPropertyContainerMapper, ISubclassMapper
+	public class SubclassMapper : AbstractPropertyContainerMapper, ISubclassMapper, IEntitySqlsWithCheckMapper
 	{
 		private readonly HbmSubclass classMapping = new HbmSubclass();
 		private Dictionary<string, IJoinMapper> joinMappers;
@@ -59,7 +59,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			if (!Container.GetBaseTypes().Contains(baseType))
 			{
 				throw new ArgumentOutOfRangeException("baseType",
-				                                      string.Format("{0} is a valid super-class of {1}", baseType, Container));
+													  string.Format("{0} is a valid super-class of {1}", baseType, Container));
 			}
 			classMapping.extends = baseType.GetShortClassName(MapDoc);
 		}
@@ -175,6 +175,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.sqlinsert.Text = new[] {sql};
 		}
 
+		public void SqlInsert(string sql, SqlCheck sqlCheck)
+		{
+			if (classMapping.SqlInsert == null)
+			{
+				classMapping.sqlinsert = new HbmCustomSQL();
+			}
+			classMapping.sqlinsert.checkSpecified = true;
+			classMapping.sqlinsert.check = (HbmCustomSQLCheck)Enum.Parse(typeof(HbmCustomSQLCheck), sqlCheck.ToString(), true);
+			classMapping.sqlinsert.Text = new[] { sql };
+		}
+
 		public void SqlUpdate(string sql)
 		{
 			if (classMapping.SqlUpdate == null)
@@ -184,6 +195,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.sqlupdate.Text = new[] {sql};
 		}
 
+		public void SqlUpdate(string sql, SqlCheck sqlCheck)
+		{
+			if (classMapping.SqlUpdate == null)
+			{
+				classMapping.sqlupdate = new HbmCustomSQL();
+			}
+			classMapping.sqlupdate.checkSpecified = true;
+			classMapping.sqlupdate.check = (HbmCustomSQLCheck)Enum.Parse(typeof(HbmCustomSQLCheck), sqlCheck.ToString(), true);
+			classMapping.sqlupdate.Text = new[] { sql };
+		}
+
 		public void SqlDelete(string sql)
 		{
 			if (classMapping.SqlDelete == null)
@@ -191,6 +213,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 				classMapping.sqldelete = new HbmCustomSQL();
 			}
 			classMapping.sqldelete.Text = new[] {sql};
+		}
+
+		public void SqlDelete(string sql, SqlCheck sqlCheck)
+		{
+			if (classMapping.SqlDelete == null)
+			{
+				classMapping.sqldelete = new HbmCustomSQL();
+			}
+			classMapping.sqldelete.checkSpecified = true;
+			classMapping.sqldelete.check = (HbmCustomSQLCheck)Enum.Parse(typeof(HbmCustomSQLCheck), sqlCheck.ToString(), true);
+			classMapping.sqldelete.Text = new[] { sql };
 		}
 
 		public void Subselect(string sql) {}

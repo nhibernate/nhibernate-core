@@ -17,7 +17,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 	}
 	public delegate void TableNameChangedHandler(IJoinMapper mapper, TableNameChangedEventArgs args);
 
-	public class JoinMapper: AbstractPropertyContainerMapper,IJoinMapper
+	public class JoinMapper: AbstractPropertyContainerMapper, IJoinMapper, IEntitySqlsWithCheckMapper
 	{
 		private readonly HbmJoin hbmJoin;
 		private readonly KeyMapper keyMapper;
@@ -79,6 +79,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 			hbmJoin.sqlinsert.Text = new[] { sql };
 		}
 
+		public void SqlInsert(string sql, SqlCheck sqlCheck)
+		{
+			if (hbmJoin.SqlInsert == null)
+			{
+				hbmJoin.sqlinsert = new HbmCustomSQL();
+			}
+			hbmJoin.sqlinsert.checkSpecified = true;
+			hbmJoin.sqlinsert.check = (HbmCustomSQLCheck)Enum.Parse(typeof(HbmCustomSQLCheck), sqlCheck.ToString(), true);
+			hbmJoin.sqlinsert.Text = new[] { sql };
+		}
+
 		public void SqlUpdate(string sql)
 		{
 			if (hbmJoin.SqlUpdate == null)
@@ -88,12 +99,34 @@ namespace NHibernate.Mapping.ByCode.Impl
 			hbmJoin.sqlupdate.Text = new[] { sql };
 		}
 
+		public void SqlUpdate(string sql, SqlCheck sqlCheck)
+		{
+			if (hbmJoin.SqlUpdate == null)
+			{
+				hbmJoin.sqlupdate = new HbmCustomSQL();
+			}
+			hbmJoin.sqlupdate.checkSpecified = true;
+			hbmJoin.sqlupdate.check = (HbmCustomSQLCheck)Enum.Parse(typeof(HbmCustomSQLCheck), sqlCheck.ToString(), true);
+			hbmJoin.sqlupdate.Text = new[] { sql };
+		}
+
 		public void SqlDelete(string sql)
 		{
 			if (hbmJoin.SqlDelete == null)
 			{
 				hbmJoin.sqldelete = new HbmCustomSQL();
 			}
+			hbmJoin.sqldelete.Text = new[] { sql };
+		}
+
+		public void SqlDelete(string sql, SqlCheck sqlCheck)
+		{
+			if (hbmJoin.SqlDelete == null)
+			{
+				hbmJoin.sqldelete = new HbmCustomSQL();
+			}
+			hbmJoin.sqldelete.checkSpecified = true;
+			hbmJoin.sqldelete.check = (HbmCustomSQLCheck)Enum.Parse(typeof(HbmCustomSQLCheck), sqlCheck.ToString(), true);
 			hbmJoin.sqldelete.Text = new[] { sql };
 		}
 
