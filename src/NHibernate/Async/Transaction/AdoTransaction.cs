@@ -177,10 +177,12 @@ namespace NHibernate.Transaction
 						log.Debug("DbTransaction disposed.");
 					}
 
-					if (IsActive && session != null)
+					if (IsActive)
 					{
 						// Assume we are rolled back
-						await (AfterTransactionCompletionAsync(false, cancellationToken)).ConfigureAwait(false);
+						rolledBack = true;
+						if (session != null)
+							await (AfterTransactionCompletionAsync(false, cancellationToken)).ConfigureAwait(false);
 					}
 					// nothing for Finalizer to do - so tell the GC to ignore it
 					GC.SuppressFinalize(this);

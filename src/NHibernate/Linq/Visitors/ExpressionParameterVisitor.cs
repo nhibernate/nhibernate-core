@@ -70,7 +70,7 @@ namespace NHibernate.Linq.Visitors
 			{
 				var rawParameter = Visit(expression.Arguments[0]);
 				// TODO 6.0: Remove below code and return expression as this logic is now inside ConstantTypeLocator
-				var parameter = rawParameter as ConstantExpression;
+				var parameter = ParameterTypeLocator.UnwrapUnary(rawParameter) as ConstantExpression;
 				var type = expression.Arguments[1] as ConstantExpression;
 				if (parameter == null)
 					throw new HibernateException(
@@ -83,7 +83,7 @@ namespace NHibernate.Linq.Visitors
 
 				_parameters[parameter].Type = (IType)type.Value;
 
-				return parameter;
+				return rawParameter;
 			}
 
 			var method = expression.Method.IsGenericMethod

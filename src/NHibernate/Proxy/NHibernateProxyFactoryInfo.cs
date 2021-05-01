@@ -74,5 +74,10 @@ namespace NHibernate.Proxy
 			info.AddValue(nameof(_componentIdType), _componentIdType);
 			info.AddValue(nameof(_isClassProxy), _isClassProxy);
 		}
+
+		internal NHibernateProxyFactoryInfo Clone()
+		{
+			return new NHibernateProxyFactoryInfo(_entityName, _persistentClass, _interfaces, _getIdentifierMethod, _setIdentifierMethod, _componentIdType, _isClassProxy);
+		}
 	}
 }

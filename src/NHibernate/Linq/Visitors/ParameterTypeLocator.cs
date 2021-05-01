@@ -228,7 +228,7 @@ namespace NHibernate.Linq.Visitors
 				if (VisitorUtil.IsMappedAs(node.Method))
 				{
 					var rawParameter = Visit(node.Arguments[0]);
-					var parameter = rawParameter as ConstantExpression;
+					var parameter = UnwrapUnary(rawParameter) as ConstantExpression;
 					var type = node.Arguments[1] as ConstantExpression;
 					if (parameter == null)
 						throw new HibernateException(
@@ -405,7 +405,7 @@ namespace NHibernate.Linq.Visitors
 		/// </summary>
 		/// <param name="expression">The expression to unwrap.</param>
 		/// <returns>The unwrapped expression.</returns>
-		private static Expression UnwrapUnary(Expression expression)
+		internal static Expression UnwrapUnary(Expression expression)
 		{
 			while (expression is UnaryExpression unaryExpression)
 			{
