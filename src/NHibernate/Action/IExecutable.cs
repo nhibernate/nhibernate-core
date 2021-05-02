@@ -37,6 +37,11 @@ namespace NHibernate.Action
 	public partial interface IExecutable
 	{
 		/// <summary>
+		/// What UpdateTimestamps Spaces are affected any actions
+		/// </summary>
+		string[] UpdateTimestampsSpaces { get; }
+
+		/// <summary>
 		/// What spaces (tables) are affected by this action?
 		/// </summary>
 		string[] PropertySpaces { get; }

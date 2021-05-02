@@ -94,6 +94,11 @@ namespace NHibernate.Action
 		protected internal abstract bool HasPostCommitEventListeners { get; }
 
 		#region IExecutable Members
+		
+		public string[] UpdateTimestampsSpaces
+		{
+			get { return persister.HasUpdateTimestampsCache ? persister.PropertySpaces : null; }
+		}
 
 		public string[] PropertySpaces
 		{

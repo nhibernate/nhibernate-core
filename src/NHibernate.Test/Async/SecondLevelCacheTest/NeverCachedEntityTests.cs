@@ -143,6 +143,23 @@ namespace NHibernate.Test.SecondLevelCacheTest
 			}
 		}
 
+		[Test]
+		public async Task ShouldAutoFlushAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var e1 = new NeverItem { Id = 100, Name = "Abatay" };
+				await (session.SaveAsync(e1));
+
+				var result = await ((from e in session.Query<NeverItem>()
+							  where e.Name == "Abatay"
+									 select e).ToListAsync());
+
+				Assert.That(result.Count, Is.EqualTo(1));
+			}
+		}
+
 		protected override void OnTearDown()
 		{
 			using (var s = OpenSession())

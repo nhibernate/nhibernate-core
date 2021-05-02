@@ -140,6 +140,23 @@ namespace NHibernate.Test.SecondLevelCacheTest
 			}
 		}
 
+		[Test]
+		public void ShouldAutoFlush()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var e1 = new NeverItem { Id= 100, Name = "Abatay" };
+				session.Save(e1);
+
+				var result =(from e in session.Query<NeverItem>()
+									 where e.Name == "Abatay"
+							 select e).ToList();
+
+				Assert.That(result.Count, Is.EqualTo(1));
+			}
+		}
+
 		protected override void OnTearDown()
 		{
 			using (var s = OpenSession())
