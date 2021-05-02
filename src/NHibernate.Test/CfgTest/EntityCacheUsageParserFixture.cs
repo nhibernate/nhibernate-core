@@ -13,6 +13,7 @@ namespace NHibernate.Test.CfgTest
 			Assert.That(EntityCacheUsageParser.ToString(EntityCacheUsage.ReadWrite), Is.EqualTo("read-write"));
 			Assert.That(EntityCacheUsageParser.ToString(EntityCacheUsage.NonStrictReadWrite), Is.EqualTo("nonstrict-read-write"));
 			Assert.That(EntityCacheUsageParser.ToString(EntityCacheUsage.Transactional), Is.EqualTo("transactional"));
+			Assert.That(EntityCacheUsageParser.ToString(EntityCacheUsage.Never), Is.EqualTo("never"));
 		}
 
 		[Test]
@@ -22,6 +23,7 @@ namespace NHibernate.Test.CfgTest
 			Assert.That(EntityCacheUsageParser.Parse("read-write"), Is.EqualTo(EntityCacheUsage.ReadWrite));
 			Assert.That(EntityCacheUsageParser.Parse("nonstrict-read-write"), Is.EqualTo(EntityCacheUsage.NonStrictReadWrite));
 			Assert.That(EntityCacheUsageParser.Parse("transactional"), Is.EqualTo(EntityCacheUsage.Transactional));
+			Assert.That(EntityCacheUsageParser.Parse("never"), Is.EqualTo(EntityCacheUsage.Never));
 		}
 	}
 }

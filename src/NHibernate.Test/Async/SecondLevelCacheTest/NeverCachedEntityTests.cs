@@ -1,0 +1,156 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using NHibernate.Cache;
+using NHibernate.Cfg;
+using NHibernate.Impl;
+using NHibernate.Linq;
+using NHibernate.Test.SecondLevelCacheTests;
+using NSubstitute;
+using NUnit.Framework;
+
+namespace NHibernate.Test.SecondLevelCacheTest
+{
+	using System.Threading.Tasks;
+	using System.Threading;
+	[TestFixture]
+	public class NeverCachedEntityTestsAsync : TestCase
+	{
+		protected override string CacheConcurrencyStrategy => null;
+		protected override string MappingsAssembly => "NHibernate.Test";
+
+		protected override string[] Mappings => new[] { "SecondLevelCacheTest.Item.hbm.xml" };
+
+		protected override void Configure(Configuration configuration)
+		{
+			configuration.SetProperty(Environment.CacheProvider, typeof(HashtableCacheProvider).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.UseQueryCache, "true");
+		}
+
+		[Test]
+		public async Task NeverInvalidateEntitiesAsync()
+		{
+			var debugSessionFactory = (DebugSessionFactory) Sfi;
+
+			var cache = Substitute.For<UpdateTimestampsCache>(Sfi.Settings, new Dictionary<string, string>());
+
+			var updateTimestampsCacheField = typeof(SessionFactoryImpl).GetField(
+				"updateTimestampsCache",
+				BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+			updateTimestampsCacheField.SetValue(debugSessionFactory.ActualFactory, cache);
+
+			//"Received" assertions can not be used since the collection is reused and cleared between calls.
+			//The received args are cloned and stored
+			var preInvalidations = new List<IReadOnlyCollection<string>>();
+			var invalidations = new List<IReadOnlyCollection<string>>();
+
+			await (cache.PreInvalidateAsync(Arg.Do<IReadOnlyCollection<string>>(x => preInvalidations.Add(x.ToList())), CancellationToken.None));
+			await (cache.InvalidateAsync(Arg.Do<IReadOnlyCollection<string>>(x => invalidations.Add(x.ToList())), CancellationToken.None));
+
+			using (var session = OpenSession())
+			{
+				//Add NeverItem
+				using (var tx = session.BeginTransaction())
+				{
+					foreach (var i in Enumerable.Range(1, 10))
+					{
+						var item = new NeverItem
+						{
+							Id = i,
+							Name = "NHibernate" + i,
+							Description = "Cache.Never() triggers UpdateTimestampsCache"
+						};
+						await (session.SaveAsync(item));
+					}
+
+					await (tx.CommitAsync());
+				}
+
+				//Update NeverItem
+				using (var tx = session.BeginTransaction())
+				{
+					foreach (var i in Enumerable.Range(1, 10))
+					{
+						var item = await (session.GetAsync<NeverItem>(i));
+						item.Name = item.Id.ToString();
+					}
+
+					await (tx.CommitAsync());
+				}
+
+				//Delete NeverItem
+				using (var tx = session.BeginTransaction())
+				{
+					foreach (var i in Enumerable.Range(1, 10))
+					{
+						var item = await (session.GetAsync<NeverItem>(i));
+						await (session.DeleteAsync(item));
+					}
+
+					await (tx.CommitAsync());
+				}
+
+				//Update NeverItem using HQL
+				using (var tx = session.BeginTransaction())
+				{
+					await (session.CreateQuery("UPDATE NeverItem SET Name='Test'").ExecuteUpdateAsync());
+
+					await (tx.CommitAsync());
+				}
+
+				//Update NeverItem using LINQ
+				using (var tx = session.BeginTransaction())
+				{
+					await (session.Query<NeverItem>()
+						   .UpdateBuilder()
+						   .Set(x => x.Name, "Test")
+						   .UpdateAsync());
+
+					await (tx.CommitAsync());
+				}
+			}
+
+			//Should receive none preinvalidation when Cache is configured as never
+			Assert.That(preInvalidations, Has.Count.EqualTo(0));
+
+			//Should receive none invalidation when Cache is configured as never
+			Assert.That(invalidations, Has.Count.EqualTo(0));
+		}
+
+		[Test]
+		public async Task QueryCache_ThrowsExceptionAsync()
+		{
+			using (var session = OpenSession())
+			{
+				//Linq
+				using (var tx = session.BeginTransaction())
+				{
+					Assert.ThrowsAsync<QueryException>(() => session
+					.Query<NeverItem>().WithOptions(x => x.SetCacheable(true)).ToListAsync());
+
+					await (tx.CommitAsync());
+				}
+
+				//Hql
+				using (var tx = session.BeginTransaction())
+				{
+					Assert.ThrowsAsync<QueryException>(() => session
+					.CreateQuery("from NeverItem").SetCacheable(true).ListAsync());
+
+					await (tx.CommitAsync());
+				}
+			}
+		}
+
+		protected override void OnTearDown()
+		{
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.Delete("from NeverItem");
+				tx.Commit();
+			}
+		}
+	}
+}

@@ -397,6 +397,14 @@ namespace NHibernate.Loader.Hql
 			{
 				throw new QueryException("ResultTransformer is not allowed for 'select new' queries.");
 			}
+
+			if (Factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable)
+			{
+				foreach (var persister in _entityPersisters.Where(x => !x.HasUpdateTimestampsCache))
+				{
+					throw new QueryException($"Never cached entity:{persister.EntityName} cannot be used in cacheable query");
+				}
+			}
 		}
 
 		private bool HasSelectNew

@@ -248,6 +248,8 @@ namespace NHibernate.Persister.Entity
 
 		private readonly string loaderName;
 
+		private readonly bool hasUpdateTimestampsCache;
+
 		private IUniqueEntityLoader queryLoader;
 
 		private readonly string temporaryIdTableName;
@@ -548,6 +550,8 @@ namespace NHibernate.Persister.Entity
 					}
 					return uniqueKeyPropertyNames;
 				});
+
+			hasUpdateTimestampsCache = persistentClass.HasUpdateTimestampsCache;
 		}
 
 		protected abstract int[] SubclassColumnTableNumberClosure { get; }
@@ -4194,6 +4198,11 @@ namespace NHibernate.Persister.Entity
 		public virtual bool HasCache
 		{
 			get { return cache != null; }
+		}
+
+		public virtual bool HasUpdateTimestampsCache
+		{
+			get { return hasUpdateTimestampsCache; }
 		}
 
 		private string GetSubclassEntityName(System.Type clazz)

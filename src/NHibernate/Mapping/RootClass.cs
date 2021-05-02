@@ -34,6 +34,7 @@ namespace NHibernate.Mapping
 		private Property version;
 		private bool polymorphic;
 		private string cacheConcurrencyStrategy;
+		private bool hasUpdateTimestampsCache;
 		private string cacheRegionName;
 		private bool lazyPropertiesCacheable = true;
 		private IValue discriminator;
@@ -409,7 +410,15 @@ namespace NHibernate.Mapping
 		public override string CacheConcurrencyStrategy
 		{
 			get { return cacheConcurrencyStrategy; }
-			set { cacheConcurrencyStrategy = value; }
+			set 
+			{
+				cacheConcurrencyStrategy = value;
+				hasUpdateTimestampsCache = cacheConcurrencyStrategy != Cache.CacheFactory.Never;
+			}
+		}
+		public override bool HasUpdateTimestampsCache
+		{
+			get { return hasUpdateTimestampsCache; }
 		}
 
 		public override bool IsLazyPropertiesCacheable

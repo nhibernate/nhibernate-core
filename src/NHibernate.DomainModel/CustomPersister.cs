@@ -354,6 +354,11 @@ namespace NHibernate.DomainModel
 			get { return false; }
 		}
 
+		public bool HasUpdateTimestampsCache
+		{
+			get { return true; }
+		}
+
 		public object[] GetDatabaseSnapshot(object id, ISessionImplementor session)
 		{
 			return null;

@@ -161,7 +161,14 @@ namespace NHibernate.Persister.Entity
 				constraintOrderedKeyColumnNames[position] = keyColumnNames[i];
 			}
 
-			spaces = qualifiedTableNames.Concat(persistentClass.SynchronizedTables).ToArray();
+			if (persistentClass.HasUpdateTimestampsCache)
+			{
+				spaces = qualifiedTableNames.Concat(persistentClass.SynchronizedTables).ToArray();
+			}
+			else
+			{
+				spaces = persistentClass.SynchronizedTables.ToArray();
+			}
 
 			bool lazyAvailable = IsInstrumented;
 
