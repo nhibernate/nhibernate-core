@@ -122,10 +122,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			foreach (var synchronize in classMapping.Synchronize)
 			{
-				if (model.HasUpdateTimestampsCache)
-				{
-					model.AddSynchronizedTable(synchronize.table);
-				}
+				model.AddSynchronizedTable(synchronize.table);
 			}
 
 			model.IsAbstract = classMapping.IsAbstract;

@@ -79,6 +79,11 @@ namespace NHibernate.Action
 
 		#region IExecutable Members
 
+		public string[] UpdateTimestampsSpaces
+		{
+			get { return Persister.OwnerEntityPersister.HasUpdateTimestampsCache ? Persister.CollectionSpaces : null; }
+		}
+
 		/// <summary>
 		/// What spaces (tables) are affected by this action?
 		/// </summary>
