@@ -659,6 +659,11 @@ namespace NHibernate.Mapping
 		public abstract string CacheConcurrencyStrategy { get; set; }
 
 		/// <summary>
+		/// When <see cref="CacheConcurrencyStrategy"/> is "never" then UpdateTimestampsCache is not tracked
+		/// </summary>
+		public abstract bool HasUpdateTimestampsCache { get; }
+
+		/// <summary>
 		/// When implemented by a class, gets or sets the <see cref="PersistentClass"/>
 		/// that this mapped class is extending.
 		/// </summary>

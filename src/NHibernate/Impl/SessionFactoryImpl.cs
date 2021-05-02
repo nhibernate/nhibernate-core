@@ -455,7 +455,7 @@ namespace NHibernate.Impl
 			bool isMutable,
 			Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy> caches)
 		{
-			if (strategy == null || !settings.IsSecondLevelCacheEnabled)
+			if (strategy == null || strategy == CacheFactory.Never || !settings.IsSecondLevelCacheEnabled)
 				return null;
 
 			var cacheKey = new Tuple<string, string>(cacheRegion, strategy);

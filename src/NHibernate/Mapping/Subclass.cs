@@ -211,6 +211,11 @@ namespace NHibernate.Mapping
 			set { /* Don't change the SuperClass */ }
 		}
 
+		public override bool HasUpdateTimestampsCache
+		{
+			get { return Superclass.HasUpdateTimestampsCache; }
+		}
+
 		/// <summary>
 		/// Gets the <see cref="RootClazz"/> of the class that is mapped in the <c>class</c> element.
 		/// </summary>

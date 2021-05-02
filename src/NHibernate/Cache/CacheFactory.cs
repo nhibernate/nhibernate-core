@@ -22,6 +22,11 @@ namespace NHibernate.Cache
 		public const string Transactional = "transactional";
 
 		/// <summary>
+		/// Never interact with second level cache or UpdateTimestampsCache
+		/// </summary>
+		public const string Never = "never";
+
+		/// <summary>
 		/// Creates an <see cref="ICacheConcurrencyStrategy"/> from the parameters.
 		/// </summary>
 		/// <param name="usage">The name of the strategy that <see cref="ICacheProvider"/> should use for the class.</param>

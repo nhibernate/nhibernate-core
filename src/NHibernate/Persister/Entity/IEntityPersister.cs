@@ -405,6 +405,11 @@ namespace NHibernate.Persister.Entity
 		bool HasCache { get; }
 
 		/// <summary>
+		/// Does this class tracked with UpdateTimestampsCache? Configured via entity mapping Cache.Never()
+		/// </summary>
+		bool HasUpdateTimestampsCache { get; }
+
+		/// <summary>
 		/// Get the current database state of the object, in a "hydrated" form, without resolving identifiers
 		/// </summary>
 		/// <param name="id"></param>
