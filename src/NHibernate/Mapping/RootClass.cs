@@ -34,7 +34,7 @@ namespace NHibernate.Mapping
 		private Property version;
 		private bool polymorphic;
 		private string cacheConcurrencyStrategy;
-		private bool hasUpdateTimestampsCache;
+		private bool hasUpdateTimestampsCache = true;
 		private string cacheRegionName;
 		private bool lazyPropertiesCacheable = true;
 		private IValue discriminator;
