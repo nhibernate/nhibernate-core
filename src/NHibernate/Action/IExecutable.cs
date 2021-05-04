@@ -14,7 +14,7 @@ namespace NHibernate.Action
 	//Since v5.2
 	[Obsolete("This delegate is not used and will be removed in a future version.")]
 	public delegate void BeforeTransactionCompletionProcessDelegate();
-	
+
 	/// <summary>
 	/// Delegate representing some process that needs to occur after transaction completion.
 	/// </summary>
@@ -27,7 +27,7 @@ namespace NHibernate.Action
 	//Since v5.2
 	[Obsolete("This delegate is not used and will be removed in a future version.")]
 	public delegate void AfterTransactionCompletionProcessDelegate(bool success);
-	
+
 	/// <summary>
 	/// An operation which may be scheduled for later execution.
 	/// Usually, the operation is a database insert/update/delete,
@@ -36,11 +36,6 @@ namespace NHibernate.Action
 	//6.0 TODO: Consider refactoring towards using an abstract class
 	public partial interface IExecutable
 	{
-		/// <summary>
-		/// What UpdateTimestamps Spaces are affected any actions
-		/// </summary>
-		string[] UpdateTimestampsSpaces { get; }
-
 		/// <summary>
 		/// What spaces (tables) are affected by this action?
 		/// </summary>

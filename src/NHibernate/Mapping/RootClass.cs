@@ -34,7 +34,6 @@ namespace NHibernate.Mapping
 		private Property version;
 		private bool polymorphic;
 		private string cacheConcurrencyStrategy;
-		private bool hasUpdateTimestampsCache = true;
 		private string cacheRegionName;
 		private bool lazyPropertiesCacheable = true;
 		private IValue discriminator;
@@ -90,12 +89,12 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public override IEnumerable<Table> TableClosureIterator
 		{
-			get { return new[] {Table}; }
+			get { return new[] { Table }; }
 		}
 
 		public override IEnumerable<IKeyValue> KeyClosureIterator
 		{
-			get { return new[] {Key}; }
+			get { return new[] { Key }; }
 		}
 
 		/// <summary>
@@ -380,7 +379,7 @@ namespace NHibernate.Mapping
 		private void CheckCompositeIdentifier()
 		{
 			Component id = Identifier as Component;
-			if (id!=null)
+			if (id != null)
 			{
 				if (!id.IsDynamic)
 				{
@@ -410,15 +409,7 @@ namespace NHibernate.Mapping
 		public override string CacheConcurrencyStrategy
 		{
 			get { return cacheConcurrencyStrategy; }
-			set 
-			{
-				cacheConcurrencyStrategy = value;
-				hasUpdateTimestampsCache = cacheConcurrencyStrategy != Cache.CacheFactory.Never;
-			}
-		}
-		public override bool HasUpdateTimestampsCache
-		{
-			get { return hasUpdateTimestampsCache; }
+			set { cacheConcurrencyStrategy = value; }
 		}
 
 		public override bool IsLazyPropertiesCacheable

@@ -18,7 +18,8 @@ namespace NHibernate.Action
 		IBeforeTransactionCompletionProcess,
 		IAfterTransactionCompletionProcess,
 		IComparable<EntityAction>, 
-		IDeserializationCallback
+		IDeserializationCallback,
+		ICacheableExecutable
 	{
 		private readonly string entityName;
 		private readonly object id;
@@ -95,9 +96,24 @@ namespace NHibernate.Action
 
 		#region IExecutable Members
 		
-		public string[] UpdateTimestampsSpaces
+		public string[] QueryCacheSpaces
 		{
-			get { return persister.HasUpdateTimestampsCache ? persister.PropertySpaces : null; }
+			get 
+			{
+				if (persister is ICacheableEntityPersister cacheablePersister)
+				{
+					if (cacheablePersister.SupportsQueryCache)
+					{
+						return persister.PropertySpaces;
+					}
+					else
+					{
+						return null;
+					}
+				}
+
+				return persister.PropertySpaces;
+			}
 		}
 
 		public string[] PropertySpaces

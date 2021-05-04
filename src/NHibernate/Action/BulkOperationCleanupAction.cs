@@ -20,15 +20,15 @@ namespace NHibernate.Action
 		private readonly HashSet<string> affectedEntityNames = new HashSet<string>();
 		private readonly HashSet<string> affectedCollectionRoles = new HashSet<string>();
 		private readonly List<string> spaces;
-		private readonly string[] updateTimestampsSpaces;
+		private readonly string[] queryCacheSpaces;
 
-		public string[] UpdateTimestampsSpaces { get { return updateTimestampsSpaces; } }
+		public string[] QueryCacheSpaces { get { return queryCacheSpaces; } }
 
 		public BulkOperationCleanupAction(ISessionImplementor session, IQueryable[] affectedQueryables)
 		{
 			this.session = session;
 			List<string> tmpSpaces = new List<string>();
-			List<string> updSpaces = new List<string>();
+			ISet<string> updQueryCacheSpaces = new HashSet<string>();
 			for (int i = 0; i < affectedQueryables.Length; i++)
 			{
 				if (affectedQueryables[i].HasCache)
@@ -43,14 +43,21 @@ namespace NHibernate.Action
 				for (int y = 0; y < affectedQueryables[i].QuerySpaces.Length; y++)
 				{
 					tmpSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
-					if(affectedQueryables[i].HasUpdateTimestampsCache)
+					if(affectedQueryables[i] is ICacheableEntityPersister cacheablePersister)
 					{
-						updSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
+						if (cacheablePersister.SupportsQueryCache)
+						{
+							updQueryCacheSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
+						}
+					}
+					else
+					{
+						updQueryCacheSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
 					}
 				}
 			}
 			spaces = new List<string>(tmpSpaces);
-			updateTimestampsSpaces = updSpaces.ToArray();
+			queryCacheSpaces = updQueryCacheSpaces.ToArray();
 		}
 
 		/// <summary>
@@ -62,7 +69,7 @@ namespace NHibernate.Action
 			this.session = session;
 
 			ISet<string> tmpSpaces = new HashSet<string>(querySpaces);
-			List<string> updSpaces = new List<string>();
+			ISet<string> updQueryCacheSpaces = new HashSet<string>();
 			ISessionFactoryImplementor factory = session.Factory;
 			IDictionary<string, IClassMetadata> acmd = factory.GetAllClassMetadata();
 			foreach (KeyValuePair<string, IClassMetadata> entry in acmd)
@@ -85,15 +92,22 @@ namespace NHibernate.Action
 					for (int y = 0; y < entitySpaces.Length; y++)
 					{
 						tmpSpaces.Add(entitySpaces[y]);
-						if (persister.HasUpdateTimestampsCache)
+						if (persister is ICacheableEntityPersister cacheablePersister)
 						{
-							updSpaces.Add(entitySpaces[y]);
+							if (cacheablePersister.SupportsQueryCache)
+							{
+								updQueryCacheSpaces.Add(entitySpaces[y]);
+							}
+						}
+						else
+						{
+							updQueryCacheSpaces.Add(entitySpaces[y]);
 						}
 					}
 				}
 			}
 			spaces = new List<string>(tmpSpaces);
-			updateTimestampsSpaces = updSpaces.ToArray();
+			queryCacheSpaces = updQueryCacheSpaces.ToArray();
 		}
 
 		private bool AffectedEntity(ISet<string> querySpaces, string[] entitySpaces)

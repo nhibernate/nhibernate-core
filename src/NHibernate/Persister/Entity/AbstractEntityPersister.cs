@@ -40,7 +40,8 @@ namespace NHibernate.Persister.Entity
 	/// </remarks>
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
-		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable,
+		ICacheableEntityPersister
 	{
 		#region InclusionChecker
 
@@ -248,7 +249,7 @@ namespace NHibernate.Persister.Entity
 
 		private readonly string loaderName;
 
-		private readonly bool hasUpdateTimestampsCache;
+		private readonly bool supportsQueryCache;
 
 		private IUniqueEntityLoader queryLoader;
 
@@ -551,7 +552,7 @@ namespace NHibernate.Persister.Entity
 					return uniqueKeyPropertyNames;
 				});
 
-			hasUpdateTimestampsCache = persistentClass.HasUpdateTimestampsCache;
+			supportsQueryCache = persistentClass.CacheConcurrencyStrategy != CacheFactory.Never;
 		}
 
 		protected abstract int[] SubclassColumnTableNumberClosure { get; }
@@ -4200,9 +4201,9 @@ namespace NHibernate.Persister.Entity
 			get { return cache != null; }
 		}
 
-		public virtual bool HasUpdateTimestampsCache
+		public bool SupportsQueryCache
 		{
-			get { return hasUpdateTimestampsCache; }
+			get { return supportsQueryCache; }
 		}
 
 		private string GetSubclassEntityName(System.Type clazz)
