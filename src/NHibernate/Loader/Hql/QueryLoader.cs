@@ -400,7 +400,7 @@ namespace NHibernate.Loader.Hql
 
 			if (Factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable)
 			{
-				foreach (var persister in _entityPersisters.Where(x => !x.HasUpdateTimestampsCache))
+				foreach (var persister in _entityPersisters.Where(x => (x as ICacheableEntityPersister)?.SupportsQueryCache == false))
 				{
 					throw new QueryException($"Never cached entity:{persister.EntityName} cannot be used in cacheable query");
 				}

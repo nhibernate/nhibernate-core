@@ -48,17 +48,20 @@ namespace NHibernate.Test.SecondLevelCacheTest
 
 			using (var session = OpenSession())
 			{
+				List<int> ids = new List<int>();
 				//Add NeverItem
 				using (var tx = session.BeginTransaction())
 				{
 					foreach (var i in Enumerable.Range(1, 10))
 					{
-						var item = new NeverItem 
+						var item = new NeverItem { Name = "Abatay" };
+						item.Childrens.Add(new NeverChildItem()
 						{
-							Id = i, Name="NHibernate"+i,
-							Description="Cache.Never() triggers UpdateTimestampsCache" 
-						};
+							Name = "Child",
+							Parent = item
+						});
 						session.Save(item);
+						ids.Add(item.Id);
 					}
 
 					tx.Commit();
@@ -67,7 +70,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 				//Update NeverItem
 				using (var tx = session.BeginTransaction())
 				{
-					foreach (var i in Enumerable.Range(1, 10))
+					foreach (var i in ids)
 					{
 						var item = session.Get<NeverItem>(i);
 						item.Name = item.Id.ToString();
@@ -79,7 +82,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 				//Delete NeverItem
 				using (var tx = session.BeginTransaction())
 				{
-					foreach (var i in Enumerable.Range(1, 10))
+					foreach (var i in ids)
 					{
 						var item = session.Get<NeverItem>(i);
 						session.Delete(item);
@@ -129,11 +132,31 @@ namespace NHibernate.Test.SecondLevelCacheTest
 					tx.Commit();
 				}
 
+				//Linq Multiple with error message we will quarantied that gets 2 class in error message
+				using (var tx = session.BeginTransaction())
+				{
+					Assert.Throws<QueryException>(() => session
+					.Query<NeverItem>().Where(x=>x.Childrens.Any())
+					.WithOptions(x => x.SetCacheable(true))
+					.ToList());
+
+					tx.Commit();
+				}
+
 				//Hql
 				using (var tx = session.BeginTransaction())
 				{
 					Assert.Throws<QueryException>(() => session
-					.CreateQuery("from NeverItem").SetCacheable(true).List());
+					.CreateQuery("from NeverItem").SetCacheable(true).List<NeverItem>());
+
+					tx.Commit();
+				}
+
+				//Native Sql
+				using (var tx = session.BeginTransaction())
+				{
+					Assert.Throws<QueryException>(() => session
+					.CreateSQLQuery("select * from NeverItem").SetCacheable(true).List<NeverItem>());
 
 					tx.Commit();
 				}
@@ -146,12 +169,17 @@ namespace NHibernate.Test.SecondLevelCacheTest
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var e1 = new NeverItem { Id= 100, Name = "Abatay" };
+				var e1 = new NeverItem { Name = "Abatay" };
+				e1.Childrens.Add(new NeverChildItem()
+				{
+					Name = "Child",
+					Parent = e1
+				});
 				session.Save(e1);
 
-				var result =(from e in session.Query<NeverItem>()
-									 where e.Name == "Abatay"
-							 select e).ToList();
+				var result = (from e in session.Query<NeverItem>()
+							  where e.Name == "Abatay"
+							  select e).ToList();
 
 				Assert.That(result.Count, Is.EqualTo(1));
 			}

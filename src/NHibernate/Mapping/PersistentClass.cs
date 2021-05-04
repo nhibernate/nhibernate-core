@@ -223,7 +223,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				return new[] {this}.Concat(SubclassIterator.SelectMany(x => x.SubclassClosureIterator));
+				return new[] { this }.Concat(SubclassIterator.SelectMany(x => x.SubclassClosureIterator));
 			}
 		}
 
@@ -659,11 +659,6 @@ namespace NHibernate.Mapping
 		public abstract string CacheConcurrencyStrategy { get; set; }
 
 		/// <summary>
-		/// When <see cref="CacheConcurrencyStrategy"/> is "never" then UpdateTimestampsCache is not tracked
-		/// </summary>
-		public abstract bool HasUpdateTimestampsCache { get; }
-
-		/// <summary>
 		/// When implemented by a class, gets or sets the <see cref="PersistentClass"/>
 		/// that this mapped class is extending.
 		/// </summary>
@@ -884,7 +879,7 @@ namespace NHibernate.Mapping
 					else
 					{
 						//flat recursive algorithm
-						property = ((Component)property.Value).GetProperty(element);
+						property = ((Component) property.Value).GetProperty(element);
 					}
 				}
 			}
@@ -1062,7 +1057,7 @@ namespace NHibernate.Mapping
 			{
 				if (!columnOrFormula.IsFormula)
 				{
-					Column col = (Column)columnOrFormula;
+					Column col = (Column) columnOrFormula;
 					if (!distinctColumns.Add(col.Name))
 					{
 						// TODO: Check for column duplication
@@ -1125,7 +1120,7 @@ namespace NHibernate.Mapping
 				table.Name = temporaryIdTableName;
 				foreach (Column column in Table.PrimaryKey.ColumnIterator)
 				{
-					table.AddColumn((Column)column.Clone());
+					table.AddColumn((Column) column.Clone());
 				}
 				temporaryIdTableDDL = table.SqlTemporaryTableCreateString(dialect, mapping);
 			}

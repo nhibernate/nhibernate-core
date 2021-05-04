@@ -6,6 +6,7 @@ using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
+using NHibernate.Persister.Entity;
 using NHibernate.Util;
 
 namespace NHibernate.Action
@@ -14,7 +15,12 @@ namespace NHibernate.Action
 	/// Any action relating to insert/update/delete of a collection
 	/// </summary>
 	[Serializable]
-	public abstract partial class CollectionAction : IAsyncExecutable, IComparable<CollectionAction>, IDeserializationCallback, IAfterTransactionCompletionProcess
+	public abstract partial class CollectionAction : 
+		IAsyncExecutable, 
+		IComparable<CollectionAction>, 
+		IDeserializationCallback, 
+		IAfterTransactionCompletionProcess, 
+		ICacheableExecutable
 	{
 		private readonly object key;
 		[NonSerialized] private ICollectionPersister persister;
@@ -79,9 +85,24 @@ namespace NHibernate.Action
 
 		#region IExecutable Members
 
-		public string[] UpdateTimestampsSpaces
+		public string[] QueryCacheSpaces
 		{
-			get { return Persister.OwnerEntityPersister.HasUpdateTimestampsCache ? Persister.CollectionSpaces : null; }
+			get
+			{
+				if (persister.OwnerEntityPersister is ICacheableEntityPersister cacheablePersister)
+				{
+					if (cacheablePersister.SupportsQueryCache)
+					{
+						return Persister.CollectionSpaces;
+					}
+					else
+					{
+						return null;
+					}
+				}
+
+				return Persister.CollectionSpaces;
+			}
 		}
 
 		/// <summary>
