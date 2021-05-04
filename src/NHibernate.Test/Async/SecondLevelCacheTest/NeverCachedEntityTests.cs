@@ -154,6 +154,17 @@ namespace NHibernate.Test.SecondLevelCacheTest
 					await (tx.CommitAsync());
 				}
 
+				//ICriteria
+				using (var tx = session.BeginTransaction())
+				{
+					Assert.ThrowsAsync<QueryException>(() => session
+					.CreateCriteria<NeverItem>()
+					.SetCacheable(true)
+					.ListAsync<NeverItem>());
+
+					await (tx.CommitAsync());
+				}
+
 				//Native Sql
 				using (var tx = session.BeginTransaction())
 				{

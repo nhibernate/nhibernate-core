@@ -136,7 +136,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 				using (var tx = session.BeginTransaction())
 				{
 					Assert.Throws<QueryException>(() => session
-					.Query<NeverItem>().Where(x=>x.Childrens.Any())
+					.Query<NeverItem>().Where(x => x.Childrens.Any())
 					.WithOptions(x => x.SetCacheable(true))
 					.ToList());
 
@@ -148,6 +148,17 @@ namespace NHibernate.Test.SecondLevelCacheTest
 				{
 					Assert.Throws<QueryException>(() => session
 					.CreateQuery("from NeverItem").SetCacheable(true).List<NeverItem>());
+
+					tx.Commit();
+				}
+
+				//ICriteria
+				using (var tx = session.BeginTransaction())
+				{
+					Assert.Throws<QueryException>(() => session
+					.CreateCriteria<NeverItem>()
+					.SetCacheable(true)
+					.List<NeverItem>());
 
 					tx.Commit();
 				}

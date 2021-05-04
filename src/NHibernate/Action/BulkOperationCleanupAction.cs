@@ -14,7 +14,7 @@ namespace NHibernate.Action
 	/// Implementation of BulkOperationCleanupAction.
 	/// </summary>
 	[Serializable]
-	public partial class BulkOperationCleanupAction : IAsyncExecutable, IAfterTransactionCompletionProcess
+	public partial class BulkOperationCleanupAction : IAsyncExecutable, IAfterTransactionCompletionProcess, ICacheableExecutable
 	{
 		private readonly ISessionImplementor session;
 		private readonly HashSet<string> affectedEntityNames = new HashSet<string>();
