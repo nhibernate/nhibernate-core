@@ -10,6 +10,7 @@ using NHibernate.Dialect.Function;
 using NHibernate.Engine.Query;
 using NHibernate.Exceptions;
 using NHibernate.Id;
+using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -65,16 +66,12 @@ namespace NHibernate.Engine
 		/// <exception cref="MappingException">If no <see cref="IEntityPersister"/> can be found.</exception>
 		IEntityPersister GetEntityPersister(string entityName);
 
-		ILookup<string, IEntityPersister> GetEntityPersistersSpaces();
-
 		/// <summary>
 		/// Get the persister object for a collection role
 		/// </summary>
 		/// <param name="role"></param>
 		/// <returns></returns>
 		ICollectionPersister GetCollectionPersister(string role);
-
-		ILookup<string, ICollectionPersister> GetCollectionPersistersSpaces();
 
 		/// <summary>
 		/// Get the return types of a query
@@ -151,7 +148,7 @@ namespace NHibernate.Engine
 		/// <returns>An appropriate session.</returns>
 		[Obsolete("Please use WithOptions() instead.")]
 		ISession OpenSession(DbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
-		                     ConnectionReleaseMode connectionReleaseMode);
+							 ConnectionReleaseMode connectionReleaseMode);
 
 		/// <summary> 
 		/// Retrieves a set of all the collection roles in which the given entity
@@ -186,5 +183,72 @@ namespace NHibernate.Engine
 		/// <returns>the entity name where available or null</returns>
 		string TryGetGuessEntityName(System.Type implementor);
 		#endregion
+	}
+
+	// 6.0 TODO: move below methods directly in ISessionFactoryImplementor then remove SessionFactoryImplementorExtension
+	public static class SessionFactoryImplementorExtension
+	{
+		/// <summary>
+		/// Get entity persisters by query space
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <param name="spaces">query spaces</param>
+		/// <returns>Unique list of entity persisters, if spaces is null or empty then returns all persisters</returns>
+		public static ISet<IEntityPersister> GetEntityPersisters(this ISessionFactoryImplementor factory, ISet<string> spaces)
+		{
+			if (factory is SessionFactoryImpl sfi)
+			{
+				return sfi.GetEntityPersisters(spaces);
+			}
+			else
+			{
+				ISet<IEntityPersister> persisters = new HashSet<IEntityPersister>();
+				foreach (var entityName in factory.GetAllClassMetadata().Keys)
+				{
+					var persister = factory.GetEntityPersister(entityName);
+					//NativeSql does not have query space so return all query spaces, if spaces is null or empty
+					if (spaces == null || spaces.Count == 0 || persister.PropertySpaces.Any(x => spaces.Contains(x)))
+					{
+						persisters.Add(persister);
+					}
+				}
+
+				return persisters;
+			}
+		}
+
+		/// <summary>
+		/// Get collection persister by query space
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <param name="spaces">query spaces</param>
+		/// <returns>Unique list of collection persisters</returns>
+		public static ISet<ICollectionPersister> GetCollectionPersisters(this ISessionFactoryImplementor factory, ISet<string> spaces)
+		{
+			if (factory is SessionFactoryImpl sfi)
+			{
+				return sfi.GetCollectionPersisters(spaces);
+			}
+			else
+			{
+				ISet<ICollectionPersister> collectionPersisters = new HashSet<ICollectionPersister>();
+
+				if(spaces == null || spaces.Count == 0)
+				{
+					return collectionPersisters;
+				}
+
+				foreach (var roleName in factory.GetAllCollectionMetadata().Keys)
+				{
+					var collectionPersister = factory.GetCollectionPersister(roleName);
+					if (collectionPersister.CollectionSpaces.Any(x => spaces.Contains(x)))
+					{
+						collectionPersisters.Add(collectionPersister);
+					}
+				}
+
+				return collectionPersisters;
+			}
+		}
 	}
 }

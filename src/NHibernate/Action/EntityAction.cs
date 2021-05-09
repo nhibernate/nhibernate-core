@@ -100,19 +100,7 @@ namespace NHibernate.Action
 		{
 			get 
 			{
-				if (persister is ICacheableEntityPersister cacheablePersister)
-				{
-					if (cacheablePersister.SupportsQueryCache)
-					{
-						return persister.PropertySpaces;
-					}
-					else
-					{
-						return null;
-					}
-				}
-
-				return persister.PropertySpaces;
+				return (persister as ICacheableEntityPersister)?.SupportsQueryCache == false ? null : persister.PropertySpaces;
 			}
 		}
 

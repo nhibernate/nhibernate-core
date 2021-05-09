@@ -1835,21 +1835,20 @@ namespace NHibernate.Loader
 			{
 				if (QuerySpaces?.Count > 0)
 				{
-					var entityPersistersSpaces = _factory.GetEntityPersistersSpaces();
-					var collectionPersistersSpaces = _factory.GetCollectionPersistersSpaces();
 					ISet<string> neverCachedEntities = new HashSet<string>();
 
-					foreach (var querySpace in QuerySpaces)
+					foreach (var persister in _factory
+						.GetEntityPersisters(QuerySpaces)
+						.Where(x => (x as ICacheableEntityPersister)?.SupportsQueryCache == false))
 					{
-						foreach (var persister in entityPersistersSpaces[querySpace].Where(x => (x as ICacheableEntityPersister)?.SupportsQueryCache == false))
-						{
-							neverCachedEntities.Add(persister.EntityName);
-						}
+						neverCachedEntities.Add(persister.EntityName);
+					}
 
-						foreach (var collectionPersister in collectionPersistersSpaces[querySpace].Where(x => (x as ICacheableEntityPersister)?.SupportsQueryCache == false))
-						{
-							neverCachedEntities.Add(collectionPersister.OwnerEntityPersister.EntityName);
-						}
+					foreach (var collectionPersister in _factory
+						.GetCollectionPersisters(QuerySpaces)
+						.Where(x => (x as ICacheableEntityPersister)?.SupportsQueryCache == false))
+					{
+						neverCachedEntities.Add(collectionPersister.OwnerEntityPersister.EntityName);
 					}
 
 					if(neverCachedEntities.Any())

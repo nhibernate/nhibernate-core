@@ -89,19 +89,7 @@ namespace NHibernate.Action
 		{
 			get
 			{
-				if (persister.OwnerEntityPersister is ICacheableEntityPersister cacheablePersister)
-				{
-					if (cacheablePersister.SupportsQueryCache)
-					{
-						return Persister.CollectionSpaces;
-					}
-					else
-					{
-						return null;
-					}
-				}
-
-				return Persister.CollectionSpaces;
+				return (persister.OwnerEntityPersister as ICacheableEntityPersister)?.SupportsQueryCache == false ? null : persister.CollectionSpaces;
 			}
 		}
 
