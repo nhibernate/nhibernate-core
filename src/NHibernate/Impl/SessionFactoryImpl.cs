@@ -625,14 +625,48 @@ namespace NHibernate.Impl
 			return result;
 		}
 
-		public ILookup<string, IEntityPersister> GetEntityPersistersSpaces()
+		/// <summary>
+		/// Get entity persisters by query space
+		/// </summary>
+		/// <param name="spaces">query spaces</param>
+		/// <returns>Unique list of entity persisters, if spaces is null or empty then returns all persisters</returns>
+		public ISet<IEntityPersister> GetEntityPersisters(ISet<string> spaces)
 		{
-			return entityPersistersSpaces;
+			ISet<IEntityPersister> persisters = new HashSet<IEntityPersister>();
+
+			if (spaces == null || spaces.Count == 0)
+			{
+				//NativeSql does not have query space so return all query spaces, if spaces is null or empty
+				return new HashSet<IEntityPersister>(entityPersistersSpaces.SelectMany(x => x.Select(y => y)));
+			}
+
+			foreach (var space in spaces)
+			{
+				persisters.UnionWith(entityPersistersSpaces[space]);
+			}
+
+			return persisters;
 		}
 
-		public ILookup<string, ICollectionPersister> GetCollectionPersistersSpaces()
+		/// <summary>
+		/// Get collection persister by query space
+		/// </summary>
+		/// <param name="spaces">query spaces</param>
+		/// <returns>Unique list of collection persisters</returns>
+		public ISet<ICollectionPersister> GetCollectionPersisters(ISet<string> spaces)
 		{
-			return collectionPersistersSpaces;
+			ISet<ICollectionPersister> collectionPersisters = new HashSet<ICollectionPersister>();
+			if(spaces == null || spaces.Count == 0)
+			{
+				return collectionPersisters;
+			}
+
+			foreach (var space in spaces)
+			{
+				collectionPersisters.UnionWith(collectionPersistersSpaces[space]);
+			}
+
+			return collectionPersisters;
 		}
 
 		/// <summary></summary>
