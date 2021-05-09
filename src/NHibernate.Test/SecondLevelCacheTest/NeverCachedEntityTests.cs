@@ -138,7 +138,8 @@ namespace NHibernate.Test.SecondLevelCacheTest
 					Assert.Throws<QueryException>(() => session
 					.Query<NeverItem>().Where(x => x.Childrens.Any())
 					.WithOptions(x => x.SetCacheable(true))
-					.ToList());
+					.ToList(),
+					$"Never cached entity:{string.Join(", ", typeof(NeverItem).FullName, typeof(NeverChildItem).FullName)} cannot be used in cacheable query");
 
 					tx.Commit();
 				}
@@ -167,7 +168,10 @@ namespace NHibernate.Test.SecondLevelCacheTest
 				using (var tx = session.BeginTransaction())
 				{
 					Assert.Throws<QueryException>(() => session
-					.CreateSQLQuery("select * from NeverItem").SetCacheable(true).List<NeverItem>());
+					.CreateSQLQuery("select * from NeverItem")
+					.AddSynchronizedQuerySpace("NeverItem")
+					.SetCacheable(true)
+					.List<NeverItem>());
 
 					tx.Commit();
 				}

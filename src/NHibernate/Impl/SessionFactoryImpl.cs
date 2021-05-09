@@ -111,6 +111,8 @@ namespace NHibernate.Impl
 		private readonly IDictionary<string, ICollectionMetadata> collectionMetadata;
 		[NonSerialized]
 		private readonly Dictionary<string, ICollectionPersister> collectionPersisters;
+		[NonSerialized]
+		private readonly ILookup<string, ICollectionPersister> collectionPersistersSpaces;
 
 		[NonSerialized]
 		private readonly IDictionary<string, ISet<string>> collectionRolesByEntityParticipant;
@@ -120,6 +122,8 @@ namespace NHibernate.Impl
 		private readonly IEntityNotFoundDelegate entityNotFoundDelegate;
 		[NonSerialized]
 		private readonly IDictionary<string, IEntityPersister> entityPersisters;
+		[NonSerialized]
+		private readonly ILookup<string, IEntityPersister> entityPersistersSpaces;
 
 		/// <summary>
 		/// NH specific : to avoid the use of entityName for generic implementation
@@ -283,6 +287,11 @@ namespace NHibernate.Impl
 					implementorToEntityName[model.MappedClass] = model.EntityName;
 				}
 			}
+
+			entityPersistersSpaces = entityPersisters
+				.SelectMany(x => x.Value.PropertySpaces.Select(y => new { QuerySpace = y, Persister = x.Value }))
+				.ToLookup(x => x.QuerySpace, x => x.Persister);
+
 			classMetadata = new ReadOnlyDictionary<string, IClassMetadata>(classMeta);
 
 			Dictionary<string, ISet<string>> tmpEntityToCollectionRoleMap = new Dictionary<string, ISet<string>>();
@@ -321,6 +330,11 @@ namespace NHibernate.Impl
 					roles.Add(persister.Role);
 				}
 			}
+
+			collectionPersistersSpaces = collectionPersisters
+				.SelectMany(x => x.Value.CollectionSpaces.Select(y => new { QuerySpace = y, Persister = x.Value }))
+				.ToLookup(x => x.QuerySpace, x => x.Persister);
+
 			Dictionary<string, ICollectionMetadata> tmpcollectionMetadata = new Dictionary<string, ICollectionMetadata>(collectionPersisters.Count);
 			foreach (KeyValuePair<string, ICollectionPersister> collectionPersister in collectionPersisters)
 			{
@@ -609,6 +623,16 @@ namespace NHibernate.Impl
 			ISet<string> result;
 			collectionRolesByEntityParticipant.TryGetValue(entityName, out result);
 			return result;
+		}
+
+		public ILookup<string, IEntityPersister> GetEntityPersistersSpaces()
+		{
+			return entityPersistersSpaces;
+		}
+
+		public ILookup<string, ICollectionPersister> GetCollectionPersistersSpaces()
+		{
+			return collectionPersistersSpaces;
 		}
 
 		/// <summary></summary>

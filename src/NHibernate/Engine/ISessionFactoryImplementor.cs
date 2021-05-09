@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -64,12 +65,16 @@ namespace NHibernate.Engine
 		/// <exception cref="MappingException">If no <see cref="IEntityPersister"/> can be found.</exception>
 		IEntityPersister GetEntityPersister(string entityName);
 
+		ILookup<string, IEntityPersister> GetEntityPersistersSpaces();
+
 		/// <summary>
 		/// Get the persister object for a collection role
 		/// </summary>
 		/// <param name="role"></param>
 		/// <returns></returns>
 		ICollectionPersister GetCollectionPersister(string role);
+
+		ILookup<string, ICollectionPersister> GetCollectionPersistersSpaces();
 
 		/// <summary>
 		/// Get the return types of a query
