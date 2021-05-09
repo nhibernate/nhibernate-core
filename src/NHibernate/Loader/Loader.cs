@@ -156,6 +156,8 @@ namespace NHibernate.Loader
 			get { return false; }
 		}
 
+		public virtual ISet<string> QuerySpaces => null;
+
 		/// <summary>
 		/// Get the result set descriptor
 		/// </summary>
@@ -1829,7 +1831,37 @@ namespace NHibernate.Loader
 
 		internal bool IsCacheable(QueryParameters queryParameters)
 		{
-			return _factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
+			if (Factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable)
+			{
+				if (QuerySpaces?.Count > 0)
+				{
+					var entityPersistersSpaces = _factory.GetEntityPersistersSpaces();
+					var collectionPersistersSpaces = _factory.GetCollectionPersistersSpaces();
+					ISet<string> neverCachedEntities = new HashSet<string>();
+
+					foreach (var querySpace in QuerySpaces)
+					{
+						foreach (var persister in entityPersistersSpaces[querySpace].Where(x => (x as ICacheableEntityPersister)?.SupportsQueryCache == false))
+						{
+							neverCachedEntities.Add(persister.EntityName);
+						}
+
+						foreach (var collectionPersister in collectionPersistersSpaces[querySpace].Where(x => (x as ICacheableEntityPersister)?.SupportsQueryCache == false))
+						{
+							neverCachedEntities.Add(collectionPersister.OwnerEntityPersister.EntityName);
+						}
+					}
+
+					if(neverCachedEntities.Any())
+					{
+						throw new QueryException($"Never cached entity:{string.Join(", ", neverCachedEntities)} cannot be used in cacheable query");
+					}
+				}
+
+				return true;
+			}
+
+			return false;
 		}
 
 		private IList ListIgnoreQueryCache(ISessionImplementor session, QueryParameters queryParameters)

@@ -93,7 +93,7 @@ namespace NHibernate.Loader.Criteria
 
 		// Not ported: scroll (not supported)
 
-		public ISet<string> QuerySpaces
+		public override ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}

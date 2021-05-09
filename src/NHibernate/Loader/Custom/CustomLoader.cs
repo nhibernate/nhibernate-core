@@ -182,7 +182,7 @@ namespace NHibernate.Loader.Custom
 			ResultRowAliases = transformerAliases.Where((a, i) => includeInResultRowList[i]).ToArray();
 		}
 
-		public ISet<string> QuerySpaces
+		public override ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}

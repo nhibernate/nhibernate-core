@@ -109,6 +109,8 @@ namespace NHibernate.Loader.Hql
 			get { return _sqlAliases; }
 		}
 
+		public override ISet<string> QuerySpaces => _queryTranslator.QuerySpaces;
+
 		protected override int[] CollectionOwners
 		{
 			get { return _collectionOwners; }
@@ -396,14 +398,6 @@ namespace NHibernate.Loader.Hql
 			if (HasSelectNew && queryParameters.ResultTransformer != null)
 			{
 				throw new QueryException("ResultTransformer is not allowed for 'select new' queries.");
-			}
-
-			if (Factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable)
-			{
-				foreach (var persister in _entityPersisters.Where(x => (x as ICacheableEntityPersister)?.SupportsQueryCache == false))
-				{
-					throw new QueryException($"Never cached entity:{persister.EntityName} cannot be used in cacheable query");
-				}
 			}
 		}
 

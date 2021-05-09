@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NHibernate.Engine;
-using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
@@ -19,7 +18,7 @@ namespace NHibernate.Action
 		private readonly ISessionImplementor session;
 		private readonly HashSet<string> affectedEntityNames = new HashSet<string>();
 		private readonly HashSet<string> affectedCollectionRoles = new HashSet<string>();
-		private readonly List<string> spaces;
+		private readonly string[] spaces;
 		private readonly string[] queryCacheSpaces;
 
 		public string[] QueryCacheSpaces { get { return queryCacheSpaces; } }
@@ -27,8 +26,8 @@ namespace NHibernate.Action
 		public BulkOperationCleanupAction(ISessionImplementor session, IQueryable[] affectedQueryables)
 		{
 			this.session = session;
-			List<string> tmpSpaces = new List<string>();
-			ISet<string> updQueryCacheSpaces = new HashSet<string>();
+			ISet<string> affectedSpaces = new HashSet<string>();
+			ISet<string> affectedQueryCacheSpaces = new HashSet<string>();
 			for (int i = 0; i < affectedQueryables.Length; i++)
 			{
 				if (affectedQueryables[i].HasCache)
@@ -42,22 +41,23 @@ namespace NHibernate.Action
 				}
 				for (int y = 0; y < affectedQueryables[i].QuerySpaces.Length; y++)
 				{
-					tmpSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
+					affectedSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
 					if(affectedQueryables[i] is ICacheableEntityPersister cacheablePersister)
 					{
 						if (cacheablePersister.SupportsQueryCache)
 						{
-							updQueryCacheSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
+							affectedQueryCacheSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
 						}
 					}
 					else
 					{
-						updQueryCacheSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
+						affectedQueryCacheSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
 					}
 				}
 			}
-			spaces = new List<string>(tmpSpaces);
-			queryCacheSpaces = updQueryCacheSpaces.ToArray();
+
+			spaces = affectedSpaces.ToArray();
+			queryCacheSpaces = affectedQueryCacheSpaces.ToArray();
 		}
 
 		/// <summary>
@@ -68,18 +68,16 @@ namespace NHibernate.Action
 			//from H3.2 TODO: cache the autodetected information and pass it in instead.
 			this.session = session;
 
-			ISet<string> tmpSpaces = new HashSet<string>(querySpaces);
-			ISet<string> updQueryCacheSpaces = new HashSet<string>();
-			ISessionFactoryImplementor factory = session.Factory;
-			IDictionary<string, IClassMetadata> acmd = factory.GetAllClassMetadata();
-			foreach (KeyValuePair<string, IClassMetadata> entry in acmd)
-			{
-				string entityName = entry.Key;
-				IEntityPersister persister = factory.GetEntityPersister(entityName);
-				string[] entitySpaces = persister.QuerySpaces;
+			ISet<string> affectedSpaces = new HashSet<string>(querySpaces);
+			ISet<string> affectedQueryCacheSpaces = new HashSet<string>();
 
-				if (AffectedEntity(querySpaces, entitySpaces))
+			var entityPersistersSpaces = session.Factory.GetEntityPersistersSpaces();
+			foreach (var querySpace in querySpaces)
+			{
+				foreach(var persister in entityPersistersSpaces[querySpace])
 				{
+					string[] entitySpaces = persister.QuerySpaces;
+
 					if (persister.HasCache)
 					{
 						affectedEntityNames.Add(persister.EntityName);
@@ -91,40 +89,32 @@ namespace NHibernate.Action
 					}
 					for (int y = 0; y < entitySpaces.Length; y++)
 					{
-						tmpSpaces.Add(entitySpaces[y]);
+						affectedSpaces.Add(entitySpaces[y]);
 						if (persister is ICacheableEntityPersister cacheablePersister)
 						{
 							if (cacheablePersister.SupportsQueryCache)
 							{
-								updQueryCacheSpaces.Add(entitySpaces[y]);
+								affectedQueryCacheSpaces.Add(entitySpaces[y]);
 							}
 						}
 						else
 						{
-							updQueryCacheSpaces.Add(entitySpaces[y]);
+							affectedQueryCacheSpaces.Add(entitySpaces[y]);
 						}
 					}
 				}
-			}
-			spaces = new List<string>(tmpSpaces);
-			queryCacheSpaces = updQueryCacheSpaces.ToArray();
-		}
 
-		private bool AffectedEntity(ISet<string> querySpaces, string[] entitySpaces)
-		{
-			if (querySpaces == null || (querySpaces.Count == 0))
-			{
-				return true;
 			}
 
-			return entitySpaces.Any(querySpaces.Contains);
+			spaces = affectedSpaces.ToArray();
+			queryCacheSpaces = affectedQueryCacheSpaces.ToArray();
 		}
 
 		#region IExecutable Members
 
 		public string[] PropertySpaces
 		{
-			get { return spaces.ToArray(); }
+			get { return spaces; }
 		}
 
 		public void BeforeExecutions()
