@@ -89,7 +89,7 @@ namespace NHibernate.Action
 		{
 			get
 			{
-				return (persister.OwnerEntityPersister as ICacheableEntityPersister)?.SupportsQueryCache == false ? null : persister.CollectionSpaces;
+				return (persister as ICacheableCollectionPersister)?.SupportsQueryCache == false ? null : persister.CollectionSpaces;
 			}
 		}
 
