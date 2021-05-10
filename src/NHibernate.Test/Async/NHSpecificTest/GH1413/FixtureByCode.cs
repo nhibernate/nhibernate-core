@@ -74,13 +74,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1413
 			}
 		}
 
-		[Test]
-		[KnownBug("#1413")]
-		public async Task SessionIsDirtyShouldNotTriggerCascadeSavingAsync()
+		[Theory]
+		public async Task SessionIsDirtyShouldNotTriggerCascadeSavingAsync(bool beginTransaction)
 		{
 			Sfi.Statistics.IsStatisticsEnabled = true;
 			using (var session = OpenSession())
-			using (session.BeginTransaction())
+			using (beginTransaction ? session.BeginTransaction() : null)
 			{
 				var parent = await (GetParentAsync(session));
 				var entityChild = new EntityChild

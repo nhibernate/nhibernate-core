@@ -62,13 +62,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1413
 			}
 		}
 
-		[Test]
-		[KnownBug("#1413")]
-		public void SessionIsDirtyShouldNotTriggerCascadeSaving()
+		[Theory]
+		public void SessionIsDirtyShouldNotTriggerCascadeSaving(bool beginTransaction)
 		{
 			Sfi.Statistics.IsStatisticsEnabled = true;
 			using (var session = OpenSession())
-			using (session.BeginTransaction())
+			using (beginTransaction ? session.BeginTransaction() : null)
 			{
 				var parent = GetParent(session);
 				var entityChild = new EntityChild
