@@ -9,6 +9,7 @@
 
 
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Engine;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -94,11 +95,14 @@ namespace NHibernate.Test.NHSpecificTest.GH1413
 				var isDirty = await (session.IsDirtyAsync());
 
 				Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(0), "Dirty has triggered an insert");
-				Assert.That(
-					entityChild.Id,
-					Is.EqualTo(0),
-					"Transient objects should not be saved by ISession.IsDirty() call (expected 0 as Id)");
 				Assert.That(isDirty, "ISession.IsDirty() call should return true.");
+				if (Dialect.SupportsIdentityColumns)
+				{
+					Assert.That(
+						entityChild.Id,
+						Is.EqualTo(0),
+						"Transient objects should not be saved by ISession.IsDirty() call (expected 0 as Id)");
+				}
 			}
 		}
 
