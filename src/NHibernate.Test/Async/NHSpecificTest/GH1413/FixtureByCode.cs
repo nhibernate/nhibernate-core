@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1413
 			var mapper = new ModelMapper();
 			mapper.Class<EntityParent>(rc =>
 			{
-				rc.Id(x => x.Id, m => m.Generator(Generators.Native));
+				rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
 				rc.Property(x => x.Name);
 				rc.Bag(x => x.Children, m =>
 				{
@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1413
 
 			mapper.Class<EntityChild>(rc =>
 			{
-				rc.Id(x => x.Id, m => m.Generator(Generators.Native));
+				rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
 				rc.Property(x => x.Name);
 			});
 
