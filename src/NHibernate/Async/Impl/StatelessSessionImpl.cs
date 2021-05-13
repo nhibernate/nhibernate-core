@@ -322,6 +322,24 @@ namespace NHibernate.Impl
 
 		#region IStatelessSession Members
 
+		public async Task ManagedCloseAsync(CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			using (BeginContext())
+			{
+				if (IsClosed)
+				{
+					throw new SessionException("Session was already closed!");
+				}
+				// We need to flush the batcher. Otherwise it may have pending operations which will never reach the database,
+				// although a stateless session is not supposed to retain anything in memory and so should not need any explicit
+				// flush from users.
+				await (FlushAsync(cancellationToken)).ConfigureAwait(false);
+				CloseConnectionManager();
+				SetClosed();
+			}
+		}
+
 		/// <summary> Insert a entity.</summary>
 		/// <param name="entity">A new transient instance </param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>

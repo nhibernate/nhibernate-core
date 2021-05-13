@@ -438,6 +438,10 @@ namespace NHibernate.Impl
 				{
 					throw new SessionException("Session was already closed!");
 				}
+				// We need to flush the batcher. Otherwise it may have pending operations which will never reach the database,
+				// although a stateless session is not supposed to retain anything in memory and so should not need any explicit
+				// flush from users.
+				Flush();
 				CloseConnectionManager();
 				SetClosed();
 			}
@@ -786,6 +790,10 @@ namespace NHibernate.Impl
 				// with a null ref rather than silently leaking a session. And then fix the synchronization.
 				if (TransactionContext != null && TransactionContext.CanFlushOnSystemTransactionCompleted)
 				{
+					// We need to flush the batcher. Otherwise it may have pending operations which will never reach the database,
+					// although a stateless session is not supposed to retain anything in memory and so should not need any explicit
+					// flush from users.
+					Flush();
 					TransactionContext.ShouldCloseSessionOnSystemTransactionCompleted = true;
 					return;
 				}
