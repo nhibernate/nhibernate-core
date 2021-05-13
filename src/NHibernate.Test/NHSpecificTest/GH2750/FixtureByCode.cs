@@ -92,6 +92,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2750
 					{
 						session.Insert(entity);
 					}
+					session.FlushBatcher();
 
 					transaction.Complete();
 				}

@@ -104,6 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2750
 					{
 						await (session.InsertAsync(entity));
 					}
+					await (session.FlushBatcherAsync());
 
 					transaction.Complete();
 				}
