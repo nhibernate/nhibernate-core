@@ -1829,38 +1829,33 @@ namespace NHibernate.Loader
 			return ListIgnoreQueryCache(session, queryParameters);
 		}
 
-		internal bool IsCacheable(QueryParameters queryParameters)
+		public virtual bool IsCacheable(QueryParameters queryParameters)
 		{
-			if (Factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable)
+			return Factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
+		}
+
+		internal void ThrowIfNotSupportsCacheable()
+		{
+			ISet<string> neverCachedEntities = new HashSet<string>();
+
+			foreach (var persister in _factory
+				.GetEntityPersisters(QuerySpaces)
+				.Where(x => (x as ICacheableEntityPersister)?.SupportsQueryCache == false))
 			{
-				if (QuerySpaces?.Count > 0)
-				{
-					ISet<string> neverCachedEntities = new HashSet<string>();
-
-					foreach (var persister in _factory
-						.GetEntityPersisters(QuerySpaces)
-						.Where(x => (x as ICacheableEntityPersister)?.SupportsQueryCache == false))
-					{
-						neverCachedEntities.Add(persister.EntityName);
-					}
-
-					foreach (var collectionPersister in _factory
-						.GetCollectionPersisters(QuerySpaces)
-						.Where(x => (x as ICacheableEntityPersister)?.SupportsQueryCache == false))
-					{
-						neverCachedEntities.Add(collectionPersister.OwnerEntityPersister.EntityName);
-					}
-
-					if(neverCachedEntities.Any())
-					{
-						throw new QueryException($"Never cached entity:{string.Join(", ", neverCachedEntities)} cannot be used in cacheable query");
-					}
-				}
-
-				return true;
+				neverCachedEntities.Add(persister.EntityName);
 			}
 
-			return false;
+			foreach (var collectionPersister in _factory
+				.GetCollectionPersisters(QuerySpaces)
+				.Where(x => (x as ICacheableEntityPersister)?.SupportsQueryCache == false))
+			{
+				neverCachedEntities.Add(collectionPersister.OwnerEntityPersister.EntityName);
+			}
+
+			if (neverCachedEntities.Any())
+			{
+				throw new QueryException($"Never cached entity:{string.Join(", ", neverCachedEntities)} cannot be used in cacheable query");
+			}
 		}
 
 		private IList ListIgnoreQueryCache(ISessionImplementor session, QueryParameters queryParameters)

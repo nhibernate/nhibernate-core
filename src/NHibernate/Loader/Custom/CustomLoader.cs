@@ -25,6 +25,7 @@ namespace NHibernate.Loader.Custom
 
 		private readonly SqlString sql;
 		private readonly HashSet<string> querySpaces = new HashSet<string>();
+		private readonly bool supportsQueryCache = true;
 		private List<IParameterSpecification> parametersSpecifications;
 
 		private readonly IQueryable[] entityPersisters;
@@ -46,6 +47,13 @@ namespace NHibernate.Loader.Custom
 		{
 			sql = customQuery.SQL;
 			querySpaces.UnionWith(customQuery.QuerySpaces);
+			if(querySpaces?.Count > 0)
+			{
+				supportsQueryCache = factory
+					.GetEntityPersisters(querySpaces)
+					.All(x => (x as ICacheableEntityPersister)?.SupportsQueryCache ?? true);
+			}
+
 			parametersSpecifications = customQuery.CollectedParametersSpecifications.ToList();
 
 			List<IQueryable> entitypersisters = new List<IQueryable>();
@@ -91,6 +99,7 @@ namespace NHibernate.Loader.Custom
 					specifiedAliases.Add(rootRtn.Alias);
 					entityaliases.Add(rootRtn.EntityAliases);
 					querySpaces.UnionWith(persister.QuerySpaces);
+					supportsQueryCache = supportsQueryCache && ((persister as ICacheableEntityPersister)?.SupportsQueryCache ?? true);
 					includeInResultRowList.Add(true);
 				}
 				else if (rtn is CollectionReturn)
@@ -115,6 +124,7 @@ namespace NHibernate.Loader.Custom
 						entityowners.Add(-1);
 						entityaliases.Add(collRtn.ElementEntityAliases);
 						querySpaces.UnionWith(elementPersister.QuerySpaces);
+						supportsQueryCache = supportsQueryCache && ((elementPersister as ICacheableEntityPersister)?.SupportsQueryCache ?? true);
 					}
 					includeInResultRowList.Add(true);
 				}
@@ -134,6 +144,7 @@ namespace NHibernate.Loader.Custom
 					specifiedAliases.Add(fetchRtn.Alias);
 					entityaliases.Add(fetchRtn.EntityAliases);
 					querySpaces.UnionWith(persister.QuerySpaces);
+					supportsQueryCache = supportsQueryCache && ((persister as ICacheableEntityPersister)?.SupportsQueryCache ?? true);
 					includeInResultRowList.Add(false);
 				}
 				else if (rtn is CollectionFetchReturn)
@@ -159,6 +170,7 @@ namespace NHibernate.Loader.Custom
 						entityowners.Add(ownerIndex);
 						entityaliases.Add(fetchRtn.ElementEntityAliases);
 						querySpaces.UnionWith(elementPersister.QuerySpaces);
+						supportsQueryCache = supportsQueryCache && ((elementPersister as ICacheableEntityPersister)?.SupportsQueryCache ?? true);
 					}
 					includeInResultRowList.Add(false);
 				}
@@ -185,6 +197,17 @@ namespace NHibernate.Loader.Custom
 		public override ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
+		}
+
+		public override bool IsCacheable(QueryParameters queryParameters)
+		{
+			bool isCacheable = base.IsCacheable(queryParameters);
+			if (isCacheable && !supportsQueryCache)
+			{
+				ThrowIfNotSupportsCacheable();
+			}
+
+			return isCacheable;
 		}
 
 		protected override int[] CollectionOwners

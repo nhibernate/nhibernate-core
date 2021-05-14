@@ -29,6 +29,8 @@ namespace NHibernate.Loader.Criteria
 			}
 		}
 
+		public bool SupportsQueryCache => (persister as ICacheableEntityPersister)?.SupportsQueryCache ?? true; 
+
 		public IPropertyMapping PropertyMapping
 		{
 			get
