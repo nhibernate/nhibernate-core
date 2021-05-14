@@ -224,6 +224,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			get { return _sqlAst.Walker.QuerySpaces; }
 		}
 
+		public bool SupportsQueryCache => _sqlAst.Walker.SupportsQueryCache;
+
 		public string SQLString
 		{
 			get { return _generator.Sql.ToString(); }

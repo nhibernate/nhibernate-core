@@ -50,6 +50,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly Dictionary<String, ISelectExpression> selectExpressionsByResultVariable = new Dictionary<string, ISelectExpression>();
 
 		private readonly HashSet<string> _querySpaces = new HashSet<string>();
+		private bool supportsQueryCache = true;
 
 		private readonly LiteralProcessor _literalProcessor;
 
@@ -133,6 +134,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			get { return _querySpaces; }
 		}
+
+		public bool SupportsQueryCache => supportsQueryCache;
 
 		public IDictionary<string, object> NamedParameters
 		{
@@ -456,7 +459,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			intoClause.SetFirstChild(propertySpec);
 			intoClause.Initialize(persister);
 
-			AddQuerySpaces(persister.QuerySpaces);
+			AddQuerySpaces(persister);
 
 			return intoClause;
 		}
@@ -1192,6 +1195,19 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
+		public void AddQuerySpaces(IEntityPersister persister)
+		{
+			supportsQueryCache = supportsQueryCache && ((persister as ICacheableEntityPersister)?.SupportsQueryCache ?? true);
+			AddQuerySpaces(persister.QuerySpaces);
+		}
+
+		public void AddQuerySpaces(ICollectionPersister collectionPersister)
+		{
+			supportsQueryCache = supportsQueryCache && ((collectionPersister as ICacheableCollectionPersister)?.SupportsQueryCache ?? true);
+			AddQuerySpaces(collectionPersister.CollectionSpaces);
+		}
+
+		//TODO NH 6.0 make this method private
 		public void AddQuerySpaces(string[] spaces)
 		{
 			for (int i = 0; i < spaces.Length; i++)

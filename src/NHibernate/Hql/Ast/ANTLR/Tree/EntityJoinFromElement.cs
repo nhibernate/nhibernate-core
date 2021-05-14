@@ -21,7 +21,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			JoinSequence = new JoinSequence(SessionFactoryHelper.Factory) {ForceFilter = true}
 				.AddJoin(entityType, tableAlias, joinType, Array.Empty<string>());
 
-			fromClause.Walker.AddQuerySpaces(entityPersister.QuerySpaces);
+			fromClause.Walker.AddQuerySpaces(entityPersister);
 		}
 	}
 }

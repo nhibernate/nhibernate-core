@@ -41,6 +41,8 @@ namespace NHibernate.Loader.Criteria
 			get { return persister.CollectionSpaces; }
 		}
 
+		public bool SupportsQueryCache => (persister as ICacheableCollectionPersister)?.SupportsQueryCache ?? true;
+
 		public IPropertyMapping PropertyMapping
 		{
 			get { return persister; }

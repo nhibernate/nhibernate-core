@@ -154,6 +154,14 @@ namespace NHibernate.Loader.Criteria
 			return result;
 		}
 
+		public bool SupportsQueryCache
+		{
+			get
+			{
+				return criteriaInfoMap.Values.All(x => x.SupportsQueryCache) && criteriaCollectionPersisters.All(x => (x as ICacheableCollectionPersister)?.SupportsQueryCache ?? true);
+			}
+		}
+
 		public int SQLAliasCount
 		{
 			get { return criteriaSQLAliasMap.Count; }
