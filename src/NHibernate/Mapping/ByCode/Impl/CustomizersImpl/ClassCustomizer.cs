@@ -6,7 +6,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class ClassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IClassMapper<TEntity>, IConformistHoldersProvider where TEntity : class
+	public class ClassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IClassMapper<TEntity>, IConformistHoldersProvider, IEntitySqlsWithCheckMapper where TEntity : class
 	{
 		private Dictionary<string, IJoinMapper<TEntity>> joinCustomizers;
 

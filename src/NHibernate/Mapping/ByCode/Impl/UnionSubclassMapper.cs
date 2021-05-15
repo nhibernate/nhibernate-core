@@ -136,7 +136,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				classMapping.sqlinsert = new HbmCustomSQL();
 			}
 			classMapping.sqlinsert.checkSpecified = true;
-			classMapping.sqlinsert.check = (HbmCustomSQLCheck)Enum.Parse(typeof(HbmCustomSQLCheck), sqlCheck.ToString(), true);
+			classMapping.sqlinsert.check = sqlCheck.ToHbmSqlCheck();
 			classMapping.sqlinsert.Text = new[] { sql };
 		}
 
@@ -156,7 +156,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				classMapping.sqlupdate = new HbmCustomSQL();
 			}
 			classMapping.sqlupdate.checkSpecified = true;
-			classMapping.sqlupdate.check = (HbmCustomSQLCheck)Enum.Parse(typeof(HbmCustomSQLCheck), sqlCheck.ToString(), true);
+			classMapping.sqlupdate.check = sqlCheck.ToHbmSqlCheck();
 			classMapping.sqlupdate.Text = new[] { sql };
 		}
 
@@ -176,7 +176,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				classMapping.sqldelete = new HbmCustomSQL();
 			}
 			classMapping.sqldelete.checkSpecified = true;
-			classMapping.sqldelete.check = (HbmCustomSQLCheck)Enum.Parse(typeof(HbmCustomSQLCheck), sqlCheck.ToString(), true);
+			classMapping.sqldelete.check = sqlCheck.ToHbmSqlCheck();
 			classMapping.sqldelete.Text = new[] { sql };
 		}
 
