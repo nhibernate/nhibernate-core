@@ -5,6 +5,7 @@ using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using NHibernate.Impl;
+using NHibernate.Persister;
 
 namespace NHibernate.Action
 {
@@ -95,12 +96,12 @@ namespace NHibernate.Action
 		protected internal abstract bool HasPostCommitEventListeners { get; }
 
 		#region IExecutable Members
-		
+
 		public string[] QueryCacheSpaces
 		{
-			get 
+			get
 			{
-				return (persister as ICacheableEntityPersister)?.SupportsQueryCache == false ? null : persister.PropertySpaces;
+				return (persister as IPersister)?.SupportsQueryCache == false ? null : persister.PropertySpaces;
 			}
 		}
 

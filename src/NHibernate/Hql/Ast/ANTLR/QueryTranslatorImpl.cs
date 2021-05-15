@@ -13,6 +13,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Loader.Hql;
 using NHibernate.Param;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -223,6 +224,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			get { return _sqlAst.Walker.QuerySpaces; }
 		}
+
+		internal ISet<IPersister> Persisters => _sqlAst.Walker.Persisters;
 
 		public bool SupportsQueryCache => _sqlAst.Walker.SupportsQueryCache;
 

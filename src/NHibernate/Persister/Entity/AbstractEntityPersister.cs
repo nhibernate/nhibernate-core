@@ -41,7 +41,7 @@ namespace NHibernate.Persister.Entity
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
 		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable,
-		ICacheableEntityPersister
+		IPersister
 	{
 		#region InclusionChecker
 

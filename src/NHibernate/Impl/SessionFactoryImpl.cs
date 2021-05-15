@@ -289,7 +289,7 @@ namespace NHibernate.Impl
 			}
 
 			entityPersistersSpaces = entityPersisters
-				.SelectMany(x => x.Value.PropertySpaces.Select(y => new { QuerySpace = y, Persister = x.Value }))
+				.SelectMany(x => x.Value.QuerySpaces.Select(y => new { QuerySpace = y, Persister = x.Value }))
 				.ToLookup(x => x.QuerySpace, x => x.Persister);
 
 			classMetadata = new ReadOnlyDictionary<string, IClassMetadata>(classMeta);
@@ -626,20 +626,18 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Get entity persisters by query space
+		/// Get entity persisters by the given query spaces.
 		/// </summary>
-		/// <param name="spaces">query spaces</param>
-		/// <returns>Unique list of entity persisters, if spaces is null or empty then returns all persisters</returns>
+		/// <param name="spaces">The query spaces.</param>
+		/// <returns>Unique list of entity persisters, if <paramref name="spaces"/> is <c>null</c> or empty then all persisters are returned.</returns>
 		public ISet<IEntityPersister> GetEntityPersisters(ISet<string> spaces)
 		{
-			ISet<IEntityPersister> persisters = new HashSet<IEntityPersister>();
-
 			if (spaces == null || spaces.Count == 0)
 			{
-				//NativeSql does not have query space so return all query spaces, if spaces is null or empty
-				return new HashSet<IEntityPersister>(entityPersistersSpaces.SelectMany(x => x.Select(y => y)));
+				return new HashSet<IEntityPersister>(entityPersisters.Values);
 			}
 
+			var persisters = new HashSet<IEntityPersister>();
 			foreach (var space in spaces)
 			{
 				persisters.UnionWith(entityPersistersSpaces[space]);
@@ -649,24 +647,24 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Get collection persister by query space
+		/// Get collection persisters by the given query spaces.
 		/// </summary>
-		/// <param name="spaces">query spaces</param>
-		/// <returns>Unique list of collection persisters</returns>
+		/// <param name="spaces">The query spaces.</param>
+		/// <returns>Unique list of collection persisters, if <paramref name="spaces"/> is <c>null</c> or empty then all persisters are returned.</returns>
 		public ISet<ICollectionPersister> GetCollectionPersisters(ISet<string> spaces)
 		{
-			ISet<ICollectionPersister> collectionPersisters = new HashSet<ICollectionPersister>();
-			if(spaces == null || spaces.Count == 0)
+			if (spaces == null || spaces.Count == 0)
 			{
-				return collectionPersisters;
+				return new HashSet<ICollectionPersister>(collectionPersisters.Values);
 			}
 
+			var persisters = new HashSet<ICollectionPersister>();
 			foreach (var space in spaces)
 			{
-				collectionPersisters.UnionWith(collectionPersistersSpaces[space]);
+				persisters.UnionWith(collectionPersistersSpaces[space]);
 			}
 
-			return collectionPersisters;
+			return persisters;
 		}
 
 		/// <summary></summary>

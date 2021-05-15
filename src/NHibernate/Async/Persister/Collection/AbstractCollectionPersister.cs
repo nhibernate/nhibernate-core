@@ -46,7 +46,7 @@ namespace NHibernate.Persister.Collection
 		ISupportSelectModeJoinable, 
 		ICompositeKeyPostInsertIdentityPersister, 
 		ISupportLazyPropsJoinable,
-		ICacheableCollectionPersister
+		IPersister
 	{
 
 		public Task InitializeAsync(object key, ISessionImplementor session, CancellationToken cancellationToken)

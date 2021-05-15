@@ -109,17 +109,9 @@ namespace NHibernate.Loader.Hql
 			get { return _sqlAliases; }
 		}
 
-		public override ISet<string> QuerySpaces => _queryTranslator.QuerySpaces;
-
-		public override bool IsCacheable(QueryParameters queryParameters)
+		internal override bool IsCacheable(QueryParameters queryParameters)
 		{
-			bool isCacheable = base.IsCacheable(queryParameters);
-			if (isCacheable && !_queryTranslator.SupportsQueryCache)
-			{
-				ThrowIfNotSupportsCacheable();
-			}
-
-			return isCacheable;
+			return IsCacheable(queryParameters, _queryTranslator.SupportsQueryCache, _queryTranslator.Persisters);
 		}
 
 		protected override int[] CollectionOwners

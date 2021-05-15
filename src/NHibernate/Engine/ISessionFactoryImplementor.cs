@@ -148,7 +148,7 @@ namespace NHibernate.Engine
 		/// <returns>An appropriate session.</returns>
 		[Obsolete("Please use WithOptions() instead.")]
 		ISession OpenSession(DbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
-							 ConnectionReleaseMode connectionReleaseMode);
+		                     ConnectionReleaseMode connectionReleaseMode);
 
 		/// <summary> 
 		/// Retrieves a set of all the collection roles in which the given entity
@@ -189,66 +189,56 @@ namespace NHibernate.Engine
 	public static class SessionFactoryImplementorExtension
 	{
 		/// <summary>
-		/// Get entity persisters by query space
+		/// Get entity persisters by the given query spaces.
 		/// </summary>
-		/// <param name="factory"></param>
-		/// <param name="spaces">query spaces</param>
-		/// <returns>Unique list of entity persisters, if spaces is null or empty then returns all persisters</returns>
+		/// <param name="factory">The session factory.</param>
+		/// <param name="spaces">The query spaces.</param>
+		/// <returns>Unique list of entity persisters, if <paramref name="spaces"/> is <c>null</c> or empty then all persisters are returned.</returns>
 		public static ISet<IEntityPersister> GetEntityPersisters(this ISessionFactoryImplementor factory, ISet<string> spaces)
 		{
 			if (factory is SessionFactoryImpl sfi)
 			{
 				return sfi.GetEntityPersisters(spaces);
 			}
-			else
-			{
-				ISet<IEntityPersister> persisters = new HashSet<IEntityPersister>();
-				foreach (var entityName in factory.GetAllClassMetadata().Keys)
-				{
-					var persister = factory.GetEntityPersister(entityName);
-					//NativeSql does not have query space so return all query spaces, if spaces is null or empty
-					if (spaces == null || spaces.Count == 0 || persister.PropertySpaces.Any(x => spaces.Contains(x)))
-					{
-						persisters.Add(persister);
-					}
-				}
 
-				return persisters;
+			ISet<IEntityPersister> persisters = new HashSet<IEntityPersister>();
+			foreach (var entityName in factory.GetAllClassMetadata().Keys)
+			{
+				var persister = factory.GetEntityPersister(entityName);
+				//NativeSql does not have query space so return all query spaces, if spaces is null or empty
+				if (spaces == null || spaces.Count == 0 || persister.QuerySpaces.Any(x => spaces.Contains(x)))
+				{
+					persisters.Add(persister);
+				}
 			}
+
+			return persisters;
 		}
 
 		/// <summary>
-		/// Get collection persister by query space
+		/// Get collection persisters by the given query spaces.
 		/// </summary>
-		/// <param name="factory"></param>
-		/// <param name="spaces">query spaces</param>
-		/// <returns>Unique list of collection persisters</returns>
+		/// <param name="factory">The session factory.</param>
+		/// <param name="spaces">The query spaces.</param>
+		/// <returns>Unique list of collection persisters, if <paramref name="spaces"/> is <c>null</c> or empty then all persisters are returned.</returns>
 		public static ISet<ICollectionPersister> GetCollectionPersisters(this ISessionFactoryImplementor factory, ISet<string> spaces)
 		{
 			if (factory is SessionFactoryImpl sfi)
 			{
 				return sfi.GetCollectionPersisters(spaces);
 			}
-			else
+
+			ISet<ICollectionPersister> collectionPersisters = new HashSet<ICollectionPersister>();
+			foreach (var roleName in factory.GetAllCollectionMetadata().Keys)
 			{
-				ISet<ICollectionPersister> collectionPersisters = new HashSet<ICollectionPersister>();
-
-				if(spaces == null || spaces.Count == 0)
+				var collectionPersister = factory.GetCollectionPersister(roleName);
+				if (spaces == null || spaces.Count == 0 || collectionPersister.CollectionSpaces.Any(x => spaces.Contains(x)))
 				{
-					return collectionPersisters;
+					collectionPersisters.Add(collectionPersister);
 				}
-
-				foreach (var roleName in factory.GetAllCollectionMetadata().Keys)
-				{
-					var collectionPersister = factory.GetCollectionPersister(roleName);
-					if (collectionPersister.CollectionSpaces.Any(x => spaces.Contains(x)))
-					{
-						collectionPersisters.Add(collectionPersister);
-					}
-				}
-
-				return collectionPersisters;
 			}
+
+			return collectionPersisters;
 		}
 	}
 }

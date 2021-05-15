@@ -93,20 +93,14 @@ namespace NHibernate.Loader.Criteria
 
 		// Not ported: scroll (not supported)
 
-		public override ISet<string> QuerySpaces
+		public ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}
 
-		public override bool IsCacheable(QueryParameters queryParameters)
+		internal override bool IsCacheable(QueryParameters queryParameters)
 		{
-			bool isCacheable = base.IsCacheable(queryParameters);
-			if (isCacheable && !translator.SupportsQueryCache)
-			{
-				ThrowIfNotSupportsCacheable();
-			}
-
-			return isCacheable;
+			return IsCacheable(queryParameters, translator.SupportsQueryCache, translator.GetPersisters());
 		}
 
 		public override bool IsSubselectLoadingEnabled

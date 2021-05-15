@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NHibernate.Engine;
+using NHibernate.Persister;
 using NHibernate.Persister.Entity;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
@@ -21,37 +22,29 @@ namespace NHibernate.Action
 		private readonly string[] spaces;
 		private readonly string[] queryCacheSpaces;
 
-		public string[] QueryCacheSpaces { get { return queryCacheSpaces; } }
-
 		public BulkOperationCleanupAction(ISessionImplementor session, IQueryable[] affectedQueryables)
 		{
 			this.session = session;
 			ISet<string> affectedSpaces = new HashSet<string>();
 			ISet<string> affectedQueryCacheSpaces = new HashSet<string>();
-			for (int i = 0; i < affectedQueryables.Length; i++)
+			foreach (var affectedQueryable in affectedQueryables)
 			{
-				if (affectedQueryables[i].HasCache)
+				if (affectedQueryable.HasCache)
 				{
-					affectedEntityNames.Add(affectedQueryables[i].EntityName);
+					affectedEntityNames.Add(affectedQueryable.EntityName);
 				}
-				ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(affectedQueryables[i].EntityName);
+				ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(affectedQueryable.EntityName);
 				if (roles != null)
 				{
 					affectedCollectionRoles.UnionWith(roles);
 				}
-				for (int y = 0; y < affectedQueryables[i].QuerySpaces.Length; y++)
+
+				foreach (var querySpace in affectedQueryable.QuerySpaces)
 				{
-					affectedSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
-					if(affectedQueryables[i] is ICacheableEntityPersister cacheablePersister)
+					affectedSpaces.Add(querySpace);
+					if ((affectedQueryable as IPersister)?.SupportsQueryCache != false)
 					{
-						if (cacheablePersister.SupportsQueryCache)
-						{
-							affectedQueryCacheSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
-						}
-					}
-					else
-					{
-						affectedQueryCacheSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
+						affectedQueryCacheSpaces.Add(querySpace);
 					}
 				}
 			}
@@ -73,8 +66,6 @@ namespace NHibernate.Action
 
 			foreach (var persister in session.Factory.GetEntityPersisters(querySpaces))
 			{
-				string[] entitySpaces = persister.QuerySpaces;
-
 				if (persister.HasCache)
 				{
 					affectedEntityNames.Add(persister.EntityName);
@@ -84,22 +75,15 @@ namespace NHibernate.Action
 				{
 					affectedCollectionRoles.UnionWith(roles);
 				}
-				for (int y = 0; y < entitySpaces.Length; y++)
+
+				foreach (var querySpace in persister.QuerySpaces)
 				{
-					affectedSpaces.Add(entitySpaces[y]);
-					if (persister is ICacheableEntityPersister cacheablePersister)
+					affectedSpaces.Add(querySpace);
+					if ((persister as IPersister)?.SupportsQueryCache != false)
 					{
-						if (cacheablePersister.SupportsQueryCache)
-						{
-							affectedQueryCacheSpaces.Add(entitySpaces[y]);
-						}
-					}
-					else
-					{
-						affectedQueryCacheSpaces.Add(entitySpaces[y]);
+						affectedQueryCacheSpaces.Add(querySpace);
 					}
 				}
-
 			}
 
 			spaces = affectedSpaces.ToArray();
@@ -107,6 +91,9 @@ namespace NHibernate.Action
 		}
 
 		#region IExecutable Members
+
+		/// <inheritdoc />
+		public string[] QueryCacheSpaces => queryCacheSpaces;
 
 		public string[] PropertySpaces
 		{
