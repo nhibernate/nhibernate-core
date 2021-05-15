@@ -329,6 +329,5 @@ namespace NHibernate.Mapping.ByCode.Impl
 		}
 
 		#endregion
-
 	}
 }

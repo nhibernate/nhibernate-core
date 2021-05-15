@@ -59,7 +59,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			if (!Container.GetBaseTypes().Contains(baseType))
 			{
 				throw new ArgumentOutOfRangeException("baseType",
-													  string.Format("{0} is a valid super-class of {1}", baseType, Container));
+				                                      string.Format("{0} is a valid super-class of {1}", baseType, Container));
 			}
 			classMapping.extends = baseType.GetShortClassName(MapDoc);
 		}
