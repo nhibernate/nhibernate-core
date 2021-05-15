@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
 namespace NHibernate.Loader.Criteria
 {
-	public class ComponentCollectionCriteriaInfoProvider : ICriteriaInfoProvider
+	public class ComponentCollectionCriteriaInfoProvider : ICriteriaInfoProvider, IExtendedCriteriaInfoProvider
 	{
 		private readonly IQueryableCollection persister;
 		private readonly Dictionary<string, IType> subTypes = new Dictionary<string, IType>();
@@ -41,12 +42,12 @@ namespace NHibernate.Loader.Criteria
 			get { return persister.CollectionSpaces; }
 		}
 
-		public bool SupportsQueryCache => (persister as ICacheableCollectionPersister)?.SupportsQueryCache ?? true;
-
 		public IPropertyMapping PropertyMapping
 		{
 			get { return persister; }
 		}
+
+		IPersister IExtendedCriteriaInfoProvider.Persister => persister as IPersister;
 
 		public IType GetType(String relativePath)
 		{

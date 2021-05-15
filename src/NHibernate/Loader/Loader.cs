@@ -18,6 +18,7 @@ using NHibernate.Exceptions;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Param;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -155,8 +156,6 @@ namespace NHibernate.Loader
 		{
 			get { return false; }
 		}
-
-		public virtual ISet<string> QuerySpaces => null;
 
 		/// <summary>
 		/// Get the result set descriptor
@@ -1829,33 +1828,22 @@ namespace NHibernate.Loader
 			return ListIgnoreQueryCache(session, queryParameters);
 		}
 
-		public virtual bool IsCacheable(QueryParameters queryParameters)
+		internal virtual bool IsCacheable(QueryParameters queryParameters)
 		{
-			return Factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
+			return IsCacheable(queryParameters, true, Enumerable.Empty<IPersister>());
 		}
 
-		internal void ThrowIfNotSupportsCacheable()
+		internal bool IsCacheable(QueryParameters queryParameters, bool supportsQueryCache, IEnumerable<IPersister> persisters)
 		{
-			ISet<string> neverCachedEntities = new HashSet<string>();
-
-			foreach (var persister in _factory
-				.GetEntityPersisters(QuerySpaces)
-				.Where(x => (x as ICacheableEntityPersister)?.SupportsQueryCache == false))
+			bool isCacheable = Factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
+			if (isCacheable && !supportsQueryCache)
 			{
-				neverCachedEntities.Add(persister.EntityName);
+				throw new QueryException(
+					$"Never cached entities/collections: {string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(o => o.Name))} " +
+					$"cannot be used in a cacheable query.");
 			}
 
-			foreach (var collectionPersister in _factory
-				.GetCollectionPersisters(QuerySpaces)
-				.Where(x => (x as ICacheableEntityPersister)?.SupportsQueryCache == false))
-			{
-				neverCachedEntities.Add(collectionPersister.OwnerEntityPersister.EntityName);
-			}
-
-			if (neverCachedEntities.Any())
-			{
-				throw new QueryException($"Never cached entity:{string.Join(", ", neverCachedEntities)} cannot be used in cacheable query");
-			}
+			return isCacheable;
 		}
 
 		private IList ListIgnoreQueryCache(ISessionImplementor session, QueryParameters queryParameters)

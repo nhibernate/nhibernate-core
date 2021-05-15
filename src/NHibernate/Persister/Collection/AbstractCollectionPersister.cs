@@ -37,7 +37,7 @@ namespace NHibernate.Persister.Collection
 		ISupportSelectModeJoinable, 
 		ICompositeKeyPostInsertIdentityPersister, 
 		ISupportLazyPropsJoinable,
-		ICacheableCollectionPersister
+		IPersister
 	{
 		protected static readonly object NotFoundPlaceHolder = new object();
 		private readonly string role;
@@ -645,6 +645,7 @@ namespace NHibernate.Persister.Collection
 			get { return cache != null; }
 		}
 
+		/// <inheritdoc />
 		public bool SupportsQueryCache
 		{
 			get { return supportsQueryCache; }

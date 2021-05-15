@@ -5,6 +5,7 @@ using NHibernate.Cache.Access;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
@@ -89,7 +90,7 @@ namespace NHibernate.Action
 		{
 			get
 			{
-				return (persister as ICacheableCollectionPersister)?.SupportsQueryCache == false ? null : persister.CollectionSpaces;
+				return (persister as IPersister)?.SupportsQueryCache == false ? null : persister.CollectionSpaces;
 			}
 		}
 
