@@ -1,0 +1,20 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: Microsoft.AspNetCore
+    versions:
+    - "> 2.0.0"
+  - dependency-name: Microsoft.AspNetCore.Mvc
+    versions:
+    - "> 2.0.0"
+  - dependency-name: Microsoft.AspNetCore.Mvc.Razor.ViewCompilation
+    versions:
+    - "> 2.0.0"
+  - dependency-name: Microsoft.AspNetCore.StaticFiles
+    versions:
+    - "> 2.0.0"

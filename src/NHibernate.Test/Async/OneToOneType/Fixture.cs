@@ -19,7 +19,7 @@ namespace NHibernate.Test.OneToOneType
 	{
 		protected override void OnTearDown()
 		{
-			using (var s = Sfi.OpenSession())
+			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
 				s.CreateQuery("delete from Details").ExecuteUpdate();
@@ -34,10 +34,10 @@ namespace NHibernate.Test.OneToOneType
 		{
 			object ownerId;
 
-			using (var s = Sfi.OpenSession())
+			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var owner = new Owner()
+				var owner = new Owner
 				{
 					Name = "Owner",
 				};
@@ -52,7 +52,7 @@ namespace NHibernate.Test.OneToOneType
 			{
 				Owner owner = await (s.LoadAsync<Owner>(ownerId));
 
-				owner.Details = new Details()
+				owner.Details = new Details
 				{
 					Data = "Owner Details"
 				};
@@ -74,10 +74,10 @@ namespace NHibernate.Test.OneToOneType
 		{
 			Owner owner;
 
-			using (var s = Sfi.OpenSession())
+			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				owner = new Owner()
+				owner = new Owner
 				{
 					Name = "Owner",
 				};
@@ -95,7 +95,7 @@ namespace NHibernate.Test.OneToOneType
 			using (var tx = s.BeginTransaction())
 			{
 				await (s.SaveOrUpdateAsync(owner));
-				owner.Details = new Details()
+				owner.Details = new Details
 				{
 					Data = "Owner Details"
 				};
@@ -108,6 +108,37 @@ namespace NHibernate.Test.OneToOneType
 				owner = await (s.GetAsync<Owner>(owner.Id));
 
 				Assert.IsNotNull(owner.Details);
+			}
+		}
+		
+		[Test]
+		public async Task CanInsertByStatelessSessionAsync()
+		{
+			object id;
+
+			using (var s = Sfi.OpenStatelessSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var details = new Details
+				{
+					Owner = new Owner
+					{
+						Name = "Owner"
+					},
+					Data = "Owner Details"
+				};
+
+				id = await (s.InsertAsync(details));
+
+				await (tx.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var owner = await (s.GetAsync<Owner>(id));
+
+				Assert.That(owner.Details, Is.Not.Null);
 			}
 		}
 	}

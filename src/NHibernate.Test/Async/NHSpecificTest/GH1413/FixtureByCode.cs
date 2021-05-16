@@ -9,6 +9,7 @@
 
 
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Engine;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -26,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1413
 			var mapper = new ModelMapper();
 			mapper.Class<EntityParent>(rc =>
 			{
-				rc.Id(x => x.Id, m => m.Generator(Generators.Native));
+				rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
 				rc.Property(x => x.Name);
 				rc.Bag(x => x.Children, m =>
 				{
@@ -38,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1413
 
 			mapper.Class<EntityChild>(rc =>
 			{
-				rc.Id(x => x.Id, m => m.Generator(Generators.Native));
+				rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
 				rc.Property(x => x.Name);
 			});
 
@@ -74,13 +75,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1413
 			}
 		}
 
-		[Test]
-		[KnownBug("#1413")]
-		public async Task SessionIsDirtyShouldNotTriggerCascadeSavingAsync()
+		[Theory]
+		public async Task SessionIsDirtyShouldNotTriggerCascadeSavingAsync(bool beginTransaction)
 		{
 			Sfi.Statistics.IsStatisticsEnabled = true;
 			using (var session = OpenSession())
-			using (session.BeginTransaction())
+			using (beginTransaction ? session.BeginTransaction() : null)
 			{
 				var parent = await (GetParentAsync(session));
 				var entityChild = new EntityChild
@@ -95,11 +95,14 @@ namespace NHibernate.Test.NHSpecificTest.GH1413
 				var isDirty = await (session.IsDirtyAsync());
 
 				Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(0), "Dirty has triggered an insert");
-				Assert.That(
-					entityChild.Id,
-					Is.EqualTo(0),
-					"Transient objects should not be saved by ISession.IsDirty() call (expected 0 as Id)");
 				Assert.That(isDirty, "ISession.IsDirty() call should return true.");
+				if (Dialect.SupportsIdentityColumns)
+				{
+					Assert.That(
+						entityChild.Id,
+						Is.EqualTo(0),
+						"Transient objects should not be saved by ISession.IsDirty() call (expected 0 as Id)");
+				}
 			}
 		}
 

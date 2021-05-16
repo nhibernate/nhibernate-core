@@ -160,8 +160,8 @@ namespace NHibernate.Driver
 				using (var clearConnection = CreateConnection())
 				{
 					var connectionType = clearConnection.GetType();
-					_clearPool = connectionType.GetMethod("ClearPool") ?? throw new InvalidOperationException("Unable to resolve ClearPool method.");
-					_clearAllPools = connectionType.GetMethod("ClearAllPools") ?? throw new InvalidOperationException("Unable to resolve ClearAllPools method.");
+					_clearPool = connectionType.GetMethod("ClearPool", new[] { connectionType }) ?? throw new InvalidOperationException("Unable to resolve ClearPool method.");
+					_clearAllPools = connectionType.GetMethod("ClearAllPools", Array.Empty<System.Type>()) ?? throw new InvalidOperationException("Unable to resolve ClearAllPools method.");
 				}
 			}
 
