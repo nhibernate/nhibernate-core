@@ -133,9 +133,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.sqlinsert = new HbmCustomSQL();
 			}
+			classMapping.sqlinsert.Text = new[] { sql };
 			classMapping.sqlinsert.checkSpecified = true;
 			classMapping.sqlinsert.check = sqlCheck.ToHbmSqlCheck();
-			classMapping.sqlinsert.Text = new[] { sql };
 		}
 
 		public void SqlUpdate(string sql)
@@ -153,9 +153,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.sqlupdate = new HbmCustomSQL();
 			}
+			classMapping.sqlupdate.Text = new[] { sql };
 			classMapping.sqlupdate.checkSpecified = true;
 			classMapping.sqlupdate.check = sqlCheck.ToHbmSqlCheck();
-			classMapping.sqlupdate.Text = new[] { sql };
 		}
 
 		public void SqlDelete(string sql)
@@ -173,9 +173,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.sqldelete = new HbmCustomSQL();
 			}
+			classMapping.sqldelete.Text = new[] { sql };
 			classMapping.sqldelete.checkSpecified = true;
 			classMapping.sqldelete.check = sqlCheck.ToHbmSqlCheck();
-			classMapping.sqldelete.Text = new[] { sql };
 		}
 
 		public void Subselect(string sql)

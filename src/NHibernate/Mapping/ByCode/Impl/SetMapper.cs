@@ -261,6 +261,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				mapping.sqlinsert = new HbmCustomSQL();
 			}
 			mapping.sqlinsert.Text = new[] {sql};
+			mapping.sqlinsert.checkSpecified = true;
 			mapping.sqlinsert.check = sqlCheck.ToHbmSqlCheck();
 		}
 
