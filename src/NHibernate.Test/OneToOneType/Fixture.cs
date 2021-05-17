@@ -8,7 +8,7 @@ namespace NHibernate.Test.OneToOneType
 	{
 		protected override void OnTearDown()
 		{
-			using (var s = Sfi.OpenSession())
+			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
 				s.CreateQuery("delete from Details").ExecuteUpdate();
@@ -23,10 +23,10 @@ namespace NHibernate.Test.OneToOneType
 		{
 			object ownerId;
 
-			using (var s = Sfi.OpenSession())
+			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var owner = new Owner()
+				var owner = new Owner
 				{
 					Name = "Owner",
 				};
@@ -41,7 +41,7 @@ namespace NHibernate.Test.OneToOneType
 			{
 				Owner owner = s.Load<Owner>(ownerId);
 
-				owner.Details = new Details()
+				owner.Details = new Details
 				{
 					Data = "Owner Details"
 				};
@@ -63,10 +63,10 @@ namespace NHibernate.Test.OneToOneType
 		{
 			Owner owner;
 
-			using (var s = Sfi.OpenSession())
+			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				owner = new Owner()
+				owner = new Owner
 				{
 					Name = "Owner",
 				};
@@ -84,7 +84,7 @@ namespace NHibernate.Test.OneToOneType
 			using (var tx = s.BeginTransaction())
 			{
 				s.SaveOrUpdate(owner);
-				owner.Details = new Details()
+				owner.Details = new Details
 				{
 					Data = "Owner Details"
 				};
@@ -97,6 +97,37 @@ namespace NHibernate.Test.OneToOneType
 				owner = s.Get<Owner>(owner.Id);
 
 				Assert.IsNotNull(owner.Details);
+			}
+		}
+		
+		[Test]
+		public void CanInsertByStatelessSession()
+		{
+			object id;
+
+			using (var s = Sfi.OpenStatelessSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var details = new Details
+				{
+					Owner = new Owner
+					{
+						Name = "Owner"
+					},
+					Data = "Owner Details"
+				};
+
+				id = s.Insert(details);
+
+				tx.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var owner = s.Get<Owner>(id);
+
+				Assert.That(owner.Details, Is.Not.Null);
 			}
 		}
 	}
