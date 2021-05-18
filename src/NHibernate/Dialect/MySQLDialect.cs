@@ -211,6 +211,7 @@ namespace NHibernate.Dialect
 			"separator",
 			"show",
 			"shutdown",
+			"source_ssl_verify_server_cert",
 			"spatial",
 			"sql_big_result",
 			"sql_calc_found_rows",
