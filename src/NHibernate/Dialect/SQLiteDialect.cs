@@ -227,6 +227,7 @@ namespace NHibernate.Dialect
 			"logical",
 			"long",
 			"longtext",
+			"mediumint",
 			"memo",
 			"money",
 			"note",
