@@ -292,7 +292,11 @@ namespace NHibernate.Cfg
 			bool namedQueryChecking = PropertiesHelper.GetBoolean(Environment.QueryStartupChecking, properties, true);
 			log.Info("Named query checking : {0}", EnabledDisabled(namedQueryChecking));
 			settings.IsNamedQueryStartupCheckingEnabled = namedQueryChecking;
-			
+
+			bool queryThrowNeverCached = PropertiesHelper.GetBoolean(Environment.QueryThrowNeverCached, properties, true);
+			log.Info("Never cached entities/collections query cache throws exception : {0}", EnabledDisabled(queryThrowNeverCached));
+			settings.QueryThrowNeverCached = queryThrowNeverCached;
+
 			// Not ported - settings.StatementFetchSize = statementFetchSize;
 			// Not ported - ScrollableResultSetsEnabled
 			// Not ported - GetGeneratedKeysEnabled

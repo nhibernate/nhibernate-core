@@ -1838,12 +1838,19 @@ namespace NHibernate.Loader
 			bool isCacheable = Factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
 			if (isCacheable && !supportsQueryCache)
 			{
-				throw new QueryException(
-					$"Never cached entities/collections: {string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(o => o.Name))} " +
-					$"cannot be used in a cacheable query.");
+				if (Factory.Settings.QueryThrowNeverCached)
+				{
+					throw new QueryException(
+						$"Never cached entities/collections: {string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(o => o.Name))} " +
+						$"cannot be used in a cacheable query.");
+				}
+				else if (Log.IsWarnEnabled())
+				{
+					Log.Warn("Never cached entities/collections: {0} cannot be used in a cacheable query.", string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(o => o.Name)));
+				}
 			}
 
-			return isCacheable;
+			return isCacheable && supportsQueryCache;
 		}
 
 		private IList ListIgnoreQueryCache(ISessionImplementor session, QueryParameters queryParameters)

@@ -139,6 +139,8 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public bool ThrowOnSchemaUpdate { get; internal set; }
 
+		public bool QueryThrowNeverCached { get; internal set; }
+
 		#region NH specific
 
 		public IsolationLevel IsolationLevel { get; internal set; }
