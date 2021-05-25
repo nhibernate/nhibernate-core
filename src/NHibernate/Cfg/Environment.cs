@@ -175,6 +175,8 @@ namespace NHibernate.Cfg
 		/// <summary> Should named queries be checked during startup (the default is enabled). </summary>
 		/// <remarks>Mainly intended for test environments.</remarks>
 		public const string QueryStartupChecking = "query.startup_check";
+		/// <summary> Should never cached entity/collecion query cache throws exception(the default is enabled). /// </summary>
+		public const string QueryThrowNeverCached = "query.throw_never_cached";
 
 		/// <summary> Enable statistics collection</summary>
 		public const string GenerateStatistics = "generate_statistics";
