@@ -149,7 +149,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 		}
 
-		[KnownBug("GH-2738")]
+		[Test]
 		public void LeftJoinExtensionMethodWithNoUseOfOuterReference()
 		{
 			using (var sqlSpy = new SqlLogSpy())
@@ -164,8 +164,8 @@ namespace NHibernate.Test.Linq.ByMethod
 							   .ToList();
 
 				var sql = sqlSpy.GetWholeLog();
-				Assert.That(animals.Count, Is.EqualTo(1));
-				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(6));
+				Assert.That(animals.Count, Is.EqualTo(6));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(5));
 			}
 		}
 

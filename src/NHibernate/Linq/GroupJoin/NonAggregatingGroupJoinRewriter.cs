@@ -91,6 +91,24 @@ namespace NHibernate.Linq.Visitors
 					throw new NotSupportedException();
 				}
 			}
+
+			// Remove not used group joins
+			foreach (var groupJoinClause in _groupJoinClauses)
+			{
+				if (aggregateDetectorResults.NonAggregatingClauses.Contains(groupJoinClause) || aggregateDetectorResults.AggregatingClauses.Contains(groupJoinClause))
+				{
+					continue;
+				}
+
+				var locator = new QuerySourceUsageLocator(groupJoinClause);
+				foreach (var bodyClause in _model.BodyClauses)
+				{
+					locator.Search(bodyClause);
+				}
+
+				_model.BodyClauses.Remove((IBodyClause) locator.Usages[0]);
+				_model.BodyClauses.Remove(groupJoinClause);
+			}
 		}
 
 		private void ProcessFlattenedJoin(GroupJoinClause nonAggregatingJoin, QuerySourceUsageLocator locator)
