@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using NHibernate.Linq.Visitors;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 
@@ -43,6 +44,8 @@ namespace NHibernate.Linq.GroupJoin
 
 			if (aggregateDetectorResults.AggregatingClauses.Count > 0)
 			{
+				NonAggregatingGroupJoinRewriter.RewriteGroupJoins(aggregateDetectorResults.AggregatingClauses, model);
+
 				// Re-write the select expression
 				model.SelectClause.TransformExpressions(s => GroupJoinSelectClauseRewriter.ReWrite(s, aggregateDetectorResults));
 
@@ -56,7 +59,7 @@ namespace NHibernate.Linq.GroupJoin
 
 		private static IsAggregatingResults IsAggregatingGroupJoin(QueryModel model, IEnumerable<GroupJoinClause> clause)
 		{
-			return GroupJoinAggregateDetectionVisitor.Visit(clause, model.SelectClause.Selector);
+			return GroupJoinAggregateDetectionQueryModelVisitor.Visit(clause, model);
 		}
 	}
 }

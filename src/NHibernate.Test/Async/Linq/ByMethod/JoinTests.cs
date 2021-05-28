@@ -132,7 +132,27 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 		}
 
-		[KnownBug("GH-2379")]
+		[Test]
+		public async Task LeftJoinExtensionMethodWithOuterReferenceInWhereClauseOnlyCountAsync()
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var total = await (db.Orders
+				                .LeftJoin(
+					                db.OrderLines,
+					                x => x,
+					                x => x.Order,
+					                (order, line) => new { order, line })
+				                
+				                .Select(x => new { x.order.OrderId, x.line.Discount })
+				                .CountAsync());
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(total, Is.EqualTo(2155));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
+		}
+
+		[KnownBug("GH-2739")]
 		public async Task NestedLeftJoinExtensionMethodWithOuterReferenceInWhereClauseOnlyAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (var sqlSpy = new SqlLogSpy())
@@ -177,7 +197,27 @@ namespace NHibernate.Test.Linq.ByMethod
 
 				var sql = sqlSpy.GetWholeLog();
 				Assert.That(animals.Count, Is.EqualTo(6));
-				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(5));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(6));
+			}
+		}
+
+		[Test]
+		public async Task LeftJoinExtensionMethodWithNoUseOfOuterReferenceCountAsync()
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var total = await (db.Animals
+				              .LeftJoin(
+					              db.Mammals,
+					              x => x.Id,
+					              x => x.Id,
+					              (animal, mammal) => new {animal, mammal})
+				              .Select(x => x.animal)
+				              .CountAsync());
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(total, Is.EqualTo(6));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
 			}
 		}
 
@@ -199,6 +239,27 @@ namespace NHibernate.Test.Linq.ByMethod
 				var sql = sqlSpy.GetWholeLog();
 				Assert.That(animals.Count, Is.EqualTo(6));
 				Assert.That(animals[0].SerialNumber, Is.EqualTo("1121"));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public async Task LeftJoinExtensionMethodWithOuterReferenceInOrderByClauseOnlyCountAsync()
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var total = await (db.Animals
+				              .LeftJoin(
+					              db.Mammals,
+					              x => x.Id,
+					              x => x.Id,
+					              (animal, mammal) => new {animal, mammal})
+				              .OrderBy(x => x.mammal.SerialNumber ?? "z")
+				              .Select(x => new {SerialNumber = x.animal.SerialNumber})
+				              .CountAsync());
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(total, Is.EqualTo(6));
 				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
 			}
 		}
