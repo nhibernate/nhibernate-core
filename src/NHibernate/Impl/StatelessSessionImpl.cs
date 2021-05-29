@@ -110,6 +110,10 @@ namespace NHibernate.Impl
 		{
 			using (BeginProcess())
 			{
+				// We need to flush the batcher. Otherwise it may have pending operations which will not already have reached the database,
+				// and the query may yield stale data.
+				Flush();
+
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, false);
 
@@ -140,6 +144,10 @@ namespace NHibernate.Impl
 		{
 			using (BeginProcess())
 			{
+				// We need to flush the batcher. Otherwise it may have pending operations which will not already have reached the database,
+				// and the query may yield stale data.
+				Flush();
+
 				string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
 				int size = implementors.Length;
 
@@ -267,6 +275,10 @@ namespace NHibernate.Impl
 		{
 			using (BeginProcess())
 			{
+				// We need to flush the batcher. Otherwise it may have pending operations which will not already have reached the database,
+				// and the query may yield stale data.
+				Flush();
+
 				var loader = new CustomLoader(customQuery, Factory);
 
 				var success = false;
@@ -351,7 +363,7 @@ namespace NHibernate.Impl
 
 		public override FlushMode FlushMode
 		{
-			get { return FlushMode.Commit; }
+			get { return FlushMode.Always; }
 			set { throw new NotSupportedException(); }
 		}
 
@@ -438,6 +450,10 @@ namespace NHibernate.Impl
 				{
 					throw new SessionException("Session was already closed!");
 				}
+				// We need to flush the batcher. Otherwise it may have pending operations which will never reach the database,
+				// although a stateless session is not supposed to retain anything in memory and so should not need any explicit
+				// flush from users.
+				Flush();
 				CloseConnectionManager();
 				SetClosed();
 			}
@@ -564,6 +580,10 @@ namespace NHibernate.Impl
 		{
 			using (BeginProcess())
 			{
+				// We need to flush the batcher. Otherwise it may have pending operations which will not already have reached the database,
+				// and the get may miss an entity which should be there.
+				Flush();
+
 				object result = Factory.GetEntityPersister(entityName).Load(id, null, lockMode ?? LockMode.None, this);
 				if (temporaryPersistenceContext.IsLoadFinished)
 				{
@@ -627,6 +647,10 @@ namespace NHibernate.Impl
 		{
 			using (BeginProcess())
 			{
+				// We need to flush the batcher. Otherwise it may have pending operations which will not already have reached the database,
+				// and the query may yield stale data.
+				Flush();
+
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
 				object id = persister.GetIdentifier(entity);
 				if (log.IsDebugEnabled())
@@ -786,6 +810,10 @@ namespace NHibernate.Impl
 				// with a null ref rather than silently leaking a session. And then fix the synchronization.
 				if (TransactionContext != null && TransactionContext.CanFlushOnSystemTransactionCompleted)
 				{
+					// We need to flush the batcher. Otherwise it may have pending operations which will never reach the database,
+					// although a stateless session is not supposed to retain anything in memory and so should not need any explicit
+					// flush from users.
+					Flush();
 					TransactionContext.ShouldCloseSessionOnSystemTransactionCompleted = true;
 					return;
 				}
