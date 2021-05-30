@@ -139,6 +139,9 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public bool ThrowOnSchemaUpdate { get; internal set; }
 
+		/// <summary>
+		/// Should using a never cached entity/collection in a cacheable query throw an exception.
+		/// </summary>
 		public bool QueryThrowNeverCached { get; internal set; }
 
 		#region NH specific
