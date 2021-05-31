@@ -36,7 +36,6 @@ namespace NHibernate.Linq.GroupJoin
 
 		protected override Expression VisitSubQuery(SubQueryExpression expression)
 		{
-			//Visit the entire query model?
 			Visit(expression.QueryModel.SelectClause.Selector);
 			return expression;
 		}
