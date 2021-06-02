@@ -579,8 +579,11 @@ possible solutions:
 			if (_parameters.ConstantToParameterMap.TryGetValue(expression, out namedParameter))
 			{
 				_parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, false));
+				var parameter = _hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression();
 
-				return _hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression();
+				return HqlIdent.SupportsType(expression.Type)
+					? _hqlTreeBuilder.TransparentCast(parameter, expression.Type)
+					: parameter;
 			}
 
 			return _hqlTreeBuilder.Constant(expression.Value);
