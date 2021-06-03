@@ -8,9 +8,11 @@
 //------------------------------------------------------------------------------
 
 
+using System.Data;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
+using NHibernate.SqlTypes;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -36,15 +38,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3565
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return base.AppliesTo(dialect)
+					//Dialects like SQL Server CE, Firebird don't distinguish AnsiString from String
+					&& Dialect.GetTypeName(new SqlType(DbType.AnsiString)) != Dialect.GetTypeName(new SqlType(DbType.String));
+		}
+
 		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity { Name = "Bob" };
+				var e1 = new Entity {Name = "Bob"};
 				session.Save(e1);
 
-				var e2 = new Entity { Name = "Sally" };
+				var e2 = new Entity {Name = "Sally"};
 				session.Save(e2);
 
 				transaction.Commit();
@@ -65,12 +74,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3565
 		[Test]
 		public async Task ParameterTypeForLikeIsProperlyDetectedAsync()
 		{
-			using(var logSpy = new SqlLogSpy())
+			using (var logSpy = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
 				var result = from e in session.Query<Entity>()
-							 where NHibernate.Linq.SqlMethods.Like(e.Name, "Bob")
-							 select e;
+							where NHibernate.Linq.SqlMethods.Like(e.Name, "Bob")
+							select e;
 
 				Assert.That(await (result.ToListAsync()), Has.Count.EqualTo(1));
 				Assert.That(logSpy.GetWholeLog(), Does.Contain("Type: AnsiString"));
@@ -81,12 +90,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3565
 		[Test]
 		public async Task ParameterTypeForContainsIsProperlyDetectedAsync()
 		{
-			using(var logSpy = new SqlLogSpy())
+			using (var logSpy = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
 				var result = from e in session.Query<Entity>()
-							 where e.Name.Contains("Bob")
-							 select e;
+							where e.Name.Contains("Bob")
+							select e;
 
 				Assert.That(await (result.ToListAsync()), Has.Count.EqualTo(1));
 				Assert.That(logSpy.GetWholeLog(), Does.Contain("Type: AnsiString"));
@@ -97,12 +106,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3565
 		[Test]
 		public async Task ParameterTypeForStartsWithIsProperlyDetectedAsync()
 		{
-			using(var logSpy = new SqlLogSpy())
+			using (var logSpy = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
 				var result = from e in session.Query<Entity>()
-							 where e.Name.StartsWith("Bob")
-							 select e;
+							where e.Name.StartsWith("Bob")
+							select e;
 
 				Assert.That(await (result.ToListAsync()), Has.Count.EqualTo(1));
 				Assert.That(logSpy.GetWholeLog(), Does.Contain("Type: AnsiString"));
