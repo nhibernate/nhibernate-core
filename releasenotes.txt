@@ -1,4 +1,87 @@
-﻿Build 5.3.4
+﻿Build 5.3.8
+=============================
+
+Release notes - NHibernate - Version 5.3.8
+
+6 issues were resolved in this release.
+
+** Bug
+
+   * #2710 Filtered Entity Dml Update Throws Collection was modified
+   * #2708 MappedAs throws when called on a Convert UnaryExpression
+   * #2707 Don't currently support idents of type X
+   * #2673 Exception when using BinaryFormatter to deserialize entities with initialized proxies in associations
+   * #1264 NH-3005 - NHibernate.Hql.Ast.HqlIdent..ctor throws Don't currently support idents of type Date
+
+** Task
+
+   * #2721 Release 5.3.8
+
+Build 5.3.7
+=============================
+
+Release notes - NHibernate - Version 5.3.7
+
+5 issues were resolved in this release.
+
+** Bug
+
+   * #2704 IEnhancedUserType from string to bool fails in some circumstances
+   * #2702 LINQ projection of nullable enum with list fails
+   * #2693 Invalid parameter conversion with group by
+   * #2688 NoViableAltException in a delete on a many-to-one id
+
+** Task
+
+   * #2701 Release 5.3.7
+
+Build 5.3.6
+=============================
+
+Release notes - NHibernate - Version 5.3.6
+
+12 issues were resolved in this release.
+
+** Bug
+
+   * #2659 IQueryable<T> filter by subquery gives "Item with Same Key has already been added"
+   * #2649 Invalid parameter conversion for enums mapped in sub-classes
+   * #2646 Invalid generated sql with linq any in select and composite keys
+   * #2642 Linq expression parser removes required Convert nodes
+   * #2631 IndexOutOfRange exception with One-to-One mapping
+   * #2627 Null reference on Merge for detached unsaved entity
+   * #2626 WHERE IN SELECT uses wrong column
+   * #2608 Delay entity insert may fail with Merge
+   * #2544 Recognition error occurs using System.Linq.Queryable.Contains
+
+** Improvement
+
+   * #2677 Missing ConfigureAwait in FutureEnumerable.GetEnumerableAsync
+   * #2656 Make sure dbcommand is disposed
+
+** Task
+
+   * #2676 Release 5.3.6
+
+As part of releasing 5.3.6, one missing 5.3.0 possible breaking change has been added, about
+Merge no more triggering immediate generation of identifier. See 5.3.0 possible breaking changes.
+
+Build 5.3.5
+=============================
+
+Release notes - NHibernate - Version 5.3.5
+
+2 issues were resolved in this release.
+
+** Bug
+
+   * #2599 WrongClassException in Linq query
+
+** Task
+
+   * #2606 Release 5.3.5
+
+Build 5.3.4
 =============================
 
 Release notes - NHibernate - Version 5.3.4
@@ -106,7 +189,7 @@ Release notes - NHibernate - Version 5.3.0
         * `update` and `delete` statements will now take into account any enabled filter on the entities
           they update or delete, while previously they were ignoring them. (`insert` statements will also take
           them into account, but previously they were failing instead of ignoring enabled filters.)
-        * ISession.Persist will no more trigger immediate generation of identifier.
+        * ISession.Persist and ISession.Merge will no more trigger immediate generation of identifier.
         * Bags will no more be loaded with "null" entities, they will be filtered out.
         * Setting the value of an uninitialized lazy property will no more trigger loading of all the lazy
           properties of the entity.

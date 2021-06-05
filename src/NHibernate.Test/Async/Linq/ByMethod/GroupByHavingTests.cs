@@ -10,6 +10,7 @@
 
 using System;
 using System.Linq;
+using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -146,6 +147,46 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(orderCounts, Has.Count.EqualTo(28));
 			var hornRow = orderCounts.Single(row => row.CompanyName == "Around the Horn");
 			Assert.That(hornRow.OrderCount, Is.EqualTo(13));
+		}
+
+		[Test]
+		public async Task HavingWithStringEnumParameterAsync()
+		{
+			await (db.Users
+			  .GroupBy(p => p.Enum1)
+			  .Where(g => g.Key == EnumStoredAsString.Large)
+			  .Select(g => g.Count())
+			  .ToListAsync());
+			await (db.Users
+			  .GroupBy(p => new StringEnumGroup {Enum = p.Enum1})
+			  .Where(g => g.Key.Enum == EnumStoredAsString.Large)
+			  .Select(g => g.Count())
+			  .ToListAsync());
+			await (db.Users
+			  .GroupBy(p => new[] {p.Enum1})
+			  .Where(g => g.Key[0] == EnumStoredAsString.Large)
+			  .Select(g => g.Count())
+			  .ToListAsync());
+			await (db.Users
+			  .GroupBy(p => new {p.Enum1})
+			  .Where(g => g.Key.Enum1 == EnumStoredAsString.Large)
+			  .Select(g => g.Count())
+			  .ToListAsync());
+			await (db.Users
+			  .GroupBy(p => new {Test = new {Test2 = p.Enum1}})
+			  .Where(g => g.Key.Test.Test2 == EnumStoredAsString.Large)
+			  .Select(g => g.Count())
+			  .ToListAsync());
+			await (db.Users
+			  .GroupBy(p => new {Test = new[] {p.Enum1}})
+			  .Where(g => g.Key.Test[0] == EnumStoredAsString.Large)
+			  .Select(g => g.Count())
+			  .ToListAsync());
+		}
+
+		private class StringEnumGroup
+		{
+			public EnumStoredAsString Enum { get; set; }
 		}
 	}
 }

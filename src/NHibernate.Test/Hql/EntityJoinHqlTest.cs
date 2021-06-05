@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Test.Hql.EntityJoinHqlTestEntities;
@@ -222,6 +224,21 @@ namespace NHibernate.Test.Hql
 			}
 		}
 
+		[Test(Description = "GH-2688")]
+		public void NullableManyToOneDeleteQuery()
+		{
+			using (var session = OpenSession())
+			{
+				session
+					.CreateQuery(
+						"delete "
+						+ "from NullableOwner ex "
+						+ "where ex.ManyToOne.id = :id"
+					).SetParameter("id", Guid.Empty)
+					.ExecuteUpdate();
+			}
+		}
+
 		[Test]
 		public void NullableOneToOneFetchQueryIsNotAffected()
 		{
@@ -257,6 +274,24 @@ namespace NHibernate.Test.Hql
 						.UniqueResult<NullableOwner>();
 
 				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test(Description = "GH-2772")]
+		public void NullableEntityProjection()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var nullableOwner1 = new NullableOwner {Name = "1", ManyToOne = session.Load<OneToOneEntity>(Guid.NewGuid())};
+				var nullableOwner2 = new NullableOwner {Name = "2"};
+				session.Save(nullableOwner1);
+				session.Save(nullableOwner2);
+
+				var fullList = session.Query<NullableOwner>().Select(x => new {x.Name, ManyToOneId = (Guid?) x.ManyToOne.Id}).ToList();
+				var withValidManyToOneList = session.Query<NullableOwner>().Where(x => x.ManyToOne != null).Select(x => new {x.Name, ManyToOneId = (Guid?) x.ManyToOne.Id}).ToList();
+				Assert.That(fullList.Count, Is.EqualTo(2));
+				Assert.That(withValidManyToOneList.Count, Is.EqualTo(0));
 			}
 		}
 
@@ -520,6 +555,7 @@ namespace NHibernate.Test.Hql
 							m.ForeignKey("none");
 							m.NotFound(NotFoundMode.Ignore);
 						});
+					rc.ManyToOne(e => e.ManyToOne, m => m.NotFound(NotFoundMode.Ignore));
 				});
 
 

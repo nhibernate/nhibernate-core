@@ -70,7 +70,7 @@ namespace NHibernate.Linq.Visitors
 			{
 				var rawParameter = Visit(expression.Arguments[0]);
 				// TODO 6.0: Remove below code and return expression as this logic is now inside ConstantTypeLocator
-				var parameter = rawParameter as ConstantExpression;
+				var parameter = ParameterTypeLocator.UnwrapUnary(rawParameter) as ConstantExpression;
 				var type = expression.Arguments[1] as ConstantExpression;
 				if (parameter == null)
 					throw new HibernateException(
@@ -83,7 +83,7 @@ namespace NHibernate.Linq.Visitors
 
 				_parameters[parameter].Type = (IType)type.Value;
 
-				return parameter;
+				return rawParameter;
 			}
 
 			var method = expression.Method.IsGenericMethod
@@ -135,49 +135,72 @@ namespace NHibernate.Linq.Visitors
 		{
 			if (!_parameters.ContainsKey(expression) && !typeof(IQueryable).IsAssignableFrom(expression.Type) && !IsNullObject(expression))
 			{
-				// We use null for the type to indicate that the caller should let HQL figure it out.
-				object value = expression.Value;
-				IType type = null;
-
-				// We have a bit more information about the null parameter value.
-				// Figure out a type so that HQL doesn't break on the null. (Related to NH-2430)
-				// In v5.3 types are calculated by ParameterTypeLocator, this logic is only for back compatibility.
-				// TODO 6.0: Remove
-				if (expression.Value == null)
-					type = NHibernateUtil.GuessType(expression.Type);
-
-				// Constant characters should be sent as strings
-				// TODO 6.0: Remove
-				if (_queryVariables == null && expression.Type == typeof(char))
-				{
-					value = value.ToString();
-				}
-
-				// There is more information available in the Linq expression than to HQL directly.
-				// In some cases it might be advantageous to use the extra info.  Assuming this
-				// comes up, it would be nice to combine the HQL parameter type determination code
-				// and the Expression information.
-
-				NamedParameter parameter = null;
-				if (_queryVariables != null &&
-				    _queryVariables.TryGetValue(expression, out var variable) &&
-				    !_variableParameters.TryGetValue(variable, out parameter))
-				{
-					parameter = CreateParameter(expression, value, type);
-					_variableParameters.Add(variable, parameter);
-				}
-
-				if (parameter == null)
-				{
-					parameter = CreateParameter(expression, value, type);
-				}
-
-				_parameters.Add(expression, parameter);
-
-				return base.VisitConstant(expression);
+				AddConstantExpressionParameter(expression, null);
 			}
 
 			return base.VisitConstant(expression);
+		}
+
+		protected override Expression VisitUnary(UnaryExpression node)
+		{
+			// If we have an expression like "Convert(<constant>)" we do not want to lose the conversion operation
+			// because it might be necessary if the types are incompatible with each other, which might happen if
+			// the expression uses an implicitly or explicitly defined cast operator.
+			if (node.NodeType == ExpressionType.Convert &&
+			    node.Method != null && // The implicit/explicit operator method
+			    node.Operand is ConstantExpression constantExpression)
+			{
+				// Instead of getting constantExpression.Value, we override the value by compiling and executing this subtree,
+				// performing the cast.
+				var lambda = Expression.Lambda<Func<object>>(Expression.Convert(node, typeof(object)));
+				var compiledLambda = lambda.Compile();
+
+				AddConstantExpressionParameter(constantExpression, compiledLambda());
+			}
+
+			return base.VisitUnary(node);
+		}
+
+		private void AddConstantExpressionParameter(ConstantExpression expression, object overrideValue)
+		{
+			// We use null for the type to indicate that the caller should let HQL figure it out.
+			object value = overrideValue ?? expression.Value;
+			IType type = null;
+
+			// We have a bit more information about the null parameter value.
+			// Figure out a type so that HQL doesn't break on the null. (Related to NH-2430)
+			// In v5.3 types are calculated by ParameterTypeLocator, this logic is only for back compatibility.
+			// TODO 6.0: Remove
+			if (value == null)
+				type = NHibernateUtil.GuessType(expression.Type);
+
+			// Constant characters should be sent as strings
+			// TODO 6.0: Remove
+			if (_queryVariables == null && expression.Type == typeof(char))
+			{
+				value = value.ToString();
+			}
+
+			// There is more information available in the Linq expression than to HQL directly.
+			// In some cases it might be advantageous to use the extra info.  Assuming this
+			// comes up, it would be nice to combine the HQL parameter type determination code
+			// and the Expression information.
+
+			NamedParameter parameter = null;
+			if (_queryVariables != null &&
+				_queryVariables.TryGetValue(expression, out var variable) &&
+				!_variableParameters.TryGetValue(variable, out parameter))
+			{
+				parameter = CreateParameter(expression, value, type);
+				_variableParameters.Add(variable, parameter);
+			}
+
+			if (parameter == null)
+			{
+				parameter = CreateParameter(expression, value, type);
+			}
+
+			_parameters.Add(expression, parameter);
 		}
 
 		private NamedParameter CreateParameter(ConstantExpression expression, object value, IType type)
