@@ -41,7 +41,7 @@ jobs:
       run: |
         sudo systemctl start postgresql.service
         pg_isready
-        sudo -u postgres psql --command="CREATE USER nhibernate PASSWORD 'nhibernate'" --command="\du"
+        sudo -u postgres psql --command="CREATE USER nhibernate PASSWORD 'nhibernate' CREATEDB"
 
     - name: Set up Firebird
       if: matrix.DB == 'Firebird'
