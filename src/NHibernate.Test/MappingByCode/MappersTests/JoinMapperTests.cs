@@ -113,6 +113,20 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		}
 
 		[Test]
+		public void CanSetSqlInsertWithCheck()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+			mapper.SqlInsert("blah", SqlCheck.RowCount);
+
+			Assert.That(hbmJoin.SqlInsert, Is.Not.Null);
+			Assert.That(hbmJoin.SqlInsert.Text[0], Is.EqualTo("blah"));
+			Assert.That(hbmJoin.SqlInsert.checkSpecified, Is.True);
+			Assert.That(hbmJoin.SqlInsert.check, Is.EqualTo(HbmCustomSQLCheck.Rowcount));
+		}
+
+		[Test]
 		public void SetSqlUpdate()
 		{
 			var mapdoc = new HbmMapping();
@@ -125,6 +139,20 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		}
 
 		[Test]
+		public void SetSqlUpdateWithCheck()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+			mapper.SqlUpdate("blah", SqlCheck.RowCount);
+
+			Assert.That(hbmJoin.SqlUpdate, Is.Not.Null);
+			Assert.That(hbmJoin.SqlUpdate.Text[0], Is.EqualTo("blah"));
+			Assert.That(hbmJoin.SqlUpdate.checkSpecified, Is.True);
+			Assert.That(hbmJoin.SqlUpdate.check, Is.EqualTo(HbmCustomSQLCheck.Rowcount));
+		}
+
+		[Test]
 		public void SetSqlDelete()
 		{
 			var mapdoc = new HbmMapping();
@@ -134,6 +162,20 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 			Assert.That(hbmJoin.SqlDelete, Is.Not.Null);
 			Assert.That(hbmJoin.SqlDelete.Text[0], Is.EqualTo("blah"));
+		}
+
+		[Test]
+		public void SetSqlDeleteWithCheck()
+		{
+			var mapdoc = new HbmMapping();
+			var hbmJoin = new HbmJoin();
+			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
+			mapper.SqlDelete("blah", SqlCheck.RowCount);
+
+			Assert.That(hbmJoin.SqlDelete, Is.Not.Null);
+			Assert.That(hbmJoin.SqlDelete.Text[0], Is.EqualTo("blah"));
+			Assert.That(hbmJoin.SqlDelete.checkSpecified, Is.True);
+			Assert.That(hbmJoin.SqlDelete.check, Is.EqualTo(HbmCustomSQLCheck.Rowcount));
 		}
 
 		[Test]
