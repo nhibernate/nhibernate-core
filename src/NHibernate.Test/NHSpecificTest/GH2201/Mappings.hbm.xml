@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.GH2201">
+  <class name="Person" table="Persons">
+    <id name="Id" column="personId" unsaved-value="0" generator="native"/>
+    <property name="Name" column="name"/>
+    <set name="Children" table="Persons" lazy="true" cascade="all" inverse="true">
+      <key column="prarentId" not-null="false"/>
+      <one-to-many class="Person"/>
+    </set>
+    <many-to-one name="Parent" class="Person" column="parentId" not-null="false"/>
+    <one-to-one name="Details" class="Detail" fetch="join" cascade="all-delete-orphan"/>
+  </class>
+
+  <class name="Detail" table="Details">
+    <id name="Id" column="personId">
+      <generator class="foreign">
+        <param name="property">Person</param>
+      </generator>
+    </id>
+    <one-to-one name="Person" class="Person" constrained="true"/>
+    <property name="Data"/>
+  </class>
+</hibernate-mapping>

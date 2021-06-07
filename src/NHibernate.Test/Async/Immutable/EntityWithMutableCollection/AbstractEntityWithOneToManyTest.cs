@@ -1234,7 +1234,6 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			// If the entity uses a join mapping, DML queries require temp tables.
 			if (Dialect.SupportsTemporaryTables)
 				await (s.CreateQuery("delete from Party").ExecuteUpdateAsync());
@@ -1251,7 +1250,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 				await (s.DeleteAsync(partyOrig));
 				await (s.DeleteAsync(newParty));
 			}
-
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
 			await (s.DeleteAsync(c));
 			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));

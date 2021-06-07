@@ -91,6 +91,7 @@
 										<xs:enumeration value="default_schema" />
 										<xs:enumeration value="show_sql" />
 										<xs:enumeration value="max_fetch_depth" />
+										<xs:enumeration value="detect_fetch_loops" />
 										<xs:enumeration value="current_session_context_class" />
 										<xs:enumeration value="transaction.factory_class">
 											<xs:annotation>

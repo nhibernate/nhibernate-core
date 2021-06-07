@@ -110,6 +110,12 @@ namespace NHibernate.Cfg
 		public const string CurrentSessionContextClass = "current_session_context_class";
 		public const string UseSqlComments = "use_sql_comments";
 
+		/// <summary>
+		/// Enable or disable the ability to detect loops in query fetches.
+		/// The default is to detect and elimate potential fetch loops.
+		/// </summary>
+		public const string DetectFetchLoops = "detect_fetch_loops";
+
 		/// <summary> Enable formatting of SQL logged to the console</summary>
 		public const string FormatSql = "format_sql";
 
