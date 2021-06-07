@@ -303,6 +303,9 @@ namespace NHibernate.Test
 
 		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi, Func<DbConnection> getConnection = null)
 		{
+			using(var optionalConnection = getConnection?.Invoke())
+				export.Drop(useStdOut, true, optionalConnection);
+
 			if (sfi?.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
 			{
 				// Firebird will pool each connection created during the test and will marked as used any table
@@ -313,9 +316,6 @@ namespace NHibernate.Test
 				// Moved from NH1908 test case, contributed by Amro El-Fakharany.
 				fbDriver.ClearPool(null);
 			}
-
-			using(var optionalConnection = getConnection?.Invoke())
-				export.Drop(useStdOut, true, optionalConnection);
 		}
 
 		/// <summary>
