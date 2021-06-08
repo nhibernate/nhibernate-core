@@ -33,7 +33,7 @@ namespace NHibernate.Collection.Generic.SetHelpers
 				}
 				else
 				{
-					_values.Add(item, item);
+					_values[item] = item;
 				}
 			}
 		}
@@ -70,7 +70,7 @@ namespace NHibernate.Collection.Generic.SetHelpers
 				return;
 			}
 
-			_values.Add(item, item);
+			_values[item] = item;
 		}
 
 		public void Clear()
