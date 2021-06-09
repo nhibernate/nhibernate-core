@@ -745,7 +745,7 @@ namespace NHibernate.Impl
 			{
 				// try to get the class from imported names
 				string importedName = GetImportedClassName(entityOrClassName);
-				if (importedName != null)
+				if (importedName != entityOrClassName)
 				{
 					clazz = System.Type.GetType(importedName, false);
 				}
