@@ -570,16 +570,17 @@ namespace NHibernate.Linq.Visitors
 			{
 				// Visit the join inner key only for entities that have subclasses
 				if (joinClause.InnerSequence is ConstantExpression constantNode &&
-				    constantNode.Value is IEntityNameProvider entityNameProvider &&
-				    !_sessionFactory.GetEntityPersister(entityNameProvider.EntityName).EntityMetamodel.HasSubclasses)
+				    constantNode.Value is IEntityNameProvider &&
+					ExpressionsHelper.TryGetMappedType(_sessionFactory, constantNode, out _, out var _persister, out _, out _) &&
+					_persister?.EntityMetamodel.HasSubclasses == true)
 				{
-					return false;
+					_result = false;
+					Visit(joinClause.InnerKeySelector);
+
+					return _result;
 				}
 
-				_result = false;
-				Visit(joinClause.InnerKeySelector);
-
-				return _result;
+				return false;
 			}
 
 			protected override Expression VisitMember(MemberExpression node)
