@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
@@ -78,7 +78,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UsingSqlFunctions_Concat_WithCast()
 		{
-			if(Dialect is Oracle8iDialect)
+			if (Dialect is Oracle8iDialect)
 			{
 				Assert.Ignore("Not supported by the active dialect:{0}.", Dialect);
 			}
@@ -195,6 +195,84 @@ namespace NHibernate.Test.Criteria
 					)
 					.UniqueResult<string>();
 				Assert.AreEqual("no", result);
+			}
+		}
+
+		[Test]
+		public void UsingMultiConditionals()
+		{
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
+			var students = new[]
+			{
+				new Student() { StudentNumber = 6L, Name = "testa", },
+				new Student() { StudentNumber = 5L, Name = "testz", },
+				new Student() { StudentNumber = 4L, Name = "test1", },
+				new Student() { StudentNumber = 3L, Name = "test2", },
+				new Student() { StudentNumber = 2L, Name = "test998", },
+				new Student() { StudentNumber = 1L, Name = "test999", },
+			};
+
+			var expecteds = new[]
+			{
+				students[0],
+				students[1],
+				students[2],
+				students[3],
+			};
+
+			// student, sortingindex
+			var testData = new Tuple<Student, string>[]
+			{
+				System.Tuple.Create(expecteds[0], "1"),
+				System.Tuple.Create(expecteds[1], "2"),
+				System.Tuple.Create(expecteds[2], "3"),
+				System.Tuple.Create(expecteds[3], "4"),
+			};
+
+			using (ISession session = this.Sfi.OpenSession())
+			{
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					session.Save<Student>(students);
+					transaction.Commit();
+				}
+
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					// when Name = "testa" then 1 ...
+					var criterionProjections = testData
+						.Select(x => new ConditionalCriterionProjectionPair(Expression.Eq(nameof(Student.Name), x.Item1.Name), Projections.Constant(x.Item2)))
+						.ToArray();
+
+					// ... else 99
+					var elseProjection = Projections.Constant("99");
+
+					var conditionalsProjection = Projections.Conditionals(criterionProjections, elseProjection);
+
+					var order = Order.Asc(conditionalsProjection);
+
+					var criteria = session.CreateCriteria(typeof(Student))
+						.AddOrder(order);
+
+					var actuals = criteria.List<Student>();
+
+					Assert.GreaterOrEqual(actuals.Count, expecteds.Length);
+					for (int i = 0; i < expecteds.Length; i++)
+					{
+						var expected = expecteds[i];
+						var actual = actuals[i];
+
+						Assert.AreEqual(expected.Name, actual.Name);
+					}
+				}
+
+				using (ITransaction transaction = session.BeginTransaction())
+				{
+					session.Delete<Student>(students);
+					transaction.Commit();
+				}
 			}
 		}
 
