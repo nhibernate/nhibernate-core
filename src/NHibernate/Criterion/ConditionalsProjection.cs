@@ -13,6 +13,7 @@ namespace NHibernate.Criterion
 	/// </summary>
 	/// <seealso cref="SimpleProjection" />
 	/// <seealso cref="ConditionalCriterionProjectionPair" />
+	[Serializable]
 	public sealed class ConditionalsProjection : SimpleProjection
 	{
 		private readonly ConditionalCriterionProjectionPair[] criterionProjections;
