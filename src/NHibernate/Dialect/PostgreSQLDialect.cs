@@ -141,6 +141,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "date");
 			RegisterColumnType(DbType.DateTime, "timestamp");
 			RegisterColumnType(DbType.Time, "time");
+			RegisterColumnType(DbType.DateTimeOffset, "timestamptz");
 		}
 
 		protected virtual void RegisterKeywords()
