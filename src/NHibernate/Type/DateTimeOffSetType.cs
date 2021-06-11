@@ -65,9 +65,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				// To fix: Unhandled Exception: System.InvalidCastException: Unable to cast object of type 'System.DateTime' to type 'System.DateTimeOffset'
-				// Applying workaround from https://github.com/npgsql/npgsql/issues/2641#issuecomment-535590330
-				return rs.GetFieldValue<DateTimeOffset>(index);
+				return (DateTimeOffset) rs[index];
 			}
 			catch (Exception ex)
 			{
