@@ -8,43 +8,43 @@ using NHibernate.Type;
 namespace NHibernate.Criterion
 {
 	/// <summary>
-	/// Defines a "switch" projection which supports multiple "cases" ("when/then's") using <see cref="ConditionalCriterionProjectionPair"/>.
+	/// Defines a "switch" projection which supports multiple "cases" ("when/then's") using <see cref="ConditionalProjectionCase"/>.
 	/// Can be used in Orderby for example.
 	/// </summary>
 	/// <seealso cref="SimpleProjection" />
-	/// <seealso cref="ConditionalCriterionProjectionPair" />
+	/// <seealso cref="ConditionalProjectionCase" />
 	[Serializable]
 	public sealed class ConditionalsProjection : SimpleProjection
 	{
-		private readonly ConditionalCriterionProjectionPair[] criterionProjections;
+		private readonly ConditionalProjectionCase[] _cases;
 		private readonly IProjection elseProjection;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ConditionalsProjection"/> class.
 		/// </summary>
-		/// <param name="conditionalProjections">The <see cref="ConditionalCriterionProjectionPair"/>s containg your <see cref="ICriterion"/> and <see cref="IProjection"/> pairs.</param>
+		/// <param name="cases">The <see cref="ConditionalProjectionCase"/>s containg your <see cref="ICriterion"/> and <see cref="IProjection"/> pairs.</param>
 		/// <param name="elseProjection">The else <see cref="IProjection"/>.</param>
-		/// <exception cref="ArgumentNullException"><paramref name="conditionalProjections"/> is null.</exception>
+		/// <exception cref="ArgumentNullException"><paramref name="cases"/> is null.</exception>
 		/// <exception cref="ArgumentNullException"><paramref name="elseProjection"/> is null.</exception>
-		/// <exception cref="ArgumentOutOfRangeException"><paramref name="conditionalProjections"/> should not be empty.</exception>
-		public ConditionalsProjection(ConditionalCriterionProjectionPair[] conditionalProjections, IProjection elseProjection)
+		/// <exception cref="ArgumentOutOfRangeException"><paramref name="cases"/> should not be empty.</exception>
+		public ConditionalsProjection(ConditionalProjectionCase[] cases, IProjection elseProjection)
 		{
 			if (elseProjection is null)
 			{
 				throw new ArgumentNullException(nameof(elseProjection));
 			}
 
-			if (conditionalProjections is null)
+			if (cases is null)
 			{
-				throw new ArgumentNullException(nameof(conditionalProjections));
+				throw new ArgumentNullException(nameof(cases));
 			}
 
-			if (conditionalProjections.Length == 0)
+			if (cases.Length == 0)
 			{
-				throw new ArgumentOutOfRangeException(nameof(this.criterionProjections), "Array should not be empty.");
+				throw new ArgumentOutOfRangeException(nameof(cases), "Array should not be empty.");
 			}
 
-			this.criterionProjections = conditionalProjections.ToArray();
+			_cases = cases;
 			this.elseProjection = elseProjection;
 		}
 
@@ -55,9 +55,9 @@ namespace NHibernate.Criterion
 				if (this.elseProjection.IsAggregate)
 					return true;
 
-				for (int i = 0; i < this.criterionProjections.Length; i++)
+				for (int i = 0; i < _cases.Length; i++)
 				{
-					if (this.CalcIsAggregate(this.criterionProjections[i]))
+					if (this.CalcIsAggregate(_cases[i]))
 						return true;
 				}
 
@@ -65,18 +65,18 @@ namespace NHibernate.Criterion
 			}
 		}
 
-		public override bool IsGrouped => this.elseProjection.IsGrouped || this.CalcIsGrouped(this.criterionProjections);
+		public override bool IsGrouped => this.elseProjection.IsGrouped || this.CalcIsGrouped(_cases);
 
 		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
-			object[] parts = new object[5 + (this.criterionProjections.Length * 4)];
+			object[] parts = new object[5 + (_cases.Length * 4)];
 			var index = 0;
 
 			parts[index++] = "(case";
 
-			for (int i = 0; i < criterionProjections.Length; i++)
+			for (int i = 0; i < _cases.Length; i++)
 			{
-				ConditionalCriterionProjectionPair conditional = this.criterionProjections[i];
+				ConditionalProjectionCase conditional = _cases[i];
 				parts[index++] = " when ";
 				parts[index++] = conditional.Criterion.ToSqlString(criteria, criteriaQuery);
 				parts[index++] = " then ";
@@ -96,9 +96,9 @@ namespace NHibernate.Criterion
 		{
 			var elseTypes = this.elseProjection.GetTypes(criteria, criteriaQuery);
 
-			for (int i = 0; i < this.criterionProjections.Length; i++)
+			for (int i = 0; i < _cases.Length; i++)
 			{
-				var subsequentTypes = this.criterionProjections[i].Projection.GetTypes(criteria, criteriaQuery);
+				var subsequentTypes = _cases[i].Projection.GetTypes(criteria, criteriaQuery);
 
 				this.AssertAreEqualTypes(elseTypes, subsequentTypes, i.ToString());
 			}
@@ -110,10 +110,10 @@ namespace NHibernate.Criterion
 		{
 			List<TypedValue> typedValues = new List<TypedValue>();
 
-			for (int i = 0; i < this.criterionProjections.Length; i++)
+			for (int i = 0; i < _cases.Length; i++)
 			{
-				typedValues.AddRange(this.criterionProjections[i].Criterion.GetTypedValues(criteria, criteriaQuery));
-				typedValues.AddRange(this.criterionProjections[i].Projection.GetTypedValues(criteria, criteriaQuery));
+				typedValues.AddRange(_cases[i].Criterion.GetTypedValues(criteria, criteriaQuery));
+				typedValues.AddRange(_cases[i].Projection.GetTypedValues(criteria, criteriaQuery));
 			}
 
 			typedValues.AddRange(this.elseProjection.GetTypedValues(criteria, criteriaQuery));
@@ -125,7 +125,7 @@ namespace NHibernate.Criterion
 		{
 			SqlStringBuilder sqlBuilder = new SqlStringBuilder();
 
-			this.AddToGroupedSql(sqlBuilder, this.criterionProjections, criteria, criteriaQuery);
+			this.AddToGroupedSql(sqlBuilder, _cases, criteria, criteriaQuery);
 			this.AddToGroupedSql(sqlBuilder, this.elseProjection, criteria, criteriaQuery);
 
 			// ?? 
@@ -137,7 +137,7 @@ namespace NHibernate.Criterion
 			return sqlBuilder.ToSqlString();
 		}
 
-		private bool CalcIsGrouped(IList<ConditionalCriterionProjectionPair> criterionProjections)
+		private bool CalcIsGrouped(IList<ConditionalProjectionCase> criterionProjections)
 		{
 			for (int i = 0; i < criterionProjections.Count; i++)
 			{
@@ -187,7 +187,7 @@ namespace NHibernate.Criterion
 			return false;
 		}
 
-		private bool CalcIsAggregate(ConditionalCriterionProjectionPair criterionProjection)
+		private bool CalcIsAggregate(ConditionalProjectionCase criterionProjection)
 		{
 			if (criterionProjection.Projection.IsAggregate)
 				return true;
@@ -202,7 +202,7 @@ namespace NHibernate.Criterion
 			return false;
 		}
 
-		private void AddToGroupedSql(SqlStringBuilder sqlBuilder, ConditionalCriterionProjectionPair[] criterionProjections, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		private void AddToGroupedSql(SqlStringBuilder sqlBuilder, ConditionalProjectionCase[] criterionProjections, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			for (int i = 0; i < criterionProjections.Length; i++)
 			{
@@ -210,7 +210,7 @@ namespace NHibernate.Criterion
 			}
 		}
 
-		private void AddToGroupedSql(SqlStringBuilder sqlBuilder, ConditionalCriterionProjectionPair criterionProjection, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		private void AddToGroupedSql(SqlStringBuilder sqlBuilder, ConditionalProjectionCase criterionProjection, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			this.AddToGroupedSql(sqlBuilder, criterionProjection.Criterion, criteria, criteriaQuery);
 			this.AddToGroupedSql(sqlBuilder, criterionProjection.Projection, criteria, criteriaQuery);

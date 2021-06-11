@@ -357,15 +357,15 @@ namespace NHibernate.Criterion
 		}
 
 		/// <summary>
-		/// Conditionally returns one of the <see cref="ConditionalCriterionProjectionPair.Projection"/>s depending on the <see cref="ConditionalCriterionProjectionPair.Criterion"/>s of <paramref name="criterionProjections"/> or the <paramref name="elseProjection"/>.
+		/// Conditionally returns one of the <see cref="ConditionalProjectionCase.Projection"/>s depending on the <see cref="ConditionalProjectionCase.Criterion"/>s of <paramref name="cases"/> or the <paramref name="elseProjection"/>.
 		/// This produces an switch-case expression with multiple when-then parts.
 		/// </summary>
-		/// <param name="criterionProjections">The <see cref="ConditionalCriterionProjectionPair"/>s which contain your <see cref="ICriterion"/>s and <see cref="IProjection"/>s.</param>
+		/// <param name="cases">The <see cref="ConditionalProjectionCase"/>s which contain your <see cref="ICriterion"/>s and <see cref="IProjection"/>s.</param>
 		/// <param name="elseProjection">The else <see cref="IProjection"/>.</param>
-		/// <returns>A <see cref="IProjection"/> for a switch-expression with multiple <see cref="ICriterion">Criterions</see> ("when") <see cref="IProjection">Projections</see> ("then").</returns>
-		public static IProjection Conditionals(ConditionalCriterionProjectionPair[] criterionProjections, IProjection elseProjection)
+		/// <returns>A <see cref="IProjection"/> for a switch-expression with multiple <see cref="ICriterion">Criteria</see> ("when") <see cref="IProjection">Projections</see> ("then").</returns>
+		public static IProjection Conditionals(ConditionalProjectionCase[] cases, IProjection elseProjection)
 		{
-			return new ConditionalsProjection(criterionProjections, elseProjection);
+			return new ConditionalsProjection(cases, elseProjection);
 		}
 
 		public static IProjection SubQuery(DetachedCriteria detachedCriteria)

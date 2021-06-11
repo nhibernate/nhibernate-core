@@ -71,7 +71,7 @@ namespace NHibernate.Test.Criteria
 				var criterionProjections =
 					orderOfNames
 						.Select(
-							x => new ConditionalCriterionProjectionPair(
+							x => new ConditionalProjectionCase(
 								Restrictions.Eq(nameof(Student.Name), x.Item1),
 								Projections.Constant(x.Item2)))
 						.ToArray();
