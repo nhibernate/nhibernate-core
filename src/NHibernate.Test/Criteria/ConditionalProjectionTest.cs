@@ -68,7 +68,7 @@ namespace NHibernate.Test.Criteria
 				// ... else 99
 				var elseProjection = Projections.Constant("99");
 
-				var conditionalsProjection = Projections.Conditionals(criterionProjections, elseProjection);
+				var conditionalsProjection = Projections.Conditional(criterionProjections, elseProjection);
 
 				var order = Order.Asc(conditionalsProjection);
 
