@@ -363,7 +363,7 @@ namespace NHibernate.Dialect
 		}
 
 		/// <inheritdoc />
-		internal override bool IsDecimalStoredAsFloatingPointNumber => true;
+		public override bool IsDecimalStoredAsFloatingPointNumber => true;
 
 		public override string Qualify(string catalog, string schema, string table)
 		{

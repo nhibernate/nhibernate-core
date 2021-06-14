@@ -2614,7 +2614,7 @@ namespace NHibernate.Dialect
 		/// <summary>
 		/// Whether <see cref="decimal"/> is stored as a floating point number.
 		/// </summary>
-		internal virtual bool IsDecimalStoredAsFloatingPointNumber => false;
+		public virtual bool IsDecimalStoredAsFloatingPointNumber => false;
 
 		public virtual bool IsKnownToken(string currentToken, string nextToken)
 		{

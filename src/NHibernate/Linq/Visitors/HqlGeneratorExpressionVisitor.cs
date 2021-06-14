@@ -582,7 +582,7 @@ possible solutions:
 				var parameter = _hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression();
 
 				// SQLite driver binds decimal parameters to text, which can cause unexpected results in arithmetic operations.
-				return expression.Type.UnwrapIfNullable() == typeof(decimal) && _parameters.SessionFactory.Dialect.IsDecimalStoredAsFloatingPointNumber
+				return _parameters.SessionFactory.Dialect.IsDecimalStoredAsFloatingPointNumber && expression.Type.UnwrapIfNullable() == typeof(decimal)
 					? _hqlTreeBuilder.TransparentCast(parameter, expression.Type)
 					: parameter;
 			}

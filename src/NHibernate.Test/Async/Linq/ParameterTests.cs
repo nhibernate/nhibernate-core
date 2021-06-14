@@ -320,7 +320,7 @@ namespace NHibernate.Test.Linq
 					totalParameters,
 					sql =>
 					{
-						Assert.That(sql, pair.Value == "Decimal" && Dialect is SQLiteDialect ? Does.Contain("cast") : Does.Not.Contain("cast"));
+						Assert.That(sql, pair.Value == "Decimal" && Dialect.IsDecimalStoredAsFloatingPointNumber ? Does.Contain("cast") : Does.Not.Contain("cast"));
 						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(totalParameters));
 					}));
 			}
