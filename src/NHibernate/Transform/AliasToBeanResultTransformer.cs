@@ -35,8 +35,6 @@ namespace NHibernate.Transform
 	[Serializable]
 	public class AliasToBeanResultTransformer : AliasedTupleSubsetResultTransformer, IEquatable<AliasToBeanResultTransformer>
 	{
-		protected readonly System.Type ResultClass;
-        protected readonly ConstructorInfo BeanConstructor;
 		private readonly Dictionary<string, NamedMember<FieldInfo>> _fieldsByNameCaseSensitive;
 		private readonly Dictionary<string, NamedMember<FieldInfo>> _fieldsByNameCaseInsensitive;
 		private readonly Dictionary<string, NamedMember<PropertyInfo>> _propertiesByNameCaseSensitive;
@@ -67,6 +65,9 @@ namespace NHibernate.Transform
 			_propertiesByNameCaseSensitive = GetMapByName(properties, StringComparer.Ordinal);
 			_propertiesByNameCaseInsensitive = GetMapByName(properties, StringComparer.OrdinalIgnoreCase);
 		}
+
+		protected System.Type ResultClass { get; }
+		protected ConstructorInfo BeanConstructor { get; }
 
 		public override bool IsTransformedValueATupleElement(String[] aliases, int tupleLength)
 		{
