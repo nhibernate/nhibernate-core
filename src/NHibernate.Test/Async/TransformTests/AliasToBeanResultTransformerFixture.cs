@@ -8,7 +8,8 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using NHibernate.Transform;
 using NHibernate.Util;
@@ -260,6 +261,39 @@ namespace NHibernate.Test.TransformTests
 			await (AssertSerializationAsync<NewPropertiesSimpleDTO>());
 		}
 
+		enum TestEnum
+		{ Value0, Value1 }
+
+		class TestDto
+		{
+			private TestDto()
+			{ }
+
+			public TestDto(bool bogus) { }
+
+			public string StringProp { get; set; }
+			public int IntProp { get; set; }
+			public int IntPropNull { get; set; }
+			public int? IntPropNullNullable { get; set; }
+			public TestEnum EnumProp { get; set; }
+		}
+
+		struct TestDtoAsStruct
+		{
+			public string StringProp { get; set; }
+			public int IntProp { get; set; }
+			public int IntPropNull { get; set; }
+			public int? IntPropNullNullable { get; set; }
+			public TestEnum EnumProp { get; set; }
+		}
+
+		class NoDefCtorDto
+		{
+			public NoDefCtorDto(bool bogus)
+			{
+			}
+		}
+
 		private async Task AssertCardinalityNameAndIdAsync<T>(IResultTransformer transformer = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (var s = OpenSession())
@@ -299,7 +333,7 @@ namespace NHibernate.Test.TransformTests
 			{
 				var transformer = Transformers.AliasToBean<T>();
 				var bytes = SerializationHelper.Serialize(transformer);
-				transformer = (IResultTransformer)SerializationHelper.Deserialize(bytes);
+				transformer = (IResultTransformer) SerializationHelper.Deserialize(bytes);
 				return AssertCardinalityNameAndIdAsync<T>(transformer: transformer, cancellationToken: cancellationToken);
 			}
 			catch (System.Exception ex)

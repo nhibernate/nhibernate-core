@@ -15,6 +15,7 @@ namespace NHibernate.Transform
 		/// <summary>
 		/// Creates a result transformer that will inject aliased values into instances
 		/// of <paramref name="target"/> via property methods or fields.
+		/// NOTE: This transformer can't be reused by different queries as it caches query aliases on first transformation
 		/// </summary>
 		/// <param name="target">The type of the instances to build.</param>
 		/// <returns>A result transformer for supplied type.</returns>
@@ -31,6 +32,7 @@ namespace NHibernate.Transform
 		/// <summary>
 		/// Creates a result transformer that will inject aliased values into instances
 		/// of <typeparamref name="T"/> via property methods or fields.
+		/// NOTE: This transformer can't be reused by different queries as it caches query aliases on first transformation
 		/// </summary>
 		/// <typeparam name="T">The type of the instances to build.</typeparam>
 		/// <returns>A result transformer for supplied type.</returns>
