@@ -23,7 +23,7 @@ namespace NHibernate.Transform
 	/// 			)
 	/// 			.SetResultTransformer( new AliasToBeanResultTransformer(typeof(StudentDTO)))
 	/// 			.List();
-	/// 
+	///
 	/// StudentDTO dto = (StudentDTO)resultWithAliasedBean[0];
 	/// </code>
 	/// </example>
@@ -35,8 +35,8 @@ namespace NHibernate.Transform
 	[Serializable]
 	public class AliasToBeanResultTransformer : AliasedTupleSubsetResultTransformer, IEquatable<AliasToBeanResultTransformer>
 	{
-		private readonly System.Type _resultClass;
-		private readonly ConstructorInfo _beanConstructor;
+		protected readonly System.Type ResultClass;
+        protected readonly ConstructorInfo BeanConstructor;
 		private readonly Dictionary<string, NamedMember<FieldInfo>> _fieldsByNameCaseSensitive;
 		private readonly Dictionary<string, NamedMember<FieldInfo>> _fieldsByNameCaseInsensitive;
 		private readonly Dictionary<string, NamedMember<PropertyInfo>> _propertiesByNameCaseSensitive;
@@ -44,14 +44,14 @@ namespace NHibernate.Transform
 
 		public AliasToBeanResultTransformer(System.Type resultClass)
 		{
-			_resultClass = resultClass ?? throw new ArgumentNullException("resultClass");
+			ResultClass = resultClass ?? throw new ArgumentNullException("resultClass");
 
 			const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-			_beanConstructor = resultClass.GetConstructor(bindingFlags, null, System.Type.EmptyTypes, null);
+			BeanConstructor = resultClass.GetConstructor(bindingFlags, null, System.Type.EmptyTypes, null);
 
-			// if resultClass is a ValueType (struct), GetConstructor will return null... 
+			// if resultClass is a ValueType (struct), GetConstructor will return null...
 			// in that case, we'll use Activator.CreateInstance instead of the ConstructorInfo to create instances
-			if (_beanConstructor == null && resultClass.IsClass)
+			if (BeanConstructor == null && resultClass.IsClass)
 			{
 				throw new ArgumentException(
 					"The target class of a AliasToBeanResultTransformer need a parameter-less constructor",
@@ -83,9 +83,9 @@ namespace NHibernate.Transform
 
 			try
 			{
-				result = _resultClass.IsClass
-							? _beanConstructor.Invoke(null)
-							: Activator.CreateInstance(_resultClass, true);
+				result = ResultClass.IsClass
+							? BeanConstructor.Invoke(null)
+							: Activator.CreateInstance(ResultClass, true);
 
 				for (int i = 0; i < aliases.Length; i++)
 				{
@@ -94,11 +94,11 @@ namespace NHibernate.Transform
 			}
 			catch (InstantiationException e)
 			{
-				throw new HibernateException("Could not instantiate result class: " + _resultClass.FullName, e);
+				throw new HibernateException("Could not instantiate result class: " + ResultClass.FullName, e);
 			}
 			catch (MethodAccessException e)
 			{
-				throw new HibernateException("Could not instantiate result class: " + _resultClass.FullName, e);
+				throw new HibernateException("Could not instantiate result class: " + ResultClass.FullName, e);
 			}
 
 			return result;
@@ -111,7 +111,7 @@ namespace NHibernate.Transform
 
 		protected virtual void OnPropertyNotFound(string propertyName)
 		{
-			throw new PropertyNotFoundException(_resultClass.GetType(), propertyName, "setter");
+			throw new PropertyNotFoundException(ResultClass.GetType(), propertyName, "setter");
 		}
 
 		#region Setter resolution
@@ -126,7 +126,7 @@ namespace NHibernate.Transform
 		/// <exception cref="PropertyNotFoundException">Thrown if no matching property or field can be found.</exception>
 		/// <exception cref="AmbiguousMatchException">Thrown if many matching properties or fields are found, having the
 		/// same visibility and inheritance depth.</exception>
-		private void SetProperty(string alias, object value, object resultObj)
+		protected void SetProperty(string alias, object value, object resultObj)
 		{
 			if (alias == null)
 				// Grouping properties in criteria are selected without alias, just ignore them.
@@ -187,7 +187,7 @@ namespace NHibernate.Transform
 		private void FetchFieldsAndProperties(List<RankedMember<FieldInfo>> fields, List<RankedMember<PropertyInfo>> properties)
 		{
 			const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-			var currentType = _resultClass;
+			var currentType = ResultClass;
 			var rank = 1;
 			// For grasping private members, we need to manually walk the hierarchy.
 			while (currentType != null && currentType != typeof(object))
@@ -315,12 +315,12 @@ namespace NHibernate.Transform
 			{
 				return true;
 			}
-			return Equals(other._resultClass, _resultClass);
+			return Equals(other.ResultClass, ResultClass);
 		}
 
 		public override int GetHashCode()
 		{
-			return _resultClass.GetHashCode();
+			return ResultClass.GetHashCode();
 		}
 
 		#endregion
