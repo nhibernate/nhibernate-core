@@ -9,7 +9,7 @@
 
 
 using System.Data.Common;
-using Microsoft.Data.SqlClient;
+using System.Data.SqlClient;
 using NHibernate.Engine.Transaction;
 
 namespace NHibernate.Test.MultiTenancy
@@ -21,18 +21,10 @@ namespace NHibernate.Test.MultiTenancy
 
 		public Task DoWorkAsync(DbConnection connection, DbTransaction transaction, CancellationToken cancellationToken)
 		{
-			try
-			{
-				var con = (SqlConnection) connection;
-				var builder = new SqlConnectionStringBuilder(con.ConnectionString);
-				if (builder.ApplicationName != _tenantName)
-					return Task.FromException<object>(new HibernateException("Invalid tenant connection"));
-				return Task.CompletedTask;
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			var builder = new SqlConnectionStringBuilder(connection.ConnectionString);
+			if (builder.ApplicationName != _tenantName)
+				return Task.FromException<object>(new HibernateException("Invalid tenant connection"));
+			return Task.CompletedTask;
 		}
 	}
 }
