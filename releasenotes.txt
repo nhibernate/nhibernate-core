@@ -1,4 +1,29 @@
-﻿Build 5.3.8
+﻿Build 5.3.9
+=============================
+
+Release notes - NHibernate - Version 5.3.9
+
+9 issues were resolved in this release.
+
+** Bug
+
+   * #2811 Remove session finalizer
+   * #2805 Model not mapped Exception
+   * #2802 ArgumentException on session Flush
+   * #2792 Arithmetic operations adding casts to SQLite that cause incorrect results
+   * #2791 Custom Equality Fails
+   * #2772 LINQ query returns NULL instead of expected result
+
+** Test
+
+   * #2814 Fix intermittent Firebird test errors
+   * #2812 Replace Travis CI with GitHub Actions
+
+** Task
+
+   * #2837 Release 5.3.9
+
+Build 5.3.8
 =============================
 
 Release notes - NHibernate - Version 5.3.8
