@@ -156,7 +156,7 @@ namespace NHibernate.Linq.Visitors
 				return candidateType;
 			}
 
-			if (visitor.NotGuessableConstants.Contains(constantExpression))
+			if (visitor.NotGuessableConstants.Contains(constantExpression) && constantExpression.Value != null)
 			{
 				return null;
 			}
