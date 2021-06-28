@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -1954,6 +1955,20 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(809, q.Length);
 
 			Assert.That(!q.Any(orderid => withNullShippingDate.Contains(orderid)));
+		}
+
+		[Test]
+		public void ReplaceFunctionWithNullArgument()
+		{
+			var query = from e in db.Employees
+			            select e.FirstName.Replace(e.LastName, null);
+			List<string> results = null;
+			Assert.That(
+				() =>
+				{
+					results = query.ToList();
+				}, Throws.Nothing, "Expected REPLACE(FirstName, LastName, NULL) to be supported");
+			Assert.That(results, Is.Not.Null);
 		}
 	}
 
