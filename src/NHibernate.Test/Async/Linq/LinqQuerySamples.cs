@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -1369,6 +1370,20 @@ namespace NHibernate.Test.Linq
 				var sql = sqlSpy.GetWholeLog();
 				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(2));
 			}
+		}
+
+		[Test]
+		public void ReplaceFunctionWithNullArgumentAsync()
+		{
+			var query = from e in db.Employees
+			            select e.FirstName.Replace(e.LastName, null);
+			List<string> results = null;
+			Assert.That(
+				async () =>
+				{
+					results = await (query.ToListAsync());
+				}, Throws.Nothing, "Expected REPLACE(FirstName, LastName, NULL) to be supported");
+			Assert.That(results, Is.Not.Null);
 		}
 	}
 }
