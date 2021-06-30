@@ -28,7 +28,7 @@ jobs:
     - name: Set up SqlServer
       if: matrix.DB == 'SqlServer2008'
       run: |
-        docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=P@ssw0rd" -e "MSSQL_PID=Express" -p 1433:1433 -d --name sqlexpress microsoft/mssql-server-linux:latest;
+        docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=P@ssw0rd" -e "MSSQL_PID=Express" -p 1433:1433 -d --name sqlexpress mcr.microsoft.com/mssql/server:2019-latest;
 
     - name: Set up MySQL
       if: matrix.DB == 'MySQL'
