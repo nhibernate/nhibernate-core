@@ -25,6 +25,11 @@ namespace NHibernate.AdoNet
 	public partial class ConnectionManager : ISerializable, IDeserializationCallback
 	{
 
+		/// <summary>
+		/// Get a new opened connection. The caller is responsible for closing it.
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>An opened connection.</returns>
 		public Task<DbConnection> GetNewConnectionAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -34,6 +39,11 @@ namespace NHibernate.AdoNet
 			return _connectionAccess.GetConnectionAsync(cancellationToken);
 		}
 
+		/// <summary>
+		/// Get the managed connection.
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>An opened connection.</returns>
 		public Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
 		{
 			if (!_allowConnectionUsage)
