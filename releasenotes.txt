@@ -3,10 +3,11 @@
 
 Release notes - NHibernate - Version 5.3.9
 
-9 issues were resolved in this release.
+11 issues were resolved in this release.
 
 ** Bug
 
+   * #2835 Fix ExecuteWorkInIsolation ignores MultiTenancy configuration
    * #2811 Remove session finalizer
    * #2805 Model not mapped Exception
    * #2802 ArgumentException on session Flush
@@ -16,6 +17,7 @@ Release notes - NHibernate - Version 5.3.9
 
 ** Test
 
+   * #2841 Fix possible test failure for SqlServer 2019
    * #2814 Fix intermittent Firebird test errors
    * #2812 Replace Travis CI with GitHub Actions
 
