@@ -224,11 +224,19 @@ namespace NHibernate.AdoNet
 			_connection = null;
 		}
 
+		/// <summary>
+		/// Get a new opened connection. The caller is responsible for closing it.
+		/// </summary>
+		/// <returns>An opened connection.</returns>
 		public DbConnection GetNewConnection()
 		{
 			return _connectionAccess.GetConnection();
 		}
 
+		/// <summary>
+		/// Get the managed connection.
+		/// </summary>
+		/// <returns>An opened connection.</returns>
 		public DbConnection GetConnection()
 		{
 			if (!_allowConnectionUsage)
