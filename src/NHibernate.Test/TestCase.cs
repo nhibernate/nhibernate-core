@@ -18,6 +18,7 @@ using System.Text;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine.Query;
+using NHibernate.SqlTypes;
 using NHibernate.Util;
 using NSubstitute;
 
@@ -533,6 +534,8 @@ namespace NHibernate.Test
 			var forPartsOfMethod = ReflectHelper.GetMethodDefinition(() => Substitute.ForPartsOf<object>());
 			var substitute = (Dialect.Dialect) forPartsOfMethod.MakeGenericMethod(origDialect.GetType())
 																.Invoke(null, new object[] { new object[0] });
+			substitute.GetCastTypeName(Arg.Any<SqlType>())
+			          .ReturnsForAnyArgs(x => origDialect.GetCastTypeName(x.ArgAt<SqlType>(0)));
 
 			dialectProperty.SetValue(Sfi.Settings, substitute);
 
