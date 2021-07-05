@@ -525,7 +525,11 @@ namespace NHibernate.Tool.hbm2ddl
 			{
 				if (connectionProvider != null)
 				{
-					connectionProvider.CloseConnection(connection);
+					if (connection != null)
+					{
+						connectionProvider.CloseConnection(connection);
+					}
+
 					connectionProvider.Dispose();
 				}
 			}

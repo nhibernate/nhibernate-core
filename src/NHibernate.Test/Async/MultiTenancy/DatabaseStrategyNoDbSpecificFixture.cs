@@ -19,6 +19,7 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
+using NHibernate.Engine.Transaction;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.MultiTenancy;
@@ -28,6 +29,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.MultiTenancy
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class DatabaseStrategyNoDbSpecificFixtureAsync : TestCaseMappingByCode
 	{
@@ -158,6 +160,18 @@ namespace NHibernate.Test.MultiTenancy
 
 			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
 			Assert.That(Sfi.Statistics.SecondLevelCacheHitCount, Is.EqualTo(1));
+		}
+
+		[Test]
+		public async Task TenantIsolatedWorkOpensTenantConnectionAsync()
+		{
+			if (!IsSqlServerDialect)
+				Assert.Ignore("MSSqlServer specific test");
+
+			using (var ses = OpenTenantSession("tenant1"))
+			{
+				await (Isolater.DoIsolatedWorkAsync(new TenantIsolatatedWork("tenant1"), ses.GetSessionImplementation(), CancellationToken.None));
+			}
 		}
 
 		private static string GetTenantId(ISession session)

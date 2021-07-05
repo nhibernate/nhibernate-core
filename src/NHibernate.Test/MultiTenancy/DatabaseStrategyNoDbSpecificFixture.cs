@@ -9,6 +9,7 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine;
+using NHibernate.Engine.Transaction;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.MultiTenancy;
@@ -227,6 +228,18 @@ namespace NHibernate.Test.MultiTenancy
 
 			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0));
 			Assert.That(Sfi.Statistics.SecondLevelCacheHitCount, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void TenantIsolatedWorkOpensTenantConnection()
+		{
+			if (!IsSqlServerDialect)
+				Assert.Ignore("MSSqlServer specific test");
+
+			using (var ses = OpenTenantSession("tenant1"))
+			{
+				Isolater.DoIsolatedWork(new TenantIsolatatedWork("tenant1"), ses.GetSessionImplementation());
+			}
 		}
 
 		private static string GetTenantId(ISession session)

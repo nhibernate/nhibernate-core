@@ -364,13 +364,13 @@ using (ITransaction txn = session.BeginTransaction())
         <programlisting><![CDATA[DetachedCriteria avgWeight = DetachedCriteria.For<Cat>()
     .SetProjection( Projections.Avg("Weight") );
 session.CreateCriteria<Cat>()
-    .Add( Subqueries.Gt("Weight", avgWeight) )
+    .Add( Subqueries.PropertyGt("Weight", avgWeight) )
     .List<Cat>();]]></programlisting>
     
         <programlisting><![CDATA[DetachedCriteria weights = DetachedCriteria.For<Cat>()
     .SetProjection( Projections.Property("Weight") );
 session.CreateCriteria<Cat>()
-    .Add( Subqueries.GeAll("Weight", weights) )
+    .Add( Subqueries.PropertyGeAll("Weight", weights) )
     .List<Cat>();]]></programlisting>
     
         <para>
@@ -381,7 +381,7 @@ session.CreateCriteria<Cat>()
     .SetProjection( Projections.Avg("Weight") )
     .Add( Expression.EqProperty("cat2.Sex", "cat.Sex") );
 session.CreateCriteria(typeof(Cat), "cat")
-    .Add( Subqueries.Gt("weight", avgWeightForSex) )
+    .Add( Subqueries.PropertyGt("Weight", avgWeightForSex) )
     .List<Cat>();]]></programlisting>
 
     </sect1>

@@ -6,7 +6,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class CollectionPropertiesCustomizer<TEntity, TElement> : ICollectionPropertiesMapper<TEntity, TElement>
+	public class CollectionPropertiesCustomizer<TEntity, TElement> : ICollectionPropertiesMapper<TEntity, TElement>, ICollectionSqlsWithCheckMapper
 	{
 		private readonly IKeyMapper<TEntity> keyMapper;
 
@@ -157,9 +157,19 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(PropertyPath, (ICollectionPropertiesMapper x) => x.SqlInsert(sql));
 		}
 
+		public void SqlInsert(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(PropertyPath, (ICollectionPropertiesMapper x) => x.SqlInsert(sql, sqlCheck));
+		}
+
 		public void SqlUpdate(string sql)
 		{
 			CustomizersHolder.AddCustomizer(PropertyPath, (ICollectionPropertiesMapper x) => x.SqlUpdate(sql));
+		}
+
+		public void SqlUpdate(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(PropertyPath, (ICollectionPropertiesMapper x) => x.SqlUpdate(sql, sqlCheck));
 		}
 
 		public void SqlDelete(string sql)
@@ -167,9 +177,19 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(PropertyPath, (ICollectionPropertiesMapper x) => x.SqlDelete(sql));
 		}
 
+		public void SqlDelete(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(PropertyPath, (ICollectionPropertiesMapper x) => x.SqlDelete(sql, sqlCheck));
+		}
+
 		public void SqlDeleteAll(string sql)
 		{
 			CustomizersHolder.AddCustomizer(PropertyPath, (ICollectionPropertiesMapper x) => x.SqlDeleteAll(sql));
+		}
+
+		public void SqlDeleteAll(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(PropertyPath, (ICollectionPropertiesMapper x) => x.SqlDeleteAll(sql, sqlCheck));
 		}
 
 		public void Subselect(string sql)

@@ -47,7 +47,7 @@ namespace NHibernate.Transaction
 					// since SQLite only allows one connection to the database.
 					connection = session.Factory.Dialect is SQLiteDialect
 						? session.Connection
-						: await (session.Factory.ConnectionProvider.GetConnectionAsync(cancellationToken)).ConfigureAwait(false);
+						: await (session.ConnectionManager.GetNewConnectionAsync(cancellationToken)).ConfigureAwait(false);
 
 					if (transacted)
 					{

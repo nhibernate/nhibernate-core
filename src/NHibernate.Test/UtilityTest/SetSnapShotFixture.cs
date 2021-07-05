@@ -50,6 +50,16 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		[Test]
+		public void TestDuplicates()
+		{
+			var list = new List<string> { "test1", "test1", "test2" };
+			var sn = new SetSnapShot<string>(list);
+			Assert.That(sn, Has.Count.EqualTo(2));
+			Assert.That(sn.TryGetValue("test1", out _), Is.True);
+			Assert.That(sn.TryGetValue("test2", out _), Is.True);
+		}
+
+		[Test]
 		public void TestCopyTo()
 		{
 			var list = new List<string> {"test1", null, "test2"};

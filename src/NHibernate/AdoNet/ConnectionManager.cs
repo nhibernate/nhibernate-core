@@ -224,6 +224,19 @@ namespace NHibernate.AdoNet
 			_connection = null;
 		}
 
+		/// <summary>
+		/// Get a new opened connection. The caller is responsible for closing it.
+		/// </summary>
+		/// <returns>An opened connection.</returns>
+		public DbConnection GetNewConnection()
+		{
+			return _connectionAccess.GetConnection();
+		}
+
+		/// <summary>
+		/// Get the managed connection.
+		/// </summary>
+		/// <returns>An opened connection.</returns>
 		public DbConnection GetConnection()
 		{
 			if (!_allowConnectionUsage)
@@ -254,7 +267,7 @@ namespace NHibernate.AdoNet
 			{
 				if (_ownConnection)
 				{
-					_connection = _connectionAccess.GetConnection();
+					_connection = GetNewConnection();
 					// Will fail if the connection is already enlisted in another transaction.
 					// Probable case: nested transaction scope with connection auto-enlistment enabled.
 					// That is an user error.

@@ -60,8 +60,12 @@
       name: BestGuessEntityName
       containingTypeName: ISessionImplementor
     - conversion: Ignore
-      name: Contains
+      name: CloseSessionFromSystemTransaction
       containingTypeName: ISessionImplementor
+# TODO 6.0: Remove ignore rule for IStatelessSession.Close
+    - conversion: Ignore
+      name: Close
+      containingTypeName: IStatelessSession
     - conversion: Ignore
       name: GetUnsavedVersionValue
       containingTypeName: UnsavedValueFactory

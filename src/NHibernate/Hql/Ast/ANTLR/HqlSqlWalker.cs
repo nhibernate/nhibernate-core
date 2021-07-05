@@ -796,17 +796,39 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private IQueryable ResolveEntityJoinReferencedPersister(IASTNode path)
 		{
+			string entityName = GetEntityJoinCandidateEntityName(path);
+
+			var persister = SessionFactoryHelper.FindQueryableUsingImports(entityName);
+			if (persister == null && entityName != null)
+			{
+				var implementors = SessionFactoryHelper.Factory.GetImplementors(entityName);
+				//Possible case - join on interface
+				if (implementors.Length == 1)
+					persister = SessionFactoryHelper.FindQueryableUsingImports(implementors[0]);
+			}
+
+			if (persister != null)
+				return persister;
+
 			if (path.Type == IDENT)
 			{
-				var pathIdentNode = (IdentNode) path;
 				// Since IDENT node is not expected for implicit join path, we can throw on not found persister
-				return (IQueryable) SessionFactoryHelper.RequireClassPersister(pathIdentNode.Path);
+				throw new QuerySyntaxException(entityName + " is not mapped");
 			}
-			else if (path.Type == DOT)
+
+			return null;
+		}
+
+		private static string GetEntityJoinCandidateEntityName(IASTNode path)
+		{
+			switch (path.Type)
 			{
-				var pathText = ASTUtil.GetPathText(path);
-				return SessionFactoryHelper.FindQueryableUsingImports(pathText);
+				case IDENT:
+					return ((IdentNode) path).Path;
+				case DOT:
+					return ASTUtil.GetPathText(path);
 			}
+
 			return null;
 		}
 

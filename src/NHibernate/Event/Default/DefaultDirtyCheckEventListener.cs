@@ -1,4 +1,6 @@
 using System;
+using NHibernate.Engine;
+using NHibernate.Util;
 
 namespace NHibernate.Event.Default
 {
@@ -10,6 +12,10 @@ namespace NHibernate.Event.Default
 	public partial class DefaultDirtyCheckEventListener : AbstractFlushingEventListener, IDirtyCheckEventListener
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultDirtyCheckEventListener));
+
+		protected override object Anything => IdentityMap.Instantiate(10);
+
+		protected override CascadingAction CascadingAction => CascadingAction.Persist;
 
 		public virtual void OnDirtyCheck(DirtyCheckEvent @event)
 		{

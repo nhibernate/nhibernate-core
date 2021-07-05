@@ -36,6 +36,20 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task DecimalAddAsync()
+		{
+			decimal offset = 5.5m;
+			decimal test = 10248 + offset;
+			var result = await (session.Query<Order>().Where(e => offset + e.OrderId == test).ToListAsync());
+			Assert.That(result, Has.Count.EqualTo(1));
+
+			offset = 5.5m;
+			test = 32.38m + offset;
+			result = await (session.Query<Order>().Where(e => offset + e.Freight == test).ToListAsync());
+			Assert.That(result, Has.Count.EqualTo(1));
+		}
+
+		[Test]
 		public async Task UnaryPlusAsync()
 		{
 			// Ensure expression tree contains UnaryPlus

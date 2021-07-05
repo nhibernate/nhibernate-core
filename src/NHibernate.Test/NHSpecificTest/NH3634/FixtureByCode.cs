@@ -1,4 +1,5 @@
-﻿using NHibernate.Cfg.MappingSchema;
+﻿using System.Linq;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -302,6 +303,66 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 				Assert.That(cached.Connection.PortName, Is.Null);
 
 				tx.Commit();
+			}
+		}
+
+		[Test]
+		public void QueryOverComponentIsNull()
+		{
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var person = session.QueryOver<Person>()
+									.Where(p => p.Connection == null)
+									.SingleOrDefault<Person>();
+				Assert.That(person, Is.Null);
+			}
+		}
+
+		[Test(Description = "GH-2822")]
+		public void LinqComponentIsNull()
+		{
+			using (ISession session = OpenSession())
+			{
+				var person = session.Query<Person>()
+									.Where(p => p.Name != null && p.Connection == null && p.Name != null)
+									.FirstOrDefault<Person>();
+				Assert.That(person, Is.Null);
+			}
+		}
+
+		[Test]
+		public void LinqComponentIsNotNull()
+		{
+			using (ISession session = OpenSession())
+			{
+				var person = session.Query<Person>()
+									.Where(p => p.Name != null && p.Connection != null && p.Name != null)
+									.FirstOrDefault<Person>();
+				Assert.That(person, Is.Not.Null);
+			}
+		}
+		
+		[Test]
+		public void HqlComponentIsNull()
+		{
+			using(new SqlLogSpy())
+			using (ISession session = OpenSession())
+			{
+				var p = session.CreateQuery("from Person where Connection is null").UniqueResult<Person>();
+
+				Assert.That(p, Is.Null);
+			}
+		}
+
+		[Test]
+		public void HqlComponentIsNotNull()
+		{
+			using (ISession session = OpenSession())
+			{
+				var p = session.CreateQuery("from Person where Connection is not null").SetMaxResults(1).UniqueResult<Person>();
+
+				Assert.That(p, Is.Not.Null);
 			}
 		}
 

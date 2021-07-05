@@ -61,6 +61,28 @@ namespace NHibernate
 			cancellationToken.ThrowIfCancellationRequested();
 			return (T) await (session.GetAsync(entityName, id, cancellationToken)).ConfigureAwait(false);
 		}
+
+		/// <summary>
+		/// Flush the batcher. When batching is enabled, a stateless session is no more fully stateless. It may retain
+		/// in its batcher some state waiting to be flushed to the database.
+		/// </summary>
+		/// <param name="session">The session.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public static Task FlushBatcherAsync(this IStatelessSession session, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				return session.GetSessionImplementation().FlushAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
 	}
 
 	public partial interface IStatelessSession : IDisposable

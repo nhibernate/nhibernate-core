@@ -5,5 +5,6 @@
 		public virtual string ConnectionType { get; set; }
 		public virtual string Address { get; set; }
 		public virtual string PortName { get; set; }
+		public virtual string PortName2 { get; set; }
 	}
 }

@@ -3,7 +3,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class JoinedSubclassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IJoinedSubclassMapper<TEntity>, IConformistHoldersProvider where TEntity : class
+	public class JoinedSubclassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IJoinedSubclassMapper<TEntity>, IConformistHoldersProvider, IEntitySqlsWithCheckMapper where TEntity : class
 	{
 		private readonly IKeyMapper<TEntity> keyMapper;
 
@@ -92,14 +92,29 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IJoinedSubclassAttributesMapper m) => m.SqlInsert(sql));
 		}
 
+		public void SqlInsert(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinedSubclassAttributesMapper m) => m.SqlInsert(sql, sqlCheck));
+		}
+
 		public void SqlUpdate(string sql)
 		{
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IJoinedSubclassAttributesMapper m) => m.SqlUpdate(sql));
 		}
 
+		public void SqlUpdate(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinedSubclassAttributesMapper m) => m.SqlUpdate(sql, sqlCheck));
+		}
+
 		public void SqlDelete(string sql)
 		{
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IJoinedSubclassAttributesMapper m) => m.SqlDelete(sql));
+		}
+
+		public void SqlDelete(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinedSubclassAttributesMapper m) => m.SqlDelete(sql, sqlCheck));
 		}
 
 		public void Subselect(string sql)
@@ -140,10 +155,10 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IJoinedSubclassAttributesMapper m) => m.Schema(schemaName));
 		}
 
-        public void Filter(string filterName, Action<IFilterMapper> filterMapping)
-        {
-            CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinedSubclassAttributesMapper m) => m.Filter(filterName, filterMapping));
-        }
+		public void Filter(string filterName, Action<IFilterMapper> filterMapping)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinedSubclassAttributesMapper m) => m.Filter(filterName, filterMapping));
+		}
 
 		#endregion
 

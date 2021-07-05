@@ -103,7 +103,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1300
 
 				var sqlEx = ex.InnerException as SqlException;
 				Assert.That(sqlEx, Is.Not.Null);
-				Assert.That(sqlEx.Number, Is.EqualTo(8152));
+				// Error code is different if verbose truncation warning is enabled
+				// See details: https://www.brentozar.com/archive/2019/03/how-to-fix-the-error-string-or-binary-data-would-be-truncated/
+				Assert.That(sqlEx.Number, Is.EqualTo(8152).Or.EqualTo(2628));
 			}
 		}
 

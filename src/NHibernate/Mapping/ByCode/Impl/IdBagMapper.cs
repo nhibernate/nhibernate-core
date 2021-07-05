@@ -8,7 +8,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class IdBagMapper : IIdBagPropertiesMapper
+	public class IdBagMapper : IIdBagPropertiesMapper, ICollectionSqlsWithCheckMapper
 	{
 		private readonly IAccessorPropertyMapper entityPropertyMapper;
 		private readonly KeyMapper keyMapper;
@@ -259,6 +259,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 			mapping.sqlinsert.Text = new[] {sql};
 		}
 
+		public void SqlInsert(string sql, SqlCheck sqlCheck)
+		{
+			if (mapping.SqlInsert == null)
+			{
+				mapping.sqlinsert = new HbmCustomSQL();
+			}
+			mapping.sqlinsert.Text = new[] {sql};
+			mapping.sqlinsert.checkSpecified = true;
+			mapping.sqlinsert.check = sqlCheck.ToHbmSqlCheck();
+		}
+
 		public void SqlUpdate(string sql)
 		{
 			if (mapping.SqlUpdate == null)
@@ -266,6 +277,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 				mapping.sqlupdate = new HbmCustomSQL();
 			}
 			mapping.sqlupdate.Text = new[] {sql};
+		}
+
+		public void SqlUpdate(string sql, SqlCheck sqlCheck)
+		{
+			if (mapping.SqlUpdate == null)
+			{
+				mapping.sqlupdate = new HbmCustomSQL();
+			}
+			mapping.sqlupdate.Text = new[] {sql};
+			mapping.sqlupdate.checkSpecified = true;
+			mapping.sqlupdate.check = sqlCheck.ToHbmSqlCheck();
 		}
 
 		public void SqlDelete(string sql)
@@ -277,6 +299,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 			mapping.sqldelete.Text = new[] {sql};
 		}
 
+		public void SqlDelete(string sql, SqlCheck sqlCheck)
+		{
+			if (mapping.SqlDelete == null)
+			{
+				mapping.sqldelete = new HbmCustomSQL();
+			}
+			mapping.sqldelete.Text = new[] {sql};
+			mapping.sqldelete.checkSpecified = true;
+			mapping.sqldelete.check = sqlCheck.ToHbmSqlCheck();
+		}
+
 		public void SqlDeleteAll(string sql)
 		{
 			if (mapping.SqlDeleteAll == null)
@@ -284,6 +317,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 				mapping.sqldeleteall = new HbmCustomSQL();
 			}
 			mapping.sqldeleteall.Text = new[] {sql};
+		}
+
+		public void SqlDeleteAll(string sql, SqlCheck sqlCheck)
+		{
+			if (mapping.SqlDeleteAll == null)
+			{
+				mapping.sqldeleteall = new HbmCustomSQL();
+			}
+			mapping.sqldeleteall.Text = new[] {sql};
+			mapping.sqldeleteall.checkSpecified = true;
+			mapping.sqldeleteall.check = sqlCheck.ToHbmSqlCheck();
 		}
 
 		public void Subselect(string sql)

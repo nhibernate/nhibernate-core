@@ -3,7 +3,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class UnionSubclassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IUnionSubclassMapper<TEntity>, IConformistHoldersProvider where TEntity : class
+	public class UnionSubclassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IUnionSubclassMapper<TEntity>, IConformistHoldersProvider, IEntitySqlsWithCheckMapper where TEntity : class
 	{
 		public UnionSubclassCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizersHolder)
 			: base(explicitDeclarationsHolder, customizersHolder, null)
@@ -79,14 +79,29 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.SqlInsert(sql));
 		}
 
+		public void SqlInsert(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.SqlInsert(sql, sqlCheck));
+		}
+
 		public void SqlUpdate(string sql)
 		{
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.SqlUpdate(sql));
 		}
 
+		public void SqlUpdate(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.SqlUpdate(sql, sqlCheck));
+		}
+
 		public void SqlDelete(string sql)
 		{
 			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.SqlDelete(sql));
+		}
+
+		public void SqlDelete(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.SqlDelete(sql, sqlCheck));
 		}
 
 		public void Subselect(string sql)
