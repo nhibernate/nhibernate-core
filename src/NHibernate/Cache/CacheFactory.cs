@@ -60,7 +60,7 @@ namespace NHibernate.Cache
 		public static ICacheConcurrencyStrategy CreateCache(string usage, CacheBase cache)
 		{
 			if (log.IsDebugEnabled())
-				log.Debug("cache for: {0} usage strategy: {1}", cache.RegionName, usage);
+				log.Debug("cache for: {0} usage strategy: {1}", cache?.RegionName, usage);
 
 			ICacheConcurrencyStrategy ccs;
 			switch (usage)

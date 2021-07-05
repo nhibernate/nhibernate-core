@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,7 @@ namespace NHibernate.Cache
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ReadWriteCache));
 
 		private CacheBase _cache;
+		private bool _isDestroyed;
 		private int _nextLockId;
 		private readonly AsyncReaderWriterLock _asyncReaderWriterLock = new AsyncReaderWriterLock();
 
@@ -43,7 +45,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public string RegionName
 		{
-			get { return Cache.RegionName; }
+			get { return Cache?.RegionName; }
 		}
 
 		// 6.0 TODO: remove
@@ -55,7 +57,18 @@ namespace NHibernate.Cache
 			set { _cache = value?.AsCacheBase(); }
 		}
 
-		// 6.0 TODO: make implicit and switch to auto-property
+		// 6.0 TODO: Rename to Cache and make public (possible breaking change for reader when null).
+		private CacheBase InternalCache
+		{
+			get
+			{
+				if (_cache == null || _isDestroyed)
+					throw new InvalidOperationException(_isDestroyed ? "The cache has already been destroyed" : "The concrete cache is not defined");
+				return _cache;
+			}
+		}
+
+		// 6.0 TODO: remove
 		CacheBase IBatchableCacheConcurrencyStrategy.Cache
 		{
 			get => _cache;
@@ -96,6 +109,7 @@ namespace NHibernate.Cache
 		/// </remarks>
 		public object Get(CacheKey key, long txTimestamp)
 		{
+			var cache = InternalCache;
 			using (_asyncReaderWriterLock.ReadLock())
 			{
 				if (log.IsDebugEnabled())
@@ -107,7 +121,7 @@ namespace NHibernate.Cache
 				/*try
 				{
 					cache.Lock( key );*/
-				var lockable = (ILockable) Cache.Get(key);
+				var lockable = (ILockable) cache.Get(key);
 				return GetValue(txTimestamp, key, lockable);
 				/*}
 				finally
@@ -123,10 +137,11 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
+			var cache = InternalCache;
 			var result = new object[keys.Length];
 			using (_asyncReaderWriterLock.ReadLock())
 			{
-				var lockables = _cache.GetMany(keys);
+				var lockables = cache.GetMany(keys);
 				for (var i = 0; i < lockables.Length; i++)
 				{
 					var o = (ILockable) lockables[i];
@@ -167,6 +182,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public ISoftLock Lock(CacheKey key, object version)
 		{
+			var cache = InternalCache;
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -174,20 +190,20 @@ namespace NHibernate.Cache
 					log.Debug("Invalidating: {0}", key);
 				}
 
-				var lockValue = _cache.Lock(key);
+				var lockValue = cache.Lock(key);
 				try
 				{
-					ILockable lockable = (ILockable) Cache.Get(key);
-					long timeout = Cache.NextTimestamp() + Cache.Timeout;
+					ILockable lockable = (ILockable) cache.Get(key);
+					long timeout = cache.NextTimestamp() + cache.Timeout;
 					CacheLock @lock = lockable == null ?
 					                  CacheLock.Create(timeout, NextLockId(), version) :
 					                  lockable.Lock(timeout, NextLockId());
-					Cache.Put(key, @lock);
+					cache.Put(key, @lock);
 					return @lock;
 				}
 				finally
 				{
-					_cache.Unlock(key, lockValue);
+					cache.Unlock(key, lockValue);
 				}
 			}
 		}
@@ -210,6 +226,7 @@ namespace NHibernate.Cache
 				return result;
 			}
 
+			var cache = InternalCache;
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -217,11 +234,11 @@ namespace NHibernate.Cache
 					log.Debug("Caching: {0}", string.Join(",", keys.AsEnumerable()));
 				}
 
-				var lockValue = _cache.LockMany(keys);
+				var lockValue = cache.LockMany(keys);
 				try
 				{
 					var putBatch = new Dictionary<object, object>();
-					var lockables = _cache.GetMany(keys);
+					var lockables = cache.GetMany(keys);
 					for (var i = 0; i < keys.Length; i++)
 					{
 						var key = keys[i];
@@ -231,7 +248,7 @@ namespace NHibernate.Cache
 						                lockable.IsPuttable(timestamp, version, versionComparers[i]);
 						if (puttable)
 						{
-							putBatch.Add(key, CachedItem.Create(values[i], Cache.NextTimestamp(), version));
+							putBatch.Add(key, CachedItem.Create(values[i], cache.NextTimestamp(), version));
 							if (log.IsDebugEnabled())
 							{
 								log.Debug("Cached: {0}", key);
@@ -252,12 +269,12 @@ namespace NHibernate.Cache
 
 					if (putBatch.Count > 0)
 					{
-						_cache.PutMany(putBatch.Keys.ToArray(), putBatch.Values.ToArray());
+						cache.PutMany(putBatch.Keys.ToArray(), putBatch.Values.ToArray());
 					}
 				}
 				finally
 				{
-					_cache.UnlockMany(keys, lockValue);
+					cache.UnlockMany(keys, lockValue);
 				}
 			}
 			return result;
@@ -279,6 +296,7 @@ namespace NHibernate.Cache
 				return false;
 			}
 
+			var cache = InternalCache;
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -286,17 +304,17 @@ namespace NHibernate.Cache
 					log.Debug("Caching: {0}", key);
 				}
 
-				var lockValue = _cache.Lock(key);
+				var lockValue = cache.Lock(key);
 				try
 				{
-					ILockable lockable = (ILockable) Cache.Get(key);
+					ILockable lockable = (ILockable) cache.Get(key);
 
 					bool puttable = lockable == null ||
 					                lockable.IsPuttable(txTimestamp, version, versionComparator);
 
 					if (puttable)
 					{
-						Cache.Put(key, CachedItem.Create(value, Cache.NextTimestamp(), version));
+						cache.Put(key, CachedItem.Create(value, cache.NextTimestamp(), version));
 						if (log.IsDebugEnabled())
 						{
 							log.Debug("Cached: {0}", key);
@@ -314,7 +332,7 @@ namespace NHibernate.Cache
 				}
 				finally
 				{
-					_cache.Unlock(key, lockValue);
+					cache.Unlock(key, lockValue);
 				}
 			}
 		}
@@ -325,12 +343,14 @@ namespace NHibernate.Cache
 		private void DecrementLock(object key, CacheLock @lock)
 		{
 			//decrement the lock
-			@lock.Unlock(Cache.NextTimestamp());
-			Cache.Put(key, @lock);
+			var cache = InternalCache;
+			@lock.Unlock(cache.NextTimestamp());
+			cache.Put(key, @lock);
 		}
 
 		public void Release(CacheKey key, ISoftLock clientLock)
 		{
+			var cache = InternalCache;
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -338,10 +358,10 @@ namespace NHibernate.Cache
 					log.Debug("Releasing: {0}", key);
 				}
 
-				var lockValue = _cache.Lock(key);
+				var lockValue = cache.Lock(key);
 				try
 				{
-					ILockable lockable = (ILockable) Cache.Get(key);
+					ILockable lockable = (ILockable) cache.Get(key);
 					if (IsUnlockable(clientLock, lockable))
 					{
 						DecrementLock(key, (CacheLock) lockable);
@@ -353,7 +373,7 @@ namespace NHibernate.Cache
 				}
 				finally
 				{
-					_cache.Unlock(key, lockValue);
+					cache.Unlock(key, lockValue);
 				}
 			}
 		}
@@ -361,28 +381,32 @@ namespace NHibernate.Cache
 		internal void HandleLockExpiry(object key)
 		{
 			log.Warn("An item was expired by the cache while it was locked (increase your cache timeout): {0}", key);
-			long ts = Cache.NextTimestamp() + Cache.Timeout;
+			var cache = InternalCache;
+			long ts = cache.NextTimestamp() + cache.Timeout;
 			// create new lock that times out immediately
 			CacheLock @lock = CacheLock.Create(ts, NextLockId(), null);
 			@lock.Unlock(ts);
-			Cache.Put(key, @lock);
+			cache.Put(key, @lock);
 		}
 
 		public void Clear()
 		{
-			Cache.Clear();
+			InternalCache.Clear();
 		}
 
 		public void Remove(CacheKey key)
 		{
-			Cache.Remove(key);
+			InternalCache.Remove(key);
 		}
 
 		public void Destroy()
 		{
+			if (_isDestroyed)
+				return;
+			_isDestroyed = true;
 			// The cache is externally provided and may be shared. Destroying the cache is
 			// not the responsibility of this class.
-			Cache = null;
+			_cache = null;
 			_asyncReaderWriterLock.Dispose();
 		}
 
@@ -392,6 +416,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public bool AfterUpdate(CacheKey key, object value, object version, ISoftLock clientLock)
 		{
+			var cache = InternalCache;
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -399,10 +424,10 @@ namespace NHibernate.Cache
 					log.Debug("Updating: {0}", key);
 				}
 
-				var lockValue = _cache.Lock(key);
+				var lockValue = cache.Lock(key);
 				try
 				{
-					ILockable lockable = (ILockable) Cache.Get(key);
+					ILockable lockable = (ILockable) cache.Get(key);
 					if (IsUnlockable(clientLock, lockable))
 					{
 						CacheLock @lock = (CacheLock) lockable;
@@ -415,7 +440,7 @@ namespace NHibernate.Cache
 						else
 						{
 							//recache the updated state
-							Cache.Put(key, CachedItem.Create(value, Cache.NextTimestamp(), version));
+							cache.Put(key, CachedItem.Create(value, cache.NextTimestamp(), version));
 							if (log.IsDebugEnabled())
 							{
 								log.Debug("Updated: {0}", key);
@@ -431,13 +456,14 @@ namespace NHibernate.Cache
 				}
 				finally
 				{
-					_cache.Unlock(key, lockValue);
+					cache.Unlock(key, lockValue);
 				}
 			}
 		}
 
 		public bool AfterInsert(CacheKey key, object value, object version)
 		{
+			var cache = InternalCache;
 			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
@@ -445,13 +471,13 @@ namespace NHibernate.Cache
 					log.Debug("Inserting: {0}", key);
 				}
 
-				var lockValue = _cache.Lock(key);
+				var lockValue = cache.Lock(key);
 				try
 				{
-					ILockable lockable = (ILockable) Cache.Get(key);
+					ILockable lockable = (ILockable) cache.Get(key);
 					if (lockable == null)
 					{
-						Cache.Put(key, CachedItem.Create(value, Cache.NextTimestamp(), version));
+						cache.Put(key, CachedItem.Create(value, cache.NextTimestamp(), version));
 						if (log.IsDebugEnabled())
 						{
 							log.Debug("Inserted: {0}", key);
@@ -465,7 +491,7 @@ namespace NHibernate.Cache
 				}
 				finally
 				{
-					_cache.Unlock(key, lockValue);
+					cache.Unlock(key, lockValue);
 				}
 			}
 		}
