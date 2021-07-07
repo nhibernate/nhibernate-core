@@ -12,7 +12,7 @@ namespace NHibernate.Test.Linq
 
 		public static void CreateMiscTestData(ISession session)
 		{
-			var roles = new[]
+			var roles = new[] 
 			{
 				new Role()
 				{

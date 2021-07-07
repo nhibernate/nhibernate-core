@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.TestDatabaseSetu
 EndProject
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "NHibernate.Test.VisualBasic", "NHibernate.Test.VisualBasic\NHibernate.Test.VisualBasic.vbproj", "{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Benchmark", "NHibernate.Benchmark\NHibernate.Benchmark.csproj", "{D54A8513-4CCF-4CD4-9FAF-2C33A266720E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C2EF610-BCA0-4D1F-898A-DE9908E4970C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D54A8513-4CCF-4CD4-9FAF-2C33A266720E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D54A8513-4CCF-4CD4-9FAF-2C33A266720E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D54A8513-4CCF-4CD4-9FAF-2C33A266720E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D54A8513-4CCF-4CD4-9FAF-2C33A266720E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
