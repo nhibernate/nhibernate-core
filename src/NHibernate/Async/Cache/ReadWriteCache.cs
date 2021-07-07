@@ -404,7 +404,7 @@ namespace NHibernate.Cache
 				try
 				{
 					ILockable lockable = (ILockable) await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
-					if (lockable == null)
+					if (lockable == null || (lockable is CacheLock @lock && !@lock.WasLockedConcurrently))
 					{
 						await (Cache.PutAsync(key, CachedItem.Create(value, Cache.NextTimestamp(), version), cancellationToken)).ConfigureAwait(false);
 						if (log.IsDebugEnabled())

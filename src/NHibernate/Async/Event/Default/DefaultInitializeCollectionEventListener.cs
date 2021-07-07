@@ -176,7 +176,14 @@ namespace NHibernate.Event.Default
 				IPersistenceContext persistenceContext = source.PersistenceContext;
 
 				CollectionCacheEntry cacheEntry = (CollectionCacheEntry) persister.CacheEntryStructure.Destructure(ce, factory);
-				await (cacheEntry.AssembleAsync(collection, persister, persistenceContext.GetCollectionOwner(collectionKey, persister), cancellationToken)).ConfigureAwait(false);
+				try
+				{
+					await (cacheEntry.AssembleAsync(collection, persister, persistenceContext.GetCollectionOwner(collectionKey, persister), cancellationToken)).ConfigureAwait(false);
+				}
+				catch (ObjectNotFoundException)
+				{
+					return false;
+				}
 
 				persistenceContext.GetCollectionEntry(collection).PostInitialize(collection, persistenceContext);
 
