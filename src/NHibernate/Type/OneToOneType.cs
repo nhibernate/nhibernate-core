@@ -40,6 +40,12 @@ namespace NHibernate.Type
 			this.propertyName = propertyName;
 			this.entityName = entityName;
 		}
+		
+		public OneToOneType(OneToOneType original, string superTypeEntityName)
+			: base(original, superTypeEntityName)
+		{
+			
+		}
 
 		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
