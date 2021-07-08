@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using NHibernate.Action;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -151,6 +152,15 @@ namespace NHibernate.Type
 				// From reading the .NET SDK the default is to NOT accept a null value. 
 				// I definitely need to look into this more...
 				st.Parameters[index].Value = DBNull.Value;
+			}
+			else if (value is DelayedPostInsertIdentifier)
+			{
+				if (IsDebugEnabled)
+				{
+					Log.Debug("binding 0 to parameter: {0}", index);
+				}
+
+				st.Parameters[index].Value = 0;
 			}
 			else
 			{
