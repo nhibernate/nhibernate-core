@@ -62,6 +62,10 @@ Task Set-Configuration {
         'SqlServer2012' = @{
             'connection.connection_string' = 'Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;';
             'dialect' = 'NHibernate.Dialect.MsSql2012Dialect'
+        };
+        'Oracle' = @{
+			'connection.driver_class' = 'NHibernate.Driver.OracleManagedDataClientDriver';
+            'dialect' = 'NHibernate.Dialect.Oracle12cDialect'
         }
     }
     #Settings for current build
