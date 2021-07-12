@@ -46,7 +46,7 @@ namespace NHibernate.Test
 
 		protected Dialect.Dialect Dialect
 		{
-			get { return _dialect; }
+			get { return _dialect ?? (_dialect = NHibernate.Dialect.Dialect.GetDialect(cfg.Properties)); }
 		}
 
 		protected TestDialect TestDialect
@@ -78,7 +78,6 @@ namespace NHibernate.Test
 			try
 			{
 				Configure();
-				_dialect = NHibernate.Dialect.Dialect.GetDialect(cfg.Properties);
 				if (!AppliesTo(Dialect))
 				{
 					Assert.Ignore(GetType() + " does not apply to " + Dialect);
