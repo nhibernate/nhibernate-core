@@ -18,7 +18,8 @@ namespace NHibernate.Action
 		IBeforeTransactionCompletionProcess,
 		IAfterTransactionCompletionProcess,
 		IComparable<EntityAction>, 
-		IDeserializationCallback
+		IDeserializationCallback,
+		ICacheableExecutable
 	{
 		private readonly string entityName;
 		private readonly object id;
@@ -195,5 +196,7 @@ namespace NHibernate.Action
 		{
 			AfterTransactionCompletionProcessImpl(success);
 		}
+
+		public bool HasCache => persister.HasCache;
 	}
 }
