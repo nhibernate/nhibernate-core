@@ -26,7 +26,7 @@ namespace NHibernate.Test.Hql
 	[TestFixture]
 	public class EntityJoinHqlTestAsync : TestCaseMappingByCode
 	{
-		private const string _customEntityName = "CustomEntityName";
+		private const string _customEntityName = "CustomEntityName.Test";
 		private EntityWithCompositeId _entityWithCompositeId;
 		private EntityWithNoAssociation _noAssociation;
 		private EntityCustomEntityName _entityWithCustomEntityName;
@@ -42,6 +42,46 @@ namespace NHibernate.Test.Hql
 					.CreateQuery("select ex " +
 						"from EntityWithNoAssociation root " +
 						"left join EntityComplex ex with root.Complex1Id = ex.Id")
+						.SetMaxResults(1)
+					.UniqueResultAsync<EntityComplex>());
+
+				Assert.That(entityComplex, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(entityComplex), Is.True);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public async Task CanJoinNotAssociatedEntityFullNameAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex = 
+				await (session
+					.CreateQuery("select ex " +
+						"from EntityWithNoAssociation root " +
+						$"left join {typeof(EntityComplex).FullName} ex with root.Complex1Id = ex.Id")
+						.SetMaxResults(1)
+					.UniqueResultAsync<EntityComplex>());
+
+				Assert.That(entityComplex, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(entityComplex), Is.True);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public async Task CanJoinNotAssociatedInterfaceFullNameAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex = 
+				await (session
+					.CreateQuery("select ex " +
+						"from EntityWithNoAssociation root " +
+						$"left join {typeof(IEntityComplex).FullName} ex with root.Complex1Id = ex.Id")
 						.SetMaxResults(1)
 					.UniqueResultAsync<EntityComplex>());
 
