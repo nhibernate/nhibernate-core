@@ -9,13 +9,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1171
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			// Firebird has issues with comments containing apostrophes
-			return !(dialect is FirebirdDialect)
-#if !NETFX
-					//Oracle Core client throws Oracle.ManagedDataAccess.Client.OracleException : ORA-01008: not all variables bound
-					&& !(dialect is Oracle10gDialect)
-#endif
-				;
+			return
+				// Firebird has issues with comments containing apostrophes
+				!(dialect is FirebirdDialect)
+				// GH-2853: Oracle client bug: throws Oracle.ManagedDataAccess.Client.OracleException : ORA-01008: not all variables bound
+				&& !(dialect is Oracle10gDialect);
 		}
 
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
