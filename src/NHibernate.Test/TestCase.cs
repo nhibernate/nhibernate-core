@@ -33,6 +33,8 @@ namespace NHibernate.Test
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
 		private static readonly FieldInfo PlanCacheField;
+		private Dialect.Dialect _dialect;
+		private TestDialect _testDialect;
 
 		static TestCase()
 		{
@@ -44,12 +46,12 @@ namespace NHibernate.Test
 
 		protected Dialect.Dialect Dialect
 		{
-			get { return NHibernate.Dialect.Dialect.GetDialect(cfg.Properties); }
+			get { return _dialect ?? (_dialect = NHibernate.Dialect.Dialect.GetDialect(cfg.Properties)); }
 		}
 
 		protected TestDialect TestDialect
 		{
-			get { return TestDialect.GetTestDialect(Dialect); }
+			get { return _testDialect ?? (_testDialect = TestDialect.GetTestDialect(Dialect)); }
 		}
 
 		/// <summary>
