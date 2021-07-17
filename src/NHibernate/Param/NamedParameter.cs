@@ -20,6 +20,7 @@ namespace NHibernate.Param
 		public string Name { get; private set; }
 		public object Value { get; internal set; }
 		public IType Type { get; internal set; }
+		internal bool IsGuessedType { get; set; }
 
 		public virtual bool IsCollection { get; }
 
