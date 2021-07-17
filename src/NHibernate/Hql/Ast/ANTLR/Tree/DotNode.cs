@@ -124,6 +124,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { _propertyPath = value; }
 		}
 
+		internal bool SkipSemiResolve { get; set; }
+
 		public override void SetScalarColumnText(int i)
 		{
 			string[] sqlColumns = GetColumns();
@@ -200,7 +202,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// this might be a Java constant.
 			if ( propertyType == null ) 
 			{
-				if ( parent == null ) 
+				if (parent == null && !SkipSemiResolve)
 				{
 					Walker.LiteralProcessor.LookupConstant( this );
 				}

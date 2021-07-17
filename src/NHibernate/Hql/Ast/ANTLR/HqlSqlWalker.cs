@@ -702,12 +702,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// 		2) an entity-join (join com.acme.User)
 			//
 			// so make the proper interpretation here...
-			var entityJoinReferencedPersister = ResolveEntityJoinReferencedPersister(path);
-			if (entityJoinReferencedPersister != null)
+			// DOT node processing was moved to prefer implicit join path before probing for entity join
+			if (path.Type == IDENT)
 			{
-				var entityJoin = CreateEntityJoin(entityJoinReferencedPersister, alias, joinType, with);
-				((FromReferenceNode) path).FromElement = entityJoin;
-				SetPropertyFetch(entityJoin, propertyFetch, alias);
+				ProcessAsEntityJoin();
 				return;
 			}
 			// The path AST should be a DotNode, and it should have been evaluated already.
@@ -725,6 +723,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			// Generate an explicit join for the root dot node.   The implied joins will be collected and passed up
 			// to the root dot node.
+			dot.SkipSemiResolve = true;
 			dot.Resolve( true, false, alias == null ? null : alias.Text );
 
 			FromElement fromElement;
@@ -738,7 +737,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 				fromElement = dot.GetImpliedJoin();
 				if (fromElement == null)
 				{
-					throw new InvalidPathException("Invalid join: " + dot.Path);
+					ProcessAsEntityJoin();
+					return;
 				}
 				SetPropertyFetch(fromElement, propertyFetch, alias);
 
@@ -761,6 +761,15 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if ( log.IsDebugEnabled() )
 			{
 				log.Debug("createFromJoinElement() : {0}", _printer.ShowAsString( fromElement, "-- join tree --" ));
+			}
+
+			void ProcessAsEntityJoin()
+			{
+				var node = (FromReferenceNode) path;
+				var entityJoinReferencedPersister = ResolveEntityJoinReferencedPersister(node);
+				var entityJoin = CreateEntityJoin(entityJoinReferencedPersister, alias, joinType, with);
+				node.FromElement = entityJoin;
+				SetPropertyFetch(entityJoin, propertyFetch, alias);
 			}
 		}
 
@@ -790,9 +799,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return join;
 		}
 
-		private IQueryable ResolveEntityJoinReferencedPersister(IASTNode path)
+		private IQueryable ResolveEntityJoinReferencedPersister(FromReferenceNode path)
 		{
-			string entityName = GetEntityJoinCandidateEntityName(path);
+			string entityName = path.Path;
 
 			var persister = SessionFactoryHelper.FindQueryableUsingImports(entityName);
 			if (persister == null && entityName != null)
@@ -800,7 +809,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				var implementors = SessionFactoryHelper.Factory.GetImplementors(entityName);
 				//Possible case - join on interface
 				if (implementors.Length == 1)
-					persister = SessionFactoryHelper.FindQueryableUsingImports(implementors[0]);
+					persister = (IQueryable) SessionFactoryHelper.Factory.TryGetEntityPersister(implementors[0]);
 			}
 
 			if (persister != null)
@@ -808,24 +817,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			if (path.Type == IDENT)
 			{
-				// Since IDENT node is not expected for implicit join path, we can throw on not found persister
 				throw new QuerySyntaxException(entityName + " is not mapped");
 			}
 
-			return null;
-		}
-
-		private static string GetEntityJoinCandidateEntityName(IASTNode path)
-		{
-			switch (path.Type)
-			{
-				case IDENT:
-					return ((IdentNode) path).Path;
-				case DOT:
-					return ASTUtil.GetPathText(path);
-			}
-
-			return null;
+			//Keep old exception for DOT node
+			throw new InvalidPathException("Invalid join: " + entityName);
 		}
 
 		private static string GetPropertyPath(DotNode dotNode, IASTNode alias)
