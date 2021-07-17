@@ -62,6 +62,11 @@ Task Set-Configuration {
         'SqlServer2012' = @{
             'connection.connection_string' = 'Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;';
             'dialect' = 'NHibernate.Dialect.MsSql2012Dialect'
+        };
+        'Oracle' = @{
+            'connection.connection_string' = 'User ID=nhibernate;Password=nhibernate;Metadata Pooling=false;Self Tuning=false;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XEPDB1)))';
+            'connection.driver_class' = 'NHibernate.Driver.OracleManagedDataClientDriver';
+            'dialect' = 'NHibernate.Dialect.Oracle10gDialect'
         }
     }
     #Settings for current build
