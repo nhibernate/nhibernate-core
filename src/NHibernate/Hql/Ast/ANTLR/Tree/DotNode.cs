@@ -354,7 +354,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					Walker.AddQuerySpaces(entityPersister);
 				}
 			}
-			Walker.AddQuerySpaces( queryableCollection );	// Always add the collection's query spaces.
+			// Always add the collection's query spaces.
+			Walker.AddQuerySpaces(queryableCollection);
 		}
 
 		private void DereferenceEntity(EntityType entityType, bool implicitJoin, string classAlias, bool generateJoin, IASTNode parent) 
