@@ -25,8 +25,8 @@ namespace NHibernate.Action
 		public BulkOperationCleanupAction(ISessionImplementor session, IQueryable[] affectedQueryables)
 		{
 			this.session = session;
-			ISet<string> affectedSpaces = new HashSet<string>();
-			ISet<string> affectedQueryCacheSpaces = new HashSet<string>();
+			var affectedSpaces = new HashSet<string>();
+			var affectedQueryCacheSpaces = new HashSet<string>();
 			foreach (var affectedQueryable in affectedQueryables)
 			{
 				if (affectedQueryable.HasCache)
