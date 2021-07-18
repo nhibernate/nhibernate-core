@@ -103,8 +103,8 @@ namespace NHibernate.Loader.Custom
 					specifiedAliases.Add(rootRtn.Alias);
 					entityaliases.Add(rootRtn.EntityAliases);
 					querySpaces.UnionWith(persister.QuerySpaces);
-					// 6.0 TODO: the cast and null coalesce to true will no more be needed once IPersister's todo is done.
-					supportsQueryCache = supportsQueryCache && ((persister as IPersister)?.SupportsQueryCache ?? true);
+					// 6.0 TODO: Use IPersister.SupportsQueryCache property once IPersister's todo is done.
+					supportsQueryCache = supportsQueryCache && persister.SupportsQueryCache();
 					includeInResultRowList.Add(true);
 				}
 				else if (rtn is CollectionReturn)
@@ -129,8 +129,8 @@ namespace NHibernate.Loader.Custom
 						entityowners.Add(-1);
 						entityaliases.Add(collRtn.ElementEntityAliases);
 						querySpaces.UnionWith(elementPersister.QuerySpaces);
-						// 6.0 TODO: the cast and null coalesce to true will no more be needed once IPersister's todo is done.
-						supportsQueryCache = supportsQueryCache && ((elementPersister as IPersister)?.SupportsQueryCache ?? true);
+						// 6.0 TODO: Use IPersister.SupportsQueryCache property once IPersister's todo is done.
+						supportsQueryCache = supportsQueryCache && elementPersister.SupportsQueryCache();
 					}
 					includeInResultRowList.Add(true);
 				}
@@ -150,8 +150,8 @@ namespace NHibernate.Loader.Custom
 					specifiedAliases.Add(fetchRtn.Alias);
 					entityaliases.Add(fetchRtn.EntityAliases);
 					querySpaces.UnionWith(persister.QuerySpaces);
-						// 6.0 TODO: the cast and null coalesce to true will no more be needed once IPersister's todo is done.
-					supportsQueryCache = supportsQueryCache && ((persister as IPersister)?.SupportsQueryCache ?? true);
+					// 6.0 TODO: Use IPersister.SupportsQueryCache property once IPersister's todo is done.
+					supportsQueryCache = supportsQueryCache && persister.SupportsQueryCache();
 					includeInResultRowList.Add(false);
 				}
 				else if (rtn is CollectionFetchReturn)
@@ -177,8 +177,8 @@ namespace NHibernate.Loader.Custom
 						entityowners.Add(ownerIndex);
 						entityaliases.Add(fetchRtn.ElementEntityAliases);
 						querySpaces.UnionWith(elementPersister.QuerySpaces);
-						// 6.0 TODO: the cast and null coalesce to true will no more be needed once IPersister's todo is done.
-						supportsQueryCache = supportsQueryCache && ((elementPersister as IPersister)?.SupportsQueryCache ?? true);
+						// 6.0 TODO: Use IPersister.SupportsQueryCache property once IPersister's todo is done.
+						supportsQueryCache = supportsQueryCache && elementPersister.SupportsQueryCache();
 					}
 					includeInResultRowList.Add(false);
 				}
