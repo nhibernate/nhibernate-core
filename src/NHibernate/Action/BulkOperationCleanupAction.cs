@@ -44,7 +44,7 @@ namespace NHibernate.Action
 				foreach (var querySpace in affectedQueryable.QuerySpaces)
 				{
 					affectedSpaces.Add(querySpace);
-					if ((affectedQueryable as IPersister)?.SupportsQueryCache != false)
+					if (supportsQuerySpace )
 					{
 						affectedQueryCacheSpaces.Add(querySpace);
 					}
