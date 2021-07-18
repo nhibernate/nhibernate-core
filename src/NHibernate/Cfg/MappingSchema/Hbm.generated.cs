@@ -427,10 +427,10 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("transactional")]
         Transactional,
-		/// <remarks/>
-		[System.Xml.Serialization.XmlEnumAttribute("never")]
-		Never,
-	}
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("never")]
+        Never,
+    }
     
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("HbmXsd", "5.0.0-Alpha1")]
