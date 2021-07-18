@@ -1842,7 +1842,7 @@ namespace NHibernate.Loader
 				{
 					throw new QueryException(
 						"Never cached entities/collections cannot be used in a cacheable query: " +
-						{string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(o => o.Name))});
+						string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(o => o.Name)));
 				}
 				else if (Log.IsWarnEnabled())
 				{

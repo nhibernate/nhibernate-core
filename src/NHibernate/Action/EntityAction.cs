@@ -101,8 +101,8 @@ namespace NHibernate.Action
 		{
 			get
 			{
-				// 6.0 TODO: the cast and comparison to false will no more be needed once IPersister's todo is done.
-				return (persister as IPersister)?.SupportsQueryCache == false ? null : persister.PropertySpaces;
+				// 6.0 TODO: Use IPersister.SupportsQueryCache property once IPersister's todo is done.
+				return persister.SupportsQueryCache() ? persister.PropertySpaces : null;
 			}
 		}
 
