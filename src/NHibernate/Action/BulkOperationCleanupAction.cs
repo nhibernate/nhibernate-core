@@ -63,8 +63,8 @@ namespace NHibernate.Action
 			//from H3.2 TODO: cache the autodetected information and pass it in instead.
 			this.session = session;
 
-			ISet<string> affectedSpaces = new HashSet<string>(querySpaces);
-			ISet<string> affectedQueryCacheSpaces = new HashSet<string>();
+			var affectedSpaces = new HashSet<string>(querySpaces);
+			var affectedQueryCacheSpaces = new HashSet<string>();
 
 			foreach (var persister in session.Factory.GetEntityPersisters(querySpaces))
 			{
