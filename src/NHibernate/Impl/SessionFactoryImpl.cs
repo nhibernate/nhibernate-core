@@ -644,10 +644,10 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Get collection persisters by the given query spaces.
+		/// Get collection persisters filtered by the given query spaces.
 		/// </summary>
-		/// <param name="spaces">The query spaces.</param>
-		/// <returns>Unique list of collection persisters, if <paramref name="spaces"/> is <c>null</c> or empty then all persisters are returned.</returns>
+		/// <param name="spaces">The query spaces, or <c>null</c> or an empty set for getting all persisters.</param>
+		/// <returns>A set of collection persisters.</returns>
 		public ISet<ICollectionPersister> GetCollectionPersisters(ISet<string> spaces)
 		{
 			if (spaces == null || spaces.Count == 0)
