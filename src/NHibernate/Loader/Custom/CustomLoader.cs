@@ -149,6 +149,7 @@ namespace NHibernate.Loader.Custom
 					specifiedAliases.Add(fetchRtn.Alias);
 					entityaliases.Add(fetchRtn.EntityAliases);
 					querySpaces.UnionWith(persister.QuerySpaces);
+						// 6.0 TODO: the cast and null coalesce to true will no more be needed once IPersister's todo is done.
 					supportsQueryCache = supportsQueryCache && ((persister as IPersister)?.SupportsQueryCache ?? true);
 					includeInResultRowList.Add(false);
 				}
