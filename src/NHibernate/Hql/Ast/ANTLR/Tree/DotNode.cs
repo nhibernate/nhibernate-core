@@ -540,7 +540,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 
 			SetImpliedJoin( elem );
-			Walker.AddQuerySpaces( elem.EntityPersister );
+			Walker.AddQuerySpaces(elem.EntityPersister);
 			FromElement = elem;	// This 'dot' expression now refers to the resulting from element.
 		}
 
