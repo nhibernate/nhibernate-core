@@ -78,6 +78,8 @@ namespace NHibernate.Action
 					affectedCollectionRoles.UnionWith(roles);
 				}
 
+				// 6.0 TODO: the cast and comparison to false will no more be needed once IPersister's todo is done.
+				var supportsQuerySpace = (persister as IPersister)?.SupportsQueryCache != false;
 				foreach (var querySpace in persister.QuerySpaces)
 				{
 					affectedSpaces.Add(querySpace);
