@@ -182,7 +182,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_fromElement = collectionFromElement;
 			if (!collectionFromElement.IsCollectionOfValuesOrComponents)
 			{
-				Walker.AddQuerySpaces(queryableCollection.ElementPersister.QuerySpaces);
+				Walker.AddQuerySpaces(queryableCollection.ElementPersister);
 			}
 
 			DataType = queryableCollection.ElementType;

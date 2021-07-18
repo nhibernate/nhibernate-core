@@ -305,5 +305,11 @@ namespace NHibernate.Persister.Collection
 
 			return 1;
 		}
+
+		// 6.0 TODO: Remove once IPersister's todo is done.
+		internal static bool SupportsQueryCache(this ICollectionPersister persister)
+		{
+			return (persister as IPersister)?.SupportsQueryCache ?? true;
+		}
 	}
 }

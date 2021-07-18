@@ -640,5 +640,11 @@ namespace NHibernate.Persister.Entity
 			persister.AfterInitialize(entity, true, session);
 #pragma warning restore 618
 		}
+
+		// 6.0 TODO: Remove once IPersister's todo is done.
+		internal static bool SupportsQueryCache(this IEntityPersister persister)
+		{
+			return (persister as IPersister)?.SupportsQueryCache ?? true;
+		}
 	}
 }

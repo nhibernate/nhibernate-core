@@ -427,6 +427,9 @@ namespace NHibernate.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("transactional")]
         Transactional,
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("never")]
+        Never,
     }
     
     /// <remarks/>

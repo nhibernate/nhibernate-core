@@ -15,6 +15,7 @@ using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using NHibernate.Impl;
+using NHibernate.Persister;
 
 namespace NHibernate.Action
 {
@@ -25,7 +26,8 @@ namespace NHibernate.Action
 		IBeforeTransactionCompletionProcess,
 		IAfterTransactionCompletionProcess,
 		IComparable<EntityAction>, 
-		IDeserializationCallback
+		IDeserializationCallback,
+		ICacheableExecutable
 	{
 
 		#region IExecutable Members

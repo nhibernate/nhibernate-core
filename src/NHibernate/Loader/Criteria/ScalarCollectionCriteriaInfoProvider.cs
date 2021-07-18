@@ -1,12 +1,13 @@
 using System;
 using NHibernate.Hql.Util;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
 namespace NHibernate.Loader.Criteria
 {
-	public class ScalarCollectionCriteriaInfoProvider : ICriteriaInfoProvider
+	public class ScalarCollectionCriteriaInfoProvider : ICriteriaInfoProvider, IExtendedCriteriaInfoProvider
 	{
 		private readonly String role;
 		private readonly IQueryableCollection persister;
@@ -41,6 +42,8 @@ namespace NHibernate.Loader.Criteria
 				return helper.GetCollectionPropertyMapping(role);
 			}
 		}
+
+		IPersister IExtendedCriteriaInfoProvider.Persister => persister as IPersister;
 
 		public IType GetType(String relativePath)
 		{

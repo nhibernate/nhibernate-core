@@ -216,8 +216,16 @@ namespace NHibernate.Engine
 				RegisterProcess(executable.AfterTransactionCompletionProcess);
 #pragma warning restore 618,619
 			}
-			if (executable.PropertySpaces != null)
+			if (executable is ICacheableExecutable cacheableExecutable)
 			{
+				if (cacheableExecutable.QueryCacheSpaces != null)
+				{
+					executedSpaces.UnionWith(cacheableExecutable.QueryCacheSpaces);
+				}
+			}
+			else if (executable.PropertySpaces != null)
+			{
+				//TODO 6.0 remove this else block
 				executedSpaces.UnionWith(executable.PropertySpaces);
 			}
 		}

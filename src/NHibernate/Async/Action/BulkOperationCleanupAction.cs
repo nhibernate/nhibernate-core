@@ -14,13 +14,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NHibernate.Engine;
-using NHibernate.Metadata;
+using NHibernate.Persister;
 using NHibernate.Persister.Entity;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Action
 {
-	public partial class BulkOperationCleanupAction : IAsyncExecutable, IAfterTransactionCompletionProcess
+	public partial class BulkOperationCleanupAction : IAsyncExecutable, IAfterTransactionCompletionProcess, ICacheableExecutable
 	{
 
 		#region IExecutable Members

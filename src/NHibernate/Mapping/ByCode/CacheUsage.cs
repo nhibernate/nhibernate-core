@@ -8,6 +8,7 @@ namespace NHibernate.Mapping.ByCode
 		public static CacheUsage ReadWrite = new ReadWriteUsage();
 		public static CacheUsage NonstrictReadWrite = new NonstrictReadWriteUsage();
 		public static CacheUsage Transactional = new TransactionalUsage();
+		public static CacheUsage Never = new NeverUsage();
 
 		internal abstract HbmCacheUsage ToHbm();
 
@@ -54,6 +55,18 @@ namespace NHibernate.Mapping.ByCode
 			internal override HbmCacheUsage ToHbm()
 			{
 				return HbmCacheUsage.Transactional;
+			}
+		}
+
+		#endregion
+
+		#region Nested type: NeverUsage
+
+		private class NeverUsage : CacheUsage
+		{
+			internal override HbmCacheUsage ToHbm()
+			{
+				return HbmCacheUsage.Never;
 			}
 		}
 

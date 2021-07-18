@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NHibernate.Engine;
-using NHibernate.Metadata;
+using NHibernate.Persister;
 using NHibernate.Persister.Entity;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
@@ -14,34 +14,45 @@ namespace NHibernate.Action
 	/// Implementation of BulkOperationCleanupAction.
 	/// </summary>
 	[Serializable]
-	public partial class BulkOperationCleanupAction : IAsyncExecutable, IAfterTransactionCompletionProcess
+	public partial class BulkOperationCleanupAction : IAsyncExecutable, IAfterTransactionCompletionProcess, ICacheableExecutable
 	{
 		private readonly ISessionImplementor session;
 		private readonly HashSet<string> affectedEntityNames = new HashSet<string>();
 		private readonly HashSet<string> affectedCollectionRoles = new HashSet<string>();
-		private readonly List<string> spaces;
+		private readonly string[] spaces;
+		private readonly string[] queryCacheSpaces;
 
 		public BulkOperationCleanupAction(ISessionImplementor session, IQueryable[] affectedQueryables)
 		{
 			this.session = session;
-			List<string> tmpSpaces = new List<string>();
-			for (int i = 0; i < affectedQueryables.Length; i++)
+			var affectedSpaces = new HashSet<string>();
+			var affectedQueryCacheSpaces = new HashSet<string>();
+			foreach (var affectedQueryable in affectedQueryables)
 			{
-				if (affectedQueryables[i].HasCache)
+				if (affectedQueryable.HasCache)
 				{
-					affectedEntityNames.Add(affectedQueryables[i].EntityName);
+					affectedEntityNames.Add(affectedQueryable.EntityName);
 				}
-				ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(affectedQueryables[i].EntityName);
+				ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(affectedQueryable.EntityName);
 				if (roles != null)
 				{
 					affectedCollectionRoles.UnionWith(roles);
 				}
-				for (int y = 0; y < affectedQueryables[i].QuerySpaces.Length; y++)
+
+				// 6.0 TODO: Use IPersister.SupportsQueryCache property once IPersister's todo is done.
+				var supportsQuerySpace = affectedQueryable.SupportsQueryCache();
+				foreach (var querySpace in affectedQueryable.QuerySpaces)
 				{
-					tmpSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
+					affectedSpaces.Add(querySpace);
+					if (supportsQuerySpace)
+					{
+						affectedQueryCacheSpaces.Add(querySpace);
+					}
 				}
 			}
-			spaces = new List<string>(tmpSpaces);
+
+			spaces = affectedSpaces.ToArray();
+			queryCacheSpaces = affectedQueryCacheSpaces.ToArray();
 		}
 
 		/// <summary>
@@ -52,50 +63,45 @@ namespace NHibernate.Action
 			//from H3.2 TODO: cache the autodetected information and pass it in instead.
 			this.session = session;
 
-			ISet<string> tmpSpaces = new HashSet<string>(querySpaces);
-			ISessionFactoryImplementor factory = session.Factory;
-			IDictionary<string, IClassMetadata> acmd = factory.GetAllClassMetadata();
-			foreach (KeyValuePair<string, IClassMetadata> entry in acmd)
-			{
-				string entityName = entry.Key;
-				IEntityPersister persister = factory.GetEntityPersister(entityName);
-				string[] entitySpaces = persister.QuerySpaces;
+			var affectedSpaces = new HashSet<string>(querySpaces);
+			var affectedQueryCacheSpaces = new HashSet<string>();
 
-				if (AffectedEntity(querySpaces, entitySpaces))
+			foreach (var persister in session.Factory.GetEntityPersisters(querySpaces))
+			{
+				if (persister.HasCache)
 				{
-					if (persister.HasCache)
+					affectedEntityNames.Add(persister.EntityName);
+				}
+				ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(persister.EntityName);
+				if (roles != null)
+				{
+					affectedCollectionRoles.UnionWith(roles);
+				}
+
+				// 6.0 TODO: Use IPersister.SupportsQueryCache property once IPersister's todo is done.
+				var supportsQuerySpace = persister.SupportsQueryCache();
+				foreach (var querySpace in persister.QuerySpaces)
+				{
+					affectedSpaces.Add(querySpace);
+					if (supportsQuerySpace)
 					{
-						affectedEntityNames.Add(persister.EntityName);
-					}
-					ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(persister.EntityName);
-					if (roles != null)
-					{
-						affectedCollectionRoles.UnionWith(roles);
-					}
-					for (int y = 0; y < entitySpaces.Length; y++)
-					{
-						tmpSpaces.Add(entitySpaces[y]);
+						affectedQueryCacheSpaces.Add(querySpace);
 					}
 				}
 			}
-			spaces = new List<string>(tmpSpaces);
-		}
 
-		private bool AffectedEntity(ISet<string> querySpaces, string[] entitySpaces)
-		{
-			if (querySpaces == null || (querySpaces.Count == 0))
-			{
-				return true;
-			}
-
-			return entitySpaces.Any(querySpaces.Contains);
+			spaces = affectedSpaces.ToArray();
+			queryCacheSpaces = affectedQueryCacheSpaces.ToArray();
 		}
 
 		#region IExecutable Members
 
+		/// <inheritdoc />
+		public string[] QueryCacheSpaces => queryCacheSpaces;
+
 		public string[] PropertySpaces
 		{
-			get { return spaces.ToArray(); }
+			get { return spaces; }
 		}
 
 		public void BeforeExecutions()
