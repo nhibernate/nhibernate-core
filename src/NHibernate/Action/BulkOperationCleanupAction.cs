@@ -25,8 +25,8 @@ namespace NHibernate.Action
 		public BulkOperationCleanupAction(ISessionImplementor session, IQueryable[] affectedQueryables)
 		{
 			this.session = session;
-			ISet<string> affectedSpaces = new HashSet<string>();
-			ISet<string> affectedQueryCacheSpaces = new HashSet<string>();
+			var affectedSpaces = new HashSet<string>();
+			var affectedQueryCacheSpaces = new HashSet<string>();
 			foreach (var affectedQueryable in affectedQueryables)
 			{
 				if (affectedQueryable.HasCache)
@@ -39,10 +39,12 @@ namespace NHibernate.Action
 					affectedCollectionRoles.UnionWith(roles);
 				}
 
+				// 6.0 TODO: the cast and comparison to false will no more be needed once IPersister's todo is done.
+				var supportsQuerySpace = (affectedQueryable as IPersister)?.SupportsQueryCache != false;
 				foreach (var querySpace in affectedQueryable.QuerySpaces)
 				{
 					affectedSpaces.Add(querySpace);
-					if ((affectedQueryable as IPersister)?.SupportsQueryCache != false)
+					if (supportsQuerySpace )
 					{
 						affectedQueryCacheSpaces.Add(querySpace);
 					}
@@ -61,8 +63,8 @@ namespace NHibernate.Action
 			//from H3.2 TODO: cache the autodetected information and pass it in instead.
 			this.session = session;
 
-			ISet<string> affectedSpaces = new HashSet<string>(querySpaces);
-			ISet<string> affectedQueryCacheSpaces = new HashSet<string>();
+			var affectedSpaces = new HashSet<string>(querySpaces);
+			var affectedQueryCacheSpaces = new HashSet<string>();
 
 			foreach (var persister in session.Factory.GetEntityPersisters(querySpaces))
 			{
@@ -76,10 +78,12 @@ namespace NHibernate.Action
 					affectedCollectionRoles.UnionWith(roles);
 				}
 
+				// 6.0 TODO: the cast and comparison to false will no more be needed once IPersister's todo is done.
+				var supportsQuerySpace = (persister as IPersister)?.SupportsQueryCache != false;
 				foreach (var querySpace in persister.QuerySpaces)
 				{
 					affectedSpaces.Add(querySpace);
-					if ((persister as IPersister)?.SupportsQueryCache != false)
+					if (supportsQuerySpace)
 					{
 						affectedQueryCacheSpaces.Add(querySpace);
 					}

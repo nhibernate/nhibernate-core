@@ -49,7 +49,7 @@ namespace NHibernate.Loader.Custom
 		{
 			sql = customQuery.SQL;
 			querySpaces.UnionWith(customQuery.QuerySpaces);
-			if(querySpaces?.Count > 0)
+			if (querySpaces.Count > 0)
 			{
 				customPersisters = factory
 					.GetEntityPersisters(querySpaces).OfType<IPersister>()
@@ -103,6 +103,7 @@ namespace NHibernate.Loader.Custom
 					specifiedAliases.Add(rootRtn.Alias);
 					entityaliases.Add(rootRtn.EntityAliases);
 					querySpaces.UnionWith(persister.QuerySpaces);
+					// 6.0 TODO: the cast and null coalesce to true will no more be needed once IPersister's todo is done.
 					supportsQueryCache = supportsQueryCache && ((persister as IPersister)?.SupportsQueryCache ?? true);
 					includeInResultRowList.Add(true);
 				}
@@ -128,6 +129,7 @@ namespace NHibernate.Loader.Custom
 						entityowners.Add(-1);
 						entityaliases.Add(collRtn.ElementEntityAliases);
 						querySpaces.UnionWith(elementPersister.QuerySpaces);
+						// 6.0 TODO: the cast and null coalesce to true will no more be needed once IPersister's todo is done.
 						supportsQueryCache = supportsQueryCache && ((elementPersister as IPersister)?.SupportsQueryCache ?? true);
 					}
 					includeInResultRowList.Add(true);
@@ -148,6 +150,7 @@ namespace NHibernate.Loader.Custom
 					specifiedAliases.Add(fetchRtn.Alias);
 					entityaliases.Add(fetchRtn.EntityAliases);
 					querySpaces.UnionWith(persister.QuerySpaces);
+						// 6.0 TODO: the cast and null coalesce to true will no more be needed once IPersister's todo is done.
 					supportsQueryCache = supportsQueryCache && ((persister as IPersister)?.SupportsQueryCache ?? true);
 					includeInResultRowList.Add(false);
 				}
@@ -174,6 +177,7 @@ namespace NHibernate.Loader.Custom
 						entityowners.Add(ownerIndex);
 						entityaliases.Add(fetchRtn.ElementEntityAliases);
 						querySpaces.UnionWith(elementPersister.QuerySpaces);
+						// 6.0 TODO: the cast and null coalesce to true will no more be needed once IPersister's todo is done.
 						supportsQueryCache = supportsQueryCache && ((elementPersister as IPersister)?.SupportsQueryCache ?? true);
 					}
 					includeInResultRowList.Add(false);

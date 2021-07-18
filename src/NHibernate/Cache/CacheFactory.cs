@@ -22,7 +22,7 @@ namespace NHibernate.Cache
 		public const string Transactional = "transactional";
 
 		/// <summary>
-		/// Never interact with second level cache or UpdateTimestampsCache
+		/// Never interact with second level cache or UpdateTimestampsCache.
 		/// </summary>
 		public const string Never = "never";
 

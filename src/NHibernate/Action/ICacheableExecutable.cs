@@ -4,7 +4,7 @@
 	public interface ICacheableExecutable : IExecutable
 	{
 		/// <summary>
-		/// What QueryCache spaces(tables) are affected by this action?
+		/// The query cache spaces (tables) which are affected by this action.
 		/// </summary>
 		string[] QueryCacheSpaces { get; }
 	}

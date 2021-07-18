@@ -223,7 +223,7 @@ namespace NHibernate.Engine
 					executedSpaces.UnionWith(cacheableExecutable.QueryCacheSpaces);
 				}
 			}
-			else
+			else if (executable.PropertySpaces != null)
 			{
 				//TODO 6.0 remove this else block
 				executedSpaces.UnionWith(executable.PropertySpaces);

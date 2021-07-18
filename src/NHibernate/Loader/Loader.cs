@@ -1841,12 +1841,15 @@ namespace NHibernate.Loader
 				if (Factory.Settings.QueryThrowNeverCached)
 				{
 					throw new QueryException(
-						$"Never cached entities/collections: {string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(o => o.Name))} " +
-						$"cannot be used in a cacheable query.");
+						"Never cached entities/collections cannot be used in a cacheable query: " +
+						{string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(o => o.Name))});
 				}
 				else if (Log.IsWarnEnabled())
 				{
-					Log.Warn("Never cached entities/collections: {0} cannot be used in a cacheable query.", string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(o => o.Name)));
+					Log.Warn(
+						"Never cached entities/collections ({0}) are included in a cacheable query: the query '{1}' will not be cached.",
+						string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(p => p.Name)),
+						ToString());
 				}
 			}
 
