@@ -1846,7 +1846,10 @@ namespace NHibernate.Loader
 				}
 				else if (Log.IsWarnEnabled())
 				{
-					Log.Warn("Never cached entities/collections: {0} cannot be used in a cacheable query.", string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(o => o.Name)));
+					Log.Warn(
+						"Never cached entities/collections ({0}) are included in a cacheable query: the query '{1}' will not be cached.",
+						string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(p => p.Name)),
+						ToString());
 				}
 			}
 
