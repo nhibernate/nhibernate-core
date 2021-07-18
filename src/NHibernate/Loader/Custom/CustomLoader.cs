@@ -49,7 +49,7 @@ namespace NHibernate.Loader.Custom
 		{
 			sql = customQuery.SQL;
 			querySpaces.UnionWith(customQuery.QuerySpaces);
-			if(querySpaces?.Count > 0)
+			if (querySpaces.Count > 0)
 			{
 				customPersisters = factory
 					.GetEntityPersisters(querySpaces).OfType<IPersister>()
