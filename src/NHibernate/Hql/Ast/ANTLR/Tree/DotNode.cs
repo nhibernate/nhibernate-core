@@ -351,7 +351,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				IEntityPersister entityPersister = elem.EntityPersister;
 				if ( entityPersister != null ) 
 				{
-					Walker.AddQuerySpaces( entityPersister );
+					Walker.AddQuerySpaces(entityPersister);
 				}
 			}
 			Walker.AddQuerySpaces( queryableCollection );	// Always add the collection's query spaces.
