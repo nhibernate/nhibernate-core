@@ -205,7 +205,7 @@ namespace NHibernate.Engine
 			foreach (var entityName in factory.GetAllClassMetadata().Keys)
 			{
 				var persister = factory.GetEntityPersister(entityName);
-				//NativeSql does not have query space so return all query spaces, if spaces is null or empty
+				// NativeSql does not have query spaces so include the persister, if spaces is null or empty.
 				if (spaces == null || spaces.Count == 0 || persister.QuerySpaces.Any(x => spaces.Contains(x)))
 				{
 					persisters.Add(persister);
