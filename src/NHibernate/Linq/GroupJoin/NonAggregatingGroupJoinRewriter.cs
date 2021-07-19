@@ -36,11 +36,9 @@ namespace NHibernate.Linq.Visitors
 			new NonAggregatingGroupJoinRewriter(model, clauses).ReWrite();
 		}
 
-		private void ReWrite()
+		internal static void RewriteGroupJoins(IEnumerable<GroupJoinClause> groupJoins, QueryModel model)
 		{
-			var aggregateDetectorResults = GetGroupJoinInformation(_groupJoinClauses);
-
-			foreach (var nonAggregatingJoin in aggregateDetectorResults.NonAggregatingClauses)
+			foreach (var groupJoin in groupJoins)
 			{
 				// Group joins get processed (currently) in one of three ways.
 				// Option 1: results of group join are not further referenced outside of the final projection.
@@ -67,22 +65,20 @@ namespace NHibernate.Linq.Visitors
 				//                select new { o.OrderNumber, x.VendorName, y.StatusName }
 				//            This is used to repesent an outer join, and again the "from" is removing the hierarchy. So
 				//            simply change the group join to an outer join
-
-				var locator = new QuerySourceUsageLocator(nonAggregatingJoin);
-
-				foreach (var bodyClause in _model.BodyClauses)
+				var locator = new QuerySourceUsageLocator(groupJoin);
+				foreach (var bodyClause in model.BodyClauses)
 				{
 					locator.Search(bodyClause);
 				}
 
-				if (IsHierarchicalJoin(nonAggregatingJoin, locator))
+				if (IsHierarchicalJoin(locator))
 				{
 				}
-				else if (IsFlattenedJoin(nonAggregatingJoin, locator))
+				else if (IsFlattenedJoin(locator))
 				{
-					ProcessFlattenedJoin(nonAggregatingJoin, locator);
+					ProcessFlattenedJoin(groupJoin, locator, model);
 				}
-				else if (IsOuterJoin(nonAggregatingJoin))
+				else if (IsOuterJoin(locator))
 				{
 				}
 				else
@@ -93,7 +89,27 @@ namespace NHibernate.Linq.Visitors
 			}
 		}
 
-		private void ProcessFlattenedJoin(GroupJoinClause nonAggregatingJoin, QuerySourceUsageLocator locator)
+		private void ReWrite()
+		{
+			var aggregateDetectorResults = GetGroupJoinInformation(_groupJoinClauses);
+			RewriteGroupJoins(aggregateDetectorResults.NonAggregatingClauses, _model);
+			RewriteGroupJoins(GetNotUsedGroupJoins(aggregateDetectorResults), _model);
+		}
+
+		private IEnumerable<GroupJoinClause> GetNotUsedGroupJoins(IsAggregatingResults aggregateDetectorResults)
+		{
+			foreach (var groupJoinClause in _groupJoinClauses)
+			{
+				if (aggregateDetectorResults.NonAggregatingClauses.Contains(groupJoinClause) || aggregateDetectorResults.AggregatingClauses.Contains(groupJoinClause))
+				{
+					continue;
+				}
+
+				yield return groupJoinClause;
+			}
+		}
+
+		private static void ProcessFlattenedJoin(GroupJoinClause nonAggregatingJoin, QuerySourceUsageLocator locator, QueryModel model)
 		{
 			var nhJoin = locator.LeftJoin
 				? new NhOuterJoinClause(nonAggregatingJoin.JoinClause)
@@ -103,55 +119,45 @@ namespace NHibernate.Linq.Visitors
 			// 1. Remove the group join and replace it with a join
 			// 2. Remove the corresponding "from" clause (the thing that was doing the flattening)
 			// 3. Rewrite the query model to reference the "join" rather than the "from" clause
-			SwapClause(nonAggregatingJoin, (IBodyClause) nhJoin);
+			SwapClause(nonAggregatingJoin, (IBodyClause) nhJoin, model);
 
-			_model.BodyClauses.Remove((IBodyClause) locator.Usages[0]);
-			
+			model.BodyClauses.Remove((IBodyClause) locator.Usages[0]);
+
 			SwapQuerySourceVisitor querySourceSwapper;
 			if (locator.LeftJoin)
 			{
 				// As we wrapped the join clause we have to update all references to the wrapped clause
 				querySourceSwapper = new SwapQuerySourceVisitor(nonAggregatingJoin.JoinClause, nhJoin);
-				_model.TransformExpressions(querySourceSwapper.Swap);
+				model.TransformExpressions(querySourceSwapper.Swap);
 			}
 
 			querySourceSwapper = new SwapQuerySourceVisitor(locator.Usages[0], nhJoin);
-			_model.TransformExpressions(querySourceSwapper.Swap);
+			model.TransformExpressions(querySourceSwapper.Swap);
 		}
 
 		// TODO - store the indexes of the join clauses when we find them, then can remove this loop
-		private void SwapClause(IBodyClause oldClause, IBodyClause newClause)
+		private static void SwapClause(IBodyClause oldClause, IBodyClause newClause, QueryModel model)
 		{
-			for (int i = 0; i < _model.BodyClauses.Count; i++)
+			for (int i = 0; i < model.BodyClauses.Count; i++)
 			{
-				if (_model.BodyClauses[i] == oldClause)
+				if (model.BodyClauses[i] == oldClause)
 				{
-					_model.BodyClauses[i] = newClause;
+					model.BodyClauses[i] = newClause;
 				}
 			}
 		}
 
-		private bool IsOuterJoin(GroupJoinClause nonAggregatingJoin)
+		private static bool IsOuterJoin(QuerySourceUsageLocator locator)
 		{
 			return false;
 		}
 
-		private bool IsFlattenedJoin(GroupJoinClause nonAggregatingJoin, QuerySourceUsageLocator locator)
+		private static bool IsFlattenedJoin(QuerySourceUsageLocator locator)
 		{
-			if (locator.Usages.Count == 1)
-			{
-				var from = locator.Usages[0] as AdditionalFromClause;
-
-				if (from != null)
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return locator.Usages.Count == 1 && locator.Usages[0] is AdditionalFromClause;
 		}
 
-		private bool IsHierarchicalJoin(GroupJoinClause nonAggregatingJoin, QuerySourceUsageLocator locator)
+		private static bool IsHierarchicalJoin(QuerySourceUsageLocator locator)
 		{
 			return locator.Usages.Count == 0;
 		}
@@ -159,7 +165,7 @@ namespace NHibernate.Linq.Visitors
 		// TODO - rename this and share with the AggregatingGroupJoinRewriter
 		private IsAggregatingResults GetGroupJoinInformation(IEnumerable<GroupJoinClause> clause)
 		{
-			return GroupJoinAggregateDetectionVisitor.Visit(clause, _model.SelectClause.Selector);
+			return GroupJoinAggregateDetectionQueryModelVisitor.Visit(clause, _model);
 		}
 	}
 

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Visitors;
+using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 
@@ -18,7 +20,7 @@ namespace NHibernate.Linq.GroupJoin
 		private readonly List<GroupJoinClause> _nonAggregatingGroupJoins = new List<GroupJoinClause>();
 		private readonly List<GroupJoinClause> _aggregatingGroupJoins = new List<GroupJoinClause>();
 
-		private GroupJoinAggregateDetectionVisitor(IEnumerable<GroupJoinClause> groupJoinClause)
+		internal GroupJoinAggregateDetectionVisitor(IEnumerable<GroupJoinClause> groupJoinClause)
 		{
 			_groupJoinClauses = new HashSet<GroupJoinClause>(groupJoinClause);
 		}
@@ -29,7 +31,7 @@ namespace NHibernate.Linq.GroupJoin
 
 			visitor.Visit(selectExpression);
 
-			return new IsAggregatingResults { NonAggregatingClauses = visitor._nonAggregatingGroupJoins, AggregatingClauses = visitor._aggregatingGroupJoins, NonAggregatingExpressions = visitor._nonAggregatingExpressions };
+			return GetResults(visitor);
 		}
 
 		protected override Expression VisitSubQuery(SubQueryExpression expression)
@@ -87,6 +89,21 @@ namespace NHibernate.Linq.GroupJoin
 			}
 
 			return base.VisitQuerySourceReference(expression);
+		}
+
+		internal IsAggregatingResults GetResults()
+		{
+			return GetResults(this);
+		}
+
+		private static IsAggregatingResults GetResults(GroupJoinAggregateDetectionVisitor visitor)
+		{
+			return new IsAggregatingResults
+			{
+				NonAggregatingClauses = visitor._nonAggregatingGroupJoins,
+				AggregatingClauses = visitor._aggregatingGroupJoins,
+				NonAggregatingExpressions = visitor._nonAggregatingExpressions
+			};
 		}
 
 		internal class StackFlag
