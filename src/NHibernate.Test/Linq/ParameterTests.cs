@@ -968,6 +968,15 @@ namespace NHibernate.Test.Linq
 			Assert.That(expression1.Key, Is.EqualTo(expression2.Key));
 		}
 
+		[Test(Description = "GH-2872")]
+		public void UsingListWithWhereParameter()
+		{
+			var ids = new [] {2, 1};
+			AssertTotalParameters(
+				db.Orders.Where(o => ids.Where(i => i == 1).Contains(o.OrderId)),
+				1);
+		}
+
 		private void AssertTotalParameters<T>(IQueryable<T> query, int parameterNumber, Action<string> sqlAction)
 		{
 			AssertTotalParameters(query, parameterNumber, null, sqlAction);

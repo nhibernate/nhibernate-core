@@ -16,8 +16,10 @@
 // 
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Linq.Functions;
@@ -43,6 +45,8 @@ namespace NHibernate.Linq.Visitors
 	{
 		#region Relinq adjusted code
 
+		private readonly HashSet<Expression> _nhEvaluate = new HashSet<Expression>();
+
 		/// <summary>
 		/// Takes an expression tree and finds and evaluates all its evaluatable subtrees.
 		/// </summary>
@@ -61,6 +65,7 @@ namespace NHibernate.Linq.Visitors
 		// _partialEvaluationInfo contains a list of the expressions that are safe to be evaluated.
 		private readonly PartialEvaluationInfo _partialEvaluationInfo;
 		private readonly PreTransformationParameters _preTransformationParameters;
+		private static readonly MethodInfo ContainsMethodInfo = ReflectHelper.FastGetMethodDefinition(Enumerable.Contains, default(IEnumerable<object>), default(object));
 
 		private NhPartialEvaluatingExpressionVisitor(
 			PartialEvaluationInfo partialEvaluationInfo,
@@ -77,12 +82,24 @@ namespace NHibernate.Linq.Visitors
 			if (expression == null)
 				return null;
 
-			if (expression.NodeType == ExpressionType.Lambda || !_partialEvaluationInfo.IsEvaluatableExpression(expression) ||
+			if ((expression.NodeType == ExpressionType.Lambda || !_partialEvaluationInfo.IsEvaluatableExpression(expression) ||
+
 				#region NH additions
 				// Variables should be evaluated only when they are part of an evaluatable expression (e.g. o => string.Format("...", variable))
 				ContainsVariable(expression))
+				&& !_nhEvaluate.Contains(expression)
 				#endregion
+			)
+			{
+				#region NH additions
+				var paramExpr = GetParamExpressionOnCollectionContains(expression);
+
+				if (paramExpr != null)
+					_nhEvaluate.Add(paramExpr);
+				#endregion
+
 				return base.Visit(expression);
+			}
 
 			Expression evaluatedExpression;
 			try
@@ -154,6 +171,61 @@ namespace NHibernate.Linq.Visitors
 		}
 
 		#region NH additions
+
+		private static Expression GetParamExpressionOnCollectionContains(Expression ex)
+		{
+			if (ex.NodeType != ExpressionType.Call)
+				return null;
+
+			MethodCallExpression expression = (MethodCallExpression) ex;
+			if (!expression.Method.IsGenericMethod || ContainsMethodInfo != expression.Method.GetGenericMethodDefinition())
+				return null;
+			var argument = expression.Arguments[0];
+			if (argument.NodeType != ExpressionType.Call)
+				return null;
+
+			return TryGetCollectionParameter((MethodCallExpression)argument)
+				? argument 
+				: null;
+		}
+
+		private static bool TryGetCollectionParameter(MethodCallExpression expression)
+		{
+			var argument = expression.Method.IsStatic ? expression.Arguments[0] : expression.Object;
+
+			if (IsCollectionParameter(argument))
+				return true;
+
+			if(argument.NodeType == ExpressionType.Call)
+			{
+				return TryGetCollectionParameter((MethodCallExpression)argument);
+			}
+			return false;
+		}
+
+		private static bool IsCollectionParameter(Expression expression)
+		{
+			if (expression.NodeType == ExpressionType.Constant)
+				return true;
+
+			if (expression.NodeType == ExpressionType.MemberAccess)
+			{
+				var memberAccess = (MemberExpression) expression;
+				if (memberAccess.Expression == null || memberAccess.Expression.NodeType == ExpressionType.Constant)
+				{
+					var member = memberAccess.Member;
+					switch (member.MemberType)
+					{
+						case MemberTypes.Field:
+							return true;
+						case MemberTypes.Property:
+							return true;
+					}
+				}
+			}
+
+			return false;
+		}
 
 		private bool ContainsVariable(Expression expression)
 		{
