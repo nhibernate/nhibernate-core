@@ -191,7 +191,10 @@ namespace NHibernate.Linq.Visitors
 
 		private static bool TryGetCollectionParameter(MethodCallExpression expression)
 		{
-			var argument = expression.Method.IsStatic ? expression.Arguments[0] : expression.Object;
+			if (expression.Method.DeclaringType != typeof(Enumerable))
+				return false;
+
+			var argument = expression.Arguments[0];
 
 			if (IsCollectionParameter(argument))
 				return true;
