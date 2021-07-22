@@ -172,7 +172,7 @@ namespace NHibernate.Linq.Visitors
 
 		#region NH additions
 
-		private static Expression GetParamExpressionOnCollectionContains(Expression ex)
+		private Expression GetParamExpressionOnCollectionContains(Expression ex)
 		{
 			if (ex.NodeType != ExpressionType.Call)
 				return null;
@@ -189,14 +189,14 @@ namespace NHibernate.Linq.Visitors
 				: null;
 		}
 
-		private static bool TryGetCollectionParameter(MethodCallExpression expression)
+		private bool TryGetCollectionParameter(MethodCallExpression expression)
 		{
 			if (expression.Method.DeclaringType != typeof(Enumerable))
-				return false;
+				return IsCollectionParameter(Visit(expression));
 
 			var argument = expression.Arguments[0];
 
-			if (IsCollectionParameter(argument))
+			if (IsCollectionParameter(Visit(argument)))
 				return true;
 
 			if(argument.NodeType == ExpressionType.Call)
@@ -208,26 +208,7 @@ namespace NHibernate.Linq.Visitors
 
 		private static bool IsCollectionParameter(Expression expression)
 		{
-			if (expression.NodeType == ExpressionType.Constant)
-				return true;
-
-			if (expression.NodeType == ExpressionType.MemberAccess)
-			{
-				var memberAccess = (MemberExpression) expression;
-				if (memberAccess.Expression == null || memberAccess.Expression.NodeType == ExpressionType.Constant)
-				{
-					var member = memberAccess.Member;
-					switch (member.MemberType)
-					{
-						case MemberTypes.Field:
-							return true;
-						case MemberTypes.Property:
-							return true;
-					}
-				}
-			}
-
-			return false;
+			return expression.NodeType == ExpressionType.Constant;
 		}
 
 		private bool ContainsVariable(Expression expression)
