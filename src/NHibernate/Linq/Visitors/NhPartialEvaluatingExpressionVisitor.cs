@@ -45,8 +45,6 @@ namespace NHibernate.Linq.Visitors
 	{
 		#region Relinq adjusted code
 
-		private readonly HashSet<Expression> _nhEvaluate = new HashSet<Expression>();
-
 		/// <summary>
 		/// Takes an expression tree and finds and evaluates all its evaluatable subtrees.
 		/// </summary>
@@ -82,24 +80,12 @@ namespace NHibernate.Linq.Visitors
 			if (expression == null)
 				return null;
 
-			if ((expression.NodeType == ExpressionType.Lambda || !_partialEvaluationInfo.IsEvaluatableExpression(expression) ||
-
+			if (expression.NodeType == ExpressionType.Lambda || !_partialEvaluationInfo.IsEvaluatableExpression(expression) ||
 				#region NH additions
 				// Variables should be evaluated only when they are part of an evaluatable expression (e.g. o => string.Format("...", variable))
 				ContainsVariable(expression))
-				&& !_nhEvaluate.Contains(expression)
 				#endregion
-			)
-			{
-				#region NH additions
-				var paramExpr = GetParamExpressionOnCollectionContains(expression);
-
-				if (paramExpr != null)
-					_nhEvaluate.Add(paramExpr);
-				#endregion
-
 				return base.Visit(expression);
-			}
 
 			Expression evaluatedExpression;
 			try
@@ -172,43 +158,40 @@ namespace NHibernate.Linq.Visitors
 
 		#region NH additions
 
-		private Expression GetParamExpressionOnCollectionContains(Expression ex)
+		protected override Expression VisitMethodCall(MethodCallExpression node)
 		{
-			if (ex.NodeType != ExpressionType.Call)
-				return null;
+			DetectEvaluatableExpressionOnCollectionContains(node);
+			return base.VisitMethodCall(node);
+		}
 
-			MethodCallExpression expression = (MethodCallExpression) ex;
+		private void DetectEvaluatableExpressionOnCollectionContains(MethodCallExpression expression)
+		{
 			if (!expression.Method.IsGenericMethod || ContainsMethodInfo != expression.Method.GetGenericMethodDefinition())
-				return null;
+				return;
 			var argument = expression.Arguments[0];
 			if (argument.NodeType != ExpressionType.Call)
-				return null;
+				return;
 
-			return TryGetCollectionParameter((MethodCallExpression)argument)
-				? argument 
-				: null;
+			if(TryGetCollectionParameter((MethodCallExpression)argument))
+				_partialEvaluationInfo.AddEvaluatableExpression(argument);
 		}
 
 		private bool TryGetCollectionParameter(MethodCallExpression expression)
 		{
 			if (expression.Method.DeclaringType != typeof(Enumerable))
-				return IsCollectionParameter(Visit(expression));
+				return IsCollectionParameter(expression);
 
-			var argument = expression.Arguments[0];
+			var arg = expression.Arguments[0];
 
-			if (IsCollectionParameter(Visit(argument)))
+			if (IsCollectionParameter(arg))
 				return true;
 
-			if(argument.NodeType == ExpressionType.Call)
-			{
-				return TryGetCollectionParameter((MethodCallExpression)argument);
-			}
-			return false;
+			return arg.NodeType == ExpressionType.Call && TryGetCollectionParameter((MethodCallExpression) arg);
 		}
 
-		private static bool IsCollectionParameter(Expression expression)
+		private bool IsCollectionParameter(Expression expression)
 		{
-			return expression.NodeType == ExpressionType.Constant;
+			return Visit(expression).NodeType == ExpressionType.Constant;
 		}
 
 		private bool ContainsVariable(Expression expression)
