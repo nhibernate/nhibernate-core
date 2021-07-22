@@ -1997,14 +1997,6 @@ namespace NHibernate.Test.Linq
 				}, Throws.Nothing, "Expected REPLACE(FirstName, LastName, NULL) to be supported");
 			Assert.That(results, Is.Not.Null);
 		}
-		
-		[Test]
-		public void UsingListWithWhereParameter()
-		{
-			var ids = db.Orders.OrderBy(x => x.OrderId).Take(2).ToArray();
-
-			db.Orders.Where(o => ids.Where(i => i == ids[0]).Contains(o) || ids.Select(wo => wo.OrderId).Where(i => i == ids[0].OrderId).Contains(o.OrderId)).ToList();
-		}
 	}
 
 	public class ParentChildBatch<T, TKey, TSub>

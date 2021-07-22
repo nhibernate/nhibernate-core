@@ -977,6 +977,15 @@ namespace NHibernate.Test.Linq
 				1);
 		}
 
+		[Test(Description = "GH-2872")]
+		public void UsingListWithWhereParameter2()
+		{
+			var ids = db.Orders.OrderBy(x => x.OrderId).Take(2).ToArray();
+			AssertTotalParameters(
+				db.Orders.Where(o => ids.Where(i => i == ids[0]).Contains(o) || ids.Select(wo => wo.OrderId).Where(i => i == ids[0].OrderId).Contains(o.OrderId)),
+				2);
+		}
+
 		private void AssertTotalParameters<T>(IQueryable<T> query, int parameterNumber, Action<string> sqlAction)
 		{
 			AssertTotalParameters(query, parameterNumber, null, sqlAction);
