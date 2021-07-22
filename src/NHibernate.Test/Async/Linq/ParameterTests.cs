@@ -908,9 +908,9 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test(Description = "GH-2872")]
-		public async Task UsingArrayParameterWithWhereAsync()
+		public async Task UsingListParameterWithWhereAsync()
 		{
-			var ids = new List<int> {2, 1};
+			var ids = await (db.Orders.OrderBy(x => x.OrderId).Take(2).Select(o => o.OrderId).ToListAsync());
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => ids.Where(i => i == ids[0]).Contains(o.OrderId)),
 				1,
