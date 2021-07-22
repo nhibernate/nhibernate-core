@@ -989,6 +989,22 @@ namespace NHibernate.Test.Linq
 				countResults: 1);
 		}
 
+		[Test]   
+		public void UsingArrayMethodParameterWithTake()
+		{
+			using (var logSpy = new SqlLogSpy())
+			{
+				var results = db.Orders.Where(o => GetArrayParameters().Take(1).Contains(o)).ToList();
+				Assert.That(results.Count, Is.EqualTo(1));
+				Assert.That(logSpy.Appender.GetEvents().Length, Is.EqualTo(2));
+			}
+		}
+
+		private Order[] GetArrayParameters()
+		{
+			return db.Orders.OrderBy(x => x.OrderId).Take(3).ToArray();
+		}
+
 		private void AssertTotalParameters<T>(IQueryable<T> query, int parameterNumber, Action<string> sqlAction)
 		{
 			AssertTotalParameters(query, parameterNumber, null, sqlAction);

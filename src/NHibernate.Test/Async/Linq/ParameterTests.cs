@@ -928,6 +928,22 @@ namespace NHibernate.Test.Linq
 				countResults: 1));
 		}
 
+		[Test]   
+		public async Task UsingArrayMethodParameterWithTakeAsync()
+		{
+			using (var logSpy = new SqlLogSpy())
+			{
+				var results = await (db.Orders.Where(o => GetArrayParameters().Take(1).Contains(o)).ToListAsync());
+				Assert.That(results.Count, Is.EqualTo(1));
+				Assert.That(logSpy.Appender.GetEvents().Length, Is.EqualTo(2));
+			}
+		}
+
+		private Order[] GetArrayParameters()
+		{
+			return db.Orders.OrderBy(x => x.OrderId).Take(3).ToArray();
+		}
+
 		private Task AssertTotalParametersAsync<T>(IQueryable<T> query, int parameterNumber, Action<string> sqlAction, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return AssertTotalParametersAsync(query, parameterNumber, null, sqlAction, cancellationToken: cancellationToken);
