@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Globalization;
@@ -57,14 +57,15 @@ namespace NHibernate.Type
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			var parameter = cmd.Parameters[index];
+			var stringValue  = Convert.ToString(value);
 
 			//Allow the driver to adjust the parameter for the value
-			session.Factory.ConnectionProvider.Driver.AdjustParameterForValue(parameter, SqlType, value);
+			session.Factory.ConnectionProvider.Driver.AdjustParameterForValue(parameter, SqlType, stringValue);
 
 			// set the parameter value before the size check, since ODBC changes the size automatically
-			parameter.Value = value;
+			parameter.Value = stringValue;
 
-			if (parameter.Size > 0 && ((string)value).Length > parameter.Size)
+			if (parameter.Size > 0 && stringValue.Length > parameter.Size)
 				throw new HibernateException("The length of the string value exceeds the length configured in the mapping/parameter.");
 		}
 
