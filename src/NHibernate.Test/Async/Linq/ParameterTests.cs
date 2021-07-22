@@ -908,38 +908,35 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test(Description = "GH-2872")]
-		public async Task UsingListWithWhereParameterAsync()
+		public async Task UsingArrayParameterWithWhereAsync()
 		{
-			var ids = new [] {2, 1};
+			var ids = new List<int> {2, 1};
 			await (AssertTotalParametersAsync(
-				db.Orders.Where(o => ids.Where(i => i == 1).Contains(o.OrderId)),
-				1));
+				db.Orders.Where(o => ids.Where(i => i == ids[0]).Contains(o.OrderId)),
+				1,
+				countResults: 1));
 		}
 
-		[Test(Description = "GH-2872")]
-		public async Task UsingListWithWhereParameter2Async()
+		[Test(Description = "GH-2276")]
+		public async Task UsingArrayParameterWithWhereAndSelectAsync()
 		{
 			var ids = db.Orders.OrderBy(x => x.OrderId).Take(2).ToArray();
+			var orderLines = new[] {ids[0].OrderLines.First(), ids[1].OrderLines.First()};
 			await (AssertTotalParametersAsync(
-				db.Orders.Where(o => ids.Where(i => i == ids[0]).Contains(o) || ids.Select(wo => wo.OrderId).Where(i => i == ids[0].OrderId).Contains(o.OrderId)),
-				2));
+				db.Orders.Where(o => ids.Where(i => i == ids[0]).Contains(o) && orderLines.Select(ol => ol.Order).Where(i => i.OrderId == ids[0].OrderId).Contains(o)),
+				2,
+				countResults: 1));
 		}
 
 		private Task AssertTotalParametersAsync<T>(IQueryable<T> query, int parameterNumber, Action<string> sqlAction, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return AssertTotalParametersAsync(query, parameterNumber, null, sqlAction, cancellationToken);
+			return AssertTotalParametersAsync(query, parameterNumber, null, sqlAction, cancellationToken: cancellationToken);
 		}
 
-		private async Task AssertTotalParametersAsync<T>(IQueryable<T> query, int parameterNumber, int? linqParameterNumber = null, Action<string> sqlAction = null, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task AssertTotalParametersAsync<T>(IQueryable<T> query, int parameterNumber, int? linqParameterNumber = null, Action<string> sqlAction = null, int? countResults = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (var sqlSpy = new SqlLogSpy())
 			{
-				// In case of arrays linqParameterNumber and parameterNumber will be different
-				Assert.That(
-					GetLinqExpression(query).ParameterValuesByName.Count,
-					Is.EqualTo(linqParameterNumber ?? parameterNumber),
-					"Linq expression has different number of parameters");
-
 				var queryPlanCacheType = typeof(QueryPlanCache);
 				var cache = (SoftLimitMRUCache)
 					queryPlanCacheType
@@ -947,7 +944,15 @@ namespace NHibernate.Test.Linq
 						.GetValue(Sfi.QueryPlanCache);
 				cache.Clear();
 
-				await (query.ToListAsync(cancellationToken));
+				var results = await (query.ToListAsync(cancellationToken));
+
+				// In case of arrays linqParameterNumber and parameterNumber will be different
+				Assert.That(
+					GetLinqExpression(query).ParameterValuesByName.Count,
+					Is.EqualTo(linqParameterNumber ?? parameterNumber),
+					"Linq expression has different number of parameters");
+				if(countResults != null)
+					Assert.That(results.Count, Is.EqualTo(countResults), "Unexpected results count");
 
 				sqlAction?.Invoke(sqlSpy.GetWholeLog());
 
