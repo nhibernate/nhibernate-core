@@ -191,7 +191,7 @@ namespace NHibernate.Linq.Visitors
 
 		private bool IsCollectionParameter(Expression expression)
 		{
-			return Visit(expression).NodeType == ExpressionType.Constant;
+			return _partialEvaluationInfo.IsEvaluatableExpression(expression);
 		}
 
 		private bool ContainsVariable(Expression expression)
