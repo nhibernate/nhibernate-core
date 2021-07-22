@@ -969,9 +969,9 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test(Description = "GH-2872")]
-		public void UsingArrayParameterWithWhere()
+		public void UsingListParameterWithWhere()
 		{
-			var ids = new List<int> {2, 1};
+			var ids = db.Orders.OrderBy(x => x.OrderId).Take(2).Select(o => o.OrderId).ToList();
 			AssertTotalParameters(
 				db.Orders.Where(o => ids.Where(i => i == ids[0]).Contains(o.OrderId)),
 				1,
