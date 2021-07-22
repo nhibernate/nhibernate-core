@@ -907,6 +907,24 @@ namespace NHibernate.Test.Linq
 				2));
 		}
 
+		[Test(Description = "GH-2872")]
+		public async Task UsingListWithWhereParameterAsync()
+		{
+			var ids = new [] {2, 1};
+			await (AssertTotalParametersAsync(
+				db.Orders.Where(o => ids.Where(i => i == 1).Contains(o.OrderId)),
+				1));
+		}
+
+		[Test(Description = "GH-2872")]
+		public async Task UsingListWithWhereParameter2Async()
+		{
+			var ids = db.Orders.OrderBy(x => x.OrderId).Take(2).ToArray();
+			await (AssertTotalParametersAsync(
+				db.Orders.Where(o => ids.Where(i => i == ids[0]).Contains(o) || ids.Select(wo => wo.OrderId).Where(i => i == ids[0].OrderId).Contains(o.OrderId)),
+				2));
+		}
+
 		private Task AssertTotalParametersAsync<T>(IQueryable<T> query, int parameterNumber, Action<string> sqlAction, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return AssertTotalParametersAsync(query, parameterNumber, null, sqlAction, cancellationToken);
