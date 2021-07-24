@@ -91,6 +91,15 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task UsingParameterForCollectionWithWhereAsync()
+		{
+			var item = await (db.OrderLines.FirstAsync());
+			await (AssertTotalParametersAsync(
+				db.Orders.Where(o => o.OrderLines.Select(ol => ol.Id).Where(id => id == item.Id).Contains(item.Id)),
+				1));
+		}
+
+		[Test]
 		public async Task UsingProxyParameterForCollectionAsync()
 		{
 			var item = await (session.LoadAsync<Order>(10248));
@@ -926,6 +935,14 @@ namespace NHibernate.Test.Linq
 				db.Orders.Where(o => ids.Where(i => i == ids[0]).Contains(o) && orderLines.Select(ol => ol.Order).Where(i => i.OrderId == ids[0].OrderId).Contains(o)),
 				2,
 				countResults: 1));
+		}
+
+		[Test]
+		public void UsingArrayParameterWithNotEvaluatableWhereAsync()
+		{
+			var ids = db.Orders.OrderBy(x => x.OrderId).Take(2).Select(x => x.OrderId).ToArray();
+			//ids.Where(i => i == o.OrderId) is not supported part of query. So just check it throws some exception and not silently ignored
+			Assert.ThrowsAsync<HibernateException>(() => db.Orders.Where(o => ids.Where(i => i == o.OrderId).Contains(o.OrderId)).ToListAsync());
 		}
 
 		[Test]   
