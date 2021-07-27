@@ -361,6 +361,15 @@ namespace NHibernate.Util
 					case IAbstractComponentType componentType:
 						currentComponentType = componentType;
 						currentType = TryGetComponentPropertyType(componentType, member.Path);
+						if (currentEntityPersister != null)
+						{
+							// q.Component.Prop
+							member = new MemberMetadata(
+								memberPath + "." + member.Path,
+								member.ConvertType,
+								member.HasIndexer);
+						}
+
 						break;
 					default:
 						// q.Prop.NotMappedProp
