@@ -367,7 +367,7 @@ namespace NHibernate.Util
 						}
 						else
 						{
-							// Concatenate the component property path in order to be able to use EntityMetamodel.GetPropertyType to retrieve the type.
+							// Concatenate the component property path in order to be able to use IEntityPersister.GetPropertyType to retrieve the type.
 							// As GetPropertyType supports only components, do not concatenate when dealing with collection composite elements or elements.
 							// q.Component.Prop
 							member = new MemberMetadata(
@@ -376,7 +376,7 @@ namespace NHibernate.Util
 								member.HasIndexer);
 
 							// q.Component.Prop
-							currentType = currentEntityPersister.EntityMetamodel.GetPropertyType(member.Path);
+							currentType = currentEntityPersister.GetPropertyType(member.Path);
 						}
 
 						break;
