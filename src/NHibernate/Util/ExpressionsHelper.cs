@@ -360,25 +360,7 @@ namespace NHibernate.Util
 						break;
 					case IAbstractComponentType componentType:
 						currentComponentType = componentType;
-						if (currentEntityPersister == null)
-						{
-							// When persister is not available (q.OneToManyCompositeElement[0].Prop), try to get the type from the component
-							currentType = TryGetComponentPropertyType(componentType, member.Path);
-						}
-						else
-						{
-							// Concatenate the component property path in order to be able to use IEntityPersister.GetPropertyType to retrieve the type.
-							// As GetPropertyType supports only components, do not concatenate when dealing with collection composite elements or elements.
-							// q.Component.Prop
-							member = new MemberMetadata(
-								$"{memberPath}.{member.Path}",
-								member.ConvertType,
-								member.HasIndexer);
-
-							// q.Component.Prop
-							currentType = currentEntityPersister.GetPropertyType(member.Path);
-						}
-
+						currentType = TryGetComponentPropertyType(componentType, member.Path);
 						break;
 					default:
 						// q.Prop.NotMappedProp
