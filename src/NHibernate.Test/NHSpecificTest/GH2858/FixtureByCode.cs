@@ -1,29 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Hql.Ast;
-using NHibernate.Linq.Functions;
-using NHibernate.Linq.Visitors;
 using NHibernate.Mapping.ByCode;
-using NHibernate.Type;
-using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH2858
 {
-	/// <summary>
-	/// Fixture using 'by code' mappings
-	/// </summary>
-	/// <remarks>
-	/// This fixture is identical to <see cref="Fixture" /> except the <see cref="Entity" /> mapping is performed 
-	/// by code in the GetMappings method, and does not require the <c>Mappings.hbm.xml</c> file. Use this approach
-	/// if you prefer.
-	/// </remarks>
 	[TestFixture]
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
@@ -60,6 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2858
 				{
 					rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 					rc.ManyToOne(x => x.Issue, m => m.Column("IssueId"));
+					rc.Property(x => x.Seconds);
 				});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
@@ -87,7 +71,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2858
 				session.Save(projectY);
 				var projectZ = new Project {Name = "Z", Department = deptE};
 				session.Save(projectZ);
-
 
 				var issue1 = new Issue {Name = "TEST-1", Project = projectX,};
 				session.Save(issue1);
@@ -125,12 +108,10 @@ namespace NHibernate.Test.NHSpecificTest.GH2858
 			}
 		}
 
-		[KnownBug("GH-2857")]
-		[Test]
+		[Test(Description = "GH-2857")]
 		public void GroupLevelQuery()
 		{
 			using (var session = OpenSession())
-			using (var transaction = session.BeginTransaction())
 			{
 				var query = session.Query<ITimeChunk>()
 									.Select(x => new object[] {(object) x})
@@ -139,17 +120,13 @@ namespace NHibernate.Test.NHSpecificTest.GH2858
 
 				var results = query.ToList();
 				Assert.That(results, Has.Count.EqualTo(2));
-
-				transaction.Rollback();
 			}
 		}
 
-		[KnownBug("GH-2857")]
-		[Test]
+		[Test(Description = "GH-2857")]
 		public void GroupLevelQuery_Simplified()
 		{
 			using (var session = OpenSession())
-			using (var transaction = session.BeginTransaction())
 			{
 				var query = session.Query<ITimeChunk>()
 									.Select(x => new object[] {x})
@@ -158,8 +135,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2858
 
 				var results = query.ToList();
 				Assert.That(results, Has.Count.EqualTo(2));
-
-				transaction.Rollback();
 			}
 		}
 
@@ -167,7 +142,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2858
 		public void SelectManySubQueryWithCoalesce()
 		{
 			using (var session = OpenSession())
-			using (var transaction = session.BeginTransaction())
 			{
 				var usedDepartments = session.Query<ITimeChunk>()
 											.SelectMany(x => ((IEnumerable<object>) x.Issue.Departments).DefaultIfEmpty().Select(d => (object) ((Guid?) ((Guid?) (((IDepartment) d).Id) ?? x.Issue.Project.Department.Id))))
@@ -179,7 +153,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2858
 									.Select(d => new {d.Id, d.Name});
 
 				Assert.That(result.ToList(), Has.Count.EqualTo(4));
-				transaction.Rollback();
 			}
 		}
 
@@ -187,7 +160,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2858
 		public void SelectManySubQueryWithCoalesce_Simplified()
 		{
 			using (var session = OpenSession())
-			using (var transaction = session.BeginTransaction())
 			{
 				var usedDepartments = session.Query<ITimeChunk>()
 											.SelectMany(x => ((IEnumerable<object>) x.Issue.Departments).DefaultIfEmpty().Select(d => (Guid?) ((IDepartment) d).Id ?? x.Issue.Project.Department.Id));
@@ -197,7 +169,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2858
 									.Select(d => new {d.Id, d.Name});
 
 				Assert.That(result.ToList(), Has.Count.EqualTo(4));
-				transaction.Rollback();
 			}
 		}
 	}
