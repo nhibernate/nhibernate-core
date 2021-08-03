@@ -526,19 +526,12 @@ namespace NHibernate.Util
 				return persister != null;
 			}
 
-			if (convertedType.IsAssignableFrom(currentEntityPersister.MappedClass))
-			{
-				// If it's casting to interface or base class of the same entity 
-				var results = sessionFactory.GetImplementors(convertedType.FullName);
-				if (results.Length == 1)
-				{
-					persister = sessionFactory.TryGetEntityPersister(results[0]);
-					if (persister != null)
-						return true;
-				}
-			}
+			if (TryGetEntityPersister(convertedType, sessionFactory, out persister))
+				return true;
 
-			return TryGetEntityPersister(convertedType, sessionFactory, out persister);
+			// Assume type conversion doesn't change entity type
+			persister = currentEntityPersister;
+			return true;
 		}
 
 		private static bool TryGetEntityPersister(
