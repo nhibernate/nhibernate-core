@@ -8,7 +8,7 @@ environment:
     CONNECTION_STRING: Host=localhost;Port=5432;Username=postgres;Password=Password12!;Database=nhibernate;Enlist=true;
   - DB: Firebird
   - DB: MySQL
-    CONNECTION_STRING: Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;
+    CONNECTION_STRING: Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;SslMode=none;
   - DB: SQLite
 init:
     # Required for having windows endlines in sources zip
