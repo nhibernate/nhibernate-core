@@ -15,7 +15,7 @@ Task Set-Configuration {
             'dialect' = 'NHibernate.Dialect.FirebirdDialect'
         };
         'MySQL' = @{
-            'connection.connection_string' = 'Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;';
+            'connection.connection_string' = 'Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;SslMode=none;';
             'connection.driver_class' = 'NHibernate.Driver.MySqlDataDriver';
             'dialect' = 'NHibernate.Dialect.MySQL5Dialect'
         };
