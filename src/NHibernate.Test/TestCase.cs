@@ -18,6 +18,7 @@ using System.Text;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine.Query;
+using NHibernate.SqlTypes;
 using NHibernate.Util;
 using NSubstitute;
 
@@ -32,6 +33,8 @@ namespace NHibernate.Test
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
 		private static readonly FieldInfo PlanCacheField;
+		private Dialect.Dialect _dialect;
+		private TestDialect _testDialect;
 
 		static TestCase()
 		{
@@ -43,12 +46,12 @@ namespace NHibernate.Test
 
 		protected Dialect.Dialect Dialect
 		{
-			get { return NHibernate.Dialect.Dialect.GetDialect(cfg.Properties); }
+			get { return _dialect ?? (_dialect = NHibernate.Dialect.Dialect.GetDialect(cfg.Properties)); }
 		}
 
 		protected TestDialect TestDialect
 		{
-			get { return TestDialect.GetTestDialect(Dialect); }
+			get { return _testDialect ?? (_testDialect = TestDialect.GetTestDialect(Dialect)); }
 		}
 
 		/// <summary>
@@ -533,6 +536,8 @@ namespace NHibernate.Test
 			var forPartsOfMethod = ReflectHelper.GetMethodDefinition(() => Substitute.ForPartsOf<object>());
 			var substitute = (Dialect.Dialect) forPartsOfMethod.MakeGenericMethod(origDialect.GetType())
 																.Invoke(null, new object[] { new object[0] });
+			substitute.GetCastTypeName(Arg.Any<SqlType>())
+			          .ReturnsForAnyArgs(x => origDialect.GetCastTypeName(x.ArgAt<SqlType>(0)));
 
 			dialectProperty.SetValue(Sfi.Settings, substitute);
 

@@ -9,11 +9,13 @@
 
 
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Test.Hql.EntityJoinHqlTestEntities;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.Hql
 {
@@ -284,6 +286,24 @@ namespace NHibernate.Test.Hql
 						.UniqueResultAsync<NullableOwner>());
 
 				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test(Description = "GH-2772")]
+		public async Task NullableEntityProjectionAsync()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var nullableOwner1 = new NullableOwner {Name = "1", ManyToOne = await (session.LoadAsync<OneToOneEntity>(Guid.NewGuid()))};
+				var nullableOwner2 = new NullableOwner {Name = "2"};
+				await (session.SaveAsync(nullableOwner1));
+				await (session.SaveAsync(nullableOwner2));
+
+				var fullList = await (session.Query<NullableOwner>().Select(x => new {x.Name, ManyToOneId = (Guid?) x.ManyToOne.Id}).ToListAsync());
+				var withValidManyToOneList = await (session.Query<NullableOwner>().Where(x => x.ManyToOne != null).Select(x => new {x.Name, ManyToOneId = (Guid?) x.ManyToOne.Id}).ToListAsync());
+				Assert.That(fullList.Count, Is.EqualTo(2));
+				Assert.That(withValidManyToOneList.Count, Is.EqualTo(0));
 			}
 		}
 

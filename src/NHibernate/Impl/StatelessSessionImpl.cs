@@ -783,14 +783,6 @@ namespace NHibernate.Impl
 		private bool _isAlreadyDisposed;
 		private IDisposable _context;
 
-		/// <summary>
-		/// Finalizer that ensures the object is correctly disposed of.
-		/// </summary>
-		~StatelessSessionImpl()
-		{
-			Dispose(false);
-		}
-
 		///<summary>
 		///Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		///</summary>
@@ -821,6 +813,7 @@ namespace NHibernate.Impl
 			}
 		}
 
+		//TODO: Get rid of isDisposing parameter. Finalizer is removed as not needed, so isDisposing  is always true
 		protected void Dispose(bool isDisposing)
 		{
 			using (BeginContext())
@@ -839,9 +832,6 @@ namespace NHibernate.Impl
 					{
 						Close();
 					}
-
-					// nothing for Finalizer to do - so tell the GC to ignore it
-					GC.SuppressFinalize(this);
 				}
 
 				// free unmanaged resources here
