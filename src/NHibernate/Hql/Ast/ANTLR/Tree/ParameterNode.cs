@@ -49,6 +49,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
+		internal IType GuessedType { get; set; }
+
 		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
 		{
 			int count;
