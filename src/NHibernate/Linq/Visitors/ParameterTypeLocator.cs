@@ -93,7 +93,8 @@ namespace NHibernate.Linq.Visitors
 					continue;
 				}
 
-				namedParameter.Type = GetParameterType(sessionFactory, constantExpressions, visitor, namedParameter);
+				namedParameter.Type = GetParameterType(sessionFactory, constantExpressions, visitor, namedParameter, out var tryProcessInHql);
+				namedParameter.IsGuessedType = tryProcessInHql;
 			}
 		}
 
@@ -145,8 +146,10 @@ namespace NHibernate.Linq.Visitors
 			ISessionFactoryImplementor sessionFactory,
 			HashSet<ConstantExpression> constantExpressions,
 			ConstantTypeLocatorVisitor visitor,
-			NamedParameter namedParameter)
+			NamedParameter namedParameter,
+			out bool tryProcessInHql)
 		{
+			tryProcessInHql = false;
 			// All constant expressions have the same type/value
 			var constantExpression = constantExpressions.First();
 			var constantType = constantExpression.Type.UnwrapIfNullable();
@@ -158,7 +161,7 @@ namespace NHibernate.Linq.Visitors
 
 			if (visitor.NotGuessableConstants.Contains(constantExpression) && constantExpression.Value != null)
 			{
-				return null;
+				tryProcessInHql = true;
 			}
 
 			// No related MemberExpressions was found, guess the type by value or its type when null.

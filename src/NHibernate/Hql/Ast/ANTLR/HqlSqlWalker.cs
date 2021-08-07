@@ -1070,7 +1070,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				// Add the parameter type information so that we are able to calculate functions return types
 				// when the parameter is used as an argument.
-				parameter.ExpectedType = namedParameter.Type;
+				if (namedParameter.IsGuessedType)
+					parameter.GuessedType = namedParameter.Type;
+				else
+					parameter.ExpectedType = namedParameter.Type;
 			}
 
 			_parameters.Add(paramSpec);
