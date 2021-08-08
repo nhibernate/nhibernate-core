@@ -376,20 +376,29 @@ namespace NHibernate.Transaction
 				// know this call came through Dispose()
 				if (isDisposing)
 				{
-					if (trans != null)
+					try
 					{
-						trans.Dispose();
-						trans = null;
-						log.Debug("DbTransaction disposed.");
-					}
+						if (trans != null)
+						{
+							trans.Dispose();
+							trans = null;
+							log.Debug("DbTransaction disposed.");
+						}
 
-					if (IsActive && session != null)
-					{
-						// Assume we are rolled back
-						AfterTransactionCompletion(false);
+						if (IsActive && session != null)
+						{
+							// Assume we are rolled back
+							AfterTransactionCompletion(false);
+						}
+						// nothing for Finalizer to do - so tell the GC to ignore it
+						GC.SuppressFinalize(this);
 					}
-					// nothing for Finalizer to do - so tell the GC to ignore it
-					GC.SuppressFinalize(this);
+					finally
+					{
+						// Do not leave the object in an inconsistent state in case of disposal failure: we should assume
+						// the DbTransaction is either no more ongoing or unrecoverable.
+						begun = false;
+					}
 				}
 
 				// free unmanaged resources here
