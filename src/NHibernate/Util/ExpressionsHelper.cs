@@ -173,7 +173,14 @@ namespace NHibernate.Util
 				return true;
 			}
 
-			index = entityPersister.EntityMetamodel.GetPropertyIndex(memberPath);
+			var propIndex = entityPersister.EntityMetamodel.GetPropertyIndexOrNull(memberPath);
+			if (propIndex == null)
+			{
+				nullable = false;
+				return false;
+			}
+
+			index = propIndex.Value;
 			nullable = entityPersister.PropertyNullability[index];
 			return true;
 		}
@@ -338,7 +345,7 @@ namespace NHibernate.Util
 			// Traverse the members that were traversed by the TryGetAllMemberMetadata method in the reverse order and try to keep
 			// tracking the entity persister until all members are traversed.
 			var member = memberPaths.Pop();
-			var currentType = currentEntityPersister.EntityMetamodel.GetPropertyType(member.Path);
+			var currentType = GetPropertyType(currentEntityPersister, member.Path);
 			IAbstractComponentType currentComponentType = null;
 			while (memberPaths.Count > 0 && currentType != null)
 			{
@@ -407,6 +414,12 @@ namespace NHibernate.Util
 			return false;
 		}
 
+		private static IType GetPropertyType(IEntityPersister currentEntityPersister, string path)
+		{
+			((IPropertyMapping) currentEntityPersister).TryToType(path, out var type);
+			return type;
+		}
+
 		private static IType TryGetComponentPropertyType(IAbstractComponentType componentType, string memberPath)
 		{
 			var index = Array.IndexOf(componentType.PropertyNames, memberPath);
@@ -471,7 +484,7 @@ namespace NHibernate.Util
 
 			memberComponent = null;
 			memberType = memberPersister != null
-				? memberPersister.EntityMetamodel.GetPropertyType(member.Path)
+				? GetPropertyType(memberPersister, member.Path)
 				: null; // q.AnyType.Member, ((NotMappedClass)q.ManyToOne)
 		}
 
@@ -523,10 +536,16 @@ namespace NHibernate.Util
 									.Select(sessionFactory.GetEntityPersister)
 									.FirstOrDefault(p => p.MappedClass == convertedType);
 
-				return persister != null;
+				if (persister != null)
+					return true;
 			}
+			else if (TryGetEntityPersister(convertedType, sessionFactory, out persister))
+				return true;
 
-			return TryGetEntityPersister(convertedType, sessionFactory, out persister);
+			// Assume type conversion doesn't change entity type
+			// TODO: Consider removing convertedType related logic above and always return currentEntityPersister
+			persister = currentEntityPersister;
+			return true;
 		}
 
 		private static bool TryGetEntityPersister(
