@@ -380,7 +380,7 @@ comparisonExpr
 	| ^(NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery)
 	| ^(IN exprOrSubquery inRhs )
 	| ^(NOT_IN exprOrSubquery inRhs )
-	| ^(IS_NULL exprOrSubquery)
+	| ^(IS_NULL { _isNullComparison = true; } exprOrSubquery { _isNullComparison = false; })
 	| ^(IS_NOT_NULL exprOrSubquery)
 //	| ^(IS_TRUE expr)
 //	| ^(IS_FALSE expr)
