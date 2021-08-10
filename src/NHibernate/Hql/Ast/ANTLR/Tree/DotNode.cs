@@ -476,7 +476,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string[] joinColumns = GetColumns();
 			string joinPath = Path;
 
-			if ( impliedJoin && Walker.IsInFrom )
+			if ( impliedJoin && Walker.IsInFrom ) 
 			{
 				_joinType = Walker.ImpliedJoinType;
 			}
