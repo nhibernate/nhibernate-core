@@ -417,8 +417,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if ( joinIsNeeded )
 			{
-				//TODO: Find correct place for this if.
-				if (Walker.IsNullComparison)
+				if (comparisonWithNullableEntity && Walker.IsNullComparison)
 				{
 					implicitJoin = false;
 					_joinType = JoinType.LeftOuterJoin;
