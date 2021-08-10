@@ -335,9 +335,7 @@ namespace NHibernate.Test.Hql
 				Assert.That(fullList.Count, Is.EqualTo(2));
 				Assert.That(withValidManyToOneList.Count, Is.EqualTo(0));
 				Assert.That(withValidManyToOneList2.Count, Is.EqualTo(0));
-				//NOTE: IS NULL case is broken, it returns 1 instead of 2 records. 
-				//Assert.That(withNullManyToOneList.Count, Is.EqualTo(2));
-				Assert.That(withNullManyToOneList.Count, Is.GreaterThan(0));
+				Assert.That(withNullManyToOneList.Count, Is.EqualTo(2));
 			}
 		}
 

@@ -389,12 +389,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			bool joinIsNeeded;
 
 			//For nullable entity comparisons we always need to add join (like not constrained one-to-one or not-found ignore associations)
-			bool comparisonWithNullableEntity = entityType.IsNullable && Walker.IsComparativeExpressionClause
-					//NOTE: comparisonWithNullableEntity fix is not fully correct. It doesn't work for comparisons with null (where e.OneToOneProp is null)
-					// as by default implicit join is generated and to work propelry left join is required (see GH-2611 and GH-2881).
-					// IsNullComparison check was introduced that disables this fix  for null comparison
-					// (it still generates wrong query but simply returns 5.2.x behavior)
-					&& !Walker.IsNullComparison;
+			bool comparisonWithNullableEntity = entityType.IsNullable && Walker.IsComparativeExpressionClause;
 
 			if ( IsDotNode( parent ) ) 
 			{
@@ -420,8 +415,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				               || comparisonWithNullableEntity;
 			}
 
-			if ( joinIsNeeded ) 
+			if ( joinIsNeeded )
 			{
+				//TODO: Find correct place for this if.
+				if (Walker.IsNullComparison)
+				{
+					implicitJoin = false;
+					_joinType = JoinType.LeftOuterJoin;
+				}
+
 				DereferenceEntityJoin( classAlias, entityType, implicitJoin, parent );
 				if (comparisonWithNullableEntity)
 				{
@@ -475,7 +477,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string[] joinColumns = GetColumns();
 			string joinPath = Path;
 
-			if ( impliedJoin && Walker.IsInFrom ) 
+			if ( impliedJoin && Walker.IsInFrom )
 			{
 				_joinType = Walker.ImpliedJoinType;
 			}
