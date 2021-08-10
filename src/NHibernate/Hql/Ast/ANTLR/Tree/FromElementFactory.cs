@@ -359,9 +359,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 
 				elem = CreateManyToMany(role, associatedEntityName, roleAlias, entityPersister, (EntityType)_queryableCollection.ElementType, joinType);
-				_fromClause.Walker.AddQuerySpaces(_queryableCollection.CollectionSpaces);
 			}
 			elem.CollectionTableAlias = roleAlias;
+			_fromClause.Walker.AddQuerySpaces(_queryableCollection.CollectionSpaces);
+			_fromClause.AddCollectionJoinFromElementByPath(_path, elem);
 			return elem;
 		}
 
