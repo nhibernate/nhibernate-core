@@ -330,8 +330,12 @@ namespace NHibernate.Test.Hql
 
 				var fullList = session.Query<NullableOwner>().Select(x => new {x.Name, ManyToOneId = (Guid?) x.ManyToOne.Id}).ToList();
 				var withValidManyToOneList = session.Query<NullableOwner>().Where(x => x.ManyToOne != null).Select(x => new {x.Name, ManyToOneId = (Guid?) x.ManyToOne.Id}).ToList();
+				var withValidManyToOneList2 = session.CreateQuery("from NullableOwner ex where not ex.ManyToOne is null").List<NullableOwner>();
+				var withNullManyToOneList = session.Query<NullableOwner>().Where(x => x.ManyToOne == null).ToList();
 				Assert.That(fullList.Count, Is.EqualTo(2));
 				Assert.That(withValidManyToOneList.Count, Is.EqualTo(0));
+				Assert.That(withValidManyToOneList2.Count, Is.EqualTo(0));
+				Assert.That(withNullManyToOneList.Count, Is.EqualTo(2));
 			}
 		}
 
