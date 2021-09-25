@@ -170,11 +170,14 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly ConcurrentDictionary<string, string[]> entityNameImplementorsMap = new ConcurrentDictionary<string, string[]>(4 * System.Environment.ProcessorCount, 100);
 		private readonly string uuid;
+
+		[NonSerialized]
 		private bool disposed;
 
 		[NonSerialized]
 		private bool isClosed = false;
 
+		[NonSerialized]
 		private QueryPlanCache queryPlanCache;
 		[NonSerialized]
 		private StatisticsImpl statistics;
