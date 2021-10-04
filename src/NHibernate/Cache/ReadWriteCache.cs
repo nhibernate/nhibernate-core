@@ -36,7 +36,17 @@ namespace NHibernate.Cache
 
 		private CacheBase _cache;
 		private int _nextLockId;
-		private readonly AsyncReaderWriterLock _asyncReaderWriterLock = new AsyncReaderWriterLock();
+		private readonly ICacheLock _asyncReaderWriterLock;
+
+		public ReadWriteCache()
+		{
+			_asyncReaderWriterLock = new AsyncReaderWriterLock();
+		}
+
+		public ReadWriteCache(ICacheLock locker)
+		{
+			_asyncReaderWriterLock = locker;
+		}
 
 		/// <summary>
 		/// Gets the cache region name.

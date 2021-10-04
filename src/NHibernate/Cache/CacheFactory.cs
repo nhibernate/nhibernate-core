@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NHibernate.Cfg;
+using NHibernate.Util;
 
 namespace NHibernate.Cache
 {
@@ -43,7 +44,7 @@ namespace NHibernate.Cache
 
 			var cache = BuildCacheBase(name, settings, properties);
 
-			var ccs = CreateCache(usage, cache);
+			var ccs = CreateCache(usage, cache, settings);
 
 			if (mutable && usage == ReadOnly)
 				log.Warn("read-only cache configured for mutable: {0}", name);
@@ -57,7 +58,21 @@ namespace NHibernate.Cache
 		/// <param name="usage">The name of the strategy that <see cref="ICacheProvider"/> should use for the class.</param>
 		/// <param name="cache">The <see cref="CacheBase"/> used for this strategy.</param>
 		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>
+		// TODO: Since v5.4
+		//[Obsolete("Please use overload with a CacheBase and Settings parameters.")]
 		public static ICacheConcurrencyStrategy CreateCache(string usage, CacheBase cache)
+		{
+			return CreateCache(usage, cache, null);
+		}
+
+		/// <summary>
+		/// Creates an <see cref="ICacheConcurrencyStrategy"/> from the parameters.
+		/// </summary>
+		/// <param name="usage">The name of the strategy that <see cref="ICacheProvider"/> should use for the class.</param>
+		/// <param name="cache">The <see cref="CacheBase"/> used for this strategy.</param>
+		/// <param name="settings">NHibernate settings</param>
+		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>
+		public static ICacheConcurrencyStrategy CreateCache(string usage, CacheBase cache, Settings settings)
 		{
 			if (log.IsDebugEnabled())
 				log.Debug("cache for: {0} usage strategy: {1}", cache.RegionName, usage);
@@ -69,7 +84,7 @@ namespace NHibernate.Cache
 					ccs = new ReadOnlyCache();
 					break;
 				case ReadWrite:
-					ccs = new ReadWriteCache();
+					ccs = new ReadWriteCache(settings == null ? new AsyncReaderWriterLock() : settings.CacheReadWriteReadWriteLockFactory.Create());
 					break;
 				case NonstrictReadWrite:
 					ccs = new NonstrictReadWriteCache();

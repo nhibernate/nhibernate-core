@@ -103,6 +103,7 @@
 										<xs:enumeration value="cache.provider_class" />
 										<xs:enumeration value="cache.use_query_cache" />
 										<xs:enumeration value="cache.query_cache_factory" />
+										<xs:enumeration value="cache.read_write_lock_factory" />
 										<xs:enumeration value="cache.use_second_level_cache" />
 										<xs:enumeration value="cache.region_prefix" />
 										<xs:enumeration value="cache.use_minimal_puts" />
