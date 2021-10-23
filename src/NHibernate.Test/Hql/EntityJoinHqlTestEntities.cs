@@ -2,7 +2,17 @@
 
 namespace NHibernate.Test.Hql.EntityJoinHqlTestEntities
 {
-	public class EntityComplex
+	public interface IEntityComplex
+	{
+		Guid Id { get; set; }
+		int Version { get; set; }
+		string Name { get; set; }
+		string LazyProp { get; set; }
+		EntityComplex SameTypeChild { get; set; }
+		EntityComplex SameTypeChild2 { get; set; }
+	}
+
+	public class EntityComplex : IEntityComplex
 	{
 		public virtual Guid Id { get; set; }
 		public virtual int Version { get; set; }

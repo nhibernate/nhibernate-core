@@ -1412,5 +1412,18 @@ namespace NHibernate.Test.Linq
 				}, Throws.Nothing, "Expected REPLACE(FirstName, LastName, NULL) to be supported");
 			Assert.That(results, Is.Not.Null);
 		}
+
+		[Test(Description = "GH-2860")]
+		public async Task StringFormatWithTrimAsync()
+		{
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
+			var q =
+				from e in db.Employees
+				select new { Name = $"{e.FirstName} {e.LastName}".Trim(), Phone = e.Address.PhoneNumber };
+			var items = await (q.ToListAsync());
+			Assert.AreEqual(9, items.Count);
+		}
 	}
 }

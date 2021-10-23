@@ -7,11 +7,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1962
 	public class Fixture : BugTestCase
 	{
 		[Test]
-		[KnownBug("#1962")]
 		public void LinqShouldBeValid()
 		{
 			using (var session = OpenSession())
-			using (session.BeginTransaction())
 			{
 				var result =
 					session
