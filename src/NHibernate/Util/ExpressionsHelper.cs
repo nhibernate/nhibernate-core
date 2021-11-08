@@ -158,7 +158,11 @@ namespace NHibernate.Util
 			}
 
 			int index;
-			if (componentType != null)
+			if (componentType is CompositeCustomType cct)
+			{
+				memberPath = memberPath.Remove(memberPath.LastIndexOf('.'));
+			}
+			else if (componentType != null)
 			{
 				index = Array.IndexOf(
 					componentType.PropertyNames,

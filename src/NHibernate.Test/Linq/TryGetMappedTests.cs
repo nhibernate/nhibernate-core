@@ -273,6 +273,18 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void CompositePropertyTest()
+		{
+			var query = session.Query<Glarch>().Select(o => o.Multiple.count);
+			AssertSupported(
+				query,
+				typeof(Glarch).FullName,
+				"Multiple.count",
+				o => o is Int32Type,
+				o => o?.Name == typeof(MultiplicityType).FullName);
+		}
+
+		[Test]
 		public void ManyToOneTest()
 		{
 			var query = db.OrderLines.Select(o => o.Order);
