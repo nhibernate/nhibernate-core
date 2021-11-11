@@ -346,9 +346,9 @@ namespace NHibernate.Test.Hql
 				var withNullManyToOneList = await (session.Query<NullableOwner>().Where(x => x.ManyToOne == null).ToListAsync());
 				var withNullManyToOneJoinedList =
 					await ((from x in session.Query<NullableOwner>()
-							from x2 in session.Query<NullableOwner>()
-							where x == x2 && x.ManyToOne == null && x.OneToOne.Name == null
-							select x2).ToListAsync());
+					from x2 in session.Query<NullableOwner>()
+					where x == x2 && x.ManyToOne == null && x.OneToOne.Name == null
+					select x2).ToListAsync());
 				Assert.That(fullList.Count, Is.EqualTo(2));
 				Assert.That(withValidManyToOneList.Count, Is.EqualTo(0));
 				Assert.That(withValidManyToOneList2.Count, Is.EqualTo(0));

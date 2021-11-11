@@ -819,7 +819,7 @@ namespace NHibernate.Test.Linq
 			Assert.That(() => expectedMemberType(memberType), $"Invalid member type: {memberType?.Name ?? "null"}");
 			Assert.That(() => expectedComponentType(componentType), $"Invalid component type: {componentType?.Name ?? "null"}");
 
-			if (found)
+			if (found && (componentType == null || componentType.PropertyNullability != null))
 			{
 				Assert.That(_tryGetMappedNullability(Sfi, queryModel.SelectClause.Selector, out var isNullable), Is.True, "Expression should be supported");
 				Assert.That(nullability, Is.EqualTo(isNullable), "Nullability is not correct");

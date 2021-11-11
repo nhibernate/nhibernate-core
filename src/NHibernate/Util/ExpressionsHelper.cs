@@ -160,10 +160,17 @@ namespace NHibernate.Util
 			int index;
 			if (componentType != null)
 			{
+				var propertyNullability = componentType.PropertyNullability;
+				if (propertyNullability == null)
+				{
+					nullable = false;
+					return false;
+				}
+
 				index = Array.IndexOf(
 					componentType.PropertyNames,
 					memberPath.Substring(memberPath.LastIndexOf('.') + 1));
-				nullable = componentType.PropertyNullability[index];
+				nullable = propertyNullability[index];
 				return true;
 			}
 
