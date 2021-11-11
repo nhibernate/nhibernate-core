@@ -276,12 +276,14 @@ namespace NHibernate.Test.Linq
 		public void CompositePropertyTest()
 		{
 			var query = session.Query<Glarch>().Select(o => o.Multiple.count);
-			AssertSupported(
+			AssertResult(
 				query,
+				true, true,
 				typeof(Glarch).FullName,
 				"Multiple.count",
 				o => o is Int32Type,
-				o => o?.Name == typeof(MultiplicityType).FullName);
+				o => o?.Name == typeof(MultiplicityType).FullName,
+				null);
 		}
 
 		[Test]
@@ -780,7 +782,7 @@ namespace NHibernate.Test.Linq
 			string expectedMemberPath,
 			Predicate<IType> expectedMemberType,
 			Predicate<IAbstractComponentType> expectedComponentType = null,
-			bool nullability = true)
+			bool? nullability = true)
 		{
 			expectedComponentType = expectedComponentType ?? (o => o == null);
 
@@ -819,10 +821,14 @@ namespace NHibernate.Test.Linq
 			Assert.That(() => expectedMemberType(memberType), $"Invalid member type: {memberType?.Name ?? "null"}");
 			Assert.That(() => expectedComponentType(componentType), $"Invalid component type: {componentType?.Name ?? "null"}");
 
-			if (found && (componentType == null || componentType.PropertyNullability != null))
+			if (found)
 			{
-				Assert.That(_tryGetMappedNullability(Sfi, queryModel.SelectClause.Selector, out var isNullable), Is.True, "Expression should be supported");
-				Assert.That(nullability, Is.EqualTo(isNullable), "Nullability is not correct");
+				Assert.That(
+					_tryGetMappedNullability(Sfi, queryModel.SelectClause.Selector, out var isNullable),
+					Is.EqualTo(nullability.HasValue),
+					$"Expression should be {(nullability.HasValue ? "supported" : "unsupported")}");
+				if (nullability.HasValue)
+					Assert.That(nullability, Is.EqualTo(isNullable), "Nullability is not correct");
 			}
 		}
 	}
