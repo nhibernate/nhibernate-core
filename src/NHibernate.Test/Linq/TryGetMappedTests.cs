@@ -276,9 +276,8 @@ namespace NHibernate.Test.Linq
 		public void CompositePropertyTest()
 		{
 			var query = session.Query<Glarch>().Select(o => o.Multiple.count);
-			AssertResult(
+			AssertSupported(
 				query,
-				true, true,
 				typeof(Glarch).FullName,
 				"Multiple.count",
 				o => o is Int32Type,
@@ -737,9 +736,10 @@ namespace NHibernate.Test.Linq
 			string expectedEntityName,
 			string expectedMemberPath,
 			Predicate<IType> expectedMemberType,
-			Predicate<IAbstractComponentType> expectedComponentType = null)
+			Predicate<IAbstractComponentType> expectedComponentType = null,
+			bool? nullability = true)
 		{
-			AssertResult(query, true, true, expectedEntityName, expectedMemberPath, expectedMemberType, expectedComponentType);
+			AssertResult(query, true, true, expectedEntityName, expectedMemberPath, expectedMemberType, expectedComponentType, nullability);
 		}
 
 		private void AssertSupported(
