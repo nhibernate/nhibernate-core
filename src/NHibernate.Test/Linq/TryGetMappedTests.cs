@@ -272,8 +272,8 @@ namespace NHibernate.Test.Linq
 				o => o?.Name == "component[OtherProperty1]");
 		}
 
-		[Test]
-		public void CompositePropertyTest()
+		[Test(Description = "GH-2937")]
+		public void CompositeUserTypePropertyTest()
 		{
 			var query = session.Query<Glarch>().Select(o => o.Multiple.count);
 			AssertSupported(
