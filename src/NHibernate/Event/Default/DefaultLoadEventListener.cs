@@ -33,8 +33,8 @@ namespace NHibernate.Event.Default
 			IEntityPersister persister;
 			if (@event.InstanceToLoad != null)
 			{
-				persister = source.GetEntityPersister(null, @event.InstanceToLoad); //the load() which takes an entity does not pass an entityName
-				@event.EntityClassName = @event.InstanceToLoad.GetType().FullName;
+				@event.EntityClassName = source.BestGuessEntityName(@event.InstanceToLoad);//the load() which takes an entity does not pass an entityName
+				persister = source.GetEntityPersister(@event.EntityClassName, @event.InstanceToLoad);
 			}
 			else
 			{
