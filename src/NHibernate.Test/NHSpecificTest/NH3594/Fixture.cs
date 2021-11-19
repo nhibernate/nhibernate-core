@@ -17,7 +17,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3594
 
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.SetProperty(Environment.Dialect, typeof(MsSql2012Dialect).FullName);
+			var dialect = NHibernate.Dialect.Dialect.GetDialect(configuration.Properties);
+			if (dialect is MsSql2005Dialect)
+				configuration.SetProperty(Environment.Dialect, typeof(MsSql2012Dialect).FullName);
 			base.Configure(configuration);
 		}
 
