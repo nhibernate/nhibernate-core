@@ -20,7 +20,6 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <returns>A write lock.</returns>
 		IDisposable WriteLock();
-		
 
 		/// <summary>
 		/// Acquire asynchronously a read lock.
