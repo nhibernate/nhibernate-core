@@ -206,7 +206,7 @@ namespace NHibernate.Cfg
 
 			if (useSecondLevelCache || useQueryCache)
 			{
-				settings.CacheReadWriteReadWriteLockFactory = GetReadWriteLockFactory(PropertiesHelper.GetString(Environment.CacheReadWriteLockFactory, properties, null));
+				settings.CacheReadWriteLockFactory = GetReadWriteLockFactory(PropertiesHelper.GetString(Environment.CacheReadWriteLockFactory, properties, null));
 				// The cache provider is needed when we either have second-level cache enabled
 				// or query cache enabled.  Note that useSecondLevelCache is enabled by default
 				settings.CacheProvider = CreateCacheProvider(properties);

@@ -388,7 +388,7 @@ namespace NHibernate.Impl
 			if (settings.IsQueryCacheEnabled)
 			{
 				var updateTimestampsCacheName = nameof(Cache.UpdateTimestampsCache);
-				updateTimestampsCache = new UpdateTimestampsCache(GetCache(updateTimestampsCacheName), settings.CacheReadWriteReadWriteLockFactory.Create());
+				updateTimestampsCache = new UpdateTimestampsCache(GetCache(updateTimestampsCacheName), settings.CacheReadWriteLockFactory.Create());
 				var queryCacheName = typeof(StandardQueryCache).FullName;
 				queryCache = BuildQueryCache(queryCacheName);
 				queryCaches = new ConcurrentDictionary<string, Lazy<IQueryCache>>();

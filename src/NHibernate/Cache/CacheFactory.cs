@@ -84,7 +84,7 @@ namespace NHibernate.Cache
 					ccs = new ReadOnlyCache();
 					break;
 				case ReadWrite:
-					ccs = new ReadWriteCache(settings == null ? new AsyncReaderWriterLock() : settings.CacheReadWriteReadWriteLockFactory.Create());
+					ccs = new ReadWriteCache(settings == null ? new AsyncReaderWriterLock() : settings.CacheReadWriteLockFactory.Create());
 					break;
 				case NonstrictReadWrite:
 					ccs = new NonstrictReadWriteCache();
