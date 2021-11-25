@@ -101,7 +101,7 @@ namespace NHibernate.Cfg
 		public ConnectionReleaseMode ConnectionReleaseMode { get; internal set; }
 
 		public ICacheProvider CacheProvider { get; internal set; }
-		public ICacheReadWriteLockFactory CacheReadWriteReadWriteLockFactory { get; internal set; }
+		public ICacheReadWriteLockFactory CacheReadWriteLockFactory { get; internal set; }
 
 		public IQueryCacheFactory QueryCacheFactory { get; internal set; }
 
