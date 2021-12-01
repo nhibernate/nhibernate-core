@@ -33,7 +33,7 @@ namespace NHibernate.Util
 			return ((MemberExpression)expression.Body).Member;
 		}
 
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER
 		/// <summary>
 		/// Try to retrieve <see cref="GetMemberBinder"/> from a reduced <see cref="ExpressionType.Dynamic"/> expression.
 		/// </summary>
@@ -714,7 +714,7 @@ namespace NHibernate.Util
 				return base.Visit(node.Expression);
 			}
 
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER
 			protected override Expression VisitInvocation(InvocationExpression node)
 			{
 				if (TryGetDynamicMemberBinder(node, out var binder))

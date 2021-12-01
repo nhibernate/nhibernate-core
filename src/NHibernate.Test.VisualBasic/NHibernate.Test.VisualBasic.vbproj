@@ -12,7 +12,7 @@
     <OptionStrict>On</OptionStrict>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-    <DefineConstants>NETCOREAPP2_0,$(DefineConstants)</DefineConstants>
+    <DefineConstants>NETCOREAPP2_0_OR_GREATER,$(DefineConstants)</DefineConstants>
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
