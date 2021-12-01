@@ -141,7 +141,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1486
 						continue;
 
 					var checkable = new [] { true, true, true };
-					Assert.That(
+					Assert.That<Task<bool>>(
 						() => componentType.IsModifiedAsync(new object[] { "", "", "" }, person.Address, checkable, sessionImplementor, CancellationToken.None),
 						Throws.Nothing,
 						"Checking component against an array snapshot failed");

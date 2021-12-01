@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1419
 				parent.Child = new EntityChild { Name = "NewManyToOneChild" };
 
 				var isDirty = false;
-				Assert.That(() => isDirty = session.IsDirty(), Throws.Nothing, "ISession.IsDirty() call should not fail for transient  many-to-one object referenced in session.");
+				Assert.That<bool>(() => isDirty = session.IsDirty(), Throws.Nothing, "ISession.IsDirty() call should not fail for transient  many-to-one object referenced in session.");
 				Assert.That(isDirty, "ISession.IsDirty() call should return true.");
 			}
 		}
@@ -103,7 +103,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1419
 				parent.ChildAssigned = new EntityChildAssigned { Id = 2, Name = "NewManyToOneChildAssignedId" };
 
 				var isDirty = false;
-				Assert.That(() => isDirty = session.IsDirty(), Throws.Nothing, "ISession.IsDirty() call should not fail for transient  many-to-one object referenced in session.");
+				Assert.That<bool>(() => isDirty = session.IsDirty(), Throws.Nothing, "ISession.IsDirty() call should not fail for transient  many-to-one object referenced in session.");
 				Assert.That(isDirty, "ISession.IsDirty() call should return true.");
 			}
 		}

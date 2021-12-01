@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" name="NHibernate.TestDatabaseSetup.dll" fullname="C:/Projects/Private/nhibernate-core/src/NHibernate.TestDatabaseSetup/bin/Release/net6.0/NHibernate.TestDatabaseSetup.dll" testcasecount="1" result="Passed" start-time="2021-12-01T03:48:42.1038347Z" end-time="2021-12-01T03:48:42.8444916Z" duration="0.740474" total="1" passed="1" failed="0" inconclusive="0" skipped="0" warnings="0" asserts="1" random-seed="1077332858">
+  <command-line><![CDATA[C:\Projects\Private\nhibernate-core\src\NHibernate.TestDatabaseSetup\bin\Release\net6.0\NHibernate.TestDatabaseSetup.dll --labels=before --nocolor --result=NHibernate.TestDatabaseSetup-TestResult.xml]]></command-line>
+  <filter />
+  <test-suite type="Assembly" id="1002" name="NHibernate.TestDatabaseSetup.dll" fullname="C:/Projects/Private/nhibernate-core/src/NHibernate.TestDatabaseSetup/bin/Release/net6.0/NHibernate.TestDatabaseSetup.dll" runstate="Runnable" testcasecount="1" result="Passed" start-time="2021-12-01T03:48:42.1038347Z" end-time="2021-12-01T03:48:42.8444916Z" duration="0.740474" total="1" passed="1" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="1">
+    <environment framework-version="3.13.2.0" clr-version="6.0.0" os-version="Microsoft Windows 10.0.19044" platform="Win32NT" cwd="C:\Projects\Private\nhibernate-core" machine-name="DESKTOP-77LMGQQ" user="Alex Zaytsev" user-domain="DESKTOP-77LMGQQ" culture="en-NZ" uiculture="en-GB" os-architecture="x64" />
+    <settings>
+      <setting name="WorkDirectory" value="C:\Projects\Private\nhibernate-core" />
+      <setting name="NumberOfTestWorkers" value="12" />
+    </settings>
+    <properties>
+      <property name="LevelOfParallelism" value="0" />
+      <property name="_PID" value="2400" />
+      <property name="_APPDOMAIN" value="NHibernate.TestDatabaseSetup" />
+    </properties>
+    <test-suite type="TestSuite" id="1003" name="NHibernate" fullname="NHibernate" runstate="Runnable" testcasecount="1" result="Passed" start-time="2021-12-01T03:48:42.1243053Z" end-time="2021-12-01T03:48:42.8444811Z" duration="0.720175" total="1" passed="1" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="1">
+      <test-suite type="TestSuite" id="1004" name="TestDatabaseSetup" fullname="NHibernate.TestDatabaseSetup" runstate="Runnable" testcasecount="1" result="Passed" start-time="2021-12-01T03:48:42.1252142Z" end-time="2021-12-01T03:48:42.8444299Z" duration="0.719216" total="1" passed="1" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="1">
+        <test-suite type="TestFixture" id="1000" name="DatabaseSetup" fullname="NHibernate.TestDatabaseSetup.DatabaseSetup" classname="NHibernate.TestDatabaseSetup.DatabaseSetup" runstate="Runnable" testcasecount="1" result="Passed" start-time="2021-12-01T03:48:42.1252707Z" end-time="2021-12-01T03:48:42.8436123Z" duration="0.718342" total="1" passed="1" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="1">
+          <test-case id="1001" name="SetupDatabase" fullname="NHibernate.TestDatabaseSetup.DatabaseSetup.SetupDatabase" methodname="SetupDatabase" classname="NHibernate.TestDatabaseSetup.DatabaseSetup" runstate="Runnable" seed="572316797" result="Passed" start-time="2021-12-01T03:48:42.1327274Z" end-time="2021-12-01T03:48:42.8370806Z" duration="0.704577" asserts="1" />
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

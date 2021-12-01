@@ -1990,11 +1990,8 @@ namespace NHibernate.Test.Linq
 			var query = from e in db.Employees
 			            select e.FirstName.Replace(e.LastName, null);
 			List<string> results = null;
-			Assert.That(
-				() =>
-				{
-					results = query.ToList();
-				}, Throws.Nothing, "Expected REPLACE(FirstName, LastName, NULL) to be supported");
+			Assert.That<List<string>>(
+				() => results = query.ToList(), Throws.Nothing, "Expected REPLACE(FirstName, LastName, NULL) to be supported");
 			Assert.That(results, Is.Not.Null);
 		}
 

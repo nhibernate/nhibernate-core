@@ -1405,7 +1405,7 @@ namespace NHibernate.Test.Linq
 			var query = from e in db.Employees
 			            select e.FirstName.Replace(e.LastName, null);
 			List<string> results = null;
-			Assert.That(
+			Assert.That<Task>(
 				async () =>
 				{
 					results = await (query.ToListAsync());
