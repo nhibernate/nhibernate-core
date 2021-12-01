@@ -1,9 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <NhVbNet>true</NhVbNet>
-  </PropertyGroup>
-  <Import Project="../../build-common/NHibernate.props" />
-  <PropertyGroup>
     <Description>The Visual Basic Unit Tests for NHibernate.</Description>
     <TargetFrameworks>$(NhAppTargetFrameworks)</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
@@ -15,9 +11,6 @@
     <DefineConstants>NETCOREAPP2_0_OR_GREATER,$(DefineConstants)</DefineConstants>
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(NhNetFx)">
-    <DefineConstants>NETFX,$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="**\*.hbm.xml" />
