@@ -1,5 +1,5 @@
 <Project>
-  <Import Condition="Exists('NHibernate.dev.props')" Project="NHibernate.dev.props"/>
+  <Import Condition="Exists('Directory.Build.dev.props')" Project="Directory.Build.dev.props"/>
 
   <PropertyGroup>
     <NhVersion     Condition="'$(NhVersion)' == ''"    >5.4</NhVersion>
@@ -17,6 +17,7 @@
     <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
     <NhNetFx>false</NhNetFx>
     <NhNetFx Condition="$(TargetFramework.StartsWith('net4'))">true</NhNetFx>
+    <!-- Visual Basic requires to use coma (,) as a separator, other project types - semicolon (;) -->
     <DefineConstants Condition="$(NhNetFx) AND '$(MSBuildProjectExtension)' != '.vbproj'">NETFX;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="$(NhNetFx) AND '$(MSBuildProjectExtension)' == '.vbproj'">NETFX,$(DefineConstants)</DefineConstants>
 

@@ -58,6 +58,6 @@ Tools\gitreleasemanager\0.11.0\tools\GitReleaseManager.exe create -o nhibernate 
   * If this was the master branch, create the stable branch for the new release, named
     according to its version with "x" instead of its patch number. By example, "5.3.x".
     
-  * If next version is decided set it in Directory.Build.props under build-common folder
+  * If next version is decided set it in Directory.Build.props under src folder
     (in most cases - increment minor version) and set VersionSuffix to "dev".
     Commit it directly (without going through a PR).
