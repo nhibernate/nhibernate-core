@@ -369,15 +369,8 @@ namespace NHibernate.Impl
 
 		public override string BestGuessEntityName(object entity)
 		{
-			using (BeginContext())
-			{
-				if (entity.IsProxy())
-				{
-					var proxy = entity as INHibernateProxy;
-					entity = proxy.HibernateLazyInitializer.GetImplementation();
-				}
-				return GuessEntityName(entity);
-			}
+			var entityName = TryGetProxyEntityName(entity);
+			return entityName ?? GuessEntityName(entity);
 		}
 
 		public override string GuessEntityName(object entity)

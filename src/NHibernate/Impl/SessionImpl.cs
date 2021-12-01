@@ -957,37 +957,14 @@ namespace NHibernate.Impl
 
 		public override string BestGuessEntityName(object entity)
 		{
-			using (BeginContext())
-			{
-				if (entity.IsProxy())
-				{
-					INHibernateProxy proxy = entity as INHibernateProxy;
-					ILazyInitializer initializer = proxy.HibernateLazyInitializer;
+			var entityName = TryGetProxyEntityName(entity);
+			if (entityName != null)
+				return entityName;
 
-					// it is possible for this method to be called during flush processing,
-					// so make certain that we do not accidentally initialize an uninitialized proxy
-					if (initializer.IsUninitialized)
-					{
-						return initializer.PersistentClass.FullName;
-					}
-					entity = initializer.GetImplementation();
-				}
-
-				if (entity is IFieldInterceptorAccessor interceptorAccessor && interceptorAccessor.FieldInterceptor != null)
-				{
-					// NH: support of field-interceptor-proxy
-					return interceptorAccessor.FieldInterceptor.EntityName;
-				}
-				EntityEntry entry = persistenceContext.GetEntry(entity);
-				if (entry == null)
-				{
-					return GuessEntityName(entity);
-				}
-				else
-				{
-					return entry.Persister.EntityName;
-				}
-			}
+			EntityEntry entry = persistenceContext.GetEntry(entity);
+			return entry != null
+				? entry.Persister.EntityName
+				: GuessEntityName(entity);
 		}
 
 		public override string GuessEntityName(object entity)
