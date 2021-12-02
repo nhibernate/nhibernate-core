@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using NHibernate.Engine.Query.Sql;
@@ -66,12 +67,14 @@ namespace NHibernate.Engine.Query
 				{
 					log.Debug("unable to locate HQL query plan in cache; generating ({0})", queryExpression.Key);
 				}
+				Stopwatch stopwatch = Stopwatch.StartNew();
 				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
+				stopwatch.Stop();
 				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
 				if (!(queryExpression is ICacheableQueryExpression linqExpression) || linqExpression.CanCachePlan)
 					planCache.Put(key, plan);
 				else
-					log.Warn("Query plan not cacheable {0}", queryExpression.Key);
+					log.Warn("Query plan not cacheable {0} , elapsed time:{1}", queryExpression.Key,stopwatch.Elapsed);
 			}
 			else
 			{
