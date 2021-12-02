@@ -71,14 +71,13 @@ namespace NHibernate.Engine.Query
 				Stopwatch stopwatch = log.IsWarnEnabled() ? Stopwatch.StartNew() :null;
 
 				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
-				if(stopwatch!=null) stopwatch.Stop();
+				stopwatch?.Stop();
 				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
 				if (!(queryExpression is ICacheableQueryExpression linqExpression) || linqExpression.CanCachePlan)
 					planCache.Put(key, plan);
 				else
 				{
-					log.Warn("Query plan not cacheable {0}", queryExpression.Key, stopwatch.Elapsed);
-					log.Warn("Query:{0} ElapsedMilliseconds:{1}", queryExpression.Key , stopwatch.ElapsedMilliseconds);
+					log.Warn("Query plan not cacheable QueryKey:{QueryKey} , elapsed ms:{ElapsedMilliseconds}", queryExpression.Key, stopwatch.ElapsedMilliseconds);
 				}
 			}
 			else
