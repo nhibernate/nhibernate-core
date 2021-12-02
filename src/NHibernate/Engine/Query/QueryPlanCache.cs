@@ -71,7 +71,7 @@ namespace NHibernate.Engine.Query
 				if (!(queryExpression is ICacheableQueryExpression linqExpression) || linqExpression.CanCachePlan)
 					planCache.Put(key, plan);
 				else
-					log.Debug("Query plan not cacheable");
+					log.Warn("Query plan not cacheable {0}", queryExpression.Key);
 			}
 			else
 			{
