@@ -124,7 +124,7 @@ namespace NHibernate.Test.Linq
 				false,
 				typeof(A).FullName,
 				null,
-				o => o is SerializableType serializableType && serializableType.ReturnedClass == typeof(object));
+				o => o is EntityType entityType && entityType.ReturnedClass == typeof(A));
 		}
 
 		[Test]

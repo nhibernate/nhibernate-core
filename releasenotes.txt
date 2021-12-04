@@ -1,4 +1,231 @@
-﻿Build 5.3.0
+﻿Build 5.3.10
+=============================
+
+Release notes - NHibernate - Version 5.3.10
+
+11 issues were resolved in this release.
+
+** Bug
+
+   * #2891 Fix nullable entity comparison with null and implicit/cross joins
+   * #2885 Do not serialize unnecessary members in SessionFactory
+   * #2882 Fix ArgumentNullException when provider is unable to open a connection
+   * #2871 If DbTransaction.Dispose throws an exception, the AdoTransaction is left in an inconsistent state
+   * #2860 Null reference when calling Trim() on interpolated string containing null property
+   * #2858 Casting to object and back to interface in Subquery causes incorrect SQL
+   * #2856 Distinct on Composite User Type property fails
+   * #2855 Error log from ReflectHelper.TypeFromAssembly() on Linq query
+   * #2611 One-to-zero-or-one relation not returning data when checking for null
+   * #1962 Failing Linq query on element index
+
+** Task
+
+   * #2915 Release 5.3.10
+
+Build 5.3.9
+=============================
+
+Release notes - NHibernate - Version 5.3.9
+
+11 issues were resolved in this release.
+
+** Bug
+
+   * #2835 Fix ExecuteWorkInIsolation ignores MultiTenancy configuration
+   * #2811 Remove session finalizer
+   * #2805 Model not mapped Exception
+   * #2802 ArgumentException on session Flush
+   * #2792 Arithmetic operations adding casts to SQLite that cause incorrect results
+   * #2791 Custom Equality Fails
+   * #2772 LINQ query returns NULL instead of expected result
+
+** Test
+
+   * #2841 Fix possible test failure for SqlServer 2019
+   * #2814 Fix intermittent Firebird test errors
+   * #2812 Replace Travis CI with GitHub Actions
+
+** Task
+
+   * #2837 Release 5.3.9
+
+Build 5.3.8
+=============================
+
+Release notes - NHibernate - Version 5.3.8
+
+6 issues were resolved in this release.
+
+** Bug
+
+   * #2710 Filtered Entity Dml Update Throws Collection was modified
+   * #2708 MappedAs throws when called on a Convert UnaryExpression
+   * #2707 Don't currently support idents of type X
+   * #2673 Exception when using BinaryFormatter to deserialize entities with initialized proxies in associations
+   * #1264 NH-3005 - NHibernate.Hql.Ast.HqlIdent..ctor throws Don't currently support idents of type Date
+
+** Task
+
+   * #2721 Release 5.3.8
+
+Build 5.3.7
+=============================
+
+Release notes - NHibernate - Version 5.3.7
+
+5 issues were resolved in this release.
+
+** Bug
+
+   * #2704 IEnhancedUserType from string to bool fails in some circumstances
+   * #2702 LINQ projection of nullable enum with list fails
+   * #2693 Invalid parameter conversion with group by
+   * #2688 NoViableAltException in a delete on a many-to-one id
+
+** Task
+
+   * #2701 Release 5.3.7
+
+Build 5.3.6
+=============================
+
+Release notes - NHibernate - Version 5.3.6
+
+12 issues were resolved in this release.
+
+** Bug
+
+   * #2659 IQueryable<T> filter by subquery gives "Item with Same Key has already been added"
+   * #2649 Invalid parameter conversion for enums mapped in sub-classes
+   * #2646 Invalid generated sql with linq any in select and composite keys
+   * #2642 Linq expression parser removes required Convert nodes
+   * #2631 IndexOutOfRange exception with One-to-One mapping
+   * #2627 Null reference on Merge for detached unsaved entity
+   * #2626 WHERE IN SELECT uses wrong column
+   * #2608 Delay entity insert may fail with Merge
+   * #2544 Recognition error occurs using System.Linq.Queryable.Contains
+
+** Improvement
+
+   * #2677 Missing ConfigureAwait in FutureEnumerable.GetEnumerableAsync
+   * #2656 Make sure dbcommand is disposed
+
+** Task
+
+   * #2676 Release 5.3.6
+
+As part of releasing 5.3.6, one missing 5.3.0 possible breaking change has been added, about
+Merge no more triggering immediate generation of identifier. See 5.3.0 possible breaking changes.
+
+Build 5.3.5
+=============================
+
+Release notes - NHibernate - Version 5.3.5
+
+2 issues were resolved in this release.
+
+** Bug
+
+   * #2599 WrongClassException in Linq query
+
+** Task
+
+   * #2606 Release 5.3.5
+
+Build 5.3.4
+=============================
+
+Release notes - NHibernate - Version 5.3.4
+
+6 issues were resolved in this release.
+
+** Bug
+
+   * #2580 InvalidWithClauseException when join polymorphic entity
+   * #2559 Regression in caching linq query with ThenFetchMany statement.
+   * #2549 ApplyFilter does not work on join statements in LINQ
+   * #2537 Unable to cast "System.Linq.Expressions.UnaryExpression" to "System.Linq.Expressions.LambdaExpression".
+
+** Task
+
+   * #2578 Add missing possible breaking changes for #2365
+   * #2587 Release 5.3.4
+
+As part of releasing 5.3.4, one missing 5.3.0 possible breaking change has been added, about
+custom method generators for Linq. See 5.3.0 possible breaking changes.
+
+Build 5.3.3
+=============================
+
+Release notes - NHibernate - Version 5.3.3
+
+16 issues were resolved in this release.
+
+** Bug
+
+   * #2519 Fix parameter caching for Linq provider
+   * #2515 InvalidCastException for Linq query with subquery
+   * #2514 Entity with field interceptor are not correctly passed as Linq parameters
+   * #2512 Linq queries with a condition after a projection on a collection fail
+   * #2511 Linq Fetch over component after fetching a many-to-one throws exception
+   * #2508 OnPreUpdateCollection - Passed entity instance X is not of expected type Y
+   * #2499 Cast operation fails when an enum is mapped as an AnsiString
+   * #2490 Unnecessary cast in sql with Linq are causing performance issues
+   * #2488 Fix parameter detection for Equals and CompareTo methods for Linq provider
+   * #2485 Throw entity not mapped exception for entity join in hql if possible
+   * #2484 Entity Joins are not polymorphic in hql
+   * #2476 Hashset add returns true instead of false
+   * #2474 Fetch all lazy properties when entity is already loaded fails
+   * #2471 AsQueryable() on collection throws if applied after Where statement
+
+** Task
+
+   * #2482 Add missing possible breaking changes for #2010
+   * #2527 Release 5.3.3
+
+As part of releasing 5.3.3, two missing 5.3.0 possible breaking changes have been added, about
+uninitialized extra lazy collections and SQLite schema validation. See 5.3.0 possible breaking changes.
+
+Build 5.3.2
+=============================
+
+Release notes - NHibernate - Version 5.3.2
+
+6 issues were resolved in this release.
+
+** Bug
+
+   * #2468 Null reference at NHibernate.Util.AsyncReaderWriterLock.ReadLock()
+   * #2465 Linq contains on a value collection is failing
+   * #2463 Path expected for join
+   * #2458 Evaluatable expressions with parameters are no more pre-evaluated
+   * #2453 Fail to cast enum as nvarchar for Linq Contains
+
+** Task
+
+   * #2472 Release 5.3.2
+
+Build 5.3.1
+=============================
+
+Release notes - NHibernate - Version 5.3.1
+
+7 issues were resolved in this release.
+
+** Bug
+
+   * #2445 LINQ queries with a cast from int to uint fail
+   * #2440 InvalidCastException for Future Criteria with aliased fetches 
+   * #2439 Invalid parameter conversion for enums
+   * #2437 Invalid cast on nullable custom type with Linq
+
+** Task
+
+   * #2450 Release 5.3.1
+   * #2436 Fix old http://nhibernate.info URIs
+   * #2435 Fix iconUrl warning
+
+Build 5.3.0
 =============================
 
 Release notes - NHibernate - Version 5.3.0
@@ -13,7 +240,7 @@ Release notes - NHibernate - Version 5.3.0
         * `update` and `delete` statements will now take into account any enabled filter on the entities
           they update or delete, while previously they were ignoring them. (`insert` statements will also take
           them into account, but previously they were failing instead of ignoring enabled filters.)
-        * ISession.Persist will no more trigger immediate generation of identifier.
+        * ISession.Persist and ISession.Merge will no more trigger immediate generation of identifier.
         * Bags will no more be loaded with "null" entities, they will be filtered out.
         * Setting the value of an uninitialized lazy property will no more trigger loading of all the lazy
           properties of the entity.
@@ -30,12 +257,42 @@ Release notes - NHibernate - Version 5.3.0
           stored as `REAL` instead of `NUMERIC`. Both are binary floating point types, excepted that `NUMERIC`
           stores integral values as `INTEGER`. This change may cause big integral decimal values to lose more
           precision in SQLite.
+        * SQLite: non supported SQL type names previously used by NHibernate, resulting in unexpected actual typing,
+          have been fixed. This causes databases generated by a previous NHibernate version to fail schema validation
+          by 5.3 or higher versions. See #2507 for more information.
         * Custom dialects used for databases that do not support cross join will have to override
           `SupportsCrossJoin` property and set it to `false`.
         * `VisitorParameters.ConstantToParameterMap` may contain the same parameter for multiple constant
           expressions.
         * `ICache` caches yielded by the session factory will be `CacheBase` wrappers around the cache actually
           provided by the cache provider, if it was not deriving from `CacheBase`.
+        * Calling `IList.RemoveAt` or `IList<>.RemoveAt` on an uninitialized list with a negative number
+          will now throw an `ArgumentOutOfRangeException`.
+        * Calling `IList.RemoveAt` or `IList<>.RemoveAt` on an uninitialized list mapped as `lazy="extra"`
+          with a number that is equal or higher that the current collection size will now throw an
+          `ArgumentOutOfRangeException`.
+        * Calling `IList.Insert` or `IList<>.Insert` on an uninitialized list with a negative number will
+          now throw an `ArgumentOutOfRangeException`.
+        * Calling `IList.Insert` or `IList<>.Insert` on an uninitialized list mapped as `lazy="extra"`
+          with a number that is higher that the current collection size will now throw an 
+          `ArgumentOutOfRangeException`.
+        * Getting or setting a value with `IList.this[int index]` or `IList<>.this[int index]` on an uninitialized
+          list with a negative number will now throw an `ArgumentOutOfRangeException`.
+        * Setting a value with `IList.this[int index]` or `IList<>.this[int index]` on an uninitialized list
+          mapped as `lazy="extra"` with a number that is equal or higher that the current collection size will now
+          throw an `ArgumentOutOfRangeException`.
+        * Calling `IDictionary<,>.Add` or `ICollection<>.Add` on an uninitialized map mapped as `lazy="extra"` with
+          a key that already exists will now throw an `ArgumentException`.
+        * Calling `IDictionary<,>.Remove` or `ICollection<>.Remove` on an uninitialized map mapped as `lazy="extra"`
+          with a key that does not exist will now return false.
+        * Map dirtiness is now evaluated by `EqualityComparer<TValue>.Default` when setting an existing key value
+          with `IDictionary<,>.this[]` on an initialized map.
+        * Calling `ISet<>.Add` on an uninitialized set mapped as `lazy="extra"` with a transient element that
+          already exists in the set will now return false.
+        * Calling `ISet<>.Add` or `ICollection<>.Add` on an uninitialized set mapped as `lazy="true"` with a
+          transient element that does not override `Equals` method will not initialize the collection.
+        * Linq custom generators deriving from `BaseHqlGeneratorForMethod` should override the
+          `TryGetCollectionParameter` method if they have to support parameter lists.
 
 ** Bug
 

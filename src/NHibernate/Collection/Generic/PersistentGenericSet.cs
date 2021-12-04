@@ -277,23 +277,6 @@ namespace NHibernate.Collection.Generic
 			throw new NotSupportedException("Sets don't support updating by element");
 		}
 
-		public override bool Equals(object other)
-		{
-			var that = other as ISet<T>;
-			if (that == null)
-			{
-				return false;
-			}
-			Read();
-			return WrappedSet.SequenceEqual(that);
-		}
-
-		public override int GetHashCode()
-		{
-			Read();
-			return WrappedSet.GetHashCode();
-		}
-
 		public override bool EntryExists(object entry, int i)
 		{
 			return true;
@@ -314,8 +297,8 @@ namespace NHibernate.Collection.Generic
 		public bool Add(T o)
 		{
 			// Skip checking the element existence in the database if we know that the element
-			// is transient and the operation queue is enabled
-			if (WasInitialized || !IsOperationQueueEnabled || !IsTransient(o))
+			// is transient, the mapped class does not override Equals method and the operation queue is enabled
+			if (WasInitialized || !IsOperationQueueEnabled || !CanSkipElementExistenceCheck(o))
 			{
 				var exists = IsOperationQueueEnabled ? ReadElementExistence(o, out _) : null;
 				if (!exists.HasValue)

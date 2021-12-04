@@ -1,6 +1,7 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -39,22 +40,26 @@ namespace NHibernate.Engine
 			return buf.Append('}').ToString();
 		}
 
-		private sealed class Join
+		private sealed class Join : IJoin
 		{
 			private readonly IAssociationType associationType;
 			private readonly IJoinable joinable;
 			private readonly JoinType joinType;
 			private readonly string alias;
 			private readonly string[] lhsColumns;
+			private readonly string[] rhsColumns;
 
 			public Join(ISessionFactoryImplementor factory, IAssociationType associationType, string alias, JoinType joinType,
-			            string[] lhsColumns)
+						string[] lhsColumns)
 			{
 				this.associationType = associationType;
 				this.joinable = associationType.GetAssociatedJoinable(factory);
 				this.alias = alias;
 				this.joinType = joinType;
 				this.lhsColumns = lhsColumns;
+				this.rhsColumns = lhsColumns.Length > 0
+					? JoinHelper.GetRHSColumnNames(joinable, associationType)
+					: Array.Empty<string>();
 			}
 
 			public string Alias
@@ -80,6 +85,11 @@ namespace NHibernate.Engine
 			public string[] LHSColumns
 			{
 				get { return lhsColumns; }
+			}
+
+			public string[] RHSColumns
+			{
+				get { return rhsColumns; }
 			}
 
 			public override string ToString()
@@ -133,105 +143,122 @@ namespace NHibernate.Engine
 
 		public JoinFragment ToJoinFragment(IDictionary<string, IFilter> enabledFilters, bool includeExtraJoins)
 		{
-			return ToJoinFragment(enabledFilters, includeExtraJoins, null, null);
+			return ToJoinFragment(enabledFilters, includeExtraJoins, true, null);
 		}
 
+		public JoinFragment ToJoinFragment(IDictionary<string, IFilter> enabledFilters, bool includeAllSubclassJoins, SqlString withClause)
+		{
+			return ToJoinFragment(enabledFilters, includeAllSubclassJoins, true, withClause);
+		}
+
+		// Since 5.4
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public JoinFragment ToJoinFragment(
 			IDictionary<string, IFilter> enabledFilters,
 			bool includeExtraJoins,
 			SqlString withClauseFragment,
 			string withClauseJoinAlias)
 		{
-			return ToJoinFragment(enabledFilters, includeExtraJoins, withClauseFragment, withClauseJoinAlias, rootAlias);
+			return ToJoinFragment(enabledFilters, includeExtraJoins, true, withClauseFragment);
 		}
 
-		internal virtual JoinFragment ToJoinFragment(
+		internal JoinFragment ToJoinFragment(
 			IDictionary<string, IFilter> enabledFilters,
-			bool includeExtraJoins,
-			SqlString withClauseFragment,
-			string withClauseJoinAlias,
-			string withRootAlias)
+			bool includeAllSubclassJoins,
+			bool renderSubclassJoins,
+			SqlString withClauseFragment)
 		{
 			QueryJoinFragment joinFragment = new QueryJoinFragment(factory.Dialect, useThetaStyle);
 			if (rootJoinable != null)
 			{
-				joinFragment.AddCrossJoin(rootJoinable.TableName, withRootAlias);
-				string filterCondition = rootJoinable.FilterFragment(withRootAlias, enabledFilters);
+				joinFragment.AddCrossJoin(rootJoinable.TableName, rootAlias);
+				string filterCondition = rootJoinable.FilterFragment(rootAlias, enabledFilters);
 				// JoinProcessor needs to know if the where clause fragment came from a dynamic filter or not so it
 				// can put the where clause fragment in the right place in the SQL AST.   'hasFilterCondition' keeps track
 				// of that fact.
 				joinFragment.HasFilterCondition = joinFragment.AddCondition(filterCondition);
-				if (includeExtraJoins)
-				{
-					//TODO: not quite sure about the full implications of this!
-					AddExtraJoins(joinFragment, withRootAlias, rootJoinable, true);
-				}
+				AddSubclassJoins(joinFragment, rootAlias, rootJoinable, true, includeAllSubclassJoins);
 			}
 
+			var withClauses = new SqlString[joins.Count];
 			IJoinable last = rootJoinable;
+			for (int i = 0; i < joins.Count; i++)
+			{
+				Join join = joins[i];
+
+				withClauses[i] = GetWithClause(enabledFilters, ref withClauseFragment, join, last);
+				last = join.Joinable;
+			}
+
+			if (rootJoinable == null && TableGroupJoinHelper.ProcessAsTableGroupJoin(joins, withClauses, includeAllSubclassJoins, joinFragment, alias => IsIncluded(alias), factory))
+			{
+				return joinFragment;
+			}
 
 			for (int i = 0; i < joins.Count; i++)
 			{
 				Join join = joins[i];
-				string on = join.AssociationType.GetOnCondition(join.Alias, factory, enabledFilters);
-				SqlString condition = new SqlString();
-				if (last != null &&
-						IsManyToManyRoot(last) &&
-						((IQueryableCollection)last).ElementType == join.AssociationType)
-				{
-					// the current join represents the join between a many-to-many association table
-					// and its "target" table.  Here we need to apply any additional filters
-					// defined specifically on the many-to-many
-					string manyToManyFilter = ((IQueryableCollection)last)
-						.GetManyToManyFilterFragment(join.Alias, enabledFilters);
-					condition = new SqlString("".Equals(manyToManyFilter)
-												? on
-												: "".Equals(on)
-														? manyToManyFilter
-														: on + " and " + manyToManyFilter);
-				}
-				else
-				{
-					// NH Different behavior : NH1179 and NH1293
-					// Apply filters in Many-To-One association
-					var enabledForManyToOne = FilterHelper.GetEnabledForManyToOne(enabledFilters);
-					condition = new SqlString(string.IsNullOrEmpty(on) && enabledForManyToOne.Count > 0
-					            	? join.Joinable.FilterFragment(join.Alias, enabledForManyToOne)
-					            	: on);
-				}
-
-				if (withClauseFragment != null)
-				{
-					if (join.Alias.Equals(withClauseJoinAlias))
-					{
-						condition = condition.Append(" and ", withClauseFragment);
-					}
-				}
 
 				// NH: the variable "condition" have to be a SqlString because it may contains Parameter instances with BackTrack
 				joinFragment.AddJoin(
 					join.Joinable.TableName,
 					join.Alias,
 					join.LHSColumns,
-					JoinHelper.GetRHSColumnNames(join.AssociationType, factory),
+					join.RHSColumns,
 					join.JoinType,
-					condition
-					);
-				if (includeExtraJoins)
-				{
-					//TODO: not quite sure about the full implications of this!
-					AddExtraJoins(joinFragment, join.Alias, join.Joinable, join.JoinType == JoinType.InnerJoin);
-				}
-				last = join.Joinable;
+					withClauses[i]
+				);
+
+				AddSubclassJoins(joinFragment, join.Alias, join.Joinable, join.JoinType == JoinType.InnerJoin, renderSubclassJoins);
 			}
+
 			if (next != null)
 			{
-				joinFragment.AddFragment(next.ToJoinFragment(enabledFilters, includeExtraJoins));
+				joinFragment.AddFragment(next.ToJoinFragment(enabledFilters, includeAllSubclassJoins));
 			}
 			joinFragment.AddCondition(conditions.ToSqlString());
 			if (isFromPart)
 				joinFragment.ClearWherePart();
 			return joinFragment;
+		}
+
+		private SqlString GetWithClause(IDictionary<string, IFilter> enabledFilters, ref SqlString withClauseFragment, Join join, IJoinable last)
+		{
+			string on = join.AssociationType.GetOnCondition(join.Alias, factory, enabledFilters);
+			var withConditions = new List<object>();
+
+			if (!string.IsNullOrEmpty(on))
+				withConditions.Add(on);
+
+			if (last != null &&
+				IsManyToManyRoot(last) &&
+				((IQueryableCollection) last).ElementType == join.AssociationType)
+			{
+				// the current join represents the join between a many-to-many association table
+				// and its "target" table.  Here we need to apply any additional filters
+				// defined specifically on the many-to-many
+				string manyToManyFilter = ((IQueryableCollection) last)
+					.GetManyToManyFilterFragment(join.Alias, enabledFilters);
+
+				if (!string.IsNullOrEmpty(manyToManyFilter))
+					withConditions.Add(manyToManyFilter);
+			}
+			else if (string.IsNullOrEmpty(on))
+			{
+				// NH Different behavior : NH1179 and NH1293
+				// Apply filters for entity joins and Many-To-One association
+				var enabledForManyToOne = FilterHelper.GetEnabledForManyToOne(enabledFilters);
+				if (ForceFilter || enabledForManyToOne.Count > 0)
+					withConditions.Add(join.Joinable.FilterFragment(join.Alias, enabledForManyToOne));
+			}
+
+			if (withClauseFragment != null && !IsManyToManyRoot(join.Joinable))
+			{
+				withConditions.Add(withClauseFragment);
+				withClauseFragment = null;
+			}
+
+			return SqlStringHelper.JoinParts(" and ", withConditions);
 		}
 
 		private bool IsManyToManyRoot(IJoinable joinable)
@@ -249,9 +276,9 @@ namespace NHibernate.Engine
 			return selector != null && selector.IncludeSubclasses(alias);
 		}
 
-		private void AddExtraJoins(JoinFragment joinFragment, string alias, IJoinable joinable, bool innerJoin)
+		private void AddSubclassJoins(JoinFragment joinFragment, String alias, IJoinable joinable, bool innerJoin, bool includeSubclassJoins)
 		{
-			bool include = IsIncluded(alias);
+			bool include = includeSubclassJoins && IsIncluded(alias);
 			joinFragment.AddJoins(joinable.FromJoinFragment(alias, innerJoin, include),
 			                      joinable.WhereJoinFragment(alias, innerJoin, include));
 		}
@@ -327,5 +354,13 @@ namespace NHibernate.Engine
 		internal string RootAlias => rootAlias;
 
 		public ISessionFactoryImplementor Factory => factory;
+
+		internal bool ForceFilter { get; set; }
+
+		public JoinSequence AddJoin(FromElement fromElement)
+		{
+			joins.AddRange(fromElement.JoinSequence.joins);
+			return this;
+		}
 	}
 }

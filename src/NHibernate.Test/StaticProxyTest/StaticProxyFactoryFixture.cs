@@ -37,6 +37,13 @@ namespace NHibernate.Test.StaticProxyTest
 			public virtual int Id { get; set; }
 		}
 
+		[Serializable]
+		internal class InternalTestClass
+		{
+			int Id { get; set; }
+			string Name { get; set; }
+		}
+
 		public interface IPublic
 		{
 			int Id { get; set; }
@@ -200,6 +207,22 @@ namespace NHibernate.Test.StaticProxyTest
 			{
 				info.AddValue(nameof(Id), Id);
 			}
+		}
+
+		[Serializable]
+		public abstract class ClassWithGenericNonVirtualMethod : IWithGenericMethod
+		{
+			public virtual int Id { get; set; }
+			public virtual string Name { get; set; }
+			public T CopyTo<T>() where T : class, IWithGenericMethod
+			{
+				return null;
+			}
+		}
+
+		public interface IWithGenericMethod
+		{
+			T CopyTo<T>() where T : class, IWithGenericMethod;
 		}
 
 		[Test]
@@ -517,6 +540,58 @@ namespace NHibernate.Test.StaticProxyTest
 					Assert.That(proxy, Is.Not.Null);
 					Assert.That(proxy, Is.InstanceOf<IPublic>());
 					Assert.That(proxy, Is.InstanceOf<AbstractTestClass>());
+#if NETFX
+				});
+#endif
+		}
+		
+		[Test]
+		public void VerifyProxyForInternalClass()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(
+				typeof(InternalTestClass).FullName,
+				typeof(InternalTestClass),
+				new HashSet<System.Type> { typeof(INHibernateProxy) },
+				null, null, null, true);
+
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var proxy = factory.GetProxy(1, null);
+					Assert.That(proxy, Is.Not.Null);
+					Assert.That(proxy, Is.InstanceOf<InternalTestClass>());
+
+					Assert.That(factory.GetFieldInterceptionProxy(), Is.InstanceOf<InternalTestClass>());
+
+#if NETFX
+				});
+#endif
+		}
+
+		[Test(Description = "GH2619")]
+		public void VerifyProxyForClassWithGenericNonVirtualMethod()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(
+				typeof(ClassWithGenericNonVirtualMethod).FullName,
+				typeof(ClassWithGenericNonVirtualMethod),
+				new HashSet<System.Type> { typeof(INHibernateProxy) },
+				null, null, null, true);
+
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var proxy = factory.GetProxy(1, null);
+					Assert.That(proxy, Is.Not.Null);
+					Assert.That(proxy, Is.InstanceOf<ClassWithGenericNonVirtualMethod>());
+
+					Assert.That(factory.GetFieldInterceptionProxy(), Is.InstanceOf<ClassWithGenericNonVirtualMethod>());
+
 #if NETFX
 				});
 #endif

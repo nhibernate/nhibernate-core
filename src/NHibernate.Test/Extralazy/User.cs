@@ -50,6 +50,8 @@ namespace NHibernate.Test.Extralazy
 
 		public virtual ISet<UserPermission> Permissions { get; set; } = new HashSet<UserPermission>();
 
+		public virtual ISet<UserFollower> Followers { get; set; } = new HashSet<UserFollower>();
+
 		public virtual IList<Company> Companies { get; set; } = new List<Company>();
 
 		public virtual IList<CreditCard> CreditCards { get; set; } = new List<CreditCard>();

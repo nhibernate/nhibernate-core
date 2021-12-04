@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1693
 			using (var tx = session.BeginTransaction())
 			{
 				var q1 =
-					"from Invoice i where i.Mode='a' and i.Category=:cat and not exists (from Invoice i2 where i2.Mode='a' and i2.Category=:cat and i2.Num=i.Num+1)";
+					"from Invoice i where i.Mode='a' and i.Category=:cat and not exists (from Invoice i2 where i2.Mode='a' and i2.Category=:cat and i2.Num=i.Num+1) order by i.Num";
 				var list = await (session.CreateQuery(q1)
 					.SetParameter("cat", 10)
 					.ListAsync<Invoice>());
@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1693
 				session.EnableFilter("modeFilter").SetParameter("currentMode", "a");
 
 				var q1 =
-					"from Invoice i where i.Category=:cat and not exists (from Invoice i2 where i2.Category=:cat and i2.Num=i.Num+1)";
+					"from Invoice i where i.Category=:cat and not exists (from Invoice i2 where i2.Category=:cat and i2.Num=i.Num+1) order by i.Num";
 				var list = await (session.CreateQuery(q1)
 					.SetParameter("cat", 10)
 					.ListAsync<Invoice>());

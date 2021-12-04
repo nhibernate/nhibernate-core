@@ -64,15 +64,9 @@
 		<property name="tool.path" value="${tools.dir}/${tool.id}/${tool.version}/" />
 	</target>
 
-	<target name="find-async-generator-console">
-		<property name="tool.id" value="CSharpAsyncGenerator.CommandLine" />
-		<call target="get-tool-info" />
-		<property name="async-generator-console"  value="${tool.path}tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll" />
-	</target>
-
-	<target name="generate-async" depends="solution-restore find-async-generator-console">
+	<target name="generate-async" depends="solution-restore">
 		<exec workingdir="${root.dir}/src" program="dotnet" verbose="true">
-			<arg line=".${async-generator-console}" />
+			<arg line="async-generator" />
 		</exec> 
 	</target>
 

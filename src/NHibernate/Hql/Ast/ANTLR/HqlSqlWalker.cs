@@ -42,6 +42,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private SelectClause _selectClause;
 		private readonly AliasGenerator _aliasGenerator = new AliasGenerator();
 		private readonly ASTPrinter _printer = new ASTPrinter();
+		private bool _isNullComparison;
 
 		//
 		//Maps each top-level result variable to its SelectExpression;
@@ -182,6 +183,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		void BeforeStatement(string statementName, int statementType)
 		{
 			_inFunctionCall = false;
+			_inCase = false;
 			_level++;
 			if (_level == 1)
 			{
@@ -427,6 +429,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			clauseStack.Push(_currentClauseType);
 			_currentClauseType = clauseType;
+			if (_level == 1)
+			{
+				CurrentTopLevelClauseType = clauseType;
+			}
 		}
 
 		void HandleClauseEnd(int clauseType)
@@ -701,12 +707,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// 		2) an entity-join (join com.acme.User)
 			//
 			// so make the proper interpretation here...
-			var entityJoinReferencedPersister = ResolveEntityJoinReferencedPersister(path);
-			if (entityJoinReferencedPersister != null)
+			// DOT node processing was moved to prefer implicit join path before probing for entity join
+			if (path.Type == IDENT)
 			{
-				var entityJoin = CreateEntityJoin(entityJoinReferencedPersister, alias, joinType, with);
-				((FromReferenceNode) path).FromElement = entityJoin;
-				SetPropertyFetch(entityJoin, propertyFetch, alias);
+				ProcessAsEntityJoin();
 				return;
 			}
 			// The path AST should be a DotNode, and it should have been evaluated already.
@@ -724,6 +728,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			// Generate an explicit join for the root dot node.   The implied joins will be collected and passed up
 			// to the root dot node.
+			dot.SkipSemiResolve = true;
 			dot.Resolve( true, false, alias == null ? null : alias.Text );
 
 			FromElement fromElement;
@@ -737,7 +742,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 				fromElement = dot.GetImpliedJoin();
 				if (fromElement == null)
 				{
-					throw new InvalidPathException("Invalid join: " + dot.Path);
+					ProcessAsEntityJoin();
+					return;
 				}
 				SetPropertyFetch(fromElement, propertyFetch, alias);
 
@@ -760,6 +766,15 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if ( log.IsDebugEnabled() )
 			{
 				log.Debug("createFromJoinElement() : {0}", _printer.ShowAsString( fromElement, "-- join tree --" ));
+			}
+
+			void ProcessAsEntityJoin()
+			{
+				var node = (FromReferenceNode) path;
+				var entityJoinReferencedPersister = ResolveEntityJoinReferencedPersister(node);
+				var entityJoin = CreateEntityJoin(entityJoinReferencedPersister, alias, joinType, with);
+				node.FromElement = entityJoin;
+				SetPropertyFetch(entityJoin, propertyFetch, alias);
 			}
 		}
 
@@ -789,20 +804,29 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return join;
 		}
 
-		private IQueryable ResolveEntityJoinReferencedPersister(IASTNode path)
+		private IQueryable ResolveEntityJoinReferencedPersister(FromReferenceNode path)
 		{
+			string entityName = path.Path;
+
+			var persister = SessionFactoryHelper.FindQueryableUsingImports(entityName);
+			if (persister == null && entityName != null)
+			{
+				var implementors = SessionFactoryHelper.Factory.GetImplementors(entityName);
+				//Possible case - join on interface
+				if (implementors.Length == 1)
+					persister = (IQueryable) SessionFactoryHelper.Factory.TryGetEntityPersister(implementors[0]);
+			}
+
+			if (persister != null)
+				return persister;
+
 			if (path.Type == IDENT)
 			{
-				var pathIdentNode = (IdentNode) path;
-				string name = path.Text ?? pathIdentNode.OriginalText;
-				return SessionFactoryHelper.FindQueryableUsingImports(name);
+				throw new QuerySyntaxException(entityName + " is not mapped");
 			}
-			else if (path.Type == DOT)
-			{
-				var pathText = ASTUtil.GetPathText(path);
-				return SessionFactoryHelper.FindQueryableUsingImports(pathText);
-			}
-			return null;
+
+			//Keep old exception for DOT node
+			throw new InvalidPathException("Invalid join: " + entityName);
 		}
 
 		private static string GetPropertyPath(DotNode dotNode, IASTNode alias)
@@ -1051,7 +1075,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				// Add the parameter type information so that we are able to calculate functions return types
 				// when the parameter is used as an argument.
-				parameter.ExpectedType = namedParameter.Type;
+				if (namedParameter.IsGuessedType)
+					parameter.GuessedType = namedParameter.Type;
+				else
+					parameter.ExpectedType = namedParameter.Type;
 			}
 
 			_parameters.Add(paramSpec);
@@ -1095,6 +1122,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 				get { return _currentClauseType; }
 		}
+
+		// Note: CurrentClauseType tracks the current clause within the current
+		// statement, regardless of level; CurrentTopLevelClauseType, on the other
+		// hand, tracks the current clause within the top (or primary) statement.
+		// Thus, CurrentTopLevelClauseType ignores the clauses from any subqueries.
+		public int CurrentTopLevelClauseType { get; private set; }
 
 		public IDictionary<string, IFilter> EnabledFilters
 		{
@@ -1181,6 +1214,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
+		internal bool IsNullComparison => _isNullComparison;
+
 		public void AddQuerySpaces(string[] spaces)
 		{
 			for (int i = 0; i < spaces.Length; i++)
@@ -1229,8 +1264,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				sql.whereExpr();
 
-				var withClauseFragment = new SqlString("(", sql.GetSQL(), ")");
-				fromElement.SetWithClauseFragment(visitor.GetJoinAlias(), withClauseFragment);
+				fromElement.WithClauseFragment = new SqlString("(", sql.GetSQL(), ")");
 			}
 			catch (SemanticException)
 			{
@@ -1250,44 +1284,15 @@ namespace NHibernate.Hql.Ast.ANTLR
 	class WithClauseVisitor : IVisitationStrategy 
 	{
 		private readonly FromElement _joinFragment;
-		private readonly bool _multiTable;
 
 		public WithClauseVisitor(FromElement fromElement) 
 		{
 			_joinFragment = fromElement;
-			_multiTable = (fromElement.EntityPersister as IQueryable)?.IsMultiTable == true;
 		}
 
 		public void Visit(IASTNode node)
 		{
-			// todo : currently expects that the individual with expressions apply to the same sql table join.
-			//      This may not be the case for joined-subclass where the property values
-			//      might be coming from different tables in the joined hierarchy.  At some
-			//      point we should expand this to support that capability.  However, that has
-			//      some difficulties:
-			//          1) the biggest is how to handle ORs when the individual comparisons are
-			//              linked to different sql joins.
-			//          2) here we would need to track each comparison individually, along with
-			//              the join alias to which it applies and then pass that information
-			//              back to the FromElement so it can pass it along to the JoinSequence
-			if (_multiTable && node is DotNode dotNode)
-			{
-				FromElement fromElement = dotNode.FromElement;
-				if (_joinFragment == fromElement)
-				{
-					var joinAlias = ExtractAppliedAlias(dotNode);
-					//See WithClauseFixture.InvalidWithSemantics to understand the logic behind this check
-					// todo : temporary
-					//      needed because currently persister is the one that
-					//      creates and renders the join fragments for inheritence
-					//      hierarchies...
-					if (joinAlias != _joinFragment.TableAlias)
-					{
-						throw new InvalidWithClauseException("with clause can only reference columns in the driving table");
-					}
-				}
-			}
-			else if (node is ParameterNode paramNode)
+			if (node is ParameterNode paramNode)
 			{
 				ApplyParameterSpecification(paramNode.HqlParameterSpecification);
 			}
@@ -1314,11 +1319,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_joinFragment.AddEmbeddedParameter(paramSpec);
 		}
 
-		private static String ExtractAppliedAlias(IASTNode dotNode) 
-		{
-			return dotNode.Text.Substring( 0, dotNode.Text.IndexOf( '.' ) );
-		}
-
+		// Since 5.4
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public String GetJoinAlias()
 		{
 			return _joinFragment.TableAlias;

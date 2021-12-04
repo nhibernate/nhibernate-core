@@ -2,10 +2,10 @@
   <Import Condition="Exists('NHibernate.dev.props')" Project="NHibernate.dev.props"/>
 
   <PropertyGroup>
-    <NhVersion     Condition="'$(NhVersion)' == ''"    >5.3</NhVersion>
+    <NhVersion     Condition="'$(NhVersion)' == ''"    >5.4</NhVersion>
     <VersionPatch  Condition="'$(VersionPatch)'  == ''">0</VersionPatch>
     <!-- Clear VersionSuffix for making release and set it to dev for making development builds -->
-    <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
+    <VersionSuffix Condition="'$(VersionSuffix)' == ''">dev</VersionSuffix>
 
     <VersionPrefix Condition="'$(VersionPrefix)' == ''">$(NhVersion).$(VersionPatch)</VersionPrefix>
     <VersionSuffix Condition="'$(VersionSuffix)' != '' AND '$(BuildNumber)' != ''">$(VersionSuffix).$(BuildNumber)</VersionSuffix>
@@ -25,8 +25,9 @@
     <Authors>NHibernate community, Hibernate community</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
 
-    <PackageProjectUrl>http://nhibernate.info</PackageProjectUrl>
+    <PackageProjectUrl>https://nhibernate.info</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/nhibernate/nhibernate-core/master/logo/NHibernate-NuGet.png</PackageIconUrl>
+    <PackageIcon>NHibernate-NuGet.png</PackageIcon>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>LGPL-2.1-only</PackageLicenseExpression>
     <PackageReleaseNotes Condition="'$(VersionSuffix)' == ''">https://github.com/nhibernate/nhibernate-core/blob/$(VersionPrefix)/releasenotes.txt</PackageReleaseNotes>
@@ -41,6 +42,6 @@
     <DisableImplicitPackageTargetFallback>True</DisableImplicitPackageTargetFallback>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
   </ItemGroup>
 </Project>

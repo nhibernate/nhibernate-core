@@ -24,6 +24,18 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void CanExecuteContains()
+		{
+			var user = db.Users.FirstOrDefault();
+			var result = db.Users.Contains(user);
+			Assert.That(result, Is.True);
+
+			user = new User("test", DateTime.Now);
+			result = db.Users.Contains(user);
+			Assert.That(result, Is.False);
+		}
+
+		[Test]
 		public void CanExecuteCountWithOrderByArguments()
 		{
 			var query = db.Users.OrderBy(u => u.Name);

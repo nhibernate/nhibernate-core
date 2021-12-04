@@ -60,8 +60,12 @@
       name: BestGuessEntityName
       containingTypeName: ISessionImplementor
     - conversion: Ignore
-      name: Contains
+      name: CloseSessionFromSystemTransaction
       containingTypeName: ISessionImplementor
+# TODO 6.0: Remove ignore rule for IStatelessSession.Close
+    - conversion: Ignore
+      name: Close
+      containingTypeName: IStatelessSession
     - conversion: Ignore
       name: GetUnsavedVersionValue
       containingTypeName: UnsavedValueFactory
@@ -287,6 +291,7 @@ methodRules:
   - containingType: NHibernate.Linq.DmlExtensionMethods
   - containingType: NHibernate.Linq.InsertBuilder<TSource, TTarget>
   - containingType: NHibernate.Linq.UpdateBuilder<TSource>
+  - containingType: NHibernate.Multi.IQueryBatch 
   name: PubliclyExposedType
 - filters:
   - hasAttributeName: ObsoleteAttribute

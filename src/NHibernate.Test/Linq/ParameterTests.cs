@@ -4,11 +4,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using NHibernate.Dialect;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Driver;
 using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.Util;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace NHibernate.Test.Linq
 {
@@ -67,6 +70,80 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void UsingEntityParameterForCollection()
+		{
+			var item = db.OrderLines.First();
+			AssertTotalParameters(
+				db.Orders.Where(o => o.OrderLines.Contains(item)),
+				1);
+		}
+
+		[Test]
+		public void UsingProxyParameterForCollection()
+		{
+			var item = session.Load<Order>(10248);
+			Assert.That(NHibernateUtil.IsInitialized(item), Is.False);
+			AssertTotalParameters(
+				db.Customers.Where(o => o.Orders.Contains(item)),
+				1);
+		}
+
+		[Test]
+		public void UsingFieldProxyParameterForCollection()
+		{
+			var item = session.Query<AnotherEntityRequired>().First();
+			AssertTotalParameters(
+				session.Query<AnotherEntityRequired>().Where(o => o.RequiredRelatedItems.Contains(item)),
+				1);
+		}
+
+		[Test]
+		public void UsingEntityParameterInSubQuery()
+		{
+			var item = db.Customers.First();
+			var subQuery = db.Orders.Select(o => o.Customer).Where(o => o == item);
+			AssertTotalParameters(
+				db.Orders.Where(o => subQuery.Contains(o.Customer)),
+				1);
+		}
+
+		[Test]
+		public void UsingEntityParameterForCollectionSelection()
+		{
+			var item = db.OrderLines.First();
+			AssertTotalParameters(
+				db.Orders.SelectMany(o => o.OrderLines).Where(o => o == item),
+				1);
+		}
+
+		[Test]
+		public void UsingFieldProxyParameterForCollectionSelection()
+		{
+			var item = session.Query<AnotherEntityRequired>().First();
+			AssertTotalParameters(
+				session.Query<AnotherEntityRequired>().SelectMany(o => o.RequiredRelatedItems).Where(o => o == item),
+				1);
+		}
+
+		[Test]
+		public void UsingEntityListParameterForCollectionSelection()
+		{
+			var items = new[] {db.OrderLines.First()};
+			AssertTotalParameters(
+				db.Orders.SelectMany(o => o.OrderLines).Where(o => items.Contains(o)),
+				1);
+		}
+
+		[Test]
+		public void UsingFieldProxyListParameterForCollectionSelection()
+		{
+			var items = new[] {session.Query<AnotherEntityRequired>().First()};
+			AssertTotalParameters(
+				session.Query<AnotherEntityRequired>().SelectMany(o => o.RequiredRelatedItems).Where(o => items.Contains(o)),
+				1);
+		}
+
+		[Test]
 		public void UsingTwoEntityParameters()
 		{
 			var order = db.Orders.First();
@@ -111,6 +188,492 @@ namespace NHibernate.Test.Linq
 			AssertTotalParameters(
 				db.Orders.Where(o => o.OrderId == value && o.OrderId != value),
 				1);
+		}
+
+		[Test]
+		public void CompareIntegralParametersAndColumns()
+		{
+			short shortParam = 1;
+			var intParam = 2;
+			var longParam = 3L;
+			short? nullShortParam = 1;
+			int? nullIntParam = 2;
+			long? nullLongParam = 3L;
+			var queriables = new Dictionary<IQueryable<NumericEntity>, string>
+			{
+				{db.NumericEntities.Where(o => o.Short == shortParam || o.Short < intParam || o.Short > longParam), "Int16"},
+				{db.NumericEntities.Where(o => o.NullableShort == shortParam || o.NullableShort <= intParam || o.NullableShort != longParam), "Int16"},
+				{db.NumericEntities.Where(o => o.Short == nullShortParam || o.Short < nullIntParam || o.Short > nullLongParam), "Int16"},
+				{db.NumericEntities.Where(o => o.NullableShort == nullShortParam || o.NullableShort <= nullIntParam || o.NullableShort != nullLongParam), "Int16"},
+
+				{db.NumericEntities.Where(o => o.Integer == shortParam || o.Integer < intParam || o.Integer > longParam), "Int32"},
+				{db.NumericEntities.Where(o => o.NullableInteger == shortParam || o.NullableInteger <= intParam || o.NullableInteger != longParam), "Int32"},
+				{db.NumericEntities.Where(o => o.Integer == nullShortParam || o.Integer < nullIntParam || o.Integer > nullLongParam), "Int32"},
+				{db.NumericEntities.Where(o => o.NullableInteger == nullShortParam || o.NullableInteger <= nullIntParam || o.NullableInteger != nullLongParam), "Int32"},
+
+				{db.NumericEntities.Where(o => o.Long == shortParam || o.Long < intParam || o.Long > longParam), "Int64"},
+				{db.NumericEntities.Where(o => o.NullableLong == shortParam || o.NullableLong <= intParam || o.NullableLong != longParam), "Int64"},
+				{db.NumericEntities.Where(o => o.Long == nullShortParam || o.Long < nullIntParam || o.Long > nullLongParam), "Int64"},
+				{db.NumericEntities.Where(o => o.NullableLong == nullShortParam || o.NullableLong <= nullIntParam || o.NullableLong != nullLongParam), "Int64"}
+			};
+
+			foreach (var pair in queriables)
+			{
+				// Parameters should be pre-evaluated
+				AssertTotalParameters(
+					pair.Key,
+					3,
+					sql =>
+					{
+						Assert.That(sql, Does.Not.Contain("cast"));
+						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(3));
+					});
+			}
+		}
+
+		[Test]
+		public void CompareIntegralParametersWithFloatingPointColumns()
+		{
+			short shortParam = 1;
+			var intParam = 2;
+			var longParam = 3L;
+			short? nullShortParam = 1;
+			int? nullIntParam = 2;
+			long? nullLongParam = 3L;
+			var queriables = new Dictionary<IQueryable<NumericEntity>, string>
+			{
+				{db.NumericEntities.Where(o => o.Decimal == shortParam || o.Decimal < intParam || o.Decimal > longParam), "Decimal"},
+				{db.NumericEntities.Where(o => o.NullableDecimal == shortParam || o.NullableDecimal <= intParam || o.NullableDecimal != longParam), "Decimal"},
+				{db.NumericEntities.Where(o => o.Decimal == nullShortParam || o.Decimal < nullIntParam || o.Decimal > nullLongParam), "Decimal"},
+				{db.NumericEntities.Where(o => o.NullableDecimal == nullShortParam || o.NullableDecimal <= nullIntParam || o.NullableDecimal != nullLongParam), "Decimal"},
+
+				{db.NumericEntities.Where(o => o.Single == shortParam || o.Single < intParam || o.Single > longParam), "Single"},
+				{db.NumericEntities.Where(o => o.NullableSingle == shortParam || o.NullableSingle <= intParam || o.NullableSingle != longParam), "Single"},
+				{db.NumericEntities.Where(o => o.Single == nullShortParam || o.Single < nullIntParam || o.Single > nullLongParam), "Single"},
+				{db.NumericEntities.Where(o => o.NullableSingle == nullShortParam || o.NullableSingle <= nullIntParam || o.NullableSingle != nullLongParam), "Single"},
+
+				{db.NumericEntities.Where(o => o.Double == shortParam || o.Double < intParam || o.Double > longParam), "Double"},
+				{db.NumericEntities.Where(o => o.NullableDouble == shortParam || o.NullableDouble <= intParam || o.NullableDouble != longParam), "Double"},
+				{db.NumericEntities.Where(o => o.Double == nullShortParam || o.Double < nullIntParam || o.Double > nullLongParam), "Double"},
+				{db.NumericEntities.Where(o => o.NullableDouble == nullShortParam || o.NullableDouble <= nullIntParam || o.NullableDouble != nullLongParam), "Double"},
+			};
+
+			foreach (var pair in queriables)
+			{
+				// Parameters should be pre-evaluated
+				AssertTotalParameters(
+					pair.Key,
+					3,
+					sql =>
+					{
+						Assert.That(sql, Does.Not.Contain("cast"));
+						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(3));
+					});
+			}
+		}
+
+		[Test]
+		public void CompareFloatingPointParametersAndColumns()
+		{
+			var decimalParam = 1.1m;
+			var singleParam = 2.2f;
+			var doubleParam = 3.3d;
+			decimal? nullDecimalParam = 1.1m;
+			float? nullSingleParam = 2.2f;
+			double? nullDoubleParam = 3.3d;
+			var queriables = new Dictionary<IQueryable<NumericEntity>, string>
+			{
+				{db.NumericEntities.Where(o => o.Decimal == decimalParam), "Decimal"},
+				{db.NumericEntities.Where(o => o.NullableDecimal == decimalParam), "Decimal"},
+				{db.NumericEntities.Where(o => o.Decimal == nullDecimalParam), "Decimal"},
+				{db.NumericEntities.Where(o => o.NullableDecimal == nullDecimalParam), "Decimal"},
+
+				{db.NumericEntities.Where(o => o.Single <= singleParam || o.Single >= doubleParam), "Single"},
+				{db.NumericEntities.Where(o => o.NullableSingle == singleParam || o.NullableSingle != doubleParam), "Single"},
+				{db.NumericEntities.Where(o => o.Single <= nullSingleParam || o.Single >= nullDoubleParam), "Single"},
+				{db.NumericEntities.Where(o => o.NullableSingle == nullSingleParam || o.NullableSingle != nullDoubleParam), "Single"},
+
+				{db.NumericEntities.Where(o => o.Double <= singleParam || o.Double >= doubleParam), "Double"},
+				{db.NumericEntities.Where(o => o.NullableDouble == singleParam || o.NullableDouble != doubleParam), "Double"},
+				{db.NumericEntities.Where(o => o.Double <= nullSingleParam || o.Double >= nullDoubleParam), "Double"},
+				{db.NumericEntities.Where(o => o.NullableDouble == nullSingleParam || o.NullableDouble != nullDoubleParam), "Double"},
+			};
+
+			foreach (var pair in queriables)
+			{
+				var totalParameters = pair.Value == "Decimal" ? 1 : 2;
+				// Parameters should be pre-evaluated
+				AssertTotalParameters(
+					pair.Key,
+					totalParameters,
+					sql =>
+					{
+						Assert.That(sql, pair.Value == "Decimal" && Dialect.IsDecimalStoredAsFloatingPointNumber ? Does.Contain("cast") : Does.Not.Contain("cast"));
+						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(totalParameters));
+					});
+			}
+		}
+
+		[Test]
+		public void CompareFloatingPointParametersWithIntegralColumns()
+		{
+			var decimalParam = 1.1m;
+			var singleParam = 2.2f;
+			var doubleParam = 3.3d;
+			decimal? nullDecimalParam = 1.1m;
+			float? nullSingleParam = 2.2f;
+			double? nullDoubleParam = 3.3d;
+			var queriables = new List<IQueryable<NumericEntity>>
+			{
+				db.NumericEntities.Where(o => o.Short == decimalParam || o.Short != singleParam || o.Short <= doubleParam),
+				db.NumericEntities.Where(o => o.NullableShort <= decimalParam || o.NullableShort == singleParam || o.NullableShort >= doubleParam),
+				db.NumericEntities.Where(o => o.Short == nullDecimalParam || o.Short != nullSingleParam || o.Short <= nullDoubleParam),
+				db.NumericEntities.Where(o => o.NullableShort <= nullDecimalParam || o.NullableShort == nullSingleParam || o.NullableShort >= nullDoubleParam),
+
+				db.NumericEntities.Where(o => o.Integer == decimalParam || o.Integer != singleParam || o.Integer <= doubleParam),
+				db.NumericEntities.Where(o => o.NullableInteger <= decimalParam || o.NullableInteger == singleParam || o.NullableInteger >= doubleParam),
+				db.NumericEntities.Where(o => o.Integer == nullDecimalParam || o.Integer != nullSingleParam || o.Integer <= nullDoubleParam),
+				db.NumericEntities.Where(o => o.NullableInteger <= nullDecimalParam || o.NullableInteger == nullSingleParam || o.NullableInteger >= nullDoubleParam),
+
+				db.NumericEntities.Where(o => o.Long == decimalParam || o.Long != singleParam || o.Long <= doubleParam),
+				db.NumericEntities.Where(o => o.NullableLong <= decimalParam || o.NullableLong == singleParam || o.NullableLong >= doubleParam),
+				db.NumericEntities.Where(o => o.Long == nullDecimalParam || o.Long != nullSingleParam || o.Long <= nullDoubleParam),
+				db.NumericEntities.Where(o => o.NullableLong <= nullDecimalParam || o.NullableLong == nullSingleParam || o.NullableLong >= nullDoubleParam),
+			};
+
+			foreach (var query in queriables)
+			{
+				// Columns should be casted
+				AssertTotalParameters(
+					query,
+					3,
+					sql =>
+					{
+						var matches = Regex.Matches(sql, @"cast\([\w\d]+\..+\)");
+						Assert.That(matches.Count, Is.EqualTo(3));
+						Assert.That(GetTotalOccurrences(sql, $"Type: Decimal"), Is.EqualTo(1));
+						Assert.That(GetTotalOccurrences(sql, $"Type: Single"), Is.EqualTo(1));
+						Assert.That(GetTotalOccurrences(sql, $"Type: Double"), Is.EqualTo(1));
+					});
+			}
+		}
+
+		[Test]
+		public void CompareFloatingPointParameterWithIntegralAndFloatingPointColumns()
+		{
+			var decimalParam = 1.1m;
+			var singleParam = 2.2f;
+			var doubleParam = 3.3d;
+			var queriables = new Dictionary<IQueryable<NumericEntity>, string>
+			{
+				{db.NumericEntities.Where(o => o.Decimal == decimalParam || o.NullableShort >= decimalParam), "Decimal"},
+				{db.NumericEntities.Where(o => o.Decimal == decimalParam || o.Long >= decimalParam), "Decimal"},
+				{db.NumericEntities.Where(o => o.NullableDecimal == decimalParam || o.Integer != decimalParam), "Decimal"},
+				{db.NumericEntities.Where(o => o.NullableDecimal == decimalParam || o.NullableInteger == decimalParam), "Decimal"},
+
+				{db.NumericEntities.Where(o => o.Single == singleParam || o.NullableShort >= singleParam), "Single"},
+				{db.NumericEntities.Where(o => o.Single == singleParam || o.Long >= singleParam), "Single"},
+				{db.NumericEntities.Where(o => o.NullableSingle == singleParam || o.Integer != singleParam), "Single"},
+				{db.NumericEntities.Where(o => o.NullableSingle == singleParam || o.NullableInteger == singleParam), "Single"},
+
+				{db.NumericEntities.Where(o => o.Double == doubleParam || o.NullableShort >= doubleParam), "Double"},
+				{db.NumericEntities.Where(o => o.Double == doubleParam || o.Long >= doubleParam), "Double"},
+				{db.NumericEntities.Where(o => o.NullableDouble == doubleParam || o.Integer != doubleParam), "Double"},
+				{db.NumericEntities.Where(o => o.NullableDouble == doubleParam || o.NullableInteger == doubleParam), "Double"}
+			};
+			var odbcDriver = Sfi.ConnectionProvider.Driver is OdbcDriver;
+
+			foreach (var pair in queriables)
+			{
+				// Integral columns should be casted
+				AssertTotalParameters(
+					pair.Key,
+					1,
+					sql =>
+					{
+						var matches = Regex.Matches(sql, @"cast\([\w\d]+\..+\)");
+						Assert.That(matches.Count, Is.EqualTo(1));
+						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(odbcDriver ? 2 : 1));
+					});
+			}
+		}
+
+		[Test]
+		public void CompareFloatingPointParameterWithDifferentFloatingPointColumns()
+		{
+			if (Sfi.Dialect is FirebirdDialect)
+			{
+				Assert.Ignore("Due to the regex hack in FirebirdClientDriver, the parameters can be casted twice.");
+			}
+
+			var singleParam = 2.2f;
+			var doubleParam = 3.3d;
+			var queriables = new Dictionary<IQueryable<NumericEntity>, string>
+			{
+				{db.NumericEntities.Where(o => o.Single == singleParam || o.Double >= singleParam), "Single"},
+				{db.NumericEntities.Where(o => o.Double >= singleParam || o.Single == singleParam), "Single"},
+				{db.NumericEntities.Where(o => o.Single == singleParam || o.NullableDouble <= singleParam), "Single"},
+				{db.NumericEntities.Where(o => o.NullableSingle == singleParam || o.Double != singleParam), "Single"},
+				{db.NumericEntities.Where(o => o.NullableSingle == singleParam || o.NullableDouble == singleParam), "Single"},
+
+				{db.NumericEntities.Where(o => o.Double == doubleParam || o.Single >= doubleParam), "Double"},
+				{db.NumericEntities.Where(o => o.Single >= doubleParam || o.Double == doubleParam), "Double"},
+				{db.NumericEntities.Where(o => o.Double == doubleParam || o.NullableSingle >= doubleParam), "Double"},
+				{db.NumericEntities.Where(o => o.NullableDouble == doubleParam || o.Single != doubleParam), "Double"},
+				{db.NumericEntities.Where(o => o.NullableDouble == doubleParam || o.NullableSingle == doubleParam), "Double"}
+			};
+			var sameType = Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Single.SqlType, out var singleCast) &&
+			               Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Double.SqlType, out var doubleCast) &&
+			               singleCast == doubleCast;
+			var odbcDriver = Sfi.ConnectionProvider.Driver is OdbcDriver;
+
+			foreach (var pair in queriables)
+			{
+				// Columns should be casted for Double parameter and parameters for Single parameter
+				AssertTotalParameters(
+					pair.Key,
+					1,
+					sql =>
+					{
+						var matches = pair.Value == "Double"
+							? Regex.Matches(sql, @"cast\([\w\d]+\..+\)")
+							: Regex.Matches(sql, @"cast\(((@|\?|:)p\d+|\?)\s+as.*\)");
+						// SQLiteDialect uses sql cast for transparentcast method
+						Assert.That(matches.Count, Is.EqualTo(sameType && !(Sfi.Dialect is SQLiteDialect) ? 0 : 1));
+						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(odbcDriver ? 2 : 1));
+					});
+			}
+		}
+
+		[Test]
+		public void CompareIntegralParameterWithIntegralAndFloatingPointColumns()
+		{
+			if (Sfi.Dialect is FirebirdDialect)
+			{
+				Assert.Ignore("Due to the regex hack in FirebirdClientDriver, the parameters can be casted twice.");
+			}
+
+			short shortParam = 1;
+			var intParam = 2;
+			var longParam = 3L;
+			var queriables = new Dictionary<IQueryable<NumericEntity>, string>
+			{
+				{db.NumericEntities.Where(o => o.Short == shortParam || o.Double >= shortParam), "Int16"},
+				{db.NumericEntities.Where(o => o.Short == shortParam || o.NullableDouble >= shortParam), "Int16"},
+				{db.NumericEntities.Where(o => o.NullableShort == shortParam || o.Decimal != shortParam), "Int16"},
+				{db.NumericEntities.Where(o => o.NullableShort == shortParam || o.NullableSingle > shortParam), "Int16"},
+
+				{db.NumericEntities.Where(o => o.Integer == intParam || o.Double >= intParam), "Int32"},
+				{db.NumericEntities.Where(o => o.Integer == intParam || o.NullableDouble >= intParam), "Int32"},
+				{db.NumericEntities.Where(o => o.NullableInteger == intParam || o.Decimal != intParam), "Int32"},
+				{db.NumericEntities.Where(o => o.NullableInteger == intParam || o.NullableSingle > intParam), "Int32"},
+
+				{db.NumericEntities.Where(o => o.Long == longParam || o.Double >= longParam), "Int64"},
+				{db.NumericEntities.Where(o => o.Long == longParam || o.NullableDouble >= longParam), "Int64"},
+				{db.NumericEntities.Where(o => o.NullableLong == longParam || o.Decimal != longParam), "Int64"},
+				{db.NumericEntities.Where(o => o.NullableLong == longParam || o.NullableSingle > longParam), "Int64"}
+			};
+			var odbcDriver = Sfi.ConnectionProvider.Driver is OdbcDriver;
+
+			foreach (var pair in queriables)
+			{
+				// Parameters should be casted
+				AssertTotalParameters(
+					pair.Key,
+					1,
+					sql =>
+					{
+						var matches = Regex.Matches(sql, @"cast\(((@|\?|:)p\d+|\?)\s+as.*\)");
+						Assert.That(matches.Count, Is.EqualTo(1));
+						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(odbcDriver ? 2 : 1));
+					});
+			}
+		}
+
+		[Test]
+		public void UsingValueTypeParameterOfDifferentType()
+		{
+			var value = 1;
+			var queriables = new List<IQueryable<NumericEntity>>
+			{
+				db.NumericEntities.Where(o => o.Short == value),
+				db.NumericEntities.Where(o => o.Short != value),
+				db.NumericEntities.Where(o => o.Short >= value),
+				db.NumericEntities.Where(o => o.Short <= value),
+				db.NumericEntities.Where(o => o.Short > value),
+				db.NumericEntities.Where(o => o.Short < value),
+
+				db.NumericEntities.Where(o => o.NullableShort == value),
+				db.NumericEntities.Where(o => o.NullableShort != value),
+				db.NumericEntities.Where(o => o.NullableShort >= value),
+				db.NumericEntities.Where(o => o.NullableShort <= value),
+				db.NumericEntities.Where(o => o.NullableShort > value),
+				db.NumericEntities.Where(o => o.NullableShort < value),
+
+				db.NumericEntities.Where(o => o.NullableShort.Value == value),
+				db.NumericEntities.Where(o => o.NullableShort.Value != value),
+				db.NumericEntities.Where(o => o.NullableShort.Value >= value),
+				db.NumericEntities.Where(o => o.NullableShort.Value <= value),
+				db.NumericEntities.Where(o => o.NullableShort.Value > value),
+				db.NumericEntities.Where(o => o.NullableShort.Value < value)
+			};
+
+			foreach (var query in queriables)
+			{
+				AssertTotalParameters(
+					query,
+					1,
+					sql => Assert.That(sql, Does.Not.Contain("cast")));
+			}
+
+			if (Sfi.Dialect is FirebirdDialect)
+			{
+				Assert.Ignore("Due to the regex bug in FirebirdClientDriver, the parameters are not casted.");
+			}
+
+			queriables = new List<IQueryable<NumericEntity>>
+			{
+				db.NumericEntities.Where(o => o.Short + value > value),
+				db.NumericEntities.Where(o => o.Short - value > value),
+				db.NumericEntities.Where(o => o.Short * value > value),
+
+				db.NumericEntities.Where(o => o.NullableShort + value > value),
+				db.NumericEntities.Where(o => o.NullableShort - value > value),
+				db.NumericEntities.Where(o => o.NullableShort * value > value),
+
+				db.NumericEntities.Where(o => o.NullableShort.Value + value > value),
+				db.NumericEntities.Where(o => o.NullableShort.Value - value > value),
+				db.NumericEntities.Where(o => o.NullableShort.Value * value > value),
+			};
+
+			var sameType = Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Int16.SqlType, out var shortCast) &&
+			               Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Int32.SqlType, out var intCast) &&
+			               shortCast == intCast;
+			foreach (var query in queriables)
+			{
+				AssertTotalParameters(
+					query,
+					1,
+					sql => {
+						// SQLiteDialect uses sql cast for transparentcast method
+						Assert.That(sql, !sameType || Sfi.Dialect is SQLiteDialect ? Does.Match("where\\s+cast") : (IResolveConstraint)Does.Not.Contain("cast"));
+						Assert.That(GetTotalOccurrences(sql, "cast"), Is.EqualTo(!sameType || Sfi.Dialect is SQLiteDialect ? 1 : 0));
+					});
+			}
+		}
+
+		[Test]
+		public void UsingValueTypeParameterTwiceOnNullableProperty()
+		{
+			short value = 1;
+			AssertTotalParameters(
+				db.NumericEntities.Where(o => o.NullableShort == value && o.NullableShort != value && o.Short == value),
+				1, sql => {
+				
+				Assert.That(GetTotalOccurrences(sql, "cast"), Is.EqualTo(0));
+			});
+		}
+
+		[Test]
+		public void UsingValueTypeParameterOnDifferentProperties()
+		{
+			int value = 1;
+			AssertTotalParameters(
+				db.NumericEntities.Where(o => o.NullableShort == value && o.NullableShort != value && o.Integer == value),
+				1);
+
+			AssertTotalParameters(
+				db.NumericEntities.Where(o => o.Integer == value && o.NullableShort == value && o.NullableShort != value),
+				1);
+		}
+
+		[Test]
+		public void UsingParameterInEvaluatableExpression()
+		{
+			var value = "test";
+			db.Orders.Where(o => string.Format("{0}", value) != o.ShippedTo).ToList();
+			db.Orders.Where(o => $"{value}_" != o.ShippedTo).ToList();
+			db.Orders.Where(o => string.Copy(value) != o.ShippedTo).ToList();
+
+			var guid = Guid.Parse("2D7E6EB3-BD08-4A40-A4E7-5150F7895821");
+			db.Orders.Where(o => o.ShippedTo.Contains($"VALUE {guid}")).ToList();
+
+			var names = new[] {"name"};
+			db.Users.Where(x => names.Length == 0 || names.Contains(x.Name)).ToList();
+			names = new string[] { };
+			db.Users.Where(x => names.Length == 0 || names.Contains(x.Name)).ToList();
+		}
+
+		[Test]
+		public void UsingParameterWithImplicitOperator()
+		{
+			var id = new GuidImplicitWrapper(new Guid("{356E4A7E-B027-4321-BA40-E2677E6502CF}"));
+			Assert.That(db.Shippers.Where(o => o.Reference == id).ToList(), Has.Count.EqualTo(1));
+
+			id = new GuidImplicitWrapper(new Guid("{356E4A7E-B027-4321-BA40-E2677E6502FF}"));
+			Assert.That(db.Shippers.Where(o => o.Reference == id).ToList(), Is.Empty);
+
+			AssertTotalParameters(
+				db.Shippers.Where(o => o.Reference == id && id == o.Reference),
+				1);
+		}
+
+		private struct GuidImplicitWrapper
+		{
+			public readonly Guid Id;
+
+			public GuidImplicitWrapper(Guid id)
+			{
+				Id = id;
+			}
+
+			public static implicit operator Guid(GuidImplicitWrapper idWrapper)
+			{
+				return idWrapper.Id;
+			}
+		}
+
+		[Test]
+		public void UsingParameterWithExplicitOperator()
+		{
+			var id = new GuidExplicitWrapper(new Guid("{356E4A7E-B027-4321-BA40-E2677E6502CF}"));
+			Assert.That(db.Shippers.Where(o => o.Reference == (Guid) id).ToList(), Has.Count.EqualTo(1));
+
+			id = new GuidExplicitWrapper(new Guid("{356E4A7E-B027-4321-BA40-E2677E6502FF}"));
+			Assert.That(db.Shippers.Where(o => o.Reference == (Guid) id).ToList(), Is.Empty);
+
+			AssertTotalParameters(
+				db.Shippers.Where(o => o.Reference == (Guid) id && (Guid) id == o.Reference),
+				1);
+		}
+
+		private struct GuidExplicitWrapper
+		{
+			public readonly Guid Id;
+
+			public GuidExplicitWrapper(Guid id)
+			{
+				Id = id;
+			}
+
+			public static explicit operator Guid(GuidExplicitWrapper idWrapper)
+			{
+				return idWrapper.Id;
+			}
+		}
+
+		[Test]
+		public void UsingParameterOnSelectors()
+		{
+			var user = new User() {Id = 1};
+			db.Users.Where(o => o == user).ToList();
+			db.Users.FirstOrDefault(o => o == user);
+			db.Timesheets.Where(o => o.Users.Any(u => u == user)).ToList();
+
+			var users = new[] {new User() {Id = 1}};
+			db.Users.Where(o => users.Contains(o)).ToList();
+			db.Users.FirstOrDefault(o => users.Contains(o));
+			db.Timesheets.Where(o => o.Users.Any(u => users.Contains(u))).ToList();
 		}
 
 		[Test]
@@ -405,7 +968,12 @@ namespace NHibernate.Test.Linq
 			Assert.That(expression1.Key, Is.EqualTo(expression2.Key));
 		}
 
-		private void AssertTotalParameters<T>(IQueryable<T> query, int parameterNumber, int? linqParameterNumber = null)
+		private void AssertTotalParameters<T>(IQueryable<T> query, int parameterNumber, Action<string> sqlAction)
+		{
+			AssertTotalParameters(query, parameterNumber, null, sqlAction);
+		}
+
+		private void AssertTotalParameters<T>(IQueryable<T> query, int parameterNumber, int? linqParameterNumber = null, Action<string> sqlAction = null)
 		{
 			using (var sqlSpy = new SqlLogSpy())
 			{
@@ -423,6 +991,8 @@ namespace NHibernate.Test.Linq
 				cache.Clear();
 
 				query.ToList();
+
+				sqlAction?.Invoke(sqlSpy.GetWholeLog());
 
 				// In case of arrays two query plans will be stored, one with an one without expended parameters
 				Assert.That(cache, Has.Count.EqualTo(linqParameterNumber.HasValue ? 2 : 1), "Query should be cacheable");

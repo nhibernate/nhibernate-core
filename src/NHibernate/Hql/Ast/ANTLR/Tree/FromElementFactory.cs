@@ -362,6 +362,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				_fromClause.Walker.AddQuerySpaces(_queryableCollection.CollectionSpaces);
 			}
 			elem.CollectionTableAlias = roleAlias;
+			_fromClause.AddCollectionJoinFromElementByPath(_path, elem);
 			return elem;
 		}
 

@@ -110,6 +110,7 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
 			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
+			RegisterFunction("right", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,-?2)"));
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
 			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.Character));
@@ -226,6 +227,7 @@ namespace NHibernate.Dialect
 			"logical",
 			"long",
 			"longtext",
+			"mediumint",
 			"memo",
 			"money",
 			"note",
@@ -361,6 +363,9 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
+
+		/// <inheritdoc />
+		public override bool IsDecimalStoredAsFloatingPointNumber => true;
 
 		public override string Qualify(string catalog, string schema, string table)
 		{

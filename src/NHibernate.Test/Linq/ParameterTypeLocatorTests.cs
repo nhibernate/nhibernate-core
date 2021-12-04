@@ -64,7 +64,7 @@ namespace NHibernate.Test.Linq
 			AssertResults(
 				new Dictionary<string, Predicate<IType>>
 				{
-					{"2.1", o => o is Int32Type}
+					{"2.1", o => o is DoubleType}
 				},
 				db.Users.Where(o => o.Id > 2.1),
 				db.Users.Where(o => 2.1 > o.Id)
@@ -85,6 +85,181 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void SubClassStringEnumTest()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"0", o => o is EnumStoredAsStringType}
+				},
+				db.Animals.Where(o => o.Children.OfType<Reptile>().Any(r => r.Enum1 == EnumStoredAsString.Unspecified)),
+				db.Animals.Where(o => o.Children.OfType<Reptile>().Any(r => EnumStoredAsString.Unspecified == r.Enum1))
+			);
+		}
+
+		[Test]
+		public void SubClassAsUnamppedInterfaceStringEnumTest()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>> {{"0", o => o is EnumStoredAsStringType}},
+				db.Animals.Where(o => o.Children.OfType<IReptile>().Any(r => r.Enum1 == EnumStoredAsString.Unspecified)),
+				db.Animals.Where(o => o.Children.OfType<IReptile>().Any(r => EnumStoredAsString.Unspecified == r.Enum1))
+				);
+		}
+
+		[Test]
+		public void EqualsMethodStringTest()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"\"London\"", o => o is StringType stringType && stringType.SqlType.Length == 15}
+				},
+				db.Orders.Where(o => o.ShippingAddress.City.Equals("London")),
+				db.Orders.Where(o => "London".Equals(o.ShippingAddress.City)),
+				db.Orders.Where(o => string.Equals("London", o.ShippingAddress.City)),
+				db.Orders.Where(o => string.Equals(o.ShippingAddress.City, "London"))
+			);
+		}
+
+		[Test]
+		public void BinaryIntShortTest()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"3", o => o is Int16Type}
+				},
+				db.NumericEntities.Where(o => o.Short == 3),
+				db.NumericEntities.Where(o => 3 == o.Short),
+				db.NumericEntities.Where(o => o.Short < 3),
+				db.NumericEntities.Where(o => 3 < o.Short),
+				db.NumericEntities.Where(o => o.Short > 3),
+				db.NumericEntities.Where(o => 3 > o.Short),
+				db.NumericEntities.Where(o => o.Short >= 3),
+				db.NumericEntities.Where(o => 3 >= o.Short),
+				db.NumericEntities.Where(o => o.Short <= 3),
+				db.NumericEntities.Where(o => 3 <= o.Short),
+				db.NumericEntities.Where(o => o.Short != 3),
+				db.NumericEntities.Where(o => 3 != o.Short),
+
+				db.NumericEntities.Where(o => o.NullableShort == 3),
+				db.NumericEntities.Where(o => 3 == o.NullableShort),
+				db.NumericEntities.Where(o => o.NullableShort < 3),
+				db.NumericEntities.Where(o => 3 < o.NullableShort),
+				db.NumericEntities.Where(o => o.NullableShort > 3),
+				db.NumericEntities.Where(o => 3 > o.NullableShort),
+				db.NumericEntities.Where(o => o.NullableShort >= 3),
+				db.NumericEntities.Where(o => 3 >= o.NullableShort),
+				db.NumericEntities.Where(o => o.NullableShort <= 3),
+				db.NumericEntities.Where(o => 3 <= o.NullableShort),
+				db.NumericEntities.Where(o => o.NullableShort != 3),
+				db.NumericEntities.Where(o => 3 != o.NullableShort),
+
+				db.NumericEntities.Where(o => o.NullableShort.Value == 3),
+				db.NumericEntities.Where(o => 3 == o.NullableShort.Value),
+				db.NumericEntities.Where(o => o.NullableShort.Value < 3),
+				db.NumericEntities.Where(o => 3 < o.NullableShort.Value),
+				db.NumericEntities.Where(o => o.NullableShort.Value > 3),
+				db.NumericEntities.Where(o => 3 > o.NullableShort.Value),
+				db.NumericEntities.Where(o => o.NullableShort.Value >= 3),
+				db.NumericEntities.Where(o => 3 >= o.NullableShort.Value),
+				db.NumericEntities.Where(o => o.NullableShort.Value <= 3),
+				db.NumericEntities.Where(o => 3 <= o.NullableShort.Value),
+				db.NumericEntities.Where(o => o.NullableShort.Value != 3),
+				db.NumericEntities.Where(o => 3 != o.NullableShort.Value)
+			);
+		}
+
+		[Test]
+		public void BinaryNullableIntShortTest()
+		{
+			int? value = 3;
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"3", o => o is Int16Type}
+				},
+				db.NumericEntities.Where(o => o.Short == value),
+				db.NumericEntities.Where(o => value == o.Short),
+				db.NumericEntities.Where(o => o.Short < value),
+				db.NumericEntities.Where(o => value < o.Short),
+
+				db.NumericEntities.Where(o => o.NullableShort == value),
+				db.NumericEntities.Where(o => value == o.NullableShort),
+				db.NumericEntities.Where(o => o.NullableShort < value),
+				db.NumericEntities.Where(o => value < o.NullableShort),
+
+				db.NumericEntities.Where(o => o.NullableShort.Value == value),
+				db.NumericEntities.Where(o => value == o.NullableShort.Value),
+				db.NumericEntities.Where(o => o.NullableShort.Value < value),
+				db.NumericEntities.Where(o => value < o.NullableShort.Value),
+				db.NumericEntities.Where(o => o.NullableShort.Value > value)
+			);
+		}
+
+		[Test]
+		public void ContainsStringEnumTest()
+		{
+			var values = new[] {EnumStoredAsString.Small};
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"value(NHibernate.DomainModel.Northwind.Entities.EnumStoredAsString[])", o => o is EnumStoredAsStringType}
+				},
+				db.Users.Where(o => values.Contains(o.Enum1)),
+				db.Users.Where(o => values.Contains(o.NullableEnum1.Value)),
+				db.Users.Where(o => values.Contains(o.Name == o.Name ? o.Enum1 : o.NullableEnum1.Value)),
+				db.Timesheets.Where(o => o.Users.Any(u => values.Contains(u.Enum1)))
+			);
+		}
+
+		[Test]
+		public void EqualStringEnumTestWithFetch()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"3", o => o is EnumStoredAsStringType}
+				},
+				db.Users.Fetch(o => o.Role).ThenFetch(o => o.ParentRole).Where(o => o.Enum1 == EnumStoredAsString.Large),
+				db.Users.Fetch(o => o.Role).ThenFetch(o => o.ParentRole).Where(o => EnumStoredAsString.Large == o.Enum1),
+				db.Timesheets.SelectMany(o => o.Users).Fetch(o => o.Role).Where(o => EnumStoredAsString.Large == o.Enum1),
+				db.Timesheets.FetchMany(o => o.Users).SelectMany(o => o.Users).Where(o => EnumStoredAsString.Large == o.Enum1),
+				db.Timesheets.FetchMany(o => o.Users).Where(o => o.Users.Any(u => EnumStoredAsString.Large == u.Enum1))
+			);
+		}
+
+		[Test]
+		public void EqualStringEnumTestWithSubQuery()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"3", o => o is EnumStoredAsStringType}
+				},
+				db.Users.Where(o => db.Users.Any(u => u.Enum1 == EnumStoredAsString.Large)),
+				db.Users.Where(o => db.Users.Any(u => EnumStoredAsString.Large == u.Enum1)),
+				db.Timesheets.Where(o => o.Users.Any(u => EnumStoredAsString.Large == u.Enum1))
+			);
+		}
+
+		[Test]
+		public void EqualStringEnumTestWithMaxSubQuery()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"3", o => o is EnumStoredAsStringType}
+				},
+				db.Users.Fetch(o => o.Role).Where(o => db.Users.Max(u => u.Enum1 == EnumStoredAsString.Large ? u.Id : -u.Id) == o.Id),
+				db.Users.Fetch(o => o.Role).Where(o => db.Users.Max(u => EnumStoredAsString.Large == u.Enum1 ? u.Id : -u.Id) == o.Id),
+				db.Users.Where(o => db.Users.Max(u => u.Enum1 == EnumStoredAsString.Large ? u.Id : -u.Id) == o.Id),
+				db.Users.Where(o => db.Users.Max(u => EnumStoredAsString.Large == u.Enum1 ? u.Id : -u.Id) == o.Id)
+			);
+		}
+
+		[Test]
 		public void EqualStringTest()
 		{
 			AssertResults(
@@ -94,6 +269,22 @@ namespace NHibernate.Test.Linq
 				},
 				db.Orders.Where(o => o.ShippingAddress.City == "London"),
 				db.Orders.Where(o => "London" == o.ShippingAddress.City)
+			);
+		}
+
+		[Test]
+		public void CompareToStringTest()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"1", o => o is Int32Type},
+					{"\"London\"", o => o is StringType stringType && stringType.SqlType.Length == 15}
+				},
+				db.Orders.Where(o => o.ShippingAddress.City.CompareTo("London") > 1),
+				db.Orders.Where(o => "London".CompareTo(o.ShippingAddress.City) > 1),
+				db.Orders.Where(o => string.Compare("London", o.ShippingAddress.City) > 1),
+				db.Orders.Where(o => string.Compare(o.ShippingAddress.City, "London") > 1)
 			);
 		}
 

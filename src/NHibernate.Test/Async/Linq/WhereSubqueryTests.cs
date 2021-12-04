@@ -11,9 +11,10 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Dialect;
 using NHibernate.DomainModel.Northwind.Entities;
-using NUnit.Framework;
 using NHibernate.Linq;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
@@ -328,6 +329,17 @@ namespace NHibernate.Test.Linq
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
+		[Test(Description = "GH-2471")]
+		public async Task TimeSheetsWithStringContainsSubQueryWithAsQueryableAfterWhereAsync()
+		{
+			var query = await ((
+				from timesheet in db.Timesheets
+				where timesheet.Entries.Where(e => e.Comments != null).AsQueryable().Any(e => e.Comments.Contains("testing"))
+				select timesheet).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
 		[Test(Description = "NH-3002")]
 		public async Task HqlOrderLinesWithInnerJoinAndSubQueryAsync()
 		{
@@ -463,6 +475,86 @@ where c.Order.Customer.CustomerId = 'VINET'
 						 select order).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(61));
+		}
+
+		[Test]
+		public async Task OrdersWithSubquery9CountAsync()
+		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
+			var ordersQuery = db.Orders
+								.Where(x => x.Employee.EmployeeId > 5)
+								.OrderByDescending(x => x.OrderId)
+								.Take(2);
+
+			var orderLines = await (db.OrderLines
+									.Where(x => ordersQuery.Count(o => o == x.Order) > 0)
+									.OrderBy(x => x.Id)
+									.ToListAsync());
+
+			Assert.That(orderLines.Count, Is.EqualTo(4), nameof(orderLines));
+		}
+
+		[Test]
+		public async Task OrdersWithSubquery9SumAsync()
+		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
+			var ordersQuery = db.Orders
+								.Where(x => x.Employee.EmployeeId > 5)
+								.OrderByDescending(x => x.OrderId)
+								.Take(2);
+
+			var orderLines = await (db.OrderLines
+								.Where(x => ordersQuery.Where(o => o == x.Order).Sum(o => o.Freight.Value) > 0)
+								.OrderBy(x => x.Id)
+								.ToListAsync());
+
+			Assert.That(orderLines.Count, Is.EqualTo(4), nameof(orderLines));
+		}
+
+		[Test(Description = "GH2479")]
+		public async Task OrdersWithSubquery11Async()
+		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("MS SQL CE does not support sorting on a subquery.");
+
+			var ordersQuery = db.Orders
+			                    .OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId)
+			                    .Take(2);
+
+			var orderLineQuery = ordersQuery.SelectMany(x => x.OrderLines);
+			var productsNotInLargestOrders = await (db.Products
+			                                   .Where(x => orderLineQuery.All(p => p.Product != x))
+			                                   .OrderBy(x => x.ProductId)
+			                                   .ToListAsync());
+
+			Assert.That(productsNotInLargestOrders.Count, Is.EqualTo(49), nameof(productsNotInLargestOrders));
+		}
+
+		[Test]
+		public async Task OrdersWithSubquery11AAsync()
+		{
+			var ordersQuery = db.Orders
+			                    .OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId);
+
+			var orderLineQuery = ordersQuery.SelectMany(x => x.OrderLines);
+			var productsNotInLargestOrders = await (db.Products
+			                                   .Where(x => orderLineQuery.All(p => p.Product != x))
+			                                   .OrderBy(x => x.ProductId)
+			                                   .ToListAsync());
+
+			Assert.That(productsNotInLargestOrders.Count, Is.EqualTo(0), nameof(productsNotInLargestOrders));
 		}
 
 		[Test(Description = "NH-2654")]
@@ -695,6 +787,31 @@ where c.Order.Customer.CustomerId = 'VINET'
 				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(45));
+		}
+
+		public class Specification<T>
+		{
+			private Expression<Func<T, bool>> _expression;
+
+			public Specification(Expression<Func<T, bool>> expression)
+			{
+				_expression = expression;
+			}
+
+			public static implicit operator Expression<Func<T, bool>>(Specification<T> specification)
+			{
+				return specification._expression;
+			}
+		}
+
+		[Test]
+		public async Task ImplicitConversionInsideWhereSubqueryExpressionAsync()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
+			var spec = new Specification<Order>(x => x.Freight > 1000);
+			await (db.Orders.Where(o => db.Orders.Where(spec).Any(x => x.OrderId == o.OrderId)).ToListAsync());
 		}
 	}
 }

@@ -124,6 +124,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { _propertyPath = value; }
 		}
 
+		internal bool SkipSemiResolve { get; set; }
+
 		public override void SetScalarColumnText(int i)
 		{
 			string[] sqlColumns = GetColumns();
@@ -200,7 +202,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// this might be a Java constant.
 			if ( propertyType == null ) 
 			{
-				if ( parent == null ) 
+				if (parent == null && !SkipSemiResolve)
 				{
 					Walker.LiteralProcessor.LookupConstant( this );
 				}
@@ -386,8 +388,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string property = _propertyName;
 			bool joinIsNeeded;
 
-			//For nullable entity comparisons we always need to add join (like not constrained one-to-one or not-found ignore associations) 
-			bool comparisonWithNullableEntity = false;
+			//For nullable entity comparisons we always need to add join (like not constrained one-to-one or not-found ignore associations)
+			bool comparisonWithNullableEntity = entityType.IsNullable && Walker.IsComparativeExpressionClause;
 
 			if ( IsDotNode( parent ) ) 
 			{
@@ -396,7 +398,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// entity's PK (because 'our' table would know the FK).
 				parentAsDotNode = ( DotNode ) parent;
 				property = parentAsDotNode._propertyName;
-				joinIsNeeded = generateJoin && (entityType.IsNullable || !IsReferenceToPrimaryKey( parentAsDotNode._propertyName, entityType ));
+				joinIsNeeded = generateJoin && ((Walker.IsSelectStatement && comparisonWithNullableEntity) || !IsReferenceToPrimaryKey( parentAsDotNode._propertyName, entityType ));
 			}
 			else if ( ! Walker.IsSelectStatement ) 
 			{
@@ -409,13 +411,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else
 			{
-				comparisonWithNullableEntity = (Walker.IsComparativeExpressionClause && entityType.IsNullable);
 				joinIsNeeded = generateJoin || (Walker.IsInSelect && !Walker.IsInCase) || (Walker.IsInFrom && !Walker.IsComparativeExpressionClause)
 				               || comparisonWithNullableEntity;
 			}
 
-			if ( joinIsNeeded ) 
+			if ( joinIsNeeded )
 			{
+				if (comparisonWithNullableEntity && Walker.IsNullComparison)
+				{
+					implicitJoin = false;
+					_joinType = JoinType.LeftOuterJoin;
+				}
+
 				DereferenceEntityJoin( classAlias, entityType, implicitJoin, parent );
 				if (comparisonWithNullableEntity)
 				{
@@ -504,13 +511,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			//
 			///////////////////////////////////////////////////////////////////////////////
 
-			bool found = elem != null;
-			// even though we might find a pre-existing element by join path, for FromElements originating in a from-clause
-			// we should only ever use the found element if the aliases match (null != null here).  
-			// Implied joins are ok to reuse only if in same from clause (are there any other cases when we should reject implied joins?).
-			bool useFoundFromElement = found &&
-									   (elem.IsImplied && elem.FromClause == currentFromClause || // NH different behavior (NH-3002)
-										AreSame(classAlias, elem.ClassAlias));
+			// even though we might find a pre-existing element by join path, we may not be able to reuse it...
+			bool useFoundFromElement = elem != null && CanReuse(classAlias, elem);
 
 			if ( ! useFoundFromElement )
 			{
@@ -549,6 +551,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private bool AreSame(String alias1, String alias2) {
 			// again, null != null here
 			return !StringHelper.IsEmpty( alias1 ) && !StringHelper.IsEmpty( alias2 ) && alias1.Equals( alias2 );
+		}
+
+		private bool CanReuse(string classAlias, FromElement fromElement)
+		{
+			// if the from-clauses are the same, we can be a little more aggressive in terms of what we reuse
+			if (fromElement.FromClause == Walker.CurrentFromClause &&
+				AreSame(classAlias, fromElement.ClassAlias))
+			{
+				return true;
+			}
+
+			// otherwise (subquery case) don't reuse the fromElement if we are processing the from-clause of the subquery
+			return Walker.CurrentClauseType != HqlSqlWalker.FROM;
 		}
 
 		private void SetImpliedJoin(FromElement elem)

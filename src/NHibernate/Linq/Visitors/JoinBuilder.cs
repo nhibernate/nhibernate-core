@@ -21,12 +21,6 @@ namespace NHibernate.Linq.Visitors
 		private readonly NameGenerator _nameGenerator;
 		private readonly QueryModel _queryModel;
 
-		internal Joiner(QueryModel queryModel, System.Action<QueryModel, NhJoinClause> addJoinMethod)
-			: this(queryModel)
-		{
-			AddJoinMethod = addJoinMethod;
-		}
-
 		internal Joiner(QueryModel queryModel)
 		{
 			_nameGenerator = new NameGenerator(queryModel);

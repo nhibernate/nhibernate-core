@@ -170,23 +170,29 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly ConcurrentDictionary<string, string[]> entityNameImplementorsMap = new ConcurrentDictionary<string, string[]>(4 * System.Environment.ProcessorCount, 100);
 		private readonly string uuid;
+
+		[NonSerialized]
 		private bool disposed;
 
 		[NonSerialized]
 		private bool isClosed = false;
 
+		[NonSerialized]
 		private QueryPlanCache queryPlanCache;
 		[NonSerialized]
 		private StatisticsImpl statistics;
 
 		public SessionFactoryImpl(Configuration cfg, IMapping mapping, Settings settings, EventListeners listeners)
 		{
+			this.settings = settings;
+
 			Init();
+			
 			log.Info("building session factory");
 
 			properties = new Dictionary<string, string>(cfg.Properties);
 			interceptor = cfg.Interceptor;
-			this.settings = settings;
+			
 			sqlFunctionRegistry = new SQLFunctionRegistry(settings.Dialect, cfg.SqlFunctions);
 			eventListeners = listeners;
 			filters = new Dictionary<string, FilterDefinition>(cfg.FilterDefinitions);
@@ -745,7 +751,7 @@ namespace NHibernate.Impl
 			{
 				// try to get the class from imported names
 				string importedName = GetImportedClassName(entityOrClassName);
-				if (importedName != null)
+				if (importedName != entityOrClassName)
 				{
 					clazz = System.Type.GetType(importedName, false);
 				}

@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NHibernate.Dialect;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
@@ -472,6 +473,33 @@ namespace NHibernate.Test.Linq
 
 			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.Id == 5), Does.Not.Contain("is null").IgnoreCase));
 			await (ExpectAsync(session.Query<User>().Where(o => 5 == o.CreatedBy.ModifiedBy.Id), Does.Not.Contain("is null").IgnoreCase));
+
+			if (Sfi.Dialect is FirebirdDialect)
+			{
+				return;
+			}
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort == o.NullableShort), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short == o.Short), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort == o.Short), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short == o.NullableShort), WithoutIsNullAndWithoutCast()));
+
+			short value = 3;
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort == value), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => value == o.NullableShort), WithoutIsNullAndWithoutCast()));
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort.Value == value), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => value == o.NullableShort.Value), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short == value), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => value == o.Short), WithoutIsNullAndWithoutCast()));
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort == 3L), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L == o.NullableShort), WithoutIsNullAndWithoutCast()));
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort.Value == 3L), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L == o.NullableShort.Value),  WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short == 3L), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L == o.Short), WithoutIsNullAndWithoutCast()));
 		}
 
 		[Test]
@@ -560,6 +588,43 @@ namespace NHibernate.Test.Linq
 
 			await (ExpectAsync(session.Query<User>().Where(o => o.CreatedBy.ModifiedBy.Id != 5), Does.Contain("is null").IgnoreCase));
 			await (ExpectAsync(session.Query<User>().Where(o => 5 != o.CreatedBy.ModifiedBy.Id), Does.Contain("is null").IgnoreCase));
+
+			if (Sfi.Dialect is FirebirdDialect)
+			{
+				return;
+			}
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort != o.NullableShort), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short != o.Short), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort != o.Short), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short != o.NullableShort), WithIsNullAndWithoutCast()));
+
+			short value = 3;
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort != value), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => value != o.NullableShort), WithIsNullAndWithoutCast()));
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort.Value != value), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => value != o.NullableShort.Value), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short != value), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => value != o.Short), WithoutIsNullAndWithoutCast()));
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort != 3L), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3 != o.NullableShort), WithIsNullAndWithoutCast()));
+
+			await (ExpectAsync(db.NumericEntities.Where(o => o.NullableShort.Value != 3L), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L != o.NullableShort.Value), WithIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => o.Short != 3L), WithoutIsNullAndWithoutCast()));
+			await (ExpectAsync(db.NumericEntities.Where(o => 3L != o.Short), WithoutIsNullAndWithoutCast()));
+		}
+
+		private IResolveConstraint WithIsNullAndWithoutCast()
+		{
+			return Does.Contain("is null").IgnoreCase.And.Not.Contain("cast").IgnoreCase;
+		}
+
+		private IResolveConstraint WithoutIsNullAndWithoutCast()
+		{
+			return Does.Not.Contain("is null").IgnoreCase.And.Not.Contain("cast").IgnoreCase;
 		}
 
 		[Test]

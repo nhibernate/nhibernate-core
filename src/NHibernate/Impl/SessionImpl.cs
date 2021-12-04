@@ -1484,14 +1484,6 @@ namespace NHibernate.Impl
 		private IDisposable _context;
 
 		/// <summary>
-		/// Finalizer that ensures the object is correctly disposed of.
-		/// </summary>
-		~SessionImpl()
-		{
-			Dispose(false);
-		}
-
-		/// <summary>
 		/// Perform a soft (distributed transaction aware) close of the session
 		/// </summary>
 		public void Dispose()
@@ -1517,15 +1509,12 @@ namespace NHibernate.Impl
 			_context?.Dispose();
 		}
 
+		//TODO: Get rid of isDisposing parameter. Finalizer is removed as not needed, so isDisposing  is always true
 		/// <summary>
 		/// Takes care of freeing the managed and unmanaged resources that
 		/// this class is responsible for.
 		/// </summary>
 		/// <param name="isDisposing">Indicates if this Session is being Disposed of or Finalized.</param>
-		/// <remarks>
-		/// If this Session is being Finalized (<c>isDisposing==false</c>) then make sure not
-		/// to call any methods that could potentially bring this Session back to life.
-		/// </remarks>
 		private void Dispose(bool isDisposing)
 		{
 			using (BeginContext())
@@ -1546,8 +1535,6 @@ namespace NHibernate.Impl
 					{
 						Close();
 					}
-					// nothing for Finalizer to do - so tell the GC to ignore it
-					GC.SuppressFinalize(this);
 				}
 
 				// free unmanaged resources here
@@ -1702,6 +1689,8 @@ namespace NHibernate.Impl
 			{
 				string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
 				int size = implementors.Length;
+				if (size == 0)
+					throw new QueryException(criteria.EntityOrClassName + " is not mapped");
 
 				CriteriaLoader[] loaders = new CriteriaLoader[size];
 				ISet<string> spaces = new HashSet<string>();
