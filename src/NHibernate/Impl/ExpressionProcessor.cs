@@ -278,14 +278,7 @@ namespace NHibernate.Impl
 
 					if (methodCallExpression.Object == null) //extension or static method
 					{
-						if (args.Length > 0 && args[0] != null)
-						{
-							return methodCallExpression.Method.Invoke(args[0].GetType(), args);
-						}
-						else
-						{
-							return methodCallExpression.Method.Invoke(methodCallExpression.Method.DeclaringType, args);
-						}
+						return methodCallExpression.Method.Invoke(null, args);
 					}
 					else
 					{
@@ -295,26 +288,28 @@ namespace NHibernate.Impl
 					}
 				case ExpressionType.Convert:
 					var unaryExpression = (UnaryExpression) expression;
-					value = FindValue(unaryExpression.Operand);
-					var type = Nullable.GetUnderlyingType(unaryExpression.Type) ?? unaryExpression.Type;
-					if (type == typeof(object) || value == null)
+					if ((Nullable.GetUnderlyingType(unaryExpression.Type) ?? unaryExpression.Type) == unaryExpression.Operand.Type
+						|| unaryExpression.Type == typeof(object))
 					{
-						return value;
+						return FindValue(unaryExpression.Operand);
 					}
-					else if (value is IConvertible || unaryExpression.Method != null)
+					else if (unaryExpression.Method != null && unaryExpression.Type != unaryExpression.Operand.Type)
 					{
-						if (type != unaryExpression.Operand.Type)
+						return unaryExpression.Method.Invoke(null, new[] { FindValue(unaryExpression.Operand) });
+					}
+					else if (unaryExpression.Type == (Nullable.GetUnderlyingType(unaryExpression.Operand.Type) ?? unaryExpression.Operand.Type))
+					{
+						value = FindValue(unaryExpression.Operand);
+						if (value != null || Nullable.GetUnderlyingType(unaryExpression.Type) != null)
 						{
-							value = unaryExpression.Method != null ? unaryExpression.Method.Invoke(null, new[] { value }) : Convert.ChangeType(value, type);
+							return value;
 						}
-
-						return value;
 					}
 					break;
 			}
 
-			var valueExpression = Expression.Lambda(expression).Compile(true);
-			value = valueExpression.DynamicInvoke();
+			var lambdaExpression = Expression.Lambda(expression).Compile(true);
+			value = lambdaExpression.DynamicInvoke();
 			return value;
 		}
 

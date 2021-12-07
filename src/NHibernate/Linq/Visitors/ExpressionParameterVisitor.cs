@@ -151,8 +151,8 @@ namespace NHibernate.Linq.Visitors
 			    node.Method != null && // The implicit/explicit operator method
 			    node.Operand is ConstantExpression constantExpression)
 			{
-				// Instead of getting constantExpression.Value, we override the value with ExpressionProcessor
-				var value = ExpressionProcessor.FindValue(node);
+				// Instead of getting constantExpression.Value, invoke method
+				var value = node.Method.Invoke(null, null);
 
 				AddConstantExpressionParameter(constantExpression, value);
 			}
