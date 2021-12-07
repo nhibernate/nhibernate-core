@@ -248,32 +248,73 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Invoke the expression to extract its runtime value
+		/// Walk or Invoke expression to extract its runtime value
 		/// </summary>
 		public static object FindValue(Expression expression)
 		{
-			if (expression.NodeType == ExpressionType.Constant)
-				return ((ConstantExpression) expression).Value;
-
-			if (expression.NodeType == ExpressionType.MemberAccess)
+			object value;
+			switch (expression.NodeType)
 			{
-				var memberAccess = (MemberExpression) expression;
-				if (memberAccess.Expression == null || memberAccess.Expression.NodeType == ExpressionType.Constant)
-				{
-					var constantValue = ((ConstantExpression) memberAccess.Expression)?.Value;
-					var member = memberAccess.Member;
-					switch (member.MemberType)
+				case ExpressionType.Constant:
+					var constantExpression = (ConstantExpression) expression;
+					return constantExpression.Value;
+				case ExpressionType.MemberAccess:
+					var memberExpression = (MemberExpression) expression;
+					value = memberExpression.Expression != null ? FindValue(memberExpression.Expression) : null;
+
+					switch (memberExpression.Member.MemberType)
 					{
 						case MemberTypes.Field:
-							return ((FieldInfo) member).GetValue(constantValue);
+							return ((FieldInfo) memberExpression.Member).GetValue(value);
 						case MemberTypes.Property:
-							return ((PropertyInfo) member).GetValue(constantValue);
+							return ((PropertyInfo) memberExpression.Member).GetValue(value);
 					}
-				}
+					break;
+				case ExpressionType.Call:
+					var methodCallExpression = (MethodCallExpression) expression;
+					var args = new object[methodCallExpression.Arguments.Count];
+					for (int i = 0; i < args.Length; i++)
+						args[i] = FindValue(methodCallExpression.Arguments[i]);
+
+					if (methodCallExpression.Object == null) //extension or static method
+					{
+						if (args.Length > 0 && args[0] != null)
+						{
+							return methodCallExpression.Method.Invoke(args[0].GetType(), args);
+						}
+						else
+						{
+							return methodCallExpression.Method.Invoke(methodCallExpression.Method.DeclaringType, args);
+						}
+					}
+					else
+					{
+						var callingObject = FindValue(methodCallExpression.Object);
+
+						return methodCallExpression.Method.Invoke(callingObject, args);
+					}
+				case ExpressionType.Convert:
+					var unaryExpression = (UnaryExpression) expression;
+					value = FindValue(unaryExpression.Operand);
+					var type = Nullable.GetUnderlyingType(unaryExpression.Type) ?? unaryExpression.Type;
+					if (type == typeof(object) || value == null)
+					{
+						return value;
+					}
+					else if (value is IConvertible || unaryExpression.Method != null)
+					{
+						if (type != unaryExpression.Operand.Type)
+						{
+							value = unaryExpression.Method != null ? unaryExpression.Method.Invoke(null, new[] { value }) : Convert.ChangeType(value, type);
+						}
+
+						return value;
+					}
+					break;
 			}
 
-			var valueExpression = Expression.Lambda(expression).Compile();
-			object value = valueExpression.DynamicInvoke();
+			var valueExpression = Expression.Lambda(expression).Compile(true);
+			value = valueExpression.DynamicInvoke();
 			return value;
 		}
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.Linq.Functions;
 using NHibernate.Param;
 using NHibernate.Type;
@@ -150,12 +151,10 @@ namespace NHibernate.Linq.Visitors
 			    node.Method != null && // The implicit/explicit operator method
 			    node.Operand is ConstantExpression constantExpression)
 			{
-				// Instead of getting constantExpression.Value, we override the value by compiling and executing this subtree,
-				// performing the cast.
-				var lambda = Expression.Lambda<Func<object>>(Expression.Convert(node, typeof(object)));
-				var compiledLambda = lambda.Compile();
+				// Instead of getting constantExpression.Value, we override the value with ExpressionProcessor
+				var value = ExpressionProcessor.FindValue(node);
 
-				AddConstantExpressionParameter(constantExpression, compiledLambda());
+				AddConstantExpressionParameter(constantExpression, value);
 			}
 
 			return base.VisitUnary(node);
