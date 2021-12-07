@@ -152,7 +152,7 @@ namespace NHibernate.Linq.Visitors
 			    node.Operand is ConstantExpression constantExpression)
 			{
 				// Instead of getting constantExpression.Value, invoke method
-				var value = node.Method.Invoke(null, null);
+				var value = node.Method.Invoke(null, new[] { constantExpression.Value });
 
 				AddConstantExpressionParameter(constantExpression, value);
 			}
