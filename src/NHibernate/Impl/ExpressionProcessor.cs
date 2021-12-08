@@ -252,6 +252,8 @@ namespace NHibernate.Impl
 		/// </summary>
 		public static object FindValue(Expression expression)
 		{
+			object findValue(Expression e) => e != null ? FindValue(e) : null;
+
 			switch (expression.NodeType)
 			{
 				case ExpressionType.Constant:
@@ -259,21 +261,18 @@ namespace NHibernate.Impl
 					return constantExpression.Value;
 				case ExpressionType.MemberAccess:
 					var memberExpression = (MemberExpression) expression;
-					object getObj() => memberExpression.Expression != null ? FindValue(memberExpression.Expression) : null;
-
 					switch (memberExpression.Member.MemberType)
 					{
 						case MemberTypes.Field:
-							return ((FieldInfo) memberExpression.Member).GetValue(getObj());
+							return ((FieldInfo) memberExpression.Member).GetValue(findValue(memberExpression.Expression));
 						case MemberTypes.Property:
-							return ((PropertyInfo) memberExpression.Member).GetValue(getObj());
+							return ((PropertyInfo) memberExpression.Member).GetValue(findValue(memberExpression.Expression));
 					}
 					break;
 				case ExpressionType.Call:
 					var methodCallExpression = (MethodCallExpression) expression;
 					var args = methodCallExpression.Arguments.ToArray(arg => FindValue(arg));
-
-					var callingObject = methodCallExpression.Object == null ? null : FindValue(methodCallExpression.Object);
+					var callingObject = findValue(methodCallExpression.Object);
 					return methodCallExpression.Method.Invoke(callingObject, args);
 				case ExpressionType.Convert:
 					var unaryExpression = (UnaryExpression) expression;
