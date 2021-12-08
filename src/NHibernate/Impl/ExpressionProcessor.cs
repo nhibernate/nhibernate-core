@@ -283,9 +283,7 @@ namespace NHibernate.Impl
 
 					var toType = unaryExpression.Type;
 					var fromType = unaryExpression.Operand.Type;
-					if (toType == typeof(object)
-						|| toType == fromType
-						|| Nullable.GetUnderlyingType(toType) == fromType)
+					if (toType == typeof(object) || toType == fromType || Nullable.GetUnderlyingType(toType) == fromType)
 						return FindValue(unaryExpression.Operand);
 
 					if (toType == Nullable.GetUnderlyingType(fromType))
