@@ -163,6 +163,38 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
+		public void GivenNullableIntegerToInteger()
+		{
+			int? value = 1;
+			Expression<Func<int>> expression = () => (int) value;
+
+			var actual = GetValue(expression);
+
+			//Check with expression compile and invoke
+			var lambdaExpression = Expression.Lambda(expression).Compile();
+
+			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+
+			Assert.AreEqual(expected, actual);
+		}
+
+		[Test]
+		public void GivenIntegerToInteger()
+		{
+			int value = 1;
+			Expression<Func<int>> expression = () => (int) value;
+
+			var actual = GetValue(expression);
+
+			//Check with expression compile and invoke
+			var lambdaExpression = Expression.Lambda(expression).Compile();
+
+			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+
+			Assert.AreEqual(expected, actual);
+		}
+
+		[Test]
 		public void GivenIntegerToNullableIntegerCast()
 		{
 			int value = 12345;

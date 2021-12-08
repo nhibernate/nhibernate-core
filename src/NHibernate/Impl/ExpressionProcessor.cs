@@ -281,9 +281,19 @@ namespace NHibernate.Impl
 					if (unaryExpression.Method != null)
 						return unaryExpression.Method.Invoke(null, new[] { FindValue(unaryExpression.Operand) });
 
-					if (unaryExpression.Type == typeof(object)
-						|| (Nullable.GetUnderlyingType(unaryExpression.Type) ?? unaryExpression.Type) == unaryExpression.Operand.Type)
+					var toType = unaryExpression.Type;
+					var fromType = unaryExpression.Operand.Type;
+					if (toType == typeof(object)
+						|| toType == fromType
+						|| Nullable.GetUnderlyingType(toType) == fromType)
 						return FindValue(unaryExpression.Operand);
+
+					if (toType == Nullable.GetUnderlyingType(fromType))
+					{
+						var val = FindValue(unaryExpression.Operand);
+						if (val != null)
+							return val;
+					}
 
 					break;
 			}
