@@ -272,9 +272,7 @@ namespace NHibernate.Impl
 					break;
 				case ExpressionType.Call:
 					var methodCallExpression = (MethodCallExpression) expression;
-					var args = new object[methodCallExpression.Arguments.Count];
-					for (int i = 0; i < args.Length; i++)
-						args[i] = FindValue(methodCallExpression.Arguments[i]);
+					var args = methodCallExpression.Arguments.ToArray(arg => FindValue(arg));
 
 					if (methodCallExpression.Object == null) //extension or static method
 					{
