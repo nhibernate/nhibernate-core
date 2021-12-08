@@ -252,7 +252,6 @@ namespace NHibernate.Impl
 		/// </summary>
 		public static object FindValue(Expression expression)
 		{
-			object value;
 			switch (expression.NodeType)
 			{
 				case ExpressionType.Constant:
@@ -260,54 +259,37 @@ namespace NHibernate.Impl
 					return constantExpression.Value;
 				case ExpressionType.MemberAccess:
 					var memberExpression = (MemberExpression) expression;
-					value = memberExpression.Expression != null ? FindValue(memberExpression.Expression) : null;
+					object getObj() => memberExpression.Expression != null ? FindValue(memberExpression.Expression) : null;
 
 					switch (memberExpression.Member.MemberType)
 					{
 						case MemberTypes.Field:
-							return ((FieldInfo) memberExpression.Member).GetValue(value);
+							return ((FieldInfo) memberExpression.Member).GetValue(getObj());
 						case MemberTypes.Property:
-							return ((PropertyInfo) memberExpression.Member).GetValue(value);
+							return ((PropertyInfo) memberExpression.Member).GetValue(getObj());
 					}
 					break;
 				case ExpressionType.Call:
 					var methodCallExpression = (MethodCallExpression) expression;
 					var args = methodCallExpression.Arguments.ToArray(arg => FindValue(arg));
 
-					if (methodCallExpression.Object == null) //extension or static method
-					{
-						return methodCallExpression.Method.Invoke(null, args);
-					}
-					else
-					{
-						var callingObject = FindValue(methodCallExpression.Object);
-
-						return methodCallExpression.Method.Invoke(callingObject, args);
-					}
+					var callingObject = methodCallExpression.Object == null ? null : FindValue(methodCallExpression.Object);
+					return methodCallExpression.Method.Invoke(callingObject, args);
 				case ExpressionType.Convert:
 					var unaryExpression = (UnaryExpression) expression;
-					if ((Nullable.GetUnderlyingType(unaryExpression.Type) ?? unaryExpression.Type) == unaryExpression.Operand.Type
-						|| unaryExpression.Type == typeof(object))
-					{
-						return FindValue(unaryExpression.Operand);
-					}
-					else if (unaryExpression.Method != null && unaryExpression.Type != unaryExpression.Operand.Type)
-					{
+
+					if (unaryExpression.Method != null)
 						return unaryExpression.Method.Invoke(null, new[] { FindValue(unaryExpression.Operand) });
-					}
-					else if (unaryExpression.Type == (Nullable.GetUnderlyingType(unaryExpression.Operand.Type) ?? unaryExpression.Operand.Type))
-					{
-						value = FindValue(unaryExpression.Operand);
-						if (value != null || Nullable.GetUnderlyingType(unaryExpression.Type) != null)
-						{
-							return value;
-						}
-					}
+
+					if (unaryExpression.Type == typeof(object)
+						|| (Nullable.GetUnderlyingType(unaryExpression.Type) ?? unaryExpression.Type) == unaryExpression.Operand.Type)
+						return FindValue(unaryExpression.Operand);
+
 					break;
 			}
 
 			var lambdaExpression = Expression.Lambda(expression).Compile(true);
-			value = lambdaExpression.DynamicInvoke();
+			var value = lambdaExpression.DynamicInvoke();
 			return value;
 		}
 
