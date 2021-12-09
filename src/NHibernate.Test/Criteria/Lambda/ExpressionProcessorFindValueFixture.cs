@@ -159,11 +159,10 @@ namespace NHibernate.Test.Criteria.Lambda
 			var lambdaExpression = Expression.Lambda(expression).Compile();
 
 			Assert.Throws<InvalidOperationException>(() => ((dynamic) lambdaExpression.DynamicInvoke()).Invoke());
-
 		}
 
 		[Test]
-		public void NullableIntegerToInteger()
+		public void NullableIntegerToIntegerCast()
 		{
 			int? value = 1;
 			Expression<Func<int>> expression = () => (int) value;
@@ -179,7 +178,23 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void IntegerToInteger()
+		public void NullableIntegerToNullableLongImplicitCast()
+		{
+			int? value = 1;
+			Expression<Func<long?>> expression = () => value;
+
+			var actual = GetValue(expression);
+
+			//Check with expression compile and invoke
+			var lambdaExpression = Expression.Lambda(expression).Compile();
+
+			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+
+			Assert.AreEqual(expected, actual);
+		}
+
+		[Test]
+		public void IntegerToIntegerCast()
 		{
 			int value = 1;
 			Expression<Func<int>> expression = () => (int) value;
@@ -195,7 +210,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void IntegerToNullableIntegerCast()
+		public void IntegerToNullableIntegerImplicitCast()
 		{
 			int value = 12345;
 			Expression<Func<int?>> expression = () => value;
@@ -211,7 +226,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void IntegerToNullableLongCast()
+		public void IntegerToNullableLongImplicitCast()
 		{
 			int value = 12345;
 			Expression<Func<long?>> expression = () => value;
@@ -227,7 +242,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void IntegerToNullableDecimalCast()
+		public void IntegerToNullableDecimalImplicitCast()
 		{
 			int value = 12345;
 			Expression<Func<decimal?>> expression = () => value;
@@ -243,7 +258,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void Int16ToIntegerCast()
+		public void Int16ToIntegerImplicitCast()
 		{
 			short value = 12345;
 			Expression<Func<int>> expression = () => value;
