@@ -3,7 +3,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Impl;
 using NUnit.Framework;
-using Expression = System.Linq.Expressions.Expression;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
@@ -99,8 +98,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			var actual = GetValue(expression);
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+			var expected = expression.Compile().Invoke();
 
 			Assert.AreEqual(expected, actual);
 		}
@@ -113,8 +111,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			var actual = GetValue(expression);
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+			var expected = expression.Compile().Invoke();
 
 			Assert.AreEqual(expected, actual);
 		}
@@ -127,8 +124,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			var actual = GetValue(expression);
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+			var expected = expression.Compile().Invoke();
 
 			Assert.AreEqual(expected, actual);
 		}
@@ -142,9 +138,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			Assert.Throws<NullReferenceException>(() => GetValue(expression));
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-
-			Assert.Throws<NullReferenceException>(() => ((dynamic) lambdaExpression.DynamicInvoke()).Invoke());
+			Assert.Throws<NullReferenceException>(() => expression.Compile().Invoke());
 		}
 
 		[Test]
@@ -156,9 +150,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			Assert.Throws<InvalidOperationException>(() => GetValue(expression));
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-
-			Assert.Throws<InvalidOperationException>(() => ((dynamic) lambdaExpression.DynamicInvoke()).Invoke());
+			Assert.Throws<InvalidOperationException>(() => expression.Compile().Invoke());
 		}
 
 		[Test]
@@ -170,9 +162,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			var actual = GetValue(expression);
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-
-			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+			var expected = expression.Compile().Invoke();
 
 			Assert.AreEqual(expected, actual);
 		}
@@ -186,9 +176,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			var actual = GetValue(expression);
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-
-			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+			var expected = expression.Compile().Invoke();
 
 			Assert.AreEqual(expected, actual);
 		}
@@ -202,9 +190,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			var actual = GetValue(expression);
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-
-			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+			var expected = expression.Compile().Invoke();
 
 			Assert.AreEqual(expected, actual);
 		}
@@ -218,9 +204,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			var actual = GetValue(expression);
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-
-			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+			var expected = expression.Compile().Invoke();
 
 			Assert.AreEqual(expected, actual);
 		}
@@ -234,9 +218,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			var actual = GetValue(expression);
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-
-			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+			var expected = expression.Compile().Invoke();
 
 			Assert.AreEqual(expected, actual);
 		}
@@ -250,9 +232,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			var actual = GetValue(expression);
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-
-			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+			var expected = expression.Compile().Invoke();
 
 			Assert.AreEqual(expected, actual);
 		}
@@ -266,9 +246,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			var actual = GetValue(expression);
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-
-			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+			var expected = expression.Compile().Invoke();
 
 			Assert.AreEqual(expected, actual);
 
@@ -283,8 +261,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			var actual = GetValue(expression);
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+			var expected = expression.Compile().Invoke();
 
 			Assert.AreEqual(expected, actual);
 
@@ -299,9 +276,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			Assert.Throws<InvalidCastException>(() => GetValue(expression));
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-
-			Assert.Throws<InvalidCastException>(() => ((dynamic) lambdaExpression.DynamicInvoke()).Invoke());
+			Assert.Throws<InvalidCastException>(() => expression.Compile().Invoke());
 		}
 
 		[Test]
@@ -313,9 +288,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			Assert.Throws<InvalidCastException>(() => GetValue(expression));
 
 			//Check with expression compile and invoke
-			var lambdaExpression = Expression.Lambda(expression).Compile();
-
-			Assert.Throws<InvalidCastException>(() => ((dynamic) lambdaExpression.DynamicInvoke()).Invoke());
+			Assert.Throws<InvalidCastException>(() => expression.Compile().Invoke());
 		}
 	}
 }
