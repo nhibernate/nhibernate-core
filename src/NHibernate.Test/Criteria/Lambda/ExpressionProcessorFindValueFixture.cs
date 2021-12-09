@@ -36,7 +36,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenStaticPropertyInstanceMethodCall()
+		public void StaticPropertyInstanceMethodCall()
 		{
 			var actual = GetValue(() => DateTime.Now.ToString("yyyyMMdd"));
 			var expected = DateTime.Now.ToString("yyyyMMdd");
@@ -45,7 +45,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenStaticPropertyInstanceMultipleMethodCall()
+		public void StaticPropertyInstanceMultipleMethodCall()
 		{
 			var actual = GetValue(() => DateTime.Now.AddDays(365).ToString("yyyyMMdd"));
 			var expected = DateTime.Now.AddDays(365).ToString("yyyyMMdd");
@@ -54,7 +54,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenStaticPropertyInstanceMethodCallThenCast()
+		public void StaticPropertyInstanceMethodCallThenCast()
 		{
 			var actual = GetValue(() => Convert.ToInt32(DateTime.Now.AddDays(365).ToString("yyyyMMdd")));
 			var expected = Convert.ToInt32(DateTime.Now.AddDays(365).ToString("yyyyMMdd"));
@@ -63,7 +63,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenStaticMethodCall()
+		public void StaticMethodCall()
 		{
 			var actual = GetValue(() => GetIntegerDate());
 			var expected = GetIntegerDate();
@@ -72,7 +72,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenExtensionMethodCall()
+		public void ExtensionMethodCall()
 		{
 			var date = DateTime.Now;
 			var actual = GetValue(() => date.ToLongDateTime());
@@ -82,7 +82,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenNestedPropertyAccess()
+		public void NestedPropertyAccess()
 		{
 			var animal = new { Snake = new { Animal = new { Name = "Scorpion" } } };
 			var actual = GetValue(() => animal.Snake.Animal.Name);
@@ -92,7 +92,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenGuidToStringCast()
+		public void GuidToStringCast()
 		{
 			var guid = Guid.NewGuid();
 			Expression<Func<string>> expression = () => $"{guid}";
@@ -106,7 +106,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenNestedPropertyToIntegerCast()
+		public void NestedPropertyToIntegerCast()
 		{
 			var animal = new { Snake = new { Animal = new { Weight = 9.89 } } };
 			Expression<Func<int>> expression = () => (int) animal.Snake.Animal.Weight;
@@ -120,7 +120,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenNestedPropertyToIntegerConvert()
+		public void NestedPropertyToIntegerConvert()
 		{
 			var animal = new { Snake = new { Animal = new { Weight = 9.89 } } };
 			Expression<Func<int>> expression = () => Convert.ToInt32(animal.Snake.Animal.Weight);
@@ -134,7 +134,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenNullToIntegerCastFails()
+		public void NullToIntegerCastFails()
 		{
 			object value = null;
 			Expression<Func<int>> expression = () => (int) value;
@@ -148,7 +148,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenNullableIntegerToIntegerCastFails()
+		public void NullableIntegerToIntegerCastFails()
 		{
 			int? value = null;
 			Expression<Func<int>> expression = () => (int) value;
@@ -163,7 +163,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenNullableIntegerToInteger()
+		public void NullableIntegerToInteger()
 		{
 			int? value = 1;
 			Expression<Func<int>> expression = () => (int) value;
@@ -179,7 +179,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenIntegerToInteger()
+		public void IntegerToInteger()
 		{
 			int value = 1;
 			Expression<Func<int>> expression = () => (int) value;
@@ -195,7 +195,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenIntegerToNullableIntegerCast()
+		public void IntegerToNullableIntegerCast()
 		{
 			int value = 12345;
 			Expression<Func<int?>> expression = () => value;
@@ -208,11 +208,42 @@ namespace NHibernate.Test.Criteria.Lambda
 			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
 
 			Assert.AreEqual(expected, actual);
-
 		}
 
 		[Test]
-		public void GivenInt16ToIntegerCast()
+		public void IntegerToNullableLongCast()
+		{
+			int value = 12345;
+			Expression<Func<long?>> expression = () => value;
+
+			var actual = GetValue(expression);
+
+			//Check with expression compile and invoke
+			var lambdaExpression = Expression.Lambda(expression).Compile();
+
+			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+
+			Assert.AreEqual(expected, actual);
+		}
+
+		[Test]
+		public void IntegerToNullableDecimalCast()
+		{
+			int value = 12345;
+			Expression<Func<decimal?>> expression = () => value;
+
+			var actual = GetValue(expression);
+
+			//Check with expression compile and invoke
+			var lambdaExpression = Expression.Lambda(expression).Compile();
+
+			var expected = ((dynamic) lambdaExpression.DynamicInvoke()).Invoke();
+
+			Assert.AreEqual(expected, actual);
+		}
+
+		[Test]
+		public void Int16ToIntegerCast()
 		{
 			short value = 12345;
 			Expression<Func<int>> expression = () => value;
@@ -229,7 +260,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenNullableDecimalToDecimalCast()
+		public void NullableDecimalToDecimalCast()
 		{
 			decimal? value = 9.89m;
 			Expression<Func<decimal>> expression = () => (decimal) value;
@@ -245,7 +276,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenStringToIntegerCastFails()
+		public void StringToIntegerCastFails()
 		{
 			object value = "Abatay";
 			Expression<Func<int>> expression = () => (int) value;
@@ -259,7 +290,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		}
 
 		[Test]
-		public void GivenBooleanToCharCastFails()
+		public void BooleanToCharCastFails()
 		{
 			object isTrue = true;
 			Expression<Func<char>> expression = () => (char) isTrue;
