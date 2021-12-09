@@ -249,7 +249,6 @@ namespace NHibernate.Test.Criteria.Lambda
 			var expected = expression.Compile().Invoke();
 
 			Assert.AreEqual(expected, actual);
-
 		}
 
 		[Test]
@@ -264,7 +263,6 @@ namespace NHibernate.Test.Criteria.Lambda
 			var expected = expression.Compile().Invoke();
 
 			Assert.AreEqual(expected, actual);
-
 		}
 
 		[Test]
