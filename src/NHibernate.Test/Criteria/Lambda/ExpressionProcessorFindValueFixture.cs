@@ -236,6 +236,90 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			Assert.AreEqual(expected, actual);
 		}
+		
+		[Test]
+		public void IntegerToObjectImplicitCast()
+		{
+			int value = 12345;
+			Expression<Func<object>> expression = () => value;
+
+			var actual = GetValue(expression);
+
+			//Check with expression compile and invoke
+			var expected = expression.Compile().Invoke();
+
+			Assert.AreEqual(expected, actual);
+		}
+
+		[Test]
+		public void NullableIntegerToObjectImplicitCast()
+		{
+			int? value = 12345;
+			Expression<Func<object>> expression = () => value;
+
+			var actual = GetValue(expression);
+
+			//Check with expression compile and invoke
+			var expected = expression.Compile().Invoke();
+
+			Assert.AreEqual(expected, actual);
+		}
+
+		[Test]
+		public void NullableNullIntegerToObjectImplicitCast()
+		{
+			int? value = null;
+			Expression<Func<object>> expression = () => value;
+
+			var actual = GetValue(expression);
+
+			//Check with expression compile and invoke
+			var expected = expression.Compile().Invoke();
+
+			Assert.AreEqual(expected, actual);
+		}
+		
+		[Test]
+		public void ObjectToIntegerCast()
+		{
+			object value = 12345;
+			Expression<Func<int>> expression = () => (int) value;
+
+			var actual = GetValue(expression);
+
+			//Check with expression compile and invoke
+			var expected = expression.Compile().Invoke();
+
+			Assert.AreEqual(expected, actual);
+		}
+
+		[Test]
+		public void ObjectToNullableIntegerCast()
+		{
+			object value = 12345;
+			Expression<Func<int?>> expression = () => (int?) value;
+
+			var actual = GetValue(expression);
+
+			//Check with expression compile and invoke
+			var expected = expression.Compile().Invoke();
+
+			Assert.AreEqual(expected, actual);
+		}
+		
+		[Test]
+		public void NullObjectToNullableIntegerCast()
+		{
+			object value = null;
+			Expression<Func<int?>> expression = () => (int?) value;
+
+			var actual = GetValue(expression);
+
+			//Check with expression compile and invoke
+			var expected = expression.Compile().Invoke();
+
+			Assert.AreEqual(expected, actual);
+		}
 
 		[Test]
 		public void Int16ToIntegerImplicitCast()
@@ -265,6 +349,34 @@ namespace NHibernate.Test.Criteria.Lambda
 			Assert.AreEqual(expected, actual);
 		}
 
+		[Test]
+		public void StringToObjectImplicitCast()
+		{
+			string value = "Hello World";
+			Expression<Func<object>> expression = () => value;
+
+			var actual = GetValue(expression);
+
+			//Check with expression compile and invoke
+			var expected = expression.Compile().Invoke();
+
+			Assert.AreEqual(expected, actual);
+		}
+		
+		[Test]
+		public void StringObjectToStringCast()
+		{
+			object value = "Hello World";
+			Expression<Func<string>> expression = () => (string) value;
+
+			var actual = GetValue(expression);
+
+			//Check with expression compile and invoke
+			var expected = expression.Compile().Invoke();
+
+			Assert.AreEqual(expected, actual);
+		}
+		
 		[Test]
 		public void StringToIntegerCastFails()
 		{
