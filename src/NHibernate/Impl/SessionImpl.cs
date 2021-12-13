@@ -957,7 +957,7 @@ namespace NHibernate.Impl
 
 		public override string BestGuessEntityName(object entity)
 		{
-			var entityName = TryGetProxyEntityName(entity);
+			var entityName = TryGetProxyEntityName(ref entity);
 			if (entityName != null)
 				return entityName;
 

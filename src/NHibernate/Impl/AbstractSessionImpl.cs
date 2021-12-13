@@ -337,11 +337,16 @@ namespace NHibernate.Impl
 		[Obsolete("Replaced by FutureBatch")]
 		public abstract FutureQueryBatch FutureQueryBatch { get; protected internal set; }
 
-		protected private static string TryGetProxyEntityName(object entity)
+		protected private static string TryGetProxyEntityName(ref object entity)
 		{
 			if (entity is INHibernateProxy proxy)
 			{
-				return proxy.HibernateLazyInitializer.EntityName;
+				// In case of inheritance proxy EntityName can represent base entity,
+				// So if entity is initialized try to detect actual EntityName
+				if(proxy.HibernateLazyInitializer.IsUninitialized)
+					return proxy.HibernateLazyInitializer.EntityName;
+
+				entity = proxy.HibernateLazyInitializer.GetImplementation();
 			}
 
 			if (entity is IFieldInterceptorAccessor interceptorAccessor && interceptorAccessor.FieldInterceptor != null)

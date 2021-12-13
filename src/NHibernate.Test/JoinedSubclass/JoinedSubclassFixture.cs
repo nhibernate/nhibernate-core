@@ -172,6 +172,41 @@ namespace NHibernate.Test.JoinedSubclass
 			}
 		}
 
+		[Test]
+		public void BestGuessEntityName()
+		{
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				Person wally = new Person();
+				wally.Name = "wally";
+
+				Employee dilbert = new Employee();
+				dilbert.Name = "dilbert";
+				dilbert.Title = "office clown";
+
+				s.Save(wally);
+				s.Save(dilbert);
+				s.Flush();
+
+				s.Clear();
+				var person = s.Load<Person>(dilbert.Id);
+				var entityName = s.GetSessionImplementation().BestGuessEntityName(person);
+				bool isInitialized = NHibernateUtil.IsInitialized(person);
+				NHibernateUtil.Initialize(person);
+				var enityNameInited = s.GetSessionImplementation().BestGuessEntityName(person);
+
+				Assert.That(entityName, Is.EqualTo(typeof(Person).FullName));
+				Assert.That(isInitialized, Is.False);
+				Assert.That(enityNameInited, Is.EqualTo(typeof(Employee).FullName));
+				s.Clear();
+
+				s.Delete(wally);
+				s.Delete(dilbert);
+				t.Commit();
+			}
+		}
+
 		/// <summary>
 		/// Test the ability to insert a new row with a User Assigned Key
 		/// Right now - the only way to verify this is to watch SQL Profiler

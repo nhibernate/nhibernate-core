@@ -369,7 +369,7 @@ namespace NHibernate.Impl
 
 		public override string BestGuessEntityName(object entity)
 		{
-			var entityName = TryGetProxyEntityName(entity);
+			var entityName = TryGetProxyEntityName(ref entity);
 			return entityName ?? GuessEntityName(entity);
 		}
 
