@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "csharpasyncgenerator.tool": {
-      "version": "0.20.0",
+      "version": "0.20.1",
       "commands": [
         "async-generator"
       ]
