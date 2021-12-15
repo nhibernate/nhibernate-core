@@ -343,7 +343,7 @@ namespace NHibernate.Impl
 			{
 				// In case of inheritance proxy EntityName can represent base entity,
 				// So if entity is initialized try to detect actual EntityName
-				if(proxy.HibernateLazyInitializer.IsUninitialized)
+				if (proxy.HibernateLazyInitializer.IsUninitialized)
 					return proxy.HibernateLazyInitializer.EntityName;
 
 				entity = proxy.HibernateLazyInitializer.GetImplementation();
