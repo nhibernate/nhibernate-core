@@ -1672,20 +1672,30 @@ namespace NHibernate.Loader
 												 object optionalObject, string optionalEntityName, object optionalId,
 												 IEntityPersister persister)
 		{
+			IType[] types = new IType[ids.Length];
+			ArrayHelper.Fill(types, idType);
+			var queryParameters = new QueryParameters(
+				types,
+				ids,
+				optionalObject,
+				optionalEntityName,
+				optionalId);
+			return LoadEntityBatch(session, persister, queryParameters);
+		}
+
+		protected internal IList LoadEntityBatch(ISessionImplementor session,  IEntityPersister persister, QueryParameters queryParameters)
+		{
+			var ids = queryParameters.PositionalParameterValues;
 			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("batch loading entity: {0}", MessageHelper.InfoString(persister, ids, Factory));
 			}
 
-			IType[] types = new IType[ids.Length];
-			ArrayHelper.Fill(types, idType);
-			IList result;
 			try
 			{
-				result =
-					DoQueryAndInitializeNonLazyCollections(session,
-														   new QueryParameters(types, ids, optionalObject, optionalEntityName,
-																			   optionalId), false);
+				var results = DoQueryAndInitializeNonLazyCollections(session, queryParameters, false);
+				Log.Debug("done entity batch load");
+				return results;
 			}
 			catch (HibernateException)
 			{
@@ -1694,13 +1704,10 @@ namespace NHibernate.Loader
 			catch (Exception sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-												 "could not load an entity batch: "
-												 + MessageHelper.InfoString(persister, ids, Factory), SqlString);
+												"could not load an entity batch: "
+												+ MessageHelper.InfoString(persister, ids, Factory), SqlString);
 				// NH: Hibernate3 passes EntityPersisters[0] instead of persister, I think it's wrong.
 			}
-
-			Log.Debug("done entity batch load");
-			return result;
 		}
 
 		/// <summary>
@@ -2014,9 +2021,13 @@ namespace NHibernate.Loader
 		public virtual ISqlCommand CreateSqlCommand(QueryParameters queryParameters, ISessionImplementor session)
 		{
 			// A distinct-copy of parameter specifications collected during query construction
+			// var parameterSpecs = new HashSet<IParameterSpecification>(queryParameters.DynamicParamSpec ?? GetParameterSpecifications());
+			// SqlString sqlString = queryParameters.DynamicSql ?? SqlString.Copy();
+
 			var parameterSpecs = new HashSet<IParameterSpecification>(GetParameterSpecifications());
 			SqlString sqlString = SqlString.Copy();
 
+			sqlString = TransformSql(sqlString, queryParameters, parameterSpecs);
 			// dynamic-filter parameters: during the createion of the SqlString of allLoader implementation, filters can be added as SQL_TOKEN/string for this reason we have to re-parse the SQL.
 			sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
 			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, queryParameters);
@@ -2031,6 +2042,11 @@ namespace NHibernate.Loader
 			ResetEffectiveExpectedType(parameterSpecs, queryParameters);
 
 			return new SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
+		}
+
+		private virtual protected SqlString TransformSql(SqlString sqlString, QueryParameters queryParameters, HashSet<IParameterSpecification> parameterSpecifications)
+		{
+			return sqlString;
 		}
 
 		protected virtual void ResetEffectiveExpectedType(IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)

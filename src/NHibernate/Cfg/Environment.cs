@@ -231,6 +231,11 @@ namespace NHibernate.Cfg
 
 		public const string DefaultBatchFetchSize = "default_batch_fetch_size";
 
+		/// <summary>
+		/// <see cref="NHibernate.Loader.BatchFetchStyle"/> to use.
+		/// </summary> 
+		public const string BatchFetchStyle = "batch_fetch_style";
+
 		public const string CollectionTypeFactoryClass = "collectiontype.factory_class";
 
 		public const string LinqToHqlGeneratorsRegistry = "linqtohql.generatorsregistry";

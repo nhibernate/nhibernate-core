@@ -18,10 +18,10 @@ namespace NHibernate.Loader.Collection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class BatchingCollectionInitializer : ICollectionInitializer
+	public partial class BatchingCollectionInitializer : AbstractBatchingCollectionInitializer
 	{
 
-		public async Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
+		public override async Task InitializeAsync(object id, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] batch =

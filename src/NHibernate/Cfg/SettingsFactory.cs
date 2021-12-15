@@ -13,6 +13,9 @@ using NHibernate.Hql;
 using NHibernate.Linq;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
+using NHibernate.Loader;
+using NHibernate.Loader.Collection;
+using NHibernate.Loader.Entity;
 using NHibernate.MultiTenancy;
 using NHibernate.Transaction;
 using NHibernate.Util;
@@ -339,7 +342,41 @@ namespace NHibernate.Cfg
 				settings.MultiTenancyConnectionProvider = CreateMultiTenancyConnectionProvider(properties);
 			}
 
+			settings.BatchFetchStyle = PropertiesHelper.GetEnum(Environment.BatchFetchStyle, properties, BatchFetchStyle.Legacy);
+			settings.BatchingEntityLoaderBuilder = GetBatchingEntityLoaderBuilder(settings.BatchFetchStyle);
+			settings.BatchingCollectionInitializationBuilder = GetBatchingCollectionInitializationBuilder(settings.BatchFetchStyle);
+
 			return settings;
+		}
+
+		private BatchingCollectionInitializerBuilder GetBatchingCollectionInitializationBuilder(BatchFetchStyle batchFetchStyle)
+		{
+			switch (batchFetchStyle)
+			{
+				case BatchFetchStyle.Legacy:
+					return new LegacyBatchingCollectionInitializerBuilder();
+				// case BatchFetchStyle.PADDED:
+				// 	break;
+				case BatchFetchStyle.Dynamic:
+					return new DynamicBatchingCollectionInitializerBuilder();
+				default:
+					throw new ArgumentOutOfRangeException(nameof(batchFetchStyle), batchFetchStyle, null);
+			}
+		}
+
+		private BatchingEntityLoaderBuilder GetBatchingEntityLoaderBuilder(BatchFetchStyle batchFetchStyle)
+		{
+			switch (batchFetchStyle)
+			{
+				case BatchFetchStyle.Legacy:
+					return new LegacyBatchingEntityLoaderBuilder();
+				// case BatchFetchStyle.PADDED:
+				// 	break;
+				case BatchFetchStyle.Dynamic:
+					return new DynamicBatchingEntityLoaderBuilder();
+				default:
+					throw new ArgumentOutOfRangeException(nameof(batchFetchStyle), batchFetchStyle, null);
+			}
 		}
 
 		private static IBatcherFactory CreateBatcherFactory(IDictionary<string, string> properties, int batchSize, IConnectionProvider connectionProvider)

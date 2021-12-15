@@ -10,6 +10,9 @@ using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
+using NHibernate.Loader;
+using NHibernate.Loader.Collection;
+using NHibernate.Loader.Entity;
 using NHibernate.MultiTenancy;
 using NHibernate.Transaction;
 
@@ -214,5 +217,8 @@ namespace NHibernate.Cfg
 		public IMultiTenancyConnectionProvider MultiTenancyConnectionProvider { get; internal set; }
 		public int QueryPlanCacheParameterMetadataMaxSize { get; internal set; }
 		public int QueryPlanCacheMaxSize { get; internal set; }
+		public BatchFetchStyle BatchFetchStyle { get; internal set; }
+		public BatchingEntityLoaderBuilder  BatchingEntityLoaderBuilder { get; internal set; }
+		public BatchingCollectionInitializerBuilder BatchingCollectionInitializationBuilder { get; internal set; }
 	}
 }

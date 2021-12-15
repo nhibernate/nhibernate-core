@@ -76,19 +76,24 @@ namespace NHibernate.Criterion
 
 		private SqlString GetSqlString(ICriteriaQuery criteriaQuery, SqlString[] columns, Parameter bogusParam)
 		{
-			if (columns.Length <= 1 || criteriaQuery.Factory.Dialect.SupportsRowValueConstructorSyntaxInInList)
+			return GetSqlString(columns, Values.Length, criteriaQuery.Factory.Dialect, bogusParam);
+		}
+		
+		internal static SqlString GetSqlString(object[] columns, int paramsCount, Dialect.Dialect dialect, Parameter bogusParam)
+		{
+			if (columns.Length <= 1 || dialect.SupportsRowValueConstructorSyntaxInInList)
 			{
 				var wrapInParens = columns.Length > 1;
 				const string comaSeparator = ", ";
 				var singleValueParam = SqlStringHelper.Repeat(new SqlString(bogusParam), columns.Length, comaSeparator, wrapInParens);
 
-				var parameters = SqlStringHelper.Repeat(singleValueParam, Values.Length, comaSeparator,  wrapInParens: false);
+				var parameters = SqlStringHelper.Repeat(singleValueParam, paramsCount, comaSeparator,  wrapInParens: false);
 
 				//single column: col1 in (?, ?)
 				//multi column:  (col1, col2) in ((?, ?), (?, ?))
 				return new SqlString(
 					wrapInParens ? StringHelper.OpenParen : string.Empty,
-					SqlStringHelper.Join(comaSeparator, columns),
+					SqlStringHelper.JoinParts(comaSeparator, columns),
 					wrapInParens ? StringHelper.ClosedParen : string.Empty,
 					" in (",
 					parameters,
@@ -102,7 +107,7 @@ namespace NHibernate.Criterion
 				"= ",
 				bogusParam,
 				" ) ");
-			cols = SqlStringHelper.Repeat(cols, Values.Length, " or ", wrapInParens: Values.Length > 1);
+			cols = SqlStringHelper.Repeat(cols, paramsCount, " or ", wrapInParens: paramsCount > 1);
 			return cols;
 		}
 

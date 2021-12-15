@@ -74,7 +74,7 @@ namespace NHibernate.Loader.Entity
 
 		protected IType UniqueKeyType { get; private set; }
 
-		private IEnumerable<IParameterSpecification> CreateParameterSpecificationsAndAssignBackTrack(IEnumerable<Parameter> sqlPatameters)
+		internal protected List<IParameterSpecification> CreateParameterSpecificationsAndAssignBackTrack(IEnumerable<Parameter> sqlPatameters)
 		{
 			var specifications = new List<IParameterSpecification>();
 			int position = 0;
@@ -92,7 +92,7 @@ namespace NHibernate.Loader.Entity
 			return specifications;
 		}
 
-		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
+		protected  override IEnumerable<IParameterSpecification> GetParameterSpecifications()
 		{
 			return parametersSpecifications ?? (parametersSpecifications = CreateParameterSpecificationsAndAssignBackTrack(SqlString.GetParameters()).ToArray());
 		}
