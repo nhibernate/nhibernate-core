@@ -129,7 +129,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1486
 						continue;
 
 					var checkable = new [] { true, true, true };
-					Assert.That<bool>(
+					Assert.That(
 						() => componentType.IsModified(new object[] { "", "", "" }, person.Address, checkable, sessionImplementor),
 						Throws.Nothing,
 						"Checking component against an array snapshot failed");

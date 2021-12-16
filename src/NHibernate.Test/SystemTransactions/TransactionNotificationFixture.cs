@@ -1,6 +1,5 @@
 using System.Transactions;
 using NHibernate.Cfg;
-using NHibernate.Mapping;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -219,7 +218,7 @@ namespace NHibernate.Test.SystemTransactions
 
 			// Transaction completion may happen asynchronously, so allow some delay. Odbc promotes
 			// this test to distributed and have that delay, by example.
-			Assert.That<bool>(() => s1.IsOpen, Is.False.After(500, 100), "Session not closed.");
+			Assert.That(() => s1.IsOpen, Is.False.After(500, 100), "Session not closed.");
 
 			Assert.That(interceptor.afterTransactionCompletionCalled, Is.EqualTo(1));
 		}

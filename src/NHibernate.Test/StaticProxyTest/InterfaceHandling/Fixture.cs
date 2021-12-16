@@ -168,28 +168,28 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 
 		private void ThrowOnIEntityNameAccess(IEntity entity)
 		{
-			Assert.That<string>(() => entity.Name, Throws.TypeOf<ObjectNotFoundException>(), "IEntity.Name access should lead to proxy initialization");
+			Assert.That(() => entity.Name, Throws.TypeOf<ObjectNotFoundException>(), "IEntity.Name access should lead to proxy initialization");
 		}
 
 		private void ThrowOnIEntityIdAccess(IEntity entity)
 		{
-			Assert.That<Guid>(() => entity.Id, Throws.TypeOf<ObjectNotFoundException>(), "IEntity.Id access should lead to proxy initialization");
+			Assert.That(() => entity.Id, Throws.TypeOf<ObjectNotFoundException>(), "IEntity.Id access should lead to proxy initialization");
 		}
 
 		private void ThrowOnIEntity2IdAccess(IEntity2 entity)
 		{
-			Assert.That<Guid>(() => entity.Id, Throws.TypeOf<ObjectNotFoundException>(), "IEntityId.Id access should lead to proxy initialization");
+			Assert.That(() => entity.Id, Throws.TypeOf<ObjectNotFoundException>(), "IEntityId.Id access should lead to proxy initialization");
 		}
 
 		private void CanAccessIEntityId(IEntity entity)
 		{
-			Assert.That<Guid>(() => entity.Id, Throws.Nothing, "Failed to access proxy IEntity.Id interface");
+			Assert.That(() => entity.Id, Throws.Nothing, "Failed to access proxy IEntity.Id interface");
 			Assert.That(entity.Id, Is.EqualTo(_id));
 		}
 
 		private void CanAccessIEntity2Id(IEntity2 entity)
 		{
-			Assert.That<Guid>(() => entity.Id, Throws.Nothing, "Failed to access proxy IEntity2.Id interface");
+			Assert.That(() => entity.Id, Throws.Nothing, "Failed to access proxy IEntity2.Id interface");
 			Assert.That(entity.Id, Is.EqualTo(_id));
 		}
 	}

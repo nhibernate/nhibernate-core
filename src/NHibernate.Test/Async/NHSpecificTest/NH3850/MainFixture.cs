@@ -394,28 +394,26 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				if (expectedResult.HasValue)
 				{
 					var nonNullableDecimal = -1m;
-					Assert.That<Task<decimal>>(async () => nonNullableDecimal = await (dcQuery.AverageAsync(dc => dc.NonNullableDecimal, cancellationToken)), Throws.Nothing, "Non nullable decimal average has failed");
+					Assert.That(async () => nonNullableDecimal = await (dcQuery.AverageAsync(dc => dc.NonNullableDecimal, cancellationToken)), Throws.Nothing, "Non nullable decimal average has failed");
 					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Non nullable decimal average has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Average(dc => dc.NonNullableDecimal));
-					Assert.That<Task<decimal>>(async () => nonNullableDecimal = await (futureNonNullableDec.GetValueAsync(cancellationToken)), Throws.Nothing, "Future non nullable decimal average has failed");
+					Assert.That(async () => nonNullableDecimal = await (futureNonNullableDec.GetValueAsync(cancellationToken)), Throws.Nothing, "Future non nullable decimal average has failed");
 					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Future non nullable decimal average has failed");
 				}
 				else
 				{
-					Assert.That<Task<decimal>>(
-						() => dcQuery.AverageAsync(dc => dc.NonNullableDecimal, cancellationToken),
-						// After fix
-						Throws.InstanceOf<InvalidOperationException>()
-						      // Before fix
-						      .Or.InnerException.InstanceOf<ArgumentNullException>(),
-						"Non nullable decimal average has failed");
+					Assert.That(() => dcQuery.AverageAsync(dc => dc.NonNullableDecimal, cancellationToken),
+					            // After fix
+					            Throws.InstanceOf<InvalidOperationException>()
+					                  // Before fix
+					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
+					            "Non nullable decimal average has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Average(dc => dc.NonNullableDecimal));
-					Assert.That<Task<decimal>>(
-						() => futureNonNullableDec.GetValueAsync(cancellationToken),
-						Throws.InstanceOf<ArgumentNullException>()
-						      // When multi-queries are not supported, we have a discrepancy here.
-						      .Or.InnerException.InstanceOf<ArgumentNullException>(),
-						"Future non nullable decimal average has failed");
+					Assert.That(() => futureNonNullableDec.GetValueAsync(cancellationToken),
+					            Throws.InstanceOf<ArgumentNullException>()
+					                  // When multi-queries are not supported, we have a discrepancy here.
+					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
+					            "Future non nullable decimal average has failed");
 				}
 			}
 		}
@@ -575,7 +573,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(result, Is.Not.Null);
 				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>());
 				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault());
-				Assert.That<Task<DomainClassBExtendedByA>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
 				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>(), "Future");
 			}
@@ -594,7 +592,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(result.Name, Is.EqualTo(SearchName1));
 				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>());
 				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == SearchName1));
-				Assert.That<Task<DomainClassBExtendedByA>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
 				Assert.That(result.Name, Is.EqualTo(SearchName1), "Future");
 				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>(), "Future");
@@ -613,7 +611,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(result, Is.Not.Null);
 				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>());
 				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault());
-				Assert.That<Task<DomainClassCExtendedByD>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
 				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>(), "Future");
 			}
@@ -632,7 +630,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(result.Name, Is.EqualTo(SearchName1));
 				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>());
 				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == SearchName1));
-				Assert.That<Task<DomainClassCExtendedByD>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
 				Assert.That(result.Name, Is.EqualTo(SearchName1), "Future");
 				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>(), "Future");
@@ -650,7 +648,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(async () => result = await (query.FirstOrDefaultAsync()), Throws.Nothing);
 				Assert.That(result, Is.Not.Null);
 				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault());
-				Assert.That<Task<DomainClassE>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
 			}
 		}
@@ -667,7 +665,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(result, Is.Not.Null);
 				Assert.That(result.Name, Is.EqualTo(SearchName1));
 				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == SearchName1));
-				Assert.That<Task<DomainClassE>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
 				Assert.That(result.Name, Is.EqualTo(SearchName1), "Future");
 			}
@@ -684,7 +682,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(async () => result = await (query.FirstOrDefaultAsync()), Throws.Nothing);
 				Assert.That(result, Is.Null);
 				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault());
-				Assert.That<Task<DomainClassF>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Null, "Future");
 			}
 		}
@@ -700,7 +698,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(async () => result = await (query.FirstOrDefaultAsync(dc => dc.Name == SearchName1)), Throws.Nothing);
 				Assert.That(result, Is.Null);
 				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == SearchName1));
-				Assert.That<Task<DomainClassF>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Null, "Future");
 			}
 		}
@@ -718,7 +716,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
 				Assert.That(result, Is.TypeOf<DomainClassGExtendedByH>());
 				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault());
-				Assert.That<Task<DomainClassGExtendedByH>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
 				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
 				Assert.That(result, Is.TypeOf<DomainClassGExtendedByH>(), "Future");
@@ -739,7 +737,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
 				Assert.That(result, Is.TypeOf<DomainClassGExtendedByH>());
 				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault(dc => dc.Name == SearchName1));
-				Assert.That<Task<DomainClassGExtendedByH>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
 				Assert.That(result.Name, Is.EqualTo(SearchName1), "Future");
 				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
@@ -760,7 +758,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
 				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>());
 				var futureQuery = query.ToFutureValue(qdc => qdc.FirstOrDefault());
-				Assert.That<Task<object>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
 				// If class type assert starts failing, maybe just ignore it: order of first on polymorphic queries looks unspecified to me.
 				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>(), "Future");
@@ -960,26 +958,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				if (expectedResult.HasValue)
 				{
 					var nonNullableDecimal = -1m;
-					Assert.That<Task<decimal>>(async () => nonNullableDecimal = await (dcQuery.MaxAsync(dc => dc.NonNullableDecimal, cancellationToken)), Throws.Nothing, "Non nullable decimal max has failed");
+					Assert.That(async () => nonNullableDecimal = await (dcQuery.MaxAsync(dc => dc.NonNullableDecimal, cancellationToken)), Throws.Nothing, "Non nullable decimal max has failed");
 					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Non nullable decimal max has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.NonNullableDecimal));
-					Assert.That<Task<decimal>>(async () => nonNullableDecimal = await (futureNonNullableDec.GetValueAsync(cancellationToken)), Throws.Nothing, "Future non nullable decimal max has failed");
+					Assert.That(async () => nonNullableDecimal = await (futureNonNullableDec.GetValueAsync(cancellationToken)), Throws.Nothing, "Future non nullable decimal max has failed");
 					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Future non nullable decimal max has failed");
 				}
 				else
 				{
-					Assert.That<Task<decimal>>(
-						() => dcQuery.MaxAsync(dc => dc.NonNullableDecimal, cancellationToken),
-						// After fix
-						Throws.InstanceOf<InvalidOperationException>()
-						      // Before fix
-						      .Or.InnerException.InstanceOf<ArgumentNullException>(),
-						"Non nullable decimal max has failed");
+					Assert.That(() => dcQuery.MaxAsync(dc => dc.NonNullableDecimal, cancellationToken),
+					            // After fix
+					            Throws.InstanceOf<InvalidOperationException>()
+					                  // Before fix
+					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
+					            "Non nullable decimal max has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.NonNullableDecimal));
-					Assert.That<Task<decimal>>(
-						() => futureNonNullableDec.GetValueAsync(cancellationToken),
-						Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
-						"Future non nullable decimal max has failed");
+					Assert.That(() => futureNonNullableDec.GetValueAsync(cancellationToken),
+					            Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
+					            "Future non nullable decimal max has failed");
 				}
 			}
 		}
@@ -1034,26 +1030,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				if (expectedResult.HasValue)
 				{
 					var nonNullableDecimal = -1m;
-					Assert.That<Task<decimal>>(async () => nonNullableDecimal = await (dcQuery.MinAsync(dc => dc.NonNullableDecimal, cancellationToken)), Throws.Nothing, "Non nullable decimal min has failed");
+					Assert.That(async () => nonNullableDecimal = await (dcQuery.MinAsync(dc => dc.NonNullableDecimal, cancellationToken)), Throws.Nothing, "Non nullable decimal min has failed");
 					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Non nullable decimal min has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.NonNullableDecimal));
-					Assert.That<Task<decimal>>(async () => nonNullableDecimal = await (futureNonNullableDec.GetValueAsync(cancellationToken)), Throws.Nothing, "Future non nullable decimal min has failed");
+					Assert.That(async () => nonNullableDecimal = await (futureNonNullableDec.GetValueAsync(cancellationToken)), Throws.Nothing, "Future non nullable decimal min has failed");
 					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Future non nullable decimal min has failed");
 				}
 				else
 				{
-					Assert.That<Task<decimal>>(
-						() => dcQuery.MinAsync(dc => dc.NonNullableDecimal, cancellationToken),
-						// After fix
-						Throws.InstanceOf<InvalidOperationException>()
-						      // Before fix
-						      .Or.InnerException.InstanceOf<ArgumentNullException>(),
-						"Non nullable decimal min has failed");
+					Assert.That(() => dcQuery.MinAsync(dc => dc.NonNullableDecimal, cancellationToken),
+					            // After fix
+					            Throws.InstanceOf<InvalidOperationException>()
+					                  // Before fix
+					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
+					            "Non nullable decimal min has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.NonNullableDecimal));
-					Assert.That<Task<decimal>>(
-						() => futureNonNullableDec.GetValueAsync(cancellationToken),
-						Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
-						"Future non nullable decimal min has failed");
+					Assert.That(() => futureNonNullableDec.GetValueAsync(cancellationToken),
+					            Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
+					            "Future non nullable decimal min has failed");
 				}
 			}
 		}
@@ -1067,7 +1061,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				var query = session.Query<DomainClassBExtendedByA>();
 				Assert.That(() => query.SingleOrDefaultAsync(), Throws.InvalidOperationException);
 				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault());
-				Assert.That<Task<DomainClassBExtendedByA>>(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
+				Assert.That(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
 			}
 		}
 
@@ -1084,7 +1078,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(result.Name, Is.EqualTo(SearchName1));
 				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>());
 				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == SearchName1));
-				Assert.That<Task<DomainClassBExtendedByA>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
 				Assert.That(result.Name, Is.EqualTo(SearchName1), "Future");
 				Assert.That(result, Is.TypeOf<DomainClassBExtendedByA>(), "Future");
@@ -1100,7 +1094,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				var query = session.Query<DomainClassCExtendedByD>();
 				Assert.That(() => query.SingleOrDefaultAsync(), Throws.InvalidOperationException);
 				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault());
-				Assert.That<Task<DomainClassCExtendedByD>>(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
+				Assert.That(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
 			}
 		}
 
@@ -1117,7 +1111,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(result.Name, Is.EqualTo(SearchName1));
 				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>());
 				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == SearchName1));
-				Assert.That<Task<DomainClassCExtendedByD>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
 				Assert.That(result.Name, Is.EqualTo(SearchName1), "Future");
 				Assert.That(result, Is.TypeOf<DomainClassCExtendedByD>(), "Future");
@@ -1133,7 +1127,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				var query = session.Query<DomainClassE>();
 				Assert.That(() => query.SingleOrDefaultAsync(), Throws.InvalidOperationException);
 				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault());
-				Assert.That<Task<DomainClassE>>(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
+				Assert.That(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
 			}
 		}
 
@@ -1149,7 +1143,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(result, Is.Not.Null);
 				Assert.That(result.Name, Is.EqualTo(SearchName1));
 				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == SearchName1));
-				Assert.That<Task<DomainClassE>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Not.Null, "Future");
 				Assert.That(result.Name, Is.EqualTo(SearchName1), "Future");
 			}
@@ -1166,7 +1160,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(async () => result = await (query.SingleOrDefaultAsync()), Throws.Nothing);
 				Assert.That(result, Is.Null);
 				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault());
-				Assert.That<Task<DomainClassF>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Null, "Future");
 			}
 		}
@@ -1182,7 +1176,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(async () => result = await (query.SingleOrDefaultAsync(dc => dc.Name == SearchName1)), Throws.Nothing);
 				Assert.That(result, Is.Null);
 				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == SearchName1));
-				Assert.That<Task<DomainClassF>>(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
+				Assert.That(async () => result = await (futureQuery.GetValueAsync()), Throws.Nothing, "Future");
 				Assert.That(result, Is.Null, "Future");
 			}
 		}
@@ -1196,7 +1190,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				var query = session.Query<DomainClassGExtendedByH>();
 				Assert.That(() => query.SingleOrDefaultAsync(), Throws.InvalidOperationException);
 				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault());
-				Assert.That<Task<DomainClassGExtendedByH>>(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
+				Assert.That(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
 			}
 		}
 
@@ -1209,7 +1203,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				var query = session.Query<DomainClassGExtendedByH>();
 				Assert.That(() => query.SingleOrDefaultAsync(dc => dc.Name == SearchName1), Throws.InvalidOperationException);
 				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault(dc => dc.Name == SearchName1));
-				Assert.That<Task<DomainClassGExtendedByH>>(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
+				Assert.That(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
 			}
 		}
 
@@ -1222,7 +1216,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				var query = session.Query<object>();
 				Assert.That(() => query.SingleOrDefaultAsync(), Throws.InvalidOperationException);
 				var futureQuery = query.ToFutureValue(qdc => qdc.SingleOrDefault());
-				Assert.That<Task<object>>(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
+				Assert.That(() => futureQuery.GetValueAsync(), Throws.TargetInvocationException.And.InnerException.TypeOf<InvalidOperationException>(), "Future");
 			}
 		}
 
@@ -1310,26 +1304,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				if (expectedResult.HasValue)
 				{
 					var nonNullableDecimal = -1m;
-					Assert.That<Task<decimal>>(async () => nonNullableDecimal = await (dcQuery.SumAsync(dc => dc.NonNullableDecimal, cancellationToken)), Throws.Nothing, "Non nullable decimal sum has failed");
+					Assert.That(async () => nonNullableDecimal = await (dcQuery.SumAsync(dc => dc.NonNullableDecimal, cancellationToken)), Throws.Nothing, "Non nullable decimal sum has failed");
 					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Non nullable decimal sum has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Sum(dc => dc.NonNullableDecimal));
-					Assert.That<Task<decimal>>(async () => nonNullableDecimal = await (futureNonNullableDec.GetValueAsync(cancellationToken)), Throws.Nothing, "Future non nullable decimal sum has failed");
+					Assert.That(async () => nonNullableDecimal = await (futureNonNullableDec.GetValueAsync(cancellationToken)), Throws.Nothing, "Future non nullable decimal sum has failed");
 					Assert.That(nonNullableDecimal, Is.EqualTo(expectedResult), "Future non nullable decimal sum has failed");
 				}
 				else
 				{
-					Assert.That<Task<decimal>>(
-						() => dcQuery.SumAsync(dc => dc.NonNullableDecimal, cancellationToken),
-						// After fix
-						Throws.InstanceOf<InvalidOperationException>()
-						      // Before fix
-						      .Or.InnerException.InstanceOf<ArgumentNullException>(),
-						"Non nullable decimal sum has failed");
+					Assert.That(() => dcQuery.SumAsync(dc => dc.NonNullableDecimal, cancellationToken),
+					            // After fix
+					            Throws.InstanceOf<InvalidOperationException>()
+					                  // Before fix
+					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
+					            "Non nullable decimal sum has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Sum(dc => dc.NonNullableDecimal));
-					Assert.That<Task<decimal>>(
-						() => futureNonNullableDec.GetValueAsync(cancellationToken),
-						Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
-						"Future non nullable decimal sum has failed");
+					Assert.That(() => futureNonNullableDec.GetValueAsync(cancellationToken),
+					            Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
+					            "Future non nullable decimal sum has failed");
 				}
 			}
 		}
