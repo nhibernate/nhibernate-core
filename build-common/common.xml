@@ -14,11 +14,11 @@
   <!-- This is used for build folder and also for "API Reference" docs (not active task, see doc/NHibernate.shfbproj.template) -->
   <target name="get-project-version">
     <xmlpeek
-      file="${root.dir}/src/Directory.Build.props"
+      file="${root.dir}/build-common/NHibernate.props"
       xpath="/Project/PropertyGroup/NhVersion"
       property="version.short" />
     <xmlpeek
-      file="${root.dir}/src/Directory.Build.props"
+      file="${root.dir}/build-common/NHibernate.props"
       xpath="/Project/PropertyGroup/VersionPatch"
       property="version.patch" />
     <property name="project.version" value="${version.short}.${version.patch}" />
