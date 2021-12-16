@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+
 using System.Collections;
 using System.Linq;
 using NHibernate.Cfg;
@@ -104,8 +105,8 @@ namespace NHibernate.Test.Insertordering.FamilyModel
 			using (var session = OpenSession())
 			using (var tran = session.BeginTransaction())
 			{
-				Assert.AreEqual(9, await (session.Query<Woman>().CountAsync()));
-				Assert.AreEqual(6, await (session.Query<Man>().CountAsync()));
+				Assert.AreEqual(9, session.Query<Woman>().Count());
+				Assert.AreEqual(6, session.Query<Man>().Count());
 			}
 		}
 	}

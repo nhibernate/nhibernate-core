@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1850

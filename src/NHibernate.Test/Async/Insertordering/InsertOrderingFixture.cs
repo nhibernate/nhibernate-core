@@ -7,13 +7,12 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using System.Threading;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
@@ -25,6 +24,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Insertordering
 {
+	using System.Threading;
 	[TestFixture]
 	public partial class InsertOrderingFixtureAsync : TestCase
 	{
@@ -87,7 +87,7 @@ namespace NHibernate.Test.Insertordering
 		[Test]
 		public async System.Threading.Tasks.Task BatchOrderingAsync()
 		{
-			using (var  s = OpenSession())
+			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				for (int i = 0; i < instancesPerEach; i++)
@@ -675,16 +675,25 @@ namespace NHibernate.Test.Insertordering
 
 		#endregion
 	}
-
 	public partial class InsertOrderingFixture : TestCase
 	{
+
+
+
+
+
+
+
+
+
+
+
+		
+		
 		public partial class StatsBatcher : SqlClientBatchingBatcher
 		{
-			public override async System.Threading.Tasks.Task<DbCommand> PrepareBatchCommandAsync(
-				CommandType type,
-				SqlString sql,
-				SqlType[] parameterTypes,
-				CancellationToken cancellationToken)
+
+			public override async System.Threading.Tasks.Task<DbCommand> PrepareBatchCommandAsync(CommandType type, SqlString sql, SqlType[] parameterTypes, CancellationToken cancellationToken)
 			{
 				var result = await (base.PrepareBatchCommandAsync(type, sql, parameterTypes, cancellationToken));
 
@@ -693,9 +702,7 @@ namespace NHibernate.Test.Insertordering
 				return result;
 			}
 
-			public override System.Threading.Tasks.Task AddToBatchAsync(
-				IExpectation expectation,
-				CancellationToken cancellationToken)
+			public override System.Threading.Tasks.Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
 			{
 				try
 				{
@@ -708,9 +715,7 @@ namespace NHibernate.Test.Insertordering
 				}
 			}
 
-			protected override System.Threading.Tasks.Task DoExecuteBatchAsync(
-				DbCommand ps,
-				CancellationToken cancellationToken)
+			protected override System.Threading.Tasks.Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken)
 			{
 				try
 				{
@@ -724,5 +729,6 @@ namespace NHibernate.Test.Insertordering
 			}
 		}
 
-	}
+
+			}
 }
