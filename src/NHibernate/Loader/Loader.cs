@@ -1704,8 +1704,8 @@ namespace NHibernate.Loader
 			catch (Exception sqle)
 			{
 				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-												"could not load an entity batch: "
-												+ MessageHelper.InfoString(persister, ids, Factory), SqlString);
+												 "could not load an entity batch: "
+												 + MessageHelper.InfoString(persister, ids, Factory), SqlString);
 				// NH: Hibernate3 passes EntityPersisters[0] instead of persister, I think it's wrong.
 			}
 		}
@@ -2021,9 +2021,6 @@ namespace NHibernate.Loader
 		public virtual ISqlCommand CreateSqlCommand(QueryParameters queryParameters, ISessionImplementor session)
 		{
 			// A distinct-copy of parameter specifications collected during query construction
-			// var parameterSpecs = new HashSet<IParameterSpecification>(queryParameters.DynamicParamSpec ?? GetParameterSpecifications());
-			// SqlString sqlString = queryParameters.DynamicSql ?? SqlString.Copy();
-
 			var parameterSpecs = new HashSet<IParameterSpecification>(GetParameterSpecifications());
 			SqlString sqlString = SqlString.Copy();
 
