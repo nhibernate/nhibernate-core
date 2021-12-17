@@ -2,6 +2,7 @@ using System;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
 
 namespace NHibernate.Loader
 {
@@ -14,25 +15,14 @@ namespace NHibernate.Loader
 			return new SqlStringBuilder(1).Add(BatchIdPlaceholder);
 		}
 
-		public static void ExpandBatchIdPlaceholder(SqlString sqlString, QueryParameters queryParameters, string[] columns, Dialect.Dialect dialect, out SqlString result, out Parameter[] parameters)
-		{
-			var wherePart = GenerateWherePart(queryParameters, columns, dialect, out parameters);
-			result = sqlString.ReplaceLast(BatchIdPlaceholder, wherePart);
-		}
-
-		private static SqlString GenerateWherePart(QueryParameters queryParameters, string[] columns, Dialect.Dialect dialect, out Parameter[] parameters)
+		public static SqlString ExpandBatchIdPlaceholder(SqlString sqlString, QueryParameters queryParameters, string[] columns, Dialect.Dialect dialect, out Parameter[] parameters)
 		{
 			var bogusParam = Parameter.Placeholder;
 			var wherePart = InExpression.GetSqlString(columns, queryParameters.PositionalParameterValues.Length, dialect, bogusParam);
-			var paramsCount = wherePart.GetParameterCount();
-			parameters = new Parameter[paramsCount];
-			for (var i = 0; i < parameters.Length; i++)
-			{
-				parameters[i] = Parameter.Placeholder;
-			}
-
+			parameters = wherePart.Parameters.ToArray(x => Parameter.Placeholder);
 			wherePart.SubstituteBogusParameters(parameters, bogusParam);
-			return wherePart;
+
+			return sqlString.ReplaceLast(BatchIdPlaceholder, wherePart);
 		}
 
 		public static int GetIdsToLoad(object[] batch, out object[] idsToLoad)

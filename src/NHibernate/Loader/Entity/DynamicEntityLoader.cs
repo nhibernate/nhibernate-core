@@ -31,7 +31,7 @@ namespace NHibernate.Loader.Entity
 		private protected override SqlString TransformSql(SqlString sqlString, QueryParameters queryParameters, HashSet<IParameterSpecification> parameterSpecifications)
 		{
 			var columns = StringHelper.Qualify(_alias, persister.KeyColumnNames);
-			DynamicBatchingHelper.ExpandBatchIdPlaceholder(sqlString, queryParameters, columns, Factory.Dialect, out var result, out var parameters);
+			var result = DynamicBatchingHelper.ExpandBatchIdPlaceholder(sqlString, queryParameters, columns, Factory.Dialect, out var parameters);
 			parameterSpecifications.UnionWith(CreateParameterSpecificationsAndAssignBackTrack(parameters));
 			return result;
 		}
