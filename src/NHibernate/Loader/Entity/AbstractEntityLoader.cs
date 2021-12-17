@@ -92,7 +92,7 @@ namespace NHibernate.Loader.Entity
 			return specifications;
 		}
 
-		protected  override IEnumerable<IParameterSpecification> GetParameterSpecifications()
+		protected override IEnumerable<IParameterSpecification> GetParameterSpecifications()
 		{
 			return parametersSpecifications ?? (parametersSpecifications = CreateParameterSpecificationsAndAssignBackTrack(SqlString.GetParameters()).ToArray());
 		}

@@ -31,14 +31,14 @@ namespace NHibernate.Loader.Entity
 		private protected override SqlString TransformSql(SqlString sqlString, QueryParameters queryParameters, HashSet<IParameterSpecification> parameterSpecifications)
 		{
 			var columns = StringHelper.Qualify(_alias, persister.KeyColumnNames);
-			DynamicBatchingHelper.ExpandBatchIdPlaceholder(sqlString, queryParameters, columns, Factory.Dialect, out var parameters, out var result);
+			DynamicBatchingHelper.ExpandBatchIdPlaceholder(sqlString, queryParameters, columns, Factory.Dialect, out var result, out var parameters);
 			parameterSpecifications.UnionWith(CreateParameterSpecificationsAndAssignBackTrack(parameters));
 			return result;
 		}
 
 		class DynamicEntityJoinWalker : EntityJoinWalker
 		{
-			public DynamicEntityJoinWalker(IOuterJoinLoadable persister, string[] identifierColumnNames, LockMode lockMode, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters) : base(persister, identifierColumnNames, -1, lockMode, factory, enabledFilters)
+			public DynamicEntityJoinWalker(IOuterJoinLoadable persister, string[] identifierColumnNames, LockMode lockMode, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters) : base(persister, identifierColumnNames, 1, lockMode, factory, enabledFilters)
 			{
 			}
 

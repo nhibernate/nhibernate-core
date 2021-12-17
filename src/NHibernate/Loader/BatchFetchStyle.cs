@@ -1,5 +1,8 @@
 namespace NHibernate.Loader
 {
+	/// <summary>
+	/// Defines the style that should be used to perform batch loading.
+	/// </summary>
 	public enum BatchFetchStyle
 	{
 		/// <summary>

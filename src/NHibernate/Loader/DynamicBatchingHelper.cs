@@ -14,7 +14,7 @@ namespace NHibernate.Loader
 			return new SqlStringBuilder(1).Add(BatchIdPlaceholder);
 		}
 
-		public static void ExpandBatchIdPlaceholder(SqlString sqlString, QueryParameters queryParameters, string[] columns, Dialect.Dialect dialect, out Parameter[] parameters, out SqlString result)
+		public static void ExpandBatchIdPlaceholder(SqlString sqlString, QueryParameters queryParameters, string[] columns, Dialect.Dialect dialect, out SqlString result, out Parameter[] parameters)
 		{
 			var wherePart = GenerateWherePart(queryParameters, columns, dialect, out parameters);
 			result = sqlString.ReplaceLast(BatchIdPlaceholder, wherePart);
