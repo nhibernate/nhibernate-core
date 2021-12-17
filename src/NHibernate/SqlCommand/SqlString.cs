@@ -565,7 +565,6 @@ namespace NHibernate.SqlCommand
 			return new SqlString(ReplaceParts(oldValue, newValue));
 		}
 
-		
 		private IEnumerable<object> ReplaceParts(string oldValue, string newValue)
 		{
 			foreach (var part in this)
