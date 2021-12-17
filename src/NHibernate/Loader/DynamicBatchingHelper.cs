@@ -11,13 +11,13 @@ namespace NHibernate.Loader
 
 		public static SqlStringBuilder BuildBatchFetchRestrictionFragment()
 		{
-			return new SqlStringBuilder(1).Add(DynamicBatchingHelper.BatchIdPlaceholder);
+			return new SqlStringBuilder(1).Add(BatchIdPlaceholder);
 		}
 
 		public static void ExpandBatchIdPlaceholder(SqlString sqlString, QueryParameters queryParameters, string[] columns, Dialect.Dialect dialect, out Parameter[] parameters, out SqlString result)
 		{
 			var wherePart = GenerateWherePart(queryParameters, columns, dialect, out parameters);
-			result = sqlString.ReplaceLast(DynamicBatchingHelper.BatchIdPlaceholder, wherePart);
+			result = sqlString.ReplaceLast(BatchIdPlaceholder, wherePart);
 		}
 
 		private static SqlString GenerateWherePart(QueryParameters queryParameters, string[] columns, Dialect.Dialect dialect, out Parameter[] parameters)
