@@ -74,7 +74,7 @@ namespace NHibernate.Loader.Entity
 
 		protected IType UniqueKeyType { get; private set; }
 
-		protected List<IParameterSpecification> CreateParameterSpecificationsAndAssignBackTrack(IEnumerable<Parameter> sqlPatameters)
+		private List<IParameterSpecification> CreateParameterSpecificationsAndAssignBackTrack(IEnumerable<Parameter> sqlPatameters)
 		{
 			var specifications = new List<IParameterSpecification>();
 			int position = 0;

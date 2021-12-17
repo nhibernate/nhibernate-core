@@ -393,8 +393,6 @@ namespace NHibernate.SqlCommand
 				&& IndexOf(value, _length - value.Length, value.Length, StringComparison.InvariantCultureIgnoreCase) >= 0;
 		}
 
-		internal IList<Parameter> Parameters => _parameters.Values;
-
 		public IEnumerable<Parameter> GetParameters()
 		{
 			return _parameters.Values;

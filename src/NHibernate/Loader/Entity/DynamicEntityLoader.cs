@@ -31,9 +31,7 @@ namespace NHibernate.Loader.Entity
 		private protected override SqlString TransformSql(SqlString sqlString, QueryParameters queryParameters, HashSet<IParameterSpecification> parameterSpecifications)
 		{
 			var columns = StringHelper.Qualify(_alias, persister.KeyColumnNames);
-			var result = DynamicBatchingHelper.ExpandBatchIdPlaceholder(sqlString, queryParameters, columns, Factory.Dialect, out var parameters);
-			parameterSpecifications.UnionWith(CreateParameterSpecificationsAndAssignBackTrack(parameters));
-			return result;
+			return DynamicBatchingHelper.ExpandBatchIdPlaceholder(sqlString, parameterSpecifications, columns, queryParameters.PositionalParameterTypes, Factory);
 		}
 
 		class DynamicEntityJoinWalker : EntityJoinWalker
@@ -47,7 +45,7 @@ namespace NHibernate.Loader.Entity
 				return DynamicBatchingHelper.BuildBatchFetchRestrictionFragment();
 			}
 
-			new public string Alias => base.Alias;
+			public new string Alias => base.Alias;
 		}
 	}
 }

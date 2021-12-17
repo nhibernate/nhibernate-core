@@ -67,19 +67,18 @@ namespace NHibernate.Criterion
 				list.AddRange(criteriaQuery.NewQueryParameter(typedValue));
 			}
 
-			var bogusParam = Parameter.Placeholder;
+			return GetSqlString(columns, Values.Length, list, criteriaQuery.Factory.Dialect);
+		}
 
-			var sqlString = GetSqlString(criteriaQuery, columns, bogusParam);
-			sqlString.SubstituteBogusParameters(list, bogusParam);
+		internal static SqlString GetSqlString(object[] columns, int paramsCount, IReadOnlyList<Parameter> parameters, Dialect.Dialect dialect)
+		{
+			var bogusParam = Parameter.Placeholder;
+			var sqlString = GetSqlString(columns, paramsCount, bogusParam, dialect);
+			sqlString.SubstituteBogusParameters(parameters, bogusParam);
 			return sqlString;
 		}
 
-		private SqlString GetSqlString(ICriteriaQuery criteriaQuery, SqlString[] columns, Parameter bogusParam)
-		{
-			return GetSqlString(columns, Values.Length, criteriaQuery.Factory.Dialect, bogusParam);
-		}
-		
-		internal static SqlString GetSqlString(object[] columns, int paramsCount, Dialect.Dialect dialect, Parameter bogusParam)
+		private static SqlString GetSqlString(object[] columns, int paramsCount, Parameter bogusParam, Dialect.Dialect dialect)
 		{
 			if (columns.Length <= 1 || dialect.SupportsRowValueConstructorSyntaxInInList)
 			{

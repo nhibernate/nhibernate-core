@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.Engine;
+using NHibernate.Param;
 using NHibernate.SqlCommand;
-using NHibernate.Util;
+using NHibernate.Type;
 
 namespace NHibernate.Loader
 {
@@ -15,14 +17,40 @@ namespace NHibernate.Loader
 			return new SqlStringBuilder(1).Add(BatchIdPlaceholder);
 		}
 
-		public static SqlString ExpandBatchIdPlaceholder(SqlString sqlString, QueryParameters queryParameters, string[] columns, Dialect.Dialect dialect, out Parameter[] parameters)
+		public static SqlString ExpandBatchIdPlaceholder(
+			SqlString sqlString,
+			ISet<IParameterSpecification> specifications,
+			string[] columns,
+			IType[] types,
+			ISessionFactoryImplementor factory)
 		{
-			var bogusParam = Parameter.Placeholder;
-			var wherePart = InExpression.GetSqlString(columns, queryParameters.PositionalParameterValues.Length, dialect, bogusParam);
-			parameters = wherePart.Parameters.ToArray(x => Parameter.Placeholder);
-			wherePart.SubstituteBogusParameters(parameters, bogusParam);
+			var parameters = GeneratePositionalParameters(specifications, types, factory);
+
+			var wherePart = InExpression.GetSqlString(columns, types.Length, parameters, factory.Dialect);
 
 			return sqlString.ReplaceLast(BatchIdPlaceholder, wherePart);
+		}
+
+		public static List<Parameter> GeneratePositionalParameters(
+			ISet<IParameterSpecification> specifications,
+			IType[] types,
+			ISessionFactoryImplementor factory)
+		{
+			var parameters = new List<Parameter>();
+			for (var i = 0; i < types.Length; i++)
+			{
+				var specification = new PositionalParameterSpecification(1, 0, i) { ExpectedType = types[i] };
+				foreach (var id in specification.GetIdsForBackTrack(factory))
+				{
+					var p = Parameter.Placeholder;
+					p.BackTrack = id;
+					parameters.Add(p);
+				}
+
+				specifications.Add(specification);
+			}
+
+			return parameters;
 		}
 
 		public static int GetIdsToLoad(object[] batch, out object[] idsToLoad)
