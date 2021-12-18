@@ -10,15 +10,22 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Test.NHSpecificTest.NH3530
 {
 	//NH-3530 (GH-1316) 
-	[TestFixture]
-	public class DynamicBatchFetchStyleFixture : TestCaseMappingByCode
+	[TestFixture(BatchFetchStyle.Dynamic)]
+	[TestFixture(BatchFetchStyle.Legacy)]
+	public class BatchFetchStyleFixture : TestCaseMappingByCode
 	{
+		private readonly BatchFetchStyle _fetchStyle;
 		private readonly List<object> _ids = new List<object>();
+
+		public BatchFetchStyleFixture(BatchFetchStyle fetchStyle)
+		{
+			_fetchStyle = fetchStyle;
+		}
 
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);
-			configuration.SetProperty(Environment.BatchFetchStyle, BatchFetchStyle.Dynamic.ToString());
+			configuration.SetProperty(Environment.BatchFetchStyle, _fetchStyle.ToString());
 		}
 
 		[Test]

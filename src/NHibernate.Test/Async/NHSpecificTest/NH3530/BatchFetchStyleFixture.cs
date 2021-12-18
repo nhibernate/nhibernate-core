@@ -22,15 +22,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3530
 	using System.Threading.Tasks;
 	using System.Threading;
 	//NH-3530 (GH-1316) 
-	[TestFixture]
-	public class DynamicBatchFetchStyleFixtureAsync : TestCaseMappingByCode
+	[TestFixture(BatchFetchStyle.Dynamic)]
+	[TestFixture(BatchFetchStyle.Legacy)]
+	public class BatchFetchStyleFixtureAsync : TestCaseMappingByCode
 	{
+		private readonly BatchFetchStyle _fetchStyle;
 		private readonly List<object> _ids = new List<object>();
+
+		public BatchFetchStyleFixtureAsync(BatchFetchStyle fetchStyle)
+		{
+			_fetchStyle = fetchStyle;
+		}
 
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);
-			configuration.SetProperty(Environment.BatchFetchStyle, BatchFetchStyle.Dynamic.ToString());
+			configuration.SetProperty(Environment.BatchFetchStyle, _fetchStyle.ToString());
 		}
 
 		[Test]
