@@ -23,15 +23,15 @@ namespace NHibernate.Loader.Collection
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// first, figure out how many batchable ids we have...
-			object[] batch = await (session.PersistenceContext.BatchFetchQueue.GetCollectionBatchAsync(CollectionPersister, id, maxBatchSize, cancellationToken)).ConfigureAwait(false);
+			object[] batch = await (session.PersistenceContext.BatchFetchQueue.GetCollectionBatchAsync(CollectionPersister, id, _maxBatchSize, cancellationToken)).ConfigureAwait(false);
 			var numberOfIds = DynamicBatchingHelper.GetIdsToLoad(batch, out var idsToLoad);
 			if (numberOfIds <= 1)
 			{
-				await (singleKeyLoader.LoadCollectionAsync(session, id, CollectionPersister.KeyType, cancellationToken)).ConfigureAwait(false);
+				await (_singleKeyLoader.LoadCollectionAsync(session, id, CollectionPersister.KeyType, cancellationToken)).ConfigureAwait(false);
 				return;
 			}
 
-			await (batchLoader.LoadCollectionBatchAsync(session, idsToLoad, CollectionPersister.KeyType, cancellationToken)).ConfigureAwait(false);
+			await (_batchLoader.LoadCollectionBatchAsync(session, idsToLoad, CollectionPersister.KeyType, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }

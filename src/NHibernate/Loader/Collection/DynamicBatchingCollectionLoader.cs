@@ -13,18 +13,12 @@ namespace NHibernate.Loader.Collection
 
 		public DynamicBatchingCollectionLoader(IQueryableCollection collectionPersister, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters) : base(collectionPersister, factory, enabledFilters)
 		{
-			JoinWalker walker = BuildJoinWalker(collectionPersister, factory, enabledFilters);
+			var walker = collectionPersister.IsOneToMany
+				? (JoinWalker) new DynamicOneToManyJoinWalker(collectionPersister, factory, enabledFilters)
+				: new DynamicBasicCollectionJoinWalker(collectionPersister, factory, enabledFilters);
 			InitFromWalker(walker);
 			_alias = StringHelper.GenerateAlias(collectionPersister.Role, 0);
 			PostInstantiate();
-		}
-
-		private JoinWalker BuildJoinWalker(IQueryableCollection collectionPersister, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
-		{
-			if (collectionPersister.IsOneToMany)
-				return new DynamicOneToManyJoinWalker(collectionPersister, factory, enabledFilters);
-
-			return new DynamicBasicCollectionJoinWalker(collectionPersister, factory, enabledFilters);
 		}
 
 		private protected override SqlString TransformSql(SqlString sqlString, QueryParameters queryParameters, HashSet<IParameterSpecification> parameterSpecifications)
