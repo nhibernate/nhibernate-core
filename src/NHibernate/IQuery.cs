@@ -6,6 +6,19 @@ using System.Collections.Generic;
 
 namespace NHibernate
 {
+	// 6.0 TODO add to IQuery
+	internal interface IQueryNextVer : IQuery
+	{
+		/// <summary>
+		/// Bind a value to a named query parameter
+		/// </summary>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">The possibly null parameter value</param>
+		/// <param name="type">The NHibernate <see cref="IType"/>.</param>
+		/// <param name="preferMetadataType">If true supplied type is used only if parameter metadata is missing</param>
+		IQuery SetParameter(string name, object val, IType type, bool preferMetadataType);
+	}
+
 	/// <summary>
 	/// An object-oriented representation of a NHibernate query.
 	/// </summary>
