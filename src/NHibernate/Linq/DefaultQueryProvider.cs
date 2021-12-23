@@ -265,7 +265,11 @@ namespace NHibernate.Linq
 				}
 				else
 				{
-					query.SetParameter(parameter.Name, parameter.Value);
+					//Let HQL try to process guessed types (hql doesn't support type guessing for NULL) 
+					if (parameter.Type != null && (parameter.IsGuessedType == false || parameter.Value == null))
+						query.SetParameter(parameter.Name, parameter.Value, parameter.Type);
+					else
+						query.SetParameter(parameter.Name, parameter.Value);
 				}
 			}
 		}
