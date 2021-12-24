@@ -18,6 +18,7 @@ namespace NHibernate
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+
 	public partial interface IQuery
 	{
 
