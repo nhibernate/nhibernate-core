@@ -8,12 +8,12 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using NHibernate.Cfg;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Functions;
@@ -40,6 +40,14 @@ namespace NHibernate.Test.Linq
 			var users = await (db.Users.Where(o => ((object) EnumStoredAsString.Medium).Equals(o.NullableEnum1)).ToListAsync());
 			Assert.That(users.Count, Is.EqualTo(2));
 			Assert.That(users.All(c => c.NullableEnum1 == EnumStoredAsString.Medium), Is.True);
+		}
+
+		[Test(Description = "GH-2963")]
+		public async Task CanUseComparisonWithExtensionOnMappedPropertyAsync()
+		{
+			var time = DateTime.UtcNow.GetTime();
+			//using(new SqlLogSpy())
+			await (db.Users.Where(u => u.RegisteredAt.GetTime() > time).Select(u => u.Id).ToListAsync());
 		}
 
 		[Test]
