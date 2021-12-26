@@ -42,6 +42,8 @@ namespace NHibernate.Test
 				(IIdentifierGenerator) Cfg.Environment.ObjectsFactory.CreateInstance(
 					_dialect.NativeIdentifierGeneratorClass));
 
+		public virtual bool SupportsTime => true;
+
 		public virtual bool SupportsOperatorAll => true;
 		public virtual bool SupportsOperatorSome => true;
 

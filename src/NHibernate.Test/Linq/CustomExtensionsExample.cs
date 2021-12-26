@@ -103,6 +103,11 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "GH-2963")]
 		public void CanUseComparisonWithExtensionOnMappedProperty()
 		{
+			if (!TestDialect.SupportsTime)
+			{
+				Assert.Ignore("Time type is not supported");
+			}
+
 			var time = DateTime.UtcNow.GetTime();
 			//using(new SqlLogSpy())
 			db.Users.Where(u => u.RegisteredAt.GetTime() > time).Select(u => u.Id).ToList();
