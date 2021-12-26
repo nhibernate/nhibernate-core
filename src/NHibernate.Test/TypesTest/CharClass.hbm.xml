@@ -11,8 +11,5 @@
 
     <property name="NormalChar"/>
     <property name="NullableChar"/>
-    <property name="AnsiString" type="AnsiString(15)"/>
-    <property name="AnsiChar" type="AnsiChar"/>
-    
   </class>
 </hibernate-mapping>

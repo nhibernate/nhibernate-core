@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using System.Linq;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -30,34 +29,6 @@ namespace NHibernate.Test.TypesTest
 
 				s.Delete(saved);
 				s.Flush();
-			}
-		}
-
-		[Test]
-		public void ParameterTypeForAnsiCharInLinq()
-		{
-			using (var logSpy = new SqlLogSpy())
-			using (var session = OpenSession())
-			{
-				var result = (from e in session.Query<CharClass>()
-							where e.AnsiChar == 'B'
-							select e).ToList();
-				
-				Assert.That(logSpy.GetWholeLog(), Does.Contain("Type: AnsiString"));
-			}
-		}
-
-		[Test]
-		public void ParameterTypeForCharInAnsiStringInLinq()
-		{
-			using (var logSpy = new SqlLogSpy())
-			using (var session = OpenSession())
-			{
-				var result = (from e in session.Query<CharClass>()
-							where e.AnsiString[0] == 'P'
-							select e).ToList();
-
-				Assert.That(logSpy.GetWholeLog(), Does.Contain("Type: AnsiString"));
 			}
 		}
 	}
