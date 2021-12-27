@@ -6,8 +6,6 @@
 		{
 		}
 
-		public override bool SupportsTime => false;
-
 		public override bool SupportsFullJoin => false;
 
 		public override bool SupportsComplexExpressionInGroupBy => false;
