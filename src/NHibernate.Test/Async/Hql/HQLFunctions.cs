@@ -1153,7 +1153,7 @@ namespace NHibernate.Test.Hql
 			using (ISession s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var a1 = new Human { NickName = nickName };
+				var a1 = new Human { NickName = nickName, Birthdate = DateTime.Today };
 				await (s.SaveAsync(a1));
 				await (t.CommitAsync());
 			}
@@ -1180,7 +1180,7 @@ namespace NHibernate.Test.Hql
 			using (ISession s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var a1 = new Human { NickName = nickName };
+				var a1 = new Human { NickName = nickName, Birthdate = DateTime.Today };
 				await (s.SaveAsync(a1));
 				await (t.CommitAsync());
 			}
