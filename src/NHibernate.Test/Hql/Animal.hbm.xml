@@ -20,7 +20,7 @@
 				<property name="Initial" column="name_initial"/>
 				<property name="Last" column="name_last"/>
 			</component>
-			<property name="NickName"/>
+			<property name="NickName" type="AnsiString(50)" />
 			<property name="Birthdate" type="Date"/>
 		</joined-subclass>
 	</class>

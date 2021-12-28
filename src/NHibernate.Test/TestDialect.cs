@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Id;
 using NHibernate.SqlTypes;
@@ -53,6 +54,8 @@ namespace NHibernate.Test
 		public virtual bool HasBrokenDecimalType => false;
 
 		public virtual bool SupportsNullCharactersInUtfStrings => true;
+
+		public virtual bool SupportsAnsiString => _dialect.GetTypeName(new SqlType(DbType.AnsiString)) != _dialect.GetTypeName(new SqlType(DbType.String));   
 
 		/// <summary>
 		/// Some databases do not support SELECT FOR UPDATE 

@@ -68,7 +68,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "datalength(?1) * 8"));
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
 			RegisterFunction("char", new StandardSQLFunction("char", NHibernateUtil.String));
-			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(","+",")"));
+			RegisterFunction("concat", new VarArgsSQLFunction("(", "+", ")"));
 			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
 			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double));
 			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate));

@@ -1144,6 +1144,59 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public async Task ConcatAnsiFirstParamAsync()
+		{
+			if (!TestDialect.SupportsAnsiString)
+				Assert.Ignore("AnsiString type is not supported by dialect.");
+
+			var nickName = "abcdef";
+			using (ISession s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var a1 = new Human { NickName = nickName };
+				await (s.SaveAsync(a1));
+				await (t.CommitAsync());
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			using (ISession s = OpenSession())
+			{
+				var param = nickName + "gg";
+				var hql = "from Human a where concat(a.NickName, 'gg') = :param ";
+				Animal result = (Animal) await (s.CreateQuery(hql).SetParameter("param", param).UniqueResultAsync());
+				Assert.That(result, Is.Not.Null);
+				Assert.That(logSpy.GetWholeLog(), Does.Contain("Type: AnsiString"));
+			}
+		}
+
+		[KnownBug("Not fixed yet")]
+		[Test]
+		public async Task ConcatAnsiSecondParamAsync()
+		{
+			if (!TestDialect.SupportsAnsiString)
+				Assert.Ignore("AnsiString type is not supported by dialect.");
+
+			var nickName = "abcdef";
+			using (ISession s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var a1 = new Human { NickName = nickName };
+				await (s.SaveAsync(a1));
+				await (t.CommitAsync());
+			}
+
+			using (var logSpy = new SqlLogSpy())
+			using (ISession s = OpenSession())
+			{
+				var param = "gg" + nickName;
+				var hql = "from Human a where concat('gg', a.NickName) = :param ";
+				Animal result = (Animal) await (s.CreateQuery(hql).SetParameter("param", param).UniqueResultAsync());
+				Assert.That(result, Is.Not.Null);
+				Assert.That(logSpy.GetWholeLog(), Does.Contain("Type: AnsiString"));
+			}
+		}
+
+		[Test]
 		public async Task HourMinuteSecondAsync()
 		{
 			AssumeFunctionSupported("second");

@@ -90,7 +90,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("user", new NoArgSQLFunction("user", NHibernateUtil.String, false));
 
 			// Multi-param string dialect functions...
-			RegisterFunction("concat", new StandardSQLFunction("concat", NHibernateUtil.String));
+			RegisterFunction("concat", new StandardSQLFunction("concat"));
 			RegisterFunction("instr", new StandardSQLFunction("instr", NHibernateUtil.String));
 			RegisterFunction("instrb", new StandardSQLFunction("instrb", NHibernateUtil.String));
 			RegisterFunction("lpad", new StandardSQLFunction("lpad", NHibernateUtil.String));
