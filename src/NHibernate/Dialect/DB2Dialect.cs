@@ -121,6 +121,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("integer", new StandardSQLFunction("integer", NHibernateUtil.Int32));
 			RegisterFunction("smallint", new StandardSQLFunction("smallint", NHibernateUtil.Int16));
 
+			RegisterFunction("str", new StandardSQLFunction("varchar", NHibernateUtil.AnsiString));
 			RegisterFunction("digits", new StandardSQLFunction("digits", NHibernateUtil.String));
 			RegisterFunction("ascii", new StandardSQLFunction("ascii", NHibernateUtil.Int32));
 			RegisterFunction("chr", new StandardSQLFunction("chr", NHibernateUtil.Character));
