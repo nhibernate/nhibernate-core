@@ -87,6 +87,11 @@ Task Set-Configuration {
             'connection.connection_string' = 'User ID=nhibernate;Password=nhibernate;Metadata Pooling=false;Self Tuning=false;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XEPDB1)))';
             'connection.driver_class' = 'NHibernate.Driver.OracleManagedDataClientDriver';
             'dialect' = 'NHibernate.Dialect.Oracle10gDialect'
+        };
+        'DB2' = @{
+            'connection.connection_string' = '';
+            'dialect' = 'NHibernate.Dialect.DB2Dialect';
+            'connection.driver_class' = 'NHibernate.Driver.DB2CoreDriver'
         }
     }
     #Settings for current build

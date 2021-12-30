@@ -38,6 +38,11 @@ jobs:
             DB_INIT: |
               docker run -d -p 1521:1521 -e APP_USER=nhibernate -e APP_USER_PASSWORD=nhibernate -e ORACLE_PASSWORD=nhibernate gvenzl/oracle-xe:21-slim
           - DB: SQLite
+          - DB: DB2
+            CONNECTION_STRING: "Server=localhost:50000;Database=nhib;UID=nhib;PWD=nhib;"
+            DB_INIT: |
+              docker run --name DB2 --privileged=true -e DB2INSTANCE=nhib -e DB2INST1_PASSWORD=nhib -e DBNAME=nhib -e LICENSE=accept -e AUTOCONFIG=false -e ARCHIVE_LOGS=false -p 50000:50000 -d ibmcom/db2:11.5.7.0
+              docker logs -f DB2 | sed '/(*) Setup has completed./ q'
     runs-on: ubuntu-latest
     continue-on-error: ${{matrix.ALLOW_FAILURE == true}}
     env:
@@ -55,4 +60,9 @@ jobs:
 
     - name: Build and Test
       run: |
+        export DB2_CLI_DRIVER_INSTALL_PATH=/home/runner/work/nhibernate-core/nhibernate-core/src/NHibernate.Test/bin/Release/netcoreapp2.0/clidriver
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/runner/work/nhibernate-core/nhibernate-core/src/NHibernate.Test/bin/Release/netcoreapp2.0/clidriver/lib
+        export LIBPATH=$LIBPATH:/home/runner/work/nhibernate-core/nhibernate-core/src/NHibernate.Test/bin/Release/netcoreapp2.0/clidriver/lib
+        export PATH=/home/runner/work/nhibernate-core/nhibernate-core/src/NHibernate.Test/bin/Release/netcoreapp2.0/clidriver/bin:$PATH
+        export PATH=/home/runner/work/nhibernate-core/nhibernate-core/src/NHibernate.Test/bin/Release/netcoreapp2.0/clidriver/adm:$PATH
         pwsh -noprofile -command "& ./build.ps1 -TaskList Set-Configuration,Test -properties @{'Database' = '${{matrix.DB}}';'ConnectionString'='${{matrix.CONNECTION_STRING}}'}"
