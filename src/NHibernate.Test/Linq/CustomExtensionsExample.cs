@@ -109,7 +109,6 @@ namespace NHibernate.Test.Linq
 			}
 
 			var time = DateTime.UtcNow.GetTime();
-			//using(new SqlLogSpy())
 			db.Users.Where(u => u.RegisteredAt.GetTime() > time).Select(u => u.Id).ToList();
 		}
 
