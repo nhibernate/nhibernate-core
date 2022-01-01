@@ -2001,9 +2001,6 @@ namespace NHibernate.Test.Linq
 		[Test(Description = "GH-2860")]
 		public void StringFormatWithTrim()
 		{
-			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
-				Assert.Ignore("Current dialect does not support this test");
-
 			var q =
 				from e in db.Employees
 				select new { Name = $"{e.FirstName} {e.LastName}".Trim(), Phone = e.Address.PhoneNumber };
