@@ -524,10 +524,10 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test(Description = "GH2479")]
 		public async Task OrdersWithSubquery11Async()
 		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 			if (!TestDialect.SupportsSubSelectsInOrderBy)
 				Assert.Ignore("Dialect does not support order by sub-select");
-			if (!TestDialect.SupportsOrderByAndLimitInSubQueries)
-				Assert.Ignore("Dialect does not support sub-selects with order by or limit/top");
 
 			var ordersQuery = db.Orders
 			                    .OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId)
