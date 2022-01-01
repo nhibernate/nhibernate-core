@@ -137,8 +137,8 @@ namespace NHibernate.Test.ProjectionFixtures
         [Test]
         public void LimitingResultSetOnQueryThatIsOrderedByProjection()
         {
-           if (!Dialect.SupportsScalarSubSelects)
-               Assert.Ignore("Dialect does not support scalar sub-select");
+           	if (!TestDialect.SupportsSubSelectsInOrderBy)
+               Assert.Ignore("Dialect does not support order by sub-select");
 
             using(var s = OpenSession())
             {
@@ -161,8 +161,8 @@ namespace NHibernate.Test.ProjectionFixtures
         [Test]
         public void QueryingWithParemetersAndParaemtersInOrderBy()
         {
-           if (!Dialect.SupportsScalarSubSelects)
-               Assert.Ignore("Dialect does not support scalar sub-select");
+           	if (!TestDialect.SupportsSubSelectsInOrderBy)
+               Assert.Ignore("Dialect does not support order by sub-select");
 
             using (var s = OpenSession())
             {
