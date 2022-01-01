@@ -6,6 +6,7 @@ namespace NHibernate.Test.TestDialects
 		{
 		}
 
+		public override bool SupportsNonDataBoundCondition => false;
 		public override bool SupportsComplexExpressionInGroupBy => false;
 	}
 }
