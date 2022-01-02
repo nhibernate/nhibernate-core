@@ -312,6 +312,9 @@ namespace NHibernate.Dialect
 
 		public override bool SupportsExistsInSelect => false;
 
+		/// <inheritdoc/>
+		public override bool SupportsHavingOnGroupedByComputation => false;
+
 		public override bool DoesReadCommittedCauseWritersToBlockReaders => true;
 
 		#endregion
