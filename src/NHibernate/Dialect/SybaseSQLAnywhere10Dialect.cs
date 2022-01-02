@@ -257,7 +257,6 @@ namespace NHibernate.Dialect
 			RegisterFunction("char_length", new StandardSQLFunction("char_length", NHibernateUtil.Int32));
 			RegisterFunction("compare", new VarArgsSQLFunction(NHibernateUtil.Int32, "compare(", ",", ")"));
 			RegisterFunction("compress", new VarArgsSQLFunction(NHibernateUtil.BinaryBlob, "compress(", ",", ")"));
-			RegisterFunction("concat", new VarArgsSQLFunction("(", " || ", ")"));
 			RegisterFunction("csconvert", new VarArgsSQLFunction(NHibernateUtil.StringClob, "csconvert(", ",", ")"));
 			RegisterFunction("decompress", new VarArgsSQLFunction(NHibernateUtil.BinaryBlob, "decompress(", ",", ")"));
 			RegisterFunction("decrypt", new VarArgsSQLFunction(NHibernateUtil.BinaryBlob, "decrypt(", ",", ")"));
