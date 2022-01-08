@@ -16,12 +16,12 @@ namespace NHibernate.Test.DialectTest
 			const int max = 6;
 			var dialect = new PostgreSQL81Dialect();
 
-			Assert.That(dialect.GetTypeName(SqlTypeFactory.DateTime), Is.EqualTo("timestamp").IgnoreCase, "Default datetime");
-			Assert.That(dialect.GetTypeName(SqlTypeFactory.GetDateTime(min)), Is.EqualTo($"timestamp({min})").IgnoreCase, "Min datetime");
-			Assert.That(dialect.GetTypeName(SqlTypeFactory.GetDateTime(intermediate)), Is.EqualTo($"timestamp({intermediate})").IgnoreCase, "Intermediate datetime");
-			Assert.That(dialect.GetTypeName(SqlTypeFactory.GetDateTime(max)), Is.EqualTo($"timestamp({max})").IgnoreCase, "Max datetime");
-			Assert.That(dialect.GetLongestTypeName(DbType.DateTime), Is.EqualTo($"timestamp({max})").IgnoreCase, "Longest datetime");
-			Assert.That(dialect.GetTypeName(SqlTypeFactory.GetDateTime(max + 1)), Is.EqualTo("timestamp").IgnoreCase, "Over max datetime");
+			Assert.That(dialect.GetTypeName(SqlTypeFactory.DateTime), Does.StartWith("timestamp").IgnoreCase, "Default datetime");
+			Assert.That(dialect.GetTypeName(SqlTypeFactory.GetDateTime(min)), Does.StartWith($"timestamp({min})").IgnoreCase, "Min datetime");
+			Assert.That(dialect.GetTypeName(SqlTypeFactory.GetDateTime(intermediate)), Does.StartWith($"timestamp({intermediate})").IgnoreCase, "Intermediate datetime");
+			Assert.That(dialect.GetTypeName(SqlTypeFactory.GetDateTime(max)), Does.StartWith($"timestamp({max})").IgnoreCase, "Max datetime");
+			Assert.That(dialect.GetLongestTypeName(DbType.DateTime), Does.StartWith($"timestamp({max})").IgnoreCase, "Longest datetime");
+			Assert.That(dialect.GetTypeName(SqlTypeFactory.GetDateTime(max + 1)), Does.StartWith("timestamp").IgnoreCase, "Over max datetime");
 
 			Assert.That(dialect.GetTypeName(SqlTypeFactory.Time), Is.EqualTo($"time").IgnoreCase, "Default time");
 			Assert.That(dialect.GetTypeName(SqlTypeFactory.GetTime(min)), Is.EqualTo($"time({min})").IgnoreCase, "Min time");
