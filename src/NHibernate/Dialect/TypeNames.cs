@@ -49,6 +49,7 @@ namespace NHibernate.Dialect
 			new Dictionary<DbType, SortedList<int, string>>();
 
 		private readonly Dictionary<DbType, string> defaults = new Dictionary<DbType, string>();
+		private readonly Dictionary<DbType, string> aliases = new Dictionary<DbType, string>();
 
 		/// <summary>
 		/// Get default type name for specified type
@@ -72,7 +73,12 @@ namespace NHibernate.Dialect
 		/// <returns>Whether the default type name was found.</returns>
 		public bool TryGet(DbType typecode, out string typeName)
 		{
-			return defaults.TryGetValue(typecode, out typeName);
+			bool tmp = defaults.TryGetValue(typecode, out typeName);
+
+			if (!tmp)
+				return aliases.TryGetValue(typecode, out typeName);
+
+			return tmp;
 		}
 
 		/// <summary>
@@ -207,10 +213,15 @@ namespace NHibernate.Dialect
 		/// <param name="typecode">the type key</param>
 		/// <param name="capacity">the (maximum) type size/length, precision or scale</param>
 		/// <param name="value">The associated name</param>
-		public void Put(DbType typecode, int capacity, string value)
+		/// <param name="alias">The alias name</param>
+		public void Put(DbType typecode, int capacity, string value, string alias = null)
 		{
 			if (value == null)
 				throw new ArgumentNullException(nameof(value));
+
+			if (!string.IsNullOrEmpty(alias))
+				aliases[typecode] = alias;
+
 			SortedList<int, string> map;
 			if (!weighted.TryGetValue(typecode, out map))
 			{
@@ -225,8 +236,12 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="typecode"></param>
 		/// <param name="value"></param>
-		public void Put(DbType typecode, string value)
+		/// <param name="alias"></param>
+		public void Put(DbType typecode, string value, string alias = null)
 		{
+			if (!string.IsNullOrEmpty(alias))
+				aliases[typecode] = alias;
+
 			defaults[typecode] = value ?? throw new ArgumentNullException(nameof(value));
 		}
 	}

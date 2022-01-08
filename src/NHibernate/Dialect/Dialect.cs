@@ -338,9 +338,10 @@ namespace NHibernate.Dialect
 		/// <param name="code">The typecode</param>
 		/// <param name="capacity">Maximum length or scale of database type</param>
 		/// <param name="name">The database type name</param>
-		protected void RegisterColumnType(DbType code, int capacity, string name)
+		/// <param name="alias"></param>
+		protected void RegisterColumnType(DbType code, int capacity, string name, string alias = null)
 		{
-			_typeNames.Put(code, capacity, name);
+			_typeNames.Put(code, capacity, name, alias);
 		}
 
 		/// <summary>
@@ -349,9 +350,10 @@ namespace NHibernate.Dialect
 		/// </summary>
 		/// <param name="code">The typecode</param>
 		/// <param name="name">The database type name</param>
-		protected void RegisterColumnType(DbType code, string name)
+		/// <param name="alias"></param>
+		protected void RegisterColumnType(DbType code, string name, string alias = null)
 		{
-			_typeNames.Put(code, name);
+			_typeNames.Put(code, name, alias);
 		}
 
 		/// <summary>

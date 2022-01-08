@@ -37,10 +37,10 @@ namespace NHibernate.Dialect
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.NpgsqlDriver";
 
 			RegisterDateTimeTypeMappings();
-			RegisterColumnType(DbType.AnsiStringFixedLength, "char(255)");
-			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "char($l)");
-			RegisterColumnType(DbType.AnsiString, "varchar(255)");
-			RegisterColumnType(DbType.AnsiString, 8000, "varchar($l)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, "character(255)", "char(255)");
+			RegisterColumnType(DbType.AnsiStringFixedLength, 8000, "character($l)", "char($l)");
+			RegisterColumnType(DbType.AnsiString, "character varying(255)", "varchar(255)");
+			RegisterColumnType(DbType.AnsiString, 8000, "character varying($l)", "varchar($1)");
 			RegisterColumnType(DbType.AnsiString, 2147483647, "text");
 			RegisterColumnType(DbType.Binary, "bytea");
 			RegisterColumnType(DbType.Binary, 2147483647, "bytea");
@@ -50,20 +50,20 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Decimal, "decimal(19,5)");
 			// PostgreSQL max precision is unlimited, but .Net is limited to 28-29.
 			RegisterColumnType(DbType.Decimal, 29, "decimal($p, $s)");
-			RegisterColumnType(DbType.Double, "float8");
-			RegisterColumnType(DbType.Int16, "int2");
-			RegisterColumnType(DbType.Int32, "int4");
-			RegisterColumnType(DbType.Int64, "int8");
-			RegisterColumnType(DbType.Single, "float4");
-			RegisterColumnType(DbType.StringFixedLength, "char(255)");
-			RegisterColumnType(DbType.StringFixedLength, 4000, "char($l)");
-			RegisterColumnType(DbType.String, "varchar(255)");
-			RegisterColumnType(DbType.String, 4000, "varchar($l)");
+			RegisterColumnType(DbType.Double, "double precision", "float8");
+			RegisterColumnType(DbType.Int16, "smallint", "int2)");
+			RegisterColumnType(DbType.Int32, "integer", "int4");
+			RegisterColumnType(DbType.Int64, "bigint", "int8");
+			RegisterColumnType(DbType.Single, "real", "float4");
+			RegisterColumnType(DbType.StringFixedLength, "character(255)", "char(255)");
+			RegisterColumnType(DbType.StringFixedLength, 4000, "character($l)", "char($1)");
+			RegisterColumnType(DbType.String, "character varying(255)", "varchar(255)");
+			RegisterColumnType(DbType.String, 4000, "character varying($l)", "varchar($1)");
 			RegisterColumnType(DbType.String, 1073741823, "text");
 
 			// Override standard HQL function
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("now", NHibernateUtil.LocalDateTime, true));
-			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as varchar)"));
+			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as character varying)"));
 			RegisterFunction("locate", new PositionSubstringFunction());
 			RegisterFunction("iif", new IifSQLFunction());
 			RegisterFunction("replace", new StandardSQLFunction("replace", NHibernateUtil.String));
@@ -139,7 +139,8 @@ namespace NHibernate.Dialect
 		protected virtual void RegisterDateTimeTypeMappings()
 		{
 			RegisterColumnType(DbType.Date, "date");
-			RegisterColumnType(DbType.DateTime, "timestamp");
+			RegisterColumnType(DbType.DateTime, "timestamp without timezone", "timestamp");
+			RegisterColumnType(DbType.DateTimeOffset, "timestamp with timezone", "timestampz");
 			RegisterColumnType(DbType.Time, "time");
 		}
 
