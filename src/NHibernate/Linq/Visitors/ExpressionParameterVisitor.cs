@@ -118,7 +118,7 @@ namespace NHibernate.Linq.Visitors
 			return base.VisitMethodCall(expression);
 		}
 
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER
 		protected override Expression VisitInvocation(InvocationExpression expression)
 		{
 			if (ExpressionsHelper.TryGetDynamicMemberBinder(expression, out _))

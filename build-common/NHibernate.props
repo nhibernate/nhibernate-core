@@ -13,11 +13,13 @@
     <FileVersion Condition="'$(VersionSuffix)' != '' AND '$(BuildNumber)' != ''">$(VersionPrefix).$(BuildNumber)</FileVersion>
     <FileVersion Condition="'$(FileVersion)' == ''">$(VersionPrefix).0</FileVersion>
 
-    <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net461;netcoreapp2.0</NhAppTargetFrameworks>
+    <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net461;net6.0</NhAppTargetFrameworks>
     <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
     <NhNetFx>false</NhNetFx>
     <NhNetFx Condition="$(TargetFramework.StartsWith('net4'))">true</NhNetFx>
-    <DefineConstants Condition="$(NhNetFx) AND $(NhVbNet) == ''" >NETFX;$(DefineConstants)</DefineConstants>
+    <!-- Visual Basic requires to use coma (,) as a separator, other project types - semicolon (;) -->
+    <DefineConstants Condition="$(NhNetFx) AND '$(MSBuildProjectExtension)' != '.vbproj'">NETFX;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="$(NhNetFx) AND '$(MSBuildProjectExtension)' == '.vbproj'">NETFX,$(DefineConstants)</DefineConstants>
 
     <Product>NHibernate</Product>
     <Company>NHibernate.info</Company>
@@ -25,6 +27,12 @@
     <Authors>NHibernate community, Hibernate community</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
 
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatSpecificWarningsAsErrors />
+    
+    <DisableImplicitPackageTargetFallback>True</DisableImplicitPackageTargetFallback>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(IsPackable)' == 'True'">
     <PackageProjectUrl>https://nhibernate.info</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/nhibernate/nhibernate-core/master/logo/NHibernate-NuGet.png</PackageIconUrl>
     <PackageIcon>NHibernate-NuGet.png</PackageIcon>
@@ -35,11 +43,6 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <TreatSpecificWarningsAsErrors />
-    
-    <DisableImplicitPackageTargetFallback>True</DisableImplicitPackageTargetFallback>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
