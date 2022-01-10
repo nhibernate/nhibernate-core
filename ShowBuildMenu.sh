@@ -172,8 +172,8 @@ testSetupMenu() {
 }
 
 testRun(){
-	dotnet test ./src/NHibernate.Test/NHibernate.Test.csproj -f netcoreapp2.0
-	dotnet test ./src/NHibernate.Test.VisualBasic/NHibernate.Test.VisualBasic.vbproj -f netcoreapp2.0
+	dotnet test ./src/NHibernate.Test/NHibernate.Test.csproj -f net6.0
+	dotnet test ./src/NHibernate.Test.VisualBasic/NHibernate.Test.VisualBasic.vbproj -f net6.0
 	mainMenu
 }
 
