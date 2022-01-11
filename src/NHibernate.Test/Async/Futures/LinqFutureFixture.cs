@@ -383,7 +383,12 @@ namespace NHibernate.Test.Futures
 					string paramPrefix = ((DriverBase) Sfi.ConnectionProvider.Driver).NamedPrefix;
 					Assert.That(
 						wholeLog,
-						Does.Contain(paramPrefix + "p0 = 1 [Type: Int32 (0:0:0)], " + paramPrefix + "p1 = 2 [Type: Int32 (0:0:0)]"));
+						Does.Contain(
+							    paramPrefix + "p0 = 1 [Type: Int32 (0:0:0)], " + 
+							    paramPrefix + "p1 = 2 [Type: Int32 (0:0:0)]")
+						    .Or.Contain(
+							    paramPrefix + "p0 = 1 [Type: Int32 (4:0:0)], " + 
+							    paramPrefix + "p1 = 2 [Type: Int32 (4:0:0)]"));
 				}
 			}
 		}
