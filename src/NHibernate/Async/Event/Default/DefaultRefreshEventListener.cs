@@ -68,7 +68,7 @@ namespace NHibernate.Event.Default
 
 			if (e == null)
 			{
-				persister = source.GetEntityPersister(null, obj); //refresh() does not pass an entityName
+				persister = source.GetEntityPersister(source.BestGuessEntityName(obj), obj); //refresh() does not pass an entityName
 				id = persister.GetIdentifier(obj);
 				if (log.IsDebugEnabled())
 				{
