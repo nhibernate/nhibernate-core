@@ -16,7 +16,7 @@ namespace NHibernate.Proxy
 			string propertyName,
 			object key)
 		{
-			if (interceptor is Impl.SessionFactoryImpl.DefaultEntityNotFoundDelegate x)
+			if (interceptor is IEntityNotFoundPropertyDelegate x)
 			{
 				x.HandleEntityNotFound(entityName, propertyName, key);
 				return;
@@ -26,6 +26,14 @@ namespace NHibernate.Proxy
 		}
 	}
 
+	/// <summary> 
+	/// Delegate to handle the scenario of an entity not found by a specified id and property. 
+	/// </summary>
+	public interface IEntityNotFoundPropertyDelegate
+	{
+		void HandleEntityNotFound(string entityName, string propertyName, object key);
+	}
+	
 	/// <summary> 
 	/// Delegate to handle the scenario of an entity not found by a specified id. 
 	/// </summary>
