@@ -27,7 +27,7 @@ namespace NHibernate.Test.IdGen.NativeGuid
 		{
 			try
 			{
-				var str = Dialect.Dialect.GetDialect().SelectGUIDString;	
+				var _ = sessions.Dialect.SelectGUIDString;	
 			}
 			catch (NotSupportedException)
 			{
