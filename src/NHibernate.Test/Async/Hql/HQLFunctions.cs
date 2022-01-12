@@ -1142,6 +1142,25 @@ namespace NHibernate.Test.Hql
 				}
 			}
 		}
+		
+		[Test]
+		public async Task ConcatWithNullAsync()
+		{
+			AssumeFunctionSupported("concat");
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("abcdef", 1f);
+				await (s.SaveAsync(a1));
+				await (s.FlushAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				var hql = "select concat(a.Description,null) from Animal a";
+				var lresult = await (s.CreateQuery(hql).ListAsync<string>());
+				Assert.That(lresult[0], Is.EqualTo("abcdef"));
+			}
+		}
 
 		[Test]
 		public async Task HourMinuteSecondAsync()
