@@ -30,12 +30,10 @@
 
 		/// <inheritdoc />
 		/// <remarks>
-		/// SQL Anywhere treats string parameters concatenation as yielding <c>numeric</c> and fails casting
-		/// the actual string value if it is not castable to a number. Likewise, in <c>case when</c>
-		/// statement, it treats them as yielding <c>integer</c> if all case yields parameter values, whatever
-		/// the actual type of the parameters. And in case of <c>numeric</c> computations with a <c>numeric</c>
-		/// parameter, the result is treated as a fractional digit lossy <c>double<c> instead of being kept
-		/// <c>numeric</c>. See https://stackoverflow.com/q/52558715/1178314.
+		/// SQL Anywhere treats parameters in <c>case when</c> statement as yielding <c>integer</c> if all case yields
+		/// parameter values, whatever the actual type of the parameters. And in case of <c>numeric</c> computations
+		/// with a <c>numeric</c> parameter, the result is treated as a fractional digit lossy <c>double<c> instead of
+		/// being kept <c>numeric</c>. See https://stackoverflow.com/q/52558715/1178314.
 		/// </remarks>
 		public override bool HasBrokenTypeInferenceOnSelectedParameters => true;
 
