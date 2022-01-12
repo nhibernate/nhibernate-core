@@ -131,7 +131,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("lower", new StandardSQLFunction("lower"));
 			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
-
+			RegisterFunction("replace", new StandardSQLFunction("replace", NHibernateUtil.String));
 			RegisterFunction("truncate", new StandardSQLFunction("truncate"));
 
 			RegisterFunction("mod", new ModulusFunction(true, false));
