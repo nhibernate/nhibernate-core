@@ -16,7 +16,7 @@ namespace NHibernate.Proxy
 			string propertyName,
 			object key)
 		{
-			if (interceptor is IEntityNotFoundPropertyDelegate x)
+			if (interceptor is IEntityNotFoundByUniqueKeyDelegate x)
 			{
 				x.HandleEntityNotFound(entityName, propertyName, key);
 				return;
@@ -27,9 +27,11 @@ namespace NHibernate.Proxy
 	}
 
 	/// <summary> 
-	/// Delegate to handle the scenario of an entity not found by a specified id and property. 
+	/// Delegate to handle the scenario of an entity not found by a specified id and property.
+	/// This is a temporary interface until it can be merged into IEntityNotFoundDelegate 
 	/// </summary>
-	public interface IEntityNotFoundPropertyDelegate
+	//6.0 TODO Remove and add to method to IEntityNotFoundDelegate interface
+	public interface IEntityNotFoundByUniqueKeyDelegate
 	{
 		void HandleEntityNotFound(string entityName, string propertyName, object key);
 	}
