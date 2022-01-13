@@ -40,7 +40,6 @@
     <Compile Remove="**\CfgTest\HbmOrderingFixture.cs" />
     <Compile Remove="**\DynamicProxyTests\PeVerifyFixture.cs" />
     <Compile Remove="**\Insertordering\**" />
-    <Compile Remove="**\Linq\ODataTests.cs" />
     <Compile Remove="**\NHSpecificTest\NH1850\**" />
     <Compile Remove="**\NHSpecificTest\NH2484\**" />
     <Compile Remove="**\NHSpecificTest\NH2188\**" />
@@ -56,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.5.12" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.0" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.3" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.12" />
@@ -73,11 +73,11 @@
     <Reference Include="System.Transactions" />
     <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Data.OracleClient" />
-    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.5.12" />
     <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
     <PackageReference Include="Oracle.ManagedDataAccess" Version="19.12.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.1" />
     <PackageReference Include="System.CodeDom" Version="4.7.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     <PackageReference Include="System.Data.OracleClient" Version="1.0.8" />
