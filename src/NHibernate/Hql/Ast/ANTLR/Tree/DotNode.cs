@@ -417,14 +417,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if ( joinIsNeeded )
 			{
-				bool forceJoinType = false;
-				if (comparisonWithNullableEntity && Walker.IsNullComparison)
-				{
-					_joinType = JoinType.LeftOuterJoin;
-					forceJoinType = true;
-				}
-
-				DereferenceEntityJoin(classAlias, entityType, implicitJoin, parent, forceJoinType);
+				var forceLeftJoin = comparisonWithNullableEntity && Walker.IsNullComparison;
+				DereferenceEntityJoin(classAlias, entityType, implicitJoin, parent, forceLeftJoin);
 				if (comparisonWithNullableEntity)
 				{
 					_columns = FromElement.GetIdentityColumns();
@@ -458,7 +452,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-		private void DereferenceEntityJoin(string classAlias, EntityType propertyType, bool impliedJoin, IASTNode parent, bool forceJoinType)
+		private void DereferenceEntityJoin(string classAlias, EntityType propertyType, bool impliedJoin, IASTNode parent, bool forceLeftJoin)
 		{
 			_dereferenceType = DerefEntity;
 			if ( Log.IsDebugEnabled() ) 
@@ -477,7 +471,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string[] joinColumns = GetColumns();
 			string joinPath = Path;
 
-			if (impliedJoin && !forceJoinType && Walker.IsInFrom)
+			if (forceLeftJoin)
+			{
+				_joinType = JoinType.LeftOuterJoin;
+			}
+			else if (impliedJoin && Walker.IsInFrom)
 			{
 				_joinType = Walker.ImpliedJoinType;
 			}
@@ -525,7 +523,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// If this is an implied join in a from element, then use the impled join type which is part of the
 				// tree parser's state (set by the gramamar actions).
 				JoinSequence joinSequence = SessionFactoryHelper
-					.CreateJoinSequence(!forceJoinType && impliedJoin, propertyType, tableAlias, _joinType, joinColumns);
+					.CreateJoinSequence(!forceLeftJoin && impliedJoin, propertyType, tableAlias, _joinType, joinColumns);
 
 				var factory = new FromElementFactory(
 						currentFromClause,
@@ -546,7 +544,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else 
 			{
-				if (forceJoinType)
+				if (forceLeftJoin)
 				{
 					elem.JoinSequence.SetJoinType(_joinType);
 				}
