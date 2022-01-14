@@ -519,7 +519,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// If this is an implied join in a from element, then use the impled join type which is part of the
 				// tree parser's state (set by the gramamar actions).
 				JoinSequence joinSequence = SessionFactoryHelper
-					.CreateJoinSequence( impliedJoin, propertyType, tableAlias, _joinType, joinColumns );
+					.CreateJoinSequence(false, propertyType, tableAlias, _joinType, joinColumns);
 
 				var factory = new FromElementFactory(
 						currentFromClause,

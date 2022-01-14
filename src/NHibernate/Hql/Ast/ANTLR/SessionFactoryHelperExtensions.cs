@@ -319,7 +319,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			JoinSequence joinSequence = CreateJoinSequence();
 			joinSequence.SetRoot(collPersister, collectionName);
-			joinSequence.SetUseThetaStyle(true);		// TODO: figure out how this should be set.
+			joinSequence.SetUseThetaStyle(false);		// TODO: figure out how this should be set.
 
 			///////////////////////////////////////////////////////////////////////////////
 			// This was the reason for failures regarding INDEX_OP and subclass joins on

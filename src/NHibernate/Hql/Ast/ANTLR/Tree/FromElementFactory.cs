@@ -122,6 +122,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			
 			string tableAlias = correlatedSubselect ? fromElement.TableAlias : null;
 
+			//To properly generete subselect implicit join is required by SqlGenerator
+			if (fromElement.IsImplied)
+				fromElement.JoinSequence.SetUseThetaStyle(true);
+
 			// If the from element isn't in the same clause, create a new from element.
 			if (fromElement.FromClause != _fromClause)
 			{
@@ -190,17 +194,20 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				// A collection of entities...
 				elem = CreateEntityAssociation(role, roleAlias, joinType);
+				//TODO: Investigate why not implicit indexed join is incorrectly generated and get rid of it
+				if (indexed && elem.IsImplied)
+					elem.JoinSequence.SetUseThetaStyle(true);
 			}
 			else if (elementType.IsComponentType)
 			{
 				// A collection of components...
-				JoinSequence joinSequence = CreateJoinSequence(roleAlias, joinType);
+				JoinSequence joinSequence = CreateJoinSequence(roleAlias, joinType, indexed);
 				elem = CreateCollectionJoin(joinSequence, roleAlias);
 			}
 			else
 			{
 				// A collection of scalar elements...
-				JoinSequence joinSequence = CreateJoinSequence(roleAlias, joinType);
+				JoinSequence joinSequence = CreateJoinSequence(roleAlias, joinType, indexed);
 				elem = CreateCollectionJoin(joinSequence, roleAlias);
 			}
 
@@ -429,7 +436,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return elem;
 		}
 
-		private JoinSequence CreateJoinSequence(string roleAlias, JoinType joinType)
+		//TODO: Investigate why not implicit indexed join is incorrectly generated and get rid of implicitJoin parameter
+		private JoinSequence CreateJoinSequence(string roleAlias, JoinType joinType, bool implicitJoin = false)
 		{
 			SessionFactoryHelperExtensions sessionFactoryHelper = _fromClause.SessionFactoryHelper;
 			string[] joinColumns = Columns;
@@ -437,7 +445,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				throw new InvalidOperationException("collectionType is null!");
 			}
-			return sessionFactoryHelper.CreateJoinSequence(_implied, _collectionType, roleAlias, joinType, joinColumns);
+			return sessionFactoryHelper.CreateJoinSequence(implicitJoin, _collectionType, roleAlias, joinType, joinColumns);
 		}
 
 		private FromElement CreateJoin(
