@@ -417,13 +417,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if ( joinIsNeeded )
 			{
+				bool forceJoinType = false;
 				if (comparisonWithNullableEntity && Walker.IsNullComparison)
 				{
-					implicitJoin = false;
 					_joinType = JoinType.LeftOuterJoin;
+					forceJoinType = true;
 				}
 
-				DereferenceEntityJoin( classAlias, entityType, implicitJoin, parent );
+				DereferenceEntityJoin(classAlias, entityType, implicitJoin, parent, forceJoinType);
 				if (comparisonWithNullableEntity)
 				{
 					_columns = FromElement.GetIdentityColumns();
@@ -457,7 +458,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-		private void DereferenceEntityJoin(string classAlias, EntityType propertyType, bool impliedJoin, IASTNode parent)
+		private void DereferenceEntityJoin(string classAlias, EntityType propertyType, bool impliedJoin, IASTNode parent, bool forceJoinType)
 		{
 			_dereferenceType = DerefEntity;
 			if ( Log.IsDebugEnabled() ) 
@@ -476,7 +477,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string[] joinColumns = GetColumns();
 			string joinPath = Path;
 
-			if ( impliedJoin && Walker.IsInFrom ) 
+			if (impliedJoin && !forceJoinType && Walker.IsInFrom)
 			{
 				_joinType = Walker.ImpliedJoinType;
 			}
@@ -524,7 +525,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// If this is an implied join in a from element, then use the impled join type which is part of the
 				// tree parser's state (set by the gramamar actions).
 				JoinSequence joinSequence = SessionFactoryHelper
-					.CreateJoinSequence( impliedJoin, propertyType, tableAlias, _joinType, joinColumns );
+					.CreateJoinSequence(!forceJoinType && impliedJoin, propertyType, tableAlias, _joinType, joinColumns);
 
 				var factory = new FromElementFactory(
 						currentFromClause,
@@ -545,6 +546,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else 
 			{
+				if (forceJoinType)
+				{
+					elem.JoinSequence.SetJoinType(_joinType);
+				}
 				currentFromClause.AddDuplicateAlias(classAlias, elem);
 			}
 
