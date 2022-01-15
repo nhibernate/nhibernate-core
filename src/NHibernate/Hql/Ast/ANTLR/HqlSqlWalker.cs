@@ -759,7 +759,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				if (fromElement.Parent == null)
 				{
+					// Most likely means association join is used in invalid context
+					// I.e. in subquery: from EntityA a where exists (from EntityB join a.Assocation)  
+					// Maybe we should throw exception instead
 					fromElement.FromClause.AddChild(fromElement);
+					if (fromElement.IsImplied)
+						fromElement.JoinSequence.SetUseThetaStyle(true);
 				}
 			}
 
