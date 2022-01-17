@@ -372,15 +372,15 @@ namespace NHibernate.Test.Legacy
 			l.Add(null);
 			l.Add(s2);
 			c.ManyToMany = l;
-			c.One = new One { Value = "one" };
-			s.Save(c.One);
+			c.ManyToOne = new Simple { Name = "x", Count = 4};
+			s.Save(c.ManyToOne, c.ManyToOne.Count);
 			s.Save(c);
 
 			Assert.AreEqual(1,
 			                s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s").List
 			                	().Count);			
 			Assert.AreEqual(1,
-			                s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s and c.One != null").List
+			                s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s and c.ManyToOne.Name = 'x'").List
 			                	().Count);
 			Assert.AreEqual(1,
 			                s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.ManyToMany[2] = s").
@@ -418,7 +418,7 @@ namespace NHibernate.Test.Legacy
 			                	"select c from c in class ContainerX where c.ManyToMany[ c.OneToMany[0].Count ].Name = 's'").List().
 			                	Count);
 
-			s.Delete(c.One);
+			s.Delete(c.ManyToOne);
 			s.Delete(c);
 			s.Delete(s1);
 			s.Delete(s2);

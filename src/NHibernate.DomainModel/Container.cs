@@ -92,7 +92,7 @@ namespace NHibernate.DomainModel
 		private IDictionary<string, Ternary> _ternaryMap;
 		//<set> mapping
 		private ISet<Ternary> _ternarySet;
-		private One _one;
+		private Simple _manyToOne;
 
 		public virtual IList<Simple> OneToMany
 		{
@@ -130,10 +130,10 @@ namespace NHibernate.DomainModel
 			set { _id = value; }
 		}
 
-		public virtual One One
+		public virtual Simple ManyToOne
 		{
-			get => _one;
-			set => _one = value;
+			get => _manyToOne;
+			set => _manyToOne = value;
 		}
 
 		public virtual IList<Contained> Bag
