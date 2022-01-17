@@ -22,7 +22,7 @@
 		>
 			<generator class="native" />
 		</id>
-		
+		<one-to-one name="One" />
 		<list 
 			name="OneToMany" 
 			lazy="true"

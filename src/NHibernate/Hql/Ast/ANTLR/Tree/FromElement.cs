@@ -590,7 +590,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 				else
 				{
-					if (this.IsImplied || Walker.IsInFrom || Walker.IsInSelect)
+					if ((IsImplied && !JoinSequence.IsThetaStyle) || Walker.IsInFrom || Walker.IsInSelect)
 					{
 						origin.AddChild(this);
 					}

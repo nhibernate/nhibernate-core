@@ -92,6 +92,7 @@ namespace NHibernate.DomainModel
 		private IDictionary<string, Ternary> _ternaryMap;
 		//<set> mapping
 		private ISet<Ternary> _ternarySet;
+		private One _one;
 
 		public virtual IList<Simple> OneToMany
 		{
@@ -127,6 +128,12 @@ namespace NHibernate.DomainModel
 		{
 			get { return _id; }
 			set { _id = value; }
+		}
+
+		public virtual One One
+		{
+			get => _one;
+			set => _one = value;
 		}
 
 		public virtual IList<Contained> Bag
