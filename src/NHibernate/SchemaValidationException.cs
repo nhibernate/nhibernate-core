@@ -28,5 +28,17 @@ namespace NHibernate
 			base.GetObjectData(info, context);
 			info.AddValue("ValidationErrors", ValidationErrors);
 		}
+
+		public override string Message
+		{
+			get
+			{
+				var message = base.Message;
+				if (ValidationErrors == null || ValidationErrors.Count == 0)
+					return message;
+				var errors = "ValidationErrors:" + string.Join(Environment.NewLine + "- ", ValidationErrors);
+				return message + Environment.NewLine + errors;
+			}
+		}
 	}
 }
