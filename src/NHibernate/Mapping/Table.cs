@@ -1038,7 +1038,8 @@ namespace NHibernate.Mapping
 				//TODO: Add new method to ColumnMetadata :getTypeCode
 				var typesMatch = Regex.IsMatch(
 					column.GetSqlType(dialect, mapping),
-					$@"^{Regex.Escape(columnInfo.TypeName)}\b");
+					$@"^{Regex.Escape(columnInfo.TypeName)}\b",
+					RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 				//|| columnInfo.get() == column.GetSqlTypeCode(mapping);
 				if (!typesMatch)
 				{
