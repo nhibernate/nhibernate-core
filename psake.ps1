@@ -103,7 +103,7 @@ Task Build {
     Exec { 
         dotnet `
             build ./src/NHibernate.sln `
-            -c Release
+            -c Release -maxcpucount:3
     }
 }
 
