@@ -13,13 +13,16 @@
     <FileVersion Condition="'$(VersionSuffix)' != '' AND '$(BuildNumber)' != ''">$(VersionPrefix).$(BuildNumber)</FileVersion>
     <FileVersion Condition="'$(FileVersion)' == ''">$(VersionPrefix).0</FileVersion>
 
+    <NhLibPackableTargetFrameworks Condition="'$(IsPackable)' == 'True' OR '$(Configuration)' == 'Release'">;net6.0;net48</NhLibPackableTargetFrameworks>
     <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net461;net6.0</NhAppTargetFrameworks>
-    <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
+    <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;netcoreapp2.0;netstandard2.0$(NhLibPackableTargetFrameworks)</NhLibTargetFrameworks>
+
     <NhNetFx>false</NhNetFx>
     <NhNetFx Condition="$(TargetFramework.StartsWith('net4'))">true</NhNetFx>
     <!-- Visual Basic requires to use coma (,) as a separator, other project types - semicolon (;) -->
     <DefineConstants Condition="$(NhNetFx) AND '$(MSBuildProjectExtension)' != '.vbproj'">NETFX;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="$(NhNetFx) AND '$(MSBuildProjectExtension)' == '.vbproj'">NETFX,$(DefineConstants)</DefineConstants>
+    <NoWarn Condition="'$(TargetFramework)' == 'net6.0'">$(NoWarn);SYSLIB0011</NoWarn>
 
     <Product>NHibernate</Product>
     <Company>NHibernate.info</Company>

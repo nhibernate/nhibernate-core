@@ -4,7 +4,7 @@
     <Description>The Unit Tests for NHibernate.</Description>
     <TargetFrameworks>$(NhAppTargetFrameworks)</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
-    <NoWarn>$(NoWarn);3001;3002;3003;3005;SYSLIB0003;SYSLIB0011;SYSLIB0012</NoWarn>
+    <NoWarn>$(NoWarn);3001;3002;3003;3005;SYSLIB0003;SYSLIB0012</NoWarn>
     <ContentSQLiteInteropFiles>true</ContentSQLiteInteropFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
