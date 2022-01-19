@@ -389,6 +389,11 @@ namespace NHibernate.Test
 			return Sfi.OpenSession();
 		}
 
+		protected virtual IDisposable EnableStatisticsScope()
+		{
+			return new StatisticsScope(Sfi);
+		}
+
 		protected virtual ISession OpenSession(IInterceptor sessionLocalInterceptor)
 		{
 			return Sfi.WithOptions().Interceptor(sessionLocalInterceptor).OpenSession();
@@ -571,6 +576,24 @@ namespace NHibernate.Test
 			public void Dispose()
 			{
 				_disposeAction();
+			}
+		}
+
+		protected class StatisticsScope : IDisposable
+		{
+			private readonly ISessionFactoryImplementor _factory;
+
+			public StatisticsScope(ISessionFactoryImplementor factory)
+			{
+				_factory = factory;
+				_factory.Statistics.IsStatisticsEnabled = true;
+				_factory.Statistics.Clear();
+			}
+
+			public void Dispose()
+			{
+				_factory.Statistics.IsStatisticsEnabled = false;
+				_factory.Statistics.Clear();
 			}
 		}
 
