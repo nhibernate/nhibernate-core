@@ -38,9 +38,8 @@ namespace NHibernate.Cache
 		private int _nextLockId;
 		private readonly ICacheLock _asyncReaderWriterLock;
 
-		public ReadWriteCache()
+		public ReadWriteCache() : this(new AsyncReaderWriterLock())
 		{
-			_asyncReaderWriterLock = new AsyncReaderWriterLock();
 		}
 
 		public ReadWriteCache(ICacheLock locker)
