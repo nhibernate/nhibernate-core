@@ -6,7 +6,7 @@
 >
 
 	<property name="root.dir" value="." />
-	<property name="target.dir" value="net461" />
+	<property name="target.dir" value="net48" />
 
 	<include buildfile="${root.dir}/build-common/common.xml" />
 
