@@ -101,9 +101,8 @@ Task Set-Configuration {
 
 Task Build {
     Exec { 
-        dotnet `
-            build ./src/NHibernate.sln `
-            -c Release -maxcpucount:3
+        dotnet build ./src/NHibernate/NHibernate.csproj -c Release
+        dotnet build ./src/NHibernate.sln -c Release
     }
 }
 
