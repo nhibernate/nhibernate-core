@@ -149,7 +149,14 @@
 										<xs:enumeration value="xml.output_stylesheet" />
 										<xs:enumeration value="generate_statistics" />
 										<xs:enumeration value="query.startup_check" />
-										<xs:enumeration value="query.throw_never_cached" />
+										<xs:enumeration value="query.throw_never_cached">
+											<xs:annotation>
+												<xs:documentation>
+													Should queries set as cacheable raise an error if they reference an entity using the cache
+													strategy "never" (the default is enabled).
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="default_catalog" />
 										<xs:enumeration value="proxyfactory.factory_class" />
 										<xs:enumeration value="adonet.factory_class" />

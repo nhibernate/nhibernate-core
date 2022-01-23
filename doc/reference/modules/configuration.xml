@@ -704,6 +704,24 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>query.throw_never_cached</literal>
+                        </entry>
+                        <entry>
+                            Should queries set as cacheable raise an error if they reference an entity using the cache
+                            <xref linkend="performance-cache-never" /> (the default is enabled).
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                            <para>
+                                Disabling this setting causes NHibernate to ignore the caching of such queries without
+                                raising an error. Furthermore NHibernate will log a warning on cacheable queries
+                                referencing an entity using the <literal>never</literal> cache strategy.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>query.factory_class</literal>
                         </entry>
                         <entry>
