@@ -37,7 +37,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 				var validator = new Tool.hbm2ddl.SchemaValidator(expected);
 
 				var error = Assert.ThrowsAsync<SchemaValidationException>(() => validator.ValidateAsync());
-				Assert.That(error, Has.Message.EqualTo("Schema validation failed: see list of validation errors"));
+				Assert.That(error, Has.Message.StartsWith("Schema validation failed: see list of validation errors"));
 				Assert.That(
 					error,
 					Has.Property("ValidationErrors").Some.Contains("Wrong column type").IgnoreCase
@@ -65,7 +65,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 				var validator = new Tool.hbm2ddl.SchemaValidator(expected);
 
 				var error = Assert.ThrowsAsync<SchemaValidationException>(() => validator.ValidateAsync());
-				Assert.That(error, Has.Message.EqualTo("Schema validation failed: see list of validation errors"));
+				Assert.That(error, Has.Message.StartsWith("Schema validation failed: see list of validation errors"));
 				Assert.That(
 					error,
 					Has.Property("ValidationErrors").Some.Contains("Wrong column type").IgnoreCase

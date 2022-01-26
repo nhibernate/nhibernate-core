@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Security;
+using System.Text;
 
 namespace NHibernate
 {
@@ -36,8 +37,12 @@ namespace NHibernate
 				var message = base.Message;
 				if (ValidationErrors == null || ValidationErrors.Count == 0)
 					return message;
-				var errors = "ValidationErrors:" + string.Join(Environment.NewLine + "- ", ValidationErrors);
-				return message + Environment.NewLine + errors;
+
+				var sb = new StringBuilder(message).AppendLine().AppendLine("Validation errors:");
+				foreach (var error in ValidationErrors)
+					sb.Append('-').AppendLine(error);
+				
+				return sb.ToString();
 			}
 		}
 	}

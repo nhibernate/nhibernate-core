@@ -79,7 +79,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 			Assert.That(
 				() => validatorV2.Validate(),
 				Throws.TypeOf<SchemaValidationException>()
-				      .And.Message.EqualTo("Schema validation failed: see list of validation errors")
+				      .And.Message.StartsWith("Schema validation failed: see list of validation errors")
 				      .And.Property("ValidationErrors").Some.Contains("Missing column: Name in ").IgnoreCase.And.Contains("Version").IgnoreCase);
 		}
 
@@ -92,7 +92,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 
 			var error = Assert.Throws<SchemaValidationException>(() => validator.Validate());
 			Assert.That(error,
-				Has.Message.EqualTo("Schema validation failed: see list of validation errors")
+				Has.Message.StartsWith("Schema validation failed: see list of validation errors")
 					.And.Property("ValidationErrors").Some.Contains("Missing column: Name in ").IgnoreCase.And.Contains("Version").IgnoreCase);
 			Assert.That(error,
 				Has.Property("ValidationErrors").Some.Contains("Missing column: Title in ").IgnoreCase.And.Contains("Version").IgnoreCase);
