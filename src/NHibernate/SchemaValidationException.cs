@@ -40,8 +40,8 @@ namespace NHibernate
 
 				var sb = new StringBuilder(message).AppendLine().AppendLine("Validation errors:");
 				foreach (var error in ValidationErrors)
-					sb.Append('-').AppendLine(error);
-				
+					sb.Append("\t- ").AppendLine(error);
+
 				return sb.ToString();
 			}
 		}
