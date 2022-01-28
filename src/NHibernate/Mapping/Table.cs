@@ -1036,10 +1036,13 @@ namespace NHibernate.Mapping
 				}
 
 				//TODO: Add new method to ColumnMetadata :getTypeCode
-				var typesMatch = Regex.IsMatch(
-					column.GetSqlType(dialect, mapping),
-					$@"^{Regex.Escape(columnInfo.TypeName)}\b",
-					RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+				var columnType = column.GetSqlType(dialect, mapping);
+				var typesMatch =
+					string.Equals(columnType, columnInfo.TypeName, StringComparison.OrdinalIgnoreCase) ||
+					Regex.IsMatch(
+						columnType,
+						$@"^{Regex.Escape(columnInfo.TypeName)}\b",
+						RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 				//|| columnInfo.get() == column.GetSqlTypeCode(mapping);
 				if (!typesMatch)
 				{
@@ -1049,7 +1052,7 @@ namespace NHibernate.Mapping
 							dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name),
 							column.Name,
 							columnInfo.TypeName.ToLowerInvariant(),
-							column.GetSqlType(dialect, mapping)));
+							columnType));
 				}
 			}
 
