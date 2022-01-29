@@ -15,6 +15,7 @@ namespace NHibernate.Linq
 		protected bool? ReadOnly { get; private set; }
 		protected string Comment { get; private set; }
 		protected FlushMode? FlushMode { get; private set; }
+		protected string Hint { get; private set; }
 
 #pragma warning disable 618
 		/// <inheritdoc />
@@ -28,6 +29,9 @@ namespace NHibernate.Linq
 
 		/// <inheritdoc />
 		IQueryableOptions IQueryableOptions.SetTimeout(int timeout) => SetTimeout(timeout);
+
+		/// <inheritdoc />
+		IQueryableOptions IQueryableOptions.SetHint(string hint) => SetHint(hint);
 #pragma warning restore 618
 
 		/// <summary>
@@ -125,6 +129,20 @@ namespace NHibernate.Linq
 			return this;
 		}
 
+		/// <summary>
+		/// Set a T-SQL query hint which is appended to the query.
+		/// </summary>
+		/// <remarks>
+		/// The underlying dialect needs support for query hints.
+		/// </remarks>
+		/// <param name="hint">The query hint which should be appended to the query.</param>
+		/// <returns><see langword="this"/> (for method chaining).</returns>
+		public NhQueryableOptions SetHint(string hint)
+		{
+			Hint = hint;
+			return this;
+		}
+
 		protected internal NhQueryableOptions Clone()
 		{
 			return new NhQueryableOptions
@@ -135,7 +153,8 @@ namespace NHibernate.Linq
 				Timeout = Timeout,
 				ReadOnly = ReadOnly,
 				Comment = Comment,
-				FlushMode = FlushMode
+				FlushMode = FlushMode,
+				Hint = Hint
 			};
 		}
 
@@ -161,6 +180,9 @@ namespace NHibernate.Linq
 
 			if (FlushMode.HasValue)
 				query.SetFlushMode(FlushMode.Value);
+
+			if (!string.IsNullOrEmpty(Hint))
+				query.SetHint(Hint);
 		}
 	}
 }

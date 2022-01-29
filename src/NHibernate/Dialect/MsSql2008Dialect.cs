@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using NHibernate.Dialect.Function;
 using NHibernate.Driver;
+using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using Environment = NHibernate.Cfg.Environment;
@@ -107,5 +109,17 @@ namespace NHibernate.Dialect
 
 		/// <inheritdoc />
 		public override bool SupportsDateTimeScale => !KeepDateTime;
+		
+		/// <inheritdoc />
+		public override bool SupportsQueryHints => true;
+
+		/// <inheritdoc />
+		public override SqlString GetQueryHintString(SqlString queryString, string hint)
+		{
+			if (String.IsNullOrEmpty(hint))
+				return queryString;
+
+			return queryString.Append($" OPTION({hint})");
+		}
 	}
 }

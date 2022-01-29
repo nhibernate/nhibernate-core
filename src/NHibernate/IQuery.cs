@@ -647,6 +647,11 @@ namespace NHibernate
 		IQuery SetResultTransformer(IResultTransformer resultTransformer);
 
 		/// <summary>
+		/// Provide a query hint. Needs support of the underlying dialect.
+		/// </summary>
+		IQuery SetHint(string hint);
+
+		/// <summary>
 		/// Get a enumerable that when enumerated will execute
 		/// a batch of queries in a single database roundtrip
 		/// </summary>

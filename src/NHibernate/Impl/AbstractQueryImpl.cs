@@ -903,6 +903,12 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		public IQuery SetHint(string hint)
+		{
+			selection.Hint = hint;
+			return this;
+		}
+
 		public IQuery SetCollectionKey(object collectionKey)
 		{
 			this.collectionKey = collectionKey;

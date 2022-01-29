@@ -50,6 +50,7 @@ namespace NHibernate.Engine.Query
 				RowSelection selection = new RowSelection();
 				selection.FetchSize = queryParameters.RowSelection.FetchSize;
 				selection.Timeout = queryParameters.RowSelection.Timeout;
+				selection.Hint = queryParameters.RowSelection.Hint;
 				queryParametersToUse = queryParameters.CreateCopyUsing(selection);
 			}
 			else

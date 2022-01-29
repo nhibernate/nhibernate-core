@@ -38,5 +38,12 @@ namespace NHibernate.Linq
 		/// <param name="timeout">The timeout in seconds.</param>
 		/// <returns><see langword="this" /> (for method chaining).</returns>
 		IQueryableOptions SetTimeout(int timeout);
+
+		/// <summary>
+		/// Set a T-SQL Query hint as an Option to the query
+		/// </summary>
+		/// <param name="hint">The t-sql query hint</param>
+		/// <returns><see langword="this" /> (for method chaining).</returns>
+		IQueryableOptions SetHint(string hint);
 	}
 }

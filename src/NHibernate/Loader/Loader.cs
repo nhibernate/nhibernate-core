@@ -228,6 +228,16 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
+		/// Append <c> OPTION(...hints...)</c> clause, if necessary. This
+		/// empty superclass implementation merely returns its first
+		/// argument.
+		/// </summary>
+		protected virtual SqlString ApplyHint(SqlString sql, string hints, Dialect.Dialect dialect)
+		{
+			return sql;
+		}
+
+		/// <summary>
 		/// Does this query return objects that might be already cached by 
 		/// the session, whose lock mode may need upgrading.
 		/// </summary>

@@ -2408,6 +2408,11 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public virtual bool SupportsDateTimeScale => false;
 
+		/// <summary>
+        /// Does this dialect support T-SQL query hints
+        /// </summary>
+		public virtual bool SupportsQueryHints => false;
+
 		#endregion
 
 		/// <summary>
@@ -2674,6 +2679,21 @@ namespace NHibernate.Dialect
 			// since SQLErrorCode is extremely vendor-specific.  Specific Dialects
 			// may override to return whatever is most appropriate for that vendor.
 			return new SQLStateConverter(ViolatedConstraintNameExtracter);
+		}
+
+		/// <summary>
+        /// If the dialect supports T-SQL query hints, this method returns the corresponding SQL. 
+        /// </summary>
+        /// <param name="queryString">The input query string to transform</param>
+        /// <param name="hint">The query hint string</param>
+        /// <returns>Modified query string with the given T-SQL query hint.</returns>
+        /// <exception cref="NotSupportedException">
+        /// This exception is thrown if the dialect does state it supports query hints, but the current dialect
+        /// has no implementation for it.
+        /// </exception>
+		public virtual SqlString GetQueryHintString(SqlString queryString, string hint)
+		{
+			throw new NotSupportedException("Dialect does not have support for query hints.");
 		}
 	}
 }

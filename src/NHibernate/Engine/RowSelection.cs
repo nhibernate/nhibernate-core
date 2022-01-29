@@ -18,6 +18,7 @@ namespace NHibernate.Engine
 		private int maxRows = NoValue;
 		private int timeout = NoValue;
 		private int fetchSize = NoValue;
+		private string hint = null;
 
 		/// <summary>
 		/// Gets or Sets the Index of the First Row to Select
@@ -61,6 +62,12 @@ namespace NHibernate.Engine
 		public bool DefinesLimits
 		{
 			get { return maxRows != NoValue || firstRow > 0; }
+		}
+
+		public string Hint
+		{
+			get { return hint; }
+			set { hint = value; }
 		}
 	}
 }
