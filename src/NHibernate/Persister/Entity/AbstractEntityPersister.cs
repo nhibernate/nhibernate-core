@@ -3494,7 +3494,7 @@ namespace NHibernate.Persister.Entity
 			{
 				// For the case of dynamic-insert="true", we need to generate the INSERT SQL
 				bool[] notNull = GetPropertiesToInsert(fields);
-				id = Insert(fields, notNull, GenerateInsertString(true, notNull), obj, session);
+				id = Insert(fields, notNull, GenerateIdentityInsertString(notNull), obj, session);
 				for (int j = 1; j < span; j++)
 				{
 					Insert(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session);
