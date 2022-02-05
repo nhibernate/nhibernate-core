@@ -106,11 +106,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1235
 
 				result.OtherName += "x";
 				using (var s2 = OpenSession())
-				using (var t2 = s2.BeginTransaction())
 				{
 					var result2 = s2.Query<MultiTableEntity>().FirstOrDefault();
 					result2.OtherName += "y";
 					t1.Commit();
+
+					using (var t2 = s2.BeginTransaction())
 					Assert.That(
 						() => t2.Commit(),
 						_optimisticLock == null
@@ -139,11 +140,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1235
 
 				result.OtherName += "x";
 				using (var s2 = OpenSession())
-				using (var t2 = s2.BeginTransaction())
 				{
 					var result2 = s2.Query<MultiTableEntity>().FirstOrDefault();
 					s2.Delete(result2);
 					t1.Commit();
+
+					using (var t2 = s2.BeginTransaction())
 					Assert.That(
 						() => t2.Commit(),
 						_optimisticLock == null
