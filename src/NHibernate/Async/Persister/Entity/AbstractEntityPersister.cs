@@ -785,7 +785,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						return Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), id, j, expectation, statement);
+						return Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), id, j, expectation, statement, IsPropertyBasedOptimisticLocking(oldFields));
 					}
 				}
 				catch (OperationCanceledException) { throw; }
@@ -891,7 +891,7 @@ namespace NHibernate.Persister.Entity
 					{
 						await (VersionType.NullSafeSetAsync(statement, version, index, session, cancellationToken)).ConfigureAwait(false);
 					}
-					else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && loadedState != null)
+					else if (IsPropertyBasedOptimisticLocking(loadedState))
 					{
 						bool[] versionability = PropertyVersionability;
 						IType[] types = PropertyTypes;
@@ -915,7 +915,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), tableId, j, expectation, statement);
+						Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), tableId, j, expectation, statement, IsPropertyBasedOptimisticLocking(loadedState));
 					}
 				}
 				catch (OperationCanceledException) { throw; }
