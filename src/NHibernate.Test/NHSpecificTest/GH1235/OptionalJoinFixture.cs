@@ -7,14 +7,14 @@ using NUnit.Framework.Constraints;
 namespace NHibernate.Test.NHSpecificTest.GH1235
 {
 	//NH-2785
-	[TestFixture(true, "OptimisticLock")]
-	[TestFixture(false, "Version")]
-	[TestFixture(null, "NotVersioned")]
+	[TestFixture(OptimisticLockMode.None)]
+	[TestFixture(OptimisticLockMode.Version)]
+	[TestFixture(OptimisticLockMode.Dirty)]
 	public class OptionalJoinFixture : TestCaseMappingByCode
 	{
-		private readonly bool? _optimisticLock;
+		private readonly OptimisticLockMode _optimisticLock;
 
-		public OptionalJoinFixture(bool? optimisticLock, string comment)
+		public OptionalJoinFixture(OptimisticLockMode optimisticLock)
 		{
 			_optimisticLock = optimisticLock;
 		}
@@ -92,7 +92,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1235
 		{
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
-
 			{
 				var result = new MultiTableEntity { Name = "Bob", OtherName = "Bob" };
 				s.Save(result);
@@ -112,11 +111,11 @@ namespace NHibernate.Test.NHSpecificTest.GH1235
 					t1.Commit();
 
 					using (var t2 = s2.BeginTransaction())
-					Assert.That(
-						() => t2.Commit(),
-						_optimisticLock == null
-							? (IResolveConstraint) Throws.Nothing
-							: Throws.InstanceOf<StaleObjectStateException>());
+						Assert.That(
+							() => t2.Commit(),
+							_optimisticLock == OptimisticLockMode.None
+								? (IResolveConstraint) Throws.Nothing
+								: Throws.InstanceOf<StaleObjectStateException>());
 				}
 			}
 		}
@@ -126,7 +125,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1235
 		{
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
-
 			{
 				var result = new MultiTableEntity { Name = "Bob", OtherName = "Bob" };
 				s.Save(result);
@@ -146,11 +144,11 @@ namespace NHibernate.Test.NHSpecificTest.GH1235
 					t1.Commit();
 
 					using (var t2 = s2.BeginTransaction())
-					Assert.That(
-						() => t2.Commit(),
-						_optimisticLock == null
-							? (IResolveConstraint) Throws.Nothing
-							: Throws.InstanceOf<StaleObjectStateException>());
+						Assert.That(
+							() => t2.Commit(),
+							_optimisticLock == OptimisticLockMode.None
+								? (IResolveConstraint) Throws.Nothing
+								: Throws.InstanceOf<StaleObjectStateException>());
 				}
 			}
 		}
@@ -163,10 +161,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1235
 				{
 					rc.Id(x => x.Id, m => m.Generator(Generators.Native));
 					rc.DynamicUpdate(true);
+					rc.OptimisticLock(_optimisticLock);
 
-					if (_optimisticLock == true)
-						rc.OptimisticLock(OptimisticLockMode.Dirty);
-					else if (_optimisticLock != null)
+					if (_optimisticLock == OptimisticLockMode.Version)
 						rc.Version(x => x.Version, _ => { });
 
 					rc.Property(x => x.Name);
