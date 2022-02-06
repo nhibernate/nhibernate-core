@@ -14,6 +14,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.GH1062
 {
 	using System.Threading.Tasks;
+	//NH-1893
 	[TestFixture]
 	public class TriggerIdentityDinamicInsertFixtureAsync : BugTestCase
 	{

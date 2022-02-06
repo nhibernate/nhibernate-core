@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1062
 {
+	//NH-1893
 	[TestFixture]
 	public class TriggerIdentityDinamicInsertFixture : BugTestCase
 	{
