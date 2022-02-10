@@ -2516,6 +2516,7 @@ namespace NHibernate.Persister.Entity
 			return CreateEntityLoader(lockMode, CollectionHelper.EmptyDictionary<string, IFilter>());
 		}
 
+		//TODO 6.0: Remove (replaced by overload with optional parameter) 
 		protected bool Check(int rows, object id, int tableNumber, IExpectation expectation, DbCommand statement)
 		{
 			return Check(rows, id, tableNumber, expectation, statement, false);
