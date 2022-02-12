@@ -25,7 +25,8 @@ namespace NHibernate.Action
 		IBeforeTransactionCompletionProcess,
 		IAfterTransactionCompletionProcess,
 		IComparable<EntityAction>, 
-		IDeserializationCallback
+		IDeserializationCallback,
+		ICacheableExecutable
 	{
 
 		#region IExecutable Members

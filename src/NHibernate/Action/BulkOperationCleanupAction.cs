@@ -14,34 +14,49 @@ namespace NHibernate.Action
 	/// Implementation of BulkOperationCleanupAction.
 	/// </summary>
 	[Serializable]
-	public partial class BulkOperationCleanupAction : IAsyncExecutable, IAfterTransactionCompletionProcess
+	public partial class BulkOperationCleanupAction :
+		IAsyncExecutable,
+		IAfterTransactionCompletionProcess,
+		ICacheableExecutable
 	{
-		private readonly ISessionImplementor session;
-		private readonly HashSet<string> affectedEntityNames = new HashSet<string>();
-		private readonly HashSet<string> affectedCollectionRoles = new HashSet<string>();
-		private readonly List<string> spaces;
+		private readonly ISessionFactoryImplementor _factory;
+		private readonly HashSet<string> affectedEntityNames;
+		private readonly HashSet<string> affectedCollectionRoles;
+		private readonly string[] spaces;
+		private readonly bool _hasCache;
 
 		public BulkOperationCleanupAction(ISessionImplementor session, IQueryable[] affectedQueryables)
 		{
-			this.session = session;
-			List<string> tmpSpaces = new List<string>();
-			for (int i = 0; i < affectedQueryables.Length; i++)
+			_factory = session.Factory;
+			var tmpSpaces = new HashSet<string>();
+			foreach (var queryables in affectedQueryables)
 			{
-				if (affectedQueryables[i].HasCache)
+				if (queryables.HasCache)
 				{
-					affectedEntityNames.Add(affectedQueryables[i].EntityName);
+					_hasCache = true;
+					if (affectedEntityNames == null)
+					{
+						affectedEntityNames = new HashSet<string>();
+					}
+
+					affectedEntityNames.Add(queryables.EntityName);
 				}
-				ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(affectedQueryables[i].EntityName);
+
+				var roles = _factory.GetCollectionRolesByEntityParticipant(queryables.EntityName);
 				if (roles != null)
 				{
+					if (affectedCollectionRoles == null)
+					{
+						affectedCollectionRoles = new HashSet<string>();
+					}
+
 					affectedCollectionRoles.UnionWith(roles);
 				}
-				for (int y = 0; y < affectedQueryables[i].QuerySpaces.Length; y++)
-				{
-					tmpSpaces.Add(affectedQueryables[i].QuerySpaces[y]);
-				}
+
+				tmpSpaces.UnionWith(queryables.QuerySpaces);
 			}
-			spaces = new List<string>(tmpSpaces);
+
+			spaces = tmpSpaces.ToArray();
 		}
 
 		/// <summary>
@@ -50,35 +65,44 @@ namespace NHibernate.Action
 		public BulkOperationCleanupAction(ISessionImplementor session, ISet<string> querySpaces)
 		{
 			//from H3.2 TODO: cache the autodetected information and pass it in instead.
-			this.session = session;
+			_factory = session.Factory;
 
-			ISet<string> tmpSpaces = new HashSet<string>(querySpaces);
-			ISessionFactoryImplementor factory = session.Factory;
-			IDictionary<string, IClassMetadata> acmd = factory.GetAllClassMetadata();
+			var tmpSpaces = new HashSet<string>(querySpaces);
+			var acmd = _factory.GetAllClassMetadata();
 			foreach (KeyValuePair<string, IClassMetadata> entry in acmd)
 			{
-				string entityName = entry.Key;
-				IEntityPersister persister = factory.GetEntityPersister(entityName);
-				string[] entitySpaces = persister.QuerySpaces;
+				var entityName = entry.Key;
+				var persister = _factory.GetEntityPersister(entityName);
+				var entitySpaces = persister.QuerySpaces;
 
 				if (AffectedEntity(querySpaces, entitySpaces))
 				{
 					if (persister.HasCache)
 					{
+						_hasCache = true;
+						if (affectedEntityNames == null)
+						{
+							affectedEntityNames = new HashSet<string>();
+						}
+
 						affectedEntityNames.Add(persister.EntityName);
 					}
-					ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(persister.EntityName);
+
+					var roles = session.Factory.GetCollectionRolesByEntityParticipant(persister.EntityName);
 					if (roles != null)
 					{
+						if (affectedCollectionRoles == null)
+						{
+							affectedCollectionRoles = new HashSet<string>();
+						}
+
 						affectedCollectionRoles.UnionWith(roles);
 					}
-					for (int y = 0; y < entitySpaces.Length; y++)
-					{
-						tmpSpaces.Add(entitySpaces[y]);
-					}
+
+					tmpSpaces.UnionWith(entitySpaces);
 				}
 			}
-			spaces = new List<string>(tmpSpaces);
+			spaces = tmpSpaces.ToArray();
 		}
 
 		private bool AffectedEntity(ISet<string> querySpaces, string[] entitySpaces)
@@ -91,12 +115,11 @@ namespace NHibernate.Action
 			return entitySpaces.Any(querySpaces.Contains);
 		}
 
+		public bool HasCache => _hasCache;
+
 		#region IExecutable Members
 
-		public string[] PropertySpaces
-		{
-			get { return spaces.ToArray(); }
-		}
+		public string[] PropertySpaces => spaces;
 
 		public void BeforeExecutions()
 		{
@@ -132,17 +155,17 @@ namespace NHibernate.Action
 
 		private void EvictCollectionRegions()
 		{
-			if (affectedCollectionRoles != null && affectedCollectionRoles.Any())
+			if (affectedCollectionRoles != null)
 			{
-				session.Factory.EvictCollection(affectedCollectionRoles);
+				_factory.EvictCollection(affectedCollectionRoles);
 			}
 		}
 
 		private void EvictEntityRegions()
 		{
-			if (affectedEntityNames != null && affectedEntityNames.Any())
+			if (affectedEntityNames != null)
 			{
-				session.Factory.EvictEntity(affectedEntityNames);
+				_factory.EvictEntity(affectedEntityNames);
 			}
 		}
 

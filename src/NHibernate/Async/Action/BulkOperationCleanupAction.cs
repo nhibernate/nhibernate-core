@@ -20,7 +20,10 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Action
 {
-	public partial class BulkOperationCleanupAction : IAsyncExecutable, IAfterTransactionCompletionProcess
+	public partial class BulkOperationCleanupAction :
+		IAsyncExecutable,
+		IAfterTransactionCompletionProcess,
+		ICacheableExecutable
 	{
 
 		#region IExecutable Members
@@ -72,18 +75,11 @@ namespace NHibernate.Action
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
+			if (affectedCollectionRoles != null)
 			{
-				if (affectedCollectionRoles != null && affectedCollectionRoles.Any())
-				{
-					return session.Factory.EvictCollectionAsync(affectedCollectionRoles, cancellationToken);
-				}
-				return Task.CompletedTask;
+				return _factory.EvictCollectionAsync(affectedCollectionRoles, cancellationToken);
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return Task.CompletedTask;
 		}
 
 		private Task EvictEntityRegionsAsync(CancellationToken cancellationToken)
@@ -92,18 +88,11 @@ namespace NHibernate.Action
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
+			if (affectedEntityNames != null)
 			{
-				if (affectedEntityNames != null && affectedEntityNames.Any())
-				{
-					return session.Factory.EvictEntityAsync(affectedEntityNames, cancellationToken);
-				}
-				return Task.CompletedTask;
+				return _factory.EvictEntityAsync(affectedEntityNames, cancellationToken);
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return Task.CompletedTask;
 		}
 
 		#endregion
