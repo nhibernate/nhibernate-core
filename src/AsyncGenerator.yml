@@ -222,6 +222,8 @@
     - conversion: Ignore
       anyBaseTypeRule: IsTestCase
       executionPhase: PostProviders
+    - conversion: Ignore
+      name: SyncOnlyCacheFixture
     ignoreDocuments:
     - filePathEndsWith: Linq/MathTests.cs
     - filePathEndsWith: Linq/ExpressionSessionLeakTest.cs

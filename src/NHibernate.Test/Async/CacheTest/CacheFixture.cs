@@ -19,7 +19,7 @@ namespace NHibernate.Test.CacheTest
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class CacheFixtureAsync
+	public class CacheFixtureAsync: TestCase
 	{
 		[Test]
 		public async Task TestSimpleCacheAsync()
@@ -27,14 +27,14 @@ namespace NHibernate.Test.CacheTest
 			await (DoTestCacheAsync(new HashtableCacheProvider()));
 		}
 
-		private CacheKey CreateCacheKey(string text)
+		protected CacheKey CreateCacheKey(string text)
 		{
 			return new CacheKey(text, NHibernateUtil.String, "Foo", null, null);
 		}
 
 		public async Task DoTestCacheAsync(ICacheProvider cacheProvider, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var cache = cacheProvider.BuildCache(typeof(String).FullName, new Dictionary<string, string>());
+			var cache = (CacheBase) cacheProvider.BuildCache(typeof(String).FullName, new Dictionary<string, string>());
 
 			long longBefore = Timestamper.Next();
 
@@ -44,8 +44,7 @@ namespace NHibernate.Test.CacheTest
 
 			await (Task.Delay(15, cancellationToken));
 
-			ICacheConcurrencyStrategy ccs = new ReadWriteCache();
-			ccs.Cache = cache;
+			ICacheConcurrencyStrategy ccs = CreateCache(cache);
 
 			// cache something
 			CacheKey fooKey = CreateCacheKey("foo");
@@ -155,12 +154,17 @@ namespace NHibernate.Test.CacheTest
 		public async Task MinValueTimestampAsync()
 		{
 			var cache = new HashtableCacheProvider().BuildCache("region", new Dictionary<string, string>());
-			ICacheConcurrencyStrategy strategy = new ReadWriteCache();
-			strategy.Cache = cache;
 
-			await (DoTestMinValueTimestampOnStrategyAsync(cache, new ReadWriteCache()));
-			await (DoTestMinValueTimestampOnStrategyAsync(cache, new NonstrictReadWriteCache()));
-			await (DoTestMinValueTimestampOnStrategyAsync(cache, new ReadOnlyCache()));
+			await (DoTestMinValueTimestampOnStrategyAsync(cache, CreateCache(cache)));
+			await (DoTestMinValueTimestampOnStrategyAsync(cache, CreateCache(cache, CacheFactory.NonstrictReadWrite)));
+			await (DoTestMinValueTimestampOnStrategyAsync(cache, CreateCache(cache, CacheFactory.ReadOnly)));
 		}
+
+		protected virtual ICacheConcurrencyStrategy CreateCache(CacheBase cache, string strategy = CacheFactory.ReadWrite)
+		{
+			return CacheFactory.CreateCache(strategy, cache, Sfi.Settings);
+		}
+
+		protected override string[] Mappings => Array.Empty<string>();
 	}
 }

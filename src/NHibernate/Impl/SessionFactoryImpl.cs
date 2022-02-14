@@ -387,8 +387,8 @@ namespace NHibernate.Impl
 
 			if (settings.IsQueryCacheEnabled)
 			{
-				var updateTimestampsCacheName = typeof(UpdateTimestampsCache).Name;
-				updateTimestampsCache = new UpdateTimestampsCache(GetCache(updateTimestampsCacheName));
+				var updateTimestampsCacheName = nameof(Cache.UpdateTimestampsCache);
+				updateTimestampsCache = new UpdateTimestampsCache(GetCache(updateTimestampsCacheName), settings.CacheReadWriteLockFactory.Create());
 				var queryCacheName = typeof(StandardQueryCache).FullName;
 				queryCache = BuildQueryCache(queryCacheName);
 				queryCaches = new ConcurrentDictionary<string, Lazy<IQueryCache>>();
@@ -459,7 +459,7 @@ namespace NHibernate.Impl
 			if (caches.TryGetValue(cacheKey, out var cache)) 
 				return cache;
 
-			cache = CacheFactory.CreateCache(strategy, GetCache(cacheRegion));
+			cache = CacheFactory.CreateCache(strategy, GetCache(cacheRegion), settings);
 			caches.Add(cacheKey, cache);
 			if (isMutable && strategy == CacheFactory.ReadOnly)
 				log.Warn("read-only cache configured for mutable: {0}", name);

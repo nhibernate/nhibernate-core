@@ -19,7 +19,7 @@ namespace NHibernate.Cache
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(UpdateTimestampsCache));
 		private readonly CacheBase _updateTimestamps;
-		private readonly AsyncReaderWriterLock _asyncReaderWriterLock = new AsyncReaderWriterLock();
+		private readonly ICacheLock _asyncReaderWriterLock;
 
 		public virtual void Clear()
 		{
@@ -40,11 +40,21 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Build the update timestamps cache.
 		/// </summary>x
-		/// <param name="cache">The <see cref="ICache" /> to use.</param>
-		public UpdateTimestampsCache(CacheBase cache)
+		/// <param name="cache">The <see cref="CacheBase" /> to use.</param>
+		public UpdateTimestampsCache(CacheBase cache) : this(cache, new AsyncReaderWriterLock())
+		{
+		}
+
+		/// <summary>
+		///  Build the update timestamps cache.
+		/// </summary>
+		/// <param name="cache">The <see cref="CacheBase" /> to use.</param>
+		/// <param name="locker">Locker to use.</param>
+		public UpdateTimestampsCache(CacheBase cache, ICacheLock locker)
 		{
 			log.Info("starting update timestamps cache at region: {0}", cache.RegionName);
 			_updateTimestamps = cache;
+			_asyncReaderWriterLock = locker;
 		}
 
 		//Since v5.1
