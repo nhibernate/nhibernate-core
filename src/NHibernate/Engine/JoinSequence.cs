@@ -43,7 +43,7 @@ namespace NHibernate.Engine
 		{
 			private readonly IAssociationType associationType;
 			private readonly IJoinable joinable;
-			private readonly JoinType joinType;
+			private JoinType joinType;
 			private readonly string alias;
 			private readonly string[] lhsColumns;
 
@@ -75,6 +75,7 @@ namespace NHibernate.Engine
 			public JoinType JoinType
 			{
 				get { return joinType; }
+				internal set { joinType = value; }
 			}
 
 			public string[] LHSColumns
@@ -329,5 +330,11 @@ namespace NHibernate.Engine
 		public ISessionFactoryImplementor Factory => factory;
 
 		internal bool ForceFilter { get; set; }
+
+		internal void SetJoinType(JoinType joinType)
+		{
+			joins[0].JoinType = joinType;
+			SetUseThetaStyle(false);
+		}
 	}
 }
