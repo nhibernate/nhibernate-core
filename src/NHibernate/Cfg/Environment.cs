@@ -165,6 +165,7 @@ namespace NHibernate.Cfg
 		public const string CacheProvider = "cache.provider_class";
 		public const string UseQueryCache = "cache.use_query_cache";
 		public const string QueryCacheFactory = "cache.query_cache_factory";
+		public const string CacheReadWriteLockFactory = "cache.read_write_lock_factory";
 		public const string UseSecondLevelCache = "cache.use_second_level_cache";
 		public const string CacheRegionPrefix = "cache.region_prefix";
 		public const string UseMinimalPuts = "cache.use_minimal_puts";
