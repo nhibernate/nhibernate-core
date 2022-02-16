@@ -1,5 +1,7 @@
 version = 1
 
+test_patterns = ["src/NHibernate.Test/**"]
+
 [[analyzers]]
 name = "csharp"
 enabled = true
