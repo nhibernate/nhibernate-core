@@ -50,7 +50,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <param name="cache">The <see cref="CacheBase" /> to use.</param>
 		/// <param name="locker">Locker to use.</param>
-		public UpdateTimestampsCache(CacheBase cache, ICacheLock locker)
+		internal UpdateTimestampsCache(CacheBase cache, ICacheLock locker)
 		{
 			log.Info("starting update timestamps cache at region: {0}", cache.RegionName);
 			_updateTimestamps = cache;
