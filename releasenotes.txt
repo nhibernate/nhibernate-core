@@ -1,4 +1,29 @@
-﻿Build 5.3.10
+﻿Build 5.3.11
+=============================
+
+Release notes - NHibernate - Version 5.3.11
+
+12 issues were resolved in this release.
+
+** Bug
+
+   * #3005 LINQ: Casting from object to TimeSpan throws
+   * #2988 Query issues when using not-found='ignore' in entity mapping
+   * #2965 Fix possible issue with logging for Linq Readonly tests
+   * #2963 Time is incompatible with bigint for TimeAsTimeSpanType
+   * #2937 NRE in linq processing of custom components
+   * #2928 Session.Refresh when entity is IFieldInterceptorAccessor throws a MappingException
+   * #2904 SQL query result not retrieved from second level cache
+   * #2876 Schema validation not working with NpgSql v5
+   * #2862 NHibernate AsyncReaderWriterLock stalls under load
+   * #2727 The session.Load(obj, id) overload can't handle proxies
+
+** Task
+
+   * #3019 Release 5.3.11
+   * #2984 Bump AsyncGenerator to 0.18.3 for 5.3 branch with fix for .net 6
+
+Build 5.3.10
 =============================
 
 Release notes - NHibernate - Version 5.3.10
