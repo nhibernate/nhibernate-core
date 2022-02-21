@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CacheTest
 {
 	[TestFixture]
-	public class CacheFixture
+	public class CacheFixture: TestCase
 	{
 		[Test]
 		public void TestSimpleCache()
@@ -16,14 +16,14 @@ namespace NHibernate.Test.CacheTest
 			DoTestCache(new HashtableCacheProvider());
 		}
 
-		private CacheKey CreateCacheKey(string text)
+		protected CacheKey CreateCacheKey(string text)
 		{
 			return new CacheKey(text, NHibernateUtil.String, "Foo", null, null);
 		}
 
 		public void DoTestCache(ICacheProvider cacheProvider)
 		{
-			var cache = cacheProvider.BuildCache(typeof(String).FullName, new Dictionary<string, string>());
+			var cache = (CacheBase) cacheProvider.BuildCache(typeof(String).FullName, new Dictionary<string, string>());
 
 			long longBefore = Timestamper.Next();
 
@@ -33,8 +33,7 @@ namespace NHibernate.Test.CacheTest
 
 			Thread.Sleep(15);
 
-			ICacheConcurrencyStrategy ccs = new ReadWriteCache();
-			ccs.Cache = cache;
+			ICacheConcurrencyStrategy ccs = CreateCache(cache);
 
 			// cache something
 			CacheKey fooKey = CreateCacheKey("foo");
@@ -144,12 +143,17 @@ namespace NHibernate.Test.CacheTest
 		public void MinValueTimestamp()
 		{
 			var cache = new HashtableCacheProvider().BuildCache("region", new Dictionary<string, string>());
-			ICacheConcurrencyStrategy strategy = new ReadWriteCache();
-			strategy.Cache = cache;
 
-			DoTestMinValueTimestampOnStrategy(cache, new ReadWriteCache());
-			DoTestMinValueTimestampOnStrategy(cache, new NonstrictReadWriteCache());
-			DoTestMinValueTimestampOnStrategy(cache, new ReadOnlyCache());
+			DoTestMinValueTimestampOnStrategy(cache, CreateCache(cache));
+			DoTestMinValueTimestampOnStrategy(cache, CreateCache(cache, CacheFactory.NonstrictReadWrite));
+			DoTestMinValueTimestampOnStrategy(cache, CreateCache(cache, CacheFactory.ReadOnly));
 		}
+
+		protected virtual ICacheConcurrencyStrategy CreateCache(CacheBase cache, string strategy = CacheFactory.ReadWrite)
+		{
+			return CacheFactory.CreateCache(strategy, cache, Sfi.Settings);
+		}
+
+		protected override string[] Mappings => Array.Empty<string>();
 	}
 }

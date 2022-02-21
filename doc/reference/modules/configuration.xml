@@ -612,6 +612,26 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>cache.read_write_lock_factory</literal>
+                        </entry>
+                        <entry>
+                            Specify the cache lock factory to use for read-write cache regions.
+                            Defaults to the built-in <literal>async</literal> cache lock factory.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>async</literal>, or <literal>sync</literal>, or <literal>classname.of.CacheLockFactory, assembly</literal> with custom implementation of <literal>ICacheReadWriteLockFactory</literal>
+                            </para>
+                            <para>
+                                <literal>async</literal> uses a single writer multiple readers locking mechanism supporting asynchronous operations.
+                            </para>
+                            <para>
+                                <literal>sync</literal> uses a single access locking mechanism which will throw on asynchronous
+                                operations but may have better performances than the <literal>async</literal> provider for applications using the .Net Framework (4.8 and below).
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>cache.region_prefix</literal>
                         </entry>
                         <entry>
