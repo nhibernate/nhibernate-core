@@ -205,6 +205,65 @@ namespace NHibernate.Test.SqlTest.Query
 			}
 		}
 
+		[Test(Description = "GH-2904")]
+		public void CacheableScalarSQLQuery()
+		{
+			Organization ifa = new Organization("IFA");
+			Organization jboss = new Organization("JBoss");
+			Person gavin = new Person("Gavin");
+			Employment emp = new Employment(gavin, jboss, "AU");
+
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(ifa);
+				s.Save(jboss);
+				s.Save(gavin);
+				s.Save(emp);
+				t.Commit();
+			}
+
+			using (ISession s = OpenSession())
+			{
+				IList GetCacheableSqlQueryResults()
+				{
+					return s.CreateSQLQuery(
+								"select emp.REGIONCODE " +
+								"from ORGANIZATION org " +
+								"left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER ")
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.SetCacheable(true)
+							.List();
+				}
+
+				using (EnableStatisticsScope())
+				{
+					IList l = GetCacheableSqlQueryResults();
+					Assert.AreEqual(2, l.Count);
+					Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(1), "results are expected from DB");
+					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0), "results are expected from DB");
+				}
+
+				using (EnableStatisticsScope())
+				{
+					IList l2 = GetCacheableSqlQueryResults();
+					Assert.AreEqual(2, l2.Count);
+					Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(0), "results are expected from cache");
+					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1), "results are expected from cache");
+				}
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Delete(emp);
+				s.Delete(gavin);
+				s.Delete(ifa);
+				s.Delete(jboss);
+				t.Commit();
+			}
+		}
+
 		[Test]
 		public void ResultSetMappingDefinition()
 		{

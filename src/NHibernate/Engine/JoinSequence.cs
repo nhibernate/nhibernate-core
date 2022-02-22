@@ -44,7 +44,7 @@ namespace NHibernate.Engine
 		{
 			private readonly IAssociationType associationType;
 			private readonly IJoinable joinable;
-			private readonly JoinType joinType;
+			private JoinType joinType;
 			private readonly string alias;
 			private readonly string[] lhsColumns;
 			private readonly string[] rhsColumns;
@@ -80,6 +80,7 @@ namespace NHibernate.Engine
 			public JoinType JoinType
 			{
 				get { return joinType; }
+				internal set { joinType = value; }
 			}
 
 			public string[] LHSColumns
@@ -361,6 +362,12 @@ namespace NHibernate.Engine
 		{
 			joins.AddRange(fromElement.JoinSequence.joins);
 			return this;
+		}
+
+		internal void SetJoinType(JoinType joinType)
+		{
+			joins[0].JoinType = joinType;
+			SetUseThetaStyle(false);
 		}
 	}
 }
