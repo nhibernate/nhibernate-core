@@ -6,14 +6,21 @@ namespace NHibernate.Cache
 {
 	class SyncCacheLock : ICacheLock
 	{
+		private readonly MonitorLock _monitorLock;
+
 		class MonitorLock : IDisposable
 		{
 			private readonly object _lockObj;
 
 			public MonitorLock(object lockObj)
 			{
-				Monitor.Enter(lockObj);
 				_lockObj = lockObj;
+			}
+
+			public IDisposable Lock()
+			{
+				Monitor.Enter(_lockObj);
+				return this;
 			}
 
 			public void Dispose()
@@ -22,18 +29,23 @@ namespace NHibernate.Cache
 			}
 		}
 
+		public SyncCacheLock()
+		{
+			_monitorLock = new MonitorLock(this);
+		}
+
 		public void Dispose()
 		{
 		}
 
 		public IDisposable ReadLock()
 		{
-			return new MonitorLock(this);
+			return _monitorLock.Lock();
 		}
 
 		public IDisposable WriteLock()
 		{
-			return new MonitorLock(this);
+			return _monitorLock.Lock();
 		}
 
 		public Task<IDisposable> ReadLockAsync()
