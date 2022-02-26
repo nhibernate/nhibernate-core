@@ -349,6 +349,19 @@ namespace NHibernate.Cfg
 		public const string OracleUseBinaryFloatingPointTypes = "oracle.use_binary_floating_point_types";
 
 		/// <summary>
+		/// This setting specifies whether to suppress the InvalidCastException and return a rounded-off 28 precision value
+		/// if the Oracle NUMBER value has more than 28 precision.
+		/// <para>
+		/// <see langword="false"/> by default.
+		/// </para>
+		/// </summary>
+		/// <remarks>
+		/// See https://docs.oracle.com/en/database/oracle/oracle-data-access-components/19.3/odpnt/DataReaderSuppressGetDecimalInvalidCastException.html
+		/// This setting works only with ODP.NET 19.10 or newer.
+		/// </remarks>
+		public const string OracleSuppressDecimalInvalidCastException = "oracle.suppress_decimal_invalid_cast_exception";
+
+		/// <summary>
 		/// <para>
 		/// Firebird with FirebirdSql.Data.FirebirdClient may be unable to determine the type
 		/// of parameters in many circumstances, unless they are explicitly casted in the SQL

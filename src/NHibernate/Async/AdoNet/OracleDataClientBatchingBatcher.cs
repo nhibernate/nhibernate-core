@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet.Util;
+using NHibernate.Driver;
 using NHibernate.Exceptions;
 
 namespace NHibernate.AdoNet
