@@ -98,6 +98,12 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 					rc.Property(x => x.Name);
 				});
 
+			mapper.Class<EntityWithExplicitGenericInterface>(
+				rc =>
+				{
+					rc.Id(x => x.Id);
+				});
+
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
@@ -174,6 +180,15 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 
 				CanAccessIEntityId(entity);
 				CanAccessIEntity2Id(entity);
+			}
+		}
+
+		[Test]
+		public void ProxyExplicitGenericInterfaceAsync()
+		{
+			using (var session = OpenSession())
+			{
+				Assert.That(() => session.LoadAsync<EntityWithExplicitGenericInterface>(_id), Throws.Nothing, "Failed to load EntityWithExplicitGenericInterface proxy");
 			}
 		}
 
