@@ -612,6 +612,26 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>cache.read_write_lock_factory</literal>
+                        </entry>
+                        <entry>
+                            Specify the cache lock factory to use for read-write cache regions.
+                            Defaults to the built-in <literal>async</literal> cache lock factory.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>async</literal>, or <literal>sync</literal>, or <literal>classname.of.CacheLockFactory, assembly</literal> with custom implementation of <literal>ICacheReadWriteLockFactory</literal>
+                            </para>
+                            <para>
+                                <literal>async</literal> uses a single writer multiple readers locking mechanism supporting asynchronous operations.
+                            </para>
+                            <para>
+                                <literal>sync</literal> uses a single access locking mechanism which will throw on asynchronous
+                                operations but may have better performances than the <literal>async</literal> provider for applications using the .Net Framework (4.8 and below).
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>cache.region_prefix</literal>
                         </entry>
                         <entry>
@@ -1210,6 +1230,58 @@ var session = sessions.OpenSession(conn);
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>oracle.use_binary_floating_point_types</literal>
+                        </entry>
+                        <entry>
+                            <para>
+                                Set whether NHibernate should map .Net <literal>double</literal> and <literal>float</literal>
+                                to Oracle <literal>BINARY_DOUBLE</literal> and <literal>BINARY_FLOAT</literal> types or use
+                                Oracle <literal>DOUBLE</literal> and <literal>FLOAT</literal> types.
+                            </para>
+                            <para>
+                                Oracle 10g introduced <literal>BINARY_DOUBLE</literal> and <literal>BINARY_FLOAT</literal>
+                                types which are compatible with .NET <literal>double</literal> and <literal>float</literal>
+                                types, while Oracle <literal>DOUBLE</literal> and <literal>FLOAT</literal> are not. Oracle
+                                <literal>DOUBLE</literal> and <literal>FLOAT</literal> types do not conform to the IEEE
+                                standard as they are internally implemented as <literal>NUMBER</literal> type, which
+                                makes them an exact numeric type.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> for using Oracle <literal>BINARY_DOUBLE</literal> and
+                                <literal>BINARY_FLOAT</literal> types | <literal>false</literal> for using Oracle
+                                <literal>DOUBLE</literal> and <literal>FLOAT</literal> types.
+                            </para>
+                            <para>
+                                <literal>false</literal> by default. See
+                                <ulink url="https://docs.oracle.com/database/121/TTSQL/types.htm#TTSQL126">ANSI SQL data types</ulink>.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>oracle.suppress_decimal_invalid_cast_exception</literal>
+                        </entry>
+                        <entry>
+                            <para>
+                                This setting specifies whether to suppress or not the <literal>InvalidCastException</literal>
+                                and return a rounded-off 28 precision value if the Oracle <literal>NUMBER</literal> value
+                                has more than a 28 precision.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> for suppressing the exception | <literal>false</literal> for letting
+                                the exception be raised.
+                            </para>
+                            <para>
+                                <literal>false</literal> by default. See
+                                <ulink url="https://docs.oracle.com/en/database/oracle/oracle-data-access-components/19.3/odpnt/DataReaderSuppressGetDecimalInvalidCastException.html">SuppressGetDecimalInvalidCastException</ulink>.
+                                This setting works only with ODP.NET 19.10 or newer.
                             </para>
                         </entry>
                     </row>

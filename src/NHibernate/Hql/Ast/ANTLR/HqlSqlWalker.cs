@@ -59,6 +59,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private readonly IDictionary<string, string> _tokenReplacements;
 		private readonly IDictionary<string, NamedParameter> _namedParameters;
+		private readonly IDictionary<IParameterSpecification, IType> _guessedParameterTypes = new Dictionary<IParameterSpecification, IType>();
 
 		private JoinType _impliedJoinType;
 
@@ -99,6 +100,21 @@ namespace NHibernate.Hql.Ast.ANTLR
 		public override void ReportError(RecognitionException e)
 		{
 			_parseErrorHandler.ReportError(e);
+		}
+
+		internal IStatement Transform()
+		{
+			var tree = (IStatement) statement().Tree;
+			// Use the guessed type in case we weren't been able to detect the type
+			foreach (var parameter in _parameters)
+			{
+				if (parameter.ExpectedType == null && _guessedParameterTypes.TryGetValue(parameter, out var guessedType))
+				{
+					parameter.ExpectedType = guessedType;
+				}
+			}
+
+			return tree;
 		}
 
 		/*
@@ -1083,7 +1099,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 				// Add the parameter type information so that we are able to calculate functions return types
 				// when the parameter is used as an argument.
 				if (namedParameter.IsGuessedType)
+				{
+					_guessedParameterTypes[paramSpec] = namedParameter.Type;
 					parameter.GuessedType = namedParameter.Type;
+				}
 				else
 					parameter.ExpectedType = namedParameter.Type;
 			}

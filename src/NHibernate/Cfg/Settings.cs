@@ -102,6 +102,8 @@ namespace NHibernate.Cfg
 
 		public ICacheProvider CacheProvider { get; internal set; }
 
+		public ICacheReadWriteLockFactory CacheReadWriteLockFactory { get; internal set; }
+
 		public IQueryCacheFactory QueryCacheFactory { get; internal set; }
 
 		public IConnectionProvider ConnectionProvider { get; internal set; }

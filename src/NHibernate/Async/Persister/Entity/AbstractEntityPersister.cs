@@ -1026,7 +1026,7 @@ namespace NHibernate.Persister.Entity
 			{
 				// For the case of dynamic-insert="true", we need to generate the INSERT SQL
 				bool[] notNull = GetPropertiesToInsert(fields);
-				id = await (InsertAsync(fields, notNull, GenerateInsertString(true, notNull), obj, session, cancellationToken)).ConfigureAwait(false);
+				id = await (InsertAsync(fields, notNull, GenerateIdentityInsertString(notNull), obj, session, cancellationToken)).ConfigureAwait(false);
 				for (int j = 1; j < span; j++)
 				{
 					await (InsertAsync(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session, cancellationToken)).ConfigureAwait(false);

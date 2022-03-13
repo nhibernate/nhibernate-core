@@ -207,6 +207,7 @@ namespace NHibernate.Cfg
 
 			if (useSecondLevelCache || useQueryCache)
 			{
+				settings.CacheReadWriteLockFactory = GetReadWriteLockFactory(PropertiesHelper.GetString(Environment.CacheReadWriteLockFactory, properties, null));
 				// The cache provider is needed when we either have second-level cache enabled
 				// or query cache enabled.  Note that useSecondLevelCache is enabled by default
 				settings.CacheProvider = CreateCacheProvider(properties);
@@ -344,6 +345,28 @@ namespace NHibernate.Cfg
 			}
 
 			return settings;
+		}
+
+		private ICacheReadWriteLockFactory GetReadWriteLockFactory(string lockFactory)
+		{
+			switch (lockFactory)
+			{
+				case null:
+				case "async":
+					return new AsyncCacheReadWriteLockFactory();
+				case "sync":
+					return new SyncCacheReadWriteLockFactory();
+				default:
+					try
+					{
+						var type = ReflectHelper.ClassForName(lockFactory);
+						return (ICacheReadWriteLockFactory) Environment.ObjectsFactory.CreateInstance(type);
+					}
+					catch (Exception e)
+					{
+						throw new HibernateException($"Could not instantiate cache lock factory: `{lockFactory}`. Use either `sync` or `async` values or type name implementing {nameof(ICacheReadWriteLockFactory)} interface", e);
+					}
+			}
 		}
 
 		private static IBatcherFactory CreateBatcherFactory(IDictionary<string, string> properties, int batchSize, IConnectionProvider connectionProvider)

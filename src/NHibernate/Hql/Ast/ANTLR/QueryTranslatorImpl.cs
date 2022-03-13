@@ -615,7 +615,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				try
 				{
 					// Transform the tree.
-					_resultAst = (IStatement) hqlSqlWalker.statement().Tree;
+					_resultAst = hqlSqlWalker.Transform();
 				}
 				finally
 				{
