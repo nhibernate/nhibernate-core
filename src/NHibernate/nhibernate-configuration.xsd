@@ -278,6 +278,17 @@
 												</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>
+										<xs:enumeration value="oracle.suppress_decimal_invalid_cast_exception">
+											<xs:annotation>
+												<xs:documentation>
+													This setting specifies whether to suppress the InvalidCastException and return a rounded-off
+													28 precision value if the Oracle NUMBER value has more than 28 precision.
+													False by default.
+													See https://docs.oracle.com/en/database/oracle/oracle-data-access-components/19.3/odpnt/DataReaderSuppressGetDecimalInvalidCastException.html
+													This setting works only with ODP.NET 19.10 or newer.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="firebird.disable_parameter_casting">
 											<xs:annotation>
 												<xs:documentation>
