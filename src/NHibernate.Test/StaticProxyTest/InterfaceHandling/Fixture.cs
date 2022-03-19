@@ -90,6 +90,7 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 			mapper.Class<EntityWithExplicitGenericInterface>(
 				rc =>
 				{
+					rc.Table("explGenInterface");
 					rc.Id(x => x.Id);
 				});
 
