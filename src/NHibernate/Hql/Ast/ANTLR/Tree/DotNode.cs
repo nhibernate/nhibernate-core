@@ -353,10 +353,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				IEntityPersister entityPersister = elem.EntityPersister;
 				if ( entityPersister != null ) 
 				{
-					Walker.AddQuerySpaces( entityPersister.QuerySpaces );
+					Walker.AddQuerySpaces(entityPersister);
 				}
 			}
-			Walker.AddQuerySpaces( queryableCollection.CollectionSpaces );	// Always add the collection's query spaces.
+			// Always add the collection's query spaces.
+			Walker.AddQuerySpaces(queryableCollection);
 		}
 
 		private void DereferenceEntity(EntityType entityType, bool implicitJoin, string classAlias, bool generateJoin, IASTNode parent) 
@@ -547,7 +548,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 
 			SetImpliedJoin( elem );
-			Walker.AddQuerySpaces( elem.EntityPersister.QuerySpaces );
+			Walker.AddQuerySpaces(elem.EntityPersister);
 			FromElement = elem;	// This 'dot' expression now refers to the resulting from element.
 		}
 

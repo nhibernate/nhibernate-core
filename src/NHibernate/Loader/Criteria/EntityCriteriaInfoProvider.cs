@@ -1,10 +1,11 @@
 using System;
+using NHibernate.Persister;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
 namespace NHibernate.Loader.Criteria
 {
-	public class EntityCriteriaInfoProvider : ICriteriaInfoProvider
+	public class EntityCriteriaInfoProvider : ICriteriaInfoProvider, IExtendedCriteriaInfoProvider
 	{
 		readonly IQueryable persister;
 
@@ -36,6 +37,8 @@ namespace NHibernate.Loader.Criteria
 				return persister;
 			}
 		}
+
+		IPersister IExtendedCriteriaInfoProvider.Persister => persister as IPersister;
 
 		public IType GetType(String relativePath)
 		{
