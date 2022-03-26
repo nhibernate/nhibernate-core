@@ -11,10 +11,15 @@
     <OptionExplicit>On</OptionExplicit>
     <OptionStrict>On</OptionStrict>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
-    <DefineConstants>NETCOREAPP2_1,$(DefineConstants)</DefineConstants>
+  <PropertyGroup Condition="$(NhNetCoreApp)">
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <DefineConstants>NETCOREAPP2_0,$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
+    <DefineConstants>NETCOREAPP2_1,$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="$(NhNetFx)">
     <DefineConstants>NETFX,$(DefineConstants)</DefineConstants>
@@ -22,7 +27,7 @@
   <ItemGroup>
     <None Remove="**\*.hbm.xml" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
+  <ItemGroup Condition="$(NhNetCoreApp)">
     <Compile Remove="**\Issues\NH3302\**" />
   </ItemGroup>
   <ItemGroup>
@@ -35,10 +40,15 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
     <PackageReference Include="Microsoft.VisualBasic" Version="10.2.0" />
     <PackageReference Include="NUnit" Version="3.13.2" />
+  </ItemGroup>
+  <ItemGroup Condition="$(NhNetFx)">
     <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
+  <ItemGroup Condition="$(NhNetCoreApp)">
     <PackageReference Include="NUnitLite" Version="3.13.2" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
+    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate\NHibernate.csproj" />

@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP2_1
+﻿#if NETCOREAPP2_0 || NETCOREAPP2_1
 namespace NHibernate.TestDatabaseSetup
 {
 	public class Program
