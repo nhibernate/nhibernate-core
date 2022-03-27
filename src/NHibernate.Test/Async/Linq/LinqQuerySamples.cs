@@ -1372,6 +1372,20 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
+		[Test]
+		public void ReplaceFunctionWithNullArgumentAsync()
+		{
+			var query = from e in db.Employees
+			            select e.FirstName.Replace(e.LastName, null);
+			List<string> results = null;
+			Assert.That(
+				async () =>
+				{
+					results = await (query.ToListAsync());
+				}, Throws.Nothing, "Expected REPLACE(FirstName, LastName, NULL) to be supported");
+			Assert.That(results, Is.Not.Null);
+		}
+
 		[Test(Description = "GH-2860")]
 		public async Task StringFormatWithTrimAsync()
 		{
