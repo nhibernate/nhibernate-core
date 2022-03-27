@@ -12,14 +12,9 @@
     <OptionStrict>On</OptionStrict>
   </PropertyGroup>
   <PropertyGroup Condition="$(NhNetCoreApp)">
+    <DefineConstants>NETCOREAPP,$(DefineConstants)</DefineConstants>
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-    <DefineConstants>NETCOREAPP2_0,$(DefineConstants)</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
-    <DefineConstants>NETCOREAPP2_1,$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="$(NhNetFx)">
     <DefineConstants>NETFX,$(DefineConstants)</DefineConstants>
