@@ -20,7 +20,7 @@
   <ItemGroup Condition="$(NhNetFx)">
     <PackageReference Include="NUnit3TestAdapter" Version="4.1.0" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
     <PackageReference Include="NUnitLite" Version="3.13.2" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
