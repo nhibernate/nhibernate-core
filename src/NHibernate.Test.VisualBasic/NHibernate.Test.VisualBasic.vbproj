@@ -12,7 +12,7 @@
     <OptionStrict>On</OptionStrict>
   </PropertyGroup>
   <PropertyGroup Condition="$(NhNetCoreApp)">
-    <DefineConstants>NETCOREAPP,$(DefineConstants)</DefineConstants>
+    <DefineConstants>NETCOREAPP2_0_OR_GREATER,$(DefineConstants)</DefineConstants>
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>

@@ -20,6 +20,7 @@
     <DefineConstants Condition="$(NhNetFx) AND $(NhVbNet) == ''" >NETFX;$(DefineConstants)</DefineConstants>
     <NhNetCoreApp>false</NhNetCoreApp>
     <NhNetCoreApp Condition="$(TargetFramework.StartsWith('netcoreapp'))">true</NhNetCoreApp>
+    <DefineConstants Condition="$(NhNetCoreApp) AND $(NhVbNet) == ''" >NETCOREAPP2_0_OR_GREATER;$(DefineConstants)</DefineConstants>
 
     <Product>NHibernate</Product>
     <Company>NHibernate.info</Company>
