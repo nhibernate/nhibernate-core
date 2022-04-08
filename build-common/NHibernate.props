@@ -13,11 +13,14 @@
     <FileVersion Condition="'$(VersionSuffix)' != '' AND '$(BuildNumber)' != ''">$(VersionPrefix).$(BuildNumber)</FileVersion>
     <FileVersion Condition="'$(FileVersion)' == ''">$(VersionPrefix).0</FileVersion>
 
-    <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net461;netcoreapp2.0</NhAppTargetFrameworks>
+    <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net461;netcoreapp2.0;netcoreapp2.1</NhAppTargetFrameworks>
     <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
     <NhNetFx>false</NhNetFx>
     <NhNetFx Condition="$(TargetFramework.StartsWith('net4'))">true</NhNetFx>
     <DefineConstants Condition="$(NhNetFx) AND $(NhVbNet) == ''" >NETFX;$(DefineConstants)</DefineConstants>
+    <NhNetCoreApp>false</NhNetCoreApp>
+    <NhNetCoreApp Condition="$(TargetFramework.StartsWith('netcoreapp'))">true</NhNetCoreApp>
+    <DefineConstants Condition="$(NhNetCoreApp) AND $(NhVbNet) == ''" >NETCOREAPP2_0_OR_GREATER;$(DefineConstants)</DefineConstants>
 
     <Product>NHibernate</Product>
     <Company>NHibernate.info</Company>
