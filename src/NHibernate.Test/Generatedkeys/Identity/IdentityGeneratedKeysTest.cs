@@ -1,4 +1,6 @@
+using System.Linq;
 using NHibernate.Cfg;
+using NHibernate.Exceptions;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Generatedkeys.Identity
@@ -27,6 +29,19 @@ namespace NHibernate.Test.Generatedkeys.Identity
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
+		protected override void OnTearDown()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.CreateQuery("delete from MyChild").ExecuteUpdate();
+				s.CreateQuery("delete from MySibling").ExecuteUpdate();
+				s.CreateQuery("delete from System.Object").ExecuteUpdate();
+				t.Commit();
+				s.Close();
+			}
+		}
+
 		[Test]
 		public void IdentityColumnGeneratedIds()
 		{
@@ -43,7 +58,7 @@ namespace NHibernate.Test.Generatedkeys.Identity
 			}
 		}
 
-		[Test, Ignore("Not supported yet.")]
+		[Test]
 		public void PersistOutsideTransaction()
 		{
 			var myEntity1 = new MyEntity("test-save");
@@ -83,7 +98,7 @@ namespace NHibernate.Test.Generatedkeys.Identity
 			}
 		}
 
-		[Test, Ignore("Not supported yet.")]
+		[Test]
 		public void PersistOutsideTransactionCascadedToNonInverseCollection()
 		{
 			long initialInsertCount = Sfi.Statistics.EntityInsertCount;
@@ -115,7 +130,7 @@ namespace NHibernate.Test.Generatedkeys.Identity
 			}
 		}
 
-		[Test, Ignore("Not supported yet.")]
+		[Test]
 		public void PersistOutsideTransactionCascadedToInverseCollection()
 		{
 			long initialInsertCount = Sfi.Statistics.EntityInsertCount;
@@ -149,7 +164,7 @@ namespace NHibernate.Test.Generatedkeys.Identity
 			}
 		}
 
-		[Test, Ignore("Not supported yet.")]
+		[Test]
 		public void PersistOutsideTransactionCascadedToManyToOne()
 		{
 			long initialInsertCount = Sfi.Statistics.EntityInsertCount;
@@ -181,7 +196,7 @@ namespace NHibernate.Test.Generatedkeys.Identity
 			}
 		}
 
-		[Test, Ignore("Not supported yet.")]
+		[Test]
 		public void PersistOutsideTransactionCascadedFromManyToOne()
 		{
 			long initialInsertCount = Sfi.Statistics.EntityInsertCount;
@@ -209,6 +224,36 @@ namespace NHibernate.Test.Generatedkeys.Identity
 			{
 				s.Delete("from MySibling");
 				s.Delete("from MyEntity");
+				t.Commit();
+				s.Close();
+			}
+		}
+
+		[Test]
+		public void QueryOnPersistedEntity([Values(FlushMode.Auto, FlushMode.Commit)] FlushMode flushMode)
+		{
+			var myEntity = new MyEntity("test-persist");
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.FlushMode = flushMode;
+
+				var initialInsertCount = Sfi.Statistics.EntityInsertCount;
+				s.Persist(myEntity);
+				Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(initialInsertCount),
+					"persist on identity column not delayed");
+				Assert.That(myEntity.Id, Is.Zero);
+
+				var query = s.Query<MyChild>().Where(c => c.InverseParent == myEntity);
+				switch (flushMode)
+				{
+					case FlushMode.Auto:
+						Assert.That(query.ToList, Throws.Nothing);
+						break;
+					case FlushMode.Commit:
+						Assert.That(query.ToList, Throws.Exception.TypeOf(typeof(HibernateException)).And.Not.TypeOf(typeof(GenericADOException)));
+						break;
+				}
 				t.Commit();
 				s.Close();
 			}
