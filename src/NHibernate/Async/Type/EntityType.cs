@@ -18,6 +18,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
 using System.Collections.Generic;
+using NHibernate.Action;
 
 namespace NHibernate.Type
 {
@@ -78,6 +79,18 @@ namespace NHibernate.Type
 
 				return propertyValue;
 			}
+		}
+
+		protected internal async Task<object> GetReferenceValueAsync(object value, ISessionImplementor session, bool forbidDelayed, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var referenceValue = await (GetReferenceValueAsync(value, session, cancellationToken)).ConfigureAwait(false);
+			if (forbidDelayed && referenceValue is DelayedPostInsertIdentifier)
+				throw new UnresolvableObjectException(
+					$"Cannot resolve the identifier from a {nameof(DelayedPostInsertIdentifier)}. Consider flushing the session first.",
+					referenceValue, returnedClass);
+
+			return referenceValue;
 		}
 
 		public override async Task<object> ReplaceAsync(object original, object target, ISessionImplementor session, object owner, IDictionary copyCache, CancellationToken cancellationToken)

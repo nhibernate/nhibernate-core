@@ -43,7 +43,7 @@ namespace NHibernate.Type
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			await (GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session, cancellationToken)).ConfigureAwait(false), index, session, cancellationToken)).ConfigureAwait(false);
+				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session, true, cancellationToken)).ConfigureAwait(false), index, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public override Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)

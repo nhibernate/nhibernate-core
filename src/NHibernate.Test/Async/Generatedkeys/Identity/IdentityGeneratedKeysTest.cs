@@ -262,7 +262,7 @@ namespace NHibernate.Test.Generatedkeys.Identity
 						Assert.That(query.ToList, Throws.Nothing);
 						break;
 					case FlushMode.Commit:
-						Assert.That(query.ToList, Throws.Exception.TypeOf(typeof(HibernateException)).And.Not.TypeOf(typeof(GenericADOException)));
+						Assert.That(query.ToList, Throws.Exception.TypeOf(typeof(UnresolvableObjectException)));
 						break;
 				}
 				await (t.CommitAsync());
