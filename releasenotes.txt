@@ -1,4 +1,80 @@
-﻿Build 5.3.8
+﻿Build 5.3.11
+=============================
+
+Release notes - NHibernate - Version 5.3.11
+
+12 issues were resolved in this release.
+
+** Bug
+
+   * #3005 LINQ: Casting from object to TimeSpan throws
+   * #2988 Query issues when using not-found='ignore' in entity mapping
+   * #2965 Fix possible issue with logging for Linq Readonly tests
+   * #2963 Time is incompatible with bigint for TimeAsTimeSpanType
+   * #2937 NRE in linq processing of custom components
+   * #2928 Session.Refresh when entity is IFieldInterceptorAccessor throws a MappingException
+   * #2904 SQL query result not retrieved from second level cache
+   * #2876 Schema validation not working with NpgSql v5
+   * #2862 NHibernate AsyncReaderWriterLock stalls under load
+   * #2727 The session.Load(obj, id) overload can't handle proxies
+
+** Task
+
+   * #3019 Release 5.3.11
+   * #2984 Bump AsyncGenerator to 0.18.3 for 5.3 branch with fix for .net 6
+
+Build 5.3.10
+=============================
+
+Release notes - NHibernate - Version 5.3.10
+
+11 issues were resolved in this release.
+
+** Bug
+
+   * #2891 Fix nullable entity comparison with null and implicit/cross joins
+   * #2885 Do not serialize unnecessary members in SessionFactory
+   * #2882 Fix ArgumentNullException when provider is unable to open a connection
+   * #2871 If DbTransaction.Dispose throws an exception, the AdoTransaction is left in an inconsistent state
+   * #2860 Null reference when calling Trim() on interpolated string containing null property
+   * #2858 Casting to object and back to interface in Subquery causes incorrect SQL
+   * #2856 Distinct on Composite User Type property fails
+   * #2855 Error log from ReflectHelper.TypeFromAssembly() on Linq query
+   * #2611 One-to-zero-or-one relation not returning data when checking for null
+   * #1962 Failing Linq query on element index
+
+** Task
+
+   * #2915 Release 5.3.10
+
+Build 5.3.9
+=============================
+
+Release notes - NHibernate - Version 5.3.9
+
+11 issues were resolved in this release.
+
+** Bug
+
+   * #2835 Fix ExecuteWorkInIsolation ignores MultiTenancy configuration
+   * #2811 Remove session finalizer
+   * #2805 Model not mapped Exception
+   * #2802 ArgumentException on session Flush
+   * #2792 Arithmetic operations adding casts to SQLite that cause incorrect results
+   * #2791 Custom Equality Fails
+   * #2772 LINQ query returns NULL instead of expected result
+
+** Test
+
+   * #2841 Fix possible test failure for SqlServer 2019
+   * #2814 Fix intermittent Firebird test errors
+   * #2812 Replace Travis CI with GitHub Actions
+
+** Task
+
+   * #2837 Release 5.3.9
+
+Build 5.3.8
 =============================
 
 Release notes - NHibernate - Version 5.3.8

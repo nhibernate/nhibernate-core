@@ -18,7 +18,7 @@ namespace NHibernate.Linq.Functions
 				ReflectHelper.FastGetMethod(Math.Truncate, default(double)),
 				ReflectHelper.FastGetMethod(decimal.Truncate, default(decimal)),
 
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER
 				ReflectHelper.FastGetMethod(MathF.Truncate, default(float)),
 #endif
 			};

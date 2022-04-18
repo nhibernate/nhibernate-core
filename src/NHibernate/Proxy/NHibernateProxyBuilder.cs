@@ -76,7 +76,7 @@ namespace NHibernate.Proxy
 				interfaces.Add(baseType);
 			}
 
-#if NETFX || NETCOREAPP2_0
+#if NETFX || NETCOREAPP2_0_OR_GREATER
 			var assemblyNamesToIgnoreAccessCheck =
 				new[] {baseType}
 					.Concat(interfaces).Where(i => !i.IsVisible)

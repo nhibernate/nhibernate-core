@@ -99,7 +99,7 @@ namespace NHibernate.Exceptions
 				foreach (var namedParameter in namedParameters)
 				{
 					object value = namedParameter.Value.Value ?? "null";
-					sb.Append("  ").Append("Name:").Append(namedParameter.Key).Append(" - Value:").Append(value);
+					sb.Append("  ").Append("Name:").Append(namedParameter.Key).Append(" - Value:").Append(value).Append(" [Type: ").Append(namedParameter.Value.Type).Append("]");
 				}
 			}
 			sb.AppendLine();

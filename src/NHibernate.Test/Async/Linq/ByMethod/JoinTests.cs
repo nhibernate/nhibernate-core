@@ -306,5 +306,14 @@ namespace NHibernate.Test.Linq.ByMethod
 			              join o2 in db.Mammals on o.BodyWeight equals o2.BodyWeight
 			              select new { o, o2 }).Take(1).ToListAsync());
 		}
+
+		[Test(Description = "GH-2805")]
+		public async Task CanJoinOnInterfaceAsync()
+		{
+			var result = await (db.IUsers.Join(db.IUsers,
+									u => u.Id,
+									iu => iu.Id,
+									(u, iu) => iu.Name).Take(1).ToListAsync());
+		}
 	}
 }

@@ -60,8 +60,12 @@
       name: BestGuessEntityName
       containingTypeName: ISessionImplementor
     - conversion: Ignore
-      name: Contains
+      name: CloseSessionFromSystemTransaction
       containingTypeName: ISessionImplementor
+# TODO 6.0: Remove ignore rule for IStatelessSession.Close
+    - conversion: Ignore
+      name: Close
+      containingTypeName: IStatelessSession
     - conversion: Ignore
       name: GetUnsavedVersionValue
       containingTypeName: UnsavedValueFactory
@@ -183,7 +187,7 @@
     scanForMissingAsyncMembers:
     - all: true
 - filePath: NHibernate.Test/NHibernate.Test.csproj
-  targetFramework: netcoreapp2.0
+  targetFramework: net6.0
   concurrentRun: true
   applyChanges: true
   suppressDiagnosticFailures:
@@ -222,10 +226,21 @@
     - conversion: Ignore
       anyBaseTypeRule: IsTestCase
       executionPhase: PostProviders
+    - conversion: Ignore
+      name: SyncOnlyCacheFixture
     ignoreDocuments:
     - filePathEndsWith: Linq/MathTests.cs
     - filePathEndsWith: Linq/ExpressionSessionLeakTest.cs
     - filePathEndsWith: Linq/NorthwindDbCreator.cs
+    ignoreSearchForAsyncCounterparts:
+    - name: Wait
+      containingTypeName: Task
+    - name: Prepare
+      containingTypeName: DbCommand
+    - name: Close
+      containingTypeName: DbConnection
+    - name: Close
+      containingTypeName: DbDataReader    
     cancellationTokens:
       enabled: true
     scanMethodBody: true

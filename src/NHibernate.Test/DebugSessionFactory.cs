@@ -316,6 +316,16 @@ namespace NHibernate.Test
 			return ActualFactory.GetCollectionPersister(role);
 		}
 
+		public ISet<IEntityPersister> GetEntityPersisters(ISet<string> spaces)
+		{
+			return ActualFactory.GetEntityPersisters(spaces);
+		}
+
+		public ISet<ICollectionPersister> GetCollectionPersisters(ISet<string> spaces)
+		{
+			return ActualFactory.GetCollectionPersisters(spaces);
+		}
+
 		IType[] ISessionFactoryImplementor.GetReturnTypes(string queryString)
 		{
 			return ActualFactory.GetReturnTypes(queryString);

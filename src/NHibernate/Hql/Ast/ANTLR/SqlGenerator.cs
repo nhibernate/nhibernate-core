@@ -229,8 +229,15 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			else
 			{
-				// these are just two unrelated table references
-				Out(", ");
+				if (right.JoinSequence?.IsThetaStyle == false && right.JoinSequence.JoinCount != 0)
+				{
+					Out(" ");
+				}
+				else
+				{
+					// these are just two unrelated table references
+					Out(", ");
+				}
 			}
 		}
 

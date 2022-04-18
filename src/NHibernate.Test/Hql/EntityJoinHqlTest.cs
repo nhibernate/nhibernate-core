@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
@@ -13,7 +14,7 @@ namespace NHibernate.Test.Hql
 	[TestFixture]
 	public class EntityJoinHqlTest : TestCaseMappingByCode
 	{
-		private const string _customEntityName = "CustomEntityName";
+		private const string _customEntityName = "CustomEntityName.Test";
 		private EntityWithCompositeId _entityWithCompositeId;
 		private EntityWithNoAssociation _noAssociation;
 		private EntityCustomEntityName _entityWithCustomEntityName;
@@ -29,6 +30,46 @@ namespace NHibernate.Test.Hql
 					.CreateQuery("select ex " +
 						"from EntityWithNoAssociation root " +
 						"left join EntityComplex ex with root.Complex1Id = ex.Id")
+						.SetMaxResults(1)
+					.UniqueResult<EntityComplex>();
+
+				Assert.That(entityComplex, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(entityComplex), Is.True);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public void CanJoinNotAssociatedEntityFullName()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex = 
+				session
+					.CreateQuery("select ex " +
+						"from EntityWithNoAssociation root " +
+						$"left join {typeof(EntityComplex).FullName} ex with root.Complex1Id = ex.Id")
+						.SetMaxResults(1)
+					.UniqueResult<EntityComplex>();
+
+				Assert.That(entityComplex, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(entityComplex), Is.True);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public void CanJoinNotAssociatedInterfaceFullName()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex = 
+				session
+					.CreateQuery("select ex " +
+						"from EntityWithNoAssociation root " +
+						$"left join {typeof(IEntityComplex).FullName} ex with root.Complex1Id = ex.Id")
 						.SetMaxResults(1)
 					.UniqueResult<EntityComplex>();
 
@@ -273,6 +314,46 @@ namespace NHibernate.Test.Hql
 						.UniqueResult<NullableOwner>();
 
 				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test(Description = "GH-2772")]
+		public void NullableEntityProjection()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var nullableOwner1 = new NullableOwner {Name = "1", ManyToOne = session.Load<OneToOneEntity>(Guid.NewGuid())};
+				var nullableOwner2 = new NullableOwner {Name = "2"};
+				session.Save(nullableOwner1);
+				session.Save(nullableOwner2);
+
+				var fullList = session.Query<NullableOwner>().Select(x => new {x.Name, ManyToOneId = (Guid?) x.ManyToOne.Id}).ToList();
+				var withValidManyToOneList = session.Query<NullableOwner>().Where(x => x.ManyToOne != null).Select(x => new {x.Name, ManyToOneId = (Guid?) x.ManyToOne.Id}).ToList();
+				var withValidManyToOneList2 = session.CreateQuery("from NullableOwner ex where not ex.ManyToOne is null").List<NullableOwner>();
+				var withNullManyToOneList = session.Query<NullableOwner>().Where(x => x.ManyToOne == null).ToList();
+				var withNullManyToOneJoinedList =
+					(from x in session.Query<NullableOwner>()
+					from x2 in session.Query<NullableOwner>()
+					where x == x2 && x.ManyToOne == null && x.OneToOne.Name == null
+					select x2).ToList();
+
+				var validManyToOne = new OneToOneEntity{Name = "valid"};
+				session.Save(validManyToOne);
+				nullableOwner2.ManyToOne = validManyToOne;
+				session.Flush();
+
+				//GH-2988
+				var withNullOrValidList = session.Query<NullableOwner>().Where(x => x.ManyToOne.Id == validManyToOne.Id || x.ManyToOne == null).ToList();
+				var withNullOrValidList2 = session.Query<NullableOwner>().Where(x =>  x.ManyToOne == null || x.ManyToOne.Id == validManyToOne.Id).ToList();
+
+				Assert.That(fullList.Count, Is.EqualTo(2));
+				Assert.That(withValidManyToOneList.Count, Is.EqualTo(0));
+				Assert.That(withValidManyToOneList2.Count, Is.EqualTo(0));
+				Assert.That(withNullManyToOneList.Count, Is.EqualTo(2));
+				Assert.That(withNullManyToOneJoinedList.Count, Is.EqualTo(2));
+				Assert.That(withNullOrValidList.Count, Is.EqualTo(2));
+				Assert.That(withNullOrValidList2.Count, Is.EqualTo(2));
 			}
 		}
 
