@@ -59,11 +59,14 @@ namespace NHibernate.Test.Generatedkeys.Identity
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				MyEntity myEntity = new MyEntity("test");
-				long id = (long) await (s.SaveAsync(myEntity));
-				Assert.IsNotNull(id, "identity column did not force immediate insert");
-				Assert.AreEqual(id, myEntity.Id);
-				await (s.DeleteAsync(myEntity));
+				var entity1 = new MyEntity("test");
+				var id1 = (long) await (s.SaveAsync(entity1));
+				var entity2 = new MyEntity("test2");
+				var id2 = (long) await (s.SaveAsync(entity2));
+				// As 0 may be a valid identity value, we check for returned ids being not the same when saving two entities.
+				Assert.That(id1, Is.Not.EqualTo(id2), "identity column did not force immediate insert");
+				Assert.That(id1, Is.EqualTo(entity1.Id));
+				Assert.That(id2, Is.EqualTo(entity2.Id));
 				await (t.CommitAsync());
 				s.Close();
 			}
@@ -77,12 +80,16 @@ namespace NHibernate.Test.Generatedkeys.Identity
 			using (var s = OpenSession())
 			{
 				// first test save() which should force an immediate insert...
-				long id = (long) await (s.SaveAsync(myEntity1));
-				Assert.IsNotNull(id, "identity column did not force immediate insert");
-				Assert.AreEqual(id, myEntity1.Id);
+				var initialInsertCount = Sfi.Statistics.EntityInsertCount;
+				var id = (long) await (s.SaveAsync(myEntity1));
+				Assert.That(
+					Sfi.Statistics.EntityInsertCount,
+					Is.GreaterThan(initialInsertCount),
+					"identity column did not force immediate insert");
+				Assert.That(id, Is.EqualTo(myEntity1.Id));
 
 				// next test persist() which should cause a delayed insert...
-				long initialInsertCount = Sfi.Statistics.EntityInsertCount;
+				initialInsertCount = Sfi.Statistics.EntityInsertCount;
 				await (s.PersistAsync(myEntity2));
 				Assert.AreEqual(
 					initialInsertCount,
