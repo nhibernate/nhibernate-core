@@ -86,9 +86,11 @@ namespace NHibernate.Type
 			cancellationToken.ThrowIfCancellationRequested();
 			var referenceValue = await (GetReferenceValueAsync(value, session, cancellationToken)).ConfigureAwait(false);
 			if (forbidDelayed && referenceValue is DelayedPostInsertIdentifier)
+			{
 				throw new UnresolvableObjectException(
 					$"Cannot resolve the identifier from a {nameof(DelayedPostInsertIdentifier)}. Consider flushing the session first.",
 					referenceValue, returnedClass);
+			}
 
 			return referenceValue;
 		}

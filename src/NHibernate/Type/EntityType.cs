@@ -190,9 +190,11 @@ namespace NHibernate.Type
 		{
 			var referenceValue = GetReferenceValue(value, session);
 			if (forbidDelayed && referenceValue is DelayedPostInsertIdentifier)
+			{
 				throw new UnresolvableObjectException(
 					$"Cannot resolve the identifier from a {nameof(DelayedPostInsertIdentifier)}. Consider flushing the session first.",
 					referenceValue, returnedClass);
+			}
 
 			return referenceValue;
 		}
