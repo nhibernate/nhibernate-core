@@ -175,7 +175,7 @@ namespace NHibernate.Engine
 			{
 				Join join = joins[i];
 				string on = join.AssociationType.GetOnCondition(join.Alias, factory, enabledFilters);
-				SqlString condition = new SqlString();
+				SqlString condition;
 				if (last != null &&
 						IsManyToManyRoot(last) &&
 						((IQueryableCollection)last).ElementType == join.AssociationType)
@@ -195,10 +195,17 @@ namespace NHibernate.Engine
 				{
 					// NH Different behavior : NH1179 and NH1293
 					// Apply filters for entity joins and Many-To-One association
-					var enabledForManyToOne = FilterHelper.GetEnabledForManyToOne(enabledFilters);
-					condition = new SqlString(string.IsNullOrEmpty(on) && (ForceFilter || enabledForManyToOne.Count > 0)
-					            	? join.Joinable.FilterFragment(join.Alias, enabledForManyToOne)
-					            	: on);
+					if (string.IsNullOrEmpty(on))
+					{
+						var enabledFiltersForJoin = ForceFilter ? enabledFilters : FilterHelper.GetEnabledForManyToOne(enabledFilters);
+						condition = new SqlString(enabledFiltersForJoin.Count > 0
+										? join.Joinable.FilterFragment(join.Alias, enabledFiltersForJoin)
+										: on);
+					}
+					else
+					{
+						condition = new SqlString(on);
+					}
 				}
 
 				if (withClauseFragment != null)
