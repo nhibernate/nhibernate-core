@@ -854,7 +854,7 @@ namespace NHibernate.Loader
 					// NH Different behavior : NH1179 and NH1293
 					// Apply filters for entity joins and Many-To-One associations
 					var enabledFiltersForJoin = oj.ForceFilter ? enabledFilters : enabledFiltersForManyToOne;
-					if (enabledFiltersForJoin.Count > 0)
+					if (oj.ForceFilter || enabledFiltersForJoin.Count > 0)
 					{
 						string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForJoin);
 						bool joinClauseDoesNotContainsFilterAlready =

@@ -198,7 +198,7 @@ namespace NHibernate.Engine
 					if (string.IsNullOrEmpty(on))
 					{
 						var enabledFiltersForJoin = ForceFilter ? enabledFilters : FilterHelper.GetEnabledForManyToOne(enabledFilters);
-						condition = new SqlString(enabledFiltersForJoin.Count > 0
+						condition = new SqlString(ForceFilter || enabledFiltersForJoin.Count > 0
 										? join.Joinable.FilterFragment(join.Alias, enabledFiltersForJoin)
 										: on);
 					}
