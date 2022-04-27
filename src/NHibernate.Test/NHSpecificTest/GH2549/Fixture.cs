@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH2549
 {
-	// Also test GH3046, when useManyToOne is <c>true</c>.
+	// Test GH3046 too, when useManyToOne is <c>true</c>.
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{

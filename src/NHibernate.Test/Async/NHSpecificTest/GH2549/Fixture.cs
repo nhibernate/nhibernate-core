@@ -15,7 +15,7 @@ using NHibernate.Linq;
 namespace NHibernate.Test.NHSpecificTest.GH2549
 {
 	using System.Threading.Tasks;
-	// Also test GH3046, when useManyToOne is <c>true</c>.
+	// Test GH3046 too, when useManyToOne is <c>true</c>.
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
