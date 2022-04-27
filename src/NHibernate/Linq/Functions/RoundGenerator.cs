@@ -21,7 +21,7 @@ namespace NHibernate.Linq.Functions
 				ReflectHelper.FastGetMethod(decimal.Round, default(decimal)),
 				ReflectHelper.FastGetMethod(decimal.Round, default(decimal), default(int)),
 
-#if NETCOREAPP2_0_OR_GREATER
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 				ReflectHelper.FastGetMethod(MathF.Round, default(float)),
 				ReflectHelper.FastGetMethod(MathF.Round, default(float), default(int)),
 #endif
