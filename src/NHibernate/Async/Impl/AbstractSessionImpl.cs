@@ -220,7 +220,7 @@ namespace NHibernate.Impl
 
 		public abstract Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
 
-
+#if NETSTANDARD2_1_OR_GREATER
 		/// <summary>
 		/// Begin a NHibernate transaction
 		/// </summary>
@@ -259,5 +259,6 @@ namespace NHibernate.Impl
 				return await ConnectionManager.BeginTransactionAsync(isolationLevel);
 			}
 		}
+#endif
 	}
 }

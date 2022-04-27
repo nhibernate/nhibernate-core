@@ -114,6 +114,7 @@ namespace NHibernate.AdoNet
 			return result;
 		}
 
+#if NETSTANDARD2_1_OR_GREATER
 		public async Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel)
 		{
 			EnsureTransactionIsCreated();
@@ -127,5 +128,6 @@ namespace NHibernate.AdoNet
 			await _transaction.BeginAsync().ConfigureAwait(false);
 			return _transaction;
 		}
+#endif
 	}
 }

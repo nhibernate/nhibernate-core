@@ -645,7 +645,7 @@ namespace NHibernate
 		/// <returns> the entity name </returns>
 		Task<string> GetEntityNameAsync(object obj, CancellationToken cancellationToken = default(CancellationToken));
 
-
+#if NETSTANDARD2_1_OR_GREATER
 		/// <summary>
 		/// Begin a unit of work and return the associated <c>ITransaction</c> object.
 		/// </summary>
@@ -664,5 +664,6 @@ namespace NHibernate
 		/// <param name="isolationLevel">Isolation level for the new transaction</param>
 		/// <returns>A transaction instance having the specified isolation level</returns>
 		Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel);
+#endif
 	}
 }

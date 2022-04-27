@@ -9,13 +9,14 @@ namespace NHibernate.Driver
 	/// </summary>
 	partial class DriverBase
 	{
+#if NETSTANDARD2_1_OR_GREATER
 		/// <summary>
 		/// Begin an ADO <see cref="DbTransaction" />.
 		/// </summary>
 		/// <param name="isolationLevel">The isolation level requested for the transaction.</param>
 		/// <param name="connection">The connection on which to start the transaction.</param>
 		/// <returns>The started <see cref="DbTransaction" />.</returns>
-		public virtual async Task<DbTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, DbConnection connection)
+		public virtual async ValueTask<DbTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, DbConnection connection)
 		{
 			await connection.OpenAsync();
 
@@ -25,5 +26,6 @@ namespace NHibernate.Driver
 			}
 			return await connection.BeginTransactionAsync(isolationLevel);
 		}
+#endif
 	}
 }

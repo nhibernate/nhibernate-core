@@ -272,6 +272,7 @@ namespace NHibernate.Transaction
 			}
 		}
 
+#if NETSTANDARD2_1_OR_GREATER
 		public Task BeginAsync()
 		{
 			return BeginAsync(IsolationLevel.Unspecified);
@@ -330,5 +331,6 @@ namespace NHibernate.Transaction
 					dependentSession.AfterTransactionBegin(this);
 			}
 		}
+#endif
 	}
 }
