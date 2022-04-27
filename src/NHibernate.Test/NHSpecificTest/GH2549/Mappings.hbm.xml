@@ -10,6 +10,7 @@
       <property name="Deleted" type="Boolean" not-null="true" />
 
       <filter name="DeletedCustomer" condition="Deleted = :deleted" />
+      <filter name="DeletedCustomerNoManyToOne" condition="Deleted = :deleted" />
     </class>
 
     <class name="Person">
@@ -20,6 +21,10 @@
     </class>
 
     <filter-def name="DeletedCustomer">
+        <filter-param name="deleted" type="Boolean"/>
+    </filter-def>
+
+    <filter-def name="DeletedCustomerNoManyToOne" use-many-to-one="false">
         <filter-param name="deleted" type="Boolean"/>
     </filter-def>
 

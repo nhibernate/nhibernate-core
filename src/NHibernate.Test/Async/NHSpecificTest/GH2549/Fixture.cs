@@ -15,6 +15,7 @@ using NHibernate.Linq;
 namespace NHibernate.Test.NHSpecificTest.GH2549
 {
 	using System.Threading.Tasks;
+	// Also test GH3046, when useManyToOne is <c>true</c>.
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -41,8 +42,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2549
 			}
 		}
 
-		[Test]
-		public async Task EntityJoinFilterLinqAsync()
+		[Theory]
+		public async Task EntityJoinFilterLinqAsync(bool useManyToOne)
 		{
 			using (var s = OpenSession())
 			{
@@ -50,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2549
 							join c in s.Query<Customer>() on p.Name equals c.Name
 							select p).ToListAsync());
 
-				s.EnableFilter("DeletedCustomer").SetParameter("deleted", false);
+				s.EnableFilter(useManyToOne ? "DeletedCustomer" : "DeletedCustomerNoManyToOne").SetParameter("deleted", false);
 
 				var filteredList = await ((from p in s.Query<Person>()
 									join c in s.Query<Customer>() on p.Name equals c.Name
@@ -61,8 +62,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2549
 			}
 		}
 
-		[Test]
-		public async Task EntityJoinFilterQueryOverAsync()
+		[Theory]
+		public async Task EntityJoinFilterQueryOverAsync(bool useManyToOne)
 		{
 			using (var s = OpenSession())
 			{
@@ -70,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2549
 				Person p = null;
 				var list = await (s.QueryOver(() => p).JoinEntityAlias(() => c, () => c.Name == p.Name).ListAsync());
 
-				s.EnableFilter("DeletedCustomer").SetParameter("deleted", false);
+				s.EnableFilter(useManyToOne ? "DeletedCustomer" : "DeletedCustomerNoManyToOne").SetParameter("deleted", false);
 
 				var filteredList = await (s.QueryOver(() => p).JoinEntityAlias(() => c, () => c.Name == p.Name).ListAsync());
 
