@@ -271,5 +271,64 @@ namespace NHibernate.Transaction
 				}
 			}
 		}
+
+		public Task BeginAsync()
+		{
+			return BeginAsync(IsolationLevel.Unspecified);
+		}
+
+		/// <summary>
+		/// Begins the <see cref="DbTransaction"/> on the <see cref="DbConnection"/>
+		/// used by the <see cref="ISession"/>.
+		/// </summary>
+		/// <exception cref="TransactionException">
+		/// Thrown if there is any problems encountered while trying to create
+		/// the <see cref="DbTransaction"/>.
+		/// </exception>
+		public async Task BeginAsync(IsolationLevel isolationLevel)
+		{
+			using (session.BeginProcess())
+			{
+				if (begun)
+				{
+					return;
+				}
+
+				if (commitFailed)
+				{
+					throw new TransactionException("Cannot restart transaction after failed commit");
+				}
+
+				if (isolationLevel == IsolationLevel.Unspecified)
+				{
+					isolationLevel = session.Factory.Settings.IsolationLevel;
+				}
+
+				log.Debug("Begin ({0})", isolationLevel);
+
+				try
+				{
+					trans = await session.Factory.ConnectionProvider.Driver.BeginTransactionAsync(isolationLevel, session.Connection);
+				}
+				catch (HibernateException)
+				{
+					// Don't wrap HibernateExceptions
+					throw;
+				}
+				catch (Exception e)
+				{
+					log.Error(e, "Begin transaction failed");
+					throw new TransactionException("Begin failed with SQL exception", e);
+				}
+
+				begun = true;
+				committed = false;
+				rolledBack = false;
+
+				session.AfterTransactionBegin(this);
+				foreach (var dependentSession in session.ConnectionManager.DependentSessions)
+					dependentSession.AfterTransactionBegin(this);
+			}
+		}
 	}
 }

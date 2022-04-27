@@ -113,5 +113,19 @@ namespace NHibernate.AdoNet
 			EnlistInTransaction(result);
 			return result;
 		}
+
+		public async Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel)
+		{
+			EnsureTransactionIsCreated();
+			await _transaction.BeginAsync(isolationLevel).ConfigureAwait(false);
+			return _transaction;
+		}
+
+		public async Task<ITransaction> BeginTransactionAsync()
+		{
+			EnsureTransactionIsCreated();
+			await _transaction.BeginAsync().ConfigureAwait(false);
+			return _transaction;
+		}
 	}
 }

@@ -19,6 +19,16 @@ namespace NHibernate
 	using System.Threading;
 	public partial interface ITransaction : IDisposable
 	{
+		/// <summary>
+		/// Begin the transaction with the default isolation level.
+		/// </summary>
+		Task BeginAsync();
+
+		/// <summary>
+		/// Begin the transaction with the specified isolation level.
+		/// </summary>
+		/// <param name="isolationLevel">Isolation level of the transaction</param>
+		Task BeginAsync(IsolationLevel isolationLevel);
 
 		/// <summary>
 		/// Flush the associated <c>ISession</c> and end the unit of work.

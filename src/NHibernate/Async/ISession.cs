@@ -644,5 +644,25 @@ namespace NHibernate
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns> the entity name </returns>
 		Task<string> GetEntityNameAsync(object obj, CancellationToken cancellationToken = default(CancellationToken));
+
+
+		/// <summary>
+		/// Begin a unit of work and return the associated <c>ITransaction</c> object.
+		/// </summary>
+		/// <remarks>
+		/// If a new underlying transaction is required, begin the transaction. Otherwise
+		/// continue the new work in the context of the existing underlying transaction.
+		/// The class of the returned <see cref="ITransaction" /> object is determined by
+		/// the property <c>transaction_factory</c>
+		/// </remarks>
+		/// <returns>A transaction instance</returns>
+		Task<ITransaction> BeginTransactionAsync();
+
+		/// <summary>
+		/// Begin a transaction with the specified <c>isolationLevel</c>
+		/// </summary>
+		/// <param name="isolationLevel">Isolation level for the new transaction</param>
+		/// <returns>A transaction instance having the specified isolation level</returns>
+		Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel);
 	}
 }

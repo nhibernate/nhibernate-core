@@ -219,5 +219,45 @@ namespace NHibernate.Impl
 		public abstract Task<IEnumerable<T>> EnumerableAsync<T>(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
 
 		public abstract Task<int> ExecuteUpdateAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
+
+
+		/// <summary>
+		/// Begin a NHibernate transaction
+		/// </summary>
+		/// <returns>A NHibernate transaction</returns>
+		public async Task<ITransaction> BeginTransactionAsync()
+		{
+			using (BeginProcess())
+			{
+				if (IsTransactionCoordinatorShared)
+				{
+					// Todo : should seriously consider not allowing a txn to begin from a child session
+					//      can always route the request to the root session...
+					Log.Warn("Transaction started on non-root session");
+				}
+
+				return await ConnectionManager.BeginTransactionAsync();
+			}
+		}
+
+		/// <summary>
+		/// Begin a NHibernate transaction with the specified isolation level
+		/// </summary>
+		/// <param name="isolationLevel">The isolation level</param>
+		/// <returns>A NHibernate transaction</returns>
+		public async Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel)
+		{
+			using (BeginProcess())
+			{
+				if (IsTransactionCoordinatorShared)
+				{
+					// Todo : should seriously consider not allowing a txn to begin from a child session
+					//      can always route the request to the root session...
+					Log.Warn("Transaction started on non-root session");
+				}
+
+				return await ConnectionManager.BeginTransactionAsync(isolationLevel);
+			}
+		}
 	}
 }
