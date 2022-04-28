@@ -3,10 +3,11 @@
 
 Release notes - NHibernate - Version 5.3.12
 
-3 issues were resolved in this release.
+5 issues were resolved in this release.
 
 ** Bug
 
+   * #3046 Regression for filters on entity joins with many-to-one disabled
    * #3029 InvalidOperationException on proxies with explicit implementation of a generic method
 
 ** Improvement
