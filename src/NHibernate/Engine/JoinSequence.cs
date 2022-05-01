@@ -248,9 +248,9 @@ namespace NHibernate.Engine
 			{
 				// NH Different behavior : NH1179 and NH1293
 				// Apply filters for entity joins and Many-To-One association
-				var enabledForManyToOne = FilterHelper.GetEnabledForManyToOne(enabledFilters);
-				if (ForceFilter || enabledForManyToOne.Count > 0)
-					withConditions.Add(join.Joinable.FilterFragment(join.Alias, enabledForManyToOne));
+				var enabledFiltersForJoin = ForceFilter ? enabledFilters : FilterHelper.GetEnabledForManyToOne(enabledFilters);
+				if (ForceFilter || enabledFiltersForJoin.Count > 0)
+					withConditions.Add(join.Joinable.FilterFragment(join.Alias, enabledFiltersForJoin));
 			}
 
 			if (withClauseFragment != null && !IsManyToManyRoot(join.Joinable))
