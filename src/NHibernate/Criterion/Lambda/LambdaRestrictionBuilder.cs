@@ -165,5 +165,13 @@ namespace NHibernate.Criterion.Lambda
 		{
 			return Process(Restrictions.Like(projection.AsProperty(), value, matchMode, escapeChar));
 		}
+		
+		/// <summary>
+		/// Apply an "equal" constraint to the named property
+		/// </summary>
+		public AbstractCriterion IsEqual(string value)
+		{
+			return Process(projection.Create<AbstractCriterion>(s => Restrictions.Eq(s, value), p => Restrictions.Eq(p, value)));
+		}
 	}
 }
