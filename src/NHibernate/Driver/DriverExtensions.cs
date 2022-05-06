@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
-	public static class DriverExtensions
+	public static partial class DriverExtensions
 	{
 		internal static void AdjustParameterForValue(this IDriver driver, DbParameter parameter, SqlType sqlType, object value)
 		{
