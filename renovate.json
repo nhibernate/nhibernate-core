@@ -1,5 +1,9 @@
 {
   "extends": [
     "config:base"
-  ]
+  ],
+  "packageRules": [{ 
+    "matchPackagePrefixes": ["Microsoft.Extensions", "Microsoft.AspNetCore", "Microsoft.EntityFrameworkCore", "mcr.microsoft.com/dotnet/"],
+    "groupName": "dotnet runtime"
+  }
 }
