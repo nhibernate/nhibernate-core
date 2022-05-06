@@ -5,5 +5,8 @@
   "packageRules": [{ 
     "matchPackagePrefixes": ["Microsoft.Extensions", "Microsoft.AspNetCore", "Microsoft.EntityFrameworkCore", "mcr.microsoft.com/dotnet/"],
     "groupName": "dotnet runtime"
+  }, { 
+    "matchPackagePrefixes": ["NUnit"],
+    "groupName": "NUnit"
   }]
 }
