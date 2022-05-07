@@ -17,6 +17,7 @@
         "Microsoft.AspNetCore.Mvc.Razor.ViewCompilation",
         "Microsoft.AspNetCore.StaticFiles"
       ],
+      "groupName": "Microsoft.AspNetCore 2.1",
       "allowedVersions": "<2.2.0"
     }
   ]
