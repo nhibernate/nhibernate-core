@@ -26,14 +26,14 @@ namespace NHibernate.Type
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			await (GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSetAsync(st, await (GetReferenceValueAsync(value, session, cancellationToken)).ConfigureAwait(false), index, settable, session, cancellationToken)).ConfigureAwait(false);
+				.NullSafeSetAsync(st, await (GetReferenceValueAsync(value, session, true, cancellationToken)).ConfigureAwait(false), index, settable, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public override async Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			await (GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session, cancellationToken)).ConfigureAwait(false), index, session, cancellationToken)).ConfigureAwait(false);
+				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session, true, cancellationToken)).ConfigureAwait(false), index, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary>

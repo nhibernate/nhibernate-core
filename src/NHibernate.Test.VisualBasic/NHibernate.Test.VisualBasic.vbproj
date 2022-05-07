@@ -1,7 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <NhVbNet>true</NhVbNet>
-  </PropertyGroup>
   <Import Project="../../build-common/NHibernate.props" />
   <PropertyGroup>
     <Description>The Visual Basic Unit Tests for NHibernate.</Description>
@@ -11,18 +8,14 @@
     <OptionExplicit>On</OptionExplicit>
     <OptionStrict>On</OptionStrict>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-    <DefineConstants>NETCOREAPP2_0,$(DefineConstants)</DefineConstants>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(NhNetFx)">
-    <DefineConstants>NETFX,$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="**\*.hbm.xml" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+  <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
     <Compile Remove="**\Issues\NH3302\**" />
   </ItemGroup>
   <ItemGroup>
@@ -32,12 +25,12 @@
     <None Include="..\NHibernate.Test\App.config" Link="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
     <PackageReference Include="NUnit" Version="3.13.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.1.0" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <PackageReference Include="NUnitLite" Version="3.13.2" />
   </ItemGroup>
   <ItemGroup>

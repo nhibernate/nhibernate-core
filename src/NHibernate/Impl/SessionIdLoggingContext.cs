@@ -1,5 +1,5 @@
 using System;
-#if !NETSTANDARD2_0 && !NETCOREAPP2_0 
+#if NETFX
 using System.Runtime.Remoting.Messaging;
 #else
 using System.Threading;
@@ -9,11 +9,11 @@ namespace NHibernate.Impl
 {
 	public class SessionIdLoggingContext : IDisposable
 	{
-#if NETSTANDARD2_0 || NETCOREAPP2_0
+#if NETFX
+		private const string LogicalCallContextVariableName = "__" + nameof(SessionIdLoggingContext) + "__";
+#else
 		private static readonly Lazy<AsyncLocal<Guid?>> _currentSessionId =
 			new Lazy<AsyncLocal<Guid?>>(() => new AsyncLocal<Guid?>(), true);
-#else
-		private const string LogicalCallContextVariableName = "__" + nameof(SessionIdLoggingContext) + "__";
 #endif
 		private readonly Guid? _oldSessionId;
 		private bool _hasChanged;
@@ -58,18 +58,18 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-#if NETSTANDARD2_0 || NETCOREAPP2_0
-				return _currentSessionId.IsValueCreated ? _currentSessionId.Value.Value : null;
-#else
+#if NETFX
 				return (Guid?) CallContext.LogicalGetData(LogicalCallContextVariableName);
+#else
+				return _currentSessionId.IsValueCreated ? _currentSessionId.Value.Value : null;
 #endif
 			}
 			set
 			{
-#if NETSTANDARD2_0 || NETCOREAPP2_0
-				_currentSessionId.Value.Value = value;
-#else
+#if NETFX
 				CallContext.LogicalSetData(LogicalCallContextVariableName, value);
+#else
+				_currentSessionId.Value.Value = value;
 #endif
 			}
 		}

@@ -113,7 +113,7 @@ Task Test -depends Build {
         'NHibernate.Test',
         'NHibernate.Test.VisualBasic'
     ) | ForEach-Object { 
-        $assembly = [IO.Path]::Combine("src", $_, "bin", "Release", "netcoreapp2.0", "$_.dll")
+        $assembly = [IO.Path]::Combine("src", $_, "bin", "Release", "net6.0", "$_.dll")
         Exec {
             dotnet $assembly --labels=before --nocolor "--result=$_-TestResult.xml"
         }
