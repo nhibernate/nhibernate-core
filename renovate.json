@@ -1,9 +1,23 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base"
   ],
-  "packageRules": [{ 
-    "matchPackagePrefixes": ["NUnit"],
-    "groupName": "NUnit"
-  }]
+  "packageRules": [
+    {
+      "matchPackagePrefixes": [
+        "NUnit"
+      ],
+      "groupName": "NUnit"
+    }, 
+    {
+      "matchPackageNames": [
+        "Microsoft.AspNetCore",
+        "Microsoft.AspNetCore.Mvc",
+        "Microsoft.AspNetCore.Mvc.Razor.ViewCompilation",
+        "Microsoft.AspNetCore.StaticFiles"
+      ],
+      "allowedVersions": "<2.2.0"
+    }
+  ]
 }
