@@ -25,7 +25,7 @@ namespace NHibernate.Loader.Collection
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] batch =
-				await (session.PersistenceContext.BatchFetchQueue.GetCollectionBatchAsync(collectionPersister, id, batchSizes[0], cancellationToken)).ConfigureAwait(false);
+				await (session.PersistenceContext.BatchFetchQueue.GetCollectionBatchAsync(CollectionPersister, id, batchSizes[0], cancellationToken)).ConfigureAwait(false);
 
 			for (int i = 0; i < batchSizes.Length; i++)
 			{
@@ -34,12 +34,12 @@ namespace NHibernate.Loader.Collection
 				{
 					object[] smallBatch = new object[smallBatchSize];
 					Array.Copy(batch, 0, smallBatch, 0, smallBatchSize);
-					await (loaders[i].LoadCollectionBatchAsync(session, smallBatch, collectionPersister.KeyType, cancellationToken)).ConfigureAwait(false);
+					await (loaders[i].LoadCollectionBatchAsync(session, smallBatch, CollectionPersister.KeyType, cancellationToken)).ConfigureAwait(false);
 					return; //EARLY EXIT!
 				}
 			}
 
-			await (loaders[batchSizes.Length - 1].LoadCollectionAsync(session, id, collectionPersister.KeyType, cancellationToken)).ConfigureAwait(false);
+			await (loaders[batchSizes.Length - 1].LoadCollectionAsync(session, id, CollectionPersister.KeyType, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }

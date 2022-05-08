@@ -353,7 +353,7 @@ namespace NHibernate.Cfg
 
 			return settings;
 		}
-    
+
 		private ICacheReadWriteLockFactory GetReadWriteLockFactory(string lockFactory)
 		{
 			switch (lockFactory)

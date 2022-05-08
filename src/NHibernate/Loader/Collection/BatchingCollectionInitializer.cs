@@ -15,7 +15,6 @@ namespace NHibernate.Loader.Collection
 	{
 		private readonly Loader[] loaders;
 		private readonly int[] batchSizes;
-		private readonly ICollectionPersister collectionPersister;
 
 		//Since 5.4
 		[Obsolete("Please use ctor with IQueryableCollection collectionPersister")]
@@ -27,13 +26,12 @@ namespace NHibernate.Loader.Collection
 		{
 			this.loaders = loaders;
 			this.batchSizes = batchSizes;
-			this.collectionPersister = collectionPersister;
 		}
 
 		public override void Initialize(object id, ISessionImplementor session)
 		{
 			object[] batch =
-				session.PersistenceContext.BatchFetchQueue.GetCollectionBatch(collectionPersister, id, batchSizes[0]);
+				session.PersistenceContext.BatchFetchQueue.GetCollectionBatch(CollectionPersister, id, batchSizes[0]);
 
 			for (int i = 0; i < batchSizes.Length; i++)
 			{
@@ -42,12 +40,12 @@ namespace NHibernate.Loader.Collection
 				{
 					object[] smallBatch = new object[smallBatchSize];
 					Array.Copy(batch, 0, smallBatch, 0, smallBatchSize);
-					loaders[i].LoadCollectionBatch(session, smallBatch, collectionPersister.KeyType);
+					loaders[i].LoadCollectionBatch(session, smallBatch, CollectionPersister.KeyType);
 					return; //EARLY EXIT!
 				}
 			}
 
-			loaders[batchSizes.Length - 1].LoadCollection(session, id, collectionPersister.KeyType);
+			loaders[batchSizes.Length - 1].LoadCollection(session, id, CollectionPersister.KeyType);
 		}
 
 		//Since 5.4

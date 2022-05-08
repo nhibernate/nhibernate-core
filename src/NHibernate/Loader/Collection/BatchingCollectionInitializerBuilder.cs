@@ -13,7 +13,7 @@ namespace NHibernate.Loader.Collection
 		/// Builds a batch-fetch capable ICollectionInitializer for basic and many-to-many collections (collections with
 		/// a dedicated collection table).
 		/// </summary>
-		/// <param name="persister"> THe collection persister </param>
+		/// <param name="persister"> The collection persister </param>
 		/// <param name="maxBatchSize"> The maximum number of keys to batch-fetch together </param>
 		/// <param name="factory"> The SessionFactory </param>
 		/// <param name="enabledFilters"></param>
@@ -35,7 +35,7 @@ namespace NHibernate.Loader.Collection
 		/// Builds a batch-fetch capable ICollectionInitializer for one-to-many collections (collections without
 		/// a dedicated collection table).
 		/// </summary>
-		/// <param name="persister"> THe collection persister </param>
+		/// <param name="persister"> The collection persister </param>
 		/// <param name="maxBatchSize"> The maximum number of keys to batch-fetch together </param>
 		/// <param name="factory"> The SessionFactory </param>
 		/// <param name="enabledFilters"></param>
