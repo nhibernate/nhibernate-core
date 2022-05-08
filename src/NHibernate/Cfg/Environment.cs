@@ -166,6 +166,7 @@ namespace NHibernate.Cfg
 		public const string CacheProvider = "cache.provider_class";
 		public const string UseQueryCache = "cache.use_query_cache";
 		public const string QueryCacheFactory = "cache.query_cache_factory";
+		public const string CacheReadWriteLockFactory = "cache.read_write_lock_factory";
 		public const string UseSecondLevelCache = "cache.use_second_level_cache";
 		public const string CacheRegionPrefix = "cache.region_prefix";
 		public const string UseMinimalPuts = "cache.use_minimal_puts";
@@ -175,6 +176,8 @@ namespace NHibernate.Cfg
 		/// <summary> Should named queries be checked during startup (the default is enabled). </summary>
 		/// <remarks>Mainly intended for test environments.</remarks>
 		public const string QueryStartupChecking = "query.startup_check";
+		/// <summary>Should using a never cached entity/collection in a cacheable query throw an exception? The default is true. /// </summary>
+		public const string QueryThrowNeverCached = "query.throw_never_cached";
 
 		/// <summary> Enable statistics collection</summary>
 		public const string GenerateStatistics = "generate_statistics";
@@ -351,6 +354,19 @@ namespace NHibernate.Cfg
 		/// See https://docs.oracle.com/database/121/TTSQL/types.htm#TTSQL126
 		/// </remarks>
 		public const string OracleUseBinaryFloatingPointTypes = "oracle.use_binary_floating_point_types";
+
+		/// <summary>
+		/// This setting specifies whether to suppress the InvalidCastException and return a rounded-off 28 precision value
+		/// if the Oracle NUMBER value has more than 28 precision.
+		/// <para>
+		/// <see langword="false"/> by default.
+		/// </para>
+		/// </summary>
+		/// <remarks>
+		/// See https://docs.oracle.com/en/database/oracle/oracle-data-access-components/19.3/odpnt/DataReaderSuppressGetDecimalInvalidCastException.html
+		/// This setting works only with ODP.NET 19.10 or newer.
+		/// </remarks>
+		public const string OracleSuppressDecimalInvalidCastException = "oracle.suppress_decimal_invalid_cast_exception";
 
 		/// <summary>
 		/// <para>

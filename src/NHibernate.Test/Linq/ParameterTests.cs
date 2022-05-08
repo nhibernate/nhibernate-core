@@ -593,7 +593,9 @@ namespace NHibernate.Test.Linq
 			var value = "test";
 			db.Orders.Where(o => string.Format("{0}", value) != o.ShippedTo).ToList();
 			db.Orders.Where(o => $"{value}_" != o.ShippedTo).ToList();
+#pragma warning disable CS0618
 			db.Orders.Where(o => string.Copy(value) != o.ShippedTo).ToList();
+#pragma warning restore CS0618
 
 			var guid = Guid.Parse("2D7E6EB3-BD08-4A40-A4E7-5150F7895821");
 			db.Orders.Where(o => o.ShippedTo.Contains($"VALUE {guid}")).ToList();
@@ -820,7 +822,9 @@ namespace NHibernate.Test.Linq
 		{
 			var value = new Product {Name = "test"};
 			AssertTotalParameters(
+#pragma warning disable CS0618
 				db.Products.Where(o => o.Name == string.Copy(value.Name) && o.Name != string.Copy(value.Name)),
+#pragma warning restore CS0618
 				2);
 		}
 

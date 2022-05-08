@@ -48,5 +48,17 @@ namespace NHibernate.Driver
 			}
 			return connection.BeginTransaction(isolationLevel);
 		}
+
+		// 6.0 TODO: merge into IDriver
+		/// <summary>
+		/// Unwraps the <see cref="DbCommand"/> in case it is wrapped, otherwise the same instance is returned.
+		/// </summary>
+		/// <param name="driver">The driver.</param>
+		/// <param name="command">The command to unwrap.</param>
+		/// <returns>The unwrapped command.</returns>
+		public static DbCommand UnwrapDbCommand(this IDriver driver, DbCommand command)
+		{
+			return driver is DriverBase driverBase ? driverBase.UnwrapDbCommand(command) : command;
+		}
 	}
 }

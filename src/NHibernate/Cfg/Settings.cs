@@ -105,6 +105,8 @@ namespace NHibernate.Cfg
 
 		public ICacheProvider CacheProvider { get; internal set; }
 
+		public ICacheReadWriteLockFactory CacheReadWriteLockFactory { get; internal set; }
+
 		public IQueryCacheFactory QueryCacheFactory { get; internal set; }
 
 		public IConnectionProvider ConnectionProvider { get; internal set; }
@@ -141,6 +143,11 @@ namespace NHibernate.Cfg
 		/// <see langword="false" /> to ignore failures.
 		/// </summary>
 		public bool ThrowOnSchemaUpdate { get; internal set; }
+
+		/// <summary>
+		/// Should using a never cached entity/collection in a cacheable query throw an exception.
+		/// </summary>
+		public bool QueryThrowNeverCached { get; internal set; }
 
 		#region NH specific
 

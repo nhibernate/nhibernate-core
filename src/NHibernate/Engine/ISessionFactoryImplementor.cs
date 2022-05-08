@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Connection;
@@ -9,6 +10,7 @@ using NHibernate.Dialect.Function;
 using NHibernate.Engine.Query;
 using NHibernate.Exceptions;
 using NHibernate.Id;
+using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -181,5 +183,62 @@ namespace NHibernate.Engine
 		/// <returns>the entity name where available or null</returns>
 		string TryGetGuessEntityName(System.Type implementor);
 		#endregion
+	}
+
+	// 6.0 TODO: move below methods directly in ISessionFactoryImplementor then remove SessionFactoryImplementorExtension
+	public static class SessionFactoryImplementorExtension
+	{
+		/// <summary>
+		/// Get entity persisters by the given query spaces.
+		/// </summary>
+		/// <param name="factory">The session factory.</param>
+		/// <param name="spaces">The query spaces.</param>
+		/// <returns>Unique list of entity persisters, if <paramref name="spaces"/> is <c>null</c> or empty then all persisters are returned.</returns>
+		public static ISet<IEntityPersister> GetEntityPersisters(this ISessionFactoryImplementor factory, ISet<string> spaces)
+		{
+			if (factory is SessionFactoryImpl sfi)
+			{
+				return sfi.GetEntityPersisters(spaces);
+			}
+
+			ISet<IEntityPersister> persisters = new HashSet<IEntityPersister>();
+			foreach (var entityName in factory.GetAllClassMetadata().Keys)
+			{
+				var persister = factory.GetEntityPersister(entityName);
+				// NativeSql does not have query spaces so include the persister, if spaces is null or empty.
+				if (spaces == null || spaces.Count == 0 || persister.QuerySpaces.Any(x => spaces.Contains(x)))
+				{
+					persisters.Add(persister);
+				}
+			}
+
+			return persisters;
+		}
+
+		/// <summary>
+		/// Get collection persisters by the given query spaces.
+		/// </summary>
+		/// <param name="factory">The session factory.</param>
+		/// <param name="spaces">The query spaces.</param>
+		/// <returns>Unique list of collection persisters, if <paramref name="spaces"/> is <c>null</c> or empty then all persisters are returned.</returns>
+		public static ISet<ICollectionPersister> GetCollectionPersisters(this ISessionFactoryImplementor factory, ISet<string> spaces)
+		{
+			if (factory is SessionFactoryImpl sfi)
+			{
+				return sfi.GetCollectionPersisters(spaces);
+			}
+
+			ISet<ICollectionPersister> collectionPersisters = new HashSet<ICollectionPersister>();
+			foreach (var roleName in factory.GetAllCollectionMetadata().Keys)
+			{
+				var collectionPersister = factory.GetCollectionPersister(roleName);
+				if (spaces == null || spaces.Count == 0 || collectionPersister.CollectionSpaces.Any(x => spaces.Contains(x)))
+				{
+					collectionPersisters.Add(collectionPersister);
+				}
+			}
+
+			return collectionPersisters;
+		}
 	}
 }

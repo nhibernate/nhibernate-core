@@ -18,6 +18,7 @@ using NHibernate.Exceptions;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Param;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -1834,9 +1835,32 @@ namespace NHibernate.Loader
 			return ListIgnoreQueryCache(session, queryParameters);
 		}
 
-		internal bool IsCacheable(QueryParameters queryParameters)
+		internal virtual bool IsCacheable(QueryParameters queryParameters)
 		{
-			return _factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
+			return IsCacheable(queryParameters, true, Enumerable.Empty<IPersister>());
+		}
+
+		internal bool IsCacheable(QueryParameters queryParameters, bool supportsQueryCache, IEnumerable<IPersister> persisters)
+		{
+			bool isCacheable = Factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
+			if (isCacheable && !supportsQueryCache)
+			{
+				if (Factory.Settings.QueryThrowNeverCached)
+				{
+					throw new QueryException(
+						"Never cached entities/collections cannot be used in a cacheable query: " +
+						string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(o => o.Name)));
+				}
+				else if (Log.IsWarnEnabled())
+				{
+					Log.Warn(
+						"Never cached entities/collections ({0}) are included in a cacheable query: the query '{1}' will not be cached.",
+						string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(p => p.Name)),
+						ToString());
+				}
+			}
+
+			return isCacheable && supportsQueryCache;
 		}
 
 		private IList ListIgnoreQueryCache(ISessionImplementor session, QueryParameters queryParameters)

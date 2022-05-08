@@ -49,6 +49,8 @@ namespace NHibernate.Cfg.MappingSchema
 					return "nonstrict-read-write";
 				case HbmCacheUsage.Transactional:
 					return "transactional";
+				case HbmCacheUsage.Never:
+					return "never";
 				default:
 					throw new ArgumentOutOfRangeException("cacheUsage");
 			}

@@ -33,7 +33,7 @@ namespace NHibernate.Util
 			return ((MemberExpression)expression.Body).Member;
 		}
 
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER
 		/// <summary>
 		/// Try to retrieve <see cref="GetMemberBinder"/> from a reduced <see cref="ExpressionType.Dynamic"/> expression.
 		/// </summary>
@@ -160,10 +160,17 @@ namespace NHibernate.Util
 			int index;
 			if (componentType != null)
 			{
+				var propertyNullability = componentType.PropertyNullability;
+				if (propertyNullability == null)
+				{
+					nullable = false;
+					return false;
+				}
+
 				index = Array.IndexOf(
 					componentType.PropertyNames,
 					memberPath.Substring(memberPath.LastIndexOf('.') + 1));
-				nullable = componentType.PropertyNullability[index];
+				nullable = propertyNullability[index];
 				return true;
 			}
 
@@ -714,7 +721,7 @@ namespace NHibernate.Util
 				return base.Visit(node.Expression);
 			}
 
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER
 			protected override Expression VisitInvocation(InvocationExpression node)
 			{
 				if (TryGetDynamicMemberBinder(node, out var binder))
