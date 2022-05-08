@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet.Util;
+using NHibernate.Driver;
 using NHibernate.Exceptions;
 
 namespace NHibernate.AdoNet
@@ -34,7 +35,7 @@ namespace NHibernate.AdoNet
 		public override void AddToBatch(IExpectation expectation)
 		{
 			// HanaCommands are cloneable
-			if (!(CurrentCommand is ICloneable cloneableCurrentCommand))
+			if (!(Driver.UnwrapDbCommand(CurrentCommand) is ICloneable cloneableCurrentCommand))
 				throw new InvalidOperationException("Current command is not an ICloneable");
 
 			var batchUpdate = CurrentCommand;

@@ -87,7 +87,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 							null);
 
 			// Add to the query spaces.
-			_fromClause.Walker.AddQuerySpaces(entityPersister.QuerySpaces);
+			_fromClause.Walker.AddQuerySpaces(entityPersister);
 
 			return elem;
 		}
@@ -266,7 +266,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_fromClause.AddCollectionJoinFromElementByPath(_path, destination);
 			//		origin.addDestination(destination);
 			// Add the query spaces.
-			_fromClause.Walker.AddQuerySpaces(entityPersister.QuerySpaces);
+			_fromClause.Walker.AddQuerySpaces(entityPersister);
 
 			CollectionType type = queryableCollection.CollectionType;
 			string role = type.Role;
@@ -364,7 +364,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 
 				elem = CreateManyToMany(role, associatedEntityName, roleAlias, entityPersister, (EntityType)_queryableCollection.ElementType, joinType, implicitJoin);
-				_fromClause.Walker.AddQuerySpaces(_queryableCollection.CollectionSpaces);
+				_fromClause.Walker.AddQuerySpaces(_queryableCollection);
 			}
 			elem.CollectionTableAlias = roleAlias;
 			_fromClause.AddCollectionJoinFromElementByPath(_path, elem);
@@ -396,7 +396,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_origin.Text = "";						// The destination node will have all the FROM text.
 			_origin.CollectionJoin = true;			// The parent node is a collection join too (voodoo - see JoinProcessor)
 			_fromClause.AddCollectionJoinFromElementByPath(_path, destination);
-			_fromClause.Walker.AddQuerySpaces(_queryableCollection.CollectionSpaces);
+			_fromClause.Walker.AddQuerySpaces(_queryableCollection);
 			return destination;
 		}
 

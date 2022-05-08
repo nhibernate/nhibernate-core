@@ -47,6 +47,16 @@ namespace NHibernate.Driver
 		public abstract DbCommand CreateCommand();
 
 		/// <summary>
+		/// Unwraps the <see cref="DbCommand"/> in case it is wrapped, otherwise the same instance is returned.
+		/// </summary>
+		/// <param name="command">The command to unwrap.</param>
+		/// <returns>The unwrapped command.</returns>
+		public virtual DbCommand UnwrapDbCommand(DbCommand command)
+		{
+			return command;
+		}
+
+		/// <summary>
 		/// Begin an ADO <see cref="DbTransaction" />.
 		/// </summary>
 		/// <param name="isolationLevel">The isolation level requested for the transaction.</param>

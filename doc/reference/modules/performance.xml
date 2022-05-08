@@ -733,8 +733,8 @@ using(var iter = session
                     <area id="cache1" coords="2 70"/>
                     <area id="cache2" coords="3 70"/>
                 </areaspec>
-                <programlisting><![CDATA[<cache 
-    usage="read-write|nonstrict-read-write|read-only"
+                <programlisting><![CDATA[<cache
+    usage="read-write|nonstrict-read-write|read-only|never"
     region="RegionName"
 />]]></programlisting>
                 <calloutlist>
@@ -742,8 +742,9 @@ using(var iter = session
                         <para>
                             <literal>usage</literal> specifies the caching strategy:
                             <literal>read-write</literal>,
-                            <literal>nonstrict-read-write</literal> or
-                            <literal>read-only</literal>
+                            <literal>nonstrict-read-write</literal>,
+                            <literal>read-only</literal> or
+                            <literal>never</literal>
                         </para>
                     </callout>
                     <callout arearefs="cache2">
@@ -820,6 +821,26 @@ using(var iter = session
                     If the cache is used in a JTA environment, you must specify
                     <literal>hibernate.transaction.manager_lookup_class</literal>.
                 -->
+            </para>
+
+        </sect2>
+
+        <sect2 id="performance-cache-never">
+            <title>Strategy: never</title>
+
+            <para>
+                By default, without a cache configuration, entities are not cacheable. But they may still be referenced
+                in cacheable queries, which results will then be cached according to the values these non cacheable
+                entities have. So, their data may be indirectly cached through cacheable queries.
+            </para>
+
+            <para>
+                By using the cache strategy <literal>never</literal>, such indirect caching of these entities data will
+                be forbidden by NHibernate. Setting as cacheable a query referencing entities with strategy
+                <literal>never</literal> will be treated as an error by default. Alternatively, the
+                <literal>query.throw_never_cached</literal> <link linkend="configuration-optional">setting</link> can be
+                set to <literal>false</literal>: instead of raising an error, it will disable the query cache on such
+                queries, and log a warning.
             </para>
 
         </sect2>

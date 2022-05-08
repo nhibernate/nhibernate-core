@@ -52,11 +52,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1583
 		}
 
 		[Test]
-		[KnownBug("GH-1583")]
 		public void QueryForPropertyOfParentInComponent()
 		{
 			using (var session = OpenSession())
-			using (session.BeginTransaction())
 			{
 				var result = (from p in session.Query<Parent>().SelectMany(x => x.Children)
 							  select p.ParentLink.ParentId).ToList();
