@@ -1,4 +1,28 @@
-﻿Build 5.3.11
+﻿Build 5.3.12
+=============================
+
+Release notes - NHibernate - Version 5.3.12
+
+5 issues were resolved in this release.
+
+** Bug
+
+   * #3046 Regression for filters on entity joins with many-to-one disabled
+   * #3029 InvalidOperationException on proxies with explicit implementation of a generic method
+
+** Improvement
+
+   * #3043 Improve exception for query on delayed id
+
+** Test
+
+   * #3035 Support tests in VS 2022
+
+** Task
+
+   * #3044 Release 5.3.12
+
+Build 5.3.11
 =============================
 
 Release notes - NHibernate - Version 5.3.11
