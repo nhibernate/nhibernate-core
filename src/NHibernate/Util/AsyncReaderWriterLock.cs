@@ -7,7 +7,7 @@ namespace NHibernate.Util
 	// Idea from:
 	// https://github.com/kpreisser/AsyncReaderWriterLockSlim
 	// https://devblogs.microsoft.com/pfxteam/building-async-coordination-primitives-part-7-asyncreaderwriterlock/
-	internal class AsyncReaderWriterLock : IDisposable
+	internal class AsyncReaderWriterLock : IDisposable, Cache.ICacheLock
 	{
 		private readonly SemaphoreSlim _writeLockSemaphore = new SemaphoreSlim(1, 1);
 		private readonly SemaphoreSlim _readLockSemaphore = new SemaphoreSlim(0, 1);
@@ -38,6 +38,11 @@ namespace NHibernate.Util
 
 		internal bool AcquiredWriteLock => _writeLockSemaphore.CurrentCount == 0;
 
+		IDisposable Cache.ICacheLock.WriteLock()
+		{
+			return WriteLock();
+		}
+
 		public Releaser WriteLock()
 		{
 			if (!CanEnterWriteLock(out var waitForReadLocks))
@@ -57,6 +62,11 @@ namespace NHibernate.Util
 			DisposeWaitingSemaphore();
 
 			return _writerReleaser;
+		}
+
+		async Task<IDisposable> Cache.ICacheLock.WriteLockAsync()
+		{
+			return await WriteLockAsync().ConfigureAwait(false);
 		}
 
 		public async Task<Releaser> WriteLockAsync()
@@ -80,6 +90,11 @@ namespace NHibernate.Util
 			return _writerReleaser;
 		}
 
+		IDisposable Cache.ICacheLock.ReadLock()
+		{
+			return ReadLock();
+		}
+
 		public Releaser ReadLock()
 		{
 			if (CanEnterReadLock(out var waitingReadLockSemaphore))
@@ -90,6 +105,11 @@ namespace NHibernate.Util
 			waitingReadLockSemaphore.Wait();
 
 			return _readerReleaser;
+		}
+
+		async Task<IDisposable> Cache.ICacheLock.ReadLockAsync()
+		{
+			return await ReadLockAsync().ConfigureAwait(false);
 		}
 
 		public Task<Releaser> ReadLockAsync()

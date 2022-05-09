@@ -13,6 +13,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
+using NHibernate.Persister;
 
 namespace NHibernate.Loader.Criteria
 {
@@ -56,9 +57,11 @@ namespace NHibernate.Loader.Criteria
 		private readonly ICollection<IParameterSpecification> collectedParameterSpecifications;
 		private readonly ICollection<NamedParameter> namedParameters;
 		private readonly HashSet<string> subQuerySpaces = new HashSet<string>();
+		private HashSet<IPersister> subPersisters;
 
 		private Dictionary<string, EntityJoinInfo> entityJoins = new Dictionary<string, EntityJoinInfo>();
 		private readonly IQueryable rootPersister;
+		private readonly bool supportsQueryCache;
 
 		//Key for the dictionary sub-criteria
 		private class AliasKey : IEquatable<AliasKey>
@@ -127,6 +130,8 @@ namespace NHibernate.Loader.Criteria
 			CreateCriteriaCollectionPersisters();
 			CreateCriteriaSQLAliasMap();
 			CreateSubQuerySpaces();
+
+			supportsQueryCache = GetPersisters().All(o => o.SupportsQueryCache);
 		}
 
 		[CLSCompliant(false)] // TODO: Why does this cause a problem in 1.1
@@ -153,6 +158,37 @@ namespace NHibernate.Loader.Criteria
 
 			return result;
 		}
+
+		internal IEnumerable<IPersister> GetPersisters()
+		{
+			foreach (var info in criteriaInfoMap.Values)
+			{
+				if (info is IExtendedCriteriaInfoProvider extendedCriteriaInfo && extendedCriteriaInfo.Persister != null)
+				{
+					yield return extendedCriteriaInfo.Persister;
+				}
+			}
+
+			foreach (var collectionPersister in criteriaCollectionPersisters)
+			{
+				if (collectionPersister is IPersister cacheablePersister)
+				{
+					yield return cacheablePersister;
+				}
+			}
+
+			if (subPersisters == null)
+			{
+				yield break;
+			}
+
+			foreach (var subPersister in subPersisters)
+			{
+				yield return subPersister;
+			}
+		}
+
+		internal bool SupportsQueryCache => supportsQueryCache;
 
 		public int SQLAliasCount
 		{
@@ -1053,6 +1089,7 @@ namespace NHibernate.Loader.Criteria
 				//The RootSqlAlias is not relevant, since we're only retreiving the query spaces
 				var translator = new CriteriaQueryTranslator(sessionFactory, criteriaImpl, criteriaImpl.EntityOrClassName, RootSqlAlias);
 				subQuerySpaces.UnionWith(translator.GetQuerySpaces());
+				(subPersisters = subPersisters ?? new HashSet<IPersister>()).UnionWith(translator.GetPersisters());
 			}
 		}
 

@@ -28,6 +28,7 @@ using NHibernate.Exceptions;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Param;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;

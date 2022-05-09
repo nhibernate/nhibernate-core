@@ -8,6 +8,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Id;
 using NHibernate.Param;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -51,11 +52,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly Dictionary<String, ISelectExpression> selectExpressionsByResultVariable = new Dictionary<string, ISelectExpression>();
 
 		private readonly HashSet<string> _querySpaces = new HashSet<string>();
+		private bool _supportsQueryCache = true;
+		private HashSet<IPersister> _persisters;
 
 		private readonly LiteralProcessor _literalProcessor;
 
 		private readonly IDictionary<string, string> _tokenReplacements;
 		private readonly IDictionary<string, NamedParameter> _namedParameters;
+		private readonly IDictionary<IParameterSpecification, IType> _guessedParameterTypes = new Dictionary<IParameterSpecification, IType>();
 
 		private JoinType _impliedJoinType;
 
@@ -98,6 +102,21 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_parseErrorHandler.ReportError(e);
 		}
 
+		internal IStatement Transform()
+		{
+			var tree = (IStatement) statement().Tree;
+			// Use the guessed type in case we weren't been able to detect the type
+			foreach (var parameter in _parameters)
+			{
+				if (parameter.ExpectedType == null && _guessedParameterTypes.TryGetValue(parameter, out var guessedType))
+				{
+					parameter.ExpectedType = guessedType;
+				}
+			}
+
+			return tree;
+		}
+
 		/*
 		protected override void Mismatch(IIntStream input, int ttype, BitSet follow)
 		{
@@ -134,6 +153,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			get { return _querySpaces; }
 		}
+
+		public bool SupportsQueryCache => _supportsQueryCache;
+
+		internal ISet<IPersister> Persisters => _persisters ?? CollectionHelper.EmptySet<IPersister>();
 
 		public IDictionary<string, object> NamedParameters
 		{
@@ -457,7 +480,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			intoClause.SetFirstChild(propertySpec);
 			intoClause.Initialize(persister);
 
-			AddQuerySpaces(persister.QuerySpaces);
+			AddQuerySpaces(persister);
 
 			return intoClause;
 		}
@@ -1076,7 +1099,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 				// Add the parameter type information so that we are able to calculate functions return types
 				// when the parameter is used as an argument.
 				if (namedParameter.IsGuessedType)
+				{
+					_guessedParameterTypes[paramSpec] = namedParameter.Type;
 					parameter.GuessedType = namedParameter.Type;
+				}
 				else
 					parameter.ExpectedType = namedParameter.Type;
 			}
@@ -1216,6 +1242,30 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		internal bool IsNullComparison => _isNullComparison;
 
+		public void AddQuerySpaces(IEntityPersister persister)
+		{
+			AddPersister(persister);
+			AddQuerySpaces(persister.QuerySpaces);
+		}
+
+		public void AddQuerySpaces(ICollectionPersister collectionPersister)
+		{
+			AddPersister(collectionPersister);
+			AddQuerySpaces(collectionPersister.CollectionSpaces);
+		}
+
+		private void AddPersister(object persister)
+		{
+			if (!(persister is IPersister cacheablePersister))
+			{
+				return;
+			}
+
+			_supportsQueryCache &= cacheablePersister.SupportsQueryCache;
+			(_persisters = _persisters ?? new HashSet<IPersister>()).Add(cacheablePersister);
+		}
+
+		//TODO NH 6.0 make this method private
 		public void AddQuerySpaces(string[] spaces)
 		{
 			for (int i = 0; i < spaces.Length; i++)
