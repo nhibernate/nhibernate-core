@@ -143,6 +143,15 @@ namespace NHibernate
 		/// <summary>Close the stateless session and release the ADO.NET connection.</summary>
 		void Close();
 
+		/// <summary>
+		/// Cancel execution of the current query.
+		/// </summary>
+		/// <remarks>
+		/// May be called from one thread to stop execution of a query in another thread.
+		/// Use with care!
+		/// </remarks>
+		void CancelQuery();
+
 		/// <summary>Insert an entity.</summary>
 		/// <param name="entity">A new transient instance</param>
 		/// <returns>The identifier of the instance</returns>
