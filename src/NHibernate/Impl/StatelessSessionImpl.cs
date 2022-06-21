@@ -459,14 +459,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public void CancelQuery()
-		{
-			using (BeginProcess())
-			{
-				Batcher.CancelLastQuery();
-			}
-		}
-
 		/// <summary> Insert a entity.</summary>
 		/// <param name="entity">A new transient instance </param>
 		/// <returns> the identifier of the instance </returns>
