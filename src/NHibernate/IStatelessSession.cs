@@ -84,9 +84,10 @@ namespace NHibernate
 		/// </remarks>
 		public static void CancelQuery(this IStatelessSession session)
 		{
-			using (session.GetSessionImplementation().BeginProcess())
+			var implementation = session.GetSessionImplementation();
+			using (implementation.BeginProcess())
 			{
-				session.GetSessionImplementation().Batcher.CancelLastQuery();
+				implementation.Batcher.CancelLastQuery();
 			}
 		}
 	}
