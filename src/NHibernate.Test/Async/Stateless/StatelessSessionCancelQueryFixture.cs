@@ -93,8 +93,7 @@ namespace NHibernate.Test.Stateless
 					s2.CancelQuery();
 					Assert.That(() => queryTask,
 						Throws.InnerException.TypeOf(typeof(OperationCanceledException))
-							.Or.InnerException.Message.Contains("cancelled")
-							.Or.InnerException.Message.Contains("canceled"));
+							.Or.InnerException.Message.Contains("cancel"));
 				}
 			}
 		}
