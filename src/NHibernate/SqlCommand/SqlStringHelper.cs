@@ -88,9 +88,17 @@ namespace NHibernate.SqlCommand
 		/// <returns><paramref name="sql" /> if it was not aliased, otherwise an un-aliased <c>SqlString</c> representing the column.</returns>
 		public static SqlString RemoveAsAliasesFromSql(SqlString sql)
 		{
-			int index = sql.LastIndexOfCaseInsensitive(" as ");
+			int index = sql.IndexOfCaseInsensitive(" as ");
 			if (index < 0) return sql;
-			return sql.Substring(0, index);
+			var sb = new SqlStringBuilder();
+			int start = 0;
+			while (index > 0)
+			{
+				sb.Add(sql.Substring(start, index-start));
+				start = sql.IndexOfCaseInsensitive(",", index);
+				index = start < 0 ? start : sql.IndexOfCaseInsensitive(" as ", start);
+			}
+			return sb.ToSqlString();
 		}
 
 		public static bool IsNotEmpty(SqlString str)

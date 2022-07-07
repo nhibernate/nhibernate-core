@@ -408,6 +408,7 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		/// <param name="text">Text to look for in the <see cref="SqlString" />. Must be in lower
 		/// case.</param>
+		/// <param name="startIndex">The zero-based index of the search starting position.</param>
 		/// <remarks>
 		/// The text must be located entirely in a string part of the <see cref="SqlString" />.
 		/// Searching for <c>"a ? b"</c> in an <see cref="SqlString" /> consisting of
@@ -415,9 +416,9 @@ namespace NHibernate.SqlCommand
 		/// </remarks>
 		/// <returns>The index of the first occurrence of <paramref name="text" />, or -1
 		/// if not found.</returns>
-		public int IndexOfCaseInsensitive(string text)
+		public int IndexOfCaseInsensitive(string text, int startIndex = 0)
 		{
-			return IndexOf(text, 0, _length, StringComparison.InvariantCultureIgnoreCase);
+			return IndexOf(text, startIndex, _length, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		internal int IndexOfOrdinal(string text)
