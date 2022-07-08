@@ -25,6 +25,9 @@ namespace NHibernate.Criterion
 		{
 			if (projection is IPropertyProjection propertyProjection)
 				return new SqlString(string.Join(", ", criteriaQuery.GetColumns(criteria, propertyProjection.PropertyName)));
+			// This is because if grouped by an entity, multiple columns are in an projection which all have as aliases, which are not allowed.
+			if (projection is EntityProjection)
+				return SqlStringHelper.RemoveAllAsAliasesFromSql(renderedProjection);
 
 			//This is kind of a hack. The hack is based on the fact that ToGroupSqlString always called after ToSqlString.
 			return SqlStringHelper.RemoveAsAliasesFromSql(renderedProjection);

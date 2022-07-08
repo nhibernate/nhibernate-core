@@ -77,16 +77,30 @@ namespace NHibernate.SqlCommand
 			{
 				result[i] = new SqlString(x[i], sep, y[i]);
 			}
+
 			return result;
 		}
 
 		/// <summary>
-		/// Removes the <c>as someColumnAlias</c> clause from a <c>SqlString</c> representing a column expression.
+		/// Removes the last <c>as someColumnAlias</c> clause from a <c>SqlString</c> representing a column expression.
 		/// Consider using <c>CriterionUtil.GetColumn...</c> methods instead.
 		/// </summary>
 		/// <param name="sql">The <c>SqlString</c> representing a column expression which might be aliased.</param>
 		/// <returns><paramref name="sql" /> if it was not aliased, otherwise an un-aliased <c>SqlString</c> representing the column.</returns>
 		public static SqlString RemoveAsAliasesFromSql(SqlString sql)
+		{
+			int index = sql.LastIndexOfCaseInsensitive(" as ");
+			if (index < 0) return sql;
+			return sql.Substring(0, index);
+		}
+
+		/// <summary>
+		/// Removes all the <c>as someColumnAlias</c> clause from a <c>SqlString</c> representing a column expression.
+		/// Consider using <c>CriterionUtil.GetColumn...</c> methods instead.
+		/// </summary>
+		/// <param name="sql">The <c>SqlString</c> representing a column expression which might be aliased.</param>
+		/// <returns><paramref name="sql" /> if it was not aliased, otherwise an un-aliased <c>SqlString</c> representing the column.</returns>
+		public static SqlString RemoveAllAsAliasesFromSql(SqlString sql)
 		{
 			int index = sql.IndexOfCaseInsensitive(" as ");
 			if (index < 0) return sql;
@@ -94,10 +108,11 @@ namespace NHibernate.SqlCommand
 			int start = 0;
 			while (index > 0)
 			{
-				sb.Add(sql.Substring(start, index-start));
+				sb.Add(sql.Substring(start, index - start));
 				start = sql.IndexOfCaseInsensitive(",", index);
 				index = start < 0 ? start : sql.IndexOfCaseInsensitive(" as ", start);
 			}
+
 			return sb.ToSqlString();
 		}
 
