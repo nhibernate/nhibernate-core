@@ -92,7 +92,6 @@ namespace NHibernate.Test.SubclassFilterTest
 			s.Close();
 		}
 		
-		
 		[Test(Description = "Tests the joined subclass collection filter of a single table with a collection mapping " +
 		                    "on the parent class.")]
 		public void FilterCollectionJoinedSubclass()
@@ -116,7 +115,6 @@ namespace NHibernate.Test.SubclassFilterTest
 				}
 		}
 		
-
 		private static void PrepareTestData(ISession session)
 		{
 			Car sharedCar1 = new Car { LicensePlate = "1234" };

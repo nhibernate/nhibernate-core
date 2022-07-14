@@ -520,7 +520,6 @@ namespace NHibernate.DomainModel
 
 		public IEntityTuplizer EntityTuplizer => null;
 
-
 		public FilterHelper FilterHelper => throw new NotSupportedException();
 		
 		public string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
