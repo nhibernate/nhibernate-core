@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Engine;
@@ -518,6 +519,14 @@ namespace NHibernate.DomainModel
 		}
 
 		public IEntityTuplizer EntityTuplizer => null;
+
+
+		public FilterHelper FilterHelper => throw new NotSupportedException();
+		
+		public string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
+		{
+			throw new NotSupportedException();
+		}
 
 		#endregion
 	}

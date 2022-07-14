@@ -7,7 +7,7 @@ namespace NHibernate.Persister.Entity
 	/// <summary>
 	/// Anything that can be loaded by outer join - namely persisters for classes or collections.
 	/// </summary>
-	public interface IJoinable
+	public interface IJoinable: IFilterable
 	{
 		// Should this interface extend PropertyMapping?
 
@@ -64,11 +64,6 @@ namespace NHibernate.Persister.Entity
 		/// <param name="includeSubclasses"></param>
 		/// <returns></returns>
 		SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
-
-		/// <summary>
-		/// Get the where clause filter, given a query alias and considering enabled session filters
-		/// </summary>
-		string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters);
 
 		string OneToManyFilterFragment(string alias);
 

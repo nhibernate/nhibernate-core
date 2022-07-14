@@ -199,7 +199,7 @@ namespace NHibernate.Persister.Entity
 
 		#region Dynamic filters attached to the class-level
 
-		private readonly FilterHelper filterHelper;
+		public FilterHelper FilterHelper { get; }
 
 		#endregion
 
@@ -516,7 +516,7 @@ namespace NHibernate.Persister.Entity
 			#endregion
 
 			// Handle any filters applied to the class level
-			filterHelper = new FilterHelper(persistentClass.FilterMap, factory.Dialect, factory.SQLFunctionRegistry);
+			FilterHelper = new FilterHelper(persistentClass.FilterMap, factory.Dialect, factory.SQLFunctionRegistry);
 
 			temporaryIdTableName = persistentClass.TemporaryIdTableName;
 			temporaryIdTableDDL = persistentClass.TemporaryIdTableDDL;
@@ -3666,11 +3666,11 @@ namespace NHibernate.Persister.Entity
 		public virtual string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
 			var filterFragment = FilterFragment(alias);
-			if (!filterHelper.IsAffectedBy(enabledFilters))
+			if (!FilterHelper.IsAffectedBy(enabledFilters))
 				return filterFragment;
 
 			var sessionFilterFragment = new StringBuilder();
-			filterHelper.Render(sessionFilterFragment, GenerateFilterConditionAlias(alias), GetColumnsToTableAliasMap(alias), enabledFilters);
+			FilterHelper.Render(sessionFilterFragment, GenerateFilterConditionAlias(alias), GetColumnsToTableAliasMap(alias), enabledFilters);
 			return sessionFilterFragment.Append(filterFragment).ToString();
 		}
 
