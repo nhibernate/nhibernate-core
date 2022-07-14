@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace NHibernate.Test.SubclassFilterTest
@@ -41,5 +40,7 @@ namespace NHibernate.Test.SubclassFilterTest
 			get { return minions; }
 			set { minions = value; }
 		}
+		
+		public virtual Car SharedCar { get; set; }
 	}
 }

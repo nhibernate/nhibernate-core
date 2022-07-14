@@ -1,8 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<hibernate-mapping
-	assembly='NHibernate.Test'
-	namespace='NHibernate.Test.SubclassFilterTest'
-	xmlns='urn:nhibernate-mapping-2.2'>
+<hibernate-mapping	assembly='NHibernate.Test'
+                    namespace='NHibernate.Test.SubclassFilterTest'
+                    xmlns='urn:nhibernate-mapping-2.2'>
 	<class name="Person" table="JPerson">
 
 		<id name="Id" column="person_id">
@@ -18,6 +17,7 @@
 			<property name="Title"/>
 			<property name="Department" column="dept"/>
 			<many-to-one name="Manager" column="mgr_id" class="Employee" cascade="none"/>
+      <many-to-one name="SharedCar"/>
 			<set name="Minions" inverse="true" lazy="true" cascade="all">
 				<key column="mgr_id"/>
 				<one-to-many class="Employee"/>
@@ -33,7 +33,26 @@
 
 	</class>
 
+  <class name="Car">
+
+    <id name="Id" column="car_id" >
+      <generator class="native"/>
+    </id>
+    
+    <property name="LicensePlate"/>
+
+    <bag cascade="all-delete-orphan" inverse="true" name="Drivers">
+      <key>
+        <column name="SharedCar" />
+      </key>
+      <one-to-many class="Employee" />
+      <filter name="region" condition="Region = :userRegion"/>
+    </bag>
+
+  </class>
+
 	<filter-def name="region">
 		<filter-param name="userRegion" type="string"/>
 	</filter-def>
+  
 </hibernate-mapping>

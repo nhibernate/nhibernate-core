@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using NUnit.Framework;
 using System.Linq;
@@ -13,10 +12,7 @@ namespace NHibernate.Test.SubclassFilterTest
 			get { return new string[] {"SubclassFilterTest.joined-subclass.hbm.xml"}; }
 		}
 
-		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
+		protected override string MappingsAssembly => "NHibernate.Test";
 
 		[Test]
 		public void FiltersWithSubclass()
@@ -91,48 +87,92 @@ namespace NHibernate.Test.SubclassFilterTest
 			s.Delete("from Customer c where c.ContactOwner is not null");
 			s.Delete("from Employee e where e.Manager is not null");
 			s.Delete("from Person");
+			s.Delete("from Car");
 			t.Commit();
 			s.Close();
 		}
-
-		private static void PrepareTestData(ISession s)
+		
+		
+		[Test(Description = "Tests the joined subclass collection filter of a single table with a collection mapping " +
+		                    "on the parent class.")]
+		public void FilterCollectionJoinedSubclass()
 		{
-			Employee john = new Employee("John Doe");
-			john.Company = ("JBoss");
-			john.Department = ("hr");
-			john.Title = ("hr guru");
-			john.Region = ("US");
+			using(ISession session = OpenSession())
+				using(ITransaction t = session.BeginTransaction())
+				{
+					PrepareTestData(session);
 
-			Employee polli = new Employee("Polli Wog");
-			polli.Company = ("JBoss");
-			polli.Department = ("hr");
-			polli.Title = ("hr novice");
-			polli.Region = ("US");
-			polli.Manager = (john);
+					// sets the filter
+					session.EnableFilter("region").SetParameter("userRegion", "US");
+
+					var result = session.Query<Car>()
+					                    .Where(c => c.Drivers.Any())
+					                    .ToList();
+					
+					Assert.AreEqual(1, result.Count);
+
+					t.Rollback();
+					session.Close();
+				}
+		}
+		
+
+		private static void PrepareTestData(ISession session)
+		{
+			Car sharedCar1 = new Car { LicensePlate = "1234" };
+			Car sharedCar2 = new Car { LicensePlate = "5678" };
+			
+			Employee john = new Employee("John Doe")
+			                {
+				                Company = "JBoss", 
+				                Department = "hr", 
+				                Title = "hr guru",
+				                Region = "US",
+				                SharedCar = sharedCar1
+			                };
+
+			Employee polli = new Employee("Polli Wog")
+			                 {
+				                 Company = "JBoss",
+				                 Department = "hr",
+				                 Title = "hr novice",
+				                 Region = "US",
+				                 Manager = john,
+				                 SharedCar = sharedCar1
+			                 };
 			john.Minions.Add(polli);
 
-			Employee suzie = new Employee("Suzie Q");
-			suzie.Company = ("JBoss");
-			suzie.Department = ("hr");
-			suzie.Title = ("hr novice");
-			suzie.Region = ("EMEA");
-			suzie.Manager = (john);
+			Employee suzie = new Employee("Suzie Q")
+			                 {
+				                 Company = "JBoss",
+				                 Department = "hr", 
+				                 Title = "hr novice", 
+				                 Region = "EMEA",
+				                 Manager = john,
+				                 SharedCar = sharedCar2
+			                 };
 			john.Minions.Add(suzie);
 
-			Customer cust = new Customer("John Q Public");
-			cust.Company = ("Acme");
-			cust.Region = ("US");
-			cust.ContactOwner = (john);
+			Customer cust = new Customer("John Q Public")
+			                {
+				                Company = "Acme", 
+				                Region = "US", 
+				                ContactOwner = john
+			                };
 
-			Person ups = new Person("UPS guy");
-			ups.Company = ("UPS");
-			ups.Region = ("US");
+			Person ups = new Person("UPS guy")
+			             {
+				             Company = "UPS", 
+				             Region = "US"
+			             };
 
-			s.Save(john);
-			s.Save(cust);
-			s.Save(ups);
+			session.Save(sharedCar1);
+			session.Save(sharedCar2);
+			session.Save(john);
+			session.Save(cust);
+			session.Save(ups);
 
-			s.Flush();
+			session.Flush();
 		}
 	}
 }

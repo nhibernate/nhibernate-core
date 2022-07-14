@@ -8,10 +8,10 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
 using NUnit.Framework;
 using System.Linq;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.SubclassFilterTest
 {
@@ -25,10 +25,7 @@ namespace NHibernate.Test.SubclassFilterTest
 			get { return new string[] {"SubclassFilterTest.joined-subclass.hbm.xml"}; }
 		}
 
-		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
+		protected override string MappingsAssembly => "NHibernate.Test";
 
 		[Test]
 		public async Task FiltersWithSubclassAsync()
@@ -103,48 +100,92 @@ namespace NHibernate.Test.SubclassFilterTest
 			await (s.DeleteAsync("from Customer c where c.ContactOwner is not null"));
 			await (s.DeleteAsync("from Employee e where e.Manager is not null"));
 			await (s.DeleteAsync("from Person"));
+			await (s.DeleteAsync("from Car"));
 			await (t.CommitAsync());
 			s.Close();
 		}
-
-		private static async Task PrepareTestDataAsync(ISession s, CancellationToken cancellationToken = default(CancellationToken))
+		
+		
+		[Test(Description = "Tests the joined subclass collection filter of a single table with a collection mapping " +
+		                    "on the parent class.")]
+		public async Task FilterCollectionJoinedSubclassAsync()
 		{
-			Employee john = new Employee("John Doe");
-			john.Company = ("JBoss");
-			john.Department = ("hr");
-			john.Title = ("hr guru");
-			john.Region = ("US");
+			using(ISession session = OpenSession())
+				using(ITransaction t = session.BeginTransaction())
+				{
+					await (PrepareTestDataAsync(session));
 
-			Employee polli = new Employee("Polli Wog");
-			polli.Company = ("JBoss");
-			polli.Department = ("hr");
-			polli.Title = ("hr novice");
-			polli.Region = ("US");
-			polli.Manager = (john);
+					// sets the filter
+					session.EnableFilter("region").SetParameter("userRegion", "US");
+
+					var result = await (session.Query<Car>()
+					                    .Where(c => c.Drivers.Any())
+					                    .ToListAsync());
+					
+					Assert.AreEqual(1, result.Count);
+
+					await (t.RollbackAsync());
+					session.Close();
+				}
+		}
+		
+
+		private static async Task PrepareTestDataAsync(ISession session, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			Car sharedCar1 = new Car { LicensePlate = "1234" };
+			Car sharedCar2 = new Car { LicensePlate = "5678" };
+			
+			Employee john = new Employee("John Doe")
+			                {
+				                Company = "JBoss", 
+				                Department = "hr", 
+				                Title = "hr guru",
+				                Region = "US",
+				                SharedCar = sharedCar1
+			                };
+
+			Employee polli = new Employee("Polli Wog")
+			                 {
+				                 Company = "JBoss",
+				                 Department = "hr",
+				                 Title = "hr novice",
+				                 Region = "US",
+				                 Manager = john,
+				                 SharedCar = sharedCar1
+			                 };
 			john.Minions.Add(polli);
 
-			Employee suzie = new Employee("Suzie Q");
-			suzie.Company = ("JBoss");
-			suzie.Department = ("hr");
-			suzie.Title = ("hr novice");
-			suzie.Region = ("EMEA");
-			suzie.Manager = (john);
+			Employee suzie = new Employee("Suzie Q")
+			                 {
+				                 Company = "JBoss",
+				                 Department = "hr", 
+				                 Title = "hr novice", 
+				                 Region = "EMEA",
+				                 Manager = john,
+				                 SharedCar = sharedCar2
+			                 };
 			john.Minions.Add(suzie);
 
-			Customer cust = new Customer("John Q Public");
-			cust.Company = ("Acme");
-			cust.Region = ("US");
-			cust.ContactOwner = (john);
+			Customer cust = new Customer("John Q Public")
+			                {
+				                Company = "Acme", 
+				                Region = "US", 
+				                ContactOwner = john
+			                };
 
-			Person ups = new Person("UPS guy");
-			ups.Company = ("UPS");
-			ups.Region = ("US");
+			Person ups = new Person("UPS guy")
+			             {
+				             Company = "UPS", 
+				             Region = "US"
+			             };
 
-			await (s.SaveAsync(john, cancellationToken));
-			await (s.SaveAsync(cust, cancellationToken));
-			await (s.SaveAsync(ups, cancellationToken));
+			await (session.SaveAsync(sharedCar1, cancellationToken));
+			await (session.SaveAsync(sharedCar2, cancellationToken));
+			await (session.SaveAsync(john, cancellationToken));
+			await (session.SaveAsync(cust, cancellationToken));
+			await (session.SaveAsync(ups, cancellationToken));
 
-			await (s.FlushAsync(cancellationToken));
+			await (session.FlushAsync(cancellationToken));
 		}
 	}
 }
