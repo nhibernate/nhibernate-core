@@ -22,8 +22,9 @@
     },
     {
       "matchPackagePrefixes": [
-        "Oracle"
-      ]
+        "Oracle.ManagedDataAccess"
+      ],
+      "groupName": "Oracle.ManagedDataAccess",
     }
   ]
 }
