@@ -24,7 +24,7 @@
       "matchPackagePrefixes": [
         "Oracle.ManagedDataAccess"
       ],
-      "groupName": "Oracle.ManagedDataAccess",
+      "groupName": "Oracle.ManagedDataAccess"
     }
   ]
 }
