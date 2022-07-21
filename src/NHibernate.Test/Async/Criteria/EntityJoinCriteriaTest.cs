@@ -205,6 +205,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public async Task MixOfJoinsForAssociatedAndNotAssociatedEntitiesAsync()
 		{
+#pragma warning disable CS8073 //The result of the expression is always 'false'
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
@@ -223,6 +224,7 @@ namespace NHibernate.Test.Criteria
 						.Take(1)
 						.SingleOrDefaultAsync<object>());
 			}
+#pragma warning restore CS8073 //The result of the expression is always 'false'
 		}
 
 		[Test]
@@ -248,6 +250,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public async Task NullLeftEntityJoinAsync()
 		{
+#pragma warning disable CS8073 //The result of the expression is always 'false'
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
@@ -263,11 +266,13 @@ namespace NHibernate.Test.Criteria
 				Assert.That(NHibernateUtil.IsInitialized(root), Is.True);
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
+#pragma warning restore CS8073 //The result of the expression is always 'false'
 		}	
 		
 		[Test]
 		public async Task NullLeftEntityJoinWithEntityProjectionAsync()
 		{
+#pragma warning disable CS8073 //The result of the expression is always 'false'
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
@@ -287,6 +292,7 @@ namespace NHibernate.Test.Criteria
 				Assert.That(ejLeftNull, Is.Null, "Entity join should be null");
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
+#pragma warning restore CS8073 //The result of the expression is always 'false'
 		}
 
 		[Test]

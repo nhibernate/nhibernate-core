@@ -58,13 +58,13 @@ namespace NHibernate.Type
 		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSet(st, GetReferenceValue(value, session), index, settable, session);
+				.NullSafeSet(st, GetReferenceValue(value, session, true), index, settable, session);
 		}
 
 		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSet(cmd, GetReferenceValue(value, session), index, session);
+				.NullSafeSet(cmd, GetReferenceValue(value, session, true), index, session);
 		}
 
 		public override bool IsOneToOne

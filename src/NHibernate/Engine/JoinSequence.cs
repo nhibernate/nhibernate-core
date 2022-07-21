@@ -44,7 +44,7 @@ namespace NHibernate.Engine
 		{
 			private readonly IAssociationType associationType;
 			private readonly IJoinable joinable;
-			private readonly JoinType joinType;
+			private JoinType joinType;
 			private readonly string alias;
 			private readonly string[] lhsColumns;
 			private readonly string[] rhsColumns;
@@ -80,6 +80,7 @@ namespace NHibernate.Engine
 			public JoinType JoinType
 			{
 				get { return joinType; }
+				internal set { joinType = value; }
 			}
 
 			public string[] LHSColumns
@@ -247,9 +248,9 @@ namespace NHibernate.Engine
 			{
 				// NH Different behavior : NH1179 and NH1293
 				// Apply filters for entity joins and Many-To-One association
-				var enabledForManyToOne = FilterHelper.GetEnabledForManyToOne(enabledFilters);
-				if (ForceFilter || enabledForManyToOne.Count > 0)
-					withConditions.Add(join.Joinable.FilterFragment(join.Alias, enabledForManyToOne));
+				var enabledFiltersForJoin = ForceFilter ? enabledFilters : FilterHelper.GetEnabledForManyToOne(enabledFilters);
+				if (ForceFilter || enabledFiltersForJoin.Count > 0)
+					withConditions.Add(join.Joinable.FilterFragment(join.Alias, enabledFiltersForJoin));
 			}
 
 			if (withClauseFragment != null && !IsManyToManyRoot(join.Joinable))
@@ -361,6 +362,12 @@ namespace NHibernate.Engine
 		{
 			joins.AddRange(fromElement.JoinSequence.joins);
 			return this;
+		}
+
+		internal void SetJoinType(JoinType joinType)
+		{
+			joins[0].JoinType = joinType;
+			SetUseThetaStyle(false);
 		}
 	}
 }

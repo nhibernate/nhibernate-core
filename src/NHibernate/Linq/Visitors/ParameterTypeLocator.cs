@@ -159,7 +159,9 @@ namespace NHibernate.Linq.Visitors
 				return candidateType;
 			}
 
-			isGuessedType = true;
+			// Leave hql logic to determine the type except when the value is a char. Hql logic detects a char as a string, which causes an exception
+			// when trying to set a string db parameter with a char value.
+			isGuessedType = !(constantExpression.Value is char);
 
 			// No related MemberExpressions was found, guess the type by value or its type when null.
 			// When a numeric parameter is compared to different columns with different types (e.g. Where(o => o.Single >= singleParam || o.Double <= singleParam))
@@ -389,7 +391,7 @@ namespace NHibernate.Linq.Visitors
 			{
 				switch (expression)
 				{
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER
 					case InvocationExpression invocationExpression:
 						// session.Query<Product>().Where("Properties.Name == @0", "First Product")
 						return ExpressionsHelper.TryGetDynamicMemberBinder(invocationExpression, out _);

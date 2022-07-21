@@ -270,7 +270,7 @@ namespace NHibernate.Linq.Functions
 
 	public class ReplaceGenerator : BaseHqlGeneratorForMethod
 	{
-#if NETCOREAPP2_0  
+#if NETCOREAPP2_0_OR_GREATER  
 		private static readonly MethodInfo MethodWithComparer = ReflectHelper.GetMethodDefinition<string>(x => x.Replace(string.Empty, string.Empty, default(StringComparison)));
 #endif
 
@@ -280,7 +280,7 @@ namespace NHibernate.Linq.Functions
 			{
 				ReflectHelper.GetMethodDefinition<string>(s => s.Replace(' ', ' ')),
 				ReflectHelper.GetMethodDefinition<string>(s => s.Replace("", "")),
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER
 				MethodWithComparer,
 #endif
 			};
@@ -288,7 +288,7 @@ namespace NHibernate.Linq.Functions
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER
 			LogIgnoredStringComparisonParameter(method, MethodWithComparer);
 #endif
 			return treeBuilder.MethodCall(

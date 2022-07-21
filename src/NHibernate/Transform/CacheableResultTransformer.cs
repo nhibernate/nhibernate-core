@@ -387,7 +387,7 @@ namespace NHibernate.Transform
 
 			// Auto-discovery does not allow distinguishing by transformer: just compare their queries
 			if (AutoDiscoverTypes && that.AutoDiscoverTypes)
-				return _autoDiscoveredQuery == that._autoDiscoveredQuery;
+				return Equals(_autoDiscoveredQuery, that._autoDiscoveredQuery);
 
 			return HasSameParameters(that);
 		}

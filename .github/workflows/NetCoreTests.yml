@@ -15,7 +15,7 @@ jobs:
           - DB: Firebird
             CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
           - DB: MySQL
-            CONNECTION_STRING: "Server=localhost;Uid=root;Password=nhibernate;Database=nhibernate;Old Guids=True;"
+            CONNECTION_STRING: "Server=localhost;Uid=root;Password=nhibernate;Database=nhibernate;Old Guids=True;SslMode=none;"
           - DB: Oracle
             CONNECTION_STRING: "User ID=nhibernate;Password=nhibernate;Metadata Pooling=false;Self Tuning=false;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XEPDB1)))"
           - DB: SQLite
@@ -54,9 +54,9 @@ jobs:
 
     - uses: actions/checkout@v2
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1.8.0
+      uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 2.1.x
+        dotnet-version: 6.0.x
 
     - name: Build and Test
       run: |

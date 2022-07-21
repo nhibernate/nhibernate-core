@@ -15,14 +15,21 @@ using NHibernate.Cache.Access;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
+using NHibernate.Persister.Entity;
 using NHibernate.Util;
 
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public abstract partial class CollectionAction : IAsyncExecutable, IComparable<CollectionAction>, IDeserializationCallback, IAfterTransactionCompletionProcess
+	public abstract partial class CollectionAction : 
+		IAsyncExecutable, 
+		IComparable<CollectionAction>, 
+		IDeserializationCallback, 
+		IAfterTransactionCompletionProcess, 
+		ICacheableExecutable
 	{
 
 		protected async Task<object> GetKeyAsync(CancellationToken cancellationToken)

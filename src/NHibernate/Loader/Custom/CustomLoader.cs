@@ -12,6 +12,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
+using NHibernate.Persister;
 
 namespace NHibernate.Loader.Custom
 {
@@ -25,6 +26,7 @@ namespace NHibernate.Loader.Custom
 
 		private readonly SqlString sql;
 		private readonly HashSet<string> querySpaces = new HashSet<string>();
+		private readonly bool supportsQueryCache = true;
 		private List<IParameterSpecification> parametersSpecifications;
 
 		private readonly IQueryable[] entityPersisters;
@@ -34,6 +36,7 @@ namespace NHibernate.Loader.Custom
 		private readonly IQueryableCollection[] collectionPersisters;
 		private readonly int[] collectionOwners;
 		private readonly ICollectionAliases[] collectionAliases;
+		private readonly IPersister[] customPersisters;
 
 		private readonly LockMode[] lockModes;
 		private readonly ResultRowProcessor rowProcessor;
@@ -46,6 +49,15 @@ namespace NHibernate.Loader.Custom
 		{
 			sql = customQuery.SQL;
 			querySpaces.UnionWith(customQuery.QuerySpaces);
+			if (querySpaces.Count > 0)
+			{
+				customPersisters = factory
+					.GetEntityPersisters(querySpaces).OfType<IPersister>()
+					.Concat(factory.GetCollectionPersisters(querySpaces).OfType<IPersister>())
+					.ToArray();
+				supportsQueryCache = customPersisters.All(x => x.SupportsQueryCache);
+			}
+
 			parametersSpecifications = customQuery.CollectedParametersSpecifications.ToList();
 
 			List<IQueryable> entitypersisters = new List<IQueryable>();
@@ -91,6 +103,8 @@ namespace NHibernate.Loader.Custom
 					specifiedAliases.Add(rootRtn.Alias);
 					entityaliases.Add(rootRtn.EntityAliases);
 					querySpaces.UnionWith(persister.QuerySpaces);
+					// 6.0 TODO: Use IPersister.SupportsQueryCache property once IPersister's todo is done.
+					supportsQueryCache = supportsQueryCache && persister.SupportsQueryCache();
 					includeInResultRowList.Add(true);
 				}
 				else if (rtn is CollectionReturn)
@@ -115,6 +129,8 @@ namespace NHibernate.Loader.Custom
 						entityowners.Add(-1);
 						entityaliases.Add(collRtn.ElementEntityAliases);
 						querySpaces.UnionWith(elementPersister.QuerySpaces);
+						// 6.0 TODO: Use IPersister.SupportsQueryCache property once IPersister's todo is done.
+						supportsQueryCache = supportsQueryCache && elementPersister.SupportsQueryCache();
 					}
 					includeInResultRowList.Add(true);
 				}
@@ -134,6 +150,8 @@ namespace NHibernate.Loader.Custom
 					specifiedAliases.Add(fetchRtn.Alias);
 					entityaliases.Add(fetchRtn.EntityAliases);
 					querySpaces.UnionWith(persister.QuerySpaces);
+					// 6.0 TODO: Use IPersister.SupportsQueryCache property once IPersister's todo is done.
+					supportsQueryCache = supportsQueryCache && persister.SupportsQueryCache();
 					includeInResultRowList.Add(false);
 				}
 				else if (rtn is CollectionFetchReturn)
@@ -159,6 +177,8 @@ namespace NHibernate.Loader.Custom
 						entityowners.Add(ownerIndex);
 						entityaliases.Add(fetchRtn.ElementEntityAliases);
 						querySpaces.UnionWith(elementPersister.QuerySpaces);
+						// 6.0 TODO: Use IPersister.SupportsQueryCache property once IPersister's todo is done.
+						supportsQueryCache = supportsQueryCache && elementPersister.SupportsQueryCache();
 					}
 					includeInResultRowList.Add(false);
 				}
@@ -185,6 +205,16 @@ namespace NHibernate.Loader.Custom
 		public ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
+		}
+
+		internal override bool IsCacheable(QueryParameters queryParameters)
+		{
+			return IsCacheable(
+				queryParameters,
+				supportsQueryCache,
+				entityPersisters
+					.OfType<IPersister>()
+					.Union(customPersisters ?? Enumerable.Empty<IPersister>()));
 		}
 
 		protected override int[] CollectionOwners

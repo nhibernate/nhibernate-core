@@ -365,6 +365,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void NullEntityProjection()
 		{
+#pragma warning disable CS8073 //The result of the expression is always 'false'
 			using (var session = OpenSession())
 			{
 				EntitySimpleChild child1 = null;
@@ -377,6 +378,7 @@ namespace NHibernate.Test.Criteria
 
 				Assert.That(child1, Is.Null);
 			}
+#pragma warning restore CS8073 //The result of the expression is always 'false'
 		}
 
 		[Test]
