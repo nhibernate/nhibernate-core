@@ -359,8 +359,8 @@ namespace NHibernate.Test.Legacy
 			if (!TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator)
 				Assert.Ignore("Support of empty inserts is required");
 
-			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
 
 			Simple s1 = new Simple();
 			s1.Name = "s";
@@ -383,10 +383,15 @@ namespace NHibernate.Test.Legacy
 			l.Add(null);
 			l.Add(s2);
 			c.ManyToMany = l;
+			c.ManyToOne = new Simple { Name = "x", Count = 4};
+			await (s.SaveAsync(c.ManyToOne, c.ManyToOne.Count));
 			await (s.SaveAsync(c));
 
 			Assert.AreEqual(1,
 			                (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s").ListAsync
+			                	())).Count);			
+			Assert.AreEqual(1,
+			                (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s and c.ManyToOne.Name = 'x'").ListAsync
 			                	())).Count);
 			Assert.AreEqual(1,
 			                (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.ManyToMany[2] = s").
@@ -424,13 +429,13 @@ namespace NHibernate.Test.Legacy
 			                	"select c from c in class ContainerX where c.ManyToMany[ c.OneToMany[0].Count ].Name = 's'").ListAsync())).
 			                	Count);
 
+			await (s.DeleteAsync(c.ManyToOne));
 			await (s.DeleteAsync(c));
 			await (s.DeleteAsync(s1));
 			await (s.DeleteAsync(s2));
 			await (s.DeleteAsync(s3));
 
 			await (t.CommitAsync());
-			s.Close();
 		}
 
 		[Test]
