@@ -53,6 +53,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Like("Name", "%test%"))
 					.Add(Restrictions.Like("Name", "test", MatchMode.Anywhere))
 					.Add(Restrictions.Like("Name", "test", MatchMode.Anywhere, '?'))
+					.Add(Restrictions.Eq("Name", "test"))
 					.Add(Restrictions.NaturalId()
 							.Set("Name", "my name")
 							.Set("personAlias.Age", 18));
@@ -77,9 +78,10 @@ namespace NHibernate.Test.Criteria.Lambda
 					.And(Restrictions.On<Person>(p => p.Name).IsLike("%test%"))
 					.And(Restrictions.On<Person>(p => p.Name).IsLike("test", MatchMode.Anywhere))
 					.And(Restrictions.On<Person>(p => p.Name).IsLike("test", MatchMode.Anywhere, '?'))
+					.And(Restrictions.On<Person>(p => p.Name).IsEqual("test"))
 					.And(Restrictions.NaturalId()
-							.Set<Person>(p => p.Name).Is("my name")
-							.Set(() => personAlias.Age).Is(18));
+					                 .Set<Person>(p => p.Name).Is("my name")
+					                 .Set(() => personAlias.Age).Is(18));
 
 			AssertCriteriaAreEqual(expected, actual);
 		}
@@ -129,6 +131,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.Add(Restrictions.Like("Name", "%test%"))
 					.Add(Restrictions.Like("Name", "test", MatchMode.Anywhere))
 					.Add(Restrictions.Like("Name", "test", MatchMode.Anywhere, '?'))
+					.Add(Restrictions.Eq("Name", "test"))
 					.Add(Restrictions.Not(Restrictions.Like("Name", "%test%")));
 
 			Person personAlias = null;
@@ -149,6 +152,7 @@ namespace NHibernate.Test.Criteria.Lambda
 					.AndRestrictionOn(p => p.Name).IsLike("%test%")
 					.AndRestrictionOn(p => p.Name).IsLike("test", MatchMode.Anywhere)
 					.AndRestrictionOn(p => p.Name).IsLike("test", MatchMode.Anywhere, '?')
+					.AndRestrictionOn(p => p.Name).IsEqual("test")
 					.AndRestrictionOn(p => p.Name).Not.IsLike("%test%");
 
 			AssertCriteriaAreEqual(expected, actual);

@@ -194,5 +194,13 @@ namespace NHibernate.Criterion.Lambda
 		{
 			return Add(Restrictions.Like(projection.AsProperty(), value, matchMode, escapeChar));
 		}
+		
+		/// <summary>
+		/// Apply a "equal" constraint to the named property
+		/// </summary>
+		public TReturn IsEqual(string value)
+		{
+			return Add(Restrictions.Eq(projection.AsProperty(), value));
+		}
 	}
 }
