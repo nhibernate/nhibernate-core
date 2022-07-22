@@ -18,7 +18,7 @@
         "Microsoft.AspNetCore.StaticFiles"
       ],
       "groupName": "Microsoft.AspNetCore 2.0",
-      "allowedVersions": "<2.0.0"
+      "allowedVersions": "~2.0.0"
     },
     {
       "matchPackagePrefixes": [
