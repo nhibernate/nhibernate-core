@@ -3,12 +3,20 @@
   "extends": [
     "config:base"
   ],
+  "pruneStaleBranches": false,
+  "automerge": true,
   "labels": [
     "dependencies",
     "p: Lowest",
     "t: Task"
   ],
   "packageRules": [
+    {
+      "matchPaths": [
+        "src/NHibernate.Test*/*.csproj"
+      ],
+      "labels": [ "c: Tests" ]
+    },
     {
       "matchPackagePrefixes": [
         "NUnit"
