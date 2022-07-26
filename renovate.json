@@ -3,6 +3,11 @@
   "extends": [
     "config:base"
   ],
+  "labels": [
+    "dependencies",
+    "p: Lowest",
+    "t: Task"
+  ],
   "packageRules": [
     {
       "matchPackagePrefixes": [
@@ -18,7 +23,7 @@
         "Microsoft.AspNetCore.StaticFiles"
       ],
       "groupName": "Microsoft.AspNetCore 2.0",
-      "allowedVersions": "~2.0.0"
+      "allowedVersions": "~2.1.0"
     },
     {
       "matchPackagePrefixes": [
