@@ -3,6 +3,7 @@
   "extends": [
     "config:base"
   ],
+  "configMigration": true,
   "pruneStaleBranches": false,
   "automerge": true,
   "labels": [
