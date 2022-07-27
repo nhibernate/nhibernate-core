@@ -19,3 +19,7 @@ TestResult.xml
 .vs/
 /build-common/NHibernate.dev.props
 /doc/reference/master.xml
+/doc/bin/
+/doc/obj/
+/Tools/bin/
+/Tools/obj/
