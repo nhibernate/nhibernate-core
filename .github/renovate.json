@@ -6,6 +6,7 @@
   "configMigration": true,
   "pruneStaleBranches": false,
   "automerge": true,
+  "platformAutomerge": true,
   "labels": [
     "dependencies",
     "p: Lowest",
