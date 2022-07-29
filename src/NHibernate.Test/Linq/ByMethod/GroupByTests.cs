@@ -840,6 +840,15 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
+		[Test(Description="GH-3076")]
+		public void NestedGroupBy()
+		{
+			var list = db.OrderLines
+				.GroupBy(x => new { x.Order.OrderId, x.Product.ProductId }) // this works fine
+				.GroupBy(x => x.Key.ProductId) // exception: "A recognition error occurred"
+				.ToList();
+		}
+
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
 		{
 			var used = new HashSet<object>();
