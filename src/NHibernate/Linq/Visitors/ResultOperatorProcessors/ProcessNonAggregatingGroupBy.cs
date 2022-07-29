@@ -11,7 +11,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 	{
 		public void Process(NonAggregatingGroupBy resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{
-			var selector = queryModelVisitor.Model.SelectClause.Selector;
+			var selector = resultOperator.Source;
 			var keySelector = resultOperator.GroupBy.KeySelector;
 			var elementSelector = resultOperator.GroupBy.ElementSelector;
 

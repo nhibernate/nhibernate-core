@@ -1,14 +1,25 @@
+using System;
+using System.Linq.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.ResultOperators
 {
 	public class NonAggregatingGroupBy : ClientSideTransformOperator
 	{
-		public NonAggregatingGroupBy(GroupResultOperator groupBy)
+		//Since v5.4
+		[Obsolete("Please use another constructor")]
+		public NonAggregatingGroupBy(GroupResultOperator groupBy) : this(groupBy, null)
 		{
-			GroupBy = groupBy;
 		}
 
-		public GroupResultOperator GroupBy { get; private set; }
+		public NonAggregatingGroupBy(GroupResultOperator groupBy, Expression source)
+		{
+			GroupBy = groupBy;
+			Source = source;
+		}
+
+		public GroupResultOperator GroupBy { get; }
+
+		public Expression Source { get; }
 	}
 }

@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
-using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ExpressionVisitors;
@@ -18,13 +17,12 @@ namespace NHibernate.Linq.GroupBy
 			if (queryModel.ResultOperators.All(r => r is GroupResultOperator)
 			    && IsNonAggregatingGroupBy(queryModel))
 			{
-				var resultOperators = queryModel.ResultOperators
-					.ToArray(r => new NonAggregatingGroupBy((GroupResultOperator) r));
-				
-				queryModel.ResultOperators.Clear();
-				foreach (var resultOperator in resultOperators)
+				var source = queryModel.SelectClause.Selector;
+				for (var index = 0; index < queryModel.ResultOperators.Count; index++)
 				{
-					queryModel.ResultOperators.Add(resultOperator);
+					var r = (GroupResultOperator) queryModel.ResultOperators[index];
+					queryModel.ResultOperators[index] = new NonAggregatingGroupBy(r, source);
+					source = new QuerySourceReferenceExpression(r);
 				}
 
 				return;
@@ -65,7 +63,7 @@ namespace NHibernate.Linq.GroupBy
 				throw new NotImplementedException();
 			}
 
-			queryModel.ResultOperators.Add(new NonAggregatingGroupBy((GroupResultOperator) subQueryModel.ResultOperators[0]));
+			queryModel.ResultOperators.Add(new NonAggregatingGroupBy((GroupResultOperator) subQueryModel.ResultOperators[0], queryModel.SelectClause.Selector));
 			queryModel.ResultOperators.Add(clientSideSelect);
 		}
 

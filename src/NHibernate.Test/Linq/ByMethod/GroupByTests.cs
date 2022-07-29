@@ -847,6 +847,8 @@ namespace NHibernate.Test.Linq.ByMethod
 				.GroupBy(x => new { x.Order.OrderId, x.Product.ProductId }) // this works fine
 				.GroupBy(x => x.Key.ProductId) // exception: "A recognition error occurred"
 				.ToList();
+
+			Assert.That(list, Has.Count.EqualTo(77));
 		}
 
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)
