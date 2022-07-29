@@ -14,7 +14,8 @@ namespace NHibernate.Linq.GroupBy
 	{
 		public static void ReWrite(QueryModel queryModel)
 		{
-			if (queryModel.ResultOperators.All(r => r is GroupResultOperator)
+			if (queryModel.ResultOperators.Count > 0 
+			    && queryModel.ResultOperators.All(r => r is GroupResultOperator)
 			    && IsNonAggregatingGroupBy(queryModel))
 			{
 				var source = queryModel.SelectClause.Selector;
