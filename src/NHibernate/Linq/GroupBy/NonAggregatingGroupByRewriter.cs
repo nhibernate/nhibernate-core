@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
+using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ExpressionVisitors;
@@ -13,13 +15,18 @@ namespace NHibernate.Linq.GroupBy
 	{
 		public static void ReWrite(QueryModel queryModel)
 		{
-			if (queryModel.ResultOperators.Count == 1 
-				&& queryModel.ResultOperators[0] is GroupResultOperator 
-				&& IsNonAggregatingGroupBy(queryModel))
+			if (queryModel.ResultOperators.All(r => r is GroupResultOperator)
+			    && IsNonAggregatingGroupBy(queryModel))
 			{
-				var resultOperator = (GroupResultOperator)queryModel.ResultOperators[0];
+				var resultOperators = queryModel.ResultOperators
+					.ToArray(r => new NonAggregatingGroupBy((GroupResultOperator) r));
+				
 				queryModel.ResultOperators.Clear();
-				queryModel.ResultOperators.Add(new NonAggregatingGroupBy(resultOperator));
+				foreach (var resultOperator in resultOperators)
+				{
+					queryModel.ResultOperators.Add(resultOperator);
+				}
+
 				return;
 			}
 
