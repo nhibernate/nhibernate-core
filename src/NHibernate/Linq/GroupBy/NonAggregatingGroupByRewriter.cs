@@ -29,9 +29,7 @@ namespace NHibernate.Linq.GroupBy
 				return;
 			}
 
-			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
-
-			if ((subQueryExpression != null) 
+			if ((queryModel.MainFromClause.FromExpression is SubQueryExpression subQueryExpression) 
 				&& (subQueryExpression.QueryModel.ResultOperators.Count == 1) 
 				&& (subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator) 
 				&& (IsNonAggregatingGroupBy(queryModel)))
