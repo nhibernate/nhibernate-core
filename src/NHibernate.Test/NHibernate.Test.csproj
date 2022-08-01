@@ -64,7 +64,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="8.5.2" />
-    <PackageReference Include="Npgsql" Version="5.0.11" />
+    <PackageReference Include="Npgsql" Version="6.0.5" />
     <PackageReference Include="MySql.Data" Version="8.0.27" />
   </ItemGroup>
   <ItemGroup Condition="$(NhNetFx)">
