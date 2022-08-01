@@ -31,7 +31,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <PackageReference Include="NUnitLite" Version="3.13.2" />
+    <PackageReference Include="NUnitLite" Version="3.13.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate\NHibernate.csproj" />
