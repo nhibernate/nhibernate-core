@@ -1,25 +1,18 @@
-using System;
-using System.Linq.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
+using Remotion.Linq.Clauses.StreamedData;
 
 namespace NHibernate.Linq.ResultOperators
 {
 	public class NonAggregatingGroupBy : ClientSideTransformOperator
 	{
-		//Since v5.4
-		[Obsolete("Please use another constructor")]
-		public NonAggregatingGroupBy(GroupResultOperator groupBy) : this(groupBy, null)
-		{
-		}
-
-		public NonAggregatingGroupBy(GroupResultOperator groupBy, Expression source)
+		public NonAggregatingGroupBy(GroupResultOperator groupBy)
 		{
 			GroupBy = groupBy;
-			Source = source;
 		}
 
 		public GroupResultOperator GroupBy { get; }
 
-		public Expression Source { get; }
+		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo) => 
+			GroupBy.GetOutputDataInfo(inputInfo);
 	}
 }

@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
 using NHibernate.Util;
 using Remotion.Linq.Clauses.ExpressionVisitors;
+using Remotion.Linq.Clauses.StreamedData;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
@@ -11,7 +12,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 	{
 		public void Process(NonAggregatingGroupBy resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{
-			var selector = resultOperator.Source;
+			var selector = ((StreamedSequenceInfo) queryModelVisitor.PreviousEvaluationType).ItemExpression;
 			var keySelector = resultOperator.GroupBy.KeySelector;
 			var elementSelector = resultOperator.GroupBy.ElementSelector;
 

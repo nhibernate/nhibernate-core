@@ -22,7 +22,7 @@ namespace NHibernate.Linq.GroupBy
 				for (var index = 0; index < queryModel.ResultOperators.Count; index++)
 				{
 					var r = (GroupResultOperator) queryModel.ResultOperators[index];
-					queryModel.ResultOperators[index] = new NonAggregatingGroupBy(r, source);
+					queryModel.ResultOperators[index] = new NonAggregatingGroupBy(r);
 					source = new QuerySourceReferenceExpression(r);
 				}
 
@@ -62,7 +62,7 @@ namespace NHibernate.Linq.GroupBy
 				throw new NotImplementedException();
 			}
 
-			queryModel.ResultOperators.Add(new NonAggregatingGroupBy((GroupResultOperator) subQueryModel.ResultOperators[0], queryModel.SelectClause.Selector));
+			queryModel.ResultOperators.Add(new NonAggregatingGroupBy((GroupResultOperator) subQueryModel.ResultOperators[0]));
 			queryModel.ResultOperators.Add(clientSideSelect);
 		}
 
