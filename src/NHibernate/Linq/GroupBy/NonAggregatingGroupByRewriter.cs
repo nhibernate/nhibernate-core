@@ -18,21 +18,19 @@ namespace NHibernate.Linq.GroupBy
 			    && queryModel.ResultOperators.All(r => r is GroupResultOperator)
 			    && IsNonAggregatingGroupBy(queryModel))
 			{
-				var source = queryModel.SelectClause.Selector;
-				for (var index = 0; index < queryModel.ResultOperators.Count; index++)
+				for (var i = 0; i < queryModel.ResultOperators.Count; i++)
 				{
-					var r = (GroupResultOperator) queryModel.ResultOperators[index];
-					queryModel.ResultOperators[index] = new NonAggregatingGroupBy(r);
-					source = new QuerySourceReferenceExpression(r);
+					var r = (GroupResultOperator) queryModel.ResultOperators[i];
+					queryModel.ResultOperators[i] = new NonAggregatingGroupBy(r);
 				}
 
 				return;
 			}
 
-			if ((queryModel.MainFromClause.FromExpression is SubQueryExpression subQueryExpression) 
-				&& (subQueryExpression.QueryModel.ResultOperators.Count == 1) 
-				&& (subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator) 
-				&& (IsNonAggregatingGroupBy(queryModel)))
+			if (queryModel.MainFromClause.FromExpression is SubQueryExpression subQueryExpression 
+				&& subQueryExpression.QueryModel.ResultOperators.Count > 0 
+				&& subQueryExpression.QueryModel.ResultOperators.All(r => r is GroupResultOperator) 
+				&& IsNonAggregatingGroupBy(queryModel))
 			{
 				FlattenSubQuery(subQueryExpression, queryModel);
 			}
@@ -62,7 +60,11 @@ namespace NHibernate.Linq.GroupBy
 				throw new NotImplementedException();
 			}
 
-			queryModel.ResultOperators.Add(new NonAggregatingGroupBy((GroupResultOperator) subQueryModel.ResultOperators[0]));
+			for (var i = 0; i < subQueryModel.ResultOperators.Count; i++)
+			{
+				queryModel.ResultOperators.Add(new NonAggregatingGroupBy((GroupResultOperator) subQueryModel.ResultOperators[i]));
+			}
+
 			queryModel.ResultOperators.Add(clientSideSelect);
 		}
 

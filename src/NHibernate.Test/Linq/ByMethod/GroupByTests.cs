@@ -841,11 +841,23 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test(Description="GH-3076")]
-		public void NestedGroupBy()
+		public void NestedNonAggregateGroupBy()
 		{
 			var list = db.OrderLines
 				.GroupBy(x => new { x.Order.OrderId, x.Product.ProductId }) // this works fine
 				.GroupBy(x => x.Key.ProductId) // exception: "A recognition error occurred"
+				.ToList();
+
+			Assert.That(list, Has.Count.EqualTo(77));
+		}
+
+		[Test(Description="GH-3076")]
+		public void NestedNonAggregateGroupBySelect()
+		{
+			var list = db.OrderLines
+				.GroupBy(x => new { x.Order.OrderId, x.Product.ProductId }) // this works fine
+				.GroupBy(x => x.Key.ProductId) // exception: "A recognition error occurred"
+				.Select(x => new { ProductId = x })
 				.ToList();
 
 			Assert.That(list, Has.Count.EqualTo(77));
