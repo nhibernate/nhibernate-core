@@ -15,13 +15,13 @@ namespace NHibernate.Linq.GroupBy
 		public static void ReWrite(QueryModel queryModel)
 		{
 			if (queryModel.ResultOperators.Count > 0 
-			    && queryModel.ResultOperators.All(r => r is GroupResultOperator)
-			    && IsNonAggregatingGroupBy(queryModel))
+				&& queryModel.ResultOperators.All(r => r is GroupResultOperator)
+				&& IsNonAggregatingGroupBy(queryModel))
 			{
 				for (var i = 0; i < queryModel.ResultOperators.Count; i++)
 				{
-					var r = (GroupResultOperator) queryModel.ResultOperators[i];
-					queryModel.ResultOperators[i] = new NonAggregatingGroupBy(r);
+					var resultOperator = (GroupResultOperator) queryModel.ResultOperators[i];
+					queryModel.ResultOperators[i] = new NonAggregatingGroupBy(resultOperator );
 				}
 
 				return;
@@ -62,7 +62,8 @@ namespace NHibernate.Linq.GroupBy
 
 			for (var i = 0; i < subQueryModel.ResultOperators.Count; i++)
 			{
-				queryModel.ResultOperators.Add(new NonAggregatingGroupBy((GroupResultOperator) subQueryModel.ResultOperators[i]));
+				var resultOperator = new NonAggregatingGroupBy((GroupResultOperator) subQueryModel.ResultOperators[i]);
+				queryModel.ResultOperators.Add(resultOperator);
 			}
 
 			queryModel.ResultOperators.Add(clientSideSelect);
