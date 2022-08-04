@@ -756,7 +756,7 @@ namespace NHibernate.Persister.Entity
 						if (CheckVersion(includeProperty))
 							await (VersionType.NullSafeSetAsync(statement, oldVersion, index, session, cancellationToken)).ConfigureAwait(false);
 					}
-					else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && oldFields != null)
+					else if (IsPropertyBasedOptimisticLocking(oldFields))
 					{
 						bool[] versionability = PropertyVersionability;
 						bool[] includeOldField = OptimisticLockMode == Versioning.OptimisticLock.All

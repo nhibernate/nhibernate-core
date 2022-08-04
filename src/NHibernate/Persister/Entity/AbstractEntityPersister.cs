@@ -3232,7 +3232,7 @@ namespace NHibernate.Persister.Entity
 						if (CheckVersion(includeProperty))
 							VersionType.NullSafeSet(statement, oldVersion, index, session);
 					}
-					else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && oldFields != null)
+					else if (IsPropertyBasedOptimisticLocking(oldFields))
 					{
 						bool[] versionability = PropertyVersionability;
 						bool[] includeOldField = OptimisticLockMode == Versioning.OptimisticLock.All
