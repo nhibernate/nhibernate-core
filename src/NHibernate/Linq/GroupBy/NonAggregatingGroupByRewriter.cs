@@ -21,7 +21,7 @@ namespace NHibernate.Linq.GroupBy
 				for (var i = 0; i < queryModel.ResultOperators.Count; i++)
 				{
 					var resultOperator = (GroupResultOperator) queryModel.ResultOperators[i];
-					queryModel.ResultOperators[i] = new NonAggregatingGroupBy(resultOperator );
+					queryModel.ResultOperators[i] = new NonAggregatingGroupBy(resultOperator);
 				}
 
 				return;
