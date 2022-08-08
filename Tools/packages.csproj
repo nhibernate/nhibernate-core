@@ -13,7 +13,6 @@
   <ItemGroup>
     <PackageReference Include="vswhere" Version="2.1.4" />
     <PackageReference Include="NUnit.Console" Version="3.10.0" />
-    <PackageReference Include="GitReleaseManager" Version="0.11.0" />
   </ItemGroup>
   
 </Project>
