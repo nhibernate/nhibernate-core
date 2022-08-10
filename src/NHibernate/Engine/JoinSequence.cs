@@ -191,7 +191,7 @@ namespace NHibernate.Engine
 				last = join.Joinable;
 			}
 
-			if (rootJoinable == null && TableGroupJoinHelper.ProcessAsTableGroupJoin(joins, withClauses, includeAllSubclassJoins, joinFragment, alias => IsIncluded(alias), factory))
+			if (rootJoinable == null && !IsThetaStyle && TableGroupJoinHelper.ProcessAsTableGroupJoin(joins, withClauses, includeAllSubclassJoins, joinFragment, alias => IsIncluded(alias), factory))
 			{
 				return joinFragment;
 			}

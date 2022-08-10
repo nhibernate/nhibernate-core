@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using NUnit.Framework;
 using System.Linq;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.SubclassFilterTest
 {
@@ -105,6 +106,35 @@ namespace NHibernate.Test.SubclassFilterTest
 			await (s.DeleteAsync("from Person"));
 			await (t.CommitAsync());
 			s.Close();
+		}
+
+		[Test]
+		public async Task FilterCollectionWithSubclass1Async()
+		{
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			await (PrepareTestDataAsync(s));
+
+			s.EnableFilter("minionsWithManager");
+
+			var employees = await (s.Query<Employee>().Where(x => x.Minions.Any()).ToListAsync());
+			Assert.That(employees.Count, Is.EqualTo(1));
+			Assert.That(employees[0].Minions.Count, Is.EqualTo(2));
+		}
+
+		[KnownBug("GH-3079: Collection filter on subclass columns")]
+		[Test]
+		public async Task FilterCollectionWithSubclass2Async()
+		{
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			await (PrepareTestDataAsync(s));
+
+			s.EnableFilter("minionsRegion").SetParameter("userRegion", "US");
+
+			var employees = await (s.Query<Employee>().Where(x => x.Minions.Any()).ToListAsync());
+			Assert.That(employees.Count, Is.EqualTo(1));
+			Assert.That(employees[0].Minions.Count, Is.EqualTo(1));
 		}
 
 		private static async Task PrepareTestDataAsync(ISession s, CancellationToken cancellationToken = default(CancellationToken))
