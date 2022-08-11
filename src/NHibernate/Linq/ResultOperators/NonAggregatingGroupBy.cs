@@ -1,4 +1,5 @@
 using Remotion.Linq.Clauses.ResultOperators;
+using Remotion.Linq.Clauses.StreamedData;
 
 namespace NHibernate.Linq.ResultOperators
 {
@@ -9,6 +10,9 @@ namespace NHibernate.Linq.ResultOperators
 			GroupBy = groupBy;
 		}
 
-		public GroupResultOperator GroupBy { get; private set; }
+		public GroupResultOperator GroupBy { get; }
+
+		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo) => 
+			GroupBy.GetOutputDataInfo(inputInfo);
 	}
 }
