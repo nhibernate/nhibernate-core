@@ -217,8 +217,7 @@ namespace NHibernate.Linq.Functions
 		{
 			var expression = visitor.Visit(targetObject).AsExpression();
 			var index = treeBuilder.Add(visitor.Visit(arguments[0]).AsExpression(), treeBuilder.Constant(1));
-
-			return treeBuilder.TransparentCast(treeBuilder.MethodCall("substring", expression, index, treeBuilder.Constant(1)), typeof(char));
+			return treeBuilder.MethodCall("substring", expression, index, treeBuilder.Constant(1));
 		}
 	}
 

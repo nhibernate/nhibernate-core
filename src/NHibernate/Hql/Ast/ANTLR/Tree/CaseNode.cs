@@ -29,36 +29,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				if (ExpectedType != null)
 					return ExpectedType;
 
-				if (base.DataType != null)
-					return base.DataType;
-
-				var dataType = GetTypeFromResultNodes();
-
-				foreach (var node in GetResultNodes().OfType<ISelectExpression>())
+				foreach (var node in GetResultNodes())
 				{
-					if (node.DataType == null && node is IExpectedTypeAwareNode typeAwareNode)
-					{
-						typeAwareNode.ExpectedType = dataType;
-					}
+					if (node is ISelectExpression select && !(node is ParameterNode))
+						return select.DataType;
 				}
 
-				base.DataType = dataType;
-				return dataType;
+				throw new HibernateException("Unable to determine data type of CASE statement.");
 			}
 			set { base.DataType = value; }
-		}
-
-		private IType GetTypeFromResultNodes()
-		{
-			foreach (var node in GetResultNodes())
-			{
-				if (node is ISelectExpression select && select.DataType != null)
-				{
-					return select.DataType;
-				}
-			}
-
-			throw new HibernateException("Unable to determine data type of CASE statement.");
 		}
 
 		public IEnumerable<IASTNode> GetResultNodes()

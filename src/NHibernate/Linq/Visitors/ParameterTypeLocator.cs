@@ -93,8 +93,8 @@ namespace NHibernate.Linq.Visitors
 					continue;
 				}
 
-				namedParameter.Type = GetParameterType(sessionFactory, constantExpressions, visitor, namedParameter, out var isGuessedType);
-				namedParameter.IsGuessedType = isGuessedType;
+				namedParameter.Type = GetParameterType(sessionFactory, constantExpressions, visitor, namedParameter, out var tryProcessInHql);
+				namedParameter.IsGuessedType = tryProcessInHql;
 			}
 		}
 
@@ -147,9 +147,9 @@ namespace NHibernate.Linq.Visitors
 			HashSet<ConstantExpression> constantExpressions,
 			ConstantTypeLocatorVisitor visitor,
 			NamedParameter namedParameter,
-			out bool isGuessedType)
+			out bool tryProcessInHql)
 		{
-			isGuessedType = false;
+			tryProcessInHql = false;
 			// All constant expressions have the same type/value
 			var constantExpression = constantExpressions.First();
 			var constantType = constantExpression.Type.UnwrapIfNullable();
@@ -161,8 +161,7 @@ namespace NHibernate.Linq.Visitors
 
 			// Leave hql logic to determine the type except when the value is a char. Hql logic detects a char as a string, which causes an exception
 			// when trying to set a string db parameter with a char value.
-			isGuessedType = !(constantExpression.Value is char);
-
+			tryProcessInHql = !(constantExpression.Value is char);
 			// No related MemberExpressions was found, guess the type by value or its type when null.
 			// When a numeric parameter is compared to different columns with different types (e.g. Where(o => o.Single >= singleParam || o.Double <= singleParam))
 			// do not change the parameter type, but instead cast the parameter when comparing with different column types.
