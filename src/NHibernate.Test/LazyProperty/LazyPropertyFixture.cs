@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
@@ -372,7 +372,7 @@ namespace NHibernate.Test.LazyProperty
 				{
 					Id = 2,
 					Parent = book,
-					Content = new byte[1] {0}
+					Content = new[]{0}
 				};
 
 				book.Words.Add(word);
@@ -384,7 +384,7 @@ namespace NHibernate.Test.LazyProperty
 			{
 				book = s.Get<Book>(3);
 				Assert.That(book.Words.Any(), Is.True);
-				Assert.That(book.Words.First().Content, Is.EqualTo(new byte[1] { 0 }));
+				Assert.That(book.Words.First().Content, Is.EqualTo(new[]{ 0 }));
 			}
 		}
 	}

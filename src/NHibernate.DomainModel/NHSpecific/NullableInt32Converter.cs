@@ -62,12 +62,12 @@ namespace NHibernate.DomainModel.NHSpecific
 			{
 				NullableInt32 nullable = (NullableInt32) value;
 
-				System.Type[] constructorArgTypes = new System.Type[1] {typeof(Int32)};
+				System.Type[] constructorArgTypes = new[]{typeof(Int32)};
 				ConstructorInfo constructor = typeof(NullableInt32).GetConstructor(constructorArgTypes);
 
 				if (constructor != null)
 				{
-					object[] constructorArgValues = new object[1] {nullable.Value};
+					object[] constructorArgValues = new[]{nullable.Value};
 					return new InstanceDescriptor(constructor, constructorArgValues);
 				}
 			}

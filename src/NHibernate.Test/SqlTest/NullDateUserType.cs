@@ -8,7 +8,7 @@ namespace NHibernate.Test.SqlTest
 {
 	public class NullDateUserType : IUserType
 	{
-		private SqlType[] sqlTypes = new SqlType[1] {SqlTypeFactory.Date};
+		private SqlType[] sqlTypes = new[]{SqlTypeFactory.Date};
 
 		public SqlType[] SqlTypes
 		{
