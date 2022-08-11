@@ -99,6 +99,23 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 		}
 
+		[Test(Description = "GH-3104")]
+		public void LeftJoinExtensionMethodWithInnerJoinAfter()
+		{
+			var animals = db.Animals
+						   .LeftJoin(db.Mammals, o => o.Id, i => i.Id, (o, i) => new { animal = o, mammalLeft1 = i })
+						   .LeftJoin(db.Mammals, x => x.mammalLeft1.Id, y => y.Id, (o, i) => new { o.animal, o.mammalLeft1, mammalLeft2 = i })
+						   .Join(db.Mammals, o => o.mammalLeft2.Id, y => y.Id, (o, i) => new { o.animal, o.mammalLeft1, o.mammalLeft2, mammalInner = i })
+						   .Where(x => x.mammalLeft1.SerialNumber.StartsWith("9"))
+						   .Where(x => x.mammalLeft2.SerialNumber.StartsWith("9"))
+						   .Where(x => x.animal.SerialNumber.StartsWith("9"))
+						   .Where(x => x.mammalInner.SerialNumber.StartsWith("9"))
+						   .Select(x => new { SerialNumber = x.animal.SerialNumber })
+						   .ToList();
+
+			Assert.That(animals.Count, Is.EqualTo(1));
+		}
+
 		[Test]
 		public void LeftJoinExtensionMethodWithOuterReferenceInWhereClauseOnly()
 		{
