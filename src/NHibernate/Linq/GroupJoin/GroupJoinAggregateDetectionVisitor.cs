@@ -13,12 +13,12 @@ namespace NHibernate.Linq.GroupJoin
 	internal class GroupJoinAggregateDetectionVisitor : NhExpressionVisitor
 	{
 		private readonly HashSet<GroupJoinClause> _groupJoinClauses;
-		private readonly StackFlag _inAggregate = new StackFlag();
-		private readonly StackFlag _parentExpressionProcessed = new StackFlag();
+		private readonly StackFlag _inAggregate = new();
+		private readonly StackFlag _parentExpressionProcessed = new();
 
-		private readonly List<Expression> _nonAggregatingExpressions = new List<Expression>();
-		private readonly List<GroupJoinClause> _nonAggregatingGroupJoins = new List<GroupJoinClause>();
-		private readonly List<GroupJoinClause> _aggregatingGroupJoins = new List<GroupJoinClause>();
+		private readonly List<Expression> _nonAggregatingExpressions = new();
+		private readonly List<GroupJoinClause> _nonAggregatingGroupJoins = new();
+		private readonly List<GroupJoinClause> _aggregatingGroupJoins = new();
 
 		internal GroupJoinAggregateDetectionVisitor(IEnumerable<GroupJoinClause> groupJoinClause)
 		{
