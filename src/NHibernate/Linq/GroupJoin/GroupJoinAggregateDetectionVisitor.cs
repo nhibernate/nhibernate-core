@@ -64,7 +64,8 @@ namespace NHibernate.Linq.GroupJoin
 		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
 			if (!(expression.ReferencedQuerySource is FromClauseBase fromClause))
-			{ }
+			{
+			}
 			else if (fromClause.FromExpression is QuerySourceReferenceExpression querySourceReference)
 			{
 				var groupJoinClause = querySourceReference.ReferencedQuerySource as GroupJoinClause;
