@@ -67,28 +67,32 @@ namespace NHibernate.Criterion
 				list.AddRange(criteriaQuery.NewQueryParameter(typedValue));
 			}
 
-			var bogusParam = Parameter.Placeholder;
+			return GetSqlString(columns, Values.Length, list, criteriaQuery.Factory.Dialect);
+		}
 
-			var sqlString = GetSqlString(criteriaQuery, columns, bogusParam);
-			sqlString.SubstituteBogusParameters(list, bogusParam);
+		internal static SqlString GetSqlString(object[] columns, int paramsCount, IReadOnlyList<Parameter> parameters, Dialect.Dialect dialect)
+		{
+			var bogusParam = Parameter.Placeholder;
+			var sqlString = GetSqlString(columns, paramsCount, bogusParam, dialect);
+			sqlString.SubstituteBogusParameters(parameters, bogusParam);
 			return sqlString;
 		}
 
-		private SqlString GetSqlString(ICriteriaQuery criteriaQuery, SqlString[] columns, Parameter bogusParam)
+		private static SqlString GetSqlString(object[] columns, int paramsCount, Parameter bogusParam, Dialect.Dialect dialect)
 		{
-			if (columns.Length <= 1 || criteriaQuery.Factory.Dialect.SupportsRowValueConstructorSyntaxInInList)
+			if (columns.Length <= 1 || dialect.SupportsRowValueConstructorSyntaxInInList)
 			{
 				var wrapInParens = columns.Length > 1;
 				const string comaSeparator = ", ";
 				var singleValueParam = SqlStringHelper.Repeat(new SqlString(bogusParam), columns.Length, comaSeparator, wrapInParens);
 
-				var parameters = SqlStringHelper.Repeat(singleValueParam, Values.Length, comaSeparator,  wrapInParens: false);
+				var parameters = SqlStringHelper.Repeat(singleValueParam, paramsCount, comaSeparator,  wrapInParens: false);
 
 				//single column: col1 in (?, ?)
 				//multi column:  (col1, col2) in ((?, ?), (?, ?))
 				return new SqlString(
 					wrapInParens ? StringHelper.OpenParen : string.Empty,
-					SqlStringHelper.Join(comaSeparator, columns),
+					SqlStringHelper.JoinParts(comaSeparator, columns),
 					wrapInParens ? StringHelper.ClosedParen : string.Empty,
 					" in (",
 					parameters,
@@ -102,7 +106,7 @@ namespace NHibernate.Criterion
 				"= ",
 				bogusParam,
 				" ) ");
-			cols = SqlStringHelper.Repeat(cols, Values.Length, " or ", wrapInParens: Values.Length > 1);
+			cols = SqlStringHelper.Repeat(cols, paramsCount, " or ", wrapInParens: paramsCount > 1);
 			return cols;
 		}
 
