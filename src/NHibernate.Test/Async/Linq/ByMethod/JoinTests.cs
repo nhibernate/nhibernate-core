@@ -316,6 +316,19 @@ namespace NHibernate.Test.Linq.ByMethod
 						select new {o, o2}).Take(1).ToListAsync());
 		}
 
+		[Test]
+		public async Task CanInnerJoinOnEntityWithSubclassesAsync()
+		{
+			//inner joined animal is not used in output (no need to join subclasses)
+			var resultsFromOuter1 = await (db.Animals.Join(db.Animals, o => o.Id, i => i.Id, (o, i) => o).Take(1).ToListAsync());
+
+			//inner joined mammal is not used in output (but subclass join is needed for mammal)
+			var resultsFromOuter2 = await (db.Animals.Join(db.Mammals, o => o.Id, i => i.Id, (o, i) => o).Take(1).ToListAsync());
+
+			//inner joined animal is used in output (all subclass joins are required)
+			var resultsFromInner1 = await (db.Animals.Join(db.Animals, o => o.Id, i => i.Id, (o, i) => i).Take(1).ToListAsync());
+		}
+
 		[Test(Description = "GH-2580")]
 		public async Task CanInnerJoinOnSubclassWithBaseTableReferenceInOnClauseAsync()
 		{

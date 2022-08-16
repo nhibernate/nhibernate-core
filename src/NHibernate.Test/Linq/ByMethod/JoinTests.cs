@@ -304,6 +304,19 @@ namespace NHibernate.Test.Linq.ByMethod
 						select new {o, o2}).Take(1).ToList();
 		}
 
+		[Test]
+		public void CanInnerJoinOnEntityWithSubclasses()
+		{
+			//inner joined animal is not used in output (no need to join subclasses)
+			var resultsFromOuter1 = db.Animals.Join(db.Animals, o => o.Id, i => i.Id, (o, i) => o).Take(1).ToList();
+
+			//inner joined mammal is not used in output (but subclass join is needed for mammal)
+			var resultsFromOuter2 = db.Animals.Join(db.Mammals, o => o.Id, i => i.Id, (o, i) => o).Take(1).ToList();
+
+			//inner joined animal is used in output (all subclass joins are required)
+			var resultsFromInner1 = db.Animals.Join(db.Animals, o => o.Id, i => i.Id, (o, i) => i).Take(1).ToList();
+		}
+
 		[Test(Description = "GH-2580")]
 		public void CanInnerJoinOnSubclassWithBaseTableReferenceInOnClause()
 		{

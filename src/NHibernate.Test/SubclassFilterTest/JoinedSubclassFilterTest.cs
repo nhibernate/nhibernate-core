@@ -95,6 +95,35 @@ namespace NHibernate.Test.SubclassFilterTest
 			s.Close();
 		}
 
+		[Test]
+		public void FilterCollectionWithSubclass1()
+		{
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			PrepareTestData(s);
+
+			s.EnableFilter("minionsWithManager");
+
+			var employees = s.Query<Employee>().Where(x => x.Minions.Any()).ToList();
+			Assert.That(employees.Count, Is.EqualTo(1));
+			Assert.That(employees[0].Minions.Count, Is.EqualTo(2));
+		}
+
+		[KnownBug("GH-3079: Collection filter on subclass columns")]
+		[Test]
+		public void FilterCollectionWithSubclass2()
+		{
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			PrepareTestData(s);
+
+			s.EnableFilter("minionsRegion").SetParameter("userRegion", "US");
+
+			var employees = s.Query<Employee>().Where(x => x.Minions.Any()).ToList();
+			Assert.That(employees.Count, Is.EqualTo(1));
+			Assert.That(employees[0].Minions.Count, Is.EqualTo(1));
+		}
+
 		private static void PrepareTestData(ISession s)
 		{
 			Employee john = new Employee("John Doe");
