@@ -26,9 +26,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1444
 					var message = ls.GetWholeLog();
 					var paramFormatter = (ISqlParameterFormatter)Sfi.ConnectionProvider.Driver;
 					Assert.That(message, Does.Contain(
-						"xchild0_.ParentId=xparent1_.Id and (" +
-						$"{paramFormatter.GetParameterName(0)}={Dialect.ToBooleanValueString(true)} or " +
-						$"xparent1_.A<{paramFormatter.GetParameterName(1)})"));
+						"on xchild0_.ParentId=xparent1_.Id").And.Contain(
+						$"where {paramFormatter.GetParameterName(0)}={Dialect.ToBooleanValueString(true)} or " +
+						$"xparent1_.A<{paramFormatter.GetParameterName(1)};"));
 				}
 			}
 		}

@@ -5,14 +5,23 @@ using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.DomainModel;
+using NHibernate.Loader;
 using NHibernate.Test.CacheTest.Caches;
 using NUnit.Framework;
 
 namespace NHibernate.Test.CacheTest
 {
-	[TestFixture]
+	[TestFixture(BatchFetchStyle.Dynamic)]
+	[TestFixture(BatchFetchStyle.Legacy)]
 	public class BatchableCacheSubclassFixture : TestCase
 	{
+		private readonly BatchFetchStyle _fetchStyle;
+
+		public BatchableCacheSubclassFixture(BatchFetchStyle fetchStyle)
+		{
+			_fetchStyle = fetchStyle;
+		}
+
 		protected override string[] Mappings
 		{
 			get
@@ -45,6 +54,7 @@ namespace NHibernate.Test.CacheTest
 			configuration.SetProperty(Cfg.Environment.UseSecondLevelCache, "true");
 			configuration.SetProperty(Cfg.Environment.UseQueryCache, "true");
 			configuration.SetProperty(Cfg.Environment.CacheProvider, typeof(BatchableCacheProvider).AssemblyQualifiedName);
+			configuration.SetProperty(Cfg.Environment.BatchFetchStyle, _fetchStyle.ToString());
 		}
 
 		protected override void OnSetUp()

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH2710">
+
+  <class name="Entity">
+    <id name="Id" generator="native"/>
+    <property name="MbrId" column="mbrid"/>
+    <property name="MrcDailyMoved"/>
+    <filter name="Filter" condition="mbrid = :MbrId"/>
+  </class>
+
+  <filter-def name="Filter">
+    <filter-param name="MbrId" type="int"/>
+  </filter-def>
+
+</hibernate-mapping>

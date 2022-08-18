@@ -128,7 +128,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			FromElement elem = factory.CreateCollection(queryableCollection, role, JoinType.InnerJoin, false, true);
 			FromElement = elem;
-			Walker.AddQuerySpaces(queryableCollection.CollectionSpaces);	// Always add the collection's query spaces.
+			Walker.AddQuerySpaces(queryableCollection);	// Always add the collection's query spaces.
 		}
 
 		public override void Resolve(bool generateJoin, bool implicitJoin, string classAlias, IASTNode parent)

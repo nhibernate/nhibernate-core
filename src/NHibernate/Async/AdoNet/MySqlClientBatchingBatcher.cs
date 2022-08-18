@@ -12,6 +12,7 @@ using System;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet.Util;
+using NHibernate.Driver;
 using NHibernate.Exceptions;
 
 namespace NHibernate.AdoNet
@@ -48,7 +49,7 @@ namespace NHibernate.AdoNet
 			{
 				Log.Debug("Adding to batch:{0}", lineWithParameters);
 			}
-			currentBatch.Append(batchUpdate);
+			currentBatch.Append(Driver.UnwrapDbCommand(batchUpdate));
 
 			if (currentBatch.CountOfCommands >= batchSize)
 			{

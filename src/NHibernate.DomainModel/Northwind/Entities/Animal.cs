@@ -16,9 +16,16 @@ namespace NHibernate.DomainModel.Northwind.Entities
 		public virtual Animal FatherOrMother => Father ?? Mother;
 	}
 
-    public abstract class Reptile : Animal
+	public interface IReptile
+	{
+		EnumStoredAsString Enum1 { get; }
+	}
+
+    public abstract class Reptile : Animal, IReptile
     {
         public virtual double BodyTemperature { get; set; }
+
+		public virtual EnumStoredAsString Enum1 { get; set; }
     }
 
     public class Lizard : Reptile { }

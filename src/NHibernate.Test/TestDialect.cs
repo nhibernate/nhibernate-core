@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Id;
 using NHibernate.SqlTypes;
@@ -41,6 +42,8 @@ namespace NHibernate.Test
 			=> HqlSqlWalker.SupportsIdGenWithBulkInsertion(
 				(IIdentifierGenerator) Cfg.Environment.ObjectsFactory.CreateInstance(
 					_dialect.NativeIdentifierGeneratorClass));
+
+		public virtual bool SupportsTime => _dialect.GetTypeName(new SqlType(DbType.Time)) != _dialect.GetTypeName(new SqlType(DbType.DateTime));
 
 		public virtual bool SupportsOperatorAll => true;
 		public virtual bool SupportsOperatorSome => true;
@@ -190,5 +193,10 @@ namespace NHibernate.Test
 		/// This flag is added to be able to test this feature selectively
 		/// </summary>
 		public virtual bool SupportsRowValueConstructorSyntax => _dialect.SupportsRowValueConstructorSyntax;
+
+		/// <summary>
+		/// Returns true if you can modify the same table which you use in the SELECT part.
+		/// </summary>
+		public virtual bool SupportsModifyAndSelectSameTable => true;
 	}
 }

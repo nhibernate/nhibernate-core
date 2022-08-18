@@ -22,6 +22,7 @@ using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
+using NHibernate.Persister;
 
 namespace NHibernate.Loader.Custom
 {

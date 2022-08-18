@@ -8,10 +8,12 @@
 //------------------------------------------------------------------------------
 
 
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Criterion;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH3634
 {
@@ -313,6 +315,66 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 				Assert.That(cached.Connection.PortName, Is.Null);
 
 				await (tx.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task QueryOverComponentIsNullAsync()
+		{
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var person = await (session.QueryOver<Person>()
+									.Where(p => p.Connection == null)
+									.SingleOrDefaultAsync<Person>());
+				Assert.That(person, Is.Null);
+			}
+		}
+
+		[Test(Description = "GH-2822")]
+		public async Task LinqComponentIsNullAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				var person = await (session.Query<Person>()
+									.Where(p => p.Name != null && p.Connection == null && p.Name != null)
+									.FirstOrDefaultAsync<Person>());
+				Assert.That(person, Is.Null);
+			}
+		}
+
+		[Test]
+		public async Task LinqComponentIsNotNullAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				var person = await (session.Query<Person>()
+									.Where(p => p.Name != null && p.Connection != null && p.Name != null)
+									.FirstOrDefaultAsync<Person>());
+				Assert.That(person, Is.Not.Null);
+			}
+		}
+		
+		[Test]
+		public async Task HqlComponentIsNullAsync()
+		{
+			using(new SqlLogSpy())
+			using (ISession session = OpenSession())
+			{
+				var p = await (session.CreateQuery("from Person where Connection is null").UniqueResultAsync<Person>());
+
+				Assert.That(p, Is.Null);
+			}
+		}
+
+		[Test]
+		public async Task HqlComponentIsNotNullAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				var p = await (session.CreateQuery("from Person where Connection is not null").SetMaxResults(1).UniqueResultAsync<Person>());
+
+				Assert.That(p, Is.Not.Null);
 			}
 		}
 

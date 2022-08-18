@@ -98,6 +98,11 @@ namespace NHibernate.Loader.Criteria
 			get { return querySpaces; }
 		}
 
+		internal override bool IsCacheable(QueryParameters queryParameters)
+		{
+			return IsCacheable(queryParameters, translator.SupportsQueryCache, translator.GetPersisters());
+		}
+
 		public override bool IsSubselectLoadingEnabled
 		{
 			get { return HasSubselectLoadableCollections(); }

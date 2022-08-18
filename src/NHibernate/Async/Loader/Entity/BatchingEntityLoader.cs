@@ -20,14 +20,14 @@ namespace NHibernate.Loader.Entity
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class BatchingEntityLoader : IUniqueEntityLoader
+	public partial class BatchingEntityLoader : AbstractBatchingEntityLoader
 	{
 
-		public async Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session, CancellationToken cancellationToken)
+		public override async Task<object> LoadAsync(object id, object optionalObject, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object[] batch =
-				await (session.PersistenceContext.BatchFetchQueue.GetEntityBatchAsync(persister, id, batchSizes[0], cancellationToken)).ConfigureAwait(false);
+				await (session.PersistenceContext.BatchFetchQueue.GetEntityBatchAsync(Persister, id, batchSizes[0], cancellationToken)).ConfigureAwait(false);
 
 			for (int i = 0; i < batchSizes.Length - 1; i++)
 			{
@@ -38,7 +38,7 @@ namespace NHibernate.Loader.Entity
 					Array.Copy(batch, 0, smallBatch, 0, smallBatchSize);
 
 					IList results =
-						await (loaders[i].LoadEntityBatchAsync(session, smallBatch, idType, optionalObject, persister.EntityName, id, persister, cancellationToken)).ConfigureAwait(false);
+						await (loaders[i].LoadEntityBatchAsync(session, smallBatch, idType, optionalObject, Persister.EntityName, id, Persister, cancellationToken)).ConfigureAwait(false);
 
 					return GetObjectFromList(results, id, session); //EARLY EXIT
 				}

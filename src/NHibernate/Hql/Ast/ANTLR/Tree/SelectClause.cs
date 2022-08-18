@@ -283,10 +283,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private void AddExpression(ISelectExpression expr, List<IType> queryReturnTypeList)
 		{
 			IType type = expr.DataType;
-			if (type == null && !(expr is ParameterNode))
+			if (type == null)
 			{
-				throw new QueryException(
-					"No data type for node: " + expr.GetType().Name + " " + new ASTPrinter().ShowAsString((IASTNode) expr, ""));
+				if (expr is ParameterNode param)
+				{
+					type = param.GuessedType;
+				}
+				else
+					throw new QueryException("No data type for node: " + expr.GetType().Name + " " + new ASTPrinter().ShowAsString((IASTNode)expr, ""));
 			}
 			//sqlResultTypeList.add( type );
 

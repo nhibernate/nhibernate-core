@@ -107,8 +107,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1869
 			using (var session = Sfi.OpenSession())
 			{
 				var result = await (GetResultWithQueryBatchAsync(session));
-				Assert.That(await (result.GetResultAsync<NodeKeyword>(0, CancellationToken.None)), Has.Count.EqualTo(1));
-				Assert.That(await (result.GetResultAsync<NodeKeyword>(1, CancellationToken.None)), Has.Count.EqualTo(1));
+				Assert.That(await (result.GetResultAsync<NodeKeyword>(0)), Has.Count.EqualTo(1));
+				Assert.That(await (result.GetResultAsync<NodeKeyword>(1)), Has.Count.EqualTo(1));
 			}
 		}
 

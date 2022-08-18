@@ -1,14 +1,30 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Cfg;
 using NHibernate.Driver;
+using NHibernate.Loader;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3142
 {
-	[TestFixture]
+	[TestFixture(BatchFetchStyle.Dynamic)]
+	[TestFixture(BatchFetchStyle.Legacy)]
 	public class ChildrenTest : BugTestCase
 	{
+		private readonly BatchFetchStyle _fetchStyle;
+
+		public ChildrenTest(BatchFetchStyle fetchStyle)
+		{
+			_fetchStyle = fetchStyle;
+		}
+
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+			configuration.SetProperty(Cfg.Environment.BatchFetchStyle, _fetchStyle.ToString());
+		}
+
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
 			return !(factory.ConnectionProvider.Driver is OracleManagedDataClientDriver);

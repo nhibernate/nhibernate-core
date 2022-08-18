@@ -12,7 +12,9 @@ namespace NHibernate.Cfg
 		/// <summary>Xml value: nonstrict-read-write</summary>
 		NonStrictReadWrite,
 		/// <summary>Xml value: transactional</summary>
-		Transactional
+		Transactional,
+		/// <summary>Xml value: never</summary>
+		Never
 	}
 
 	/// <summary>
@@ -24,6 +26,7 @@ namespace NHibernate.Cfg
 		private const string ReadWriteXmlValue = "read-write";
 		private const string NonstrictReadWriteXmlValue = "nonstrict-read-write";
 		private const string TransactionalXmlValue = "transactional";
+		private const string NeverXmlValue = "never";
 
 		/// <summary>
 		/// Convert a <see cref="EntityCacheUsage"/> in its xml expected value.
@@ -42,6 +45,8 @@ namespace NHibernate.Cfg
 					return NonstrictReadWriteXmlValue;
 				case EntityCacheUsage.Transactional:
 					return TransactionalXmlValue;
+				case EntityCacheUsage.Never:
+					return NeverXmlValue;
 				default:
 					return string.Empty;
 			}
@@ -70,6 +75,8 @@ namespace NHibernate.Cfg
 					return EntityCacheUsage.NonStrictReadWrite;
 				case TransactionalXmlValue:
 					return EntityCacheUsage.Transactional;
+				case NeverXmlValue:
+					return EntityCacheUsage.Never;
 				default:
 					throw new HibernateConfigException(string.Format("Invalid EntityCacheUsage value:{0}", value));
 			}

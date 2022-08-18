@@ -17,12 +17,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2208
 	public class FilterAsync : BugTestCase
 	{
 		[Test]
-		public async Task TestAsync()
+		public async Task TestHqlAsync()
 		{
 			using (ISession session = OpenSession())
 			{
 				session.EnableFilter("myfilter");
 				await (session.CreateQuery("from E1 e join fetch e.BO").ListAsync());
+			}
+		}
+
+		[Test]
+		public async Task TestQueryOverAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				session.EnableFilter("myfilter");
+				await (session.QueryOver<E1>().JoinQueryOver(x => x.BO).ListAsync());
 			}
 		}
 	}

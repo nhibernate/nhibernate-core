@@ -627,9 +627,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				propertyName = NHibernate.Persister.Entity.EntityPersister.EntityID;
 			}
 
-			return UseTableAliases
-				? GetPropertyMapping(propertyName).ToColumns(alias, propertyName)
-				: GetPropertyMapping(propertyName).ToColumns(propertyName);
+			return ToColumns(alias, propertyName, Walker.StatementType == HqlSqlWalker.SELECT);
 		}
 
 		internal bool UseTableAliases => Walker.StatementType == HqlSqlWalker.SELECT || Walker.IsSubQuery;
@@ -694,13 +692,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 				else
 				{
-					if (!Walker.IsInFrom && !Walker.IsInSelect)
+					if ((IsImplied && !JoinSequence.IsThetaStyle) || Walker.IsInFrom || Walker.IsInSelect)
 					{
-						FromClause.AddChild(this);
+						origin.AddChild(this);
 					}
 					else
 					{
-						origin.AddChild(this);
+						FromClause.AddChild(this);
 					}
 				}
 			}

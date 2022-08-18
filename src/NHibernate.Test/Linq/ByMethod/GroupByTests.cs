@@ -372,6 +372,40 @@ namespace NHibernate.Test.Linq.ByMethod
 		}
 
 		[Test]
+		public void GroupByWithStringEnumParameter()
+		{
+			db.Users
+			  .GroupBy(p => p.Enum1)
+			  .Select(g => g.Key == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new StringEnumGroup {Enum = p.Enum1})
+			  .Select(g => g.Key.Enum == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new[] {p.Enum1})
+			  .Select(g => g.Key[0] == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new {p.Enum1})
+			  .Select(g => g.Key.Enum1 == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new {Test = new {Test2 = p.Enum1}})
+			  .Select(g => g.Key.Test.Test2 == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+			db.Users
+			  .GroupBy(p => new {Test = new[] {p.Enum1}})
+			  .Select(g => g.Key.Test[0] == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
+			  .ToList();
+		}
+
+		private class StringEnumGroup
+		{
+			public EnumStoredAsString Enum { get; set; }
+		}
+
+		[Test]
 		public void SelectFirstElementFromProductsGroupedByUnitPrice()
 		{
 			//NH-3180
@@ -804,6 +838,29 @@ namespace NHibernate.Test.Linq.ByMethod
 
 			var orderGroups = db.OrderLines.Select(o => new { OrderLine = (object)o }).GroupBy(x => new object[] { ((OrderLine)x.OrderLine).Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToList();
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
+		}
+
+		[Test(Description="GH-3076")]
+		public void NestedNonAggregateGroupBy()
+		{
+			var list = db.OrderLines
+				.GroupBy(x => new { x.Order.OrderId, x.Product.ProductId }) // this works fine
+				.GroupBy(x => x.Key.ProductId) // exception: "A recognition error occurred"
+				.ToList();
+
+			Assert.That(list, Has.Count.EqualTo(77));
+		}
+
+		[Test(Description="GH-3076")]
+		public void NestedNonAggregateGroupBySelect()
+		{
+			var list = db.OrderLines
+				.GroupBy(x => new { x.Order.OrderId, x.Product.ProductId }) // this works fine
+				.GroupBy(x => x.Key.ProductId) // exception: "A recognition error occurred"
+				.Select(x => new { ProductId = x })
+				.ToList();
+
+			Assert.That(list, Has.Count.EqualTo(77));
 		}
 
 		private static void CheckGrouping<TKey, TElement>(IEnumerable<IGrouping<TKey, TElement>> groupedItems, Func<TElement, TKey> groupBy)

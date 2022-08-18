@@ -314,7 +314,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		protected override ICollectionInitializer CreateCollectionInitializer(IDictionary<string, IFilter> enabledFilters)
 		{
-			return BatchingCollectionInitializer.CreateBatchingCollectionInitializer(this, batchSize, Factory, enabledFilters);
+			return Factory.Settings.BatchingCollectionInitializationBuilder.CreateBatchingCollectionInitializer(this, batchSize, Factory, enabledFilters);
 		}
 
 		public override SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
