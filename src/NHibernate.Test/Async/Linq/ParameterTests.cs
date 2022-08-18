@@ -320,7 +320,7 @@ namespace NHibernate.Test.Linq
 					totalParameters,
 					sql =>
 					{
-						Assert.That(sql, Does.Not.Contain("cast"));
+						Assert.That(sql, pair.Value == "Decimal" && Dialect.IsDecimalStoredAsFloatingPointNumber ? Does.Contain("cast") : Does.Not.Contain("cast"));
 						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(totalParameters));
 					}));
 			}
@@ -605,7 +605,9 @@ namespace NHibernate.Test.Linq
 			var value = "test";
 			await (db.Orders.Where(o => string.Format("{0}", value) != o.ShippedTo).ToListAsync());
 			await (db.Orders.Where(o => $"{value}_" != o.ShippedTo).ToListAsync());
+#pragma warning disable CS0618
 			await (db.Orders.Where(o => string.Copy(value) != o.ShippedTo).ToListAsync());
+#pragma warning restore CS0618
 
 			var guid = Guid.Parse("2D7E6EB3-BD08-4A40-A4E7-5150F7895821");
 			await (db.Orders.Where(o => o.ShippedTo.Contains($"VALUE {guid}")).ToListAsync());
@@ -812,7 +814,9 @@ namespace NHibernate.Test.Linq
 		{
 			var value = new Product {Name = "test"};
 			await (AssertTotalParametersAsync(
+#pragma warning disable CS0618
 				db.Products.Where(o => o.Name == string.Copy(value.Name) && o.Name != string.Copy(value.Name)),
+#pragma warning restore CS0618
 				2));
 		}
 

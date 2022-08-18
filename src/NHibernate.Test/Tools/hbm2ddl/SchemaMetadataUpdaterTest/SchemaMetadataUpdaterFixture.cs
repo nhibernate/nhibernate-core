@@ -259,7 +259,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			// Test uses the default dialect driver, which will not accept Odbc or OleDb connection strings.
 			if (typeof(OdbcDriver).IsAssignableFrom(driverClass) || typeof(OleDbDriver).IsAssignableFrom(driverClass))
 				Assert.Ignore("Test is not compatible with OleDb or ODBC driver connection strings");
-			var configuredDialect = Dialect.Dialect.GetDialect();
+			var configuredDialect = Dialect.Dialect.GetDialect(configuration.Properties);
 			if(!configuredDialect.DefaultProperties.ContainsKey(Environment.ConnectionDriver))
 			{
 				Assert.Ignore(GetType() + " does not apply to " + configuredDialect);

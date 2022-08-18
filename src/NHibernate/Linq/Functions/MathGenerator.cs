@@ -55,7 +55,7 @@ namespace NHibernate.Linq.Functions
 
 				ReflectHelper.FastGetMethod(Math.Pow, default(double), default(double)),
 
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER
 				ReflectHelper.FastGetMethod(MathF.Sin, default(float)),
 				ReflectHelper.FastGetMethod(MathF.Cos, default(float)),
 				ReflectHelper.FastGetMethod(MathF.Tan, default(float)),

@@ -5,6 +5,7 @@ using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using NHibernate.Impl;
+using NHibernate.Persister;
 
 namespace NHibernate.Action
 {
@@ -18,7 +19,8 @@ namespace NHibernate.Action
 		IBeforeTransactionCompletionProcess,
 		IAfterTransactionCompletionProcess,
 		IComparable<EntityAction>, 
-		IDeserializationCallback
+		IDeserializationCallback,
+		ICacheableExecutable
 	{
 		private readonly string entityName;
 		private readonly object id;
@@ -94,6 +96,15 @@ namespace NHibernate.Action
 		protected internal abstract bool HasPostCommitEventListeners { get; }
 
 		#region IExecutable Members
+
+		public string[] QueryCacheSpaces
+		{
+			get
+			{
+				// 6.0 TODO: Use IPersister.SupportsQueryCache property once IPersister's todo is done.
+				return persister.SupportsQueryCache() ? persister.PropertySpaces : null;
+			}
+		}
 
 		public string[] PropertySpaces
 		{

@@ -16,6 +16,7 @@ using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Linq;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -1396,6 +1397,33 @@ namespace NHibernate.Test.Linq
 				var sql = sqlSpy.GetWholeLog();
 				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(2));
 			}
+		}
+
+		[Test]
+		public void ReplaceFunctionWithNullArgumentAsync()
+		{
+			var query = from e in db.Employees
+			            select e.FirstName.Replace(e.LastName, null);
+			List<string> results = null;
+			Assert.That(
+				async () =>
+				{
+					results = await (query.ToListAsync());
+				}, Throws.Nothing, "Expected REPLACE(FirstName, LastName, NULL) to be supported");
+			Assert.That(results, Is.Not.Null);
+		}
+
+		[Test(Description = "GH-2860")]
+		public async Task StringFormatWithTrimAsync()
+		{
+			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
+				Assert.Ignore("Current dialect does not support this test");
+
+			var q =
+				from e in db.Employees
+				select new { Name = $"{e.FirstName} {e.LastName}".Trim(), Phone = e.Address.PhoneNumber };
+			var items = await (q.ToListAsync());
+			Assert.AreEqual(9, items.Count);
 		}
 	}
 }

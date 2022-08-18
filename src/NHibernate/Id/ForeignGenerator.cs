@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
 namespace NHibernate.Id
@@ -39,8 +40,6 @@ namespace NHibernate.Id
 		/// </returns>
 		public object Generate(ISessionImplementor sessionImplementor, object obj)
 		{
-			ISession session = (ISession) sessionImplementor;
-
 			var persister = sessionImplementor.Factory.GetEntityPersister(entityName);
 			object associatedObject = persister.GetPropertyValue(obj, propertyName);
 
@@ -49,17 +48,7 @@ namespace NHibernate.Id
 				throw new IdentifierGenerationException("attempted to assign id from null one-to-one property: " + propertyName);
 			}
 
-			EntityType foreignValueSourceType;
-			IType propertyType = persister.GetPropertyType(propertyName);
-			if (propertyType.IsEntityType)
-			{
-				foreignValueSourceType = (EntityType) propertyType;
-			}
-			else
-			{
-				// try identifier mapper
-				foreignValueSourceType = (EntityType) persister.GetPropertyType("_identifierMapper." + propertyName);
-			}
+			var foreignValueSourceType = GetForeignValueSourceType(persister);
 
 			object id;
 			try
@@ -71,16 +60,44 @@ namespace NHibernate.Id
 			}
 			catch (TransientObjectException)
 			{
-				id = session.Save(foreignValueSourceType.GetAssociatedEntityName(), associatedObject);
+				if (sessionImplementor is ISession session)
+				{
+					id = session.Save(foreignValueSourceType.GetAssociatedEntityName(), associatedObject);
+				}
+				else if (sessionImplementor is IStatelessSession statelessSession)
+				{
+					id = statelessSession.Insert(foreignValueSourceType.GetAssociatedEntityName(), associatedObject);
+				}
+				else
+				{
+					throw new IdentifierGenerationException("sessionImplementor is neither Session nor StatelessSession");
+				}
 			}
 
-			if (session.Contains(obj))
+			if (Contains(sessionImplementor, obj))
 			{
 				//abort the save (the object is already saved by a circular cascade)
 				return IdentifierGeneratorFactory.ShortCircuitIndicator;
 			}
 
 			return id;
+		}
+
+		private EntityType GetForeignValueSourceType(IEntityPersister persister)
+		{
+			var propertyType = persister.GetPropertyType(propertyName);
+			if (propertyType.IsEntityType)
+			{
+				return (EntityType) propertyType;
+			}
+
+			// try identifier mapper
+			return (EntityType) persister.GetPropertyType("_identifierMapper." + propertyName);
+		}
+
+		private static bool Contains(ISessionImplementor sessionImplementor, object obj)
+		{
+			return sessionImplementor is ISession session && session.Contains(obj);
 		}
 
 		#endregion

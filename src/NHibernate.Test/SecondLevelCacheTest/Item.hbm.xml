@@ -26,6 +26,30 @@
 		<property name="Name"/>
 		<property name="Description"/>
 	</class>
+  
+  <class name="NHibernate.Test.SecondLevelCacheTests.NeverItem, NHibernate.Test">
+		<cache usage="never"/>
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name"/>
+		<property name="Description"/>
+  	<bag name="Childrens" cascade="all" inverse="true">
+			<cache usage="never"/>
+			<key column="ParentId"/>
+			<one-to-many class="NHibernate.Test.SecondLevelCacheTests.NeverChildItem, NHibernate.Test"/>
+		</bag>
+	</class>
+  
+  <class name="NHibernate.Test.SecondLevelCacheTests.NeverChildItem, NHibernate.Test">
+		<cache usage="never"/>
+		<id name="Id">
+			<generator class="native"/>
+		</id>
+		<property name="Name"/>
+    <many-to-one name="Parent" column="ParentId"
+					 class="NHibernate.Test.SecondLevelCacheTests.NeverItem, NHibernate.Test"/>
+	</class>
 
 	<query name="Stat" cacheable="true" read-only ="true" cache-region="Statistics">
 		select ai.Name, count(*) from AnotherItem ai group by ai.Name
