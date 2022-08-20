@@ -8,10 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using NHibernate.Stat;
 using NUnit.Framework;
 using NHCfg = NHibernate.Cfg;
 
@@ -19,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2201
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync : BugTestCase
+	public class DetectFetchLoopsFalseFixtureAsync : BugTestCase
 	{
 		protected override void Configure(NHCfg.Configuration configuration)
 		{
@@ -91,7 +87,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2201
 			using (var tx = s.BeginTransaction())
 			{
 				var people = await (s.QueryOver<Person>()
-					.Fetch(SelectMode.Fetch,p => p.Parent)
+					.Fetch(SelectMode.Fetch, p => p.Parent)
 					.Where(p => p.Parent != null)
 					.ListAsync());
 
