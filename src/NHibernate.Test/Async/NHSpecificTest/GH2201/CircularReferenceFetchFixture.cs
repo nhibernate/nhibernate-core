@@ -19,6 +19,10 @@ namespace NHibernate.Test.NHSpecificTest.GH2201
 	[TestFixture]
 	public class CircularReferenceFetchFixtureAsync : BaseFetchFixture
 	{
+		public CircularReferenceFetchFixtureAsync() : base(-1)
+		{
+		}
+
 		[Test]
 		public async Task QueryOverAsync()
 		{

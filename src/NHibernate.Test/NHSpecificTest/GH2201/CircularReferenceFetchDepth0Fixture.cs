@@ -8,11 +8,16 @@ namespace NHibernate.Test.NHSpecificTest.GH2201
 	{
 		private int _id2;
 
+		public CircularReferenceFetchDepth0Fixture() : base(0)
+		{
+		}
+
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty("max_fetch_depth", "0");
 			base.Configure(configuration);
 		}
+
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();

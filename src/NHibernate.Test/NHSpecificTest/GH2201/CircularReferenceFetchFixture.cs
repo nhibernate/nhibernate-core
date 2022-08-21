@@ -8,6 +8,10 @@ namespace NHibernate.Test.NHSpecificTest.GH2201
 	[TestFixture]
 	public class CircularReferenceFetchFixture : BaseFetchFixture
 	{
+		public CircularReferenceFetchFixture() : base(-1)
+		{
+		}
+
 		[Test]
 		public void QueryOver()
 		{
