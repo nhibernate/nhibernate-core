@@ -87,6 +87,7 @@ namespace NHibernate.Loader.Criteria
 				IncludeInResultIfNeeded(persister, entityJoinInfo.Criteria, tableAlias, criteriaPath);
 				//collect mapped associations for entity join
 				WalkEntityTree(persister, tableAlias, criteriaPath);
+				ProcessJoins();
 			}
 		}
 

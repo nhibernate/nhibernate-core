@@ -411,6 +411,8 @@ namespace NHibernate.Loader
 			string path,
 			string pathAlias)
 		{
+			depth = 0;
+			visitedAssociationKeys.Clear();
 			OuterJoinableAssociation assoc =
 				InitAssociation(new OuterJoinableAssociation(
 					persister.EntityType,
@@ -665,7 +667,7 @@ namespace NHibernate.Loader
 			if (IsTooDeep(currentDepth) || (type.IsCollectionType && IsTooManyCollections))
 				return JoinType.None;
 
-			bool dupe = IsDuplicateAssociation(lhsTable, lhsColumns, type);
+			bool dupe = IsDuplicateAssociation(lhsTable, lhsColumns, type) && currentDepth > 0;//NOTE: currentDepth check must be executed after dup check (to properly collect dup info)
 			if (dupe)
 				return JoinType.None;
 
