@@ -330,7 +330,7 @@ namespace NHibernate.Loader
 			while(joinQueue.Count > 0)
 			{
 				QueueEntry entry = joinQueue.Dequeue();
-				entry.Walk(this, ref depth);
+				entry.Walk(this);
 			}
 		}
 
@@ -1256,7 +1256,7 @@ namespace NHibernate.Loader
 
 		protected abstract class QueueEntry
 		{
-			public abstract void Walk(JoinWalker walker, ref int depth);
+			public abstract void Walk(JoinWalker walker);
 		}
 
 		protected abstract class QueueEntry<T> : QueueEntry where T : IJoinable
@@ -1272,7 +1272,7 @@ namespace NHibernate.Loader
 
 		protected class EntityQueueEntry : EntityQueueEntry<IOuterJoinLoadable>
 		{
-			public override void Walk(JoinWalker walker, ref int depth)
+			public override void Walk(JoinWalker walker)
 			{
 				walker.WalkEntityTree(Persister, Alias, Path);
 			}
@@ -1282,7 +1282,7 @@ namespace NHibernate.Loader
 		{
 			public string PathAlias { get; set; }
 
-			public override void Walk(JoinWalker walker, ref int depth)
+			public override void Walk(JoinWalker walker)
 			{
 				walker.WalkCollectionTree(Persister, Alias, Path, PathAlias);
 			}
@@ -1296,9 +1296,9 @@ namespace NHibernate.Loader
 			{
 			}
 
-			public override void Walk(JoinWalker walker, ref int depth)
+			public override void Walk(JoinWalker walker)
 			{
-				depth++;
+				walker.depth++;
 			}
 		}
 	}
