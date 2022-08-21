@@ -667,7 +667,7 @@ namespace NHibernate.Loader
 			if (IsTooDeep(currentDepth) || (type.IsCollectionType && IsTooManyCollections))
 				return JoinType.None;
 
-			bool dupe = IsDuplicateAssociation(lhsTable, lhsColumns, type) && currentDepth > 0;//NOTE: currentDepth check must be executed after dup check (to properly collect dup info)
+			bool dupe = IsDuplicateAssociation(lhsTable, lhsColumns, type);
 			if (dupe)
 				return JoinType.None;
 
