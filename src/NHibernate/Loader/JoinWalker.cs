@@ -327,7 +327,7 @@ namespace NHibernate.Loader
 
 		protected void ProcessJoins()
 		{
-			while(joinQueue.Count > 0)
+			while (joinQueue.Count > 0)
 			{
 				QueueEntry entry = joinQueue.Dequeue();
 				entry.Walk(this);
@@ -341,7 +341,7 @@ namespace NHibernate.Loader
 		{
 			if (persister.IsOneToMany)
 			{
-				WalkEntityTree((IOuterJoinLoadable)persister.ElementPersister, alias, path);
+				WalkEntityTree((IOuterJoinLoadable) persister.ElementPersister, alias, path);
 			}
 			else
 			{
@@ -775,15 +775,13 @@ namespace NHibernate.Loader
 		/// </summary>
 		protected virtual bool IsDuplicateAssociation(string foreignKeyTable, string[] foreignKeyColumns)
 		{
-			bool detectFetchLoops = Factory.Settings.DetectFetchLoops;
-
-			if (detectFetchLoops)
+			if (!Factory.Settings.DetectFetchLoops)
 			{
-				var associationKey = new AssociationKey(foreignKeyColumns, foreignKeyTable);
-				return !visitedAssociationKeys.Add(associationKey);
+				return false;
 			}
 
-			return false;
+			AssociationKey associationKey = new AssociationKey(foreignKeyColumns, foreignKeyTable);
+			return !visitedAssociationKeys.Add(associationKey);
 		}
 
 		/// <summary>
