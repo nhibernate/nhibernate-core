@@ -1296,7 +1296,7 @@ namespace NHibernate.Loader
 
 		protected class NextLevelQueueEntry : QueueEntry
 		{
-			public static NextLevelQueueEntry Instance = new NextLevelQueueEntry();
+			public static readonly NextLevelQueueEntry Instance = new NextLevelQueueEntry();
 
 			private NextLevelQueueEntry()
 			{
