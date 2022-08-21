@@ -464,19 +464,6 @@ namespace NHibernate.Loader
 		/// Since 5.4
 		protected virtual void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path)
 		{
-			// TODO: inline function
-#pragma warning disable 618
-			WalkEntityTree(persister, alias, path, depth);
-#pragma warning restore 618
-		}
-
-		/// <summary>
-		/// For an entity class, add to a list of associations to be fetched
-		/// by outerjoin
-		/// </summary>
-		[Obsolete("Use or override the overload without the currentDepth parameter")]
-		protected virtual void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
-		{
 			int n = persister.CountSubclassProperties();
 
 			joinQueue.Enqueue(NextLevelQueueEntry.Instance);
@@ -499,24 +486,21 @@ namespace NHibernate.Loader
 		}
 
 		/// <summary>
-		/// For a component, add to a list of associations to be fetched by outerjoin
+		/// For an entity class, add to a list of associations to be fetched
+		/// by outerjoin
 		/// </summary>
-		/// Since 5.4
-		protected void WalkComponentTree(IAbstractComponentType componentType, int begin, string alias, string path,
-										 ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
+		[Obsolete("Use or override the overload without the currentDepth parameter")]
+		protected virtual void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
 		{
-			// TODO: inline function
-#pragma warning disable 618
-			WalkComponentTree(componentType, begin, alias, path, depth, associationTypeSQLInfo);
-#pragma warning restore 618
+			WalkEntityTree(persister, alias, path);
 		}
 
 		/// <summary>
 		/// For a component, add to a list of associations to be fetched by outerjoin
 		/// </summary>
-		[Obsolete("Use or override the overload without the currentDepth parameter")]
+		/// Since 5.4
 		protected void WalkComponentTree(IAbstractComponentType componentType, int begin, string alias, string path,
-										 int currentDepth, ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
+										 ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
 		{
 			IType[] types = componentType.Subtypes;
 			string[] propertyNames = componentType.PropertyNames;
@@ -565,6 +549,16 @@ namespace NHibernate.Loader
 				}
 				begin += types[i].GetColumnSpan(Factory);
 			}
+		}
+
+		/// <summary>
+		/// For a component, add to a list of associations to be fetched by outerjoin
+		/// </summary>
+		[Obsolete("Use or override the overload without the currentDepth parameter")]
+		protected void WalkComponentTree(IAbstractComponentType componentType, int begin, string alias, string path,
+										 int currentDepth, ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
+		{
+			WalkComponentTree(componentType, begin, alias, path, associationTypeSQLInfo);
 		}
 
 		/// <summary>
