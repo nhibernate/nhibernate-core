@@ -4,7 +4,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH2201
 {
-
 	[TestFixture]
 	public class CircularReferenceFetchFixture : BaseFetchFixture
 	{

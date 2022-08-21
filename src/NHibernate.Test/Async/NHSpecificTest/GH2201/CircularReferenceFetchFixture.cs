@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.GH2201
 {
 	using System.Threading.Tasks;
-
 	[TestFixture]
 	public class CircularReferenceFetchFixtureAsync : BaseFetchFixture
 	{

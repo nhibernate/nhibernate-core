@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2201
 				{
 					var name = names[i];
 
-					Person parent = new Person()
+					var parent = new Person()
 					{
 						Name = name,
 						Details = new Detail()
@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2201
 
 					for (int j = 1; j <= 3; j++)
 					{
-						Person child = new Person()
+						var child = new Person()
 						{
 							Name = $"Child ${j} of ${parent.Name}",
 							Parent = parent,

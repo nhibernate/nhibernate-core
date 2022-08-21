@@ -129,7 +129,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2201
 			VerifyChildrenNotInitialized(result.AdditionalEntity);
 			VerifyChildrenNotInitialized(result.SourceEntity);
 			VerifyChildrenNotInitialized(result.ReferencedEntity);
-
 		}
 
 		protected void VerifyChildrenInitialized(Entity result)
