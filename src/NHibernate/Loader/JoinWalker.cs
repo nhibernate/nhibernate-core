@@ -330,19 +330,7 @@ namespace NHibernate.Loader
 			while(joinQueue.Count > 0)
 			{
 				QueueEntry entry = joinQueue.Dequeue();
-
-				switch(entry)
-				{
-					case CollectionQueueEntry ce:
-						WalkCollectionTree(ce.Persister, ce.Alias, ce.Path, ce.PathAlias);
-						break;
-					case EntityQueueEntry eqe:
-						WalkEntityTree(eqe.Persister, eqe.Alias, eqe.Path);
-						break;
-					default:
-						depth++;
-						break;
-				}
+				entry.Walk(this, ref depth);
 			}
 		}
 
@@ -491,7 +479,7 @@ namespace NHibernate.Loader
 		{
 			int n = persister.CountSubclassProperties();
 
-			joinQueue.Enqueue(null);
+			joinQueue.Enqueue(NextLevelQueueEntry.Instance);
 			for (int i = 0; i < n; i++)
 			{
 				IType type = persister.GetSubclassPropertyType(i);
@@ -1272,7 +1260,10 @@ namespace NHibernate.Loader
 			return join.GetSelectFragment(entitySuffix, collectionSuffix, next);
 		}
 
-		protected abstract class QueueEntry { }
+		protected abstract class QueueEntry
+		{
+			public abstract void Walk(JoinWalker walker, ref int depth);
+		}
 
 		protected abstract class QueueEntry<T> : QueueEntry where T : IJoinable
 		{
@@ -1280,15 +1271,41 @@ namespace NHibernate.Loader
 			public T Persister { get; set; }
 		}
 
-		protected class EntityQueueEntry<T> : QueueEntry<T> where T : IJoinable
+		protected abstract class EntityQueueEntry<T> : QueueEntry<T> where T : IJoinable
 		{
 			public string Path { get; set; }
 		}
-		protected class EntityQueueEntry : EntityQueueEntry<IOuterJoinLoadable> {}
+
+		protected class EntityQueueEntry : EntityQueueEntry<IOuterJoinLoadable>
+		{
+			public override void Walk(JoinWalker walker, ref int depth)
+			{
+				walker.WalkEntityTree(Persister, Alias, Path);
+			}
+		}
 
 		protected class CollectionQueueEntry : EntityQueueEntry<IQueryableCollection>
 		{
 			public string PathAlias { get; set; }
+
+			public override void Walk(JoinWalker walker, ref int depth)
+			{
+				walker.WalkCollectionTree(Persister, Alias, Path, PathAlias);
+			}
+		}
+
+		protected class NextLevelQueueEntry : QueueEntry
+		{
+			public static NextLevelQueueEntry Instance = new NextLevelQueueEntry();
+
+			private NextLevelQueueEntry()
+			{
+			}
+
+			public override void Walk(JoinWalker walker, ref int depth)
+			{
+				depth++;
+			}
 		}
 	}
 }
