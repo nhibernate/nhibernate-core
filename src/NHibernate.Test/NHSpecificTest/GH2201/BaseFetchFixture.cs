@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH2201
 {
-	public class BaseFetchFixture : TestCaseMappingByCode
+	public abstract class BaseFetchFixture : TestCaseMappingByCode
 	{
 		protected int _id;
 		protected int _depth;

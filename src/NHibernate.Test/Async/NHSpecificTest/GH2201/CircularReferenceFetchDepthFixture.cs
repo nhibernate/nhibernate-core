@@ -45,7 +45,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2201
 		[Test]
 		public async Task QueryOverAsync()
 		{
-			using(var logSpy = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
 				Entity e1 = null;
