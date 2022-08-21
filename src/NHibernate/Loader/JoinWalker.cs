@@ -779,7 +779,7 @@ namespace NHibernate.Loader
 
 			if (detectFetchLoops)
 			{
-				AssociationKey associationKey = new AssociationKey(foreignKeyColumns, foreignKeyTable);
+				var associationKey = new AssociationKey(foreignKeyColumns, foreignKeyTable);
 				return !visitedAssociationKeys.Add(associationKey);
 			}
 
