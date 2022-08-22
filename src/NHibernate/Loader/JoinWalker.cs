@@ -15,7 +15,6 @@ namespace NHibernate.Loader
 	public class JoinWalker
 	{
 		private readonly ISessionFactoryImplementor factory;
-		private Queue<QueueEntry> joinQueue = new Queue<QueueEntry>();
 		private int depth;
 		protected readonly IList<OuterJoinableAssociation> associations = new List<OuterJoinableAssociation>();
 		private readonly HashSet<AssociationKey> visitedAssociationKeys = new HashSet<AssociationKey>();
@@ -33,6 +32,7 @@ namespace NHibernate.Loader
 		private string[] aliases;
 		private LockMode[] lockModeArray;
 		private SqlString sql;
+		private readonly Queue<IJoinQueueEntry> _joinQueue = new();
 
 		public string[] CollectionSuffixes
 		{
@@ -192,26 +192,11 @@ namespace NHibernate.Loader
 
 			if (qc != null)
 			{
-				joinQueue.Enqueue(
-					new CollectionQueueEntry()
-					{
-						Persister = qc,
-						Alias = subalias,
-						Path = path,
-						PathAlias = pathAlias,
-					}
-				);
+				_joinQueue.Enqueue(new CollectionJoinQueueEntry(qc, subalias, path, pathAlias));
 			}
 			else if (joinable is IOuterJoinLoadable jl)
 			{
-				joinQueue.Enqueue(
-					new EntityQueueEntry()
-					{
-						Persister = jl,
-						Alias = subalias,
-						Path = path,
-					}
-				);
+				_joinQueue.Enqueue(new EntityJoinQueueEntry(jl, subalias, path));
 			}
 		}
 
@@ -327,9 +312,9 @@ namespace NHibernate.Loader
 
 		protected void ProcessJoins()
 		{
-			while (joinQueue.Count > 0)
+			while (_joinQueue.Count > 0)
 			{
-				QueueEntry entry = joinQueue.Dequeue();
+				var entry = _joinQueue.Dequeue();
 				entry.Walk(this);
 			}
 		}
@@ -466,7 +451,7 @@ namespace NHibernate.Loader
 		{
 			int n = persister.CountSubclassProperties();
 
-			joinQueue.Enqueue(NextLevelQueueEntry.Instance);
+			_joinQueue.Enqueue(NextLevelJoinQueueEntry.Instance);
 			for (int i = 0; i < n; i++)
 			{
 				IType type = persister.GetSubclassPropertyType(i);
@@ -1252,49 +1237,60 @@ namespace NHibernate.Loader
 			return join.GetSelectFragment(entitySuffix, collectionSuffix, next);
 		}
 
-		protected abstract class QueueEntry
+		protected interface IJoinQueueEntry
 		{
-			public abstract void Walk(JoinWalker walker);
+			void Walk(JoinWalker walker);
 		}
 
-		protected abstract class QueueEntry<T> : QueueEntry where T : IJoinable
+		protected class EntityJoinQueueEntry : IJoinQueueEntry
 		{
-			public string Alias { get; set; }
-			public T Persister { get; set; }
-		}
+			private readonly IOuterJoinLoadable _persister;
+			private readonly string _alias;
+			private readonly string _path;
 
-		protected abstract class EntityQueueEntry<T> : QueueEntry<T> where T : IJoinable
-		{
-			public string Path { get; set; }
-		}
-
-		protected class EntityQueueEntry : EntityQueueEntry<IOuterJoinLoadable>
-		{
-			public override void Walk(JoinWalker walker)
+			public EntityJoinQueueEntry(IOuterJoinLoadable persister, string alias, string path)
 			{
-				walker.WalkEntityTree(Persister, Alias, Path);
+				_persister = persister;
+				_alias = alias;
+				_path = path;
+			}
+
+			public void Walk(JoinWalker walker)
+			{
+				walker.WalkEntityTree(_persister, _alias, _path);
 			}
 		}
 
-		protected class CollectionQueueEntry : EntityQueueEntry<IQueryableCollection>
+		protected class CollectionJoinQueueEntry : IJoinQueueEntry
 		{
-			public string PathAlias { get; set; }
+			private readonly IQueryableCollection _persister;
+			private readonly string _alias;
+			private readonly string _path;
+			private readonly string _pathAlias;
 
-			public override void Walk(JoinWalker walker)
+			public CollectionJoinQueueEntry(IQueryableCollection persister, string alias, string path, string pathAlias)
 			{
-				walker.WalkCollectionTree(Persister, Alias, Path, PathAlias);
+				_persister = persister;
+				_alias = alias;
+				_path = path;
+				_pathAlias = pathAlias;
+			}
+
+			public void Walk(JoinWalker walker)
+			{
+				walker.WalkCollectionTree(_persister, _alias, _path, _pathAlias);
 			}
 		}
 
-		protected class NextLevelQueueEntry : QueueEntry
+		protected class NextLevelJoinQueueEntry : IJoinQueueEntry
 		{
-			public static readonly NextLevelQueueEntry Instance = new NextLevelQueueEntry();
+			public static readonly NextLevelJoinQueueEntry Instance = new();
 
-			private NextLevelQueueEntry()
+			private NextLevelJoinQueueEntry()
 			{
 			}
 
-			public override void Walk(JoinWalker walker)
+			public void Walk(JoinWalker walker)
 			{
 				walker.depth++;
 			}
