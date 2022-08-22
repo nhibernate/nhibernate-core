@@ -140,6 +140,7 @@ namespace NHibernate.Type
 		{
 			var typeAliases = new List<string>(aliases);
 			typeAliases.AddRange(GetClrTypeAliases(systemType));
+			typeAliases.AddRange(GetClrTypeAliases(nhibernateType.GetType()));
 
 			RegisterType(nhibernateType, typeAliases, ctorLengthOrScale, @override);
 		}
