@@ -15,7 +15,6 @@ namespace NHibernate.Loader
 	public class JoinWalker
 	{
 		private readonly ISessionFactoryImplementor factory;
-		private int depth;
 		protected readonly IList<OuterJoinableAssociation> associations = new List<OuterJoinableAssociation>();
 		private readonly HashSet<AssociationKey> visitedAssociationKeys = new HashSet<AssociationKey>();
 		private readonly IDictionary<string, IFilter> enabledFilters;
@@ -33,6 +32,7 @@ namespace NHibernate.Loader
 		private LockMode[] lockModeArray;
 		private SqlString sql;
 		private readonly Queue<IJoinQueueEntry> _joinQueue = new();
+		private int _depth;
 
 		public string[] CollectionSuffixes
 		{
@@ -343,7 +343,7 @@ namespace NHibernate.Loader
 					// if the current depth is 0, the root thing being loaded is the
 					// many-to-many collection itself.  Here, it is alright to use
 					// an inner join...
-					bool useInnerJoin = depth == 0;
+					bool useInnerJoin = _depth == 0;
 
 					var joinType =
 						GetJoinType(
@@ -354,7 +354,7 @@ namespace NHibernate.Loader
 							persister.TableName,
 							lhsColumns,
 							!useInnerJoin,
-							depth - 1,
+							_depth - 1,
 							null);
 
 					AddAssociationToJoinTreeIfNecessary(
@@ -384,7 +384,7 @@ namespace NHibernate.Loader
 			string path,
 			string pathAlias)
 		{
-			depth = 0;
+			_depth = 0;
 			visitedAssociationKeys.Clear();
 			OuterJoinableAssociation assoc =
 				InitAssociation(new OuterJoinableAssociation(
@@ -429,7 +429,7 @@ namespace NHibernate.Loader
 					lhsTable,
 					lhsColumns,
 					nullable,
-					depth,
+					_depth,
 					persister.GetCascadeStyle(propertyNumber));
 
 				AddAssociationToJoinTreeIfNecessary(
@@ -514,7 +514,7 @@ namespace NHibernate.Loader
 							lhsTable,
 							lhsColumns,
 							propertyNullability == null || propertyNullability[i],
-							depth,
+							_depth,
 							componentType.GetCascadeStyle(i));
 
 						AddAssociationToJoinTreeIfNecessary(
@@ -582,7 +582,7 @@ namespace NHibernate.Loader
 								persister.TableName,
 								lhsColumns,
 								propertyNullability == null || propertyNullability[i],
-								depth,
+								_depth,
 								compositeType.GetCascadeStyle(i));
 
 						AddAssociationToJoinTreeIfNecessary(
@@ -1292,7 +1292,7 @@ namespace NHibernate.Loader
 
 			public void Walk(JoinWalker walker)
 			{
-				walker.depth++;
+				walker._depth++;
 			}
 		}
 	}
