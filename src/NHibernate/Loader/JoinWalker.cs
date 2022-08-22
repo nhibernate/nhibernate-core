@@ -446,7 +446,6 @@ namespace NHibernate.Loader
 		/// For an entity class, add to a list of associations to be fetched
 		/// by outerjoin
 		/// </summary>
-		/// Since 5.4
 		protected virtual void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path)
 		{
 			int n = persister.CountSubclassProperties();
@@ -474,6 +473,7 @@ namespace NHibernate.Loader
 		/// For an entity class, add to a list of associations to be fetched
 		/// by outerjoin
 		/// </summary>
+		// Since 5.4
 		[Obsolete("Use or override the overload without the currentDepth parameter")]
 		protected virtual void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
 		{
@@ -483,7 +483,6 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// For a component, add to a list of associations to be fetched by outerjoin
 		/// </summary>
-		/// Since 5.4
 		protected void WalkComponentTree(IAbstractComponentType componentType, int begin, string alias, string path,
 										 ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
 		{
@@ -539,6 +538,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// For a component, add to a list of associations to be fetched by outerjoin
 		/// </summary>
+		// Since 5.4
 		[Obsolete("Use or override the overload without the currentDepth parameter")]
 		protected void WalkComponentTree(IAbstractComponentType componentType, int begin, string alias, string path,
 										 int currentDepth, ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
