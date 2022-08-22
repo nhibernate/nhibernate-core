@@ -33,7 +33,7 @@
     
     <DisableImplicitPackageTargetFallback>True</DisableImplicitPackageTargetFallback>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(IsPackable)' == 'True'">
+  <PropertyGroup Condition="$(IsPackable) == True">
     <PackageProjectUrl>https://nhibernate.info</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/nhibernate/nhibernate-core/master/logo/NHibernate-NuGet.png</PackageIconUrl>
     <PackageIcon>NHibernate-NuGet.png</PackageIcon>
