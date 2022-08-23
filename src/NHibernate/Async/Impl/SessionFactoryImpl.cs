@@ -353,6 +353,7 @@ namespace NHibernate.Impl
 			// NH Different implementation
 			if (queryCache != null)
 			{
+				CheckNotClosed();
 				await (queryCache.ClearAsync(cancellationToken)).ConfigureAwait(false);
 				if (queryCaches.Count == 0)
 				{
@@ -377,6 +378,7 @@ namespace NHibernate.Impl
 				{
 					if (settings.IsQueryCacheEnabled)
 					{
+						CheckNotClosed();
 						if (queryCaches.TryGetValue(cacheRegion, out var currentQueryCache))
 						{
 							return currentQueryCache.Value.ClearAsync(cancellationToken);
