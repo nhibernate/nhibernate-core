@@ -20,7 +20,7 @@ namespace NHibernate.Linq.Visitors
 
 		public HqlBooleanExpression Visit(Expression innerKeySelector, Expression outerKeySelector)
 		{
-			return innerKeySelector is NewExpression innerNewExpression&& outerKeySelector is NewExpression outerNewExpression ? VisitNew(innerNewExpression, outerNewExpression)
+			return innerKeySelector is NewExpression innerNewExpression && outerKeySelector is NewExpression outerNewExpression ? VisitNew(innerNewExpression, outerNewExpression)
 				: GenerateEqualityNode(innerKeySelector, outerKeySelector, new HqlGeneratorExpressionVisitor(_parameters));
 		}
 
