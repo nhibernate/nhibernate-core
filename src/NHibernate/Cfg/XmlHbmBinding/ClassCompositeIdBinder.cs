@@ -11,8 +11,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private Component compositeId;
 		//Since v5.2
 		[Obsolete("Please use constructor that accepts mappings parameter instead.")]
-		public ClassCompositeIdBinder(ClassBinder parent) : base(parent) {}
-		public ClassCompositeIdBinder(Mappings mappings) : base(mappings) {}
+		public ClassCompositeIdBinder(ClassBinder parent) : base(parent) { }
+		public ClassCompositeIdBinder(Mappings mappings) : base(mappings) { }
 
 		public void BindCompositeId(HbmCompositeId idSchema, PersistentClass rootClass)
 		{
@@ -107,7 +107,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					BindManyToOne(keyManyToOneSchema, manyToOne, propertyName, false);
 
 					Property property = CreateProperty(manyToOne, keyManyToOneSchema.name, compositeId.ComponentClass,
-					                                   keyManyToOneSchema);
+													   keyManyToOneSchema);
 
 					compositeId.AddProperty(property);
 				}
@@ -164,15 +164,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		private void BindManyToOne(HbmKeyManyToOne keyManyToOneSchema, ManyToOne manyToOne, string defaultColumnName,
-		                           bool isNullable)
+								   bool isNullable)
 		{
 			new ColumnsBinder(manyToOne, mappings).Bind(keyManyToOneSchema.Columns, isNullable,
 																									() => new HbmColumn { name = mappings.NamingStrategy.PropertyToColumnName(defaultColumnName) });
 
 			manyToOne.FetchMode = FetchMode.Default;
 			manyToOne.IsLazy = !keyManyToOneSchema.lazySpecified
-			                   	? manyToOne.IsLazy
-			                   	: keyManyToOneSchema.lazy == HbmRestrictedLaziness.Proxy;
+								   ? manyToOne.IsLazy
+								   : keyManyToOneSchema.lazy == HbmRestrictedLaziness.Proxy;
 
 			manyToOne.ReferencedEntityName = GetEntityName(keyManyToOneSchema, mappings);
 
@@ -185,12 +185,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		private Property CreateProperty(ToOne value, string propertyName, System.Type parentClass,
-		                                HbmKeyManyToOne keyManyToOneSchema)
+										HbmKeyManyToOne keyManyToOneSchema)
 		{
 			if (parentClass != null && value.IsSimpleValue)
 			{
 				value.SetTypeUsingReflection(parentClass.AssemblyQualifiedName, propertyName,
-				                             keyManyToOneSchema.access ?? mappings.DefaultAccess);
+											 keyManyToOneSchema.access ?? mappings.DefaultAccess);
 			}
 
 			string propertyRef = value.ReferencedPropertyName;
@@ -200,7 +200,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 
 			value.CreateForeignKey();
-			var prop = new Property {Value = value};
+			var prop = new Property { Value = value };
 			BindProperty(keyManyToOneSchema, prop);
 
 			return prop;
@@ -237,12 +237,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		private Property CreateProperty(SimpleValue value, string propertyName, System.Type parentClass,
-		                                HbmKeyProperty keyPropertySchema)
+										HbmKeyProperty keyPropertySchema)
 		{
 			if (parentClass != null && value.IsSimpleValue)
 			{
 				value.SetTypeUsingReflection(parentClass.AssemblyQualifiedName, propertyName,
-				                             keyPropertySchema.access ?? mappings.DefaultAccess);
+											 keyPropertySchema.access ?? mappings.DefaultAccess);
 			}
 
 			// This is done here 'cos we might only know the type here (ugly!)
@@ -257,7 +257,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			}
 
 			value.CreateForeignKey();
-			var prop = new Property {Value = value};
+			var prop = new Property { Value = value };
 			BindProperty(keyPropertySchema, prop);
 
 			return prop;

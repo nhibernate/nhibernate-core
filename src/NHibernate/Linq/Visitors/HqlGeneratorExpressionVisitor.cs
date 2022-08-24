@@ -99,15 +99,15 @@ namespace NHibernate.Linq.Visitors
 					return VisitMemberExpression((MemberExpression) expression);
 				case ExpressionType.Call:
 					return VisitMethodCallExpression((MethodCallExpression) expression);
-					//case ExpressionType.New:
-					//    return VisitNew((NewExpression)expression);
-					//case ExpressionType.NewArrayBounds:
+				//case ExpressionType.New:
+				//    return VisitNew((NewExpression)expression);
+				//case ExpressionType.NewArrayBounds:
 				case ExpressionType.NewArrayInit:
 					return VisitNewArrayExpression((NewArrayExpression) expression);
-					//case ExpressionType.MemberInit:
-					//    return VisitMemberInitExpression((MemberInitExpression)expression);
-					//case ExpressionType.ListInit:
-					//    return VisitListInitExpression((ListInitExpression)expression);
+				//case ExpressionType.MemberInit:
+				//    return VisitMemberInitExpression((MemberInitExpression)expression);
+				//case ExpressionType.ListInit:
+				//    return VisitListInitExpression((ListInitExpression)expression);
 				case ExpressionType.Parameter:
 					return VisitParameterExpression((ParameterExpression) expression);
 				case ExpressionType.TypeIs:
@@ -352,7 +352,7 @@ possible solutions:
 					return _hqlTreeBuilder.BooleanOr(lhs.ToBooleanExpression(), rhs.ToBooleanExpression());
 
 				case ExpressionType.Add:
-					if (expression.Left.Type == typeof (string) && expression.Right.Type == typeof(string))
+					if (expression.Left.Type == typeof(string) && expression.Right.Type == typeof(string))
 					{
 						return _hqlTreeBuilder.MethodCall("concat", lhs, rhs);
 					}
@@ -537,7 +537,7 @@ possible solutions:
 					return IsCastRequired(expression.Operand, castType, out var needTransparentCast) && castable
 						? _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), castType)
 						// Make a transparent cast when an IType exists, so that it can be used to retrieve the value from the data reader
-						: needTransparentCast 
+						: needTransparentCast
 							? _hqlTreeBuilder.TransparentCast(VisitExpression(expression.Operand).AsExpression(), castType)
 							: VisitExpression(expression.Operand);
 			}
@@ -622,7 +622,7 @@ possible solutions:
 							   ? VisitExpression(expression.IfFalse).ToArithmeticExpression()
 							   : null);
 
-			HqlExpression @case = _hqlTreeBuilder.Case(new[] {_hqlTreeBuilder.When(test, ifTrue)}, ifFalse);
+			HqlExpression @case = _hqlTreeBuilder.Case(new[] { _hqlTreeBuilder.When(test, ifTrue) }, ifFalse);
 
 			// If both operands are parameters, HQL will not be able to determine the resulting type before
 			// parameters binding. But it has to compute result set columns type before parameters are bound,
@@ -687,7 +687,7 @@ possible solutions:
 
 			// Some dialects can map several sql types into one, cast only if the dialect types are different
 			if (!_parameters.SessionFactory.Dialect.TryGetCastTypeName(sqlTypes[0], out var castTypeName) ||
-			    !_parameters.SessionFactory.Dialect.TryGetCastTypeName(toSqlTypes[0], out var toCastTypeName))
+				!_parameters.SessionFactory.Dialect.TryGetCastTypeName(toSqlTypes[0], out var toCastTypeName))
 			{
 				return false; // The dialect does not support such cast
 			}
@@ -715,7 +715,7 @@ possible solutions:
 				return true; // Fallback to the old behavior
 			}
 
-			var fnReturnType = sqlFunction.GetEffectiveReturnType(new[] {argumentType}, _parameters.SessionFactory, false);
+			var fnReturnType = sqlFunction.GetEffectiveReturnType(new[] { argumentType }, _parameters.SessionFactory, false);
 			return fnReturnType == null || IsCastRequired(fnReturnType, returnNhType, out _);
 		}
 	}

@@ -45,7 +45,7 @@ namespace NHibernate.Linq.ReWriters
 			if (resultOperators.Count == 0 || HasJustAllFlattenableOperator(resultOperators))
 			{
 
-				if (subQueryModel.SelectClause.Selector is QuerySourceReferenceExpression selectQuerySource&& selectQuerySource.ReferencedQuerySource == subQueryModel.MainFromClause)
+				if (subQueryModel.SelectClause.Selector is QuerySourceReferenceExpression selectQuerySource && selectQuerySource.ReferencedQuerySource == subQueryModel.MainFromClause)
 				{
 					foreach (var resultOperator in resultOperators)
 					{

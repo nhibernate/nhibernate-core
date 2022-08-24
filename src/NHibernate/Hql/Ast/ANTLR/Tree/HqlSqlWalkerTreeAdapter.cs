@@ -55,7 +55,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				case HqlSqlWalker.INDEX_OP:
 					ret = new IndexNode(payload);
 					break;
-					// Alias references and identifiers use the same node class.
+				// Alias references and identifiers use the same node class.
 				case HqlSqlWalker.ALIAS_REF:
 				case HqlSqlWalker.IDENT:
 					ret = new IdentNode(payload);

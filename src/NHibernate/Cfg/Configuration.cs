@@ -554,11 +554,11 @@ namespace NHibernate.Cfg
 			try
 			{
 				var dialect = new Lazy<Dialect.Dialect>(() => Dialect.Dialect.GetDialect(properties));
-				OnBeforeBindMapping(new BindMappingEventArgs(mappingDocument, documentFileName) {LazyDialect = dialect});
+				OnBeforeBindMapping(new BindMappingEventArgs(mappingDocument, documentFileName) { LazyDialect = dialect });
 				var mappings = CreateMappings();
 				mappings.LazyDialect = dialect;
 				new MappingRootBinder(mappings).Bind(mappingDocument);
-				OnAfterBindMapping(new BindMappingEventArgs(mappingDocument, documentFileName) {LazyDialect = dialect});
+				OnAfterBindMapping(new BindMappingEventArgs(mappingDocument, documentFileName) { LazyDialect = dialect });
 			}
 			catch (Exception e)
 			{
@@ -2498,7 +2498,7 @@ namespace NHibernate.Cfg
 				if (!pc.IsInherited)
 				{
 
-					if (pc.Identifier.CreateIdentifierGenerator(dialect, defaultCatalog, defaultSchema, (RootClass)pc)is IPersistentIdentifierGenerator ig)
+					if (pc.Identifier.CreateIdentifierGenerator(dialect, defaultCatalog, defaultSchema, (RootClass) pc) is IPersistentIdentifierGenerator ig)
 					{
 						generators[ig.GeneratorKey()] = ig;
 					}
@@ -2510,7 +2510,7 @@ namespace NHibernate.Cfg
 				if (collection.IsIdentified)
 				{
 
-					if (((IdentifierCollection)collection).Identifier.CreateIdentifierGenerator(dialect, defaultCatalog, defaultSchema, null)is IPersistentIdentifierGenerator ig)
+					if (((IdentifierCollection) collection).Identifier.CreateIdentifierGenerator(dialect, defaultCatalog, defaultSchema, null) is IPersistentIdentifierGenerator ig)
 					{
 						generators[ig.GeneratorKey()] = ig;
 					}

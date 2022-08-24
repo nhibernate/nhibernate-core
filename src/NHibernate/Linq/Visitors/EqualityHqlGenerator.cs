@@ -7,7 +7,7 @@ namespace NHibernate.Linq.Visitors
 	/// <summary>
 	/// Builds HQL Equality nodes and used in joins
 	/// </summary>
-	public class EqualityHqlGenerator 
+	public class EqualityHqlGenerator
 	{
 		private readonly HqlTreeBuilder _hqlTreeBuilder;
 		private readonly VisitorParameters _parameters;
@@ -21,7 +21,7 @@ namespace NHibernate.Linq.Visitors
 		public HqlBooleanExpression Visit(Expression innerKeySelector, Expression outerKeySelector)
 		{
 			var innerNewExpression = innerKeySelector as NewExpression;
-			return innerNewExpression != null && outerKeySelector is NewExpression outerNewExpression				? VisitNew(innerNewExpression, outerNewExpression)
+			return innerNewExpression != null && outerKeySelector is NewExpression outerNewExpression ? VisitNew(innerNewExpression, outerNewExpression)
 				: GenerateEqualityNode(innerKeySelector, outerKeySelector, new HqlGeneratorExpressionVisitor(_parameters));
 		}
 

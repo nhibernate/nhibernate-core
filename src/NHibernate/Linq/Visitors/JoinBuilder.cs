@@ -27,7 +27,7 @@ namespace NHibernate.Linq.Visitors
 			_queryModel = queryModel;
 			AddJoinMethod = AddJoin;
 		}
-		
+
 		internal System.Action<QueryModel, NhJoinClause> AddJoinMethod { get; }
 
 		public IEnumerable<NhJoinClause> Joins
@@ -70,7 +70,7 @@ namespace NHibernate.Linq.Visitors
 			var bodyClause = source as IBodyClause;
 			if (bodyClause != null && _queryModel.BodyClauses.Contains(bodyClause))
 				return true;
-			return source is ResultOperatorBase resultOperatorBase&& _queryModel.ResultOperators.Contains(resultOperatorBase);
+			return source is ResultOperatorBase resultOperatorBase && _queryModel.ResultOperators.Contains(resultOperatorBase);
 		}
 
 		private void AddJoin(QueryModel queryModel, NhJoinClause joinClause)

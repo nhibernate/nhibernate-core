@@ -19,7 +19,7 @@ namespace NHibernate.Linq.GroupBy
 		public static void ReWrite(QueryModel queryModel)
 		{
 
-			if (queryModel.MainFromClause.FromExpression is SubQueryExpression subQueryExpression&&
+			if (queryModel.MainFromClause.FromExpression is SubQueryExpression subQueryExpression &&
 				subQueryExpression.QueryModel.ResultOperators.All(x => PagingResultOperators.Contains(x.GetType())))
 			{
 				FlattenSubQuery(subQueryExpression, queryModel);
@@ -48,7 +48,7 @@ namespace NHibernate.Linq.GroupBy
 
 				var newSubQueryModel = subQueryModel.Clone();
 				newSubQueryModel.ResultOperators.Add(cro);
-				newSubQueryModel.ResultTypeOverride = typeof (bool);
+				newSubQueryModel.ResultTypeOverride = typeof(bool);
 
 				var where = new WhereClause(new SubQueryExpression(newSubQueryModel));
 				queryModel.BodyClauses.Add(where);

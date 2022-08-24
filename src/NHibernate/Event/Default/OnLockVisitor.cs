@@ -42,7 +42,7 @@ namespace NHibernate.Event.Default
 						else
 						{
 							// a "detached" collection that belonged to a different entity
-                            throw new HibernateException("reassociated object has dirty collection reference: " + persistentCollection.Role);
+							throw new HibernateException("reassociated object has dirty collection reference: " + persistentCollection.Role);
 						}
 					}
 					else
@@ -50,7 +50,7 @@ namespace NHibernate.Event.Default
 						// a collection loaded in the current session
 						// can not possibly be the collection belonging
 						// to the entity passed to update()
-                        throw new HibernateException("reassociated object has dirty collection reference: " + persistentCollection.Role);
+						throw new HibernateException("reassociated object has dirty collection reference: " + persistentCollection.Role);
 					}
 				}
 				else

@@ -180,7 +180,7 @@ namespace NHibernate.Loader
 						subalias,
 						joinType,
 						//for many-to-many with clause is applied with OuterJoinableAssociation created for entity persister so simply skip it here
-						qc?.IsManyToMany == true ? null :GetWithClause(path, pathAlias),
+						qc?.IsManyToMany == true ? null : GetWithClause(path, pathAlias),
 						Factory,
 						enabledFilters,
 						GetSelectMode(path)),
@@ -201,7 +201,7 @@ namespace NHibernate.Loader
 			}
 		}
 
-		protected  virtual SelectMode GetSelectMode(string path)
+		protected virtual SelectMode GetSelectMode(string path)
 		{
 			return SelectMode.Undefined;
 		}
@@ -210,7 +210,7 @@ namespace NHibernate.Loader
 		{
 			return null;
 		}
-		
+
 		private struct DependentAlias2
 		{
 			public DependentAlias2(string alias, ICollection<string> dependsOn)
@@ -317,7 +317,7 @@ namespace NHibernate.Loader
 		{
 			if (persister.IsOneToMany)
 			{
-				WalkEntityTree((IOuterJoinLoadable)persister.ElementPersister, alias, path, currentDepth);
+				WalkEntityTree((IOuterJoinLoadable) persister.ElementPersister, alias, path, currentDepth);
 			}
 			else
 			{
@@ -387,7 +387,8 @@ namespace NHibernate.Loader
 					GetWithClause(path, pathAlias),
 					Factory,
 					enabledFilters,
-					GetSelectMode(path)) {ForceFilter = true},
+					GetSelectMode(path))
+				{ ForceFilter = true },
 				path);
 			AddAssociation(assoc);
 		}
@@ -679,7 +680,7 @@ namespace NHibernate.Loader
 						{
 							//TODO: look at the owning property and check that it 
 							//      isn't lazy (by instrumentation)
-							EntityType entityType = (EntityType)type;
+							EntityType entityType = (EntityType) type;
 							IEntityPersister persister = factory.GetEntityPersister(entityType.GetAssociatedEntityName());
 							return !persister.HasProxy;
 						}
@@ -824,11 +825,13 @@ namespace NHibernate.Loader
 			return orderBy.Append(StringHelper.CommaSpace, ass);
 		}
 
-		protected SqlString MergeOrderings(string ass, SqlString orderBy) {
+		protected SqlString MergeOrderings(string ass, SqlString orderBy)
+		{
 			return this.MergeOrderings(new SqlString(ass), orderBy);
 		}
 
-		protected SqlString MergeOrderings(string ass, string orderBy) {
+		protected SqlString MergeOrderings(string ass, string orderBy)
+		{
 			return this.MergeOrderings(new SqlString(ass), new SqlString(orderBy));
 		}
 
@@ -864,7 +867,7 @@ namespace NHibernate.Loader
 						}
 					}
 
-					if (TableGroupJoinHelper.ProcessAsTableGroupJoin(new[] {oj}, new[] {oj.On, filter}, true, outerjoin, alias => true, factory))
+					if (TableGroupJoinHelper.ProcessAsTableGroupJoin(new[] { oj }, new[] { oj.On, filter }, true, outerjoin, alias => true, factory))
 						continue;
 
 					oj.AddJoins(outerjoin);
@@ -968,8 +971,9 @@ namespace NHibernate.Loader
 				last = oj;
 			}
 
-			if (buf.Count > 0) {
-				buf.RemoveAt(buf.Count-1);
+			if (buf.Count > 0)
+			{
+				buf.RemoveAt(buf.Count - 1);
 			}
 
 			return buf.ToSqlString();
@@ -995,7 +999,7 @@ namespace NHibernate.Loader
 				var qualifiedName = !string.IsNullOrEmpty(tableAlias)
 					? tableAlias + StringHelper.Dot + columnName
 					: columnName;
-				
+
 				var whereString = new SqlStringBuilder(batchSize * 5);
 				whereString.Add(qualifiedName);
 				if (batchSize == 1)
@@ -1116,7 +1120,7 @@ namespace NHibernate.Loader
 				}
 				else
 				{
-					IQueryableCollection collPersister = (IQueryableCollection)oj.Joinable;
+					IQueryableCollection collPersister = (IQueryableCollection) oj.Joinable;
 					if (oj.ShouldFetchCollectionPersister())
 					{
 						//it must be a collection fetch

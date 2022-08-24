@@ -61,7 +61,7 @@ namespace NHibernate.Tuple
 				{
 					return true;
 				}
-				string type = (string)that[KEY];
+				string type = (string) that[KEY];
 				return type == null || isInstanceEntityNames.Contains(type);
 			}
 			else

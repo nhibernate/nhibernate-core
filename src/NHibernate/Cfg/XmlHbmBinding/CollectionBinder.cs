@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
-
 using Array = NHibernate.Mapping.Array;
-using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -17,7 +16,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		public CollectionBinder(Mappings mappings, Dialect.Dialect dialect) : base(mappings, dialect)
 		{
 		}
-		
+
 		public CollectionBinder(Mappings mappings) : base(mappings)
 		{
 		}
@@ -26,33 +25,33 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string propertyFullPath, PersistentClass owner, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			var collectionType = collectionMapping.GetType();
-			if (collectionType == typeof (HbmBag))
+			if (collectionType == typeof(HbmBag))
 			{
-				return CreateBag((HbmBag)collectionMapping, className, propertyFullPath, owner, containingType, inheritedMetas);
+				return CreateBag((HbmBag) collectionMapping, className, propertyFullPath, owner, containingType, inheritedMetas);
 			}
-			else if (collectionType == typeof (HbmSet))
+			else if (collectionType == typeof(HbmSet))
 			{
-				return CreateSet((HbmSet)collectionMapping, className, propertyFullPath, owner, containingType, inheritedMetas);
+				return CreateSet((HbmSet) collectionMapping, className, propertyFullPath, owner, containingType, inheritedMetas);
 			}
-			else if (collectionType == typeof (HbmList))
+			else if (collectionType == typeof(HbmList))
 			{
-				return CreateList((HbmList)collectionMapping, className, propertyFullPath, owner, containingType, inheritedMetas);
+				return CreateList((HbmList) collectionMapping, className, propertyFullPath, owner, containingType, inheritedMetas);
 			}
-			else if (collectionType == typeof (HbmMap))
+			else if (collectionType == typeof(HbmMap))
 			{
-				return CreateMap((HbmMap)collectionMapping, className, propertyFullPath, owner, containingType, inheritedMetas);
+				return CreateMap((HbmMap) collectionMapping, className, propertyFullPath, owner, containingType, inheritedMetas);
 			}
-			else if (collectionType == typeof (HbmIdbag))
+			else if (collectionType == typeof(HbmIdbag))
 			{
-				return CreateIdentifierBag((HbmIdbag)collectionMapping, className, propertyFullPath, owner, containingType, inheritedMetas);
+				return CreateIdentifierBag((HbmIdbag) collectionMapping, className, propertyFullPath, owner, containingType, inheritedMetas);
 			}
-			else if (collectionType == typeof (HbmArray))
+			else if (collectionType == typeof(HbmArray))
 			{
-				return CreateArray((HbmArray)collectionMapping, className, propertyFullPath, owner, containingType, inheritedMetas);
+				return CreateArray((HbmArray) collectionMapping, className, propertyFullPath, owner, containingType, inheritedMetas);
 			}
-			else if (collectionType == typeof (HbmPrimitiveArray))
+			else if (collectionType == typeof(HbmPrimitiveArray))
 			{
-				return CreatePrimitiveArray((HbmPrimitiveArray)collectionMapping, className, propertyFullPath, owner, containingType, inheritedMetas);
+				return CreatePrimitiveArray((HbmPrimitiveArray) collectionMapping, className, propertyFullPath, owner, containingType, inheritedMetas);
 			}
 			throw new MappingException("Not supported collection mapping element:" + collectionType);
 		}
@@ -115,7 +114,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			PersistentClass owner, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			var array = new PrimitiveArray(owner);
-			BindPrimitiveArray(primitiveArrayMapping, array, prefix, path, containingType,inheritedMetas);
+			BindPrimitiveArray(primitiveArrayMapping, array, prefix, path, containingType, inheritedMetas);
 			AddPrimitiveArraySecondPass(primitiveArrayMapping, array, inheritedMetas);
 			return array;
 		}
@@ -164,7 +163,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 																	 "could not instantiate collection persister class: {0}");
 			}
 
-			if(!string.IsNullOrEmpty(collectionMapping.CollectionType))
+			if (!string.IsNullOrEmpty(collectionMapping.CollectionType))
 			{
 				TypeDef typeDef = mappings.GetTypeDef(collectionMapping.CollectionType);
 				if (typeDef != null)
@@ -263,7 +262,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void InitLaziness(ICollectionPropertiesMapping collectionMapping, Mapping.Collection fetchable)
 		{
 			var lazyMapping = collectionMapping.Lazy;
-			if(!lazyMapping.HasValue)
+			if (!lazyMapping.HasValue)
 			{
 				fetchable.IsLazy = mappings.DefaultLazy;
 				fetchable.ExtraLazy = false;
@@ -354,7 +353,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				HbmOneToMany oneToMany;
 				HbmManyToMany manyToMany;
 				HbmCompositeElement compositeElement;
-				if((element = arrayMapping.ElementRelationship as HbmElement) != null)
+				if ((element = arrayMapping.ElementRelationship as HbmElement) != null)
 				{
 					string typeName;
 					var typeAttribute = element.Type;
@@ -368,7 +367,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 					model.ElementClassName = type.ReturnedClass.AssemblyQualifiedName;
 				}
-				else if((oneToMany = arrayMapping.ElementRelationship as HbmOneToMany) != null)
+				else if ((oneToMany = arrayMapping.ElementRelationship as HbmOneToMany) != null)
 				{
 					model.ElementClassName = GetQualifiedClassName(oneToMany.@class, mappings);
 				}
@@ -385,7 +384,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddListSecondPass(HbmList listMapping, List model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
+			mappings.AddSecondPass(delegate (IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
 					BindListSecondPass(listMapping, model, persistentClasses, inheritedMetas);
@@ -395,7 +394,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddArraySecondPass(HbmArray arrayMapping, Array model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
+			mappings.AddSecondPass(delegate (IDictionary<string, PersistentClass> persistentClasses)
 			{
 				PreCollectionSecondPass(model);
 				BindArraySecondPass(arrayMapping, model, persistentClasses, inheritedMetas);
@@ -405,7 +404,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddPrimitiveArraySecondPass(HbmPrimitiveArray primitiveArrayMapping, Array model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
+			mappings.AddSecondPass(delegate (IDictionary<string, PersistentClass> persistentClasses)
 			{
 				PreCollectionSecondPass(model);
 				BindPrimitiveArraySecondPass(primitiveArrayMapping, model, persistentClasses, inheritedMetas);
@@ -415,7 +414,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddMapSecondPass(HbmMap mapMapping, Map model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
+			mappings.AddSecondPass(delegate (IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
 					BindMapSecondPass(mapMapping, model, persistentClasses, inheritedMetas);
@@ -425,7 +424,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddSetSecondPass(HbmSet setMapping, Set model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
+			mappings.AddSecondPass(delegate (IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
 					BindSetSecondPass(setMapping, model, persistentClasses, inheritedMetas);
@@ -435,7 +434,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddIdentifierCollectionSecondPass(HbmIdbag idbagMapping, IdentifierCollection model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
+			mappings.AddSecondPass(delegate (IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
 					BindIdentifierCollectionSecondPass(idbagMapping, model, persistentClasses, inheritedMetas);
@@ -445,7 +444,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void AddCollectionSecondPass(ICollectionPropertiesMapping collectionMapping, Mapping.Collection model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			mappings.AddSecondPass(delegate(IDictionary<string, PersistentClass> persistentClasses)
+			mappings.AddSecondPass(delegate (IDictionary<string, PersistentClass> persistentClasses)
 				{
 					PreCollectionSecondPass(model);
 					BindCollectionSecondPass(collectionMapping, model, persistentClasses, inheritedMetas);
@@ -498,7 +497,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				string info = "";
 				if (collection.IsIndexed)
-					info += ", index: " + string.Join(",", ((IndexedCollection)collection).Index.ColumnIterator.Select(c => c.Text).ToArray());
+					info += ", index: " + string.Join(",", ((IndexedCollection) collection).Index.ColumnIterator.Select(c => c.Text).ToArray());
 				if (collection.IsOneToMany)
 					info += ", one-to-many: " + collection.Element.Type.Name;
 				else
@@ -523,7 +522,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (NeedBackref(model))
 			{
-				string entityName = ((OneToMany)model.Element).ReferencedEntityName;
+				string entityName = ((OneToMany) model.Element).ReferencedEntityName;
 				PersistentClass referenced = mappings.GetClass(entityName);
 				var ib = new IndexBackref();
 				ib.Name = '_' + model.OwnerEntityName + "." + listMapping.Name + "IndexBackref";
@@ -679,13 +678,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				var any = new Any(model.CollectionTable);
 				BindIndexManyToAny(indexManyToAnyMapping, any, model.IsOneToMany);
-				model.Index = any;				
+				model.Index = any;
 			}
 
-			bool indexIsFormula = model.Index.ColumnIterator.Any(x=> x.IsFormula);
+			bool indexIsFormula = model.Index.ColumnIterator.Any(x => x.IsFormula);
 			if (NeedBackref(model) && !indexIsFormula)
 			{
-				string entityName = ((OneToMany)model.Element).ReferencedEntityName;
+				string entityName = ((OneToMany) model.Element).ReferencedEntityName;
 				PersistentClass referenced = mappings.GetClass(entityName);
 				var ib = new IndexBackref();
 				ib.Name = '_' + model.OwnerEntityName + "." + mapMapping.Name + "IndexBackref";
@@ -737,7 +736,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			if (model.IsOneToMany)
 			{
-				var oneToMany = (OneToMany)model.Element;
+				var oneToMany = (OneToMany) model.Element;
 				string associatedEntityName = oneToMany.ReferencedEntityName;
 				PersistentClass persistentClass;
 				if (persistentClasses.TryGetValue(associatedEntityName, out persistentClass) == false)
@@ -749,7 +748,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					// NH: bidirectional one-to-many with a class splitted in more tables; have to find in which table is the inverse side
 					foreach (var joined in persistentClass.JoinClosureIterator)
 					{
-						if (collectionMapping.Key.Columns.Select(x=> x.name).All(x => joined.Table.ColumnIterator.Select(jc=> jc.Name).Contains(x)))
+						if (collectionMapping.Key.Columns.Select(x => x.name).All(x => joined.Table.ColumnIterator.Select(jc => jc.Name).Contains(x)))
 						{
 							model.CollectionTable = joined.Table;
 							break;
@@ -790,13 +789,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				BindManyToAny(manyToAnyMapping, model);
 			}
-			
+
 			BindCache(collectionMapping.Cache, model);
 
 			if (NeedBackref(model))
 			{
 				// for non-inverse one-to-many, with a not-null fk, add a backref!
-				string entityName = ((OneToMany)model.Element).ReferencedEntityName;
+				string entityName = ((OneToMany) model.Element).ReferencedEntityName;
 				PersistentClass referenced = mappings.GetClass(entityName);
 				var prop = new Backref();
 				prop.Name = '_' + model.OwnerEntityName + "." + collectionMapping.Name + "Backref";
@@ -829,7 +828,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			manyToMany.IsIgnoreNotFound = manyToManyMapping.NotFoundMode == HbmNotFoundMode.Ignore;
 
-			if(!string.IsNullOrEmpty(manyToManyMapping.foreignkey))
+			if (!string.IsNullOrEmpty(manyToManyMapping.foreignkey))
 			{
 				manyToMany.ForeignKeyName = manyToManyMapping.foreignkey;
 			}
@@ -853,9 +852,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			new ColumnsBinder(any, Mappings).Bind(manyToAnyMapping.Columns, true,
 												  () =>
 												  new HbmColumn
-													{
-														name = mappings.NamingStrategy.PropertyToColumnName(manyToAnyMapping.column1)
-													});
+												  {
+													  name = mappings.NamingStrategy.PropertyToColumnName(manyToAnyMapping.column1)
+												  });
 		}
 
 		private void BindElement(HbmElement elementMapping, Mapping.Collection model)
@@ -906,7 +905,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				mappings.AddUniquePropertyReference(model.OwnerEntityName, propRef);
 			}
 			var key = new DependantValue(model.CollectionTable, keyValue)
-						{IsCascadeDeleteEnabled = keyMapping.ondelete == HbmOndelete.Cascade};
+			{ IsCascadeDeleteEnabled = keyMapping.ondelete == HbmOndelete.Cascade };
 
 			new ValuePropertyBinder(key, Mappings).BindSimpleValue(keyMapping, Mapping.Collection.DefaultKeyColumnName, model.IsOneToMany);
 

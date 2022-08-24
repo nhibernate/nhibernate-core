@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
-using NHibernate.Engine;
-using NHibernate.SqlCommand;
-using NHibernate.Util;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using NHibernate.Engine;
+using NHibernate.SqlCommand;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {
@@ -223,7 +223,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				return new[] {this}.Concat(SubclassIterator.SelectMany(x => x.SubclassClosureIterator));
+				return new[] { this }.Concat(SubclassIterator.SelectMany(x => x.SubclassClosureIterator));
 			}
 		}
 
@@ -878,7 +878,7 @@ namespace NHibernate.Mapping
 					else
 					{
 						//flat recursive algorithm
-						property = ((Component)property.Value).GetProperty(element);
+						property = ((Component) property.Value).GetProperty(element);
 					}
 				}
 			}
@@ -1056,7 +1056,7 @@ namespace NHibernate.Mapping
 			{
 				if (!columnOrFormula.IsFormula)
 				{
-					Column col = (Column)columnOrFormula;
+					Column col = (Column) columnOrFormula;
 					if (!distinctColumns.Add(col.Name))
 					{
 						// TODO: Check for column duplication
@@ -1118,7 +1118,7 @@ namespace NHibernate.Mapping
 				table.Name = temporaryIdTableName;
 				foreach (Column column in Table.PrimaryKey.ColumnIterator)
 				{
-					table.AddColumn((Column)column.Clone());
+					table.AddColumn((Column) column.Clone());
 				}
 				temporaryIdTableDDL = table.SqlTemporaryTableCreateString(dialect, mapping);
 			}

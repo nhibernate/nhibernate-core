@@ -191,16 +191,16 @@ namespace NHibernate.SqlCommand
 				if (initialCapacity < sqlBuilder.Count)
 				{
 					log.Debug("The initial capacity was set too low at: {0} for the InsertSqlBuilder that needed a capacity of: {1} for the table {2}",
-					          initialCapacity,
-					          sqlBuilder.Count,
-					          tableName);
+							  initialCapacity,
+							  sqlBuilder.Count,
+							  tableName);
 				}
 				else if (initialCapacity > 16 && ((float) initialCapacity / sqlBuilder.Count) > 1.2)
 				{
 					log.Debug("The initial capacity was set too high at: {0} for the InsertSqlBuilder that needed a capacity of: {1} for the table {2}",
-					          initialCapacity,
-					          sqlBuilder.Count,
-					          tableName);
+							  initialCapacity,
+							  sqlBuilder.Count,
+							  tableName);
 				}
 			}
 

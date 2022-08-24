@@ -12,7 +12,7 @@ namespace NHibernate.Loader.Custom.Sql
 {
 	public class SQLQueryReturnProcessor
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (SQLQueryReturnProcessor));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SQLQueryReturnProcessor));
 
 		private readonly INativeSQLQueryReturn[] queryReturns;
 
@@ -103,7 +103,7 @@ namespace NHibernate.Loader.Custom.Sql
 
 		private IDictionary<string, string[]> InternalGetPropertyResultsMap(string alias)
 		{
-			return alias2Return[alias] is NativeSQLQueryNonScalarReturn rtn? rtn.PropertyResultsMap : null;
+			return alias2Return[alias] is NativeSQLQueryNonScalarReturn rtn ? rtn.PropertyResultsMap : null;
 		}
 
 		private bool HasPropertyResultMap(string alias)
@@ -178,7 +178,7 @@ namespace NHibernate.Loader.Custom.Sql
 			}
 		}
 
-		private void ProcessScalarReturn(NativeSQLQueryScalarReturn typeReturn) {}
+		private void ProcessScalarReturn(NativeSQLQueryScalarReturn typeReturn) { }
 
 		private void ProcessRootReturn(NativeSQLQueryRootReturn rootReturn)
 		{
@@ -382,7 +382,7 @@ namespace NHibernate.Loader.Custom.Sql
 							new CollectionFetchReturn(alias, ownerCustomReturn, rtn.OwnerProperty, collectionAliases, elementEntityAliases,
 													  rtn.LockMode);
 					}
-					else 
+					else
 					{
 						IEntityAliases entityAliases;
 						if (queryHadAliases || HasPropertyResultMap(alias))

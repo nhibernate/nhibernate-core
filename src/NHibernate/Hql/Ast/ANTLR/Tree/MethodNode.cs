@@ -15,7 +15,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class MethodNode : AbstractSelectExpression 
+	public class MethodNode : AbstractSelectExpression
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(MethodNode));
 
@@ -28,34 +28,34 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public MethodNode(IToken token) : base(token)
 		{
 		}
-		
+
 		public virtual void Resolve(bool inSelect)
 		{
 			// Get the function name node.
 			IASTNode name = GetChild(0);
-			InitializeMethodNode( name, inSelect );
+			InitializeMethodNode(name, inSelect);
 			IASTNode exprList = name.NextSibling;
 
 			// If the expression list has exactly one expression, and the type of the expression is a collection
 			// then this might be a collection function, such as index(c) or size(c).
-			if ( (exprList != null && exprList.ChildCount == 1) && IsCollectionPropertyMethod ) 
+			if ((exprList != null && exprList.ChildCount == 1) && IsCollectionPropertyMethod)
 			{
-				CollectionProperty( exprList.GetChild(0), name );
+				CollectionProperty(exprList.GetChild(0), name);
 			}
-			else 
+			else
 			{
-				DialectFunction( exprList );
+				DialectFunction(exprList);
 			}
 		}
 
 		public override void SetScalarColumnText(int i)
 		{
-			if ( _selectColumns == null ) 
-			{ 	// Dialect function
-				ColumnHelper.GenerateSingleScalarColumn(Walker.ASTFactory, this, i );
+			if (_selectColumns == null)
+			{   // Dialect function
+				ColumnHelper.GenerateSingleScalarColumn(Walker.ASTFactory, this, i);
 			}
-			else 
-			{	// Collection 'property function'
+			else
+			{   // Collection 'property function'
 				ColumnHelper.GenerateScalarColumns(Walker.ASTFactory, this, _selectColumns, i);
 			}
 		}
@@ -63,8 +63,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public void InitializeMethodNode(IASTNode name, bool inSelect)
 		{
 			name.Type = HqlSqlWalker.METHOD_NAME;
-			_methodName = name.Text.ToLowerInvariant();	// Use the lower case function name.
-			_inSelect = inSelect;			// Remember whether we're in a SELECT clause or not.
+			_methodName = name.Text.ToLowerInvariant(); // Use the lower case function name.
+			_inSelect = inSelect;           // Remember whether we're in a SELECT clause or not.
 		}
 
 		public bool IsCollectionPropertyMethod
@@ -90,7 +90,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public void ResolveCollectionProperty(IASTNode expr)
 		{
-			var propertyName = CollectionProperties.GetNormalizedPropertyName( _methodName );
+			var propertyName = CollectionProperties.GetNormalizedPropertyName(_methodName);
 
 			var collectionNode = expr as FromReferenceNode;
 			if (collectionNode == null)
@@ -137,36 +137,36 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-		private void CollectionProperty(IASTNode path, IASTNode name) 
+		private void CollectionProperty(IASTNode path, IASTNode name)
 		{
-			if ( path == null ) 
+			if (path == null)
 			{
-				throw new SemanticException( "Collection function " + name.Text + " has no path!" );
+				throw new SemanticException("Collection function " + name.Text + " has no path!");
 			}
 
-			var expr = ( SqlNode ) path;
+			var expr = (SqlNode) path;
 			IType type = expr.DataType;
 
-			if ( Log.IsDebugEnabled() ) 
+			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("collectionProperty() :  name={0} type={1}", name, type);
 			}
 
-			ResolveCollectionProperty( expr );
+			ResolveCollectionProperty(expr);
 		}
 
 		private static void PrepareAnyImplicitJoins(DotNode dotNode)
 		{
-			if ( dotNode.GetLhs()is DotNode lhs)
+			if (dotNode.GetLhs() is DotNode lhs)
 			{
 				FromElement lhsOrigin = lhs.FromElement;
-				if ( lhsOrigin != null && "" == lhsOrigin.Text )
+				if (lhsOrigin != null && "" == lhsOrigin.Text)
 				{
 					String lhsOriginText = lhsOrigin.Queryable.TableName +
 							" " + lhsOrigin.TableAlias;
 					lhsOrigin.Text = lhsOriginText;
 				}
-				PrepareAnyImplicitJoins( lhs );
+				PrepareAnyImplicitJoins(lhs);
 			}
 		}
 
