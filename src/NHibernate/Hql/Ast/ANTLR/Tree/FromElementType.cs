@@ -35,9 +35,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_fromElement = fromElement;
 			_persister = persister;
 			_entityType = entityType;
-
-			var queryable = persister as IQueryable;
-			if (queryable != null)
+			if (persister is IQueryable queryable)
 				fromElement.Text = queryable.TableName + " " + fromElement.TableAlias;
 		}
 

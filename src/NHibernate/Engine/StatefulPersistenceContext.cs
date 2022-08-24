@@ -1183,8 +1183,7 @@ namespace NHibernate.Engine
 			{
 				foreach (DictionaryEntry mergeMapEntry in mergeMap)
 				{
-					var proxy = mergeMapEntry.Key as INHibernateProxy;
-					if (proxy != null)
+					if (mergeMapEntry.Key is INHibernateProxy proxy)
 					{
 						if (persister.IsSubclassEntityName(proxy.HibernateLazyInitializer.EntityName))
 						{

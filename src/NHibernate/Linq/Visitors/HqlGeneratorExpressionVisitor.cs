@@ -569,8 +569,7 @@ possible solutions:
 		{
 			if (expression.Value != null)
 			{
-				IEntityNameProvider entityName = expression.Value as IEntityNameProvider;
-				if (entityName != null)
+				if (expression.Value is IEntityNameProvider entityName)
 				{
 					return _hqlTreeBuilder.Ident(entityName.EntityName);
 				}

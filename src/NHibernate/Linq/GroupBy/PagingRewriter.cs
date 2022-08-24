@@ -18,9 +18,8 @@ namespace NHibernate.Linq.GroupBy
 
 		public static void ReWrite(QueryModel queryModel)
 		{
-			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
-			if (subQueryExpression != null &&
+			if (queryModel.MainFromClause.FromExpression is SubQueryExpression subQueryExpression&&
 				subQueryExpression.QueryModel.ResultOperators.All(x => PagingResultOperators.Contains(x.GetType())))
 			{
 				FlattenSubQuery(subQueryExpression, queryModel);

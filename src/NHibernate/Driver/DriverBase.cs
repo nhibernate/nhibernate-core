@@ -264,8 +264,7 @@ namespace NHibernate.Driver
 			var expandedParameters = new List<DbParameter>();
 			foreach (object part in sqlString)
 			{
-				var parameter = part as Parameter;
-				if (parameter != null)
+				if (part is Parameter parameter)
 				{
 					var index = parameter.ParameterPosition.Value;
 					var originalParameter = cmd.Parameters[index];

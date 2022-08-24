@@ -34,8 +34,7 @@ namespace NHibernate.Event.Default
 
 		internal override object ProcessCollection(object collection, CollectionType collectionType)
 		{
-			IPersistentCollection coll = collection as IPersistentCollection;
-			if (coll != null)
+			if (collection is IPersistentCollection coll)
 			{
 				ISessionImplementor session = Session;
 				if (coll.SetCurrentSession(session))

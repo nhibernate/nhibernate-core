@@ -41,9 +41,8 @@ namespace NHibernate.Tool.HbmXsd
 
 			foreach (XmlSchemaObject item in schema.Items)
 			{
-				XmlSchemaElement element = item as XmlSchemaElement;
 
-				if (element != null)
+				if (item is XmlSchemaElement element)
 				{
 					XmlQualifiedName name = new XmlQualifiedName(element.Name, schema.TargetNamespace);
 					XmlTypeMapping map = importer.ImportTypeMapping(name);

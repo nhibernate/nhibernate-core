@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Antlr.Runtime;
 using NHibernate.Hql.Ast.ANTLR.Util;
@@ -40,14 +40,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				if (recurse)
 				{
-					var ctor = n as ConstructorNode;
 
-					if (ctor != null)
+					if (n is ConstructorNode ctor)
 					{
 						for (IASTNode cn = ctor.GetChild(1); cn != null; cn = cn.NextSibling)
 						{
-							var se = cn as ISelectExpression;
-							if (se != null)
+							if (cn is ISelectExpression se)
 							{
 								list.Add(se);
 							}
@@ -55,8 +53,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					}
 					else
 					{
-						var se = n as ISelectExpression;
-						if (se != null)
+						if (n is ISelectExpression se)
 						{
 							list.Add(se);
 						}
@@ -69,8 +66,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 				else
 				{
-					var se = n as ISelectExpression;
-					if (se != null)
+					if (n is ISelectExpression se)
 					{
 						list.Add(se);
 					}

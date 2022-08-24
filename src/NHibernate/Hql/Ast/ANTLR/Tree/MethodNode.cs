@@ -157,8 +157,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private static void PrepareAnyImplicitJoins(DotNode dotNode)
 		{
-			var lhs = dotNode.GetLhs() as DotNode;
-			if ( lhs != null )
+			if ( dotNode.GetLhs()is DotNode lhs)
 			{
 				FromElement lhsOrigin = lhs.FromElement;
 				if ( lhsOrigin != null && "" == lhsOrigin.Text )

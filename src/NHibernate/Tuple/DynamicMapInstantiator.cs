@@ -55,8 +55,7 @@ namespace NHibernate.Tuple
 
 		public bool IsInstance(object obj)
 		{
-			IDictionary that = obj as IDictionary;
-			if (that != null)
+			if (obj is IDictionary that)
 			{
 				if (entityName == null)
 				{

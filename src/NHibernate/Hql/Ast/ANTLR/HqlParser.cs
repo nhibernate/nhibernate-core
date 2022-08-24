@@ -147,8 +147,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 					// Case 2: The current token is after FROM and before '.'.
                     if (t != IDENT && input.LA(-1) == FROM && ((input.LA(2) == DOT) || (input.LA(2) == IDENT) || (input.LA(2) == -1)))
 					{
-						HqlToken hqlToken = input.LT(1) as HqlToken;
-						if (hqlToken != null && hqlToken.PossibleId)
+						if (input.LT(1)is HqlToken hqlToken&& hqlToken.PossibleId)
 						{
 							hqlToken.Type = IDENT;
 							if (log.IsDebugEnabled())
@@ -335,9 +334,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// If the lookahead contains a DOT then something that isn't an IDENT...
 			if (input.LA(1) == DOT && input.LA(2) != IDENT)
 			{
-				// See if the second lookahed token can be an identifier.
-				HqlToken t = input.LT(2) as HqlToken;
-				if (t != null && t.PossibleId)
+				if (input.LT(2)is HqlToken t&& t.PossibleId)
 				{
 					// Set it!
 					input.LT(2).Type = IDENT;

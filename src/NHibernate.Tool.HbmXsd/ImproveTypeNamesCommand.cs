@@ -61,12 +61,11 @@ namespace NHibernate.Tool.HbmXsd
 				foreach (CodeTypeMember member in type.Members)
 				{
 					CodeMemberField field = member as CodeMemberField;
-					CodeConstructor constructor = member as CodeConstructor;
 
 					if (field != null)
 						UpdateFieldTypeReferences(field);
 
-					else if (constructor != null)
+					else if (member is CodeConstructor constructor)
 						UpdateMethodTypeReferences(constructor);
 				}
 		}
@@ -105,10 +104,8 @@ namespace NHibernate.Tool.HbmXsd
 				}
 				else if (attribute.Name == typeof (DefaultValueAttribute).FullName)
 				{
-					CodeFieldReferenceExpression reference = attribute.Arguments[0].Value
-					                                         as CodeFieldReferenceExpression;
 
-					if (reference != null)
+					if (attribute.Arguments[0].Value is CodeFieldReferenceExpression reference)
 						UpdateTypeReference(((CodeTypeReferenceExpression) reference.TargetObject).Type);
 				}
 		}
@@ -118,9 +115,8 @@ namespace NHibernate.Tool.HbmXsd
 			foreach (CodeStatement statement in method.Statements)
 			{
 				CodeAssignStatement assignment = (CodeAssignStatement) statement;
-				CodeFieldReferenceExpression right = assignment.Right as CodeFieldReferenceExpression;
 
-				if (right != null)
+				if (assignment.Right is CodeFieldReferenceExpression right)
 					UpdateTypeReference(((CodeTypeReferenceExpression) right.TargetObject).Type);
 			}
 		}

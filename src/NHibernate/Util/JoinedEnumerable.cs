@@ -70,10 +70,7 @@ namespace NHibernate.Util
 					}
 					else
 					{
-						// there are no items left to iterate over in the current
-						// enumerator so go ahead and dispose of it.
-						IDisposable disposable = _enumerators[_current] as IDisposable;
-						if (disposable != null)
+						if (_enumerators[_current] is IDisposable disposable)
 						{
 							disposable.Dispose();
 						}
@@ -146,8 +143,7 @@ namespace NHibernate.Util
 					// dispose each IEnumerable that still needs to be disposed of
 					for (; _current < _enumerators.Length; _current++)
 					{
-						IDisposable currentDisposable = _enumerators[_current] as IDisposable;
-						if (currentDisposable != null)
+						if (_enumerators[_current] is IDisposable currentDisposable)
 						{
 							currentDisposable.Dispose();
 						}

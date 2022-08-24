@@ -11,9 +11,7 @@ namespace NHibernate.Param
 	{
 		public static IEnumerable<int> GetEffectiveParameterLocations(this IList<Parameter> sqlParameters, string backTrackId)
 		{
-			var cacheParameters = sqlParameters as BackTrackCacheParameterList;
-			return cacheParameters != null
-				? cacheParameters.GetEffectiveParameterLocations(backTrackId)
+			return sqlParameters is BackTrackCacheParameterList cacheParameters				? cacheParameters.GetEffectiveParameterLocations(backTrackId)
 				: GetEffectiveParameterLocationsSlow(sqlParameters, backTrackId);
 		}
 

@@ -97,7 +97,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			foreach (object item in idSchema.Items ?? System.Array.Empty<object>())
 			{
 				var keyManyToOneSchema = item as HbmKeyManyToOne;
-				var keyPropertySchema = item as HbmKeyProperty;
 
 				if (keyManyToOneSchema != null)
 				{
@@ -112,7 +111,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 					compositeId.AddProperty(property);
 				}
-				else if (keyPropertySchema != null)
+				else if (item is HbmKeyProperty keyPropertySchema)
 				{
 					var value = new SimpleValue(compositeId.Table);
 

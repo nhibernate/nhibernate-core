@@ -258,8 +258,7 @@ namespace NHibernate.Mapping
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			Column columnObj = obj as Column;
-			return columnObj != null && Equals(columnObj);
+			return obj is Column columnObj&& Equals(columnObj);
 		}
 
 		/// <summary>

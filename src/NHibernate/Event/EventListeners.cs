@@ -596,8 +596,7 @@ namespace NHibernate.Event
 		    initializedListeners.AddRange(list);
 			foreach (object i in list)
 			{
-				IInitializable initializable = i as IInitializable;
-				if (initializable != null)
+				if (i is IInitializable initializable)
 				{
 					initializable.Initialize(cfg);
 				}
@@ -616,15 +615,13 @@ namespace NHibernate.Event
 			{
 				foreach (object i in initializedListeners)
 				{
-					var destructible = i as IDestructible;
-					if (destructible != null)
+					if (i is IDestructible destructible)
 					{
 						destructible.Cleanup();
 					}
 					else
 					{
-						var disposable = i as IDisposable;
-						if (disposable != null)
+						if (i is IDisposable disposable)
 						{
 							disposable.Dispose();
 						}						

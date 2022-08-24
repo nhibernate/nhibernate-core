@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Remotion.Linq;
@@ -44,9 +44,8 @@ namespace NHibernate.Linq.ReWriters
 			var resultOperators = subQueryModel.ResultOperators;
 			if (resultOperators.Count == 0 || HasJustAllFlattenableOperator(resultOperators))
 			{
-				var selectQuerySource = subQueryModel.SelectClause.Selector as QuerySourceReferenceExpression;
 
-				if (selectQuerySource != null && selectQuerySource.ReferencedQuerySource == subQueryModel.MainFromClause)
+				if (subQueryModel.SelectClause.Selector is QuerySourceReferenceExpression selectQuerySource&& selectQuerySource.ReferencedQuerySource == subQueryModel.MainFromClause)
 				{
 					foreach (var resultOperator in resultOperators)
 					{

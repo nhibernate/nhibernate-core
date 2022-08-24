@@ -1098,8 +1098,7 @@ namespace NHibernate.Mapping
 
 			public override bool Equals(object other)
 			{
-				var that = other as ForeignKeyKey;
-				if (that != null)
+				if (other is ForeignKeyKey that)
 				{
 					return Equals(this, that);
 				}

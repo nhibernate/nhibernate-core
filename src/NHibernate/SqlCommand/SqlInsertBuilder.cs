@@ -177,9 +177,7 @@ namespace NHibernate.SqlCommand
 					if (commaNeeded)
 						sqlBuilder.Add(StringHelper.CommaSpace);
 					commaNeeded = true;
-
-					SqlType param = obj as SqlType;
-					if (param != null)
+					if (obj is SqlType param)
 						sqlBuilder.Add(Parameter.Placeholder);
 					else
 						sqlBuilder.Add((string) obj);

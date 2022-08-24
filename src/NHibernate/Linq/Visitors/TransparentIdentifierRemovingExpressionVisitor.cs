@@ -1,4 +1,4 @@
-﻿// Copyright (c) rubicon IT GmbH, www.rubicon.eu
+// Copyright (c) rubicon IT GmbH, www.rubicon.eu
 //
 // See the NOTICE file distributed with this work for additional information
 // regarding copyright ownership.  rubicon licenses this file to you under 
@@ -90,8 +90,7 @@ namespace NHibernate.Linq.Visitors
 
 		private IEnumerable<MemberBinding> GetMemberBindingsCreatedByExpression(Expression expression)
 		{
-			var memberInitExpression = expression as MemberInitExpression;
-			if (memberInitExpression != null)
+			if (expression is MemberInitExpression memberInitExpression)
 			{
 				return memberInitExpression.Bindings
 					.Where(binding => binding is MemberAssignment)
@@ -99,8 +98,7 @@ namespace NHibernate.Linq.Visitors
 			}
 			else
 			{
-				var newExpression = expression as NewExpression;
-				if (newExpression != null && newExpression.Members != null)
+				if (expression is NewExpression newExpression&& newExpression.Members != null)
 					return GetMemberBindingsForNewExpression(newExpression);
 				else
 					return null;

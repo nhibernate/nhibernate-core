@@ -103,8 +103,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			{
 				if (specification.ExpectedType == null)
 				{
-					var namedSpec = specification as NamedParameterSpecification;
-					if (namedSpec != null)
+					if (specification is NamedParameterSpecification namedSpec)
 					{
 						TypedValue tv;
 						if(parameters.NamedParameters.TryGetValue(namedSpec.Name, out tv))
@@ -114,8 +113,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 					}
 					else
 					{
-						var posSpec = specification as PositionalParameterSpecification;
-						if (posSpec != null)
+						if (specification is PositionalParameterSpecification posSpec)
 						{
 							specification.ExpectedType = parameters.PositionalParameterTypes[posSpec.HqlPosition];
 						}

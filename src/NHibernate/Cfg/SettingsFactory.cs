@@ -414,9 +414,7 @@ namespace NHibernate.Cfg
 			{
 				if (batchSize > 0)
 				{
-					// try to get the BatcherFactory from the Drive if not available use NonBatchingBatcherFactory
-					IEmbeddedBatcherFactoryProvider ebfp = connectionProvider.Driver as IEmbeddedBatcherFactoryProvider;
-					if (ebfp != null && ebfp.BatcherFactoryClass != null)
+					if (connectionProvider.Driver is IEmbeddedBatcherFactoryProvider ebfp&& ebfp.BatcherFactoryClass != null)
 						tBatcher = ebfp.BatcherFactoryClass;
 				}
 			}

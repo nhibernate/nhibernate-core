@@ -331,8 +331,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			property.Cascade = oneToOneMapping.cascade ?? mappings.DefaultCascade;
 			property.UnwrapProxy = oneToOneMapping.Lazy == HbmLaziness.NoProxy;
-			var toOne = property.Value as ToOne;
-			if (toOne != null)
+			if (property.Value is ToOne toOne)
 			{
 				string propertyRef = toOne.ReferencedPropertyName;
 				if (propertyRef != null)
@@ -387,8 +386,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			property.UnwrapProxy = manyToOneMapping.Lazy == HbmLaziness.NoProxy;
 			property.IsUpdateable = manyToOneMapping.update;
 			property.IsInsertable = manyToOneMapping.insert;
-			var toOne = property.Value as ToOne;
-			if (toOne != null)
+			if (property.Value is ToOne toOne)
 			{
 				string propertyRef = toOne.ReferencedPropertyName;
 				if (propertyRef != null)

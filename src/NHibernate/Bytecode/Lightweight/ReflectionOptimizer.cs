@@ -289,9 +289,7 @@ namespace NHibernate.Bytecode.Lightweight
 				// get the member accessor
 				ISetter setter = setters[i];
 
-				var optimizableSetter = setter as IOptimizableSetter;
-
-				if (optimizableSetter != null)
+				if (setter is IOptimizableSetter optimizableSetter)
 				{
 					// load 'this'
 					il.Emit(OpCodes.Ldloc, thisLocal);

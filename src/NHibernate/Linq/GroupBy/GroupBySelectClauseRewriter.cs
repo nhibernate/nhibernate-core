@@ -123,9 +123,7 @@ namespace NHibernate.Linq.GroupBy
 
 			var querySource = referencedQuery.ReferencedQuerySource as FromClauseBase;
 
-			var subQuery2 = querySource.FromExpression as SubQueryExpression;
-
-			return subQuery2 != null && subQuery2.QueryModel == _model;
+			return querySource.FromExpression is SubQueryExpression subQuery2&& subQuery2.QueryModel == _model;
 		}
 
 		protected override Expression VisitSubQuery(SubQueryExpression expression)

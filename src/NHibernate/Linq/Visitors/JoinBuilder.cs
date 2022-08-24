@@ -70,9 +70,7 @@ namespace NHibernate.Linq.Visitors
 			var bodyClause = source as IBodyClause;
 			if (bodyClause != null && _queryModel.BodyClauses.Contains(bodyClause))
 				return true;
-
-			var resultOperatorBase = source as ResultOperatorBase;
-			return resultOperatorBase != null && _queryModel.ResultOperators.Contains(resultOperatorBase);
+			return source is ResultOperatorBase resultOperatorBase&& _queryModel.ResultOperators.Contains(resultOperatorBase);
 		}
 
 		private void AddJoin(QueryModel queryModel, NhJoinClause joinClause)

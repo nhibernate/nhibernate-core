@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
@@ -198,9 +198,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				initableNode.Initialize(_walker);
 			}
 
-			var sessionNode = node as ISessionFactoryAwareNode;
-
-			if (sessionNode != null)
+			if (node is ISessionFactoryAwareNode sessionNode)
 			{
 				sessionNode.SessionFactory = _walker.SessionFactoryHelper.Factory;
 			}

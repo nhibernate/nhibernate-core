@@ -850,8 +850,7 @@ namespace NHibernate.Mapping
 						}
 						else if (identifierProperty == null)
 						{
-							var component = Identifier as Component;
-							if (component != null)
+							if (Identifier is Component component)
 							{
 								// we have an embedded composite identifier
 								try
@@ -1072,8 +1071,7 @@ namespace NHibernate.Mapping
 		{
 			foreach (Property prop in properties)
 			{
-				Component component = prop.Value as Component;
-				if (component != null)
+				if (prop.Value is Component component)
 				{
 					CheckPropertyColumnDuplication(distinctColumns, component.PropertyIterator);
 				}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
 
@@ -21,9 +21,7 @@ namespace NHibernate.Linq.Visitors
 		public HqlBooleanExpression Visit(Expression innerKeySelector, Expression outerKeySelector)
 		{
 			var innerNewExpression = innerKeySelector as NewExpression;
-			var outerNewExpression = outerKeySelector as NewExpression;
-			return innerNewExpression != null && outerNewExpression != null
-				? VisitNew(innerNewExpression, outerNewExpression)
+			return innerNewExpression != null && outerKeySelector is NewExpression outerNewExpression				? VisitNew(innerNewExpression, outerNewExpression)
 				: GenerateEqualityNode(innerKeySelector, outerKeySelector, new HqlGeneratorExpressionVisitor(_parameters));
 		}
 

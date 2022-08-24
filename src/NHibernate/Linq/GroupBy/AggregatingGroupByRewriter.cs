@@ -44,9 +44,8 @@ namespace NHibernate.Linq.GroupBy
 
 		public static void ReWrite(QueryModel queryModel)
 		{
-			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
 
-			if (subQueryExpression != null)
+			if (queryModel.MainFromClause.FromExpression is SubQueryExpression subQueryExpression)
 			{
 				var operators = subQueryExpression.QueryModel.ResultOperators
 					.Where(x => !QueryReferenceExpressionFlattener.FlattenableResultOperators.Contains(x.GetType()))
@@ -54,8 +53,7 @@ namespace NHibernate.Linq.GroupBy
 
 				if (operators.Length == 1)
 				{
-					var groupBy = operators[0] as GroupResultOperator;
-					if (groupBy != null)
+					if (operators[0] is GroupResultOperator groupBy)
 					{
 						FlattenSubQuery(queryModel, subQueryExpression.QueryModel, groupBy);
 						RemoveCostantGroupByKeys(queryModel, groupBy);
@@ -78,10 +76,7 @@ namespace NHibernate.Linq.GroupBy
 			{
 				var clause = queryModel.BodyClauses[i];
 				clause.TransformExpressions(s => GroupBySelectClauseRewriter.ReWrite(s, groupBy, subQueryModel));
-
-				//all outer where clauses actually are having clauses
-				var whereClause = clause as WhereClause;
-				if (whereClause != null)
+				if (clause is WhereClause whereClause)
 				{
 					queryModel.BodyClauses[i] = new NhHavingClause(whereClause.Predicate);
 				}

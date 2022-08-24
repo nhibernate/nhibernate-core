@@ -20,8 +20,7 @@ namespace NHibernate.Util
 
 		public void Dispose()
 		{
-			var disposable = _wrapped as IDisposable;
-			if (disposable != null)
+			if (_wrapped is IDisposable disposable)
 				disposable.Dispose();
 		}
 

@@ -748,9 +748,7 @@ namespace NHibernate.SqlCommand
 					visitor.String(partSqlString);
 					continue;
 				}
-
-				var partParameter = part as Parameter;
-				if (partParameter != null)
+				if (part is Parameter partParameter)
 				{
 					visitor.Parameter(partParameter);
 				}

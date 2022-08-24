@@ -26,8 +26,7 @@ namespace NHibernate.Event.Default
 			}
 			else
 			{
-				IPersistentCollection persistentCollection = collection as IPersistentCollection;
-				if (persistentCollection != null)
+				if (collection is IPersistentCollection persistentCollection)
 				{
 					if (persistentCollection.SetCurrentSession(session))
 					{

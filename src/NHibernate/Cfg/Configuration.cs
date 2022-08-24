@@ -2497,9 +2497,8 @@ namespace NHibernate.Cfg
 			{
 				if (!pc.IsInherited)
 				{
-					var ig = pc.Identifier.CreateIdentifierGenerator(dialect, defaultCatalog, defaultSchema, (RootClass) pc) as IPersistentIdentifierGenerator;
 
-					if (ig != null)
+					if (pc.Identifier.CreateIdentifierGenerator(dialect, defaultCatalog, defaultSchema, (RootClass)pc)is IPersistentIdentifierGenerator ig)
 					{
 						generators[ig.GeneratorKey()] = ig;
 					}
@@ -2510,9 +2509,8 @@ namespace NHibernate.Cfg
 			{
 				if (collection.IsIdentified)
 				{
-					var ig = ((IdentifierCollection) collection).Identifier.CreateIdentifierGenerator(dialect, defaultCatalog, defaultSchema, null) as IPersistentIdentifierGenerator;
 
-					if (ig != null)
+					if (((IdentifierCollection)collection).Identifier.CreateIdentifierGenerator(dialect, defaultCatalog, defaultSchema, null)is IPersistentIdentifierGenerator ig)
 					{
 						generators[ig.GeneratorKey()] = ig;
 					}

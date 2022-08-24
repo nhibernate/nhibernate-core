@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR
@@ -28,9 +28,8 @@ namespace NHibernate.Hql.Ast.ANTLR
         public HqlToken(IToken other)
             : base(other)
         {
-            var hqlToken = other as HqlToken;
 
-            if (hqlToken != null)
+            if (other is HqlToken hqlToken)
             {
                 _previousTokenType = hqlToken._previousTokenType;
             }

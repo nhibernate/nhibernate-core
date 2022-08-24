@@ -123,9 +123,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private void BindPrimitiveArray(HbmPrimitiveArray arrayMapping, PrimitiveArray model, string prefix, string path, System.Type containingType, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			BindCollection(arrayMapping, model, prefix, path, containingType, inheritedMetas);
-
-			var element = arrayMapping.ElementRelationship as HbmElement;
-			if (element != null)
+			if (arrayMapping.ElementRelationship is HbmElement element)
 			{
 				string typeName;
 				var typeAttribute = element.Type;

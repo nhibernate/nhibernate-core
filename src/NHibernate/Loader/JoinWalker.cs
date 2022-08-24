@@ -192,8 +192,7 @@ namespace NHibernate.Loader
 
 			if (qc == null)
 			{
-				IOuterJoinLoadable pjl = joinable as IOuterJoinLoadable;
-				if (pjl != null)
+				if (joinable is IOuterJoinLoadable pjl)
 					WalkEntityTree(pjl, subalias, path, nextDepth);
 			}
 			else

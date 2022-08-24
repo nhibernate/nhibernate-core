@@ -56,12 +56,11 @@ namespace NHibernate.Tool.HbmXsd
 					foreach (CodeTypeMember member in type.Members)
 					{
 						CodeMemberField field = member as CodeMemberField;
-						CodeConstructor constructor = member as CodeConstructor;
 
 						if (field != null)
 							UpdateFieldEnumValueReferences(field);
 
-						else if (constructor != null)
+						else if (member is CodeConstructor constructor)
 							UpdateMethodEnumValueReferences(constructor);
 					}
 		}
@@ -103,10 +102,8 @@ namespace NHibernate.Tool.HbmXsd
 			foreach (CodeAttributeDeclaration attribute in field.CustomAttributes)
 				if (attribute.Name == typeof (DefaultValueAttribute).FullName)
 				{
-					CodeFieldReferenceExpression reference = attribute.Arguments[0].Value
-						as CodeFieldReferenceExpression;
 
-					if (reference != null)
+					if (attribute.Arguments[0].Value is CodeFieldReferenceExpression reference)
 						UpdateReference(reference);
 				}
 		}
@@ -116,9 +113,8 @@ namespace NHibernate.Tool.HbmXsd
 			foreach (CodeStatement statement in method.Statements)
 			{
 				CodeAssignStatement assignment = (CodeAssignStatement) statement;
-				CodeFieldReferenceExpression right = assignment.Right as CodeFieldReferenceExpression;
 
-				if (right != null)
+				if (assignment.Right is CodeFieldReferenceExpression right)
 					UpdateReference(right);
 			}
 		}
