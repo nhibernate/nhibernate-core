@@ -49,7 +49,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			HbmLoadCollection loadCollectionSchema = item as HbmLoadCollection;
 			HbmReturn returnSchema = item as HbmReturn;
-			HbmReturnJoin returnJoinSchema = item as HbmReturnJoin;
 
 			if (item is HbmReturnScalar returnScalarSchema)
 				return CreateScalarReturn(returnScalarSchema);
@@ -57,7 +56,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			else if (returnSchema != null)
 				return CreateReturn(returnSchema, count);
 
-			else if (returnJoinSchema != null)
+			else if (item is HbmReturnJoin returnJoinSchema)
 				return CreateJoinReturn(returnJoinSchema);
 
 			else if (loadCollectionSchema != null)

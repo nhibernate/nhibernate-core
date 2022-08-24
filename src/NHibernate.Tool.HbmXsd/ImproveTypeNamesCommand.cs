@@ -60,9 +60,8 @@ namespace NHibernate.Tool.HbmXsd
 			foreach (CodeTypeDeclaration type in code.Types)
 				foreach (CodeTypeMember member in type.Members)
 				{
-					CodeMemberField field = member as CodeMemberField;
 
-					if (field != null)
+					if (member is CodeMemberField field)
 						UpdateFieldTypeReferences(field);
 
 					else if (member is CodeConstructor constructor)

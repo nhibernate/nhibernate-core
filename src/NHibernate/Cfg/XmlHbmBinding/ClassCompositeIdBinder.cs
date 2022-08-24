@@ -96,9 +96,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			foreach (object item in idSchema.Items ?? System.Array.Empty<object>())
 			{
-				var keyManyToOneSchema = item as HbmKeyManyToOne;
 
-				if (keyManyToOneSchema != null)
+				if (item is HbmKeyManyToOne keyManyToOneSchema)
 				{
 					var manyToOne = new ManyToOne(compositeId.Table);
 

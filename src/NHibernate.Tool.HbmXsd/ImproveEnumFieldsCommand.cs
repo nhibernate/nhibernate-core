@@ -55,9 +55,8 @@ namespace NHibernate.Tool.HbmXsd
 				if (type.IsClass)
 					foreach (CodeTypeMember member in type.Members)
 					{
-						CodeMemberField field = member as CodeMemberField;
 
-						if (field != null)
+						if (member is CodeMemberField field)
 							UpdateFieldEnumValueReferences(field);
 
 						else if (member is CodeConstructor constructor)
