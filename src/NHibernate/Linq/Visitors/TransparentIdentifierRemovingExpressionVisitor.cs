@@ -96,13 +96,13 @@ namespace NHibernate.Linq.Visitors
 					.Where(binding => binding is MemberAssignment)
 					.Select(assignment => MemberBinding.Bind(assignment.Member, ((MemberAssignment) assignment).Expression));
 			}
-			else
+
+			if (expression is NewExpression newExpression && newExpression.Members != null)
 			{
-				if (expression is NewExpression newExpression && newExpression.Members != null)
-					return GetMemberBindingsForNewExpression(newExpression);
-				else
-					return null;
+				return GetMemberBindingsForNewExpression(newExpression);
 			}
+
+			return null;
 		}
 
 		private IEnumerable<MemberBinding> GetMemberBindingsForNewExpression(NewExpression newExpression)

@@ -47,21 +47,19 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private INativeSQLQueryReturn CreateQueryReturn(object item, int count)
 		{
-
 			if (item is HbmReturnScalar returnScalarSchema)
 				return CreateScalarReturn(returnScalarSchema);
 
-			else if (item is HbmReturn returnSchema)
+			if (item is HbmReturn returnSchema)
 				return CreateReturn(returnSchema, count);
 
-			else if (item is HbmReturnJoin returnJoinSchema)
+			if (item is HbmReturnJoin returnJoinSchema)
 				return CreateJoinReturn(returnJoinSchema);
 
-			else if (item is HbmLoadCollection loadCollectionSchema)
+			if (item is HbmLoadCollection loadCollectionSchema)
 				return CreateLoadCollectionReturn(loadCollectionSchema);
 
-			else
-				return null;
+			return null;
 		}
 
 		private INativeSQLQueryReturn CreateScalarReturn(HbmReturnScalar returnScalarSchema)
