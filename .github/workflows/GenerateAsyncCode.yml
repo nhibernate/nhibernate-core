@@ -2,9 +2,7 @@ name: Generate Async code
 
 on: [pull_request_target]
 
-permissions:
-  contents: read
-  pull-requests: write
+permissions: {}
 
 jobs:
   generate-async:
@@ -15,7 +13,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
         repository: ${{ github.event.pull_request.head.repo.full_name }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.NHIBERNATE_BOT_TOKEN }}
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
