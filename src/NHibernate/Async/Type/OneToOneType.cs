@@ -113,8 +113,7 @@ namespace NHibernate.Type
 			//This ugly mess is only used when mapping one-to-one entities with component ID types
 			if (type.IsComponentType && type is EmbeddedComponentType componentType)
 			{
-				EmbeddedComponentType ownerIdType = session.GetEntityPersister(null, owner).IdentifierType as EmbeddedComponentType;
-				if (ownerIdType != null)
+				if (session.GetEntityPersister(null, owner).IdentifierType is EmbeddedComponentType ownerIdType)
 				{
 					object[] values = await (ownerIdType.GetPropertyValuesAsync(identifier, session, cancellationToken)).ConfigureAwait(false);
 					object id = await (componentType.ResolveIdentifierAsync(values, session, null, cancellationToken)).ConfigureAwait(false);
