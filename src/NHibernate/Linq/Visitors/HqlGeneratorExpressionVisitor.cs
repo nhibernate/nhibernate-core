@@ -567,12 +567,9 @@ possible solutions:
 
 		protected HqlTreeNode VisitConstantExpression(ConstantExpression expression)
 		{
-			if (expression.Value != null)
+			if (expression.Value != null && expression.Value is IEntityNameProvider entityName)
 			{
-				if (expression.Value is IEntityNameProvider entityName)
-				{
-					return _hqlTreeBuilder.Ident(entityName.EntityName);
-				}
+				return _hqlTreeBuilder.Ident(entityName.EntityName);
 			}
 
 			NamedParameter namedParameter;
