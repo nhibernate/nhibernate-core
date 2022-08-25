@@ -32,8 +32,7 @@
     <TreatSpecificWarningsAsErrors />
     
     <DisableImplicitPackageTargetFallback>True</DisableImplicitPackageTargetFallback>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(IsPackable)' == 'True'">
+
     <PackageProjectUrl>https://nhibernate.info</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/nhibernate/nhibernate-core/master/logo/NHibernate-NuGet.png</PackageIconUrl>
     <PackageIcon>NHibernate-NuGet.png</PackageIcon>
@@ -46,6 +45,6 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
   </ItemGroup>
 </Project>

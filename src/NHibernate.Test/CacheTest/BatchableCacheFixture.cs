@@ -5,6 +5,7 @@ using System.Reflection;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Linq;
+using NHibernate.Loader;
 using NHibernate.Multi;
 using NHibernate.Test.CacheTest.Caches;
 using NUnit.Framework;
@@ -12,9 +13,17 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.CacheTest
 {
-	[TestFixture]
+	[TestFixture(BatchFetchStyle.Dynamic)]
+	[TestFixture(BatchFetchStyle.Legacy)]
 	public class BatchableCacheFixture : TestCase
 	{
+		private readonly BatchFetchStyle _fetchStyle;
+
+		public BatchableCacheFixture(BatchFetchStyle fetchStyle)
+		{
+			_fetchStyle = fetchStyle;
+		}
+
 		protected override string[] Mappings => new[]
 		{
 			"CacheTest.ReadOnly.hbm.xml",
@@ -31,6 +40,7 @@ namespace NHibernate.Test.CacheTest
 			configuration.SetProperty(Environment.UseQueryCache, "true");
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
 			configuration.SetProperty(Environment.CacheProvider, typeof(BatchableCacheProvider).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.BatchFetchStyle, _fetchStyle.ToString());
 		}
 
 		protected override void OnSetUp()
