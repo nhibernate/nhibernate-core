@@ -2,13 +2,13 @@ name: Generate Async code
 
 on: [pull_request_target]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   generate-async:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      pull-requests: write
 
     steps:
     - uses: actions/checkout@v3
