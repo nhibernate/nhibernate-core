@@ -29,7 +29,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2717
 				rc.Discriminator(x => x.Type(NHibernateUtil.String));
 				rc.Property(x => x.Name);
 				rc.Abstract(true);
-
 			});
 			mapper.Subclass<Subclass>(rc => rc.DiscriminatorValue("xxx"));
 
