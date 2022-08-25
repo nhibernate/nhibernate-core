@@ -13,6 +13,7 @@ using System.Collections;
 using NHibernate.Transform;
 using NHibernate.Type;
 using System.Collections.Generic;
+using NHibernate.Impl;
 
 namespace NHibernate
 {
