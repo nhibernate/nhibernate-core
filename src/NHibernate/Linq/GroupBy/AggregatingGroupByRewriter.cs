@@ -44,7 +44,6 @@ namespace NHibernate.Linq.GroupBy
 
 		public static void ReWrite(QueryModel queryModel)
 		{
-
 			if (queryModel.MainFromClause.FromExpression is SubQueryExpression subQueryExpression)
 			{
 				var operators = subQueryExpression.QueryModel.ResultOperators

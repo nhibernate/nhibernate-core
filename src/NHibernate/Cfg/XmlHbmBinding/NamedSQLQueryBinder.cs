@@ -64,7 +64,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			foreach (object item in querySchema.Items ?? Array.Empty<object>())
 			{
-
 				if (item is HbmSynchronize synchronizeSchema)
 					synchronizedTables.Add(synchronizeSchema.table);
 			}

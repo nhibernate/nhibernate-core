@@ -41,7 +41,6 @@ namespace NHibernate.Tool.HbmXsd
 
 			foreach (XmlSchemaObject item in schema.Items)
 			{
-
 				if (item is XmlSchemaElement element)
 				{
 					XmlQualifiedName name = new XmlQualifiedName(element.Name, schema.TargetNamespace);

@@ -60,7 +60,6 @@ namespace NHibernate.Tool.HbmXsd
 			foreach (CodeTypeDeclaration type in code.Types)
 				foreach (CodeTypeMember member in type.Members)
 				{
-
 					if (member is CodeMemberField field)
 						UpdateFieldTypeReferences(field);
 
@@ -103,7 +102,6 @@ namespace NHibernate.Tool.HbmXsd
 				}
 				else if (attribute.Name == typeof(DefaultValueAttribute).FullName)
 				{
-
 					if (attribute.Arguments[0].Value is CodeFieldReferenceExpression reference)
 						UpdateTypeReference(((CodeTypeReferenceExpression) reference.TargetObject).Type);
 				}

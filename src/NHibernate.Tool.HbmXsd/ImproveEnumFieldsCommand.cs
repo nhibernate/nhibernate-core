@@ -55,7 +55,6 @@ namespace NHibernate.Tool.HbmXsd
 				if (type.IsClass)
 					foreach (CodeTypeMember member in type.Members)
 					{
-
 						if (member is CodeMemberField field)
 							UpdateFieldEnumValueReferences(field);
 
@@ -101,7 +100,6 @@ namespace NHibernate.Tool.HbmXsd
 			foreach (CodeAttributeDeclaration attribute in field.CustomAttributes)
 				if (attribute.Name == typeof(DefaultValueAttribute).FullName)
 				{
-
 					if (attribute.Arguments[0].Value is CodeFieldReferenceExpression reference)
 						UpdateReference(reference);
 				}
