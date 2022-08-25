@@ -6,12 +6,16 @@ jobs:
   generate-async:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      pull-requests: write
+
     steps:
     - uses: actions/checkout@v3
       with:
         ref: ${{ github.event.pull_request.head.ref }}
         repository: ${{ github.event.pull_request.head.repo.full_name }}
-        token: ${{ secrets.NHIBERNATE_BOT_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
@@ -28,7 +32,7 @@ jobs:
 
     - name: Push changes
       run: |
-        git config user.name github-actions[bot]
+        git config user.name "${{  }}"
         git config user.email github-actions[bot]@users.noreply.github.com
         if [[ -z "$(git status --porcelain)" ]]; then
             echo "No changes to commit"
