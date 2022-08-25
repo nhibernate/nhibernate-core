@@ -107,9 +107,7 @@ namespace NHibernate.Linq.GroupBy
 				return false;
 			}
 
-			var subQuery = fromClause.FromExpression as SubQueryExpression;
-
-			if (subQuery != null)
+			if (fromClause.FromExpression is SubQueryExpression subQuery)
 			{
 				return subQuery.QueryModel == _model;
 			}

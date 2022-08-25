@@ -741,9 +741,7 @@ namespace NHibernate.SqlCommand
 					visitor.String(partString);
 					continue;
 				}
-
-				var partSqlString = part as SqlString;
-				if (partSqlString != null)
+				if (part is SqlString partSqlString)
 				{
 					visitor.String(partSqlString);
 					continue;
@@ -794,9 +792,7 @@ namespace NHibernate.SqlCommand
 				pendingContent.Append(stringPart);
 				return;
 			}
-
-			var parameter = part as Parameter;
-			if (parameter != null)
+			if (part is Parameter parameter)
 			{
 				AppendAndResetPendingContent(pendingContent, ref sqlIndex);
 
@@ -805,9 +801,7 @@ namespace NHibernate.SqlCommand
 				sqlIndex += 1;
 				return;
 			}
-
-			var sql = part as SqlString;
-			if (sql != null)
+			if (part is SqlString sql)
 			{
 				foreach (var otherPart in sql)
 				{

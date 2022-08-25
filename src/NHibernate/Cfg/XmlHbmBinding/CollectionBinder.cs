@@ -182,9 +182,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			// LAZINESS
 			InitLaziness(collectionMapping, model);
-
-			var oneToManyMapping = collectionMapping.ElementRelationship as HbmOneToMany;
-			if (oneToManyMapping != null)
+			if (collectionMapping.ElementRelationship is HbmOneToMany oneToManyMapping)
 			{
 				var oneToMany = new OneToMany(model.Owner);
 				model.Element = oneToMany;
