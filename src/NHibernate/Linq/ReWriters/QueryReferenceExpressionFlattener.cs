@@ -66,7 +66,7 @@ namespace NHibernate.Linq.ReWriters
 		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
 
-			if (expression.ReferencedQuerySource is FromClauseBase fromClauseBase&&
+			if (expression.ReferencedQuerySource is FromClauseBase fromClauseBase &&
 				fromClauseBase.FromExpression is QuerySourceReferenceExpression &&
 				expression.Type == fromClauseBase.FromExpression.Type)
 			{

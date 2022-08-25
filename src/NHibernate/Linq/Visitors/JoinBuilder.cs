@@ -66,7 +66,7 @@ namespace NHibernate.Linq.Visitors
 
 			if (_queryModel.MainFromClause == source)
 				return true;
-			if (source is IBodyClause bodyClause&& _queryModel.BodyClauses.Contains(bodyClause))
+			if (source is IBodyClause bodyClause && _queryModel.BodyClauses.Contains(bodyClause))
 				return true;
 			return source is ResultOperatorBase resultOperatorBase && _queryModel.ResultOperators.Contains(resultOperatorBase);
 		}
