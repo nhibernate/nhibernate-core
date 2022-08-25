@@ -19,7 +19,7 @@ namespace NHibernate.Impl
 	/// <summary>
 	/// Abstract implementation of the IQuery interface.
 	/// </summary>
-	public abstract partial class AbstractQueryImpl : IQuery, IQueryNextVer
+	public abstract partial class AbstractQueryImpl : IQuery
 	{
 		private readonly string queryString;
 		protected readonly ISessionImplementor session;

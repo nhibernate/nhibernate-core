@@ -253,36 +253,7 @@ namespace NHibernate.Linq
 #pragma warning restore 618
 		}
 
-		//TODO 6.0: Remove
 		private static void SetParameters(IQuery query, IDictionary<string, NamedParameter> parameters)
-		{
-			if (query is IQueryNextVer impl)
-			{
-				SetParameters(impl, parameters);
-				return;
-			}
-			foreach (var parameterName in query.NamedParameters)
-			{
-				// The parameter type will be taken from the parameter metadata
-				var parameter = parameters[parameterName];
-				if (parameter.IsCollection)
-				{
-					query.SetParameterList(parameter.Name, (IEnumerable) parameter.Value);
-				}
-				else
-				{
-					//Let HQL try to process guessed types (hql doesn't support type guessing for NULL) 
-					if (parameter.Type != null && (parameter.IsGuessedType == false || parameter.Value == null))
-						query.SetParameter(parameter.Name, parameter.Value, parameter.Type);
-					else
-						query.SetParameter(parameter.Name, parameter.Value);
-				}
-			}
-		}
-
-		//TODO 6.0: Replace with
-		//private static void SetParameters(IQuery query, IDictionary<string, NamedParameter> parameters)
-		private static void SetParameters(IQueryNextVer query, IDictionary<string, NamedParameter> parameters)
 		{
 			foreach (var parameterName in query.NamedParameters)
 			{

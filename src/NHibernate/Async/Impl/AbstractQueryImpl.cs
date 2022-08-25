@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
-	public abstract partial class AbstractQueryImpl : IQuery, IQueryNextVer
+	public abstract partial class AbstractQueryImpl : IQuery
 	{
 
 		#region Execution methods
