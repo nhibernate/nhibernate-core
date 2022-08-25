@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
@@ -55,7 +55,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				case HqlSqlWalker.INDEX_OP:
 					ret = new IndexNode(payload);
 					break;
-				// Alias references and identifiers use the same node class.
+					// Alias references and identifiers use the same node class.
 				case HqlSqlWalker.ALIAS_REF:
 				case HqlSqlWalker.IDENT:
 					ret = new IdentNode(payload);
@@ -198,7 +198,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				initableNode.Initialize(_walker);
 			}
 
-			if (node is ISessionFactoryAwareNode sessionNode)
+			var sessionNode = node as ISessionFactoryAwareNode;
+
+			if (sessionNode != null)
 			{
 				sessionNode.SessionFactory = _walker.SessionFactoryHelper.Factory;
 			}

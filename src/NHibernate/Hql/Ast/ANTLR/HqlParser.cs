@@ -107,10 +107,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_parseErrorHandler.ReportError(e);
 		}
 
-		protected override object RecoverFromMismatchedToken(IIntStream input, int ttype, BitSet follow)
-		{
-			throw new MismatchedTokenException(ttype, input);
-		}
+        protected override object RecoverFromMismatchedToken(IIntStream input, int ttype, BitSet follow)
+        {
+            throw new MismatchedTokenException(ttype, input);
+        }
 
 		public void WeakKeywords()
 		{
@@ -145,9 +145,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 					break;
 				default:
 					// Case 2: The current token is after FROM and before '.'.
-					if (t != IDENT && input.LA(-1) == FROM && ((input.LA(2) == DOT) || (input.LA(2) == IDENT) || (input.LA(2) == -1)))
+                    if (t != IDENT && input.LA(-1) == FROM && ((input.LA(2) == DOT) || (input.LA(2) == IDENT) || (input.LA(2) == -1)))
 					{
-						if (input.LT(1) is HqlToken hqlToken && hqlToken.PossibleId)
+						HqlToken hqlToken = input.LT(1) as HqlToken;
+						if (hqlToken != null && hqlToken.PossibleId)
 						{
 							hqlToken.Type = IDENT;
 							if (log.IsDebugEnabled())
@@ -160,9 +161,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-		public void WeakKeywords2()
-		{
-			/*
+        public void WeakKeywords2()
+        {
+            /*
              * path
              * alias in class? path
              * in open path close
@@ -170,40 +171,40 @@ namespace NHibernate.Hql.Ast.ANTLR
              * elements open path close
              * alias in path dot elements
             */
-			int t = input.LA(1);
+            int t = input.LA(1);
 
-			switch (t)
-			{
-				case ORDER:
-				case GROUP:
-					// Case 1: Multi token keywords GROUP BY and ORDER BY
-					// The next token ( LT(2) ) should be 'by'... otherwise, this is just an ident.
-					if (input.LA(2) != LITERAL_by)
-					{
-						input.LT(1).Type = IDENT;
-						if (log.IsDebugEnabled())
-						{
-							log.Debug("weakKeywords() : new LT(1) token - {0}", input.LT(1));
-						}
-					}
-					break;
-				default:
-					// Case 2: The current token is after FROM and before '.'.
-					if (t != IDENT && input.LA(-1) == FROM && input.LA(2) == DOT)
-					{
-						HqlToken hqlToken = (HqlToken) input.LT(1);
-						if (hqlToken.PossibleId)
-						{
-							hqlToken.Type = IDENT;
-							if (log.IsDebugEnabled())
-							{
-								log.Debug("weakKeywords() : new LT(1) token - {0}", input.LT(1));
-							}
-						}
-					}
-					break;
-			}
-		}
+            switch (t)
+            {
+                case ORDER:
+                case GROUP:
+                    // Case 1: Multi token keywords GROUP BY and ORDER BY
+                    // The next token ( LT(2) ) should be 'by'... otherwise, this is just an ident.
+                    if (input.LA(2) != LITERAL_by)
+                    {
+                        input.LT(1).Type = IDENT;
+                        if (log.IsDebugEnabled())
+                        {
+                            log.Debug("weakKeywords() : new LT(1) token - {0}", input.LT(1));
+                        }
+                    }
+                    break;
+                default:
+                    // Case 2: The current token is after FROM and before '.'.
+                    if (t != IDENT && input.LA(-1) == FROM && input.LA(2) == DOT)
+                    {
+                        HqlToken hqlToken = (HqlToken)input.LT(1);
+                        if (hqlToken.PossibleId)
+                        {
+                            hqlToken.Type = IDENT;
+                            if (log.IsDebugEnabled())
+                            {
+                                log.Debug("weakKeywords() : new LT(1) token - {0}", input.LT(1));
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
 
 		public IASTNode NegateNode(IASTNode node)
 		{
@@ -225,35 +226,35 @@ namespace NHibernate.Hql.Ast.ANTLR
 				case EQ:
 					node.Type = NE;
 					node.Text = "{not}" + node.Text;
-					return node;    // (NOT (EQ a b) ) => (NE a b)
+					return node;	// (NOT (EQ a b) ) => (NE a b)
 				case NE:
 					node.Type = EQ;
 					node.Text = "{not}" + node.Text;
-					return node;    // (NOT (NE a b) ) => (EQ a b)
+					return node;	// (NOT (NE a b) ) => (EQ a b)
 				case GT:
 					node.Type = LE;
 					node.Text = "{not}" + node.Text;
-					return node;    // (NOT (GT a b) ) => (LE a b)
+					return node;	// (NOT (GT a b) ) => (LE a b)
 				case LT:
 					node.Type = GE;
 					node.Text = "{not}" + node.Text;
-					return node;    // (NOT (LT a b) ) => (GE a b)
+					return node;	// (NOT (LT a b) ) => (GE a b)
 				case GE:
 					node.Type = LT;
 					node.Text = "{not}" + node.Text;
-					return node;    // (NOT (GE a b) ) => (LT a b)
+					return node;	// (NOT (GE a b) ) => (LT a b)
 				case LE:
 					node.Type = GT;
 					node.Text = "{not}" + node.Text;
-					return node;    // (NOT (LE a b) ) => (GT a b)
+					return node;	// (NOT (LE a b) ) => (GT a b)
 				case LIKE:
 					node.Type = NOT_LIKE;
 					node.Text = "{not}" + node.Text;
-					return node;    // (NOT (LIKE a b) ) => (NOT_LIKE a b)
+					return node;	// (NOT (LIKE a b) ) => (NOT_LIKE a b)
 				case NOT_LIKE:
 					node.Type = LIKE;
 					node.Text = "{not}" + node.Text;
-					return node;    // (NOT (NOT_LIKE a b) ) => (LIKE a b)
+					return node;	// (NOT (NOT_LIKE a b) ) => (LIKE a b)
 				case IN:
 					node.Type = NOT_IN;
 					node.Text = "{not}" + node.Text;
@@ -265,19 +266,19 @@ namespace NHibernate.Hql.Ast.ANTLR
 				case IS_NULL:
 					node.Type = IS_NOT_NULL;
 					node.Text = "{not}" + node.Text;
-					return node;    // (NOT (IS_NULL a b) ) => (IS_NOT_NULL a b)
+					return node;	// (NOT (IS_NULL a b) ) => (IS_NOT_NULL a b)
 				case IS_NOT_NULL:
 					node.Type = IS_NULL;
 					node.Text = "{not}" + node.Text;
-					return node;    // (NOT (IS_NOT_NULL a b) ) => (IS_NULL a b)
+					return node;	// (NOT (IS_NOT_NULL a b) ) => (IS_NULL a b)
 				case BETWEEN:
 					node.Type = NOT_BETWEEN;
 					node.Text = "{not}" + node.Text;
-					return node;    // (NOT (BETWEEN a b) ) => (NOT_BETWEEN a b)
+					return node;	// (NOT (BETWEEN a b) ) => (NOT_BETWEEN a b)
 				case NOT_BETWEEN:
 					node.Type = BETWEEN;
 					node.Text = "{not}" + node.Text;
-					return node;    // (NOT (NOT_BETWEEN a b) ) => (BETWEEN a b)
+					return node;	// (NOT (NOT_BETWEEN a b) ) => (BETWEEN a b)
 				/* This can never happen because this rule will always eliminate the child NOT.
 							case NOT:
 								return x.getFirstChild();			// (NOT (NOT x) ) => (x)
@@ -334,7 +335,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// If the lookahead contains a DOT then something that isn't an IDENT...
 			if (input.LA(1) == DOT && input.LA(2) != IDENT)
 			{
-				if (input.LT(2) is HqlToken t && t.PossibleId)
+				// See if the second lookahed token can be an identifier.
+				HqlToken t = input.LT(2) as HqlToken;
+				if (t != null && t.PossibleId)
 				{
 					// Set it!
 					input.LT(2).Type = IDENT;
@@ -351,7 +354,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			int type = negated ? IS_NOT_NULL : IS_NULL;
 			string text = negated ? "is not null" : "is null";
 
-			return (IASTNode) adaptor.BecomeRoot(adaptor.Create(type, text), node);
+			return (IASTNode)adaptor.BecomeRoot(adaptor.Create(type, text), node);
 		}
 
 		private IASTNode ProcessIsEmpty(IASTNode node, bool negated)
@@ -361,19 +364,19 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			IASTNode ast = CreateSubquery(node);
 
-			ast = (IASTNode) adaptor.BecomeRoot(adaptor.Create(EXISTS, "exists"), ast);
+			ast = (IASTNode)adaptor.BecomeRoot(adaptor.Create(EXISTS, "exists"), ast);
 
 			// Add NOT if it's negated.
 			if (!negated)
 			{
-				ast = (IASTNode) adaptor.BecomeRoot(adaptor.Create(NOT, "not"), ast);
+				ast = (IASTNode)adaptor.BecomeRoot(adaptor.Create(NOT, "not"), ast);
 			}
 			return ast;
 		}
 
 		private IASTNode CreateSubquery(IASTNode node)
 		{
-			return (IASTNode) adaptor.BecomeRoot(
+			return (IASTNode)adaptor.BecomeRoot(
 							   adaptor.Create(QUERY, "QUERY"),
 							   adaptor.BecomeRoot(
 								   adaptor.Create(SELECT_FROM, "SELECT_FROM"),
@@ -390,23 +393,23 @@ namespace NHibernate.Hql.Ast.ANTLR
 			ASTFactory factory = new ASTFactory(adaptor);
 
 			return factory.CreateNode(n == null ? IN : NOT_IN,
-									  n == null ? "in" : "not in",
-									  root.IsNil && root.ChildCount == 1 ? root.GetChild(0) : root,
-									  factory.CreateNode(IN_LIST, "inList",
-														 CreateSubquery(p)));
+			                          n == null ? "in" : "not in",
+			                          root.IsNil && root.ChildCount == 1 ? root.GetChild(0) : root,
+			                          factory.CreateNode(IN_LIST, "inList",
+			                                             CreateSubquery(p)));
 		}
 
 		public IASTNode HandleIdentifierError(IToken token, RecognitionException ex)
 		{
 			if (token is HqlToken)
 			{
-				HqlToken hqlToken = (HqlToken) token;
+				HqlToken hqlToken = (HqlToken)token;
 
 				// ... and the token could be an identifer and the error is
 				// a mismatched token error ...
 				if (hqlToken.PossibleId && (ex is MismatchedTokenException))
 				{
-					MismatchedTokenException mte = (MismatchedTokenException) ex;
+					MismatchedTokenException mte = (MismatchedTokenException)ex;
 
 					// ... and the expected token type was an identifier, then:
 					if (mte.Expecting == IDENT)
@@ -423,9 +426,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 						input.Consume();
 						return (IASTNode) adaptor.Create(token);
 					}
-				}
+				} 
 			}
-
+			
 			// Otherwise, handle the error normally.
 			ReflectHelper.PreserveStackTrace(ex);
 			throw ex;

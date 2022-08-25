@@ -35,7 +35,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_fromElement = fromElement;
 			_persister = persister;
 			_entityType = entityType;
-			if (persister is IQueryable queryable)
+
+			var queryable = persister as IQueryable;
+			if (queryable != null)
 				fromElement.Text = queryable.TableName + " " + fromElement.TableAlias;
 		}
 
@@ -124,7 +126,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 					return _fromElement.SessionFactoryHelper.CreateJoinSequence().SetRoot(joinable, useAlias ? TableAlias : string.Empty);
 				}
-
+				
 				return null; // TODO: Should this really return null?  If not, figure out something better to do here.
 			}
 			set { _joinSequence = value; }
@@ -163,7 +165,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				var queryable = Queryable;
 				if (queryable == null)
 					throw new QueryException("not an entity");
-
+				
 				string fragment = queryable.IdentifierSelectFragment(TableAlias, GetSuffix(size, k));
 				return TrimLeadingCommaAndSpaces(fragment);
 			}
@@ -264,7 +266,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 				if (_queryableCollection == null)
 					return false;
-
+				
 				return !_queryableCollection.ElementType.IsEntityType;
 			}
 		}
@@ -274,9 +276,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			CheckInitialized();
 
 			if (_queryableCollection == null)
-			{
+			{		
 				// Not a collection?
-				return (IPropertyMapping) _persister;   // Return the entity property mapping.
+				return (IPropertyMapping)_persister;	// Return the entity property mapping.
 			}
 
 			// If the property is a special collection property name, return a CollectionPropertyMapping.
@@ -300,7 +302,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// Collection of components.
 				if (propertyName == Persister.Entity.EntityPersister.EntityID)
 				{
-					return (IPropertyMapping) _queryableCollection.OwnerEntityPersister;
+					return (IPropertyMapping)_queryableCollection.OwnerEntityPersister;
 				}
 			}
 
@@ -329,7 +331,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				type = _persister.IdentifierType;
 			}
 			else
-			{   // Otherwise, use the property mapping.
+			{	// Otherwise, use the property mapping.
 				IPropertyMapping mapping = GetPropertyMapping(propertyName);
 				type = mapping.ToType(propertyPath);
 			}
@@ -393,7 +395,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				{
 					Log.Debug("toColumns({0},{1}) : subquery = {2}", tableAlias, path, subquery);
 				}
-				return new[] { "(" + subquery + ")" };
+				return new [] { "(" + subquery + ")" };
 			}
 			else
 			{

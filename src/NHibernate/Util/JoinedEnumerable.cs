@@ -1,7 +1,7 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace NHibernate.Util
 {
@@ -70,7 +70,10 @@ namespace NHibernate.Util
 					}
 					else
 					{
-						if (_enumerators[_current] is IDisposable disposable)
+						// there are no items left to iterate over in the current
+						// enumerator so go ahead and dispose of it.
+						IDisposable disposable = _enumerators[_current] as IDisposable;
+						if (disposable != null)
 						{
 							disposable.Dispose();
 						}
@@ -143,7 +146,8 @@ namespace NHibernate.Util
 					// dispose each IEnumerable that still needs to be disposed of
 					for (; _current < _enumerators.Length; _current++)
 					{
-						if (_enumerators[_current] is IDisposable currentDisposable)
+						IDisposable currentDisposable = _enumerators[_current] as IDisposable;
+						if (currentDisposable != null)
 						{
 							currentDisposable.Dispose();
 						}
@@ -197,7 +201,7 @@ namespace NHibernate.Util
 
 		public IEnumerator GetEnumerator()
 		{
-			return ((IEnumerable<T>) this).GetEnumerator();
+			return ((IEnumerable<T>)this).GetEnumerator();
 		}
 
 		#endregion
@@ -276,7 +280,7 @@ namespace NHibernate.Util
 
 			public object Current
 			{
-				get { return ((IEnumerator<T>) this).Current; }
+				get { return ((IEnumerator<T>)this).Current; }
 			}
 
 			#endregion

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -17,8 +17,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private readonly IToken _token;
 		private List<IASTNode> _children;
 
-		public ASTNode()
-			: this((IToken) null) { }
+	    public ASTNode()
+			: this((IToken)null) {}
 
 		public ASTNode(IToken token)
 		{
@@ -124,7 +124,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public int CharPositionInLine
 		{
-			get
+			get 
 			{
 				if ((_token != null) && (_token.CharPositionInLine != 0))
 				{
@@ -260,9 +260,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 				return null;
 			}
-			// Setter commented out 2014-07-26. I don't like it since it drops the current next sibling from
-			// the tree, and the name of the property doesn't give a clear indication if it overwrites or not.
-			// Better to use InsertChild() on the parent.
+            // Setter commented out 2014-07-26. I don't like it since it drops the current next sibling from
+            // the tree, and the name of the property doesn't give a clear indication if it overwrites or not.
+            // Better to use InsertChild() on the parent.
 			//set
 			//{
 			//    if (_parent != null)
@@ -315,7 +315,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				throw new InvalidOperationException();
 			}
-			var childNode = (ASTNode) newChild;
+			var childNode = (ASTNode)newChild;
 			childNode.Parent = this;
 			childNode._childIndex = index;
 			_children[index] = childNode;
@@ -386,22 +386,22 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		// ITree implementations
 		// //////////////////////////////////////////////////////////
 
-		public bool HasAncestor(int ttype)
-		{
-			throw new NotImplementedException();
-		}
+	    public bool HasAncestor(int ttype)
+	    {
+	        throw new NotImplementedException();
+	    }
 
-		public ITree GetAncestor(int ttype)
-		{
-			throw new NotImplementedException();
-		}
+	    public ITree GetAncestor(int ttype)
+	    {
+	        throw new NotImplementedException();
+	    }
 
-		public IList<ITree> GetAncestors()
-		{
-			throw new NotImplementedException();
-		}
+	    public IList<ITree> GetAncestors()
+	    {
+	        throw new NotImplementedException();
+	    }
 
-		void ITree.FreshenParentAndChildIndexes()
+	    void ITree.FreshenParentAndChildIndexes()
 		{
 			FreshenParentAndChildIndexes();
 		}
@@ -433,33 +433,35 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		void ITree.ReplaceChildren(int startChildIndex, int stopChildIndex, object t)
 		{
-			if (_children != null)
-			{
-				_children.RemoveRange(startChildIndex, stopChildIndex - startChildIndex + 1);
-			}
-			if (_children == null)
-			{
-				_children = new List<IASTNode>();
-			}
+            if (_children != null)
+            {
+                _children.RemoveRange(startChildIndex, stopChildIndex - startChildIndex + 1);
+            }
+            if (_children == null)
+            {
+                _children = new List<IASTNode>(); 
+            }
 
-			if (node != null)
-			{
-				_children.Insert(startChildIndex, (IASTNode) t);
-			}
-			else
-			{
-				IEnumerable list = t as IEnumerable;
+            IASTNode node = t as IASTNode;
 
-				if (t is IASTNode node)
-				{
-					int i = 0;
-					foreach (IASTNode entry in list)
-					{
-						_children.Insert(startChildIndex + i, entry);
-						i++;
-					}
-				}
-			}
+            if (node != null)
+            {
+                _children.Insert(startChildIndex, (IASTNode)t);
+            }
+            else
+            {
+                IEnumerable list = t as IEnumerable;
+
+                if (list != null)
+                {
+                    int i = 0;
+                    foreach (IASTNode entry in list)
+                    {
+                        _children.Insert(startChildIndex + i, entry);
+                        i++;
+                    }
+                }
+            }
 
 			FreshenParentAndChildIndexes(startChildIndex);
 		}
@@ -477,8 +479,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		ITree ITree.Parent
 		{
-			get { return (ITree) Parent; }
-			set { Parent = (IASTNode) value; }
+			get { return (ITree)Parent; }
+			set { Parent = (IASTNode)value; }
 		}
 
 		int ITree.TokenStartIndex
