@@ -1,6 +1,9 @@
 name: Generate Async code
 
-on: [pull_request_target]
+on: 
+  pull_request_target:
+    paths:
+      - '**.cs'
 
 permissions: {}
 
