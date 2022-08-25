@@ -693,5 +693,4 @@ namespace NHibernate
 		/// <returns></returns>
 		IFutureValue<T> FutureValue<T>();
 	}
-	
 }
