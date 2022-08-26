@@ -32,14 +32,14 @@ namespace NHibernate.Mapping.ByCode.Impl
 			discriminatorMapping.formula = null;
 			HbmColumn hbm = discriminatorMapping.Columns.SingleOrDefault();
 			hbm = hbm
-			      ??
-			      new HbmColumn
-			      {
-			      	name = discriminatorMapping.column,
-			      	length = discriminatorMapping.length,
-			      	notnull = discriminatorMapping.notnull,
-			      	notnullSpecified = discriminatorMapping.notnull,
-			      };
+				  ??
+				  new HbmColumn
+				  {
+					  name = discriminatorMapping.column,
+					  length = discriminatorMapping.length,
+					  notnull = discriminatorMapping.notnull,
+					  notnullSpecified = discriminatorMapping.notnull,
+				  };
 			columnMapper(new ColumnMapper(hbm, defaultColumnName));
 			if (ColumnTagIsRequired(hbm))
 			{
@@ -70,7 +70,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Type<TPersistentType>() where TPersistentType : IDiscriminatorType
 		{
-			Type(typeof (TPersistentType));
+			Type(typeof(TPersistentType));
 		}
 
 		public void Type(System.Type persistentType)
@@ -79,7 +79,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException("persistentType");
 			}
-			if (!typeof (IDiscriminatorType).IsAssignableFrom(persistentType))
+			if (!typeof(IDiscriminatorType).IsAssignableFrom(persistentType))
 			{
 				throw new ArgumentOutOfRangeException("persistentType", "Expected type implementing IDiscriminatorType");
 			}
@@ -98,7 +98,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
 			if (formulaLines.Length > 1)
 			{
-				discriminatorMapping.Item = new HbmFormula {Text = formulaLines};
+				discriminatorMapping.Item = new HbmFormula { Text = formulaLines };
 			}
 			else
 			{
@@ -131,7 +131,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private bool ColumnTagIsRequired(HbmColumn hbm)
 		{
 			return hbm.sqltype != null || hbm.@default != null || hbm.check != null || hbm.comment != null ||
-			       hbm.index != null || hbm.precision != null || hbm.scale != null || hbm.unique || hbm.uniquekey != null;
+				   hbm.index != null || hbm.precision != null || hbm.scale != null || hbm.unique || hbm.uniquekey != null;
 		}
 
 		private void ResetColumnPlainValues()
