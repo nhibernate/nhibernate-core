@@ -10,10 +10,10 @@
 
 using System;
 using System.Collections;
-using NHibernate.Transform;
-using NHibernate.Type;
 using System.Collections.Generic;
 using NHibernate.Impl;
+using NHibernate.Transform;
+using NHibernate.Type;
 
 namespace NHibernate
 {
