@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using NHibernate.Transform;
-using NHibernate.Type;
 using System.Collections.Generic;
 using NHibernate.Impl;
+using NHibernate.Transform;
+using NHibernate.Type;
 
 namespace NHibernate
 {
@@ -104,7 +104,7 @@ namespace NHibernate
 		/// </summary>
 		/// <value>The parameter names, in no particular order</value>
 		string[] NamedParameters { get; }
-		
+
 		/// <summary>
 		/// Will entities (and proxies) returned by the query be loaded in read-only mode?
 		/// </summary>

@@ -1,6 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql;
@@ -9,10 +13,6 @@ using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
@@ -143,7 +143,7 @@ namespace NHibernate.Impl
 		protected internal virtual IType DetermineType(int paramPosition, object paramValue)
 		{
 			IType type = parameterMetadata.GetOrdinalParameterExpectedType(paramPosition + 1) ??
-			             ParameterHelper.GuessType(paramValue, session.Factory);
+						 ParameterHelper.GuessType(paramValue, session.Factory);
 			return type;
 		}
 
@@ -156,14 +156,14 @@ namespace NHibernate.Impl
 		protected internal virtual IType DetermineType(string paramName, object paramValue)
 		{
 			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName) ??
-			             ParameterHelper.GuessType(paramValue, session.Factory);
+						 ParameterHelper.GuessType(paramValue, session.Factory);
 			return type;
 		}
 
 		protected internal virtual IType DetermineType(string paramName, System.Type clazz)
 		{
 			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName) ??
-			             ParameterHelper.GuessType(clazz, session.Factory);
+						 ParameterHelper.GuessType(clazz, session.Factory);
 			return type;
 		}
 
@@ -196,13 +196,13 @@ namespace NHibernate.Impl
 				namedParamsCopy[name] = typedValues[0];
 				return query;
 			}
-			
+
 			var isJpaPositionalParam = parameterMetadata.GetNamedParameterDescriptor(name).JpaStyle;
 			var aliases = new string[typedValues.Count];
 			for (var index = 0; index < typedValues.Count; index++)
 			{
 				var value = typedValues[index];
-				var alias =  (isJpaPositionalParam ? 'x' + name : name + StringHelper.Underscore) + index + StringHelper.Underscore;
+				var alias = (isJpaPositionalParam ? 'x' + name : name + StringHelper.Underscore) + index + StringHelper.Underscore;
 				namedParamsCopy[alias] = value;
 				aliases[index] = ParserHelper.HqlVariablePrefix + alias;
 			}
@@ -719,9 +719,9 @@ namespace NHibernate.Impl
 			}
 			if (type == null)
 			{
-				throw new ArgumentNullException("type","Can't determine the type of parameter-list elements.");
+				throw new ArgumentNullException("type", "Can't determine the type of parameter-list elements.");
 			}
-			if(!vals.Cast<object>().Any())
+			if (!vals.Cast<object>().Any())
 			{
 				throw new QueryException(string.Format("An empty parameter-list generates wrong SQL; parameter name '{0}'", name));
 			}
@@ -793,13 +793,13 @@ namespace NHibernate.Impl
 		{
 			get { return session.Factory.GetReturnAliases(queryString); }
 		}
-		
+
 		// TODO: maybe call it RowSelection ?
 		public RowSelection Selection
 		{
 			get { return selection; }
 		}
-		
+
 		public IQuery SetMaxResults(int maxResults)
 		{
 			selection.MaxRows = maxResults;
@@ -956,7 +956,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				return (T)result;
+				return (T) result;
 			}
 		}
 

@@ -5,13 +5,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Impl;
-using NHibernate.Type;
-using NHibernate.Util;
-using System.Threading.Tasks;
 using NHibernate.Multi;
 using NHibernate.Param;
+using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Linq
 {
@@ -98,7 +98,7 @@ namespace NHibernate.Linq
 
 		public TResult Execute<TResult>(Expression expression)
 		{
-			return (TResult)Execute(expression);
+			return (TResult) Execute(expression);
 		}
 
 		//TODO 6.0: Add to INhQueryProvider interface 
@@ -137,7 +137,7 @@ namespace NHibernate.Linq
 		{
 			MethodInfo m = CreateQueryMethodDefinition.MakeGenericMethod(expression.Type.GetGenericArguments()[0]);
 
-			return (IQueryable)m.Invoke(this, new object[] { expression });
+			return (IQueryable) m.Invoke(this, new object[] { expression });
 		}
 
 		public virtual IQueryable<T> CreateQuery<T>(Expression expression)
@@ -179,7 +179,7 @@ namespace NHibernate.Linq
 
 		public async Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
 		{
-			return (TResult)await ExecuteAsync(expression, cancellationToken).ConfigureAwait(false);
+			return (TResult) await ExecuteAsync(expression, cancellationToken).ConfigureAwait(false);
 		}
 
 		public virtual Task<object> ExecuteAsync(Expression expression, CancellationToken cancellationToken)
