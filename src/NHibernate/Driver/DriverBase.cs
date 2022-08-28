@@ -338,14 +338,14 @@ namespace NHibernate.Driver
 
 		public virtual bool RequiresTimeSpanForTime => false;
 
-#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
-		public virtual bool SupportsSystemTransactions => false;
-
-		public virtual bool SupportsNullEnlistment => false;
-#else
+#if NETFX
 		public virtual bool SupportsSystemTransactions => true;
 
 		public virtual bool SupportsNullEnlistment => true;
+#else
+		public virtual bool SupportsSystemTransactions => false;
+
+		public virtual bool SupportsNullEnlistment => false;
 #endif
 
 		/// <inheritdoc />
