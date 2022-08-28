@@ -3,9 +3,38 @@ using System.Collections;
 using NHibernate.Transform;
 using NHibernate.Type;
 using System.Collections.Generic;
+using NHibernate.Impl;
 
 namespace NHibernate
 {
+	// 6.0 TODO remove
+	internal static class QueryExtensions
+	{
+		/// <summary>
+		/// Bind a value to a named query parameter
+		/// </summary>
+		/// <param name="query">The query</param>
+		/// <param name="name">The name of the parameter</param>
+		/// <param name="val">The possibly null parameter value</param>
+		/// <param name="type">The NHibernate <see cref="IType"/>.</param>
+		/// <param name="preferMetadataType">If true supplied type is used only if parameter metadata is missing</param>
+		public static void SetParameter(this IQuery query, string name, object val, IType type, bool preferMetadataType)
+		{
+			if (query is AbstractQueryImpl impl)
+			{
+				impl.SetParameter(name, val, type, preferMetadataType);
+			}
+			else
+			{
+				//Let HQL try to process guessed types (hql doesn't support type guessing for NULL) 
+				if (type != null && (preferMetadataType == false || val == null))
+					query.SetParameter(name, val, type);
+				else
+					query.SetParameter(name, val);
+			}
+		}
+	}
+
 	/// <summary>
 	/// An object-oriented representation of a NHibernate query.
 	/// </summary>
