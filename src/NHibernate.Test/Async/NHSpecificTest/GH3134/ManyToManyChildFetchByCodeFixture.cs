@@ -71,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3134
 					.Fetch(SelectMode.Fetch, b => b.As)
 					.Future();
 
-				var b = (await (session.QueryOver<B>()
+				var result = (await (session.QueryOver<B>()
 					.Fetch(SelectMode.ChildFetch, b => b, b => b.As)
 					.Fetch(SelectMode.Fetch, b => b.As.First().Bs)
 					.TransformUsing(Transformers.DistinctRootEntity)
@@ -79,11 +79,11 @@ namespace NHibernate.Test.NHSpecificTest.GH3134
 					.GetEnumerableAsync()))
 					.ToList();
 
-				Assert.That(b.Count, Is.EqualTo(4));
-				Assert.That(NHibernateUtil.IsInitialized(b[0].As), Is.True);
-				Assert.That(NHibernateUtil.IsInitialized(b[0].As.First().Bs), Is.True);
-				Assert.That(b[0].As.Count, Is.EqualTo(1));
-				Assert.That(b[0].As.First().Bs.Count, Is.EqualTo(2));
+				Assert.That(result.Count, Is.EqualTo(4));
+				Assert.That(NHibernateUtil.IsInitialized(result[0].As), Is.True);
+				Assert.That(NHibernateUtil.IsInitialized(result[0].As.First().Bs), Is.True);
+				Assert.That(result[0].As.Count, Is.EqualTo(1));
+				Assert.That(result[0].As.First().Bs.Count, Is.EqualTo(2));
 			}
 		}
 	}
