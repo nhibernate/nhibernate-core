@@ -30,7 +30,7 @@ namespace NHibernate.Util
 				throw new HibernateException(
 					string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}", expression.Body.NodeType));
 			}
-			return ((MemberExpression)expression.Body).Member;
+			return ((MemberExpression) expression.Body).Member;
 		}
 
 #if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
@@ -80,7 +80,7 @@ namespace NHibernate.Util
 				case ConstantExpression constantExpression:
 					path = null;
 					if (constantExpression.Type.Attributes.HasFlag(TypeAttributes.NestedPrivate) &&
-					    Attribute.IsDefined(constantExpression.Type, typeof(CompilerGeneratedAttribute), inherit: true))
+						Attribute.IsDefined(constantExpression.Type, typeof(CompilerGeneratedAttribute), inherit: true))
 					{
 						closureContext = constantExpression.Value;
 						return true;
@@ -393,7 +393,7 @@ namespace NHibernate.Util
 						break;
 				}
 			}
-			
+
 			// When traversed to the top of the expression, return the current tracking values
 			if (memberPaths.Count == 0)
 			{
@@ -624,10 +624,10 @@ namespace NHibernate.Util
 					expression = TransparentIdentifierRemovingExpressionVisitor.ReplaceTransparentIdentifiers(expression);
 					// When the grouping key is an array we have to unwrap it (e.g. group.Key[0] == variable)
 					if (expression.NodeType == ExpressionType.ArrayIndex &&
-					    expression is BinaryExpression binaryExpression &&
-					    binaryExpression.Left is NewArrayExpression newArray &&
-					    binaryExpression.Right is ConstantExpression indexExpression &&
-					    indexExpression.Value is int index)
+						expression is BinaryExpression binaryExpression &&
+						binaryExpression.Left is NewArrayExpression newArray &&
+						binaryExpression.Right is ConstantExpression indexExpression &&
+						indexExpression.Value is int index)
 					{
 						return newArray.Expressions[index];
 					}
@@ -823,7 +823,7 @@ namespace NHibernate.Util
 				}
 
 				if (node.NodeType == ExpressionType.Coalesce &&
-				    (TryGetMembersMetadata(node.Left) | TryGetMembersMetadata(node.Right)))
+					(TryGetMembersMetadata(node.Left) | TryGetMembersMetadata(node.Right)))
 				{
 					return node;
 				}

@@ -8,7 +8,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Linq.Functions
 {
-    internal class TruncateGenerator : BaseHqlGeneratorForMethod
+	internal class TruncateGenerator : BaseHqlGeneratorForMethod
 	{
 		public TruncateGenerator()
 		{

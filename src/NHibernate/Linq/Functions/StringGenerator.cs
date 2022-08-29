@@ -18,7 +18,7 @@ namespace NHibernate.Linq.Functions
 		}
 
 		public HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments,
-		                            HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+									HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			if (arguments.Count == 2)
 			{
@@ -28,7 +28,7 @@ namespace NHibernate.Linq.Functions
 			}
 			if (arguments[2].NodeType == ExpressionType.Constant)
 			{
-				var escapeCharExpression = (ConstantExpression)arguments[2];
+				var escapeCharExpression = (ConstantExpression) arguments[2];
 				return treeBuilder.Like(
 					visitor.Visit(arguments[0]).AsExpression(),
 					visitor.Visit(arguments[1]).AsExpression(),
@@ -48,9 +48,9 @@ namespace NHibernate.Linq.Functions
 			// to avoid referencing Linq2Sql or Linq2NHibernate, if they so wish.
 
 			return method != null && method.Name == "Like" &&
-			       (method.GetParameters().Length == 2 || method.GetParameters().Length == 3) &&
-			       method.DeclaringType != null &&
-			       method.DeclaringType.FullName.EndsWith("SqlMethods");
+				   (method.GetParameters().Length == 2 || method.GetParameters().Length == 3) &&
+				   method.DeclaringType != null &&
+				   method.DeclaringType.FullName.EndsWith("SqlMethods");
 		}
 
 		public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
@@ -87,7 +87,7 @@ namespace NHibernate.Linq.Functions
 
 		public StartsWithGenerator()
 		{
-			SupportedMethods = new[] {ReflectHelper.GetMethodDefinition<string>(x => x.StartsWith(null)), MethodWithComparer};
+			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition<string>(x => x.StartsWith(null)), MethodWithComparer };
 		}
 
 		public override bool AllowsNullableReturnType(MethodInfo method) => false;
@@ -109,7 +109,7 @@ namespace NHibernate.Linq.Functions
 
 		public EndsWithGenerator()
 		{
-			SupportedMethods = new[] {ReflectHelper.GetMethodDefinition<string>(x => x.EndsWith(null)), MethodWithComparer,};
+			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition<string>(x => x.EndsWith(null)), MethodWithComparer, };
 		}
 
 		public override bool AllowsNullableReturnType(MethodInfo method) => false;
@@ -202,7 +202,7 @@ namespace NHibernate.Linq.Functions
 			return treeBuilder.MethodCall("substring", stringExpr, start, length);
 		}
 	}
-	
+
 	public class GetCharsGenerator : BaseHqlGeneratorForMethod
 	{
 		public GetCharsGenerator()
@@ -253,7 +253,7 @@ namespace NHibernate.Linq.Functions
 				locate = treeBuilder.MethodCall("locate",
 					visitor.Visit(arguments[0]).AsExpression(),
 					visitor.Visit(targetObject).AsExpression()); //,
-				//treeBuilder.Constant(0));
+																 //treeBuilder.Constant(0));
 			}
 			else
 			{
@@ -263,13 +263,13 @@ namespace NHibernate.Linq.Functions
 							visitor.Visit(targetObject).AsExpression(),
 							start);
 			}
-			return treeBuilder.Subtract(locate,treeBuilder.Constant(1));
+			return treeBuilder.Subtract(locate, treeBuilder.Constant(1));
 		}
 	}
 
 	public class ReplaceGenerator : BaseHqlGeneratorForMethod
 	{
-#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER  
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 		private static readonly MethodInfo MethodWithComparer = ReflectHelper.GetMethodDefinition<string>(x => x.Replace(string.Empty, string.Empty, default(StringComparison)));
 #endif
 
