@@ -75,11 +75,5 @@ namespace NHibernate.Driver
 				_reader = await (NDataReader.CreateAsync(_reader, _isMidstream, cancellationToken)).ConfigureAwait(false);
 			}
 		}
-
-		/// <summary></summary>
-		public override Task CloseAsync()
-		{
-			return _reader.CloseAsync();
-		}
 	}
 }

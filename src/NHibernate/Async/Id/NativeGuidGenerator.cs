@@ -46,8 +46,7 @@ namespace NHibernate.Id
 					}
 					finally
 					{
-						cancellationToken.ThrowIfCancellationRequested();
-						await (reader.CloseAsync()).ConfigureAwait(false);
+						reader.Close();
 					}
 					log.Debug("GUID identifier generated: {0}", result);
 					return result;

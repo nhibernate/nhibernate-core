@@ -56,10 +56,8 @@ namespace NHibernate.Id.Enhanced
 						{
 							try
 							{
-								cancellationToken.ThrowIfCancellationRequested();
-								await (rs.CloseAsync()).ConfigureAwait(false);
+								rs.Close();
 							}
-							catch (OperationCanceledException) { throw; }
 							catch
 							{
 								// intentionally empty

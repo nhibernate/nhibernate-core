@@ -53,18 +53,5 @@ namespace NHibernate.Driver
 				reader = await (batcher.ExecuteReaderAsync(command, cancellationToken)).ConfigureAwait(false)
 			};
 		}
-
-		public override Task CloseAsync()
-		{
-			try
-			{
-				Close();
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
 	}
 }

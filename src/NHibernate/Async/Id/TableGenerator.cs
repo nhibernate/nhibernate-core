@@ -95,8 +95,7 @@ namespace NHibernate.Id
 				{
 					if (rs != null)
 					{
-						cancellationToken.ThrowIfCancellationRequested();
-						await (rs.CloseAsync()).ConfigureAwait(false);
+						rs.Close();
 					}
 					qps.Dispose();
 				}

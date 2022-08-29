@@ -525,12 +525,7 @@ namespace NHibernate.Persister.Entity
 			}
 			finally
 			{
-				cancellationToken.ThrowIfCancellationRequested();
-				var closeTask = sequentialResultSet?.CloseAsync();
-				if (closeTask != null)
-				{
-					await (closeTask).ConfigureAwait(false);
-				}
+				sequentialResultSet?.Close();
 				if (sequentialSelect != null)
 				{
 					session.Batcher.CloseCommand(sequentialSelect, sequentialResultSet);

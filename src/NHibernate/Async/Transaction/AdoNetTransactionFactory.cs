@@ -58,7 +58,7 @@ namespace NHibernate.Transaction
 
 					if (transacted)
 					{
-						await (trans.CommitAsync(cancellationToken)).ConfigureAwait(false);
+						trans.Commit();
 					}
 				}
 				catch (Exception t)
@@ -69,7 +69,7 @@ namespace NHibernate.Transaction
 						{
 							if (trans != null && connection.State != ConnectionState.Closed)
 							{
-								await (trans.RollbackAsync(cancellationToken)).ConfigureAwait(false);
+								trans.Rollback();
 							}
 						}
 						catch (Exception ignore)
