@@ -45,7 +45,7 @@
 			<arg value="/t:Restore" />
 			<arg value="/t:Rebuild" />
 			<arg value="/v:q" />
-			<arg value="/m" />
+			<arg value="/m:1" />
 		</exec> 
 	</target>
 
