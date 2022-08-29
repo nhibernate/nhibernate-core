@@ -10,6 +10,7 @@
 
 using System;
 using System.Data.Common;
+using NHibernate.Action;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
