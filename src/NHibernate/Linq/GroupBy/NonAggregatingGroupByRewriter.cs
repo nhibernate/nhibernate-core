@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
 using Remotion.Linq;
@@ -13,22 +14,23 @@ namespace NHibernate.Linq.GroupBy
 	{
 		public static void ReWrite(QueryModel queryModel)
 		{
-			if (queryModel.ResultOperators.Count == 1 
-				&& queryModel.ResultOperators[0] is GroupResultOperator 
+			if (queryModel.ResultOperators.Count > 0 
+				&& queryModel.ResultOperators.All(r => r is GroupResultOperator)
 				&& IsNonAggregatingGroupBy(queryModel))
 			{
-				var resultOperator = (GroupResultOperator)queryModel.ResultOperators[0];
-				queryModel.ResultOperators.Clear();
-				queryModel.ResultOperators.Add(new NonAggregatingGroupBy(resultOperator));
+				for (var i = 0; i < queryModel.ResultOperators.Count; i++)
+				{
+					var resultOperator = (GroupResultOperator) queryModel.ResultOperators[i];
+					queryModel.ResultOperators[i] = new NonAggregatingGroupBy(resultOperator);
+				}
+
 				return;
 			}
 
-			var subQueryExpression = queryModel.MainFromClause.FromExpression as SubQueryExpression;
-
-			if ((subQueryExpression != null) 
-				&& (subQueryExpression.QueryModel.ResultOperators.Count == 1) 
-				&& (subQueryExpression.QueryModel.ResultOperators[0] is GroupResultOperator) 
-				&& (IsNonAggregatingGroupBy(queryModel)))
+			if (queryModel.MainFromClause.FromExpression is SubQueryExpression subQueryExpression 
+				&& subQueryExpression.QueryModel.ResultOperators.Count > 0 
+				&& subQueryExpression.QueryModel.ResultOperators.All(r => r is GroupResultOperator) 
+				&& IsNonAggregatingGroupBy(queryModel))
 			{
 				FlattenSubQuery(subQueryExpression, queryModel);
 			}
@@ -58,7 +60,12 @@ namespace NHibernate.Linq.GroupBy
 				throw new NotImplementedException();
 			}
 
-			queryModel.ResultOperators.Add(new NonAggregatingGroupBy((GroupResultOperator) subQueryModel.ResultOperators[0]));
+			for (var i = 0; i < subQueryModel.ResultOperators.Count; i++)
+			{
+				var resultOperator = new NonAggregatingGroupBy((GroupResultOperator) subQueryModel.ResultOperators[i]);
+				queryModel.ResultOperators.Add(resultOperator);
+			}
+
 			queryModel.ResultOperators.Add(clientSideSelect);
 		}
 

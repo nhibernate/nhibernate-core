@@ -30,8 +30,14 @@ namespace NHibernate.Persister.Collection
 	/// <summary>
 	/// Summary description for AbstractCollectionPersister.
 	/// </summary>
-	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
-		IPostInsertIdentityPersister, ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable
+	public abstract partial class AbstractCollectionPersister : 
+		ICollectionMetadata, 
+		ISqlLoadableCollection,
+		IPostInsertIdentityPersister, 
+		ISupportSelectModeJoinable, 
+		ICompositeKeyPostInsertIdentityPersister, 
+		ISupportLazyPropsJoinable,
+		IPersister
 	{
 		protected static readonly object NotFoundPlaceHolder = new object();
 		private readonly string role;
@@ -91,6 +97,7 @@ namespace NHibernate.Persister.Collection
 
 		protected readonly string qualifiedTableName;
 		private readonly string queryLoaderName;
+		private readonly bool supportsQueryCache;
 
 		private readonly bool isPrimitiveArray;
 		private readonly bool isArray;
@@ -530,6 +537,8 @@ namespace NHibernate.Persister.Collection
 											: Template.RenderOrderByStringTemplate(manyToManyOrderByString, factory.Dialect,
 																				   factory.SQLFunctionRegistry);
 			InitCollectionPropertyMap();
+
+			supportsQueryCache = collection.CacheConcurrencyStrategy != CacheFactory.Never;
 		}
 
 		public void PostInstantiate()
@@ -634,6 +643,12 @@ namespace NHibernate.Persister.Collection
 		public bool HasCache
 		{
 			get { return cache != null; }
+		}
+
+		/// <inheritdoc />
+		public bool SupportsQueryCache
+		{
+			get { return supportsQueryCache; }
 		}
 
 		public string GetSQLWhereString(string alias)
@@ -1380,7 +1395,9 @@ namespace NHibernate.Persister.Collection
 
 			return buffer.ToString();
 		}
-		
+
+		// Since 5.4
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public bool IsManyToManyFiltered(IDictionary<string, IFilter> enabledFilters)
 		{
 			return IsManyToMany && (manyToManyWhereString != null || manyToManyFilterHelper.IsAffectedBy(enabledFilters));

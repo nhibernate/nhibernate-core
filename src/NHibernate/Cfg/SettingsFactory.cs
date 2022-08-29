@@ -7,11 +7,16 @@ using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
 using NHibernate.Connection;
 using NHibernate.Dialect;
+using NHibernate.Engine.Query;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Linq;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
+using NHibernate.Loader;
+using NHibernate.Loader.Collection;
+using NHibernate.Loader.Entity;
+using NHibernate.MultiTenancy;
 using NHibernate.Transaction;
 using NHibernate.Util;
 
@@ -205,6 +210,7 @@ namespace NHibernate.Cfg
 
 			if (useSecondLevelCache || useQueryCache)
 			{
+				settings.CacheReadWriteLockFactory = GetReadWriteLockFactory(PropertiesHelper.GetString(Environment.CacheReadWriteLockFactory, properties, null));
 				// The cache provider is needed when we either have second-level cache enabled
 				// or query cache enabled.  Note that useSecondLevelCache is enabled by default
 				settings.CacheProvider = CreateCacheProvider(properties);
@@ -290,7 +296,11 @@ namespace NHibernate.Cfg
 			bool namedQueryChecking = PropertiesHelper.GetBoolean(Environment.QueryStartupChecking, properties, true);
 			log.Info("Named query checking : {0}", EnabledDisabled(namedQueryChecking));
 			settings.IsNamedQueryStartupCheckingEnabled = namedQueryChecking;
-			
+
+			bool queryThrowNeverCached = PropertiesHelper.GetBoolean(Environment.QueryThrowNeverCached, properties, true);
+			log.Info("Never cached entities/collections query cache throws exception : {0}", EnabledDisabled(queryThrowNeverCached));
+			settings.QueryThrowNeverCached = queryThrowNeverCached;
+
 			// Not ported - settings.StatementFetchSize = statementFetchSize;
 			// Not ported - ScrollableResultSetsEnabled
 			// Not ported - GetGeneratedKeysEnabled
@@ -310,7 +320,18 @@ namespace NHibernate.Cfg
 			// Not ported - JdbcBatchVersionedData
 
 			settings.QueryModelRewriterFactory = CreateQueryModelRewriterFactory(properties);
-			
+			settings.PreTransformerRegistrar = CreatePreTransformerRegistrar(properties);
+
+			// Avoid dependency on re-linq assembly when PreTransformerRegistrar is null
+			if (settings.PreTransformerRegistrar != null)
+			{
+				settings.LinqPreTransformer = NhRelinqQueryParser.CreatePreTransformer(settings.PreTransformerRegistrar);
+			}
+
+			//QueryPlanCache:
+			settings.QueryPlanCacheParameterMetadataMaxSize = PropertiesHelper.GetInt32(Environment.QueryPlanCacheParameterMetadataMaxSize, properties, QueryPlanCache.DefaultParameterMetadataMaxCount); 
+			settings.QueryPlanCacheMaxSize = PropertiesHelper.GetInt32(Environment.QueryPlanCacheMaxSize, properties, QueryPlanCache.DefaultQueryPlanMaxCount);
+
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;
 			
@@ -318,7 +339,71 @@ namespace NHibernate.Cfg
 			log.Debug("Track session id: " + EnabledDisabled(trackSessionId));
 			settings.TrackSessionId = trackSessionId;
 
+			var multiTenancyStrategy = PropertiesHelper.GetEnum(Environment.MultiTenancy, properties, MultiTenancyStrategy.None);
+			settings.MultiTenancyStrategy = multiTenancyStrategy;
+			if (multiTenancyStrategy != MultiTenancyStrategy.None)
+			{
+				log.Debug("multi-tenancy strategy : " + multiTenancyStrategy);
+				settings.MultiTenancyConnectionProvider = CreateMultiTenancyConnectionProvider(properties);
+			}
+
+			settings.BatchFetchStyle = PropertiesHelper.GetEnum(Environment.BatchFetchStyle, properties, BatchFetchStyle.Legacy);
+			settings.BatchingEntityLoaderBuilder = GetBatchingEntityLoaderBuilder(settings.BatchFetchStyle);
+			settings.BatchingCollectionInitializationBuilder = GetBatchingCollectionInitializationBuilder(settings.BatchFetchStyle);
+
 			return settings;
+		}
+
+		private ICacheReadWriteLockFactory GetReadWriteLockFactory(string lockFactory)
+		{
+			switch (lockFactory)
+			{
+				case null:
+				case "async":
+					return new AsyncCacheReadWriteLockFactory();
+				case "sync":
+					return new SyncCacheReadWriteLockFactory();
+				default:
+					try
+					{
+						var type = ReflectHelper.ClassForName(lockFactory);
+						return (ICacheReadWriteLockFactory) Environment.ObjectsFactory.CreateInstance(type);
+					}
+					catch (Exception e)
+					{
+						throw new HibernateException($"Could not instantiate cache lock factory: `{lockFactory}`. Use either `sync` or `async` values or type name implementing {nameof(ICacheReadWriteLockFactory)} interface", e);
+					}
+			}
+		}
+
+		private BatchingCollectionInitializerBuilder GetBatchingCollectionInitializationBuilder(BatchFetchStyle batchFetchStyle)
+		{
+			switch (batchFetchStyle)
+			{
+				case BatchFetchStyle.Legacy:
+					return new LegacyBatchingCollectionInitializerBuilder();
+				// case BatchFetchStyle.PADDED:
+				// 	break;
+				case BatchFetchStyle.Dynamic:
+					return new DynamicBatchingCollectionInitializerBuilder();
+				default:
+					throw new ArgumentOutOfRangeException(nameof(batchFetchStyle), batchFetchStyle, null);
+			}
+		}
+
+		private BatchingEntityLoaderBuilder GetBatchingEntityLoaderBuilder(BatchFetchStyle batchFetchStyle)
+		{
+			switch (batchFetchStyle)
+			{
+				case BatchFetchStyle.Legacy:
+					return new LegacyBatchingEntityLoaderBuilder();
+				// case BatchFetchStyle.PADDED:
+				// 	break;
+				case BatchFetchStyle.Dynamic:
+					return new DynamicBatchingEntityLoaderBuilder();
+				default:
+					throw new ArgumentOutOfRangeException(nameof(batchFetchStyle), batchFetchStyle, null);
+			}
 		}
 
 		private static IBatcherFactory CreateBatcherFactory(IDictionary<string, string> properties, int batchSize, IConnectionProvider connectionProvider)
@@ -404,6 +489,29 @@ namespace NHibernate.Cfg
 			}
 		}
 
+		private static IMultiTenancyConnectionProvider CreateMultiTenancyConnectionProvider(IDictionary<string, string> properties)
+		{
+			string className = PropertiesHelper.GetString(
+				Environment.MultiTenancyConnectionProvider,
+				properties,
+				null);
+			log.Info("Multi-tenancy connection provider: {0}", className);
+			if (className == null)
+			{
+				return null;
+			}
+
+			try
+			{
+				return (IMultiTenancyConnectionProvider)
+					Environment.ObjectsFactory.CreateInstance(System.Type.GetType(className, true));
+			}
+			catch (Exception cnfe)
+			{
+				throw new HibernateException("could not find Multi-tenancy connection provider class: " + className, cnfe);
+			}
+		}
+
 		private static ITransactionFactory CreateTransactionFactory(IDictionary<string, string> properties)
 		{
 			string className = PropertiesHelper.GetString(
@@ -442,6 +550,26 @@ namespace NHibernate.Cfg
 			catch (Exception cnfe)
 			{
 				throw new HibernateException("could not instantiate IQueryModelRewriterFactory: " + className, cnfe);
+			}
+		}
+
+		private static IExpressionTransformerRegistrar CreatePreTransformerRegistrar(IDictionary<string, string> properties)
+		{
+			var className = PropertiesHelper.GetString(Environment.PreTransformerRegistrar, properties, null);
+			if (className == null)
+				return null;
+
+			log.Info("Pre-transformer registrar: {0}", className);
+
+			try
+			{
+				return
+					(IExpressionTransformerRegistrar)
+					Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(className));
+			}
+			catch (Exception e)
+			{
+				throw new HibernateException("could not instantiate IExpressionTransformerRegistrar: " + className, e);
 			}
 		}
 	}

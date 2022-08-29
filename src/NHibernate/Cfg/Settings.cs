@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
 using NHibernate.AdoNet;
 using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
@@ -9,6 +10,10 @@ using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
+using NHibernate.Loader;
+using NHibernate.Loader.Collection;
+using NHibernate.Loader.Entity;
+using NHibernate.MultiTenancy;
 using NHibernate.Transaction;
 
 namespace NHibernate.Cfg
@@ -100,6 +105,8 @@ namespace NHibernate.Cfg
 
 		public ICacheProvider CacheProvider { get; internal set; }
 
+		public ICacheReadWriteLockFactory CacheReadWriteLockFactory { get; internal set; }
+
 		public IQueryCacheFactory QueryCacheFactory { get; internal set; }
 
 		public IConnectionProvider ConnectionProvider { get; internal set; }
@@ -136,6 +143,11 @@ namespace NHibernate.Cfg
 		/// <see langword="false" /> to ignore failures.
 		/// </summary>
 		public bool ThrowOnSchemaUpdate { get; internal set; }
+
+		/// <summary>
+		/// Should using a never cached entity/collection in a cacheable query throw an exception.
+		/// </summary>
+		public bool QueryThrowNeverCached { get; internal set; }
 
 		#region NH specific
 
@@ -189,7 +201,14 @@ namespace NHibernate.Cfg
 		public bool LinqToHqlFallbackOnPreEvaluation { get; internal set; }
 
 		public IQueryModelRewriterFactory QueryModelRewriterFactory { get; internal set; }
-		
+
+		/// <summary>
+		/// The pre-transformer registrar used to register custom expression transformers.
+		/// </summary>
+		public IExpressionTransformerRegistrar PreTransformerRegistrar { get; internal set; }
+
+		internal Func<Expression, Expression> LinqPreTransformer { get; set; }
+
 		#endregion
 
 		internal string GetFullCacheRegionName(string name)
@@ -199,5 +218,14 @@ namespace NHibernate.Cfg
 				return prefix + '.' + name;
 			return name;
 		}
+
+		public MultiTenancyStrategy MultiTenancyStrategy { get; internal set; }
+
+		public IMultiTenancyConnectionProvider MultiTenancyConnectionProvider { get; internal set; }
+		public int QueryPlanCacheParameterMetadataMaxSize { get; internal set; }
+		public int QueryPlanCacheMaxSize { get; internal set; }
+		public BatchFetchStyle BatchFetchStyle { get; internal set; }
+		public BatchingEntityLoaderBuilder  BatchingEntityLoaderBuilder { get; internal set; }
+		public BatchingCollectionInitializerBuilder BatchingCollectionInitializationBuilder { get; internal set; }
 	}
 }

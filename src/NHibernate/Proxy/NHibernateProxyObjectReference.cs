@@ -51,7 +51,8 @@ namespace NHibernate.Proxy
 		[SecurityCritical]
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			info.AddValue(nameof(_proxyFactoryInfo), _proxyFactoryInfo);
+			//Save a copy as it seems IObjectReference deserialization can't properly handle multiple objects with the same reference 
+			info.AddValue(nameof(_proxyFactoryInfo), _proxyFactoryInfo.Clone());
 			info.AddValue(nameof(_identifier), _identifier);
 			info.AddValue(nameof(_implementation), _implementation);
 		}

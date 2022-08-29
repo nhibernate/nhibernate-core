@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1688
 		{
 			using (ISession session = OpenSession())
 			{
-				DetachedCriteria criteria = DetachedCriteria.For<NH1679.DomainClass>("alias");
+				DetachedCriteria criteria = DetachedCriteria.For<DomainClass>("alias");
 
 				action.Invoke(criteria);
 

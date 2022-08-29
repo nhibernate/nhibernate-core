@@ -337,5 +337,14 @@ namespace NHibernate.Test.Hql.Ast
 				Assert.That(actualWorkaround, Is.EqualTo(-2));
 			}
 		}
+
+		//NH-3249 (GH-1285)
+		[Test]
+		public void CountDistinctOnFunction()
+		{
+			var hql = @"SELECT COUNT(DISTINCT DATE(m.birthdate)) FROM Mammal m";
+			using(var s = OpenSession())
+				s.CreateQuery(hql).List();
+		}
 	}
 }

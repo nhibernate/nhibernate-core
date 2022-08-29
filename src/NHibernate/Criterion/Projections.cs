@@ -1,8 +1,8 @@
 using System;
 using System.Linq.Expressions;
+using NHibernate.Dialect.Function;
 using NHibernate.Impl;
 using NHibernate.Type;
-using NHibernate.Dialect.Function;
 
 namespace NHibernate.Criterion
 {
@@ -317,7 +317,7 @@ namespace NHibernate.Criterion
 		/// <returns></returns>
 		public static IProjection Constant(object obj, IType type)
 		{
-			return new ConstantProjection(obj,type);
+			return new ConstantProjection(obj, type);
 		}
 
 		/// <summary>
@@ -327,7 +327,7 @@ namespace NHibernate.Criterion
 		/// <param name="type">The type.</param>
 		/// <param name="projections">The projections.</param>
 		/// <returns></returns>
-		public static IProjection SqlFunction(string functionName, IType type, params IProjection [] projections)
+		public static IProjection SqlFunction(string functionName, IType type, params IProjection[] projections)
 		{
 			return new SqlFunctionProjection(functionName, type, projections);
 		}
@@ -354,6 +354,18 @@ namespace NHibernate.Criterion
 		public static IProjection Conditional(ICriterion criterion, IProjection whenTrue, IProjection whenFalse)
 		{
 			return new ConditionalProjection(criterion, whenTrue, whenFalse);
+		}
+
+		/// <summary>
+		/// Conditionally returns one of the <see cref="ConditionalProjectionCase.Projection"/>s depending on the <see cref="ConditionalProjectionCase.Criterion"/>s of <paramref name="cases"/> or the <paramref name="elseProjection"/>.
+		/// This produces an switch-case expression with multiple when-then parts.
+		/// </summary>
+		/// <param name="cases">The <see cref="ConditionalProjectionCase"/>s which contain your <see cref="ICriterion"/>s and <see cref="IProjection"/>s.</param>
+		/// <param name="elseProjection">The else <see cref="IProjection"/>.</param>
+		/// <returns>A <see cref="IProjection"/> for a switch-expression with multiple <see cref="ICriterion">Criterions</see> ("when") <see cref="IProjection">Projections</see> ("then").</returns>
+		public static IProjection Conditional(ConditionalProjectionCase[] cases, IProjection elseProjection)
+		{
+			return new ConditionalProjection(cases, elseProjection);
 		}
 
 		public static IProjection SubQuery(DetachedCriteria detachedCriteria)
@@ -417,7 +429,7 @@ namespace NHibernate.Criterion
 		{
 			return Projections.GroupProperty(ExpressionProcessor.FindMemberExpression(expression.Body));
 		}
-		
+
 		/// <summary>
 		/// A grouping property projection
 		/// </summary>
@@ -520,12 +532,28 @@ namespace NHibernate.Criterion
 			throw QueryOver.GetDirectUsageException();
 		}
 
+		/// <summary>
+		/// Projects given lambda expression
+		/// </summary>
+		public static IProjection Select(Expression<Func<object>> expression)
+		{
+			return ExpressionProcessor.FindMemberProjection(expression.Body).AsProjection();
+		}
+
+		/// <summary>
+		/// Projects given lambda expression
+		/// </summary>
+		public static IProjection Select<TEntity>(Expression<Func<TEntity, object>> expression)
+		{
+			return ExpressionProcessor.FindMemberProjection(expression.Body).AsProjection();
+		}
+
 		internal static IProjection ProcessConcat(MethodCallExpression methodCallExpression)
 		{
-			NewArrayExpression args = (NewArrayExpression)methodCallExpression.Arguments[0];
+			NewArrayExpression args = (NewArrayExpression) methodCallExpression.Arguments[0];
 			IProjection[] projections = new IProjection[args.Expressions.Count];
 
-			for (var i=0; i<args.Expressions.Count; i++)
+			for (var i = 0; i < args.Expressions.Count; i++)
 				projections[i] = ExpressionProcessor.FindMemberProjection(args.Expressions[i]).AsProjection();
 
 			return Projections.SqlFunction("concat", NHibernateUtil.String, projections);

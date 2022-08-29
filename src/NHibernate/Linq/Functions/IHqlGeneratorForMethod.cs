@@ -18,6 +18,14 @@ namespace NHibernate.Linq.Functions
 	internal interface IHqlGeneratorForMethodExtended
 	{
 		bool AllowsNullableReturnType(MethodInfo method);
+
+		/// <summary>
+		/// Try getting a collection parameter from <see cref="MethodCallExpression"/>.
+		/// </summary>
+		/// <param name="expression">The method call expression.</param>
+		/// <param name="collectionParameter">Output parameter for the retrieved collection parameter.</param>
+		/// <returns>Whether collection parameter was retrieved.</returns>
+		bool TryGetCollectionParameter(MethodCallExpression expression, out ConstantExpression collectionParameter);
 	}
 
 	internal static class HqlGeneratorForMethodExtensions
@@ -31,6 +39,21 @@ namespace NHibernate.Linq.Functions
 			}
 
 			return true;
+		}
+
+		// 6.0 TODO: Remove
+		public static bool TryGetCollectionParameters(
+			this IHqlGeneratorForMethod generator,
+			MethodCallExpression expression,
+			out ConstantExpression collectionParameter)
+		{
+			if (generator is IHqlGeneratorForMethodExtended extendedGenerator)
+			{
+				return extendedGenerator.TryGetCollectionParameter(expression, out collectionParameter);
+			}
+
+			collectionParameter = null;
+			return false;
 		}
 
 		// 6.0 TODO: merge into IHqlGeneratorForMethod

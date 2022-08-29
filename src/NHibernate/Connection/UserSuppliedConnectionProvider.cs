@@ -40,7 +40,7 @@ namespace NHibernate.Connection
 		/// Thrown when this method is called.  User is responsible for creating
 		/// <see cref="DbConnection"/>s.
 		/// </exception>
-		public override DbConnection GetConnection()
+		public override DbConnection GetConnection(string connectionString)
 		{
 			throw new InvalidOperationException("The user must provide an ADO.NET connection - NHibernate is not creating it.");
 		}

@@ -26,6 +26,7 @@ using NHibernate.Hql;
 using NHibernate.Intercept;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -1126,6 +1127,8 @@ namespace NHibernate.Impl
 			{
 				string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
 				int size = implementors.Length;
+				if (size == 0)
+					throw new QueryException(criteria.EntityOrClassName + " is not mapped");
 
 				CriteriaLoader[] loaders = new CriteriaLoader[size];
 				ISet<string> spaces = new HashSet<string>();

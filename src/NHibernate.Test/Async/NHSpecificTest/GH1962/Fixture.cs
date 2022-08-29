@@ -19,11 +19,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1962
 	public class FixtureAsync : BugTestCase
 	{
 		[Test]
-		[KnownBug("#1962")]
 		public async Task LinqShouldBeValidAsync()
 		{
 			using (var session = OpenSession())
-			using (session.BeginTransaction())
 			{
 				var result =
 					await (session

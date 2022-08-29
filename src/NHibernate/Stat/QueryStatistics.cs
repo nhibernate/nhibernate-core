@@ -70,7 +70,7 @@ namespace NHibernate.Stat
 				executionMaxTime = time;
 			executionCount++;
 			executionRowCount += rows;
-			executionAvgTime = TimeSpan.FromTicks((executionAvgTime.Ticks * executionCount + time.Ticks) / executionCount);
+			executionAvgTime = TimeSpan.FromTicks((executionAvgTime.Ticks * (executionCount - 1) + time.Ticks) / executionCount);
 		}
 
 		public override string ToString()

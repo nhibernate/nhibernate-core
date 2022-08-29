@@ -388,7 +388,8 @@ namespace NHibernate.Loader
 					GetWithClause(path, pathAlias),
 					Factory,
 					enabledFilters,
-					GetSelectMode(path)), path);
+					GetSelectMode(path)) {ForceFilter = true},
+				path);
 			AddAssociation(assoc);
 		}
 
@@ -750,8 +751,9 @@ namespace NHibernate.Loader
 			}
 			else
 			{
-				foreignKeyTable = type.GetAssociatedJoinable(Factory).TableName;
-				foreignKeyColumns = JoinHelper.GetRHSColumnNames(type, Factory);
+				var joinable = type.GetAssociatedJoinable(Factory);
+				foreignKeyTable = joinable.TableName;
+				foreignKeyColumns = JoinHelper.GetRHSColumnNames(joinable, type);
 			}
 
 			return IsDuplicateAssociation(foreignKeyTable, foreignKeyColumns);
@@ -818,10 +820,9 @@ namespace NHibernate.Loader
 		{
 			if (ass.Length == 0)
 				return orderBy;
-			else if (orderBy.Length == 0)
+			if (orderBy.Length == 0)
 				return ass;
-			else
-				return ass.Append(StringHelper.CommaSpace, orderBy);
+			return orderBy.Append(StringHelper.CommaSpace, ass);
 		}
 
 		protected SqlString MergeOrderings(string ass, SqlString orderBy) {
@@ -849,21 +850,30 @@ namespace NHibernate.Loader
 				}
 				else
 				{
-					oj.AddJoins(outerjoin);
 					// NH Different behavior : NH1179 and NH1293
-					// Apply filters in Many-To-One association
-					if (enabledFiltersForManyToOne.Count > 0)
+					// Apply filters for entity joins and Many-To-One associations
+					SqlString filter = null;
+					var enabledFiltersForJoin = oj.ForceFilter ? enabledFilters : enabledFiltersForManyToOne;
+					if (oj.ForceFilter || enabledFiltersForJoin.Count > 0)
 					{
-						string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForManyToOne);
+						string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForJoin);
 						bool joinClauseDoesNotContainsFilterAlready =
-							outerjoin.ToFromFragmentString.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
+							oj.On?.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
 						if (joinClauseDoesNotContainsFilterAlready)
 						{
-							// Ensure that the join condition is added to the join, not the where clause.
-							// Adding the condition to the where clause causes left joins to become inner joins.
-							outerjoin.AddFromFragmentString(new SqlString(manyToOneFilterFragment));
+							filter = new SqlString(manyToOneFilterFragment);
 						}
 					}
+
+					if (TableGroupJoinHelper.ProcessAsTableGroupJoin(new[] {oj}, new[] {oj.On, filter}, true, outerjoin, alias => true, factory))
+						continue;
+
+					oj.AddJoins(outerjoin);
+
+					// Ensure that the join condition is added to the join, not the where clause.
+					// Adding the condition to the where clause causes left joins to become inner joins.
+					if (SqlStringHelper.IsNotEmpty(filter))
+						outerjoin.AddFromFragmentString(filter);
 				}
 				last = oj;
 			}
@@ -974,7 +984,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Render the where condition for a (batch) load by identifier / collection key
 		/// </summary>
-		protected SqlStringBuilder WhereString(string alias, string[] columnNames, int batchSize)
+		protected virtual SqlStringBuilder WhereString(string alias, string[] columnNames, int batchSize)
 		{
 			if (columnNames.Length == 1)
 			{
@@ -1051,10 +1061,9 @@ namespace NHibernate.Loader
 			}
 		}
 
-		private static void ColumnFragment(SqlStringBuilder builder, string alias, string[] columnNames)
+		private void ColumnFragment(SqlStringBuilder builder, string alias, string[] columnNames)
 		{
 			//foo = ? and bar = ?
-			var prefix = alias + StringHelper.Dot;
 			var added = false;
 			foreach (var columnName in columnNames)
 			{
@@ -1064,8 +1073,7 @@ namespace NHibernate.Loader
 				}
 
 				builder
-					.Add(prefix)
-					.Add(columnName)
+					.Add(StringHelper.Qualify(GenerateAliasForColumn(alias, columnName), columnName))
 					.Add("=")
 					.Add(Parameter.Placeholder);
 

@@ -40,7 +40,8 @@ namespace NHibernate.Persister.Entity
 	/// </remarks>
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
-		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable,
+		IPersister
 	{
 		#region InclusionChecker
 
@@ -247,6 +248,8 @@ namespace NHibernate.Persister.Entity
 		private bool[] tableHasColumns;
 
 		private readonly string loaderName;
+
+		private readonly bool supportsQueryCache;
 
 		private IUniqueEntityLoader queryLoader;
 
@@ -548,6 +551,8 @@ namespace NHibernate.Persister.Entity
 					}
 					return uniqueKeyPropertyNames;
 				});
+
+			supportsQueryCache = persistentClass.CacheConcurrencyStrategy != CacheFactory.Never;
 		}
 
 		protected abstract int[] SubclassColumnTableNumberClosure { get; }
@@ -1413,7 +1418,12 @@ namespace NHibernate.Persister.Entity
 			int[] lazyIndexes;
 			if (allLazyProperties)
 			{
-				lazyIndexes = indexes = lazyPropertyNumbers;
+				indexes = lazyPropertyNumbers;
+				lazyIndexes = new int[lazyPropertyNumbers.Length];
+				for(var i = 0; i < lazyIndexes.Length; i++)
+				{
+					lazyIndexes[i] = i;
+				}
 			}
 			else
 			{
@@ -2133,14 +2143,20 @@ namespace NHibernate.Persister.Entity
 
 		public virtual string GenerateTableAliasForColumn(string rootAlias, string column)
 		{
-			int propertyIndex = Array.IndexOf(SubclassColumnClosure, column);
+			return GenerateTableAlias(rootAlias, GetColumnTableNumber(column));
+		}
+
+		private int GetColumnTableNumber(string column)
+		{
+			if (SubclassTableSpan == 1)
+				return 0;
+
+			int i = Array.IndexOf(SubclassColumnClosure, column);
 
 			// The check for KeyColumnNames was added to fix NH-2491
-			if (propertyIndex < 0 || Array.IndexOf(KeyColumnNames, column) >= 0)
-			{
-				return rootAlias;
-			}
-			return GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[propertyIndex]);
+			return i < 0 || Array.IndexOf(KeyColumnNames, column) >= 0 
+				? 0
+				: SubclassColumnTableNumberClosure[i];
 		}
 
 		public string GenerateTableAlias(string rootAlias, int tableNumber)
@@ -2492,7 +2508,7 @@ namespace NHibernate.Persister.Entity
 		protected IUniqueEntityLoader CreateEntityLoader(LockMode lockMode, IDictionary<string, IFilter> enabledFilters)
 		{
 			//TODO: disable batch loading if lockMode > READ?
-			return BatchingEntityLoader.CreateBatchingEntityLoader(this, batchSize, lockMode, Factory, enabledFilters);
+			return Factory.Settings.BatchingEntityLoaderBuilder.BuildLoader(this, batchSize, lockMode, Factory, enabledFilters);
 		}
 
 		protected IUniqueEntityLoader CreateEntityLoader(LockMode lockMode)
@@ -3342,7 +3358,7 @@ namespace NHibernate.Persister.Entity
 						IType[] types = PropertyTypes;
 						for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 						{
-							if (IsPropertyOfTable(i, j) && versionability[i])
+							if (IsPropertyOfTable(i, j) && versionability[i] && types[i].GetOwnerColumnSpan(Factory) > 0)
 							{
 								// this property belongs to the table and it is not specifically
 								// excluded from optimistic locking by optimistic-lock="false"
@@ -3483,7 +3499,7 @@ namespace NHibernate.Persister.Entity
 			{
 				// For the case of dynamic-insert="true", we need to generate the INSERT SQL
 				bool[] notNull = GetPropertiesToInsert(fields);
-				id = Insert(fields, notNull, GenerateInsertString(true, notNull), obj, session);
+				id = Insert(fields, notNull, GenerateIdentityInsertString(notNull), obj, session);
 				for (int j = 1; j < span; j++)
 				{
 					Insert(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session);
@@ -3578,13 +3594,13 @@ namespace NHibernate.Persister.Entity
 				{
 					delete.SetComment("delete " + EntityName + " [" + j + "]");
 				}
-
 				bool[] versionability = PropertyVersionability;
 				IType[] types = PropertyTypes;
 				for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 				{
 					bool include = versionability[i] &&
-												 IsPropertyOfTable(i, j);
+												 IsPropertyOfTable(i, j) 
+												&& types[i].GetOwnerColumnSpan(Factory) > 0;
 
 					if (include)
 					{
@@ -3774,12 +3790,10 @@ namespace NHibernate.Persister.Entity
 			int tableSpan = SubclassTableSpan;
 			for (int j = 1; j < tableSpan; j++) //notice that we skip the first table; it is the driving table!
 			{
-				string[] idCols = StringHelper.Qualify(name, GetJoinIdKeyColumns(j)); //some joins may be to non primary keys
-
-				bool joinIsIncluded = IsClassOrSuperclassTable(j) ||
-					(includeSubclasses && !IsSubclassTableSequentialSelect(j) && !IsSubclassTableLazy(j));
+				var joinIsIncluded = IsJoinIncluded(includeSubclasses, j);
 				if (joinIsIncluded)
 				{
+					string[] idCols = StringHelper.Qualify(name, GetJoinIdKeyColumns(j)); //some joins may be to non primary keys
 					join.AddJoin(GetSubclassTableName(j),
 						GenerateTableAlias(name, j),
 						idCols,
@@ -3791,6 +3805,36 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 			return join;
+		}
+
+		internal bool ColumnsDependOnSubclassJoins(string[] columns)
+		{
+			foreach (var column in columns)
+			{
+				if (GetColumnTableNumber(column) > 0)
+					return true;
+			}
+			return false;
+		}
+
+		internal bool HasSubclassJoins(bool includeSubclasses)
+		{
+			if (SubclassTableSpan == 1)
+				return false;
+
+			for (int i = 1; i < SubclassTableSpan; ++i)
+			{
+				if (IsJoinIncluded(includeSubclasses, i))
+					return true;
+			}
+
+			return false;
+		}
+
+		private bool IsJoinIncluded(bool includeSubclasses, int j)
+		{
+			return IsClassOrSuperclassTable(j) ||
+					(includeSubclasses && !IsSubclassTableSequentialSelect(j) && !IsSubclassTableLazy(j));
 		}
 
 		private JoinFragment CreateJoin(int[] tableNumbers, string drivingAlias)
@@ -4155,6 +4199,11 @@ namespace NHibernate.Persister.Entity
 		public virtual bool HasCache
 		{
 			get { return cache != null; }
+		}
+
+		public bool SupportsQueryCache
+		{
+			get { return supportsQueryCache; }
 		}
 
 		private string GetSubclassEntityName(System.Type clazz)

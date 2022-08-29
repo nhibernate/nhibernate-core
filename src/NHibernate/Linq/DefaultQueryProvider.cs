@@ -11,6 +11,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using System.Threading.Tasks;
 using NHibernate.Multi;
+using NHibernate.Param;
 
 namespace NHibernate.Linq
 {
@@ -211,7 +212,7 @@ namespace NHibernate.Linq
 				query = Session.CreateFilter(Collection, nhLinqExpression);
 			}
 
-			SetParameters(query, nhLinqExpression.ParameterValuesByName);
+			SetParameters(query, nhLinqExpression.NamedParameters);
 			_options?.Apply(query);
 			SetResultTransformerAndAdditionalCriteria(query, nhLinqExpression, nhLinqExpression.ParameterValuesByName);
 
@@ -252,38 +253,19 @@ namespace NHibernate.Linq
 #pragma warning restore 618
 		}
 
-		private static void SetParameters(IQuery query, IDictionary<string, Tuple<object, IType>> parameters)
+		private static void SetParameters(IQuery query, IDictionary<string, NamedParameter> parameters)
 		{
 			foreach (var parameterName in query.NamedParameters)
 			{
-				var param = parameters[parameterName];
-
-				if (param.Item1 == null)
+				// The parameter type will be taken from the parameter metadata
+				var parameter = parameters[parameterName];
+				if (parameter.IsCollection)
 				{
-					if (typeof(IEnumerable).IsAssignableFrom(param.Item2.ReturnedClass) &&
-						param.Item2.ReturnedClass != typeof(string))
-					{
-						query.SetParameterList(parameterName, null, param.Item2);
-					}
-					else
-					{
-						query.SetParameter(parameterName, null, param.Item2);
-					}
+					query.SetParameterList(parameter.Name, (IEnumerable) parameter.Value);
 				}
 				else
 				{
-					if (param.Item1 is IEnumerable && !(param.Item1 is string))
-					{
-						query.SetParameterList(parameterName, (IEnumerable)param.Item1);
-					}
-					else if (param.Item2 != null)
-					{
-						query.SetParameter(parameterName, param.Item1, param.Item2);
-					}
-					else
-					{
-						query.SetParameter(parameterName, param.Item1);
-					}
+					query.SetParameter(parameter.Name, parameter.Value, parameter.Type, parameter.IsGuessedType);
 				}
 			}
 		}
@@ -310,7 +292,7 @@ namespace NHibernate.Linq
 
 			var query = Session.CreateQuery(nhLinqExpression);
 
-			SetParameters(query, nhLinqExpression.ParameterValuesByName);
+			SetParameters(query, nhLinqExpression.NamedParameters);
 			_options?.Apply(query);
 			return query.ExecuteUpdate();
 		}

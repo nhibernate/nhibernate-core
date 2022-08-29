@@ -26,7 +26,12 @@ namespace NHibernate.Test
 		{
 			_start = start;
 			_thread = new Thread(Run);
-			_thread.SetApartmentState(ApartmentState.STA);
+			#if NET5_0_OR_GREATER
+			if (OperatingSystem.IsWindows())
+			#endif
+			{
+				_thread.SetApartmentState(ApartmentState.STA);
+			}
 		}
 
 		public void Start()

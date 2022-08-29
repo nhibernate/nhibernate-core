@@ -425,6 +425,11 @@ namespace NHibernate.SqlCommand
 			return IndexOf(text, 0, _length, StringComparison.Ordinal);
 		}
 
+		internal bool Contains(string text)
+		{
+			return IndexOfOrdinal(text) >= 0;
+		}
+
 		/// <summary>
 		/// Returns the index of the first occurrence of <paramref name="text" />, case-insensitive.
 		/// </summary>
@@ -495,6 +500,11 @@ namespace NHibernate.SqlCommand
 		public int LastIndexOfCaseInsensitive(string text)
 		{
 			return LastIndexOf(text, 0, _length, StringComparison.InvariantCultureIgnoreCase);
+		}
+
+		internal int LastIndexOf(string text, StringComparison comparison)
+		{
+			return LastIndexOf(text, 0, _length, comparison);
 		}
 
 		/// <summary>
@@ -1083,6 +1093,15 @@ namespace NHibernate.SqlCommand
 			{
 				return Content;
 			}
+		}
+
+		internal SqlString ReplaceLast(string from, SqlString to)
+		{
+			var index = LastIndexOf(from, StringComparison.Ordinal);
+			return new SqlString(
+				Substring(0, index),
+				to,
+				Substring(index + from.Length));
 		}
 	}
 }

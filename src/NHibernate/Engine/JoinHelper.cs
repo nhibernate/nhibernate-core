@@ -23,16 +23,19 @@ namespace NHibernate.Engine
 		/// </summary>
 		public static string[] GetRHSColumnNames(IAssociationType type, ISessionFactoryImplementor factory)
 		{
+			return GetRHSColumnNames(type.GetAssociatedJoinable(factory), type);
+		}
+
+		/// <summary>
+		/// Get the columns of the associated table which are to 
+		/// be used in the join
+		/// </summary>
+		public static string[] GetRHSColumnNames(IJoinable joinable, IAssociationType type)
+		{
 			string uniqueKeyPropertyName = type.RHSUniqueKeyPropertyName;
-			IJoinable joinable = type.GetAssociatedJoinable(factory);
-			if (uniqueKeyPropertyName == null)
-			{
-				return joinable.KeyColumnNames;
-			}
-			else
-			{
-				return ((IOuterJoinLoadable)joinable).GetPropertyColumnNames(uniqueKeyPropertyName);
-			}
+			return uniqueKeyPropertyName == null
+				? joinable.KeyColumnNames
+				: ((IOuterJoinLoadable) joinable).GetPropertyColumnNames(uniqueKeyPropertyName);
 		}
 	}
 

@@ -525,6 +525,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("locate", new PositionFunction());
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
 			RegisterFunction("left", new StandardSQLFunction("left"));
+			RegisterFunction("right", new StandardSQLFunction("right"));
 		}
 
 		private void RegisterBlobFunctions()

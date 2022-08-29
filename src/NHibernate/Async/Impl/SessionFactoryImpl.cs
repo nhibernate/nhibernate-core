@@ -31,6 +31,7 @@ using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -131,24 +132,7 @@ namespace NHibernate.Impl
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				IEntityPersister p = GetEntityPersister(persistentClass.FullName);
-				if (p.HasCache)
-				{
-					if (log.IsDebugEnabled())
-					{
-						log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id));
-					}
-					CacheKey ck = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
-					return p.Cache.RemoveAsync(ck, cancellationToken);
-				}
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			return EvictEntityAsync(persistentClass.FullName, id, cancellationToken);
 		}
 
 		public Task EvictAsync(System.Type persistentClass, CancellationToken cancellationToken = default(CancellationToken))
@@ -249,6 +233,15 @@ namespace NHibernate.Impl
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
+			return EvictEntityAsync(entityName, id, null, cancellationToken);
+		}
+
+		public Task EvictEntityAsync(string entityName, object id, string tenantIdentifier, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				IEntityPersister p = GetEntityPersister(entityName);
@@ -256,9 +249,9 @@ namespace NHibernate.Impl
 				{
 					if (log.IsDebugEnabled())
 					{
-						log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id, this));
+						LogEvict(tenantIdentifier, MessageHelper.InfoString(p, id, this));
 					}
-					CacheKey cacheKey = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
+					CacheKey cacheKey = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName, tenantIdentifier);
 					return p.Cache.RemoveAsync(cacheKey, cancellationToken);
 				}
 				return Task.CompletedTask;
@@ -275,6 +268,15 @@ namespace NHibernate.Impl
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
+			return EvictCollectionAsync(roleName, id, null, cancellationToken);
+		}
+
+		public Task EvictCollectionAsync(string roleName, object id, string tenantIdentifier, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
 			try
 			{
 				ICollectionPersister p = GetCollectionPersister(roleName);
@@ -282,9 +284,10 @@ namespace NHibernate.Impl
 				{
 					if (log.IsDebugEnabled())
 					{
-						log.Debug("evicting second-level cache: {0}", MessageHelper.CollectionInfoString(p, id));
+						LogEvict(tenantIdentifier, MessageHelper.CollectionInfoString(p, id));
 					}
-					CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
+
+					CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role, tenantIdentifier);
 					return p.Cache.RemoveAsync(ck, cancellationToken);
 				}
 				return Task.CompletedTask;

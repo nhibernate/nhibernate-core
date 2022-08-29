@@ -5,7 +5,9 @@ using NHibernate.Cache.Access;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Impl;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
+using NHibernate.Persister.Entity;
 using NHibernate.Util;
 
 namespace NHibernate.Action
@@ -14,7 +16,12 @@ namespace NHibernate.Action
 	/// Any action relating to insert/update/delete of a collection
 	/// </summary>
 	[Serializable]
-	public abstract partial class CollectionAction : IAsyncExecutable, IComparable<CollectionAction>, IDeserializationCallback, IAfterTransactionCompletionProcess
+	public abstract partial class CollectionAction : 
+		IAsyncExecutable, 
+		IComparable<CollectionAction>, 
+		IDeserializationCallback, 
+		IAfterTransactionCompletionProcess, 
+		ICacheableExecutable
 	{
 		private readonly object key;
 		[NonSerialized] private ICollectionPersister persister;
@@ -79,6 +86,15 @@ namespace NHibernate.Action
 
 		#region IExecutable Members
 
+		public string[] QueryCacheSpaces
+		{
+			get
+			{
+				// 6.0 TODO: Use IPersister.SupportsQueryCache property once IPersister's todo is done.
+				return persister.SupportsQueryCache() ? persister.CollectionSpaces : null;
+			}
+		}
+
 		/// <summary>
 		/// What spaces (tables) are affected by this action?
 		/// </summary>
@@ -124,7 +140,7 @@ namespace NHibernate.Action
 
 		public virtual void ExecuteAfterTransactionCompletion(bool success)
 		{
-			var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
+			var ck = session.GenerateCacheKey(key, persister.KeyType, persister.Role);
 			persister.Cache.Release(ck, softLock);
 		}
 

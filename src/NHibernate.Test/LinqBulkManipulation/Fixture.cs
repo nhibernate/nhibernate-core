@@ -289,6 +289,76 @@ namespace NHibernate.Test.LinqBulkManipulation
 			}
 		}
 
+		[Test(Description = "GH2594")]
+		public void InsertIntoWithSubquery()
+		{
+			if(!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Dialect does not support scalar sub-select");
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s
+					.Query<Car>()
+					.InsertInto(
+						x => new Pickup
+						{
+							Id = -s.Query<Car>().Where(c => c.Id == x.Id).Select(c => c.Id).FirstOrDefault(),
+							Vin = x.Vin,
+							Owner = x.Owner
+						});
+
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void UpdateWithSubquery()
+		{
+			if(!TestDialect.SupportsModifyAndSelectSameTable || !Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Not supported by dialect");
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s
+					.Query<Car>()
+					.Update(
+						x => new
+						{
+							Id = -s.Query<Car>().Where(c => c.Id == x.Id).Select(c => c.Id).FirstOrDefault(),
+							Vin = x.Vin,
+							Owner = x.Owner
+						});
+
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void MultiTableUpdateWithSubquery()
+		{
+			if (!Dialect.SupportsTemporaryTables) 
+				Assert.Ignore("Cannot perform multi-table updates using dialect not supporting temp tables.");
+
+			if(!TestDialect.SupportsModifyAndSelectSameTable || !Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Not supported by dialect");
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s
+					.Query<Animal>()
+					.Update(
+						x => new
+						{
+							Description = s.Query<DomesticAnimal>().Where(c => c.Id == x.Id).Select(c => c.Description).FirstOrDefault(),
+						});
+
+				t.Commit();
+			}
+		}
+
 		[Test]
 		public void InsertWithManyToOne()
 		{
@@ -975,6 +1045,24 @@ namespace NHibernate.Test.LinqBulkManipulation
 			{
 				var count = s.Query<SimpleEntityWithAssociation>().Where(x => x.AssociatedEntities.Count == 0 && x.Name.Contains("myEntity")).Delete();
 				Assert.That(count, Is.EqualTo(1), "Incorrect delete count");
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void DeleteWithSubquery2()
+		{
+			if(!TestDialect.SupportsModifyAndSelectSameTable || !Dialect.SupportsScalarSubSelects)
+				Assert.Ignore("Not supported by dialect");
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s
+					.Query<Car>()
+					.Where(x => x.Id == -s.Query<Car>().Where(c => c.Id == x.Id).Select(c => c.Id).FirstOrDefault())
+					.Delete();
+
 				t.Commit();
 			}
 		}

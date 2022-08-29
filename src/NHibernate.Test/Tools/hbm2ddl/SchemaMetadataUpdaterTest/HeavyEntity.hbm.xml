@@ -4,16 +4,27 @@
 				   assembly="NHibernate.Test"
 				   default-lazy="false">
 
-	<class name="Order">
-		<id type="int">
-			<generator class="native"/>
-		</id>
-		<property name="Select"/>
-		<property name="From"/>
-		<property name="And"/>
-		<property name="Column"/>
-		<property name="Name"/>
-		<property name="Abracadabra"/>
-	</class>
+  <class name="Order">
+    <id type="int">
+      <generator class="native"/>
+    </id>
+    <property name="Select"/>
+    <property name="From"/>
+    <property name="And"/>
+    <property name="Column"/>
+    <property name="Name"/>
+    <property name="Abracadabra"/>
+    <set name="Rows" cascade="none">
+      <key column="Order"/>
+      <one-to-many class="OrderRow" />
+    </set>
+  </class>
+  <class name="OrderRow">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="Name"/>
+    <many-to-one name="Order" column="Order" not-null="true"/>
+  </class>
 
 </hibernate-mapping>

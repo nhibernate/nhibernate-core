@@ -45,7 +45,8 @@ namespace NHibernate.Persister.Entity
 	using System.Threading;
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
-		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable,
+		IPersister
 	{
 
 		private partial class GeneratedIdentifierBinder : IBinder
@@ -87,7 +88,12 @@ namespace NHibernate.Persister.Entity
 				int[] lazyIndexes;
 				if (allLazyProperties)
 				{
-					lazyIndexes = indexes = lazyPropertyNumbers;
+					indexes = lazyPropertyNumbers;
+					lazyIndexes = new int[lazyPropertyNumbers.Length];
+					for(var i = 0; i < lazyIndexes.Length; i++)
+					{
+						lazyIndexes[i] = i;
+					}
 				}
 				else
 				{
@@ -891,7 +897,7 @@ namespace NHibernate.Persister.Entity
 						IType[] types = PropertyTypes;
 						for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 						{
-							if (IsPropertyOfTable(i, j) && versionability[i])
+							if (IsPropertyOfTable(i, j) && versionability[i] && types[i].GetOwnerColumnSpan(Factory) > 0)
 							{
 								// this property belongs to the table and it is not specifically
 								// excluded from optimistic locking by optimistic-lock="false"
@@ -1020,7 +1026,7 @@ namespace NHibernate.Persister.Entity
 			{
 				// For the case of dynamic-insert="true", we need to generate the INSERT SQL
 				bool[] notNull = GetPropertiesToInsert(fields);
-				id = await (InsertAsync(fields, notNull, GenerateInsertString(true, notNull), obj, session, cancellationToken)).ConfigureAwait(false);
+				id = await (InsertAsync(fields, notNull, GenerateIdentityInsertString(notNull), obj, session, cancellationToken)).ConfigureAwait(false);
 				for (int j = 1; j < span; j++)
 				{
 					await (InsertAsync(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session, cancellationToken)).ConfigureAwait(false);

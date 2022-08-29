@@ -65,15 +65,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				rhsType = lhsType;
 			}
 
-			var lshExpectedTypeAwareNode = lhs as IExpectedTypeAwareNode;
-			if (lshExpectedTypeAwareNode != null)
+			if (lhs is IExpectedTypeAwareNode lshTypeAwareNode && lshTypeAwareNode.ExpectedType == null)
 			{
-				lshExpectedTypeAwareNode.ExpectedType = rhsType;
+				lshTypeAwareNode.ExpectedType = rhsType;
 			}
-			var rshExpectedTypeAwareNode = rhs as IExpectedTypeAwareNode;
-			if (rshExpectedTypeAwareNode != null)
+
+			if (rhs is IExpectedTypeAwareNode rshTypeAwareNode && rshTypeAwareNode.ExpectedType == null)
 			{
-				rshExpectedTypeAwareNode.ExpectedType = lhsType;
+				rshTypeAwareNode.ExpectedType = lhsType;
 			}
 
 			MutateRowValueConstructorSyntaxesIfNecessary( lhsType, rhsType );

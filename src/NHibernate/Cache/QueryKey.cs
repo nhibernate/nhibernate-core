@@ -21,6 +21,7 @@ namespace NHibernate.Cache
 		private readonly object[] _values;
 		private readonly int _firstRow = RowSelection.NoValue;
 		private readonly int _maxRows = RowSelection.NoValue;
+		private readonly string _tenantIdentifier;
 
 		// Sets and dictionaries are populated last during deserialization, causing them to be potentially empty
 		// during the deserialization callback. This causes them to be unreliable when used in hashcode or equals
@@ -47,8 +48,9 @@ namespace NHibernate.Cache
 		/// <param name="queryParameters">The query parameters.</param>
 		/// <param name="filters">The filters.</param>
 		/// <param name="customTransformer">The result transformer; should be null if data is not transformed before being cached.</param>
+		/// <param name="tenantIdentifier">Tenant identifier or null</param>
 		public QueryKey(ISessionFactoryImplementor factory, SqlString queryString, QueryParameters queryParameters,
-		                ISet<FilterKey> filters, CacheableResultTransformer customTransformer)
+						ISet<FilterKey> filters, CacheableResultTransformer customTransformer, string tenantIdentifier)
 		{
 			_factory = factory;
 			_sqlQueryString = queryString;
@@ -70,8 +72,17 @@ namespace NHibernate.Cache
 			_namedParameters = queryParameters.NamedParameters?.ToArray();
 			_filters = filters?.ToArray();
 			_customTransformer = customTransformer;
+			_tenantIdentifier = tenantIdentifier;
 
 			_hashCode = ComputeHashCode();
+		}
+
+		//Since 5.3
+		[Obsolete("Please use overload with tenantIdentifier")]
+		public QueryKey(ISessionFactoryImplementor factory, SqlString queryString, QueryParameters queryParameters,
+		                ISet<FilterKey> filters, CacheableResultTransformer customTransformer)
+			: this(factory, queryString, queryParameters, filters, customTransformer, null)
+		{
 		}
 
 		public CacheableResultTransformer ResultTransformer
@@ -161,6 +172,11 @@ namespace NHibernate.Cache
 			{
 				return false;
 			}
+
+			if (_tenantIdentifier != other._tenantIdentifier)
+			{
+				return false;
+			}
 			return true;
 		}
 
@@ -223,6 +239,10 @@ namespace NHibernate.Cache
 
 				result = 37 * result + (_customTransformer == null ? 0 : _customTransformer.GetHashCode());
 				result = 37 * result + _sqlQueryString.GetHashCode();
+				if (_tenantIdentifier != null)
+				{
+					result = (37 * result) + _tenantIdentifier.GetHashCode();
+				}
 				return result;
 			}
 		}
@@ -282,6 +302,11 @@ namespace NHibernate.Cache
 						.Append(_multiQueriesMaxRows[i]);
 				}
 				buf.Append("; ");
+			}
+
+			if (_tenantIdentifier != null)
+			{
+				buf.Append("; tenantIdentifier=").Append(_tenantIdentifier).Append("; ");
 			}
 
 			return buf.ToString();
