@@ -242,7 +242,7 @@ namespace NHibernate.Loader
 							                    IncludeLazyProps = SelectMode == SelectMode.FetchLazyProperties,
 						                    });
 				case SelectMode.ChildFetch:
-					//Skip ChileFetch for many-to-many as element id is added by element persister
+					// Skip ChildFetch for many-to-many as element id is added by element persister.
 					if (Joinable.IsCollection && ((IQueryableCollection) Joinable).IsManyToMany)
 						return string.Empty;
 					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(Joinable, "child fetch select mode")
