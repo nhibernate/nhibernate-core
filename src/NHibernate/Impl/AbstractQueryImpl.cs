@@ -242,17 +242,33 @@ namespace NHibernate.Impl
 
 		public IQuery SetParameter(string name, object val, IType type)
 		{
-			if (!parameterMetadata.NamedParameterNames.Contains(name))
-			{
-				if (shouldIgnoredUnknownNamedParameters)//just ignore it
-					return this;
-				throw new ArgumentException("Parameter " + name + " does not exist as a named parameter in [" + QueryString + "]");
-			}
-			else
-			{
-				namedParameters[name] = new TypedValue(type, val, false);
+			return SetParameter(name, val, type, false);
+		}
+
+		//TODO 6.0: Add to IQuery interface
+		public IQuery SetParameter(string name, object val, IType type, bool preferMetadataType)
+		{
+			if (CheckParameterIgnored(name))
 				return this;
+
+			if (type == null || preferMetadataType)
+			{
+				type = parameterMetadata.GetNamedParameterExpectedType(name) ?? type ?? ParameterHelper.GuessType(val, session.Factory);
 			}
+
+			namedParameters[name] = new TypedValue(type, val, false);
+			return this;
+		}
+
+		private bool CheckParameterIgnored(string name)
+		{
+			if (parameterMetadata.NamedParameterNames.Contains(name))
+				return false;
+
+			if (shouldIgnoredUnknownNamedParameters) //just ignore it
+				return true;
+
+			throw new ArgumentException("Parameter " + name + " does not exist as a named parameter in [" + QueryString + "]");
 		}
 
 		public IQuery SetParameter<T>(int position, T val)
@@ -289,29 +305,7 @@ namespace NHibernate.Impl
 
 		public IQuery SetParameter(string name, object val)
 		{
-			if (!parameterMetadata.NamedParameterNames.Contains(name))
-			{
-				if (shouldIgnoredUnknownNamedParameters)//just ignore it
-					return this;
-			}
-
-			if (val == null)
-			{
-				IType type = parameterMetadata.GetNamedParameterExpectedType(name);
-				if (type == null)
-				{
-					throw new ArgumentNullException("val",
-																					"A type specific Set(name, val) should be called because the Type can not be guessed from a null value.");
-				}
-
-				SetParameter(name, val, type);
-			}
-			else
-			{
-				SetParameter(name, val, DetermineType(name, val));
-			}
-
-			return this;
+			return SetParameter(name, val, null, true);
 		}
 
 		public IQuery SetParameter(int position, object val)

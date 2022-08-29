@@ -2508,7 +2508,7 @@ namespace NHibernate.Persister.Entity
 		protected IUniqueEntityLoader CreateEntityLoader(LockMode lockMode, IDictionary<string, IFilter> enabledFilters)
 		{
 			//TODO: disable batch loading if lockMode > READ?
-			return BatchingEntityLoader.CreateBatchingEntityLoader(this, batchSize, lockMode, Factory, enabledFilters);
+			return Factory.Settings.BatchingEntityLoaderBuilder.BuildLoader(this, batchSize, lockMode, Factory, enabledFilters);
 		}
 
 		protected IUniqueEntityLoader CreateEntityLoader(LockMode lockMode)

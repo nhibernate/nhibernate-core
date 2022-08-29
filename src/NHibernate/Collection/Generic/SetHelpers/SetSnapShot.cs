@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-#if NETCOREAPP2_0_OR_GREATER
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 using System.Runtime.Serialization;
 using System.Threading;
 #endif
@@ -132,7 +132,7 @@ namespace NHibernate.Collection.Generic.SetHelpers
 	}
 #endif
 
-#if NETCOREAPP2_0_OR_GREATER
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 	[Serializable]
 	internal class SetSnapShot<T> : HashSet<T>, ICollection
 	{

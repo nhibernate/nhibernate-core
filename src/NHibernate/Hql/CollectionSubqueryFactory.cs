@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
-using NHibernate.Util;
 
 namespace NHibernate.Hql
 {
@@ -16,6 +15,7 @@ namespace NHibernate.Hql
 		{
 			try
 			{
+				joinSequence.SetUseThetaStyle(true);
 				JoinFragment join = joinSequence.ToJoinFragment(enabledFilters, true);
 				return new StringBuilder()
 					.Append("select ")
