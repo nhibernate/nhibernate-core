@@ -548,7 +548,7 @@ namespace NHibernate.Test.TypesTest
 		}
 	}
 
-	public class ClientDriverWithParamsStats : IDriver
+	public partial class ClientDriverWithParamsStats : IDriver
 	{
 		private readonly Dictionary<SqlType, int> _usedSqlTypes = new Dictionary<SqlType, int>();
 		private readonly Dictionary<DbType, int> _usedDbTypes = new Dictionary<DbType, int>();

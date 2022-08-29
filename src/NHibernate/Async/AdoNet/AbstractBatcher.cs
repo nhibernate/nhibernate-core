@@ -59,7 +59,7 @@ namespace NHibernate.AdoNet
 				}
 
 				_connectionManager.EnlistInTransaction(cmd);
-				Driver.PrepareCommand(cmd);
+				await (Driver.PrepareCommandAsync(cmd, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (InvalidOperationException ioe)
 			{

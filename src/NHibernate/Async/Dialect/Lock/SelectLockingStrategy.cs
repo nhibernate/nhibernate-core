@@ -56,7 +56,8 @@ namespace NHibernate.Dialect.Lock
 					}
 					finally
 					{
-						rs.Close();
+						cancellationToken.ThrowIfCancellationRequested();
+						await (rs.CloseAsync()).ConfigureAwait(false);
 					}
 				}
 				finally

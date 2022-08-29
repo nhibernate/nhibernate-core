@@ -39,6 +39,16 @@ namespace NHibernate.AdoNet
 		}
 
 		/// <inheritdoc />
+		public override Task PrepareAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return Command.PrepareAsync(cancellationToken);
+		}
+
+		/// <inheritdoc />
 		protected override Task<DbDataReader> ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)

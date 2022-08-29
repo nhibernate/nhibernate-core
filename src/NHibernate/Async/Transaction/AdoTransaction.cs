@@ -63,7 +63,7 @@ namespace NHibernate.Transaction
 
 				try
 				{
-					trans.Commit();
+					await (trans.CommitAsync(cancellationToken)).ConfigureAwait(false);
 					log.Debug("DbTransaction Committed");
 
 					committed = true;
@@ -117,11 +117,12 @@ namespace NHibernate.Transaction
 				{
 					try
 					{
-						trans.Rollback();
+						await (trans.RollbackAsync(cancellationToken)).ConfigureAwait(false);
 						log.Debug("DbTransaction RolledBack");
 						rolledBack = true;
 						Dispose();
 					}
+					catch (OperationCanceledException) { throw; }
 					catch (HibernateException e)
 					{
 						log.Error(e, "Rollback failed");

@@ -493,4 +493,20 @@ namespace NHibernate.Test.TypesTest
 			return (DateTimeKind) _kindProperty.GetValue(Type);
 		}
 	}
+
+	public partial class ClientDriverWithParamsStats : IDriver
+	{
+
+		#region Firebird mess
+
+		#endregion
+		#region Pure forwarding
+
+		Task IDriver.PrepareCommandAsync(DbCommand command, CancellationToken cancellationToken)
+		{
+			return _driverImplementation.PrepareCommandAsync(command, cancellationToken);
+		}
+
+		#endregion
+	}
 }

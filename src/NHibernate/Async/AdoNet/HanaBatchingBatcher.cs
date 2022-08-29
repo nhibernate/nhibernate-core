@@ -105,7 +105,7 @@ namespace NHibernate.AdoNet
 						}
 					}
 
-					_currentBatch.Prepare();
+					await (_currentBatch.PrepareAsync(cancellationToken)).ConfigureAwait(false);
 
 					try
 					{

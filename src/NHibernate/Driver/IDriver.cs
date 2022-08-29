@@ -30,7 +30,7 @@ namespace NHibernate.Driver
 	/// value="FullyQualifiedClassName, AssemblyName"
 	/// </code>
 	/// </remarks>
-	public interface IDriver
+	public partial interface IDriver
 	{
 		/// <summary>
 		/// Configure the driver using <paramref name="settings"/>.

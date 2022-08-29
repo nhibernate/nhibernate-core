@@ -76,7 +76,8 @@ namespace NHibernate.Id
 					}
 					finally
 					{
-						reader.Close();
+						cancellationToken.ThrowIfCancellationRequested();
+						await (reader.CloseAsync()).ConfigureAwait(false);
 					}
 				}
 				finally

@@ -67,9 +67,24 @@ namespace NHibernate.Driver
 			}
 			finally
 			{
-				reader.Close();
+				cancellationToken.ThrowIfCancellationRequested();
+				await (reader.CloseAsync()).ConfigureAwait(false);
 			}
 			return dataReader;
+		}
+
+		/// <summary></summary>
+		public override Task CloseAsync()
+		{
+			try
+			{
+				Close();
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
 		}
 
 		private partial class NResult

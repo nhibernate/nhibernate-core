@@ -151,6 +151,11 @@ namespace NHibernate.Test.NHSpecificTest.GH1547
 		#endregion
 		#region Pure forwarding
 
+		Task IDriver.PrepareCommandAsync(DbCommand command, CancellationToken cancellationToken)
+		{
+			return _driverImplementation.PrepareCommandAsync(command, cancellationToken);
+		}
+
 		#endregion
 
 		private partial class SubstituteDbCommand : DbCommand
