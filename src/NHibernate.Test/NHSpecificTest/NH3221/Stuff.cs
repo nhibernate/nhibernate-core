@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3221
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
 			if (obj.GetType() != typeof(Stuff)) return false;
-			return Equals((Stuff)obj);
+			return Equals((Stuff) obj);
 		}
 
 		public override int GetHashCode()

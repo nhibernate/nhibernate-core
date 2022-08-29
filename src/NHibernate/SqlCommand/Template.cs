@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Hql;
 using NHibernate.Util;
-using System.Collections.Generic;
 
 namespace NHibernate.SqlCommand
 {
@@ -63,13 +63,13 @@ namespace NHibernate.SqlCommand
 		public static readonly string Placeholder = "$PlaceHolder$";
 
 		public static string RenderWhereStringTemplate(string sqlWhereString, Dialect.Dialect dialect,
-		                                               SQLFunctionRegistry functionRegistry)
+													   SQLFunctionRegistry functionRegistry)
 		{
 			return RenderWhereStringTemplate(sqlWhereString, Placeholder, dialect, functionRegistry);
 		}
 
 		public static string RenderWhereStringTemplate(string sqlWhereString, string placeholder, Dialect.Dialect dialect,
-		                                               SQLFunctionRegistry functionRegistry)
+													   SQLFunctionRegistry functionRegistry)
 		{
 			//TODO: make this a bit nicer
 			string symbols = new StringBuilder()
@@ -203,7 +203,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		public static string RenderOrderByStringTemplate(string sqlOrderByString, Dialect.Dialect dialect,
-		                                                 SQLFunctionRegistry functionRegistry)
+														 SQLFunctionRegistry functionRegistry)
 		{
 			//TODO: make this a bit nicer
 			string symbols = new StringBuilder()
@@ -311,22 +311,22 @@ namespace NHibernate.SqlCommand
 		}
 
 		private static bool IsFunctionOrKeyword(string lcToken, string nextToken, Dialect.Dialect dialect,
-		                                        SQLFunctionRegistry functionRegistry)
+												SQLFunctionRegistry functionRegistry)
 		{
 			return "(".Equals(nextToken) ||
-			       Keywords.Contains(lcToken) ||
-			       functionRegistry.HasFunction(lcToken) ||
-			       dialect.IsKeyword(lcToken) ||
+				   Keywords.Contains(lcToken) ||
+				   functionRegistry.HasFunction(lcToken) ||
+				   dialect.IsKeyword(lcToken) ||
 				   dialect.IsKnownToken(lcToken, nextToken) ||
-			       FunctionKeywords.Contains(lcToken);
+				   FunctionKeywords.Contains(lcToken);
 		}
 
 		private static bool IsIdentifier(string token, Dialect.Dialect dialect)
 		{
 			return token[0] == '`' || ( //allow any identifier quoted with backtick
-			                          char.IsLetter(token[0]) && //only recognizes identifiers beginning with a letter
-			                          token.IndexOf('.') < 0
-			                          );
+									  char.IsLetter(token[0]) && //only recognizes identifiers beginning with a letter
+									  token.IndexOf('.') < 0
+									  );
 		}
 	}
 }

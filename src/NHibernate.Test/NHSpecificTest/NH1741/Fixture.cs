@@ -1,13 +1,13 @@
 using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.Impl;
-using NUnit.Framework;
 using NHibernate.Util;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1741
 {
 	[TestFixture]
-	public class Fixture: BugTestCase
+	public class Fixture : BugTestCase
 	{
 		private const string QueryName = "NH1741_All";
 
@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1741
 			public override IQuery GetExecutableQuery(ISession session)
 			{
 				var result = base.GetExecutableQuery(session);
-				queryExecutable = (QueryImpl)result;
+				queryExecutable = (QueryImpl) result;
 				return result;
 			}
 
@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1741
 			{
 				get
 				{
-					return (bool)fiCacheable.GetValue(queryExecutable);
+					return (bool) fiCacheable.GetValue(queryExecutable);
 				}
 			}
 
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1741
 			{
 				get
 				{
-					return (string)fiCacheRegion.GetValue(queryExecutable);
+					return (string) fiCacheRegion.GetValue(queryExecutable);
 				}
 			}
 
@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1741
 			{
 				get
 				{
-					return ((RowSelection)fiSelection.GetValue(queryExecutable)).Timeout;
+					return ((RowSelection) fiSelection.GetValue(queryExecutable)).Timeout;
 				}
 			}
 
@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1741
 			{
 				get
 				{
-					return ((RowSelection)fiSelection.GetValue(queryExecutable)).FetchSize;
+					return ((RowSelection) fiSelection.GetValue(queryExecutable)).FetchSize;
 				}
 			}
 
@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1741
 			{
 				get
 				{
-					return (CacheMode?)fiCacheMode.GetValue(queryExecutable);
+					return (CacheMode?) fiCacheMode.GetValue(queryExecutable);
 				}
 			}
 
@@ -74,7 +74,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1741
 			{
 				get
 				{
-					return (bool)fiReadOnly.GetValue(queryExecutable);
+					return (bool) fiReadOnly.GetValue(queryExecutable);
 				}
 			}
 
@@ -82,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1741
 			{
 				get
 				{
-					return (string)fiComment.GetValue(queryExecutable);
+					return (string) fiComment.GetValue(queryExecutable);
 				}
 			}
 
@@ -90,7 +90,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1741
 			{
 				get
 				{
-					return (FlushMode)fiFlushMode.GetValue(queryExecutable);
+					return (FlushMode) fiFlushMode.GetValue(queryExecutable);
 				}
 			}
 		}

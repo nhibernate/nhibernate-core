@@ -19,8 +19,8 @@ namespace NHibernate.Test.QueryTest
 		public void ValidateOk()
 		{
 			QueryParameters qp = new QueryParameters(
-				new IType[] {NHibernateUtil.String},
-				new object[] {"string"});
+				new IType[] { NHibernateUtil.String },
+				new object[] { "string" });
 
 			qp.ValidateParameters();
 		}
@@ -29,7 +29,7 @@ namespace NHibernate.Test.QueryTest
 		public void ValidateFailureDifferentLengths()
 		{
 			QueryParameters qp = new QueryParameters(
-				new IType[] {NHibernateUtil.String},
+				new IType[] { NHibernateUtil.String },
 				Array.Empty<object>());
 
 			Assert.Throws<QueryException>(() => qp.ValidateParameters());

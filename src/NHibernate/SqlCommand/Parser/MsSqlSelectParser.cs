@@ -277,7 +277,7 @@ namespace NHibernate.SqlCommand.Parser
 
 			ColumnDefinition column;
 			if (!TryGetColumnDefinition(columnNameOrIndex, out column, beginToken, endToken))
-			{   
+			{
 				// Column appears in order by clause, but not in select clause
 				column = ParseOrderColumnDefinition(beginToken, endToken, "__c" + _nextOrderAliasIndex++);
 			}

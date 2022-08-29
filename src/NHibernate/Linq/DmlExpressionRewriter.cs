@@ -25,10 +25,10 @@ namespace NHibernate.Linq
 				switch (node.BindingType)
 				{
 					case MemberBindingType.Assignment:
-						AddSettersFromAssignment((MemberAssignment)node, subPath);
+						AddSettersFromAssignment((MemberAssignment) node, subPath);
 						break;
 					case MemberBindingType.MemberBinding:
-						AddSettersFromBindings(((MemberMemberBinding)node).Bindings, subPath);
+						AddSettersFromBindings(((MemberMemberBinding) node).Bindings, subPath);
 						break;
 					default:
 						throw new InvalidOperationException($"{node.BindingType} is not supported");
@@ -53,10 +53,10 @@ namespace NHibernate.Linq
 				switch (argument.NodeType)
 				{
 					case ExpressionType.New:
-						AddSettersFromAnonymousConstructor((NewExpression)argument, subPath);
+						AddSettersFromAnonymousConstructor((NewExpression) argument, subPath);
 						break;
 					case ExpressionType.MemberInit:
-						AddSettersFromBindings(((MemberInitExpression)argument).Bindings, subPath);
+						AddSettersFromBindings(((MemberInitExpression) argument).Bindings, subPath);
 						break;
 					default:
 						_assignments.Add(subPath.Substring(1), Expression.Lambda(argument, _parameters));

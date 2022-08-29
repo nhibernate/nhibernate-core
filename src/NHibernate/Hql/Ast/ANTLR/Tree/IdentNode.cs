@@ -29,12 +29,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get
 			{
 				IType type = base.DataType;
-				if ( type != null ) 
+				if (type != null)
 				{
 					return type;
 				}
 				FromElement fe = FromElement;
-				if ( fe != null ) 
+				if (fe != null)
 				{
 					return fe.DataType;
 				}
@@ -50,18 +50,21 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public override void SetScalarColumnText(int i)
 		{
-			if (_nakedPropertyRef) 
+			if (_nakedPropertyRef)
 			{
 				// do *not* over-write the column text, as that has already been
 				// "rendered" during resolve
 				ColumnHelper.GenerateSingleScalarColumn(Walker.ASTFactory, this, i);
 			}
-			else {
+			else
+			{
 				FromElement fe = FromElement;
-				if (fe != null) {
+				if (fe != null)
+				{
 					Text = fe.RenderScalarIdentifierSelect(i);
 				}
-				else {
+				else
+				{
 					ColumnHelper.GenerateSingleScalarColumn(Walker.ASTFactory, this, i);
 				}
 			}
@@ -76,13 +79,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			//      itself (addrExpr -> resolve()).  The other option, if that
 			//      changes, is to call resolve from here; but it is
 			//      currently un-needed overhead.
-			if (!(IsResolved && _nakedPropertyRef)) 
+			if (!(IsResolved && _nakedPropertyRef))
 			{
 				throw new InvalidOperationException();
 			}
 
 			string propertyName = OriginalText;
-			if (!DataType.IsCollectionType) 
+			if (!DataType.IsCollectionType)
 			{
 				throw new SemanticException("Collection expected; [" + propertyName + "] does not refer to a collection property");
 			}
@@ -105,7 +108,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			FromElement elem = factory.CreateCollection(queryableCollection, role, JoinType.InnerJoin, false, true);
 			FromElement = elem;
-			Walker.AddQuerySpaces(queryableCollection);	// Always add the collection's query spaces.
+			Walker.AddQuerySpaces(queryableCollection); // Always add the collection's query spaces.
 		}
 
 		public override void Resolve(bool generateJoin, bool implicitJoin, string classAlias, IASTNode parent)
@@ -122,7 +125,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 				else if (parent != null && parent.Type == HqlSqlWalker.DOT)
 				{
-					DotNode dot = (DotNode)parent;
+					DotNode dot = (DotNode) parent;
 					if (parent.GetFirstChild() == this)
 					{
 						if (ResolveAsNakedComponentPropertyRefLhs(dot))

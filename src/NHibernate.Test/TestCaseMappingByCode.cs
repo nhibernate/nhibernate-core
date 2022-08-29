@@ -4,7 +4,7 @@ using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Test
 {
-	public abstract class TestCaseMappingByCode:TestCase
+	public abstract class TestCaseMappingByCode : TestCase
 	{
 		protected override string[] Mappings
 		{

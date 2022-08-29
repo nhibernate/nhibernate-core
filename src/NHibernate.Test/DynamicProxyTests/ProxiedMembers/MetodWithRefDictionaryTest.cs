@@ -11,7 +11,7 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 	{
 		public class MyClass
 		{
-			public virtual void Method(ref Dictionary<string ,string> adictionary)
+			public virtual void Method(ref Dictionary<string, string> adictionary)
 			{
 				adictionary = new Dictionary<string, string>();
 			}
@@ -21,7 +21,7 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 		public void Proxy()
 		{
 			var factory = new ProxyFactory();
-			var c = (MyClass)factory.CreateProxy(typeof(MyClass), new PassThroughInterceptor(new MyClass()), null);
+			var c = (MyClass) factory.CreateProxy(typeof(MyClass), new PassThroughInterceptor(new MyClass()), null);
 			var dictionary = new Dictionary<string, string>();
 			var myParam = dictionary;
 			c.Method(ref myParam);

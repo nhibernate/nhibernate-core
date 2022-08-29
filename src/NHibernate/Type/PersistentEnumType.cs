@@ -149,19 +149,19 @@ namespace NHibernate.Type
 		static PersistentEnumType()
 		{
 			converters = new Dictionary<System.Type, IEnumConverter>(8);
-			converters.Add(typeof (Int32), new SystemInt32EnumConverter());
-			converters.Add(typeof (Int16), new SystemInt16EnumConverter());
-			converters.Add(typeof (Int64), new SystemInt64EnumConverter());
-			converters.Add(typeof (Byte), new SystemByteEnumConverter());
-			converters.Add(typeof (SByte), new SystemSByteEnumConverter());
-			converters.Add(typeof (UInt16), new SystemUInt16EnumConverter());
-			converters.Add(typeof (UInt32), new SystemUInt32EnumConverter());
-			converters.Add(typeof (UInt64), new SystemUInt64EnumConverter());
+			converters.Add(typeof(Int32), new SystemInt32EnumConverter());
+			converters.Add(typeof(Int16), new SystemInt16EnumConverter());
+			converters.Add(typeof(Int64), new SystemInt64EnumConverter());
+			converters.Add(typeof(Byte), new SystemByteEnumConverter());
+			converters.Add(typeof(SByte), new SystemSByteEnumConverter());
+			converters.Add(typeof(UInt16), new SystemUInt16EnumConverter());
+			converters.Add(typeof(UInt32), new SystemUInt32EnumConverter());
+			converters.Add(typeof(UInt64), new SystemUInt64EnumConverter());
 		}
 		private static readonly Dictionary<System.Type, IEnumConverter> converters;
 		private readonly IEnumConverter converter;
 
-		public PersistentEnumType(System.Type enumClass) : base(GetEnumCoverter(enumClass).SqlType,enumClass)
+		public PersistentEnumType(System.Type enumClass) : base(GetEnumCoverter(enumClass).SqlType, enumClass)
 		{
 			converter = GetEnumCoverter(enumClass);
 		}
@@ -282,7 +282,7 @@ namespace NHibernate.Type
 				return false;
 			}
 
-			return ((PersistentEnumType)obj).ReturnedClass == ReturnedClass;
+			return ((PersistentEnumType) obj).ReturnedClass == ReturnedClass;
 		}
 
 		public override int GetHashCode()
@@ -296,7 +296,7 @@ namespace NHibernate.Type
 	{
 		private readonly string typeName;
 
-		public EnumType() : base(typeof (T))
+		public EnumType() : base(typeof(T))
 		{
 			System.Type type = GetType();
 			typeName = type.FullName + ", " + type.Assembly.GetName().Name;

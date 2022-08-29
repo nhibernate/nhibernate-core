@@ -25,7 +25,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				System.Type elementType = typeof (object);
+				System.Type elementType = typeof(object);
 
 				// If this set is part of a dynamic component, IsGeneric will be false, in
 				// which case we default to typing as object.
@@ -62,7 +62,7 @@ namespace NHibernate.Mapping
 				{
 					if (!selectable.IsFormula)
 					{
-						Column col = (Column)selectable;
+						Column col = (Column) selectable;
 						pk.AddColumn(col);
 					}
 				}

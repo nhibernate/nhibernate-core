@@ -26,14 +26,14 @@ namespace NHibernate.Loader
 			// NH-1612: Add aliases for all composite element properties to support access
 			// to individual composite element properties in <return-property> elements.
 			elementAliases = persister.ElementType.IsComponentType
-			                 	? GetUserProvidedCompositeElementAliases(userProvidedAliases, persister.GetElementColumnAliases(suffix))
-			                 	: GetUserProvidedAliases(userProvidedAliases, CollectionPersister.PropElement, persister.GetElementColumnAliases(suffix));
+								 ? GetUserProvidedCompositeElementAliases(userProvidedAliases, persister.GetElementColumnAliases(suffix))
+								 : GetUserProvidedAliases(userProvidedAliases, CollectionPersister.PropElement, persister.GetElementColumnAliases(suffix));
 
 			identifierAlias = GetUserProvidedAlias(userProvidedAliases, CollectionPersister.PropId, persister.GetIdentifierColumnAlias(suffix));
 		}
 
 		public GeneratedCollectionAliases(ICollectionPersister persister, string str)
-			: this(null, persister, str) {}
+			: this(null, persister, str) { }
 
 		private static string[] GetUserProvidedCompositeElementAliases(IDictionary<string, string[]> userProvidedAliases, string[] defaultAliases)
 		{

@@ -14,7 +14,7 @@ namespace NHibernate.Test.Unconstrained
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"Unconstrained.PersonNoLazy.hbm.xml"}; }
+			get { return new string[] { "Unconstrained.PersonNoLazy.hbm.xml" }; }
 		}
 
 		[Test]
@@ -66,9 +66,9 @@ namespace NHibernate.Test.Unconstrained
 			session = OpenSession();
 			tx = session.BeginTransaction();
 			p = (Person) session.CreateCriteria(typeof(Person))
-			             	.Fetch("Employee")
-			             	.Add(Expression.Eq("Name", "gavin"))
-			             	.UniqueResult();
+							 .Fetch("Employee")
+							 .Add(Expression.Eq("Name", "gavin"))
+							 .UniqueResult();
 			Assert.IsNull(p.Employee);
 			p.Employee = new Employee("123456");
 			tx.Commit();
@@ -79,9 +79,9 @@ namespace NHibernate.Test.Unconstrained
 			session = OpenSession();
 			tx = session.BeginTransaction();
 			p = (Person) session.CreateCriteria(typeof(Person))
-			             	.Fetch("Employee")
-			             	.Add(Expression.Eq("Name", "gavin"))
-			             	.UniqueResult();
+							 .Fetch("Employee")
+							 .Add(Expression.Eq("Name", "gavin"))
+							 .UniqueResult();
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Employee));
 			Assert.IsNotNull(p.Employee);
 			session.Delete(p);
@@ -95,7 +95,7 @@ namespace NHibernate.Test.Unconstrained
 			ILog log = LogManager.GetLogger(GetType());
 
 			log.Info("Unconstrained - BEGIN");
-			
+
 			log.Info("Creating Person#gavin with EmployeeId = 123456 (non-existent)");
 
 			ISession session = OpenSession();

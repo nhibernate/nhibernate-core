@@ -9,7 +9,7 @@ namespace NHibernate.Linq
 	internal class LockExpressionNode : ResultOperatorExpressionNodeBase
 	{
 		private static readonly ParameterExpression Parameter = Expression.Parameter(typeof(object));
-		
+
 		private readonly ConstantExpression _lockMode;
 		private readonly ResolvedExpressionCache<Expression> _cache;
 
@@ -28,7 +28,7 @@ namespace NHibernate.Linq
 		protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
 		{
 			//Resolve identity expression (_=>_). Normally this would be resolved into QuerySourceReferenceExpression.
-			
+
 			var expression = _cache.GetOrCreate(
 				r => r.GetResolvedExpression(Parameter, Parameter, clauseGenerationContext));
 

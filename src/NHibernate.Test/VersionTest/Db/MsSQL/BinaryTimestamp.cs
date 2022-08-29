@@ -62,12 +62,12 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 
 		public System.Type ReturnedType
 		{
-			get { return typeof (byte[]); }
+			get { return typeof(byte[]); }
 		}
 
 		public SqlType[] SqlTypes
 		{
-			get { return new[] {new SqlType(DbType.Binary, 8)}; }
+			get { return new[] { new SqlType(DbType.Binary, 8) }; }
 		}
 
 		public int Compare(object x, object y)

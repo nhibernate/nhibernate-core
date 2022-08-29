@@ -69,19 +69,19 @@ namespace NHibernate.Proxy
 			// use the default read-only/modifiable setting
 			SetReadOnly(s.PersistenceContext.DefaultReadOnly || !s.Factory.GetEntityPersister(_entityName).IsMutable);
 		}
-		
+
 		/// <inheritdoc />
 		public void UnsetSession()
 		{
 			_session = null;
 			readOnly = false;
 		}
-		
+
 		protected internal bool IsConnectedToSession
 		{
 			get { return GetProxyOrNull() != null; }
 		}
-		
+
 		/// <summary>
 		/// Perform an ImmediateLoad of the actual object for the Proxy.
 		/// </summary>
@@ -192,13 +192,13 @@ namespace NHibernate.Proxy
 			_target = target;
 			initialized = true;
 		}
-		
+
 		/// <inheritdoc />
 		public bool IsReadOnlySettingAvailable
 		{
 			get { return (_session != null && !_session.IsClosed); }
 		}
-		
+
 		/// <inheritdoc />
 		public bool ReadOnly
 		{
@@ -210,7 +210,7 @@ namespace NHibernate.Proxy
 			set
 			{
 				ErrorIfReadOnlySettingNotAvailable();
-			
+
 				// only update if setting is different from current setting
 				if (this.readOnly != value)
 				{
@@ -227,7 +227,7 @@ namespace NHibernate.Proxy
 			if (_session.IsClosed)
 				throw new SessionException("Session is closed. The read-only/modifiable setting is only accessible when the proxy is associated with an open session.");
 		}
-		
+
 		private static EntityKey GenerateEntityKeyOrNull(object id, ISessionImplementor s, string entityName)
 		{
 			if (id == null || s == null || entityName == null)
@@ -235,7 +235,7 @@ namespace NHibernate.Proxy
 
 			return s.GenerateEntityKey(id, s.Factory.GetEntityPersister(entityName));
 		}
-		
+
 		private void CheckTargetState()
 		{
 			if (!unwrap)
@@ -246,7 +246,7 @@ namespace NHibernate.Proxy
 				}
 			}
 		}
-		
+
 		private object GetProxyOrNull()
 		{
 			EntityKey entityKey = GenerateEntityKeyOrNull(_id, _session, _entityName);
@@ -256,16 +256,16 @@ namespace NHibernate.Proxy
 			}
 			return null;
 		}
-		
+
 		private void SetReadOnly(bool readOnly)
 		{
 			if (!readOnly && !_session.Factory.GetEntityPersister(_entityName).IsMutable)
 			{
 				throw new InvalidOperationException("cannot make proxies for immutable entities modifiable");
 			}
-			
+
 			this.readOnly = readOnly;
-		
+
 			if (initialized)
 			{
 				EntityKey key = GenerateEntityKeyOrNull(_id, _session, _entityName);

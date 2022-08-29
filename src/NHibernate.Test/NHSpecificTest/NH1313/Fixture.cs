@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1313
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				DateTime result =
-					s.CreateCriteria(typeof (A)).SetProjection(new SqlFunctionProjection("MyCurrentTime", NHibernateUtil.DateTime)).
+					s.CreateCriteria(typeof(A)).SetProjection(new SqlFunctionProjection("MyCurrentTime", NHibernateUtil.DateTime)).
 						UniqueResult<DateTime>();
 				// we are simply checking that the function is parsed and executed
 				s.Delete(a);

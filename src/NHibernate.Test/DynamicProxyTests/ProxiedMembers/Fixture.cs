@@ -15,7 +15,7 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 		{
 			x++;
 		}
-		
+
 		public virtual void Method3(out int? y)
 		{
 			y = 4;
@@ -35,7 +35,7 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 		public void Proxy()
 		{
 			var factory = new ProxyFactory();
-			var c = (ClassWithVarietyOfMembers)factory.CreateProxy(typeof(ClassWithVarietyOfMembers), new PassThroughInterceptor(new ClassWithVarietyOfMembers()), null);
+			var c = (ClassWithVarietyOfMembers) factory.CreateProxy(typeof(ClassWithVarietyOfMembers), new PassThroughInterceptor(new ClassWithVarietyOfMembers()), null);
 
 			int x;
 			c.Method1(out x);
@@ -44,11 +44,11 @@ namespace NHibernate.Test.DynamicProxyTests.ProxiedMembers
 			x = 4;
 			c.Method2(ref x);
 			Assert.AreEqual(5, x);
-			
+
 			int? y;
 			c.Method3(out y);
 			Assert.AreEqual(4, y);
-			
+
 			c.Method4(ref y);
 			Assert.AreEqual(5, y);
 		}

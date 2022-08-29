@@ -18,7 +18,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void PropertyValueDoesntSwaps()
 		{
-            var query = (from user in db.Users
+			var query = (from user in db.Users
 						 where (user.Name == "ayende")
 						 select user).ToList();
 			Assert.AreEqual(1, query.Count);
@@ -27,16 +27,16 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void PropertyPropertyDoesntSwap()
 		{
-            var query = (from user in db.Users
+			var query = (from user in db.Users
 						 where (user.Name == user.Name)
 						 select user).ToList();
 			Assert.AreEqual(3, query.Count);
 		}
 
-        [Test]
+		[Test]
 		public void EqualsSwapsToEquals()
 		{
-            var query = (from user in db.Users
+			var query = (from user in db.Users
 						 where ("ayende" == user.Name)
 						 select user).ToList();
 			Assert.AreEqual(1, query.Count);
@@ -45,7 +45,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void NotEqualsSwapsToNotEquals()
 		{
-            var query = (from user in db.Users
+			var query = (from user in db.Users
 						 where ("ayende" != user.Name)
 						 select user).ToList();
 			Assert.AreEqual(2, query.Count);
@@ -54,7 +54,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void GreaterThanSwapsToLessThan()
 		{
-            var query = (from user in db.Users
+			var query = (from user in db.Users
 						 where (3 > user.Id)
 						 select user).ToList();
 			Assert.AreEqual(2, query.Count);
@@ -63,7 +63,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void GreaterThanOrEqualToSwapsToLessThanOrEqualTo()
 		{
-            var query = (from user in db.Users
+			var query = (from user in db.Users
 						 where (2 >= user.Id)
 						 select user).ToList();
 			Assert.AreEqual(2, query.Count);
@@ -72,7 +72,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void LessThanSwapsToGreaterThan()
 		{
-            var query = (from user in db.Users
+			var query = (from user in db.Users
 						 where (1 < user.Id)
 						 select user).ToList();
 			Assert.AreEqual(2, query.Count);
@@ -81,7 +81,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void LessThanOrEqualToSwapsToGreaterThanOrEqualTo()
 		{
-            var query = (from user in db.Users
+			var query = (from user in db.Users
 						 where (2 <= user.Id)
 						 select user).ToList();
 			Assert.AreEqual(2, query.Count);
@@ -92,8 +92,8 @@ namespace NHibernate.Test.Linq
 		{
 			// check NH-2440
 			var query = (from user in db.Users
-									 where ("ayende".Equals(user.Name))
-									 select user).ToList();
+						 where ("ayende".Equals(user.Name))
+						 select user).ToList();
 			Assert.AreEqual(1, query.Count);
 		}
 
@@ -102,8 +102,8 @@ namespace NHibernate.Test.Linq
 		{
 			// check NH-2440
 			var query = (from user in db.Users
-									 where (user.Name.Equals("ayende"))
-									 select user).ToList();
+						 where (user.Name.Equals("ayende"))
+						 select user).ToList();
 			Assert.AreEqual(1, query.Count);
 		}
 	}

@@ -31,7 +31,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 		public void WhenMixComposedIdWithComponentAsIdThenThrows()
 		{
 			var mapdoc = new HbmMapping();
-			var mapper = new ClassMapper(typeof (Person), mapdoc, For<Person>.Property(x => x.Id));
+			var mapper = new ClassMapper(typeof(Person), mapdoc, For<Person>.Property(x => x.Id));
 
 			mapper.ComposedId(map => map.Property(For<Person>.Property(x => x.Name), pm => { }));
 			Assert.That(() => mapper.ComponentAsId(For<Person>.Property(x => x.Id), map => map.Property(For<PersonId>.Property(x => x.Email), pm => { })), Throws.TypeOf<MappingException>());

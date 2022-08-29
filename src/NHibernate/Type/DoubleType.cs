@@ -18,7 +18,7 @@ namespace NHibernate.Type
 		{
 		}
 
-		public DoubleType(SqlType sqlType) : base(sqlType) {}
+		public DoubleType(SqlType sqlType) : base(sqlType) { }
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{

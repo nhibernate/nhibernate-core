@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.ConnectionTest
 {
-	[TestFixture,Ignore("Not yet supported. Need AutoClosed feature.(TransactionContext)")]
+	[TestFixture, Ignore("Not yet supported. Need AutoClosed feature.(TransactionContext)")]
 	public class ThreadLocalCurrentSessionTest : ConnectionManagementTestCase
 	{
 		protected override ISession GetSessionUnderTest()
@@ -18,7 +18,7 @@ namespace NHibernate.Test.ConnectionTest
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(cfg);
-			cfg.SetProperty(Environment.CurrentSessionContextClass, typeof (TestableThreadLocalContext).AssemblyQualifiedName);
+			cfg.SetProperty(Environment.CurrentSessionContextClass, typeof(TestableThreadLocalContext).AssemblyQualifiedName);
 			cfg.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
@@ -37,11 +37,11 @@ namespace NHibernate.Test.ConnectionTest
 		public void ContextCleanup()
 		{
 			ISession session = Sfi.OpenSession();
-			using(var t = session.BeginTransaction())
+			using (var t = session.BeginTransaction())
 				t.Commit();
 			Assert.IsFalse(session.IsOpen, "session open after txn completion");
 			Assert.IsFalse(TestableThreadLocalContext.IsSessionBound(session), "session still bound after txn completion");
-			
+
 			ISession session2 = OpenSession();
 			Assert.IsFalse(session.Equals(session2), "same session returned after txn completion");
 			session2.Close();
@@ -80,7 +80,7 @@ namespace NHibernate.Test.ConnectionTest
 		public static bool IsSessionBound(ISession session)
 		{
 			return context != null && context.ContainsKey(me.factory)
-			       && context[me.factory] == session;
+				   && context[me.factory] == session;
 		}
 
 		public static bool HasBind()

@@ -12,6 +12,7 @@ namespace NHibernate.Event
 		public InitializeCollectionEvent(IPersistentCollection collection, IEventSource source)
 			: base(
 				GetLoadedCollectionPersister(collection, source), collection, source, GetLoadedOwnerOrNull(collection, source),
-				GetLoadedOwnerIdOrNull(collection, source)) {}
+				GetLoadedOwnerIdOrNull(collection, source))
+		{ }
 	}
 }

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using NHibernate.Type;
-using NHibernate.Engine;
 using System.Data.Common;
+using NHibernate.Engine;
+using NHibernate.Type;
 
 namespace NHibernate.Persister.Entity
 {
@@ -91,7 +91,7 @@ namespace NHibernate.Persister.Entity
 				return abstractEntityPersister.Hydrate(
 					rs, id, obj, suffixedPropertyColumns, fetchedLazyProperties, allProperties, session);
 			}
-			
+
 			var rootLoadable = loadable.RootEntityName == loadable.EntityName
 				? loadable
 				: (ILoadable) loadable.Factory.GetEntityPersister(loadable.RootEntityName);

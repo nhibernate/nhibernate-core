@@ -30,7 +30,7 @@ namespace NHibernate.Test.UserCollection
 
 		public override bool Equals(object obj)
 		{
-			if (! (obj is Email))
+			if (!(obj is Email))
 				return false;
 			return ((Email) obj).address.Equals(address);
 		}

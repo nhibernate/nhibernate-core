@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1403
 			object savedIdMale;
 			object saveIdFemale;
 			using (ISession s = OpenSession())
-			using(ITransaction t = s.BeginTransaction())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				savedIdMale = s.Save(h);
 				saveIdFemale = s.Save(h1);

@@ -28,10 +28,10 @@ namespace NHibernate.Test.Stats
 		private static Continent FillDb(ISession s)
 		{
 			Continent europe = new Continent();
-			europe.Name="Europe";
+			europe.Name = "Europe";
 			Country france = new Country();
-			france.Name="France";
-			europe.Countries=new HashSet<Country>();
+			france.Name = "France";
+			europe.Countries = new HashSet<Country>();
 			europe.Countries.Add(france);
 			s.Save(france);
 			s.Save(europe);
@@ -159,7 +159,7 @@ namespace NHibernate.Test.Stats
 			Assert.AreEqual(results, continentStats.ExecutionRowCount, "unexpected row count");
 			var maxTime = continentStats.ExecutionMaxTime;
 			Assert.AreEqual(maxTime, stats.QueryExecutionMaxTime);
-			Assert.AreEqual( continents, stats.QueryExecutionMaxTimeQueryString );
+			Assert.AreEqual(continents, stats.QueryExecutionMaxTimeQueryString);
 
 			IEnumerable itr = s.CreateQuery(continents).Enumerable();
 			// Enumerable() should increment the execution count
@@ -184,7 +184,7 @@ namespace NHibernate.Test.Stats
 			Assert.AreEqual(results, localityStats.ExecutionRowCount, "unexpected row count");
 			maxTime = localityStats.ExecutionMaxTime;
 			Assert.AreEqual(maxTime, stats.QueryExecutionMaxTime);
-			Assert.AreEqual( localities, stats.QueryExecutionMaxTimeQueryString );
+			Assert.AreEqual(localities, stats.QueryExecutionMaxTimeQueryString);
 			tx.Commit();
 			s.Close();
 			Assert.IsFalse(s.IsOpen);
@@ -194,14 +194,14 @@ namespace NHibernate.Test.Stats
 			s = OpenSession();
 			tx = s.BeginTransaction();
 			string sql = "select Id, Name from Country";
-			results = s.CreateSQLQuery(sql).AddEntity(typeof (Country)).List().Count;
+			results = s.CreateSQLQuery(sql).AddEntity(typeof(Country)).List().Count;
 			QueryStatistics sqlStats = stats.GetQueryStatistics(sql);
 			Assert.IsNotNull(sqlStats, "sql stats were null");
 			Assert.AreEqual(1, sqlStats.ExecutionCount, "unexpected execution count");
 			Assert.AreEqual(results, sqlStats.ExecutionRowCount, "unexpected row count");
 			maxTime = sqlStats.ExecutionMaxTime;
 			Assert.AreEqual(maxTime, stats.QueryExecutionMaxTime);
-			Assert.AreEqual( sql, stats.QueryExecutionMaxTimeQueryString);
+			Assert.AreEqual(sql, stats.QueryExecutionMaxTimeQueryString);
 
 			// check that 2nd query correctly updates query statistics
 			results = s.CreateSQLQuery(sql).AddEntity(typeof(Country)).List().Count;

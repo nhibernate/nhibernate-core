@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3954
 		{
 			_cache = new ProxyCache();
 
-			_internalCache = (ConcurrentDictionary<ProxyCacheEntry, TypeInfo>)InternalCacheField.GetValue(null);
+			_internalCache = (ConcurrentDictionary<ProxyCacheEntry, TypeInfo>) InternalCacheField.GetValue(null);
 
 			_cache.StoreProxyType(typeof(Entity1FakeProxy).GetTypeInfo(), typeof(Entity1));
 			_cache.StoreProxyType(typeof(Entity2FakeProxy).GetTypeInfo(), typeof(Entity2), typeof(INHibernateProxy));

@@ -28,7 +28,7 @@ namespace NHibernate.Cfg
 			{
 				return false;
 			}
-			return Equals((SchemaAutoAction)obj);
+			return Equals((SchemaAutoAction) obj);
 		}
 
 		public bool Equals(string other)

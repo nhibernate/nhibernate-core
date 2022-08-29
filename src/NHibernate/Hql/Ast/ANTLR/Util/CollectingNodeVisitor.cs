@@ -23,7 +23,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	}
 
 	[CLSCompliant(false)]
-	public class CollectingNodeVisitor<TNode> : IVisitationStrategy 
+	public class CollectingNodeVisitor<TNode> : IVisitationStrategy
 	{
 		private readonly List<TNode> collectedNodes = new List<TNode>();
 		private readonly FilterPredicate predicate;

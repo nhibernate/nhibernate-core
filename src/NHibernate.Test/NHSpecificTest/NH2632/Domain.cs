@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2632
 			get;
 			protected set;
 		}
-	} 
+	}
 
 	public class Order
 	{

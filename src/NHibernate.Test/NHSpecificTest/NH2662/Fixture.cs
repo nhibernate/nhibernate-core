@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2662
 				Assert.That(() =>
 				{
 					var temp = session.Query<Customer>().Select(
-						c => new {c.Id, c.Order.OrderDate, ((PizzaOrder)c.Order).PizzaName })
+						c => new { c.Id, c.Order.OrderDate, ((PizzaOrder) c.Order).PizzaName })
 									  .ToArray();
 
 					foreach (var item in temp) { Trace.WriteLine(item.PizzaName); }
@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2662
 				{
 					Order orderAlias = null;
 
-					var results = 
+					var results =
 						session.QueryOver<Customer>()
 							   .Left.JoinAlias(o => o.Order, () => orderAlias)
 							   .OrderBy(() => orderAlias.OrderDate).Asc

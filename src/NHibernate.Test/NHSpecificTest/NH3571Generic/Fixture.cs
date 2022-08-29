@@ -1,9 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.Linq;
 using NUnit.Framework;
-using System.Linq.Expressions;
-using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH3571Generic
 {
@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3571Generic
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override string[] Mappings => new[] {"NHSpecificTest.NH3571Generic.Mappings.hbm.xml"};
+		protected override string[] Mappings => new[] { "NHSpecificTest.NH3571Generic.Mappings.hbm.xml" };
 
 		/// <summary>
 		/// push some data into the database
@@ -23,19 +23,19 @@ namespace NHibernate.Test.NHSpecificTest.NH3571Generic
 			using (var session = OpenSession())
 			using (var tran = session.BeginTransaction())
 			{
-				var product = new Product {ProductId = "1"};
+				var product = new Product { ProductId = "1" };
 				product.Details.Properties["Name"] = "First Product";
 				product.Details.Properties["Description"] = "First Description";
 
 				session.Save(product);
 
-				product = new Product {ProductId = "2"};
+				product = new Product { ProductId = "2" };
 				product.Details.Properties["Name"] = "Second Product";
 				product.Details.Properties["Description"] = "Second Description";
 
 				session.Save(product);
 
-				product = new Product {ProductId = "3"};
+				product = new Product { ProductId = "3" };
 				product.Details.Properties["Name"] = "val";
 				product.Details.Properties["Description"] = "val";
 
@@ -100,7 +100,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3571Generic
 		{
 			using (var session = OpenSession())
 			{
-// ReSharper disable AccessToDisposedClosure Ok since the expressions aren't actually used after the using block.
+				// ReSharper disable AccessToDisposedClosure Ok since the expressions aren't actually used after the using block.
 				Expression<Func<IEnumerable>> key1 = () => (
 					from a in session.Query<Product>()
 					where (string) a.Details.Properties["Name"] == "val"
@@ -110,7 +110,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3571Generic
 					from a in session.Query<Product>()
 					where (string) a.Details.Properties["Description"] == "val"
 					select a);
-// ReSharper restore AccessToDisposedClosure
+				// ReSharper restore AccessToDisposedClosure
 
 				var nhKey1 = new NhLinqExpression(key1.Body, Sfi);
 				var nhKey2 = new NhLinqExpression(key2.Body, Sfi);

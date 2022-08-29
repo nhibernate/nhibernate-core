@@ -86,7 +86,7 @@ namespace NHibernate.Param
 		}
 
 		#endregion
-		
+
 		public override bool Equals(object obj)
 		{
 			return Equals(obj as DynamicFilterParameterSpecification);

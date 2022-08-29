@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2858
 		public virtual int Id { get; set; }
 		public virtual Guid TheGuid { get; set; }
 	}
-	
+
 	public class Fixture : TestCaseMappingByCode
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2858
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var entity = new Entity {Id = 1, TheGuid = Guid.Empty};
+				var entity = new Entity { Id = 1, TheGuid = Guid.Empty };
 				session.Save(entity);
 				session.Flush();
 				transaction.Commit();

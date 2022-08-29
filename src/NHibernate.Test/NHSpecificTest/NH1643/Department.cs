@@ -4,10 +4,10 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1643
 {
-    public class Department
-    {
-        public virtual int Id { get; set; }
+	public class Department
+	{
+		public virtual int Id { get; set; }
 
-        public virtual string Name { get; set; }
-    }
+		public virtual string Name { get; set; }
+	}
 }

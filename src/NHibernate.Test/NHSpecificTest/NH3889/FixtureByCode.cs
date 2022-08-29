@@ -87,12 +87,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3889
 				var setting = new TimeSetting { Include = include };
 				session.Save(setting);
 
-				session.Save(new TimeRecord {Project = project_a, Hours = 2, Setting = setting }/*.AddTime(2)*/);
-				session.Save(new TimeRecord {Project = project_a, Hours = 3, Setting = setting }/*.AddTime(3)*/);
-				session.Save(new TimeRecord {Project = project_b, Hours = 5, Setting = setting }/*.AddTime(2).AddTime(3)*/);
-				session.Save(new TimeRecord {Project = project_b, Hours = 2, Setting = setting }/*.AddTime(1).AddTime(1)*/);
-				session.Save(new TimeRecord {Project = project_c, Hours = 7, Setting = setting }/*.AddTime(2).AddTime(3).AddTime(2)*/);
-				session.Save(new TimeRecord {Project = project_c, ActualJob = job_a, Hours = 3, Setting = setting }/*.AddTime(1).AddTime(1).AddTime(1)*/);
+				session.Save(new TimeRecord { Project = project_a, Hours = 2, Setting = setting }/*.AddTime(2)*/);
+				session.Save(new TimeRecord { Project = project_a, Hours = 3, Setting = setting }/*.AddTime(3)*/);
+				session.Save(new TimeRecord { Project = project_b, Hours = 5, Setting = setting }/*.AddTime(2).AddTime(3)*/);
+				session.Save(new TimeRecord { Project = project_b, Hours = 2, Setting = setting }/*.AddTime(1).AddTime(1)*/);
+				session.Save(new TimeRecord { Project = project_c, Hours = 7, Setting = setting }/*.AddTime(2).AddTime(3).AddTime(2)*/);
+				session.Save(new TimeRecord { Project = project_c, ActualJob = job_a, Hours = 3, Setting = setting }/*.AddTime(1).AddTime(1).AddTime(1)*/);
 
 				session.Flush();
 				transaction.Commit();
@@ -172,7 +172,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3889
 									Job = j,
 									Hours = session.Query<TimeRecord>()
 												.Where(t => (t.ActualJob ?? t.Project.Job) == j)
-												.Sum(t => (decimal?)t.Hours) ?? 0
+												.Sum(t => (decimal?) t.Hours) ?? 0
 								});
 				var results = query.ToList();
 
@@ -198,7 +198,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3889
 									Hours = session.Query<TimeRecord>()
 												.Where(t => (t.ActualJob ?? t.Project.Job) == j)
 												.Where(t => t.Setting.Include == include)
-												.Sum(t => (decimal?)t.Hours) ?? 0
+												.Sum(t => (decimal?) t.Hours) ?? 0
 								});
 				var results = query.ToList();
 
@@ -220,8 +220,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3889
 								{
 									Job = j,
 									Hours = session.Query<TimeRecord>()
-												.Where(t => ((Guid?)t.ActualJob.Id ?? t.Project.Job.Id) == j.Id)
-												.Sum(t => (decimal?)t.Hours) ?? 0
+												.Where(t => ((Guid?) t.ActualJob.Id ?? t.Project.Job.Id) == j.Id)
+												.Sum(t => (decimal?) t.Hours) ?? 0
 								});
 				var results = query.ToList();
 
@@ -245,9 +245,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3889
 								{
 									Job = j,
 									Hours = session.Query<TimeRecord>()
-												.Where(t => ((Guid?)t.ActualJob.Id ?? t.Project.Job.Id) == j.Id)
+												.Where(t => ((Guid?) t.ActualJob.Id ?? t.Project.Job.Id) == j.Id)
 												.Where(t => t.Setting.Include == include)
-												.Sum(t => (decimal?)t.Hours) ?? 0
+												.Sum(t => (decimal?) t.Hours) ?? 0
 								});
 				var results = query.ToList();
 

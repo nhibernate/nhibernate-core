@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Multi;
 using NHibernate.Type;
 using NHibernate.Util;
 using Remotion.Linq.Parsing.ExpressionVisitors;
-using System.Threading;
-using System.Threading.Tasks;
-using NHibernate.Engine;
 using static NHibernate.Util.ReflectionCache.QueryableMethods;
 
 namespace NHibernate.Linq

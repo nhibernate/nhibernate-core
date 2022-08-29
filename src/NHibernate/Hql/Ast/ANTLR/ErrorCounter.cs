@@ -8,7 +8,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// <summary>
 	/// An error handler that counts parsing errors and warnings.
 	/// </summary>
-	internal class ErrorCounter : IParseErrorHandler 
+	internal class ErrorCounter : IParseErrorHandler
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ErrorCounter));
 		private static readonly INHibernateLogger hqlLog = NHibernateLogger.For("NHibernate.Hql.Parser");
@@ -19,35 +19,36 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public void ReportError(RecognitionException e)
 		{
-			ReportError( e.ToString() );
-			_recognitionExceptions.Add( e );
-			if ( log.IsDebugEnabled() ) {
+			ReportError(e.ToString());
+			_recognitionExceptions.Add(e);
+			if (log.IsDebugEnabled())
+			{
 				log.Debug(e, e.ToString());
 			}
 		}
 
-		public void ReportError(string message) 
+		public void ReportError(string message)
 		{
-			hqlLog.Error( message );
-			_errorList.Add( message );
+			hqlLog.Error(message);
+			_errorList.Add(message);
 		}
 
-		public int GetErrorCount() 
+		public int GetErrorCount()
 		{
 			return _errorList.Count;
 		}
 
-		public void ReportWarning(string message) 
+		public void ReportWarning(string message)
 		{
-			hqlLog.Debug( message );
-			_warningList.Add( message );
+			hqlLog.Debug(message);
+			_warningList.Add(message);
 		}
 
-		private string GetErrorString() 
+		private string GetErrorString()
 		{
 			bool first = true;
 			StringBuilder buf = new StringBuilder();
-			foreach (string error in _errorList) 
+			foreach (string error in _errorList)
 			{
 				buf.Append(error);
 
@@ -55,29 +56,29 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				first = false;
 			}
-			
+
 			return buf.ToString();
 		}
 
 		public void ThrowQueryException()
 		{
-			if ( GetErrorCount() > 0 ) 
+			if (GetErrorCount() > 0)
 			{
-				if ( _recognitionExceptions.Count > 0 ) 
+				if (_recognitionExceptions.Count > 0)
 				{
-					throw QuerySyntaxException.Convert(_recognitionExceptions[0] );
+					throw QuerySyntaxException.Convert(_recognitionExceptions[0]);
 				}
-				else 
+				else
 				{
-					throw new QueryException( GetErrorString() );
+					throw new QueryException(GetErrorString());
 				}
 			}
-			else 
+			else
 			{
 				// all clear
-				if ( log.IsDebugEnabled() ) 
+				if (log.IsDebugEnabled())
 				{
-					log.Debug( "throwQueryException() : no errors" );
+					log.Debug("throwQueryException() : no errors");
 				}
 			}
 		}

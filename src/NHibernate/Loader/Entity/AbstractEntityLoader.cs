@@ -16,7 +16,7 @@ namespace NHibernate.Loader.Entity
 	/// </summary>
 	public abstract partial class AbstractEntityLoader : OuterJoinLoader, IUniqueEntityLoader
 	{
-		protected static readonly INHibernateLogger log = NHibernateLogger.For(typeof (AbstractEntityLoader));
+		protected static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AbstractEntityLoader));
 		protected readonly IOuterJoinLoadable persister;
 		protected readonly string entityName;
 		private IParameterSpecification[] parametersSpecifications;
@@ -81,7 +81,7 @@ namespace NHibernate.Loader.Entity
 			var parameters = sqlPatameters.ToArray();
 			for (var sqlParameterPos = 0; sqlParameterPos < parameters.Length;)
 			{
-				var specification = new PositionalParameterSpecification(1, 0, position++) {ExpectedType = UniqueKeyType};
+				var specification = new PositionalParameterSpecification(1, 0, position++) { ExpectedType = UniqueKeyType };
 				var paramTrackers = specification.GetIdsForBackTrack(Factory);
 				foreach (var paramTracker in paramTrackers)
 				{

@@ -1,5 +1,8 @@
 using System;
+using System.Data;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using NHibernate.Action;
@@ -13,9 +16,6 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Transaction;
 using NHibernate.Util;
-using System.Data;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
@@ -86,7 +86,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			string rootTableName = persister.TableName;
 			SqlString fromJoinFragment = persister.FromJoinFragment(tableAlias, true, false);
 			select.SetFromClause(rootTableName + " " + tableAlias + fromJoinFragment);
-			
+
 			var whereJoinFragment = GetWhereJoinFragment(persister, tableAlias);
 
 			SqlString userWhereClause = SqlString.Empty;

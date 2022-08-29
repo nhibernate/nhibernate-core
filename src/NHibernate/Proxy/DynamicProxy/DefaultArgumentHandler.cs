@@ -25,7 +25,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 			// object[] args = new object[size];
 			IL.Emit(OpCodes.Ldc_I4, parameterCount);
-			IL.Emit(OpCodes.Newarr, typeof (object));
+			IL.Emit(OpCodes.Newarr, typeof(object));
 			IL.Emit(OpCodes.Stloc_S, 0);
 
 			if (parameterCount == 0)

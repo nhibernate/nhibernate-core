@@ -3,7 +3,7 @@
 namespace NHibernate.Test.NHSpecificTest.NH473
 {
 	[TestFixture]
-	public class Fixture:BugTestCase
+	public class Fixture : BugTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
@@ -12,13 +12,13 @@ namespace NHibernate.Test.NHSpecificTest.NH473
 
 		protected override void OnSetUp()
 		{
-			using(var session=this.OpenSession())
-			using(var tran=session.BeginTransaction())
+			using (var session = this.OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
 				var parent = new Parent();
-				var child1 = new Child {Name = "Fabio"};
-				var child2 = new Child {Name = "Ayende"};
-				var child3 = new Child {Name = "Dario"};
+				var child1 = new Child { Name = "Fabio" };
+				var child2 = new Child { Name = "Ayende" };
+				var child3 = new Child { Name = "Dario" };
 				parent.Children.Add(child1);
 				parent.Children.Add(child2);
 				parent.Children.Add(child3);
@@ -39,13 +39,13 @@ namespace NHibernate.Test.NHSpecificTest.NH473
 		[Test]
 		public void ChildItemsGetInOrderWhenUsingFetchJoin()
 		{
-			using(var session=this.OpenSession())
-			using(var tran=session.BeginTransaction())
+			using (var session = this.OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
-				var result = session.CreateCriteria(typeof (Parent))
+				var result = session.CreateCriteria(typeof(Parent))
 					.Fetch("Children")
 					.List<Parent>();
-				Assert.That(result[0].Children[0].Name,Is.EqualTo("Ayende"));
+				Assert.That(result[0].Children[0].Name, Is.EqualTo("Ayende"));
 				Assert.That(result[0].Children[1].Name, Is.EqualTo("Dario"));
 				Assert.That(result[0].Children[2].Name, Is.EqualTo("Fabio"));
 			}

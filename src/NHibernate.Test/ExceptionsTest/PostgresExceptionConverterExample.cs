@@ -13,7 +13,7 @@ namespace NHibernate.Test.ExceptionsTest
 			var sqle = ADOExceptionHelper.ExtractDbException(exInfo.SqlException) as DbException;
 			if (sqle != null)
 			{
-				string code = (string)sqle.GetType().GetProperty("Code").GetValue(sqle, null);
+				string code = (string) sqle.GetType().GetProperty("Code").GetValue(sqle, null);
 
 				if (code == "23503")
 				{

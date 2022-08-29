@@ -5,20 +5,20 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 	using NUnit.Framework;
 	using SqlCommand;
 	using Type;
-	using TestCase=NHibernate.Test.TestCase;
+	using TestCase = NHibernate.Test.TestCase;
 
 	[TestFixture]
-    public class Fixture : TestCase
-    {
-        protected override string[] Mappings
-        {
-            get { return new string[] { "NHSpecificTest.LoadingNullEntityInSet.Mappings.hbm.xml" }; }
-        }
+	public class Fixture : TestCase
+	{
+		protected override string[] Mappings
+		{
+			get { return new string[] { "NHSpecificTest.LoadingNullEntityInSet.Mappings.hbm.xml" }; }
+		}
 
-        protected override string MappingsAssembly
-        {
-            get { return "NHibernate.Test"; }
-        }
+		protected override string MappingsAssembly
+		{
+			get { return "NHibernate.Test"; }
+		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
@@ -27,9 +27,9 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 
 		protected override DebugSessionFactory BuildSessionFactory()
 		{
-			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Primaries")
+			cfg.GetCollectionMapping(typeof(Employee).FullName + ".Primaries")
 				.CollectionTable.Name = "WantedProfessions";
-			cfg.GetCollectionMapping(typeof (Employee).FullName + ".Secondaries")
+			cfg.GetCollectionMapping(typeof(Employee).FullName + ".Secondaries")
 				.CollectionTable.Name = "WantedProfessions";
 			try
 			{
@@ -42,45 +42,45 @@ namespace NHibernate.Test.NHSpecificTest.LoadingNullEntityInSet
 			}
 		}
 
-        [Test]
-        public void CanHandleNullEntityInList()
-        {
-            using (ISession sess = OpenSession())
-            using (ITransaction tx = sess.BeginTransaction())
-            {
-                Employee e = new Employee();
-                PrimaryProfession ppc = new PrimaryProfession();
+		[Test]
+		public void CanHandleNullEntityInList()
+		{
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				Employee e = new Employee();
+				PrimaryProfession ppc = new PrimaryProfession();
 				sess.Save(e);
-            	sess.Save(ppc);
-            	sess.Flush();
+				sess.Save(ppc);
+				sess.Flush();
 
 				WantedProfession wanted = new WantedProfession();
-            	wanted.Id = 15;
+				wanted.Id = 15;
 				wanted.Employee = e;
 				wanted.PrimaryProfession = ppc;
 
-            	sess.Save(wanted);
+				sess.Save(wanted);
 
 				tx.Commit();
-            }
+			}
 
-            using (ISession sess = OpenSession())
-            {
-            	ICriteria criteria = sess.CreateCriteria(typeof(Employee));
-            	criteria.CreateCriteria("Primaries", JoinType.LeftOuterJoin);
+			using (ISession sess = OpenSession())
+			{
+				ICriteria criteria = sess.CreateCriteria(typeof(Employee));
+				criteria.CreateCriteria("Primaries", JoinType.LeftOuterJoin);
 				criteria.CreateCriteria("Secondaries", JoinType.LeftOuterJoin);
-            	criteria.List();
-            }
+				criteria.List();
+			}
 
-        	using (ISession sess = OpenSession())
-            {
+			using (ISession sess = OpenSession())
+			{
 				sess.Delete("from WantedProfession");
 				sess.Flush();
 				sess.Delete("from PrimaryProfession");
-                sess.Flush();
+				sess.Flush();
 				sess.Delete("from Employee");
-                sess.Flush();
-            }
-        }
-    }
+				sess.Flush();
+			}
+		}
+	}
 }

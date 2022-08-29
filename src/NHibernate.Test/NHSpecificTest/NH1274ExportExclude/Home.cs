@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 
 	public class Home_Drop : Home { public Home_Drop() { } public Home_Drop(string city, int zip) : base(city, zip) { } }
 
-	public class Home_None : Home {public Home_None() { }  public Home_None(string city, int zip) : base(city, zip) { } }
+	public class Home_None : Home { public Home_None() { } public Home_None(string city, int zip) : base(city, zip) { } }
 
-	public class Home_All : Home {public Home_All() { }  public Home_All(string city, int zip) : base(city, zip) { } }
+	public class Home_All : Home { public Home_All() { } public Home_All(string city, int zip) : base(city, zip) { } }
 }

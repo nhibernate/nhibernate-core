@@ -52,9 +52,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2030
 				thread.Join();
 			}
 
-			if(exceptions.Count > 0)
+			if (exceptions.Count > 0)
 			{
-				foreach(var e in exceptions)
+				foreach (var e in exceptions)
 					Console.WriteLine(e);
 
 				throw exceptions[0];

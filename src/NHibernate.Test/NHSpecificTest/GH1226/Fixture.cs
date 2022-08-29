@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1226
 				var accounts = session.CreateQuery("from Account a left join fetch a.Bank").List<Account>();
 				var associatedBanks = accounts.Select(x => x.Bank).ToList();
 				Assert.That(associatedBanks, Has.All.Matches<object>(NHibernateUtil.IsInitialized),
-				            "One bank or more was lazily loaded.");
+							"One bank or more was lazily loaded.");
 
 				var countAfterQuery = Sfi.Statistics.PrepareStatementCount;
 				var statementCount = countAfterQuery - countBeforeQuery;
@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1226
 				var accounts = session.CreateQuery("from Account a left join fetch a.Bank").List<Account>();
 				var associatedBanks = accounts.Select(x => x.Bank).ToList();
 				Assert.That(associatedBanks, Has.All.Matches<object>(NHibernateUtil.IsInitialized),
-				            "One bank or more was lazily loaded.");
+							"One bank or more was lazily loaded.");
 
 				var countAfterQuery = Sfi.Statistics.PrepareStatementCount;
 				var statementCount = countAfterQuery - countBeforeQuery;
@@ -116,11 +116,11 @@ namespace NHibernate.Test.NHSpecificTest.GH1226
 					var accounts = s1.CreateQuery("from Account a left join fetch a.Bank").List<Account>();
 					var associatedBanks = accounts.Select(x => x.Bank).ToList();
 					Assert.That(associatedBanks, Has.All.Not.Null,
-					            "One bank or more failed loading.");
+								"One bank or more failed loading.");
 					Assert.That(associatedBanks, Has.All.Matches<object>(NHibernateUtil.IsInitialized),
-					            "One bank or more was lazily loaded.");
+								"One bank or more was lazily loaded.");
 					Assert.That(associatedBanks, Has.All.Property(nameof(Bank.Code)).EqualTo(oldCode),
-					            "One bank or more has no more the old code.");
+								"One bank or more has no more the old code.");
 
 					tx.Commit();
 					// Do not check statements count: we are in a special case defeating the eager fetching, because

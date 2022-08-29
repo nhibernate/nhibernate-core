@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1324
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				int? result = s.CreateCriteria(typeof (Person))
+				int? result = s.CreateCriteria(typeof(Person))
 					.SetProjection(Projections.Property("IQ"))
 					.UniqueResult<int?>();
 				Assert.IsNull(result);

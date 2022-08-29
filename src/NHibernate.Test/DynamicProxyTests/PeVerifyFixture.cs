@@ -1,9 +1,9 @@
 using System;
 using System.Reflection;
 using System.Reflection.Emit;
-using NUnit.Framework;
 using NHibernate.Proxy.DynamicProxy;
 using NHibernate.Test.ProxyTest;
+using NUnit.Framework;
 
 namespace NHibernate.Test.DynamicProxyTests
 {
@@ -85,7 +85,7 @@ namespace NHibernate.Test.DynamicProxyTests
 			public ClassWithPublicDefaultConstructor() { InitG<int>(1); }
 			public ClassWithPublicDefaultConstructor(int unused) { }
 			public virtual int Prop1 { get; set; }
-			public virtual void InitG<T>(T value) { Init((int)(object)value); }
+			public virtual void InitG<T>(T value) { Init((int) (object) value); }
 			public virtual void Init(int value) { Prop1 = value; if (Prop1 == 1) wasCalled = true; }
 		}
 

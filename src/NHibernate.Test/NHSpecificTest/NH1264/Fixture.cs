@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1264
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"NHSpecificTest.NH1264.Passenger.hbm.xml", "NHSpecificTest.NH1264.Reservation.hbm.xml",}; }
+			get { return new[] { "NHSpecificTest.NH1264.Passenger.hbm.xml", "NHSpecificTest.NH1264.Reservation.hbm.xml", }; }
 		}
 
 		protected override void OnTearDown()

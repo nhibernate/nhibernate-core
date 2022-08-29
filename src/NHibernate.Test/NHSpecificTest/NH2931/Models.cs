@@ -1,6 +1,6 @@
 ﻿namespace NHibernate.Test.NHSpecificTest.NH2931
 {
-	public class A : F{ }
+	public class A : F { }
 
 	public class B { }
 

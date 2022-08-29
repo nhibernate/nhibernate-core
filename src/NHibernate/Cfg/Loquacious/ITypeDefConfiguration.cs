@@ -38,14 +38,14 @@ namespace NHibernate.Cfg.Loquacious
 	/// Properties of TypeDef configuration.
 	/// </summary>
 	/// <seealso cref="ConfigurationExtensions.TypeDefinition{TDef}"/>
-	public class TypeDefConfigurationProperties 
+	public class TypeDefConfigurationProperties
 #pragma warning disable 618
 		: ITypeDefConfigurationProperties
 #pragma warning restore 618
 	{
 		internal static TypeDefConfigurationProperties Create<T>()
 		{
-			return new TypeDefConfigurationProperties {Alias = typeof(T).Name};
+			return new TypeDefConfigurationProperties { Alias = typeof(T).Name };
 		}
 
 		#region Implementation of ITypeDefConfigurationProperties

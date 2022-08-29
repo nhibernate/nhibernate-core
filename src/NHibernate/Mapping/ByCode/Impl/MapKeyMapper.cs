@@ -35,16 +35,16 @@ namespace NHibernate.Mapping.ByCode.Impl
 			hbmMapKey.formula = null;
 			HbmColumn hbm = hbmMapKey.Columns.SingleOrDefault();
 			hbm = hbm
-			      ??
-			      new HbmColumn
-			      {
-			      	name = hbmMapKey.column,
-			      	length = hbmMapKey.length,
-			      };
+				  ??
+				  new HbmColumn
+				  {
+					  name = hbmMapKey.column,
+					  length = hbmMapKey.length,
+				  };
 			columnMapper(new ColumnMapper(hbm, DefaultColumnName));
 			if (ColumnTagIsRequired(hbm))
 			{
-				hbmMapKey.Items = new[] {hbm};
+				hbmMapKey.Items = new[] { hbm };
 				ResetColumnPlainValues();
 			}
 			else
@@ -83,7 +83,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Type<TPersistentType>()
 		{
-			Type(typeof (TPersistentType));
+			Type(typeof(TPersistentType));
 		}
 
 		public void Type(System.Type persistentType)
@@ -135,7 +135,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
 			if (formulaLines.Length > 1)
 			{
-				hbmMapKey.Items = new object[] {new HbmFormula {Text = formulaLines}};
+				hbmMapKey.Items = new object[] { new HbmFormula { Text = formulaLines } };
 			}
 			else
 			{
@@ -153,7 +153,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			hbmMapKey.Items =
 				formulas
 					.ToArray(
-						f => (object) new HbmFormula {Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None)});
+						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) });
 		}
 
 		#endregion
@@ -168,8 +168,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private bool ColumnTagIsRequired(HbmColumn hbm)
 		{
 			return hbm.precision != null || hbm.scale != null || hbm.notnull || hbm.unique
-			       || hbm.uniquekey != null || hbm.sqltype != null || hbm.index != null || hbm.@default != null
-			       || hbm.check != null;
+				   || hbm.uniquekey != null || hbm.sqltype != null || hbm.index != null || hbm.@default != null
+				   || hbm.check != null;
 		}
 	}
 }

@@ -41,7 +41,7 @@ namespace NHibernate.Criterion
 			var collectionPersister = GetQueryableCollection(entityName, actualPropertyName, factory);
 
 			var collectionKeys = collectionPersister.KeyColumnNames;
-			var ownerKeys = ((ILoadable)factory.GetEntityPersister(entityName)).IdentifierColumnNames;
+			var ownerKeys = ((ILoadable) factory.GetEntityPersister(entityName)).IdentifierColumnNames;
 
 			var innerSelect = new StringBuilder();
 			innerSelect.Append("(select 1 from ")
@@ -58,7 +58,7 @@ namespace NHibernate.Criterion
 
 			innerSelect.Append(")");
 
-			return new SqlString(new object[] {ExcludeEmpty ? "exists" : "not exists", innerSelect.ToString()});
+			return new SqlString(new object[] { ExcludeEmpty ? "exists" : "not exists", innerSelect.ToString() });
 		}
 
 		protected IQueryableCollection GetQueryableCollection(string entityName, string actualPropertyName,

@@ -11,7 +11,7 @@
 		/// <summary>
 		/// NHibernate parameterless constructor
 		/// </summary>
-		protected Cat() {}
+		protected Cat() { }
 
 		#region ICat Members
 

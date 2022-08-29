@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1235
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
 		{
 			// Specific to MsSql2000Dialect. Does not apply to MsSql2005Dialect
-			return dialect.GetType().Equals(typeof (MsSql2000Dialect));
+			return dialect.GetType().Equals(typeof(MsSql2000Dialect));
 		}
 
 		protected override void OnTearDown()

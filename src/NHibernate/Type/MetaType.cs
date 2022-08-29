@@ -52,7 +52,7 @@ namespace NHibernate.Type
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof (string); }
+			get { return typeof(string); }
 		}
 
 		public override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
@@ -90,7 +90,7 @@ namespace NHibernate.Type
 
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
-			return (string)value;
+			return (string) value;
 		}
 
 		public override string Name

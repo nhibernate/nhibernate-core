@@ -123,7 +123,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public int? BatchSize
 		{
-			get { return batchsizeSpecified ? batchsize : (int?)null; }
+			get { return batchsizeSpecified ? batchsize : (int?) null; }
 		}
 
 		public string PersisterQualifiedName
@@ -138,17 +138,17 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public HbmCollectionFetchMode? FetchMode
 		{
-			get { return fetchSpecified ? fetch : (HbmCollectionFetchMode?)null; }
+			get { return fetchSpecified ? fetch : (HbmCollectionFetchMode?) null; }
 		}
 
 		public HbmOuterJoinStrategy? OuterJoin
 		{
-			get { return outerjoinSpecified ? outerjoin : (HbmOuterJoinStrategy?)null; }
+			get { return outerjoinSpecified ? outerjoin : (HbmOuterJoinStrategy?) null; }
 		}
 
 		public HbmCollectionLazy? Lazy
 		{
-			get { return lazySpecified ? lazy : (HbmCollectionLazy?)null; }
+			get { return lazySpecified ? lazy : (HbmCollectionLazy?) null; }
 		}
 
 		public string Table
@@ -183,7 +183,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public bool? Generic
 		{
-			get { return genericSpecified ? generic : (bool?)null; }
+			get { return genericSpecified ? generic : (bool?) null; }
 		}
 
 		[XmlIgnore]

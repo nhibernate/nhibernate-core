@@ -148,8 +148,8 @@ namespace NHibernate.Linq.Visitors
 
 			// Check if there was a not null check prior or after the equality expression
 			if (IsEqualOrNotEqual(equalityExpression) &&
-			    _equalityNotNullMembers.TryGetValue(equalityExpression, out var notNullMembers) &&
-			    notNullMembers.Any(o => AreEqual(o, memberExpression)))
+				_equalityNotNullMembers.TryGetValue(equalityExpression, out var notNullMembers) &&
+				notNullMembers.Any(o => AreEqual(o, memberExpression)))
 			{
 				return false;
 			}
@@ -260,7 +260,7 @@ namespace NHibernate.Linq.Visitors
 		private static bool AreEqual(MemberExpression memberExpression, MemberExpression otherMemberExpression)
 		{
 			if (memberExpression.Member != otherMemberExpression.Member ||
-			    memberExpression.Expression.NodeType != otherMemberExpression.Expression.NodeType)
+				memberExpression.Expression.NodeType != otherMemberExpression.Expression.NodeType)
 			{
 				return false;
 			}
@@ -271,7 +271,7 @@ namespace NHibernate.Linq.Visitors
 					if (otherMemberExpression.Expression is QuerySourceReferenceExpression otherQuerySourceReferenceExpression)
 					{
 						return querySourceReferenceExpression.ReferencedQuerySource ==
-						       otherQuerySourceReferenceExpression.ReferencedQuerySource;
+							   otherQuerySourceReferenceExpression.ReferencedQuerySource;
 					}
 
 					return false;

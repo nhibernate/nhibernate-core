@@ -5,7 +5,7 @@ namespace NHibernate.Test.Extralazy
 		private string title;
 		private string content;
 		private User owner;
-		protected Document() {}
+		protected Document() { }
 		public Document(string title, string content, User owner)
 		{
 			this.title = title;

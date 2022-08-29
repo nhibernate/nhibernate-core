@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2508
 		}
 
 		public virtual string Solution { get; set; }
-	
+
 		public virtual Guid Id { get; set; }
 
 		public virtual string Name { get; set; }

@@ -8,7 +8,7 @@ using NHibernate.Util;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public class ConstructorNode : SelectExpressionList, ISelectExpression 
+	public class ConstructorNode : SelectExpressionList, ISelectExpression
 	{
 		private IType[] _constructorArgumentTypes;
 		private ConstructorInfo _constructor;
@@ -114,17 +114,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public void Prepare()
 		{
 			_constructorArgumentTypes = ResolveConstructorArgumentTypes();
-			string path = ( ( IPathNode ) GetChild(0) ).Path;
+			string path = ((IPathNode) GetChild(0)).Path;
 
 			if (string.Equals(path, "map", StringComparison.OrdinalIgnoreCase))
 			{
 				_isMap = true;
 			}
-			else if (string.Equals(path, "list", StringComparison.OrdinalIgnoreCase)) 
+			else if (string.Equals(path, "list", StringComparison.OrdinalIgnoreCase))
 			{
 				_isList = true;
 			}
-			else 
+			else
 			{
 				_constructor = ResolveConstructor(path);
 			}
@@ -134,7 +134,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			ISelectExpression[] argumentExpressions = CollectSelectExpressions();
 			IType[] types = new IType[argumentExpressions.Length];
-			for ( int x = 0; x < argumentExpressions.Length; x++ ) 
+			for (int x = 0; x < argumentExpressions.Length; x++)
 			{
 				types[x] = argumentExpressions[x].DataType;
 			}
@@ -144,27 +144,27 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private ConstructorInfo ResolveConstructor(String path)
 		{
-			string importedClassName = SessionFactoryHelper.GetImportedClassName( path );
-			string className = StringHelper.IsEmpty( importedClassName ) ? path : importedClassName;
+			string importedClassName = SessionFactoryHelper.GetImportedClassName(path);
+			string className = StringHelper.IsEmpty(importedClassName) ? path : importedClassName;
 
-			if ( className == null ) 
+			if (className == null)
 			{
-				throw new SemanticException( "Unable to locate class [" + path + "]" );
+				throw new SemanticException("Unable to locate class [" + path + "]");
 			}
-			try 
+			try
 			{
-				System.Type holderClass = ReflectHelper.ClassForName( className );
-				return ReflectHelper.GetConstructor( holderClass, _constructorArgumentTypes );
+				System.Type holderClass = ReflectHelper.ClassForName(className);
+				return ReflectHelper.GetConstructor(holderClass, _constructorArgumentTypes);
 			}
-			catch ( TypeLoadException e ) 
+			catch (TypeLoadException e)
 			{
-				throw new QueryException( "Unable to locate class [" + className + "]", e );
+				throw new QueryException("Unable to locate class [" + className + "]", e);
 			}
-			catch (InstantiationException e) 
+			catch (InstantiationException e)
 			{
 				// this is the exception returned by ReflectHelper.getConstructor() if it cannot
 				// locate an appropriate constructor
-				throw new QueryException( "Unable to locate appropriate constructor on class [" + className + "]", e );
+				throw new QueryException("Unable to locate appropriate constructor on class [" + className + "]", e);
 			}
 		}
 	}

@@ -4,7 +4,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1857
 {
 	public class Employee
 	{
-		private Employee() {}
+		private Employee() { }
 
 		public Employee(int id, string name, DateTime d)
 		{

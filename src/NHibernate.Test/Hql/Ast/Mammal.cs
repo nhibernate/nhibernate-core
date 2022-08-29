@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Hql.Ast
 {
-	public class Mammal: Animal
+	public class Mammal : Animal
 	{
 		private bool pregnant;
 		private DateTime? birthdate;

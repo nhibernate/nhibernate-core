@@ -9,7 +9,7 @@ namespace NHibernate.Event
 	public class PreCollectionRemoveEvent : AbstractCollectionEvent
 	{
 		public PreCollectionRemoveEvent(ICollectionPersister collectionPersister, IPersistentCollection collection,
-		                                IEventSource source, object loadedOwner)
-			: base(collectionPersister, collection, source, loadedOwner, GetOwnerIdOrNull(loadedOwner, source)) {}
+										IEventSource source, object loadedOwner)
+			: base(collectionPersister, collection, source, loadedOwner, GetOwnerIdOrNull(loadedOwner, source)) { }
 	}
 }

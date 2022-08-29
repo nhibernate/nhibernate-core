@@ -15,7 +15,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
 		protected PrimitiveType(SqlType sqlType)
-			: base(sqlType) {}
+			: base(sqlType) { }
 
 		public abstract System.Type PrimitiveClass { get; }
 

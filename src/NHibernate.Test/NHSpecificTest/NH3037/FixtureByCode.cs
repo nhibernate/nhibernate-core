@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3037
 					session.Save(new Entity() { Id = i, Name = i.ToString() });
 				}
 
-				var impl = ((NHibernate.Impl.SessionImpl)session);
+				var impl = ((NHibernate.Impl.SessionImpl) session);
 
 				var stopwatch = Stopwatch.StartNew();
 

@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2009
 				session.Flush();
 				session.Clear();
 			}
-			
+
 			using (ISession session = OpenSession())
 			{
 				var user = session.Get<BlogPost>(savedBlogPost.ID);

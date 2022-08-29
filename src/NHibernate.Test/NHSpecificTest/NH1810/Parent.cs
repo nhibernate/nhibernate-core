@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (Parent)) return false;
+			if (obj.GetType() != typeof(Parent)) return false;
 			return Equals((Parent) obj);
 		}
 
@@ -67,8 +67,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 				unchecked
 				{
 					int result = (MedicalRecord != null ? MedicalRecord.GetHashCode() : 0);
-					result = (result*397) ^ (Address != null ? Address.GetHashCode() : 0);
-					result = (result*397) ^ Visits;
+					result = (result * 397) ^ (Address != null ? Address.GetHashCode() : 0);
+					result = (result * 397) ^ Visits;
 					hashCode = result;
 				}
 

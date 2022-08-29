@@ -60,7 +60,7 @@ namespace NHibernate.Test.GenericTest.SetGeneric
 			// ensuring the correct generic type was constructed
 			a.Items.Add(thirdB);
 			Assert.AreEqual(3, a.Items.Count, "3 items in the set now");
-			Assert.IsTrue( a.Items is NHibernate.Collection.Generic.PersistentGenericSet<B> );
+			Assert.IsTrue(a.Items is NHibernate.Collection.Generic.PersistentGenericSet<B>);
 			s.Flush();
 			s.Close();
 		}
@@ -74,26 +74,26 @@ namespace NHibernate.Test.GenericTest.SetGeneric
 
 			B b1 = new B();
 			b1.Name = "b1";
-			a.Items.Add( b1 );
+			a.Items.Add(b1);
 
 			B b2 = new B();
 			b2.Name = "b2";
-			a.Items.Add( b2 );
+			a.Items.Add(b2);
 
 			A copiedA;
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				copiedA = s.Merge(a);
 				t.Commit();
 			}
 
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				A loadedA = s.Get<A>( copiedA.Id );
-				Assert.IsNotNull( loadedA );
-				s.Delete( loadedA );
+				A loadedA = s.Get<A>(copiedA.Id);
+				Assert.IsNotNull(loadedA);
+				s.Delete(loadedA);
 				t.Commit();
 			}
 		}

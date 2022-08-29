@@ -9,7 +9,7 @@ namespace NHibernate.Event
 	public class PreCollectionRecreateEvent : AbstractCollectionEvent
 	{
 		public PreCollectionRecreateEvent(ICollectionPersister collectionPersister, IPersistentCollection collection,
-		                                  IEventSource source)
-			: base(collectionPersister, collection, source, collection.Owner, GetOwnerIdOrNull(collection.Owner, source)) {}
+										  IEventSource source)
+			: base(collectionPersister, collection, source, collection.Owner, GetOwnerIdOrNull(collection.Owner, source)) { }
 	}
 }

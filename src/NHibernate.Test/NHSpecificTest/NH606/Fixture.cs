@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH606
 		{
 			Assert.Throws<MappingException>(
 				() =>
-				new Configuration().AddResource(typeof (Fixture).Namespace + ".Mapping.hbm.xml", typeof (Fixture).Assembly).
+				new Configuration().AddResource(typeof(Fixture).Namespace + ".Mapping.hbm.xml", typeof(Fixture).Assembly).
 					BuildSessionFactory());
 		}
 	}

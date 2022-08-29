@@ -64,7 +64,7 @@ namespace NHibernate.Bytecode
 				: CollectionHelper.EmptySet<string>();
 
 			_fetchGroups = fetchGroups;
-			FetchGroupNames = _fetchGroups?.Count > 0 
+			FetchGroupNames = _fetchGroups?.Count > 0
 				? new ReadOnlySet<string>(new HashSet<string>(_fetchGroups.Keys))
 				: CollectionHelper.EmptySet<string>();
 		}

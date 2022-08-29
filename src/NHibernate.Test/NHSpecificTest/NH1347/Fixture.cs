@@ -25,10 +25,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1347
 				tx.Commit();
 			}
 
-			using(SqlLogSpy spy = new SqlLogSpy())
+			using (SqlLogSpy spy = new SqlLogSpy())
 			using (ISession s = OpenSession())
 			{
-				A a = s.CreateCriteria(typeof (A))
+				A a = s.CreateCriteria(typeof(A))
 					.AddOrder(Order.Asc("Name"))
 					.SetMaxResults(1)
 					.UniqueResult<A>();

@@ -117,6 +117,6 @@ namespace NHibernate.Hql
 
 		IType[] ActualReturnTypes { get; }
 
-        ParameterMetadata BuildParameterMetadata();
+		ParameterMetadata BuildParameterMetadata();
 	}
 }

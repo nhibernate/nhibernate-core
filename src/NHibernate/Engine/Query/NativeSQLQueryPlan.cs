@@ -50,7 +50,7 @@ namespace NHibernate.Engine.Query
 
 			if (session.IsEventSource)
 			{
-				((IEventSource)session).ActionQueue.AddAction(action);
+				((IEventSource) session).ActionQueue.AddAction(action);
 			}
 		}
 
@@ -76,7 +76,7 @@ namespace NHibernate.Engine.Query
 
 				var sqlParametersList = sql.GetParameters().ToList();
 				SqlType[] sqlTypes = parametersSpecifications.GetQueryParameterTypes(sqlParametersList, session.Factory);
-				
+
 				var ps = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTypes);
 
 				try
@@ -91,7 +91,7 @@ namespace NHibernate.Engine.Query
 					{
 						parameterSpecification.Bind(ps, sqlParametersList, queryParameters, session);
 					}
-					
+
 					result = session.Batcher.ExecuteNonQuery(ps);
 				}
 				finally

@@ -10,7 +10,7 @@ namespace NHibernate.Event
 	[Serializable]
 	public class RefreshEvent : AbstractEvent
 	{
-		private readonly LockMode lockMode= LockMode.Read;
+		private readonly LockMode lockMode = LockMode.Read;
 		private readonly object entity;
 
 		public RefreshEvent(object entity, IEventSource source)

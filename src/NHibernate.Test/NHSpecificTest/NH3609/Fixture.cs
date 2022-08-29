@@ -14,10 +14,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3609
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity {Name = "Bob"};
+				var e1 = new Entity { Name = "Bob" };
 				session.Save(e1);
 
-				var e2 = new Entity {Name = "Sally"};
+				var e2 = new Entity { Name = "Sally" };
 				session.Save(e2);
 
 				session.Flush();
@@ -88,7 +88,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3609
 				Assert.Ignore(Dialect.GetType().Name + " does not support complex group by expressions");
 			// When not using a named prefix, the driver use positional parameters, causing parameterized
 			// expression used in group by and select to be not be considered as the same expression.
-			if (!((DriverBase)Sfi.ConnectionProvider.Driver).UseNamedPrefixInParameter)
+			if (!((DriverBase) Sfi.ConnectionProvider.Driver).UseNamedPrefixInParameter)
 				Assert.Ignore("Cannot group by and select a parameterized expression with positional parameters");
 
 			using (var session = OpenSession())

@@ -97,17 +97,17 @@ namespace NHibernate.Criterion
 		public static ICriterion ProcessIsLikeMatchMode(MethodCallExpression methodCallExpression)
 		{
 			ExpressionProcessor.ProjectionInfo projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			string value = (string)ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			MatchMode matchMode = (MatchMode)ExpressionProcessor.FindValue(methodCallExpression.Arguments[2]);
+			string value = (string) ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
+			MatchMode matchMode = (MatchMode) ExpressionProcessor.FindValue(methodCallExpression.Arguments[2]);
 			return projection.Create<ICriterion>(s => Restrictions.Like(s, value, matchMode), p => Restrictions.Like(p, value, matchMode));
 		}
 
 		public static ICriterion ProcessIsLikeMatchModeEscapeChar(MethodCallExpression methodCallExpression)
 		{
 			string property = ExpressionProcessor.FindMemberExpression(methodCallExpression.Arguments[0]);
-			string value = (string)ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			MatchMode matchMode = (MatchMode)ExpressionProcessor.FindValue(methodCallExpression.Arguments[2]);
-			char? escapeChar = (char?)ExpressionProcessor.FindValue(methodCallExpression.Arguments[3]);
+			string value = (string) ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
+			MatchMode matchMode = (MatchMode) ExpressionProcessor.FindValue(methodCallExpression.Arguments[2]);
+			char? escapeChar = (char?) ExpressionProcessor.FindValue(methodCallExpression.Arguments[3]);
 			return Restrictions.Like(property, value, matchMode, escapeChar);
 		}
 
@@ -121,28 +121,28 @@ namespace NHibernate.Criterion
 		public static ICriterion ProcessIsInsensitiveLikeMatchMode(MethodCallExpression methodCallExpression)
 		{
 			ExpressionProcessor.ProjectionInfo projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			string value = (string)ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
-			MatchMode matchMode = (MatchMode)ExpressionProcessor.FindValue(methodCallExpression.Arguments[2]);
+			string value = (string) ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
+			MatchMode matchMode = (MatchMode) ExpressionProcessor.FindValue(methodCallExpression.Arguments[2]);
 			return projection.Create<ICriterion>(s => Restrictions.InsensitiveLike(s, value, matchMode), p => Restrictions.InsensitiveLike(p, value, matchMode));
 		}
 
 		public static ICriterion ProcessIsInArray(MethodCallExpression methodCallExpression)
 		{
 			ExpressionProcessor.ProjectionInfo projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			object[] values = (object[])ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
+			object[] values = (object[]) ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
 			return projection.Create<ICriterion>(s => Restrictions.In(s, values), p => Restrictions.In(p, values));
 		}
 
 		public static ICriterion ProcessIsInCollection(MethodCallExpression methodCallExpression)
 		{
 			ExpressionProcessor.ProjectionInfo projection = ExpressionProcessor.FindMemberProjection(methodCallExpression.Arguments[0]);
-			var values = (ICollection)ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
+			var values = (ICollection) ExpressionProcessor.FindValue(methodCallExpression.Arguments[1]);
 			return projection.Create<ICriterion>(s => Restrictions.In(s, values), p => Restrictions.In(p, values));
 		}
 
 		public static ICriterion ProcessIsBetween(MethodCallExpression methodCallExpression)
 		{
-			MethodCallExpression betweenFunction = (MethodCallExpression)methodCallExpression.Object;
+			MethodCallExpression betweenFunction = (MethodCallExpression) methodCallExpression.Object;
 			ExpressionProcessor.ProjectionInfo projection = ExpressionProcessor.FindMemberProjection(betweenFunction.Arguments[0]);
 			object lo = ExpressionProcessor.FindValue(betweenFunction.Arguments[1]);
 			object hi = ExpressionProcessor.FindValue(methodCallExpression.Arguments[0]);

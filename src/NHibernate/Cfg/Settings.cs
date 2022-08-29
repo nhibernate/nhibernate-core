@@ -136,7 +136,7 @@ namespace NHibernate.Cfg
 		public bool IsNamedQueryStartupCheckingEnabled { get; internal set; }
 
 		public bool IsBatchVersionedDataEnabled { get; internal set; }
-		
+
 		// 6.0 TODO : should throw by default
 		/// <summary>
 		/// <see langword="true" /> to throw in case any failure is reported during schema auto-update,
@@ -154,7 +154,7 @@ namespace NHibernate.Cfg
 		public IsolationLevel IsolationLevel { get; internal set; }
 
 		public bool IsOuterJoinFetchEnabled { get; internal set; }
-		
+
 		public bool TrackSessionId { get; internal set; }
 
 		/// <summary>
@@ -225,7 +225,7 @@ namespace NHibernate.Cfg
 		public int QueryPlanCacheParameterMetadataMaxSize { get; internal set; }
 		public int QueryPlanCacheMaxSize { get; internal set; }
 		public BatchFetchStyle BatchFetchStyle { get; internal set; }
-		public BatchingEntityLoaderBuilder  BatchingEntityLoaderBuilder { get; internal set; }
+		public BatchingEntityLoaderBuilder BatchingEntityLoaderBuilder { get; internal set; }
 		public BatchingCollectionInitializerBuilder BatchingCollectionInitializationBuilder { get; internal set; }
 	}
 }

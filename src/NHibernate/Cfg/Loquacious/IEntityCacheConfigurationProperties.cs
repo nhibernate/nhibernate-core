@@ -1,6 +1,6 @@
 using System;
-using System.Linq.Expressions;
 using System.Collections;
+using System.Linq.Expressions;
 
 namespace NHibernate.Cfg.Loquacious
 {
@@ -11,10 +11,10 @@ namespace NHibernate.Cfg.Loquacious
 		EntityCacheUsage Strategy { get; set; }
 		string RegionName { get; set; }
 	}
-	
+
 	//Since 5.3
 	[Obsolete("Replaced by direct class usage")]
-	public interface IEntityCacheConfigurationProperties<TEntity> where TEntity: class
+	public interface IEntityCacheConfigurationProperties<TEntity> where TEntity : class
 	{
 		EntityCacheUsage? Strategy { get; set; }
 		string RegionName { get; set; }

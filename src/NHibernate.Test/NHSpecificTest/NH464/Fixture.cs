@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH464
 		/// <summary>
 		/// Mapping files used in the TestCase
 		/// </summary>
-		protected override string[] Mappings => new[] {"Promotion.hbm.xml"};
+		protected override string[] Mappings => new[] { "Promotion.hbm.xml" };
 
 		protected override void OnSetUp()
 		{

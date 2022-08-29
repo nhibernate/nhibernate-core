@@ -64,7 +64,7 @@ namespace NHibernate.Cfg.Loquacious
 		}
 	}
 
-	public class CacheConfiguration 
+	public class CacheConfiguration
 #pragma warning disable 618
 		: ICacheConfiguration
 #pragma warning restore 618
@@ -138,7 +138,7 @@ namespace NHibernate.Cfg.Loquacious
 #pragma warning restore 618
 	}
 
-	public class QueryCacheConfiguration 
+	public class QueryCacheConfiguration
 #pragma warning disable 618
 		: IQueryCacheConfiguration
 #pragma warning restore 618

@@ -105,7 +105,7 @@ namespace NHibernate.Impl
 	{
 		private readonly object collection;
 
-		public ExpressionFilterImpl(IQueryExpression queryExpression, object collection, ISessionImplementor session, ParameterMetadata parameterMetadata) 
+		public ExpressionFilterImpl(IQueryExpression queryExpression, object collection, ISessionImplementor session, ParameterMetadata parameterMetadata)
 			: base(queryExpression, session, parameterMetadata, true)
 		{
 			this.collection = collection;
@@ -203,7 +203,7 @@ namespace NHibernate.Impl
 			Key = key;
 			Type = queryExpression.Type;
 			ParameterDescriptors = queryExpression.ParameterDescriptors;
-			 _cacheableExpression = queryExpression as ICacheableQueryExpression;
+			_cacheableExpression = queryExpression as ICacheableQueryExpression;
 		}
 
 		#region IQueryExpression Members

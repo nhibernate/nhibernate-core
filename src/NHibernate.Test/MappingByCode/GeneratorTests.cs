@@ -17,9 +17,9 @@ namespace NHibernate.Test.MappingByCode
 	public class E { public int Id { get; set; } }
 
 	public class F { public int Id { get; set; } }
-	
+
 	public class G { public int Id { get; set; } }
-	
+
 	public class H { public int Id { get; set; } }
 
 	public class I { public int Id { get; set; } }

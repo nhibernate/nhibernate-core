@@ -49,7 +49,7 @@ namespace NHibernate.Type
 
 		public override System.Type PrimitiveClass
 		{
-			get { return typeof (Decimal); }
+			get { return typeof(Decimal); }
 		}
 
 		public override object DefaultValue

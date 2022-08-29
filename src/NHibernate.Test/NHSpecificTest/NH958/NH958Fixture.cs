@@ -6,8 +6,8 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH958
 {
 	[TestFixture]
-    public class NH958Fixture : BugTestCase
-    {
+	public class NH958Fixture : BugTestCase
+	{
 		[Test]
 		public void MergeWithAny1()
 		{
@@ -61,12 +61,12 @@ namespace NHibernate.Test.NHSpecificTest.NH958
 			person.AddHobby(new Hobby("Hobby_2"));
 
 			using (ISession session = OpenSession())
-            using (ITransaction transaction = session.BeginTransaction())
-            {
-                // the transient hobby "test" is inserted and updated
-                person = session.Merge(person);
-                transaction.Commit();
-            }
+			using (ITransaction transaction = session.BeginTransaction())
+			{
+				// the transient hobby "test" is inserted and updated
+				person = session.Merge(person);
+				transaction.Commit();
+			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
@@ -74,6 +74,6 @@ namespace NHibernate.Test.NHSpecificTest.NH958
 				session.Delete(person);
 				transaction.Commit();
 			}
-        }
-    }
+		}
+	}
 }

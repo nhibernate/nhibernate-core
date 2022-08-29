@@ -69,7 +69,7 @@ namespace NHibernate.Collection.Generic
 			foreach (KeyValuePair<TKey, TValue> e in WrappedMap)
 			{
 				object copy = persister.ElementType.DeepCopy(e.Value, persister.Factory);
-				clonedMap[e.Key] = (TValue)copy;
+				clonedMap[e.Key] = (TValue) copy;
 			}
 			return clonedMap;
 		}
@@ -77,13 +77,13 @@ namespace NHibernate.Collection.Generic
 		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
 			var sn = (IDictionary<TKey, TValue>) snapshot;
-			return GetOrphans((ICollection)sn.Values, (ICollection)WrappedMap.Values, entityName, Session);
+			return GetOrphans((ICollection) sn.Values, (ICollection) WrappedMap.Values, entityName, Session);
 		}
 
 		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
 			IType elementType = persister.ElementType;
-			var xmap = (IDictionary<TKey, TValue>)GetSnapshot();
+			var xmap = (IDictionary<TKey, TValue>) GetSnapshot();
 			if (xmap.Count != WrappedMap.Count)
 			{
 				return false;
@@ -102,7 +102,7 @@ namespace NHibernate.Collection.Generic
 
 		public override bool IsSnapshotEmpty(object snapshot)
 		{
-			return ((IDictionary)snapshot).Count == 0;
+			return ((IDictionary) snapshot).Count == 0;
 		}
 
 		public override bool IsWrapper(object collection)
@@ -112,7 +112,7 @@ namespace NHibernate.Collection.Generic
 
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
-			WrappedMap = (IDictionary<TKey, TValue>)persister.CollectionType.Instantiate(anticipatedSize);
+			WrappedMap = (IDictionary<TKey, TValue>) persister.CollectionType.Instantiate(anticipatedSize);
 		}
 
 		public override void ApplyQueuedOperations()
@@ -144,7 +144,7 @@ namespace NHibernate.Collection.Generic
 
 		protected virtual void AddDuringInitialize(object index, object element)
 		{
-			WrappedMap[(TKey)index] = (TValue)element;
+			WrappedMap[(TKey) index] = (TValue) element;
 		}
 
 		public override IEnumerable Entries(ICollectionPersister persister)
@@ -160,13 +160,13 @@ namespace NHibernate.Collection.Generic
 		/// <param name="owner">The owner object.</param>
 		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
-			object[] array = (object[])disassembled;
+			object[] array = (object[]) disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i += 2)
 			{
-				WrappedMap[(TKey)persister.IndexType.Assemble(array[i], Session, owner)] =
-					(TValue)persister.ElementType.Assemble(array[i + 1], Session, owner);
+				WrappedMap[(TKey) persister.IndexType.Assemble(array[i], Session, owner)] =
+					(TValue) persister.ElementType.Assemble(array[i + 1], Session, owner);
 			}
 		}
 
@@ -185,7 +185,7 @@ namespace NHibernate.Collection.Generic
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			IList deletes = new List<object>();
-			var sn = (IDictionary<TKey, TValue>)GetSnapshot();
+			var sn = (IDictionary<TKey, TValue>) GetSnapshot();
 			foreach (var e in sn)
 			{
 				if (!WrappedMap.ContainsKey(e.Key))
@@ -199,15 +199,15 @@ namespace NHibernate.Collection.Generic
 
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			var sn = (IDictionary)GetSnapshot();
-			var e = (KeyValuePair<TKey, TValue>)entry;
+			var sn = (IDictionary) GetSnapshot();
+			var e = (KeyValuePair<TKey, TValue>) entry;
 			return !sn.Contains(e.Key);
 		}
 
 		public override bool NeedsUpdating(object entry, int i, IType elemType)
 		{
-			var sn = (IDictionary)GetSnapshot();
-			var e = (KeyValuePair<TKey, TValue>)entry;
+			var sn = (IDictionary) GetSnapshot();
+			var e = (KeyValuePair<TKey, TValue>) entry;
 			var snValue = sn[e.Key];
 			var isNew = !sn.Contains(e.Key);
 			return e.Value != null && snValue != null && elemType.IsDirty(snValue, e.Value, Session)
@@ -216,23 +216,23 @@ namespace NHibernate.Collection.Generic
 
 		public override object GetIndex(object entry, int i, ICollectionPersister persister)
 		{
-			return ((KeyValuePair<TKey, TValue>)entry).Key;
+			return ((KeyValuePair<TKey, TValue>) entry).Key;
 		}
 
 		public override object GetElement(object entry)
 		{
-			return ((KeyValuePair<TKey, TValue>)entry).Value;
+			return ((KeyValuePair<TKey, TValue>) entry).Value;
 		}
 
 		public override object GetSnapshotElement(object entry, int i)
 		{
-			var sn = (IDictionary)GetSnapshot();
-			return sn[((KeyValuePair<TKey, TValue>)entry).Key];
+			var sn = (IDictionary) GetSnapshot();
+			return sn[((KeyValuePair<TKey, TValue>) entry).Key];
 		}
 
 		public override bool EntryExists(object entry, int i)
 		{
-			return WrappedMap.ContainsKey(((KeyValuePair<TKey, TValue>)entry).Key);
+			return WrappedMap.ContainsKey(((KeyValuePair<TKey, TValue>) entry).Key);
 		}
 
 		#region IDictionary<TKey,TValue> Members
@@ -416,7 +416,7 @@ namespace NHibernate.Collection.Generic
 
 			if (exists.Value)
 			{
-				TValue x = ((IDictionary<TKey, TValue>)this)[item.Key];
+				TValue x = ((IDictionary<TKey, TValue>) this)[item.Key];
 				TValue y = item.Value;
 				return EqualityComparer<TValue>.Default.Equals(x, y);
 			}
@@ -432,7 +432,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(KeyValuePair<TKey, TValue> item)
 		{
-			if (((ICollection<KeyValuePair<TKey, TValue>>)this).Contains(item))
+			if (((ICollection<KeyValuePair<TKey, TValue>>) this).Contains(item))
 			{
 				Remove(item.Key);
 				return true;

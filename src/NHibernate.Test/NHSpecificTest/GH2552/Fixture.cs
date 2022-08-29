@@ -113,7 +113,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 			Assert.AreEqual(0, statistics.SecondLevelCacheHitCount, "Second level cache hit count");
 		}
 
-		private int DeleteDetailsFromFirstPerson<TPerson>() where TPerson:Person
+		private int DeleteDetailsFromFirstPerson<TPerson>() where TPerson : Person
 		{
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())

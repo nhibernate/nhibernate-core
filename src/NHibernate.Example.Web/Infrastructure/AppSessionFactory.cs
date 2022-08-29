@@ -18,7 +18,7 @@ namespace NHibernate.Example.Web.Infrastructure
 			var mapper = new ModelMapper();
 			mapper.AddMapping<ItemMap>();
 			var domainMapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			
+
 			Configuration = new Configuration();
 			Configuration.DataBaseIntegration(db =>
 				{

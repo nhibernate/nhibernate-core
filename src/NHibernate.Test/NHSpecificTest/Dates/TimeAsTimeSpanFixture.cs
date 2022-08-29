@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"NHSpecificTest.Dates.Mappings.TimeAsTimeSpan.hbm.xml"}; }
+			get { return new[] { "NHSpecificTest.Dates.Mappings.TimeAsTimeSpan.hbm.xml" }; }
 		}
 
 		[Test]
@@ -18,12 +18,12 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			TimeSpan now = DateTime.Parse("23:59:59").TimeOfDay;
 
 			SavingAndRetrievingAction(new AllDates { Sql_TimeAsTimeSpan = now },
-			                          entity =>
-			                          	{
-											Assert.AreEqual(entity.Sql_TimeAsTimeSpan.Hours, now.Hours);
-											Assert.AreEqual(entity.Sql_TimeAsTimeSpan.Minutes, now.Minutes);
-											Assert.AreEqual(entity.Sql_TimeAsTimeSpan.Seconds, now.Seconds);
-			                          	});
+									  entity =>
+										  {
+											  Assert.AreEqual(entity.Sql_TimeAsTimeSpan.Hours, now.Hours);
+											  Assert.AreEqual(entity.Sql_TimeAsTimeSpan.Minutes, now.Minutes);
+											  Assert.AreEqual(entity.Sql_TimeAsTimeSpan.Seconds, now.Seconds);
+										  });
 		}
 	}
 }

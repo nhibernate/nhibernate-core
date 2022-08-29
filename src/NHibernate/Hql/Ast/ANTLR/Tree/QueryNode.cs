@@ -43,7 +43,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get
 			{
-				return ((ISelectExpression)GetSelectClause().GetFirstSelectExpression()).DataType;
+				return ((ISelectExpression) GetSelectClause().GetFirstSelectExpression()).DataType;
 			}
 			set
 			{
@@ -93,16 +93,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return _scalarColumn; }
 		}
 
-		public OrderByClause GetOrderByClause() 
+		public OrderByClause GetOrderByClause()
 		{
-			if (_orderByClause == null) 
+			if (_orderByClause == null)
 			{
 				_orderByClause = LocateOrderByClause();
 
 				// if there is no order by, make one
 				if (_orderByClause == null)
 				{
-					Log.Debug( "getOrderByClause() : Creating a new ORDER BY clause" );
+					Log.Debug("getOrderByClause() : Creating a new ORDER BY clause");
 					_orderByClause = (OrderByClause) Walker.ASTFactory.CreateNode(HqlSqlWalker.ORDER, "ORDER");
 
 					// Find the WHERE; if there is no WHERE, find the FROM...
@@ -123,18 +123,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// get created; thus it depends upon lifecycle.
 		/// </summary>
 		/// <returns>Our select clause, or null.</returns>
-		public SelectClause GetSelectClause() 
+		public SelectClause GetSelectClause()
 		{
 			// Due to the complexity in initializing the SelectClause, do not generate one here.
 			// If it is not found; simply return null...
 			//
 			// Also, do not cache since it gets generated well after we are created.
-			return ( SelectClause ) ASTUtil.FindTypeInChildren( this, HqlSqlWalker.SELECT_CLAUSE );
+			return (SelectClause) ASTUtil.FindTypeInChildren(this, HqlSqlWalker.SELECT_CLAUSE);
 		}
 
 		private OrderByClause LocateOrderByClause()
 		{
-			return (OrderByClause)ASTUtil.FindTypeInChildren(this, HqlSqlWalker.ORDER);
+			return (OrderByClause) ASTUtil.FindTypeInChildren(this, HqlSqlWalker.ORDER);
 		}
 	}
 }

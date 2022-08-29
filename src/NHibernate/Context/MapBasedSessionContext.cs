@@ -51,7 +51,7 @@ namespace NHibernate.Context
 
 		private ConcurrentDictionary<ISessionFactoryImplementor, ISession> GetConcreteMap()
 		{
-			return (ConcurrentDictionary<ISessionFactoryImplementor, ISession>)GetMap();
+			return (ConcurrentDictionary<ISessionFactoryImplementor, ISession>) GetMap();
 		}
 
 		/// <summary>

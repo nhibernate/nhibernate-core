@@ -42,7 +42,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public HbmRestrictedLaziness? Lazy
 		{
-			get { return lazySpecified ? lazy : (HbmRestrictedLaziness?)null; }
+			get { return lazySpecified ? lazy : (HbmRestrictedLaziness?) null; }
 		}
 
 		#region Implementation of IRelationship

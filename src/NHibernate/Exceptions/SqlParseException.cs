@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace NHibernate.Exceptions
 {
 	[Serializable]
-	public class SqlParseException : Exception 
+	public class SqlParseException : Exception
 	{
 		public SqlParseException(string message) : base(message)
 		{

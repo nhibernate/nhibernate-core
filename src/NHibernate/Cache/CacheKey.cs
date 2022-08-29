@@ -32,7 +32,7 @@ namespace NHibernate.Cache
 		/// <param name="entityOrRoleName">The entity or collection-role name. </param>
 		/// <param name="factory">The session factory for which we are caching </param>
 		/// <param name="tenantIdentifier"></param>
-		public CacheKey(object id, IType type, string entityOrRoleName, ISessionFactoryImplementor factory, string tenantIdentifier) 
+		public CacheKey(object id, IType type, string entityOrRoleName, ISessionFactoryImplementor factory, string tenantIdentifier)
 		{
 			key = id;
 			this.type = type;

@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (Doctor)) return false;
+			if (obj.GetType() != typeof(Doctor)) return false;
 			return Equals((Doctor) obj);
 		}
 
@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 
 			if (!hashCode.HasValue)
 				hashCode = doctorNumber.GetHashCode();
-			
+
 			return hashCode.Value;
 		}
 	}

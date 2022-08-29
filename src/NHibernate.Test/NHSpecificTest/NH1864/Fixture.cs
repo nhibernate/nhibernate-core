@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1864
 		[Test]
 		public void Bug()
 		{
-			Assert.DoesNotThrow(() => ExecuteQuery(s=> s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+			Assert.DoesNotThrow(() => ExecuteQuery(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
 		}
 
 		[Test]
@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1864
 			Assert.DoesNotThrow(() => ExecuteQuery(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
 			Assert.DoesNotThrow(() => ExecuteQuery(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
 		}
-		
+
 		private void ExecuteQuery(Action<ISession> sessionModifier)
 		{
 			using (ISession session = OpenSession())
@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1864
 				using (ITransaction tx = session.BeginTransaction())
 				{
 					sessionModifier(session);
-					
+
 					session
 						.CreateQuery(@"select cat from Invoice inv, Category cat where cat.ValidUntil = :now and inv.Foo = :foo")
 						.SetInt32("foo", 42)

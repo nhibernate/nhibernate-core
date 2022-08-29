@@ -24,7 +24,7 @@ namespace NHibernate.SqlTypes
 	[Serializable]
 	public class BinaryBlobSqlType : BinarySqlType
 	{
-		public BinaryBlobSqlType(int length) : base(length) {}
-		public BinaryBlobSqlType() {}
+		public BinaryBlobSqlType(int length) : base(length) { }
+		public BinaryBlobSqlType() { }
 	}
 }

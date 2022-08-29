@@ -17,5 +17,5 @@ namespace NHibernate.Test.MappingByCode.NatureDemo.Naturalness
 		public virtual Address Address { get; set; }
 	}
 
-	public class PettingZoo : Zoo {}
+	public class PettingZoo : Zoo { }
 }

@@ -66,7 +66,9 @@ namespace NHibernate.Cache
 		/// <inheritdoc />
 		public override int Timeout
 		{
-			get { return Timestamper.OneMs * 60000; // ie. 60 seconds
+			get
+			{
+				return Timestamper.OneMs * 60000; // ie. 60 seconds
 			}
 		}
 

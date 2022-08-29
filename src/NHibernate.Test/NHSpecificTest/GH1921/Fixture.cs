@@ -52,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 				if (filtered)
 					session.EnableFilter("NameFilter").SetParameter("name", "Bob");
 				var rowCount = session.CreateQuery("insert into Entity (Name) select e.Name from Entity e")
-				                      .ExecuteUpdate();
+									  .ExecuteUpdate();
 				transaction.Commit();
 
 				Assert.That(rowCount, Is.EqualTo(filtered ? 1 : 2));

@@ -186,57 +186,57 @@ namespace NHibernate.Mapping.ByCode
 			return typeof(object);
 		}
 
-		public void AddAsRootEntity(System.Type type) {}
+		public void AddAsRootEntity(System.Type type) { }
 
-		public void AddAsComponent(System.Type type) {}
+		public void AddAsComponent(System.Type type) { }
 
-		public void AddAsTablePerClassEntity(System.Type type) {}
+		public void AddAsTablePerClassEntity(System.Type type) { }
 
-		public void AddAsTablePerClassHierarchyEntity(System.Type type) {}
+		public void AddAsTablePerClassHierarchyEntity(System.Type type) { }
 
-		public void AddAsTablePerConcreteClassEntity(System.Type type) {}
+		public void AddAsTablePerConcreteClassEntity(System.Type type) { }
 
-		public void AddAsOneToOneRelation(MemberInfo member) {}
+		public void AddAsOneToOneRelation(MemberInfo member) { }
 
-		public void AddAsManyToOneRelation(MemberInfo member) {}
+		public void AddAsManyToOneRelation(MemberInfo member) { }
 
-		public void AddAsManyToManyKeyRelation(MemberInfo member) {}
+		public void AddAsManyToManyKeyRelation(MemberInfo member) { }
 
-		public void AddAsManyToManyItemRelation(MemberInfo member) {}
+		public void AddAsManyToManyItemRelation(MemberInfo member) { }
 
-		public void AddAsOneToManyRelation(MemberInfo member) {}
+		public void AddAsOneToManyRelation(MemberInfo member) { }
 
-		public void AddAsManyToAnyRelation(MemberInfo member) {}
+		public void AddAsManyToAnyRelation(MemberInfo member) { }
 
-		public void AddAsAny(MemberInfo member) {}
+		public void AddAsAny(MemberInfo member) { }
 
-		public void AddAsPoid(MemberInfo member) {}
+		public void AddAsPoid(MemberInfo member) { }
 
-		public void AddAsPartOfComposedId(MemberInfo member) {}
+		public void AddAsPartOfComposedId(MemberInfo member) { }
 
-		public void AddAsVersionProperty(MemberInfo member) {}
+		public void AddAsVersionProperty(MemberInfo member) { }
 
-		public void AddAsNaturalId(MemberInfo member) {}
+		public void AddAsNaturalId(MemberInfo member) { }
 
-		public void AddAsSet(MemberInfo member) {}
+		public void AddAsSet(MemberInfo member) { }
 
-		public void AddAsBag(MemberInfo member) {}
+		public void AddAsBag(MemberInfo member) { }
 
-		public void AddAsIdBag(MemberInfo member) {}
+		public void AddAsIdBag(MemberInfo member) { }
 
-		public void AddAsList(MemberInfo member) {}
+		public void AddAsList(MemberInfo member) { }
 
-		public void AddAsArray(MemberInfo member) {}
+		public void AddAsArray(MemberInfo member) { }
 
-		public void AddAsMap(MemberInfo member) {}
+		public void AddAsMap(MemberInfo member) { }
 
-		public void AddAsProperty(MemberInfo member) {}
+		public void AddAsProperty(MemberInfo member) { }
 
-		public void AddAsPersistentMember(MemberInfo member) {}
+		public void AddAsPersistentMember(MemberInfo member) { }
 
-		public void AddAsPropertySplit(SplitDefinition definition) {}
+		public void AddAsPropertySplit(SplitDefinition definition) { }
 
-		public void AddAsDynamicComponent(MemberInfo member, System.Type componentTemplate) {}
+		public void AddAsDynamicComponent(MemberInfo member, System.Type componentTemplate) { }
 
 		#endregion
 	}

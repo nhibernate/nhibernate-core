@@ -7,7 +7,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 	{
 		public string ShowAsString(IASTNode ast, string header)
 		{
-            return ast.ToStringTree();
+			return ast.ToStringTree();
 		}
 	}
 }

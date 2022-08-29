@@ -22,7 +22,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			if (source is HqlParameter)
 			{
 				// This is an "in" style statement
-				if (IsEmptyList((HqlParameter)source, queryModelVisitor.VisitorParameters))
+				if (IsEmptyList((HqlParameter) source, queryModelVisitor.VisitorParameters))
 				{
 					// if the list is empty the expression will always be false, so generate "1 = 0"
 					tree.SetRoot(tree.TreeBuilder.Equality(tree.TreeBuilder.Constant(1), tree.TreeBuilder.Constant(0)));
@@ -64,7 +64,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			var parameterName = source.NodesPreOrder.Single(n => n is HqlIdent).AstNode.Text;
 			// Multiple constants may be linked to the same parameter, take the first matching parameter
 			var parameterValue = parameters.ConstantToParameterMap.First(p => p.Value.Name == parameterName).Key.Value;
-			return !((IEnumerable)parameterValue).Cast<object>().Any();
+			return !((IEnumerable) parameterValue).Cast<object>().Any();
 		}
 	}
 }

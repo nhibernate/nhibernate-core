@@ -8,9 +8,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 	{
 		private int id;
 		private string description;
-		
-		public MainClass(){}
-		
+
+		public MainClass() { }
+
 		public MainClass(string description)
 		{
 			this.description = description;

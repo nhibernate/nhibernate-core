@@ -16,7 +16,7 @@ namespace NHibernate.Loader.Entity
 		private readonly LockMode lockMode;
 
 		public EntityJoinWalker(IOuterJoinLoadable persister, string[] uniqueKey, int batchSize, LockMode lockMode,
-		                        ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
+								ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(persister, factory, enabledFilters)
 		{
 			this.lockMode = lockMode;

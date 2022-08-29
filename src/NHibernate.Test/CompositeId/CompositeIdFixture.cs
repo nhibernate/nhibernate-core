@@ -19,10 +19,10 @@ namespace NHibernate.Test.CompositeId
 			get
 			{
 				return new string[]
-				       	{
-				       		"CompositeId.Customer.hbm.xml", "CompositeId.Order.hbm.xml", "CompositeId.LineItem.hbm.xml",
-				       		"CompositeId.Product.hbm.xml"
-				       	};
+						   {
+							   "CompositeId.Customer.hbm.xml", "CompositeId.Order.hbm.xml", "CompositeId.LineItem.hbm.xml",
+							   "CompositeId.Product.hbm.xml"
+						   };
 			}
 		}
 
@@ -83,7 +83,7 @@ namespace NHibernate.Test.CompositeId
 				t.Commit();
 			}
 
-			using(s = OpenSession())
+			using (s = OpenSession())
 			{
 				t = s.BeginTransaction();
 				s.CreateQuery(
@@ -91,14 +91,14 @@ namespace NHibernate.Test.CompositeId
 				t.Commit();
 			}
 
-			using(s = OpenSession())
+			using (s = OpenSession())
 			{
 				t = s.BeginTransaction();
 				s.CreateQuery("from Order o left join fetch o.LineItems li left join fetch li.Product p").List();
 				t.Commit();
 			}
 
-			using(s = OpenSession())
+			using (s = OpenSession())
 			{
 				t = s.BeginTransaction();
 				IEnumerable iter = s.CreateQuery("select o.id, li.id from Order o join o.LineItems li").List();
@@ -114,7 +114,7 @@ namespace NHibernate.Test.CompositeId
 				t.Commit();
 			}
 
-			using(s = OpenSession())
+			using (s = OpenSession())
 			{
 				t = s.BeginTransaction();
 				Customer c = s.Get<Customer>("C111");

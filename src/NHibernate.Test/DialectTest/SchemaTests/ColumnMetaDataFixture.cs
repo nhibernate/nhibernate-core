@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
-using NUnit.Framework;
 using NHibernate.Dialect.Schema;
+using NUnit.Framework;
 
 namespace NHibernate.Test.DialectTest.SchemaTests
 {

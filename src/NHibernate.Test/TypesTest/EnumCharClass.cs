@@ -39,7 +39,7 @@ namespace NHibernate.Test.TypesTest
 		}
 	}
 
-	public class EnumCharBar : EnumCharFoo {}
+	public class EnumCharBar : EnumCharFoo { }
 
 	public class EnumCharBaz
 	{

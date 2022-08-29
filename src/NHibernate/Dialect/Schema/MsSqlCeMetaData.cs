@@ -4,11 +4,11 @@ using System.Data.Common;
 
 namespace NHibernate.Dialect.Schema
 {
-	public class MsSqlCeDataBaseSchema: AbstractDataBaseSchema
+	public class MsSqlCeDataBaseSchema : AbstractDataBaseSchema
 	{
 		// Since v5.2
 		[Obsolete("Use overload with dialect argument.")]
-		public MsSqlCeDataBaseSchema(DbConnection connection) : this(connection, Dialect.GetDialect()) {}
+		public MsSqlCeDataBaseSchema(DbConnection connection) : this(connection, Dialect.GetDialect()) { }
 
 		public MsSqlCeDataBaseSchema(DbConnection connection, Dialect dialect) : base(connection, dialect)
 		{
@@ -23,7 +23,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class MsSqlCeTableMetadata: AbstractTableMetadata
+	public class MsSqlCeTableMetadata : AbstractTableMetadata
 	{
 		public MsSqlCeTableMetadata(DataRow rs, IDataBaseSchema meta, bool extras) : base(rs, meta, extras) { }
 
@@ -77,11 +77,11 @@ namespace NHibernate.Dialect.Schema
 			this.SetNumericalPrecision(rs["NUMERIC_PRECISION"]);
 
 			Nullable = Convert.ToString(rs["IS_NULLABLE"]);
-			TypeName = Convert.ToString(rs["DATA_TYPE"]);			
+			TypeName = Convert.ToString(rs["DATA_TYPE"]);
 		}
 	}
 
-	public class MsSqlCeIndexMetadata: AbstractIndexMetadata
+	public class MsSqlCeIndexMetadata : AbstractIndexMetadata
 	{
 		public MsSqlCeIndexMetadata(DataRow rs) : base(rs)
 		{

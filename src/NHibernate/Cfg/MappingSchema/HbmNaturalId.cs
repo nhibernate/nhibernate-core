@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmNaturalId: IPropertiesContainerMapping
+	public partial class HbmNaturalId : IPropertiesContainerMapping
 	{
 		#region Implementation of IPropertiesContainerMapping
 

@@ -37,22 +37,22 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public HbmClass[] RootClasses
 		{
-			get { return Items != null ? Items.OfType<HbmClass>().ToArray():Array.Empty<HbmClass>(); }
+			get { return Items != null ? Items.OfType<HbmClass>().ToArray() : Array.Empty<HbmClass>(); }
 		}
 
 		public HbmSubclass[] SubClasses
 		{
-			get { return Items != null ? Items.OfType<HbmSubclass>().ToArray(): Array.Empty<HbmSubclass>(); }
+			get { return Items != null ? Items.OfType<HbmSubclass>().ToArray() : Array.Empty<HbmSubclass>(); }
 		}
 
 		public HbmJoinedSubclass[] JoinedSubclasses
 		{
-			get { return Items != null ? Items.OfType<HbmJoinedSubclass>().ToArray(): Array.Empty<HbmJoinedSubclass>(); }
+			get { return Items != null ? Items.OfType<HbmJoinedSubclass>().ToArray() : Array.Empty<HbmJoinedSubclass>(); }
 		}
 
 		public HbmUnionSubclass[] UnionSubclasses
 		{
-			get { return Items != null ? Items.OfType<HbmUnionSubclass>().ToArray(): Array.Empty<HbmUnionSubclass>(); }
+			get { return Items != null ? Items.OfType<HbmUnionSubclass>().ToArray() : Array.Empty<HbmUnionSubclass>(); }
 		}
 
 		public HbmQuery[] HqlQueries

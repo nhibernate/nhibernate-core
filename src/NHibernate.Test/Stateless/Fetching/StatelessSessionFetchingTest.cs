@@ -46,7 +46,7 @@ namespace NHibernate.Test.Stateless.Fetching
 			{
 				ss.BeginTransaction();
 				Task taskRef =
-					(Task)ss.CreateQuery("from Task t join fetch t.Resource join fetch t.User").UniqueResult();
+					(Task) ss.CreateQuery("from Task t join fetch t.Resource join fetch t.User").UniqueResult();
 				Assert.That(taskRef, Is.Not.Null);
 				Assert.That(NHibernateUtil.IsInitialized(taskRef), Is.True);
 				Assert.That(NHibernateUtil.IsInitialized(taskRef.User), Is.True);

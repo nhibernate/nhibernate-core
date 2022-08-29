@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3316
 	{
 		public Entity()
 		{
-			Children = new HashSet<ChildComponent>();    
+			Children = new HashSet<ChildComponent>();
 		}
 
 		public virtual Guid Id { get; set; }

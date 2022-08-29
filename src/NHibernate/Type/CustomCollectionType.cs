@@ -94,7 +94,7 @@ namespace NHibernate.Type
 		}
 
 		public override object ReplaceElements(object original, object target, object owner, IDictionary copyCache,
-		                                       ISessionImplementor session)
+											   ISessionImplementor session)
 		{
 			ICollectionPersister cp = session.Factory.GetCollectionPersister(Role);
 			return userType.ReplaceElements(original, target, cp, owner, copyCache, session);

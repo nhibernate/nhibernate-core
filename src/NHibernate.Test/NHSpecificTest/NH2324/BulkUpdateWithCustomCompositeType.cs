@@ -4,9 +4,9 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2324
 {
 	[TestFixture]
-	public class BulkUpdateWithCustomCompositeType: BugTestCase
+	public class BulkUpdateWithCustomCompositeType : BugTestCase
 	{
-		public class Scenario: IDisposable
+		public class Scenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 
@@ -17,9 +17,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2324
 				using (ITransaction t = s.BeginTransaction())
 				{
 					var e = new Entity
-								{
-									Data = new CompositeData {DataA = new DateTime(2010, 1, 1), DataB = new DateTime(2010, 2, 2)}
-								};
+					{
+						Data = new CompositeData { DataA = new DateTime(2010, 1, 1), DataB = new DateTime(2010, 2, 2) }
+					};
 					s.Save(e);
 					t.Commit();
 				}

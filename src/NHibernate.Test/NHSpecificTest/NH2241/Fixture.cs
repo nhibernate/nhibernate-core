@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2241
 			using (var session = OpenSession())
 			using (var tran = session.BeginTransaction())
 			{
-				var country = new Country {CountryCode = "SE", CountryName = "Sweden"};
+				var country = new Country { CountryCode = "SE", CountryName = "Sweden" };
 				session.Save(country);
 				tran.Commit();
 			}
@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2241
 			using (var tx = ss.BeginTransaction())
 			{
 				var user = new User();
-				user.Country = new Country {CountryCode = "SE", CountryName = "Sweden"};
+				user.Country = new Country { CountryCode = "SE", CountryName = "Sweden" };
 
 				ss.Insert(user);
 				tx.Commit();

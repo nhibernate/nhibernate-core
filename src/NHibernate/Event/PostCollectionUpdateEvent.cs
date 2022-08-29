@@ -9,9 +9,10 @@ namespace NHibernate.Event
 	public class PostCollectionUpdateEvent : AbstractCollectionEvent
 	{
 		public PostCollectionUpdateEvent(ICollectionPersister collectionPersister, IPersistentCollection collection,
-		                                 IEventSource source)
+										 IEventSource source)
 			: base(
 				collectionPersister, collection, source, GetLoadedOwnerOrNull(collection, source),
-				GetLoadedOwnerIdOrNull(collection, source)) {}
+				GetLoadedOwnerIdOrNull(collection, source))
+		{ }
 	}
 }

@@ -14,11 +14,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2218
 			{
 				for (int i = 0; i < 4; i++)
 				{
-					session.Save("Entity1", new Entity {Name = "Mapping1 -" + i});
+					session.Save("Entity1", new Entity { Name = "Mapping1 -" + i });
 				}
 				for (int i = 0; i < 3; i++)
 				{
-					session.Save("Entity2", new Entity {Name = "Mapping2 -" + i});
+					session.Save("Entity2", new Entity { Name = "Mapping2 -" + i });
 				}
 
 				session.Flush();

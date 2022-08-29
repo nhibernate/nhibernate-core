@@ -16,7 +16,7 @@ namespace NHibernate.Type
 	{
 		/// <summary></summary>
 		internal TypeType()
-			: base(new StringSqlType()) {}
+			: base(new StringSqlType()) { }
 
 		/// <summary>
 		/// Initialize a new instance of the TypeType class using a 
@@ -24,7 +24,7 @@ namespace NHibernate.Type
 		/// </summary>
 		/// <param name="sqlType">The underlying <see cref="SqlTypes.SqlType"/>.</param>
 		internal TypeType(StringSqlType sqlType)
-			: base(sqlType) {}
+			: base(sqlType) { }
 
 		public override SqlType SqlType
 		{

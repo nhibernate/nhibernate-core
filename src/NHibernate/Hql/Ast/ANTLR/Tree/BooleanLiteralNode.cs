@@ -10,7 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Represents a boolean literal within a query.
 	///</summary>
 	[CLSCompliant(false)]
-	public class BooleanLiteralNode : LiteralNode, IExpectedTypeAwareNode 
+	public class BooleanLiteralNode : LiteralNode, IExpectedTypeAwareNode
 	{
 		public BooleanLiteralNode(IToken token) : base(token)
 		{
@@ -27,21 +27,22 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return (ILiteralType) DataType;
 		}
 
-		private bool GetValue() {
+		private bool GetValue()
+		{
 			return Type == HqlSqlWalker.TRUE;
 		}
 
 		public IType ExpectedType { get; set; }
 
-		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory) 
+		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
 		{
 			try
 			{
-				return new SqlString(TypeAsLiteralType().ObjectToSQLString( GetValue(), sessionFactory.Dialect ));
+				return new SqlString(TypeAsLiteralType().ObjectToSQLString(GetValue(), sessionFactory.Dialect));
 			}
-			catch( Exception t )
+			catch (Exception t)
 			{
-				throw new QueryException( "Unable to render boolean literal value", t );
+				throw new QueryException("Unable to render boolean literal value", t);
 			}
 		}
 	}

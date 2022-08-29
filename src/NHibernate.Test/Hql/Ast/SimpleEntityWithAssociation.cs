@@ -36,7 +36,7 @@ namespace NHibernate.Test.Hql.Ast
 
 		public virtual SimpleAssociatedEntity AddAssociation(string aName)
 		{
-			var result = new SimpleAssociatedEntity {Name = aName, Owner = this};
+			var result = new SimpleAssociatedEntity { Name = aName, Owner = this };
 			AddAssociation(result);
 			return result;
 		}

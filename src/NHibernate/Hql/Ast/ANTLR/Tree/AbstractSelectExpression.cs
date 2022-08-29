@@ -4,7 +4,7 @@ using Antlr.Runtime;
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public abstract class AbstractSelectExpression : HqlSqlWalkerNode, ISelectExpression 
+	public abstract class AbstractSelectExpression : HqlSqlWalkerNode, ISelectExpression
 	{
 		private string _alias;
 		private int _scalarColumnIndex = -1;
@@ -40,10 +40,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return false; }
 		}
 
-		public virtual FromElement FromElement 
+		public virtual FromElement FromElement
 		{
 			get { return null; }
-			set {}
+			set { }
 		}
 
 		public virtual bool IsScalar

@@ -25,7 +25,7 @@ namespace NHibernate.SqlCommand
 		private string comment;
 
 		public SqlSelectBuilder(ISessionFactoryImplementor factory)
-			: base(factory.Dialect, factory) {}
+			: base(factory.Dialect, factory) { }
 
 		public SqlSelectBuilder SetComment(string comment)
 		{
@@ -262,7 +262,7 @@ namespace NHibernate.SqlCommand
 					.Add(groupByClause);
 			}
 
-			if(SqlStringHelper.IsNotEmpty(havingClause))
+			if (SqlStringHelper.IsNotEmpty(havingClause))
 			{
 				sqlBuilder.Add(" HAVING ")
 					.Add(havingClause);
@@ -284,16 +284,16 @@ namespace NHibernate.SqlCommand
 				if (initialCapacity < sqlBuilder.Count)
 				{
 					log.Debug("The initial capacity was set too low at: {0} for the SelectSqlBuilder that needed a capacity of: {1} for the table {2}",
-					          initialCapacity,
-					          sqlBuilder.Count,
-					          fromClause);
+							  initialCapacity,
+							  sqlBuilder.Count,
+							  fromClause);
 				}
 				else if (initialCapacity > 16 && ((float) initialCapacity / sqlBuilder.Count) > 1.2)
 				{
 					log.Debug("The initial capacity was set too high at: {0} for the SelectSqlBuilder that needed a capacity of: {1} for the table {2}",
-					          initialCapacity,
-					          sqlBuilder.Count,
-					          fromClause);
+							  initialCapacity,
+							  sqlBuilder.Count,
+							  fromClause);
 				}
 			}
 

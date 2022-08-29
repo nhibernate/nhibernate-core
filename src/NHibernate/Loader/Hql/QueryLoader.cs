@@ -348,9 +348,9 @@ namespace NHibernate.Loader.Hql
 			Object[] resultRow = GetResultRow(row, rs, session);
 			bool hasTransform = HasSelectNew || resultTransformer != null;
 			return (!hasTransform && resultRow.Length == 1
-				        ? resultRow[0]
-				        : resultRow
-			       );
+						? resultRow[0]
+						: resultRow
+				   );
 		}
 
 		protected override object[] GetResultRow(object[] row, DbDataReader rs, ISessionImplementor session)
@@ -446,7 +446,7 @@ namespace NHibernate.Loader.Hql
 			var rs = GetResultSet(cmd, queryParameters, session, null);
 
 			var resultTransformer = _selectNewTransformer ?? queryParameters.ResultTransformer;
-			IEnumerable result = 
+			IEnumerable result =
 				new EnumerableImpl(rs, cmd, session, queryParameters.IsReadOnly(session), _queryTranslator.ReturnTypes, _queryTranslator.GetColumnNames(), queryParameters.RowSelection, resultTransformer, _queryReturnAliases);
 
 			if (stopWatch != null)

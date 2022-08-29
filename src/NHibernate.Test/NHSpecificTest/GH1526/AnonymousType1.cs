@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1526
 		{
 			return _provider.GetExpressionOfNew();
 		}
-		
+
 		public Expression GetExpressionOfTypeBinary()
 		{
 			return _provider.GetExpressionOfTypeBinary();

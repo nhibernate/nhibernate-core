@@ -14,7 +14,7 @@ namespace NHibernate.Engine
 		private readonly ISet<EntityKey> resultingEntityKeys;
 
 		public SubselectFetch(string alias, ILoadable loadable, QueryParameters queryParameters,
-		                      ISet<EntityKey> resultingEntityKeys)
+							  ISet<EntityKey> resultingEntityKeys)
 		{
 			this.resultingEntityKeys = resultingEntityKeys;
 			this.queryParameters = queryParameters;
@@ -37,8 +37,8 @@ namespace NHibernate.Engine
 		public SqlString ToSubselectString(string ukname)
 		{
 			string[] joinColumns = ukname == null
-			                       	? StringHelper.Qualify(alias, loadable.IdentifierColumnNames)
-			                       	: ((IPropertyMapping) loadable).ToColumns(alias, ukname);
+									   ? StringHelper.Qualify(alias, loadable.IdentifierColumnNames)
+									   : ((IPropertyMapping) loadable).ToColumns(alias, ukname);
 
 			return new SqlString("select ", string.Join(", ", joinColumns), queryString);
 		}

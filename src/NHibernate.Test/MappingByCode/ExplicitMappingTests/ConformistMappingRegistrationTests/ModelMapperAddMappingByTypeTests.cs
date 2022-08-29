@@ -1,6 +1,6 @@
 using System;
-using NUnit.Framework;
 using NHibernate.Mapping.ByCode;
+using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {
@@ -18,14 +18,14 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 		public void WhenRegisterClassMappingThroughTypeThenCheckIConformistHoldersProvider()
 		{
 			var mapper = new ModelMapper();
-			Assert.That(() => mapper.AddMapping(typeof (object)), Throws.TypeOf<ArgumentOutOfRangeException>().And.Message.Contains("IConformistHoldersProvider"));
+			Assert.That(() => mapper.AddMapping(typeof(object)), Throws.TypeOf<ArgumentOutOfRangeException>().And.Message.Contains("IConformistHoldersProvider"));
 		}
 
 		[Test]
 		public void WhenRegisterClassMappingThroughTypeThenCheckParameterLessCtor()
 		{
 			var mapper = new ModelMapper();
-			Assert.That(() => mapper.AddMapping(typeof (WithOutPublicParameterLessCtor)), Throws.TypeOf<MappingException>());
+			Assert.That(() => mapper.AddMapping(typeof(WithOutPublicParameterLessCtor)), Throws.TypeOf<MappingException>());
 		}
 	}
 }

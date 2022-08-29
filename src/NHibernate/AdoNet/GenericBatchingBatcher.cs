@@ -46,7 +46,7 @@ namespace NHibernate.AdoNet
 		public override void AddToBatch(IExpectation expectation)
 		{
 			var batchCommand = CurrentCommand;
-			if (_maxNumberOfParameters.HasValue && 
+			if (_maxNumberOfParameters.HasValue &&
 				_currentBatch.CountOfParameters + batchCommand.Parameters.Count > _maxNumberOfParameters)
 			{
 				ExecuteBatchWithTiming(batchCommand);
@@ -106,9 +106,9 @@ namespace NHibernate.AdoNet
 				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
 				lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
 				_currentBatchCommandsLog.Append("command ")
-				                        .Append(_currentBatch.CountOfCommands)
-				                        .Append(":")
-				                        .AppendLine(lineWithParameters);
+										.Append(_currentBatch.CountOfCommands)
+										.Append(":")
+										.AppendLine(lineWithParameters);
 			}
 			if (Log.IsDebugEnabled())
 			{
@@ -188,7 +188,7 @@ namespace NHibernate.AdoNet
 				{
 					_commandType = _batcher.CurrentCommand.CommandType;
 				}
-				
+
 				_sql.Add(CurrentStatement);
 				_sqlTypes.AddRange(_batcher.CurrentCommandParameterTypes);
 

@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1738
 		public virtual string Name { get; set; }
 		public virtual IList<Child> Children { get; set; } = new List<Child>();
 	}
-	
+
 	class Child
 	{
 		public virtual Guid Id { get; set; }

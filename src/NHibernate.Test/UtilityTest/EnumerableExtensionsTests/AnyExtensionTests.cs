@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using NUnit.Framework;
 using NHibernate.Util;
+using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 {
@@ -22,7 +22,7 @@ namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 			Assert.That((new object[1]).Any(), Is.True);
 		}
 
-		private class MyDisposableList: IEnumerable
+		private class MyDisposableList : IEnumerable
 		{
 			private readonly System.Action enumeratorDisposeCallback;
 
@@ -70,7 +70,7 @@ namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 		public void WhenDisposableListThenCallDispose()
 		{
 			var disposeCalled = false;
-			(new MyDisposableList(()=> disposeCalled = true)).Any();
+			(new MyDisposableList(() => disposeCalled = true)).Any();
 			Assert.That(disposeCalled, Is.True);
 		}
 	}

@@ -12,7 +12,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void ReadWrite()
 		{
-			var basic = new CharClass{Id=1,NormalChar = 'A'};
+			var basic = new CharClass { Id = 1, NormalChar = 'A' };
 
 			using (var s = OpenSession())
 			{
@@ -22,7 +22,7 @@ namespace NHibernate.Test.TypesTest
 
 			using (var s = OpenSession())
 			{
-				CharClass saved= null;
+				CharClass saved = null;
 				Assert.That(() => saved = s.Get<CharClass>(1), Throws.Nothing);
 				Assert.That(saved.NormalChar, Is.EqualTo('A'));
 				Assert.That(saved.NullableChar, Is.Null);

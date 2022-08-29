@@ -30,9 +30,9 @@ namespace NHibernate.Util
 		private int maximumSize;
 
 		public LRUMap()
-			: this(100) {}
+			: this(100) { }
 
-		public LRUMap(int capacity):base(capacity)
+		public LRUMap(int capacity) : base(capacity)
 		{
 			maximumSize = capacity;
 		}

@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class CollectionIdMapper: ICollectionIdMapper
+	public class CollectionIdMapper : ICollectionIdMapper
 	{
 		private readonly HbmCollectionId hbmId;
 		private const string DefaultColumnName = "collection_key";
@@ -31,7 +31,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				return;
 			}
-			if(!generator.SupportedAsCollectionElementId)
+			if (!generator.SupportedAsCollectionElementId)
 			{
 				throw new NotSupportedException("The generator '" + generator.Class + "' cannot be used as collection element id.");
 			}
@@ -72,7 +72,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 					{
 						var pvalue = pi.GetValue(generatorParameters, null);
 						return
-							new HbmParam {name = pi.Name, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
+							new HbmParam { name = pi.Name, Text = new[] { ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString() } };
 					});
 			}
 			else

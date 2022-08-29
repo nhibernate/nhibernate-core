@@ -180,16 +180,16 @@ namespace NHibernate.Impl
 			for (int i = 0; i < loaders.Count; i++)
 			{
 				CriteriaLoader loader = loaders[i];
-				var resultList = loader.GetResultList((IList)results[i], parameters[i].ResultTransformer);
+				var resultList = loader.GetResultList((IList) results[i], parameters[i].ResultTransformer);
 				var criteriaIndex = loaderCriteriaMap[i];
-				ArrayHelper.AddAll((IList)resultCollections[criteriaIndex], resultList);
+				ArrayHelper.AddAll((IList) resultCollections[criteriaIndex], resultList);
 			}
 
 			if (resultTransformer != null)
 			{
 				for (int i = 0; i < results.Count; i++)
 				{
-					resultCollections[i] = resultTransformer.TransformList((IList)resultCollections[i]);
+					resultCollections[i] = resultTransformer.TransformList((IList) resultCollections[i]);
 				}
 			}
 
@@ -257,8 +257,8 @@ namespace NHibernate.Impl
 
 							object o =
 								loader.GetRowFromResultSet(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
-								                           null, hydratedObjects[i], keys, true, null, null,
-								                           (persister, data) => cacheBatcher.AddToBatch(persister, data));
+														   null, hydratedObjects[i], keys, true, null, null,
+														   (persister, data) => cacheBatcher.AddToBatch(persister, data));
 							if (createSubselects[i])
 							{
 								subselectResultKeys[i].Add(keys);

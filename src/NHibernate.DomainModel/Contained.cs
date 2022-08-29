@@ -13,7 +13,7 @@ namespace NHibernate.DomainModel
 		private IList<Container> _bag = new List<Container>();
 		private IList<Container> _lazyBag = new List<Container>();
 
-		# region object overrides
+		#region object overrides
 
 		public override bool Equals(object obj)
 		{

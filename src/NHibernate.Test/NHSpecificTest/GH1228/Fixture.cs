@@ -91,10 +91,14 @@ namespace NHibernate.Test.NHSpecificTest.GH1228
 		}
 
 		[Test]
-		public void Test3() {
-			using (ISession s = OpenSession()) {
-				using (ITransaction t = s.BeginTransaction()) {
-					try {
+		public void Test3()
+		{
+			using (ISession s = OpenSession())
+			{
+				using (ITransaction t = s.BeginTransaction())
+				{
+					try
+					{
 						{
 							// The only assertion here is that the generated SQL is valid and can be executed.
 							// Right now, the generated SQL is missing the JOIN inside the subselect (EXISTS) to Folder.
@@ -120,7 +124,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1228
 							queryThatCreatesWrongSQL.List();
 						}
 					}
-					finally {
+					finally
+					{
 						s.Delete("from Sheet");
 						s.Delete("from Folder");
 						s.Delete("from Shelf");

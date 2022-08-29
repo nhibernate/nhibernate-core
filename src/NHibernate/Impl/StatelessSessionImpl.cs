@@ -260,7 +260,7 @@ namespace NHibernate.Impl
 		[Obsolete("Use override with persister parameter")]
 		public override object Instantiate(string clazz, object id)
 		{
-		  return Instantiate(Factory.GetEntityPersister(clazz), id);
+			return Instantiate(Factory.GetEntityPersister(clazz), id);
 		}
 
 		public override object Instantiate(IEntityPersister persister, object id)

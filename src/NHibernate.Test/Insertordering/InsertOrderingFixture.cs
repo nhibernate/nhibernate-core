@@ -23,7 +23,7 @@ namespace NHibernate.Test.Insertordering
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"Insertordering.Mapping.hbm.xml"}; }
+			get { return new[] { "Insertordering.Mapping.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly

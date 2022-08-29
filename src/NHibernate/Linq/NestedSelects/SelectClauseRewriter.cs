@@ -14,7 +14,7 @@ namespace NHibernate.Linq.NestedSelects
 		readonly Expression parameter;
 		readonly int tuple;
 
-		public SelectClauseRewriter(Expression parameter, ICollection<ExpressionHolder> expressions, Expression expression, Dictionary<Expression, Expression> dictionary) 
+		public SelectClauseRewriter(Expression parameter, ICollection<ExpressionHolder> expressions, Expression expression, Dictionary<Expression, Expression> dictionary)
 			: this(parameter, expressions, expression, 0, dictionary)
 		{
 		}

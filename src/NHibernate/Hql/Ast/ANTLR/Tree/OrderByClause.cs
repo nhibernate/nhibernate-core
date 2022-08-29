@@ -9,13 +9,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class OrderByClause : HqlSqlWalkerNode 
+	public class OrderByClause : HqlSqlWalkerNode
 	{
 		public OrderByClause(IToken token) : base(token)
 		{
 		}
 
-		public void AddOrderFragment(string orderByFragment) 
+		public void AddOrderFragment(string orderByFragment)
 		{
 			AddChild(ASTFactory.CreateNode(HqlSqlWalker.SQL_TOKEN, orderByFragment));
 		}

@@ -33,18 +33,18 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			HbmColumn hbm = mapping.Columns.SingleOrDefault();
 			hbm = hbm
-			      ??
-			      new HbmColumn
-			      {
-			      	name = mapping.column1,
-			      	notnull = mapping.notnull,
-			      	unique = mapping.unique,
-			      	uniqueSpecified = mapping.unique,
-			      };
+				  ??
+				  new HbmColumn
+				  {
+					  name = mapping.column1,
+					  notnull = mapping.notnull,
+					  unique = mapping.unique,
+					  uniqueSpecified = mapping.unique,
+				  };
 			columnMapper(new ColumnMapper(hbm, DefaultColumnName(ownerEntityType)));
 			if (ColumnTagIsRequired(hbm))
 			{
-				mapping.column = new[] {hbm};
+				mapping.column = new[] { hbm };
 				ResetColumnPlainValues();
 			}
 			else
@@ -137,7 +137,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private bool ColumnTagIsRequired(HbmColumn hbm)
 		{
 			return hbm.uniquekey != null || hbm.sqltype != null || hbm.index != null || hbm.@default != null || hbm.check != null || hbm.length != null || hbm.precision != null ||
-			       hbm.scale != null;
+				   hbm.scale != null;
 		}
 
 		private void ResetColumnPlainValues()

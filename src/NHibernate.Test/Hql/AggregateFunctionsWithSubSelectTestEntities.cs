@@ -8,7 +8,7 @@ namespace NHibernate.Test.Hql
 
 		public virtual string Name { get; set; }
 
-		public virtual IDictionary<int, string > Localized { get; set; } = new Dictionary<int, string>();
+		public virtual IDictionary<int, string> Localized { get; set; } = new Dictionary<int, string>();
 	}
 
 	public class Document

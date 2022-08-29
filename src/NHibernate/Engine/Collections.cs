@@ -126,9 +126,9 @@ namespace NHibernate.Engine
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Collection found: {0}, was: {1}{2}",
-				          MessageHelper.CollectionInfoString(persister, collection, ce.CurrentKey, session),
-				          MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, session),
-				          (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
+						  MessageHelper.CollectionInfoString(persister, collection, ce.CurrentKey, session),
+						  MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, session),
+						  (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
 			}
 
 			PrepareCollectionForUpdate(collection, ce, factory);
@@ -155,7 +155,7 @@ namespace NHibernate.Engine
 				if (ownerChanged)
 				{
 					// do a check
-					bool orphanDeleteAndRoleChanged = loadedPersister != null && 
+					bool orphanDeleteAndRoleChanged = loadedPersister != null &&
 						currentPersister != null && loadedPersister.HasOrphanDelete;
 
 					if (orphanDeleteAndRoleChanged)

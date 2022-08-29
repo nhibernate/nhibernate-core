@@ -58,7 +58,7 @@ namespace NHibernate.Criterion
 		}
 
 		public override IProjection[] GetProjections()
-		{		
+		{
 			return null;
 		}
 
@@ -75,11 +75,11 @@ namespace NHibernate.Criterion
 			SqlString lhSqlString = _lhs.ToSqlString(criteria, criteriaQuery);
 			SqlString rhSqlString = _rhs.ToSqlString(criteria, criteriaQuery);
 
-			sqlBuilder.Add(new SqlString[] {lhSqlString, rhSqlString},
-			               "(",
-			               Op,
-			               ")",
-			               false // not wrapping because the prefix and postfix params already take care of that	
+			sqlBuilder.Add(new SqlString[] { lhSqlString, rhSqlString },
+						   "(",
+						   Op,
+						   ")",
+						   false // not wrapping because the prefix and postfix params already take care of that	
 				);
 
 			return sqlBuilder.ToSqlString();

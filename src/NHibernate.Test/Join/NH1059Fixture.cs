@@ -15,7 +15,7 @@ namespace NHibernate.Test.Join
 		{
 			get
 			{
-				return new string[] { 
+				return new string[] {
 					"Join.Worker.hbm.xml",
 				};
 			}

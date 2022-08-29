@@ -27,21 +27,21 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void OneToMany(Action<IOneToManyMapper> mapping)
 		{
-			var hbm = new HbmOneToMany {@class = collectionElementType.GetShortClassName(mapDoc)};
+			var hbm = new HbmOneToMany { @class = collectionElementType.GetShortClassName(mapDoc) };
 			mapping(new OneToManyMapper(collectionElementType, hbm, mapDoc));
 			elementRelationshipAssing(hbm);
 		}
 
 		public void ManyToMany(Action<IManyToManyMapper> mapping)
 		{
-			var hbm = new HbmManyToMany {@class = collectionElementType.GetShortClassName(mapDoc)};
+			var hbm = new HbmManyToMany { @class = collectionElementType.GetShortClassName(mapDoc) };
 			mapping(new ManyToManyMapper(collectionElementType, hbm, mapDoc));
 			elementRelationshipAssing(hbm);
 		}
 
 		public void Component(Action<IComponentElementMapper> mapping)
 		{
-			var hbm = new HbmCompositeElement {@class = collectionElementType.GetShortClassName(mapDoc)};
+			var hbm = new HbmCompositeElement { @class = collectionElementType.GetShortClassName(mapDoc) };
 			mapping(new ComponentElementMapper(collectionElementType, mapDoc, hbm));
 			elementRelationshipAssing(hbm);
 		}

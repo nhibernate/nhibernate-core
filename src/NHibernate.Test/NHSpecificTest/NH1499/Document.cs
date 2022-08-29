@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1499
 			get { return id; }
 			set { id = value; }
 		}
-		
+
 		public virtual string Title
 		{
 			get { return title; }

@@ -367,7 +367,7 @@ namespace NHibernate.Test.Logging
 		public void NewLoggerFactoryTimingsForNoLogging(int iteration)
 		{
 			ResetCounts();
-			NHibernateLogger.SetLoggersFactory((INHibernateLoggerFactory)null);
+			NHibernateLogger.SetLoggersFactory((INHibernateLoggerFactory) null);
 			INHibernateLogger logger2 = NHibernateLogger.For(this.GetType());
 
 			var stopwatch = Stopwatch.StartNew();

@@ -14,7 +14,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly HbmOneToOne _oneToOne;
 
 		public OneToOneMapper(MemberInfo member, HbmOneToOne oneToOne)
-			: this(member, member == null ? (IAccessorPropertyMapper)new NoMemberPropertyMapper() : new AccessorPropertyMapper(member.DeclaringType, member.Name, x => oneToOne.access = x), oneToOne) { }
+			: this(member, member == null ? (IAccessorPropertyMapper) new NoMemberPropertyMapper() : new AccessorPropertyMapper(member.DeclaringType, member.Name, x => oneToOne.access = x), oneToOne) { }
 
 		public OneToOneMapper(MemberInfo member, IAccessorPropertyMapper accessorMapper, HbmOneToOne oneToOne)
 		{
@@ -106,7 +106,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
 			if (formulaLines.Length > 1)
 			{
-				_oneToOne.formula = new[] {new HbmFormula {Text = formulaLines}};
+				_oneToOne.formula = new[] { new HbmFormula { Text = formulaLines } };
 				_oneToOne.formula1 = null;
 			}
 			else
@@ -125,7 +125,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			_oneToOne.formula =
 				formulas
 					.ToArray(
-						f => new HbmFormula {Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None)});
+						f => new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) });
 		}
 
 		public void ForeignKey(string foreignKeyName)
@@ -144,7 +144,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 	public class OneToOneMapper<T> : OneToOneMapper, IOneToOneMapper<T>
 	{
-		public OneToOneMapper(MemberInfo member, HbmOneToOne oneToOne) 
+		public OneToOneMapper(MemberInfo member, HbmOneToOne oneToOne)
 			: base(member, oneToOne)
 		{
 		}

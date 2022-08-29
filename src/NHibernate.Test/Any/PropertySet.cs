@@ -8,7 +8,7 @@ namespace NHibernate.Test.Any
 		private long id;
 		private string name;
 		private IPropertyValue someSpecificProperty;
-		public PropertySet() {}
+		public PropertySet() { }
 
 		public PropertySet(string name)
 		{

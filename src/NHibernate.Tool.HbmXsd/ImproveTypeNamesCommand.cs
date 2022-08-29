@@ -47,7 +47,7 @@ namespace NHibernate.Tool.HbmXsd
 		private static void AddRootElementName(CodeTypeMember type)
 		{
 			foreach (CodeAttributeDeclaration attribute in type.CustomAttributes)
-				if (attribute.Name == typeof (XmlRootAttribute).FullName)
+				if (attribute.Name == typeof(XmlRootAttribute).FullName)
 				{
 					CodePrimitiveExpression value = new CodePrimitiveExpression(type.Name);
 					CodeAttributeArgument argument = new CodeAttributeArgument("", value);
@@ -74,7 +74,7 @@ namespace NHibernate.Tool.HbmXsd
 		private static string GetRootElementName(CodeTypeMember type)
 		{
 			foreach (CodeAttributeDeclaration attribute in type.CustomAttributes)
-				if (attribute.Name == typeof (XmlRootAttribute).FullName)
+				if (attribute.Name == typeof(XmlRootAttribute).FullName)
 					foreach (CodeAttributeArgument argument in attribute.Arguments)
 						if (argument.Name == "")
 							return ((CodePrimitiveExpression) argument.Value).Value.ToString();
@@ -98,15 +98,15 @@ namespace NHibernate.Tool.HbmXsd
 				UpdateTypeReference(field.Type);
 
 			foreach (CodeAttributeDeclaration attribute in field.CustomAttributes)
-				if (attribute.Name == typeof (XmlElementAttribute).FullName)
+				if (attribute.Name == typeof(XmlElementAttribute).FullName)
 				{
 					if (attribute.Arguments.Count == 2)
 						UpdateTypeReference(((CodeTypeOfExpression) attribute.Arguments[1].Value).Type);
 				}
-				else if (attribute.Name == typeof (DefaultValueAttribute).FullName)
+				else if (attribute.Name == typeof(DefaultValueAttribute).FullName)
 				{
 					CodeFieldReferenceExpression reference = attribute.Arguments[0].Value
-					                                         as CodeFieldReferenceExpression;
+															 as CodeFieldReferenceExpression;
 
 					if (reference != null)
 						UpdateTypeReference(((CodeTypeReferenceExpression) reference.TargetObject).Type);

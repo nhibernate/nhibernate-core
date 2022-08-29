@@ -93,9 +93,9 @@ namespace NHibernate.AdoNet
 
 			if (disposing && rs != null)
 			{
-					rs.Dispose();
+				rs.Dispose();
 				rs = null;
-				}
+			}
 
 			disposed = true;
 		}

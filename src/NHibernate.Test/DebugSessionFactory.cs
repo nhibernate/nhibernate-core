@@ -47,7 +47,7 @@ namespace NHibernate.Test
 				(_debugConnectionProvider = ActualFactory.ConnectionProvider as DebugConnectionProvider);
 		public ISessionFactoryImplementor ActualFactory { get; }
 
-		public EventListeners EventListeners => ((SessionFactoryImpl)ActualFactory).EventListeners;
+		public EventListeners EventListeners => ((SessionFactoryImpl) ActualFactory).EventListeners;
 
 		[NonSerialized]
 		private readonly ConcurrentBag<ISessionImplementor> _openedSessions = new ConcurrentBag<ISessionImplementor>();
@@ -55,7 +55,7 @@ namespace NHibernate.Test
 
 		public DebugSessionFactory(ISessionFactory actualFactory)
 		{
-			ActualFactory = (ISessionFactoryImplementor)actualFactory;
+			ActualFactory = (ISessionFactoryImplementor) actualFactory;
 		}
 
 		#region Session tracking
@@ -402,13 +402,13 @@ namespace NHibernate.Test
 		public static ISessionCreationOptions GetCreationOptions<T>(ISessionBuilder<T> sessionBuilder) where T : ISessionBuilder<T>
 		{
 			return (sessionBuilder as SessionBuilder)?.CreationOptions ??
-				(ISessionCreationOptions)sessionBuilder;
+				(ISessionCreationOptions) sessionBuilder;
 		}
 
 		public static ISessionCreationOptions GetCreationOptions(IStatelessSessionBuilder sessionBuilder)
 		{
 			return (sessionBuilder as StatelessSessionBuilder)?.CreationOptions ??
-				(ISessionCreationOptions)sessionBuilder;
+				(ISessionCreationOptions) sessionBuilder;
 		}
 
 		internal class SessionBuilder : ISessionBuilder,
@@ -418,7 +418,7 @@ namespace NHibernate.Test
 			private readonly ISessionBuilder _actualBuilder;
 			private readonly DebugSessionFactory _debugFactory;
 
-			internal ISessionCreationOptions CreationOptions => (ISessionCreationOptions)_actualBuilder;
+			internal ISessionCreationOptions CreationOptions => (ISessionCreationOptions) _actualBuilder;
 
 			public SessionBuilder(ISessionBuilder actualBuilder, DebugSessionFactory debugFactory)
 			{
@@ -493,7 +493,7 @@ namespace NHibernate.Test
 			private readonly IStatelessSessionBuilder _actualBuilder;
 			private readonly DebugSessionFactory _debugFactory;
 
-			internal ISessionCreationOptions CreationOptions => (ISessionCreationOptions)_actualBuilder;
+			internal ISessionCreationOptions CreationOptions => (ISessionCreationOptions) _actualBuilder;
 
 			public StatelessSessionBuilder(IStatelessSessionBuilder actualBuilder, DebugSessionFactory debugFactory)
 			{

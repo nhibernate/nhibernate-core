@@ -24,9 +24,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3480
 
 		public override bool Equals(object obj)
 		{
-			if(obj is Entity)
+			if (obj is Entity)
 			{
-				var otherEntity = (Entity)obj;
+				var otherEntity = (Entity) obj;
 				return otherEntity.Id.Equals(this.Id);
 			}
 			return false;
@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3480
 			{
 				if (obj is Key)
 				{
-					var otherEntity = (Key)obj;
+					var otherEntity = (Key) obj;
 					return otherEntity.Id.Equals(this.Id);
 				}
 				return false;

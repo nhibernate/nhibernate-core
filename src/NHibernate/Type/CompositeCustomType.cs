@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
-using System.Collections.Generic;
 using NHibernate.Util;
 
 namespace NHibernate.Type
@@ -165,7 +165,7 @@ namespace NHibernate.Type
 
 		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			return userType.NullSafeGet(rs, new string[] {name}, session, owner);
+			return userType.NullSafeGet(rs, new string[] { name }, session, owner);
 		}
 
 		public override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)

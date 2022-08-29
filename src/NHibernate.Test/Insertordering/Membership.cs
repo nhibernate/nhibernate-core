@@ -4,9 +4,9 @@ namespace NHibernate.Test.Insertordering
 {
 	public class Membership
 	{
-		protected Membership() {}
+		protected Membership() { }
 
-		public Membership(User user, Group @group) : this(user, group, DateTime.Now) {}
+		public Membership(User user, Group @group) : this(user, group, DateTime.Now) { }
 
 		public Membership(User user, Group @group, DateTime activationDate)
 		{

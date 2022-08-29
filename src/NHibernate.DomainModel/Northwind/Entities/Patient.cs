@@ -71,14 +71,14 @@ namespace NHibernate.DomainModel.Northwind.Entities
 		public virtual string LastName { get; set; }
 	}
 
-    public class PatientAddress
-    {
-        public virtual string AddressLine1 { get; set; }
-        public virtual string AddressLine2 { get; set; }
-        public virtual string City { get; set; }
-        public virtual State State { get; set; }
-        public virtual string ZipCode { get; set; }
-    }
+	public class PatientAddress
+	{
+		public virtual string AddressLine1 { get; set; }
+		public virtual string AddressLine2 { get; set; }
+		public virtual string City { get; set; }
+		public virtual State State { get; set; }
+		public virtual string ZipCode { get; set; }
+	}
 	public class State
 	{
 		public virtual long Id { get; set; }

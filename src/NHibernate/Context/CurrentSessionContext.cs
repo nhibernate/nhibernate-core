@@ -71,18 +71,18 @@ namespace NHibernate.Context
 			{
 				throw new HibernateException("Session factory does not implement ISessionFactoryImplementor.");
 			}
-			
+
 			if (factoryImpl.CurrentSessionContext == null)
 			{
 				throw new HibernateException("No current session context configured.");
 			}
-			
+
 			CurrentSessionContext currentSessionContext = factoryImpl.CurrentSessionContext as CurrentSessionContext;
 			if (currentSessionContext == null)
 			{
 				throw new HibernateException("Current session context does not extend class CurrentSessionContext.");
 			}
-			
+
 			return currentSessionContext;
 		}
 	}

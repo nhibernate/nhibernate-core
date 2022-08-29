@@ -10,7 +10,7 @@ namespace NHibernate.Test.ReadOnly
 			get { return courseCode; }
 			set { courseCode = value; }
 		}
-		
+
 		public virtual string Description
 		{
 			get { return description; }

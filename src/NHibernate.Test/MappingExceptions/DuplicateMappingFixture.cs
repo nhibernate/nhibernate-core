@@ -47,7 +47,7 @@ namespace NHibernate.Test.MappingExceptions
 					me.Message);
 				Assert.IsTrue(me.InnerException.GetType() == typeof(DuplicateMappingException));
 				Assert.AreEqual("Duplicate collection role mapping NHibernate.Test.MappingExceptions.A.Children",
-				                me.InnerException.Message);
+								me.InnerException.Message);
 			}
 		}
 	}

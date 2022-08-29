@@ -21,7 +21,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly MemberInfo member;
 
 		public AnyMapper(MemberInfo member, System.Type foreignIdType, HbmAny any, HbmMapping mapDoc)
-			: this(member, foreignIdType, member == null ? (IAccessorPropertyMapper)new NoMemberPropertyMapper() : new AccessorPropertyMapper(member.DeclaringType, member.Name, x => any.access = x), any, mapDoc) { }
+			: this(member, foreignIdType, member == null ? (IAccessorPropertyMapper) new NoMemberPropertyMapper() : new AccessorPropertyMapper(member.DeclaringType, member.Name, x => any.access = x), any, mapDoc) { }
 
 		public AnyMapper(MemberInfo member, System.Type foreignIdType, IAccessorPropertyMapper accessorMapper, HbmAny any, HbmMapping mapDoc)
 		{
@@ -85,7 +85,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void MetaType<TMetaType>()
 		{
-			MetaType(typeof (TMetaType));
+			MetaType(typeof(TMetaType));
 		}
 
 		public void MetaType(System.Type metaType)
@@ -109,7 +109,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void IdType<TIdType>()
 		{
-			IdType(typeof (TIdType));
+			IdType(typeof(TIdType));
 		}
 
 		public void IdType(System.Type idType)
@@ -160,7 +160,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 						metavalueKey, existingClassMetavalue, newClassMetavalue));
 			}
 			values[metavalueKey] = newClassMetavalue;
-			any.metavalue = values.ToArray(vd => new HbmMetaValue {value = vd.Key, @class = vd.Value});
+			any.metavalue = values.ToArray(vd => new HbmMetaValue { value = vd.Key, @class = vd.Value });
 		}
 
 		public void Cascade(Cascade cascadeStyle)

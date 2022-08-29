@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using NUnit.Framework;
 using NHibernate.Criterion;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2546
 {
@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2546
 				session.Flush();
 			}
 		}
-		
+
 		protected override void OnTearDown()
 		{
 			using (ISession session = Sfi.OpenSession())
@@ -40,13 +40,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2546
 				ICriteria criteria = session
 					.CreateCriteria<Student>()
 					.Add(Restrictions.Like("StringTypeWithLengthDefined", "Julian%"));
-				
+
 				IList<Student> list = criteria.List<Student>();
-				
+
 				Assert.That(list.Count, Is.EqualTo(1));
 			}
 		}
-		
+
 		[Test]
 		public void LikeExpressionExceedsDefinedTypeSize()
 		{
@@ -56,9 +56,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2546
 				ICriteria criteria = session
 					.CreateCriteria<Student>()
 					.Add(Restrictions.Like("StringTypeWithLengthDefined", "[a-z][a-z][a-z]ian%", MatchMode.Exact, null));
-				
+
 				IList<Student> list = criteria.List<Student>();
-				
+
 				Assert.That(list.Count, Is.EqualTo(1));
 			}
 		}

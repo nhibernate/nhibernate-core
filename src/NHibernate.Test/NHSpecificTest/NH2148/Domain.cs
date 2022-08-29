@@ -1,6 +1,6 @@
 namespace NHibernate.Test.NHSpecificTest.NH2148
 {
-	public class Book: IBook
+	public class Book : IBook
 	{
 		public virtual int Id { get; set; }
 		public virtual string ALotOfText { get; set; }

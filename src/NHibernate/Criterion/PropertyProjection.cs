@@ -47,7 +47,7 @@ namespace NHibernate.Criterion
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new IType[] {criteriaQuery.GetType(criteria, propertyName)};
+			return new IType[] { criteriaQuery.GetType(criteria, propertyName) };
 		}
 
 		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)

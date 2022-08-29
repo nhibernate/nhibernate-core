@@ -27,7 +27,7 @@ namespace NHibernate.Linq
 				return newArrayExpression.Expressions.SelectMany(ExtractKeyExpressions);
 			if (expr is MemberInitExpression memberInitExpression)
 				return memberInitExpression.NewExpression.Arguments.SelectMany(ExtractKeyExpressions)
-				                           .Union(memberInitExpression.Bindings.SelectMany(ExtractKeyExpressions));
+										   .Union(memberInitExpression.Bindings.SelectMany(ExtractKeyExpressions));
 			return new[] { expr };
 		}
 

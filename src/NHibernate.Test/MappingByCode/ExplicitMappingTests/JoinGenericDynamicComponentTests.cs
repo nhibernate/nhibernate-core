@@ -33,18 +33,18 @@ namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 				// basic table related properties
 				ManyToOne(x => x.Relation);
 				Component(p => p.Attributes,
-				          new
-				          {
-					          IsVisible = false,
-					          Hash = default(Guid),
-					          Reference = default(MyOther)
-				          },
-				          m =>
-				          {
-					          m.Property(p => p.IsVisible);
-					          m.Property(p => p.Hash);
-					          m.ManyToOne(p => p.Reference);
-				          });
+						  new
+						  {
+							  IsVisible = false,
+							  Hash = default(Guid),
+							  Reference = default(MyOther)
+						  },
+						  m =>
+						  {
+							  m.Property(p => p.IsVisible);
+							  m.Property(p => p.Hash);
+							  m.ManyToOne(p => p.Reference);
+						  });
 				Property(x => x.Code);
 
 				// joined table stuff
@@ -52,18 +52,18 @@ namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 				{
 					x.Property(p => p.JoinedName);
 					x.Component(p => p.JoinedAttributes,
-					            new
-					            {
-						            OtherReference = default(MyOther),
-						            Description = string.Empty,
-						            Age = 0,
-					            },
-					            m =>
-					            {
-						            m.ManyToOne(p => p.OtherReference);
-						            m.Property(p => p.Description);
-						            m.Property(p => p.Age);
-					            });
+								new
+								{
+									OtherReference = default(MyOther),
+									Description = string.Empty,
+									Age = 0,
+								},
+								m =>
+								{
+									m.ManyToOne(p => p.OtherReference);
+									m.Property(p => p.Description);
+									m.Property(p => p.Age);
+								});
 					x.ManyToOne(p => p.JoinedRelation);
 				});
 			}

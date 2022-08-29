@@ -10,7 +10,7 @@ namespace NHibernate
 	/// <summary>
 	/// Reflection based log4net logger factory.
 	/// </summary>
-	public class Log4NetLoggerFactory: ILoggerFactory
+	public class Log4NetLoggerFactory : ILoggerFactory
 #pragma warning restore 618
 	{
 		internal static readonly Assembly Log4NetAssembly;
@@ -82,7 +82,7 @@ namespace NHibernate
 
 		private static Func<Assembly, string, object> GetGetLoggerByNameMethodCall()
 		{
-			var method = LogManagerType.GetMethod("GetLogger", new[] {typeof(Assembly), typeof(string)});
+			var method = LogManagerType.GetMethod("GetLogger", new[] { typeof(Assembly), typeof(string) });
 			if (method == null)
 				throw new InvalidOperationException("Unable to find LogManager.GetLogger(Assembly, string)");
 			ParameterExpression nameParam = Expression.Parameter(typeof(string), "name");

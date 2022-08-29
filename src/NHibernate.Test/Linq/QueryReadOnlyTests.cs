@@ -11,8 +11,8 @@ namespace NHibernate.Test.Linq
 		public void CanSetReadOnlyOnLinqQueries()
 		{
 			var result = (from e in db.Customers
-			              where e.CompanyName == "Bon app'"
-			              select e).WithOptions(o => o.SetReadOnly(true)).ToList();
+						  where e.CompanyName == "Bon app'"
+						  select e).WithOptions(o => o.SetReadOnly(true)).ToList();
 
 			Assert.That(result.All(x => session.IsReadOnly(x)), Is.True);
 		}
@@ -21,7 +21,7 @@ namespace NHibernate.Test.Linq
 		public void CanSetReadOnlyOnLinqPagingQuery()
 		{
 			var result = (from e in db.Customers
-			              select e).Skip(1).Take(1).WithOptions(o => o.SetReadOnly(true)).ToList();
+						  select e).Skip(1).Take(1).WithOptions(o => o.SetReadOnly(true)).ToList();
 
 			Assert.That(result.All(x => session.IsReadOnly(x)), Is.True);
 		}
@@ -30,8 +30,8 @@ namespace NHibernate.Test.Linq
 		public void CanSetReadOnlyBeforeSkipOnLinqOrderedPageQuery()
 		{
 			var result = (from e in db.Customers
-			              orderby e.CompanyName
-			              select e).WithOptions(o => o.SetReadOnly(true)).Skip(5).Take(5).ToList();
+						  orderby e.CompanyName
+						  select e).WithOptions(o => o.SetReadOnly(true)).Skip(5).Take(5).ToList();
 
 			Assert.That(result.All(x => session.IsReadOnly(x)), Is.True);
 		}

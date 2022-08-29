@@ -25,7 +25,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbmId = new HbmCollectionId();
 			new CollectionIdMapper(hbmId).Generator(Generators.HighLow);
-			
+
 			Assert.That(hbmId.generator.@class, Is.EqualTo("hilo"));
 			Assert.That(hbmId.type.ToLowerInvariant(), Does.Contain("int"));
 		}
@@ -57,8 +57,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			new CollectionIdMapper(hbmId).Generator(Generators.HighLow, p => p.Params(new { max_low = 99, where = "TableName" }));
 			Assert.That(hbmId.generator.@class, Is.EqualTo("hilo"));
 			Assert.That(hbmId.generator.param, Has.Length.EqualTo(2));
-			Assert.That(hbmId.generator.param.Select(p => p.name), Is.EquivalentTo(new [] {"max_low", "where"}));
-			Assert.That(hbmId.generator.param.Select(p => p.GetText()), Is.EquivalentTo(new [] {"99", "TableName"}));
+			Assert.That(hbmId.generator.param.Select(p => p.name), Is.EquivalentTo(new[] { "max_low", "where" }));
+			Assert.That(hbmId.generator.param.Select(p => p.GetText()), Is.EquivalentTo(new[] { "99", "TableName" }));
 		}
 
 		[Test]

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using NHibernate.SqlCommand;
 using NHibernate.Engine.Query;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Driver
 {

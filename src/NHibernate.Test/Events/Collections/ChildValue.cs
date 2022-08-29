@@ -1,9 +1,9 @@
 namespace NHibernate.Test.Events.Collections
 {
-	public class ChildValue: IChild
+	public class ChildValue : IChild
 	{
 		private string name;
-		public ChildValue() {}
+		public ChildValue() { }
 		public ChildValue(string name)
 		{
 			this.name = name;

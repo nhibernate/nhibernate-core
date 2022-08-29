@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1413
 		private long oid;
 		private int version;
 
-		public Foo() {}
+		public Foo() { }
 
 		public Foo(string name, DateTime birthDate)
 		{

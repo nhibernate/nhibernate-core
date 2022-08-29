@@ -127,7 +127,7 @@ namespace NHibernate.Action
 		IBeforeTransactionCompletionProcess IAsyncExecutable.BeforeTransactionCompletionProcess =>
 			null;
 
-		IAfterTransactionCompletionProcess IAsyncExecutable.AfterTransactionCompletionProcess => 
+		IAfterTransactionCompletionProcess IAsyncExecutable.AfterTransactionCompletionProcess =>
 			this;
 
 		public void ExecuteAfterTransactionCompletion(bool success)

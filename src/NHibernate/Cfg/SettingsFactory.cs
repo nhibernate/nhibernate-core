@@ -154,7 +154,7 @@ namespace NHibernate.Cfg
 			settings.LinqQueryProviderType = CreateLinqQueryProviderType(properties);
 
 			IDictionary<string, string> querySubstitutions = PropertiesHelper.ToDictionary(Environment.QuerySubstitutions,
-			                                                                               " ,=;:\n\t\r\f", properties);
+																						   " ,=;:\n\t\r\f", properties);
 			if (log.IsInfoEnabled())
 			{
 				log.Info("Query language substitutions: {0}", CollectionPrinter.ToString((IDictionary) querySubstitutions));
@@ -227,7 +227,7 @@ namespace NHibernate.Cfg
 			if (useQueryCache)
 			{
 				string queryCacheFactoryClassName = PropertiesHelper.GetString(Environment.QueryCacheFactory, properties,
-				                                                               typeof (StandardQueryCacheFactory).FullName);
+																			   typeof(StandardQueryCacheFactory).FullName);
 				log.Info("query cache factory: {0}", queryCacheFactoryClassName);
 				try
 				{
@@ -270,7 +270,7 @@ namespace NHibernate.Cfg
 			{
 				try
 				{
-					isolation = (IsolationLevel) Enum.Parse(typeof (IsolationLevel), isolationString);
+					isolation = (IsolationLevel) Enum.Parse(typeof(IsolationLevel), isolationString);
 					log.Info("Using Isolation Level: {0}", isolation);
 				}
 				catch (ArgumentException ae)
@@ -329,12 +329,12 @@ namespace NHibernate.Cfg
 			}
 
 			//QueryPlanCache:
-			settings.QueryPlanCacheParameterMetadataMaxSize = PropertiesHelper.GetInt32(Environment.QueryPlanCacheParameterMetadataMaxSize, properties, QueryPlanCache.DefaultParameterMetadataMaxCount); 
+			settings.QueryPlanCacheParameterMetadataMaxSize = PropertiesHelper.GetInt32(Environment.QueryPlanCacheParameterMetadataMaxSize, properties, QueryPlanCache.DefaultParameterMetadataMaxCount);
 			settings.QueryPlanCacheMaxSize = PropertiesHelper.GetInt32(Environment.QueryPlanCacheMaxSize, properties, QueryPlanCache.DefaultQueryPlanMaxCount);
 
 			// NHibernate-specific:
 			settings.IsolationLevel = isolation;
-			
+
 			bool trackSessionId = PropertiesHelper.GetBoolean(Environment.TrackSessionId, properties, true);
 			log.Debug("Track session id: " + EnabledDisabled(trackSessionId));
 			settings.TrackSessionId = trackSessionId;
@@ -408,7 +408,7 @@ namespace NHibernate.Cfg
 
 		private static IBatcherFactory CreateBatcherFactory(IDictionary<string, string> properties, int batchSize, IConnectionProvider connectionProvider)
 		{
-			System.Type tBatcher = typeof (NonBatchingBatcherFactory);
+			System.Type tBatcher = typeof(NonBatchingBatcherFactory);
 			string batcherClass = PropertiesHelper.GetString(Environment.BatchStrategy, properties, null);
 			if (string.IsNullOrEmpty(batcherClass))
 			{

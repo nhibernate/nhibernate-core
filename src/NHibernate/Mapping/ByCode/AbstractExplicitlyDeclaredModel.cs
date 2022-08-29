@@ -226,9 +226,9 @@ namespace NHibernate.Mapping.ByCode
 
 		protected virtual void AddAsTablePerClassEntity(System.Type type, bool rootEntityMustExists)
 		{
-			if(!rootEntityMustExists)
+			if (!rootEntityMustExists)
 			{
-				delayedRootEntityRegistrations.Enqueue(() => System.Array.ForEach(GetRootEntitiesOf(type).ToArray(), root=> tablePerClassEntities.Add(root)));
+				delayedRootEntityRegistrations.Enqueue(() => System.Array.ForEach(GetRootEntitiesOf(type).ToArray(), root => tablePerClassEntities.Add(root)));
 				EnlistTypeRegistration(type, t => AddAsTablePerClassEntity(t, true));
 				return;
 			}
@@ -472,7 +472,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			HashSet<string> splitsGroupsIds;
 			typeSplitGroups.TryGetValue(propertyContainer, out splitsGroupsIds);
-			if(splitsGroupsIds == null)
+			if (splitsGroupsIds == null)
 			{
 				splitsGroupsIds = new HashSet<string>();
 				typeSplitGroups[propertyContainer] = splitsGroupsIds;
@@ -490,7 +490,7 @@ namespace NHibernate.Mapping.ByCode
 		protected System.Type GetSingleRootEntityOrNull(System.Type entityType)
 		{
 			var rootTypes = GetRootEntitiesOf(entityType).ToList();
-			if(rootTypes.Count > 1)
+			if (rootTypes.Count > 1)
 			{
 				var sb = new StringBuilder(1024);
 				sb.AppendLine(string.Format("Ambiguous mapping for {0}. More than one root entities was found:", entityType.FullName));
@@ -512,7 +512,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				yield break;
 			}
-			if(IsRootEntity(entityType))
+			if (IsRootEntity(entityType))
 			{
 				yield return entityType;
 			}

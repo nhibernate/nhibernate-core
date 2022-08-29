@@ -47,7 +47,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			// only has a weak reference on it.
 			Assert.That(session, Is.Not.Null);
 		}
-		
+
 		[Test]
 		public void DoNotContaminateQueryWithOptions()
 		{
@@ -116,7 +116,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			// only has a weak reference on it.
 			Assert.That(session, Is.Not.Null);
 		}
-		
+
 		[Test]
 		public async Task DoNotContaminateQueryWithOptionsAsync()
 		{
@@ -130,7 +130,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			session.CreateQuery(Arg.Any<IQueryExpression>()).Returns(query);
 
 			var queryable = new NhQueryable<Order>(session);
-			
+
 			var o1 = await queryable
 				.WithOptions(
 					x => x
@@ -142,7 +142,7 @@ namespace NHibernate.Test.Linq.ByMethod
 
 			var o2 = await queryable
 				.ToListAsync();
-			
+
 			query.Received(1).SetCacheable(true);
 			query.Received(1).SetCacheMode(CacheMode.Normal);
 			query.Received(1).SetCacheRegion("testregion");

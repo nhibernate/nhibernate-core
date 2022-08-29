@@ -14,12 +14,12 @@ namespace NHibernate.Linq.Functions
 
 		public bool SupportsMethod(MethodInfo method)
 		{
-			return method.GetCustomAttributes(typeof (LinqExtensionMethodAttribute), false).Any();
+			return method.GetCustomAttributes(typeof(LinqExtensionMethodAttribute), false).Any();
 		}
 
 		public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
 		{
-			return new HqlGeneratorForExtensionMethod((LinqExtensionMethodAttribute) method.GetCustomAttributes(typeof (LinqExtensionMethodAttribute), false).First(), method);
+			return new HqlGeneratorForExtensionMethod((LinqExtensionMethodAttribute) method.GetCustomAttributes(typeof(LinqExtensionMethodAttribute), false).First(), method);
 		}
 
 		#endregion

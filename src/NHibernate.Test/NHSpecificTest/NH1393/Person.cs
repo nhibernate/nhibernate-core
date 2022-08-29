@@ -62,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1393
 		private string species;
 		private double weight;
 
-		public Pet() {}
+		public Pet() { }
 
 		public Pet(string name, string species, int weight, Person owner)
 		{

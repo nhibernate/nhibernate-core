@@ -25,7 +25,7 @@ namespace NHibernate.Test.PropertyTest
 		public void SetInvalidType()
 		{
 			A instance = new A();
-			var e = Assert.Throws<PropertyAccessException>(() =>_setter.Set(instance, "wrong type"));
+			var e = Assert.Throws<PropertyAccessException>(() => _setter.Set(instance, "wrong type"));
 			Assert.That(e.Message, Is.EqualTo("The type System.String can not be assigned to a field of type System.Int32 setter of NHibernate.Test.PropertyTest.FieldSetterExceptionFixture+A.Id"));
 		}
 

@@ -48,10 +48,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1679
 			using (ISession session = OpenSession())
 			{
 				DetachedCriteria criteria = DetachedCriteria.For<DomainClass>("alias");
-				
+
 				action.Invoke(criteria);
-				
-				IList  l = criteria.GetExecutableCriteria(session).List();
+
+				IList l = criteria.GetExecutableCriteria(session).List();
 				Assert.AreNotEqual(l, null);
 			}
 		}

@@ -326,11 +326,11 @@ namespace NHibernate.Transaction
 					catch (InvalidOperationException ioe)
 					{
 						_logger.Warn(ioe, "Attempting to dodge a disposed transaction trouble, current" +
-						             "transaction was unreachable.");
+									 "transaction was unreachable.");
 					}
 
 					_logger.Warn(ode, "Enlisted transaction status is maybe wrongly active, original " +
-					             "transaction being already disposed. Will assume neither active nor committed.");
+								 "transaction being already disposed. Will assume neither active nor committed.");
 					return null;
 				}
 			}
@@ -477,7 +477,7 @@ namespace NHibernate.Transaction
 							// within scopes, although mixing is not advised.
 							if (!ShouldCloseSessionOnSystemTransactionCompleted)
 								_session.ConnectionManager.EnlistIfRequired(null);
-							
+
 							_session.AfterTransactionCompletion(isCommitted, null);
 							foreach (var dependentSession in _session.ConnectionManager.DependentSessions)
 								dependentSession.AfterTransactionCompletion(isCommitted, null);

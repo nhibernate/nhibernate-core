@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 
 		public int GetHashCode(object x)
 		{
-			return ((IExample)x).Value.GetHashCode();
+			return ((IExample) x).Value.GetHashCode();
 		}
 
 		public object DeepCopy(object value)
@@ -34,9 +34,9 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 			if (value == null) return null;
 			if (value.GetType() == typeof(BarExample))
 			{
-				return new BarExample { Value = ((IExample)value).Value };
+				return new BarExample { Value = ((IExample) value).Value };
 			}
-			return new FooExample { Value = ((IExample)value).Value };
+			return new FooExample { Value = ((IExample) value).Value };
 		}
 
 		public object Replace(object original, object target, object owner)
@@ -62,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 		public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			var dataParameter = cmd.Parameters[index];
-			var example = (IExample)value;
+			var example = (IExample) value;
 			dataParameter.DbType = DbType.String;
 			if (value == null || example.Value == null)
 			{

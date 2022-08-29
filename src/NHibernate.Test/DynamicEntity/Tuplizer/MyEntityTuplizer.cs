@@ -7,7 +7,7 @@ namespace NHibernate.Test.DynamicEntity.Tuplizer
 	[Obsolete("Require dynamic proxies")]
 	public class MyEntityTuplizer : PocoEntityTuplizer
 	{
-		public MyEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappedEntity) : base(entityMetamodel, mappedEntity) {}
+		public MyEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappedEntity) : base(entityMetamodel, mappedEntity) { }
 
 		protected override Tuple.IInstantiator BuildInstantiator(PersistentClass persistentClass)
 		{

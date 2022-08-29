@@ -25,7 +25,7 @@ namespace NHibernate.Engine
 		/// of each parameter under its name.</param>
 		/// <param name="useManyToOne">if set to <c>true</c> used in many to one rel</param>
 		public FilterDefinition(string name, string defaultCondition, IDictionary<string, IType> parameterTypes,
-		                        bool useManyToOne)
+								bool useManyToOne)
 		{
 			filterName = name;
 			defaultFilterCondition = defaultCondition;
@@ -42,7 +42,7 @@ namespace NHibernate.Engine
 			get { return useInManyToOne; }
 		}
 
-	    /// <summary>
+		/// <summary>
 		/// Get the name of the filter this configuration defines.
 		/// </summary>
 		/// <returns>The filter name for this configuration.</returns>

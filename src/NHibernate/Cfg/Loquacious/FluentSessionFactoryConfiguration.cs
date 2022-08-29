@@ -4,7 +4,7 @@ using NHibernate.Linq;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	public class FluentSessionFactoryConfiguration 
+	public class FluentSessionFactoryConfiguration
 #pragma warning disable 618
 		: IFluentSessionFactoryConfiguration
 #pragma warning restore 618
@@ -65,7 +65,7 @@ namespace NHibernate.Cfg.Loquacious
 		public FluentSessionFactoryConfiguration ParsingHqlThrough<TQueryTranslator>()
 			where TQueryTranslator : IQueryTranslatorFactory
 		{
-			configuration.SetProperty(Environment.QueryTranslator, typeof (TQueryTranslator).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.QueryTranslator, typeof(TQueryTranslator).AssemblyQualifiedName);
 			return this;
 		}
 
@@ -122,7 +122,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	public class CollectionFactoryConfiguration 
+	public class CollectionFactoryConfiguration
 #pragma warning disable 618
 		: ICollectionFactoryConfiguration
 #pragma warning restore 618
@@ -138,7 +138,7 @@ namespace NHibernate.Cfg.Loquacious
 			where TCollectionsFactory : ICollectionTypeFactory
 		{
 			fc.Configuration.SetProperty(Environment.CollectionTypeFactoryClass,
-										typeof (TCollectionsFactory).AssemblyQualifiedName);
+										typeof(TCollectionsFactory).AssemblyQualifiedName);
 			return fc;
 		}
 

@@ -86,10 +86,10 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 			using (ISession s = OpenSession())
 			{
 				Invoice invToUpdate = s.Get<Invoice>(inv.Id);
-				
-				itemToUpdate = ((InvoiceItem)invToUpdate.Items[0]); // update information of an element
-				itemToUpdate.Quantity = 10m; 
-					
+
+				itemToUpdate = ((InvoiceItem) invToUpdate.Items[0]); // update information of an element
+				itemToUpdate.Quantity = 10m;
+
 				invToUpdate.Items.Add(new InvoiceItem(product3, 1)); // update the idbag collection
 				s.Flush();
 				s.Clear();

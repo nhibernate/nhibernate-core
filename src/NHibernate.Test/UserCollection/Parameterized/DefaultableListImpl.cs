@@ -4,8 +4,8 @@ namespace NHibernate.Test.UserCollection.Parameterized
 {
 	public class DefaultableListImpl : List<string>, IDefaultableList
 	{
-		public DefaultableListImpl() {}
-		public DefaultableListImpl(int capacity) : base(capacity) {}
+		public DefaultableListImpl() { }
+		public DefaultableListImpl(int capacity) : base(capacity) { }
 
 		#region IDefaultableList Members
 

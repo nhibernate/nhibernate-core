@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmDiscriminator: IColumnsMapping, IFormulasMapping
+	public partial class HbmDiscriminator : IColumnsMapping, IFormulasMapping
 	{
 		#region Implementation of IColumnsMapping
 
@@ -12,9 +12,9 @@ namespace NHibernate.Cfg.MappingSchema
 		{
 			get
 			{
-				if(Item as HbmColumn != null)
+				if (Item as HbmColumn != null)
 				{
-					yield return (HbmColumn)Item;
+					yield return (HbmColumn) Item;
 				}
 				else if (string.IsNullOrEmpty(column))
 				{
@@ -52,7 +52,7 @@ namespace NHibernate.Cfg.MappingSchema
 				}
 				else
 				{
-					yield return new HbmFormula {Text = new[] {formula}};
+					yield return new HbmFormula { Text = new[] { formula } };
 				}
 			}
 		}

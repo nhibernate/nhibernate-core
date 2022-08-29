@@ -11,14 +11,14 @@ namespace NHibernate.Test.Logging
 		public void LoggerProviderCanCreateLoggers()
 		{
 			Assert.That(NHibernateLogger.For("pizza"), Is.Not.Null);
-			Assert.That(NHibernateLogger.For(typeof (LoggerProviderTest)), Is.Not.Null);
+			Assert.That(NHibernateLogger.For(typeof(LoggerProviderTest)), Is.Not.Null);
 		}
 
 		[Test, Obsolete]
 		public void LoggerProviderCanCreateLoggers_Obsolete()
 		{
 			Assert.That(LoggerProvider.LoggerFor("pizza"), Is.Not.Null);
-			Assert.That(LoggerProvider.LoggerFor(typeof (LoggerProviderTest)), Is.Not.Null);
+			Assert.That(LoggerProvider.LoggerFor(typeof(LoggerProviderTest)), Is.Not.Null);
 		}
 
 		[Test]

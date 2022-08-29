@@ -13,7 +13,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				return null;
 			}
-			return ((IASTNode)t).DupNode();
+			return ((IASTNode) t).DupNode();
 		}
 
 		public override object Create(IToken payload)

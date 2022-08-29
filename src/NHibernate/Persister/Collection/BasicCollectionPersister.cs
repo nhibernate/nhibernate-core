@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
@@ -10,10 +11,9 @@ using NHibernate.Impl;
 using NHibernate.Loader.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Collections.Generic;
-using NHibernate.SqlTypes;
 
 namespace NHibernate.Persister.Collection
 {
@@ -22,7 +22,7 @@ namespace NHibernate.Persister.Collection
 	/// </summary>
 	public partial class BasicCollectionPersister : AbstractCollectionPersister
 	{
-		public BasicCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory) 
+		public BasicCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
 			: base(collection, cache, factory) { }
 
 		public override bool CascadeDeleteEnabled
@@ -67,9 +67,9 @@ namespace NHibernate.Persister.Collection
 			SqlInsertBuilder insert = new SqlInsertBuilder(Factory)
 				.SetTableName(qualifiedTableName)
 				.AddColumns(KeyColumnNames, null, KeyType);
-			
+
 			if (hasIdentifier)
-				insert.AddColumns(new string[] {IdentifierColumnName}, null, IdentifierType);
+				insert.AddColumns(new string[] { IdentifierColumnName }, null, IdentifierType);
 
 			if (HasIndex)
 				insert.AddColumns(IndexColumnNames, indexColumnIsSettable, IndexType);

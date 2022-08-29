@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1605
 			var cfg = new Configuration();
 			Assembly assembly = Assembly.GetExecutingAssembly();
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1605.Mappings.hbm.xml", assembly);
-			using (cfg.BuildSessionFactory()) {}
+			using (cfg.BuildSessionFactory()) { }
 		}
 	}
 

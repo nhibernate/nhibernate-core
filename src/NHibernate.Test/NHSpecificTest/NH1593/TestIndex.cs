@@ -16,5 +16,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1593
 			get { return name; }
 			set { name = value; }
 		}
-	} 
+	}
 }

@@ -30,7 +30,7 @@ namespace NHibernate.Persister.Entity
 		{
 			return
 				base.ToColumns(persister.GenerateTableAlias(alias, persister.GetSubclassPropertyTableNumber(propertyName)),
-				               propertyName);
+							   propertyName);
 		}
 	}
 }

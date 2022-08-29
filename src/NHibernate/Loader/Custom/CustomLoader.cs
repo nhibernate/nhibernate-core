@@ -1,18 +1,18 @@
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Param;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
-using NHibernate.Persister;
 
 namespace NHibernate.Loader.Custom
 {
@@ -318,7 +318,7 @@ namespace NHibernate.Loader.Custom
 		// Not ported: scroll
 
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer resultTransformer, DbDataReader rs,
-		                                               ISessionImplementor session)
+													   ISessionImplementor session)
 		{
 			return rowProcessor.BuildResultRow(row, rs, resultTransformer != null, session);
 		}
@@ -397,7 +397,7 @@ namespace NHibernate.Loader.Custom
 
 		public IEnumerable<string> NamedParameters
 		{
-			get { return parametersSpecifications.OfType<NamedParameterSpecification>().Select(np=> np.Name ); }
+			get { return parametersSpecifications.OfType<NamedParameterSpecification>().Select(np => np.Name); }
 		}
 
 		public partial class ResultRowProcessor
@@ -497,7 +497,7 @@ namespace NHibernate.Loader.Custom
 				return data[position];
 			}
 
-			public void PerformDiscovery(MetaData metadata, IList<IType> types, IList<string> aliases) {}
+			public void PerformDiscovery(MetaData metadata, IList<IType> types, IList<string> aliases) { }
 		}
 
 		public partial class ScalarResultColumnProcessor : IResultColumnProcessor

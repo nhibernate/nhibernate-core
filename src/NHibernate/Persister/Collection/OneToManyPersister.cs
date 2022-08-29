@@ -320,7 +320,7 @@ namespace NHibernate.Persister.Collection
 					return buf.Append(selectMode.SelectFragment(null, null, lhsAlias, null, false, entityInfo)).ToString();
 			}
 
-			var ojl = (IOuterJoinLoadable)ElementPersister;
+			var ojl = (IOuterJoinLoadable) ElementPersister;
 			return buf.Append(ojl.SelectFragment(lhsAlias, entityInfo.EntitySuffix)).ToString(); //use suffix for the entity columns
 		}
 
@@ -333,7 +333,7 @@ namespace NHibernate.Persister.Collection
 			 The mapping Multi.hbm.xml had a column named "parent" to represent the Key of a set for the relation Lower->Top and SubMulti->SubMulti everything in the same hierarchy
 			 NH TODO: Have to add an early check of same ColumnName used to represent two relations.
 			*/
-			var ojl = (IOuterJoinLoadable)ElementPersister;
+			var ojl = (IOuterJoinLoadable) ElementPersister;
 			var selectFragment = new SelectFragment(Dialect).SetSuffix(columnSuffix);
 			var columnNames = KeyColumnNames;
 			var columnAliases = KeyColumnAliases;
@@ -361,12 +361,12 @@ namespace NHibernate.Persister.Collection
 
 		public override SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
-			return ((IJoinable)ElementPersister).WhereJoinFragment(alias, innerJoin, includeSubclasses);
+			return ((IJoinable) ElementPersister).WhereJoinFragment(alias, innerJoin, includeSubclasses);
 		}
 
 		public override string TableName
 		{
-			get { return ((IJoinable)ElementPersister).TableName; }
+			get { return ((IJoinable) ElementPersister).TableName; }
 		}
 
 		protected override string FilterFragment(string alias)

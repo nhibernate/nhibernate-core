@@ -19,7 +19,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	public partial class StandardQueryCache : IQueryCache, IBatchableQueryCache
 	{
-		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof (StandardQueryCache));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(StandardQueryCache));
 		private readonly string _regionName;
 		private readonly UpdateTimestampsCache _updateTimestampsCache;
 		private readonly CacheBase _cache;
@@ -346,7 +346,7 @@ namespace NHibernate.Cache
 				}
 				else
 				{
-					cacheable.Add(TypeHelper.Disassemble((object[])row, returnTypes, null, session, null));
+					cacheable.Add(TypeHelper.Disassemble((object[]) row, returnTypes, null, session, null));
 				}
 			}
 

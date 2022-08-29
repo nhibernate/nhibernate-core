@@ -21,7 +21,7 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		{
 			var memberProvider = new DefaultCandidatePersistentMembersProvider();
 			var properties = memberProvider.GetRootEntityMembers(typeof(Geo));
-			if(properties.Select(p => p.Name).Contains("Parent"))
+			if (properties.Select(p => p.Name).Contains("Parent"))
 			{
 				Assert.That(typeof(Geo).GetFirstPropertyOfType(typeof(Geo)), Is.Not.Null);
 			}

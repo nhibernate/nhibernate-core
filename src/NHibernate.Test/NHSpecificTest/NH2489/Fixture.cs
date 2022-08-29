@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 						var child = new Child();
 						// null members are partially working for lists, can't have one at the end
 						// and can't use the Count property.
-						entity.Children = new List<Child> {null, child};
+						entity.Children = new List<Child> { null, child };
 						s.Save(entity);
 						t.Commit();
 					}
@@ -69,10 +69,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2489
 						s.Save(child1);
 						s.Save(child2);
 
-						entity.OneToManyNamedChildren = new Dictionary<string, AnotherChild> 
+						entity.OneToManyNamedChildren = new Dictionary<string, AnotherChild>
 											   {
-												{"AnotherChild1" , child1}, 
-												{"AnotherChild2" , child2} 
+												{"AnotherChild1" , child1},
+												{"AnotherChild2" , child2}
 											   };
 
 						s.Save(entity);

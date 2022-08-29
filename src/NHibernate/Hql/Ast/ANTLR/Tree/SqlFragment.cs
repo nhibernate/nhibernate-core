@@ -13,7 +13,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class SqlFragment : SqlNode, IParameterContainer 
+	public class SqlFragment : SqlNode, IParameterContainer
 	{
 		private JoinFragment _joinFragment;
 		private FromElement _fromElement;
@@ -22,7 +22,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-		public void SetJoinFragment(JoinFragment joinFragment) 
+		public void SetJoinFragment(JoinFragment joinFragment)
 		{
 			_joinFragment = joinFragment;
 		}
@@ -61,21 +61,21 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		// ParameterContainer impl ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		private List<IParameterSpecification> _embeddedParameters;
 
-		public void AddEmbeddedParameter(IParameterSpecification specification) 
+		public void AddEmbeddedParameter(IParameterSpecification specification)
 		{
-			if ( _embeddedParameters == null ) 
+			if (_embeddedParameters == null)
 			{
 				_embeddedParameters = new List<IParameterSpecification>();
 			}
-			_embeddedParameters.Add( specification );
+			_embeddedParameters.Add(specification);
 		}
 
-		public bool HasEmbeddedParameters 
+		public bool HasEmbeddedParameters
 		{
 			get { return _embeddedParameters != null && _embeddedParameters.Count != 0; }
 		}
 
-		public IParameterSpecification[] GetEmbeddedParameters() 
+		public IParameterSpecification[] GetEmbeddedParameters()
 		{
 			return _embeddedParameters.ToArray();
 		}

@@ -95,7 +95,7 @@ namespace NHibernate.Exceptions
 					{
 						try
 						{
-							return (ISQLExceptionConverter)ctor.Invoke(new object[] { violatedConstraintNameExtracter });
+							return (ISQLExceptionConverter) ctor.Invoke(new object[] { violatedConstraintNameExtracter });
 						}
 						catch (Exception)
 						{

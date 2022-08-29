@@ -1,6 +1,6 @@
 namespace NHibernate.Test.LinqBulkManipulation.Domain
 {
-	public class DomesticAnimal: Mammal
+	public class DomesticAnimal : Mammal
 	{
 		private Human owner;
 

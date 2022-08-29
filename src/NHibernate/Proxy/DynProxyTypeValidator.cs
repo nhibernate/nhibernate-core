@@ -53,7 +53,7 @@ namespace NHibernate.Proxy
 				if (member is PropertyInfo)
 				{
 					var property = (PropertyInfo) member;
-					if(property.ShouldBeProxiable())
+					if (property.ShouldBeProxiable())
 					{
 						MethodInfo[] accessors = property.GetAccessors(true);
 

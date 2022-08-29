@@ -167,7 +167,7 @@ namespace NHibernate.DomainModel.NHSpecific
 			get { return _stringMap; }
 			set { _stringMap = value; }
 		}
-		
+
 		public IDictionary<string, string> StringMapGeneric
 		{
 			get { return _stringMapGeneric; }

@@ -11,10 +11,10 @@ namespace NHibernate.Test.UtilityTest
 	public class LinkedHashMapFixture
 	{
 		private static readonly Player[] players = {
-		                                  	new Player("12341", "Boeta Dippenaar"), new Player("23432", "Gary Kirsten"),
-		                                  	new Player("23411", "Graeme Smith"), new Player("55221", "Jonty Rhodes"),
-		                                  	new Player("61234", "Monde Zondeki"), new Player("23415", "Paul Adams")
-		                                  };
+											  new Player("12341", "Boeta Dippenaar"), new Player("23432", "Gary Kirsten"),
+											  new Player("23411", "Graeme Smith"), new Player("55221", "Jonty Rhodes"),
+											  new Player("61234", "Monde Zondeki"), new Player("23415", "Paul Adams")
+										  };
 
 		private static void Fill(IDictionary<string, Player> lhm)
 		{
@@ -38,7 +38,7 @@ namespace NHibernate.Test.UtilityTest
 			LinkedHashMap<string, Player> lhm = new LinkedHashMap<string, Player>();
 			Fill(lhm);
 			Assert.AreEqual(players[players.Length - 1].Id, lhm.LastKey);
-			Assert.AreEqual(players[players.Length-1], lhm.LastValue);
+			Assert.AreEqual(players[players.Length - 1], lhm.LastValue);
 
 			// override
 			Player antWithSameId = new Player("12341", "Another");
@@ -125,12 +125,12 @@ namespace NHibernate.Test.UtilityTest
 			IDictionary<string, Player> lhm = new LinkedHashMap<string, Player>();
 			lhm["123"] = new Player("123", "yyyyyyy");
 			Assert.Throws<InvalidOperationException>(() =>
-			                                         	{
-			                                         		foreach (KeyValuePair<string, Player> pair in lhm)
-			                                         		{
-			                                         			lhm["78945"] = new Player("78945", "Someone");
-			                                         		}
-			                                         	});
+														 {
+															 foreach (KeyValuePair<string, Player> pair in lhm)
+															 {
+																 lhm["78945"] = new Player("78945", "Someone");
+															 }
+														 });
 		}
 
 		[Test]
@@ -139,12 +139,12 @@ namespace NHibernate.Test.UtilityTest
 			IDictionary<string, Player> lhm = new LinkedHashMap<string, Player>();
 			lhm["123"] = new Player("123", "yyyyyyy");
 			Assert.Throws<InvalidOperationException>(() =>
-			                                         	{
-			                                         		foreach (KeyValuePair<string, Player> pair in lhm)
-			                                         		{
-			                                         			lhm.Remove(pair.Key);
-			                                         		}
-			                                         	});
+														 {
+															 foreach (KeyValuePair<string, Player> pair in lhm)
+															 {
+																 lhm.Remove(pair.Key);
+															 }
+														 });
 		}
 
 		[Test]
@@ -153,12 +153,12 @@ namespace NHibernate.Test.UtilityTest
 			IDictionary<string, Player> lhm = new LinkedHashMap<string, Player>();
 			lhm["123"] = new Player("123", "yyyyyyy");
 			Assert.Throws<InvalidOperationException>(() =>
-			                                         	{
-			                                         		foreach (KeyValuePair<string, Player> pair in lhm)
-			                                         		{
-			                                         			lhm["123"] = new Player("123", "aaaaaaa");
-			                                         		}
-			                                         	});
+														 {
+															 foreach (KeyValuePair<string, Player> pair in lhm)
+															 {
+																 lhm["123"] = new Player("123", "aaaaaaa");
+															 }
+														 });
 		}
 
 		[Test]
@@ -168,12 +168,12 @@ namespace NHibernate.Test.UtilityTest
 			Fill(lhm);
 
 			// remove an item that exists
-			bool removed =lhm.Remove("23411");
+			bool removed = lhm.Remove("23411");
 			Assert.IsTrue(removed);
 			Assert.AreEqual(5, lhm.Count);
 
 			// try to remove an item that does not exist
-			removed= lhm.Remove("65432");
+			removed = lhm.Remove("65432");
 			Assert.IsFalse(removed);
 			Assert.AreEqual(5, lhm.Count);
 		}
@@ -198,8 +198,8 @@ namespace NHibernate.Test.UtilityTest
 
 			for (int i = 1; i < destArray.Length; i++)
 			{
-				Assert.AreEqual(players[i-1].Id, destArray[i].Key);
-				Assert.AreEqual(players[i-1], destArray[i].Value);
+				Assert.AreEqual(players[i - 1].Id, destArray[i].Key);
+				Assert.AreEqual(players[i - 1], destArray[i].Value);
 			}
 		}
 
@@ -245,7 +245,7 @@ namespace NHibernate.Test.UtilityTest
 			f.Serialize(stream, lhm);
 			stream.Position = 0;
 
-			LinkedHashMap<string, Player> dlhm = (LinkedHashMap<string, Player>)f.Deserialize(stream);
+			LinkedHashMap<string, Player> dlhm = (LinkedHashMap<string, Player>) f.Deserialize(stream);
 			stream.Close();
 
 			Assert.AreEqual(6, dlhm.Count);
@@ -347,10 +347,10 @@ namespace NHibernate.Test.UtilityTest
 
 			for (int runIndex = 0; runIndex < numOfRuns; runIndex++)
 			{
-				decimal linkPopulateOverhead = (linkPopulateTicks[runIndex] / (decimal)dictPopulateTicks[runIndex]);
-				decimal linkItemOverhead = (linkItemTicks[runIndex] / (decimal)dictItemTicks[runIndex]);
+				decimal linkPopulateOverhead = (linkPopulateTicks[runIndex] / (decimal) dictPopulateTicks[runIndex]);
+				decimal linkItemOverhead = (linkItemTicks[runIndex] / (decimal) dictItemTicks[runIndex]);
 
-				string message = string.Format("LinkedHashMap vs Dictionary (Run-{0}) :",runIndex+1);
+				string message = string.Format("LinkedHashMap vs Dictionary (Run-{0}) :", runIndex + 1);
 				message += "\n POPULATE:";
 				message += "\n\t linked took " + linkPopulateTicks[runIndex] + " ticks.";
 				message += "\n\t dictionary took " + dictPopulateTicks[runIndex] + " ticks.";
@@ -403,7 +403,7 @@ namespace NHibernate.Test.UtilityTest
 		public override bool Equals(object obj)
 		{
 			Player that = obj as Player;
-			if(that==null) return false;
+			if (that == null) return false;
 			return id.Equals(that.id) && name.Equals(that.name);
 		}
 

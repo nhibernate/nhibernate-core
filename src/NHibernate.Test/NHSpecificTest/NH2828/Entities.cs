@@ -22,7 +22,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 		/// </summary>
 		public virtual string Name { get; set; }
 
-		public Company(){
+		public Company()
+		{
 			this.addresses = new HashSet<Address>();
 			this.bankAccounts = new HashSet<BankAccount>();
 		}
@@ -122,7 +123,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 	public class BankAccount
 	{
 		public virtual Guid Id { get; protected set; }
-		
+
 		public virtual string Name { get; set; }
 
 		public virtual Company Company { get; set; }

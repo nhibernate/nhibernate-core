@@ -89,7 +89,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		private void AddUnionSubclasses(HbmUnionSubclass unionSubclass,
-		                                IDictionary<string, MetaAttribute> inheritedMetas)
+										IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			var binder = new UnionSubclassBinder(Mappings);
 
@@ -97,7 +97,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		}
 
 		private void AddJoinedSubclasses(HbmJoinedSubclass joinedSubclass,
-		                                 IDictionary<string, MetaAttribute> inheritedMetas)
+										 IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			var binder = new JoinedSubclassBinder(Mappings);
 

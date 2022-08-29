@@ -147,7 +147,7 @@ namespace NHibernate.Mapping
 				componentClass = value;
 				if (componentClass != null)
 					componentClassName = componentClass.AssemblyQualifiedName;
-			} 
+			}
 		}
 
 		/// <summary></summary>

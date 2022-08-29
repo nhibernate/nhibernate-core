@@ -3,7 +3,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2202
 	using System.Linq;
 	using Criterion;
 	using NUnit.Framework;
-	
+
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2202
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var emp = new Employee() {EmployeeId = 1, NationalId = 1000};
+				var emp = new Employee() { EmployeeId = 1, NationalId = 1000 };
 				emp.Addresses.Add(new EmployeeAddress() { Employee = emp, Type = "Postal" });
 				emp.Addresses.Add(new EmployeeAddress() { Employee = emp, Type = "Shipping" });
 				s.Save(emp);

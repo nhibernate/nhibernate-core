@@ -1,6 +1,6 @@
-using NUnit.Framework;
-using NHibernate.Id.Enhanced;
 using System.Collections;
+using NHibernate.Id.Enhanced;
+using NUnit.Framework;
 
 namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 {
@@ -23,11 +23,11 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 			var persister = Sfi.GetEntityPersister(typeof(Entity).FullName);
 			Assert.That(persister.IdentifierGenerator, Is.TypeOf<SequenceStyleGenerator>());
 
-			var generator = (SequenceStyleGenerator)persister.IdentifierGenerator;
+			var generator = (SequenceStyleGenerator) persister.IdentifierGenerator;
 			Assert.That(generator.DatabaseStructure, Is.TypeOf<TableStructure>());
 			Assert.That(generator.Optimizer, Is.TypeOf<OptimizerFactory.PooledOptimizer>());
 
-			var optimizer = (OptimizerFactory.PooledOptimizer)generator.Optimizer;
+			var optimizer = (OptimizerFactory.PooledOptimizer) generator.Optimizer;
 
 			int increment = optimizer.IncrementSize;
 			var entities = new Entity[increment + 1];
@@ -55,7 +55,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 					Assert.That(entities[optimizer.IncrementSize].Id, Is.EqualTo(optimizer.IncrementSize + 1));
 					// initialization (2) + clock over
 					Assert.That(generator.DatabaseStructure.TimesAccessed, Is.EqualTo(3));
-					Assert.That(optimizer.LastSourceValue, Is.EqualTo(increment*2 + 1));
+					Assert.That(optimizer.LastSourceValue, Is.EqualTo(increment * 2 + 1));
 					Assert.That(optimizer.LastValue, Is.EqualTo(increment + 1));
 
 					transaction.Commit();

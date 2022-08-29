@@ -6,40 +6,40 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 {
 	[TestFixture]
 	public class ExportToFileFixture
-    {
-        [Test]
-        public void ExportToFileUsingSetOutputFileAndCreate()
-        {
-            var configuration = TestConfigurationHelper.GetDefaultConfiguration();
+	{
+		[Test]
+		public void ExportToFileUsingSetOutputFileAndCreate()
+		{
+			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
 
-            configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml",
-                                                                GetType().Assembly);
-            
-            var outputFileName = Path.GetTempFileName();
-            var export = new SchemaExport(configuration);
-            export.SetOutputFile(outputFileName);
+			configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml",
+																GetType().Assembly);
 
-            export.Create(false, false);
+			var outputFileName = Path.GetTempFileName();
+			var export = new SchemaExport(configuration);
+			export.SetOutputFile(outputFileName);
 
-            Assert.IsTrue(File.Exists(outputFileName));
-            Assert.IsTrue(new FileInfo(outputFileName).Length > 0);
-        }
+			export.Create(false, false);
 
-        [Test]
-        public void ExportToFileUsingExecute()
-        {
-            var configuration = TestConfigurationHelper.GetDefaultConfiguration();
+			Assert.IsTrue(File.Exists(outputFileName));
+			Assert.IsTrue(new FileInfo(outputFileName).Length > 0);
+		}
 
-            configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml",
-                                                                GetType().Assembly);
-            
-            var outputFileName = Path.GetTempFileName();
-            var export = new SchemaExport(configuration);
+		[Test]
+		public void ExportToFileUsingExecute()
+		{
+			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
 
-            export.Execute(null, false, false, new StreamWriter(outputFileName));
+			configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml",
+																GetType().Assembly);
 
-            Assert.IsTrue(File.Exists(outputFileName));
-            Assert.IsTrue(new FileInfo(outputFileName).Length > 0);
-        }
-    }
+			var outputFileName = Path.GetTempFileName();
+			var export = new SchemaExport(configuration);
+
+			export.Execute(null, false, false, new StreamWriter(outputFileName));
+
+			Assert.IsTrue(File.Exists(outputFileName));
+			Assert.IsTrue(new FileInfo(outputFileName).Length > 0);
+		}
+	}
 }

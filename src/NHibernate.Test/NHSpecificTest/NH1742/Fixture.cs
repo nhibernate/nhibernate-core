@@ -23,10 +23,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1742
 			device = new Device();
 			session.Save(device);
 
-			var ev = new Event {Date = date, SendedBy = device};
+			var ev = new Event { Date = date, SendedBy = device };
 			session.Save(ev);
 
-			var d = new Description {Event = ev, Value = "Test", LanguageID = "it"};
+			var d = new Description { Event = ev, Value = "Test", LanguageID = "it" };
 			session.Save(d);
 
 			IFilter f = session.EnableFilter("LanguageFilter").SetParameter("LanguageID", "it");
@@ -52,10 +52,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1742
 		{
 			IQuery query =
 				session.CreateQuery("SELECT e FROM Event e " + " inner join fetch e.descriptions d "
-				                    + " WHERE (e.SendedBy in( :dev)) " + " AND (e.Date >= :from) " + " AND (e.Date <= :to)"
-				                    + " ORDER BY d.Value");
+									+ " WHERE (e.SendedBy in( :dev)) " + " AND (e.Date >= :from) " + " AND (e.Date <= :to)"
+									+ " ORDER BY d.Value");
 
-			var devices = new List<Device> {device};
+			var devices = new List<Device> { device };
 
 			query.SetParameterList("dev", devices).SetDateTime("from", date).SetDateTime("to", date.AddMonths(1));
 
@@ -67,9 +67,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1742
 		{
 			IQuery query =
 				session.CreateQuery("SELECT e FROM Event e " + " inner join fetch e.descriptions d " + " WHERE (e.Date >= :from) "
-				                    + " AND (e.Date <= :to)" + " AND (e.SendedBy in( :dev)) " + " ORDER BY d.Value");
+									+ " AND (e.Date <= :to)" + " AND (e.SendedBy in( :dev)) " + " ORDER BY d.Value");
 
-			var devices = new List<Device> {device};
+			var devices = new List<Device> { device };
 
 			query.SetParameterList("dev", devices).SetDateTime("from", date).SetDateTime("to", date.AddMonths(1));
 
@@ -80,11 +80,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1742
 		public void NH2213()
 		{
 			IQuery query = session.CreateQuery("SELECT e FROM Event e " +
-			                                   " inner join fetch e.descriptions d " +
-			                                   " WHERE (e.SendedBy in( :dev)) " +
-			                                   " AND (e.Date >= :from) " +
-			                                   " AND (e.Date <= :to)" +
-			                                   " ORDER BY d.Value");
+											   " inner join fetch e.descriptions d " +
+											   " WHERE (e.SendedBy in( :dev)) " +
+											   " AND (e.Date >= :from) " +
+											   " AND (e.Date <= :to)" +
+											   " ORDER BY d.Value");
 			var devices = new List<Device>();
 			devices.Add(device);
 			query.SetParameterList("dev", devices);

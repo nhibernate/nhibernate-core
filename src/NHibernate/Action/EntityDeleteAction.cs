@@ -104,7 +104,7 @@ namespace NHibernate.Action
 			IPostDeleteEventListener[] postListeners = Session.Listeners.PostDeleteEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostDeleteEvent postEvent = new PostDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				PostDeleteEvent postEvent = new PostDeleteEvent(Instance, Id, state, Persister, (IEventSource) Session);
 				foreach (IPostDeleteEventListener listener in postListeners)
 				{
 					listener.OnPostDelete(postEvent);
@@ -118,7 +118,7 @@ namespace NHibernate.Action
 			bool veto = false;
 			if (preListeners.Length > 0)
 			{
-				var preEvent = new PreDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				var preEvent = new PreDeleteEvent(Instance, Id, state, Persister, (IEventSource) Session);
 				foreach (IPreDeleteEventListener listener in preListeners)
 				{
 					veto |= listener.OnPreDelete(preEvent);
@@ -126,7 +126,7 @@ namespace NHibernate.Action
 			}
 			return veto;
 		}
-		
+
 		protected override void AfterTransactionCompletionProcessImpl(bool success)
 		{
 			if (Persister.HasCache)
@@ -145,7 +145,7 @@ namespace NHibernate.Action
 			IPostDeleteEventListener[] postListeners = Session.Listeners.PostCommitDeleteEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostDeleteEvent postEvent = new PostDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				PostDeleteEvent postEvent = new PostDeleteEvent(Instance, Id, state, Persister, (IEventSource) Session);
 				foreach (IPostDeleteEventListener listener in postListeners)
 				{
 					listener.OnPostDelete(postEvent);

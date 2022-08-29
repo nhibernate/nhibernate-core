@@ -68,7 +68,7 @@ namespace NHibernate.Test.Linq
 		public void BasePropertyFilter(string queryString, int expectedRows)
 		{
 			var query = ApplyFilter(
-				session.Query<Customer>().Select(o => new CustomerVm {Name = o.ContactName, Id = o.CustomerId}),
+				session.Query<Customer>().Select(o => new CustomerVm { Name = o.ContactName, Id = o.CustomerId }),
 				queryString);
 
 			var results = ((IQueryable<CustomerVm>) query).ToList();
@@ -90,7 +90,7 @@ namespace NHibernate.Test.Linq
 		private IQueryable ApplyFilter<T>(IQueryable<T> query, string queryString)
 		{
 			var context = new ODataQueryContext(CreatEdmModel(), typeof(T), null) { };
-			var dataQuerySettings = new ODataQuerySettings {HandleNullPropagation = HandleNullPropagationOption.False};
+			var dataQuerySettings = new ODataQuerySettings { HandleNullPropagation = HandleNullPropagationOption.False };
 			var serviceProvider = new ODataServiceProvider(
 				new Dictionary<System.Type, object>()
 				{

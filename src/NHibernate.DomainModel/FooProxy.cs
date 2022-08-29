@@ -32,11 +32,11 @@ namespace NHibernate.DomainModel
 
 		bool Boolean { get; set; }
 
-//		double Double
-//		{
-//			get;
-//			set;
-//		}
+		//		double Double
+		//		{
+		//			get;
+		//			set;
+		//		}
 
 		float Float { get; set; }
 

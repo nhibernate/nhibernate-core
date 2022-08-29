@@ -89,7 +89,7 @@ namespace NHibernate.Criterion
 
 			TypedValue typedValue = GetParameterTypedValue(criteria, criteriaQuery);
 			Parameter[] parameters = criteriaQuery.NewQueryParameter(typedValue).ToArray();
-   
+
 			if (ignoreCase)
 			{
 				if (columnNames.Length != 1)
@@ -98,7 +98,7 @@ namespace NHibernate.Criterion
 						"case insensitive expression may only be applied to single-column properties: " +
 						propertyName);
 				}
-   
+
 				return new SqlString(
 					criteriaQuery.Factory.Dialect.LowercaseFunction,
 					StringHelper.OpenParen,
@@ -116,14 +116,14 @@ namespace NHibernate.Criterion
 				{
 					throw new AssertionFailure("Column nullness length doesn't match number of columns.");
 				}
-   
+
 				for (int i = 0; i < columnNames.Length; i++)
 				{
 					if (i > 0)
 					{
 						sqlBuilder.Add(" and ");
 					}
-   
+
 					if (columnNullness[i])
 					{
 						sqlBuilder.Add(columnNames[i])
@@ -170,7 +170,7 @@ namespace NHibernate.Criterion
 
 		public override string ToString()
 		{
-			return (_projection ?? (object)propertyName) + Op + ValueToStrings();
+			return (_projection ?? (object) propertyName) + Op + ValueToStrings();
 		}
 
 		/// <summary>

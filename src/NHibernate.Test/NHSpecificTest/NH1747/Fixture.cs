@@ -10,8 +10,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1747
 		[Test]
 		public void PaymentTableNotContainsFk()
 		{
-			var cm = cfg.GetClassMapping(typeof (Payment));
-			bool containsFK= false;
+			var cm = cfg.GetClassMapping(typeof(Payment));
+			bool containsFK = false;
 			foreach (var column in cm.Table.ColumnIterator)
 			{
 				if (column.Name.Equals("PaymentBatchFK_ID"))

@@ -231,7 +231,7 @@ namespace NHibernate.Test.Criteria
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
-		
+
 		[Test]
 		public void EntityProjectionAsSelectExpressionForArgumentAlias()
 		{
@@ -261,7 +261,7 @@ namespace NHibernate.Test.Criteria
 				Assert.Ignore("Oracle is not supported due to #1352 bug (NH-3902)");
 
 			var upgradeHint = Dialect.ForUpdateString;
-			if(string.IsNullOrEmpty(upgradeHint))
+			if (string.IsNullOrEmpty(upgradeHint))
 				upgradeHint = Dialect.AppendLockHint(LockMode.Upgrade, string.Empty);
 			if (string.IsNullOrEmpty(upgradeHint))
 			{
@@ -278,7 +278,7 @@ namespace NHibernate.Test.Criteria
 					.Lock(() => child1).Upgrade
 					.Select(Projections.Entity(() => child1))
 					.Take(1).SingleOrDefault<EntitySimpleChild>();
-				
+
 				Assert.That(child1, Is.Not.Null);
 				Assert.That(NHibernateUtil.IsInitialized(child1), Is.True, "Object must be initialized");
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
@@ -342,7 +342,7 @@ namespace NHibernate.Test.Criteria
 				Assert.That(NHibernateUtil.IsPropertyInitialized(entityRoot, nameof(entityRoot.LazyProp2)), Is.True, "Lazy property must be initialized");
 			}
 		}
-		
+
 		[Test]
 		public void EntityProjectionWithLazyPropertiesSinglePropertyFetch()
 		{

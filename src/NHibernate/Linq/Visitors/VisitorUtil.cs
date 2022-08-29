@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Collections;
 using System.Reflection;
 using NHibernate.Util;
 using Remotion.Linq.Clauses.Expressions;
@@ -25,8 +25,8 @@ namespace NHibernate.Linq.Visitors
 			//Walk backwards if the owning member is not a mapped class (i.e a possible Component)
 			targetObject = member.Expression;
 			while (metaData == null && targetObject != null &&
-			       (targetObject.NodeType == ExpressionType.MemberAccess || targetObject.NodeType == ExpressionType.Parameter ||
-			        targetObject is QuerySourceReferenceExpression))
+				   (targetObject.NodeType == ExpressionType.MemberAccess || targetObject.NodeType == ExpressionType.Parameter ||
+					targetObject is QuerySourceReferenceExpression))
 			{
 				System.Type memberType;
 				if (targetObject is QuerySourceReferenceExpression)
@@ -80,7 +80,7 @@ namespace NHibernate.Linq.Visitors
 		public static bool IsBooleanConstant(Expression expression, out bool value)
 		{
 			var constantExpr = expression as ConstantExpression;
-			if (constantExpr != null && constantExpr.Type == typeof (bool))
+			if (constantExpr != null && constantExpr.Type == typeof(bool))
 			{
 				value = (bool) constantExpr.Value;
 				return true;
@@ -137,10 +137,10 @@ namespace NHibernate.Linq.Visitors
 			memberName = null;
 			// A dynamic component must be an IDictionary with a string key.
 			if (method.Name != "get_Item" ||
-			    targetObject.NodeType != ExpressionType.MemberAccess || // Need the owning member (the dictionary).
-			    !(arguments.First() is ConstantExpression key) ||
-			    key.Type != typeof(string) ||
-			    (!typeof(IDictionary).IsAssignableFrom(targetObject.Type) && !typeof(IDictionary<string, object>).IsAssignableFrom(targetObject.Type)))
+				targetObject.NodeType != ExpressionType.MemberAccess || // Need the owning member (the dictionary).
+				!(arguments.First() is ConstantExpression key) ||
+				key.Type != typeof(string) ||
+				(!typeof(IDictionary).IsAssignableFrom(targetObject.Type) && !typeof(IDictionary<string, object>).IsAssignableFrom(targetObject.Type)))
 			{
 				return false;
 			}
@@ -153,7 +153,7 @@ namespace NHibernate.Linq.Visitors
 		internal static bool IsMappedAs(MethodInfo methodInfo)
 		{
 			return methodInfo.Name == nameof(LinqExtensionMethods.MappedAs) &&
-			       methodInfo.DeclaringType == typeof(LinqExtensionMethods);
+				   methodInfo.DeclaringType == typeof(LinqExtensionMethods);
 		}
 	}
 }

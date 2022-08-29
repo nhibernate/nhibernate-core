@@ -15,11 +15,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1635
 
 		private void CreateTestContext()
 		{
-			var t1 = new ForumThread {Id = 1, Name = "Thread 1"};
-			var t2 = new ForumThread {Id = 2, Name = "Thread 2"};
-			var m1 = new ForumMessage {Id = 1, Name = "Thread 1: Message 1", ForumThread = t1};
-			var m2 = new ForumMessage {Id = 2, Name = "Thread 1: Message 2", ForumThread = t1};
-			var m3 = new ForumMessage {Id = 3, Name = "Thread 2: Message 1", ForumThread = t2};
+			var t1 = new ForumThread { Id = 1, Name = "Thread 1" };
+			var t2 = new ForumThread { Id = 2, Name = "Thread 2" };
+			var m1 = new ForumMessage { Id = 1, Name = "Thread 1: Message 1", ForumThread = t1 };
+			var m2 = new ForumMessage { Id = 2, Name = "Thread 1: Message 2", ForumThread = t1 };
+			var m3 = new ForumMessage { Id = 3, Name = "Thread 2: Message 1", ForumThread = t2 };
 
 			t1.Messages.Add(m1);
 			t1.Messages.Add(m2);

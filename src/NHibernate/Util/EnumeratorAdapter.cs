@@ -37,7 +37,7 @@ namespace NHibernate.Util
 
 		public T Current
 		{
-			get { return (T)_wrapped.Current; }
+			get { return (T) _wrapped.Current; }
 		}
 
 		object IEnumerator.Current

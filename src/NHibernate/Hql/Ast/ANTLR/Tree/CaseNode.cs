@@ -22,7 +22,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-		public override IType  DataType
+		public override IType DataType
 		{
 			get
 			{
@@ -64,7 +64,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public override void SetScalarColumnText(int i)
 		{
-			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i );
+			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i);
 		}
 
 		public IType ExpectedType

@@ -14,20 +14,20 @@ namespace NHibernate.Hql
 		private readonly string[] queryReturnAliases;
 
 		public static HolderInstantiator GetHolderInstantiator(IResultTransformer selectNewTransformer,
-		                                                       IResultTransformer customTransformer,
-		                                                       string[] queryReturnAliases)
+															   IResultTransformer customTransformer,
+															   string[] queryReturnAliases)
 		{
 			return new HolderInstantiator(ResolveResultTransformer(selectNewTransformer, customTransformer),
-			                              queryReturnAliases);
+										  queryReturnAliases);
 		}
 
 		public static IResultTransformer ResolveResultTransformer(IResultTransformer selectNewTransformer, IResultTransformer customTransformer)
 		{
 			return selectNewTransformer ?? customTransformer;
-		}	
+		}
 
 		public static IResultTransformer CreateSelectNewTransformer(ConstructorInfo constructor, bool returnMaps,
-		                                                            bool returnLists)
+																	bool returnLists)
 		{
 			if (constructor != null)
 			{
@@ -48,13 +48,13 @@ namespace NHibernate.Hql
 		}
 
 		public static HolderInstantiator CreateClassicHolderInstantiator(ConstructorInfo constructor,
-		                                                                 IResultTransformer transformer)
+																		 IResultTransformer transformer)
 		{
 			return new HolderInstantiator(ResolveClassicResultTransformer(constructor, transformer), null);
 		}
 
 		public static IResultTransformer ResolveClassicResultTransformer(ConstructorInfo constructor,
-		                                                                 IResultTransformer transformer)
+																		 IResultTransformer transformer)
 		{
 			return constructor != null ? new AliasToBeanConstructorResultTransformer(constructor) : transformer;
 		}

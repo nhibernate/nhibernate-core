@@ -72,7 +72,7 @@ namespace NHibernate.Id.Enhanced
 				if (ctor == null)
 					throw new HibernateException("Optimizer does not have expected contructor");
 
-				return (IOptimizer)ctor.Invoke(new object[] { returnClass, incrementSize });
+				return (IOptimizer) ctor.Invoke(new object[] { returnClass, incrementSize });
 			}
 			catch (Exception ex)
 			{
@@ -89,7 +89,7 @@ namespace NHibernate.Id.Enhanced
 			IOptimizer optimizer = BuildOptimizer(type, returnClass, incrementSize);
 
 			if (optimizer is IInitialValueAwareOptimizer)
-				((IInitialValueAwareOptimizer)optimizer).InjectInitialValue(explicitInitialValue);
+				((IInitialValueAwareOptimizer) optimizer).InjectInitialValue(explicitInitialValue);
 
 			return optimizer;
 		}

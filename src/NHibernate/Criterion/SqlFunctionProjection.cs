@@ -115,7 +115,7 @@ namespace NHibernate.Criterion
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			var type = GetReturnType(criteria, criteriaQuery);
-			return type != null ? new[] {type} : Array.Empty<IType>();
+			return type != null ? new[] { type } : Array.Empty<IType>();
 		}
 
 		private IType GetReturnType(ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -124,7 +124,7 @@ namespace NHibernate.Criterion
 
 			var resultType = returnType ?? returnTypeProjection?.GetTypes(criteria, criteriaQuery).FirstOrDefault();
 
-			return sqlFunction.GetReturnType(new[] {resultType}, criteriaQuery.Factory, true);
+			return sqlFunction.GetReturnType(new[] { resultType }, criteriaQuery.Factory, true);
 		}
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)

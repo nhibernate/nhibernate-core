@@ -61,14 +61,14 @@ namespace NHibernate.Cfg
 		}
 
 		private static HashSet<RequiredEntityName> GetRequiredClassNames(IEnumerable<ClassExtractor.ClassEntry> classEntries,
-		                                                       ICollection<string> containedNames)
+															   ICollection<string> containedNames)
 		{
 			var result = new HashSet<RequiredEntityName>();
 
 			foreach (var ce in classEntries)
 			{
 				if (ce.ExtendsEntityName != null && !containedNames.Contains(ce.FullExtends.Type)
-				    && !containedNames.Contains(ce.ExtendsEntityName))
+					&& !containedNames.Contains(ce.ExtendsEntityName))
 				{
 					result.Add(new RequiredEntityName(ce.ExtendsEntityName, ce.FullExtends.Type));
 				}
@@ -126,7 +126,7 @@ namespace NHibernate.Cfg
 				unchecked
 				{
 					return ((EntityName != null ? EntityName.GetHashCode() : 0) * 397)
-					       ^ (FullClassName != null ? FullClassName.GetHashCode() : 0);
+						   ^ (FullClassName != null ? FullClassName.GetHashCode() : 0);
 				}
 			}
 

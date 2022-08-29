@@ -61,10 +61,10 @@ namespace NHibernate.Linq.ExpressionTransformers
 			var constantExpr = expression as ConstantExpression;
 			if (constantExpr != null)
 			{
-				if (constantExpr.Type == typeof(int) && ((int)constantExpr.Value) == 0)
+				if (constantExpr.Type == typeof(int) && ((int) constantExpr.Value) == 0)
 					return true;
 
-				if (constantExpr.Type == typeof(long) && ((long)constantExpr.Value) == 0)
+				if (constantExpr.Type == typeof(long) && ((long) constantExpr.Value) == 0)
 					return true;
 			}
 

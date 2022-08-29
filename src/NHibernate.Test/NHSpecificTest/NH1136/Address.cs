@@ -55,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1136
 
 		public override int GetHashCode()
 		{
-			return Postcode.GetHashCode() + 29*Number.GetHashCode();
+			return Postcode.GetHashCode() + 29 * Number.GetHashCode();
 		}
 
 		#endregion

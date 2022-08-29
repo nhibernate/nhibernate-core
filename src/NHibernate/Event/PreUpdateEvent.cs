@@ -9,7 +9,7 @@ namespace NHibernate.Event
 	public class PreUpdateEvent : AbstractPreDatabaseOperationEvent
 	{
 		public PreUpdateEvent(object entity, object id, object[] state, object[] oldState, IEntityPersister persister,
-		                      IEventSource source) : base(source, entity, id, persister)
+							  IEventSource source) : base(source, entity, id, persister)
 		{
 			State = state;
 			OldState = oldState;

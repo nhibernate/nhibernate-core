@@ -4,7 +4,7 @@ using NHibernate.Event;
 namespace NHibernate.Test.Events.PostEvents
 {
 	public delegate void AssertionAction(PostUpdateEvent @event);
- 
+
 	public partial class AssertOldStatePostListener : IPostUpdateEventListener
 	{
 		private readonly AssertionAction assertionDelegate;

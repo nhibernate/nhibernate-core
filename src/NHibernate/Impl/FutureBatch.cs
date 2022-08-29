@@ -101,7 +101,7 @@ namespace NHibernate.Impl
 
 				if (needTransformer)
 					AddResultTransformer(
-						multiApproach, 
+						multiApproach,
 						new FutureResultsTransformer(queries));
 
 				results = GetResultsFrom(multiApproach);

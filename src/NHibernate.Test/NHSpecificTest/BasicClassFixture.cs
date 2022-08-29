@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecific.BasicClass.hbm.xml"}; }
+			get { return new string[] { "NHSpecific.BasicClass.hbm.xml" }; }
 		}
 
 		/// <summary>
@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest
 				tx.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void Caching()
 		{
@@ -374,7 +374,7 @@ namespace NHibernate.Test.NHSpecificTest
 			bc[index] = (BasicClass) s[index].Load(typeof(BasicClass), id);
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
-			bc[index].StringArray = new string[] {"string one", "string two"};
+			bc[index].StringArray = new string[] { "string one", "string two" };
 			s[index].Update(bc[index]);
 
 			t[index].Commit();
@@ -442,7 +442,7 @@ namespace NHibernate.Test.NHSpecificTest
 			bc[index] = (BasicClass) s[index].Load(typeof(BasicClass), id);
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
-			bc[index].Int32Array = new int[] {1, 2, 3, 4, 5, 6};
+			bc[index].Int32Array = new int[] { 1, 2, 3, 4, 5, 6 };
 			s[index].Update(bc[index]);
 
 			t[index].Commit();
@@ -702,7 +702,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// This transaction was removed since it was causing a deadlock with SQLite.
 			// This is a theoretical improvement as well, since the transaction could
 			// be in a mode that would prevent non-repeatable reads, hence breaking the test.
-			
+
 			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
 
@@ -816,7 +816,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			int id = 1;
 
-			bc.StringList = new string[] {"one", "two"};
+			bc.StringList = new string[] { "one", "two" };
 
 			s.Save(bc, id);
 			t.Commit();
@@ -839,55 +839,55 @@ namespace NHibernate.Test.NHSpecificTest
 		public void TestLinqWhereOnDictionaryProperty()
 		{
 			// TODO: Move to Linq test namespace
-			
+
 			InsertBasicClass(1);
-			
+
 			using (var session = OpenSession())
 			using (var trans = session.BeginTransaction())
 			{
 				IQueryable<BasicClass> bcs = null;
 				IList<BasicClass> bcsList = null;
-				
+
 				// IDictionary[]
 				bcs = session.Query<BasicClass>()
-					.Where(bc => (string)bc.StringMap["keyZero"] == "string zero");
+					.Where(bc => (string) bc.StringMap["keyZero"] == "string zero");
 
 				Assert.That(bcs.Count(), Is.EqualTo(1));
 				bcsList = bcs.ToList<BasicClass>();
 				Assert.That(bcsList.All(f => f.StringMap != null), Is.True);
 				Assert.That(bcsList.All(f => f.StringMap.Count == 3), Is.True);
-				Assert.That(bcsList.All(f => ((f.StringMap.ContainsKey("keyZero")) && ((string)f.StringMap["keyZero"] == "string zero"))), Is.True);
-				
+				Assert.That(bcsList.All(f => ((f.StringMap.ContainsKey("keyZero")) && ((string) f.StringMap["keyZero"] == "string zero"))), Is.True);
+
 				// IDictionary<,>[]
 				bcs = session.Query<BasicClass>()
 					.Where(bc => bc.StringMapGeneric["keyOne"] == "string one");
-				
+
 				Assert.That(bcs.Count(), Is.EqualTo(1));
 				bcsList = bcs.ToList<BasicClass>();
 				Assert.That(bcsList.All(f => f.StringMapGeneric != null), Is.True);
 				Assert.That(bcsList.All(f => f.StringMapGeneric.Count == 3), Is.True);
 				Assert.That(bcsList.All(f => ((f.StringMapGeneric.ContainsKey("keyOne")) && (f.StringMapGeneric["keyOne"] == "string one"))), Is.True);
-				
+
 				// IDictionary.Contains
 				bcs = session.Query<BasicClass>()
 					.Where(bc => bc.StringMap.ContainsKey("keyZero"));
-				
+
 				Assert.That(bcs.Count(), Is.EqualTo(1));
 				bcsList = bcs.ToList<BasicClass>();
 				Assert.That(bcsList.All(f => f.StringMap != null), Is.True);
 				Assert.That(bcsList.All(f => f.StringMap.Count == 3), Is.True);
-				Assert.That(bcsList.All(f => ((f.StringMap.ContainsKey("keyZero")) && ((string)f.StringMap["keyZero"] == "string zero"))), Is.True);
-				
+				Assert.That(bcsList.All(f => ((f.StringMap.ContainsKey("keyZero")) && ((string) f.StringMap["keyZero"] == "string zero"))), Is.True);
+
 				// IDictionary<,>.ContainsKey
 				bcs = session.Query<BasicClass>()
 					.Where(bc => bc.StringMapGeneric.ContainsKey("keyZero"));
-				
+
 				Assert.That(bcs.Count(), Is.EqualTo(1));
 				bcsList = bcs.ToList<BasicClass>();
 				Assert.That(bcsList.All(f => f.StringMapGeneric != null), Is.True);
 				Assert.That(bcsList.All(f => f.StringMapGeneric.Count == 3), Is.True);
 				Assert.That(bcsList.All(f => ((f.StringMapGeneric.ContainsKey("keyOne")) && (f.StringMapGeneric["keyOne"] == "string one"))), Is.True);
-				
+
 				session.Delete("from BasicClass");
 				trans.Commit();
 			}
@@ -900,7 +900,7 @@ namespace NHibernate.Test.NHSpecificTest
 		public void TestHqlParameterizedDictionaryLookupProducesCorrectSqlParameterOrder()
 		{
 			var bc = InsertBasicClass(1);
-			
+
 			using (var session = OpenSession())
 			using (var trans = session.BeginTransaction())
 			{
@@ -915,7 +915,7 @@ namespace NHibernate.Test.NHSpecificTest
 				trans.Commit();
 			}
 		}
-		
+
 		internal void AssertDelete(int id)
 		{
 			ISession s = OpenSession();
@@ -1021,8 +1021,8 @@ namespace NHibernate.Test.NHSpecificTest
 			basicClass.TrueFalseProperty = true;
 			basicClass.YesNoProperty = true;
 
-			basicClass.StringArray = new string[] {"3 string", "2 string", "1 string"};
-			basicClass.Int32Array = new int[] {5, 4, 3, 2, 1};
+			basicClass.StringArray = new string[] { "3 string", "2 string", "1 string" };
+			basicClass.Int32Array = new int[] { 5, 4, 3, 2, 1 };
 
 			IList<string> stringBag = new List<string>(3);
 			stringBag.Add("string 0");

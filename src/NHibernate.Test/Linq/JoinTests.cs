@@ -40,7 +40,7 @@ namespace NHibernate.Test.Linq
 				Assert.That(Count(spy, "Orders"), Is.EqualTo(1));
 			}
 		}
-		
+
 		[Test]
 		public void OrderLinesFilterByCustomerIdSelectLineShouldNotContainJoinWithCustomer()
 		{
@@ -57,7 +57,7 @@ namespace NHibernate.Test.Linq
 				Assert.That(Count(spy, "Customers"), Is.EqualTo(0));
 			}
 		}
-		
+
 		[Test]
 		public void OrderLinesFilterByCustomerIdSelectCustomerIdShouldNotContainJoinWithCustomer()
 		{
@@ -74,7 +74,7 @@ namespace NHibernate.Test.Linq
 				Assert.That(Count(spy, "Customers"), Is.EqualTo(0));
 			}
 		}
-		
+
 		[Test]
 		public void OrderLinesFilterByCustomerIdSelectCustomerShouldContainJoinWithCustomer()
 		{
@@ -91,7 +91,7 @@ namespace NHibernate.Test.Linq
 				Assert.That(Count(spy, "Customers"), Is.EqualTo(1));
 			}
 		}
-		
+
 		[Test]
 		public void OrderLinesFilterByCustomerCompanyNameAndSelectCustomerIdShouldJoinOrdersOnlyOnce()
 		{
@@ -108,7 +108,7 @@ namespace NHibernate.Test.Linq
 				Assert.That(Count(spy, "Orders"), Is.EqualTo(1));
 			}
 		}
-		
+
 		[Test]
 		public void OrderLinesFilterByOrderDateAndSelectOrderId()
 		{
@@ -171,7 +171,7 @@ namespace NHibernate.Test.Linq
 				Assert.That(countJoins, Is.EqualTo(0));
 			}
 		}
-		
+
 		[Test]
 		public void OrderLinesWithFilterByOrderIdAndDateShouldProduceOneJoin()
 		{
@@ -253,7 +253,7 @@ namespace NHibernate.Test.Linq
 			using (var spy = new SqlLogSpy())
 			{
 				(from l in db.OrderLines
-				 select new {l.Order.OrderId, l.Order.OrderDate}).ToList();
+				 select new { l.Order.OrderId, l.Order.OrderDate }).ToList();
 
 				var countJoins = CountJoins(spy);
 				Assert.That(countJoins, Is.EqualTo(1));
@@ -324,7 +324,7 @@ namespace NHibernate.Test.Linq
 		private static int Count(LogSpy sqlLog, string s)
 		{
 			var log = sqlLog.GetWholeLog();
-			return log.Split(new[] {s}, StringSplitOptions.None).Length - 1;
+			return log.Split(new[] { s }, StringSplitOptions.None).Length - 1;
 		}
 	}
 }

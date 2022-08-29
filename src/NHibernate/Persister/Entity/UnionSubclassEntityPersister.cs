@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NHibernate.Cache;
 using NHibernate.Cfg;
@@ -8,7 +9,6 @@ using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
-using System.Linq;
 
 namespace NHibernate.Persister.Entity
 {
@@ -25,8 +25,8 @@ namespace NHibernate.Persister.Entity
 		private readonly string[] constraintOrderedTableNames;
 		private readonly string[][] constraintOrderedKeyColumnNames;
 
-		public UnionSubclassEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache, 
-			ISessionFactoryImplementor factory, IMapping mapping):base(persistentClass, cache, factory)
+		public UnionSubclassEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
+			ISessionFactoryImplementor factory, IMapping mapping) : base(persistentClass, cache, factory)
 		{
 			if (IdentifierGenerator is IdentityGenerator)
 			{
@@ -245,7 +245,7 @@ namespace NHibernate.Persister.Entity
 		public override string GetSubclassForDiscriminatorValue(object value)
 		{
 			string result;
-			subclassByDiscriminatorValue.TryGetValue((int)value, out result);
+			subclassByDiscriminatorValue.TryGetValue((int) value, out result);
 			return result;
 		}
 

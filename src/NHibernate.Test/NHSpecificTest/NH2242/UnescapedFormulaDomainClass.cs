@@ -1,21 +1,21 @@
 ﻿namespace NHibernate.Test.NHSpecificTest.NH2242
 {
-    public class UnescapedFormulaDomainClass
-    {
-        private int id;
+	public class UnescapedFormulaDomainClass
+	{
+		private int id;
 
-        private int formula;
+		private int formula;
 
-        public int Id
-        {
-            get { return id; }
-            set { id = value; }
-        }
+		public int Id
+		{
+			get { return id; }
+			set { id = value; }
+		}
 
-        public int Formula
-        {
-            get { return formula; }
-            set { formula = value; }
-        }
-    }
+		public int Formula
+		{
+			get { return formula; }
+			set { formula = value; }
+		}
+	}
 }

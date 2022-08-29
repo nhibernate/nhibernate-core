@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1255
 			{
 				return true;
 			}
-			if (obj.GetType() != typeof (CustomerValueId))
+			if (obj.GetType() != typeof(CustomerValueId))
 			{
 				return false;
 			}

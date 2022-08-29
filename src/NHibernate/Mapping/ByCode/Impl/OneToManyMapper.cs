@@ -31,8 +31,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 			if (!collectionElementType.IsAssignableFrom(entityType))
 			{
 				throw new ArgumentOutOfRangeException("entityType",
-				                                      string.Format("The type is incompatible; expected assignable to {0}",
-				                                                    collectionElementType));
+													  string.Format("The type is incompatible; expected assignable to {0}",
+																	collectionElementType));
 			}
 			oneToManyMapping.@class = entityType.GetShortClassName(mapDoc);
 		}

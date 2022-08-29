@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using NHibernate.DomainModel;
 using NHibernate.Hql.Ast.ANTLR;
 using NUnit.Framework;
-using System.Collections;
-using NHibernate.DomainModel;
 
 namespace NHibernate.Test.CollectionFilterTest
 {
@@ -32,30 +32,30 @@ namespace NHibernate.Test.CollectionFilterTest
 			Many many1 = new Many();
 			many1.X = 10;
 			many1.One = one;
-			one.Manies.Add( many1 );
+			one.Manies.Add(many1);
 
 			Many many2 = new Many();
 			many2.X = 20;
 			many2.One = one;
-			one.Manies.Add( many2 );
+			one.Manies.Add(many2);
 
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save( one );
-				s.Save( many1 );
-				s.Save( many2 );
+				s.Save(one);
+				s.Save(many1);
+				s.Save(many2);
 				t.Commit();
 			}
 		}
 
 		protected override void OnTearDown()
 		{
-			using( ISession session = OpenSession() )
-			using( ITransaction tx = session.BeginTransaction() )
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
 			{
-				session.Delete( "from Many" );
-				session.Delete( "from One" );
+				session.Delete("from Many");
+				session.Delete("from One");
 				tx.Commit();
 			}
 			base.OnTearDown();
@@ -67,7 +67,7 @@ namespace NHibernate.Test.CollectionFilterTest
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				One one2 = (One)s.CreateQuery("from One").UniqueResult();
+				One one2 = (One) s.CreateQuery("from One").UniqueResult();
 
 				Assert.Throws<QuerySyntaxException>(() =>
 				{
@@ -86,7 +86,7 @@ namespace NHibernate.Test.CollectionFilterTest
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				One one2 = (One)s.CreateQuery("from One").UniqueResult();
+				One one2 = (One) s.CreateQuery("from One").UniqueResult();
 
 				Assert.Throws<QuerySyntaxException>(() =>
 				{
@@ -105,7 +105,7 @@ namespace NHibernate.Test.CollectionFilterTest
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				One one2 = (One)s.CreateQuery("from One").UniqueResult();
+				One one2 = (One) s.CreateQuery("from One").UniqueResult();
 
 				Assert.Throws<QuerySyntaxException>(() =>
 				{
@@ -124,7 +124,7 @@ namespace NHibernate.Test.CollectionFilterTest
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				One one2 = (One)s.CreateQuery("from One").UniqueResult();
+				One one2 = (One) s.CreateQuery("from One").UniqueResult();
 
 				s.CreateFilter(one2.Manies, "where this.X in (select t0.X from Many t0)")
 					.List();
@@ -140,7 +140,7 @@ namespace NHibernate.Test.CollectionFilterTest
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				One one2 = (One)s.CreateQuery("from One").UniqueResult();
+				One one2 = (One) s.CreateQuery("from One").UniqueResult();
 
 				Assert.Throws<QuerySyntaxException>(() =>
 				{

@@ -1,6 +1,6 @@
 using System;
-using NUnit.Framework;
 using NHibernate.Test.Immutable.EntityWithMutableCollection;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 {
@@ -14,23 +14,23 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 				return new string[] { "Immutable.EntityWithMutableCollection.Inverse.ContractVariationVersionedOneToManyJoin.hbm.xml" };
 			}
 		}
-		
+
 		protected override bool CheckUpdateCountsAfterAddingExistingElement()
 		{
 			return false;
 		}
-	
+
 		protected override bool CheckUpdateCountsAfterRemovingElementWithoutDelete()
 		{
 			return false;
 		}
-		
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override void AddExistingOneToManyElementToPersistentEntity()
 		{
 		}
-		
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override void CreateWithEmptyOneToManyCollectionUpdateWithExistingElement()
@@ -42,13 +42,13 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 		public override void CreateWithEmptyOneToManyCollectionMergeWithExistingElement()
 		{
 		}
-		
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override void CreateWithNonEmptyOneToManyCollectionOfExisting()
 		{
 		}
-			
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override void DeleteOneToManyElement()

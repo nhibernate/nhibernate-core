@@ -16,15 +16,15 @@ namespace NHibernate.Loader.Collection
 	/// <seealso cref="BasicCollectionLoader"/>
 	public class OneToManyLoader : CollectionLoader
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (OneToManyLoader));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(OneToManyLoader));
 
 		public OneToManyLoader(IQueryableCollection oneToManyPersister, ISessionFactoryImplementor session,
 							   IDictionary<string, IFilter> enabledFilters)
-			: this(oneToManyPersister, 1, session, enabledFilters) {}
+			: this(oneToManyPersister, 1, session, enabledFilters) { }
 
 		public OneToManyLoader(IQueryableCollection oneToManyPersister, int batchSize, ISessionFactoryImplementor factory,
 							   IDictionary<string, IFilter> enabledFilters)
-			: this(oneToManyPersister, batchSize, null, factory, enabledFilters) {}
+			: this(oneToManyPersister, batchSize, null, factory, enabledFilters) { }
 
 		public OneToManyLoader(IQueryableCollection oneToManyPersister, int batchSize, SqlString subquery,
 							   ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)

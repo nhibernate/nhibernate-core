@@ -59,12 +59,12 @@ namespace NHibernate.Tuple.Entity
 				setters[i] = BuildPropertySetter(property, mappingInfo);
 				if (!property.IsBasicPropertyAccessor)
 					foundCustomAccessor = true;
-				i++;				
+				i++;
 			}
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("{0} accessors found for entity: {1}", foundCustomAccessor ? "Custom" : "No custom",
-				                mappingInfo.EntityName);
+								mappingInfo.EntityName);
 			}
 			hasCustomAccessors = foundCustomAccessor;
 
@@ -85,7 +85,7 @@ namespace NHibernate.Tuple.Entity
 			}
 
 			Mapping.Component mapper = mappingInfo.IdentifierMapper;
-			identifierMapperType = mapper == null ? null : (IAbstractComponentType)mapper.Type;
+			identifierMapperType = mapper == null ? null : (IAbstractComponentType) mapper.Type;
 		}
 
 		#region IEntityTuplizer Members
@@ -131,7 +131,7 @@ namespace NHibernate.Tuple.Entity
 					}
 					else
 					{
-						ComponentType copier = (ComponentType)entityMetamodel.IdentifierProperty.Type;
+						ComponentType copier = (ComponentType) entityMetamodel.IdentifierProperty.Type;
 						id = copier.Instantiate();
 						copier.SetPropertyValues(id, identifierMapperType.GetPropertyValues(entity));
 					}
@@ -151,7 +151,7 @@ namespace NHibernate.Tuple.Entity
 			{
 				if (entity != id)
 				{
-					IAbstractComponentType copier = (IAbstractComponentType)entityMetamodel.IdentifierProperty.Type;
+					IAbstractComponentType copier = (IAbstractComponentType) entityMetamodel.IdentifierProperty.Type;
 					copier.SetPropertyValues(entity, copier.GetPropertyValues(id));
 				}
 			}
@@ -215,7 +215,7 @@ namespace NHibernate.Tuple.Entity
 			object baseValue = GetPropertyValue(entity, index);
 			if (loc > 0)
 			{
-				ComponentType type = (ComponentType)entityMetamodel.PropertyTypes[index];
+				ComponentType type = (ComponentType) entityMetamodel.PropertyTypes[index];
 				return GetComponentValue(type, baseValue, propertyPath.Substring(loc + 1));
 			}
 			else
@@ -392,7 +392,7 @@ namespace NHibernate.Tuple.Entity
 
 			if (loc > 0)
 			{
-				ComponentType subtype = (ComponentType)type.Subtypes[index];
+				ComponentType subtype = (ComponentType) type.Subtypes[index];
 				return GetComponentValue(subtype, baseValue, propertyPath.Substring(loc + 1));
 			}
 			else

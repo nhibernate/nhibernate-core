@@ -17,10 +17,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1969
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					var entity = new EntityWithTypeProperty {Id = 1, TypeValue = typeof (File)};
+					var entity = new EntityWithTypeProperty { Id = 1, TypeValue = typeof(File) };
 					s.Save(entity);
 
-					entity = new EntityWithTypeProperty {Id = 2, TypeValue = typeof (DummyEntity)};
+					entity = new EntityWithTypeProperty { Id = 2, TypeValue = typeof(DummyEntity) };
 					s.Save(entity);
 
 					tx.Commit();
@@ -46,8 +46,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1969
 		{
 			using (ISession s = OpenSession())
 			{
-				ICriteria criteria = s.CreateCriteria(typeof (EntityWithTypeProperty));
-				criteria.Add(Restrictions.Eq("TypeValue", typeof (DummyEntity)));
+				ICriteria criteria = s.CreateCriteria(typeof(EntityWithTypeProperty));
+				criteria.Add(Restrictions.Eq("TypeValue", typeof(DummyEntity)));
 				IList<EntityWithTypeProperty> results = criteria.List<EntityWithTypeProperty>();
 				Assert.AreEqual(1, results.Count);
 				Assert.AreEqual(2, results[0].Id);
@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1969
 			using (ISession s = OpenSession())
 			{
 				IQuery q = s.CreateQuery("select t from EntityWithTypeProperty as t where t.TypeValue = :type");
-				q.SetParameter("type", typeof (DummyEntity));
+				q.SetParameter("type", typeof(DummyEntity));
 				IList<EntityWithTypeProperty> results = q.List<EntityWithTypeProperty>();
 				Assert.AreEqual(1, results.Count);
 				Assert.AreEqual(2, results[0].Id);
@@ -72,8 +72,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1969
 		{
 			using (ISession s = OpenSession())
 			{
-				ICriteria criteria = s.CreateCriteria(typeof (EntityWithTypeProperty));
-				criteria.Add(Restrictions.Eq("TypeValue", typeof (File)));
+				ICriteria criteria = s.CreateCriteria(typeof(EntityWithTypeProperty));
+				criteria.Add(Restrictions.Eq("TypeValue", typeof(File)));
 				IList<EntityWithTypeProperty> results = criteria.List<EntityWithTypeProperty>();
 				Assert.AreEqual(1, results.Count);
 				Assert.AreEqual(1, results[0].Id);
@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1969
 			using (ISession s = OpenSession())
 			{
 				IQuery q = s.CreateQuery("select t from EntityWithTypeProperty as t where t.TypeValue = :type");
-				q.SetParameter("type", typeof (File));
+				q.SetParameter("type", typeof(File));
 				IList<EntityWithTypeProperty> results = q.List<EntityWithTypeProperty>();
 				Assert.AreEqual(1, results.Count);
 				Assert.AreEqual(1, results[0].Id);

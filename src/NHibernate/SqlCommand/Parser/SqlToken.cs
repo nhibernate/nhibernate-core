@@ -88,13 +88,13 @@ namespace NHibernate.SqlCommand.Parser
 			uint hashCode = FNV_OFFSET_BASIS;
 			unchecked
 			{
-				hashCode ^= (uint)_tokenType;
+				hashCode ^= (uint) _tokenType;
 				hashCode *= FNV_PRIME;
-				hashCode ^= (uint)_sqlIndex;
+				hashCode ^= (uint) _sqlIndex;
 				hashCode *= FNV_PRIME;
-				hashCode ^= (uint)_length;
+				hashCode ^= (uint) _length;
 				hashCode *= FNV_PRIME;
-				return (int)hashCode;
+				return (int) hashCode;
 			}
 		}
 

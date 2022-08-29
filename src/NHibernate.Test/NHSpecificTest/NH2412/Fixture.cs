@@ -27,16 +27,16 @@ namespace NHibernate.Test.NHSpecificTest.NH2412
 			ISession s = OpenSession();
 			try
 			{
-				Customer c1 = new Customer {Name = "Allen"};
+				Customer c1 = new Customer { Name = "Allen" };
 				s.Save(c1);
-				Customer c2 = new Customer {Name = "Bob"};
+				Customer c2 = new Customer { Name = "Bob" };
 				s.Save(c2);
-				Customer c3 = new Customer {Name = "Charlie"};
+				Customer c3 = new Customer { Name = "Charlie" };
 				s.Save(c3);
 
-				s.Save(new Order {Customer = c1});
-				s.Save(new Order {Customer = c3});
-				s.Save(new Order {Customer = c2});
+				s.Save(new Order { Customer = c1 });
+				s.Save(new Order { Customer = c3 });
+				s.Save(new Order { Customer = c2 });
 				s.Save(new Order());
 
 				s.Flush();
@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2412
 				Assert.AreEqual(4, orders.Count);
 				if (orders[0].Customer == null)
 				{
-					CollectionAssert.AreEqual(new[] {"Allen", "Bob", "Charlie"}, orders.Skip(1).Select(o => o.Customer.Name).ToArray());
+					CollectionAssert.AreEqual(new[] { "Allen", "Bob", "Charlie" }, orders.Skip(1).Select(o => o.Customer.Name).ToArray());
 				}
 				else
 				{

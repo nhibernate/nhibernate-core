@@ -11,7 +11,7 @@ namespace NHibernate.Linq.ReWriters
 {
 	public class RemoveUnnecessaryBodyOperators : NhQueryModelVisitorBase
 	{
-		private RemoveUnnecessaryBodyOperators() {}
+		private RemoveUnnecessaryBodyOperators() { }
 
 		public static void ReWrite(QueryModel queryModel)
 		{
@@ -62,7 +62,7 @@ namespace NHibernate.Linq.ReWriters
 			}
 			if (resultOperator is CastResultOperator)
 			{
-				Array.ForEach(queryModel.ResultOperators.OfType<CastResultOperator>().ToArray(), castOperator=> queryModel.ResultOperators.Remove(castOperator));
+				Array.ForEach(queryModel.ResultOperators.OfType<CastResultOperator>().ToArray(), castOperator => queryModel.ResultOperators.Remove(castOperator));
 			}
 			if (resultOperator is AnyResultOperator)
 			{

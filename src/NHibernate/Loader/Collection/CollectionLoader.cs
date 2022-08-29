@@ -53,7 +53,7 @@ namespace NHibernate.Loader.Collection
 			var specifications = new List<IParameterSpecification>();
 			int position = 0;
 			var parameters = sqlPatameters.ToArray();
-			for (var sqlParameterPos = 0; sqlParameterPos < parameters.Length; )
+			for (var sqlParameterPos = 0; sqlParameterPos < parameters.Length;)
 			{
 				var specification = new PositionalParameterSpecification(1, 0, position++) { ExpectedType = KeyType };
 				var paramTrackers = specification.GetIdsForBackTrack(Factory);
@@ -83,8 +83,8 @@ namespace NHibernate.Loader.Collection
 				bool hasFirstRow = GetFirstRow(selection) > 0;
 				bool useOffset = hasFirstRow && dialect.SupportsLimitOffset;
 				int max = GetMaxOrLimit(dialect, selection);
-				int? skip = useOffset ? (int?)dialect.GetOffsetValue(GetFirstRow(selection)) : null;
-				int? take = max != int.MaxValue ? (int?)max : null;
+				int? skip = useOffset ? (int?) dialect.GetOffsetValue(GetFirstRow(selection)) : null;
+				int? take = max != int.MaxValue ? (int?) max : null;
 
 				Parameter skipSqlParameter = null;
 				Parameter takeSqlParameter = null;

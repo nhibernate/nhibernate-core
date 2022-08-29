@@ -27,7 +27,7 @@ namespace NHibernate.Linq.Visitors
 			_queryModel = queryModel;
 			AddJoinMethod = AddJoin;
 		}
-		
+
 		internal System.Action<QueryModel, NhJoinClause> AddJoinMethod { get; }
 
 		public IEnumerable<NhJoinClause> Joins

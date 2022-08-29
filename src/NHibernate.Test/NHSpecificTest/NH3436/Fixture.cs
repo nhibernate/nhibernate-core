@@ -93,7 +93,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3436
 			WaitHandle.WaitAll(events);
 			Assert.IsEmpty(exceptions);
 		}
-		
+
 		[Test]
 		public void TestQueryWithContains()
 		{

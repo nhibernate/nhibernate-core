@@ -12,7 +12,7 @@ namespace NHibernate.Cfg.Loquacious
 		ICommandsConfiguration AutoCommentingSql();
 		IDbIntegrationConfiguration WithHqlToSqlSubstitutions(string csvQuerySubstitutions);
 		IDbIntegrationConfiguration WithDefaultHqlToSqlSubstitutions();
-		
+
 		/// <summary>
 		/// Maximum depth of outer join fetching
 		/// </summary>

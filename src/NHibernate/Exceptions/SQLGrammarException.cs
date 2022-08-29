@@ -10,8 +10,8 @@ namespace NHibernate.Exceptions
 	[Serializable]
 	public class SQLGrammarException : ADOException
 	{
-		public SQLGrammarException(SerializationInfo info, StreamingContext context) : base(info, context) {}
-		public SQLGrammarException(string message, Exception innerException, string sql) : base(message, innerException, sql) {}
-		public SQLGrammarException(string message, Exception innerException) : base(message, innerException) {}
+		public SQLGrammarException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+		public SQLGrammarException(string message, Exception innerException, string sql) : base(message, innerException, sql) { }
+		public SQLGrammarException(string message, Exception innerException) : base(message, innerException) { }
 	}
 }

@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 				session.Save(corpA);
 				session.Save(corpB);
 				session.Save(clientZ);
-				
+
 				session.Save(new Project { Name = "A", BillingClient = null, CorporateClient = null, Client = clientA });
 				session.Save(new Project { Name = "B", BillingClient = null, CorporateClient = null, Client = clientB });
 				session.Save(new Project { Name = "C", BillingClient = null, CorporateClient = corpA, Client = clientA });
@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 				session.Save(new Project { Name = "F", BillingClient = clientB, CorporateClient = null, Client = clientA });
 				session.Save(new Project { Name = "G", BillingClient = clientZ, CorporateClient = null, Client = clientA });
 				session.Save(new Project { Name = "Z", BillingClient = null, CorporateClient = null, Client = null });
-				
+
 				session.Flush();
 				transaction.Commit();
 			}
@@ -53,23 +53,23 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 			AreEqual(
 				// Actual
 				q => q.OrderBy(p => p.Name)
-				      .Select(p => (p.BillingClient ?? p.CorporateClient ?? p.Client).Name),
+					  .Select(p => (p.BillingClient ?? p.CorporateClient ?? p.Client).Name),
 				// Expected
 				q => q.OrderBy(p => p.Name)
-				      .Select(p => p.BillingClient != null ? p.BillingClient.Name : p.CorporateClient != null ? p.CorporateClient.Name : p.Client.Name)
+					  .Select(p => p.BillingClient != null ? p.BillingClient.Name : p.CorporateClient != null ? p.CorporateClient.Name : p.Client.Name)
 			);
 		}
-		
+
 		[Test]
 		public void SelectClauseToAnon()
 		{
 			AreEqual(
 				// Actual
 				q => q.OrderBy(p => p.Name)
-				      .Select(p => new { Project = p.Name, Client = (p.BillingClient ?? p.CorporateClient ?? p.Client).Name }),
+					  .Select(p => new { Project = p.Name, Client = (p.BillingClient ?? p.CorporateClient ?? p.Client).Name }),
 				// Expected
 				q => q.OrderBy(p => p.Name)
-				      .Select(p => new { Project = p.Name, Client = p.BillingClient != null ? p.BillingClient.Name : p.CorporateClient != null ? p.CorporateClient.Name : p.Client.Name })
+					  .Select(p => new { Project = p.Name, Client = p.BillingClient != null ? p.BillingClient.Name : p.CorporateClient != null ? p.CorporateClient.Name : p.Client.Name })
 			);
 		}
 
@@ -79,12 +79,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 			AreEqual(
 				// Actual
 				q => q.OrderBy(p => (p.BillingClient ?? p.CorporateClient ?? p.Client).Name ?? "ZZZ")
-				      .ThenBy(p => p.Name)
-				      .Select(p => p.Name),
+					  .ThenBy(p => p.Name)
+					  .Select(p => p.Name),
 				// Expected
 				q => q.OrderBy(p => (p.BillingClient != null ? p.BillingClient.Name : p.CorporateClient != null ? p.CorporateClient.Name : p.Client.Name) ?? "ZZZ")
-				      .ThenBy(p => p.Name)
-				      .Select(p => p.Name)
+					  .ThenBy(p => p.Name)
+					  .Select(p => p.Name)
 			);
 		}
 
@@ -94,12 +94,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 			AreEqual(
 				// Actual
 				q => q.GroupBy(p => (p.BillingClient ?? p.CorporateClient ?? p.Client).Name)
-				      .OrderBy(x => x.Key ?? "ZZZ")
-				      .Select(grp => new  { grp.Key, Count = grp.Count() }),
+					  .OrderBy(x => x.Key ?? "ZZZ")
+					  .Select(grp => new { grp.Key, Count = grp.Count() }),
 				// Expected
 				q => q.GroupBy(p => p.BillingClient != null ? p.BillingClient.Name : p.CorporateClient != null ? p.CorporateClient.Name : p.Client.Name)
-				      .OrderBy(x => x.Key ?? "ZZZ")
-				      .Select(grp => new  { grp.Key, Count = grp.Count() })
+					  .OrderBy(x => x.Key ?? "ZZZ")
+					  .Select(grp => new { grp.Key, Count = grp.Count() })
 			);
 		}
 	}

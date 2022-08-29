@@ -16,9 +16,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2202
 			{
 				return _addresses ?? (_addresses = new HashSet<EmployeeAddress>());
 			}
-			set 
+			set
 			{
-				_addresses = value; 
+				_addresses = value;
 			}
 		}
 
@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2202
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (Employee)) return false;
+			if (obj.GetType() != typeof(Employee)) return false;
 			return Equals((Employee) obj);
 		}
 
@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2202
 		{
 			unchecked
 			{
-				return (NationalId*397) ^ EmployeeId;
+				return (NationalId * 397) ^ EmployeeId;
 			}
 		}
 	}
@@ -62,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2202
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (EmployeeAddress)) return false;
+			if (obj.GetType() != typeof(EmployeeAddress)) return false;
 			return Equals((EmployeeAddress) obj);
 		}
 
@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2202
 		{
 			unchecked
 			{
-				return ((Employee != null ? Employee.GetHashCode() : 0)*397) ^ (Type != null ? Type.GetHashCode() : 0);
+				return ((Employee != null ? Employee.GetHashCode() : 0) * 397) ^ (Type != null ? Type.GetHashCode() : 0);
 			}
 		}
 	}

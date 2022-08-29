@@ -54,8 +54,8 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 				return true;
 
 			return (date1.Year == date2.Year &&
-			        date1.Month == date2.Month &&
-			        date1.Day == date2.Day);
+					date1.Month == date2.Month &&
+					date1.Day == date2.Day);
 		}
 	}
 }

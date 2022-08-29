@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1343
 		{
 			Product product1 = new Product("product1");
 			OrderLine orderLine = new OrderLine("1", product1);
-			
+
 			using (ISession session = OpenSession())
 			{
 				session.Save(product1);

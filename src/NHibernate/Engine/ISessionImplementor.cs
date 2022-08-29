@@ -41,7 +41,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		internal static object Instantiate(this ISessionImplementor session, IEntityPersister persister, object id)
 		{
-			if(session is AbstractSessionImpl impl)
+			if (session is AbstractSessionImpl impl)
 				return impl.Instantiate(persister, id);
 			return session.Instantiate(persister.EntityName, id);
 		}
@@ -323,7 +323,7 @@ namespace NHibernate.Engine
 		IDictionary<string, IFilter> EnabledFilters { get; }
 
 		IQuery GetNamedSQLQuery(string name);
-		
+
 		// Since v5.2
 		[Obsolete("This method has no usages and will be removed in a future version")]
 		IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar); // NH specific for MultiQuery

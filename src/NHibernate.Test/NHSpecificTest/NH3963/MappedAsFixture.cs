@@ -1,8 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NHibernate.Linq;
-using NUnit.Framework;
 using NHibernate.Type;
-using System;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3963
 {
@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3963
 			using (session.BeginTransaction())
 			{
 				var result = session.Query<Entity>()
-					.Where(e => e.Name == "Bob".MappedAs(e.Id == Guid.Empty ? (IType)NHibernateUtil.AnsiString : NHibernateUtil.StringClob));
+					.Where(e => e.Name == "Bob".MappedAs(e.Id == Guid.Empty ? (IType) NHibernateUtil.AnsiString : NHibernateUtil.StringClob));
 
 				Assert.Throws<HibernateException>(() => { result.ToList(); });
 			}

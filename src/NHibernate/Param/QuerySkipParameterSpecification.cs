@@ -20,7 +20,7 @@ namespace NHibernate.Param
 
 		public QuerySkipParameterSpecification()
 		{
-			idTrack = new[] {limitParametersNameForThisQuery};
+			idTrack = new[] { limitParametersNameForThisQuery };
 		}
 
 		#region IParameterSpecification Members

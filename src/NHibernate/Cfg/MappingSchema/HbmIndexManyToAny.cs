@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmIndexManyToAny: IColumnsMapping, IAnyMapping
+	public partial class HbmIndexManyToAny : IColumnsMapping, IAnyMapping
 	{
 		#region Implementation of IColumnsMapping
 

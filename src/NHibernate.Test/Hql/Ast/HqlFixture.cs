@@ -1,6 +1,6 @@
 using System;
-using System.Linq;
 using System.Collections;
+using System.Linq;
 using NHibernate.Criterion;
 using NHibernate.Engine.Query;
 using NHibernate.Hql;
@@ -81,7 +81,7 @@ namespace NHibernate.Test.Hql.Ast
 			{
 				s.CreateQuery("select distinct z from Animal a join a.zoo as z order by z.name").List();
 			}
-		} 
+		}
 
 		[Test]
 		public void CaseClauseInSelect()
@@ -90,19 +90,19 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				s.Save(new Animal {BodyWeight = 12, Description = "Polliwog"});
+				s.Save(new Animal { BodyWeight = 12, Description = "Polliwog" });
 				t.Commit();
 			}
-		
+
 			using (ISession s = OpenSession())
 			{
 				var l = s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end from Animal a").List();
-				var element = (IList)l[0];
+				var element = (IList) l[0];
 				Assert.That(element[1], Is.EqualTo(2));
 
 				// work with alias
 				l = s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end as value from Animal a").List();
-				element = (IList)l[0];
+				element = (IList) l[0];
 				Assert.That(element[1], Is.EqualTo(2));
 			}
 
@@ -247,7 +247,7 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				s.Save(new Human{ IntValue = 11, BodyWeight = 12.5f, Description = "Polliwog" });
+				s.Save(new Human { IntValue = 11, BodyWeight = 12.5f, Description = "Polliwog" });
 				t.Commit();
 			}
 
@@ -301,9 +301,9 @@ namespace NHibernate.Test.Hql.Ast
 			using (var t = s.BeginTransaction())
 			{
 				// arrange
-				s.Save(new Animal() {Description = "cat1", BodyWeight = 2.1f});
-				s.Save(new Animal() {Description = "cat2", BodyWeight = 2.5f});
-				s.Save(new Animal() {Description = "cat3", BodyWeight = 2.7f});
+				s.Save(new Animal() { Description = "cat1", BodyWeight = 2.1f });
+				s.Save(new Animal() { Description = "cat2", BodyWeight = 2.5f });
+				s.Save(new Animal() { Description = "cat3", BodyWeight = 2.7f });
 
 				// act
 				s.CreateQuery("insert into Animal (description, bodyWeight) select a.description, :weight from Animal a where a.bodyWeight < :weight")
@@ -311,7 +311,7 @@ namespace NHibernate.Test.Hql.Ast
 
 				// assert
 				Assert.AreEqual(3, s.CreateCriteria<Animal>().SetProjection(Projections.RowCount())
-				                    .Add(Restrictions.Gt("bodyWeight", 5.5f)).UniqueResult<int>());
+									.Add(Restrictions.Gt("bodyWeight", 5.5f)).UniqueResult<int>());
 
 				s.CreateQuery("delete from Animal").ExecuteUpdate();
 				t.Commit();
@@ -324,7 +324,7 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (ITransaction txn = s.BeginTransaction())
 			{
-				s.Save(new Animal {Description = "cat1", BodyWeight = 1});
+				s.Save(new Animal { Description = "cat1", BodyWeight = 1 });
 
 				// NH-2290: Unary minus before parentheses wasn't handled correctly (this query returned 0).
 				int actual = s.CreateQuery("select -(1+1) from Animal as h")
@@ -343,7 +343,7 @@ namespace NHibernate.Test.Hql.Ast
 		public void CountDistinctOnFunction()
 		{
 			var hql = @"SELECT COUNT(DISTINCT DATE(m.birthdate)) FROM Mammal m";
-			using(var s = OpenSession())
+			using (var s = OpenSession())
 				s.CreateQuery(hql).List();
 		}
 	}

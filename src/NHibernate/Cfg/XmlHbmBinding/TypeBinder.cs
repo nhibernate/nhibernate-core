@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class TypeBinder: Binder
+	public class TypeBinder : Binder
 	{
 		private readonly SimpleValue value;
 
@@ -22,11 +22,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public void Bind(string typeName)
 		{
-			if(string.IsNullOrEmpty(typeName))
+			if (string.IsNullOrEmpty(typeName))
 			{
 				return;
 			}
-			Bind(new HbmType { name= typeName });
+			Bind(new HbmType { name = typeName });
 		}
 
 		public void Bind(HbmType typeMapping)
@@ -37,12 +37,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				return;
 			}
 			string originalTypeName = typeMapping.name;
-			if(originalTypeName == null)
+			if (originalTypeName == null)
 			{
 				return;
 			}
 			var parameters = new Dictionary<string, string>();
-			if(typeMapping.param != null)
+			if (typeMapping.param != null)
 			{
 				System.Array.ForEach(typeMapping.param, p => parameters[p.name] = p.Text.LinesToString());
 			}
@@ -62,7 +62,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				parameters = new Dictionary<string, string>(typeDef.Parameters).AddOrOverride(parameters);
 			}
 			else if (NeedQualifiedClassName(originalTypeName)
-			         && (typeDef = Mappings.GetTypeDef(FullQualifiedClassName(originalTypeName, Mappings))) != null)
+					 && (typeDef = Mappings.GetTypeDef(FullQualifiedClassName(originalTypeName, Mappings))) != null)
 			{
 				// NH: allow className completing it with assembly+namespace of the mapping doc.
 				typeName = typeDef.TypeClass;

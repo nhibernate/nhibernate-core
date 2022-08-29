@@ -29,14 +29,14 @@ namespace NHibernate.DomainModel.NHSpecific
 		{
 			return _provider.GetExpressionOfNew();
 		}
-		
+
 		public Expression GetExpressionOfTypeBinary()
 		{
 			return _provider.GetExpressionOfTypeBinary();
 		}
 	}
 
-	public class TypedQueryExpressionProvider<T> where T : new ()
+	public class TypedQueryExpressionProvider<T> where T : new()
 	{
 		public System.Type GetSuppliedType()
 		{
@@ -46,7 +46,7 @@ namespace NHibernate.DomainModel.NHSpecific
 		public Expression GetExpressionOfMethodCall()
 		{
 			Expression<Func<object>> exp = () =>
-				Enumerable.Empty<object>().Select(o => (T)o).ToList();
+				Enumerable.Empty<object>().Select(o => (T) o).ToList();
 
 			return exp;
 		}

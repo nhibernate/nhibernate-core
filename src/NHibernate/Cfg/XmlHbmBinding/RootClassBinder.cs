@@ -93,7 +93,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					uk.AddColumns(property.ColumnIterator);
 				});
 
-			rootClass.Table.AddUniqueKey(uk);	
+			rootClass.Table.AddUniqueKey(uk);
 		}
 
 		private string GetClassTableName(PersistentClass model, HbmClass classSchema)
@@ -112,9 +112,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string propertyName = timestampSchema.name;
 			var simpleValue = new SimpleValue(table);
 			new ColumnsBinder(simpleValue, Mappings).Bind(timestampSchema.Columns, false,
-			                                              () =>
-			                                              new HbmColumn
-			                                              	{name = mappings.NamingStrategy.PropertyToColumnName(propertyName)});
+														  () =>
+														  new HbmColumn
+														  { name = mappings.NamingStrategy.PropertyToColumnName(propertyName) });
 
 			if (!simpleValue.IsTypeSpecified)
 			{
@@ -205,9 +205,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			var simpleValue = new SimpleValue(table);
 			new TypeBinder(simpleValue, Mappings).Bind(versionSchema.type);
 			new ColumnsBinder(simpleValue, Mappings).Bind(versionSchema.Columns, false,
-			                                              () =>
-			                                              new HbmColumn
-			                                              	{name = mappings.NamingStrategy.PropertyToColumnName(propertyName)});
+														  () =>
+														  new HbmColumn
+														  { name = mappings.NamingStrategy.PropertyToColumnName(propertyName) });
 
 			if (!simpleValue.IsTypeSpecified)
 				simpleValue.TypeName = NHibernateUtil.Int32.Name;

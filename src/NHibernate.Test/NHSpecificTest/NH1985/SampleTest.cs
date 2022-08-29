@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 				}
 			}
 		}
-		
+
 		[Test]
 		public void AllowDeletionOfImmutableObject()
 		{

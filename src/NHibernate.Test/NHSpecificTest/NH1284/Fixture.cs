@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1284
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				jimmy = (Person)s.Get(typeof(Person), "Jimmy Hendrix");
+				jimmy = (Person) s.Get(typeof(Person), "Jimmy Hendrix");
 				tx.Commit();
 			}
 			Assert.IsFalse(jimmy.Address.HasValue);

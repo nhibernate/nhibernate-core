@@ -17,7 +17,7 @@ namespace NHibernate.Mapping.ByCode
 		void Class(System.Type componentType);
 	}
 
-	public interface IComponentMapper : IComponentAttributesMapper, IPropertyContainerMapper {}
+	public interface IComponentMapper : IComponentAttributesMapper, IPropertyContainerMapper { }
 
 	public interface IComponentAttributesMapper<TComponent> : IEntityPropertyMapper
 	{
@@ -32,7 +32,7 @@ namespace NHibernate.Mapping.ByCode
 	}
 
 	public interface IComponentMapper<TComponent> : IComponentAttributesMapper<TComponent>, IPropertyContainerMapper<TComponent>
-	{}
+	{ }
 
 	public static class ComponentAttributesMapperExtensions
 	{

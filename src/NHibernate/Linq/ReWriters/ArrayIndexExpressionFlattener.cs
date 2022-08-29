@@ -25,10 +25,10 @@ namespace NHibernate.Linq.ReWriters
 				return visitedExpression;
 
 			var expressionList = expression.Left as NewArrayExpression;
-			if (expressionList == null ||  expressionList.NodeType != ExpressionType.NewArrayInit)
+			if (expressionList == null || expressionList.NodeType != ExpressionType.NewArrayInit)
 				return visitedExpression;
 
-			return Visit(expressionList.Expressions[(int)index.Value]);
+			return Visit(expressionList.Expressions[(int) index.Value]);
 		}
 
 		protected override Expression VisitSubQuery(SubQueryExpression expression)

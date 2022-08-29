@@ -48,9 +48,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 			using (var s = OpenSession())
 			{
 				var query = s.Query<Asset>()
-				             .FetchMany(x => x.Documents)
-				             .ToList();
-				
+							 .FetchMany(x => x.Documents)
+							 .ToList();
+
 				Assert.That(query.Count, Is.EqualTo(1), "unfiltered assets");
 				Assert.That(query[0].Documents.Count, Is.EqualTo(2), "unfiltered asset documents");
 			}
@@ -59,15 +59,15 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 		[Test]
 		public void TestFilteredByWhereCollectionLinqQuery()
 		{
-			if(Dialect is PostgreSQLDialect)
+			if (Dialect is PostgreSQLDialect)
 				Assert.Ignore("Dialect doesn't support 0/1 to bool implicit cast");
 
 			using (var s = OpenSession())
 			{
 				var query = s.Query<Asset>()
-				             .FetchMany(x => x.DocumentsFiltered)
-				             .ToList();
-				
+							 .FetchMany(x => x.DocumentsFiltered)
+							 .ToList();
+
 				Assert.That(query.Count, Is.EqualTo(1), "unfiltered assets");
 				Assert.That(query[0].DocumentsFiltered.Count, Is.EqualTo(1), "unfiltered asset documents");
 			}
@@ -81,8 +81,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 			{
 				s.EnableFilter("deletedFilter").SetParameter("deletedParam", false);
 				var query = s.Query<Asset>()
-				             .FetchMany(x => x.Documents)
-				             .ToList();
+							 .FetchMany(x => x.Documents)
+							 .ToList();
 
 				Assert.That(query.Count, Is.EqualTo(1), "filtered assets");
 				Assert.That(query[0].Documents.Count, Is.EqualTo(1), "filtered asset documents");
@@ -97,9 +97,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 				s.EnableFilter("deletedFilter").SetParameter("deletedParam", false);
 
 				var query = s.QueryOver<Asset>()
-				             .Fetch(SelectMode.Fetch, x => x.Documents)
-				             .TransformUsing(Transformers.DistinctRootEntity)
-				             .List<Asset>();
+							 .Fetch(SelectMode.Fetch, x => x.Documents)
+							 .TransformUsing(Transformers.DistinctRootEntity)
+							 .List<Asset>();
 
 				Assert.That(query.Count, Is.EqualTo(1), "filtered assets");
 				Assert.That(query[0].Documents.Count, Is.EqualTo(1), "filtered asset documents");
@@ -114,9 +114,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 				s.EnableFilter("deletedFilter").SetParameter("deletedParam", false);
 
 				var query = s.QueryOver<Asset>()
-				             .Fetch(SelectMode.Fetch, x => x.DocumentsBag)
-				             .TransformUsing(Transformers.DistinctRootEntity)
-				             .List<Asset>();
+							 .Fetch(SelectMode.Fetch, x => x.DocumentsBag)
+							 .TransformUsing(Transformers.DistinctRootEntity)
+							 .List<Asset>();
 
 				Assert.That(query.Count, Is.EqualTo(1), "filtered assets");
 				Assert.That(query[0].DocumentsBag.Count, Is.EqualTo(1), "filtered asset documents");

@@ -26,7 +26,7 @@ namespace NHibernate.SqlCommand
 		private string orderBy;
 
 		public SqlSimpleSelectBuilder(Dialect.Dialect dialect, IMapping factory)
-			: base(dialect, factory) {}
+			: base(dialect, factory) { }
 
 		/// <summary>
 		/// 

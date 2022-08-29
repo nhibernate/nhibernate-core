@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (Adjunct)) return false;
+			if (obj.GetType() != typeof(Adjunct)) return false;
 			return Equals((Adjunct) obj);
 		}
 
@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 		{
 			unchecked
 			{
-				return (id*397);
+				return (id * 397);
 			}
 		}
 	}

@@ -2,13 +2,13 @@ using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH958
 {
-    public class Male : Person
-    {
-        public Male()
-        {
-        }
+	public class Male : Person
+	{
+		public Male()
+		{
+		}
 
-        public Male(string name)
-            : base(name) {}
-    }
+		public Male(string name)
+			: base(name) { }
+	}
 }

@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1362
 				s.Clear();
 
 				ClassA loaded = s.Load<ClassA>(a.Id);
-                
+
 				//work with first child object
 				loaded.B = null;
 				s.Refresh(loaded);

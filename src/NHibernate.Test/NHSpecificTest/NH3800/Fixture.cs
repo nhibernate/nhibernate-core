@@ -83,7 +83,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 				Assert.That(results.Select(x => x[1]), Is.EquivalentTo(new[] { 4, 2, 2, 2, 2 }));
 				Assert.That(results.Select(x => x[2]), Is.EquivalentTo(new[] { 13, 10, 11, 18, 19 }));
 
-				Assert.That(results.Sum(x => (decimal?)x[2]), Is.EqualTo(71));
+				Assert.That(results.Sum(x => (decimal?) x[2]), Is.EqualTo(71));
 
 				transaction.Rollback();
 			}
@@ -97,17 +97,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 			{
 				var baseQuery = session.Query<TimeRecord>();
 				var query = from t in baseQuery
-							from c in t.Components.Select(x => (object)x.Id).DefaultIfEmpty()
+							from c in t.Components.Select(x => (object) x.Id).DefaultIfEmpty()
 							let r = new object[] { c, t }
 							group r by r[0]
 								into g
-								select new[] { g.Key, g.Select(x => x[1]).Count(), g.Select(x => x[1]).Sum(x => (decimal?)((TimeRecord)x).TimeInHours) };
+							select new[] { g.Key, g.Select(x => x[1]).Count(), g.Select(x => x[1]).Sum(x => (decimal?) ((TimeRecord) x).TimeInHours) };
 
 				var results = query.ToList();
 				Assert.That(results.Select(x => x[1]), Is.EquivalentTo(new[] { 4, 2, 2, 2, 2 }));
 				Assert.That(results.Select(x => x[2]), Is.EquivalentTo(new[] { 13, 10, 11, 18, 19 }));
 
-				Assert.That(results.Sum(x => (decimal?)x[2]), Is.EqualTo(71));
+				Assert.That(results.Sum(x => (decimal?) x[2]), Is.EqualTo(71));
 
 				transaction.Rollback();
 			}
@@ -122,14 +122,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 				var baseQuery = session.Query<TimeRecord>();
 				var query = baseQuery
 						.SelectMany(t => t.Components.Select(c => c.Id).DefaultIfEmpty().Select(c => new object[] { c, t }))
-						.GroupBy(g => g[0], g => (TimeRecord)g[1])
-						.Select(g => new[] { g.Key, g.Count(), g.Sum(x => (decimal?)x.TimeInHours) });
+						.GroupBy(g => g[0], g => (TimeRecord) g[1])
+						.Select(g => new[] { g.Key, g.Count(), g.Sum(x => (decimal?) x.TimeInHours) });
 
 				var results = query.ToList();
 				Assert.That(results.Select(x => x[1]), Is.EquivalentTo(new[] { 4, 2, 2, 2, 2 }));
 				Assert.That(results.Select(x => x[2]), Is.EquivalentTo(new[] { 13, 10, 11, 18, 19 }));
 
-				Assert.That(results.Sum(x => (decimal?)x[2]), Is.EqualTo(71));
+				Assert.That(results.Sum(x => (decimal?) x[2]), Is.EqualTo(71));
 
 				transaction.Rollback();
 			}
@@ -146,16 +146,16 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 				Assert.That(baseQuery.Sum(x => x.TimeInHours), Is.EqualTo(55));
 
 				var query = baseQuery.Select(t => new object[] { t })
-					.SelectMany(t => ((TimeRecord)t[0]).Components.Select(c => (object)c.Id).DefaultIfEmpty().Select(c => new[] { t[0], c }))
-					.SelectMany(t => ((TimeRecord)t[0]).Tags.Select(x => (object)x.Id).DefaultIfEmpty().Select(x => new[] { t[0], t[1], x }))
-					.GroupBy(j => new[] { ((TimeRecord)j[0]).Project.Id, j[1], j[2] }, j => (TimeRecord)j[0])
-					.Select(g => new object[] { g.Key, g.Count(), g.Sum(t => (decimal?)t.TimeInHours) });
+					.SelectMany(t => ((TimeRecord) t[0]).Components.Select(c => (object) c.Id).DefaultIfEmpty().Select(c => new[] { t[0], c }))
+					.SelectMany(t => ((TimeRecord) t[0]).Tags.Select(x => (object) x.Id).DefaultIfEmpty().Select(x => new[] { t[0], t[1], x }))
+					.GroupBy(j => new[] { ((TimeRecord) j[0]).Project.Id, j[1], j[2] }, j => (TimeRecord) j[0])
+					.Select(g => new object[] { g.Key, g.Count(), g.Sum(t => (decimal?) t.TimeInHours) });
 
 				var results = query.ToList();
 				Assert.That(results.Select(x => x[1]), Is.EquivalentTo(new[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }));
 				Assert.That(results.Select(x => x[2]), Is.EquivalentTo(new[] { 1, 2, 3, 3, 4, 5, 6, 6, 7, 7, 8, 9, 10, 10 }));
 
-				Assert.That(results.Sum(x => (decimal?)x[2]), Is.EqualTo(81));
+				Assert.That(results.Sum(x => (decimal?) x[2]), Is.EqualTo(81));
 
 				transaction.Rollback();
 			}
@@ -173,8 +173,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3800
 				var baseQuery = session.Query<TimeRecord>();
 				var query = baseQuery
 						.SelectMany(t => t.Components.Select(c => c.Name).DefaultIfEmpty().Select(c => new object[] { c, t }))
-						.GroupBy(g => g[0], g => (TimeRecord)g[1])
-						.Select(g => new[] { g.Key, g.Count(), session.Query<Component>().Count(c => c.Name == (string)g.Key) });
+						.GroupBy(g => g[0], g => (TimeRecord) g[1])
+						.Select(g => new[] { g.Key, g.Count(), session.Query<Component>().Count(c => c.Name == (string) g.Key) });
 
 				var results = query.ToList();
 				Assert.That(results.Select(x => x[1]), Is.EquivalentTo(new[] { 4, 2, 2, 2, 2 }));

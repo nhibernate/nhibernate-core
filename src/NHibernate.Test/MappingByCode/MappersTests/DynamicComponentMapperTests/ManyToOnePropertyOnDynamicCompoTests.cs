@@ -33,7 +33,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
-			var propertyInfo = (new { A = (MyClass)null }).GetType().GetProperty("A");
+			var propertyInfo = (new { A = (MyClass) null }).GetType().GetProperty("A");
 
 			mapper.ManyToOne(propertyInfo, x => { });
 
@@ -46,7 +46,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
-			var propertyInfo = (new { A = (MyClass)null }).GetType().GetProperty("A");
+			var propertyInfo = (new { A = (MyClass) null }).GetType().GetProperty("A");
 
 			var called = false;
 			mapper.ManyToOne(propertyInfo, x => called = true);
@@ -60,7 +60,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
-			var propertyInfo = (new { A = (MyClass)null }).GetType().GetProperty("A");
+			var propertyInfo = (new { A = (MyClass) null }).GetType().GetProperty("A");
 
 			mapper.ManyToOne(propertyInfo, x => x.Access(Accessor.Field));
 

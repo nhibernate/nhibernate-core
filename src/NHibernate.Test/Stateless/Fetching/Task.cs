@@ -16,8 +16,8 @@ namespace NHibernate.Test.Stateless.Fetching
 		{
 		}
 
-		public Task(User user, string description, Resource resource, DateTime dueDate) 
-            : this(user, description, resource, dueDate, null, null)
+		public Task(User user, string description, Resource resource, DateTime dueDate)
+			: this(user, description, resource, dueDate, null, null)
 		{
 		}
 

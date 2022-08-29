@@ -1,8 +1,8 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using NHibernate.Driver;
 using NHibernate.Connection;
+using NHibernate.Driver;
 
 namespace NHibernate.Cfg.Loquacious
 {

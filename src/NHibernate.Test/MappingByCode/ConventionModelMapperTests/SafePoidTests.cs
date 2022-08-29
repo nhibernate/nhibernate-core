@@ -42,7 +42,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 		public void WhenClassWithoutPoidWithGeneratorThenApplyDefinedGenerator()
 		{
 			var mapper = new ConventionModelMapper();
-			mapper.Class<MyClassWithoutPoid>(x => x.Id(null, idm=> idm.Generator(Generators.Native)));
+			mapper.Class<MyClassWithoutPoid>(x => x.Id(null, idm => idm.Generator(Generators.Native)));
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClassWithoutPoid) });
 
 			var hbmClass = hbmMapping.RootClasses[0];
@@ -57,7 +57,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 		public void WhenPoidNoSetterThenApplyNosetter()
 		{
 			var mapper = new ConventionModelMapper();
-			mapper.Class<MyClass>(x => x.Id(mc=> mc.Id));
+			mapper.Class<MyClass>(x => x.Id(mc => mc.Id));
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 
 			var hbmClass = hbmMapping.RootClasses[0];

@@ -58,5 +58,5 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		bool IsScalar { get; }
 
 		string Alias { get; set; }
-	}	
+	}
 }

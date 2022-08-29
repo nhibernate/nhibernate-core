@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2089
 			Children.Add(child);
 			child.Parent = this;
 		}
-		
+
 		public override bool Equals(object obj)
 		{
 			return obj is Parent other && Id == other.Id;
@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2089
 		public virtual int Id { get; set; }
 		public virtual string Name { get; set; }
 		public virtual Parent Parent { get; set; }
-		
+
 		public virtual int OrderIndex
 		{
 			get
@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2089
 				return Parent.Children.IndexOf(this);
 			}
 		}
-		
+
 		public override bool Equals(object obj)
 		{
 			return obj is Child other && Id == other.Id;

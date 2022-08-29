@@ -72,18 +72,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get { return _parentFromClause; }
 		}
-		
+
 		//6.0 TODO: Replace with Typed version below
 		public IList<IASTNode> GetExplicitFromElements()
 		{
 			return ASTUtil.CollectChildren<IASTNode>(this, ExplicitFromPredicate);
 		}
-		
+
 		internal IList<FromElement> GetExplicitFromElementsTyped()
 		{
 			return ASTUtil.CollectChildren<FromElement>(this, ExplicitFromPredicate);
 		}
-		
+
 		//6.0 TODO: Replace with Typed version below
 		public IList<IASTNode> GetCollectionFetches()
 		{
@@ -160,7 +160,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				Log.Debug("addCollectionJoinFromElementByPath() : {0} -> {1}", path, destination);
 			}
-			_collectionJoinFromElementsByPath.Add(path, destination);	// Add the new node to the map so that we don't create it twice.
+			_collectionJoinFromElementsByPath.Add(path, destination);   // Add the new node to the map so that we don't create it twice.
 		}
 
 		private void AddChild(FromClause fromClause)
@@ -181,8 +181,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public FromElement AddFromElement(string path, IASTNode alias)
 		{
 			// The path may be a reference to an alias defined in the parent query.
-			string classAlias = ( alias == null ) ? null : alias.Text;
-			CheckForDuplicateClassAlias( classAlias );
+			string classAlias = (alias == null) ? null : alias.Text;
+			CheckForDuplicateClassAlias(classAlias);
 			var factory = new FromElementFactory(this, null, path, classAlias, null, false);
 			return factory.AddFromElement();
 		}
@@ -195,7 +195,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public FromElement GetFromElement(string aliasOrClassName)
 		{
 			FromElement fromElement;
-			
+
 			_fromElementByClassAlias.TryGetValue(aliasOrClassName, out fromElement);
 
 			if (fromElement == null && SessionFactoryHelper.IsStrictJPAQLComplianceEnabled)
@@ -267,12 +267,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		int Level
 		{
-		   get { return _level; }	
+			get { return _level; }
 		}
 
 		public bool IsSubQuery
 		{
-			get 
+			get
 			{
 				// TODO : this is broke for subqueries in statements other than selects...
 				return _parentFromClause != null;
@@ -294,9 +294,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private void CheckForDuplicateClassAlias(string classAlias)
 		{
-			if ( classAlias != null && _fromElementByClassAlias.ContainsKey( classAlias ) ) 
+			if (classAlias != null && _fromElementByClassAlias.ContainsKey(classAlias))
 			{
-				throw new QueryException( "Duplicate definition of alias '" + classAlias + "'" );
+				throw new QueryException("Duplicate definition of alias '" + classAlias + "'");
 			}
 		}
 
@@ -312,7 +312,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return false;
 		}
 
-		private static bool FromElementPredicate(IASTNode node) 
+		private static bool FromElementPredicate(IASTNode node)
 		{
 			var fromElement = node as FromElement;
 

@@ -10,7 +10,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		[SetUp]
 		public void OnSetUp()
 		{
-			Assert.That(typeof (EntityNH3615).Namespace, Is.Null);
+			Assert.That(typeof(EntityNH3615).Namespace, Is.Null);
 		}
 
 		[Test]

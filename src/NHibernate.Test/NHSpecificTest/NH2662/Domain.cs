@@ -17,27 +17,27 @@ namespace NHibernate.Test.NHSpecificTest.NH2662
 		}
 	}
 
-    public class Order
-    {
-        public virtual Guid Id
-        {
-            get;
-            protected set;
-        }
+	public class Order
+	{
+		public virtual Guid Id
+		{
+			get;
+			protected set;
+		}
 
-        public virtual DateTime OrderDate
-        {
-            get;
-            set;
-        }
-    }
+		public virtual DateTime OrderDate
+		{
+			get;
+			set;
+		}
+	}
 
-    public class PizzaOrder: Order
-    {
-        public virtual string PizzaName
-        {
-            get;
-            set;
-        }
-    }
+	public class PizzaOrder : Order
+	{
+		public virtual string PizzaName
+		{
+			get;
+			set;
+		}
+	}
 }

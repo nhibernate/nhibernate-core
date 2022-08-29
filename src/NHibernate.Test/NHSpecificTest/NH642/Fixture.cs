@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH642
 			{
 				ISessionFactory factory =
 					new Configuration().AddResource("NHibernate.Test.NHSpecificTest.NH642." + name + ".hbm.xml",
-					                                typeof (Fixture).Assembly).BuildSessionFactory();
+													typeof(Fixture).Assembly).BuildSessionFactory();
 				factory.Close();
 			}
 			catch (MappingException me)

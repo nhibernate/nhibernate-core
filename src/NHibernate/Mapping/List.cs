@@ -33,10 +33,10 @@ namespace NHibernate.Mapping
 					return TypeFactory.GenericList(Role, ReferencedPropertyName, GenericArguments[0]);
 				}
 
-				throw new MappingException("Non-generic persistent lists are not supported (role " + Role +").");
+				throw new MappingException("Non-generic persistent lists are not supported (role " + Role + ").");
 			}
 		}
-		
+
 		public int BaseIndex
 		{
 			get { return baseIndex; }

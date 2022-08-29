@@ -23,7 +23,7 @@ namespace NHibernate.Action
 		/// <param name="session">The session </param>
 		/// <remarks>Use this constructor when the collection is non-null.</remarks>
 		public CollectionRemoveAction(IPersistentCollection collection, ICollectionPersister persister, object id,
-		                              bool emptySnapshot, ISessionImplementor session)
+									  bool emptySnapshot, ISessionImplementor session)
 			: base(persister, collection, id, session)
 		{
 			if (collection == null)
@@ -45,7 +45,7 @@ namespace NHibernate.Action
 		/// <param name="session">The session </param>
 		/// <remarks> Use this constructor when the collection to be removed has not been loaded. </remarks>
 		public CollectionRemoveAction(object affectedOwner, ICollectionPersister persister, object id, bool emptySnapshot,
-		                              ISessionImplementor session) : base(persister, null, id, session)
+									  ISessionImplementor session) : base(persister, null, id, session)
 		{
 			if (affectedOwner == null)
 			{
@@ -95,7 +95,7 @@ namespace NHibernate.Action
 			if (preListeners.Length > 0)
 			{
 				PreCollectionRemoveEvent preEvent = new PreCollectionRemoveEvent(Persister, Collection, (IEventSource) Session,
-				                                                                 affectedOwner);
+																				 affectedOwner);
 				for (int i = 0; i < preListeners.Length; i++)
 				{
 					preListeners[i].OnPreRemoveCollection(preEvent);
@@ -109,7 +109,7 @@ namespace NHibernate.Action
 			if (postListeners.Length > 0)
 			{
 				PostCollectionRemoveEvent postEvent = new PostCollectionRemoveEvent(Persister, Collection, (IEventSource) Session,
-				                                                                    affectedOwner);
+																					affectedOwner);
 				for (int i = 0; i < postListeners.Length; i++)
 				{
 					postListeners[i].OnPostRemoveCollection(postEvent);

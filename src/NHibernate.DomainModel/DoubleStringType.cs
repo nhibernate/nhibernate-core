@@ -54,7 +54,7 @@ namespace NHibernate.DomainModel
 			string first = (string) NHibernateUtil.String.NullSafeGet(rs, names[0], session, owner);
 			string second = (string) NHibernateUtil.String.NullSafeGet(rs, names[1], session, owner);
 
-			return (first == null && second == null) ? null : new string[] {first, second};
+			return (first == null && second == null) ? null : new string[] { first, second };
 		}
 
 		public void NullSafeSet(DbCommand st, Object value, int index, bool[] settable, ISessionImplementor session)
@@ -67,12 +67,12 @@ namespace NHibernate.DomainModel
 
 		public string[] PropertyNames
 		{
-			get { return new string[] {"s1", "s2"}; }
+			get { return new string[] { "s1", "s2" }; }
 		}
 
 		public IType[] PropertyTypes
 		{
-			get { return new IType[] {NHibernateUtil.String, NHibernateUtil.String}; }
+			get { return new IType[] { NHibernateUtil.String, NHibernateUtil.String }; }
 		}
 
 		public Object GetPropertyValue(Object component, int property)

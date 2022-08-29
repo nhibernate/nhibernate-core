@@ -58,7 +58,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.AddSubclass(subclass);
 			mappings.AddClass(subclass);
 
-            new FiltersBinder(model, Mappings).Bind(subClassMapping.filter);
-        }
+			new FiltersBinder(model, Mappings).Bind(subClassMapping.filter);
+		}
 	}
 }

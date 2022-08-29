@@ -28,7 +28,7 @@ namespace NHibernate.Dialect.Function
 	/// ]]>
 	/// </remarks>
 	[Serializable]
-	public class AnsiExtractFunction: SQLFunctionTemplate, IFunctionGrammar
+	public class AnsiExtractFunction : SQLFunctionTemplate, IFunctionGrammar
 	{
 		public AnsiExtractFunction()
 			: base(NHibernateUtil.Int32, "extract(?1 ?2 ?3)")

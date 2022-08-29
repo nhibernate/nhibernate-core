@@ -8,7 +8,7 @@ namespace NHibernate.Test.Criteria
 		private string courseCode;
 		private string description;
 		private ISet<CourseMeeting> courseMeetings = new HashSet<CourseMeeting>();
-		
+
 		public virtual string CourseCode
 		{
 			get { return courseCode; }
@@ -20,7 +20,7 @@ namespace NHibernate.Test.Criteria
 			get { return description; }
 			set { description = value; }
 		}
-		
+
 		public virtual ISet<CourseMeeting> CourseMeetings
 		{
 			get { return courseMeetings; }

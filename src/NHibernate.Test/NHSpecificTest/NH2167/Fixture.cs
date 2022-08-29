@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2167
 		{
 			// When not using a named prefix, the driver use positional parameters, causing parameterized
 			// expression used in group by and select to be not be considered as the same expression.
-			return ((DriverBase)factory.ConnectionProvider.Driver).UseNamedPrefixInParameter;
+			return ((DriverBase) factory.ConnectionProvider.Driver).UseNamedPrefixInParameter;
 		}
 
 		protected override HbmMapping GetMappings()

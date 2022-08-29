@@ -65,7 +65,7 @@ namespace NHibernate.Type
 
 		protected override void Clear(object collection)
 		{
-			((ICollection<T>)collection).Clear();
+			((ICollection<T>) collection).Clear();
 		}
 
 		public override object Instantiate(int anticipatedSize)
@@ -75,7 +75,7 @@ namespace NHibernate.Type
 
 		protected override bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
 		{
-			return CollectionHelper.BagEquals((IEnumerable<T>)original, (IEnumerable<T>)target);
+			return CollectionHelper.BagEquals((IEnumerable<T>) original, (IEnumerable<T>) target);
 		}
 	}
 }

@@ -42,7 +42,7 @@ namespace NHibernate.Criterion
 		public IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			var types = new List<IType>(Length);
-			
+
 			for (int i = 0; i < Length; i++)
 			{
 				IType[] elemTypes = this[i].GetTypes(criteria, criteriaQuery);
@@ -100,7 +100,7 @@ namespace NHibernate.Criterion
 			}
 			return result.ToArray();
 		}
-		
+
 		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			for (int i = 0; i < Length; i++)
@@ -175,9 +175,9 @@ namespace NHibernate.Criterion
 		{
 			get
 			{
-				for(int i = 0; i < Length; i++)
+				for (int i = 0; i < Length; i++)
 				{
-					if(this[i].IsAggregate)
+					if (this[i].IsAggregate)
 						return true;
 				}
 				return false;

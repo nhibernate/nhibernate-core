@@ -59,8 +59,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var properties = new List<object>();
 			var map = new StubPropertyContainerMapper<EntitySimple>(properties);
-			map.Property(typeof (EntitySimple).GetProperty("Name"), x => { });
-		
+			map.Property(typeof(EntitySimple).GetProperty("Name"), x => { });
+
 			Assert.That(properties, Has.Count.EqualTo(1));
 			Assert.That(properties.First(), Is.TypeOf<HbmProperty>().And.Property("Name").EqualTo("Name"));
 		}
@@ -71,7 +71,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var properties = new List<object>();
 			var map = new StubPropertyContainerMapper<EntitySimple>(properties);
 			var called = false;
-			map.Property(typeof(EntitySimple).GetProperty("Name"), x => called = true );
+			map.Property(typeof(EntitySimple).GetProperty("Name"), x => called = true);
 
 			Assert.That(called, Is.True);
 		}
@@ -113,7 +113,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var collectionPropsCalled = false;
 			var keyRelationCalled = false;
 			var elementRelationCalled = false;
-			map.Map(typeof (MyClassWithDictionary).GetProperty("Dictionary"), cp => collectionPropsCalled = true,
+			map.Map(typeof(MyClassWithDictionary).GetProperty("Dictionary"), cp => collectionPropsCalled = true,
 					km => keyRelationCalled = true, er => elementRelationCalled = true);
 
 			Assert.That(collectionPropsCalled, Is.True);
@@ -145,7 +145,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var properties = new List<object>();
 			var map = new StubPropertyContainerMapper<MyClassWithDynamic>(properties);
 			var called = false;
-			map.Component(For<MyClassWithDynamic>.Property(x=> x.DynCompo), (IDynamicComponentMapper cp) => called = true);
+			map.Component(For<MyClassWithDynamic>.Property(x => x.DynCompo), (IDynamicComponentMapper cp) => called = true);
 			Assert.That(called, Is.True);
 		}
 
@@ -161,7 +161,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 
 		private class HackPropertyContainerMapper : AbstractPropertyContainerMapper
 		{
-			public HackPropertyContainerMapper(System.Type container, HbmMapping mapDoc) : base(container, mapDoc) {}
+			public HackPropertyContainerMapper(System.Type container, HbmMapping mapDoc) : base(container, mapDoc) { }
 
 			#region Overrides of AbstractPropertyContainerMapper
 

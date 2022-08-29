@@ -46,7 +46,7 @@ namespace NHibernate.Type
 			var dp = cmd.Parameters[index];
 			dp.Value = dp.DbType == DbType.Int16 ? Convert.ToInt16(value) : Convert.ToByte(value);
 		}
-		
+
 		public override string Name
 		{
 			get { return "Byte"; }
@@ -78,7 +78,7 @@ namespace NHibernate.Type
 
 		public virtual object Next(object current, ISessionImplementor session)
 		{
-			return (byte)((byte)current + 1);
+			return (byte) ((byte) current + 1);
 		}
 
 		public virtual object Seed(ISessionImplementor session)

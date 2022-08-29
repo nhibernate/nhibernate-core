@@ -73,7 +73,7 @@ namespace NHibernate.AdoNet
 				//get { throw new InvalidOperationException("Cannot get ExpectedRowCount of a non-batchable expectation"); }
 				get { return 1; }
 			}
-		} ;
+		};
 
 		// Various Expectation instances ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -114,7 +114,7 @@ namespace NHibernate.AdoNet
 			if (expectedRowCount < rowCount)
 			{
 				string msg = "Batch update returned unexpected row count from update; actual row count: " + rowCount +
-				             "; expected: " + expectedRowCount;
+							 "; expected: " + expectedRowCount;
 				throw new TooManyRowsAffectedException(msg, expectedRowCount, rowCount);
 			}
 		}

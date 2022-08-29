@@ -39,17 +39,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 			manyToMany.formula = null;
 			HbmColumn hbm = manyToMany.Columns.SingleOrDefault();
 			hbm = hbm
-			      ??
-			      new HbmColumn
-			      {
-			      	name = manyToMany.column,
-			      	unique = manyToMany.unique,
-			      	uniqueSpecified = manyToMany.unique,
-			      };
+				  ??
+				  new HbmColumn
+				  {
+					  name = manyToMany.column,
+					  unique = manyToMany.unique,
+					  uniqueSpecified = manyToMany.unique,
+				  };
 			columnMapper(new ColumnMapper(hbm, Collection.DefaultElementColumnName));
 			if (ColumnTagIsRequired(hbm))
 			{
-				manyToMany.Items = new[] {hbm};
+				manyToMany.Items = new[] { hbm };
 				ResetColumnPlainValues();
 			}
 			else
@@ -81,7 +81,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private bool ColumnTagIsRequired(HbmColumn hbm)
 		{
 			return hbm.length != null || hbm.precision != null || hbm.scale != null || hbm.notnull || hbm.uniquekey != null
-			       || hbm.sqltype != null || hbm.index != null || hbm.@default != null || hbm.check != null;
+				   || hbm.sqltype != null || hbm.index != null || hbm.@default != null || hbm.check != null;
 		}
 
 		private void ResetColumnPlainValues()
@@ -116,7 +116,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
 			if (formulaLines.Length > 1)
 			{
-				manyToMany.Items = new object[] {new HbmFormula {Text = formulaLines}};
+				manyToMany.Items = new object[] { new HbmFormula { Text = formulaLines } };
 			}
 			else
 			{
@@ -134,7 +134,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			manyToMany.Items =
 				formulas
 					.ToArray(
-						f => (object) new HbmFormula {Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None)});
+						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) });
 		}
 
 		#endregion
@@ -146,8 +146,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 			if (!elementType.IsAssignableFrom(entityType))
 			{
 				throw new ArgumentOutOfRangeException("entityType",
-				                                      string.Format("The type is incompatible; expected assignable to {0}",
-				                                                    elementType));
+													  string.Format("The type is incompatible; expected assignable to {0}",
+																	elementType));
 			}
 			manyToMany.@class = entityType.GetShortClassName(mapDoc);
 		}

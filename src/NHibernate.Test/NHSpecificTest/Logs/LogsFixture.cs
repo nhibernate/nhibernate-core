@@ -88,11 +88,11 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 				try
 				{
 					for (var i = 0; i < 10; i++)
-					for (var j = 0; j < 10; j++)
-					{
-						var s = sessions[j];
-						s.Get<Person>(i * 10 + j); //will execute some sql
-					}
+						for (var j = 0; j < 10; j++)
+						{
+							var s = sessions[j];
+							s.Get<Person>(i * 10 + j); //will execute some sql
+						}
 				}
 				finally
 				{
@@ -104,11 +104,11 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 
 				var loggingEvent = spy.GetWholeLog();
 				for (var i = 0; i < 10; i++)
-				for (var j = 0; j < 10; j++)
-				{
-					var sessionId = sessions[j].GetSessionImplementation().SessionId;
-					Assert.That(loggingEvent, Does.Contain($"p0 = {i * 10 + j} [Type: Int32 (0:0:0)] | SessionId: {sessionId}"));
-				}
+					for (var j = 0; j < 10; j++)
+					{
+						var sessionId = sessions[j].GetSessionImplementation().SessionId;
+						Assert.That(loggingEvent, Does.Contain($"p0 = {i * 10 + j} [Type: Int32 (0:0:0)] | SessionId: {sessionId}"));
+					}
 			}
 		}
 
@@ -192,11 +192,11 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 
 				var loggingEvent = spy.GetWholeLog();
 				for (var i = 1; i < threadCount + 1; i++)
-				for (var j = 0; j < 10; j++)
-				{
-					var sessionId = sessionIds[i];
-					Assert.That(loggingEvent, Does.Contain($"p0 = {i * 10 + j} [Type: Int32 (0:0:0)] | SessionId: {sessionId}"));
-				}
+					for (var j = 0; j < 10; j++)
+					{
+						var sessionId = sessionIds[i];
+						Assert.That(loggingEvent, Does.Contain($"p0 = {i * 10 + j} [Type: Int32 (0:0:0)] | SessionId: {sessionId}"));
+					}
 			}
 		}
 

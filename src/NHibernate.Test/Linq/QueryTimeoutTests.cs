@@ -76,7 +76,7 @@ namespace NHibernate.Test.Linq
 						  where subQuery.Contains(e.CustomerId)
 						  group e by e.CompanyName
 							  into g
-							  select new { g.Key, Count = g.Count() })
+						  select new { g.Key, Count = g.Count() })
 				.Skip(5).Take(5)
 				.WithOptions(o => o.SetTimeout(17))
 				.ToList();

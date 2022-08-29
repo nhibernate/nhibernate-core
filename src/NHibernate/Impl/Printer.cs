@@ -101,7 +101,7 @@ namespace NHibernate.Impl
 			log.Debug("listing entities:");
 			var i = 0;
 
-			foreach(var entity in entities)
+			foreach (var entity in entities)
 			{
 				if (i++ > 20)
 				{

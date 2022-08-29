@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1715
 		public void TimeSpanLargerThan2h()
 		{
 			var time = new TimeSpan(0, 2, 1, 0);
-			var entity = new ClassA {Time = time};
+			var entity = new ClassA { Time = time };
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1715
 		public void VerifyDaysShouldBeZeroInSmallTimeSpan()
 		{
 			var time = new TimeSpan(1, 0, 0);
-			var entity = new ClassA {Time = time};
+			var entity = new ClassA { Time = time };
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{

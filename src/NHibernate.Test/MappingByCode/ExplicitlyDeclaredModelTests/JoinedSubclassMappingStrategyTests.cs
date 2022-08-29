@@ -44,13 +44,13 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		public void WhenRegisteredAsJoinedSubclassThenCantRegisterAsSubclass()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsRootEntity(typeof (MyClass));
-			inspector.AddAsTablePerClassEntity(typeof (Inherited1));
+			inspector.AddAsRootEntity(typeof(MyClass));
+			inspector.AddAsTablePerClassEntity(typeof(Inherited1));
 
 			Assert.That(() =>
 			{
-				inspector.AddAsTablePerClassHierarchyEntity(typeof (Inherited1));
-				inspector.IsTablePerClass(typeof (Inherited1));
+				inspector.AddAsTablePerClassHierarchyEntity(typeof(Inherited1));
+				inspector.IsTablePerClass(typeof(Inherited1));
 			}, Throws.TypeOf<MappingException>());
 		}
 
@@ -58,13 +58,13 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		public void WhenRegisteredAsJoinedSubclassThenCantRegisterAsUnionSubclass()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsRootEntity(typeof (MyClass));
-			inspector.AddAsTablePerClassEntity(typeof (Inherited1));
+			inspector.AddAsRootEntity(typeof(MyClass));
+			inspector.AddAsTablePerClassEntity(typeof(Inherited1));
 
 			Assert.That(() =>
 			{
-				inspector.AddAsTablePerConcreteClassEntity(typeof (Inherited1));
-				inspector.IsTablePerClass(typeof (Inherited1));
+				inspector.AddAsTablePerConcreteClassEntity(typeof(Inherited1));
+				inspector.IsTablePerClass(typeof(Inherited1));
 			}, Throws.TypeOf<MappingException>());
 		}
 

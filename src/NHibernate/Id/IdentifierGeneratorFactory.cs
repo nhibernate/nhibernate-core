@@ -2,11 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
-
 using NHibernate.Engine;
+using NHibernate.Id.Enhanced;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Id.Enhanced;
 
 namespace NHibernate.Id
 {
@@ -100,7 +99,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public static partial class IdentifierGeneratorFactory
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (IdentifierGeneratorFactory));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(IdentifierGeneratorFactory));
 
 		/// <summary> Get the generated identifier when using identity columns</summary>
 		/// <param name="rs">The <see cref="DbDataReader"/> to read the identifier value from.</param>
@@ -176,22 +175,22 @@ namespace NHibernate.Id
 		/// </summary>
 		static IdentifierGeneratorFactory()
 		{
-			idgenerators.Add("uuid.hex", typeof (UUIDHexGenerator));
-			idgenerators.Add("uuid.string", typeof (UUIDStringGenerator));
-			idgenerators.Add("hilo", typeof (TableHiLoGenerator));
-			idgenerators.Add("assigned", typeof (Assigned));
-			idgenerators.Add("counter", typeof (CounterGenerator));
-			idgenerators.Add("increment", typeof (IncrementGenerator));
-			idgenerators.Add("sequence", typeof (SequenceGenerator));
-			idgenerators.Add("seqhilo", typeof (SequenceHiLoGenerator));
-			idgenerators.Add("vm", typeof (CounterGenerator));
-			idgenerators.Add("foreign", typeof (ForeignGenerator));
-			idgenerators.Add("guid", typeof (GuidGenerator));
-			idgenerators.Add("guid.comb", typeof (GuidCombGenerator));
-			idgenerators.Add("guid.native", typeof (NativeGuidGenerator));
-			idgenerators.Add("select", typeof (SelectGenerator));
-			idgenerators.Add("sequence-identity", typeof (SequenceIdentityGenerator));
-			idgenerators.Add("trigger-identity", typeof (TriggerIdentityGenerator));
+			idgenerators.Add("uuid.hex", typeof(UUIDHexGenerator));
+			idgenerators.Add("uuid.string", typeof(UUIDStringGenerator));
+			idgenerators.Add("hilo", typeof(TableHiLoGenerator));
+			idgenerators.Add("assigned", typeof(Assigned));
+			idgenerators.Add("counter", typeof(CounterGenerator));
+			idgenerators.Add("increment", typeof(IncrementGenerator));
+			idgenerators.Add("sequence", typeof(SequenceGenerator));
+			idgenerators.Add("seqhilo", typeof(SequenceHiLoGenerator));
+			idgenerators.Add("vm", typeof(CounterGenerator));
+			idgenerators.Add("foreign", typeof(ForeignGenerator));
+			idgenerators.Add("guid", typeof(GuidGenerator));
+			idgenerators.Add("guid.comb", typeof(GuidCombGenerator));
+			idgenerators.Add("guid.native", typeof(NativeGuidGenerator));
+			idgenerators.Add("select", typeof(SelectGenerator));
+			idgenerators.Add("sequence-identity", typeof(SequenceIdentityGenerator));
+			idgenerators.Add("trigger-identity", typeof(TriggerIdentityGenerator));
 			idgenerators.Add("enhanced-sequence", typeof(SequenceStyleGenerator));
 			idgenerators.Add("enhanced-table", typeof(Enhanced.TableGenerator));
 		}
@@ -254,39 +253,39 @@ namespace NHibernate.Id
 			// Convert.ChangeType would be better here, but it fails if the value does not fit
 			// in the destination type, while we need the value to be truncated in this case.
 
-			if (type == typeof (byte))
+			if (type == typeof(byte))
 			{
 				return (byte) value;
 			}
-			else if (type == typeof (sbyte))
+			else if (type == typeof(sbyte))
 			{
 				return (sbyte) value;
 			}
-			else if (type == typeof (short))
+			else if (type == typeof(short))
 			{
 				return (short) value;
 			}
-			else if (type == typeof (ushort))
+			else if (type == typeof(ushort))
 			{
 				return (ushort) value;
 			}
-			else if (type == typeof (int))
+			else if (type == typeof(int))
 			{
 				return (int) value;
 			}
-			else if (type == typeof (uint))
+			else if (type == typeof(uint))
 			{
 				return (uint) value;
 			}
-			else if (type == typeof (long))
+			else if (type == typeof(long))
 			{
 				return value;
 			}
-			else if (type == typeof (ulong))
+			else if (type == typeof(ulong))
 			{
 				return (ulong) value;
 			}
-			else if (type == typeof (decimal))
+			else if (type == typeof(decimal))
 			{
 				return (decimal) value;
 			}

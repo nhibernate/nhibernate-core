@@ -67,9 +67,9 @@ namespace NHibernate.Linq.Visitors
 
 			if (distinct != null)
 			{
-				var treeNodes = new List<HqlTreeNode>(_hqlTreeNodes.Count + 1) {_hqlTreeBuilder.Distinct()};
+				var treeNodes = new List<HqlTreeNode>(_hqlTreeNodes.Count + 1) { _hqlTreeBuilder.Distinct() };
 				treeNodes.AddRange(_hqlTreeNodes);
-				_hqlTreeNodes = new List<HqlExpression>(1) {_hqlTreeBuilder.ExpressionSubTreeHolder(treeNodes)};
+				_hqlTreeNodes = new List<HqlExpression>(1) { _hqlTreeBuilder.ExpressionSubTreeHolder(treeNodes) };
 			}
 		}
 

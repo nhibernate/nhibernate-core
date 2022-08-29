@@ -11,7 +11,7 @@ namespace NHibernate.Test.UtilityTest
 	{
 		private class MyClass
 		{
-			public void NoGenericMethod() {}
+			public void NoGenericMethod() { }
 			public void GenericMethod<T>() { }
 			public string BaseProperty { get; set; }
 			public bool BaseBool { get; set; }
@@ -26,7 +26,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WhenGenericGetMethodForNullThenThrows()
 		{
-			Assert.That(() => ReflectHelper.GetMethodDefinition<object>((Expression<System.Action<object>>)null), Throws.TypeOf<ArgumentNullException>());
+			Assert.That(() => ReflectHelper.GetMethodDefinition<object>((Expression<System.Action<object>>) null), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
@@ -38,7 +38,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WhenGenericMethodOfClassThenReturnGenericDefinition()
 		{
-			Assert.That(ReflectHelper.GetMethodDefinition<MyClass>(mc => mc.GenericMethod<int>()), Is.EqualTo(typeof (MyClass).GetMethod("GenericMethod").GetGenericMethodDefinition()));
+			Assert.That(ReflectHelper.GetMethodDefinition<MyClass>(mc => mc.GenericMethod<int>()), Is.EqualTo(typeof(MyClass).GetMethod("GenericMethod").GetGenericMethodDefinition()));
 		}
 
 		[Test]
@@ -56,7 +56,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WhenStaticNoGenericMethodThenReturnDefinition()
 		{
-			Assert.That(ReflectHelper.GetMethodDefinition(() => string.Join(null, null)), Is.EqualTo(typeof(string).GetMethod("Join", new []{typeof(string), typeof(string[])})));
+			Assert.That(ReflectHelper.GetMethodDefinition(() => string.Join(null, null)), Is.EqualTo(typeof(string).GetMethod("Join", new[] { typeof(string), typeof(string[]) })));
 		}
 
 		[Test]

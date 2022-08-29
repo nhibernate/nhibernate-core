@@ -1,10 +1,10 @@
 using System.Data.SqlClient;
 using NHibernate.AdoNet;
 using NHibernate.Dialect;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
-using NHibernate.Driver;
 
 namespace NHibernate.Test.NHSpecificTest.NH3004
 {

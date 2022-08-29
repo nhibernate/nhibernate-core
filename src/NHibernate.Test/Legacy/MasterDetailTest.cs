@@ -3,14 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NHibernate.Engine;
-using NHibernate.Criterion;
 using NHibernate.Mapping;
 using NHibernate.Util;
 using NUnit.Framework;
-using Single=NHibernate.DomainModel.Single;
+using Single = NHibernate.DomainModel.Single;
 
 namespace NHibernate.Test.Legacy
 {
@@ -143,18 +143,18 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				cat = (Category) s.CreateQuery("from Category cat where cat.Name='new foo'").UniqueResult();
-				newSubCat = (Category)s.CreateQuery("from Category cat left join fetch cat.Subcategories where cat.Name='new sub'").UniqueResult();
+				newSubCat = (Category) s.CreateQuery("from Category cat left join fetch cat.Subcategories where cat.Name='new sub'").UniqueResult();
 				Assert.AreEqual("new sub", newSubCat.Name);
 			}
 			newSubCat.Subcategories.Add(cat);
-			cat.Name="new new foo";
+			cat.Name = "new new foo";
 
 			using (ISession s = OpenSession())
 			{
 				newSubCat = s.Merge(newSubCat);
 				Assert.IsTrue(newSubCat.Name.Equals("new sub"));
 				Assert.AreEqual(1, newSubCat.Subcategories.Count);
-				cat	= (Category)newSubCat.Subcategories[0];
+				cat = (Category) newSubCat.Subcategories[0];
 				Assert.AreEqual("new new foo", cat.Name);
 				newSubCat.Subcategories.Remove(cat);
 				s.Delete(cat);
@@ -272,30 +272,30 @@ namespace NHibernate.Test.Legacy
 			t = s.BeginTransaction();
 
 			Master m1 = (Master) s.CreateCriteria(typeof(Master))
-			                     	.Add(Example.Create(m).EnableLike().IgnoreCase())
-			                     	.UniqueResult();
+									 .Add(Example.Create(m).EnableLike().IgnoreCase())
+									 .UniqueResult();
 			Assert.AreSame(m1.OtherMaster, m1);
 
 			m1 = (Master) s.CreateCriteria(typeof(Master))
-			              	.Add(Expression.Eq("Name", "foobar"))
-			              	.UniqueResult();
+							  .Add(Expression.Eq("Name", "foobar"))
+							  .UniqueResult();
 			Assert.IsNull(m1);
 
 			m1 = (Master) s.CreateCriteria(typeof(Master))
-			              	.Add(Example.Create(m))
-			              	.CreateCriteria("OtherMaster")
-			              	.Add(Example.Create(m).ExcludeZeroes())
-			              	.UniqueResult();
+							  .Add(Example.Create(m))
+							  .CreateCriteria("OtherMaster")
+							  .Add(Example.Create(m).ExcludeZeroes())
+							  .UniqueResult();
 			Assert.AreSame(m1.OtherMaster, m1);
 			Master m2 = (Master) s.CreateCriteria(typeof(Master))
-			                     	.Add(Example.Create(m).ExcludeNone())
-			                     	.UniqueResult();
+									 .Add(Example.Create(m).ExcludeNone())
+									 .UniqueResult();
 			Assert.AreSame(m1, m2);
 
 			m.Name = null;
 			m2 = (Master) s.CreateCriteria(typeof(Master))
-			              	.Add(Example.Create(m).ExcludeNone())
-			              	.UniqueResult();
+							  .Add(Example.Create(m).ExcludeNone())
+							  .UniqueResult();
 			Assert.IsNull(m2);
 
 			if (Dialect is MySQLDialect)
@@ -408,7 +408,7 @@ namespace NHibernate.Test.Legacy
 			if (Dialect.SupportsScalarSubSelects)
 			{
 				string hql = "from d in class NHibernate.DomainModel.Detail, m in class NHibernate.DomainModel.Master " +
-				             "where m = d.Master and m.Outgoing.size = 0 and m.Incoming.size = 0";
+							 "where m = d.Master and m.Outgoing.size = 0 and m.Incoming.size = 0";
 
 				Assert.AreEqual(2, s.CreateQuery(hql).List().Count, "query");
 			}
@@ -495,7 +495,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(0, q.List().Count);
 
 			q = s.CreateFilter(master.Details, "where this.id in (:ids)");
-			q.SetParameterList("ids", new[] {did, (long) -1});
+			q.SetParameterList("ids", new[] { did, (long) -1 });
 
 			Assert.AreEqual(1, q.List().Count);
 			Assert.IsTrue(q.Enumerable().GetEnumerator().MoveNext());
@@ -503,8 +503,8 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(2, s.CreateFilter(master.Details, "where this.id > -1").List().Count);
 			Assert.AreEqual(2, s.CreateFilter(master.Details, "select this.Master where this.id > -1").List().Count);
 			Assert.AreEqual(2,
-			                s.CreateFilter(master.Details, "select m from m in class Master where this.id > -1 and this.Master=m")
-			                	.List().Count);
+							s.CreateFilter(master.Details, "select m from m in class Master where this.id > -1 and this.Master=m")
+								.List().Count);
 			Assert.AreEqual(0, s.CreateFilter(master.Incoming, "where this.id > -1 and this.Name is not null").List().Count);
 
 			IQuery filter = s.CreateFilter(master.Details, "select max(this.I)");
@@ -538,7 +538,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(0, enumer.Current);
 
 			f = s.CreateFilter(master.Details, "select max(this.I) where this.I not in (:list)");
-			f.SetParameterList("list", new List<int> {-666, 22, 0});
+			f.SetParameterList("list", new List<int> { -666, 22, 0 });
 			enumer = f.Enumerable().GetEnumerator();
 			Assert.IsTrue(enumer.MoveNext());
 			Assert.AreEqual(12, enumer.Current);
@@ -833,7 +833,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "NAME";
 			Assignable assn = new Assignable();
 			assn.Id = "i.d.";
-			assn.Categories = new List<Category> {c};
+			assn.Categories = new List<Category> { c };
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();
@@ -1131,7 +1131,7 @@ namespace NHibernate.Test.Legacy
 			Custom c = new Custom();
 			c.Name = "foo";
 			c.Id = "100";
-			string id = (string)s.Save(c);
+			string id = (string) s.Save(c);
 			Assert.AreSame(c, s.Load(typeof(Custom), id));
 			s.Flush();
 			s.Close();
@@ -1289,7 +1289,7 @@ namespace NHibernate.Test.Legacy
 		public void ToStringWithNoIdentifier()
 		{
 			NHibernateUtil.Entity(typeof(Master)).ToLoggableString(new Master(),
-			                                                       (ISessionFactoryImplementor) Sfi);
+																   (ISessionFactoryImplementor) Sfi);
 		}
 
 		[Test]

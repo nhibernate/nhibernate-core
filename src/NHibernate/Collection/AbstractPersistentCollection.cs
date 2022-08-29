@@ -27,7 +27,7 @@ namespace NHibernate.Collection
 		// Since v5.3
 		[Obsolete("This field has no more usages in NHibernate and will be removed in a future version.")]
 		protected internal static readonly object Unknown = new object(); //place holder
-		// Since v5.3
+																		  // Since v5.3
 		[Obsolete("This field has no more usages in NHibernate and will be removed in a future version.")]
 		protected internal static readonly object NotFound = new object(); //place holder
 
@@ -140,7 +140,7 @@ namespace NHibernate.Collection
 		/// <summary>
 		/// Not called by Hibernate, but used by non-NET serialization, eg. SOAP libraries.
 		/// </summary>
-		protected AbstractPersistentCollection() {}
+		protected AbstractPersistentCollection() { }
 
 		protected AbstractPersistentCollection(ISessionImplementor session)
 		{
@@ -588,7 +588,7 @@ namespace NHibernate.Collection
 						}
 						else
 						{
-							if (!queueOperationTracker.DatabaseCollectionSize.HasValue && 
+							if (!queueOperationTracker.DatabaseCollectionSize.HasValue &&
 								queueOperationTracker.RequiresDatabaseCollectionSize(nameof(queueOperationTracker.TryGetElementAtIndex)) &&
 								!ReadSize())
 							{
@@ -1113,7 +1113,7 @@ namespace NHibernate.Collection
 		/// Called before inserting rows, to ensure that any surrogate keys are fully generated
 		/// </summary>
 		/// <param name="persister"></param>
-		public virtual void PreInsert(ICollectionPersister persister) {}
+		public virtual void PreInsert(ICollectionPersister persister) { }
 
 		/// <summary>
 		/// Called after inserting a row, to fetch the natively generated id
@@ -1339,7 +1339,7 @@ namespace NHibernate.Collection
 				return Task.FromException<ICollection>(ex);
 			}
 		}
-		
+
 		// Since 5.3
 		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public abstract Task<ICollection> GetOrphansAsync(object snapshot, string entityName, CancellationToken cancellationToken);

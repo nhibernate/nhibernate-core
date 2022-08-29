@@ -1,6 +1,6 @@
 namespace NHibernate.Cfg.Loquacious
 {
-	public class MappingsConfiguration 
+	public class MappingsConfiguration
 #pragma warning disable 618
 		: IMappingsConfiguration
 #pragma warning restore 618
@@ -43,7 +43,7 @@ namespace NHibernate.Cfg.Loquacious
 
 	public class MappingsConfigurationProperties
 #pragma warning disable 618
-		:IMappingsConfigurationProperties
+		: IMappingsConfigurationProperties
 #pragma warning restore 618
 	{
 		private readonly Configuration configuration;

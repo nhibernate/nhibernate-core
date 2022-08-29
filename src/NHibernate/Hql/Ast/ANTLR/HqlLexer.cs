@@ -11,7 +11,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 																state.type,
 																state.channel,
 																state.tokenStartCharIndex,
-																CharIndex - 1) {Line = state.tokenStartLine, Text = state.text};
+																CharIndex - 1)
+			{ Line = state.tokenStartLine, Text = state.text };
 
 			Emit(t);
 			return t;

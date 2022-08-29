@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest
 	/// </summary>
 	public abstract class BugTestCase : TestCase
 	{
-		protected override string[] Mappings => new[] {"Mappings.hbm.xml"};
+		protected override string[] Mappings => new[] { "Mappings.hbm.xml" };
 
 		protected sealed override string MappingsAssembly =>
 			throw new InvalidOperationException("BugTestCase does not support overriding mapping assembly.");
@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest
 			var mappings = Mappings;
 			if (mappings == null || mappings.Length == 0)
 				return;
-			
+
 			var type = GetType();
 			foreach (var file in mappings)
 				configuration.AddResource(type.Namespace + "." + file, type.Assembly);

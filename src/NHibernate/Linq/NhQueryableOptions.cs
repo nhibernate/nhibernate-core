@@ -3,7 +3,7 @@ namespace NHibernate.Linq
 	/// <summary>
 	/// Expose NH queryable options.
 	/// </summary>
-	public class NhQueryableOptions 
+	public class NhQueryableOptions
 #pragma warning disable 618
 		: IQueryableOptions
 #pragma warning restore 618
@@ -102,7 +102,7 @@ namespace NHibernate.Linq
 			ReadOnly = readOnly;
 			return this;
 		}
-		
+
 		/// <summary> 
 		/// Set a comment that will be prepended before the generated SQL.
 		/// </summary>
@@ -113,7 +113,7 @@ namespace NHibernate.Linq
 			Comment = comment;
 			return this;
 		}
-		
+
 		/// <summary>
 		/// Override the current session flush mode, just for this query.
 		/// </summary>
@@ -155,7 +155,7 @@ namespace NHibernate.Linq
 
 			if (ReadOnly.HasValue)
 				query.SetReadOnly(ReadOnly.Value);
-			
+
 			if (!string.IsNullOrEmpty(Comment))
 				query.SetComment(Comment);
 

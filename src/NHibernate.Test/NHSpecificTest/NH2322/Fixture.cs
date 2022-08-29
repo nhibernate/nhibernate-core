@@ -1,7 +1,7 @@
-using NHibernate.Cfg;
-using NUnit.Framework;
-using NHibernate.Event;
 using System.Diagnostics;
+using NHibernate.Cfg;
+using NHibernate.Event;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2322
 {
@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2322
 		public void ShouldNotThrowWhenCommitingATransaction()
 		{
 			int id;
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -44,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2322
 				var p = s.Get<Person>(id);
 				p.Name = "changing the name...";
 
-				Assert.That(delegate() { t.Commit(); }, Throws.Nothing);
+				Assert.That(delegate () { t.Commit(); }, Throws.Nothing);
 			}
 		}
 	}

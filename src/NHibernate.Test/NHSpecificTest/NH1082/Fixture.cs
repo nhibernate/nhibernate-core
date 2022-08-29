@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1082
 		[Test]
 		public void ExceptionsInBeforeTransactionCompletionAbortTransaction()
 		{
-			var c = new C {ID = 1, Value = "value"};
+			var c = new C { ID = 1, Value = "value" };
 
 			var sessionInterceptor = new SessionInterceptorThatThrowsExceptionAtBeforeTransactionCompletion();
 			using (var s = Sfi.WithOptions().Interceptor(sessionInterceptor).OpenSession())

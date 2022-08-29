@@ -19,9 +19,9 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		{
 			var mapper = new ModelMapper();
 
-			mapper.BeforeMapClass += 
-				(mi, t, map) => map.Id(x => x.Column((t.Name+"id").ToUpper()));
-			mapper.BeforeMapProperty += 
+			mapper.BeforeMapClass +=
+				(mi, t, map) => map.Id(x => x.Column((t.Name + "id").ToUpper()));
+			mapper.BeforeMapProperty +=
 				(mi, propertyPath, map) => map.Column(propertyPath.ToColumnName().ToUpper());
 
 			mapper.Class<MyClass>(ca =>

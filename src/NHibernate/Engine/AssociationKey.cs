@@ -33,7 +33,7 @@ namespace NHibernate.Engine
 				return false;
 			}
 			return key.propertyName.Equals(propertyName) && key.ownerKey.Equals(ownerKey)
-			       && key.ownerKey.EntityName.Equals(ownerKey.EntityName);
+				   && key.ownerKey.EntityName.Equals(ownerKey.EntityName);
 		}
 
 		public override int GetHashCode()

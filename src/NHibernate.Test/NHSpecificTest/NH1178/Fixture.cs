@@ -53,14 +53,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1178
 			using (ISession s = OpenSession())
 			{
 				Example example = Example.Create(new Foo(1000, "mono")).ExcludeZeroes().ExcludeNulls();
-				IList results = s.CreateCriteria(typeof (Foo)).Add(example).List();
+				IList results = s.CreateCriteria(typeof(Foo)).Add(example).List();
 				Assert.AreEqual(1, results.Count);
 			}
 
 			using (ISession s = OpenSession())
 			{
 				Example example = Example.Create(new Foo(1000, "mono")).ExcludeNulls().ExcludeZeroes();
-				IList results = s.CreateCriteria(typeof (Foo)).Add(example).List();
+				IList results = s.CreateCriteria(typeof(Foo)).Add(example).List();
 				Assert.AreEqual(1, results.Count);
 			}
 		}

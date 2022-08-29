@@ -128,9 +128,9 @@ namespace NHibernate.Loader
 			SqlSelectBuilder select = new SqlSelectBuilder(Factory)
 				.SetLockMode(lockMode, alias)
 				.SetSelectClause(selectClause)
-				.SetFromClause(Dialect.AppendLockHint(lockMode, persister.FromTableFragment(alias)) +persister.FromJoinFragment(alias, true, true))
+				.SetFromClause(Dialect.AppendLockHint(lockMode, persister.FromTableFragment(alias)) + persister.FromJoinFragment(alias, true, true))
 				.SetWhereClause(condition)
-				.SetOuterJoins(ojf.ToFromFragmentString,ojf.ToWhereFragmentString + WhereFragment)
+				.SetOuterJoins(ojf.ToFromFragmentString, ojf.ToWhereFragmentString + WhereFragment)
 				.SetOrderByClause(
 					projection == null
 						? OrderBy(associations, orderBy)

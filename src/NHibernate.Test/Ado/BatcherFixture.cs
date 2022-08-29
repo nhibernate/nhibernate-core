@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Ado
 {
 	[TestFixture]
-	public class BatcherFixture: TestCase
+	public class BatcherFixture : TestCase
 	{
 		protected override string MappingsAssembly
 		{
@@ -56,9 +56,9 @@ namespace NHibernate.Test.Ado
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				s.Save(new VerySimple {Id = 1, Name = "Fabio", Weight = 119.5});
-				s.Save(new VerySimple {Id = 2, Name = "Fiamma", Weight = 9.8});
-				s.Save(new VerySimple {Id = 3, Name = "Roberto", Weight = 98.8 });
+				s.Save(new VerySimple { Id = 1, Name = "Fabio", Weight = 119.5 });
+				s.Save(new VerySimple { Id = 2, Name = "Fiamma", Weight = 9.8 });
+				s.Save(new VerySimple { Id = 3, Name = "Roberto", Weight = 98.8 });
 				tx.Commit();
 			}
 		}
@@ -213,7 +213,7 @@ namespace NHibernate.Test.Ado
 					foreach (var loggingEvent in sl.Appender.GetEvents())
 					{
 						string message = loggingEvent.RenderedMessage;
-						if(message.ToLowerInvariant().Contains("insert"))
+						if (message.ToLowerInvariant().Contains("insert"))
 						{
 							Assert.That(message, Does.Contain("batch").IgnoreCase);
 						}
@@ -257,13 +257,13 @@ namespace NHibernate.Test.Ado
 					foreach (var loggingEvent in sl.Appender.GetEvents())
 					{
 						string message = loggingEvent.RenderedMessage;
-						if(message.StartsWith("Adding"))
+						if (message.StartsWith("Adding"))
 						{
 							// should be the line with the formatted SQL
 							var strings = message.Split(System.Environment.NewLine.ToCharArray());
 							foreach (var sqlLine in strings)
 							{
-								if(sqlLine.Contains("p0"))
+								if (sqlLine.Contains("p0"))
 								{
 									Assert.That(sqlLine, Does.Contain("p1"));
 									Assert.That(sqlLine, Does.Contain("p2"));

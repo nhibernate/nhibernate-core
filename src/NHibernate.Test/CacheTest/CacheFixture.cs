@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CacheTest
 {
 	[TestFixture]
-	public class CacheFixture: TestCase
+	public class CacheFixture : TestCase
 	{
 		[Test]
 		public void TestSimpleCache()

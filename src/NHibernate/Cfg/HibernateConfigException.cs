@@ -18,7 +18,7 @@ namespace NHibernate.Cfg
 		/// <remarks>Default message is used.</remarks>
 		public HibernateConfigException()
 			: base(baseMessage)
-		{ 
+		{
 		}
 
 		/// <summary>

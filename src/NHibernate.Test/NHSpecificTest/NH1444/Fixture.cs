@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1444
 {
 	[TestFixture]
-	public class Fixture: BugTestCase
+	public class Fixture : BugTestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{
@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1444
 						.SetParameter("filternull", !filter.HasValue)
 						.SetParameter("filterval", filter.HasValue ? filter.Value : 0).List<xchild>();
 					var message = ls.GetWholeLog();
-					var paramFormatter = (ISqlParameterFormatter)Sfi.ConnectionProvider.Driver;
+					var paramFormatter = (ISqlParameterFormatter) Sfi.ConnectionProvider.Driver;
 					Assert.That(message, Does.Contain(
 						"on xchild0_.ParentId=xparent1_.Id").And.Contain(
 						$"where {paramFormatter.GetParameterName(0)}={Dialect.ToBooleanValueString(true)} or " +

@@ -1,5 +1,5 @@
-using NHibernate.DomainModel;
 using NHibernate.Criterion;
+using NHibernate.DomainModel;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 

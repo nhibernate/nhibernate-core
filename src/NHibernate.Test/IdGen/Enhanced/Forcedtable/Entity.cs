@@ -18,7 +18,7 @@
 		}
 
 		public Entity() { }
-		
+
 		public Entity(string name)
 		{
 			Name = name;

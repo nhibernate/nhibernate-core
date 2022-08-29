@@ -35,9 +35,9 @@ namespace NHibernate.Mapping.ByCode
 		{
 			const BindingFlags defaultBinding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 			return (from s in FieldNamingStrategies.Values
-			        let field = subject.DeclaringType.GetField(s.GetFieldName(subject.Name), defaultBinding)
-			        where field != null
-			        select field).FirstOrDefault();
+					let field = subject.DeclaringType.GetField(s.GetFieldName(subject.Name), defaultBinding)
+					where field != null
+					select field).FirstOrDefault();
 		}
 	}
 }

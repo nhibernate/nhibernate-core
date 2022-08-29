@@ -11,24 +11,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3182
 		protected override void OnSetUp()
 		{
 			var mother = new Lizard
-				{
-					BodyWeight = 48,
-					Description = "Mother",
-					Children = new List<Animal>()
-				};
+			{
+				BodyWeight = 48,
+				Description = "Mother",
+				Children = new List<Animal>()
+			};
 			var father = new Lizard
-				{
-					BodyWeight = 48,
-					Description = "Father",
-					Children = new List<Animal>()
-				};
+			{
+				BodyWeight = 48,
+				Description = "Father",
+				Children = new List<Animal>()
+			};
 			var child = new Lizard
-				{
-					Mother = mother,
-					Father = father,
-					BodyWeight = 48,
-					Description = "Child",
-				};
+			{
+				Mother = mother,
+				Father = father,
+				BodyWeight = 48,
+				Description = "Child",
+			};
 
 			mother.Children.Add(child);
 			father.Children.Add(child);
@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3182
 
 				transaction.Commit();
 			}
-		} 
+		}
 
 		[Test]
 		public void SelectManyPregnantStatusCast1()
@@ -131,7 +131,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3182
 			{
 				var list = (session.Query<Animal>()
 					.Where(o => o is Mammal)
-					.Select(o => ((Mammal)o).Pregnant))
+					.Select(o => ((Mammal) o).Pregnant))
 					.ToList();
 
 				var count = list.Count();

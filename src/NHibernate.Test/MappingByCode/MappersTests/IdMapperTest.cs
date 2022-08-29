@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using NHibernate.Mapping.ByCode;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NHibernate.Type;
 using NUnit.Framework;
@@ -35,8 +35,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			new IdMapper(hbmId).Generator(Generators.HighLow, p => p.Params(new { max_low = 99, where = "TableName" }));
 			Assert.That(hbmId.generator.@class, Is.EqualTo("hilo"));
 			Assert.That(hbmId.generator.param, Has.Length.EqualTo(2));
-			Assert.That(hbmId.generator.param.Select(p => p.name), Is.EquivalentTo(new [] {"max_low", "where"}));
-			Assert.That(hbmId.generator.param.Select(p => p.GetText()), Is.EquivalentTo(new [] {"99", "TableName"}));
+			Assert.That(hbmId.generator.param.Select(p => p.name), Is.EquivalentTo(new[] { "max_low", "where" }));
+			Assert.That(hbmId.generator.param.Select(p => p.GetText()), Is.EquivalentTo(new[] { "99", "TableName" }));
 		}
 
 		[Test]
@@ -259,8 +259,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			Assert.That(hbmId.type1, Is.Null);
 			Assert.That(hbmId.Type.name, Does.Contain("MyType"));
 			Assert.That(hbmId.Type.param, Has.Length.EqualTo(2));
-			Assert.That(hbmId.Type.param.Select(p => p.name), Is.EquivalentTo(new [] {"Param1", "Param2"}));
-			Assert.That(hbmId.Type.param.Select(p => p.GetText()), Is.EquivalentTo(new [] {"a", "12"}));
+			Assert.That(hbmId.Type.param.Select(p => p.name), Is.EquivalentTo(new[] { "Param1", "Param2" }));
+			Assert.That(hbmId.Type.param.Select(p => p.GetText()), Is.EquivalentTo(new[] { "a", "12" }));
 		}
 
 		[Test]

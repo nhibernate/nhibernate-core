@@ -17,7 +17,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		private IEnumerable<HbmColumn> AsColumns()
 		{
-			if(string.IsNullOrEmpty(column1))
+			if (string.IsNullOrEmpty(column1))
 			{
 				yield break;
 			}

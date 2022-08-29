@@ -66,12 +66,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1355
 
 		public System.Type ReturnedType
 		{
-			get { return typeof (byte[]); }
+			get { return typeof(byte[]); }
 		}
 
 		public SqlType[] SqlTypes
 		{
-			get { return new SqlType[] {new SqlType(DbType.Binary)}; }
+			get { return new SqlType[] { new SqlType(DbType.Binary) }; }
 		}
 
 		public int Compare(object x, object y)

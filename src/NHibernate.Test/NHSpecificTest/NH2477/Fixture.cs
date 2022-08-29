@@ -14,12 +14,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2477
 	}
 
 	[TestFixture, Ignore("Not fixed yet.")]
-	public class Fixture: TestCaseMappingByCode
+	public class Fixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ConventionModelMapper();
-			mapper.BeforeMapClass += (t, mi, map)=> map.Id(idm=> idm.Generator(Generators.Native));
+			mapper.BeforeMapClass += (t, mi, map) => map.Id(idm => idm.Generator(Generators.Native));
 			return mapper.CompileMappingFor(new[] { typeof(Something) });
 		}
 

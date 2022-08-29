@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 
 		public override int Timeout
 		{
-			get { return Timestamper.OneMs*60000; }
+			get { return Timestamper.OneMs * 60000; }
 		}
 
 		public override string RegionName
@@ -137,7 +137,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 
 		protected override void Configure(Configuration configuration)
 		{
-			configuration.SetProperty(Environment.CacheProvider, typeof (MyDummyCacheProvider).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.CacheProvider, typeof(MyDummyCacheProvider).AssemblyQualifiedName);
 			configuration.SetProperty(Environment.UseQueryCache, "true");
 		}
 
@@ -146,8 +146,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3564
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.Save(new Person {Name = "Bob", DateOfBirth = new DateTime(2015, 4, 22)});
-				session.Save(new Person {Name = "Sally", DateOfBirth = new DateTime(2014, 4, 22)});
+				session.Save(new Person { Name = "Bob", DateOfBirth = new DateTime(2015, 4, 22) });
+				session.Save(new Person { Name = "Sally", DateOfBirth = new DateTime(2014, 4, 22) });
 
 				transaction.Commit();
 			}

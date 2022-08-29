@@ -7,15 +7,15 @@ namespace NHibernate.Test.DialectTest
 	[TestFixture]
 	public class SqlCEDialectFixture
 	{
-        private MsSqlCeDialect dialect;
+		private MsSqlCeDialect dialect;
 
-        [SetUp]
-        public void SetUp()
-        {
-            dialect = new MsSqlCeDialect();
-        }
-        
-        [Test]
+		[SetUp]
+		public void SetUp()
+		{
+			dialect = new MsSqlCeDialect();
+		}
+
+		[Test]
 		public void BinaryBlob_mapping_to_SqlCe_types()
 		{
 			SimpleValue sv = new SimpleValue();
@@ -28,73 +28,73 @@ namespace NHibernate.Test.DialectTest
 
 			// maximum varbinary length is 8000
 			column.Length = 8000;
-			Assert.AreEqual("VARBINARY(8000)", column.GetSqlType(dialect,null));
+			Assert.AreEqual("VARBINARY(8000)", column.GetSqlType(dialect, null));
 
 			column.Length = 8001;
 			Assert.AreEqual("IMAGE", column.GetSqlType(dialect, null));
 		}
-    
-        [Test]
-        public void QuotedSchemaNameWithSqlCE()
-        {
-            Table tbl = new Table();
-            tbl.Schema = "`schema`";
-            tbl.Name = "`name`";
 
-            Assert.AreEqual("\"schema_name\"", tbl.GetQualifiedName(dialect));
-            Assert.AreEqual("\"schema_table\"", dialect.Qualify("", "\"schema\"", "\"table\""));
-        }
+		[Test]
+		public void QuotedSchemaNameWithSqlCE()
+		{
+			Table tbl = new Table();
+			tbl.Schema = "`schema`";
+			tbl.Name = "`name`";
 
-        [Test]
-        public void QuotedTableNameWithoutSchemaWithSqlCE()
-        {
-            Table tbl = new Table();
-            tbl.Name = "`name`";
+			Assert.AreEqual("\"schema_name\"", tbl.GetQualifiedName(dialect));
+			Assert.AreEqual("\"schema_table\"", dialect.Qualify("", "\"schema\"", "\"table\""));
+		}
 
-            Assert.AreEqual("\"name\"", tbl.GetQualifiedName(dialect));
-        }
+		[Test]
+		public void QuotedTableNameWithoutSchemaWithSqlCE()
+		{
+			Table tbl = new Table();
+			tbl.Name = "`name`";
 
-        [Test]
-        public void QuotedSchemaNameWithUnqoutedTableInSqlCE()
-        {
-            Table tbl = new Table();
-            tbl.Schema = "`schema`";
-            tbl.Name = "name";
+			Assert.AreEqual("\"name\"", tbl.GetQualifiedName(dialect));
+		}
 
-            Assert.AreEqual("\"schema_name\"", tbl.GetQualifiedName(dialect));
-            Assert.AreEqual("\"schema_table\"", dialect.Qualify("", "\"schema\"", "table"));
-        }
+		[Test]
+		public void QuotedSchemaNameWithUnqoutedTableInSqlCE()
+		{
+			Table tbl = new Table();
+			tbl.Schema = "`schema`";
+			tbl.Name = "name";
 
-        [Test]
-        public void QuotedCatalogSchemaNameWithSqlCE()
-        {
-            Table tbl = new Table();
-            tbl.Catalog = "dbo";
-            tbl.Schema = "`schema`";
-            tbl.Name = "`name`";
+			Assert.AreEqual("\"schema_name\"", tbl.GetQualifiedName(dialect));
+			Assert.AreEqual("\"schema_table\"", dialect.Qualify("", "\"schema\"", "table"));
+		}
 
-            Assert.AreEqual("dbo.\"schema_name\"", tbl.GetQualifiedName(dialect));
-            Assert.AreEqual("dbo.\"schema_table\"", dialect.Qualify("dbo", "\"schema\"", "\"table\""));
-        }
+		[Test]
+		public void QuotedCatalogSchemaNameWithSqlCE()
+		{
+			Table tbl = new Table();
+			tbl.Catalog = "dbo";
+			tbl.Schema = "`schema`";
+			tbl.Name = "`name`";
 
-        [Test]
-        public void QuotedTableNameWithSqlCE()
-        {
-            Table tbl = new Table();
-            tbl.Name = "`Group`";
+			Assert.AreEqual("dbo.\"schema_name\"", tbl.GetQualifiedName(dialect));
+			Assert.AreEqual("dbo.\"schema_table\"", dialect.Qualify("dbo", "\"schema\"", "\"table\""));
+		}
 
-            Assert.AreEqual("\"Group\"", tbl.GetQualifiedName(dialect));
-        }
+		[Test]
+		public void QuotedTableNameWithSqlCE()
+		{
+			Table tbl = new Table();
+			tbl.Name = "`Group`";
 
-        [Test]
-        public void SchemaNameWithSqlCE()
-        {
-            Table tbl = new Table();
-            tbl.Schema = "schema";
-            tbl.Name = "name";
+			Assert.AreEqual("\"Group\"", tbl.GetQualifiedName(dialect));
+		}
 
-            Assert.AreEqual("schema_name", tbl.GetQualifiedName(dialect));
-            Assert.AreEqual("schema_table", dialect.Qualify("", "schema", "table"));
-        }
-    }
+		[Test]
+		public void SchemaNameWithSqlCE()
+		{
+			Table tbl = new Table();
+			tbl.Schema = "schema";
+			tbl.Name = "name";
+
+			Assert.AreEqual("schema_name", tbl.GetQualifiedName(dialect));
+			Assert.AreEqual("schema_table", dialect.Qualify("", "schema", "table"));
+		}
+	}
 }

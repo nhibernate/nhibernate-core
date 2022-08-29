@@ -67,7 +67,7 @@ namespace NHibernate.SqlCommand
 		{
 			if (SqlStringHelper.IsEmpty(condition))
 				return;
-			
+
 			buffer.Add(
 				condition.StartsWithCaseInsensitive(" and ")
 					? condition.Substring(4)

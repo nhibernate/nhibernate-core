@@ -42,7 +42,7 @@ namespace NHibernate.Transform
 			return result;
 		}
 
-		internal static List<T> TransformList<T>(IEnumerable<T> list) where T: class
+		internal static List<T> TransformList<T>(IEnumerable<T> list) where T : class
 		{
 			var result = list.Distinct(ReferenceComparer<T>.Instance).ToList();
 			if (log.IsDebugEnabled())

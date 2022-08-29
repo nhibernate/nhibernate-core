@@ -12,7 +12,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			{
 				throw new ArgumentNullException("explicitDeclarationsHolder");
 			}
-			explicitDeclarationsHolder.AddAsTablePerConcreteClassEntity(typeof (TEntity));
+			explicitDeclarationsHolder.AddAsTablePerConcreteClassEntity(typeof(TEntity));
 
 			// Add an empty customizer as a way to register the class as explicity declared
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => { });
@@ -22,42 +22,42 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void EntityName(string value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.EntityName(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.EntityName(value));
 		}
 
 		public void Proxy(System.Type proxy)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.Proxy(proxy));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.Proxy(proxy));
 		}
 
 		public void Lazy(bool value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.Lazy(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.Lazy(value));
 		}
 
 		public void DynamicUpdate(bool value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.DynamicUpdate(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.DynamicUpdate(value));
 		}
 
 		public void DynamicInsert(bool value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.DynamicInsert(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.DynamicInsert(value));
 		}
 
 		public void BatchSize(int value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.BatchSize(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.BatchSize(value));
 		}
 
 		public void SelectBeforeUpdate(bool value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.SelectBeforeUpdate(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.SelectBeforeUpdate(value));
 		}
 
 		public void Persister<T>() where T : IEntityPersister
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.Persister<T>());
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.Persister<T>());
 		}
 
 		public void Synchronize(params string[] table)
@@ -71,12 +71,12 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Loader(string namedQueryReference)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.Loader(namedQueryReference));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.Loader(namedQueryReference));
 		}
 
 		public void SqlInsert(string sql)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.SqlInsert(sql));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.SqlInsert(sql));
 		}
 
 		public void SqlInsert(string sql, SqlCheck sqlCheck)
@@ -86,7 +86,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void SqlUpdate(string sql)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.SqlUpdate(sql));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.SqlUpdate(sql));
 		}
 
 		public void SqlUpdate(string sql, SqlCheck sqlCheck)
@@ -96,7 +96,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void SqlDelete(string sql)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.SqlDelete(sql));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.SqlDelete(sql));
 		}
 
 		public void SqlDelete(string sql, SqlCheck sqlCheck)
@@ -106,7 +106,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Subselect(string sql)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.Subselect(sql));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.Subselect(sql));
 		}
 
 		#endregion
@@ -129,17 +129,17 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Table(string tableName)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.Table(tableName));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.Table(tableName));
 		}
 
 		public void Catalog(string catalogName)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.Catalog(catalogName));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.Catalog(catalogName));
 		}
 
 		public void Schema(string schemaName)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IUnionSubclassAttributesMapper m) => m.Schema(schemaName));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IUnionSubclassAttributesMapper m) => m.Schema(schemaName));
 		}
 
 		#endregion

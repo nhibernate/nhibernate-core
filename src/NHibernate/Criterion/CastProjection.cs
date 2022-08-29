@@ -12,7 +12,7 @@ namespace NHibernate.Criterion
 	/// level
 	/// </summary>
 	[Serializable]
-	public class CastProjection : SimpleProjection 
+	public class CastProjection : SimpleProjection
 	{
 		private readonly IType type;
 		private readonly IProjection projection;
@@ -44,7 +44,7 @@ namespace NHibernate.Criterion
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new IType[]{ type };
+			return new IType[] { type };
 		}
 
 		public override NHibernate.Engine.TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)

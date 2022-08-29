@@ -78,7 +78,7 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			var dateTime = (DateTime)value;
+			var dateTime = (DateTime) value;
 			if (dateTime < BaseDateValue)
 			{
 				st.Parameters[index].Value = DBNull.Value;
@@ -101,8 +101,8 @@ namespace NHibernate.Type
 				return false;
 			}
 
-			DateTime date1 = (DateTime)x;
-			DateTime date2 = (DateTime)y;
+			DateTime date1 = (DateTime) x;
+			DateTime date2 = (DateTime) y;
 			if (date1.Equals(date2))
 				return true;
 
@@ -113,7 +113,7 @@ namespace NHibernate.Type
 
 		public override int GetHashCode(object x)
 		{
-			DateTime date = (DateTime)x;
+			DateTime date = (DateTime) x;
 			int hashCode = 1;
 			unchecked
 			{
@@ -138,7 +138,7 @@ namespace NHibernate.Type
 		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val)
 		{
-			return ((DateTime)val).ToString("T");
+			return ((DateTime) val).ToString("T");
 		}
 
 		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
@@ -172,7 +172,7 @@ namespace NHibernate.Type
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return "'" + ((DateTime)value).ToShortTimeString() + "'";
+			return "'" + ((DateTime) value).ToShortTimeString() + "'";
 		}
 	}
 }

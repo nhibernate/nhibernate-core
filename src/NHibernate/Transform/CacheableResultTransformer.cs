@@ -63,8 +63,8 @@ namespace NHibernate.Transform
 		// Since v5.1
 		[Obsolete("Please use overload with skipTransformer parameter.")]
 		public static CacheableResultTransformer Create(IResultTransformer transformer,
-		                                                string[] aliases,
-		                                                bool[] includeInTuple)
+														string[] aliases,
+														bool[] includeInTuple)
 		{
 			return Create(transformer, aliases, includeInTuple, false, null);
 		}
@@ -227,9 +227,9 @@ namespace NHibernate.Transform
 		/// <param name="includeInTuple"></param>
 		/// <returns>transformedResults, with each element re-transformed (if necessary).</returns>
 		public IList RetransformResults(IList transformedResults,
-		                                string[] aliases,
-		                                IResultTransformer transformer,
-		                                bool[] includeInTuple)
+										string[] aliases,
+										IResultTransformer transformer,
+										bool[] includeInTuple)
 		{
 			if (transformer == null)
 				throw new ArgumentNullException(nameof(transformer));
@@ -323,8 +323,8 @@ namespace NHibernate.Transform
 			if (_includeInTuple == null)
 				throw new InvalidOperationException("This transformer is not initialized");
 			return _tupleLength != _tupleSubsetLength
-				       ? Index(tupleResultTypes)
-				       : tupleResultTypes;
+					   ? Index(tupleResultTypes)
+					   : tupleResultTypes;
 		}
 
 		public IList TransformList(IList list)
@@ -341,8 +341,8 @@ namespace NHibernate.Transform
 		{
 			T[] objectsIndexed = objects;
 			if (objects != null &&
-			    _includeInTransformIndex != null &&
-			    objects.Length != _tupleSubsetLength)
+				_includeInTransformIndex != null &&
+				objects.Length != _tupleSubsetLength)
 			{
 				objectsIndexed = new T[_tupleSubsetLength];
 				for (int i = 0; i < _tupleSubsetLength; i++)
@@ -363,8 +363,8 @@ namespace NHibernate.Transform
 		{
 			T[] objectsUnindexed = objects;
 			if (objects != null &&
-			    _includeInTransformIndex != null &&
-			    objects.Length != _tupleLength)
+				_includeInTransformIndex != null &&
+				objects.Length != _tupleLength)
 			{
 				objectsUnindexed = new T[_tupleLength];
 				for (int i = 0; i < _tupleSubsetLength; i++)
@@ -406,9 +406,9 @@ namespace NHibernate.Transform
 				return _autoDiscoveredQuery.GetHashCode();
 
 			var result = _tupleLength;
-			result = 31*result + _tupleSubsetLength;
-			result = 31*result + (_includeInTuple != null ? ArrayHelper.ArrayGetHashCode(_includeInTuple) : 0);
-			result = 31*result + (_includeInTransformIndex != null ? ArrayHelper.ArrayGetHashCode(_includeInTransformIndex) : 0);
+			result = 31 * result + _tupleSubsetLength;
+			result = 31 * result + (_includeInTuple != null ? ArrayHelper.ArrayGetHashCode(_includeInTuple) : 0);
+			result = 31 * result + (_includeInTransformIndex != null ? ArrayHelper.ArrayGetHashCode(_includeInTransformIndex) : 0);
 			return result;
 		}
 	}

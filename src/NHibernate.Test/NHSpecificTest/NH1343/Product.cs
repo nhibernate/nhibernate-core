@@ -2,7 +2,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1343
 {
 	public class Product
 	{
-		protected Product() {}
+		protected Product() { }
 
 		public Product(string description)
 		{

@@ -43,7 +43,7 @@ namespace NHibernate.Transform
 				for (int i = 0; i < results.Count; i++)
 				{
 					Object[] tuple = UntransformToTuple(results[i], isSingleResult);
-					results[i]= tuple;
+					results[i] = tuple;
 				}
 			}
 			return results;
@@ -51,7 +51,7 @@ namespace NHibernate.Transform
 
 		internal object[] UntransformToTuple(object transformed, bool isSingleResult)
 		{
-			return isSingleResult ? new[] {transformed} : (object[]) transformed;
+			return isSingleResult ? new[] { transformed } : (object[]) transformed;
 		}
 
 		public override bool Equals(object obj)

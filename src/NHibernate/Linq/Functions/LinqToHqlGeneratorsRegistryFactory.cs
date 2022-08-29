@@ -8,7 +8,7 @@ namespace NHibernate.Linq.Functions
 {
 	public sealed class LinqToHqlGeneratorsRegistryFactory
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (LinqToHqlGeneratorsRegistryFactory));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(LinqToHqlGeneratorsRegistryFactory));
 
 		public static ILinqToHqlGeneratorsRegistry CreateGeneratorsRegistry(IDictionary<string, string> properties)
 		{

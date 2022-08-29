@@ -1,5 +1,5 @@
-﻿using NUnit.Framework;
-using NHibernate.Mapping;
+﻿using NHibernate.Mapping;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3749
 {
@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3749
 			uk.Columns.Add(column);
 
 			tbl.AddUniqueKey(uk);
-			
+
 			Dialect.Dialect dialect = new TestDialect();
 
 			string sql = tbl.SqlCreateString(dialect, null, "", "");

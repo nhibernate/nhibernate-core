@@ -38,13 +38,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3772
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.Save(new Entity {Name = "Bob"});
+				session.Save(new Entity { Name = "Bob" });
 
-				session.Save(new Entity {Name = "Sally"});
+				session.Save(new Entity { Name = "Sally" });
 
-				session.Save(new SubEntity {Name = "Bob"});
+				session.Save(new SubEntity { Name = "Bob" });
 
-				session.Save(new SubEntity {Name = "Sally"});
+				session.Save(new SubEntity { Name = "Sally" });
 
 				session.Flush();
 				transaction.Commit();

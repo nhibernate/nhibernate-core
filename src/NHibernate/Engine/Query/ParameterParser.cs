@@ -54,18 +54,18 @@ namespace NHibernate.Engine.Query
 				int currentNewLineLength;
 
 				// check comments
-				if (indx + 1 < stringLength && sqlString.Substring(indx,2) == "/*")
+				if (indx + 1 < stringLength && sqlString.Substring(indx, 2) == "/*")
 				{
 					var closeCommentIdx = sqlString.IndexOf("*/", indx + 2, StringComparison.Ordinal);
-					recognizer.Other(sqlString.Substring(indx, (closeCommentIdx- indx)+2));
+					recognizer.Other(sqlString.Substring(indx, (closeCommentIdx - indx) + 2));
 					indx = closeCommentIdx + 1;
 					continue;
 				}
-				
+
 				if (afterNewLine && (indx + 1 < stringLength) && sqlString.Substring(indx, 2) == "--")
 				{
 					var closeCommentIdx = sqlString.IndexOfAnyNewLine(indx + 2, out currentNewLineLength);
-						
+
 					string comment;
 					if (closeCommentIdx == -1)
 					{

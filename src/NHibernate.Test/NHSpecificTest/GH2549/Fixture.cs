@@ -12,9 +12,9 @@ namespace NHibernate.Test.NHSpecificTest.GH2549
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				s.Save(new Person {Id = 1, Name = "Name"});
-				s.Save(new Customer {Deleted = false, Name = "Name", Id = 1});
-				s.Save(new Customer {Deleted = true, Name = "Name", Id = 2});
+				s.Save(new Person { Id = 1, Name = "Name" });
+				s.Save(new Customer { Deleted = false, Name = "Name", Id = 1 });
+				s.Save(new Customer { Deleted = true, Name = "Name", Id = 2 });
 
 				t.Commit();
 			}

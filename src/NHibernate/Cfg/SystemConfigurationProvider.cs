@@ -34,7 +34,7 @@ namespace NHibernate.Cfg
 
 		private string GetAppSetting(string name)
 		{
-			return  _configuration.AppSettings.Settings[name]?.Value;
+			return _configuration.AppSettings.Settings[name]?.Value;
 		}
 	}
 }

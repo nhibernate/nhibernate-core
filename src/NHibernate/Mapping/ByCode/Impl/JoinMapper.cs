@@ -17,7 +17,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 	}
 	public delegate void TableNameChangedHandler(IJoinMapper mapper, TableNameChangedEventArgs args);
 
-	public class JoinMapper: AbstractPropertyContainerMapper, IJoinMapper, IEntitySqlsWithCheckMapper
+	public class JoinMapper : AbstractPropertyContainerMapper, IJoinMapper, IEntitySqlsWithCheckMapper
 	{
 		private readonly HbmJoin hbmJoin;
 		private readonly KeyMapper keyMapper;
@@ -153,7 +153,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			var oldName = hbmJoin.table;
 			hbmJoin.table = trimmedName;
-			if(!trimmedName.Equals(oldName))
+			if (!trimmedName.Equals(oldName))
 			{
 				InvokeTableNameChanged(new TableNameChangedEventArgs(oldName, trimmedName));
 			}

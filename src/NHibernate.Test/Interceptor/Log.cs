@@ -10,7 +10,7 @@ namespace NHibernate.Test.Interceptor
 		private string action;
 		private DateTime time;
 
-		public Log() {}
+		public Log() { }
 
 		public Log(string action, string entityId, string entityName)
 		{

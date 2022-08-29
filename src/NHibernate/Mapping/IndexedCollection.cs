@@ -45,7 +45,7 @@ namespace NHibernate.Mapping
 				bool isFormula = false;
 				foreach (ISelectable selectable in Index.ColumnIterator)
 				{
-					if(selectable.IsFormula)
+					if (selectable.IsFormula)
 						isFormula = true;
 				}
 				if (isFormula)

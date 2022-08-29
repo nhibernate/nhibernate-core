@@ -54,7 +54,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			//		}
 			var fromElements = fromClause.GetProjectionListTyped();
 
-			ASTAppender appender = new ASTAppender(ASTFactory, this);	// Get ready to start adding nodes.
+			ASTAppender appender = new ASTAppender(ASTFactory, this);   // Get ready to start adding nodes.
 			int size = fromElements.Count;
 			List<IType> queryReturnTypeList = new List<IType>(size);
 
@@ -81,7 +81,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 						// Generate the select expression.
 						string text = fromElement.RenderIdentifierSelect(size, k);
 
-						SelectExpressionImpl generatedExpr = (SelectExpressionImpl)appender.Append(HqlSqlWalker.SELECT_EXPR, text, false);
+						SelectExpressionImpl generatedExpr = (SelectExpressionImpl) appender.Append(HqlSqlWalker.SELECT_EXPR, text, false);
 						if (generatedExpr != null)
 						{
 							generatedExpr.FromElement = fromElement;
@@ -133,7 +133,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 				if (expr.IsConstructor)
 				{
-					_constructorNode = (ConstructorNode)expr;
+					_constructorNode = (ConstructorNode) expr;
 					//sqlResultTypeList.addAll( constructorArgumentTypeList );
 					_scalarSelect = true;
 
@@ -160,7 +160,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 							type = param.GuessedType;
 						}
 						else
-							throw new QueryException("No data type for node: " + expr.GetType().Name + " " + new ASTPrinter().ShowAsString((IASTNode)expr, ""));
+							throw new QueryException("No data type for node: " + expr.GetType().Name + " " + new ASTPrinter().ShowAsString((IASTNode) expr, ""));
 					}
 					//sqlResultTypeList.add( type );
 
@@ -187,7 +187,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// add the fetched entities
 				var fromElements = fromClause.GetProjectionListTyped();
 
-				ASTAppender appender = new ASTAppender(ASTFactory, this);	// Get ready to start adding nodes.
+				ASTAppender appender = new ASTAppender(ASTFactory, this);   // Get ready to start adding nodes.
 				int size = fromElements.Count;
 				int k = 0;
 
@@ -225,7 +225,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 									//sqlResultTypeList.add( type );
 									// Generate the select expression.
 									String text = fromElement.RenderIdentifierSelect(size, k);
-									SelectExpressionImpl generatedExpr = (SelectExpressionImpl)appender.Append(HqlSqlWalker.SELECT_EXPR, text, false);
+									SelectExpressionImpl generatedExpr = (SelectExpressionImpl) appender.Append(HqlSqlWalker.SELECT_EXPR, text, false);
 									if (generatedExpr != null)
 									{
 										generatedExpr.FromElement = fromElement;
@@ -477,7 +477,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				for (int i = 0; i < se.Length; i++)
 				{
 					ISelectExpression expr = se[i];
-					expr.SetScalarColumn(i);	// Create SQL_TOKEN nodes for the columns.
+					expr.SetScalarColumn(i);    // Create SQL_TOKEN nodes for the columns.
 				}
 			}
 		}

@@ -40,7 +40,7 @@ namespace NHibernate.Test.Futures
 		public Guid Id { get; set; }
 		public string Name { get; set; }
 	}
-	
+
 	public class EntityEager
 	{
 		public Guid Id { get; set; }

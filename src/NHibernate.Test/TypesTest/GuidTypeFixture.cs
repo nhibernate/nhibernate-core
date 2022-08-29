@@ -25,7 +25,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Equals()
 		{
-			GuidType type = (GuidType)NHibernateUtil.Guid;
+			GuidType type = (GuidType) NHibernateUtil.Guid;
 
 			Guid lhs = new Guid("{01234567-abcd-abcd-abcd-0123456789ab}");
 			Guid rhs = new Guid("{01234567-abcd-abcd-abcd-0123456789ab}");
@@ -51,7 +51,7 @@ namespace NHibernate.Test.TypesTest
 			s.Close();
 
 			s = OpenSession();
-			basic = (GuidClass)s.Load(typeof(GuidClass), 1);
+			basic = (GuidClass) s.Load(typeof(GuidClass), 1);
 
 			Assert.AreEqual(val, basic.GuidValue);
 
@@ -77,7 +77,7 @@ namespace NHibernate.Test.TypesTest
 
 			using (ISession s = OpenSession())
 			{
-				basic = (GuidClass)s.CreateCriteria(typeof(GuidClass))
+				basic = (GuidClass) s.CreateCriteria(typeof(GuidClass))
 														.Add(Expression.Eq("GuidValue", val))
 														.UniqueResult();
 
@@ -93,7 +93,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void GetGuidWorksWhenUnderlyingTypeIsRepresentedByString()
 		{
-			GuidType type = (GuidType)NHibernateUtil.Guid;
+			GuidType type = (GuidType) NHibernateUtil.Guid;
 
 			Guid value = Guid.NewGuid();
 			DataTable data = new DataTable("test");

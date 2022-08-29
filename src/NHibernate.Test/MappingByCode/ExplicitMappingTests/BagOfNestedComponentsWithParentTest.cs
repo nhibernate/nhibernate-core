@@ -101,11 +101,11 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		{
 			HbmClass rc = mapping.RootClasses.First(r => r.Name.Contains("Person"));
 			var relation = rc.Properties.First(p => p.Name == "Addresses");
-			var collection = (HbmBag)relation;
+			var collection = (HbmBag) relation;
 			Assert.That(collection.ElementRelationship, Is.TypeOf<HbmCompositeElement>());
-			var elementRelation = (HbmCompositeElement)collection.ElementRelationship;
+			var elementRelation = (HbmCompositeElement) collection.ElementRelationship;
 			Assert.That(elementRelation.Class, Does.Contain("Address"));
-			
+
 			// This test was modified because when the "owner" is an entity it can be mapped as many-to-one or as parent and without an explicit
 			// definition of the property representing the bidiretional-relation we can't know is the mapping element (many-to-one or parent)
 			Assert.That(elementRelation.Properties.Count(), Is.EqualTo(properties.Length));
@@ -119,7 +119,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			{
 				Assert.That(elementRelation.Parent, Is.Null);
 			}
-			
+
 			// Nested
 			var propertyNestedRelation = elementRelation.Properties.FirstOrDefault(p => p.Name == "Number");
 			Assert.That(propertyNestedRelation, Is.Not.Null.And.TypeOf<HbmNestedCompositeElement>());

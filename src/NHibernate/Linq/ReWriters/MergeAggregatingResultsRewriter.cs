@@ -83,7 +83,7 @@ namespace NHibernate.Linq.ReWriters
 
 		private static Expression TransformCountExpression(Expression expression)
 		{
-			if (expression.NodeType == ExpressionType.MemberInit || 
+			if (expression.NodeType == ExpressionType.MemberInit ||
 				expression.NodeType == ExpressionType.New ||
 				expression is QuerySourceReferenceExpression)
 			{
@@ -126,27 +126,27 @@ namespace NHibernate.Linq.ReWriters
 				switch (m.Method.Name)
 				{
 					case "Count":
-						return CreateAggregate(m.Arguments[0], (LambdaExpression)m.Arguments[1],
+						return CreateAggregate(m.Arguments[0], (LambdaExpression) m.Arguments[1],
 											   e => new NhShortCountExpression(e),
 											   () => new CountResultOperator());
 					case "LongCount":
-						return CreateAggregate(m.Arguments[0], (LambdaExpression)m.Arguments[1],
+						return CreateAggregate(m.Arguments[0], (LambdaExpression) m.Arguments[1],
 											   e => new NhLongCountExpression(e),
 											   () => new LongCountResultOperator());
 					case "Min":
-						return CreateAggregate(m.Arguments[0], (LambdaExpression)m.Arguments[1],
+						return CreateAggregate(m.Arguments[0], (LambdaExpression) m.Arguments[1],
 											   e => new NhMinExpression(e),
 											   () => new MinResultOperator());
 					case "Max":
-						return CreateAggregate(m.Arguments[0], (LambdaExpression)m.Arguments[1],
+						return CreateAggregate(m.Arguments[0], (LambdaExpression) m.Arguments[1],
 											   e => new NhMaxExpression(e),
 											   () => new MaxResultOperator());
 					case "Sum":
-						return CreateAggregate(m.Arguments[0], (LambdaExpression)m.Arguments[1],
+						return CreateAggregate(m.Arguments[0], (LambdaExpression) m.Arguments[1],
 											   e => new NhSumExpression(e),
 											   () => new SumResultOperator());
 					case "Average":
-						return CreateAggregate(m.Arguments[0], (LambdaExpression)m.Arguments[1],
+						return CreateAggregate(m.Arguments[0], (LambdaExpression) m.Arguments[1],
 											   e => new NhAverageExpression(e),
 											   () => new AverageResultOperator());
 				}

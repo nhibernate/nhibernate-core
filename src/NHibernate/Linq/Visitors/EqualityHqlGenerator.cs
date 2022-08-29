@@ -7,7 +7,7 @@ namespace NHibernate.Linq.Visitors
 	/// <summary>
 	/// Builds HQL Equality nodes and used in joins
 	/// </summary>
-	public class EqualityHqlGenerator 
+	public class EqualityHqlGenerator
 	{
 		private readonly HqlTreeBuilder _hqlTreeBuilder;
 		private readonly VisitorParameters _parameters;

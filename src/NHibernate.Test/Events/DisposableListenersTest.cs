@@ -26,7 +26,7 @@ namespace NHibernate.Test.Events
 		{
 			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			var myDisposableListener = new MyDisposableListener();
-			cfg.AppendListeners(ListenerType.PostUpdate, new[]{myDisposableListener});
+			cfg.AppendListeners(ListenerType.PostUpdate, new[] { myDisposableListener });
 			var sf = cfg.BuildSessionFactory();
 			sf.Close();
 			Assert.That(myDisposableListener.DisposeCalled, Is.True);

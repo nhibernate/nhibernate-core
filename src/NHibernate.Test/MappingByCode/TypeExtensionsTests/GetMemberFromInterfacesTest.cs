@@ -44,13 +44,13 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		[Test]
 		public void WhenNullArgumentThenThrows()
 		{
-			Assert.That(() => ((MemberInfo)null).GetPropertyFromInterfaces().ToList(), Throws.TypeOf<ArgumentNullException>());
+			Assert.That(() => ((MemberInfo) null).GetPropertyFromInterfaces().ToList(), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
 		public void WhenNoInterfaceThenEmptyList()
 		{
-			Assert.That(For<BaseEntity>.Property(x=> x.Id).GetPropertyFromInterfaces(), Is.Empty);
+			Assert.That(For<BaseEntity>.Property(x => x.Id).GetPropertyFromInterfaces(), Is.Empty);
 		}
 
 		[Test]
@@ -63,7 +63,7 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		public void WhenOneInterfaceThenReturnMemberInfoOfInterface()
 		{
 			var members = For<Person>.Property(x => x.IsValid).GetPropertyFromInterfaces();
-			Assert.That(members.Single(), Is.EqualTo(For<IEntity>.Property(x=> x.IsValid)));
+			Assert.That(members.Single(), Is.EqualTo(For<IEntity>.Property(x => x.IsValid)));
 		}
 
 		[Test]

@@ -63,7 +63,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Pk.Unidirectional
 				var empAndInfoList = s.CreateQuery("from Employee e, EmployeeInfo i where e.Info = i").List();
 				Assert.AreEqual(1, empAndInfoList.Count);
 
-				var result = (object[])empAndInfoList[0];
+				var result = (object[]) empAndInfoList[0];
 
 				emp = result[0] as Employee;
 
@@ -109,7 +109,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Pk.Unidirectional
 		{
 			get { return Array.Empty<string>(); }
 		}
-		
+
 		protected override void AddMappings(Cfg.Configuration configuration)
 		{
 			var mapper = new ModelMapper();

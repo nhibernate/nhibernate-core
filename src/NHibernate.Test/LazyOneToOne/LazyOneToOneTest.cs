@@ -11,7 +11,7 @@ namespace NHibernate.Test.LazyOneToOne
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"LazyOneToOne.Person.hbm.xml"}; }
+			get { return new[] { "LazyOneToOne.Person.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly
@@ -40,11 +40,11 @@ namespace NHibernate.Test.LazyOneToOne
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			var p = new Person {Name = "Gavin"};
-			var p2 = new Person {Name = "Emmanuel"};
+			var p = new Person { Name = "Gavin" };
+			var p2 = new Person { Name = "Emmanuel" };
 			var e = new Employee(p);
 			new Employment(e, "JBoss");
-			var old = new Employment(e, "IFA") {EndDate = DateTime.Today};
+			var old = new Employment(e, "IFA") { EndDate = DateTime.Today };
 			s.Persist(p);
 			s.Persist(p2);
 			t.Commit();

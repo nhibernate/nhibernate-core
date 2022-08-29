@@ -10,7 +10,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WhenInvalidBoolValueThenUseDefault()
 		{
-			Assert.That(PropertiesHelper.GetBoolean("myProp", new Dictionary<string, string> {{"myProp", "pizza"}}, false), Is.False);
+			Assert.That(PropertiesHelper.GetBoolean("myProp", new Dictionary<string, string> { { "myProp", "pizza" } }, false), Is.False);
 		}
 
 		[Test]

@@ -49,7 +49,7 @@ namespace NHibernate.Hql
 			string[] tokens = StringHelper.Split(StringHelper.WhiteSpace + "(),", query, true);
 			if (tokens.Length == 0)
 			{
-				return new String[] {query}; // just especially for the trivial collection filter
+				return new String[] { query }; // just especially for the trivial collection filter
 			}
 			var placeholders = new List<object>();
 			var replacements = new List<object>();

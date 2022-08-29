@@ -64,9 +64,9 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 using System.Text;
 using NHibernate.DebugHelpers;
-using System.Runtime.Serialization;
 
 namespace NHibernate.Util
 {
@@ -277,7 +277,7 @@ namespace NHibernate.Util
 		{
 			get
 			{
-				Entry entry = (Entry)_entries[o];
+				Entry entry = (Entry) _entries[o];
 				if (entry == null) return null;
 
 				return entry.Value;
@@ -286,7 +286,7 @@ namespace NHibernate.Util
 			{
 				_modCount++;
 
-				Entry e = (Entry)_entries[o];
+				Entry e = (Entry) _entries[o];
 				if (e != null)
 				{
 					RemoveEntry(e);
@@ -491,7 +491,7 @@ namespace NHibernate.Util
 		/// <param name="key">The Key to remove.</param>
 		private void RemoveImpl(object key)
 		{
-			Entry e = (Entry)_entries[key];
+			Entry e = (Entry) _entries[key];
 			if (e != null)
 			{
 				_entries.Remove(key);

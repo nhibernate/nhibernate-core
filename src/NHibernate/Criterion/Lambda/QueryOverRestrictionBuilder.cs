@@ -8,12 +8,12 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion.Lambda
 {
-	public class QueryOverRestrictionBuilder<TRoot,TSubType> : QueryOverRestrictionBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
+	public class QueryOverRestrictionBuilder<TRoot, TSubType> : QueryOverRestrictionBuilderBase<QueryOver<TRoot, TSubType>, TRoot, TSubType>
 	{
-		public QueryOverRestrictionBuilder(QueryOver<TRoot,TSubType> root, ExpressionProcessor.ProjectionInfo projection)
+		public QueryOverRestrictionBuilder(QueryOver<TRoot, TSubType> root, ExpressionProcessor.ProjectionInfo projection)
 			: base(root, projection) { }
 
-		public QueryOverRestrictionBuilder<TRoot,TSubType> Not
+		public QueryOverRestrictionBuilder<TRoot, TSubType> Not
 		{
 			get
 			{
@@ -23,12 +23,12 @@ namespace NHibernate.Criterion.Lambda
 		}
 	}
 
-	public class IQueryOverRestrictionBuilder<TRoot,TSubType> : QueryOverRestrictionBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
+	public class IQueryOverRestrictionBuilder<TRoot, TSubType> : QueryOverRestrictionBuilderBase<IQueryOver<TRoot, TSubType>, TRoot, TSubType>
 	{
-		public IQueryOverRestrictionBuilder(IQueryOver<TRoot,TSubType> root, ExpressionProcessor.ProjectionInfo projection)
+		public IQueryOverRestrictionBuilder(IQueryOver<TRoot, TSubType> root, ExpressionProcessor.ProjectionInfo projection)
 			: base(root, projection) { }
 
-		public IQueryOverRestrictionBuilder<TRoot,TSubType> Not
+		public IQueryOverRestrictionBuilder<TRoot, TSubType> Not
 		{
 			get
 			{
@@ -38,8 +38,8 @@ namespace NHibernate.Criterion.Lambda
 		}
 	}
 
-	public class QueryOverRestrictionBuilderBase<TReturn,TRoot,TSubType>
-		where TReturn : IQueryOver<TRoot,TSubType>
+	public class QueryOverRestrictionBuilderBase<TReturn, TRoot, TSubType>
+		where TReturn : IQueryOver<TRoot, TSubType>
 	{
 		public class LambdaBetweenBuilder
 		{
@@ -61,7 +61,7 @@ namespace NHibernate.Criterion.Lambda
 				if (isNot)
 					criterion = Restrictions.Not(criterion);
 
-				return (TReturn)root.And(criterion);
+				return (TReturn) root.And(criterion);
 			}
 
 			public TReturn And(object hi)
@@ -88,7 +88,7 @@ namespace NHibernate.Criterion.Lambda
 			if (isNot)
 				criterion = Restrictions.Not(criterion);
 
-			return (TReturn)root.And(criterion);
+			return (TReturn) root.And(criterion);
 		}
 
 		/// <summary>
@@ -130,7 +130,7 @@ namespace NHibernate.Criterion.Lambda
 		{
 			return Add(projection.CreateCriterion(Restrictions.InsensitiveLike, Restrictions.InsensitiveLike, value));
 		}
-		
+
 		/// <summary>
 		/// A case-insensitive "like", similar to Postgres "ilike" operator
 		/// </summary>
@@ -178,7 +178,7 @@ namespace NHibernate.Criterion.Lambda
 		{
 			return Add(projection.CreateCriterion(Restrictions.Like, Restrictions.Like, value));
 		}
-		
+
 		/// <summary>
 		/// Apply a "like" constraint to the named property
 		/// </summary>
@@ -186,7 +186,7 @@ namespace NHibernate.Criterion.Lambda
 		{
 			return Add(projection.Create<ICriterion>(s => Restrictions.Like(s, value, matchMode), p => Restrictions.Like(p, value, matchMode)));
 		}
-		
+
 		/// <summary>
 		/// Apply a "like" constraint to the named property
 		/// </summary>

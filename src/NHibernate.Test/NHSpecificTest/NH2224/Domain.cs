@@ -9,23 +9,23 @@ namespace NHibernate.Test.NHSpecificTest.NH2224
 		private long _number;
 #pragma warning restore CS0649 // Field 'Class1._number' is never assigned to, and will always have its default value 0
 		private DateTime _dateOfChange;
-		
-		public virtual long Number 
+
+		public virtual long Number
 		{
-			get 
-			{ 
-				return _number; 
+			get
+			{
+				return _number;
 			}
 		}
 
-		public virtual DateTime DateOfChange 
+		public virtual DateTime DateOfChange
 		{
-			get 
-			{ 
-				return _dateOfChange; 
+			get
+			{
+				return _dateOfChange;
 			}
-			set 
-			{ 
+			set
+			{
 				if (_dateOfChange != value)
 					_dateOfChange = value;
 			}

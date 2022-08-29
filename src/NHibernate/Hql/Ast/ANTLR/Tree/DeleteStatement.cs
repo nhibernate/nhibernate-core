@@ -12,7 +12,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(DeleteStatement));
 
-		public DeleteStatement(IToken token) : base(token) {}
+		public DeleteStatement(IToken token) : base(token) { }
 
 		public override bool NeedsExecutor
 		{

@@ -7,28 +7,28 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion.Lambda
 {
-	public class QueryOverOrderBuilder<TRoot,TSubType> : QueryOverOrderBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
+	public class QueryOverOrderBuilder<TRoot, TSubType> : QueryOverOrderBuilderBase<QueryOver<TRoot, TSubType>, TRoot, TSubType>
 	{
-		public QueryOverOrderBuilder(QueryOver<TRoot,TSubType> root, Expression<Func<TSubType, object>> path) : base(root, path)
-		{}
+		public QueryOverOrderBuilder(QueryOver<TRoot, TSubType> root, Expression<Func<TSubType, object>> path) : base(root, path)
+		{ }
 
-		public QueryOverOrderBuilder(QueryOver<TRoot,TSubType> root, Expression<Func<object>> path, bool isAlias) : base(root, path, isAlias)
-		{}
+		public QueryOverOrderBuilder(QueryOver<TRoot, TSubType> root, Expression<Func<object>> path, bool isAlias) : base(root, path, isAlias)
+		{ }
 
-		public QueryOverOrderBuilder(QueryOver<TRoot,TSubType> root, ExpressionProcessor.ProjectionInfo projection) : base(root, projection)
-		{}
+		public QueryOverOrderBuilder(QueryOver<TRoot, TSubType> root, ExpressionProcessor.ProjectionInfo projection) : base(root, projection)
+		{ }
 	}
 
-	public class IQueryOverOrderBuilder<TRoot,TSubType> : QueryOverOrderBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
+	public class IQueryOverOrderBuilder<TRoot, TSubType> : QueryOverOrderBuilderBase<IQueryOver<TRoot, TSubType>, TRoot, TSubType>
 	{
-		public IQueryOverOrderBuilder(IQueryOver<TRoot,TSubType> root, Expression<Func<TSubType, object>> path) : base(root, path)
-		{}
+		public IQueryOverOrderBuilder(IQueryOver<TRoot, TSubType> root, Expression<Func<TSubType, object>> path) : base(root, path)
+		{ }
 
-		public IQueryOverOrderBuilder(IQueryOver<TRoot,TSubType> root, Expression<Func<object>> path, bool isAlias) : base(root, path, isAlias)
-		{}
+		public IQueryOverOrderBuilder(IQueryOver<TRoot, TSubType> root, Expression<Func<object>> path, bool isAlias) : base(root, path, isAlias)
+		{ }
 
-		public IQueryOverOrderBuilder(IQueryOver<TRoot,TSubType> root, ExpressionProcessor.ProjectionInfo projection) : base(root, projection)
-		{}
+		public IQueryOverOrderBuilder(IQueryOver<TRoot, TSubType> root, ExpressionProcessor.ProjectionInfo projection) : base(root, projection)
+		{ }
 	}
 
 	public class QueryOverOrderBuilderBase<TReturn, TRoot, TSubType> where TReturn : IQueryOver<TRoot, TSubType>
@@ -64,9 +64,9 @@ namespace NHibernate.Criterion.Lambda
 				root.UnderlyingCriteria.AddOrder(projection.CreateOrder(orderStringDelegate, orderProjectionDelegate));
 			else
 				if (isAlias)
-					root.UnderlyingCriteria.AddOrder(ExpressionProcessor.ProcessOrder(path, orderStringDelegate));
-				else
-					root.UnderlyingCriteria.AddOrder(ExpressionProcessor.ProcessOrder(path, orderStringDelegate, orderProjectionDelegate));
+				root.UnderlyingCriteria.AddOrder(ExpressionProcessor.ProcessOrder(path, orderStringDelegate));
+			else
+				root.UnderlyingCriteria.AddOrder(ExpressionProcessor.ProcessOrder(path, orderStringDelegate, orderProjectionDelegate));
 		}
 
 		public TReturn Asc

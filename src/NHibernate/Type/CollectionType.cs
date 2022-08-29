@@ -1,16 +1,16 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
-using System.Collections.Generic;
-using System.Linq;
-using NHibernate.Impl;
 
 namespace NHibernate.Type
 {
@@ -29,7 +29,7 @@ namespace NHibernate.Type
 		private readonly string role;
 		private readonly string foreignKeyPropertyName;
 
-		private static readonly SqlType[] NoSqlTypes = {};
+		private static readonly SqlType[] NoSqlTypes = { };
 
 		/// <summary>
 		/// Initializes a new instance of a <see cref="CollectionType"/> class for
@@ -59,9 +59,9 @@ namespace NHibernate.Type
 
 		public override bool IsEqual(object x, object y)
 		{
-			return x == y || 
-				(x is IPersistentCollection && ((IPersistentCollection)x).IsWrapper(y)) || 
-				(y is IPersistentCollection && ((IPersistentCollection)y).IsWrapper(x));
+			return x == y ||
+				(x is IPersistentCollection && ((IPersistentCollection) x).IsWrapper(y)) ||
+				(y is IPersistentCollection && ((IPersistentCollection) y).IsWrapper(x));
 		}
 
 		public override int GetHashCode(object x)
@@ -325,7 +325,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				IQueryableCollection collectionPersister = (IQueryableCollection)factory.GetCollectionPersister(role);
+				IQueryableCollection collectionPersister = (IQueryableCollection) factory.GetCollectionPersister(role);
 
 				if (!collectionPersister.ElementType.IsEntityType)
 				{
@@ -383,7 +383,7 @@ namespace NHibernate.Type
 			var elemType = GetElementType(session.Factory);
 			var targetPc = target as IPersistentCollection;
 			var originalPc = original as IPersistentCollection;
-			var iterOriginal = (IEnumerable)original;
+			var iterOriginal = (IEnumerable) original;
 			var clearTargetsDirtyFlag = ShouldTargetsDirtyFlagBeCleared(targetPc, originalPc, iterOriginal);
 
 			// copy elements into newly empty target collection
@@ -393,7 +393,7 @@ namespace NHibernate.Type
 				Add(target, elemType.Replace(obj, null, session, owner, copyCache));
 			}
 
-			if(clearTargetsDirtyFlag)
+			if (clearTargetsDirtyFlag)
 			{
 				targetPc.ClearDirty();
 			}
@@ -408,7 +408,7 @@ namespace NHibernate.Type
 
 			if (originalPc == null)
 			{
-				if (!targetPc.IsDirty && AreCollectionElementsEqual(original, (IEnumerable)targetPc))
+				if (!targetPc.IsDirty && AreCollectionElementsEqual(original, (IEnumerable) targetPc))
 				{
 					return true;
 				}
@@ -424,7 +424,7 @@ namespace NHibernate.Type
 		}
 
 		protected virtual bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
-		{ 
+		{
 			return original.Cast<object>().SequenceEqual(target.Cast<object>());
 		}
 
@@ -627,18 +627,18 @@ namespace NHibernate.Type
 			{
 				object element = elem;
 				// worrying about proxies is perhaps a little bit of overkill here...
-				
+
 				if (element.IsProxy())
 				{
-					INHibernateProxy proxy = element as INHibernateProxy; 
-					
+					INHibernateProxy proxy = element as INHibernateProxy;
+
 					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					if (!li.IsUninitialized)
 						element = li.GetImplementation();
 				}
 
 				if (element == childObject)
-					return true;				
+					return true;
 			}
 			return false;
 		}
@@ -661,7 +661,7 @@ namespace NHibernate.Type
 		/// <returns> The iterator. </returns>
 		public virtual IEnumerable GetElementsIterator(object collection)
 		{
-			return ((IEnumerable)collection);
+			return ((IEnumerable) collection);
 		}
 
 		public virtual bool HasHolder()

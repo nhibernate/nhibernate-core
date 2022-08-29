@@ -14,7 +14,7 @@ namespace NHibernate.Driver
 	/// <remarks>
 	/// Always look for a native .NET DataProvider before using the Odbc DataProvider.
 	/// </remarks>
-	public class OdbcDriver 
+	public class OdbcDriver
 #if NETFX
 		: DriverBase
 #else

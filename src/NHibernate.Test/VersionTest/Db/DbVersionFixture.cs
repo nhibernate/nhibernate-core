@@ -10,7 +10,7 @@ namespace NHibernate.Test.VersionTest.Db
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"VersionTest.Db.User.hbm.xml"}; }
+			get { return new[] { "VersionTest.Db.User.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly
@@ -25,7 +25,7 @@ namespace NHibernate.Test.VersionTest.Db
 			ITransaction t = s.BeginTransaction();
 			var guy = new User { Username = "guy" };
 			s.Persist(guy);
-			var admin = new Group {Name = "admin"};
+			var admin = new Group { Name = "admin" };
 			s.Persist(admin);
 			t.Commit();
 			s.Close();
@@ -72,9 +72,9 @@ namespace NHibernate.Test.VersionTest.Db
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			var guy = new User {Username = "guy"};
+			var guy = new User { Username = "guy" };
 			s.Persist(guy);
-			var perm = new Permission {Name = "silly", Access = "user", Context = "rw"};
+			var perm = new Permission { Name = "silly", Access = "user", Context = "rw" };
 			s.Persist(perm);
 			t.Commit();
 			s.Close();
@@ -91,7 +91,7 @@ namespace NHibernate.Test.VersionTest.Db
 
 			const string ownerVersionWasIncremented = "owner version was incremented ({0:o} => {1:o})";
 			Assert.That(NHibernateUtil.DbTimestamp.IsEqual(guyTimestamp, guy.Timestamp),
-			            string.Format(ownerVersionWasIncremented, guyTimestamp, guy.Timestamp));
+						string.Format(ownerVersionWasIncremented, guyTimestamp, guy.Timestamp));
 			Console.WriteLine(string.Format(ownerVersionWasIncremented, guyTimestamp, guy.Timestamp));
 
 			s = OpenSession();
@@ -102,7 +102,7 @@ namespace NHibernate.Test.VersionTest.Db
 			s.Close();
 
 			Assert.That(NHibernateUtil.DbTimestamp.IsEqual(guyTimestamp, guy.Timestamp),
-			            string.Format(ownerVersionWasIncremented, guyTimestamp, guy.Timestamp));
+						string.Format(ownerVersionWasIncremented, guyTimestamp, guy.Timestamp));
 
 			s = OpenSession();
 			t = s.BeginTransaction();

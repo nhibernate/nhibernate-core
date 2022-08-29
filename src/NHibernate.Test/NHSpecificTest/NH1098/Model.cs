@@ -4,65 +4,65 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1098
 {
-    class A
-    {
-        private int id;
+	class A
+	{
+		private int id;
 
-        public int Id
-        {
-            get { return id; }
-            set { id = value; }
-        }
+		public int Id
+		{
+			get { return id; }
+			set { id = value; }
+		}
 
-        private int valueA;
+		private int valueA;
 
-        public int ValueA
-        {
-            get { return valueA; }
-            set { valueA = value; }
-        }
+		public int ValueA
+		{
+			get { return valueA; }
+			set { valueA = value; }
+		}
 
-        private bool enabled;
+		private bool enabled;
 
-        public bool Enabled
-        {
-            get { return enabled; }
-            set { enabled = value; }
-        }
+		public bool Enabled
+		{
+			get { return enabled; }
+			set { enabled = value; }
+		}
 
-        public IDictionary<int, string> C
-        {
-            get { return c; }
-            set { c = value; }
-        }
+		public IDictionary<int, string> C
+		{
+			get { return c; }
+			set { c = value; }
+		}
 
-        private IDictionary<int, string> c = new Dictionary<int,string>();
-    }
+		private IDictionary<int, string> c = new Dictionary<int, string>();
+	}
 
-    class B
-    {
-        private int id;
+	class B
+	{
+		private int id;
 
-        public int Id
-        {
-            get { return id; }
-            set { id = value; }
-        }
+		public int Id
+		{
+			get { return id; }
+			set { id = value; }
+		}
 
-        private int valueB;
+		private int valueB;
 
-        public int ValueB
-        {
-            get { return valueB; }
-            set { valueB = value; }
-        }
+		public int ValueB
+		{
+			get { return valueB; }
+			set { valueB = value; }
+		}
 
-        private bool enabled;
+		private bool enabled;
 
-        public bool Enabled
-        {
-            get { return enabled; }
-            set { enabled = value; }
-        }
-    }
+		public bool Enabled
+		{
+			get { return enabled; }
+			set { enabled = value; }
+		}
+	}
 }

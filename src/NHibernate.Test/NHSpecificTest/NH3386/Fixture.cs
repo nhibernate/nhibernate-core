@@ -1,8 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NHibernate.Linq;
-using NUnit.Framework;
-using System;
 using NHibernate.SqlCommand;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3386
 {
@@ -19,10 +19,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3386
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity {Name = "Bob"};
+				var e1 = new Entity { Name = "Bob" };
 				session.Save(e1);
 
-				var e2 = new Entity {Name = "Sally"};
+				var e2 = new Entity { Name = "Sally" };
 				session.Save(e2);
 
 				session.Flush();
@@ -67,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3386
 		}
 	}
 
-	public class SqlInterceptor: EmptyInterceptor
+	public class SqlInterceptor : EmptyInterceptor
 	{
 		public SqlString Sql { get; private set; }
 

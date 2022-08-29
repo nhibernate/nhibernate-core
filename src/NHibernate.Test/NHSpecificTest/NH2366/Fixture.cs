@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2366
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			
+
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2366
 				transaction.Commit();
 			}
 		}
-		
+
 		protected override void OnTearDown()
 		{
 			using (ISession session = OpenSession())
@@ -35,10 +35,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2366
 			{
 				session.Delete("from One");
 				session.Delete("from Two");
-				
+
 				transaction.Commit();
 			}
-			
+
 			base.OnTearDown();
 		}
 

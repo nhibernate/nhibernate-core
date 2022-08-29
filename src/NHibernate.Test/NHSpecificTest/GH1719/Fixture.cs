@@ -95,7 +95,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1719
 				foreach (var pathPart in path)
 				{
 					var next = session.Query<FileEntryEntity>()
-					                  .SingleOrDefault(x => x.ParentId == found.Id && x.Name == pathPart);
+									  .SingleOrDefault(x => x.ParentId == found.Id && x.Name == pathPart);
 					Assert.That(next, Is.Not.Null);
 					found = next;
 				}

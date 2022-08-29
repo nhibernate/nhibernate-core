@@ -9,7 +9,7 @@ using NHibernate.Impl;
 using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
-using Status=NHibernate.Engine.Status;
+using Status = NHibernate.Engine.Status;
 
 namespace NHibernate.Event.Default
 {
@@ -54,7 +54,7 @@ namespace NHibernate.Event.Default
 			if (persister.ImplementsLifecycle)
 			{
 				log.Debug("calling OnSave()");
-				if (((ILifecycle)entity).OnSave(source) == LifecycleVeto.Veto)
+				if (((ILifecycle) entity).OnSave(source) == LifecycleVeto.Veto)
 				{
 					log.Debug("insertion vetoed by OnSave()");
 					return true;
@@ -67,7 +67,7 @@ namespace NHibernate.Event.Default
 		{
 			if (persister.ImplementsValidatable)
 			{
-				((IValidatable)entity).Validate();
+				((IValidatable) entity).Validate();
 			}
 		}
 
@@ -122,8 +122,8 @@ namespace NHibernate.Event.Default
 			{
 				if (log.IsDebugEnabled())
 				{
-					log.Debug("generated identifier: {0}, using strategy: {1}", 
-						persister.IdentifierType.ToLoggableString(generatedId, source.Factory), 
+					log.Debug("generated identifier: {0}, using strategy: {1}",
+						persister.IdentifierType.ToLoggableString(generatedId, source.Factory),
 						persister.IdentifierGenerator.GetType().FullName);
 				}
 				return PerformSave(entity, generatedId, persister, false, anything, source, true);
@@ -272,13 +272,13 @@ namespace NHibernate.Event.Default
 
 			object version = Versioning.GetVersion(values, persister);
 			source.PersistenceContext.AddEntity(
-				entity, 
+				entity,
 				persister.IsMutable ? Status.Loaded : Status.ReadOnly,
-				values, key, 
-				version, 
-				LockMode.Write, 
-				useIdentityColumn, 
-				persister, 
+				values, key,
+				version,
+				LockMode.Write,
+				useIdentityColumn,
+				persister,
 				VersionIncrementDisabled);
 			//source.getPersistenceContext().removeNonExist( new EntityKey( id, persister, source.getEntityMode() ) );
 
@@ -299,7 +299,7 @@ namespace NHibernate.Event.Default
 			if (persister.IsInstrumented)
 			{
 				var interceptor = persister.EntityMetamodel.BytecodeEnhancementMetadata
-				                           .InjectInterceptor(entity, source);
+										   .InjectInterceptor(entity, source);
 				interceptor?.MarkDirty();
 			}
 		}

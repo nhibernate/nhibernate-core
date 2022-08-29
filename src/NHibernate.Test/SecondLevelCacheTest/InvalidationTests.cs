@@ -53,7 +53,7 @@ namespace NHibernate.Test.SecondLevelCacheTest
 				{
 					foreach (var i in Enumerable.Range(1, 10))
 					{
-						var item = new Item {Id = i};
+						var item = new Item { Id = i };
 						session.Save(item);
 					}
 
@@ -96,9 +96,9 @@ namespace NHibernate.Test.SecondLevelCacheTest
 				using (var tx = session.BeginTransaction())
 				{
 					session.Query<Item>()
-					       .UpdateBuilder()
-					       .Set(x => x.Name, "Test")
-					       .Update();
+						   .UpdateBuilder()
+						   .Set(x => x.Name, "Test")
+						   .Update();
 
 					tx.Commit();
 				}
@@ -107,8 +107,8 @@ namespace NHibernate.Test.SecondLevelCacheTest
 				using (var tx = session.BeginTransaction())
 				{
 					session.CreateSQLQuery("UPDATE Item SET Name='Test'")
-					       .AddSynchronizedQuerySpace("Item")
-					       .ExecuteUpdate();
+						   .AddSynchronizedQuerySpace("Item")
+						   .ExecuteUpdate();
 
 					tx.Commit();
 				}

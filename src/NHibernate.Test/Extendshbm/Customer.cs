@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Extendshbm
 {
-	public class Customer: Person
+	public class Customer : Person
 	{
 		private Employee salesperson;
 		private string comments;

@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 		public override bool Equals(object obj)
 		{
 			Entity that = obj as Entity;
-			if(that == null)
+			if (that == null)
 				return false;
 			return _id == that.Id;
 		}

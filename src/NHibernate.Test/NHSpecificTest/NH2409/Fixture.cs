@@ -19,11 +19,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2409
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var contest1 = new Contest {Id = 1};
-				var contest2 = new Contest {Id = 2};
+				var contest1 = new Contest { Id = 1 };
+				var contest2 = new Contest { Id = 2 };
 				var user = new User();
 
-				var message = new Message {Contest = contest2 };
+				var message = new Message { Contest = contest2 };
 
 				session.Save(contest1);
 				session.Save(contest2);
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2409
 					.Add(Restrictions.Eq("Contest", contest2))
 					.CreateAlias("Readings", "mr", JoinType.LeftOuterJoin, Restrictions.Eq("mr.User", user))
 					.List<Message>();
-				
+
 				Assert.AreEqual(1, msgs.Count, "We should be able to find our message despite any left outer joins");
 			}
 		}

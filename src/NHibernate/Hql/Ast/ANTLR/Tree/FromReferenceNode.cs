@@ -21,7 +21,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get { return !IsScalar && _fromElement.IsEntity; }
 		}
-		
+
 		public override FromElement FromElement
 		{
 			get { return _fromElement; }
@@ -77,16 +77,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			IASTNode lhs = GetFirstChild();
 			int nextLevel = level + 1;
-			if ( lhs != null ) 
+			if (lhs != null)
 			{
-				FromReferenceNode n = ( FromReferenceNode ) lhs;
-				n.RecursiveResolve( nextLevel, impliedAtRoot, null, this );
+				FromReferenceNode n = (FromReferenceNode) lhs;
+				n.RecursiveResolve(nextLevel, impliedAtRoot, null, this);
 			}
 
 			ResolveFirstChild();
 			bool impliedJoin = !(level == RootLevel && !impliedAtRoot);
 
-			Resolve( true, impliedJoin, classAlias, parent );
+			Resolve(true, impliedJoin, classAlias, parent);
 		}
 
 		/// <summary>

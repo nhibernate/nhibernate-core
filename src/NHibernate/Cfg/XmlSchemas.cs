@@ -46,7 +46,7 @@ namespace NHibernate.Cfg
 
 		private static XmlReaderSettings CreateXmlReaderSettings(XmlSchemaSet xmlSchemaSet)
 		{
-			return new XmlReaderSettings {ValidationType = ValidationType.Schema, Schemas = xmlSchemaSet};
+			return new XmlReaderSettings { ValidationType = ValidationType.Schema, Schemas = xmlSchemaSet };
 		}
 
 		private static void ConfigSettingsValidationEventHandler(object sender, ValidationEventArgs e)

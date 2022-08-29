@@ -12,7 +12,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 	/// 2 - file only: NHibernate will read the mapping from the file.
 	/// 3 - assembly only: NHibernate will find all the resources ending in hbm.xml from the assembly.
 	/// </remarks>
-	public class MappingConfiguration: IEquatable<MappingConfiguration>
+	public class MappingConfiguration : IEquatable<MappingConfiguration>
 	{
 		internal MappingConfiguration(XPathNavigator mappingElement)
 		{
@@ -83,14 +83,14 @@ There are 3 possible combinations of mapping attributes
 	1 - resource & assembly:  NHibernate will read the mapping resource from the specified assembly
 	2 - file only: NHibernate will read the mapping from the file.
 	3 - assembly only: NHibernate will find all the resources ending in hbm.xml from the assembly.",
-					assembly,resource,file));
+					assembly, resource, file));
 			}
 		}
 
 		public bool IsEmpty()
 		{
-			return string.IsNullOrEmpty(resource) && 
-				string.IsNullOrEmpty(assembly) && 
+			return string.IsNullOrEmpty(resource) &&
+				string.IsNullOrEmpty(assembly) &&
 				string.IsNullOrEmpty(file);
 		}
 
@@ -139,7 +139,7 @@ There are 3 possible combinations of mapping attributes
 
 		public override string ToString()
 		{
-			return string.Format("file='{0}';assembly='{1}';resource='{2}'",file,assembly,resource);
+			return string.Format("file='{0}';assembly='{1}';resource='{2}'", file, assembly, resource);
 		}
 	}
 }

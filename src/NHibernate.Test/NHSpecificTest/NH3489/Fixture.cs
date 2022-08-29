@@ -70,14 +70,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3489
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var department1 = new Department {Name = "Dep 1"};
+				var department1 = new Department { Name = "Dep 1" };
 				session.Save(department1);
-				var department2 = new Department {Name = "Dep 2"};
+				var department2 = new Department { Name = "Dep 2" };
 				session.Save(department2);
 
 				for (int i = 0; i < 10000; i++)
 				{
-					var order = new Order {Name = "Order " + (i + 1)};
+					var order = new Order { Name = "Order " + (i + 1) };
 					order.Departments.Add(department1);
 					order.Departments.Add(department2);
 					session.Save(order);

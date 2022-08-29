@@ -14,7 +14,7 @@ namespace NHibernate.Linq.ResultOperators
 
 		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
 		{
-		    return null;
+			return null;
 		}
 
 		public override ResultOperatorBase Clone(CloneContext cloneContext)
@@ -22,8 +22,8 @@ namespace NHibernate.Linq.ResultOperators
 			throw new NotImplementedException();
 		}
 
-	    public override void TransformExpressions(Func<Expression, Expression> transformation)
-	    {
-	    }
+		public override void TransformExpressions(Func<Expression, Expression> transformation)
+		{
+		}
 	}
 }

@@ -378,13 +378,13 @@ namespace NHibernate.Impl
 
 		public IMultiQuery Add<T>(string hql)
 		{
-			return Add<T>(((ISession)session).CreateQuery(hql));
+			return Add<T>(((ISession) session).CreateQuery(hql));
 		}
 
 		public IMultiQuery Add<T>(string key, string hql)
 		{
 			ThrowIfKeyAlreadyExists(key);
-			return Add<T>(key, ((ISession)session).CreateQuery(hql));
+			return Add<T>(key, ((ISession) session).CreateQuery(hql));
 		}
 
 		public IMultiQuery AddNamedQuery<T>(string queryName)
@@ -485,7 +485,7 @@ namespace NHibernate.Impl
 			{
 				// First use the transformer of each query transforming each row and then the list
 				// DONE: The behavior when the query has a 'new' instead a transformer is delegated to the Loader
-				var resultList = translators[i].Loader.GetResultList((IList)results[i], Parameters[i].ResultTransformer);
+				var resultList = translators[i].Loader.GetResultList((IList) results[i], Parameters[i].ResultTransformer);
 
 				var queryIndex = translatorQueryMap[i];
 				ArrayHelper.AddAll(rawResultCollections[queryIndex], resultList);
@@ -503,7 +503,7 @@ namespace NHibernate.Impl
 			return resultCollections;
 		}
 
-		private  IList GetTransformedResults(IList source)
+		private IList GetTransformedResults(IList source)
 		{
 			if (resultTransformer == null)
 				return source;
@@ -511,7 +511,7 @@ namespace NHibernate.Impl
 			//MultiCriteria does not call TransformTuple here
 			for (var j = 0; j < source.Count; j++)
 			{
-				var row = source[j] as object[] ?? new[] {source[j]};
+				var row = source[j] as object[] ?? new[] { source[j] };
 				source[j] = resultTransformer.TransformTuple(row, null);
 			}
 
@@ -791,7 +791,7 @@ namespace NHibernate.Impl
 
 		private int AddQueryForLaterExecutionAndReturnIndexOfQuery(System.Type resultGenericListType, IQuery query)
 		{
-			((AbstractQueryImpl)query).SetIgnoreUknownNamedParameters(true);
+			((AbstractQueryImpl) query).SetIgnoreUknownNamedParameters(true);
 			queries.Add(query);
 			resultCollectionGenericType.Add(resultGenericListType);
 			return queries.Count - 1;

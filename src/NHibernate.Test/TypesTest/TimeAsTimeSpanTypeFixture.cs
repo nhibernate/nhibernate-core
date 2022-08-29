@@ -19,7 +19,7 @@ namespace NHibernate.Test.TypesTest
 
 			Assert.IsTrue(next is TimeSpan, "Next should be TimeSpan");
 			Assert.IsTrue((TimeSpan) next > (TimeSpan) current,
-			              "next should be greater than current (could be equal depending on how quickly this occurs)");
+						  "next should be greater than current (could be equal depending on how quickly this occurs)");
 		}
 
 		[Test]
@@ -68,9 +68,9 @@ namespace NHibernate.Test.TypesTest
 			var ticks = DateTime.Parse("23:59:59").TimeOfDay;
 
 			var entity = new TimeAsTimeSpanClass
-			             	{
-			             		TimeSpanValue = ticks
-			             	};
+			{
+				TimeSpanValue = ticks
+			};
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
@@ -85,9 +85,9 @@ namespace NHibernate.Test.TypesTest
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				entityReturned = s.CreateQuery("from TimeAsTimeSpanClass").UniqueResult<TimeAsTimeSpanClass>();
-				
+
 				Assert.AreEqual(ticks, entityReturned.TimeSpanValue);
-				Assert.AreEqual(entityReturned.TimeSpanValue.Hours,ticks.Hours);
+				Assert.AreEqual(entityReturned.TimeSpanValue.Hours, ticks.Hours);
 				Assert.AreEqual(entityReturned.TimeSpanValue.Minutes, ticks.Minutes);
 				Assert.AreEqual(entityReturned.TimeSpanValue.Seconds, ticks.Seconds);
 			}

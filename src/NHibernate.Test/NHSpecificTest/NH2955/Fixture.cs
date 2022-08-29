@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using NUnit.Framework;
 using NHibernate.Linq;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2955
 {
@@ -15,10 +15,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2955
 			using (var session = OpenSession())
 			using (var t = session.BeginTransaction())
 			{
-				var emp1 = new Employee { Id = 1, FirstName = "Nancy", LastName = "Davolio", Department = "IT"};
-				var emp2 = new Employee { Id = 2, FirstName = "Andrew", LastName = "Fuller", Department = "Sales"};
-				var emp3 = new Employee { Id = 3, FirstName = "Janet", LastName = "Leverling", Department = "IT"};
-				var emp4 = new Employee { Id = 4, FirstName = "Margaret", LastName = "Peacock", Department = "IT"};
+				var emp1 = new Employee { Id = 1, FirstName = "Nancy", LastName = "Davolio", Department = "IT" };
+				var emp2 = new Employee { Id = 2, FirstName = "Andrew", LastName = "Fuller", Department = "Sales" };
+				var emp3 = new Employee { Id = 3, FirstName = "Janet", LastName = "Leverling", Department = "IT" };
+				var emp4 = new Employee { Id = 4, FirstName = "Margaret", LastName = "Peacock", Department = "IT" };
 				var emp5 = new Employee { Id = 5, FirstName = "Steven", LastName = "Buchanan", Department = "Sales" };
 				session.Save(emp1);
 				session.Save(emp2);
@@ -38,13 +38,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2955
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void EnumerableContains()
 		{
-// ReSharper disable RedundantEnumerableCastCall
+			// ReSharper disable RedundantEnumerableCastCall
 			var array = new[] { 1, 3, 4 }.OfType<int>();
-// ReSharper restore RedundantEnumerableCastCall
+			// ReSharper restore RedundantEnumerableCastCall
 
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
@@ -59,11 +59,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2955
 				Assert.AreEqual("Margaret", firstNames[2]);
 			}
 		}
-		
+
 		[Test]
 		public void GroupingContains()
 		{
-			var array = new[] {1, 3, 4}.ToLookup(x => 1).Single();
+			var array = new[] { 1, 3, 4 }.ToLookup(x => 1).Single();
 
 			using (var session = OpenSession())
 			using (session.BeginTransaction())

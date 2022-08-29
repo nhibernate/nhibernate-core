@@ -99,7 +99,7 @@ namespace NHibernate.Test.OneToOneType
 				Assert.IsNotNull(owner.Details);
 			}
 		}
-		
+
 		[Test]
 		public void CanInsertByStatelessSession()
 		{

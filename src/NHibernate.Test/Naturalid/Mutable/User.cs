@@ -10,7 +10,7 @@ namespace NHibernate.Test.Naturalid.Mutable
 		private readonly string org;
 		private string password;
 
-		public User() {}
+		public User() { }
 		public User(string name, string org, string password)
 		{
 			this.name = name;

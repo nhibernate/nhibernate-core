@@ -40,7 +40,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.JoinedSubclassMapperTests
 			var mapdoc = new HbmMapping();
 			var rc = new JoinedSubclassMapper(typeof(InheritedSimple), mapdoc);
 			rc.Synchronize("T1", "T2", "T3", null);
-			Assert.That(mapdoc.JoinedSubclasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new [] {"T1", "T2", "T3"}));
+			Assert.That(mapdoc.JoinedSubclasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new[] { "T1", "T2", "T3" }));
 		}
 
 		[Test]
@@ -50,7 +50,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.JoinedSubclassMapperTests
 			var rc = new JoinedSubclassMapper(typeof(InheritedSimple), mapdoc);
 			rc.Synchronize("T1", "T2");
 			rc.Synchronize("T3");
-			Assert.That(mapdoc.JoinedSubclasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new [] {"T1", "T2", "T3"}));
+			Assert.That(mapdoc.JoinedSubclasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new[] { "T1", "T2", "T3" }));
 		}
 
 		[Test]
@@ -60,7 +60,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.JoinedSubclassMapperTests
 			var rc = new JoinedSubclassMapper(typeof(InheritedSimple), mapdoc);
 			rc.Synchronize("T1", "T2");
 			rc.Synchronize("T3", "T2");
-			Assert.That(mapdoc.JoinedSubclasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new [] {"T1", "T2", "T3"}));
+			Assert.That(mapdoc.JoinedSubclasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new[] { "T1", "T2", "T3" }));
 		}
 	}
 }

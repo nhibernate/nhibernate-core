@@ -14,30 +14,30 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public abstract class AbstractNullnessCheckNode : UnaryLogicOperatorNode 
+	public abstract class AbstractNullnessCheckNode : UnaryLogicOperatorNode
 	{
 		protected AbstractNullnessCheckNode(IToken token) : base(token)
 		{
 		}
 
-		public override void Initialize() 
+		public override void Initialize()
 		{
 			// TODO : this really needs to be delayed unitl after we definitively know the operand node type;
 			// where this is currently a problem is parameters for which where we cannot unequivocally
 			// resolve an expected type
-			IType operandType = ExtractDataType( Operand );
+			IType operandType = ExtractDataType(Operand);
 
-			if ( operandType == null ) 
+			if (operandType == null)
 			{
 				return;
 			}
 
 			ISessionFactoryImplementor sessionFactory = SessionFactoryHelper.Factory;
-			int operandColumnSpan = operandType.GetColumnSpan( sessionFactory );
+			int operandColumnSpan = operandType.GetColumnSpan(sessionFactory);
 
-			if ( operandColumnSpan > 1 ) 
+			if (operandColumnSpan > 1)
 			{
-				MutateRowValueConstructorSyntax( operandColumnSpan );
+				MutateRowValueConstructorSyntax(operandColumnSpan);
 			}
 		}
 
@@ -66,14 +66,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			Type = expansionConnectorType;
 			Text = expansionConnectorText;
 
-			String[] mutationTexts = ExtractMutationTexts( Operand, operandColumnSpan );
+			String[] mutationTexts = ExtractMutationTexts(Operand, operandColumnSpan);
 
 			IASTNode container = this;
 			container.ClearChildren();
 
-			for (int i = operandColumnSpan - 1; i > 0; i--) 
+			for (int i = operandColumnSpan - 1; i > 0; i--)
 			{
-				if ( i == 1 )
+				if (i == 1)
 				{
 					var op1 = ASTFactory.CreateNode(comparisonType, comparisonText);
 					var operand1 = ASTFactory.CreateNode(HqlSqlWalker.SQL_TOKEN, mutationTexts[0]);
@@ -85,7 +85,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					op2.SetFirstChild(operand2);
 					op1.AddSibling(op2);
 				}
-				else 
+				else
 				{
 					var operand = ASTFactory.CreateNode(HqlSqlWalker.SQL_TOKEN, mutationTexts[i]);
 					var op = ASTFactory.CreateNode(comparisonType, comparisonText);
@@ -99,11 +99,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-		private static IType ExtractDataType(IASTNode operand) 
+		private static IType ExtractDataType(IASTNode operand)
 		{
 			IType type = null;
 			var sqlNode = operand as SqlNode;
-			if ( sqlNode != null ) 
+			if (sqlNode != null)
 			{
 				type = sqlNode.DataType;
 			}
@@ -118,52 +118,52 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return type;
 		}
 
-		private static string[] ExtractMutationTexts(IASTNode operand, int count) 
+		private static string[] ExtractMutationTexts(IASTNode operand, int count)
 		{
-			if ( operand is ParameterNode ) 
+			if (operand is ParameterNode)
 			{
 				String[] rtn = new String[count];
-				for ( int i = 0; i < count; i++ ) 
+				for (int i = 0; i < count; i++)
 				{
 					rtn[i] = "?";
 				}
 				return rtn;
 			}
-			else if ( operand.Type == HqlSqlWalker.VECTOR_EXPR ) 
+			else if (operand.Type == HqlSqlWalker.VECTOR_EXPR)
 			{
-				string[] rtn = new string[ operand.ChildCount];
+				string[] rtn = new string[operand.ChildCount];
 				int x = 0;
 
 				foreach (IASTNode node in operand)
 				{
-					rtn[ x++ ] = node.Text;
+					rtn[x++] = node.Text;
 				}
 
 				return rtn;
 			}
-			else if ( operand is SqlNode ) 
+			else if (operand is SqlNode)
 			{
 				string nodeText = operand.Text;
-				if ( nodeText.StartsWith( '(' ) ) 
+				if (nodeText.StartsWith('('))
 				{
-					nodeText = nodeText.Substring( 1 );
+					nodeText = nodeText.Substring(1);
 				}
-				if ( nodeText.EndsWith( ')' ) ) 
+				if (nodeText.EndsWith(')'))
 				{
-					nodeText = nodeText.Substring( 0, nodeText.Length - 1 );
+					nodeText = nodeText.Substring(0, nodeText.Length - 1);
 				}
 
 				string[] splits = nodeText.Split(new[] { ", " }, StringSplitOptions.None);
 
-				if ( count != splits.Length ) 
+				if (count != splits.Length)
 				{
-					throw new HibernateException( "SqlNode's text did not reference expected number of columns" );
+					throw new HibernateException("SqlNode's text did not reference expected number of columns");
 				}
 				return splits;
 			}
-			else 
+			else
 			{
-				throw new HibernateException( "dont know how to extract row value elements from node : " + operand );
+				throw new HibernateException("dont know how to extract row value elements from node : " + operand);
 			}
 		}
 	}

@@ -274,15 +274,15 @@ namespace NHibernate.Criterion
 		private object[] GetPropertyValues(IEntityPersister persister, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			System.Type type = _entity.GetType();
-			if(type == persister.MappedClass) //not using anon object
+			if (type == persister.MappedClass) //not using anon object
 			{
 				return persister.GetPropertyValues(_entity);
 			}
 			var list = new List<object>();
-			for(int i = 0; i < persister.PropertyNames.Length; i++)
+			for (int i = 0; i < persister.PropertyNames.Length; i++)
 			{
 				PropertyInfo pInfo = type.GetProperty(persister.PropertyNames[i]);
-				if(pInfo != null)
+				if (pInfo != null)
 				{
 					list.Add(pInfo.GetValue(_entity, null));
 				}

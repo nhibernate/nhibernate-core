@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.Proxy;
 using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 {

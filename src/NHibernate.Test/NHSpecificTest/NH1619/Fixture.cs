@@ -16,9 +16,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1619
 		public void SavingAndRetrieving()
 		{
 			var entity = new Dude
-			             	{
-			             		BooleanValue = true
-			             	};
+			{
+				BooleanValue = true
+			};
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())

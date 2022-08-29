@@ -23,20 +23,20 @@ namespace NHibernate.Test.NHSpecificTest.NH1452
 			using (var tran = session.BeginTransaction())
 			{
 				session.Save(new Product
-					{
-						ProductId = "XO1234",
-						Id = 1,
-						Name = "Some product",
-						Description = "Very good"
-					});
+				{
+					ProductId = "XO1234",
+					Id = 1,
+					Name = "Some product",
+					Description = "Very good"
+				});
 
 				session.Save(new Product
-					{
-						ProductId = "XO54321",
-						Id = 2,
-						Name = "Other product",
-						Description = "Very bad"
-					});
+				{
+					ProductId = "XO54321",
+					Id = 2,
+					Name = "Other product",
+					Description = "Very bad"
+				});
 
 				tran.Commit();
 			}
@@ -60,12 +60,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1452
 			using (var session = OpenSession())
 			{
 				var product = new Product
-					{
-						ProductId = "XO1111",
-						Id = 3,
-						Name = "Test",
-						Description = "Test"
-					};
+				{
+					ProductId = "XO1111",
+					Id = 3,
+					Name = "Test",
+					Description = "Test"
+				};
 
 				session.Save(product);
 
@@ -77,7 +77,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1452
 				session.Clear();
 
 				//try to query for this product
-				product = session.CreateCriteria(typeof (Product))
+				product = session.CreateCriteria(typeof(Product))
 								 .Add(Restrictions.Eq("ProductId", "XO1111"))
 								 .UniqueResult<Product>();
 
@@ -91,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1452
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				var product = session.CreateCriteria(typeof (Product))
+				var product = session.CreateCriteria(typeof(Product))
 									 .Add(Restrictions.Eq("ProductId", "XO1234"))
 									 .UniqueResult<Product>();
 
@@ -109,7 +109,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1452
 		{
 			using (var session = OpenSession())
 			{
-				var product = session.CreateCriteria(typeof (Product))
+				var product = session.CreateCriteria(typeof(Product))
 									 .Add(Restrictions.Eq("ProductId", "XO1234"))
 									 .UniqueResult<Product>();
 
@@ -122,7 +122,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1452
 				session.Clear();
 
 				//pull again
-				product = session.CreateCriteria(typeof (Product))
+				product = session.CreateCriteria(typeof(Product))
 								 .Add(Restrictions.Eq("ProductId", "XO1234"))
 								 .UniqueResult<Product>();
 

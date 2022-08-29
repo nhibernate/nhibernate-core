@@ -1,6 +1,6 @@
-using NUnit.Framework;
-using NHibernate.Id.Enhanced;
 using System.Collections;
+using NHibernate.Id.Enhanced;
+using NUnit.Framework;
 
 namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 {
@@ -23,7 +23,7 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 			var persister = Sfi.GetEntityPersister(typeof(Entity).FullName);
 			Assert.That(persister.IdentifierGenerator, Is.TypeOf<SequenceStyleGenerator>());
 
-			var generator = (SequenceStyleGenerator)persister.IdentifierGenerator;
+			var generator = (SequenceStyleGenerator) persister.IdentifierGenerator;
 			Assert.That(generator.DatabaseStructure, Is.TypeOf<TableStructure>());
 			Assert.That(generator.Optimizer, Is.TypeOf<OptimizerFactory.NoopOptimizer>());
 

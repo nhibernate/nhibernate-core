@@ -13,7 +13,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private ComponentParentMapper _parentMapper;
 
 		public ComponentMapper(HbmComponent component, System.Type componentType, MemberInfo declaringTypeMember, HbmMapping mapDoc)
-			: this(component,componentType, new AccessorPropertyMapper(declaringTypeMember.DeclaringType, declaringTypeMember.Name, x => component.access = x), mapDoc)
+			: this(component, componentType, new AccessorPropertyMapper(declaringTypeMember.DeclaringType, declaringTypeMember.Name, x => component.access = x), mapDoc)
 		{
 		}
 

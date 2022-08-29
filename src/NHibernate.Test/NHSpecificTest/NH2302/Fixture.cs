@@ -7,9 +7,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2302
 {
-    [TestFixture]
-    public class Fixture : BugTestCase
-    {
+	[TestFixture]
+	public class Fixture : BugTestCase
+	{
 		protected override void Configure(Cfg.Configuration configuration)
 		{
 			foreach (var cls in configuration.ClassMappings)
@@ -29,179 +29,179 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
 			}
 		}
 
-        protected override void OnTearDown()
-        {
-            CleanUp();
+		protected override void OnTearDown()
+		{
+			CleanUp();
 
-            base.OnTearDown();
-        }
+			base.OnTearDown();
+		}
 
-        [Test]
-        public void StringHugeLength()
-        {
+		[Test]
+		public void StringHugeLength()
+		{
 			if (Sfi.ConnectionProvider.Driver is OdbcDriver || Dialect is MsSqlCeDialect)
 				Assert.Ignore("NH-4065, not fixed for Odbc and MsSqlCe");
 
 			if (Dialect.GetTypeName(SqlTypeFactory.GetString(10000)) != Dialect.GetLongestTypeName(DbType.String))
 				Assert.Ignore("Current dialect does support limited strings of 10 000 characters");
 
-            int id;
-            // buildup a string the exceed the mapping
-            string str = GetFixedLengthString12000();
+			int id;
+			// buildup a string the exceed the mapping
+			string str = GetFixedLengthString12000();
 
-            using (ISession sess = OpenSession())
-            using (ITransaction tx = sess.BeginTransaction())
-            {
-                // create and save the entity
-                StringLengthEntity entity = new StringLengthEntity();
-                entity.StringHugeLength = str;
-                sess.Save(entity);
-                tx.Commit();
-                id = entity.ID;
-            }
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				// create and save the entity
+				StringLengthEntity entity = new StringLengthEntity();
+				entity.StringHugeLength = str;
+				sess.Save(entity);
+				tx.Commit();
+				id = entity.ID;
+			}
 
-            using (ISession sess = OpenSession())
-            using (ITransaction tx = sess.BeginTransaction())
-            {
-                StringLengthEntity loaded = sess.Get<StringLengthEntity>(id);
-                Assert.IsNotNull(loaded);
-                Assert.AreEqual(12000, loaded.StringHugeLength.Length);
-                Assert.AreEqual(str, loaded.StringHugeLength);
-                tx.Commit();
-            }
-        }
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				StringLengthEntity loaded = sess.Get<StringLengthEntity>(id);
+				Assert.IsNotNull(loaded);
+				Assert.AreEqual(12000, loaded.StringHugeLength.Length);
+				Assert.AreEqual(str, loaded.StringHugeLength);
+				tx.Commit();
+			}
+		}
 
-        [Test, Ignore("Not supported without specify the string length.")]
-        public void StringSqlType()
-        {
-            int id;
-            // buildup a string the exceed the mapping
-            string str = GetFixedLengthString12000();
+		[Test, Ignore("Not supported without specify the string length.")]
+		public void StringSqlType()
+		{
+			int id;
+			// buildup a string the exceed the mapping
+			string str = GetFixedLengthString12000();
 
-            using (ISession sess = OpenSession())
-            using (ITransaction tx = sess.BeginTransaction())
-            {
-                // create and save the entity
-                StringLengthEntity entity = new StringLengthEntity();
-                entity.StringSqlType = str;
-                sess.Save(entity);
-                tx.Commit();
-                id = entity.ID;
-            }
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				// create and save the entity
+				StringLengthEntity entity = new StringLengthEntity();
+				entity.StringSqlType = str;
+				sess.Save(entity);
+				tx.Commit();
+				id = entity.ID;
+			}
 
-            using (ISession sess = OpenSession())
-            using (ITransaction tx = sess.BeginTransaction())
-            {
-                StringLengthEntity loaded = sess.Get<StringLengthEntity>(id);
-                Assert.IsNotNull(loaded);
-                Assert.AreEqual(12000, loaded.StringSqlType.Length);
-                Assert.AreEqual(str, loaded.StringSqlType);
-                tx.Commit();
-            }
-        }
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				StringLengthEntity loaded = sess.Get<StringLengthEntity>(id);
+				Assert.IsNotNull(loaded);
+				Assert.AreEqual(12000, loaded.StringSqlType.Length);
+				Assert.AreEqual(str, loaded.StringSqlType);
+				tx.Commit();
+			}
+		}
 
-        [Test]
-        public void BlobSqlType()
-        {
-            int id;
-            // buildup a string the exceed the mapping
-            string str = GetFixedLengthString12000();
+		[Test]
+		public void BlobSqlType()
+		{
+			int id;
+			// buildup a string the exceed the mapping
+			string str = GetFixedLengthString12000();
 
-            using (ISession sess = OpenSession())
-            using (ITransaction tx = sess.BeginTransaction())
-            {
-                // create and save the entity
-                StringLengthEntity entity = new StringLengthEntity();
-                entity.BlobSqlType = str;
-                sess.Save(entity);
-                tx.Commit();
-                id = entity.ID;
-            }
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				// create and save the entity
+				StringLengthEntity entity = new StringLengthEntity();
+				entity.BlobSqlType = str;
+				sess.Save(entity);
+				tx.Commit();
+				id = entity.ID;
+			}
 
-            using (ISession sess = OpenSession())
-            using (ITransaction tx = sess.BeginTransaction())
-            {
-                StringLengthEntity loaded = sess.Get<StringLengthEntity>(id);
-                Assert.IsNotNull(loaded);
-                Assert.AreEqual(12000, loaded.BlobSqlType.Length);
-                Assert.AreEqual(str, loaded.BlobSqlType);
-                tx.Commit();
-            }
-        }
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				StringLengthEntity loaded = sess.Get<StringLengthEntity>(id);
+				Assert.IsNotNull(loaded);
+				Assert.AreEqual(12000, loaded.BlobSqlType.Length);
+				Assert.AreEqual(str, loaded.BlobSqlType);
+				tx.Commit();
+			}
+		}
 
-				[Test]
-				public void BlobWithLength()
-				{
-					int id;
-					// buildup a string the exceed the mapping
-					string str = GetFixedLengthString12000();
+		[Test]
+		public void BlobWithLength()
+		{
+			int id;
+			// buildup a string the exceed the mapping
+			string str = GetFixedLengthString12000();
 
-					using (ISession sess = OpenSession())
-					using (ITransaction tx = sess.BeginTransaction())
-					{
-						// create and save the entity
-						StringLengthEntity entity = new StringLengthEntity();
-						entity.BlobLength = str;
-						sess.Save(entity);
-						tx.Commit();
-						id = entity.ID;
-					}
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				// create and save the entity
+				StringLengthEntity entity = new StringLengthEntity();
+				entity.BlobLength = str;
+				sess.Save(entity);
+				tx.Commit();
+				id = entity.ID;
+			}
 
-					using (ISession sess = OpenSession())
-					using (ITransaction tx = sess.BeginTransaction())
-					{
-						StringLengthEntity loaded = sess.Get<StringLengthEntity>(id);
-						Assert.IsNotNull(loaded);
-						Assert.AreEqual(12000, loaded.BlobLength.Length);
-						Assert.AreEqual(str, loaded.BlobLength);
-						tx.Commit();
-					}
-				}
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				StringLengthEntity loaded = sess.Get<StringLengthEntity>(id);
+				Assert.IsNotNull(loaded);
+				Assert.AreEqual(12000, loaded.BlobLength.Length);
+				Assert.AreEqual(str, loaded.BlobLength);
+				tx.Commit();
+			}
+		}
 
-				[Test]
-				public void BlobWithoutLength()
-				{
-					if (Dialect is MySQLDialect)
-						Assert.Ignore("Not fixed for MySQLDialect, still generating a varchar(255) column for StringClob without length");
-					int id;
-					// buildup a string the exceed the mapping
-					string str = GetFixedLengthString12000();
+		[Test]
+		public void BlobWithoutLength()
+		{
+			if (Dialect is MySQLDialect)
+				Assert.Ignore("Not fixed for MySQLDialect, still generating a varchar(255) column for StringClob without length");
+			int id;
+			// buildup a string the exceed the mapping
+			string str = GetFixedLengthString12000();
 
-					using (ISession sess = OpenSession())
-					using (ITransaction tx = sess.BeginTransaction())
-					{
-						// create and save the entity
-						StringLengthEntity entity = new StringLengthEntity();
-						entity.Blob = str;
-						sess.Save(entity);
-						tx.Commit();
-						id = entity.ID;
-					}
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				// create and save the entity
+				StringLengthEntity entity = new StringLengthEntity();
+				entity.Blob = str;
+				sess.Save(entity);
+				tx.Commit();
+				id = entity.ID;
+			}
 
-					using (ISession sess = OpenSession())
-					using (ITransaction tx = sess.BeginTransaction())
-					{
-						StringLengthEntity loaded = sess.Get<StringLengthEntity>(id);
-						Assert.IsNotNull(loaded);
-						Assert.AreEqual(12000, loaded.Blob.Length);
-						Assert.AreEqual(str, loaded.Blob);
-						tx.Commit();
-					}
-				}
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				StringLengthEntity loaded = sess.Get<StringLengthEntity>(id);
+				Assert.IsNotNull(loaded);
+				Assert.AreEqual(12000, loaded.Blob.Length);
+				Assert.AreEqual(str, loaded.Blob);
+				tx.Commit();
+			}
+		}
 
-        private void CleanUp()
-        {
-            using (ISession session = OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
-            {
-                session.Delete("from StringLengthEntity");
-                tx.Commit();
-            }
-        }
+		private void CleanUp()
+		{
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
+			{
+				session.Delete("from StringLengthEntity");
+				tx.Commit();
+			}
+		}
 
-        private static string GetFixedLengthString12000()
-        {
-            return new string('a', 12000);
-        }
+		private static string GetFixedLengthString12000()
+		{
+			return new string('a', 12000);
+		}
 	}
 }

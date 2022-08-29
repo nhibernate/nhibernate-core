@@ -93,7 +93,7 @@ namespace NHibernate.Transaction
 							throw;
 						case DbException _:
 							throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, t,
-							                                 "error performing isolated work");
+															 "error performing isolated work");
 						default:
 							throw new HibernateException("error performing isolated work", t);
 					}

@@ -156,7 +156,7 @@ namespace NHibernate.Cfg.Loquacious
 
 		public MultiTenancy.MultiTenancyStrategy MultiTenancy
 		{
-			set { configuration.SetProperty(Environment.MultiTenancy,  value.ToString()); }
+			set { configuration.SetProperty(Environment.MultiTenancy, value.ToString()); }
 		}
 
 		public void MultiTenancyConnectionProvider<TProvider>() where TProvider : IMultiTenancyConnectionProvider

@@ -11,7 +11,7 @@ namespace NHibernate.Test.Interceptor
 		private string name;
 		private string password;
 
-		public User() {}
+		public User() { }
 
 		public User(string name, string password)
 		{

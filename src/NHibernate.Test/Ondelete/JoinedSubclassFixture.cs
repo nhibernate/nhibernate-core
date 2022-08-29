@@ -1,8 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Cfg;
 using NHibernate.Stat;
 using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace NHibernate.Test.Ondelete
 {

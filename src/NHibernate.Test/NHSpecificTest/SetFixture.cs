@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -12,7 +13,6 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest
 {
@@ -382,7 +382,7 @@ namespace NHibernate.Test.NHSpecificTest
 	}
 
 	[TestFixture]
-	public class SetFixture: TestCase
+	public class SetFixture : TestCase
 	{
 		[Test]
 		public void DisassembleAndAssemble()

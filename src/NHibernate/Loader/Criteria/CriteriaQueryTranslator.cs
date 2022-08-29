@@ -6,14 +6,14 @@ using NHibernate.Engine;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Param;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
-using NHibernate_Persister_Entity = NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
-using NHibernate.Persister;
+using NHibernate_Persister_Entity = NHibernate.Persister.Entity;
 
 namespace NHibernate.Loader.Criteria
 {
@@ -27,9 +27,9 @@ namespace NHibernate.Loader.Criteria
 
 		public static readonly string RootSqlAlias = CriteriaSpecification.RootAlias + '_';
 		private static readonly INHibernateLogger logger = NHibernateLogger.For(typeof(CriteriaQueryTranslator));
-		
+
 		private const int AliasCount = 0;
-		
+
 		private readonly ICriteriaQuery outerQueryTranslator;
 		private readonly CriteriaImpl rootCriteria;
 		private readonly string rootSQLAlias;
@@ -221,7 +221,7 @@ namespace NHibernate.Loader.Criteria
 				ICriteria subcriteria = GetAliasedCriteria(me.Key);
 				lockModes[GetSQLAlias(subcriteria)] = me.Value;
 			}
-			
+
 			foreach (CriteriaImpl.Subcriteria subcriteria in rootCriteria.IterateSubcriteria())
 			{
 				LockMode lm = subcriteria.LockMode;
@@ -230,7 +230,7 @@ namespace NHibernate.Loader.Criteria
 					lockModes[GetSQLAlias(subcriteria)] = lm;
 				}
 			}
-			
+
 			IDictionary<string, TypedValue> queryNamedParameters = CollectedParameters.ToDictionary(np => np.Name, np => new TypedValue(np.Type, np.Value));
 
 			return
@@ -249,7 +249,7 @@ namespace NHibernate.Loader.Criteria
 					CacheMode = rootCriteria.CacheMode
 				};
 		}
-		
+
 		public SqlString GetGroupBy()
 		{
 			if (rootCriteria.Projection.IsGrouped)
@@ -587,11 +587,11 @@ namespace NHibernate.Loader.Criteria
 		{
 			// start with the root
 			IJoinable last = rootPersister;
-			
-			var tokens = path.Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
+
+			var tokens = path.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
 			if (tokens.Length == 0)
 				return last;
-			
+
 			IPropertyMapping lastEntity = rootPersister;
 			int i = 0;
 			if (entityJoins.TryGetValue(tokens[0], out var entityJoinInfo))
@@ -608,18 +608,18 @@ namespace NHibernate.Loader.Criteria
 				IType type = lastEntity.ToType(componentPath);
 				if (type.IsAssociationType)
 				{
-					if(type.IsCollectionType)
+					if (type.IsCollectionType)
 					{
 						// ignore joinables for composite collections
-						var collectionType = (CollectionType)type;
+						var collectionType = (CollectionType) type;
 						var persister = Factory.GetCollectionPersister(collectionType.Role);
-						if(persister.ElementType.IsEntityType==false)
+						if (persister.ElementType.IsEntityType == false)
 							return null;
 					}
-					IAssociationType atype = (IAssociationType)type;
-					
+					IAssociationType atype = (IAssociationType) type;
+
 					last = atype.GetAssociatedJoinable(Factory);
-					lastEntity = (NHibernate_Persister_Entity.IPropertyMapping)Factory.GetEntityPersister(atype.GetAssociatedEntityName(Factory));
+					lastEntity = (NHibernate_Persister_Entity.IPropertyMapping) Factory.GetEntityPersister(atype.GetAssociatedEntityName(Factory));
 					componentPath = "";
 				}
 				else if (type.IsComponentType)
@@ -636,7 +636,7 @@ namespace NHibernate.Loader.Criteria
 
 		private ICriteriaInfoProvider GetPathInfo(string path, ICriteriaInfoProvider rootProvider)
 		{
-			var tokens = path.Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
+			var tokens = path.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
 			// start with the root
 			ICriteriaInfoProvider provider = rootProvider;
 			if (tokens.Length == 0)
@@ -658,9 +658,9 @@ namespace NHibernate.Loader.Criteria
 				if (type.IsAssociationType)
 				{
 					// CollectionTypes are always also AssociationTypes - but there's not always an associated entity...
-					IAssociationType atype = (IAssociationType)type;
+					IAssociationType atype = (IAssociationType) type;
 
-					CollectionType ctype = type.IsCollectionType ? (CollectionType)type : null;
+					CollectionType ctype = type.IsCollectionType ? (CollectionType) type : null;
 					IType elementType = (ctype != null) ? ctype.GetElementType(sessionFactory) : null;
 					// is the association a collection of components or value-types? (i.e a colloction of valued types?)
 					if (ctype != null && elementType.IsComponentType)
@@ -764,18 +764,18 @@ namespace NHibernate.Loader.Criteria
 
 		public string[] GetIdentifierColumns(ICriteria subcriteria)
 		{
-			string[] idcols = ((NHibernate_Persister_Entity.ILoadable)GetPropertyMapping(GetEntityName(subcriteria))).IdentifierColumnNames;
+			string[] idcols = ((NHibernate_Persister_Entity.ILoadable) GetPropertyMapping(GetEntityName(subcriteria))).IdentifierColumnNames;
 			return StringHelper.Qualify(GetSQLAlias(subcriteria), idcols);
 		}
 
 		public IType GetIdentifierType(ICriteria subcriteria)
 		{
-			return ((NHibernate_Persister_Entity.ILoadable)GetPropertyMapping(GetEntityName(subcriteria))).IdentifierType;
+			return ((NHibernate_Persister_Entity.ILoadable) GetPropertyMapping(GetEntityName(subcriteria))).IdentifierType;
 		}
 
 		public TypedValue GetTypedIdentifierValue(ICriteria subcriteria, object value)
 		{
-			NHibernate_Persister_Entity.ILoadable loadable = (NHibernate_Persister_Entity.ILoadable)GetPropertyMapping(GetEntityName(subcriteria));
+			NHibernate_Persister_Entity.ILoadable loadable = (NHibernate_Persister_Entity.ILoadable) GetPropertyMapping(GetEntityName(subcriteria));
 			return new TypedValue(loadable.IdentifierType, value);
 		}
 
@@ -1005,11 +1005,11 @@ namespace NHibernate.Loader.Criteria
 			var typedValue = new TypedValue(NHibernateUtil.Int32, value, false);
 			return NewQueryParameter("skip_", typedValue).Single();
 		}
-		
+
 		public Parameter CreateTakeParameter(int value)
 		{
 			var typedValue = new TypedValue(NHibernateUtil.Int32, value, false);
-			return NewQueryParameter("take_",typedValue).Single();
+			return NewQueryParameter("take_", typedValue).Single();
 		}
 
 		public SqlString GetHavingCondition()
@@ -1074,15 +1074,15 @@ namespace NHibernate.Loader.Criteria
 		}
 
 		#endregion
-		
+
 		private void CreateSubQuerySpaces()
 		{
 			var subQueries =
 				rootCriteria.IterateExpressionEntries()
-				            .Select(x => x.Criterion)
-				            .OfType<SubqueryExpression>()
-				            .Select(x => x.Criteria)
-				            .OfType<CriteriaImpl>();
+							.Select(x => x.Criterion)
+							.OfType<SubqueryExpression>()
+							.Select(x => x.Criteria)
+							.OfType<CriteriaImpl>();
 
 			foreach (var criteriaImpl in subQueries)
 			{
@@ -1100,7 +1100,7 @@ namespace NHibernate.Loader.Criteria
 
 		private bool TryParseCriteriaPath(ICriteria subcriteria, string path, out string entityName, out string propertyName, out ICriteria pathCriteria)
 		{
-			if(StringHelper.IsNotRoot(path, out var root, out var unrootPath))
+			if (StringHelper.IsNotRoot(path, out var root, out var unrootPath))
 			{
 				ICriteria crit = GetAliasedCriteria(root);
 				if (crit != null)

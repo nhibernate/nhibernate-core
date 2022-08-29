@@ -83,7 +83,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Persister<T>() where T : IEntityPersister
 		{
-			classMapping.persister = typeof (T).GetShortClassName(MapDoc);
+			classMapping.persister = typeof(T).GetShortClassName(MapDoc);
 		}
 
 		public void Synchronize(params string[] table)
@@ -126,7 +126,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.sqlinsert = new HbmCustomSQL();
 			}
-			classMapping.sqlinsert.Text = new[] {sql};
+			classMapping.sqlinsert.Text = new[] { sql };
 		}
 
 		public void SqlInsert(string sql, SqlCheck sqlCheck)
@@ -146,7 +146,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.sqlupdate = new HbmCustomSQL();
 			}
-			classMapping.sqlupdate.Text = new[] {sql};
+			classMapping.sqlupdate.Text = new[] { sql };
 		}
 
 		public void SqlUpdate(string sql, SqlCheck sqlCheck)
@@ -166,7 +166,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.sqldelete = new HbmCustomSQL();
 			}
-			classMapping.sqldelete.Text = new[] {sql};
+			classMapping.sqldelete.Text = new[] { sql };
 		}
 
 		public void SqlDelete(string sql, SqlCheck sqlCheck)
@@ -186,7 +186,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.subselect = new HbmSubselect();
 			}
-			classMapping.subselect.Text = new[] {sql};
+			classMapping.subselect.Text = new[] { sql };
 		}
 
 		#endregion

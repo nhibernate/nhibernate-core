@@ -15,7 +15,7 @@ namespace NHibernate.Test.GenericTest.EnumGeneric
 	{
 		protected override string[] Mappings
 		{
-			get { return new String[] {"GenericTest.EnumGeneric.EnumGenericFixture.hbm.xml"}; }
+			get { return new String[] { "GenericTest.EnumGeneric.EnumGenericFixture.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly

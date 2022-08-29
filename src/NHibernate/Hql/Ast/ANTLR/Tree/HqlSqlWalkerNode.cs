@@ -23,7 +23,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public virtual void Initialize(object param)
 		{
-			_walker = (HqlSqlWalker)param;
+			_walker = (HqlSqlWalker) param;
 		}
 
 		public HqlSqlWalker Walker
@@ -41,7 +41,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get { return _walker.ASTFactory; }
 		}
-		
+
 		public AliasGenerator AliasGenerator
 		{
 			get { return _walker.AliasGenerator; }

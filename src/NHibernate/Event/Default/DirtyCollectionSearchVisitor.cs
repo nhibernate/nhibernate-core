@@ -69,7 +69,7 @@ namespace NHibernate.Event.Default
 					// we now always call wrap() before getting to here)
 					// return ( ! (obj instanceof PersistentCollection) ) ?
 					//true : searchForDirtyCollections( (PersistentCollection) obj, type );
-					persistentCollection = (IPersistentCollection)collection;
+					persistentCollection = (IPersistentCollection) collection;
 				}
 
 				if (persistentCollection.IsDirty)

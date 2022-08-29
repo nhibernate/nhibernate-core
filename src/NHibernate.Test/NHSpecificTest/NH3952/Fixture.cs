@@ -114,7 +114,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3952
 			swRefl2.Start();
 			for (var i = 0; i < 1000; i++)
 			{
-				var cast = GetMethod2(Enumerable.Cast<int>, (IEnumerable<int>)null);
+				var cast = GetMethod2(Enumerable.Cast<int>, (IEnumerable<int>) null);
 				Trace.TraceInformation(cast.ToString());
 			}
 			swRefl2.Stop();
@@ -123,7 +123,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3952
 			swRefl2Def.Start();
 			for (var i = 0; i < 1000; i++)
 			{
-				var cast = GetMethodDefinition2(Enumerable.Cast<object>, (IEnumerable<object>)null)
+				var cast = GetMethodDefinition2(Enumerable.Cast<object>, (IEnumerable<object>) null)
 					.MakeGenericMethod(new[] { typeof(int) });
 				Trace.TraceInformation(cast.ToString());
 			}

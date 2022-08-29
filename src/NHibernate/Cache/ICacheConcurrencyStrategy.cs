@@ -180,7 +180,7 @@ namespace NHibernate.Cache
 		/// <returns><see langword="true" /> if the objects were successfully cached.</returns>
 		/// <exception cref="CacheException"></exception>
 		public static bool[] PutMany(this ICacheConcurrencyStrategy cache, CacheKey[] keys, object[] values, long timestamp,
-		                          object[] versions, IComparer[] versionComparers, bool[] minimalPuts)
+								  object[] versions, IComparer[] versionComparers, bool[] minimalPuts)
 		{
 			if (cache is IBatchableCacheConcurrencyStrategy batchableCache)
 			{

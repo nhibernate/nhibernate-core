@@ -39,6 +39,6 @@ namespace NHibernate.Bytecode
 
 		bool IsInstrumented(System.Type entityClass);
 
-	    bool IsProxy(object entity);
+		bool IsProxy(object entity);
 	}
 }

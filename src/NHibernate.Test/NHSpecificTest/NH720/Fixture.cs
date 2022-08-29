@@ -32,9 +32,9 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 			config.BuildSessionFactory();
 
 			Assert.IsFalse(FooCacheProvider.RegionExists("NHibernate.Test.NHSpecificTest.NH720.A"),
-			               "Separate region created for class. Configured region was not used.");
+						   "Separate region created for class. Configured region was not used.");
 			Assert.IsFalse(FooCacheProvider.RegionExists("NHibernate.Test.NHSpecificTest.NH720.A.Bees"),
-			               "Separate region created for collection. Configured region was not used.");
+						   "Separate region created for collection. Configured region was not used.");
 			Assert.AreEqual(4, FooCacheProvider.RegionCount);
 		}
 	}

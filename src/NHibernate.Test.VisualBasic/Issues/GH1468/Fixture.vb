@@ -53,9 +53,9 @@ Namespace Issues.GH1468
                 Using session.BeginTransaction()
 
                     Dim d = New Date(2017, 12, 2)
-                    Dim result = (From e In session.Query (Of Entity)
-                            Where e.Date1 >= d
-                            Select e).ToList()
+                    Dim result = (From e In session.Query(Of Entity)
+                                  Where e.Date1 >= d
+                                  Select e).ToList()
 
                     Assert.AreEqual(1, result.Count)
                 End Using
@@ -69,9 +69,9 @@ Namespace Issues.GH1468
                 Using session.BeginTransaction()
 
                     Dim d = New Date(2017, 12, 2)
-                    Dim result = (From e In session.Query (Of Entity)
-                            Where (e.Date1 >= d).GetValueOrDefault()
-                            Select e).ToList()
+                    Dim result = (From e In session.Query(Of Entity)
+                                  Where (e.Date1 >= d).GetValueOrDefault()
+                                  Select e).ToList()
 
                     Assert.AreEqual(1, result.Count)
                 End Using

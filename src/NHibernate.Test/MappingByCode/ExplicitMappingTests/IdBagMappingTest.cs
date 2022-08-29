@@ -30,9 +30,9 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			mapper.Class<Animal>(map =>
 													 {
 														 map.Id(x => x.Id, idmap => { });
-														 map.IdBag(x => x.Children, bag => { }, rel=> rel.ManyToMany());
+														 map.IdBag(x => x.Children, bag => { }, rel => rel.ManyToMany());
 													 });
-			var hbmMapping = mapper.CompileMappingFor(new[]{ typeof(Animal)});
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(Animal) });
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmIdbag = hbmClass.Properties.OfType<HbmIdbag>().SingleOrDefault();
 			Assert.That(hbmIdbag, Is.Not.Null);

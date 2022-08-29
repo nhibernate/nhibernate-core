@@ -10,8 +10,8 @@ namespace NHibernate.Criterion
 	[Serializable]
 	public class AvgProjection : AggregateProjection
 	{
-		public AvgProjection(IProjection projection) : base("avg", projection) {}
-		public AvgProjection(string propertyName) : base("avg", propertyName) {}
+		public AvgProjection(IProjection projection) : base("avg", projection) { }
+		public AvgProjection(string propertyName) : base("avg", propertyName) { }
 
 		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
 		{
@@ -36,7 +36,7 @@ namespace NHibernate.Criterion
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new IType[] {NHibernateUtil.Double};
+			return new IType[] { NHibernateUtil.Double };
 		}
 	}
 }

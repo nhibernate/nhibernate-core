@@ -5,5 +5,5 @@ namespace NHibernate.Test.MappingByCode.NatureDemo.Naturalness
 		public virtual float BodyTemperature { get; set; }
 	}
 
-	public class Lizard : Reptile {}
+	public class Lizard : Reptile { }
 }

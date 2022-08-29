@@ -8,29 +8,29 @@ namespace NHibernate.Mapping.ByCode
 	public interface ICollectionPropertiesContainerMapper
 	{
 		void Set(MemberInfo property, Action<ISetPropertiesMapper> collectionMapping,
-		         Action<ICollectionElementRelation> mapping);
+				 Action<ICollectionElementRelation> mapping);
 
 		void Bag(MemberInfo property, Action<IBagPropertiesMapper> collectionMapping,
-		         Action<ICollectionElementRelation> mapping);
+				 Action<ICollectionElementRelation> mapping);
 
 		void List(MemberInfo property, Action<IListPropertiesMapper> collectionMapping,
-		          Action<ICollectionElementRelation> mapping);
+				  Action<ICollectionElementRelation> mapping);
 
 		void Map(MemberInfo property, Action<IMapPropertiesMapper> collectionMapping,
-		         Action<IMapKeyRelation> keyMapping,
-		         Action<ICollectionElementRelation> mapping);
+				 Action<IMapKeyRelation> keyMapping,
+				 Action<ICollectionElementRelation> mapping);
 
 		void IdBag(MemberInfo property, Action<IIdBagPropertiesMapper> collectionMapping,
 						 Action<ICollectionElementRelation> mapping);
 	}
 
-	public interface IPropertyContainerMapper : ICollectionPropertiesContainerMapper, IPlainPropertyContainerMapper {}
+	public interface IPropertyContainerMapper : ICollectionPropertiesContainerMapper, IPlainPropertyContainerMapper { }
 
 	public interface ICollectionPropertiesContainerMapper<TEntity>
 	{
 		void Set<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
-		                   Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping,
-		                   Action<ICollectionElementRelation<TElement>> mapping);
+						   Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping,
+						   Action<ICollectionElementRelation<TElement>> mapping);
 		void Set<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
 											 Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping);
 		void Set<TElement>(string notVisiblePropertyOrFieldName,
@@ -40,8 +40,8 @@ namespace NHibernate.Mapping.ByCode
 											 Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping);
 
 		void Bag<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
-		                   Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping,
-		                   Action<ICollectionElementRelation<TElement>> mapping);
+						   Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping,
+						   Action<ICollectionElementRelation<TElement>> mapping);
 		void Bag<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
 											 Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping);
 		void Bag<TElement>(string notVisiblePropertyOrFieldName,
@@ -51,8 +51,8 @@ namespace NHibernate.Mapping.ByCode
 											 Action<IBagPropertiesMapper<TEntity, TElement>> collectionMapping);
 
 		void List<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
-		                    Action<IListPropertiesMapper<TEntity, TElement>> collectionMapping,
-		                    Action<ICollectionElementRelation<TElement>> mapping);
+							Action<IListPropertiesMapper<TEntity, TElement>> collectionMapping,
+							Action<ICollectionElementRelation<TElement>> mapping);
 		void List<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property,
 												Action<IListPropertiesMapper<TEntity, TElement>> collectionMapping);
 		void List<TElement>(string notVisiblePropertyOrFieldName,
@@ -62,12 +62,12 @@ namespace NHibernate.Mapping.ByCode
 												Action<IListPropertiesMapper<TEntity, TElement>> collectionMapping);
 
 		void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
-		                         Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
-		                         Action<IMapKeyRelation<TKey>> keyMapping,
-		                         Action<ICollectionElementRelation<TElement>> mapping);
+								 Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
+								 Action<IMapKeyRelation<TKey>> keyMapping,
+								 Action<ICollectionElementRelation<TElement>> mapping);
 		void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
-		                         Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
-		                         Action<ICollectionElementRelation<TElement>> mapping);
+								 Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping,
+								 Action<ICollectionElementRelation<TElement>> mapping);
 		void Map<TKey, TElement>(Expression<Func<TEntity, IDictionary<TKey, TElement>>> property,
 														 Action<IMapPropertiesMapper<TEntity, TKey, TElement>> collectionMapping);
 		void Map<TKey, TElement>(string notVisiblePropertyOrFieldName,
@@ -93,5 +93,5 @@ namespace NHibernate.Mapping.ByCode
 	}
 
 	public interface IPropertyContainerMapper<TEntity> : ICollectionPropertiesContainerMapper<TEntity>, IPlainPropertyContainerMapper<TEntity>
-	{}
+	{ }
 }

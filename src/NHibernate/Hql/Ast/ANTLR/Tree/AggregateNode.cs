@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using Antlr.Runtime;
 using NHibernate.Dialect.Function;
-using NHibernate.Type;
 using NHibernate.Hql.Ast.ANTLR.Util;
+using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
@@ -46,7 +46,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				base.DataType = value;
 			}
 		}
-		
+
 		public override void SetScalarColumnText(int i)
 		{
 			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i);

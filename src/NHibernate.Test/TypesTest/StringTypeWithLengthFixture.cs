@@ -62,7 +62,7 @@ namespace NHibernate.Test.TypesTest
 
 		[Test]
 		[Description("Values longer than the maximum possible string length " +
-		             "should raise an exception if they would otherwise be truncated.")]
+					 "should raise an exception if they would otherwise be truncated.")]
 		public void ShouldPreventInsertionOfVeryLongStringThatWouldBeTruncated()
 		{
 			// This test case is for when the current driver will use a parameter size
@@ -81,7 +81,7 @@ namespace NHibernate.Test.TypesTest
 				{
 					using (ISession s = OpenSession())
 					{
-						StringClass b = new StringClass {LongStringValue = new string('x', maxStringLength + 1)};
+						StringClass b = new StringClass { LongStringValue = new string('x', maxStringLength + 1) };
 						s.Save(b);
 						s.Flush();
 					}
@@ -106,8 +106,8 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			{
 				var q = s.CreateQuery("from StringClass s where s.LongStringValue != :shortString")
-				         // Do not replace with SetString, otherwise length will be unspecified.
-				         .SetParameter("shortString", "aaa");
+						 // Do not replace with SetString, otherwise length will be unspecified.
+						 .SetParameter("shortString", "aaa");
 				var sc = q.UniqueResult<StringClass>();
 				Assert.That(sc, Is.Not.Null);
 				Assert.That(sc.LongStringValue, Is.EqualTo(longString));
@@ -133,8 +133,8 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			{
 				var q = s.CreateQuery("from StringClass s where s.LongStringValue = :longString")
-				         // Do not replace with SetString, otherwise length will be unspecified.
-				         .SetParameter("longString", longString);
+						 // Do not replace with SetString, otherwise length will be unspecified.
+						 .SetParameter("longString", longString);
 				var sc = q.UniqueResult<StringClass>();
 				Assert.That(sc, Is.Not.Null);
 				Assert.That(sc.LongStringValue, Is.EqualTo(longString));
@@ -143,7 +143,7 @@ namespace NHibernate.Test.TypesTest
 
 		[Test]
 		[Description("Values longer than the mapped string length " +
-		             "should raise an exception if they would otherwise be truncated.")]
+					 "should raise an exception if they would otherwise be truncated.")]
 		public void ShouldPreventInsertionOfTooLongStringThatWouldBeTruncated()
 		{
 			// Note: This test could possible be written as
@@ -157,7 +157,7 @@ namespace NHibernate.Test.TypesTest
 				{
 					using (ISession s = OpenSession())
 					{
-						StringClass b = new StringClass {StringValue = "0123456789a"};
+						StringClass b = new StringClass { StringValue = "0123456789a" };
 						s.Save(b);
 						s.Flush();
 					}
@@ -210,8 +210,8 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
-				s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
+				s.Save(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" });
+				s.Save(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" });
 
 				var aaItems =
 					s.CreateCriteria<StringClass>()
@@ -228,8 +228,8 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
-				s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
+				s.Save(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" });
+				s.Save(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" });
 
 				var aaItems =
 					s.CreateQuery("from StringClass s where s.StringValue like :likeValue")
@@ -254,8 +254,8 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
-				s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
+				s.Save(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" });
+				s.Save(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" });
 
 				var aaItems =
 					s.CreateCriteria<StringClass>()
@@ -280,8 +280,8 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				s.Save(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"});
-				s.Save(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"});
+				s.Save(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" });
+				s.Save(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" });
 
 				var aaItems =
 					s.CreateQuery("from StringClass s where s.StringValue = :likeValue")

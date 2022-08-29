@@ -1,4 +1,4 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IGenerator {}
+	public interface IGenerator { }
 }

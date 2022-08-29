@@ -9,7 +9,7 @@ namespace NHibernate.Test.Hql.Ast
 		private string name;
 		private int? requestedHash;
 
-		protected KeyManyToOneKeyEntity() {}
+		protected KeyManyToOneKeyEntity() { }
 
 		public KeyManyToOneKeyEntity(string name)
 		{
@@ -42,7 +42,7 @@ namespace NHibernate.Test.Hql.Ast
 
 		public override int GetHashCode()
 		{
-			if(!requestedHash.HasValue)
+			if (!requestedHash.HasValue)
 			{
 				unchecked
 				{

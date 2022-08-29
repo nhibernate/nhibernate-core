@@ -10,7 +10,7 @@ namespace NHibernate.SqlCommand
 	/// </example>
 	public class DecodeCaseFragment : CaseFragment
 	{
-		public DecodeCaseFragment(Dialect.Dialect dialect) : base(dialect) {}
+		public DecodeCaseFragment(Dialect.Dialect dialect) : base(dialect) { }
 
 		/// <summary></summary>
 		public override string ToSqlStringFragment()

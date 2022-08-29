@@ -18,7 +18,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 		{
 			var configuration = TestConfigurationHelper.GetDefaultConfiguration();
 			var dialect = NHibernate.Dialect.Dialect.GetDialect(configuration.Properties);
-			if(!(dialect is MsSql2000Dialect))
+			if (!(dialect is MsSql2000Dialect))
 			{
 				Assert.Ignore(GetType() + " does not apply to " + dialect);
 			}
@@ -28,7 +28,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaExportTests
 																GetType().Assembly);
 
 			var script = new StringBuilder();
-			new SchemaExport(configuration).Execute(s=> script.AppendLine(s), false, false);
+			new SchemaExport(configuration).Execute(s => script.AppendLine(s), false, false);
 			Assert.That(script.ToString(), Does.Contain("[Order]").And.Contains("[Select]").And.Contains("[From]").And.Contains("[And]"));
 		}
 

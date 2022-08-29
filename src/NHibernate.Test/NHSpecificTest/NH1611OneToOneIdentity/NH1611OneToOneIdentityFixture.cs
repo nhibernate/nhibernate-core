@@ -9,9 +9,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();
-			using(ISession session = OpenSession())
+			using (ISession session = OpenSession())
 			{
-				using(ITransaction tx = session.BeginTransaction())
+				using (ITransaction tx = session.BeginTransaction())
 				{
 					session.Delete("from Adjunct");
 					session.Delete("from Primary");
@@ -22,9 +22,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 
 		protected override void OnSetUp()
 		{
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
-				using(ITransaction tx = s.BeginTransaction())
+				using (ITransaction tx = s.BeginTransaction())
 				{
 					Primary primary = new Primary();
 					primary.ID = 5;
@@ -43,11 +43,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 		[Test]
 		public void CanQueryOneToOneWithCompositeId()
 		{
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
-				using(ITransaction tx = s.BeginTransaction())
+				using (ITransaction tx = s.BeginTransaction())
 				{
-					ICriteria criteria = s.CreateCriteria(typeof (Primary));
+					ICriteria criteria = s.CreateCriteria(typeof(Primary));
 					IList<Primary> list = criteria.List<Primary>();
 					Assert.AreEqual("blarg", list[0].Description);
 					Assert.AreEqual("nuts", list[0].Adjunct.AdjunctDescription);

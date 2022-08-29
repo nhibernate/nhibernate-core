@@ -47,13 +47,13 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 		public void ExceptionStackTrace()
 		{
 			ISession s = OpenSession();
-			IMyProxy ap = new MyProxyImpl {Id = 1, Name = "first proxy"};
+			IMyProxy ap = new MyProxyImpl { Id = 1, Name = "first proxy" };
 			s.Save(ap);
 			s.Flush();
 			s.Close();
 
 			s = OpenSession();
-			ap = (IMyProxy) s.Load(typeof (MyProxyImpl), ap.Id);
+			ap = (IMyProxy) s.Load(typeof(MyProxyImpl), ap.Id);
 			Assert.IsFalse(NHibernateUtil.IsInitialized(ap), "check we have a proxy");
 
 			try
@@ -81,13 +81,13 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 		public void Proxy()
 		{
 			ISession s = OpenSession();
-			IMyProxy ap = new MyProxyImpl {Id = 1, Name = "first proxy"};
+			IMyProxy ap = new MyProxyImpl { Id = 1, Name = "first proxy" };
 			s.Save(ap);
 			s.Flush();
 			s.Close();
 
 			s = OpenSession();
-			ap = (IMyProxy) s.Load(typeof (MyProxyImpl), ap.Id);
+			ap = (IMyProxy) s.Load(typeof(MyProxyImpl), ap.Id);
 			Assert.IsFalse(NHibernateUtil.IsInitialized(ap));
 			int id = ap.Id;
 			Assert.IsFalse(NHibernateUtil.IsInitialized(ap), "get id should not have initialized it.");
@@ -102,13 +102,13 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 		public void ProxySerialize()
 		{
 			ISession s = OpenSession();
-			IMyProxy ap = new MyProxyImpl {Id = 1, Name = "first proxy"};
+			IMyProxy ap = new MyProxyImpl { Id = 1, Name = "first proxy" };
 			s.Save(ap);
 			s.Flush();
 			s.Close();
 
 			s = OpenSession();
-			ap = (IMyProxy) s.Load(typeof (MyProxyImpl), ap.Id);
+			ap = (IMyProxy) s.Load(typeof(MyProxyImpl), ap.Id);
 			Assert.AreEqual(1, ap.Id);
 			s.Disconnect();
 
@@ -134,14 +134,14 @@ namespace NHibernate.Test.DynamicProxyTests.InterfaceProxySerializationTests
 		{
 			ISession s = OpenSession();
 			// this does not actually exists in db
-			var notThere = (IMyProxy) s.Load(typeof (MyProxyImpl), 5);
+			var notThere = (IMyProxy) s.Load(typeof(MyProxyImpl), 5);
 			Assert.AreEqual(5, notThere.Id);
 			s.Disconnect();
 
 			// serialize and then deserialize the session.
 			SerializeAndDeserialize(ref s);
 
-			Assert.IsNotNull(s.Load(typeof (MyProxyImpl), 5), "should be proxy - even though it doesn't exists in db");
+			Assert.IsNotNull(s.Load(typeof(MyProxyImpl), 5), "should be proxy - even though it doesn't exists in db");
 			s.Close();
 		}
 	}

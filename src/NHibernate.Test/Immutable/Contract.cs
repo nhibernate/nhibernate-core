@@ -17,11 +17,11 @@ namespace NHibernate.Test.Immutable
 		private ISet<Plan> plans;
 		private ISet<Party> parties;
 		private ISet<Info> infos;
-		
+
 		public Contract()
 		{
 		}
-		
+
 		public Contract(Plan plan, string customerName, string type)
 		{
 			plans = new HashSet<Plan>();
@@ -37,79 +37,79 @@ namespace NHibernate.Test.Immutable
 			parties = new HashSet<Party>();
 			infos = new HashSet<Info>();
 		}
-		
+
 		public virtual long Id
 		{
 			get { return id; }
 			set { id = value; }
 		}
-		
+
 		public virtual long Version
 		{
 			get { return version; }
 			set { version = value; }
 		}
-		
+
 		public virtual string CustomerName
 		{
 			get { return customerName; }
 			set { customerName = value; }
 		}
-		
+
 		public virtual string Type
 		{
 			get { return type; }
 			set { type = value; }
 		}
-		
+
 		public virtual IList<ContractVariation> Variations
 		{
 			get { return variations; }
 			set { variations = value; }
 		}
-		
+
 		public virtual Contract Parent
 		{
 			get { return parent; }
 			set { parent = value; }
 		}
-		
+
 		public virtual ISet<Contract> Subcontracts
 		{
 			get { return subcontracts; }
 			set { subcontracts = value; }
 		}
-		
+
 		public virtual ISet<Plan> Plans
 		{
 			get { return plans; }
 			set { plans = value; }
 		}
-		
+
 		public virtual ISet<Party> Parties
 		{
 			get { return parties; }
 			set { parties = value; }
 		}
-		
+
 		public virtual ISet<Info> Infos
 		{
 			get { return infos; }
 			set { infos = value; }
 		}
-		
+
 		public virtual void AddSubcontract(Contract subcontract)
 		{
 			subcontracts.Add(subcontract);
 			subcontract.Parent = this;
 		}
-		
+
 		public virtual void AddParty(Party party)
 		{
 			parties.Add(party);
 			party.Contract = this;
 		}
-	
+
 		public virtual void RemoveParty(Party party)
 		{
 			parties.Remove(party);

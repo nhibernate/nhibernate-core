@@ -16,7 +16,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly MemberInfo _member;
 
 		public ManyToOneMapper(MemberInfo member, HbmManyToOne manyToOne, HbmMapping mapDoc)
-			: this(member, member == null ? (IAccessorPropertyMapper)new NoMemberPropertyMapper() : new AccessorPropertyMapper(member.DeclaringType, member.Name, x => manyToOne.access = x), manyToOne, mapDoc) { }
+			: this(member, member == null ? (IAccessorPropertyMapper) new NoMemberPropertyMapper() : new AccessorPropertyMapper(member.DeclaringType, member.Name, x => manyToOne.access = x), manyToOne, mapDoc) { }
 
 		public ManyToOneMapper(MemberInfo member, IAccessorPropertyMapper accessorPropertyMapper, HbmManyToOne manyToOne, HbmMapping mapDoc)
 		{
@@ -38,7 +38,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			if (!_member.GetPropertyOrFieldType().IsAssignableFrom(entityType))
 			{
-				throw new ArgumentOutOfRangeException("entityType", 
+				throw new ArgumentOutOfRangeException("entityType",
 					String.Format("The type is incompatible; expected assignable to {0}", _member.GetPropertyOrFieldType()));
 			}
 			_manyToOne.@class = entityType.GetShortClassName(_mapDoc);
@@ -131,7 +131,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		}
 
 		#endregion
-		
+
 		#region Implementation of IColumnsAndFormulasMapper
 
 		/// <inheritdoc />
@@ -223,7 +223,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Columns(params Action<IColumnMapper>[] columnMapper)
 		{
 			ResetColumnPlainValues();
-			
+
 			var columns = new HbmColumn[columnMapper.Length];
 			for (var i = 0; i < columnMapper.Length; i++)
 			{

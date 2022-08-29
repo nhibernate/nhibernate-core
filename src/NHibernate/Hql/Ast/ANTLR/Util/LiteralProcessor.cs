@@ -112,13 +112,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			return from.ContainsClassAlias(alias);
 		}
 
-		public void ProcessBoolean(IASTNode constant) 
+		public void ProcessBoolean(IASTNode constant)
 		{
 			// TODO: something much better - look at the type of the other expression!
 			// TODO: Have comparisonExpression and/or arithmeticExpression rules complete the resolution of boolean nodes.
 			string replacement;
 			_walker.TokenReplacements.TryGetValue(constant.Text, out replacement);
-			if ( replacement != null ) 
+			if (replacement != null)
 			{
 				constant.Text = replacement;
 			}
@@ -138,7 +138,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			if (resolveIdent && isIdent && IsAlias(constant.Text))
 			{
 				// IDENT is a class alias in the FROM.
-				IdentNode ident = (IdentNode)constant;
+				IdentNode ident = (IdentNode) constant;
 				// Resolve to an identity column.
 				ident.Resolve(false, true);
 			}
@@ -273,7 +273,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				log.Debug("setConstantValue() {0} -> {1} {2}", text, value, value.GetType().Name);
 			}
 
-			node.ClearChildren();	// Chop off the rest of the tree.
+			node.ClearChildren();   // Chop off the rest of the tree.
 
 			if (value is string)
 			{
@@ -332,7 +332,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			}
 			try
 			{
-				ILiteralType literalType = (ILiteralType)type;
+				ILiteralType literalType = (ILiteralType) type;
 				NHibernate.Dialect.Dialect dialect = _walker.SessionFactoryHelper.Factory.Dialect;
 				node.Text = literalType.ObjectToSQLString(value, dialect);
 			}

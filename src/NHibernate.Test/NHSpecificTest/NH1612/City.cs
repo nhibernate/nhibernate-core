@@ -4,9 +4,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 	{
 		public virtual Country Country { get; protected set; }
 
-		protected City() {}
+		protected City() { }
 
-		public City(string code, string name) : base(code, name) {}
+		public City(string code, string name) : base(code, name) { }
 
 		public virtual void SetParent(Country country)
 		{

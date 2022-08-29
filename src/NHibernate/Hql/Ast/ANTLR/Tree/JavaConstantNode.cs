@@ -15,13 +15,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class JavaConstantNode : SqlNode, IExpectedTypeAwareNode, ISessionFactoryAwareNode 
+	public class JavaConstantNode : SqlNode, IExpectedTypeAwareNode, ISessionFactoryAwareNode
 	{
 		private ISessionFactoryImplementor _factory;
 		private Object _constantValue;
 		private IType _heuristicType;
 		private IType _expectedType;
-	    private bool _processedText;
+		private bool _processedText;
 
 		public JavaConstantNode(IToken token) : base(token)
 		{
@@ -38,41 +38,41 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { _factory = value; }
 		}
 
-        public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
-        {
-            ProcessText();
+		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
+		{
+			ProcessText();
 
 			IType type = _expectedType ?? _heuristicType;
-			return new SqlString(ResolveToLiteralString( type ));
+			return new SqlString(ResolveToLiteralString(type));
 		}
 
-        private string ResolveToLiteralString(IType type)
-        {
-            try
-            {
-                ILiteralType literalType = (ILiteralType)type;
-                Dialect.Dialect dialect = _factory.Dialect;
-                return literalType.ObjectToSQLString(_constantValue, dialect);
-            }
-            catch (Exception t)
-            {
-                throw new QueryException(LiteralProcessor.ErrorCannotFormatLiteral + Text, t);
-            }
-        }
+		private string ResolveToLiteralString(IType type)
+		{
+			try
+			{
+				ILiteralType literalType = (ILiteralType) type;
+				Dialect.Dialect dialect = _factory.Dialect;
+				return literalType.ObjectToSQLString(_constantValue, dialect);
+			}
+			catch (Exception t)
+			{
+				throw new QueryException(LiteralProcessor.ErrorCannotFormatLiteral + Text, t);
+			}
+		}
 
-        private void ProcessText()
-        {
-            if (!_processedText)
-            {
-                if (_factory == null)
-                {
-                    throw new InvalidOperationException();
-                }
-                
-                _constantValue = ReflectHelper.GetConstantValue(base.Text, _factory);
-                _heuristicType = TypeFactory.HeuristicType(_constantValue.GetType());
-                _processedText = true;
-            }
-        }
+		private void ProcessText()
+		{
+			if (!_processedText)
+			{
+				if (_factory == null)
+				{
+					throw new InvalidOperationException();
+				}
+
+				_constantValue = ReflectHelper.GetConstantValue(base.Text, _factory);
+				_heuristicType = TypeFactory.HeuristicType(_constantValue.GetType());
+				_processedText = true;
+			}
+		}
 	}
 }

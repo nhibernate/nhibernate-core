@@ -11,7 +11,7 @@ namespace NHibernate.Param
 	public partial class VersionTypeSeedParameterSpecification : IParameterSpecification
 	{
 		private const string IdBackTrack = "<nhv_seed_nh>";
-		private readonly string[] idForBackTracks = new[] {IdBackTrack};
+		private readonly string[] idForBackTracks = new[] { IdBackTrack };
 		private readonly IVersionType type;
 
 		public VersionTypeSeedParameterSpecification(IVersionType type)

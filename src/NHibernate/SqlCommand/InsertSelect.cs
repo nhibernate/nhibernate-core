@@ -57,10 +57,10 @@ namespace NHibernate.SqlCommand
 			if (!(columnNames.Count == 0))
 			{
 				buf.Add(" (");
-				bool commaNeeded= false;
+				bool commaNeeded = false;
 				foreach (var columnName in columnNames)
 				{
-					if(commaNeeded)
+					if (commaNeeded)
 					{
 						buf.Add(", ");
 					}

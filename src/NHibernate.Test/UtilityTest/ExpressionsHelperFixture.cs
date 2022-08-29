@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.Util;
 using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace NHibernate.Test.UtilityTest
 {

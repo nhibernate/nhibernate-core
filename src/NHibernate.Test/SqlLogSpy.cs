@@ -9,6 +9,6 @@ namespace NHibernate.Test
 	{
 		public SqlLogSpy()
 			: base("NHibernate.SQL")
-		{}
+		{ }
 	}
 }

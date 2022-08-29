@@ -2,7 +2,7 @@
 
 namespace NHibernate.AdoNet
 {
-	public class GenericBatchingBatcherFactory: IBatcherFactory
+	public class GenericBatchingBatcherFactory : IBatcherFactory
 	{
 		public virtual IBatcher CreateBatcher(ConnectionManager connectionManager, IInterceptor interceptor)
 		{

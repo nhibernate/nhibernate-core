@@ -67,10 +67,10 @@ namespace NHibernate.Tuple.Entity
 		private static bool IsEnhancedForLazyLoading(PersistentClass persistentClass)
 		{
 			var lazyAvailable = persistentClass.HasPocoRepresentation
-			                     && FieldInterceptionHelper.IsInstrumented(persistentClass.MappedClass);
+								 && FieldInterceptionHelper.IsInstrumented(persistentClass.MappedClass);
 
 			var lazy = persistentClass.IsLazy && (!persistentClass.HasPocoRepresentation ||
-			                                      !ReflectHelper.IsFinalClass(persistentClass.ProxyInterface));
+												  !ReflectHelper.IsFinalClass(persistentClass.ProxyInterface));
 			lazyAvailable &= lazy;
 			if (!lazyAvailable)
 			{

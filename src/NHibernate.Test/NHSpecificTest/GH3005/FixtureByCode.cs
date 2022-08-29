@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3005
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<Entity>().Select(x => (TimeSpan)(object)x.Duration).FirstOrDefault();
+				var result = session.Query<Entity>().Select(x => (TimeSpan) (object) x.Duration).FirstOrDefault();
 
 				Assert.That(result, Is.EqualTo(TimeSpan.FromMinutes(1)));
 			}

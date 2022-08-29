@@ -12,7 +12,7 @@ namespace NHibernate.Test.DriverTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"Simple.hbm.xml"}; }
+			get { return new string[] { "Simple.hbm.xml" }; }
 		}
 
 		/// <summary>

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Mapping;
@@ -90,7 +90,7 @@ namespace NHibernate.Persister.Entity
 			keyColumnNames = new string[joinSpan][];
 			Table table = persistentClass.RootTable;
 			identifierTypes[0] = IdentifierType;
-			qualifiedTableNames[0] =table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
+			qualifiedTableNames[0] = table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName, factory.Settings.DefaultSchemaName);
 			isInverseTable[0] = false;
 			isNullableTable[0] = false;
 			keyColumnNames[0] = IdentifierColumnNames;
@@ -210,7 +210,7 @@ namespace NHibernate.Persister.Entity
 					foreach (Column col in join.RefIdProperty.ColumnIterator)
 					{
 						toKeyCols.Add(col.GetQuotedName(factory.Dialect));
-						
+
 						//find out what property index this is
 						int i = 0;
 						foreach (var prop in persistentClass.PropertyClosureIterator)
@@ -219,7 +219,7 @@ namespace NHibernate.Persister.Entity
 							{
 								tableIdPropertyNumbers.Add(curTableIndex, i);
 								break;
-			}
+							}
 							i++;
 						}
 
@@ -252,7 +252,7 @@ namespace NHibernate.Persister.Entity
 				var selectable = discrimValue.ColumnIterator.First();
 				if (discrimValue.HasFormula)
 				{
-					Formula formula = (Formula)selectable;
+					Formula formula = (Formula) selectable;
 					discriminatorFormula = formula.FormulaString;
 					discriminatorFormulaTemplate = formula.GetTemplate(factory.Dialect, factory.SQLFunctionRegistry);
 					discriminatorColumnName = null;
@@ -260,7 +260,7 @@ namespace NHibernate.Persister.Entity
 				}
 				else
 				{
-					Column column = (Column)selectable;
+					Column column = (Column) selectable;
 					discriminatorColumnName = column.GetQuotedName(factory.Dialect);
 					discriminatorAlias = column.GetAlias(factory.Dialect, persistentClass.RootTable);
 					discriminatorFormula = null;
@@ -284,7 +284,7 @@ namespace NHibernate.Persister.Entity
 					discriminatorInsertable = persistentClass.IsDiscriminatorInsertable && !discrimValue.HasFormula;
 					try
 					{
-						IDiscriminatorType dtype = (IDiscriminatorType)discriminatorType;
+						IDiscriminatorType dtype = (IDiscriminatorType) discriminatorType;
 						discriminatorValue = dtype.StringToObject(persistentClass.DiscriminatorValue);
 						discriminatorSQLValue = dtype.ObjectToSQLString(discriminatorValue, factory.Dialect);
 					}
@@ -373,7 +373,7 @@ namespace NHibernate.Persister.Entity
 							throw new MappingException("Not available discriminator type of entity " + persistentClass.EntityName);
 						try
 						{
-							IDiscriminatorType dtype = (IDiscriminatorType)discriminatorType;
+							IDiscriminatorType dtype = (IDiscriminatorType) discriminatorType;
 							subclassesByDiscriminatorValue[dtype.StringToObject(sc.DiscriminatorValue)] = sc.EntityName;
 						}
 						catch (InvalidCastException cce)
@@ -613,7 +613,7 @@ namespace NHibernate.Persister.Entity
 
 		private string DiscriminatorFilterFragment(string alias)
 		{
-			const string abstractClassWithNoSubclassExceptionMessageTemplate = 
+			const string abstractClassWithNoSubclassExceptionMessageTemplate =
 @"The class {0} can't be instatiated and does not have mapped subclasses; 
 possible solutions:
 - don't map the abstract class
@@ -643,7 +643,7 @@ possible solutions:
 						validValuesForInFragment++;
 					}
 				}
-				if(validValuesForInFragment == 0)
+				if (validValuesForInFragment == 0)
 				{
 					throw new NotSupportedException(string.Format(abstractClassWithNoSubclassExceptionMessageTemplate, subclasses[0]));
 				}

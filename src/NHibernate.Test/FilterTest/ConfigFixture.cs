@@ -1,18 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
 using NHibernate.Cfg;
 using NUnit.Framework;
-using System.Linq;
 
 namespace NHibernate.Test.FilterTest
 {
 	[TestFixture]
 	public class ConfigFixture
 	{
-		private class ConfigurationStub: Configuration
+		private class ConfigurationStub : Configuration
 		{
 			public Queue<FilterSecondPassArgs> FiltersSecondPasses { get { return filtersSecondPasses; } }
 		}
@@ -43,7 +43,7 @@ namespace NHibernate.Test.FilterTest
 			cfg.AddResource("NHibernate.Test.FilterTest.SimpleFilteredFiltersDefsOk.hbm.xml", GetType().Assembly);
 			Assert.That(cfg.FilterDefinitions, Is.Not.Empty);
 			cfg.BuildMappings();
-			var pc = cfg.GetClassMapping(typeof (TestClass));
+			var pc = cfg.GetClassMapping(typeof(TestClass));
 			foreach (var filterMap in pc.FilterMap)
 			{
 				Assert.That(filterMap.Value, Is.Not.Null & Is.Not.Empty, "filtername:" + filterMap.Key);
@@ -222,7 +222,7 @@ namespace NHibernate.Test.FilterTest
 </hibernate-mapping>";
 			var cfg = GetConfiguration();
 			cfg.AddXmlString(classMap);
-			var e = Assert.Throws<MappingException>(()=>cfg.BuildSessionFactory());
+			var e = Assert.Throws<MappingException>(() => cfg.BuildSessionFactory());
 			Assert.That(e.Message, Does.StartWith("filter-def for filter named"));
 			Assert.That(e.Message, Does.Contain("was not found"));
 		}
@@ -241,20 +241,20 @@ namespace NHibernate.Test.FilterTest
 
 			var cfg = GetConfiguration();
 			cfg.AddXmlString(filterDef);
-		    var memoryAppender = new MemoryAppender();
-		    BasicConfigurator.Configure(LogManager.GetRepository(typeof(ConfigFixture).Assembly), memoryAppender);
-            try
+			var memoryAppender = new MemoryAppender();
+			BasicConfigurator.Configure(LogManager.GetRepository(typeof(ConfigFixture).Assembly), memoryAppender);
+			try
 			{
-			    cfg.BuildSessionFactory();
+				cfg.BuildSessionFactory();
 
-                var wholeLog = String.Join("\r\n", memoryAppender.GetEvents().Select(x => x.RenderedMessage).ToArray());
-			    Assert.That(wholeLog, Does.Contain("filter-def for filter named"));
-                Assert.That(wholeLog, Does.Contain("was never used to filter classes nor collections."));
+				var wholeLog = String.Join("\r\n", memoryAppender.GetEvents().Select(x => x.RenderedMessage).ToArray());
+				Assert.That(wholeLog, Does.Contain("filter-def for filter named"));
+				Assert.That(wholeLog, Does.Contain("was never used to filter classes nor collections."));
 			}
-            finally
-            {
-                LogManager.Shutdown();
-            }
+			finally
+			{
+				LogManager.Shutdown();
+			}
 		}
 	}
 }

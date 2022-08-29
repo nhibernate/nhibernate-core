@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH681
 				parentReloaded.Children.RemoveAt(0);
 				s.Flush();
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.Delete(s.Get<Foo>(parent.Id));

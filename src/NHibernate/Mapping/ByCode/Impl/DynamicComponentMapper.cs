@@ -12,7 +12,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly IAccessorPropertyMapper accessorPropertyMapper;
 
 		public DynamicComponentMapper(HbmDynamicComponent component, MemberInfo declaringTypeMember, HbmMapping mapDoc)
-			: this(component, declaringTypeMember, new AccessorPropertyMapper(declaringTypeMember.DeclaringType, declaringTypeMember.Name, x => component.access = x), mapDoc) {}
+			: this(component, declaringTypeMember, new AccessorPropertyMapper(declaringTypeMember.DeclaringType, declaringTypeMember.Name, x => component.access = x), mapDoc) { }
 
 		private DynamicComponentMapper(HbmDynamicComponent component, MemberInfo declaringTypeMember, IAccessorPropertyMapper accessorMapper, HbmMapping mapDoc)
 		{
@@ -43,10 +43,10 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Property(MemberInfo property, Action<IPropertyMapper> mapping)
 		{
 			var hbmProperty = new HbmProperty
-							  {
-								name = property.Name, 
-													type1 = property.GetPropertyOrFieldType().GetNhTypeName()
-							  };
+			{
+				name = property.Name,
+				type1 = property.GetPropertyOrFieldType().GetNhTypeName()
+			};
 
 			mapping(new PropertyMapper(property, hbmProperty, new NoMemberPropertyMapper()));
 			AddProperty(hbmProperty);
@@ -84,7 +84,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			var hbm = new HbmOneToOne { name = property.Name };
 
-			var type = typeof (OneToOneMapper<>).MakeGenericType(property.GetPropertyOrFieldType());
+			var type = typeof(OneToOneMapper<>).MakeGenericType(property.GetPropertyOrFieldType());
 			var mapper = (IOneToOneMapper) Activator.CreateInstance(type, property, new NoMemberPropertyMapper(), hbm);
 			mapping(mapper);
 			AddProperty(hbm);

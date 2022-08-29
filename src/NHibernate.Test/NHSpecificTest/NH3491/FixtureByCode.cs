@@ -1,8 +1,8 @@
 using System;
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using System.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH3491
 {
@@ -46,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3491
 			//Compile, and get the component property in which we mapped only one inner property
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 
-			var component1PropertyMapping = (HbmComponent)mappings.RootClasses[0].Properties.Single(x => x.Name == "Component1");
+			var component1PropertyMapping = (HbmComponent) mappings.RootClasses[0].Properties.Single(x => x.Name == "Component1");
 
 			//There should be only one inner property in the mapping of this component
 			// Note: take a look at how CURRENTLY the test fails with 1 expected vs 2, instead of vs 3. 

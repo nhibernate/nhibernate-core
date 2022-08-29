@@ -62,7 +62,7 @@ namespace NHibernate.Event.Default
 
 		private bool FlushIsReallyNeeded(AutoFlushEvent @event, IEventSource source)
 		{
-			return source.ActionQueue.AreTablesToBeUpdated(@event.QuerySpaces) || ((ISessionImplementor)source).FlushMode == FlushMode.Always;
+			return source.ActionQueue.AreTablesToBeUpdated(@event.QuerySpaces) || ((ISessionImplementor) source).FlushMode == FlushMode.Always;
 		}
 
 		private bool FlushMightBeNeeded(IEventSource source)

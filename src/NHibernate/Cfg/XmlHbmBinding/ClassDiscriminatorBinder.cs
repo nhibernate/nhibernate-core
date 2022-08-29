@@ -3,7 +3,7 @@ using NHibernate.Mapping;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class ClassDiscriminatorBinder: Binder
+	public class ClassDiscriminatorBinder : Binder
 	{
 		private readonly PersistentClass rootClass;
 
@@ -39,22 +39,22 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			if (discriminatorSchema.formula != null)
 			{
-				var f = new Formula {FormulaString = discriminatorSchema.formula};
+				var f = new Formula { FormulaString = discriminatorSchema.formula };
 				discriminator.AddFormula(f);
 			}
 			else
 			{
 				new ColumnsBinder(discriminator, Mappings).Bind(discriminatorSchema.Columns, false,
-				                                                () =>
-				                                                new HbmColumn
-				                                                	{
-				                                                		name =
-				                                                			mappings.NamingStrategy.PropertyToColumnName(
-				                                                			RootClass.DefaultDiscriminatorColumnName),
-				                                                		length = discriminatorSchema.length,
-																														notnull = discriminatorSchema.notnull,
-																														notnullSpecified = true
-				                                                	});
+																() =>
+																new HbmColumn
+																{
+																	name =
+																			mappings.NamingStrategy.PropertyToColumnName(
+																			RootClass.DefaultDiscriminatorColumnName),
+																	length = discriminatorSchema.length,
+																	notnull = discriminatorSchema.notnull,
+																	notnullSpecified = true
+																});
 			}
 		}
 	}

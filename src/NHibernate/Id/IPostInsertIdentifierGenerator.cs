@@ -1,5 +1,5 @@
-using NHibernate.Id.Insert;
 using NHibernate.Engine;
+using NHibernate.Id.Insert;
 
 namespace NHibernate.Id
 {

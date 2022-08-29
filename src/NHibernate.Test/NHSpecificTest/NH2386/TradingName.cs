@@ -5,40 +5,46 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH2386
 {
-   /// <summary>
-    /// represents a trading name for an organisation
-    /// </summary>
-    public class TradingName  {
-        private Organisation organisation;
-        
-        public virtual Guid TradingNameId { get; protected set; }
+	/// <summary>
+	/// represents a trading name for an organisation
+	/// </summary>
+	public class TradingName
+	{
+		private Organisation organisation;
 
-        public TradingName(Organisation organisation)  {
-            if (organisation == null) {
-                throw new ArgumentNullException("organisation");
-            }
-            this.organisation = organisation;
-        }
+		public virtual Guid TradingNameId { get; protected set; }
 
-        protected TradingName()  {}
+		public TradingName(Organisation organisation)
+		{
+			if (organisation == null)
+			{
+				throw new ArgumentNullException("organisation");
+			}
+			this.organisation = organisation;
+		}
 
-        public virtual string Name { get; set; }
+		protected TradingName() { }
 
-        public virtual Organisation Organisation {
-            get { return organisation; }
-            protected set { organisation = value; }
-        }
+		public virtual string Name { get; set; }
 
-        public virtual DateTime StartDate { get; set; }
-        
-        public virtual DateTime? EndDate { get; set; }
+		public virtual Organisation Organisation
+		{
+			get { return organisation; }
+			protected set { organisation = value; }
+		}
 
-        private bool ShouldSerializeEndDate() {
-            return EndDate.HasValue;
-        }
+		public virtual DateTime StartDate { get; set; }
 
-        public override string ToString() {
-            return Name;
-        }
+		public virtual DateTime? EndDate { get; set; }
+
+		private bool ShouldSerializeEndDate()
+		{
+			return EndDate.HasValue;
+		}
+
+		public override string ToString()
+		{
+			return Name;
+		}
 	}
 }

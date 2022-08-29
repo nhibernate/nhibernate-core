@@ -9,8 +9,8 @@ namespace NHibernate.Proxy.Map
 	[Serializable]
 	public class MapLazyInitializer : AbstractLazyInitializer
 	{
-		public MapLazyInitializer(string entityName, object id, ISessionImplementor session) 
-			: base(entityName, id, session) {}
+		public MapLazyInitializer(string entityName, object id, ISessionImplementor session)
+			: base(entityName, id, session) { }
 
 		public IDictionary Map
 		{

@@ -22,7 +22,7 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="T">The type of the element the list should hold.</typeparam>
 	/// <remarks>The underlying collection used is a <see cref="List{T}"/></remarks>
 	[Serializable]
-	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
+	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
 	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IReadOnlyList<T>, IList, IQueryable<T>
 	{
 		protected IList<T> WrappedList;
@@ -32,14 +32,14 @@ namespace NHibernate.Collection.Generic
 			get { return default(T); }
 		}
 
-		public PersistentGenericList() {}
+		public PersistentGenericList() { }
 
 		/// <summary>
 		/// Initializes an instance of the <see cref="PersistentGenericList&lt;T&gt;"/>
 		/// in the <paramref name="session"/>.
 		/// </summary>
 		/// <param name="session">The <see cref="ISessionImplementor"/> the list is in.</param>
-		public PersistentGenericList(ISessionImplementor session) : base(session) {}
+		public PersistentGenericList(ISessionImplementor session) : base(session) { }
 
 		/// <summary>
 		/// Initializes an instance of the <see cref="PersistentGenericList&lt;T&gt;"/>
@@ -65,7 +65,7 @@ namespace NHibernate.Collection.Generic
 			var clonedList = new List<T>(WrappedList.Count);
 			foreach (T current in WrappedList)
 			{
-				var deepCopy = (T)persister.ElementType.DeepCopy(current, persister.Factory);
+				var deepCopy = (T) persister.ElementType.DeepCopy(current, persister.Factory);
 				clonedList.Add(deepCopy);
 			}
 
@@ -74,8 +74,8 @@ namespace NHibernate.Collection.Generic
 
 		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
-			var sn = (IList<T>)snapshot;
-			return GetOrphans((ICollection)sn, (ICollection) WrappedList, entityName, Session);
+			var sn = (IList<T>) snapshot;
+			return GetOrphans((ICollection) sn, (ICollection) WrappedList, entityName, Session);
 		}
 
 		public override bool EqualsSnapshot(ICollectionPersister persister)
@@ -98,7 +98,7 @@ namespace NHibernate.Collection.Generic
 
 		public override bool IsSnapshotEmpty(object snapshot)
 		{
-			return ((ICollection)snapshot).Count == 0;
+			return ((ICollection) snapshot).Count == 0;
 		}
 
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
@@ -131,8 +131,8 @@ namespace NHibernate.Collection.Generic
 
 		public override object ReadFrom(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner)
 		{
-			var element = (T)role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
-			int index = (int)role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);
+			var element = (T) role.ReadElement(rs, owner, descriptor.SuffixedElementAliases, Session);
+			int index = (int) role.ReadIndex(rs, descriptor.SuffixedIndexAliases, Session);
 
 			//pad with nulls from the current last element up to the new index
 			for (int i = WrappedList.Count; i <= index; i++)
@@ -157,7 +157,7 @@ namespace NHibernate.Collection.Generic
 		/// <param name="owner">The owner object.</param>
 		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
-			object[] array = (object[])disassembled;
+			object[] array = (object[]) disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i++)
@@ -181,7 +181,7 @@ namespace NHibernate.Collection.Generic
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			IList deletes = new List<object>();
-			var sn = (IList<T>)GetSnapshot();
+			var sn = (IList<T>) GetSnapshot();
 			int end;
 			if (sn.Count > WrappedList.Count)
 			{
@@ -207,13 +207,13 @@ namespace NHibernate.Collection.Generic
 
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			var sn = (IList<T>)GetSnapshot();
+			var sn = (IList<T>) GetSnapshot();
 			return WrappedList[i] != null && (i >= sn.Count || sn[i] == null);
 		}
 
 		public override bool NeedsUpdating(object entry, int i, IType elemType)
 		{
-			var sn = (IList<T>)GetSnapshot();
+			var sn = (IList<T>) GetSnapshot();
 			return i < sn.Count && sn[i] != null && WrappedList[i] != null && elemType.IsDirty(WrappedList[i], sn[i], Session);
 		}
 
@@ -229,7 +229,7 @@ namespace NHibernate.Collection.Generic
 
 		public override object GetSnapshotElement(object entry, int i)
 		{
-			var sn = (IList<T>)GetSnapshot();
+			var sn = (IList<T>) GetSnapshot();
 			return sn[i];
 		}
 
@@ -245,7 +245,7 @@ namespace NHibernate.Collection.Generic
 			if (!IsOperationQueueEnabled)
 			{
 				Write();
-				return ((IList)WrappedList).Add(value);
+				return ((IList) WrappedList).Add(value);
 			}
 
 			var val = (T) value;
@@ -476,7 +476,8 @@ namespace NHibernate.Collection.Generic
 			WrappedList.CopyTo(array, arrayIndex);
 		}
 
-		bool ICollection<T>.IsReadOnly {
+		bool ICollection<T>.IsReadOnly
+		{
 			get { return false; }
 		}
 

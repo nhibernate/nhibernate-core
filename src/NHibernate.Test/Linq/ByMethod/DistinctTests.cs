@@ -25,7 +25,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			//NH-2380
 			var result = db.Orders
-				.Select(x => new {x.ShippingDate})
+				.Select(x => new { x.ShippingDate })
 				.Distinct()
 				.ToArray();
 
@@ -57,10 +57,10 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-2380
 			var result = db.Orders
 				.Select(x => new
-								 {
-									 x.ShippingDate,
-									 x.OrderDate
-								 })
+				{
+					x.ShippingDate,
+					x.OrderDate
+				})
 				.Distinct()
 				.ToArray();
 
@@ -73,9 +73,9 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-2486
 			OrderDto[] result = db.Orders
 				.Select(x => new OrderDto
-								 {
-									 ShippingDate = x.ShippingDate
-								 })
+				{
+					ShippingDate = x.ShippingDate
+				})
 				.Distinct()
 				.ToArray();
 
@@ -88,10 +88,10 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-2486
 			OrderDto[] result = db.Orders
 				.Select(x => new OrderDto
-								 {
-									 ShippingDate = x.ShippingDate,
-									 OrderDate = x.OrderDate
-								 })
+				{
+					ShippingDate = x.ShippingDate,
+					OrderDate = x.OrderDate
+				})
 				.Distinct()
 				.ToArray();
 
@@ -148,19 +148,19 @@ namespace NHibernate.Test.Linq.ByMethod
 				() =>
 				{
 					OrderDto[] result = db.Orders
-					                      .Select(
-						                      x => new OrderDto
-						                      {
-							                      ShippingDate = x.ShippingDate,
+										  .Select(
+											  x => new OrderDto
+											  {
+												  ShippingDate = x.ShippingDate,
 												  // As of 2012-01-25, AddMonths() is executed locally.
 												  OrderDate = x.OrderDate.Value.AddMonths(5),
-						                      })
-					                      .Distinct()
-					                      .ToArray();
+											  })
+										  .Distinct()
+										  .ToArray();
 				},
 				Throws.TypeOf<NotSupportedException>()
-				      .And.Message.EqualTo(
-					      "Cannot use distinct on result that depends on methods for which no SQL equivalent exist."));
+					  .And.Message.EqualTo(
+						  "Cannot use distinct on result that depends on methods for which no SQL equivalent exist."));
 		}
 	}
 }

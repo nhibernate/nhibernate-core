@@ -14,7 +14,7 @@ namespace NHibernate.Dialect.Function
 		[Obsolete("Use GetReturnType method instead.")]
 		public override IType ReturnType(IType columnType, IMapping mapping)
 		{
-			return GetReturnType(new[] {columnType}, mapping, true);
+			return GetReturnType(new[] { columnType }, mapping, true);
 		}
 
 		/// <inheritdoc />

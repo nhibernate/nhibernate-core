@@ -15,8 +15,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			{
 				throw new ArgumentNullException("explicitDeclarationsHolder");
 			}
-			explicitDeclarationsHolder.AddAsTablePerClassHierarchyEntity(typeof (TEntity));
-			
+			explicitDeclarationsHolder.AddAsTablePerClassHierarchyEntity(typeof(TEntity));
+
 			// Add an empty customizer as a way to register the class as explicity declared
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => { });
 		}
@@ -39,7 +39,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void DiscriminatorValue(object value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.DiscriminatorValue(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.DiscriminatorValue(value));
 		}
 
 		public void Filter(string filterName, Action<IFilterMapper> filterMapping)
@@ -72,42 +72,42 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void EntityName(string value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.EntityName(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.EntityName(value));
 		}
 
 		public void Proxy(System.Type proxy)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.Proxy(proxy));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.Proxy(proxy));
 		}
 
 		public void Lazy(bool value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.Lazy(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.Lazy(value));
 		}
 
 		public void DynamicUpdate(bool value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.DynamicUpdate(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.DynamicUpdate(value));
 		}
 
 		public void DynamicInsert(bool value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.DynamicInsert(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.DynamicInsert(value));
 		}
 
 		public void BatchSize(int value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.BatchSize(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.BatchSize(value));
 		}
 
 		public void SelectBeforeUpdate(bool value)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.SelectBeforeUpdate(value));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.SelectBeforeUpdate(value));
 		}
 
 		public void Persister<T>() where T : IEntityPersister
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.Persister<T>());
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.Persister<T>());
 		}
 
 		public void Synchronize(params string[] table)
@@ -121,12 +121,12 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Loader(string namedQueryReference)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.Loader(namedQueryReference));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.Loader(namedQueryReference));
 		}
 
 		public void SqlInsert(string sql)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.SqlInsert(sql));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.SqlInsert(sql));
 		}
 
 		public void SqlInsert(string sql, SqlCheck sqlCheck)
@@ -136,7 +136,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void SqlUpdate(string sql)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.SqlUpdate(sql));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.SqlUpdate(sql));
 		}
 
 		public void SqlUpdate(string sql, SqlCheck sqlCheck)
@@ -146,7 +146,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void SqlDelete(string sql)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.SqlDelete(sql));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.SqlDelete(sql));
 		}
 
 		public void SqlDelete(string sql, SqlCheck sqlCheck)
@@ -156,7 +156,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Subselect(string sql)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (ISubclassMapper m) => m.Subselect(sql));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (ISubclassMapper m) => m.Subselect(sql));
 		}
 
 		#endregion

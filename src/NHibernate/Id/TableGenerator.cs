@@ -36,7 +36,7 @@ namespace NHibernate.Id
 	/// </remarks>
 	public partial class TableGenerator : TransactionHelper, IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (TableGenerator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(TableGenerator));
 
 		/// <summary>
 		/// An additional where clause that is added to 
@@ -126,7 +126,7 @@ namespace NHibernate.Id
 				columnSqlType = SqlTypeFactory.Int32;
 			}
 
-			parameterTypes = new[] {columnSqlType, columnSqlType};
+			parameterTypes = new[] { columnSqlType, columnSqlType };
 
 			var builder = new SqlStringBuilder(100);
 			builder.Add("update " + tableName + " set ")
@@ -197,7 +197,7 @@ namespace NHibernate.Id
 		/// </returns>
 		public virtual string[] SqlDropString(Dialect.Dialect dialect)
 		{
-			return new[] {dialect.GetDropTableString(tableName)};
+			return new[] { dialect.GetDropTableString(tableName) };
 		}
 
 		/// <summary>
@@ -235,8 +235,8 @@ namespace NHibernate.Id
 					rs = qps.ExecuteReader();
 					if (!rs.Read())
 					{
-						var errFormat = string.IsNullOrEmpty(whereClause) 
-							? "could not read a hi value - you need to populate the table: {0}" 
+						var errFormat = string.IsNullOrEmpty(whereClause)
+							? "could not read a hi value - you need to populate the table: {0}"
 							: "could not read a hi value from table '{0}' using the where clause ({1})- you need to populate the table.";
 						log.Error(errFormat, tableName, whereClause);
 						throw new IdentifierGenerationException(string.Format(errFormat, tableName, whereClause));

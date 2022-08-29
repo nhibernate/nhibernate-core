@@ -21,7 +21,7 @@ namespace NHibernate.Test.Linq
 		{
 			get { return "NHibernate.DomainModel"; }
 		}
-		
+
 		private IEnumerable<string> Mappings
 		{
 			get
@@ -98,11 +98,11 @@ namespace NHibernate.Test.Linq
 			else
 			{
 				using (var sf = configuration.BuildSessionFactory())
-					TestCase.DropSchema(false, new SchemaExport(configuration), (ISessionFactoryImplementor)sf);
+					TestCase.DropSchema(false, new SchemaExport(configuration), (ISessionFactoryImplementor) sf);
 			}
 		}
 
-		private string GetScripFileName(Configuration configuration,string postFix)
+		private string GetScripFileName(Configuration configuration, string postFix)
 		{
 			var dialect = Dialect.Dialect.GetDialect(configuration.Properties);
 			return Path.Combine(TestContext.CurrentContext.TestDirectory, "DbScripts", dialect.GetType().Name + postFix + ".sql");
@@ -114,7 +114,7 @@ namespace NHibernate.Test.Linq
 			if (TestConfigurationHelper.hibernateConfigFile != null)
 				configuration.Configure(TestConfigurationHelper.hibernateConfigFile);
 
-			configuration.SetProperty(Environment.ConnectionProvider, typeof (DriverConnectionProvider).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.ConnectionProvider, typeof(DriverConnectionProvider).AssemblyQualifiedName);
 
 			Assembly assembly = Assembly.Load(MappingsAssembly);
 

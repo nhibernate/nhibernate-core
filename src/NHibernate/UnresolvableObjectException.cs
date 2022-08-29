@@ -28,7 +28,7 @@ namespace NHibernate
 		}
 
 		public UnresolvableObjectException(object identifier, string entityName)
-			:this("No row with the given identifier exists", identifier, entityName) { }
+			: this("No row with the given identifier exists", identifier, entityName) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UnresolvableObjectException"/> class.
@@ -67,10 +67,10 @@ namespace NHibernate
 
 		public string EntityName
 		{
-			get 
+			get
 			{
 				if (clazz != null) return clazz.FullName;
-				return entityName; 
+				return entityName;
 			}
 		}
 

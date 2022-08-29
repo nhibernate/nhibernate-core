@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
+using System.Runtime.Serialization;
 using NHibernate.Bytecode;
+using NHibernate.Bytecode.Lightweight;
 using NHibernate.Classic;
 using NHibernate.Engine;
 using NHibernate.Mapping;
@@ -10,8 +11,6 @@ using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Runtime.Serialization;
-using NHibernate.Bytecode.Lightweight;
 
 namespace NHibernate.Tuple.Entity
 {
@@ -38,7 +37,7 @@ namespace NHibernate.Tuple.Entity
 			if (optimizer != null)
 			{
 				// Also set the InstantiationOptimizer on the deserialized PocoInstantiator.
-				((PocoInstantiator)Instantiator).SetOptimizer(optimizer.InstantiationOptimizer);
+				((PocoInstantiator) Instantiator).SetOptimizer(optimizer.InstantiationOptimizer);
 			}
 
 			ClearOptimizerWhenUsingCustomAccessors();
@@ -112,7 +111,7 @@ namespace NHibernate.Tuple.Entity
 
 			// determine the id getter and setter methods from the proxy interface (if any)
 			// determine all interfaces needed by the resulting proxy
-			var proxyInterfaces = new HashSet<System.Type> {typeof (INHibernateProxy)};
+			var proxyInterfaces = new HashSet<System.Type> { typeof(INHibernateProxy) };
 
 			System.Type _mappedClass = persistentClass.MappedClass;
 			System.Type _proxyInterface = persistentClass.ProxyInterface;
@@ -204,13 +203,13 @@ namespace NHibernate.Tuple.Entity
 				if (!proxyValidator.IsProxeable(method))
 				{
 					log.Error("Getters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName,
-						              property.Name);
+									  property.Name);
 				}
 				method = property.GetSetter(clazz).Method;
 				if (!proxyValidator.IsProxeable(method))
 				{
 					log.Error("Setters of lazy classes cannot be final: {0}.{1}", persistentClass.MappedClass.FullName,
-						              property.Name);
+									  property.Name);
 				}
 			}
 		}
@@ -336,7 +335,7 @@ namespace NHibernate.Tuple.Entity
 			catch (InvalidCastException e)
 			{
 				throw new PropertyAccessException(e, "Invalid Cast (check your mapping for property type mismatches);", true,
-				                                  entity.GetType());
+												  entity.GetType());
 			}
 		}
 

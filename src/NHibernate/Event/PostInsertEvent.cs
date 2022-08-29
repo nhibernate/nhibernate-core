@@ -10,7 +10,7 @@ namespace NHibernate.Event
 	public class PostInsertEvent : AbstractPostDatabaseOperationEvent
 	{
 		public PostInsertEvent(object entity, object id, object[] state, IEntityPersister persister, IEventSource source)
-			: base(source, entity,id,persister)
+			: base(source, entity, id, persister)
 		{
 			State = state;
 		}

@@ -1,5 +1,5 @@
-using NHibernate.Util;
 using System;
+using NHibernate.Util;
 
 namespace NHibernate.Cfg
 {

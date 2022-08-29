@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1492
 				s.EnableFilter("excludeDeletedRows").SetParameter("deleted", "Y");
 
 				IQuery q = s.CreateQuery("FROM ChildEntity c WHERE c.Parent.Code = :parentCode").SetParameter("parentCode", 2);
-				childs=	q.List<ChildEntity>();
+				childs = q.List<ChildEntity>();
 			}
 			Assert.AreEqual(1, childs.Count);
 

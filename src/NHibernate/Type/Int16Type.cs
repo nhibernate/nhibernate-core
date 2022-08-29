@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
-using System.Collections.Generic;
-using System.Data;
 
 namespace NHibernate.Type
 {
@@ -87,12 +87,12 @@ namespace NHibernate.Type
 
 		public virtual object Next(object current, ISessionImplementor session)
 		{
-			return (Int16)((Int16)current + 1);
+			return (Int16) ((Int16) current + 1);
 		}
 
 		public virtual object Seed(ISessionImplementor session)
 		{
-			return (Int16)1;
+			return (Int16) 1;
 		}
 
 		public IComparer Comparator
@@ -104,7 +104,7 @@ namespace NHibernate.Type
 
 		public override System.Type PrimitiveClass
 		{
-			get { return typeof (Int16); }
+			get { return typeof(Int16); }
 		}
 
 		public override object DefaultValue

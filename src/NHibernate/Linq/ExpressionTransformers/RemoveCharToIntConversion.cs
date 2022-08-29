@@ -53,12 +53,12 @@ namespace NHibernate.Linq.ExpressionTransformers
 
 			if (!lhsIsConstantExpression && !rhsIsConstantExpression) return expression;
 
-			var convertExpression = lhsIsConvertExpression ? (UnaryExpression)lhs : (UnaryExpression)rhs;
-			var constantExpression = lhsIsConstantExpression ? (ConstantExpression)lhs : (ConstantExpression)rhs;
+			var convertExpression = lhsIsConvertExpression ? (UnaryExpression) lhs : (UnaryExpression) rhs;
+			var constantExpression = lhsIsConstantExpression ? (ConstantExpression) lhs : (ConstantExpression) rhs;
 
 			if (IsConvertCharToInt(convertExpression) && constantExpression.Type == typeof(int))
 			{
-				var constant = Expression.Constant(Convert.ToChar((int)constantExpression.Value));
+				var constant = Expression.Constant(Convert.ToChar((int) constantExpression.Value));
 
 				if (rhsIsConstantExpression)
 					return Expression.MakeBinary(expression.NodeType, convertExpression.Operand, constant);

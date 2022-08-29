@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using NHibernate.Engine;
-using NHibernate.Linq.Functions;
 using NHibernate.Linq.Expressions;
+using NHibernate.Linq.Functions;
 using NHibernate.Param;
 using NHibernate.Util;
 using Remotion.Linq.Parsing;
@@ -131,10 +131,10 @@ namespace NHibernate.Linq.Visitors
 				}
 			}
 			else if (expression is NhSumExpression ||
-			         expression is NhCountExpression ||
-			         expression is NhAverageExpression ||
-			         expression is NhMaxExpression ||
-			         expression is NhMinExpression)
+					 expression is NhCountExpression ||
+					 expression is NhAverageExpression ||
+					 expression is NhMaxExpression ||
+					 expression is NhMinExpression)
 			{
 				return true;
 			}
@@ -144,8 +144,8 @@ namespace NHibernate.Linq.Visitors
 		private bool CanBeEvaluatedInHqlSelectStatement(Expression expression, bool projectConstantsInHql)
 		{
 			// HQL can't do New or Member Init
-			if (expression.NodeType == ExpressionType.MemberInit || 
-				expression.NodeType == ExpressionType.New || 
+			if (expression.NodeType == ExpressionType.MemberInit ||
+				expression.NodeType == ExpressionType.New ||
 				expression.NodeType == ExpressionType.NewArrayInit ||
 				expression.NodeType == ExpressionType.NewArrayBounds)
 			{
@@ -155,7 +155,7 @@ namespace NHibernate.Linq.Visitors
 			// Constants will only be evaluated in HQL if they're inside a method call
 			if (expression.NodeType == ExpressionType.Constant)
 			{
-				if (!projectConstantsInHql && _parameters.ConstantToParameterMap.ContainsKey((ConstantExpression)expression))
+				if (!projectConstantsInHql && _parameters.ConstantToParameterMap.ContainsKey((ConstantExpression) expression))
 				{
 					_parameters.CanCachePlan = false;
 				}
@@ -180,9 +180,9 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			return !(expression is MemberExpression memberExpression) || // Assume all is good
-			       // Nominate only expressions that represent a mapped property or a translatable method call
-			       ExpressionsHelper.TryGetMappedType(_sessionFactory, expression, out _, out _, out _, out _) ||
-			       _functionRegistry.TryGetGenerator(memberExpression.Member, out _);
+																		 // Nominate only expressions that represent a mapped property or a translatable method call
+				   ExpressionsHelper.TryGetMappedType(_sessionFactory, expression, out _, out _, out _, out _) ||
+				   _functionRegistry.TryGetGenerator(memberExpression.Member, out _);
 		}
 
 		private static bool CanBeEvaluatedInHqlStatementShortcut(Expression expression)

@@ -19,7 +19,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		[Test]
 		public void WhenPropertyVersionFromBaseEntityThenFindItAsVersion()
 		{
-			var inspector = (IModelInspector)new SimpleModelInspector();
+			var inspector = (IModelInspector) new SimpleModelInspector();
 			var mapper = new ModelMapper(inspector);
 			mapper.Class<BaseEntity>(
 				map =>

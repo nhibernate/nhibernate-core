@@ -24,7 +24,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public void EmptySumCastNullableDecimal()
 		{
-			decimal total = db.OrderLines.Where(ol => false).Sum(ol => (decimal?)ol.Discount) ?? 0;
+			decimal total = db.OrderLines.Where(ol => false).Sum(ol => (decimal?) ol.Discount) ?? 0;
 			Assert.AreEqual(0, total);
 		}
 

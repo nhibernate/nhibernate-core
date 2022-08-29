@@ -150,8 +150,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3813
 				var other1 = new OtherTable();
 				var other2 = new OtherTable();
 
-				var assoc1 = new AssociationTable() {OtherTable = other1, FirstTable = withAssociations};
-				var assoc2 = new AssociationTable() {OtherTable = other2, FirstTable = withAssociations};
+				var assoc1 = new AssociationTable() { OtherTable = other1, FirstTable = withAssociations };
+				var assoc2 = new AssociationTable() { OtherTable = other2, FirstTable = withAssociations };
 
 				withAssociations.AssociationTableCollection.Add(assoc1);
 				withAssociations.AssociationTableCollection.Add(assoc2);

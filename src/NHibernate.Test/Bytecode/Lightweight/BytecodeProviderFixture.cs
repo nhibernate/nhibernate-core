@@ -2,7 +2,7 @@ using System;
 using NHibernate.Bytecode;
 using NHibernate.Bytecode.Lightweight;
 using NUnit.Framework;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Bytecode.Lightweight
 {
@@ -62,7 +62,7 @@ namespace NHibernate.Test.Bytecode.Lightweight
 			}
 			catch (HibernateByteCodeException e)
 			{
-				Assert.That(e.Message,Does.StartWith("Failed to create an instance of"));
+				Assert.That(e.Message, Does.StartWith("Failed to create an instance of"));
 			}
 		}
 
@@ -94,9 +94,9 @@ namespace NHibernate.Test.Bytecode.Lightweight
 			Assert.Throws<HibernateByteCodeException>(() => bcp.SetCollectionTypeFactoryClass(GetType()), "should allow only ICollectionTypeFactory type");
 		}
 
-		private class NoDefaultCtor: Type.DefaultCollectionTypeFactory
+		private class NoDefaultCtor : Type.DefaultCollectionTypeFactory
 		{
-			public NoDefaultCtor(int something) {}
+			public NoDefaultCtor(int something) { }
 		}
 
 		[Test]
@@ -104,7 +104,7 @@ namespace NHibernate.Test.Bytecode.Lightweight
 		{
 			ICollectionTypeFactory ctf;
 			var bcp = new BytecodeProviderImpl();
-			bcp.SetCollectionTypeFactoryClass(typeof (NoDefaultCtor));
+			bcp.SetCollectionTypeFactoryClass(typeof(NoDefaultCtor));
 			Assert.Throws<HibernateByteCodeException>(() => ctf = bcp.CollectionTypeFactory);
 		}
 
@@ -114,7 +114,7 @@ namespace NHibernate.Test.Bytecode.Lightweight
 			ICollectionTypeFactory ctf;
 			var bcp = new BytecodeProviderImpl();
 			ctf = bcp.CollectionTypeFactory; // initialize the instance
-			// try to set it
+											 // try to set it
 			Assert.Throws<InvalidOperationException>(() => bcp.SetCollectionTypeFactoryClass(typeof(CustomCollectionTypeFactory)));
 		}
 
@@ -152,7 +152,7 @@ namespace NHibernate.Test.Bytecode.Lightweight
 			ICollectionTypeFactory ctf;
 			var bcp = new BytecodeProviderImpl();
 			ctf = bcp.CollectionTypeFactory; // initialize the instance
-			Assert.DoesNotThrow(() => bcp.SetCollectionTypeFactoryClass(typeof (Type.DefaultCollectionTypeFactory)));
+			Assert.DoesNotThrow(() => bcp.SetCollectionTypeFactoryClass(typeof(Type.DefaultCollectionTypeFactory)));
 		}
 	}
 }

@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 	{
 		public SqlType[] SqlTypes
 		{
-			get { return new[] {new SqlType(DbType.String)}; }
+			get { return new[] { new SqlType(DbType.String) }; }
 		}
 
 		public System.Type ReturnedType

@@ -33,14 +33,14 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var mapper = new ModelMapper();
 			mapper.Class<MyClass>(x =>
 								  {
-									x.Id(c => c.Id);
-									x.Component(c => c.Compo);
-									x.Bag(c => c.Compos, cm => { });
+									  x.Id(c => c.Id);
+									  x.Component(c => c.Compo);
+									  x.Bag(c => c.Compos, cm => { });
 								  });
 			mapper.Component<MyCompo>(x =>
 									  {
-										x.ManyToOne(c => c.AManyToOne);
-										x.Component(c => c.NestedCompo);
+										  x.ManyToOne(c => c.AManyToOne);
+										  x.Component(c => c.NestedCompo);
 									  });
 			mapper.Component<MyNestedCompo>(x =>
 											{
@@ -94,7 +94,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmClass = mapping.RootClasses[0];
 			var hbmBag = hbmClass.Properties.OfType<HbmBag>().Single();
 
-			var hbmMyCompo = (HbmCompositeElement)hbmBag.ElementRelationship;
+			var hbmMyCompo = (HbmCompositeElement) hbmBag.ElementRelationship;
 			var hbmMyNestedCompo = hbmMyCompo.Properties.OfType<HbmNestedCompositeElement>().Single();
 
 			Assert.That(hbmMyNestedCompo.Properties.Count(), Is.EqualTo(1));
@@ -121,7 +121,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmClass = mapping.RootClasses[0];
 			var hbmBag = hbmClass.Properties.OfType<HbmBag>().Single();
 
-			var hbmMyCompo = (HbmCompositeElement)hbmBag.ElementRelationship;
+			var hbmMyCompo = (HbmCompositeElement) hbmBag.ElementRelationship;
 			Assert.That(hbmMyCompo.Properties.OfType<HbmManyToOne>().Count(), Is.EqualTo(1));
 			Assert.That(hbmMyCompo.Parent, Is.Null);
 		}
@@ -146,7 +146,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmClass = mapping.RootClasses[0];
 			var hbmBag = hbmClass.Properties.OfType<HbmBag>().Single();
 
-			var hbmMyCompo = (HbmCompositeElement)hbmBag.ElementRelationship;
+			var hbmMyCompo = (HbmCompositeElement) hbmBag.ElementRelationship;
 			Assert.That(hbmMyCompo.Properties.OfType<HbmManyToOne>(), Is.Empty);
 			Assert.That(hbmMyCompo.Parent, Is.Not.Null);
 			Assert.That(hbmMyCompo.Parent.name, Is.EqualTo("AManyToOne"));

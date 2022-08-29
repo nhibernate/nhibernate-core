@@ -17,7 +17,7 @@ namespace NHibernate.Hql
 			string[][] columnNames = new string[types.Length][];
 			for (int i = 0; i < types.Length; i++)
 			{
-                int span = types[i] != null ? types[i].GetColumnSpan(f) : 1;
+				int span = types[i] != null ? types[i].GetColumnSpan(f) : 1;
 				columnNames[i] = new string[span];
 				for (int j = 0; j < span; j++)
 				{

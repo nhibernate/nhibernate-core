@@ -30,7 +30,7 @@ namespace NHibernate.Test.Linq
 			using (session.BeginTransaction())
 			{
 				var result = (from e in db.Customers
-				              select e).WithLock(LockMode.Upgrade).ToList();
+							  select e).WithLock(LockMode.Upgrade).ToList();
 
 				Assert.That(result, Has.Count.EqualTo(91));
 				Assert.That(session.GetCurrentLockMode(result[0]), Is.EqualTo(LockMode.Upgrade));
@@ -44,7 +44,7 @@ namespace NHibernate.Test.Linq
 			using (session.BeginTransaction())
 			{
 				var result = (from e in db.Customers.WithLock(LockMode.Upgrade)
-				              select e).ToList();
+							  select e).ToList();
 
 				Assert.That(result, Has.Count.EqualTo(91));
 				Assert.That(session.GetCurrentLockMode(result[0]), Is.EqualTo(LockMode.Upgrade));
@@ -70,8 +70,8 @@ namespace NHibernate.Test.Linq
 			using (session.BeginTransaction())
 			{
 				var result = (from c in db.Customers
-				              from o in c.Orders.WithLock(LockMode.Upgrade)
-				              select o).ToList();
+							  from o in c.Orders.WithLock(LockMode.Upgrade)
+							  select o).ToList();
 
 				Assert.That(result, Has.Count.EqualTo(830));
 				Assert.That(session.GetCurrentLockMode(result[0]), Is.EqualTo(LockMode.Upgrade));
@@ -84,8 +84,8 @@ namespace NHibernate.Test.Linq
 			using (session.BeginTransaction())
 			{
 				var result = (from c in db.Customers
-				              from o in c.Orders
-				              select o).WithLock(LockMode.Upgrade).ToList();
+							  from o in c.Orders
+							  select o).WithLock(LockMode.Upgrade).ToList();
 
 				Assert.That(result, Has.Count.EqualTo(830));
 				Assert.That(session.GetCurrentLockMode(result[0]), Is.EqualTo(LockMode.Upgrade));
@@ -100,7 +100,7 @@ namespace NHibernate.Test.Linq
 				var query = (
 					from c in db.Customers
 					from o in c.Orders
-					select new {o, c}
+					select new { o, c }
 				).WithLock(LockMode.Upgrade);
 
 				Assert.Throws<NotSupportedException>(() => query.ToList());
@@ -128,7 +128,7 @@ namespace NHibernate.Test.Linq
 				var result = (
 					from c in db.Customers.WithLock(LockMode.Upgrade)
 					from o in c.Orders.WithLock(LockMode.Upgrade)
-					select new {o, c}
+					select new { o, c }
 				).ToList();
 
 				Assert.That(result, Has.Count.EqualTo(830));
@@ -145,7 +145,7 @@ namespace NHibernate.Test.Linq
 				var result = (
 					from c in db.Customers.Where(x => true).WithLock(LockMode.Upgrade)
 					from o in c.Orders.Where(x => true).WithLock(LockMode.Upgrade)
-					select new {o, c}
+					select new { o, c }
 				).ToList();
 
 				Assert.That(result, Has.Count.EqualTo(830));
@@ -161,7 +161,7 @@ namespace NHibernate.Test.Linq
 			using (session.BeginTransaction())
 			{
 				var result = (from e in db.Customers
-				              select e).Skip(5).Take(5).WithLock(LockMode.Upgrade).ToList();
+							  select e).Skip(5).Take(5).WithLock(LockMode.Upgrade).ToList();
 
 				Assert.That(result, Has.Count.EqualTo(5));
 				Assert.That(session.GetCurrentLockMode(result[0]), Is.EqualTo(LockMode.Upgrade));
@@ -177,13 +177,13 @@ namespace NHibernate.Test.Linq
 			using (session.BeginTransaction())
 			{
 				var result = (from e in db.Customers
-				              orderby e.CompanyName
-				              select e)
-				             .WithLock(LockMode.Upgrade).Skip(5).Take(5).ToList();
+							  orderby e.CompanyName
+							  select e)
+							 .WithLock(LockMode.Upgrade).Skip(5).Take(5).ToList();
 
 				Assert.That(result, Has.Count.EqualTo(5));
 				Assert.That(session.GetCurrentLockMode(result[0]), Is.EqualTo(LockMode.Upgrade));
-			
+
 				AssertSeparateTransactionIsLockedOut(result[0].CustomerId);
 			}
 		}

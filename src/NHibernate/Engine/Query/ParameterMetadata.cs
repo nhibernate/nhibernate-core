@@ -13,7 +13,7 @@ namespace NHibernate.Engine.Query
 		private readonly OrdinalParameterDescriptor[] ordinalDescriptors;
 
 		public ParameterMetadata(IEnumerable<OrdinalParameterDescriptor> ordinalDescriptors,
-		                         IDictionary<string, NamedParameterDescriptor> namedDescriptorMap)
+								 IDictionary<string, NamedParameterDescriptor> namedDescriptorMap)
 		{
 			this.ordinalDescriptors = ordinalDescriptors == null ? Array.Empty<OrdinalParameterDescriptor>() : ordinalDescriptors.ToArray();
 

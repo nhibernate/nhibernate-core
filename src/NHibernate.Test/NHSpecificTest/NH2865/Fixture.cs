@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NHibernate.Linq;
 using NUnit.Framework;
-using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2865
 {
@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2865
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var e1 = new OrderLine {Quantity = "2"};
+				var e1 = new OrderLine { Quantity = "2" };
 				session.Save(e1);
 
 				var e2 = new OrderLine { Quantity = "3" };

@@ -21,7 +21,7 @@ namespace NHibernate.Test.ExceptionsTest
 					return new SQLGrammarException(exInfo.Message, sqle.InnerException, exInfo.Sql);
 			}
 
-			if(dbEx is Microsoft.Data.SqlClient.SqlException msSqle)
+			if (dbEx is Microsoft.Data.SqlClient.SqlException msSqle)
 			{
 				if (msSqle.Number == 547)
 					return new ConstraintViolationException(exInfo.Message, msSqle.InnerException, exInfo.Sql, null);

@@ -10,17 +10,17 @@ namespace NHibernate.Test.NHSpecificTest.NH2100
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ConventionModelMapper();
-			System.Type baseEntityType = typeof (DomainObject);
+			System.Type baseEntityType = typeof(DomainObject);
 			mapper.IsEntity((t, declared) => baseEntityType.IsAssignableFrom(t) && baseEntityType != t);
 			mapper.IsRootEntity((t, declared) => baseEntityType == t.BaseType);
 			mapper.Class<DomainObject>(r =>
 									   {
-										r.Version(x => x.EntityVersion, map => { });
-										r.Id(x => x.ID, map => map.Generator(Generators.Native));
+										   r.Version(x => x.EntityVersion, map => { });
+										   r.Id(x => x.ID, map => map.Generator(Generators.Native));
 									   });
 			mapper.Class<Class1>(r => r.IdBag(x => x.Class2List, map => map.Inverse(true), rel => rel.ManyToMany()));
 			mapper.Class<Class2>(r => r.IdBag<Class1>("_class1List", map => map.Table("Class1List"), rel => rel.ManyToMany()));
-			HbmMapping mappings = mapper.CompileMappingFor(new[] {typeof (Class1), typeof (Class2)});
+			HbmMapping mappings = mapper.CompileMappingFor(new[] { typeof(Class1), typeof(Class2) });
 			return mappings;
 		}
 
@@ -65,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2100
 					s.Refresh(c1_2);
 
 					var class1dto =
-						new Class1DTO {ID = c1_1.ID, EntityVersion = c1_1.EntityVersion};
+						new Class1DTO { ID = c1_1.ID, EntityVersion = c1_1.EntityVersion };
 
 					if (c1_1.Class2List.Count > 0)
 					{
@@ -73,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2100
 						for (int i = 0; i < c1_1.Class2List.Count; ++i)
 						{
 							Class2 cl2 = c1_1.Class2List[i];
-							class1dto.Class2Ary[i] = new Class2DTO {ID = cl2.ID, EntityVersion = cl2.EntityVersion};
+							class1dto.Class2Ary[i] = new Class2DTO { ID = cl2.ID, EntityVersion = cl2.EntityVersion };
 						}
 					}
 

@@ -19,8 +19,8 @@ namespace NHibernate.Loader.Collection
 		private readonly List<IParameterSpecification> parametersSpecifications;
 
 		public SubselectCollectionLoader(IQueryableCollection persister, SqlString subquery, ICollection<EntityKey> entityKeys,
-		                                 QueryParameters queryParameters,
-		                                 ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
+										 QueryParameters queryParameters,
+										 ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(persister, BatchSizeForSubselectFetching, factory, enabledFilters)
 		{
 			keys = new object[entityKeys.Count];
@@ -29,7 +29,7 @@ namespace NHibernate.Loader.Collection
 			{
 				keys[i++] = entityKey.Identifier;
 			}
-			
+
 			// NH Different behavior: to deal with positionslParameter+NamedParameter+ParameterOfFilters
 			namedParameters = new Dictionary<string, TypedValue>(queryParameters.NamedParameters);
 			parametersSpecifications = queryParameters.ProcessedSqlParameters.ToList();

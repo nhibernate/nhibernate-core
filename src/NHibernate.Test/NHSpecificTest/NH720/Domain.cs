@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using log4net;
 using NHibernate.Cache;
-using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH720
 {
@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 			caches = new Dictionary<string, CacheBase>();
 		}
 
-		public static CacheBase BuildCacheStatic(string regionName, IDictionary<string,string> properties)
+		public static CacheBase BuildCacheStatic(string regionName, IDictionary<string, string> properties)
 		{
 			if (regionName != null && caches.TryGetValue(regionName, out var cache))
 			{
@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH720
 			}
 			if (properties == null)
 			{
-				properties = new Dictionary<string,string>();
+				properties = new Dictionary<string, string>();
 			}
 			if (log.IsDebugEnabled)
 			{

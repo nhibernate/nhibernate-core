@@ -22,7 +22,7 @@ namespace NHibernate.Type
 			// our column span is the number of columns in the PK
 			return GetIdentifierOrUniqueKeyType(mapping).GetColumnSpan(mapping);
 		}
-		
+
 		public override int GetOwnerColumnSpan(IMapping mapping)
 		{
 			return 0;

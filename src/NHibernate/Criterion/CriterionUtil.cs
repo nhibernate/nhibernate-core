@@ -31,10 +31,10 @@ namespace NHibernate.Criterion
 			if (projection == null)
 			{
 				return GetColumnNamesUsingPropertyName(
-					criteriaQuery, 
-					criteria, 
+					criteriaQuery,
+					criteria,
 					propertyName,
-					value, 
+					value,
 					criterion);
 			}
 			else
@@ -57,7 +57,7 @@ namespace NHibernate.Criterion
 		{
 			if (propertyName != null)
 				return criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
-			
+
 			return GetColumnNamesAsSqlStringParts(projection, criteriaQuery, criteria);
 		}
 
@@ -96,20 +96,20 @@ namespace NHibernate.Criterion
 		private static SqlString[] GetProjectionColumns(IProjection projection, ICriteriaQuery criteriaQuery, ICriteria criteria)
 		{
 			var sqlString = projection.ToSqlString(criteria, criteriaQuery.GetIndexForAlias(), criteriaQuery);
-			return new[] {SqlStringHelper.RemoveAsAliasesFromSql(sqlString)};
+			return new[] { SqlStringHelper.RemoveAsAliasesFromSql(sqlString) };
 		}
 
 		private static SqlString[] GetColumnNamesUsingPropertyName(ICriteriaQuery criteriaQuery, ICriteria criteria, string propertyName)
 		{
 			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
-			return Array.ConvertAll<string, SqlString>(columnNames, delegate(string input) { return new SqlString(input); });
+			return Array.ConvertAll<string, SqlString>(columnNames, delegate (string input) { return new SqlString(input); });
 		}
 
 		private static SqlString[] GetColumnNamesUsingPropertyName(
-			ICriteriaQuery criteriaQuery, 
-			ICriteria criteria, 
-			string propertyName, 
-			object value, 
+			ICriteriaQuery criteriaQuery,
+			ICriteria criteria,
+			string propertyName,
+			object value,
 			ICriterion critertion)
 		{
 			string[] columnNames = criteriaQuery.GetColumnsUsingProjection(criteria, propertyName);
@@ -129,16 +129,16 @@ namespace NHibernate.Criterion
 											+ " use ICriteria.CreateCriteria instead",
 											criteriaQuery.GetEntityName(criteria), propertyName));
 			}
-			return Array.ConvertAll<string, SqlString>(columnNames, delegate(string col)
+			return Array.ConvertAll<string, SqlString>(columnNames, delegate (string col)
 			{
 				return new SqlString(col);
 			});
 		}
 
 		public static TypedValue[] GetTypedValues(ICriteriaQuery criteriaQuery, ICriteria criteria,
-		                                          IProjection projection,
-		                                          string propertyName,
-		                                          params object[] values)
+												  IProjection projection,
+												  string propertyName,
+												  params object[] values)
 		{
 			List<TypedValue> types = new List<TypedValue>();
 			var propertyProjection = projection as IPropertyProjection;
@@ -147,7 +147,7 @@ namespace NHibernate.Criterion
 				var pn = propertyProjection != null ? propertyProjection.PropertyName : propertyName;
 				foreach (object value in values)
 				{
-					TypedValue typedValue = criteriaQuery.GetTypedValue(criteria, pn, value); 					
+					TypedValue typedValue = criteriaQuery.GetTypedValue(criteria, pn, value);
 					types.Add(typedValue);
 				}
 			}
@@ -155,7 +155,7 @@ namespace NHibernate.Criterion
 			{
 				foreach (object value in values)
 				{
-					types.Add(new TypedValue(NHibernateUtil.GuessType((object)value), value));
+					types.Add(new TypedValue(NHibernateUtil.GuessType((object) value), value));
 				}
 			}
 			return types.ToArray();

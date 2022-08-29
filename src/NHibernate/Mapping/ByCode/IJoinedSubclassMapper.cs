@@ -17,7 +17,7 @@ namespace NHibernate.Mapping.ByCode
 		void Abstract(bool isAbstract);
 	}
 
-	public interface IJoinedSubclassMapper : IJoinedSubclassAttributesMapper, IPropertyContainerMapper {}
+	public interface IJoinedSubclassMapper : IJoinedSubclassAttributesMapper, IPropertyContainerMapper { }
 
 	public interface IJoinedSubclassAttributesMapper<TEntity> : IEntityAttributesMapper, IEntitySqlsMapper where TEntity : class
 	{
@@ -28,10 +28,10 @@ namespace NHibernate.Mapping.ByCode
 		void Schema(string schemaName);
 		void Key(Action<IKeyMapper<TEntity>> keyMapping);
 		void SchemaAction(SchemaAction action);
-        void Filter(string filterName, Action<IFilterMapper> filterMapping);
+		void Filter(string filterName, Action<IFilterMapper> filterMapping);
 	}
 
-	public interface IJoinedSubclassMapper<TEntity> : IJoinedSubclassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class {}
+	public interface IJoinedSubclassMapper<TEntity> : IJoinedSubclassAttributesMapper<TEntity>, IPropertyContainerMapper<TEntity> where TEntity : class { }
 
 	public static class JoinedSubclassAttributesMapperExtensions
 	{

@@ -87,7 +87,7 @@ namespace NHibernate.Mapping
 				IType type = propertyValue.Type;
 				if (type.IsComponentType && !type.IsAnyType)
 				{
-					IAbstractComponentType actype = (IAbstractComponentType)propertyValue.Type;
+					IAbstractComponentType actype = (IAbstractComponentType) propertyValue.Type;
 					int length = actype.Subtypes.Length;
 					for (int i = 0; i < length; i++)
 					{
@@ -132,7 +132,7 @@ namespace NHibernate.Mapping
 				bool[] columnUpdateability = propertyValue.ColumnUpdateability;
 				return updateable &&
 					   (
-					// columnUpdateability.Length == 0 ||
+					   // columnUpdateability.Length == 0 ||
 					   !ArrayHelper.IsAllFalse(columnUpdateability)
 					   );
 			}
@@ -220,7 +220,7 @@ namespace NHibernate.Mapping
 			{
 				if (propertyValue is SimpleValue)
 				{
-					return ((SimpleValue)propertyValue).NullValue;
+					return ((SimpleValue) propertyValue).NullValue;
 				}
 				else
 					return null;
@@ -258,7 +258,7 @@ namespace NHibernate.Mapping
 				// NH Specific: Hibernate doesn't make a distinction between
 				// lazy and no-proxy, but NHibernate does. While Hibernate tracks
 				// just whatever a property is lazy, we need to track lazy/no-proxy separately.
-				
+
 				return isLazy;
 			}
 			set { isLazy = value; }

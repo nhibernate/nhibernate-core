@@ -83,7 +83,7 @@ namespace NHibernate.Properties
 
 			public System.Type ReturnType
 			{
-				get { return typeof (object); }
+				get { return typeof(object); }
 			}
 
 			public string PropertyName

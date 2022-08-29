@@ -9,7 +9,7 @@ namespace NHibernate.Test.VersionTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"VersionTest.PersonThing.hbm.xml"}; }
+			get { return new string[] { "VersionTest.PersonThing.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly

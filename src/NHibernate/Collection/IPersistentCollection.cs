@@ -310,7 +310,7 @@ namespace NHibernate.Collection
 		/// <summary> Get the "queued" orphans</summary>
 		[Obsolete("This method has no more usages and will be removed in a future version")]
 		Task<ICollection> GetQueuedOrphansAsync(string entityName, CancellationToken cancellationToken);
-		
+
 		/// <summary>
 		/// Clear the dirty flag, after flushing changes
 		/// to the database.

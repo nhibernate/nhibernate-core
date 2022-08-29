@@ -144,7 +144,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			MemberInfo memberOf = TypeExtensions.DecodeMemberAccessExpressionOf(property);
 			RegisterDynamicComponentMapping(mapping, member, memberOf);
 		}
-		
+
 		protected virtual void RegisterDynamicComponentMapping<TComponent>(Expression<Func<TEntity, IDictionary>> property, System.Type componentType, Action<IDynamicComponentMapper<TComponent>> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);

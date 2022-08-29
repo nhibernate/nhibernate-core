@@ -45,7 +45,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var mapper = new ModelMapper(autoinspector);
 			mapper.Class<MyEntity>(map => map.Property(x => x.ReadOnly));
 
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsPersistentProperty(typeof(MyEntity).GetProperty("ReadOnly")), Is.True);
 		}
 
@@ -53,7 +53,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void WhenReadonlyNotDeclaredThenIsNotPersistentProperty()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsPersistentProperty(typeof(MyEntity).GetProperty("ReadOnly")), Is.False);
 		}
@@ -62,8 +62,8 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void IncludesReadOnlyWithField()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
-			
+			var inspector = (IModelInspector) autoinspector;
+
 			PropertyInfo pi = typeof(MyEntity).GetProperty("NoReadOnlyWithField");
 			Assert.That(inspector.IsPersistentProperty(pi), Is.True);
 		}
@@ -72,7 +72,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void IncludesNoReadOnly()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			PropertyInfo pi = typeof(MyEntity).GetProperty("NoReadOnly");
 			Assert.That(inspector.IsPersistentProperty(pi), Is.True);
@@ -87,7 +87,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			var mapper = new ModelMapper(autoinspector);
 			mapper.Class<MyEntity>(map => map.Property("pizza", x => { }));
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			var pi = typeof(MyEntity).GetField("pizza", BindingFlags.Instance | BindingFlags.NonPublic);
 			Assert.That(inspector.IsPersistentProperty(pi), Is.True);
@@ -97,7 +97,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void DoesNotIncludesFieldsByDefault()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			var pi = typeof(MyEntity).GetField("pizza", BindingFlags.Instance | BindingFlags.NonPublic);
 			Assert.That(inspector.IsPersistentProperty(pi), Is.False);
@@ -107,7 +107,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void IncludesAutoprop()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			var pi = typeof(MyEntity).GetProperty("AutoPropWithPrivateSet");
 			Assert.That(inspector.IsPersistentProperty(pi), Is.True);

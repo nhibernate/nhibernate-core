@@ -2,8 +2,8 @@
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
-using NUnit.Framework;
 using NHibernate.Test.MappingByCode.IntegrationTests.NH3041;
+using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3657
 {

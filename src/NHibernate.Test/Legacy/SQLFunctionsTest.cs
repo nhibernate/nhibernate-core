@@ -64,7 +64,7 @@ namespace NHibernate.Test.Legacy
 			{
 				// Check Oracle Dialect mix of dialect functions - no args (no parenthesis and single arg functions
 				IList rset = s.CreateQuery("select s.Name, sysdate, trunc(s.Pay), round(s.Pay) from s in class Simple").List();
-				object[] row = (object[])rset[0];
+				object[] row = (object[]) rset[0];
 				Assert.IsNotNull(row[0], "Name string should have been returned");
 				Assert.IsNotNull(row[1], "Todays Date should have been returned");
 				Assert.AreEqual(45f, row[2], "trunc(45.8) result was incorrect");
@@ -140,7 +140,7 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
-			s.Save(simple, (long)10);
+			s.Save(simple, (long) 10);
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
 			q.SetProperties(simple);
 			Assert.AreEqual(simple, q.List()[0]);
@@ -282,7 +282,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			b = (Broken)s.Load(typeof(Broken), b);
+			b = (Broken) s.Load(typeof(Broken), b);
 			t.Commit();
 			s.Close();
 
@@ -300,19 +300,19 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
-			s.Save(simple, (long)10);
+			s.Save(simple, (long) 10);
 			t.Commit();
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.Update(simple, (long)10);
+			s.Update(simple, (long) 10);
 			t.Commit();
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			s.Update(simple, (long)10);
+			s.Update(simple, (long) 10);
 			s.Delete(simple);
 			t.Commit();
 			s.Close();
@@ -344,7 +344,7 @@ namespace NHibernate.Test.Legacy
 			q.SetString("name", "Simple 1");
 			Assert.AreEqual(1, q.List().Count);
 
-			simple = (Simple)q.List()[0];
+			simple = (Simple) q.List()[0];
 
 			q.SetString("name", "Simple 2");
 			Assert.AreEqual(0, q.List().Count);
@@ -510,7 +510,7 @@ namespace NHibernate.Test.Legacy
 			q.SetCacheable(true);
 			q.SetString("name", "Simple 1");
 			Assert.AreEqual(1, q.List().Count);
-			simple = (Simple)q.List()[0];
+			simple = (Simple) q.List()[0];
 
 			q.SetString("name", "Simple 2");
 			Assert.AreEqual(0, q.List().Count);
@@ -548,7 +548,7 @@ namespace NHibernate.Test.Legacy
 				ITransaction t = s.BeginTransaction();
 				Simple simple = new Simple();
 				simple.Name = "Simple 1";
-				s.Save(simple, (long)10);
+				s.Save(simple, (long) 10);
 
 				if (Dialect is DB2Dialect)
 				{
@@ -590,7 +590,7 @@ namespace NHibernate.Test.Legacy
 				other.Name = "Simple 2";
 				other.Count = 12;
 				simple.Other = other;
-				s.Save(other, (long)20);
+				s.Save(other, (long) 20);
 				Assert.AreEqual(1, s.CreateQuery("from s in class Simple where upper( s.Other.Name )='SIMPLE 2'").List().Count);
 				Assert.AreEqual(0, s.CreateQuery("from s in class Simple where not (upper(s.Other.Name)='SIMPLE 2')").List().Count);
 				Assert.AreEqual(1,
@@ -605,7 +605,7 @@ namespace NHibernate.Test.Legacy
 				Simple min = new Simple();
 				min.Count = -1;
 
-				s.Save(min, (long)30);
+				s.Save(min, (long) 30);
 
 				if (Dialect.SupportsSubSelects && TestDialect.SupportsOperatorSome)
 				{
@@ -632,7 +632,7 @@ namespace NHibernate.Test.Legacy
 					s.CreateQuery("select sum(s.Count) from s in class Simple group by s.Count having sum(s.Count) > 10 ").Enumerable()
 						.GetEnumerator();
 				Assert.IsTrue(enumer.MoveNext());
-				Assert.AreEqual(12, (Int64)enumer.Current); // changed cast from Int32 to Int64 (H3.2)
+				Assert.AreEqual(12, (Int64) enumer.Current); // changed cast from Int32 to Int64 (H3.2)
 				Assert.IsFalse(enumer.MoveNext());
 
 				if (Dialect.SupportsSubSelects)
@@ -700,7 +700,7 @@ namespace NHibernate.Test.Legacy
 				list.Add("Simple 1");
 				list.Add("foo");
 				q.SetParameterList("name_list", list);
-				q.SetParameter("count", (int)-1);
+				q.SetParameter("count", (int) -1);
 				Assert.AreEqual(1, q.List().Count);
 
 				s.Delete(other);

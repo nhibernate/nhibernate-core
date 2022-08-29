@@ -45,8 +45,8 @@ namespace NHibernate.Tuple.Entity
 		public override bool IsInstance(object obj)
 		{
 			return base.IsInstance(obj) ||
-			       // this one needed only for guessEntityMode()
-			       (_proxyInterface != null && _proxyInterface.IsInstanceOfType(obj));
+				   // this one needed only for guessEntityMode()
+				   (_proxyInterface != null && _proxyInterface.IsInstanceOfType(obj));
 		}
 	}
 }

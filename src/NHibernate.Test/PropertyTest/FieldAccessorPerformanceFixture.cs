@@ -19,13 +19,13 @@ namespace NHibernate.Test.PropertyTest
 
 		protected override object[] GetValues()
 		{
-			return new object[] {5, "name", DateTime.MaxValue, 1.5m};
+			return new object[] { 5, "name", DateTime.MaxValue, 1.5m };
 		}
 
 		public class A
 		{
 			private int _id = 5;
-			private string _name =string.Empty;
+			private string _name = string.Empty;
 			private DateTime _date = DateTime.MinValue;
 			private decimal? _decimal = decimal.Zero;
 

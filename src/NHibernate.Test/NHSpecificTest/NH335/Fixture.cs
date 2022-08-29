@@ -71,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 				IList list = query.List();
 
 				Assert.AreEqual(numAbcThings + numOtherThings, list.Count,
-				                String.Format("There should be {0} Things.", numAbcThings + numOtherThings));
+								String.Format("There should be {0} Things.", numAbcThings + numOtherThings));
 
 				foreach (object thing in list)
 				{
@@ -91,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 				IList list = query.List();
 
 				Assert.AreEqual(numAbcThings, list.Count,
-				                String.Format("There should be {0} AbcThings.", numAbcThings));
+								String.Format("There should be {0} AbcThings.", numAbcThings));
 
 				foreach (object thing in list)
 				{
@@ -107,7 +107,7 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 				IList list = query.List();
 
 				Assert.AreEqual(numAbcThings, list.Count,
-				                String.Format("There should be {0} OtherThings.", numAbcThings));
+								String.Format("There should be {0} OtherThings.", numAbcThings));
 
 				foreach (object thing in list)
 				{
@@ -135,13 +135,13 @@ namespace NHibernate.Test.NHSpecificTest.NH335
 				IList abcThings = abcThingQuery.List();
 
 				Assert.AreEqual(0, abcThings.Count,
-				                "All AbcThings should have been deleted.");
+								"All AbcThings should have been deleted.");
 
 				IQuery otherThingQuery = session.CreateQuery("from OtherThing");
 				IList otherThings = otherThingQuery.List();
 
 				Assert.AreEqual(numOtherThings, otherThings.Count,
-				                "No OtherThings should have been deleted.");
+								"No OtherThings should have been deleted.");
 
 				tx.Commit();
 			}

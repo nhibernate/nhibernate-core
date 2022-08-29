@@ -164,7 +164,7 @@ namespace NHibernate.Impl
 
 		public virtual IList List(IQueryExpression queryExpression, QueryParameters parameters)
 		{
-			var results = (IList)typeof(List<>)
+			var results = (IList) typeof(List<>)
 				.MakeGenericType(queryExpression.Type)
 				.GetConstructor(System.Type.EmptyTypes)
 				.Invoke(null);
@@ -209,7 +209,7 @@ namespace NHibernate.Impl
 		public abstract IList ListFilter(object collection, string filter, QueryParameters parameters);
 		public IList ListFilter(object collection, IQueryExpression queryExpression, QueryParameters parameters)
 		{
-			var results = (IList)typeof(List<>).MakeGenericType(queryExpression.Type)
+			var results = (IList) typeof(List<>).MakeGenericType(queryExpression.Type)
 									.GetConstructor(System.Type.EmptyTypes)
 									.Invoke(null);
 
@@ -334,9 +334,9 @@ namespace NHibernate.Impl
 		//Since 5.2
 		[Obsolete("Replaced by FutureBatch")]
 		public abstract FutureQueryBatch FutureQueryBatch { get; protected internal set; }
-	
+
 		public virtual IQueryBatch FutureBatch
-			=>_futureMultiBatch ?? (_futureMultiBatch = new QueryBatch(this, true));
+			=> _futureMultiBatch ?? (_futureMultiBatch = new QueryBatch(this, true));
 
 		public virtual IInterceptor Interceptor { get; protected set; }
 
@@ -684,7 +684,7 @@ namespace NHibernate.Impl
 		public abstract IEnumerable<T> Enumerable<T>(IQueryExpression queryExpression, QueryParameters queryParameters);
 
 		public abstract int ExecuteUpdate(IQueryExpression queryExpression, QueryParameters queryParameters);
-		
+
 		/// <summary>
 		/// Creates a new Linq <see cref="IQueryable{T}"/> for the entity class.
 		/// </summary>

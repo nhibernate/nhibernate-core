@@ -8,10 +8,10 @@ namespace NHibernate.Test.TypedManyToOne
 		private string _type;
 		private int? requestedHash;
 
-		public virtual String Type 
+		public virtual String Type
 		{
 			get { return _type; }
-			set 
+			set
 			{
 				if (!string.IsNullOrWhiteSpace(value))
 					_type = value.Trim();

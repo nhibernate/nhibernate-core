@@ -8,7 +8,7 @@ namespace NHibernate.Test.UserCollection.Parameterized
 		private string name;
 		private IList<string> values = new List<string>();
 
-		public Entity() {}
+		public Entity() { }
 
 		public Entity(string name)
 		{

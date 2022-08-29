@@ -1,9 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.Linq;
 using NUnit.Framework;
-using System.Linq.Expressions;
-using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2664
 {

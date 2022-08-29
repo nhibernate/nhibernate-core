@@ -6,7 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1403
 		private string name;
 		private Person person;
 
-		public Hobby() {}
+		public Hobby() { }
 
 		public Hobby(string name) : this()
 		{

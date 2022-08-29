@@ -9,14 +9,14 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
-    [TestFixture]
-    public class OperatorTests : LinqTestCase
-    {
-        [Test]
-        public void Mod()
-        {
-            Assert.AreEqual(2, session.Query<TimesheetEntry>().Where(a => a.NumberOfHours % 7 == 0).Count());
-        }
+	[TestFixture]
+	public class OperatorTests : LinqTestCase
+	{
+		[Test]
+		public void Mod()
+		{
+			Assert.AreEqual(2, session.Query<TimesheetEntry>().Where(a => a.NumberOfHours % 7 == 0).Count());
+		}
 
 		[Test]
 		public void UnaryMinus()

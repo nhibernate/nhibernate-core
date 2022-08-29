@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 			{
 				return true;
 			}
-			if (obj.GetType() != typeof (TestClassId))
+			if (obj.GetType() != typeof(TestClassId))
 			{
 				return false;
 			}

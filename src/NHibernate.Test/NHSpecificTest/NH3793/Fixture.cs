@@ -3,7 +3,7 @@
 namespace NHibernate.Test.NHSpecificTest.NH3793
 {
 	[TestFixture]
-	public class Fixture 
+	public class Fixture
 	{
 		[Test]
 		public void CanCreateSchemaWithCompositeIdWithKeyManyToOneUsesEntityName()

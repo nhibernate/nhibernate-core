@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using NUnit.Framework;
 using System.Linq;
+using NUnit.Framework;
 
 namespace NHibernate.Test.SubclassFilterTest
 {
@@ -10,7 +10,7 @@ namespace NHibernate.Test.SubclassFilterTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"SubclassFilterTest.joined-subclass.hbm.xml"}; }
+			get { return new string[] { "SubclassFilterTest.joined-subclass.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly
@@ -37,7 +37,7 @@ namespace NHibernate.Test.SubclassFilterTest
 			results = s.CreateQuery("from Employee").List();
 			Assert.AreEqual(2, results.Count, "Incorrect qry result count");
 
-			foreach (Person p in  results)
+			foreach (Person p in results)
 			{
 				// find john
 				if (p.Name.Equals("John Doe"))

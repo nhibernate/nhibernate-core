@@ -9,6 +9,6 @@ namespace NHibernate
 		// TODO : without default constructor can't be serialized
 		public QueryParameterException(string message) : base(message) { }
 		public QueryParameterException(string message, Exception inner) : base(message, inner) { }
-		protected QueryParameterException(SerializationInfo info,StreamingContext context): base(info, context) { }
+		protected QueryParameterException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 }

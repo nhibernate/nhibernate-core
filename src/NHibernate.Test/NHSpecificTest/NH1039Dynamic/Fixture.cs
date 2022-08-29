@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1039Dynamic
 				s.Save(person);
 				tx.Commit();
 			}
-			
+
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
 			{

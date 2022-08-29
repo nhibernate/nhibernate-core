@@ -38,7 +38,7 @@ namespace NHibernate.Test.Linq
 						m.Type(_enumType);
 						m.Formula($"(case when Enum1 = {_unspecifiedValue} then null else Enum1 end)");
 					});
-					rc.Bag(x => x.Children, m => 
+					rc.Bag(x => x.Children, m =>
 						{
 							m.Cascade(Mapping.ByCode.Cascade.All);
 							m.Inverse(true);

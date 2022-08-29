@@ -1,6 +1,6 @@
 namespace NHibernate.Test.MappingByCode.NatureDemo.Naturalness
 {
-	public class DomesticAnimal: Mammal
+	public class DomesticAnimal : Mammal
 	{
 		public virtual Human Owner { get; set; }
 	}

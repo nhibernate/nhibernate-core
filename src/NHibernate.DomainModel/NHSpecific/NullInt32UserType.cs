@@ -38,7 +38,7 @@ namespace NHibernate.DomainModel.NHSpecific
 
 		public SqlType[] SqlTypes
 		{
-			get { return new SqlType[] {_int32Type.SqlType}; }
+			get { return new SqlType[] { _int32Type.SqlType }; }
 		}
 
 		public object DeepCopy(object value)

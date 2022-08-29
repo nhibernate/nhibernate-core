@@ -30,20 +30,20 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 				session.Save(corpA);
 				session.Save(corpB);
 				session.Save(clientZ);
-				
-				var projectA = new Project { Name = "A", BillingClient = null,  Client = clientA };
-				var projectB = new Project { Name = "B", BillingClient = corpB,  Client = clientA };
-				var projectC = new Project { Name = "C", BillingClient = null,  Client = clientB };
-				var projectD = new Project { Name = "D", BillingClient = corpA,  Client = clientB };
+
+				var projectA = new Project { Name = "A", BillingClient = null, Client = clientA };
+				var projectB = new Project { Name = "B", BillingClient = corpB, Client = clientA };
+				var projectC = new Project { Name = "C", BillingClient = null, Client = clientB };
+				var projectD = new Project { Name = "D", BillingClient = corpA, Client = clientB };
 				var projectE = new Project { Name = "E", BillingClient = clientZ, Client = clientA };
-				var projectZ = new Project { Name = "Z", BillingClient = null,  Client = null };
+				var projectZ = new Project { Name = "Z", BillingClient = null, Client = null };
 				session.Save(projectA);
 				session.Save(projectB);
 				session.Save(projectC);
 				session.Save(projectD);
 				session.Save(projectE);
 				session.Save(projectZ);
- 
+
 				session.Save(new Issue { Name = "01", Project = null, Client = null });
 				session.Save(new Issue { Name = "02", Project = null, Client = clientA });
 				session.Save(new Issue { Name = "03", Project = null, Client = clientB });
@@ -76,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 		private class TestHqlGeneratorForMethod : IHqlGeneratorForMethod
 		{
 			/// <inheritdoc />
-			public IEnumerable<MethodInfo> SupportedMethods => new []
+			public IEnumerable<MethodInfo> SupportedMethods => new[]
 			{
 				ReflectHelper.GetMethodDefinition<Client>(x => x.NameByExtension()),
 			};
@@ -104,24 +104,24 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 		{
 			AreEqual(
 				// Actual
-				q => q.OrderBy(i =>i.Name)
-				      .Select(i => (i.Project.BillingClient ?? i.Project.Client ?? i.Client).NameByExtension()),
+				q => q.OrderBy(i => i.Name)
+					  .Select(i => (i.Project.BillingClient ?? i.Project.Client ?? i.Client).NameByExtension()),
 				// Expected
-				q => q.OrderBy(i =>i.Name)
-				      .Select(i => i.Project.BillingClient != null ? i.Project.BillingClient.NameByExtension() : i.Project.Client != null ? i.Project.Client.NameByExtension() : i.Client.NameByExtension())
+				q => q.OrderBy(i => i.Name)
+					  .Select(i => i.Project.BillingClient != null ? i.Project.BillingClient.NameByExtension() : i.Project.Client != null ? i.Project.Client.NameByExtension() : i.Client.NameByExtension())
 			);
 		}
-		
+
 		[Test]
 		public void SelectClauseToAnon()
 		{
 			AreEqual(
 				// Actual
-				q => q.OrderBy(i =>i.Name)
-				      .Select(i => new { Key =i.Name, Client = (i.Project.BillingClient ?? i.Project.Client ?? i.Client).NameByExtension() }),
+				q => q.OrderBy(i => i.Name)
+					  .Select(i => new { Key = i.Name, Client = (i.Project.BillingClient ?? i.Project.Client ?? i.Client).NameByExtension() }),
 				// Expected
-				q => q.OrderBy(i =>i.Name)
-				      .Select(i => new { Key =i.Name, Client = i.Project.BillingClient != null ? i.Project.BillingClient.NameByExtension() : i.Project.Client != null ? i.Project.Client.NameByExtension() : i.Client.NameByExtension() })
+				q => q.OrderBy(i => i.Name)
+					  .Select(i => new { Key = i.Name, Client = i.Project.BillingClient != null ? i.Project.BillingClient.NameByExtension() : i.Project.Client != null ? i.Project.Client.NameByExtension() : i.Client.NameByExtension() })
 			);
 		}
 
@@ -131,12 +131,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 			AreEqual(
 				// Actual
 				q => q.OrderBy(i => (i.Project.BillingClient ?? i.Project.Client ?? i.Client).NameByExtension() ?? "ZZZ")
-				      .ThenBy(i =>i.Name)
-				      .Select(i =>i.Name),
+					  .ThenBy(i => i.Name)
+					  .Select(i => i.Name),
 				// Expected
 				q => q.OrderBy(i => (i.Project.BillingClient != null ? i.Project.BillingClient.NameByExtension() : i.Project.Client != null ? i.Project.Client.NameByExtension() : i.Client.NameByExtension()) ?? "ZZZ")
-				      .ThenBy(i =>i.Name)
-				      .Select(i =>i.Name)
+					  .ThenBy(i => i.Name)
+					  .Select(i => i.Name)
 			);
 		}
 
@@ -146,12 +146,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 			AreEqual(
 				// Actual
 				q => q.GroupBy(i => (i.Project.BillingClient ?? i.Project.Client ?? i.Client).NameByExtension())
-				      .OrderBy(x => x.Key ?? "ZZZ")
-				      .Select(grp => new  { grp.Key, Count = grp.Count() }),
+					  .OrderBy(x => x.Key ?? "ZZZ")
+					  .Select(grp => new { grp.Key, Count = grp.Count() }),
 				// Expected
 				q => q.GroupBy(i => i.Project.BillingClient != null ? i.Project.BillingClient.NameByExtension() : i.Project.Client != null ? i.Project.Client.NameByExtension() : i.Client.NameByExtension())
-				      .OrderBy(x => x.Key ?? "ZZZ")
-				      .Select(grp => new  { grp.Key, Count = grp.Count() })
+					  .OrderBy(x => x.Key ?? "ZZZ")
+					  .Select(grp => new { grp.Key, Count = grp.Count() })
 			);
 		}
 	}

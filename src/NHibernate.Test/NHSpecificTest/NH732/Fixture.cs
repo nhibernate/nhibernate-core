@@ -46,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 				User user = session.Get<User>("domain\\user");
 				Assert.AreEqual(1, user.UserToRoles.Count);
 			}
-			
+
 			using (ISession session = OpenSession())
 			{
 				session.Delete("from System.Object o");
@@ -64,17 +64,17 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 
 		public System.Type ReturnedType
 		{
-			get { return typeof (string); }
+			get { return typeof(string); }
 		}
 
 		public new bool Equals(object x, object y)
 		{
-			return StringComparer.InvariantCultureIgnoreCase.Equals((string)x, (string)y);
+			return StringComparer.InvariantCultureIgnoreCase.Equals((string) x, (string) y);
 		}
 
 		public int GetHashCode(object x)
 		{
-			return StringComparer.InvariantCultureIgnoreCase.GetHashCode((string)x);
+			return StringComparer.InvariantCultureIgnoreCase.GetHashCode((string) x);
 		}
 
 		public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
@@ -135,7 +135,7 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 			return value;
 		}
 	}
-	
+
 	public class User
 	{
 		string userName;

@@ -21,11 +21,11 @@ namespace NHibernate.Context
 	[Serializable]
 	public class CallSessionContext : MapBasedSessionContext
 	{
-		#if NETFX
+#if NETFX
 		private const string SessionFactoryMapKey = "NHibernate.Context.CallSessionContext.SessionFactoryMapKey";
-		#else
+#else
 		private static readonly AsyncLocal<IDictionary> SessionFactoryMap = new AsyncLocal<IDictionary>();
-		#endif
+#endif
 
 		public CallSessionContext(ISessionFactoryImplementor factory) : base(factory)
 		{

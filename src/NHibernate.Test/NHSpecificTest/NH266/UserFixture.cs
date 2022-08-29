@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecificTest.NH266.User.hbm.xml"}; }
+			get { return new string[] { "NHSpecificTest.NH266.User.hbm.xml" }; }
 		}
 
 		protected override void OnSetUp()
@@ -81,22 +81,22 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 			Assert.AreEqual(0, list.Count, "no 'inactive user' according to where clause");
 			s.Close();
 
-//			// load a instance of B through hql
-//			s = OpenSession();
-//			IQuery q = s.CreateQuery( "from B as b where b.id = :id" );
-//			q.SetParameter( "id", bId );
-//			b = q.UniqueResult() as B;
-//			Assert.AreEqual( "the b", b.Name );
-//			s.Close();
-//
-//			// load a instance of B through Criteria
-//			s = OpenSession();
-//			ICriteria c = s.CreateCriteria( typeof(B) );
-//			c.Add( Expressions.Expression.Eq( "Id", bId ) );
-//			b = c.UniqueResult() as B;
-//
-//			Assert.AreEqual( "the b", b.Name );
-//			s.Close();		
+			//			// load a instance of B through hql
+			//			s = OpenSession();
+			//			IQuery q = s.CreateQuery( "from B as b where b.id = :id" );
+			//			q.SetParameter( "id", bId );
+			//			b = q.UniqueResult() as B;
+			//			Assert.AreEqual( "the b", b.Name );
+			//			s.Close();
+			//
+			//			// load a instance of B through Criteria
+			//			s = OpenSession();
+			//			ICriteria c = s.CreateCriteria( typeof(B) );
+			//			c.Add( Expressions.Expression.Eq( "Id", bId ) );
+			//			b = c.UniqueResult() as B;
+			//
+			//			Assert.AreEqual( "the b", b.Name );
+			//			s.Close();		
 		}
 	}
 }

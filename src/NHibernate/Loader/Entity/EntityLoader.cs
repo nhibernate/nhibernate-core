@@ -18,12 +18,13 @@ namespace NHibernate.Loader.Entity
 
 		public EntityLoader(IOuterJoinLoadable persister, LockMode lockMode, ISessionFactoryImplementor factory,
 							IDictionary<string, IFilter> enabledFilters)
-			: this(persister, 1, lockMode, factory, enabledFilters) {}
+			: this(persister, 1, lockMode, factory, enabledFilters) { }
 
 		public EntityLoader(IOuterJoinLoadable persister, int batchSize, LockMode lockMode, ISessionFactoryImplementor factory,
 							IDictionary<string, IFilter> enabledFilters)
 			: this(
-				persister, persister.IdentifierColumnNames, persister.IdentifierType, batchSize, lockMode, factory, enabledFilters) {}
+				persister, persister.IdentifierColumnNames, persister.IdentifierType, batchSize, lockMode, factory, enabledFilters)
+		{ }
 
 		public EntityLoader(IOuterJoinLoadable persister, string[] uniqueKey, IType uniqueKeyType, int batchSize,
 							LockMode lockMode, ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)

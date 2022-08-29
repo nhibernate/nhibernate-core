@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Extendshbm
 {
-	public class Employee: Person
+	public class Employee : Person
 	{
 		private string title;
 		private decimal salary;

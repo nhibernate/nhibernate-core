@@ -10,7 +10,7 @@ namespace NHibernate.Test.MappingByCode
 	[TestFixture]
 	public class ModelExplicitDeclarationsHolderMergeTest
 	{
-		private class ExplicitDeclarationsHolderMock: IModelExplicitDeclarationsHolder
+		private class ExplicitDeclarationsHolderMock : IModelExplicitDeclarationsHolder
 		{
 			public ExplicitDeclarationsHolderMock()
 			{
@@ -304,9 +304,9 @@ namespace NHibernate.Test.MappingByCode
 			public void AddAsOneToOneRelation(MemberInfo member) { }
 			public void AddAsManyToOneRelation(MemberInfo member) { }
 			public void AddAsManyToManyKeyRelation(MemberInfo member) { }
-			public void AddAsManyToManyItemRelation(MemberInfo member) {}
+			public void AddAsManyToManyItemRelation(MemberInfo member) { }
 			public void AddAsOneToManyRelation(MemberInfo member) { }
-			public void AddAsManyToAnyRelation(MemberInfo member) {}
+			public void AddAsManyToAnyRelation(MemberInfo member) { }
 
 			public void AddAsAny(MemberInfo member) { }
 			public void AddAsPoid(MemberInfo member) { }
@@ -326,7 +326,7 @@ namespace NHibernate.Test.MappingByCode
 
 			#endregion
 		}
-		private readonly MemberInfo property = typeof (MyClass).GetProperty("Bar");
+		private readonly MemberInfo property = typeof(MyClass).GetProperty("Bar");
 
 		[Test]
 		public void WhenMergeNullsThenNotThrows()
@@ -340,7 +340,7 @@ namespace NHibernate.Test.MappingByCode
 		{
 			var destination = new ExplicitDeclarationsHolder();
 			var source = new ExplicitDeclarationsHolder();
-			source.AddAsPropertySplit(new SplitDefinition(typeof (MyClass), "foo", property));
+			source.AddAsPropertySplit(new SplitDefinition(typeof(MyClass), "foo", property));
 
 			destination.Merge(source);
 			Assert.That(destination.SplitDefinitions, Has.Count.EqualTo(1));
@@ -538,7 +538,7 @@ namespace NHibernate.Test.MappingByCode
 		{
 			var destination = new ExplicitDeclarationsHolder();
 			var source = new ExplicitDeclarationsHolder();
-			source.AddAsTablePerConcreteClassEntity(typeof (MyClass));
+			source.AddAsTablePerConcreteClassEntity(typeof(MyClass));
 
 			destination.Merge(source);
 			Assert.That(destination.TablePerConcreteClassEntities, Has.Count.EqualTo(1));
@@ -549,7 +549,7 @@ namespace NHibernate.Test.MappingByCode
 		{
 			var destination = new ExplicitDeclarationsHolder();
 			var source = new ExplicitDeclarationsHolder();
-			source.AddAsTablePerClassHierarchyEntity(typeof (MyClass));
+			source.AddAsTablePerClassHierarchyEntity(typeof(MyClass));
 
 			destination.Merge(source);
 			Assert.That(destination.TablePerClassHierarchyEntities, Has.Count.EqualTo(1));
@@ -560,7 +560,7 @@ namespace NHibernate.Test.MappingByCode
 		{
 			var destination = new ExplicitDeclarationsHolder();
 			var source = new ExplicitDeclarationsHolder();
-			source.AddAsTablePerClassEntity(typeof (MyClass));
+			source.AddAsTablePerClassEntity(typeof(MyClass));
 
 			destination.Merge(source);
 			Assert.That(destination.TablePerClassEntities, Has.Count.EqualTo(1));
@@ -571,7 +571,7 @@ namespace NHibernate.Test.MappingByCode
 		{
 			var destination = new ExplicitDeclarationsHolder();
 			var source = new ExplicitDeclarationsHolder();
-			source.AddAsComponent(typeof (MyClass));
+			source.AddAsComponent(typeof(MyClass));
 
 			destination.Merge(source);
 			Assert.That(destination.Components, Has.Count.EqualTo(1));
@@ -582,7 +582,7 @@ namespace NHibernate.Test.MappingByCode
 		{
 			var destination = new ExplicitDeclarationsHolder();
 			var source = new ExplicitDeclarationsHolder();
-			source.AddAsRootEntity(typeof (MyClass));
+			source.AddAsRootEntity(typeof(MyClass));
 
 			destination.Merge(source);
 			Assert.That(destination.RootEntities, Has.Count.EqualTo(1));

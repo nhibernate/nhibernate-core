@@ -27,7 +27,7 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			set { _name = value; }
 		}
 
-		public IDictionary<string,B> Items
+		public IDictionary<string, B> Items
 		{
 			get { return _items; }
 			set { _items = value; }

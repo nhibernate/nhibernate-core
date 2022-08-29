@@ -41,12 +41,12 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		public void WhenRegisteredAsComponetThenCantRegisterAsJoinedSubclass()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsComponent(typeof (MyComponent));
+			inspector.AddAsComponent(typeof(MyComponent));
 
 			Assert.That(() =>
 			{
-				inspector.AddAsTablePerClassEntity(typeof (MyComponent));
-				inspector.IsTablePerClass(typeof (MyComponent));
+				inspector.AddAsTablePerClassEntity(typeof(MyComponent));
+				inspector.IsTablePerClass(typeof(MyComponent));
 			}, Throws.TypeOf<MappingException>());
 		}
 
@@ -54,12 +54,12 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		public void WhenRegisteredAsComponetThenCantRegisterAsSubclass()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsComponent(typeof (MyComponent));
+			inspector.AddAsComponent(typeof(MyComponent));
 
 			Assert.That(() =>
 			{
-				inspector.AddAsTablePerClassHierarchyEntity(typeof (MyComponent));
-				inspector.IsTablePerClassHierarchy(typeof (MyComponent));
+				inspector.AddAsTablePerClassHierarchyEntity(typeof(MyComponent));
+				inspector.IsTablePerClassHierarchy(typeof(MyComponent));
 			}, Throws.TypeOf<MappingException>());
 		}
 
@@ -67,12 +67,12 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		public void WhenRegisteredAsComponetThenCantRegisterAsUnionSubclass()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsComponent(typeof (MyComponent));
+			inspector.AddAsComponent(typeof(MyComponent));
 
 			Assert.That(() =>
 			{
-				inspector.AddAsTablePerConcreteClassEntity(typeof (MyComponent));
-				inspector.IsTablePerConcreteClass(typeof (MyComponent));
+				inspector.AddAsTablePerConcreteClassEntity(typeof(MyComponent));
+				inspector.IsTablePerConcreteClass(typeof(MyComponent));
 			}, Throws.TypeOf<MappingException>());
 		}
 	}

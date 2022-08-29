@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2658
 			var sfi = base.BuildSessionFactory();
 
 			// add our linq extension
-			((ISessionFactoryImplementor)sfi).Settings.LinqToHqlGeneratorsRegistry.Merge(new DynamicPropertyGenerator());
+			((ISessionFactoryImplementor) sfi).Settings.LinqToHqlGeneratorsRegistry.Merge(new DynamicPropertyGenerator());
 			return sfi;
 		}
 

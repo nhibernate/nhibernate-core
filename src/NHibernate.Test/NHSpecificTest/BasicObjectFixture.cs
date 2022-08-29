@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecific.BasicObject.hbm.xml"}; }
+			get { return new string[] { "NHSpecific.BasicObject.hbm.xml" }; }
 		}
 
 		/// <summary>

@@ -29,7 +29,7 @@ namespace NHibernate.Test.SqlCommandTest
 				new SqlString(" after.some_field = after.another_field "));
 			select.SetOrderByClause(new SqlString("column1 DESC"));
 
-			select.SetWhereClause("select_test_alias", new string[] {"identity_column"}, NHibernateUtil.Int64);
+			select.SetWhereClause("select_test_alias", new string[] { "identity_column" }, NHibernateUtil.Int64);
 
 			SqlString sqlString = select.ToSqlString();
 

@@ -8,6 +8,6 @@ namespace NHibernate.Mapping.ByCode
 
 	public interface IIdBagPropertiesMapper<TEntity, TElement> : ICollectionPropertiesMapper<TEntity, TElement>
 	{
-		void Id(Action<ICollectionIdMapper> idMapping);		
+		void Id(Action<ICollectionIdMapper> idMapping);
 	}
 }

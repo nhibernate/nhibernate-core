@@ -36,7 +36,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 			var mapdoc = new HbmMapping();
 			var rc = new ClassMapper(typeof(EntitySimple), mapdoc, For<EntitySimple>.Property(x => x.Id));
 			rc.Synchronize("T1", "T2", "T3", null);
-			Assert.That(mapdoc.RootClasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new [] {"T1", "T2", "T3"}));
+			Assert.That(mapdoc.RootClasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new[] { "T1", "T2", "T3" }));
 		}
 
 		[Test]
@@ -46,7 +46,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 			var rc = new ClassMapper(typeof(EntitySimple), mapdoc, For<EntitySimple>.Property(x => x.Id));
 			rc.Synchronize("T1", "T2");
 			rc.Synchronize("T3");
-			Assert.That(mapdoc.RootClasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new [] {"T1", "T2", "T3"}));
+			Assert.That(mapdoc.RootClasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new[] { "T1", "T2", "T3" }));
 		}
 
 		[Test]
@@ -56,7 +56,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 			var rc = new ClassMapper(typeof(EntitySimple), mapdoc, For<EntitySimple>.Property(x => x.Id));
 			rc.Synchronize("T1", "T2");
 			rc.Synchronize("T3", "T2");
-			Assert.That(mapdoc.RootClasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new [] {"T1", "T2", "T3"}));
+			Assert.That(mapdoc.RootClasses[0].Synchronize.Select(x => x.table), Is.EquivalentTo(new[] { "T1", "T2", "T3" }));
 		}
 	}
 }

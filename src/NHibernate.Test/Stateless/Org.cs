@@ -1,34 +1,34 @@
 namespace NHibernate.Test.Stateless
 {
-    public class Org
-    {
-        private int id;
-        private Country country;
+	public class Org
+	{
+		private int id;
+		private Country country;
 
-        public virtual int Id
-        {
-            get
-            {
-                return id;
-            }
+		public virtual int Id
+		{
+			get
+			{
+				return id;
+			}
 
-            set
-            {
-                id = value;
-            }
-        }
+			set
+			{
+				id = value;
+			}
+		}
 
-        public virtual Country Country
-        {
-            get
-            {
-                return country;
-            }
+		public virtual Country Country
+		{
+			get
+			{
+				return country;
+			}
 
-            set
-            {
-                country = value;
-            }
-        }
-    }
+			set
+			{
+				country = value;
+			}
+		}
+	}
 }

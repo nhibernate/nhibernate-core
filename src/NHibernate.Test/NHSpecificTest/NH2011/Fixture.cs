@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2011
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					session.Save(new Country {CountryCode = "SE"});
+					session.Save(new Country { CountryCode = "SE" });
 					tx.Commit();
 				}
 			}
@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2011
 			var newOrder = new Order();
 			newOrder.GroupComponent = new GroupComponent();
 			newOrder.GroupComponent.Countries = new List<Country>();
-			newOrder.GroupComponent.Countries.Add(new Country {CountryCode = "SE"});
+			newOrder.GroupComponent.Countries.Add(new Country { CountryCode = "SE" });
 
 			Order mergedCopy;
 			using (ISession session = OpenSession())

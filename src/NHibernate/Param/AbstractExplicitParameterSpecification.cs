@@ -85,11 +85,11 @@ namespace NHibernate.Param
 				if (skipParameter != null)
 					skipParameterValue = skipParameter.GetSkipValue(queryParameters);
 
-				return dialect.GetLimitValue(skipParameterValue , (int)value);
+				return dialect.GetLimitValue(skipParameterValue, (int) value);
 			}
 
 			if (isSkipParameter)
-				return dialect.GetOffsetValue((int)value);
+				return dialect.GetOffsetValue((int) value);
 
 			return value;
 		}

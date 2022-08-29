@@ -62,10 +62,10 @@ namespace NHibernate.DomainModel
 			if (rhs == null) return false;
 
 			return (rhs.City.Equals(this.City)
-			        && rhs.StreetName.Equals(this.StreetName)
-			        && rhs.CountryCode.Equals(this.CountryCode)
-			        && rhs.StreetNumber.Equals(this.StreetNumber)
-			       );
+					&& rhs.StreetName.Equals(this.StreetName)
+					&& rhs.CountryCode.Equals(this.CountryCode)
+					&& rhs.StreetNumber.Equals(this.StreetNumber)
+				   );
 		}
 
 		public override int GetHashCode()

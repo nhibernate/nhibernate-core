@@ -1,7 +1,7 @@
 using System;
 using NHibernate.Cfg;
-using NUnit.Framework;
 using NHibernate.Cfg.Loquacious;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2228
 {
@@ -17,11 +17,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2228
 			{
 				this.factory = factory;
 				var parent = new Parent();
-				parent.Children.Add(new Child {Description = "Child1", Parent = parent});
+				parent.Children.Add(new Child { Description = "Child1", Parent = parent });
 				parent.Children.Add(new Child { Description = "Child2", Parent = parent });
 				using (var s = factory.OpenSession())
 				{
-					parentId = (int)s.Save(parent);
+					parentId = (int) s.Save(parent);
 					s.Flush();
 				}
 			}
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2228
 					{
 						parentFromClient1.Children[0].Description = "Modified info";
 						var expectedException = Assert.Throws<StaleObjectStateException>(() => tx1.Commit());
-						Assert.That(expectedException.EntityName, Is.EqualTo(typeof (Child).FullName));
+						Assert.That(expectedException.EntityName, Is.EqualTo(typeof(Child).FullName));
 						Assert.That(expectedException.Identifier, Is.EqualTo(firstChildId));
 					}
 				}

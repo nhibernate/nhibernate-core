@@ -22,7 +22,7 @@ namespace NHibernate.Test.Hql.Ast
 			private string key2;
 			private int? requestedHash;
 
-			protected Id() {}
+			protected Id() { }
 
 			public Id(KeyManyToOneKeyEntity key1, string key2)
 			{

@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (Child)) return false;
+			if (obj.GetType() != typeof(Child)) return false;
 			return Equals((Child) obj);
 		}
 
@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 			if (!hashCode.HasValue)
 				unchecked
 				{
-					hashCode = (Age*397) ^ (Parent != null ? Parent.GetHashCode() : 0);
+					hashCode = (Age * 397) ^ (Parent != null ? Parent.GetHashCode() : 0);
 				}
 
 			return hashCode.Value;

@@ -27,9 +27,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1584
 		[Test]
 		public void Load_One_To_One_Composition_For_Joined_Subclass_Succeeds()
 		{
-			var tabby = new Tabby {HasSpots = true, HasStripes = true, HasSwirls = false};
+			var tabby = new Tabby { HasSpots = true, HasStripes = true, HasSwirls = false };
 
-			var newInstance = new Male {Name = "Male", Coat = tabby};
+			var newInstance = new Male { Name = "Male", Coat = tabby };
 
 			using (ISession session = OpenSession())
 			{
@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1584
 
 			using (ISession session = OpenSession())
 			{
-				ICriteria criteria = session.CreateCriteria(typeof (Cat));
+				ICriteria criteria = session.CreateCriteria(typeof(Cat));
 				var loaded = criteria.Add(Restrictions.Eq("Id", newInstance.Id)).UniqueResult<Male>();
 
 				Assert.IsNotNull(loaded.Coat);

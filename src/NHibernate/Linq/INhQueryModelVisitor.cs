@@ -3,7 +3,7 @@ using Remotion.Linq;
 
 namespace NHibernate.Linq
 {
-	public interface INhQueryModelVisitor: IQueryModelVisitor
+	public interface INhQueryModelVisitor : IQueryModelVisitor
 	{
 		void VisitNhJoinClause(NhJoinClause nhJoinClause, QueryModel queryModel, int index);
 

@@ -24,6 +24,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 		{
 			get { return intData; }
 			set { intData = value; }
-		}		
+		}
 	}
 }

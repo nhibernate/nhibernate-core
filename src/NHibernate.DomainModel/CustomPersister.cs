@@ -49,7 +49,7 @@ namespace NHibernate.DomainModel
 
 		public string EntityName
 		{
-			get { return typeof (Custom).FullName; }
+			get { return typeof(Custom).FullName; }
 		}
 
 		public EntityMetamodel EntityMetamodel
@@ -220,7 +220,7 @@ namespace NHibernate.DomainModel
 
 		public bool IsSubclassEntityName(string entityName)
 		{
-			return typeof (Custom).FullName.Equals(entityName);
+			return typeof(Custom).FullName.Equals(entityName);
 		}
 
 		public bool HasProxy
@@ -306,14 +306,14 @@ namespace NHibernate.DomainModel
 		{
 			// fails when optional object is supplied
 			Custom clone = null;
-			Custom obj = (Custom)Instances[id];
+			Custom obj = (Custom) Instances[id];
 			if (obj != null)
 			{
-				clone = (Custom)obj.Clone();
+				clone = (Custom) obj.Clone();
 				TwoPhaseLoad.AddUninitializedEntity(session.GenerateEntityKey(id, this), clone, this, LockMode.None, session);
-				TwoPhaseLoad.PostHydrate(this, id, new String[] {obj.Name}, null, clone, LockMode.None, session);
+				TwoPhaseLoad.PostHydrate(this, id, new String[] { obj.Name }, null, clone, LockMode.None, session);
 				TwoPhaseLoad.InitializeEntity(clone, false, session, new PreLoadEvent((IEventSource) session),
-				                              new PostLoadEvent((IEventSource) session));
+											  new PostLoadEvent((IEventSource) session));
 			}
 			return clone;
 		}
@@ -325,7 +325,7 @@ namespace NHibernate.DomainModel
 
 		public void Insert(object id, object[] fields, object obj, ISessionImplementor session)
 		{
-			Instances[id] = ((Custom)obj).Clone();
+			Instances[id] = ((Custom) obj).Clone();
 		}
 
 		public object Insert(object[] fields, object obj, ISessionImplementor session)
@@ -339,9 +339,9 @@ namespace NHibernate.DomainModel
 		}
 
 		public void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields,
-		                   object oldVersion, object obj, object rowId, ISessionImplementor session)
+						   object oldVersion, object obj, object rowId, ISessionImplementor session)
 		{
-			Instances[id] = ((Custom)obj).Clone();
+			Instances[id] = ((Custom) obj).Clone();
 		}
 
 		public bool[] PropertyUpdateability
@@ -450,22 +450,22 @@ namespace NHibernate.DomainModel
 		public object[] GetPropertyValues(object obj)
 		{
 			Custom c = (Custom) obj;
-			return new Object[] {c.Name};
+			return new Object[] { c.Name };
 		}
 
 		public object GetPropertyValue(object obj, int i)
 		{
-			return ((Custom)obj).Name;
+			return ((Custom) obj).Name;
 		}
 
 		public object GetPropertyValue(object obj, string name)
 		{
-			return ((Custom)obj).Name;
+			return ((Custom) obj).Name;
 		}
 
 		public object GetIdentifier(object obj)
 		{
-			return ((Custom)obj).Id;
+			return ((Custom) obj).Id;
 		}
 
 		public void SetIdentifier(object obj, object id)
@@ -481,7 +481,7 @@ namespace NHibernate.DomainModel
 		public object Instantiate(object id)
 		{
 			Custom c = new Custom();
-			c.Id = (string)id;
+			c.Id = (string) id;
 			return c;
 		}
 
@@ -497,7 +497,7 @@ namespace NHibernate.DomainModel
 
 		public void ResetIdentifier(object entity, object currentId, object currentVersion)
 		{
-			((Custom)entity).Id = (string)currentId;
+			((Custom) entity).Id = (string) currentId;
 		}
 
 		public IEntityPersister GetSubclassEntityPersister(object instance, ISessionFactoryImplementor factory)

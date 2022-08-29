@@ -9,7 +9,7 @@ namespace NHibernate.Test.EngineTest
 		[Test]
 		public void NativeSQLQueryCollectionReturnEqualsByAlias()
 		{
-			var sr1 = new NativeSQLQueryCollectionReturn("myAlias", "owner", "ownerProp", null,LockMode.None);
+			var sr1 = new NativeSQLQueryCollectionReturn("myAlias", "owner", "ownerProp", null, LockMode.None);
 			var sr2 = new NativeSQLQueryCollectionReturn("myAlias", "owner", "ownerProp", null, LockMode.None);
 			Assert.AreEqual(sr1, sr2);
 		}
@@ -17,7 +17,7 @@ namespace NHibernate.Test.EngineTest
 		[Test]
 		public void NativeSQLQueryCollectionReturnHashCodeByAlias()
 		{
-			var sr1 = new NativeSQLQueryCollectionReturn("myAlias", "owner", "ownerProp", null,LockMode.None);
+			var sr1 = new NativeSQLQueryCollectionReturn("myAlias", "owner", "ownerProp", null, LockMode.None);
 			var sr2 = new NativeSQLQueryCollectionReturn("myAlias", "owner", "ownerProp", null, LockMode.None);
 			Assert.AreEqual(sr1.GetHashCode(), sr2.GetHashCode());
 		}

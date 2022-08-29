@@ -103,7 +103,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 				SurrogateSelector = new SerializationHelper.SurrogateSelector()	
 #endif
 			};
-			Configuration deserializedConfig = (Configuration)reader.Deserialize(configMemoryStream);
+			Configuration deserializedConfig = (Configuration) reader.Deserialize(configMemoryStream);
 			ISessionFactory factoryFromDeserializedConfig = deserializedConfig.BuildSessionFactory();
 
 			using (ISession deserializedSession = factoryFromDeserializedConfig.OpenSession())
@@ -127,9 +127,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3119
 	public class ComponentTestReflectionOptimizer : ReflectionOptimizer
 	{
 		private readonly bool _logCall;
-		
+
 		public static bool IsCalledForComponent { get; set; }
-		
+
 		public ComponentTestReflectionOptimizer(System.Type mappedType, IGetter[] getters, ISetter[] setters) :
 			base(mappedType, getters, setters, null, null)
 		{

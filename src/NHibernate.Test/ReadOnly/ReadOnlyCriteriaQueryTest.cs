@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
-using NHibernate.Dialect;
 using NHibernate.Criterion;
+using NHibernate.Dialect;
 using NHibernate.Proxy;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -25,7 +25,7 @@ namespace NHibernate.Test.ReadOnly
 		{
 			get { return new string[] { "ReadOnly.Enrolment.hbm.xml" }; }
 		}
-		
+
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);
@@ -38,7 +38,7 @@ namespace NHibernate.Test.ReadOnly
 		public void ModifiableSessionDefaultCriteria()
 		{
 			Sfi.Statistics.Clear();
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -46,18 +46,18 @@ namespace NHibernate.Test.ReadOnly
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
 				s.Persist(course);
-		
+
 				Course coursePreferred = new Course();
 				coursePreferred.CourseCode = "JBOSS";
 				coursePreferred.Description = "JBoss";
 				s.Persist(coursePreferred);
-		
+
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 232;
 				gavin.PreferredCourse = coursePreferred;
 				s.Persist(gavin);
-		
+
 				Enrolment enrolment = new Enrolment();
 				enrolment.Course = course;
 				enrolment.CourseCode = course.CourseCode;
@@ -67,15 +67,15 @@ namespace NHibernate.Test.ReadOnly
 				enrolment.StudentNumber = gavin.StudentNumber;
 				gavin.Enrolments.Add(enrolment);
 				s.Persist(enrolment);
-		
+
 				t.Commit();
 			}
-			
+
 			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(4));
 			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(0));
 
 			Sfi.Statistics.Clear();
-				
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -83,8 +83,8 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.False);
 				Assert.That(criteria.IsReadOnly, Is.False);
-				
-				Student gavin = (Student)criteria.UniqueResult();
+
+				Student gavin = (Student) criteria.UniqueResult();
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.False);
 				Assert.That(criteria.IsReadOnly, Is.False);
@@ -121,10 +121,10 @@ namespace NHibernate.Test.ReadOnly
 
 			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(1));
 			Assert.That(Sfi.Statistics.EntityDeleteCount, Is.EqualTo(4));
-			
+
 			Sfi.Statistics.Clear();
 		}
-		
+
 		[Test]
 		public void ModifiableSessionReadOnlyCriteria()
 		{
@@ -137,7 +137,7 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
 				Assert.That(criteria.IsReadOnly, Is.True);
-				
+
 				Student gavin = criteria.UniqueResult<Student>();
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
@@ -173,7 +173,7 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void ModifiableSessionReadOnlyClonedCriteria()
 		{
@@ -186,7 +186,7 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True, "Cloned criteria must have IsReadOnlyInitialized == true");
 				Assert.That(criteria.IsReadOnly, Is.True, "Cloned criteria must be readonly");
-				
+
 				Student gavin = criteria.UniqueResult<Student>();
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
@@ -222,7 +222,7 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void ModifiableSessionModifiableCriteria()
 		{
@@ -235,11 +235,11 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.False);
 				Assert.That(criteria.IsReadOnly, Is.False);
-				
+
 				criteria.SetReadOnly(false);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
 				Assert.That(criteria.IsReadOnly, Is.False);
-				
+
 				Student gavin = criteria.UniqueResult<Student>();
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
@@ -275,7 +275,7 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void ReadOnlySessionDefaultCriteria()
 		{
@@ -285,12 +285,12 @@ namespace NHibernate.Test.ReadOnly
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.DefaultReadOnly = true;
-				
+
 				ICriteria criteria = s.CreateCriteria<Student>();
 				Assert.That(s.DefaultReadOnly, Is.True);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.False);
 				Assert.That(criteria.IsReadOnly, Is.True);
-				
+
 				Student gavin = criteria.UniqueResult<Student>();
 				Assert.That(s.DefaultReadOnly, Is.True);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.False);
@@ -326,26 +326,26 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void ReadOnlySessionReadOnlyCriteria()
 		{
 			DefaultTestSetup();
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.DefaultReadOnly = true;
-				
+
 				ICriteria criteria = s.CreateCriteria<Student>();
 				Assert.That(s.DefaultReadOnly, Is.True);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.False);
 				Assert.That(criteria.IsReadOnly, Is.True);
-				
+
 				criteria.SetReadOnly(true);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
 				Assert.That(criteria.IsReadOnly, Is.True);
-				
+
 				Student gavin = criteria.UniqueResult<Student>();
 				Assert.That(s.DefaultReadOnly, Is.True);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
@@ -386,21 +386,21 @@ namespace NHibernate.Test.ReadOnly
 		public void ReadOnlySessionModifiableCriteria()
 		{
 			DefaultTestSetup();
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.DefaultReadOnly = true;
-				
+
 				ICriteria criteria = s.CreateCriteria<Student>();
 				Assert.That(s.DefaultReadOnly, Is.True);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.False);
 				Assert.That(criteria.IsReadOnly, Is.True);
-				
+
 				criteria.SetReadOnly(false);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
 				Assert.That(criteria.IsReadOnly, Is.False);
-				
+
 				Student gavin = criteria.UniqueResult<Student>();
 				Assert.That(s.DefaultReadOnly, Is.True);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
@@ -436,12 +436,12 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void ReadOnlyCriteriaReturnsModifiableExistingEntity()
 		{
 			Course coursePreferred = null;
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -449,18 +449,18 @@ namespace NHibernate.Test.ReadOnly
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
 				s.Persist(course);
-		
+
 				coursePreferred = new Course();
 				coursePreferred.CourseCode = "JBOSS";
 				coursePreferred.Description = "JBoss";
 				s.Persist(coursePreferred);
-		
+
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 232;
 				gavin.PreferredCourse = coursePreferred;
 				s.Persist(gavin);
-		
+
 				Enrolment enrolment = new Enrolment();
 				enrolment.Course = course;
 				enrolment.CourseCode = course.CourseCode;
@@ -470,22 +470,22 @@ namespace NHibernate.Test.ReadOnly
 				enrolment.StudentNumber = gavin.StudentNumber;
 				gavin.Enrolments.Add(enrolment);
 				s.Persist(enrolment);
-		
+
 				t.Commit();
 			}
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Assert.That(s.DefaultReadOnly, Is.False);
-				
+
 				coursePreferred = s.Get<Course>(coursePreferred.CourseCode);
 				Assert.That(s.IsReadOnly(coursePreferred), Is.False);
-				
+
 				ICriteria criteria = s.CreateCriteria<Student>().SetReadOnly(true);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
 				Assert.That(criteria.IsReadOnly, Is.True);
-				
+
 				Student gavin = criteria.UniqueResult<Student>();
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
@@ -514,12 +514,12 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void ReadOnlyCriteriaReturnsExistingModifiableProxyNotInit()
 		{
 			Course coursePreferred = null;
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -527,18 +527,18 @@ namespace NHibernate.Test.ReadOnly
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
 				s.Persist(course);
-		
+
 				coursePreferred = new Course();
 				coursePreferred.CourseCode = "JBOSS";
 				coursePreferred.Description = "JBoss";
 				s.Persist(coursePreferred);
-		
+
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 232;
 				gavin.PreferredCourse = coursePreferred;
 				s.Persist(gavin);
-		
+
 				Enrolment enrolment = new Enrolment();
 				enrolment.Course = course;
 				enrolment.CourseCode = course.CourseCode;
@@ -548,23 +548,23 @@ namespace NHibernate.Test.ReadOnly
 				enrolment.StudentNumber = gavin.StudentNumber;
 				gavin.Enrolments.Add(enrolment);
 				s.Persist(enrolment);
-		
+
 				t.Commit();
 			}
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Assert.That(s.DefaultReadOnly, Is.False);
-				
+
 				coursePreferred = s.Load<Course>(coursePreferred.CourseCode);
 				Assert.That(NHibernateUtil.IsInitialized(coursePreferred), Is.False);
 				CheckProxyReadOnly(s, coursePreferred, false);
-				
+
 				ICriteria criteria = s.CreateCriteria<Student>().SetReadOnly(true);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
 				Assert.That(criteria.IsReadOnly, Is.True);
-				
+
 				Student gavin = criteria.UniqueResult<Student>();
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
@@ -572,7 +572,7 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(s.IsReadOnly(gavin), Is.True);
 				Assert.That(NHibernateUtil.IsInitialized(coursePreferred), Is.False);
 				CheckProxyReadOnly(s, coursePreferred, false);
-				
+
 				NHibernateUtil.Initialize(coursePreferred);
 				CheckProxyReadOnly(s, coursePreferred, false);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Enrolments), Is.False);
@@ -598,12 +598,12 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void ReadOnlyCriteriaReturnsExistingModifiableProxyInit()
 		{
 			Course coursePreferred = null;
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -611,18 +611,18 @@ namespace NHibernate.Test.ReadOnly
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
 				s.Persist(course);
-		
+
 				coursePreferred = new Course();
 				coursePreferred.CourseCode = "JBOSS";
 				coursePreferred.Description = "JBoss";
 				s.Persist(coursePreferred);
-		
+
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 232;
 				gavin.PreferredCourse = coursePreferred;
 				s.Persist(gavin);
-		
+
 				Enrolment enrolment = new Enrolment();
 				enrolment.Course = course;
 				enrolment.CourseCode = course.CourseCode;
@@ -632,26 +632,26 @@ namespace NHibernate.Test.ReadOnly
 				enrolment.StudentNumber = gavin.StudentNumber;
 				gavin.Enrolments.Add(enrolment);
 				s.Persist(enrolment);
-		
+
 				t.Commit();
 			}
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Assert.That(s.DefaultReadOnly, Is.False);
-				
+
 				coursePreferred = s.Load<Course>(coursePreferred.CourseCode);
 				Assert.That(NHibernateUtil.IsInitialized(coursePreferred), Is.False);
 				CheckProxyReadOnly(s, coursePreferred, false);
-				
+
 				NHibernateUtil.Initialize(coursePreferred);
 				CheckProxyReadOnly(s, coursePreferred, false);
-				
+
 				ICriteria criteria = s.CreateCriteria<Student>().SetReadOnly(true);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
 				Assert.That(criteria.IsReadOnly, Is.True);
-				
+
 				Student gavin = criteria.UniqueResult<Student>();
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
@@ -659,7 +659,7 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(s.IsReadOnly(gavin), Is.True);
 				Assert.That(NHibernateUtil.IsInitialized(coursePreferred), Is.True);
 				CheckProxyReadOnly(s, coursePreferred, false);
-				
+
 				NHibernateUtil.Initialize(coursePreferred);
 				CheckProxyReadOnly(s, coursePreferred, false);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Enrolments), Is.False);
@@ -685,12 +685,12 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void ModifiableCriteriaReturnsExistingReadOnlyEntity()
 		{
 			Course coursePreferred = null;
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -698,18 +698,18 @@ namespace NHibernate.Test.ReadOnly
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
 				s.Persist(course);
-		
+
 				coursePreferred = new Course();
 				coursePreferred.CourseCode = "JBOSS";
 				coursePreferred.Description = "JBoss";
 				s.Persist(coursePreferred);
-		
+
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 232;
 				gavin.PreferredCourse = coursePreferred;
 				s.Persist(gavin);
-		
+
 				Enrolment enrolment = new Enrolment();
 				enrolment.Course = course;
 				enrolment.CourseCode = course.CourseCode;
@@ -719,23 +719,23 @@ namespace NHibernate.Test.ReadOnly
 				enrolment.StudentNumber = gavin.StudentNumber;
 				gavin.Enrolments.Add(enrolment);
 				s.Persist(enrolment);
-		
+
 				t.Commit();
 			}
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Assert.That(s.DefaultReadOnly, Is.False);
-				
+
 				coursePreferred = s.Get<Course>(coursePreferred.CourseCode);
 				Assert.That(s.IsReadOnly(coursePreferred), Is.False);
 				s.SetReadOnly(coursePreferred, true);
-				
+
 				ICriteria criteria = s.CreateCriteria<Student>().SetReadOnly(false);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
 				Assert.That(criteria.IsReadOnly, Is.False);
-				
+
 				Student gavin = criteria.UniqueResult<Student>();
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
@@ -743,7 +743,7 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(s.IsReadOnly(gavin), Is.False);
 				Assert.That(s.IsReadOnly(coursePreferred), Is.True);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Enrolments), Is.False);
-				
+
 				NHibernateUtil.Initialize(gavin.Enrolments);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Enrolments), Is.True);
 				Assert.That(gavin.Enrolments.Count, Is.EqualTo(1));
@@ -765,12 +765,12 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void ModifiableCriteriaReturnsExistingReadOnlyProxyNotInit()
 		{
 			Course coursePreferred = null;
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -778,18 +778,18 @@ namespace NHibernate.Test.ReadOnly
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
 				s.Persist(course);
-		
+
 				coursePreferred = new Course();
 				coursePreferred.CourseCode = "JBOSS";
 				coursePreferred.Description = "JBoss";
 				s.Persist(coursePreferred);
-		
+
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 232;
 				gavin.PreferredCourse = coursePreferred;
 				s.Persist(gavin);
-		
+
 				Enrolment enrolment = new Enrolment();
 				enrolment.Course = course;
 				enrolment.CourseCode = course.CourseCode;
@@ -799,25 +799,25 @@ namespace NHibernate.Test.ReadOnly
 				enrolment.StudentNumber = gavin.StudentNumber;
 				gavin.Enrolments.Add(enrolment);
 				s.Persist(enrolment);
-		
+
 				t.Commit();
 			}
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Assert.That(s.DefaultReadOnly, Is.False);
-				
+
 				coursePreferred = s.Load<Course>(coursePreferred.CourseCode);
 				Assert.That(NHibernateUtil.IsInitialized(coursePreferred), Is.False);
 				CheckProxyReadOnly(s, coursePreferred, false);
 				s.SetReadOnly(coursePreferred, true);
 				CheckProxyReadOnly(s, coursePreferred, true);
-				
+
 				ICriteria criteria = s.CreateCriteria<Student>().SetReadOnly(false);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
 				Assert.That(criteria.IsReadOnly, Is.False);
-				
+
 				Student gavin = criteria.UniqueResult<Student>();
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
@@ -825,11 +825,11 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(s.IsReadOnly(gavin), Is.False);
 				Assert.That(NHibernateUtil.IsInitialized(coursePreferred), Is.False);
 				CheckProxyReadOnly(s, coursePreferred, true);
-				
+
 				NHibernateUtil.Initialize(coursePreferred);
 				CheckProxyReadOnly(s, coursePreferred, true);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Enrolments), Is.False);
-				
+
 				NHibernateUtil.Initialize(gavin.Enrolments);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Enrolments), Is.True);
 				Assert.That(gavin.Enrolments.Count, Is.EqualTo(1));
@@ -851,12 +851,12 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void ModifiableCriteriaReturnsExistingReadOnlyProxyInit()
 		{
 			Course coursePreferred = null;
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -864,18 +864,18 @@ namespace NHibernate.Test.ReadOnly
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
 				s.Persist(course);
-		
+
 				coursePreferred = new Course();
 				coursePreferred.CourseCode = "JBOSS";
 				coursePreferred.Description = "JBoss";
 				s.Persist(coursePreferred);
-		
+
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 232;
 				gavin.PreferredCourse = coursePreferred;
 				s.Persist(gavin);
-		
+
 				Enrolment enrolment = new Enrolment();
 				enrolment.Course = course;
 				enrolment.CourseCode = course.CourseCode;
@@ -885,28 +885,28 @@ namespace NHibernate.Test.ReadOnly
 				enrolment.StudentNumber = gavin.StudentNumber;
 				gavin.Enrolments.Add(enrolment);
 				s.Persist(enrolment);
-		
+
 				t.Commit();
 			}
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Assert.That(s.DefaultReadOnly, Is.False);
-				
+
 				coursePreferred = s.Load<Course>(coursePreferred.CourseCode);
 				Assert.That(NHibernateUtil.IsInitialized(coursePreferred), Is.False);
 				CheckProxyReadOnly(s, coursePreferred, false);
-				
+
 				NHibernateUtil.Initialize(coursePreferred);
 				CheckProxyReadOnly(s, coursePreferred, false);
 				s.SetReadOnly(coursePreferred, true);
 				CheckProxyReadOnly(s, coursePreferred, true);
-				
+
 				ICriteria criteria = s.CreateCriteria<Student>().SetReadOnly(false);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
 				Assert.That(criteria.IsReadOnly, Is.False);
-				
+
 				Student gavin = criteria.UniqueResult<Student>();
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(criteria.IsReadOnlyInitialized, Is.True);
@@ -915,7 +915,7 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(NHibernateUtil.IsInitialized(coursePreferred), Is.True);
 				CheckProxyReadOnly(s, coursePreferred, true);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Enrolments), Is.False);
-				
+
 				NHibernateUtil.Initialize(gavin.Enrolments);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Enrolments), Is.True);
 				Assert.That(gavin.Enrolments.Count, Is.EqualTo(1));
@@ -937,13 +937,13 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void Subselect()
 		{
 			Student gavin = null;
 			Enrolment enrolment = null;
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -951,18 +951,18 @@ namespace NHibernate.Test.ReadOnly
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
 				s.Persist(course);
-		
+
 				Course coursePreferred = new Course();
 				coursePreferred.CourseCode = "JBOSS";
 				coursePreferred.Description = "JBoss";
 				s.Persist(coursePreferred);
-		
+
 				gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 232;
 				gavin.PreferredCourse = coursePreferred;
 				s.Persist(gavin);
-		
+
 				enrolment = new Enrolment();
 				enrolment.Course = course;
 				enrolment.CourseCode = course.CourseCode;
@@ -972,33 +972,33 @@ namespace NHibernate.Test.ReadOnly
 				enrolment.StudentNumber = gavin.StudentNumber;
 				gavin.Enrolments.Add(enrolment);
 				s.Persist(enrolment);
-		
+
 				t.Commit();
 			}
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>()
 					.Add(Property.ForName("StudentNumber").Eq(232L))
 					.SetProjection(Property.ForName("Name"));
-				
+
 				gavin = s.CreateCriteria<Student>()
 					.Add(Subqueries.Exists(dc))
 					.SetReadOnly(true)
 					.UniqueResult<Student>();
-				
+
 				Assert.That(s.DefaultReadOnly, Is.False);
 				Assert.That(s.IsReadOnly(gavin), Is.True);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.PreferredCourse), Is.False);
 				CheckProxyReadOnly(s, gavin.PreferredCourse, true);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.PreferredCourse), Is.False);
-				
+
 				NHibernateUtil.Initialize(gavin.PreferredCourse);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.PreferredCourse), Is.True);
 				CheckProxyReadOnly(s, gavin.PreferredCourse, true);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Enrolments), Is.False);
-				
+
 				NHibernateUtil.Initialize(gavin.Enrolments);
 				Assert.That(NHibernateUtil.IsInitialized(gavin.Enrolments), Is.True);
 				Assert.That(gavin.Enrolments.Count, Is.EqualTo(1));
@@ -1008,10 +1008,10 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(s.IsReadOnly(enrolment), Is.False);
 				Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.False);
 				CheckProxyReadOnly(s, enrolment.Course, false);
-				
+
 				NHibernateUtil.Initialize(enrolment.Course);
 				CheckProxyReadOnly(s, enrolment.Course, false);
-				
+
 				t.Commit();
 			}
 
@@ -1023,35 +1023,35 @@ namespace NHibernate.Test.ReadOnly
 					DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>("st")
 						.Add(Property.ForName("st.StudentNumber").EqProperty("e.StudentNumber"))
 						.SetProjection(Property.ForName("Name"));
-				
+
 					enrolment = s.CreateCriteria<Enrolment>("e")
 						.Add(Subqueries.Eq("Gavin King", dc))
 						.SetReadOnly(true)
 						.UniqueResult<Enrolment>();
-				
+
 					Assert.That(s.IsReadOnly(enrolment), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.False);
 					CheckProxyReadOnly(s, enrolment.Course, true);
-				
+
 					NHibernateUtil.Initialize(enrolment.Course);
 					Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.True);
 					CheckProxyReadOnly(s, enrolment.Course, true);
 					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.False);
 					CheckProxyReadOnly(s, enrolment.Student, true);
-				
+
 					NHibernateUtil.Initialize(enrolment.Student);
 					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.True);
 					CheckProxyReadOnly(s, enrolment.Student, true);
 					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.False);
 					CheckProxyReadOnly(s, enrolment.Student.PreferredCourse, false);
-				
+
 					NHibernateUtil.Initialize(enrolment.Student.PreferredCourse);
 					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.True);
 					CheckProxyReadOnly(s, enrolment.Student.PreferredCourse, false);
-			
+
 					t.Commit();
 				}
-			
+
 				using (ISession s = OpenSession())
 				using (ITransaction t = s.BeginTransaction())
 				{
@@ -1060,36 +1060,36 @@ namespace NHibernate.Test.ReadOnly
 						.CreateCriteria("Course")
 						.Add(Property.ForName("Description").Eq("Hibernate Training"))
 						.SetProjection(Property.ForName("st.Name"));
-				
+
 					enrolment = s.CreateCriteria<Enrolment>("e")
 						.Add(Subqueries.Eq("Gavin King", dc))
 						.SetReadOnly(true)
 						.UniqueResult<Enrolment>();
-				
+
 					Assert.That(s.IsReadOnly(enrolment), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.False);
 					CheckProxyReadOnly(s, enrolment.Course, true);
-				
+
 					NHibernateUtil.Initialize(enrolment.Course);
 					Assert.That(NHibernateUtil.IsInitialized(enrolment.Course), Is.True);
 					CheckProxyReadOnly(s, enrolment.Course, true);
 					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.False);
 					CheckProxyReadOnly(s, enrolment.Student, true);
-				
+
 					NHibernateUtil.Initialize(enrolment.Student);
 					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student), Is.True);
 					CheckProxyReadOnly(s, enrolment.Student, true);
 					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.False);
 					CheckProxyReadOnly(s, enrolment.Student.PreferredCourse, false);
-				
+
 					NHibernateUtil.Initialize(enrolment.Student.PreferredCourse);
 					Assert.That(NHibernateUtil.IsInitialized(enrolment.Student.PreferredCourse), Is.True);
 					CheckProxyReadOnly(s, enrolment.Student.PreferredCourse, false);
-			
+
 					t.Commit();
 				}
 			}
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -1101,35 +1101,35 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void DetachedCriteria()
 		{
 			DetachedCriteria dc = NHibernate.Criterion.DetachedCriteria.For<Student>()
 				.Add(Property.ForName("Name").Eq("Gavin King"))
 				.AddOrder(Order.Asc("StudentNumber"));
-			
+
 			byte[] bytes = SerializationHelper.Serialize(dc);
-			
-			dc = (DetachedCriteria)SerializationHelper.Deserialize(bytes);
-			
+
+			dc = (DetachedCriteria) SerializationHelper.Deserialize(bytes);
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 232;
-				
+
 				Student bizarroGavin = new Student();
 				bizarroGavin.Name = "Gavin King";
 				bizarroGavin.StudentNumber = 666;
-				
+
 				s.Persist(bizarroGavin);
 				s.Persist(gavin);
-				
+
 				t.Commit();
 			}
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -1137,46 +1137,46 @@ namespace NHibernate.Test.ReadOnly
 					.SetMaxResults(3)
 					.SetReadOnly(true)
 					.List();
-				
+
 				Assert.That(result.Count, Is.EqualTo(2));
-				
-				Student gavin = (Student)result[0];
-				Student bizarroGavin = (Student)result[1];
-				
+
+				Student gavin = (Student) result[0];
+				Student bizarroGavin = (Student) result[1];
+
 				Assert.That(gavin.StudentNumber, Is.EqualTo(232));
 				Assert.That(bizarroGavin.StudentNumber, Is.EqualTo(666));
-				
+
 				Assert.That(s.IsReadOnly(gavin), Is.True);
 				Assert.That(s.IsReadOnly(bizarroGavin), Is.True);
-				
+
 				s.Delete(gavin);
 				s.Delete(bizarroGavin);
-				
+
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void TwoAliasesCache()
 		{
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			
+
 			Course course = new Course();
 			course.CourseCode = "HIB";
 			course.Description = "Hibernate Training";
 			s.Save(course);
-			
+
 			Student gavin = new Student();
 			gavin.Name = "Gavin King";
-			gavin.StudentNumber  = 666;
+			gavin.StudentNumber = 666;
 			s.Save(gavin);
-			
+
 			Student xam = new Student();
 			xam.Name = "Max Rydahl Andersen";
-			xam.StudentNumber  = 101;
+			xam.StudentNumber = 101;
 			s.Save(xam);
-			
+
 			Enrolment enrolment1 = new Enrolment();
 			enrolment1.Course = course;
 			enrolment1.CourseCode = course.CourseCode;
@@ -1186,7 +1186,7 @@ namespace NHibernate.Test.ReadOnly
 			enrolment1.StudentNumber = xam.StudentNumber;
 			xam.Enrolments.Add(enrolment1);
 			s.Save(enrolment1);
-			
+
 			Enrolment enrolment2 = new Enrolment();
 			enrolment2.Course = course;
 			enrolment2.CourseCode = course.CourseCode;
@@ -1201,7 +1201,7 @@ namespace NHibernate.Test.ReadOnly
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			
+
 			IList list = s.CreateCriteria<Enrolment>()
 				.CreateAlias("Student", "s")
 				.CreateAlias("Course", "c")
@@ -1209,19 +1209,19 @@ namespace NHibernate.Test.ReadOnly
 				.SetCacheable(true)
 				.SetReadOnly(true)
 				.List();
-			
+
 			Assert.That(list.Count, Is.EqualTo(2));
 
-			Enrolment e = (Enrolment)list[0];
+			Enrolment e = (Enrolment) list[0];
 			if (e.Student.StudentNumber == xam.StudentNumber)
 			{
 				enrolment1 = e;
-				enrolment2 = (Enrolment)list[1];
+				enrolment2 = (Enrolment) list[1];
 			}
 			else if (e.Student.StudentNumber == gavin.StudentNumber)
 			{
 				enrolment2 = e;
-				enrolment1 = (Enrolment)list[1];
+				enrolment1 = (Enrolment) list[1];
 			}
 			else
 			{
@@ -1238,10 +1238,10 @@ namespace NHibernate.Test.ReadOnly
 
 			t.Commit();
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
-			
+
 			list = s.CreateCriteria<Enrolment>()
 				.CreateAlias("Student", "s")
 				.CreateAlias("Course", "c")
@@ -1250,18 +1250,19 @@ namespace NHibernate.Test.ReadOnly
 				.SetCacheable(true)
 				.SetReadOnly(true)
 				.List();
-		
+
 			Assert.That(list.Count, Is.EqualTo(2));
 
-			e = (Enrolment)list[0];
+			e = (Enrolment) list[0];
 			if (e.Student.StudentNumber == xam.StudentNumber)
 			{
 				enrolment1 = e;
-				enrolment2 = (Enrolment)list[1];
+				enrolment2 = (Enrolment) list[1];
 			}
-			else if (e.Student.StudentNumber == gavin.StudentNumber) {
+			else if (e.Student.StudentNumber == gavin.StudentNumber)
+			{
 				enrolment2 = e;
-				enrolment1 = (Enrolment)list[1];
+				enrolment1 = (Enrolment) list[1];
 			}
 			else
 			{
@@ -1278,10 +1279,10 @@ namespace NHibernate.Test.ReadOnly
 
 			t.Commit();
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
-			
+
 			list = s.CreateCriteria<Enrolment>()
 				.SetReadOnly(true)
 				.CreateAlias("Student", "s")
@@ -1289,19 +1290,19 @@ namespace NHibernate.Test.ReadOnly
 				.Add(Restrictions.IsNotEmpty("s.Enrolments"))
 				.SetCacheable(true)
 				.List();
-			
+
 			Assert.That(list.Count, Is.EqualTo(2));
 
-			e = (Enrolment)list[0];
+			e = (Enrolment) list[0];
 			if (e.Student.StudentNumber == xam.StudentNumber)
 			{
 				enrolment1 = e;
-				enrolment2 = (Enrolment)list[1];
+				enrolment2 = (Enrolment) list[1];
 			}
 			else if (e.Student.StudentNumber == gavin.StudentNumber)
 			{
 				enrolment2 = e;
-				enrolment1 = (Enrolment)list[1];
+				enrolment1 = (Enrolment) list[1];
 			}
 			else
 			{
@@ -1321,11 +1322,11 @@ namespace NHibernate.Test.ReadOnly
 			s.Delete(enrolment1.Course);
 			s.Delete(enrolment1.Student);
 			s.Delete(enrolment2.Student);
-		
+
 			t.Commit();
 			s.Close();
 		}
-		
+
 		private void DefaultTestSetup()
 		{
 			using (ISession s = OpenSession())
@@ -1335,18 +1336,18 @@ namespace NHibernate.Test.ReadOnly
 				course.CourseCode = "HIB";
 				course.Description = "Hibernate Training";
 				s.Persist(course);
-		
+
 				Course coursePreferred = new Course();
 				coursePreferred.CourseCode = "JBOSS";
 				coursePreferred.Description = "JBoss";
 				s.Persist(coursePreferred);
-		
+
 				Student gavin = new Student();
 				gavin.Name = "Gavin King";
 				gavin.StudentNumber = 232;
 				gavin.PreferredCourse = coursePreferred;
 				s.Persist(gavin);
-		
+
 				Enrolment enrolment = new Enrolment();
 				enrolment.Course = course;
 				enrolment.CourseCode = course.CourseCode;
@@ -1356,15 +1357,15 @@ namespace NHibernate.Test.ReadOnly
 				enrolment.StudentNumber = gavin.StudentNumber;
 				gavin.Enrolments.Add(enrolment);
 				s.Persist(enrolment);
-		
+
 				t.Commit();
 			}
 		}
-		
+
 		private void CheckProxyReadOnly(ISession s, object proxy, bool expectedReadOnly)
 		{
 			Assert.That(proxy, Is.InstanceOf<INHibernateProxy>());
-			ILazyInitializer li = ((INHibernateProxy)proxy).HibernateLazyInitializer;
+			ILazyInitializer li = ((INHibernateProxy) proxy).HibernateLazyInitializer;
 			Assert.That(s, Is.SameAs(li.Session));
 			Assert.That(s.IsReadOnly(proxy), Is.EqualTo(expectedReadOnly));
 			Assert.That(li.ReadOnly, Is.EqualTo(expectedReadOnly));

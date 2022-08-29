@@ -43,16 +43,16 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 
 			mapper.ComponentAsId(For<Person>.Property(x => x.Id), map =>
 																  {
-																															map.Property(For<PersonId>.Property(x => x.Email), pm => { });
-																															map.ManyToOne(For<PersonId>.Property(x => x.User), pm => { });
-																														});
+																	  map.Property(For<PersonId>.Property(x => x.Email), pm => { });
+																	  map.ManyToOne(For<PersonId>.Property(x => x.User), pm => { });
+																  });
 			var hbmClass = mapdoc.RootClasses[0];
 			Assert.That(hbmClass.Id, Is.Null);
 			var hbmCompositeId = hbmClass.CompositeId;
 			Assert.That(hbmCompositeId, Is.Not.Null);
 			Assert.That(hbmCompositeId.@class, Is.Not.Null);
 			Assert.That(hbmCompositeId.Items, Has.Length.EqualTo(2));
-			Assert.That(hbmCompositeId.Items.Select(x => x.GetType()), Is.EquivalentTo(new [] {typeof(HbmKeyProperty), typeof(HbmKeyManyToOne)}));
+			Assert.That(hbmCompositeId.Items.Select(x => x.GetType()), Is.EquivalentTo(new[] { typeof(HbmKeyProperty), typeof(HbmKeyManyToOne) }));
 		}
 
 		[Test]

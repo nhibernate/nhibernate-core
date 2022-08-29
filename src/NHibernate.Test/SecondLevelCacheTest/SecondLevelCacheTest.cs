@@ -1,5 +1,5 @@
-using System.Data.Common;
 using System.Collections;
+using System.Data.Common;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Engine;
@@ -77,7 +77,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		{
 			using (ISession session = OpenSession())
 			{
-				Item one = (Item)session.Load(typeof(Item), 1);
+				Item one = (Item) session.Load(typeof(Item), 1);
 				IList results = session.CreateQuery("from Item item where item.Parent = :parent")
 					.SetEntity("parent", one)
 					.SetCacheable(true).List();
@@ -90,7 +90,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 
 			using (ISession session = OpenSession())
 			{
-				Item two = (Item)session.Load(typeof(Item), 2);
+				Item two = (Item) session.Load(typeof(Item), 2);
 				IList results = session.CreateQuery("from Item item where item.Parent = :parent")
 					.SetEntity("parent", two)
 					.SetCacheable(true).List();
@@ -103,14 +103,14 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		{
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item)session.Load(typeof(Item), 1);
+				Item item = (Item) session.Load(typeof(Item), 1);
 				Assert.IsTrue(item.Children.Count == 4); // just force it into the second level cache here
 			}
 			int childId = -1;
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item)session.Load(typeof(Item), 1);
-				Item child = (Item)item.Children[0];
+				Item item = (Item) session.Load(typeof(Item), 1);
+				Item child = (Item) item.Children[0];
 				childId = child.Id;
 				session.Delete(child);
 				item.Children.Remove(child);
@@ -119,7 +119,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item)session.Load(typeof(Item), 1);
+				Item item = (Item) session.Load(typeof(Item), 1);
 				Assert.AreEqual(3, item.Children.Count);
 				foreach (Item child in item.Children)
 				{
@@ -134,7 +134,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 		{
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item)session.Load(typeof(Item), 1);
+				Item item = (Item) session.Load(typeof(Item), 1);
 				Item child = new Item();
 				child.Id = 6;
 				item.Children.Add(child);
@@ -144,7 +144,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 
 			using (ISession session = OpenSession())
 			{
-				Item item = (Item)session.Load(typeof(Item), 1);
+				Item item = (Item) session.Load(typeof(Item), 1);
 				int count = item.Children.Count;
 				Assert.AreEqual(5, count);
 			}

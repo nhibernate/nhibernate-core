@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3505
 			using (ISession s = Sfi.OpenSession())
 			{
 				s.Delete("from Student");
-			    s.Delete("from Teacher");
+				s.Delete("from Teacher");
 				s.Flush();
 			}
 		}
@@ -24,17 +24,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3505
 		[Test]
 		public void StatelessSessionLazyUpdate()
 		{
-		    var s = OpenSession();
-		    Guid studentId;
-		    Guid teacherId;
+			var s = OpenSession();
+			Guid studentId;
+			Guid teacherId;
 			try
 			{
-			    var teacher = new Teacher {Name = "Wise Man"};
+				var teacher = new Teacher { Name = "Wise Man" };
 				s.Save(teacher);
-			    teacherId = teacher.Id;
-			    var student = new Student {Name = "Rebelious Teenager", Teacher = teacher};
-			    s.Save(student);
-			    studentId = student.Id;
+				teacherId = teacher.Id;
+				var student = new Student { Name = "Rebelious Teenager", Teacher = teacher };
+				s.Save(student);
+				studentId = student.Id;
 				s.Flush();
 			}
 			finally
@@ -45,22 +45,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3505
 			var ss = Sfi.OpenStatelessSession();
 			try
 			{
-			    var trans = ss.BeginTransaction();
-                try
-                {
-                    var student = ss.Get<Student>(studentId);
-                    Assert.AreEqual(teacherId, student.Teacher.Id);
-                    Assert.AreEqual("Rebelious Teenager", student.Name);
-                    student.Name = "Young Protege";
-                    ss.Update(student);
-                    trans.Commit();
-                }
-                catch
-                {
-                    trans.Rollback();
-                    throw;
-                }
-            }
+				var trans = ss.BeginTransaction();
+				try
+				{
+					var student = ss.Get<Student>(studentId);
+					Assert.AreEqual(teacherId, student.Teacher.Id);
+					Assert.AreEqual("Rebelious Teenager", student.Name);
+					student.Name = "Young Protege";
+					ss.Update(student);
+					trans.Commit();
+				}
+				catch
+				{
+					trans.Rollback();
+					throw;
+				}
+			}
 			finally
 			{
 				ss.Close();
@@ -69,9 +69,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3505
 			s = OpenSession();
 			try
 			{
-			    var student = s.Get<Student>(studentId);
-                Assert.AreEqual(teacherId, student.Teacher.Id);
-			    Assert.AreEqual("Young Protege", student.Name);
+				var student = s.Get<Student>(studentId);
+				Assert.AreEqual(teacherId, student.Teacher.Id);
+				Assert.AreEqual("Young Protege", student.Name);
 			}
 			finally
 			{

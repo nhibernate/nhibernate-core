@@ -13,14 +13,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					var category = new Category {IsActive = true};
+					var category = new Category { IsActive = true };
 					s.Save(category);
 
-					var customerWithCategory = new Customer {Name = "HasCategory"};
+					var customerWithCategory = new Customer { Name = "HasCategory" };
 					customerWithCategory.Categories.Add(category);
 					s.Save(customerWithCategory);
 
-					var customerWithNoCategory = new Customer {Name = "HasNoCategory"};
+					var customerWithNoCategory = new Customer { Name = "HasNoCategory" };
 					s.Save(customerWithNoCategory);
 
 					tx.Commit();
@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 				IFilter filter = session.EnableFilter("onlyActive");
 				filter.SetParameter("activeFlag", true);
 
-				ICriteria hasCategoryCriteria = session.CreateCriteria(typeof (Customer));
+				ICriteria hasCategoryCriteria = session.CreateCriteria(typeof(Customer));
 				hasCategoryCriteria.Add(Restrictions.Eq("Name", "HasCategory"));
 				IList<Customer> hasCategoryResult = hasCategoryCriteria.List<Customer>();
 
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 			{
 				session.DisableFilter("onlyActive");
 
-				ICriteria hasCategoryCriteria = session.CreateCriteria(typeof (Customer));
+				ICriteria hasCategoryCriteria = session.CreateCriteria(typeof(Customer));
 				hasCategoryCriteria.Add(Restrictions.Eq("Name", "HasCategory"));
 				IList<Customer> hasCategoryResult = hasCategoryCriteria.List<Customer>();
 
@@ -80,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 				IFilter filter = session.EnableFilter("onlyActive");
 				filter.SetParameter("activeFlag", true);
 
-				ICriteria hasNoCategoryCriteria = session.CreateCriteria(typeof (Customer));
+				ICriteria hasNoCategoryCriteria = session.CreateCriteria(typeof(Customer));
 				hasNoCategoryCriteria.Add(Restrictions.Eq("Name", "HasNoCategory"));
 				IList<Customer> hasNoCategoryResult = hasNoCategoryCriteria.List<Customer>();
 
@@ -95,7 +95,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1863
 			{
 				session.DisableFilter("onlyActive");
 
-				ICriteria hasNoCategoryCriteria = session.CreateCriteria(typeof (Customer));
+				ICriteria hasNoCategoryCriteria = session.CreateCriteria(typeof(Customer));
 				hasNoCategoryCriteria.Add(Restrictions.Eq("Name", "HasNoCategory"));
 				IList<Customer> hasNoCategoryResult = hasNoCategoryCriteria.List<Customer>();
 

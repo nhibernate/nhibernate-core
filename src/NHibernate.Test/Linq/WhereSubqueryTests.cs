@@ -27,11 +27,11 @@ namespace NHibernate.Test.Linq
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
 
-// ReSharper disable UseMethodAny.1
+			// ReSharper disable UseMethodAny.1
 			var query = (from timesheet in db.Timesheets
 						 where timesheet.Entries.Count() >= 1
 						 select timesheet).ToList();
-// ReSharper restore UseMethodAny.1
+			// ReSharper restore UseMethodAny.1
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -42,11 +42,11 @@ namespace NHibernate.Test.Linq
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
 
-// ReSharper disable UseMethodAny.1
+			// ReSharper disable UseMethodAny.1
 			var query = (from timesheet in db.Timesheets
 						 where 1 <= timesheet.Entries.Count()
 						 select timesheet).ToList();
-// ReSharper restore UseMethodAny.1
+			// ReSharper restore UseMethodAny.1
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -411,12 +411,12 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test(Description = "NH-2999 and NH-2988")]
 		public void OrderLinesWithImpliedJoinAndSubQuery()
 		{
-// ReSharper disable SimplifyLinqExpression
+			// ReSharper disable SimplifyLinqExpression
 			var lines = (from l in db.OrderLines
 						 where l.Order.Customer.CustomerId == "VINET"
 						 where !l.Order.Employee.Subordinates.Any(x => x.EmployeeId == 100)
 						 select l).ToList();
-// ReSharper restore SimplifyLinqExpression
+			// ReSharper restore SimplifyLinqExpression
 
 			Assert.That(lines.Count, Is.EqualTo(10));
 		}
@@ -529,14 +529,14 @@ where c.Order.Customer.CustomerId = 'VINET'
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
 			var ordersQuery = db.Orders
-			                    .Where(x => x.Employee.EmployeeId > 5)
-			                    .OrderByDescending(x => x.OrderId)
-			                    .Take(2);
+								.Where(x => x.Employee.EmployeeId > 5)
+								.OrderByDescending(x => x.OrderId)
+								.Take(2);
 
 			var orderLinesFuture = db.OrderLines
-			                         .Where(x => ordersQuery.Any(o => o == x.Order))
-			                         .OrderBy(x => x.Id)
-			                         .ToFuture();
+									 .Where(x => ordersQuery.Any(o => o == x.Order))
+									 .OrderBy(x => x.Id)
+									 .ToFuture();
 
 			var orders = ordersQuery.ToFuture().ToList();
 			var orderLines = orderLinesFuture.ToList();
@@ -549,13 +549,13 @@ where c.Order.Customer.CustomerId = 'VINET'
 		public void OrdersWithSubquery9A()
 		{
 			var ordersQuery = db.Orders
-			                    .Where(x => x.Employee.EmployeeId > 5)
-			                    .OrderByDescending(x => x.OrderId);
+								.Where(x => x.Employee.EmployeeId > 5)
+								.OrderByDescending(x => x.OrderId);
 
 			var orderLinesFuture = db.OrderLines
-			                         .Where(x => ordersQuery.Any(o => o == x.Order))
-			                         .OrderBy(x => x.Id)
-			                         .ToFuture();
+									 .Where(x => ordersQuery.Any(o => o == x.Order))
+									 .OrderBy(x => x.Id)
+									 .ToFuture();
 
 			var orders = ordersQuery.ToFuture().ToList();
 			var orderLines = orderLinesFuture.ToList();
@@ -615,15 +615,15 @@ where c.Order.Customer.CustomerId = 'VINET'
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
 
 			var ordersQuery = db.Orders
-			                    .Where(x => x.Employee.EmployeeId > 5)
-			                    .OrderByDescending(x => x.OrderId)
-			                    .Take(2);
+								.Where(x => x.Employee.EmployeeId > 5)
+								.OrderByDescending(x => x.OrderId)
+								.Take(2);
 
 			var productsQuery = ordersQuery.SelectMany(x => x.OrderLines).Select(x => x.Product);
 			var productsFuture = db.Products
-			                       .Where(x => productsQuery.Contains(x))
-			                       .OrderBy(x => x.ProductId)
-			                       .ToFuture();
+								   .Where(x => productsQuery.Contains(x))
+								   .OrderBy(x => x.ProductId)
+								   .ToFuture();
 
 			var orders = ordersQuery.ToFuture().ToList();
 			var products = productsFuture.ToList();
@@ -636,14 +636,14 @@ where c.Order.Customer.CustomerId = 'VINET'
 		public void OrdersWithSubquery10A()
 		{
 			var ordersQuery = db.Orders
-			                    .Where(x => x.Employee.EmployeeId > 5)
-			                    .OrderByDescending(x => x.OrderId);
+								.Where(x => x.Employee.EmployeeId > 5)
+								.OrderByDescending(x => x.OrderId);
 
 			var productsQuery = ordersQuery.SelectMany(x => x.OrderLines).Select(x => x.Product);
 			var productsFuture = db.Products
-			                       .Where(x => productsQuery.Contains(x))
-			                       .OrderBy(x => x.ProductId)
-			                       .ToFuture();
+								   .Where(x => productsQuery.Contains(x))
+								   .OrderBy(x => x.ProductId)
+								   .ToFuture();
 
 			var orders = ordersQuery.ToFuture().ToList();
 			var products = productsFuture.ToList();
@@ -661,14 +661,14 @@ where c.Order.Customer.CustomerId = 'VINET'
 				Assert.Ignore("MS SQL CE does not support sorting on a subquery.");
 
 			var ordersQuery = db.Orders
-			                    .OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId)
-			                    .Take(2);
+								.OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId)
+								.Take(2);
 
 			var orderLineQuery = ordersQuery.SelectMany(x => x.OrderLines);
 			var productsNotInLargestOrders = db.Products
-			                                   .Where(x => orderLineQuery.All(p => p.Product != x))
-			                                   .OrderBy(x => x.ProductId)
-			                                   .ToList();
+											   .Where(x => orderLineQuery.All(p => p.Product != x))
+											   .OrderBy(x => x.ProductId)
+											   .ToList();
 
 			Assert.That(productsNotInLargestOrders.Count, Is.EqualTo(49), nameof(productsNotInLargestOrders));
 		}
@@ -677,13 +677,13 @@ where c.Order.Customer.CustomerId = 'VINET'
 		public void OrdersWithSubquery11A()
 		{
 			var ordersQuery = db.Orders
-			                    .OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId);
+								.OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId);
 
 			var orderLineQuery = ordersQuery.SelectMany(x => x.OrderLines);
 			var productsNotInLargestOrders = db.Products
-			                                   .Where(x => orderLineQuery.All(p => p.Product != x))
-			                                   .OrderBy(x => x.ProductId)
-			                                   .ToList();
+											   .Where(x => orderLineQuery.All(p => p.Product != x))
+											   .OrderBy(x => x.ProductId)
+											   .ToList();
 
 			Assert.That(productsNotInLargestOrders.Count, Is.EqualTo(0), nameof(productsNotInLargestOrders));
 		}
@@ -730,11 +730,11 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test(Description = "NH-2762")]
 		public void ProductsWithSubqueryAsIEnumerable()
 		{
-// ReSharper disable RedundantEnumerableCastCall
+			// ReSharper disable RedundantEnumerableCastCall
 			var categories = (from c in db.Categories
 							  where c.Name == "Confections"
 							  select c).ToList().OfType<ProductCategory>();
-// ReSharper restore RedundantEnumerableCastCall
+			// ReSharper restore RedundantEnumerableCastCall
 
 			var result = (from p in db.Products
 						  where categories.Contains(p.Category)
@@ -891,7 +891,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 						  where (from c in db.Categories
 								 where c.Name == "Confections"
 								 && c == p.Category
-								 select new{R=p.Discontinued}).FirstOrDefault().R == false
+								 select new { R = p.Discontinued }).FirstOrDefault().R == false
 						  select p)
 				.ToList();
 
@@ -925,7 +925,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 			// to just the IfFalse expression. Without this collapsing, we cannot generate HQL.
 
 			var result = db.Products
-				.Select(p => new {Name = p.Name, Pr2 = new {ReorderLevel = p.ReorderLevel}})
+				.Select(p => new { Name = p.Name, Pr2 = new { ReorderLevel = p.ReorderLevel } })
 				.Where(pr1 => (pr1.Pr2 == null ? (int?) null : pr1.Pr2.ReorderLevel) > 6)
 				.ToList();
 
@@ -951,7 +951,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			var result = db.Products
 				.Select(p => new Pr1 { Name = p.Name, Pr2 = new Pr2 { ReorderLevel = p.ReorderLevel } })
-				.Where(pr1 => (pr1.Pr2 == null ? (int?)null : pr1.Pr2.ReorderLevel) > 6)
+				.Where(pr1 => (pr1.Pr2 == null ? (int?) null : pr1.Pr2.ReorderLevel) > 6)
 				.ToList();
 
 			Assert.That(result.Count, Is.EqualTo(45));

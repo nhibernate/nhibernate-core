@@ -21,12 +21,12 @@ namespace NHibernate.SqlCommand
 		// columns-> (ColumnName, Value) or (ColumnName, SqlType) for parametrized column
 		private readonly LinkedHashMap<string, object> columns = new LinkedHashMap<string, object>();
 
-	    private List<SqlString> whereStrings = new List<SqlString>();
+		private List<SqlString> whereStrings = new List<SqlString>();
 		private readonly List<SqlType> whereParameterTypes = new List<SqlType>();
 		private SqlString assignments;
 
 		public SqlUpdateBuilder(Dialect.Dialect dialect, IMapping mapping)
-			: base(dialect, mapping) {}
+			: base(dialect, mapping) { }
 
 		public SqlUpdateBuilder SetTableName(string tableName)
 		{
@@ -335,16 +335,16 @@ namespace NHibernate.SqlCommand
 				if (initialCapacity < sqlBuilder.Count)
 				{
 					log.Debug("The initial capacity was set too low at: {0} for the UpdateSqlBuilder that needed a capacity of: {1} for the table {2}",
-					          initialCapacity,
-					          sqlBuilder.Count,
-					          tableName);
+							  initialCapacity,
+							  sqlBuilder.Count,
+							  tableName);
 				}
 				else if (initialCapacity > 16 && ((float) initialCapacity / sqlBuilder.Count) > 1.2)
 				{
 					log.Debug("The initial capacity was set too high at: {0} for the UpdateSqlBuilder that needed a capacity of: {1} for the table {2}",
-					          initialCapacity,
-					          sqlBuilder.Count,
-					          tableName);
+							  initialCapacity,
+							  sqlBuilder.Count,
+							  tableName);
 				}
 			}
 
@@ -357,7 +357,7 @@ namespace NHibernate.SqlCommand
 		{
 			SqlString text = ToSqlString();
 
-			var parameterTypes = columns.Values.OfType<SqlType>().ToList(); 
+			var parameterTypes = columns.Values.OfType<SqlType>().ToList();
 			parameterTypes.AddRange(whereParameterTypes);
 			return new SqlCommandInfo(text, parameterTypes.ToArray());
 		}

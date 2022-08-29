@@ -6,29 +6,29 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2806
 {
 	[TestFixture, Ignore("Not fixed yet.")]
-	public  class Fixture : BugTestCase
+	public class Fixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{
 			var mother = new Lizard
-				{
-					BodyWeight = 48,
-					Description = "Mother",
-					Children = new List<Animal>()
-				};
+			{
+				BodyWeight = 48,
+				Description = "Mother",
+				Children = new List<Animal>()
+			};
 			var father = new Lizard
-				{
-					BodyWeight = 48,
-					Description = "Father",
-					Children = new List<Animal>()
-				};
+			{
+				BodyWeight = 48,
+				Description = "Father",
+				Children = new List<Animal>()
+			};
 			var child = new Lizard
-				{
-					Mother = mother,
-					Father = father,
-					BodyWeight = 48,
-					Description = "Child",
-				};
+			{
+				Mother = mother,
+				Father = father,
+				BodyWeight = 48,
+				Description = "Child",
+			};
 
 			mother.Children.Add(child);
 			father.Children.Add(child);
@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2806
 
 				transaction.Commit();
 			}
-		} 
+		}
 
 		[Test]
 		public void SelectPregnantStatusOfTypeHql()
@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2806
 					var list = session.CreateQuery("from Animal").List<Animal>();
 					var count = list.Count();
 					Assert.AreEqual(3, count);
-					Assert.Greater(1, spy.GetWholeLog().Split(new[] {"inner join"}, StringSplitOptions.None).Count());
+					Assert.Greater(1, spy.GetWholeLog().Split(new[] { "inner join" }, StringSplitOptions.None).Count());
 				}
 			}
 		}

@@ -2,10 +2,10 @@ using System;
 using System.IO;
 using System.Runtime.Serialization;
 using NHibernate.Engine;
-using NHibernate.Persister.Entity;
-using NHibernate.Util;
 using NHibernate.Impl;
 using NHibernate.Persister;
+using NHibernate.Persister.Entity;
+using NHibernate.Util;
 
 namespace NHibernate.Action
 {
@@ -14,11 +14,11 @@ namespace NHibernate.Action
 	/// instance.
 	/// </summary>
 	[Serializable]
-	public abstract partial class EntityAction : 
+	public abstract partial class EntityAction :
 		IAsyncExecutable,
 		IBeforeTransactionCompletionProcess,
 		IAfterTransactionCompletionProcess,
-		IComparable<EntityAction>, 
+		IComparable<EntityAction>,
 		IDeserializationCallback,
 		ICacheableExecutable
 	{
@@ -153,7 +153,7 @@ namespace NHibernate.Action
 		protected virtual void BeforeTransactionCompletionProcessImpl()
 		{
 		}
-		
+
 		protected virtual void AfterTransactionCompletionProcessImpl(bool success)
 		{
 		}

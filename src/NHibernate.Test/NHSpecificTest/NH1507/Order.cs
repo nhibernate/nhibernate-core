@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1507
 		private int _id;
 #pragma warning restore CS0169 // The field is never used
 
-		protected internal Order() {}
+		protected internal Order() { }
 
 		public virtual Employee Employee { get; set; }
 

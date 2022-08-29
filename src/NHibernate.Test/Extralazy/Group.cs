@@ -7,7 +7,7 @@ namespace NHibernate.Test.Extralazy
 		private string _name;
 		private IDictionary<string, User> _users = new Dictionary<string, User>();
 
-		protected Group() {}
+		protected Group() { }
 		public Group(string name)
 		{
 			this._name = name;

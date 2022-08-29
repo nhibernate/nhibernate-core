@@ -51,7 +51,7 @@ namespace NHibernate.Id.Insert
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-					                                 "could not insert: " + persister.GetInfoString(), insertSql.Text);
+													 "could not insert: " + persister.GetInfoString(), insertSql.Text);
 				}
 
 				var selectSql = SelectSQL;
@@ -82,8 +82,8 @@ namespace NHibernate.Id.Insert
 					catch (DbException sqle)
 					{
 						throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle,
-						                                 "could not retrieve generated id after insert: " + persister.GetInfoString(),
-						                                 insertSql.Text);
+														 "could not retrieve generated id after insert: " + persister.GetInfoString(),
+														 insertSql.Text);
 					}
 				}
 			}

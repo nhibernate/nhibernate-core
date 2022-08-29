@@ -189,8 +189,8 @@ namespace NHibernate.Cache
 					ILockable lockable = (ILockable) Cache.Get(key);
 					long timeout = Cache.NextTimestamp() + Cache.Timeout;
 					CacheLock @lock = lockable == null ?
-					                  CacheLock.Create(timeout, NextLockId(), version) :
-					                  lockable.Lock(timeout, NextLockId());
+									  CacheLock.Create(timeout, NextLockId(), version) :
+									  lockable.Lock(timeout, NextLockId());
 					Cache.Put(key, @lock);
 					return @lock;
 				}
@@ -237,7 +237,7 @@ namespace NHibernate.Cache
 						var version = versions[i];
 						var lockable = (ILockable) lockables[i];
 						bool puttable = lockable == null ||
-						                lockable.IsPuttable(timestamp, version, versionComparers[i]);
+										lockable.IsPuttable(timestamp, version, versionComparers[i]);
 						if (puttable)
 						{
 							putBatch.Add(key, CachedItem.Create(values[i], Cache.NextTimestamp(), version));
@@ -280,7 +280,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		/// <returns>Whether the item was actually put into the cache</returns>
 		public bool Put(CacheKey key, object value, long txTimestamp, object version, IComparer versionComparator,
-		                bool minimalPut)
+						bool minimalPut)
 		{
 			if (txTimestamp == long.MinValue)
 			{
@@ -301,7 +301,7 @@ namespace NHibernate.Cache
 					ILockable lockable = (ILockable) Cache.Get(key);
 
 					bool puttable = lockable == null ||
-					                lockable.IsPuttable(txTimestamp, version, versionComparator);
+									lockable.IsPuttable(txTimestamp, version, versionComparator);
 
 					if (puttable)
 					{
@@ -503,9 +503,9 @@ namespace NHibernate.Cache
 		{
 			//null clientLock is remotely possible but will never happen in practice
 			return myLock != null &&
-			       myLock.IsLock &&
-			       clientLock != null &&
-			       ((CacheLock) clientLock).Id == ((CacheLock) myLock).Id;
+				   myLock.IsLock &&
+				   clientLock != null &&
+				   ((CacheLock) clientLock).Id == ((CacheLock) myLock).Id;
 		}
 	}
 }

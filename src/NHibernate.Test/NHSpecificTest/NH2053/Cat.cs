@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH2053
 {
-    public class Cat: Animal
-    {
-    }
+	public class Cat : Animal
+	{
+	}
 }

@@ -40,7 +40,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			});
 
 			IEnumerable<string> tablePerClassSplits = inspector.GetPropertiesSplits(typeof(MyClass));
-			Assert.That(tablePerClassSplits, Is.EquivalentTo(new [] {"MyClassSplit1", "MyClassSplit2"}));
+			Assert.That(tablePerClassSplits, Is.EquivalentTo(new[] { "MyClassSplit1", "MyClassSplit2" }));
 		}
 
 		[Test]
@@ -51,7 +51,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			mapper.Class<MyClass>(map =>
 														{
 															map.Id(x => x.Id, idmap => { });
-															map.Join("MyClassSplit1", mj=>
+															map.Join("MyClassSplit1", mj =>
 															{
 																mj.Property(x => x.SomethingA1);
 																mj.Property(x => x.SomethingA2);
@@ -96,12 +96,12 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmDoc = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 
 			var hbmClass = hbmDoc.RootClasses[0];
-			Assert.That(hbmClass.Joins.Select(j => j.table), Is.EquivalentTo(new [] {"MyClassSplit1", "MyClassSplit2"}));
+			Assert.That(hbmClass.Joins.Select(j => j.table), Is.EquivalentTo(new[] { "MyClassSplit1", "MyClassSplit2" }));
 			Assert.That(hbmClass.Properties.Single().Name, Is.EqualTo("Something0"));
 			var hbmSplit1 = hbmClass.Joins.Single(j => "MyClassSplit1" == j.table);
-			Assert.That(hbmSplit1.Properties.Select(p => p.Name), Is.EquivalentTo(new [] {"SomethingA1", "SomethingA2"}));
+			Assert.That(hbmSplit1.Properties.Select(p => p.Name), Is.EquivalentTo(new[] { "SomethingA1", "SomethingA2" }));
 			var hbmSplit2 = hbmClass.Joins.Single(j => "MyClassSplit2" == j.table);
-			Assert.That(hbmSplit2.Properties.Select(p => p.Name), Is.EquivalentTo(new [] {"SomethingB1", "SomethingB2"}));
+			Assert.That(hbmSplit2.Properties.Select(p => p.Name), Is.EquivalentTo(new[] { "SomethingB1", "SomethingB2" }));
 		}
 	}
 }

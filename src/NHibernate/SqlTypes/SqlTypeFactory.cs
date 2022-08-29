@@ -12,7 +12,7 @@ namespace NHibernate.SqlTypes
 	{
 		// key = typeof(sqlType).Name : ie - BinarySqlType(l), BooleanSqlType, DecimalSqlType(p,s)
 		// value = SqlType
-		private static readonly ConcurrentDictionary<string, SqlType> SqlTypes = 
+		private static readonly ConcurrentDictionary<string, SqlType> SqlTypes =
 			new ConcurrentDictionary<string, SqlType>(4 * Environment.ProcessorCount, 128);
 
 		public static readonly SqlType Guid = new SqlType(DbType.Guid);

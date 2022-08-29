@@ -1,6 +1,6 @@
 using System.Collections;
-using NHibernate.Type;
 using NHibernate.Engine;
+using NHibernate.Type;
 
 namespace NHibernate.Metadata
 {
@@ -13,7 +13,7 @@ namespace NHibernate.Metadata
 		/// <summary>
 		/// The name of the entity
 		/// </summary>
-		string EntityName{ get; }
+		string EntityName { get; }
 
 		/// <summary>
 		/// The name of the identifier property (or return null)

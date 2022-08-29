@@ -17,7 +17,7 @@ namespace NHibernate.Engine.Query
 		}
 
 		protected FilterQueryPlan(FilterQueryPlan source, IQueryExpression expression)
-			: base (source, expression)
+			: base(source, expression)
 		{
 			CollectionRole = source.CollectionRole;
 		}

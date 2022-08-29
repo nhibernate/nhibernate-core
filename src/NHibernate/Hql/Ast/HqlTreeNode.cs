@@ -109,7 +109,7 @@ namespace NHibernate.Hql.Ast
 		public static HqlExpression AsExpression(this HqlTreeNode node)
 		{
 			// TODO - nice error handling if cast fails
-			return (HqlExpression)node;
+			return (HqlExpression) node;
 		}
 
 		// Since v5
@@ -148,7 +148,7 @@ namespace NHibernate.Hql.Ast
 			{
 				var builder = new HqlTreeBuilder();
 
-				return builder.Case(new[] {builder.When(hqlBooleanExpression, builder.True())}, builder.False());
+				return builder.Case(new[] { builder.When(hqlBooleanExpression, builder.True()) }, builder.False());
 			}
 
 			return (HqlExpression) node;
@@ -322,7 +322,7 @@ namespace NHibernate.Hql.Ast
 	public class HqlInto : HqlStatement
 	{
 		public HqlInto(IASTFactory factory, params HqlTreeNode[] children)
-			: base(HqlSqlWalker.INTO, "into", factory,children)
+			: base(HqlSqlWalker.INTO, "into", factory, children)
 		{
 		}
 	}
@@ -822,7 +822,7 @@ namespace NHibernate.Hql.Ast
 			: base(HqlSqlWalker.AGGREGATE, "max", factory, expression)
 		{
 		}
-}
+	}
 
 	public class HqlMin : HqlExpression
 	{
@@ -985,7 +985,7 @@ namespace NHibernate.Hql.Ast
 		public HqlLike(IASTFactory factory, HqlExpression lhs, HqlExpression rhs, HqlConstant escapeCharacter)
 		: base(HqlSqlWalker.LIKE, "like", factory, lhs, rhs, new HqlEscape(factory, escapeCharacter))
 		{
-	}
+		}
 	}
 
 	public class HqlEscape : HqlStatement

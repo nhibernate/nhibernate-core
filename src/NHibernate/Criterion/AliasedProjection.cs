@@ -1,6 +1,6 @@
 using System;
-using NHibernate.SqlCommand;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Criterion
@@ -43,7 +43,7 @@ namespace NHibernate.Criterion
 		{
 			return projection.GetColumnAliases(position, criteria, criteriaQuery);
 		}
-		
+
 		public string[] GetColumnAliases(string alias, int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return this.alias.Equals(alias)
@@ -53,7 +53,7 @@ namespace NHibernate.Criterion
 
 		public virtual string[] Aliases
 		{
-			get { return new string[] {alias}; }
+			get { return new string[] { alias }; }
 		}
 
 		public virtual bool IsGrouped

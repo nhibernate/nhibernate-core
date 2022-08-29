@@ -7,20 +7,20 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion.Lambda
 {
-	public class QueryOverSubqueryBuilder<TRoot,TSubType> : QueryOverSubqueryBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType, QueryOverSubqueryPropertyBuilder<TRoot,TSubType>>
+	public class QueryOverSubqueryBuilder<TRoot, TSubType> : QueryOverSubqueryBuilderBase<QueryOver<TRoot, TSubType>, TRoot, TSubType, QueryOverSubqueryPropertyBuilder<TRoot, TSubType>>
 	{
-		public QueryOverSubqueryBuilder(QueryOver<TRoot,TSubType> root)
+		public QueryOverSubqueryBuilder(QueryOver<TRoot, TSubType> root)
 			: base(root) { }
 	}
 
-	public class IQueryOverSubqueryBuilder<TRoot,TSubType> : QueryOverSubqueryBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType, IQueryOverSubqueryPropertyBuilder<TRoot,TSubType>>
+	public class IQueryOverSubqueryBuilder<TRoot, TSubType> : QueryOverSubqueryBuilderBase<IQueryOver<TRoot, TSubType>, TRoot, TSubType, IQueryOverSubqueryPropertyBuilder<TRoot, TSubType>>
 	{
-		public IQueryOverSubqueryBuilder(IQueryOver<TRoot,TSubType> root)
+		public IQueryOverSubqueryBuilder(IQueryOver<TRoot, TSubType> root)
 			: base(root) { }
 	}
 
 	public class QueryOverSubqueryBuilderBase<TReturn, TRoot, TSubType, TBuilderType>
-		where TReturn : IQueryOver<TRoot,TSubType>
+		where TReturn : IQueryOver<TRoot, TSubType>
 		where TBuilderType : QueryOverSubqueryPropertyBuilderBase, new()
 	{
 		protected TReturn root;
@@ -117,18 +117,18 @@ namespace NHibernate.Criterion.Lambda
 		public TBuilderType WhereProperty(Expression<Func<TSubType, object>> expression)
 		{
 			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
-			return (TBuilderType)new TBuilderType().Set(root, property, null);
+			return (TBuilderType) new TBuilderType().Set(root, property, null);
 		}
 
 		public TBuilderType WhereProperty(Expression<Func<object>> expression)
 		{
 			string property = ExpressionProcessor.FindMemberExpression(expression.Body);
-			return (TBuilderType)new TBuilderType().Set(root, property, null);
+			return (TBuilderType) new TBuilderType().Set(root, property, null);
 		}
 
 		public TBuilderType WhereValue(object value)
 		{
-			return (TBuilderType)new TBuilderType().Set(root, null, value);
+			return (TBuilderType) new TBuilderType().Set(root, null, value);
 		}
 	}
 }

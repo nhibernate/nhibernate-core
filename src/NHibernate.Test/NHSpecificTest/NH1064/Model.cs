@@ -72,7 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1064
 			this._Id = id;
 			this._Name = name;
 		}
-		
+
 		private string _Id;
 		public virtual string Id
 		{

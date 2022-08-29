@@ -6,5 +6,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 		public virtual SubItemBase SubItem { get; set; }
 	}
 
-	public class ItemWithComponentSubItem : ItemBase {}
+	public class ItemWithComponentSubItem : ItemBase { }
 }

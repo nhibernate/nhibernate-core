@@ -237,20 +237,20 @@ namespace NHibernate.Test.Linq
 		public void Customers11to20And21to30ShouldNoCacheQuery()
 		{
 			var query = (from c in db.Customers
-							orderby c.CustomerId
-							select c.CustomerId).Skip(10).Take(10).ToList();
+						 orderby c.CustomerId
+						 select c.CustomerId).Skip(10).Take(10).ToList();
 			Assert.AreEqual(query[0], "BSBEV");
 			Assert.AreEqual(10, query.Count);
 
 			query = (from c in db.Customers
-						orderby c.CustomerId
-						select c.CustomerId).Skip(20).Take(10).ToList();
+					 orderby c.CustomerId
+					 select c.CustomerId).Skip(20).Take(10).ToList();
 			Assert.AreNotEqual(query[0], "BSBEV");
 			Assert.AreEqual(10, query.Count);
 
 			query = (from c in db.Customers
-						orderby c.CustomerId
-						select c.CustomerId).Skip(10).Take(20).ToList();
+					 orderby c.CustomerId
+					 select c.CustomerId).Skip(10).Take(20).ToList();
 			Assert.AreEqual(query[0], "BSBEV");
 			Assert.AreEqual(20, query.Count);
 		}
@@ -262,7 +262,7 @@ namespace NHibernate.Test.Linq
 			var q = (from c in db.Customers
 					 orderby c.CustomerId
 					 select c.CustomerId).Take(5).Take(6);
-			
+
 			var query = q.ToList();
 
 			Assert.AreEqual(5, query.Count);
@@ -298,10 +298,10 @@ namespace NHibernate.Test.Linq
 				.Select(p => p.ProductId)
 				.ToList();
 
-			var ids = db.Products 
-				.OrderBy(p => p.ProductId) 
-				.Skip(10).Take(20) 
-				.Select(p => p.ProductId) 
+			var ids = db.Products
+				.OrderBy(p => p.ProductId)
+				.Skip(10).Take(20)
+				.Select(p => p.ProductId)
 				.ToList();
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
@@ -311,14 +311,14 @@ namespace NHibernate.Test.Linq
 		public void OrderedPagedProductsWithInnerProjection()
 		{
 			//NH-3108 (not failing)
-			var inMemoryIds = db.Products.ToList() 
-				.OrderBy(p => p.ProductId) 
+			var inMemoryIds = db.Products.ToList()
+				.OrderBy(p => p.ProductId)
 				.Select(p => p.ProductId)
 				.Skip(10).Take(20)
 				.ToList();
 
-			var ids = db.Products 
-				.OrderBy(p => p.ProductId) 
+			var ids = db.Products
+				.OrderBy(p => p.ProductId)
 				.Select(p => p.ProductId)
 				.Skip(10).Take(20)
 				.ToList();
@@ -337,9 +337,9 @@ namespace NHibernate.Test.Linq
 				.ToList();
 
 			var ids = db.Products
-				.OrderByDescending(p => p.ProductId) 
-				.Skip(10).Take(20) 
-				.Select(p => p.ProductId) 
+				.OrderByDescending(p => p.ProductId)
+				.Skip(10).Take(20)
+				.Select(p => p.ProductId)
 				.ToList();
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
@@ -350,13 +350,13 @@ namespace NHibernate.Test.Linq
 		{
 			//NH-3108 (not failing)
 			var inMemoryIds = db.Products.ToList()
-				.OrderByDescending(p => p.ProductId) 
+				.OrderByDescending(p => p.ProductId)
 				.Select(p => p.ProductId)
 				.Skip(10).Take(20)
 				.ToList();
 
 			var ids = db.Products
-				.OrderByDescending(p => p.ProductId) 
+				.OrderByDescending(p => p.ProductId)
 				.Select(p => p.ProductId)
 				.Skip(10).Take(20)
 				.ToList();
@@ -485,7 +485,7 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
-		
+
 		[Test]
 		public void PagedProductsWithOuterWhereClauseAndComplexProjection()
 		{

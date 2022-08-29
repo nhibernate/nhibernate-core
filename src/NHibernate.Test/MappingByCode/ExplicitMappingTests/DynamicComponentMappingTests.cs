@@ -182,7 +182,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmDynamicComponent = hbmClass.Properties.OfType<HbmDynamicComponent>().SingleOrDefault();
 			Assert.That(hbmDynamicComponent, Is.Not.Null);
-			Assert.That(hbmDynamicComponent.Properties.Select(x=> x.Name), Is.EquivalentTo(new [] {"MyInt", "MyDate"}));
+			Assert.That(hbmDynamicComponent.Properties.Select(x => x.Name), Is.EquivalentTo(new[] { "MyInt", "MyDate" }));
 		}
 
 		[Test]
@@ -199,7 +199,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmDynamicComponent = hbmClass.Properties.OfType<HbmDynamicComponent>().SingleOrDefault();
 			Assert.That(hbmDynamicComponent, Is.Not.Null);
-			Assert.That(hbmDynamicComponent.Properties.Select(x=> x.Name), Is.EquivalentTo(new [] {"MyInt", "MyDate"}));
+			Assert.That(hbmDynamicComponent.Properties.Select(x => x.Name), Is.EquivalentTo(new[] { "MyInt", "MyDate" }));
 		}
 
 		[Test]
@@ -243,7 +243,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 				map.Id(x => x.Id, idmap => { });
 				map.Component(
 					x => x.Info,
-					new {MyInt = 5},
+					new { MyInt = 5 },
 					z =>
 					{
 						z.Access(Accessor.Field);

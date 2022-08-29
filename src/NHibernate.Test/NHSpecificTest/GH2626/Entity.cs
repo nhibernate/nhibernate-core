@@ -6,9 +6,9 @@ namespace NHibernate.Test.NHSpecificTest.GH2626
 	{
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
-	}	
-	
-	 class ApplicationUser
+	}
+
+	class ApplicationUser
 	{
 		public virtual Guid Id { get; set; }
 		public virtual string UserName { get; set; }

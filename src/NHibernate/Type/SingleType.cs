@@ -22,7 +22,7 @@ namespace NHibernate.Type
 		{
 		}
 
-		public SingleType(SqlType sqlType) : base(sqlType) {}
+		public SingleType(SqlType sqlType) : base(sqlType) { }
 
 		/// <summary></summary>
 		public override string Name

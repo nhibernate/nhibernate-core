@@ -1,12 +1,12 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using NHibernate.Util;
-using System;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class FiltersBinder: Binder
+	public class FiltersBinder : Binder
 	{
 		private readonly IFilterable filterable;
 

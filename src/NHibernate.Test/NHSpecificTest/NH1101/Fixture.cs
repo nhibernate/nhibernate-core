@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 			object savedId;
 			A a = new A();
 			using (ISession s = OpenSession())
-			using(ITransaction t = s.BeginTransaction())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				savedId = s.Save(a);
 				t.Commit();

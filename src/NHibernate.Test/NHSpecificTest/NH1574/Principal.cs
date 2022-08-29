@@ -279,5 +279,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1574
 			get { return team; }
 			set { team = value; }
 		}
-	} ;
+	};
 }

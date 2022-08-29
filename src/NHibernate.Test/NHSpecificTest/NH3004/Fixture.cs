@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3004
 			driver.RemoveUnusedCommandParameters(command, sqlString);
 
 			Assert.AreEqual(command.Parameters.Count, 1);
-			
+
 			Assert.AreEqual(command.Parameters[0], usedParam);
 		}
 	}

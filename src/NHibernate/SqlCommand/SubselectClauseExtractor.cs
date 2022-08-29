@@ -112,7 +112,7 @@ namespace NHibernate.SqlCommand
 		{
 			int afterLastClosingParenIndex = 0;
 			int fromIndex = part.IndexOf(FromClauseToken, StringComparison.OrdinalIgnoreCase);
-			
+
 			for (int i = 0; i < part.Length; i++)
 			{
 				if (parenNestCount == 0 && i > fromIndex)
@@ -142,7 +142,7 @@ namespace NHibernate.SqlCommand
 				fromIndex = part.IndexOf(FromClauseToken, StringComparison.OrdinalIgnoreCase);
 			}
 
-			if(parenNestCount > 0)
+			if (parenNestCount > 0)
 				return -1;
 
 			return fromIndex;
@@ -169,7 +169,7 @@ namespace NHibernate.SqlCommand
 				lastOrderByPartIndex = builder.Count - 1;
 				lastOrderByIndex = index;
 			}
-			
+
 			IgnoreOrderByInSubselect(partString);
 		}
 

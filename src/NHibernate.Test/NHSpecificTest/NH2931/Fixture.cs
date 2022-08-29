@@ -1,6 +1,6 @@
-﻿using NHibernate.Mapping.ByCode;
+﻿using System.Linq;
+using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using System.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH2931
 {

@@ -61,7 +61,7 @@ namespace NHibernate.Test
 		/// Some databases do not support SELECT FOR UPDATE 
 		/// </summary>
 		public virtual bool SupportsSelectForUpdate => true;
-		
+
 		/// <summary>
 		/// Some databases do not support SELECT FOR UPDATE with paging
 		/// </summary>

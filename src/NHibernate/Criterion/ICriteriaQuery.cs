@@ -36,7 +36,7 @@ namespace NHibernate.Criterion
 
 		/// <summary>Get the name of the column mapped by a property path, ignoring projection alias</summary>
 		string GetColumn(ICriteria criteria, string propertyPath);
-		
+
 		/// <summary>Get the names of the columns mapped by a property path, ignoring projection aliases</summary>
 		string[] GetColumns(ICriteria criteria, string propertyPath);
 

@@ -9,7 +9,7 @@ namespace NHibernate.Test.CollectionTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"CollectionTest.NullableValueTypeElementMapFixture.hbm.xml"}; }
+			get { return new[] { "CollectionTest.NullableValueTypeElementMapFixture.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly

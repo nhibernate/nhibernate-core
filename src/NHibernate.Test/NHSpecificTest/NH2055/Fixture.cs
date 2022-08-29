@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using NUnit.Framework;
-using NHibernate.Tool.hbm2ddl;
 using System.Text;
 using NHibernate.Cfg;
+using NHibernate.Tool.hbm2ddl;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2055
 {
@@ -22,24 +22,24 @@ namespace NHibernate.Test.NHSpecificTest.NH2055
 			cfg = configuration;
 		}
 
-		[Test] 
-		public void CanCreateAndDropSchema() 
+		[Test]
+		public void CanCreateAndDropSchema()
 		{
-            using(var s = Sfi.OpenSession())
-            {
-                using(var cmd = s.Connection.CreateCommand())
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+			using (var s = Sfi.OpenSession())
+			{
+				using (var cmd = s.Connection.CreateCommand())
+				{
+					cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.CommandText = "test_proc1";
+					cmd.CommandText = "test_proc1";
 
-                    Assert.AreEqual(1, cmd.ExecuteScalar());
+					Assert.AreEqual(1, cmd.ExecuteScalar());
 
-                    cmd.CommandText = "test_proc2";
+					cmd.CommandText = "test_proc2";
 
-                    Assert.AreEqual(2, cmd.ExecuteScalar());
-                }
-            }
-		} 
+					Assert.AreEqual(2, cmd.ExecuteScalar());
+				}
+			}
+		}
 	}
 }

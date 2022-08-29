@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
-using Environment = NHibernate.Cfg.Environment;
 using NHibernate.Dialect.Function;
 using NHibernate.SqlCommand;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -30,7 +30,7 @@ namespace NHibernate.Dialect
 		public SybaseASE15Dialect()
 		{
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SybaseAseClientDriver";
-			
+
 			RegisterColumnType(DbType.Boolean, "tinyint"); // Sybase BIT type does not support null values
 			RegisterColumnType(DbType.Int16, "smallint");
 			RegisterColumnType(DbType.Int16, 255, "tinyint");
@@ -68,7 +68,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "datalength(?1) * 8"));
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
 			RegisterFunction("char", new StandardSQLFunction("char", NHibernateUtil.String));
-			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(","+",")"));
+			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
 			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
 			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double));
 			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate));
@@ -121,52 +121,52 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("new_uuid", new NoArgSQLFunction("newid", NHibernateUtil.Guid));
 		}
-		
+
 		public override string AddColumnString
 		{
 			get { return "add"; }
 		}
-		
+
 		public override string NullColumnString
 		{
 			get { return " null"; }
 		}
-		
+
 		public override bool QualifyIndexName
 		{
 			get { return false; }
 		}
-		
+
 		public override bool SupportsIdentityColumns
 		{
 			get { return true; }
 		}
-		
+
 		public override string IdentitySelectString
 		{
 			get { return "select @@identity"; }
 		}
-		
+
 		public override string IdentityColumnString
 		{
 			get { return "identity not null"; } // starts with 1, implicitly
 		}
-		
+
 		public override bool SupportsInsertSelectIdentity
 		{
 			get { return true; }
 		}
-		
+
 		public override bool SupportsCurrentTimestampSelection
 		{
 			get { return true; }
 		}
-		
+
 		public override bool IsCurrentTimestampSelectStringCallable
 		{
 			get { return false; }
 		}
-		
+
 		public override string CurrentTimestampSelectString
 		{
 			get { return "select getdate()"; }
@@ -193,47 +193,47 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
-		
+
 		public override string SelectGUIDString
 		{
 			get { return "select newid()"; }
 		}
-		
+
 		public override bool SupportsEmptyInList
 		{
 			get { return false; }
 		}
-		
+
 		public override bool SupportsUnionAll
 		{
 			get { return true; }
 		}
-		
+
 		public override bool SupportsExistsInSelect
 		{
 			get { return false; }
 		}
-		
+
 		public override bool DoesReadCommittedCauseWritersToBlockReaders
 		{
 			get { return true; }
 		}
-		
+
 		public override bool DoesRepeatableReadCauseReadersToBlockWriters
 		{
 			get { return true; }
 		}
-		
+
 		public override bool SupportsCascadeDelete
 		{
 			get { return false; }
 		}
-		
+
 		public override int MaxAliasLength
 		{
 			get { return 30; }
 		}
-		
+
 		/// <summary>
 		/// This is false only by default. The database can be configured to be
 		/// case-insensitive.
@@ -242,7 +242,7 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
-		
+
 		public override string CurrentTimestampSQLFunctionName
 		{
 			get { return "getdate()"; }
@@ -263,57 +263,57 @@ namespace NHibernate.Dialect
 		{
 			get { return '['; }
 		}
-				
+
 		public override char CloseQuote
 		{
 			get { return ']'; }
 		}
-		
+
 		public override string ForUpdateString
 		{
 			get { return String.Empty; }
 		}
-		
+
 		public override string GenerateTemporaryTableName(string baseTableName)
 		{
 			return "#" + baseTableName;
 		}
-		
+
 		public override bool DropTemporaryTableAfterUse()
 		{
 			return true;
 		}
-		
+
 		public override SqlString AppendIdentitySelectToInsert(SqlString insertString)
 		{
 			return insertString.Append("\nselect @@identity");
 		}
-		
+
 		public override string AppendLockHint(LockMode lockMode, string tableName)
 		{
 			if (lockMode.GreaterThan(LockMode.Read))
 				return tableName + " holdlock";
-			
+
 			return tableName;
 		}
-		
+
 		public override SqlString ApplyLocksToSql(SqlString sql, IDictionary<string, LockMode> aliasedLockModes, IDictionary<string, string[]> keyColumnNames)
 		{
 			// TODO:  merge additional lockoptions support in Dialect.applyLocksToSql
 
 			var buffer = new StringBuilder(sql.ToString());
 			int correction = 0;
-			
+
 			foreach (KeyValuePair<string, LockMode> entry in aliasedLockModes)
 			{
 				LockMode mode = entry.Value;
-				
+
 				if (mode.GreaterThan(LockMode.Read))
 				{
 					string alias = entry.Key;
 					int start = -1;
 					int end = -1;
-					
+
 					if (sql.EndsWith(" " + alias))
 					{
 						start = (sql.Length - alias.Length) + correction;
@@ -322,17 +322,17 @@ namespace NHibernate.Dialect
 					else
 					{
 						int position = sql.IndexOfCaseInsensitive(" " + alias + " ");
-						
+
 						if (position <= -1)
 							position = sql.IndexOfCaseInsensitive(" " + alias + ",");
-						
+
 						if (position > -1)
 						{
 							start = position + correction + 1;
 							end = start + alias.Length;
 						}
 					}
-					
+
 					if (start > -1)
 					{
 						string lockHint = AppendLockHint(mode, alias);
@@ -344,12 +344,12 @@ namespace NHibernate.Dialect
 			}
 			return new SqlString(buffer.ToString());
 		}
-		
+
 		public override int RegisterResultSetOutParameter(DbCommand statement, int position)
 		{
 			return position;
 		}
-		
+
 		public override DbDataReader GetResultSet(DbCommand statement)
 		{
 			return statement.ExecuteReader();

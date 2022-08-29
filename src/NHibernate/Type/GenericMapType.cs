@@ -81,16 +81,16 @@ namespace NHibernate.Type
 
 			var targetPc = target as IPersistentCollection;
 			var originalPc = original as IPersistentCollection;
-			var iterOriginal = (IDictionary<TKey, TValue>)original;
+			var iterOriginal = (IDictionary<TKey, TValue>) original;
 			var clearTargetsDirtyFlag = ShouldTargetsDirtyFlagBeCleared(targetPc, originalPc, iterOriginal);
 
-			var result = (IDictionary<TKey, TValue>)target;
+			var result = (IDictionary<TKey, TValue>) target;
 			result.Clear();
 
 			foreach (var me in iterOriginal)
 			{
-				var key = (TKey)cp.IndexType.Replace(me.Key, null, session, owner, copyCache);
-				var value = (TValue)cp.ElementType.Replace(me.Value, null, session, owner, copyCache);
+				var key = (TKey) cp.IndexType.Replace(me.Key, null, session, owner, copyCache);
+				var value = (TValue) cp.ElementType.Replace(me.Value, null, session, owner, copyCache);
 				result[key] = value;
 			}
 
@@ -119,8 +119,8 @@ namespace NHibernate.Type
 
 		protected override bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
 		{
-			var first = (IDictionary<TKey, TValue>)original;
-			var second = (IDictionary<TKey, TValue>)target;
+			var first = (IDictionary<TKey, TValue>) original;
+			var second = (IDictionary<TKey, TValue>) target;
 			return first.Count == second.Count && first.All(keyValue => second.Contains(keyValue));
 		}
 	}

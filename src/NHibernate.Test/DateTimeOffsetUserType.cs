@@ -60,7 +60,7 @@ namespace NHibernate.Test
 					string.Format(
 						"Could not cast the value in field {0} of type {1} to the Type {2}.  Please check to make sure that the mapping is correct and that your DataProvider supports this Data Type.",
 						names[0], dr[index].GetType().Name, GetType().Name), ice);
-			}		
+			}
 		}
 
 		public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
@@ -71,7 +71,7 @@ namespace NHibernate.Test
 			}
 			else
 			{
-				DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
+				DateTimeOffset dateTimeOffset = (DateTimeOffset) value;
 				DateTime paramVal = dateTimeOffset.ToOffset(Offset).DateTime;
 
 				cmd.Parameters[index].Value = paramVal;
@@ -123,7 +123,7 @@ namespace NHibernate.Test
 
 		public int Compare(object x, object y)
 		{
-			return ((DateTimeOffset)x).CompareTo((DateTimeOffset)y);
+			return ((DateTimeOffset) x).CompareTo((DateTimeOffset) y);
 		}
 
 		public void SetParameterValues(System.Collections.Generic.IDictionary<string, string> parameters)

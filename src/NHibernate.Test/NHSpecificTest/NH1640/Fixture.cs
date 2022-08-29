@@ -13,8 +13,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1640
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var sub = new Entity {Id = 2, Name = "Child 2"};
-					savedId = (int) session.Save(new Entity {Id = 1, Name = "Parent 1", Child = sub});
+					var sub = new Entity { Id = 2, Name = "Child 2" };
+					savedId = (int) session.Save(new Entity { Id = 1, Name = "Parent 1", Child = sub });
 					tx.Commit();
 				}
 			}
@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1640
 				var parent =
 					session.CreateQuery("from Entity p join fetch p.Child where p.Id=:pId").SetInt32("pId", savedId).UniqueResult
 						<Entity>();
-				Assert.That(parent.Child,Is.TypeOf(typeof (Entity)));
+				Assert.That(parent.Child, Is.TypeOf(typeof(Entity)));
 			}
 
 			using (ISession session = OpenSession())

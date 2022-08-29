@@ -10,7 +10,7 @@ namespace NHibernate.Proxy
 	/// <summary>
 	/// Convenient common implementation for ProxyFactory
 	/// </summary>
-	public abstract class AbstractProxyFactory: IProxyFactory
+	public abstract class AbstractProxyFactory : IProxyFactory
 	{
 		protected virtual string EntityName { get; private set; }
 		protected virtual System.Type PersistentClass { get; private set; }

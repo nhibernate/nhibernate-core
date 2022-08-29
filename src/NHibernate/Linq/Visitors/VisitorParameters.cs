@@ -26,9 +26,9 @@ namespace NHibernate.Linq.Visitors
 		internal bool CanCachePlan { get; set; } = true;
 
 		public VisitorParameters(
-			ISessionFactoryImplementor sessionFactory, 
-			IDictionary<ConstantExpression, NamedParameter> constantToParameterMap, 
-			List<NamedParameterDescriptor> requiredHqlParameters, 
+			ISessionFactoryImplementor sessionFactory,
+			IDictionary<ConstantExpression, NamedParameter> constantToParameterMap,
+			List<NamedParameterDescriptor> requiredHqlParameters,
 			QuerySourceNamer querySourceNamer,
 			System.Type targetEntityType,
 			QueryMode rootQueryMode)

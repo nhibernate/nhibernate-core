@@ -132,10 +132,10 @@ namespace NHibernate.Test.TransformTests
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-					s.Save(new Simple { Name = "Name1" });
-					s.Save(new Simple { Name = "Name2" });
-					t.Commit();
-				}
+				s.Save(new Simple { Name = "Name1" });
+				s.Save(new Simple { Name = "Name2" });
+				t.Commit();
+			}
 		}
 
 		protected override void OnTearDown()
@@ -143,8 +143,8 @@ namespace NHibernate.Test.TransformTests
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-					s.Delete("from Simple");
-					t.Commit();
+				s.Delete("from Simple");
+				t.Commit();
 			}
 		}
 
@@ -285,7 +285,7 @@ namespace NHibernate.Test.TransformTests
 		{
 			var transformer = Transformers.AliasToBean<T>();
 			var bytes = SerializationHelper.Serialize(transformer);
-			transformer = (IResultTransformer)SerializationHelper.Deserialize(bytes);
+			transformer = (IResultTransformer) SerializationHelper.Deserialize(bytes);
 			AssertCardinalityNameAndId<T>(transformer: transformer);
 		}
 	}

@@ -4,8 +4,8 @@ using System.Linq.Expressions;
 using NHibernate.Linq.ResultOperators;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
-using Remotion.Linq.Clauses.ExpressionVisitors;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses.ExpressionVisitors;
 using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.GroupBy
@@ -14,7 +14,7 @@ namespace NHibernate.Linq.GroupBy
 	{
 		public static void ReWrite(QueryModel queryModel)
 		{
-			if (queryModel.ResultOperators.Count > 0 
+			if (queryModel.ResultOperators.Count > 0
 				&& queryModel.ResultOperators.All(r => r is GroupResultOperator)
 				&& IsNonAggregatingGroupBy(queryModel))
 			{
@@ -27,9 +27,9 @@ namespace NHibernate.Linq.GroupBy
 				return;
 			}
 
-			if (queryModel.MainFromClause.FromExpression is SubQueryExpression subQueryExpression 
-				&& subQueryExpression.QueryModel.ResultOperators.Count > 0 
-				&& subQueryExpression.QueryModel.ResultOperators.All(r => r is GroupResultOperator) 
+			if (queryModel.MainFromClause.FromExpression is SubQueryExpression subQueryExpression
+				&& subQueryExpression.QueryModel.ResultOperators.Count > 0
+				&& subQueryExpression.QueryModel.ResultOperators.All(r => r is GroupResultOperator)
 				&& IsNonAggregatingGroupBy(queryModel))
 			{
 				FlattenSubQuery(subQueryExpression, queryModel);
@@ -74,14 +74,14 @@ namespace NHibernate.Linq.GroupBy
 			// TODO - don't like calling GetGenericArguments here...
 
 			var parameter = Expression.Parameter(expression.Type.GetGenericArguments()[0], "inputParameter");
-			
+
 			var mapping = new QuerySourceMapping();
 			mapping.AddMapping(queryModel.MainFromClause, parameter);
-			
+
 			var body = ReferenceReplacingExpressionVisitor.ReplaceClauseReferences(queryModel.SelectClause.Selector, mapping, false);
-			
+
 			var lambda = Expression.Lambda(body, parameter);
-			
+
 			return new ClientSideSelect(lambda);
 		}
 

@@ -17,7 +17,7 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void Configuration_should_be_serializable()
 		{
-			NHAssert.HaveSerializableAttribute(typeof (Configuration));
+			NHAssert.HaveSerializableAttribute(typeof(Configuration));
 		}
 
 		[Test]
@@ -91,7 +91,7 @@ namespace NHibernate.Test.CfgTest
 				Assert.That(p, Is.Null);
 			}
 
-			TestCase.DropSchema(true, export, (ISessionFactoryImplementor)sf);
+			TestCase.DropSchema(true, export, (ISessionFactoryImplementor) sf);
 		}
 	}
 }

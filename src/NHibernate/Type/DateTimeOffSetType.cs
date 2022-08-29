@@ -38,12 +38,12 @@ namespace NHibernate.Type
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof (DateTimeOffset); }
+			get { return typeof(DateTimeOffset); }
 		}
 
 		public override System.Type PrimitiveClass
 		{
-			get { return typeof (DateTimeOffset); }
+			get { return typeof(DateTimeOffset); }
 		}
 
 		public override object DefaultValue

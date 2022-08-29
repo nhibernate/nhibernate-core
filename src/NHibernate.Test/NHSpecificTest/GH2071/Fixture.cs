@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2071
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				domesticCatId = session.Save(new DomesticCat {Name = "Tom", OwnerName = "Jerry"});
+				domesticCatId = session.Save(new DomesticCat { Name = "Tom", OwnerName = "Jerry" });
 
 				transaction.Commit();
 			}
@@ -87,7 +87,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2071
 				});
 		}
 	}
-	
+
 	[TestFixture]
 	public class UnionSubclassFixture : FixtureBase
 	{

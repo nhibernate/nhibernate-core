@@ -72,7 +72,7 @@ namespace NHibernate.Mapping
 
 		public virtual void CreateForeignKeyOfEntity(string entityName)
 		{
-			if (!HasFormula && ! "none".Equals(ForeignKeyName, StringComparison.OrdinalIgnoreCase))
+			if (!HasFormula && !"none".Equals(ForeignKeyName, StringComparison.OrdinalIgnoreCase))
 			{
 				ForeignKey fk = table.CreateForeignKey(ForeignKeyName, ConstraintColumns, entityName);
 				fk.CascadeDeleteEnabled = cascadeDeleteEnabled;
@@ -87,7 +87,7 @@ namespace NHibernate.Mapping
 
 		public bool IsIdentityColumn(Dialect.Dialect dialect)
 		{
-			return IdentifierGeneratorFactory.GetIdentifierGeneratorClass(identifierGeneratorStrategy, dialect) == typeof (IdentityGenerator);
+			return IdentifierGeneratorFactory.GetIdentifierGeneratorClass(identifierGeneratorStrategy, dialect) == typeof(IdentityGenerator);
 		}
 
 		public string NullValue
@@ -165,7 +165,7 @@ namespace NHibernate.Mapping
 			@params[PersistentIdGeneratorParmsNames.Table] = tableName;
 
 			//pass the column name (a generated id almost always has a single column and is not a formula)
-			string columnName = ((Column)ColumnIterator.First()).GetQuotedName(dialect);
+			string columnName = ((Column) ColumnIterator.First()).GetQuotedName(dialect);
 
 			@params[PersistentIdGeneratorParmsNames.PK] = columnName;
 
@@ -246,11 +246,11 @@ namespace NHibernate.Mapping
 			IType result = null;
 			if (ColumnSpan == 1 && !columns[0].IsFormula)
 			{
-				var col = (Column)columns[0];
+				var col = (Column) columns[0];
 				if (col.IsLengthDefined())
 				{
 					result = TypeFactory.BuiltInType(typeName, col.Length);
-					
+
 					if (result == null)
 						result = TypeFactory.HeuristicType(typeName, typeParameters, col.Length);
 				}
@@ -288,7 +288,7 @@ namespace NHibernate.Mapping
 				{
 					if (selectable.IsFormula)
 						return true;
-					if (!((Column)selectable).IsNullable)
+					if (!((Column) selectable).IsNullable)
 						return false;
 				}
 				return true;

@@ -159,7 +159,7 @@ namespace NHibernate.Mapping
 			{
 				if (!isLazy.HasValue)
 				{
-					var hasAllLazyProperties = !PropertyIterator.Any(property=> property.IsLazy == false);
+					var hasAllLazyProperties = !PropertyIterator.Any(property => property.IsLazy == false);
 					isLazy = hasAllLazyProperties;
 				}
 				return isLazy.Value;

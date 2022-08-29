@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1869
 
 		public override bool Equals(object obj)
 		{
-			NodeKeyword other = (NodeKeyword)obj;
+			NodeKeyword other = (NodeKeyword) obj;
 			return NodeId == other.NodeId && Keyword == other.Keyword;
 		}
 

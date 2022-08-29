@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
+using NHibernate.Cfg;
 using NHibernate.Mapping;
 using NUnit.Framework;
-using NHibernate.Cfg;
 
 namespace NHibernate.Test.FilterTest
 {
 	[TestFixture]
 	public class FilterSecondPassArgsFixture
 	{
-		public class FakeFilterable: IFilterable
+		public class FakeFilterable : IFilterable
 		{
 			public void AddFilter(string name, string condition)
 			{

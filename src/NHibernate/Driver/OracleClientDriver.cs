@@ -18,14 +18,15 @@ namespace NHibernate.Driver
 
 		public OracleClientDriver() :
 			base(
-			"System.Data.OracleClient", 
+			"System.Data.OracleClient",
 #if NETFX
 			"System.Data.OracleClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
 #else
 			"System.Data.OracleClient",
 #endif
-			"System.Data.OracleClient.OracleConnection", 
-			"System.Data.OracleClient.OracleCommand") { }
+			"System.Data.OracleClient.OracleConnection",
+			"System.Data.OracleClient.OracleCommand")
+		{ }
 
 		public override bool UseNamedPrefixInSql
 		{

@@ -37,7 +37,7 @@ namespace NHibernate.UserTypes
 		/// Replace the elements of a collection with the elements of another collection
 		/// </summary>
 		object ReplaceElements(object original, object target, ICollectionPersister persister, object owner,
-		                       IDictionary copyCache, ISessionImplementor session);
+							   IDictionary copyCache, ISessionImplementor session);
 
 		/// <summary> 
 		/// Instantiate an empty instance of the "underlying" collection (not a wrapper),

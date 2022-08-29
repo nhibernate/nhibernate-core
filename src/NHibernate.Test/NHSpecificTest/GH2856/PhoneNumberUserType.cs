@@ -10,12 +10,12 @@ namespace NHibernate.Test.NHSpecificTest.GH2856
 	{
 		public string[] PropertyNames
 		{
-			get { return new[] {"Number", "Ext"}; }
+			get { return new[] { "Number", "Ext" }; }
 		}
 
 		public IType[] PropertyTypes
 		{
-			get { return new IType[] {NHibernateUtil.String, NHibernateUtil.String}; }
+			get { return new IType[] { NHibernateUtil.String, NHibernateUtil.String }; }
 		}
 
 		public object GetPropertyValue(object component, int property)

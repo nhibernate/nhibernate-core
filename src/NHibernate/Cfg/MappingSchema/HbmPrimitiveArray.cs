@@ -124,12 +124,12 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public HbmCollectionFetchMode? FetchMode
 		{
-			get { return fetchSpecified ? (HbmCollectionFetchMode?)fetch : null; }
+			get { return fetchSpecified ? (HbmCollectionFetchMode?) fetch : null; }
 		}
 
 		public HbmOuterJoinStrategy? OuterJoin
 		{
-			get { return outerjoinSpecified ? (HbmOuterJoinStrategy?)outerjoin : null; }
+			get { return outerjoinSpecified ? (HbmOuterJoinStrategy?) outerjoin : null; }
 		}
 
 		public HbmCollectionLazy? Lazy

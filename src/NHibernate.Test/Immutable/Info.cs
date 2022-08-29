@@ -8,13 +8,13 @@ namespace NHibernate.Test.Immutable
 		private long id;
 		private string text;
 		private long version;
-		
+
 		public virtual long Id
 		{
 			get { return id; }
 			set { id = value; }
 		}
-		
+
 		public virtual string Text
 		{
 			get { return text; }
@@ -26,11 +26,11 @@ namespace NHibernate.Test.Immutable
 			get { return version; }
 			set { version = value; }
 		}
-		
+
 		public Info()
 		{
 		}
-		
+
 		public Info(string text)
 		{
 			this.text = text;

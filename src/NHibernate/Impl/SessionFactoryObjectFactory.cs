@@ -87,7 +87,7 @@ namespace NHibernate.Impl
 		{
 			log.Debug("lookup: name={0}", name);
 			ISessionFactory factory;
-			bool found=NamedInstances.TryGetValue(name, out factory);
+			bool found = NamedInstances.TryGetValue(name, out factory);
 			if (!found)
 			{
 				log.Warn("Not found: {0}", name);

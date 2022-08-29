@@ -76,7 +76,7 @@ namespace NHibernate.Mapping.ByCode
 		void OneToOne<TProperty>(Expression<Func<TContainer, TProperty>> property, Action<IOneToOneMapper<TProperty>> mapping) where TProperty : class;
 		void OneToOne<TProperty>(string notVisiblePropertyOrFieldName, Action<IOneToOneMapper<TProperty>> mapping) where TProperty : class;
 	}
-	
+
 	public static class BasePlainPropertyContainerMapperExtensions
 	{
 		//6.0 TODO: Merge into IBasePlainPropertyContainerMapper<> interface

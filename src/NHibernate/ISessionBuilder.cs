@@ -22,7 +22,7 @@ namespace NHibernate
 		/// Associates session with given tenantConfig when multi-tenancy is enabled.
 		/// See <seealso cref="NHibernate.Cfg.Environment.MultiTenancy"/>
 		/// </summary>
-		public static T Tenant<T>(this T builder, TenantConfiguration tenantConfig) where T: ISessionBuilder
+		public static T Tenant<T>(this T builder, TenantConfiguration tenantConfig) where T : ISessionBuilder
 		{
 			ReflectHelper.CastOrThrow<ISessionCreationOptionsWithMultiTenancy>(builder, "multi tenancy").TenantConfiguration = tenantConfig;
 			return builder;

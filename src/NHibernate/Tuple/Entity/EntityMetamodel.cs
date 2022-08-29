@@ -93,13 +93,13 @@ namespace NHibernate.Tuple.Entity
 			OverridesEquals = type != null && ReflectHelper.OverridesEquals(type); // type will be null for dynamic entities
 
 			identifierProperty = PropertyFactory.BuildIdentifierProperty(persistentClass,
-			                                                             sessionFactory.GetIdentifierGenerator(rootName));
+																		 sessionFactory.GetIdentifierGenerator(rootName));
 			MapIdentifierPropertyTypes(identifierProperty);
 
 			versioned = persistentClass.IsVersioned;
 
 			bool lazyAvailable = persistentClass.HasPocoRepresentation
-			                     && FieldInterceptionHelper.IsInstrumented(persistentClass.MappedClass);
+								 && FieldInterceptionHelper.IsInstrumented(persistentClass.MappedClass);
 			bool hasLazy = false;
 
 			propertySpan = persistentClass.PropertyClosureSpan;
@@ -130,7 +130,7 @@ namespace NHibernate.Tuple.Entity
 			bool foundUpdateGeneratedValue = false;
 			bool foundNonIdentifierPropertyNamedId = false;
 			HasPocoRepresentation = persistentClass.HasPocoRepresentation;
-			
+
 			// NH: WARNING if we have to disable lazy/unproxy properties we have to do it in the whole process.
 			lazy = persistentClass.IsLazy && (!persistentClass.HasPocoRepresentation || !ReflectHelper.IsFinalClass(persistentClass.ProxyInterface));
 			lazyAvailable &= lazy; // <== Disable lazy properties if the class is marked with lazy=false
@@ -143,7 +143,7 @@ namespace NHibernate.Tuple.Entity
 				{
 					hadLazyProperties = true;
 				}
-				if(prop.UnwrapProxy)
+				if (prop.UnwrapProxy)
 				{
 					hadNoProxyRelations = true;
 				}
@@ -206,9 +206,9 @@ namespace NHibernate.Tuple.Entity
 				propertyVersionability[i] = properties[i].IsVersionable;
 				nonlazyPropertyUpdateability[i] = properties[i].IsUpdateable && !islazyProperty;
 				propertyCheckability[i] = propertyUpdateability[i]
-				                          ||
-				                          (propertyTypes[i].IsAssociationType
-				                           && ((IAssociationType) propertyTypes[i]).IsAlwaysDirtyChecked);
+										  ||
+										  (propertyTypes[i].IsAssociationType
+										   && ((IAssociationType) propertyTypes[i]).IsAlwaysDirtyChecked);
 
 				cascadeStyles[i] = properties[i].CascadeStyle;
 
@@ -259,7 +259,7 @@ namespace NHibernate.Tuple.Entity
 			versionPropertyIndex = tempVersionProperty;
 			hasLazyProperties = hasLazy;
 
-			if(hadLazyProperties && !hasLazy)
+			if (hadLazyProperties && !hasLazy)
 			{
 				log.Warn("Disabled lazy property fetching for {0} because it does not support lazy at the entity level", name);
 			}
@@ -268,7 +268,7 @@ namespace NHibernate.Tuple.Entity
 				log.Info("lazy property fetching available for: {0}", name);
 			}
 
-			if(hadNoProxyRelations && !hasUnwrapProxyForProperties)
+			if (hadNoProxyRelations && !hasUnwrapProxyForProperties)
 			{
 				log.Warn("Disabled ghost property fetching for {0} because it does not support lazy at the entity level", name);
 			}
@@ -288,7 +288,7 @@ namespace NHibernate.Tuple.Entity
 			{
 				isAbstract = persistentClass.IsAbstract.Value;
 				if (!isAbstract && persistentClass.HasPocoRepresentation
-				    && ReflectHelper.IsAbstractClass(persistentClass.MappedClass))
+					&& ReflectHelper.IsAbstractClass(persistentClass.MappedClass))
 				{
 					log.Warn("entity [{0}] is abstract-class/interface explicitly mapped as non-abstract; be sure to supply entity-names",
 						type.FullName);
@@ -349,7 +349,7 @@ namespace NHibernate.Tuple.Entity
 			}
 			else if (mappingProperty.Value is Mapping.Component)
 			{
-				if (HasPartialInsertComponentGeneration((Mapping.Component)mappingProperty.Value))
+				if (HasPartialInsertComponentGeneration((Mapping.Component) mappingProperty.Value))
 				{
 					return ValueInclusion.Partial;
 				}
@@ -367,7 +367,7 @@ namespace NHibernate.Tuple.Entity
 				}
 				else if (prop.Value is Mapping.Component)
 				{
-					if (HasPartialInsertComponentGeneration((Mapping.Component)prop.Value))
+					if (HasPartialInsertComponentGeneration((Mapping.Component) prop.Value))
 					{
 						return true;
 					}
@@ -384,7 +384,7 @@ namespace NHibernate.Tuple.Entity
 			}
 			else if (mappingProperty.Value is Mapping.Component)
 			{
-				if (HasPartialUpdateComponentGeneration((Mapping.Component)mappingProperty.Value))
+				if (HasPartialUpdateComponentGeneration((Mapping.Component) mappingProperty.Value))
 				{
 					return ValueInclusion.Partial;
 				}
@@ -402,7 +402,7 @@ namespace NHibernate.Tuple.Entity
 				}
 				else if (prop.Value is Mapping.Component)
 				{
-					if (HasPartialUpdateComponentGeneration((Mapping.Component)prop.Value))
+					if (HasPartialUpdateComponentGeneration((Mapping.Component) prop.Value))
 					{
 						return true;
 					}

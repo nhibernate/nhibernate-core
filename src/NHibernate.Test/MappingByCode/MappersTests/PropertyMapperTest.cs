@@ -1,6 +1,6 @@
 using System;
-using System.Linq;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Mapping.ByCode;
@@ -42,7 +42,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		[Test]
 		public void WhenCreateWithGivenAccessorMapperThenUseTheGivenAccessoMapper()
 		{
-			var member = typeof (MyClass).GetProperty("ReadOnly");
+			var member = typeof(MyClass).GetProperty("ReadOnly");
 			var mapping = new HbmProperty();
 			var myAccessorMapper = new MyAccessorMapper();
 			var mapper = new PropertyMapper(member, mapping, myAccessorMapper);
@@ -108,8 +108,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			Assert.That(mapping.type1, Is.Null);
 			Assert.That(mapping.Type.name, Does.Contain("MyType"));
 			Assert.That(mapping.Type.param, Has.Length.EqualTo(2));
-			Assert.That(mapping.Type.param.Select(p => p.name), Is.EquivalentTo(new [] {"Param1", "Param2"}));
-			Assert.That(mapping.Type.param.Select(p => p.GetText()), Is.EquivalentTo(new [] {"a", "12"}));
+			Assert.That(mapping.Type.param.Select(p => p.name), Is.EquivalentTo(new[] { "Param1", "Param2" }));
+			Assert.That(mapping.Type.param.Select(p => p.GetText()), Is.EquivalentTo(new[] { "a", "12" }));
 		}
 
 		[Test]
@@ -295,9 +295,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			Assert.That(mapping.Items[0], Is.TypeOf<HbmColumn>(), "first");
 			Assert.That(mapping.Items[1], Is.TypeOf<HbmFormula>(), "second");
 			Assert.That(mapping.Items[2], Is.TypeOf<HbmColumn>(), "third");
-			Assert.That(((HbmColumn)mapping.Items[0]).name, Is.EqualTo("pizza"));
-			Assert.That(((HbmFormula)mapping.Items[1]).Text, Has.Length.EqualTo(1).And.One.EqualTo("risotto"));
-			Assert.That(((HbmColumn)mapping.Items[2]).name, Is.EqualTo("pasta"));
+			Assert.That(((HbmColumn) mapping.Items[0]).name, Is.EqualTo("pizza"));
+			Assert.That(((HbmFormula) mapping.Items[1]).Text, Has.Length.EqualTo(1).And.One.EqualTo("risotto"));
+			Assert.That(((HbmColumn) mapping.Items[2]).name, Is.EqualTo("pasta"));
 			Assert.That(mapping.column, Is.Null, "column");
 			Assert.That(mapping.formula, Is.Null, "formula");
 		}

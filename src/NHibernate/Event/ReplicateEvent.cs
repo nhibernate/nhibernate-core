@@ -16,7 +16,7 @@ namespace NHibernate.Event
 
 		public ReplicateEvent(object entity, ReplicationMode replicationMode, IEventSource source)
 			: this(null, entity, replicationMode, source)
-		{}
+		{ }
 
 		public ReplicateEvent(string entityName, object entity, ReplicationMode replicationMode, IEventSource source)
 			: base(source)
@@ -26,7 +26,7 @@ namespace NHibernate.Event
 
 			if (replicationMode == null)
 				throw new ArgumentNullException("replicationMode",
-				                                "attempt to create replication strategy with null replication mode");
+												"attempt to create replication strategy with null replication mode");
 
 			this.entityName = entityName;
 			this.entity = entity;

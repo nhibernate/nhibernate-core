@@ -23,10 +23,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1642
 				{
 					using (var tr = session.BeginTransaction())
 					{
-						TrafficRuleSet ruleSet = new TrafficRuleSet {name = ruleSetName, description = ruleSetName};
-						TrafficRule rule = new TrafficRule {ruleSet = ruleSet, name = ruleSetName + "-a", description = "Some description"};
+						TrafficRuleSet ruleSet = new TrafficRuleSet { name = ruleSetName, description = ruleSetName };
+						TrafficRule rule = new TrafficRule { ruleSet = ruleSet, name = ruleSetName + "-a", description = "Some description" };
 
-						ruleSet.rules = new List<TrafficRule> {rule};
+						ruleSet.rules = new List<TrafficRule> { rule };
 
 						ruleSetId = (int) session.Save(ruleSet);
 						tr.Commit();

@@ -14,8 +14,8 @@ namespace NHibernate.Criterion
 		/// <param name="projection">the projection instance</param>
 		/// <param name="alias">LambdaExpression returning an alias</param>
 		/// <returns>return NHibernate.Criterion.IProjection</returns>
-		public static IProjection WithAlias(this IProjection			projection,
-											Expression<Func<object>>    alias)
+		public static IProjection WithAlias(this IProjection projection,
+											Expression<Func<object>> alias)
 		{
 			string aliasContainer = ExpressionProcessor.FindPropertyExpression(alias.Body);
 			return Projections.Alias(projection, aliasContainer);
@@ -336,7 +336,7 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Project Entity
 		/// </summary>
-		public static T AsEntity<T>(this T alias) where T:class
+		public static T AsEntity<T>(this T alias) where T : class
 		{
 			throw QueryOver.GetDirectUsageException();
 		}

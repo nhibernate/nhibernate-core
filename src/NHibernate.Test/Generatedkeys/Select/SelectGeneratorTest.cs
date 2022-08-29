@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Generatedkeys.Select
 {
 	[TestFixture]
-	public class SelectGeneratorTest: TestCase
+	public class SelectGeneratorTest : TestCase
 	{
 		protected override string[] Mappings
 		{

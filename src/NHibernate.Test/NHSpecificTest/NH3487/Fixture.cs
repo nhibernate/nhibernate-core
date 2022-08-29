@@ -18,12 +18,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3487
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					_key1 = new Key {Id = 1};
-					var entity1 = new Entity {Id = _key1, Name = "Bob1"};
+					_key1 = new Key { Id = 1 };
+					var entity1 = new Entity { Id = _key1, Name = "Bob1" };
 					session.Save(entity1);
 
-					_key2 = new Key {Id = 2};
-					var entity2 = new Entity {Id = _key2, Name = "Bob2"};
+					_key2 = new Key { Id = 2 };
+					var entity2 = new Entity { Id = _key2, Name = "Bob2" };
 					session.Save(entity2);
 
 					session.Flush();

@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1391
 		{
 			SessionIdLoggingContext.SessionId = null;
 		}
-		
+
 		[Test]
 		public void Concurrent()
 		{
@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1391
 			// Simulating two session factories, where one has tracking enabled and the other disabled
 			Task.WaitAll(RunAsync(true), RunAsync(false));
 		}
-		
+
 		[Test]
 		public void Enabled()
 		{
@@ -74,7 +74,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1391
 			}
 			Assert.That(SessionIdLoggingContext.SessionId, Is.Null);
 		}
-		
+
 		[Test]
 		public async Task EnabledAsync()
 		{
@@ -112,7 +112,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1391
 			}
 			Assert.That(SessionIdLoggingContext.SessionId, Is.Null);
 		}
-		
+
 		[Test]
 		public async Task DisabledAsync()
 		{
@@ -122,7 +122,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1391
 				Assert.That(SessionIdLoggingContext.SessionId, Is.Null);
 				await Task.Delay(1).ConfigureAwait(false);
 				Assert.That(SessionIdLoggingContext.SessionId, Is.Null);
-				
+
 				using (SessionIdLoggingContext.CreateOrNull(guid))
 				{
 					Assert.That(SessionIdLoggingContext.SessionId, Is.Null);
@@ -133,7 +133,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1391
 			}
 			Assert.That(SessionIdLoggingContext.SessionId, Is.Null);
 		}
-		
+
 		[Test]
 		public void XmlConfiguration()
 		{

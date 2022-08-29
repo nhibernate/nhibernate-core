@@ -21,7 +21,7 @@ namespace NHibernate.Test.TypesTest
 			public CustomStringType() : base(new StringSqlType())
 			{
 			}
-			
+
 			public CustomStringType(int length) : base(new StringSqlType(length))
 			{
 			}
@@ -44,7 +44,7 @@ namespace NHibernate.Test.TypesTest
 			TypeFactory.RegisterType(
 				_replacedType,
 				_testDefaultStringType,
-				new[] {"string"},
+				new[] { "string" },
 				length => new CustomStringType(length));
 			base.Configure(configuration);
 		}
@@ -71,10 +71,10 @@ namespace NHibernate.Test.TypesTest
 				propertyType25.GetType(),
 				Is.EqualTo(_testDefaultStringType.GetType()));
 			Assert.That(propertyType25.SqlTypes(Sfi)[0].Length, Is.EqualTo(25));
-			
+
 			var propertyType20 = Sfi.GetClassMetadata(typeof(ChangeDefaultTypeClass))
 								.GetPropertyType(nameof(ChangeDefaultTypeClass.StringTypeExplicitLength20));
-			
+
 			Assert.That(
 				propertyType20.GetType(),
 				Is.EqualTo(_testDefaultStringType.GetType()));

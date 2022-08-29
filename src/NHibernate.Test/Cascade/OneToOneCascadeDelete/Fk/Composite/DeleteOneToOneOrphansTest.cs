@@ -15,7 +15,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 			using (var t = s.BeginTransaction())
 			{
 				var emp = new Employee { Name = "Julius Caesar" };
-				emp.Info = new EmployeeInfo( 1L, 1L);
+				emp.Info = new EmployeeInfo(1L, 1L);
 
 				s.Save(emp.Info);
 				s.Save(emp);
@@ -35,7 +35,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 				tx.Commit();
 			}
 		}
-		
+
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
@@ -50,7 +50,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 			using (var t = s.BeginTransaction())
 			{
 				var infoList = s.CreateQuery("from EmployeeInfo").List<EmployeeInfo>();
-				Assert.AreEqual(1, infoList.Count );
+				Assert.AreEqual(1, infoList.Count);
 
 				var empList = s.CreateQuery("from Employee").List<Employee>();
 				Assert.AreEqual(1, empList.Count);
@@ -128,7 +128,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Composite
 					map.Property(x => x.PersonId, m => m.Column("PERS_ID"));
 				});
 			});
-			
+
 			configuration.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
 		}
 	}

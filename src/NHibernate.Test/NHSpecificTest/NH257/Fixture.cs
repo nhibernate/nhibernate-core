@@ -23,9 +23,9 @@ namespace NHibernate.Test.NHSpecificTest.NH257
 			foreach (string line in script)
 			{
 				if (string.Compare(
-				    	line,
-				    	"create table users_in_groups (group_id INT not null, user_id INT not null, primary key (user_id, group_id))",
-				    	true) == 0)
+						line,
+						"create table users_in_groups (group_id INT not null, user_id INT not null, primary key (user_id, group_id))",
+						true) == 0)
 				{
 					found = true;
 				}

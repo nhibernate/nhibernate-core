@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using System.Text.RegularExpressions;
 
 namespace NHibernate.Dialect.Function
 {
@@ -30,15 +30,15 @@ namespace NHibernate.Dialect.Function
 
 		private static readonly ISQLFunction LeadingTrim =
 			new SQLFunctionTemplate(NHibernateUtil.String,
-			                        "replace( replace( ltrim( replace( replace( ?1, ' ', '${space}$' ), ?2, ' ' ) ), ' ', ?2 ), '${space}$', ' ' )");
+									"replace( replace( ltrim( replace( replace( ?1, ' ', '${space}$' ), ?2, ' ' ) ), ' ', ?2 ), '${space}$', ' ' )");
 
 		private static readonly ISQLFunction TrailingTrim =
 			new SQLFunctionTemplate(NHibernateUtil.String,
-			                        "replace( replace( rtrim( replace( replace( ?1, ' ', '${space}$' ), ?2, ' ' ) ), ' ', ?2 ), '${space}$', ' ' )");
+									"replace( replace( rtrim( replace( replace( ?1, ' ', '${space}$' ), ?2, ' ' ) ), ' ', ?2 ), '${space}$', ' ' )");
 
 		private static readonly ISQLFunction BothTrim =
 			new SQLFunctionTemplate(NHibernateUtil.String,
-			                        "replace( replace( ltrim( rtrim( replace( replace( ?1, ' ', '${space}$' ), ?2, ' ' ) ) ), ' ', ?2 ), '${space}$', ' ' )");
+									"replace( replace( ltrim( rtrim( replace( replace( ?1, ' ', '${space}$' ), ?2, ' ' ) ) ), ' ', ?2 ), '${space}$', ' ' )");
 
 		private readonly ISQLFunction _leadingTrim = LeadingTrim;
 		private readonly ISQLFunction _trailingTrim = TrailingTrim;
@@ -157,7 +157,7 @@ namespace NHibernate.Dialect.Function
 				//      This is functionally equivalent to trim(trimSource)
 				return BothSpaceTrimFrom.Render(args, factory);
 			}
-			
+
 			// otherwise, a trim-specification and/or a trim-character
 			// have been specified;  we need to decide which options
 			// are present and "do the right thing"
@@ -210,7 +210,7 @@ namespace NHibernate.Dialect.Function
 				}
 			}
 
-			IList argsToUse = new List<object> {trimSource, trimCharacter};
+			IList argsToUse = new List<object> { trimSource, trimCharacter };
 
 			if (trimCharacter.Equals("' '"))
 			{
@@ -218,12 +218,12 @@ namespace NHibernate.Dialect.Function
 				{
 					return BothSpaceTrim.Render(argsToUse, factory);
 				}
-				
+
 				if (leading)
 				{
 					return LeadingSpaceTrim.Render(argsToUse, factory);
 				}
-				
+
 				return TrailingSpaceTrim.Render(argsToUse, factory);
 			}
 

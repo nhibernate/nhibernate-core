@@ -29,8 +29,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				throw new SemanticException("right-hand operand of a binary operator was null");
 			}
 
-			IType lhType = (lhs is SqlNode) ? ((SqlNode)lhs).DataType : null;
-			IType rhType = (rhs is SqlNode) ? ((SqlNode)rhs).DataType : null;
+			IType lhType = (lhs is SqlNode) ? ((SqlNode) lhs).DataType : null;
+			IType rhType = (rhs is SqlNode) ? ((SqlNode) rhs).DataType : null;
 
 			TrySetExpectedType(lhs, rhType, true);
 			TrySetExpectedType(rhs, lhType, false);
@@ -38,9 +38,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private void TrySetExpectedType(IASTNode operand, IType otherOperandType, bool leftHandOperand)
 		{
-			if (!(operand is IExpectedTypeAwareNode typeAwareNode) || 
-			    otherOperandType == null ||
-			    typeAwareNode.ExpectedType != null)
+			if (!(operand is IExpectedTypeAwareNode typeAwareNode) ||
+				otherOperandType == null ||
+				typeAwareNode.ExpectedType != null)
 			{
 				return;
 			}
@@ -106,8 +106,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			//      makes any sense.
 			IASTNode lhs = LeftHandOperand;
 			IASTNode rhs = RightHandOperand;
-			IType lhType = (lhs is SqlNode) ? ((SqlNode)lhs).DataType : null;
-			IType rhType = (rhs is SqlNode) ? ((SqlNode)rhs).DataType : null;
+			IType lhType = (lhs is SqlNode) ? ((SqlNode) lhs).DataType : null;
+			IType rhType = (rhs is SqlNode) ? ((SqlNode) rhs).DataType : null;
 
 			if (IsDateTimeType(lhType) || IsDateTimeType(rhType))
 			{

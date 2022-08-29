@@ -129,7 +129,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 				{
 					using (MemoryStream stream = new MemoryStream(ImageData))
 					{
-						_bitmap = (Bitmap)Bitmap.FromStream(stream);
+						_bitmap = (Bitmap) Bitmap.FromStream(stream);
 					}
 				}
 				return _bitmap;

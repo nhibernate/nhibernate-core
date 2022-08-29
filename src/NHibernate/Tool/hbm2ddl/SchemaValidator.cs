@@ -9,12 +9,12 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	public partial class SchemaValidator
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (SchemaValidator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SchemaValidator));
 		private readonly Configuration configuration;
 		private readonly IConnectionHelper connectionHelper;
 		private readonly Dialect.Dialect dialect;
 
-		public SchemaValidator(Configuration cfg) : this(cfg, cfg.Properties) {}
+		public SchemaValidator(Configuration cfg) : this(cfg, cfg.Properties) { }
 
 		public SchemaValidator(Configuration cfg, IDictionary<string, string> connectionProperties)
 		{

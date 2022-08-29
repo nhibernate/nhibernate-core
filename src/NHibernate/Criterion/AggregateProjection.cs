@@ -1,6 +1,6 @@
 using System;
-using NHibernate.SqlCommand;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Criterion
@@ -43,7 +43,7 @@ namespace NHibernate.Criterion
 			{
 				return projection.GetTypes(criteria, criteriaQuery);
 			}
-			return new IType[] {criteriaQuery.GetType(criteria, propertyName)};
+			return new IType[] { criteriaQuery.GetType(criteria, propertyName) };
 		}
 
 		public override SqlString ToSqlString(ICriteria criteria, int loc, ICriteriaQuery criteriaQuery)
@@ -68,12 +68,12 @@ namespace NHibernate.Criterion
 		{
 			throw new InvalidOperationException("not a grouping projection");
 		}
-		
+
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			if (projection != null)
 				return projection.GetTypedValues(criteria, criteriaQuery);
-			
+
 			return base.GetTypedValues(criteria, criteriaQuery);
 		}
 	}

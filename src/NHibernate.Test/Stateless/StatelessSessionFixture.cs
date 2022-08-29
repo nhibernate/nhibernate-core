@@ -18,7 +18,7 @@ namespace NHibernate.Test.Stateless
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"Stateless.Document.hbm.xml"}; }
+			get { return new[] { "Stateless.Document.hbm.xml" }; }
 		}
 
 		protected override void OnTearDown()
@@ -71,7 +71,7 @@ namespace NHibernate.Test.Stateless
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 
-				doc2 = (Document) ss.CreateSQLQuery("select * from Document").AddEntity(typeof (Document)).UniqueResult();
+				doc2 = (Document) ss.CreateSQLQuery("select * from Document").AddEntity(typeof(Document)).UniqueResult();
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 
@@ -79,7 +79,7 @@ namespace NHibernate.Test.Stateless
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 
-				doc2 = (Document) ss.CreateCriteria(typeof (Document)).UniqueResult();
+				doc2 = (Document) ss.CreateCriteria(typeof(Document)).UniqueResult();
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 
@@ -98,7 +98,7 @@ namespace NHibernate.Test.Stateless
 			ITransaction tx = ss.BeginTransaction();
 			var doc = new Document("blah blah blah", "Blahs");
 			ss.Insert(doc);
-			var paper = new Paper {Color = "White"};
+			var paper = new Paper { Color = "White" };
 			ss.Insert(paper);
 			tx.Commit();
 
@@ -130,7 +130,7 @@ namespace NHibernate.Test.Stateless
 				ITransaction tx;
 				using (tx = ss.BeginTransaction())
 				{
-					paper = new Paper {Color = "White"};
+					paper = new Paper { Color = "White" };
 					ss.Insert(paper);
 					Assert.IsTrue(paper.Id != 0);
 					tx.Commit();
@@ -152,7 +152,7 @@ namespace NHibernate.Test.Stateless
 			{
 				using (ITransaction tx = ss.BeginTransaction())
 				{
-					paper = new Paper {Color = "whtie"};
+					paper = new Paper { Color = "whtie" };
 					ss.Insert(paper);
 					tx.Commit();
 				}
@@ -189,7 +189,7 @@ namespace NHibernate.Test.Stateless
 			using (IStatelessSession ss = Sfi.OpenStatelessSession())
 			{
 				ss.SetBatchSize(37);
-				var impl = (ISessionImplementor)ss;
+				var impl = (ISessionImplementor) ss;
 				Assert.That(impl.Batcher.BatchSize, Is.EqualTo(37));
 			}
 		}
@@ -214,7 +214,7 @@ namespace NHibernate.Test.Stateless
 				Assert.That(() => criteria.List(), Throws.Nothing);
 			}
 		}
-		
+
 		[Test]
 		public void DisposingClosedStatelessSessionShouldNotCauseSessionException()
 		{

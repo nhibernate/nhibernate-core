@@ -16,10 +16,10 @@ namespace NHibernate.Test.Operations
 			get
 			{
 				return new[]
-				       	{
-				       		"Operations.Node.hbm.xml", "Operations.Employer.hbm.xml", "Operations.OptLockEntity.hbm.xml",
-				       		"Operations.OneToOne.hbm.xml", "Operations.Competition.hbm.xml"
-				       	};
+						   {
+							   "Operations.Node.hbm.xml", "Operations.Employer.hbm.xml", "Operations.OptLockEntity.hbm.xml",
+							   "Operations.OneToOne.hbm.xml", "Operations.Competition.hbm.xml"
+						   };
 			}
 		}
 

@@ -40,7 +40,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 												nidm.ManyToOne(x => x.Related);
 												nidm.Component(x => x.MyComponent, cmap =>
 																				   {
-																														 cmap.Property(y => y.FirstName);
+																					   cmap.Property(y => y.FirstName);
 																				   });
 												nidm.Any(x => x.Any, typeof(int), anymap => { });
 											});
@@ -59,7 +59,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			mapper.Class<MyClass>(map =>
 			{
 				map.Id(x => x.Id, idmap => { });
-				map.NaturalId(nidm =>{});
+				map.NaturalId(nidm => { });
 			});
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 			var hbmClass = hbmMapping.RootClasses[0];

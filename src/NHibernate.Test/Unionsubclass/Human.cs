@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Unionsubclass
 {
-	public class Human: Being
+	public class Human : Being
 	{
 		private char sex;
 

@@ -12,10 +12,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3951
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity {Name = "Bob"};
+				var e1 = new Entity { Name = "Bob" };
 				session.Save(e1);
 
-				var e2 = new Entity {Name = "Sally"};
+				var e2 = new Entity { Name = "Sally" };
 				session.Save(e2);
 
 				session.Flush();

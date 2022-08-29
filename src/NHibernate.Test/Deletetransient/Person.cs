@@ -8,7 +8,7 @@ namespace NHibernate.Test.Deletetransient
 		private string name;
 		private ISet<Address> addresses = new HashSet<Address>();
 		private IList<Person> friends = new List<Person>();
-		public Person() {}
+		public Person() { }
 		public Person(string name)
 		{
 			this.name = name;

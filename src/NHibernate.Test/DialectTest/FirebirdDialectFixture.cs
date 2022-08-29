@@ -51,7 +51,7 @@ namespace NHibernate.Test.DialectTest
 		public void GetTypeName_DecimalWithPrecisionGreaterThanFbMaxPrecision_ReturnsDecimalWithFbMaxPrecision()
 		{
 			var result = _dialect.GetTypeName(NHibernateUtil.Decimal.SqlType, 0, 19, 2);
-				//Firebird allows a maximum precision of 18
+			//Firebird allows a maximum precision of 18
 
 			Assert.AreEqual("DECIMAL(18, 2)", result);
 		}

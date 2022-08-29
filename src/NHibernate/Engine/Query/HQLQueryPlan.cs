@@ -10,22 +10,22 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine.Query
 {
-    public partial interface IQueryPlan
-    {
-        ParameterMetadata ParameterMetadata { get; }
-        ISet<string> QuerySpaces { get; }
-        IQueryTranslator[] Translators { get; }
-        ReturnMetadata ReturnMetadata { get; }
-        void PerformList(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results);
-        int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl);
-        IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session);
-        IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session);
-    }
+	public partial interface IQueryPlan
+	{
+		ParameterMetadata ParameterMetadata { get; }
+		ISet<string> QuerySpaces { get; }
+		IQueryTranslator[] Translators { get; }
+		ReturnMetadata ReturnMetadata { get; }
+		void PerformList(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results);
+		int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl);
+		IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session);
+		IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session);
+	}
 
-    public interface IQueryExpressionPlan : IQueryPlan
-    {
-        IQueryExpression QueryExpression { get; }
-    }
+	public interface IQueryExpressionPlan : IQueryPlan
+	{
+		IQueryExpression QueryExpression { get; }
+	}
 
 	/// <summary> Defines a query execution plan for an HQL query (or filter). </summary>
 	[Serializable]
@@ -35,13 +35,13 @@ namespace NHibernate.Engine.Query
 
 		private readonly string _sourceQuery;
 
-        protected HQLQueryPlan(string sourceQuery, IQueryTranslator[] translators)
-        {
-            Translators = translators;
-            _sourceQuery = sourceQuery;
+		protected HQLQueryPlan(string sourceQuery, IQueryTranslator[] translators)
+		{
+			Translators = translators;
+			_sourceQuery = sourceQuery;
 
-            FinaliseQueryPlan();
-        }
+			FinaliseQueryPlan();
+		}
 
 		internal HQLQueryPlan(HQLQueryPlan source)
 		{
@@ -53,35 +53,35 @@ namespace NHibernate.Engine.Query
 			SqlStrings = source.SqlStrings;
 		}
 
-	    public ISet<string> QuerySpaces
+		public ISet<string> QuerySpaces
 		{
-		    get;
-		    private set;
+			get;
+			private set;
 		}
 
 		public ParameterMetadata ParameterMetadata
 		{
-            get;
-            private set;
-        }
+			get;
+			private set;
+		}
 
 		public ReturnMetadata ReturnMetadata
 		{
-            get;
-            private set;
-        }
+			get;
+			private set;
+		}
 
 		public string[] SqlStrings
 		{
-            get;
-            private set;
-        }
+			get;
+			private set;
+		}
 
 		public IQueryTranslator[] Translators
 		{
-            get;
-            private set;
-        }
+			get;
+			private set;
+		}
 
 		public void PerformList(QueryParameters queryParameters, ISessionImplementor session, IList results)
 		{
@@ -179,78 +179,78 @@ namespace NHibernate.Engine.Query
 			return PerformIterate(queryParameters, session).CastOrDefault<T>();
 		}
 
-        public int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)
-        {
-            if (Log.IsDebugEnabled())
-            {
-                Log.Debug("executeUpdate: {0}", _sourceQuery);
-                queryParameters.LogParameters(session.Factory);
-            }
-            if (Translators.Length != 1)
-            {
-                Log.Warn("manipulation query [{0}] resulted in [{1}] split queries", _sourceQuery, Translators.Length);
-            }
-            int result = 0;
-            for (int i = 0; i < Translators.Length; i++)
-            {
-                result += Translators[i].ExecuteUpdate(queryParameters, session);
-            }
-            return result;
-        }
+		public int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)
+		{
+			if (Log.IsDebugEnabled())
+			{
+				Log.Debug("executeUpdate: {0}", _sourceQuery);
+				queryParameters.LogParameters(session.Factory);
+			}
+			if (Translators.Length != 1)
+			{
+				Log.Warn("manipulation query [{0}] resulted in [{1}] split queries", _sourceQuery, Translators.Length);
+			}
+			int result = 0;
+			for (int i = 0; i < Translators.Length; i++)
+			{
+				result += Translators[i].ExecuteUpdate(queryParameters, session);
+			}
+			return result;
+		}
 
 		void FinaliseQueryPlan()
-        {
-            BuildSqlStringsAndQuerySpaces();
-            BuildMetaData();
-        }
+		{
+			BuildSqlStringsAndQuerySpaces();
+			BuildMetaData();
+		}
 
-	    void BuildMetaData()
-	    {
-            if (Translators.Length == 0)
-            {
-                ParameterMetadata = new ParameterMetadata(null, null);
-                ReturnMetadata = null;
-            }
-            else
-            {
-                ParameterMetadata = Translators[0].BuildParameterMetadata();
+		void BuildMetaData()
+		{
+			if (Translators.Length == 0)
+			{
+				ParameterMetadata = new ParameterMetadata(null, null);
+				ReturnMetadata = null;
+			}
+			else
+			{
+				ParameterMetadata = Translators[0].BuildParameterMetadata();
 
-                if (Translators[0].IsManipulationStatement)
-                {
-                    ReturnMetadata = null;
-                }
-                else
-                {
-                    if (Translators.Length > 1)
-                    {
-                        int returns = Translators[0].ReturnTypes.Length;
-                        ReturnMetadata = new ReturnMetadata(Translators[0].ReturnAliases, new IType[returns]);
-                    }
-                    else
-                    {
-                        ReturnMetadata = new ReturnMetadata(Translators[0].ReturnAliases, Translators[0].ReturnTypes);
-                    }
-                }
-            }
-        }
+				if (Translators[0].IsManipulationStatement)
+				{
+					ReturnMetadata = null;
+				}
+				else
+				{
+					if (Translators.Length > 1)
+					{
+						int returns = Translators[0].ReturnTypes.Length;
+						ReturnMetadata = new ReturnMetadata(Translators[0].ReturnAliases, new IType[returns]);
+					}
+					else
+					{
+						ReturnMetadata = new ReturnMetadata(Translators[0].ReturnAliases, Translators[0].ReturnTypes);
+					}
+				}
+			}
+		}
 
-	    void BuildSqlStringsAndQuerySpaces()
-        {
-            var combinedQuerySpaces = new HashSet<string>();
-            var sqlStringList = new List<string>();
+		void BuildSqlStringsAndQuerySpaces()
+		{
+			var combinedQuerySpaces = new HashSet<string>();
+			var sqlStringList = new List<string>();
 
-            foreach (var translator in Translators)
-            {
-                foreach (var qs in translator.QuerySpaces)
-                {
-                    combinedQuerySpaces.Add(qs);
-                }
+			foreach (var translator in Translators)
+			{
+				foreach (var qs in translator.QuerySpaces)
+				{
+					combinedQuerySpaces.Add(qs);
+				}
 
-                sqlStringList.AddRange(translator.CollectSqlStrings);
-            }
+				sqlStringList.AddRange(translator.CollectSqlStrings);
+			}
 
-            SqlStrings = sqlStringList.ToArray();
-            QuerySpaces = combinedQuerySpaces;
-        }
-    }
+			SqlStrings = sqlStringList.ToArray();
+			QuerySpaces = combinedQuerySpaces;
+		}
+	}
 }

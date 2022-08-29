@@ -37,7 +37,7 @@ namespace NHibernate.Engine
 
 		public override bool Equals(object obj)
 		{
-			CollectionKey that = (CollectionKey)obj;
+			CollectionKey that = (CollectionKey) obj;
 			return that.role.Equals(role) && keyType.IsEqual(that.key, key, factory);
 		}
 

@@ -22,7 +22,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			i => i.Intercept(null));
 		private static readonly MethodInfo getArguments = typeof(InvocationInfo).GetMethod("get_Arguments");
 
-		private static readonly ConstructorInfo infoConstructor = typeof (InvocationInfo).GetConstructor(new[]
+		private static readonly ConstructorInfo infoConstructor = typeof(InvocationInfo).GetConstructor(new[]
 			{
 				typeof (object),
 				typeof (MethodInfo),
@@ -34,7 +34,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		private readonly IArgumentHandler _argumentHandler;
 
-		public DefaultMethodEmitter() : this(new DefaultArgumentHandler()) {}
+		public DefaultMethodEmitter() : this(new DefaultArgumentHandler()) { }
 
 		public DefaultMethodEmitter(IArgumentHandler argumentHandler)
 		{
@@ -48,9 +48,9 @@ namespace NHibernate.Proxy.DynamicProxy
 			var IL = proxyMethod.GetILGenerator();
 
 			ParameterInfo[] parameters = method.GetParameters();
-			IL.DeclareLocal(typeof (object[]));
-			IL.DeclareLocal(typeof (InvocationInfo));
-			IL.DeclareLocal(typeof (System.Type[]));
+			IL.DeclareLocal(typeof(object[]));
+			IL.DeclareLocal(typeof(InvocationInfo));
+			IL.DeclareLocal(typeof(System.Type[]));
 
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Ldfld, field);
@@ -245,7 +245,7 @@ namespace NHibernate.Proxy.DynamicProxy
 		{
 			System.Type returnType = method.ReturnType;
 			// Unbox the return value if necessary
-			if (returnType == typeof (void))
+			if (returnType == typeof(void))
 			{
 				IL.Emit(OpCodes.Pop);
 				return;

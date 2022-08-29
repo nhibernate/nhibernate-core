@@ -12,7 +12,7 @@ namespace NHibernate.Linq.ResultOperators
 
 		public GroupResultOperator GroupBy { get; }
 
-		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo) => 
+		public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo) =>
 			GroupBy.GetOutputDataInfo(inputInfo);
 	}
 }

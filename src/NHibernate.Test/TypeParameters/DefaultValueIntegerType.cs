@@ -1,10 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
-using System.Collections.Generic;
-using NHibernate.Engine;
 
 namespace NHibernate.Test.TypeParameters
 {
@@ -37,7 +37,7 @@ namespace NHibernate.Test.TypeParameters
 
 		public SqlType[] SqlTypes
 		{
-			get { return new SqlType[] {_int32Type.SqlType}; }
+			get { return new SqlType[] { _int32Type.SqlType }; }
 		}
 
 		public object DeepCopy(object value)

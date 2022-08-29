@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
-using NHibernate.Mapping.ByCode;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
 
@@ -164,7 +164,7 @@ Line2";
 			Assert.That(hbmFormula.Text[1], Is.EqualTo("Line2"));
 			Assert.That(mapping.formula1, Is.Null);
 		}
-		
+
 		[Test]
 		public void WhenSetFetchModeToJoinThenSetFetch()
 		{

@@ -6,7 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1136
 	public class MilestoneCollection<TKey, TValue> : SortedDictionary<TKey, TValue>, IMilestoneCollection<TKey, TValue>
 		where TKey : IComparable<TKey>
 	{
-		public MilestoneCollection() : base(new ReverseSortComparer<TKey>()){}
+		public MilestoneCollection() : base(new ReverseSortComparer<TKey>()) { }
 
 		#region IMilestoneCollection<TKey,TValue> Members
 

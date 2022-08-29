@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using NHibernate.DomainModel;
 using NHibernate.Criterion;
+using NHibernate.DomainModel;
 using NHibernate.Type;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -68,7 +68,7 @@ namespace NHibernate.Test.Legacy
 			{
 				Fum b = (Fum) s.CreateCriteria(typeof(Fum))
 								.Add(Expression.In(
-										"FumString", new string[] {"a value", "no value"}))
+										"FumString", new string[] { "a value", "no value" }))
 								.UniqueResult();
 				//Assert.IsTrue( NHibernateUtil.IsInitialized( b.MapComponent.Fummap ) );
 				Assert.IsTrue(NHibernateUtil.IsInitialized(b.MapComponent.Stringmap));
@@ -128,7 +128,7 @@ namespace NHibernate.Test.Legacy
 
 				Assert.AreSame(fum, map["this"]);
 				Assert.AreSame(fum.Fo, map["fo"]);
-				Assert.IsTrue(fum.Friends.Contains((Fum)map["fum"]));
+				Assert.IsTrue(fum.Friends.Contains((Fum) map["fum"]));
 				Assert.AreEqual(3, map.Count);
 
 				baseCriteria = s.CreateCriteria(typeof(Fum))
@@ -439,9 +439,9 @@ namespace NHibernate.Test.Legacy
 			s.Save(fum2);
 			Qux q = new Qux();
 			s.Save(q);
-			q.Fums = new HashSet<Fum> {fum1, fum2};
-			q.MoreFums = new List<Fum> {fum1};
-			fum1.QuxArray = new Qux[] {q};
+			q.Fums = new HashSet<Fum> { fum1, fum2 };
+			q.MoreFums = new List<Fum> { fum1 };
+			fum1.QuxArray = new Qux[] { q };
 			s.Flush();
 			s.Close();
 
@@ -470,8 +470,8 @@ namespace NHibernate.Test.Legacy
 			Fum f2 = new Fum(FumKey("f2"));
 			f1.FumString = "f1";
 			f2.FumString = "f2";
-			q.Fums = new HashSet<Fum> {f1, f2};
-			q.MoreFums = new List<Fum> {f1, f2};
+			q.Fums = new HashSet<Fum> { f1, f2 };
+			q.MoreFums = new List<Fum> { f1, f2 };
 			s.Save(f1);
 			s.Save(f2);
 			s.Flush();

@@ -56,13 +56,13 @@ namespace NHibernate.SqlCommand.Parser
 		/// <summary>
 		/// Includes all token types except whitespace or comments
 		/// </summary>
-		AllExceptWhitespaceOrComment = AllExceptWhitespace & ~Comment, 
+		AllExceptWhitespaceOrComment = AllExceptWhitespace & ~Comment,
 
 		/// <summary>
 		/// Includes all token types except whitespace
 		/// </summary>
 		AllExceptWhitespace = All & ~Whitespace,
-		
+
 		/// <summary>
 		/// Includes all token types
 		/// </summary>

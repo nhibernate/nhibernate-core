@@ -34,7 +34,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var mapper = new ModelMapper(autoinspector);
 			mapper.Component<AEntity>(map => { });
 
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsComponent(typeof(AEntity)), Is.True);
 		}
 
@@ -42,7 +42,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void ClassWithoutPoidIsComponent()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsComponent(typeof(AComponent)), Is.True);
 		}
 
@@ -50,7 +50,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void ClassWithPoidIsNotComponent()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsComponent(typeof(AEntity)), Is.False);
 		}
 
@@ -58,7 +58,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void ClassWithPoidFieldIsNotComponent()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsComponent(typeof(Entity)), Is.False);
 		}
 
@@ -66,7 +66,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void EnumIsNotComponent()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsComponent(typeof(Something)), Is.False);
 		}
 
@@ -74,7 +74,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void StringIsNotComponent()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsComponent(typeof(string)), Is.False);
 		}
 	}

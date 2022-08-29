@@ -1,14 +1,14 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Reflection;
+using System.Runtime.Serialization;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace NHibernate.Type
 {
@@ -56,7 +56,7 @@ namespace NHibernate.Type
 			if (!(metaType is MetaType))
 			{
 				Log.Warn("Using AnyType with a meta type which is not a MetaType is obsolete and may cause" +
-				         "querying issues.");
+						 "querying issues.");
 			}
 		}
 
@@ -92,7 +92,7 @@ namespace NHibernate.Type
 
 		public override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			return ResolveAny((string)metaType.NullSafeGet(rs, names[0], session, owner), 
+			return ResolveAny((string) metaType.NullSafeGet(rs, names[0], session, owner),
 				identifierType.NullSafeGet(rs, names[1], session, owner), session);
 		}
 
@@ -281,7 +281,7 @@ namespace NHibernate.Type
 
 		public IType[] Subtypes
 		{
-			get { return new IType[] {metaType, identifierType}; }
+			get { return new IType[] { metaType, identifierType }; }
 		}
 
 		public void SetPropertyValues(object component, object[] values)
@@ -363,10 +363,10 @@ namespace NHibernate.Type
 				return old != null;
 			if (old == null)
 				return current != null;
-			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry)old;
+			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) old;
 			bool[] idcheckable = new bool[checkable.Length - 1];
 			Array.Copy(checkable, 1, idcheckable, 0, idcheckable.Length);
-			return (checkable[0] && !holder.EntityName.Equals(session.BestGuessEntityName(current))) || 
+			return (checkable[0] && !holder.EntityName.Equals(session.BestGuessEntityName(current))) ||
 				identifierType.IsModified(holder.Id, Id(current, session), idcheckable, session);
 		}
 

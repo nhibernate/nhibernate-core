@@ -9,12 +9,12 @@ namespace NHibernate.Test.Cascade
 		private string data;
 		private ISet<H> hs; // A 1 - * H
 		private G g; // A 1 - 1 G
-		
+
 		public A()
 		{
 			hs = new HashSet<H>();
 		}
-	
+
 		public A(string data) : this()
 		{
 			this.data = data;
@@ -25,19 +25,19 @@ namespace NHibernate.Test.Cascade
 			get { return id; }
 			set { id = value; }
 		}
-	
+
 		public virtual string Data
 		{
 			get { return data; }
 			set { data = value; }
 		}
-		
+
 		public virtual G G
 		{
 			get { return g; }
 			set { g = value; }
 		}
-		
+
 		public virtual ISet<H> Hs
 		{
 			get { return hs; }
@@ -49,7 +49,7 @@ namespace NHibernate.Test.Cascade
 			hs.Add(h);
 			h.A = this;
 		}
-	
+
 		public override string ToString()
 		{
 			return "A[" + id + ", " + data + "]";

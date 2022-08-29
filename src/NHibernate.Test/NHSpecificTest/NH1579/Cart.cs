@@ -17,9 +17,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1579
 
 		private void EnsureCollections()
 		{
-			if(Apples == null)
+			if (Apples == null)
 				Apples = new List<Apple>();
-			if(Oranges == null)
+			if (Oranges == null)
 				Oranges = new List<Orange>();
 		}
 

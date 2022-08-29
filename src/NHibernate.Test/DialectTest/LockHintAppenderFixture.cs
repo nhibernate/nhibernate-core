@@ -14,7 +14,7 @@ namespace NHibernate.Test.DialectTest
 		[SetUp]
 		public void SetUp()
 		{
-			_appender = new MsSql2000Dialect.LockHintAppender(new MsSql2000Dialect(), new Dictionary<string, LockMode> { {"person", LockMode.Upgrade} });
+			_appender = new MsSql2000Dialect.LockHintAppender(new MsSql2000Dialect(), new Dictionary<string, LockMode> { { "person", LockMode.Upgrade } });
 		}
 
 		[Test]

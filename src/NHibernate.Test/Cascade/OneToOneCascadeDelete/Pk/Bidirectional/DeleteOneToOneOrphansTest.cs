@@ -51,10 +51,10 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Pk.Bidirectional
 			using (var tx = s.BeginTransaction())
 			{
 				var empInfoList = s.CreateQuery("from EmployeeInfo").List<EmployeeInfo>();
-				Assert.AreEqual( 1, empInfoList.Count);
+				Assert.AreEqual(1, empInfoList.Count);
 
 				var empList = s.CreateQuery("from Employee").List<Employee>();
-				Assert.AreEqual( 1, empList.Count);
+				Assert.AreEqual(1, empList.Count);
 
 				var emp = empList[0];
 				Assert.NotNull(emp.Info);
@@ -87,7 +87,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Pk.Bidirectional
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"Cascade.OneToOneCascadeDelete.Pk.Bidirectional.Mappings.hbm.xml"}; }
+			get { return new[] { "Cascade.OneToOneCascadeDelete.Pk.Bidirectional.Mappings.hbm.xml" }; }
 		}
 	}
 

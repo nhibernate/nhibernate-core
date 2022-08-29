@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1275
 		private int id;
 		private string name;
 
-		public A() {}
+		public A() { }
 
 		public A(string name)
 		{

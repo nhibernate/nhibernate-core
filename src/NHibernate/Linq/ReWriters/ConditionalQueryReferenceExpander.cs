@@ -94,7 +94,7 @@ namespace NHibernate.Linq.ReWriters
 
 			protected override Expression VisitMethodCall(MethodCallExpression node)
 			{
-				var result = (MethodCallExpression)base.VisitMethodCall(node);
+				var result = (MethodCallExpression) base.VisitMethodCall(node);
 				var isExtension = node.Method.GetCustomAttributes<ExtensionAttribute>().Any();
 				var methodObject = isExtension ? node.Arguments[0] : node.Object;
 
@@ -111,11 +111,11 @@ namespace NHibernate.Linq.ReWriters
 				{
 					return false;
 				}
-				
+
 				// Strip Converts
 				while (expr.NodeType == ExpressionType.Convert || expr.NodeType == ExpressionType.ConvertChecked)
 				{
-					expr = ((UnaryExpression)expr).Operand;
+					expr = ((UnaryExpression) expr).Operand;
 				}
 
 				if (expr is QuerySourceReferenceExpression && queryType?.IsAssignableFrom(expr.Type) == true)
@@ -134,7 +134,7 @@ namespace NHibernate.Linq.ReWriters
 				{
 					return ShouldRewrite(conditional.IfFalse, queryType) && ShouldRewrite(conditional.IfTrue, queryType);
 				}
-				
+
 				return false;
 			}
 		}
@@ -144,7 +144,7 @@ namespace NHibernate.Linq.ReWriters
 			where TVisitor : ConditionalQueryReferenceExpressionRewriter<T, TVisitor>, new()
 		{
 			protected T OuterExpr { get; private set; }
-			
+
 			private bool _skipUpdate;
 			private System.Type _queryType;
 

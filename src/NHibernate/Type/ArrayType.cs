@@ -65,7 +65,7 @@ namespace NHibernate.Type
 
 		public override IEnumerable GetElementsIterator(object collection)
 		{
-			return (Array)collection;
+			return (Array) collection;
 		}
 
 		/// <summary>
@@ -126,7 +126,7 @@ namespace NHibernate.Type
 		public override object ReplaceElements(object original, object target, object owner, IDictionary copyCache, ISessionImplementor session)
 		{
 			Array org = (Array) original;
-			Array result = (Array)target;
+			Array result = (Array) target;
 
 			int length = org.Length;
 			if (length != result.Length)

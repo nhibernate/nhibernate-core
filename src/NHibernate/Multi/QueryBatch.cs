@@ -255,10 +255,10 @@ namespace NHibernate.Multi
 		private void CombineQueries(IResultSetsCommand resultSetsCommand)
 		{
 			foreach (var query in _queries)
-			foreach (var cmd in query.GetCommands())
-			{
-				resultSetsCommand.Append(cmd);
-			}
+				foreach (var cmd in query.GetCommands())
+				{
+					resultSetsCommand.Append(cmd);
+				}
 		}
 
 		private void PutCacheableResults()

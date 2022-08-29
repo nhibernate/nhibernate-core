@@ -27,7 +27,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException("property");
 			}
-			if(classMapping.naturalid == null)
+			if (classMapping.naturalid == null)
 			{
 				classMapping.naturalid = naturalIdmapping;
 			}

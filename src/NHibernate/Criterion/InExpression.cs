@@ -86,7 +86,7 @@ namespace NHibernate.Criterion
 				const string comaSeparator = ", ";
 				var singleValueParam = SqlStringHelper.Repeat(new SqlString(bogusParam), columns.Length, comaSeparator, wrapInParens);
 
-				var parameters = SqlStringHelper.Repeat(singleValueParam, paramsCount, comaSeparator,  wrapInParens: false);
+				var parameters = SqlStringHelper.Repeat(singleValueParam, paramsCount, comaSeparator, wrapInParens: false);
 
 				//single column: col1 in (?, ?)
 				//multi column:  (col1, col2) in ((?, ?), (?, ?))
@@ -176,7 +176,7 @@ namespace NHibernate.Criterion
 
 		public override string ToString()
 		{
-			return (_projection ?? (object)_propertyName) + " in (" + StringHelper.ToString(_values) + ')';
+			return (_projection ?? (object) _propertyName) + " in (" + StringHelper.ToString(_values) + ')';
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace NHibernate.Test.UtilityTest
 
 			sn.Add(null);
 			Assert.That(sn, Has.Count.EqualTo(1));
-			Assert.That(sn, Is.EquivalentTo(new object[] {null}));
+			Assert.That(sn, Is.EquivalentTo(new object[] { null }));
 
 			Assert.That(sn.TryGetValue(null, out var value), Is.True);
 			Assert.That(sn.Contains(null), Is.True);
@@ -41,7 +41,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void TestInitialization()
 		{
-			var list = new List<string> {"test1", null, "test2"};
+			var list = new List<string> { "test1", null, "test2" };
 			var sn = new SetSnapShot<string>(list);
 			Assert.That(sn, Has.Count.EqualTo(list.Count));
 			Assert.That(sn, Is.EquivalentTo(list));
@@ -62,7 +62,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void TestCopyTo()
 		{
-			var list = new List<string> {"test1", null, "test2"};
+			var list = new List<string> { "test1", null, "test2" };
 			var sn = new SetSnapShot<string>(list);
 
 			var array = new string[3];
@@ -73,7 +73,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void TestSerialization()
 		{
-			var list = new List<string> {"test1", null, "test2"};
+			var list = new List<string> { "test1", null, "test2" };
 			var sn = new SetSnapShot<string>(list);
 
 			sn = Deserialize<SetSnapShot<string>>(Serialize(sn));

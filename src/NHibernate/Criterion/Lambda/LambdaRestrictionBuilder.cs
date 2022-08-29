@@ -101,7 +101,7 @@ namespace NHibernate.Criterion.Lambda
 		{
 			return Process(projection.Create<AbstractCriterion>(s => Restrictions.InsensitiveLike(s, value), p => Restrictions.InsensitiveLike(p, value)));
 		}
-		
+
 		/// <summary>
 		/// A case-insensitive "like", similar to Postgres "ilike" operator
 		/// </summary>
@@ -149,7 +149,7 @@ namespace NHibernate.Criterion.Lambda
 		{
 			return Process(projection.Create<AbstractCriterion>(s => Restrictions.Like(s, value), p => Restrictions.Like(p, value)));
 		}
-		
+
 		/// <summary>
 		/// Apply a "like" constraint to the named property
 		/// </summary>
@@ -157,7 +157,7 @@ namespace NHibernate.Criterion.Lambda
 		{
 			return Process(projection.Create<AbstractCriterion>(s => Restrictions.Like(s, value, matchMode), p => Restrictions.Like(p, value, matchMode)));
 		}
-		
+
 		/// <summary>
 		/// Apply a "like" constraint to the named property
 		/// </summary>

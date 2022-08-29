@@ -17,8 +17,8 @@ namespace NHibernate.Proxy.DynamicProxy
 	internal class ProxyImplementor
 	{
 		private const MethodAttributes InterceptorMethodsAttributes = MethodAttributes.Public | MethodAttributes.HideBySig |
-		                                                  MethodAttributes.SpecialName | MethodAttributes.NewSlot |
-		                                                  MethodAttributes.Virtual;
+														  MethodAttributes.SpecialName | MethodAttributes.NewSlot |
+														  MethodAttributes.Virtual;
 
 		private static readonly MethodInfo OriginalSetter = typeof(IProxy).GetMethod("set_Interceptor");
 		private static readonly MethodInfo OriginalGetter = typeof(IProxy).GetMethod("get_Interceptor");
@@ -33,9 +33,9 @@ namespace NHibernate.Proxy.DynamicProxy
 		public void ImplementProxy(TypeBuilder typeBuilder)
 		{
 			// Implement the IProxy interface
-			typeBuilder.AddInterfaceImplementation(typeof (IProxy));
+			typeBuilder.AddInterfaceImplementation(typeof(IProxy));
 
-			field = typeBuilder.DefineField("__interceptor", typeof (IInterceptor), FieldAttributes.Private);
+			field = typeBuilder.DefineField("__interceptor", typeof(IInterceptor), FieldAttributes.Private);
 
 			// Implement the getter
 			MethodBuilder getterMethod = typeBuilder.DefineMethod("get_Interceptor", InterceptorMethodsAttributes, CallingConventions.HasThis, typeof(IInterceptor), System.Type.EmptyTypes);
@@ -50,7 +50,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Ret);
 
 			// Implement the setter
-			MethodBuilder setterMethod = typeBuilder.DefineMethod("set_Interceptor", InterceptorMethodsAttributes, CallingConventions.HasThis, typeof (void), new[] {typeof (IInterceptor)});
+			MethodBuilder setterMethod = typeBuilder.DefineMethod("set_Interceptor", InterceptorMethodsAttributes, CallingConventions.HasThis, typeof(void), new[] { typeof(IInterceptor) });
 
 			setterMethod.SetImplementationFlags(MethodImplAttributes.Managed | MethodImplAttributes.IL);
 			IL = setterMethod.GetILGenerator();

@@ -41,7 +41,7 @@ namespace NHibernate.Criterion
 		private static TypedValue[] GetTypedValues(IType type, object value)
 		{
 			if (!type.IsComponentType)
-				return new[] {new TypedValue(type, value)};
+				return new[] { new TypedValue(type, value) };
 
 			IAbstractComponentType actype = (IAbstractComponentType) type;
 			IType[] types = actype.Subtypes;

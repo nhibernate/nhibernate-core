@@ -14,7 +14,7 @@ namespace NHibernate.Dialect
 
 		static AnsiSqlKeywords()
 		{
-			var keywordsSql2003 = new []
+			var keywordsSql2003 = new[]
 			{
 				"add",
 				"all",

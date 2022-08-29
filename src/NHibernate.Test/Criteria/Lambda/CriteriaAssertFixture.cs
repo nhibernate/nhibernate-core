@@ -1,9 +1,7 @@
 ﻿using System;
-
-using NUnit.Framework;
-
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Criteria.Lambda
 {

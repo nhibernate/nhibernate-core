@@ -22,12 +22,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 	{
 		public SqlType[] SqlTypes
 		{
-			get { return new[] {SqlTypeFactory.Int32}; }
+			get { return new[] { SqlTypeFactory.Int32 }; }
 		}
 
 		public System.Type ReturnedType
 		{
-			get { return typeof (bool); }
+			get { return typeof(bool); }
 		}
 
 		public new bool Equals(object x, object y)
@@ -59,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 
 		public object DeepCopy(object value)
 		{
-			return (bool)value;
+			return (bool) value;
 		}
 
 		public bool IsMutable
@@ -94,7 +94,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 
 		public string ToXMLString(object value)
 		{
-			return ((bool)value) ? "1" : "-1";
+			return ((bool) value) ? "1" : "-1";
 		}
 	}
 
@@ -108,7 +108,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
-				rc.Property(x => x.IsActive, pm=>pm.Type<MyBooleanType>());
+				rc.Property(x => x.IsActive, pm => pm.Type<MyBooleanType>());
 			});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
@@ -119,10 +119,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity { Name = "Bob", IsActive = true};
+				var e1 = new Entity { Name = "Bob", IsActive = true };
 				session.Save(e1);
 
-				var e2 = new Entity { Name = "Sally",IsActive = false};
+				var e2 = new Entity { Name = "Sally", IsActive = false };
 				session.Save(e2);
 
 				session.Flush();

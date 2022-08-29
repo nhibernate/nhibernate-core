@@ -19,7 +19,7 @@ namespace NHibernate.Mapping.ByCode
 
 		private static FieldInfo GetField(System.Type type, string fieldName)
 		{
-			if(type == typeof(object) || type == null)
+			if (type == typeof(object) || type == null)
 			{
 				return null;
 			}

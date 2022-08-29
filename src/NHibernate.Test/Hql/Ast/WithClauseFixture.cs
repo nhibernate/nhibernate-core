@@ -68,9 +68,9 @@ namespace NHibernate.Test.Hql.Ast
 			ITransaction txn = s.BeginTransaction();
 
 			// one-to-many
-				IList list =
-				s.CreateQuery("from Human h inner join h.offspring as o with o.bodyWeight < :someLimit").SetDouble("someLimit", 1).
-					List();
+			IList list =
+			s.CreateQuery("from Human h inner join h.offspring as o with o.bodyWeight < :someLimit").SetDouble("someLimit", 1).
+				List();
 			Assert.That(list, Is.Empty, "ad-hoc on did not take effect");
 
 			// many-to-one
@@ -103,15 +103,15 @@ namespace NHibernate.Test.Hql.Ast
 				ISession session = tc.OpenNewSession();
 				ITransaction txn = session.BeginTransaction();
 
-				var mother = new Human {BodyWeight = 10, Description = "mother"};
+				var mother = new Human { BodyWeight = 10, Description = "mother" };
 
-				var father = new Human {BodyWeight = 15, Description = "father"};
+				var father = new Human { BodyWeight = 15, Description = "father" };
 
-				var child1 = new Human {BodyWeight = 5, Description = "child1"};
+				var child1 = new Human { BodyWeight = 5, Description = "child1" };
 
-				var child2 = new Human {BodyWeight = 6, Description = "child2"};
+				var child2 = new Human { BodyWeight = 6, Description = "child2" };
 
-				var friend = new Human {BodyWeight = 20, Description = "friend"};
+				var friend = new Human { BodyWeight = 20, Description = "friend" };
 
 				child1.Mother = mother;
 				child1.Father = father;
@@ -123,7 +123,7 @@ namespace NHibernate.Test.Hql.Ast
 				mother.AddOffspring(child2);
 				father.AddOffspring(child2);
 
-				father.Friends = new[] {friend};
+				father.Friends = new[] { friend };
 
 				session.Save(mother);
 				session.Save(father);

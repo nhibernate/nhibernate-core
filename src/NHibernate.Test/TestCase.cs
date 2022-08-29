@@ -5,22 +5,22 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using log4net;
 using NHibernate.Cfg;
 using NHibernate.Connection;
-using NHibernate.Engine;
-using NHibernate.Mapping;
-using NHibernate.Tool.hbm2ddl;
-using NHibernate.Type;
-using NUnit.Framework;
-using NUnit.Framework.Interfaces;
-using System.Text;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Engine;
 using NHibernate.Engine.Query;
+using NHibernate.Mapping;
 using NHibernate.SqlTypes;
+using NHibernate.Tool.hbm2ddl;
+using NHibernate.Type;
 using NHibernate.Util;
 using NSubstitute;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace NHibernate.Test
 {
@@ -39,9 +39,9 @@ namespace NHibernate.Test
 		static TestCase()
 		{
 			PlanCacheField = typeof(QueryPlanCache)
-				                 .GetField("planCache", BindingFlags.NonPublic | BindingFlags.Instance)
-			                 ?? throw new InvalidOperationException(
-				                 "planCache field does not exist in QueryPlanCache.");
+								 .GetField("planCache", BindingFlags.NonPublic | BindingFlags.Instance)
+							 ?? throw new InvalidOperationException(
+								 "planCache field does not exist in QueryPlanCache.");
 		}
 
 		protected Dialect.Dialect Dialect
@@ -325,7 +325,7 @@ namespace NHibernate.Test
 				fbDriver.ClearPool(null);
 			}
 
-			using(var optionalConnection = getConnection?.Invoke())
+			using (var optionalConnection = getConnection?.Invoke())
 				export.Drop(useStdOut, true, optionalConnection);
 		}
 
@@ -423,7 +423,7 @@ namespace NHibernate.Test
 				{
 					if (prop.Value.IsSimpleValue)
 					{
-						IType type = ((SimpleValue)prop.Value).Type;
+						IType type = ((SimpleValue) prop.Value).Type;
 						if (ReferenceEquals(type, NHibernateUtil.BinaryBlob))
 						{
 							hasLob = true;
@@ -542,7 +542,7 @@ namespace NHibernate.Test
 			var substitute = (Dialect.Dialect) forPartsOfMethod.MakeGenericMethod(origDialect.GetType())
 																.Invoke(null, new object[] { new object[0] });
 			substitute.GetCastTypeName(Arg.Any<SqlType>())
-			          .ReturnsForAnyArgs(x => origDialect.GetCastTypeName(x.ArgAt<SqlType>(0)));
+					  .ReturnsForAnyArgs(x => origDialect.GetCastTypeName(x.ArgAt<SqlType>(0)));
 
 			dialectProperty.SetValue(Sfi.Settings, substitute);
 

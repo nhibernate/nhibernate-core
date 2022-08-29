@@ -11,7 +11,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			public int Id { get; set; }
 			public int Version { get; set; }
 		}
-		private class MyRoot: MyClass
+		private class MyRoot : MyClass
 		{
 		}
 

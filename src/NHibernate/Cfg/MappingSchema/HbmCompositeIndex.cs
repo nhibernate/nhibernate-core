@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmCompositeIndex: IComponentMapping
+	public partial class HbmCompositeIndex : IComponentMapping
 	{
 		#region Implementation of IPropertiesContainerMapping
 

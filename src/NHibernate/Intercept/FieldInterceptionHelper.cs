@@ -36,9 +36,9 @@ namespace NHibernate.Intercept
 		}
 
 		[Obsolete("Use IBytecodeEnhancementMetadata.InjectInterceptor method instead")]
-		public static IFieldInterceptor InjectFieldInterceptor(object entity, string entityName, 
+		public static IFieldInterceptor InjectFieldInterceptor(object entity, string entityName,
 			System.Type mappedClass,
-			ISet<string> uninitializedFieldNames, 
+			ISet<string> uninitializedFieldNames,
 			ISet<string> unwrapProxyFieldNames,
 			ISessionImplementor session)
 		{

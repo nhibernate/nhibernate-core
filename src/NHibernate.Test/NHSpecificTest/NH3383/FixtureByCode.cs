@@ -46,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 		public void CanRoundTripSerializedMultipleCascadeStyle()
 		{
 			CascadeStyle startingCascadeStyle =
-				new CascadeStyle.MultipleCascadeStyle(new[] {CascadeStyle.Delete, CascadeStyle.Lock});
+				new CascadeStyle.MultipleCascadeStyle(new[] { CascadeStyle.Delete, CascadeStyle.Lock });
 			CascadeStyle deserializedCascadeStyle;
 
 			var formatter = new BinaryFormatter
@@ -59,13 +59,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 			{
 				formatter.Serialize(configMemoryStream, startingCascadeStyle);
 				configMemoryStream.Position = 0;
-				deserializedCascadeStyle = (CascadeStyle)formatter.Deserialize(configMemoryStream);
+				deserializedCascadeStyle = (CascadeStyle) formatter.Deserialize(configMemoryStream);
 			}
 
 			Assert.That(deserializedCascadeStyle, Is.TypeOf<CascadeStyle.MultipleCascadeStyle>());
 			Assert.That(deserializedCascadeStyle.ToString(),
-			            Is.EqualTo(
-				            "[NHibernate.Engine.CascadeStyle+DeleteCascadeStyle,NHibernate.Engine.CascadeStyle+LockCascadeStyle]"));
+						Is.EqualTo(
+							"[NHibernate.Engine.CascadeStyle+DeleteCascadeStyle,NHibernate.Engine.CascadeStyle+LockCascadeStyle]"));
 		}
 
 		[Test]
@@ -85,7 +85,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 			{
 				formatter.Serialize(configMemoryStream, classMapping);
 				configMemoryStream.Position = 0;
-				deserializedClassMapping = (RootClass)formatter.Deserialize(configMemoryStream);
+				deserializedClassMapping = (RootClass) formatter.Deserialize(configMemoryStream);
 			}
 
 			AssertDeserializedMappingClasses(deserializedClassMapping);
@@ -112,7 +112,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 
 				try
 				{
-					var helper = (AppDomainHelper)secondAppDomain.CreateInstanceAndUnwrap(
+					var helper = (AppDomainHelper) secondAppDomain.CreateInstanceAndUnwrap(
 						Assembly.GetExecutingAssembly().FullName,
 						typeof(AppDomainHelper).FullName);
 
@@ -142,7 +142,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 			stringPropertyInComponentMapping.Name = "StringPropertyInComponent";
 			componentMapping.AddProperty(stringPropertyInComponentMapping);
 
-			var componentType = (IAbstractComponentType)componentMapping.Type;
+			var componentType = (IAbstractComponentType) componentMapping.Type;
 
 			Assume.That(CascadeStyle.None == stringPropertyInComponentMapping.CascadeStyle);
 			Assume.That(CascadeStyle.None == componentType.GetCascadeStyle(0));
@@ -154,8 +154,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 		private static void AssertDeserializedMappingClasses(RootClass deserializedClassMapping)
 		{
 			var deserializedComponentPropertyMapping = deserializedClassMapping.GetProperty("ComponentPropertyInClass");
-			var deserializedComponentMapping = (NHibernate.Mapping.Component)deserializedComponentPropertyMapping.Value;
-			var deserializedComponentType = (IAbstractComponentType)deserializedComponentMapping.Type;
+			var deserializedComponentMapping = (NHibernate.Mapping.Component) deserializedComponentPropertyMapping.Value;
+			var deserializedComponentType = (IAbstractComponentType) deserializedComponentMapping.Type;
 			var deserializedStringPropertyInComponentMapping = deserializedComponentMapping.GetProperty("StringPropertyInComponent");
 
 			// Must be all the same objects since CascadeStyles are singletons and are
@@ -175,7 +175,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3383
 					SurrogateSelector = new SerializationHelper.SurrogateSelector()	
 #endif
 				};
-				var deserializedClassMapping = (RootClass)formatter.Deserialize(configMemoryStream);
+				var deserializedClassMapping = (RootClass) formatter.Deserialize(configMemoryStream);
 
 				AssertDeserializedMappingClasses(deserializedClassMapping);
 			}

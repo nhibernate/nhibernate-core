@@ -40,14 +40,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			DotNode lhs;
 			try
 			{
-				lhs = (DotNode)eq.GetFirstChild();
+				lhs = (DotNode) eq.GetFirstChild();
 			}
 			catch (InvalidCastException e)
 			{
 				throw new QueryException(
 					string.Format("Left side of assigment should be a case sensitive property or a field (depending on mapping); found '{0}'", eq.GetFirstChild()), e);
 			}
-			var rhs = (SqlNode)lhs.NextSibling;
+			var rhs = (SqlNode) lhs.NextSibling;
 
 			ValidateLhs(lhs);
 
@@ -71,7 +71,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else if (IsParam(rhs))
 			{
-				_hqlParameters = new[] { ((ParameterNode)rhs).HqlParameterSpecification };
+				_hqlParameters = new[] { ((ParameterNode) rhs).HqlParameterSpecification };
 			}
 			else
 			{

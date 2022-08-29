@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1486
 			State = state;
 			Street = street;
 		}
-		
+
 		public bool Equals(Address other)
 		{
 			if (ReferenceEquals(null, other)) return false;

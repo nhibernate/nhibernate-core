@@ -35,7 +35,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// {@link #getEmbeddedParameters()} is allowed to return null if this method returns false.
 		/// </summary>
 		bool HasEmbeddedParameters
-		{ 
+		{
 			get;
 		}
 

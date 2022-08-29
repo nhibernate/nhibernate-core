@@ -37,7 +37,7 @@ namespace NHibernate.Type
 
 		private static string GetStringRepresentation(object value)
 		{
-			return ((Uri)value).OriginalString;
+			return ((Uri) value).OriginalString;
 		}
 
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
@@ -85,7 +85,7 @@ namespace NHibernate.Type
 
 		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return "'" + ((Uri)value).OriginalString + "'";
+			return "'" + ((Uri) value).OriginalString + "'";
 		}
 
 		/// <inheritdoc />

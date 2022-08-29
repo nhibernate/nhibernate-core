@@ -105,7 +105,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 					}
 				}
 				while (classCacheElement.MoveToNextAttribute());
-			}			
+			}
 		}
 
 		private string clazz;

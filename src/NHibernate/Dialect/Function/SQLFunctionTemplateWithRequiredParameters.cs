@@ -1,12 +1,12 @@
+using System;
 using System.Collections;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using System;
 
 namespace NHibernate.Dialect.Function
 {

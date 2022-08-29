@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using NHibernate.Intercept;
 using NHibernate.Proxy;
 using NUnit.Framework;
-using NHibernate.Intercept;
 
 namespace NHibernate.Test.DynamicProxyTests
 {
@@ -33,7 +33,7 @@ namespace NHibernate.Test.DynamicProxyTests
 			var pf = new DefaultProxyFactory();
 			var propertyInfo = typeof(MyClass).GetProperty("Id");
 			pf.PostInstantiate("MyClass", typeof(MyClass), new HashSet<System.Type>(), propertyInfo.GetGetMethod(), propertyInfo.GetSetMethod(), null);
-			var fieldInterceptionProxy = (IFieldInterceptorAccessor)pf.GetFieldInterceptionProxy(new MyClass());
+			var fieldInterceptionProxy = (IFieldInterceptorAccessor) pf.GetFieldInterceptionProxy(new MyClass());
 			fieldInterceptionProxy.FieldInterceptor = new DefaultFieldInterceptor(null, null, null, "MyClass", typeof(MyClass));
 
 			NHAssert.IsSerializable(fieldInterceptionProxy);
@@ -45,7 +45,7 @@ namespace NHibernate.Test.DynamicProxyTests
 			var pf = new DefaultProxyFactory();
 			var propertyInfo = typeof(MyClass).GetProperty("Id");
 			pf.PostInstantiate("MyClass", typeof(MyClass), new HashSet<System.Type>(), propertyInfo.GetGetMethod(), propertyInfo.GetSetMethod(), null);
-			var myClassProxied = (MyClass)pf.GetFieldInterceptionProxy(new MyClass());
+			var myClassProxied = (MyClass) pf.GetFieldInterceptionProxy(new MyClass());
 			Assert.Throws<FormatException>(() => myClassProxied.ThrowError(), "test");
 		}
 	}

@@ -8,14 +8,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 	[Serializable]
 	public class QuerySyntaxException : QueryException
 	{
-		protected QuerySyntaxException() {}
-		public QuerySyntaxException(string message, string hql) : base(message, hql) {}
-		public QuerySyntaxException(string message, string hql, Exception inner) : base(message, hql, inner) {}
+		protected QuerySyntaxException() { }
+		public QuerySyntaxException(string message, string hql) : base(message, hql) { }
+		public QuerySyntaxException(string message, string hql, Exception inner) : base(message, hql, inner) { }
 
-		public QuerySyntaxException(string message) : base(message) {}
-		public QuerySyntaxException(string message, Exception inner) : base(message, inner) {}
+		public QuerySyntaxException(string message) : base(message) { }
+		public QuerySyntaxException(string message, Exception inner) : base(message, inner) { }
 
-		protected QuerySyntaxException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+		protected QuerySyntaxException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
 		public static QuerySyntaxException Convert(RecognitionException e)
 		{

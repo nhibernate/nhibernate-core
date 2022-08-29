@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1487
 		public void GenerateSchemaMultipleUniqueKeys()
 		{
 			var cfg = GetConf();
-			if(!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
+			if (!(Dialect.Dialect.GetDialect(cfg.Properties) is MsSql2000Dialect))
 			{
 				Assert.Ignore("Specific for MsSql2000Dialect");
 			}
@@ -198,7 +198,7 @@ assembly='NHibernate.Test'>
 			var scriptB = new StringBuilder();
 			new SchemaExport(cfg).Create(sl => scriptB.AppendLine(sl), true);
 			var script = scriptB.ToString().Split(new[] { System.Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries);
-			int count=0;
+			int count = 0;
 			foreach (var s in script)
 			{
 				if (s.Contains("unique (Id)"))

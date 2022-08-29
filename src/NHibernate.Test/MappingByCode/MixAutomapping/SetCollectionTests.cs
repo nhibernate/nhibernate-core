@@ -33,7 +33,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(EntityWithSets).GetProperty("NickNames");
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsSet(mi), Is.True);
 		}
@@ -43,7 +43,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(EntityWithSets).GetField("emails", BindingFlags.NonPublic | BindingFlags.Instance);
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsSet(mi), Is.True);
 		}
@@ -53,7 +53,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(EntityWithSets).GetProperty("Emails");
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsSet(mi), Is.True);
 		}
@@ -63,7 +63,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(EntityWithSets).GetField("others", BindingFlags.NonPublic | BindingFlags.Instance);
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsSet(mi), Is.False);
 		}
@@ -73,7 +73,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(EntityWithSets).GetProperty("Others");
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsSet(mi), Is.False);
 		}
@@ -84,9 +84,9 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var mi = typeof(EntityWithSets).GetProperty("Others");
 			var autoinspector = new SimpleModelInspector();
 			var mapper = new ModelMapper(autoinspector);
-			mapper.Class<EntityWithSets>(map => map.Set(x => x.Others, x => { }, y=> {}));
+			mapper.Class<EntityWithSets>(map => map.Set(x => x.Others, x => { }, y => { }));
 
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsSet(mi), Is.True);
 		}
 	}

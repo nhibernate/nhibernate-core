@@ -83,17 +83,17 @@ namespace NHibernate.Engine
 			//for non null args, check for components and elements containing components
 			if (propertyType.IsComponentType)
 			{
-				return CheckComponentNullability(value, (IAbstractComponentType)propertyType);
+				return CheckComponentNullability(value, (IAbstractComponentType) propertyType);
 			}
 			else if (propertyType.IsCollectionType)
 			{
 				//persistent collections may have components
-				CollectionType collectionType = (CollectionType)propertyType;
+				CollectionType collectionType = (CollectionType) propertyType;
 				IType collectionElementType = collectionType.GetElementType(session.Factory);
 				if (collectionElementType.IsComponentType)
 				{
 					//check for all components values in the collection
-					IAbstractComponentType componentType = (IAbstractComponentType)collectionElementType;
+					IAbstractComponentType componentType = (IAbstractComponentType) collectionElementType;
 					IEnumerable ec = CascadingAction.GetLoadedElementsIterator(session, collectionType, value);
 					foreach (object compValue in ec)
 					{

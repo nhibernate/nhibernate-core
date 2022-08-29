@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3374
 					});
 				rc.Property(x => x.Name);
 			});
-			
+
 			mapper.Class<Blob>(map =>
 				{
 					map.Id(x => x.Id, idMapper => idMapper.Generator(Generators.Identity));
@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3374
 				var e1 = new Document
 				{
 					Name = "Bob",
-					Blob = new Blob {Bytes = new byte[] {1, 2, 3}}
+					Blob = new Blob { Bytes = new byte[] { 1, 2, 3 } }
 				};
 
 				session.Save(e1);

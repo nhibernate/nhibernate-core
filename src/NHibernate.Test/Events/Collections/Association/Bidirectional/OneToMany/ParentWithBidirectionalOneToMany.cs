@@ -16,7 +16,7 @@ namespace NHibernate.Test.Events.Collections.Association.Bidirectional.OneToMany
 		public override void AddChild(IChild child)
 		{
 			base.AddChild(child);
-			((ChildWithManyToOne)child).Parent = this;
+			((ChildWithManyToOne) child).Parent = this;
 		}
 
 		public override void NewChildren(ICollection<IChild> children)
@@ -49,7 +49,7 @@ namespace NHibernate.Test.Events.Collections.Association.Bidirectional.OneToMany
 			// only set the parent to null if child is no longer in the bag
 			if (!Children.Contains(child))
 			{
-				((ChildWithManyToOne)child).Parent = null;
+				((ChildWithManyToOne) child).Parent = null;
 			}
 		}
 	}

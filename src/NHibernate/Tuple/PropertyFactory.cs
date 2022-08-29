@@ -99,7 +99,7 @@ namespace NHibernate.Tuple
 			// entity reference can lose information
 
 			bool alwaysDirtyCheck = type.IsAssociationType &&
-			                        ((IAssociationType) type).IsAlwaysDirtyChecked;
+									((IAssociationType) type).IsAlwaysDirtyChecked;
 
 			return new StandardProperty(
 				property.Name,

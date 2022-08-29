@@ -19,7 +19,7 @@ namespace NHibernate.Test.Linq
 		{
 			pattern = Regex.Escape(pattern);
 			pattern = pattern.Replace("%", ".*?").Replace("_", ".");
-			pattern = pattern.Replace(@"\[", "[").Replace(@"\]","]").Replace(@"\^", "^");
+			pattern = pattern.Replace(@"\[", "[").Replace(@"\]", "]").Replace(@"\^", "^");
 
 			return Regex.IsMatch(source, pattern);
 		}
@@ -30,9 +30,9 @@ namespace NHibernate.Test.Linq
 		}
 	}
 
-	public class MyLinqToHqlGeneratorsRegistry: DefaultLinqToHqlGeneratorsRegistry
+	public class MyLinqToHqlGeneratorsRegistry : DefaultLinqToHqlGeneratorsRegistry
 	{
-		public MyLinqToHqlGeneratorsRegistry():base()
+		public MyLinqToHqlGeneratorsRegistry() : base()
 		{
 			RegisterGenerator(ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null)),
 							  new IsLikeGenerator());
@@ -58,10 +58,10 @@ namespace NHibernate.Test.Linq
 	{
 		public IsLikeGenerator()
 		{
-			SupportedMethods = new[] {ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null))};
+			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null)) };
 		}
 
-		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, 
+		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject,
 			ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			return treeBuilder.Like(visitor.Visit(arguments[0]).AsExpression(),
@@ -77,10 +77,10 @@ namespace NHibernate.Test.Linq
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject,
-		                                     ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+											 ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			return treeBuilder.Equality(visitor.Visit(targetObject).AsExpression(),
-			                        visitor.Visit(arguments[0]).AsExpression());
+									visitor.Visit(arguments[0]).AsExpression());
 		}
 	}
 

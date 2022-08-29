@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 		{
 			Id(i => i.Id, m => m.Generator(Generators.GuidComb));
 			Property(p => p.BaseField,
-			         map => { map.Column("BaseField"); });
+					 map => { map.Column("BaseField"); });
 		}
 	}
 
@@ -20,9 +20,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 		{
 			Extends(typeof(BaseEntity));
 			Property(p => p.ExtendedField,
-			         map => { map.Column("ExtendedField"); });
+					 map => { map.Column("ExtendedField"); });
 			Property(p => p.TopLevelField,
-			         map => { map.Column("TopLevelField"); });
+					 map => { map.Column("TopLevelField"); });
 		}
 	}
 
@@ -32,9 +32,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 		{
 			Extends(typeof(BaseEntity));
 			Property(p => p.ExtendedField,
-			         map => { map.Column("ExtendedField"); });
+					 map => { map.Column("ExtendedField"); });
 			Property(p => p.TopLevelField,
-			         map => { map.Column("TopLevelField"); });
+					 map => { map.Column("TopLevelField"); });
 		}
 	}
 
@@ -44,9 +44,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 		{
 			Extends(typeof(BaseEntity));
 			Property(p => p.ExtendedField,
-			         map => { map.Column("ExtendedField"); });
+					 map => { map.Column("ExtendedField"); });
 			Property(p => p.TopLevelField,
-			         map => { map.Column("TopLevelField"); });
+					 map => { map.Column("TopLevelField"); });
 		}
 	}
 
@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 		{
 			Id(i => i.Id, m => m.Generator(Generators.GuidComb));
 			Property(p => p.BaseField,
-			         map => { map.Column("BaseField"); });
+					 map => { map.Column("BaseField"); });
 		}
 	}
 
@@ -66,9 +66,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 		{
 			Extends(typeof(IBaseInterface));
 			Property(p => p.ExtendedField,
-			         map => { map.Column("ExtendedField"); });
+					 map => { map.Column("ExtendedField"); });
 			Property(p => p.TopLevelField,
-			         map => { map.Column("TopLevelField"); });
+					 map => { map.Column("TopLevelField"); });
 		}
 	}
 
@@ -78,9 +78,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 		{
 			Extends(typeof(IBaseInterface));
 			Property(p => p.ExtendedField,
-			         map => { map.Column("ExtendedField"); });
+					 map => { map.Column("ExtendedField"); });
 			Property(p => p.TopLevelField,
-			         map => { map.Column("TopLevelField"); });
+					 map => { map.Column("TopLevelField"); });
 		}
 	}
 
@@ -90,9 +90,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 		{
 			Extends(typeof(IBaseInterface));
 			Property(p => p.ExtendedField,
-			         map => { map.Column("ExtendedField"); });
+					 map => { map.Column("ExtendedField"); });
 			Property(p => p.TopLevelField,
-			         map => { map.Column("TopLevelField"); });
+					 map => { map.Column("TopLevelField"); });
 		}
 	}
 
@@ -105,7 +105,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 			{
 				Id(i => i.Id, m => m.Generator(Generators.Identity));
 				Property(p => p.BaseField,
-				         map => { map.Column("BaseField"); });
+						 map => { map.Column("BaseField"); });
 			}
 		}
 
@@ -114,9 +114,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 			public MappedExtensionMapping()
 			{
 				Extends(typeof(MappedRoot));
-				
+
 				Property(p => p.MappedExtensionField,
-				         map => { map.Column("MappedExtensionField"); });
+						 map => { map.Column("MappedExtensionField"); });
 			}
 		}
 
@@ -128,7 +128,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 				Property(p => p.UnmappedExtensionField,
 						 map => { map.Column("UnmappedExtensionField"); });
 				Property(p => p.TopLevelExtensionField,
-				         map => { map.Column("TopLevelExtensionField"); });
+						 map => { map.Column("TopLevelExtensionField"); });
 			}
 		}
 	}
@@ -142,7 +142,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 			{
 				Id(i => i.Id, m => m.Generator(Generators.Identity));
 				Property(p => p.BaseField,
-				         map => { map.Column("BaseField"); });
+						 map => { map.Column("BaseField"); });
 			}
 		}
 
@@ -152,9 +152,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 			{
 				Extends(typeof(MappedRoot));
 				Property(p => p.UnmappedExtensionField,
-				         map => { map.Column("UnmappedExtensionField"); });
+						 map => { map.Column("UnmappedExtensionField"); });
 				Property(p => p.MappedExtensionField,
-				         map => { map.Column("MappedExtensionField"); });
+						 map => { map.Column("MappedExtensionField"); });
 			}
 		}
 
@@ -164,7 +164,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3992
 			{
 				Extends(typeof(MappedExtension));
 				Property(p => p.TopLevelExtensionField,
-				         map => { map.Column("TopLevelExtensionField"); });
+						 map => { map.Column("TopLevelExtensionField"); });
 			}
 		}
 	}

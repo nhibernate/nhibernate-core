@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3512
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var employee = new Employee {Name = "Bob", Age = 33, Salary = 100};
+				var employee = new Employee { Name = "Bob", Age = 33, Salary = 100 };
 				session.Save(employee);
 
 				transaction.Commit();

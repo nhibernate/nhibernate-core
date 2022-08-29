@@ -35,7 +35,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			: base(mappings)
 		{
 		}
-		
+
 		protected void BindClass(IEntityMapping classMapping, PersistentClass model, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			// handle the lazy attribute
@@ -111,7 +111,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			model.MetaAttributes = GetMetas(classMapping, inheritedMetas);
 
 			// PERSISTER
-			if(!string.IsNullOrEmpty(classMapping.Persister))
+			if (!string.IsNullOrEmpty(classMapping.Persister))
 				model.EntityPersisterClass = ClassForNameChecked(classMapping.Persister, mappings,
 																 "could not instantiate persister class: {0}");
 
@@ -154,7 +154,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			else if (entity.IsLazy)
 				entity.ProxyInterfaceName = className;
 
-			HbmTuplizer tuplizer = classMapping.Tuplizers.FirstOrDefault(tp=> tp.entitymode == HbmTuplizerEntitymode.Poco);
+			HbmTuplizer tuplizer = classMapping.Tuplizers.FirstOrDefault(tp => tp.entitymode == HbmTuplizerEntitymode.Poco);
 			if (tuplizer != null)
 			{
 				string tupClassName = FullQualifiedClassName(tuplizer.@class, mappings);
@@ -198,9 +198,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				string propertyRef = joinMapping.key.propertyref;
 				var propertyRefKey = new SimpleValue(persistentClass.Table)
-					{
-						IsAlternateUniqueKey = true
-					};
+				{
+					IsAlternateUniqueKey = true
+				};
 				var property = persistentClass.GetProperty(propertyRef);
 				join.RefIdProperty = property;
 				//we only want one column
@@ -268,7 +268,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				throw new MappingException("'extends' attribute is not found or is empty.");
 			}
 			PersistentClass superModel = mappings.GetClass(extendsName);
-			if(superModel == null)
+			if (superModel == null)
 			{
 				string qualifiedExtendsName = FullClassName(extendsName, mappings);
 				superModel = mappings.GetClass(qualifiedExtendsName);
@@ -329,10 +329,10 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (componentMapping.Parent != null && !string.IsNullOrEmpty(componentMapping.Parent.name))
 			{
 				model.ParentProperty = new Property
-										{
-											Name = componentMapping.Parent.name,
-											PropertyAccessorName = componentMapping.Parent.access ?? mappings.DefaultAccess
-										}; 
+				{
+					Name = componentMapping.Parent.name,
+					PropertyAccessorName = componentMapping.Parent.access ?? mappings.DefaultAccess
+				};
 			}
 
 			new PropertiesBinder(Mappings, model, className, path, isNullable).Bind(
@@ -360,11 +360,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		protected void BindAnyMeta(IAnyMapping anyMapping, Any model)
 		{
-			if(string.IsNullOrEmpty(anyMapping.MetaType))
+			if (string.IsNullOrEmpty(anyMapping.MetaType))
 			{
 				return;
 			}
-				model.MetaType = anyMapping.MetaType;
+			model.MetaType = anyMapping.MetaType;
 			var metaValues = anyMapping.MetaValues;
 			if (metaValues.Count == 0)
 			{
@@ -377,7 +377,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				try
 				{
-					object value = ((IDiscriminatorType)metaType).StringToObject(metaValue.value);
+					object value = ((IDiscriminatorType) metaType).StringToObject(metaValue.value);
 					string entityName = GetClassName(metaValue.@class, mappings);
 					values[value] = entityName;
 				}

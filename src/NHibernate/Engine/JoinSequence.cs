@@ -281,7 +281,7 @@ namespace NHibernate.Engine
 		{
 			bool include = includeSubclassJoins && IsIncluded(alias);
 			joinFragment.AddJoins(joinable.FromJoinFragment(alias, innerJoin, include),
-			                      joinable.WhereJoinFragment(alias, innerJoin, include));
+								  joinable.WhereJoinFragment(alias, innerJoin, include));
 		}
 
 		public JoinSequence AddCondition(SqlString condition)

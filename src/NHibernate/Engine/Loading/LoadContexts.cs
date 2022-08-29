@@ -9,7 +9,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.Util;
 
 namespace NHibernate.Engine.Loading
-{	
+{
 	/// <summary> 
 	/// Maps <see cref="DbDataReader"/> to specific contextual data
 	/// related to processing that <see cref="DbDataReader"/>.
@@ -71,7 +71,7 @@ namespace NHibernate.Engine.Loading
 		{
 			if (collectionLoadContexts != null)
 			{
-				CollectionLoadContext collectionLoadContext = (CollectionLoadContext)collectionLoadContexts[resultSet];
+				CollectionLoadContext collectionLoadContext = (CollectionLoadContext) collectionLoadContexts[resultSet];
 				collectionLoadContext.Cleanup();
 				collectionLoadContexts.Remove(resultSet);
 			}
@@ -112,7 +112,7 @@ namespace NHibernate.Engine.Loading
 		/// </summary>
 		public bool HasRegisteredLoadingCollectionEntries
 		{
-				get { return (xrefLoadingCollectionEntries != null && xrefLoadingCollectionEntries.Count != 0); }
+			get { return (xrefLoadingCollectionEntries != null && xrefLoadingCollectionEntries.Count != 0); }
 		}
 
 		/// <summary> 
@@ -130,7 +130,7 @@ namespace NHibernate.Engine.Loading
 			}
 			else
 			{
-				context = (CollectionLoadContext)collectionLoadContexts[resultSet];
+				context = (CollectionLoadContext) collectionLoadContexts[resultSet];
 			}
 			if (context == null)
 			{

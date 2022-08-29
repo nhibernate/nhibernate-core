@@ -8,7 +8,7 @@ namespace NHibernate.Util
 	{
 		public static Func<object, T> BuildPropertyGetter<T>(System.Type type, string propertyName)
 		{
-			var parameter = Expression.Parameter(typeof (object), "x");
+			var parameter = Expression.Parameter(typeof(object), "x");
 			var instance = Expression.Convert(parameter, type);
 			var property = Expression.Property(instance, propertyName);
 			return Expression.Lambda<Func<object, T>>(property, parameter).Compile();
@@ -19,7 +19,7 @@ namespace NHibernate.Util
 			var parameter = Expression.Parameter(typeof(object), "x");
 			var instance = Expression.Convert(parameter, type);
 			var property = Expression.Property(instance, propertyName);
-			var valueParameter = Expression.Parameter(typeof (T), "value");
+			var valueParameter = Expression.Parameter(typeof(T), "value");
 			Expression value = valueParameter;
 			// Cast value if required
 			if (!property.Type.IsAssignableFrom(typeof(T)))
@@ -32,7 +32,7 @@ namespace NHibernate.Util
 
 		public static Action<object> BuildAction(System.Type type, string methodName)
 		{
-			var parameter = Expression.Parameter(typeof (object));
+			var parameter = Expression.Parameter(typeof(object));
 			var instance = Expression.Convert(parameter, type);
 			var methodCall = Expression.Call(
 				instance,
@@ -43,14 +43,14 @@ namespace NHibernate.Util
 
 		public static Action<object, T> BuildAction<T>(System.Type type, string methodName)
 		{
-			var parameter = Expression.Parameter(typeof (object), "x");
+			var parameter = Expression.Parameter(typeof(object), "x");
 			var instance = Expression.Convert(parameter, type);
 
-			var arg0 = Expression.Parameter(typeof (T), "arg0");
+			var arg0 = Expression.Parameter(typeof(T), "arg0");
 
 			var methodCall = Expression.Call(
 				instance,
-				GetMethod(type, methodName, typeof (T)),
+				GetMethod(type, methodName, typeof(T)),
 				arg0);
 
 			return Expression.Lambda<Action<object, T>>(methodCall, parameter, arg0).Compile();
@@ -58,15 +58,15 @@ namespace NHibernate.Util
 
 		public static Action<object, T1, T2> BuildAction<T1, T2>(System.Type type, string methodName)
 		{
-			var parameter = Expression.Parameter(typeof (object), "x");
+			var parameter = Expression.Parameter(typeof(object), "x");
 			var instance = Expression.Convert(parameter, type);
 
-			var arg0 = Expression.Parameter(typeof (T1), "arg0");
-			var arg1 = Expression.Parameter(typeof (T2), "arg1");
+			var arg0 = Expression.Parameter(typeof(T1), "arg0");
+			var arg1 = Expression.Parameter(typeof(T2), "arg1");
 
 			var methodCall = Expression.Call(
 				instance,
-				GetMethod(type, methodName, typeof (T1), typeof (T2)),
+				GetMethod(type, methodName, typeof(T1), typeof(T2)),
 				arg0,
 				arg1);
 
@@ -75,7 +75,7 @@ namespace NHibernate.Util
 
 		public static Func<object, TReturn> BuildFunc<TReturn>(System.Type type, string methodName)
 		{
-			var parameter = Expression.Parameter(typeof (object));
+			var parameter = Expression.Parameter(typeof(object));
 			var instance = Expression.Convert(parameter, type);
 			var methodCall = Expression.Call(
 				instance,

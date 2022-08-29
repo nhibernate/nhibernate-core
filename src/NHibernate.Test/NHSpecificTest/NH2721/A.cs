@@ -17,8 +17,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2721
 			Name = name;
 		}
 
-	    public int? Id { get; set; }
-	    public string Name { get; set; }
+		public int? Id { get; set; }
+		public string Name { get; set; }
 
 		public IList<B> Bs
 		{

@@ -8,10 +8,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3057
 		public virtual string InheritedProperty { get; set; }
 	}
 
-	public class AClass 
+	public class AClass
 	{
-		private ICollection<BClass> bs = new List<BClass>(); 
-		
+		private ICollection<BClass> bs = new List<BClass>();
+
 		public virtual int Id { get; set; }
 
 		public virtual ICollection<BClass> Bs

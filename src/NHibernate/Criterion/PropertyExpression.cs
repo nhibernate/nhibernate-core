@@ -105,7 +105,7 @@ namespace NHibernate.Criterion
 			else
 			{
 				List<TypedValue> types = new List<TypedValue>();
-				if(_lhsProjection!=null)
+				if (_lhsProjection != null)
 				{
 					types.AddRange(_lhsProjection.GetTypedValues(criteria, criteriaQuery));
 				}
@@ -120,22 +120,22 @@ namespace NHibernate.Criterion
 		/// <summary></summary>
 		public override string ToString()
 		{
-			return (_lhsProjection ?? (object)_lhsPropertyName) + Op + (_rhsProjection ?? (object)_rhsPropertyName);
+			return (_lhsProjection ?? (object) _lhsPropertyName) + Op + (_rhsProjection ?? (object) _rhsPropertyName);
 		}
 
 		public override IProjection[] GetProjections()
 		{
-			if(_lhsProjection != null && _rhsProjection != null)
+			if (_lhsProjection != null && _rhsProjection != null)
 			{
-				return new IProjection[] {_lhsProjection, _rhsProjection};
+				return new IProjection[] { _lhsProjection, _rhsProjection };
 			}
-			if(_lhsProjection != null)
+			if (_lhsProjection != null)
 			{
-				return new IProjection[] {_lhsProjection};
+				return new IProjection[] { _lhsProjection };
 			}
-			if(_rhsProjection != null)
+			if (_rhsProjection != null)
 			{
-				return new IProjection[] {_rhsProjection};
+				return new IProjection[] { _rhsProjection };
 			}
 			return null;
 		}

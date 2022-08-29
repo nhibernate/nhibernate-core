@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Hql.Ast
 {
-	public class DomesticAnimal: Mammal
+	public class DomesticAnimal : Mammal
 	{
 		private Human owner;
 

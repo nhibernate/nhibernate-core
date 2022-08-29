@@ -18,7 +18,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WrapsSingle()
 		{
-			int[] expected = new int[] {1, 2, 3};
+			int[] expected = new int[] { 1, 2, 3 };
 
 			EnumerableTester first;
 			JoinedEnumerable joined = InitSingle(out first);
@@ -43,7 +43,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WrapsSingleBreak()
 		{
-			int[] expected = new int[] {1, 2, 3};
+			int[] expected = new int[] { 1, 2, 3 };
 
 			EnumerableTester first;
 			JoinedEnumerable joined = InitSingle(out first);
@@ -66,7 +66,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WrapsMultiple()
 		{
-			int[] expected = new int[] {1, 2, 3, 4, 5, 6};
+			int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
 
 			EnumerableTester first;
 			EnumerableTester second;
@@ -101,7 +101,7 @@ namespace NHibernate.Test.UtilityTest
 
 		private void WrapsMultipleBreak(int breakIndex)
 		{
-			int[] expected = new int[] {1, 2, 3, 4, 5, 6};
+			int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
 
 			EnumerableTester first;
 			EnumerableTester second;
@@ -125,15 +125,15 @@ namespace NHibernate.Test.UtilityTest
 
 		private JoinedEnumerable InitSingle(out EnumerableTester first)
 		{
-			first = new EnumerableTester(new ArrayList(new int[] {1, 2, 3}));
-			return new JoinedEnumerable(new IEnumerable[] {first});
+			first = new EnumerableTester(new ArrayList(new int[] { 1, 2, 3 }));
+			return new JoinedEnumerable(new IEnumerable[] { first });
 		}
 
 		private JoinedEnumerable InitMultiple(out EnumerableTester first, out EnumerableTester second)
 		{
-			first = new EnumerableTester(new ArrayList(new int[] {1, 2, 3}));
-			second = new EnumerableTester(new ArrayList(new int[] {4, 5, 6}));
-			return new JoinedEnumerable(new IEnumerable[] {first, second});
+			first = new EnumerableTester(new ArrayList(new int[] { 1, 2, 3 }));
+			second = new EnumerableTester(new ArrayList(new int[] { 4, 5, 6 }));
+			return new JoinedEnumerable(new IEnumerable[] { first, second });
 		}
 	}
 

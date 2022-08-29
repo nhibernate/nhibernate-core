@@ -23,10 +23,10 @@ namespace NHibernate.Test.Stats
 		private static Continent FillDb(ISession s)
 		{
 			Continent europe = new Continent();
-			europe.Name="Europe";
+			europe.Name = "Europe";
 			Country france = new Country();
-			france.Name="France";
-			europe.Countries= new HashSet<Country>();
+			france.Name = "France";
+			europe.Countries = new HashSet<Country>();
 			europe.Countries.Add(france);
 			s.Save(france);
 			s.Save(europe);
@@ -44,9 +44,9 @@ namespace NHibernate.Test.Stats
 		{
 			Assert.IsTrue(Sfi.Settings.IsQueryCacheEnabled);
 
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
-				IList list = s.CreateCriteria(typeof (Country))
+				IList list = s.CreateCriteria(typeof(Country))
 					.Add(Restrictions.Eq("Name", "Narnia"))
 					.SetCacheable(true)
 					.List();

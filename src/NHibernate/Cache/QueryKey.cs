@@ -80,7 +80,7 @@ namespace NHibernate.Cache
 		//Since 5.3
 		[Obsolete("Please use overload with tenantIdentifier")]
 		public QueryKey(ISessionFactoryImplementor factory, SqlString queryString, QueryParameters queryParameters,
-		                ISet<FilterKey> filters, CacheableResultTransformer customTransformer)
+						ISet<FilterKey> filters, CacheableResultTransformer customTransformer)
 			: this(factory, queryString, queryParameters, filters, customTransformer, null)
 		{
 		}

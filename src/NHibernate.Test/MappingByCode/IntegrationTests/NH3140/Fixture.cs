@@ -14,13 +14,13 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3140
 		{
 			var mapper = new ModelMapper();
 			mapper.Class<Foo>(cm => cm.Bag(x => x.Bars,
-			 							   bpm => { },
+											bpm => { },
 										   cer => cer.ManyToMany(mtmm => mtmm.Column(columnName))));
 			mapper.Class<Bar>(cm => cm.Id(x => x.Id));
 			var mapping = mapper.CompileMappingFor(new[] { typeof(Foo), typeof(Bar) });
 			var hbmClass = mapping.RootClasses.Single(x => x.Name == "Foo");
 			var hbmBag = hbmClass.Properties.OfType<HbmBag>().Single();
-			var hbmManyToMany = (HbmManyToMany)hbmBag.ElementRelationship;
+			var hbmManyToMany = (HbmManyToMany) hbmBag.ElementRelationship;
 			Assert.AreEqual(columnName, hbmManyToMany.column);
 		}
 	}

@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			}
 
 			if (Object.Equals(ItineraryId, default(int)) &&
-			    Object.Equals(toCompare.ItineraryId, default(int)))
+				Object.Equals(toCompare.ItineraryId, default(int)))
 				return ReferenceEquals(this, toCompare);
 
 			if (!Object.Equals(ItineraryId, toCompare.ItineraryId))
@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			if (Object.Equals(ItineraryId, default(int)))
 				return base.GetHashCode();
 
-			hashCode = (hashCode*7) + ItineraryId.GetHashCode();
+			hashCode = (hashCode * 7) + ItineraryId.GetHashCode();
 			return hashCode;
 		}
 
@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			}
 
 			if (Object.Equals(ItineraryGuestId, default(int)) &&
-			    Object.Equals(toCompare.ItineraryGuestId, default(int)))
+				Object.Equals(toCompare.ItineraryGuestId, default(int)))
 				return ReferenceEquals(this, toCompare);
 
 			if (!Object.Equals(ItineraryGuestId, toCompare.ItineraryGuestId))
@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			if (Object.Equals(ItineraryGuestId, default(int)))
 				return base.GetHashCode();
 
-			hashCode = (hashCode*7) + ItineraryGuestId.GetHashCode();
+			hashCode = (hashCode * 7) + ItineraryGuestId.GetHashCode();
 			return hashCode;
 		}
 
@@ -123,7 +123,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			}
 
 			if (Object.Equals(ReservationId, default(int)) &&
-			    Object.Equals(toCompare.ReservationId, default(int)))
+				Object.Equals(toCompare.ReservationId, default(int)))
 				return ReferenceEquals(this, toCompare);
 
 			if (!Object.Equals(ReservationId, toCompare.ReservationId))
@@ -141,7 +141,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			if (Object.Equals(ReservationId, default(int)))
 				return base.GetHashCode();
 
-			hashCode = (hashCode*7) + ReservationId.GetHashCode();
+			hashCode = (hashCode * 7) + ReservationId.GetHashCode();
 			return hashCode;
 		}
 
@@ -188,7 +188,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			}
 
 			if (Object.Equals(ReservationGuestId, default(int)) &&
-			    Object.Equals(toCompare.ReservationGuestId, default(int)))
+				Object.Equals(toCompare.ReservationGuestId, default(int)))
 				return ReferenceEquals(this, toCompare);
 
 			if (!Object.Equals(ReservationGuestId, toCompare.ReservationGuestId))
@@ -206,7 +206,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			if (Object.Equals(ReservationGuestId, default(int)))
 				return base.GetHashCode();
 
-			hashCode = (hashCode*7) + ReservationGuestId.GetHashCode();
+			hashCode = (hashCode * 7) + ReservationGuestId.GetHashCode();
 			return hashCode;
 		}
 
@@ -244,7 +244,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			}
 
 			if (Object.Equals(ReservationDayId, default(int)) &&
-			    Object.Equals(toCompare.ReservationDayId, default(int)))
+				Object.Equals(toCompare.ReservationDayId, default(int)))
 				return ReferenceEquals(this, toCompare);
 
 			if (!Object.Equals(ReservationDayId, toCompare.ReservationDayId))
@@ -261,7 +261,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			if (Object.Equals(ReservationDayId, default(int)))
 				return base.GetHashCode();
 
-			hashCode = (hashCode*7) + ReservationDayId.GetHashCode();
+			hashCode = (hashCode * 7) + ReservationDayId.GetHashCode();
 			return hashCode;
 		}
 
@@ -304,7 +304,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			}
 
 			if (Object.Equals(ReservationDayPriceId, default(int)) &&
-			    Object.Equals(toCompare.ReservationDayPriceId, default(int)))
+				Object.Equals(toCompare.ReservationDayPriceId, default(int)))
 				return ReferenceEquals(this, toCompare);
 
 			if (!Object.Equals(ReservationDayPriceId, toCompare.ReservationDayPriceId))
@@ -321,7 +321,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			if (Object.Equals(ReservationDayPriceId, default(int)))
 				return base.GetHashCode();
 
-			hashCode = (hashCode*7) + ReservationDayPriceId.GetHashCode();
+			hashCode = (hashCode * 7) + ReservationDayPriceId.GetHashCode();
 			return hashCode;
 		}
 
@@ -351,7 +351,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			}
 
 			if (Object.Equals(ReservationDayShareId, default(int)) &&
-			    Object.Equals(toCompare.ReservationDayShareId, default(int)))
+				Object.Equals(toCompare.ReservationDayShareId, default(int)))
 				return ReferenceEquals(this, toCompare);
 
 			if (!Object.Equals(ReservationDayShareId, toCompare.ReservationDayShareId))
@@ -369,7 +369,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3817
 			if (Object.Equals(ReservationDayShareId, default(int)))
 				return base.GetHashCode();
 
-			hashCode = (hashCode*7) + ReservationDayShareId.GetHashCode();
+			hashCode = (hashCode * 7) + ReservationDayShareId.GetHashCode();
 			return hashCode;
 		}
 

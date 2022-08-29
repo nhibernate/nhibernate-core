@@ -24,8 +24,8 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			var pregnatMammal = (from a
 									in session.Query<Animal>().Cast<Cat>()
-								  where a.Pregnant
-								  select a).FirstOrDefault();
+								 where a.Pregnant
+								 select a).FirstOrDefault();
 			Assert.That(pregnatMammal, Is.Not.Null);
 		}
 
@@ -43,7 +43,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		public void OrderByAfterCast()
 		{
 			// NH-2657
-			var query = session.Query<Dog>().Cast<Animal>().OrderBy(a=> a.BodyWeight);
+			var query = session.Query<Dog>().Cast<Animal>().OrderBy(a => a.BodyWeight);
 			Assert.That(() => query.ToList(), Throws.Nothing);
 		}
 

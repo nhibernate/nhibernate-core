@@ -92,26 +92,26 @@ namespace NHibernate.Collection.Generic
 							 select persister.ElementType.DeepCopy(current, persister.Factory);
 			foreach (var copied in enumerable)
 			{
-				clonedSet.Add((T)copied);
+				clonedSet.Add((T) copied);
 			}
 			return clonedSet;
 		}
 
 		public override ICollection GetOrphans(object snapshot, string entityName)
 		{
-			var sn = new SetSnapShot<T>((IEnumerable<T>)snapshot);
+			var sn = new SetSnapShot<T>((IEnumerable<T>) snapshot);
 
 			// TODO: Avoid duplicating shortcuts and array copy, by making base class GetOrphans() more flexible
 			if (WrappedSet.Count == 0) return sn;
-			if (((ICollection)sn).Count == 0) return sn;
+			if (((ICollection) sn).Count == 0) return sn;
 			return GetOrphans(sn, WrappedSet.ToArray(), entityName, Session);
 		}
 
 		public override bool EqualsSnapshot(ICollectionPersister persister)
 		{
 			var elementType = persister.ElementType;
-			var snapshot = (SetSnapShot<T>)GetSnapshot();
-			if (((ICollection)snapshot).Count != WrappedSet.Count)
+			var snapshot = (SetSnapShot<T>) GetSnapshot();
+			if (((ICollection) snapshot).Count != WrappedSet.Count)
 			{
 				return false;
 			}
@@ -128,12 +128,12 @@ namespace NHibernate.Collection.Generic
 
 		public override bool IsSnapshotEmpty(object snapshot)
 		{
-			return ((ICollection)snapshot).Count == 0;
+			return ((ICollection) snapshot).Count == 0;
 		}
 
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
-			WrappedSet = (ISet<T>)persister.CollectionType.Instantiate(anticipatedSize);
+			WrappedSet = (ISet<T>) persister.CollectionType.Instantiate(anticipatedSize);
 		}
 
 		public override void ApplyQueuedOperations()
@@ -151,7 +151,7 @@ namespace NHibernate.Collection.Generic
 		/// <param name="owner">The owner object.</param>
 		public override void InitializeFromCache(ICollectionPersister persister, object disassembled, object owner)
 		{
-			var array = (object[])disassembled;
+			var array = (object[]) disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i++)
@@ -231,8 +231,8 @@ namespace NHibernate.Collection.Generic
 		public override IEnumerable GetDeletes(ICollectionPersister persister, bool indexIsFormula)
 		{
 			IType elementType = persister.ElementType;
-			var sn = (SetSnapShot<T>)GetSnapshot();
-			var deletes = new List<T>(((ICollection<T>)sn).Count);
+			var sn = (SetSnapShot<T>) GetSnapshot();
+			var deletes = new List<T>(((ICollection<T>) sn).Count);
 
 			deletes.AddRange(sn.Where(obj => !WrappedSet.Contains(obj)));
 
@@ -248,7 +248,7 @@ namespace NHibernate.Collection.Generic
 
 		public override bool NeedsInserting(object entry, int i, IType elemType)
 		{
-			var sn = (SetSnapShot<T>)GetSnapshot();
+			var sn = (SetSnapShot<T>) GetSnapshot();
 			T oldKey;
 
 			// note that it might be better to iterate the snapshot but this is safe,

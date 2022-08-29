@@ -154,8 +154,8 @@ namespace NHibernate.Mapping
 			// those checks, then the double checks for total length can be reduced to one.
 			//    But I will leave it like this for now to make it look similar. /Oskar 2016-08-20
 			bool useRawName = name.Length + suffix.Length <= usableLength &&
-			                  !_quoted &&
-			                  !"rowid".Equals(name, StringComparison.OrdinalIgnoreCase);
+							  !_quoted &&
+							  !"rowid".Equals(name, StringComparison.OrdinalIgnoreCase);
 			if (!useRawName)
 			{
 				if (suffix.Length >= usableLength)
@@ -427,7 +427,7 @@ namespace NHibernate.Mapping
 			}
 			catch (Exception e)
 			{
-				throw new MappingException(string.Format("Could not determine type for column {0} of type {1}: {2}", 
+				throw new MappingException(string.Format("Could not determine type for column {0} of type {1}: {2}",
 					_name, type.GetType().FullName, e.GetType().FullName), e);
 			}
 		}

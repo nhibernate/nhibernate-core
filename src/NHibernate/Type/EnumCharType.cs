@@ -8,7 +8,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class EnumCharType<T> : AbstractEnumType
 	{
-		public EnumCharType() : base(new StringFixedLengthSqlType(1),typeof(T))
+		public EnumCharType() : base(new StringFixedLengthSqlType(1), typeof(T))
 		{
 		}
 

@@ -16,11 +16,11 @@ namespace NHibernate.Action
 	/// Any action relating to insert/update/delete of a collection
 	/// </summary>
 	[Serializable]
-	public abstract partial class CollectionAction : 
-		IAsyncExecutable, 
-		IComparable<CollectionAction>, 
-		IDeserializationCallback, 
-		IAfterTransactionCompletionProcess, 
+	public abstract partial class CollectionAction :
+		IAsyncExecutable,
+		IComparable<CollectionAction>,
+		IDeserializationCallback,
+		IAfterTransactionCompletionProcess,
 		ICacheableExecutable
 	{
 		private readonly object key;
@@ -38,7 +38,7 @@ namespace NHibernate.Action
 		/// <param name="key">The identifier of the Collection.</param>
 		/// <param name="session">The <see cref="ISessionImplementor"/> that the Action is occurring in.</param>
 		protected CollectionAction(ICollectionPersister persister, IPersistentCollection collection, object key,
-		                        ISessionImplementor session)
+								ISessionImplementor session)
 		{
 			this.persister = persister;
 			this.session = session;
@@ -122,7 +122,7 @@ namespace NHibernate.Action
 		/// <summary>Execute this action</summary>
 		public abstract void Execute();
 
-		IBeforeTransactionCompletionProcess IAsyncExecutable.BeforeTransactionCompletionProcess => 
+		IBeforeTransactionCompletionProcess IAsyncExecutable.BeforeTransactionCompletionProcess =>
 			null;
 
 		IAfterTransactionCompletionProcess IAsyncExecutable.AfterTransactionCompletionProcess =>
@@ -130,7 +130,7 @@ namespace NHibernate.Action
 
 		//Since v5.2
 		[Obsolete("This property is not used and will be removed in a future version.")]
-		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess => 
+		public virtual BeforeTransactionCompletionProcessDelegate BeforeTransactionCompletionProcess =>
 			null;
 
 		//Since v5.2

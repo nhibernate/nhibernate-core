@@ -45,7 +45,7 @@ namespace NHibernate.Test.FetchLazyProperties
 				Person lastPerson = null;
 				for (var i = 2; i > 0; i--)
 				{
-					var person = lastPerson =  GeneratePerson(i, lastPerson);
+					var person = lastPerson = GeneratePerson(i, lastPerson);
 					person.Pets.Add(GenerateCat(currAnimalId++, person));
 					person.Pets.Add(GenerateDog(currAnimalId++, person));
 					s.Save(person);
@@ -316,7 +316,7 @@ namespace NHibernate.Test.FetchLazyProperties
 			using (var s = OpenSession())
 			{
 				person = s.CreateQuery("from Person p fetch p.Formula left join fetch p.BestFriend bf fetch bf.Address where p.Id = 1")
-				          .UniqueResult<Person>();
+						  .UniqueResult<Person>();
 			}
 
 			AssertFetchFormulaAndManyToOneComponent(person);
@@ -329,9 +329,9 @@ namespace NHibernate.Test.FetchLazyProperties
 			using (var s = OpenSession())
 			{
 				person = s.Query<Person>()
-				          .Fetch(o => o.Formula)
-				          .Fetch(o => o.BestFriend).ThenFetch(o => o.Address)
-				          .FirstOrDefault(o => o.Id == 1);
+						  .Fetch(o => o.Formula)
+						  .Fetch(o => o.BestFriend).ThenFetch(o => o.Address)
+						  .FirstOrDefault(o => o.Id == 1);
 			}
 
 			AssertFetchFormulaAndManyToOneComponent(person);
@@ -973,8 +973,8 @@ namespace NHibernate.Test.FetchLazyProperties
 		public void TestFetchAllPropertiesAfterEntityIsInitialized(bool readOnly)
 		{
 			Person person;
-			using(var s = OpenSession())
-			using(var tx = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
 				person = s.CreateQuery("from Person where Id = 1").SetReadOnly(readOnly).UniqueResult<Person>();
 				var image = person.Image;

@@ -4,7 +4,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1488
 	{
 		private int id;
 		private string name;
-		protected Category() {}
+		protected Category() { }
 		protected Category(string name)
 		{
 			this.name = name;
@@ -25,13 +25,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1488
 
 	public class CustomerCategory : Category
 	{
-		public CustomerCategory() {}
-		public CustomerCategory(string name) : base(name) {}
+		public CustomerCategory() { }
+		public CustomerCategory(string name) : base(name) { }
 	}
 	public class OtherCategory : Category
 	{
-		public OtherCategory() {}
-		public OtherCategory(string name) : base(name) {}
+		public OtherCategory() { }
+		public OtherCategory(string name) : base(name) { }
 	}
 
 	public class CustomerNoSmart
@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1488
 		private Category category;
 		private int id;
 		private string name;
-		public CustomerNoSmart() {}
+		public CustomerNoSmart() { }
 		public CustomerNoSmart(string name)
 		{
 			this.name = name;

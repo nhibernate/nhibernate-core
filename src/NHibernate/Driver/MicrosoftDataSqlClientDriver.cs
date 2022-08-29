@@ -172,7 +172,7 @@ namespace NHibernate.Driver
 		protected static bool IsAnsiText(DbParameter dbParam, SqlType sqlType)
 		{
 			return (DbType.AnsiString == dbParam.DbType || DbType.AnsiStringFixedLength == dbParam.DbType) &&
-			       sqlType.LengthDefined && sqlType.Length > MsSql2000Dialect.MaxSizeForLengthLimitedAnsiString;
+				   sqlType.LengthDefined && sqlType.Length > MsSql2000Dialect.MaxSizeForLengthLimitedAnsiString;
 		}
 
 		/// <summary>
@@ -184,8 +184,8 @@ namespace NHibernate.Driver
 		protected static bool IsText(DbParameter dbParam, SqlType sqlType)
 		{
 			return sqlType is StringClobSqlType ||
-			       (DbType.String == dbParam.DbType || DbType.StringFixedLength == dbParam.DbType) &&
-			       sqlType.LengthDefined && sqlType.Length > MsSql2000Dialect.MaxSizeForLengthLimitedString;
+				   (DbType.String == dbParam.DbType || DbType.StringFixedLength == dbParam.DbType) &&
+				   sqlType.LengthDefined && sqlType.Length > MsSql2000Dialect.MaxSizeForLengthLimitedString;
 		}
 
 		/// <summary>
@@ -197,7 +197,7 @@ namespace NHibernate.Driver
 		protected static bool IsBlob(DbParameter dbParam, SqlType sqlType)
 		{
 			return sqlType is BinaryBlobSqlType || DbType.Binary == dbParam.DbType && sqlType.LengthDefined &&
-			       sqlType.Length > MsSql2000Dialect.MaxSizeForLengthLimitedBinary;
+				   sqlType.Length > MsSql2000Dialect.MaxSizeForLengthLimitedBinary;
 		}
 
 		/// <inheritdoc />

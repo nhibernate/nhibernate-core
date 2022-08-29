@@ -8,7 +8,7 @@ namespace NHibernate.Linq
 {
 	public class ExpressionToHqlTranslationResults
 	{
-		public HqlTreeNode Statement { get;  }
+		public HqlTreeNode Statement { get; }
 		public ResultTransformer ResultTransformer { get; }
 		public Delegate PostExecuteTransformer { get; }
 		public List<Action<IQuery, IDictionary<string, Tuple<object, IType>>>> AdditionalCriteria { get; }
@@ -19,8 +19,8 @@ namespace NHibernate.Linq
 		/// </summary>
 		public System.Type ExecuteResultTypeOverride { get; }
 
-		public ExpressionToHqlTranslationResults(HqlTreeNode statement, 
-			IList<LambdaExpression> itemTransformers, 
+		public ExpressionToHqlTranslationResults(HqlTreeNode statement,
+			IList<LambdaExpression> itemTransformers,
 			IList<LambdaExpression> listTransformers,
 			IList<LambdaExpression> postExecuteTransformers,
 			List<Action<IQuery, IDictionary<string, Tuple<object, IType>>>> additionalCriteria,
@@ -35,23 +35,23 @@ namespace NHibernate.Linq
 
 			if (itemTransformer != null || listTransformer != null)
 			{
-				 ResultTransformer = new ResultTransformer(itemTransformer, listTransformer);
+				ResultTransformer = new ResultTransformer(itemTransformer, listTransformer);
 			}
 
 			AdditionalCriteria = additionalCriteria;
 			ExecuteResultTypeOverride = executeResultTypeOverride;
 		}
 
-		private static TDelegate MergeLambdasAndCompile<TDelegate>(IList<LambdaExpression> itemTransformers) 
+		private static TDelegate MergeLambdasAndCompile<TDelegate>(IList<LambdaExpression> itemTransformers)
 		{
 			var lambda = MergeLambdas(itemTransformers);
 			if (lambda == null)
 				return default(TDelegate);
 
 			var body = lambda.ReturnType.IsValueType
-						   ? Expression.Convert(lambda.Body, typeof (object))
+						   ? Expression.Convert(lambda.Body, typeof(object))
 						   : lambda.Body;
-			
+
 			return Expression.Lambda<TDelegate>(body, lambda.Parameters).Compile();
 		}
 
@@ -60,7 +60,7 @@ namespace NHibernate.Linq
 			var lambda = MergeLambdas(transformations);
 			if (lambda == null)
 				return null;
-			
+
 			return lambda.Compile();
 		}
 

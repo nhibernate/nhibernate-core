@@ -13,9 +13,9 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 		{
 			Configuration cfg = new Configuration();
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH251.CustomAccessDO.hbm.xml",
-			                Assembly.GetExecutingAssembly());
+							Assembly.GetExecutingAssembly());
 
-			ISessionFactoryImplementor factory = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
+			ISessionFactoryImplementor factory = (ISessionFactoryImplementor) cfg.BuildSessionFactory();
 			cfg.GenerateSchemaCreationScript(factory.Dialect);
 		}
 	}

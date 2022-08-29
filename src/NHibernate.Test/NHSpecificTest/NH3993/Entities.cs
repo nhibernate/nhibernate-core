@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3993
 		}
 
 		// Element to cover Componenent Element Customiser
-		private IDictionary<string,Element> _elements = new Dictionary<string,Element>();
+		private IDictionary<string, Element> _elements = new Dictionary<string, Element>();
 		public IEnumerable<Element> Elements => _elements.Values;
 	}
 

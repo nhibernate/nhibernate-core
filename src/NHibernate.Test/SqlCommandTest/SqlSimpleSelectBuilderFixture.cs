@@ -27,13 +27,13 @@ namespace NHibernate.Test.SqlCommandTest
 			select.AddColumn("column_no_alias");
 			select.AddColumn("aliased_column", "aliased_column_alias");
 
-			select.AddColumns(new string[] {"column1_no_alias", "column2_no_alias"});
-			select.AddColumns(new string[] {"column1_with_alias", "column2_with_alias"}, new string[] {"c1_alias", "c2_alias"});
+			select.AddColumns(new string[] { "column1_no_alias", "column2_no_alias" });
+			select.AddColumns(new string[] { "column1_with_alias", "column2_with_alias" }, new string[] { "c1_alias", "c2_alias" });
 
-			select.SetIdentityColumn(new string[] {"identity_column"}, NHibernateUtil.Int64);
-			select.SetVersionColumn(new string[] {"version_column"}, (IVersionType) NHibernateUtil.Int32);
+			select.SetIdentityColumn(new string[] { "identity_column" }, NHibernateUtil.Int64);
+			select.SetVersionColumn(new string[] { "version_column" }, (IVersionType) NHibernateUtil.Int32);
 
-			select.AddWhereFragment(new string[] {"where_frag_column"}, NHibernateUtil.Int32, " = ");
+			select.AddWhereFragment(new string[] { "where_frag_column" }, NHibernateUtil.Int32, " = ");
 
 			SqlString sqlString = select.ToSqlString();
 			Parameter[] actualParams = new Parameter[3];

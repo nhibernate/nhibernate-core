@@ -45,7 +45,7 @@ namespace NHibernate.Test.TypesTest
 			TypeFactory.RegisterType(
 				_replacedType,
 				_testDefaultType,
-				new[] {"currency"},
+				new[] { "currency" },
 				(precision, scale) => new CustomCurrencyType(precision, scale));
 			base.Configure(configuration);
 		}
@@ -73,10 +73,10 @@ namespace NHibernate.Test.TypesTest
 				Is.EqualTo(_testDefaultType.GetType()));
 			Assert.That(propertyType1.SqlTypes(Sfi)[0].Precision, Is.EqualTo(6));
 			Assert.That(propertyType1.SqlTypes(Sfi)[0].Scale, Is.EqualTo(3));
-			
+
 			var propertyType2 = Sfi.GetClassMetadata(typeof(ChangeDefaultTypeClass))
 									.GetPropertyType(nameof(ChangeDefaultTypeClass.CurrencyTypePrecisionInType5And2));
-			
+
 			Assert.That(
 				propertyType2.GetType(),
 				Is.EqualTo(_testDefaultType.GetType()));

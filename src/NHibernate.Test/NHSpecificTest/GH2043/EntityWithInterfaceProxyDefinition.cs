@@ -2,7 +2,7 @@
 
 namespace NHibernate.Test.NHSpecificTest.GH2043
 {
-	public class EntityWithInterfaceProxyDefinition: IEntityProxy
+	public class EntityWithInterfaceProxyDefinition : IEntityProxy
 	{
 		public virtual Guid Id { get; set; }
 

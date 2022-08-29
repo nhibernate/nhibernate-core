@@ -30,7 +30,7 @@ namespace NHibernate.Mapping.ByCode
 	{
 		void Join(string splitGroupId, Action<IJoinMapper<TEntity>> splitMapping);
 	}
-	
+
 	public static class SubclassAttributesMapperExtensions
 	{
 		//6.0 TODO: Merge to ISubclassAttributesMapper<TEntity>

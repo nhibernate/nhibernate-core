@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3234
 
 		protected override void OnTearDown()
 		{
-			using (var session=OpenSession())
+			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
 				session.Delete("from System.Object");
@@ -37,13 +37,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3234
 			using (var session = OpenSession())
 			{
 				var widget = new GridWidget
-					{
-						Levels =
+				{
+					Levels =
 							{
 								new GridLevel(),
 								new GridLevel()
 							},
-					};
+				};
 
 				Save(session, widget);
 				Evict(session, widget);
@@ -65,13 +65,13 @@ namespace NHibernate.Test.NHSpecificTest.NH3234
 			using (var session = OpenSession())
 			{
 				var widget = new GridWidget
-					{
-						Levels =
+				{
+					Levels =
 							{
 								new GridLevel(),
 								new GridLevel()
 							},
-					};
+				};
 
 				Save(session, widget);
 				Evict(session, widget);

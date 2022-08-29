@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3932.Model
 	{
 		public SetParent()
 		{
-			Children=new HashSet<Child>();
+			Children = new HashSet<Child>();
 		}
 
 		public virtual int Id { get; set; }

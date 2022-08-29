@@ -45,8 +45,8 @@ Namespace Issues
                 Using session As ISession = OpenSession()
 
                     Dim result = (From e In session.Query(Of Entity)() _
-                                 Where e.Name Like "Bob" _
-                                 Select e).ToList()
+                                  Where e.Name Like "Bob" _
+                                  Select e).ToList()
 
                     Assert.AreEqual(1, result.Count)
 
@@ -60,8 +60,8 @@ Namespace Issues
                 Using session As ISession = OpenSession()
 
                     Dim result = (From e In session.Query(Of Entity)() _
-                                 Where e.Name Like "Bo*" _
-                                 Select e).ToList()
+                                  Where e.Name Like "Bo*" _
+                                  Select e).ToList()
 
                     Assert.AreEqual(1, result.Count)
 
@@ -75,8 +75,8 @@ Namespace Issues
                 Using session As ISession = OpenSession()
 
                     Dim result = (From e In session.Query(Of Entity)() _
-                                 Where e.Name Like "B?b" _
-                                 Select e).ToList()
+                                  Where e.Name Like "B?b" _
+                                  Select e).ToList()
 
                     Assert.AreEqual(1, result.Count)
 

@@ -97,7 +97,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2324
 		/// <value></value>
 		public System.Type ReturnedClass
 		{
-			get { return typeof (CompositeData); }
+			get { return typeof(CompositeData); }
 		}
 
 		/// <summary>
@@ -122,8 +122,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2324
 		public object NullSafeGet(DbDataReader dr, string[] names, ISessionImplementor session, object owner)
 		{
 			var data = new CompositeData();
-			data.DataA = (DateTime) NHibernateUtil.DateTime.NullSafeGet(dr, new[] {names[0]}, session, owner);
-			data.DataB = (DateTime) NHibernateUtil.DateTime.NullSafeGet(dr, new[] {names[1]}, session, owner);
+			data.DataA = (DateTime) NHibernateUtil.DateTime.NullSafeGet(dr, new[] { names[0] }, session, owner);
+			data.DataB = (DateTime) NHibernateUtil.DateTime.NullSafeGet(dr, new[] { names[1] }, session, owner);
 
 			return data;
 		}

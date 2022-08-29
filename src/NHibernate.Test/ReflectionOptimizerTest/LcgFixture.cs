@@ -16,7 +16,7 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 				get { return 0; }
 			}
 		}
-		
+
 		[Test]
 		public void NoSetter()
 		{
@@ -39,7 +39,7 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 				set { }
 			}
 		}
-		
+
 		[Test]
 		public void NoGetter()
 		{
@@ -52,7 +52,7 @@ namespace NHibernate.Test.ReflectionOptimizerTest
 					new BasicPropertyAccessor.BasicSetter(typeof (NoGetterClass), typeof (NoGetterClass).GetProperty("Property"), "Property")
 				};
 
-			Assert.Throws<PropertyNotFoundException>(() => new ReflectionOptimizer(typeof (NoGetterClass), getters, setters, null, null));
+			Assert.Throws<PropertyNotFoundException>(() => new ReflectionOptimizer(typeof(NoGetterClass), getters, setters, null, null));
 		}
 
 		public class GetterTypeMismatchClass

@@ -26,6 +26,6 @@ namespace NHibernate.Bytecode
 
 		/// <inheritdoc />
 		protected NotInstrumentedException(SerializationInfo info, StreamingContext context)
-			: base(info, context) {}
+			: base(info, context) { }
 	}
 }

@@ -1,7 +1,7 @@
 using System;
 using NHibernate.Bytecode;
 using NUnit.Framework;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH496
 {

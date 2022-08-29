@@ -16,7 +16,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			public int Id { get; set; }
 		}
 
-		private class Product: BaseEntity
+		private class Product : BaseEntity
 		{
 		}
 
@@ -24,7 +24,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void ByDefaultInheritedFromObject()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsRootEntity(typeof(Person)), Is.True);
 			Assert.That(inspector.IsRootEntity(typeof(Product)), Is.False);
@@ -36,7 +36,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var autoinspector = new SimpleModelInspector();
 			autoinspector.IsRootEntity((t, declared) => typeof(BaseEntity).Equals(t.BaseType));
 
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsRootEntity(typeof(Person)), Is.False);
 			Assert.That(inspector.IsRootEntity(typeof(Product)), Is.True);

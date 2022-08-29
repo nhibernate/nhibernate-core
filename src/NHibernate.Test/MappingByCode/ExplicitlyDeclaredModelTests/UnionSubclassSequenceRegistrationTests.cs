@@ -30,6 +30,6 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			inspector.AddAsTablePerConcreteClassEntity(typeof(Inherited1));
 
 			Assert.That(() => inspector.IsTablePerConcreteClass(typeof(Inherited1)), Throws.TypeOf<MappingException>());
-		}		
+		}
 	}
 }

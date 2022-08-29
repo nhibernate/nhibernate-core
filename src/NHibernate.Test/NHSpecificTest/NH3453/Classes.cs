@@ -5,34 +5,34 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH3453
 {
-    class Direction
-    {
-        #region Compisite ID
-        
-        public virtual Int32 Id1 { get; set; }
+	class Direction
+	{
+		#region Compisite ID
 
-        public virtual Int32 Id2 { get; set; }
+		public virtual Int32 Id1 { get; set; }
 
-        #endregion
+		public virtual Int32 Id2 { get; set; }
 
-        public virtual Guid GUID { get; set; }
+		#endregion
 
-        public override int GetHashCode()
-        {
-            return string.Format("{0} - {1}", Id1, Id2).GetHashCode();
-        }
+		public virtual Guid GUID { get; set; }
 
-        public override bool Equals(object obj)
-        {
-            return Id1 == ((Direction)obj).Id1 &&
-                   Id2 == ((Direction)obj).Id2;
-        }
-    }
+		public override int GetHashCode()
+		{
+			return string.Format("{0} - {1}", Id1, Id2).GetHashCode();
+		}
 
-    class DirectionReferrer
-    {
-        public virtual Guid GUID { get; set; }
-        
-        public virtual Direction Direction { get; set; }
-    }
+		public override bool Equals(object obj)
+		{
+			return Id1 == ((Direction) obj).Id1 &&
+				   Id2 == ((Direction) obj).Id2;
+		}
+	}
+
+	class DirectionReferrer
+	{
+		public virtual Guid GUID { get; set; }
+
+		public virtual Direction Direction { get; set; }
+	}
 }

@@ -24,7 +24,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public static void Type<TPersistentType>(this IIdMapper idMapper, object parameters)
 		{
-			Type(idMapper, typeof (TPersistentType), parameters);
+			Type(idMapper, typeof(TPersistentType), parameters);
 		}
 
 		// 6.0 TODO: move into IIdMapper,

@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1813
 {
 	[TestFixture]
-	public class Fixture: BugTestCase
+	public class Fixture : BugTestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{
@@ -16,9 +16,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1813
 		public void ContainSQLInInsert()
 		{
 			using (ISession s = OpenSession())
-			using(ITransaction t = s .BeginTransaction())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save(new EntityWithUnique {Id = 1, Description = "algo"});
+				s.Save(new EntityWithUnique { Id = 1, Description = "algo" });
 				t.Commit();
 			}
 			using (ISession s = OpenSession())

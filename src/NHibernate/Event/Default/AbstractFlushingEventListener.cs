@@ -19,7 +19,7 @@ namespace NHibernate.Event.Default
 	[Serializable]
 	public abstract partial class AbstractFlushingEventListener
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (AbstractFlushingEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AbstractFlushingEventListener));
 
 		protected virtual object Anything
 		{

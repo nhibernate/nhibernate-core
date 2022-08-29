@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var person = new Person {Name = "Bob", Addresses = NewCollection()};
+					var person = new Person { Name = "Bob", Addresses = NewCollection() };
 					person.Addresses.Add(new Address("123 Main St.", "Anytown", "LA", "12345"));
 					person.Addresses.Add(new Address("456 Main St.", "Anytown", "LA", "12345"));
 
@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 	[TestFixture]
 	public class FixtureWithList : Fixture
 	{
-		protected override string[] Mappings => new[] {"MappingsList.hbm.xml"};
+		protected override string[] Mappings => new[] { "MappingsList.hbm.xml" };
 
 		protected override ICollection<Address> NewCollection()
 		{
@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 	[TestFixture]
 	public class FixtureWithBag : Fixture
 	{
-		protected override string[] Mappings => new[] {"MappingsBag.hbm.xml"};
+		protected override string[] Mappings => new[] { "MappingsBag.hbm.xml" };
 
 		protected override ICollection<Address> NewCollection()
 		{
@@ -67,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1356
 	[TestFixture]
 	public class FixtureWithSet : Fixture
 	{
-		protected override string[] Mappings => new[] {"MappingsSet.hbm.xml"};
+		protected override string[] Mappings => new[] { "MappingsSet.hbm.xml" };
 
 		protected override ICollection<Address> NewCollection()
 		{

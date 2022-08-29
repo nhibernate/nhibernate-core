@@ -24,12 +24,12 @@ namespace NHibernate.Test.TypesTest
 				"Serializable",
 				"Object"
 			};
-			
+
 			var builtInCustomTypes =
 				typeof(NHibernateUtil)
 					.GetFields(BindingFlags.Public | BindingFlags.Static)
 					.Where(f => !testExplicit.Contains(f.Name));
-			
+
 			foreach (var fieldInfo in builtInCustomTypes)
 			{
 				var ntp = (IType) fieldInfo.GetValue(null);

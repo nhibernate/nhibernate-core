@@ -70,13 +70,13 @@ namespace NHibernate.Dialect
 			//			RegisterFunction("trim", new AnsiTrimFunction()); // defined in base class
 			//			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32)); // defined in base class
 			RegisterFunction("coalesce", new NvlFunction()); // base class override
-			//			RegisterFunction("abs", new StandardSQLFunction("abs")); 
-			//			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
-			//			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
-			//			RegisterFunction("upper", new StandardSQLFunction("upper"));
-			//			RegisterFunction("lower", new StandardSQLFunction("lower"));
-			//			RegisterFunction("cast", new CastFunction());
-			//			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "||", ")"));
+															 //			RegisterFunction("abs", new StandardSQLFunction("abs")); 
+															 //			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
+															 //			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
+															 //			RegisterFunction("upper", new StandardSQLFunction("upper"));
+															 //			RegisterFunction("lower", new StandardSQLFunction("lower"));
+															 //			RegisterFunction("cast", new CastFunction());
+															 //			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "||", ")"));
 
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("current", NHibernateUtil.LocalDateTime, false));
 			RegisterFunction("current_date", new NoArgSQLFunction("today", NHibernateUtil.LocalDate, false));
@@ -280,8 +280,8 @@ namespace NHibernate.Dialect
 		public override string GetIdentitySelectString(string identityColumn, string tableName, DbType type)
 		{
 			return type == DbType.Int64
-			       	? "select dbinfo('serial8') from systables where tabid=1"
-			       	: "select dbinfo('sqlca.sqlerrd1') from systables where tabid=1";
+					   ? "select dbinfo('serial8') from systables where tabid=1"
+					   : "select dbinfo('sqlca.sqlerrd1') from systables where tabid=1";
 		}
 
 		/// <summary>
@@ -369,26 +369,26 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-        public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
+		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
 			/*
              * "SELECT [SKIP x] FIRST y  rest-of-sql-statement"
              */
 
-            // TODO - Check support for cases where only the offset is specified, but the limit is not.  Might need to use int.MaxValue.
+			// TODO - Check support for cases where only the offset is specified, but the limit is not.  Might need to use int.MaxValue.
 
 			int insertIndex = GetAfterSelectInsertPoint(queryString);
 
-            SqlStringBuilder limitFragment = new SqlStringBuilder();
-            if (offset != null)
-            {
-                limitFragment.Add(" skip ");
-                limitFragment.Add(offset);
-            }
+			SqlStringBuilder limitFragment = new SqlStringBuilder();
+			if (offset != null)
+			{
+				limitFragment.Add(" skip ");
+				limitFragment.Add(offset);
+			}
 			if (limit != null)
 			{
-			    limitFragment.Add(" first ");
-			    limitFragment.Add(limit);
+				limitFragment.Add(" first ");
+				limitFragment.Add(limit);
 			}
 
 			return queryString.Insert(insertIndex, limitFragment.ToSqlString());
@@ -485,7 +485,7 @@ namespace NHibernate.Dialect
 			else if (errorCode == -691)
 			{
 				constraintName = ExtractUsingTemplate("Missing key in referenced table for referential constraint (", ").",
-				                                      sqle.Message);
+													  sqle.Message);
 			}
 			else if (errorCode == -692)
 			{
@@ -503,5 +503,5 @@ namespace NHibernate.Dialect
 			}
 			return constraintName;
 		}
-	} ;
+	};
 }

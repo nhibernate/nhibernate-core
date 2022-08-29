@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using NUnit.Framework;
 using NHibernate.Linq;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
 {
@@ -56,7 +56,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-3241
 			Assert.DoesNotThrow(() =>
 				{
-				var result = db.Orders.Fetch(x => x.Customer).FetchMany(x => x.OrderLines).Any();
+					var result = db.Orders.Fetch(x => x.Customer).FetchMany(x => x.OrderLines).Any();
 				}
 			);
 		}
@@ -67,11 +67,11 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.DoesNotThrow(() =>
 				{
 					var result = db.Orders
-					               .Where(x => x.Customer.CustomerId == "Test")
-					               .Fetch(x => x.Customer)
-					               .FetchMany(x => x.OrderLines)
-					               .Where(x => x.Freight > 1)
-					               .Count();
+								   .Where(x => x.Customer.CustomerId == "Test")
+								   .Fetch(x => x.Customer)
+								   .FetchMany(x => x.OrderLines)
+								   .Where(x => x.Freight > 1)
+								   .Count();
 				}
 			);
 		}

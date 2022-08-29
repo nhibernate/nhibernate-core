@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1217
 {
-	[TestFixture,Ignore("Not fixed yet")]
+	[TestFixture, Ignore("Not fixed yet")]
 	public class Fixture : BugTestCase
 	{
 		protected override void OnTearDown()
@@ -39,10 +39,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1217
 					e1.Label = "Edge 1";
 					e1.FromNode = n1;
 					e1.ToNode = n2;
-					
+
 					n1.FromEdges.Add(e1);
 					n2.ToEdges.Add(e1);
-					
+
 					s.Save(r);
 
 					s.Flush();

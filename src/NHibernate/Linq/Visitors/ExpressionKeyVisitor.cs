@@ -170,7 +170,7 @@ namespace NHibernate.Linq.Visitors
 			{
 				_string.Append(param.Name);
 			}
-			
+
 			// Add the type in order to avoid invalid parameter conversions (string -> char)
 			_string.Append("<");
 			_string.Append(param.Value.GetType());

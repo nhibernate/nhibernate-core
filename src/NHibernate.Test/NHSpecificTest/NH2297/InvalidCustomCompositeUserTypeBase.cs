@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 	{
 		public System.Type ReturnedClass
 		{
-			get { return typeof (CustomCompositeUserType); }
+			get { return typeof(CustomCompositeUserType); }
 		}
 
 		public bool IsMutable
@@ -42,12 +42,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 
 		public virtual String[] PropertyNames
 		{
-			get { return new[] {"Value1", "Value2"}; }
+			get { return new[] { "Value1", "Value2" }; }
 		}
 
 		public virtual Type.IType[] PropertyTypes
 		{
-			get { return new IType[] {NHibernateUtil.String, NHibernateUtil.String}; }
+			get { return new IType[] { NHibernateUtil.String, NHibernateUtil.String }; }
 		}
 
 		public object Assemble(object cached, ISessionImplementor session, object owner)
@@ -71,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 		}
 
 		public object NullSafeGet(DbDataReader rs, String[] names, NHibernate.Engine.ISessionImplementor session,
-		                          Object owner)
+								  Object owner)
 		{
 			return NHibernateUtil.String.NullSafeGet(rs, names[0], session, owner);
 		}
@@ -93,7 +93,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2297
 
 		public int GetHashCode(object x)
 		{
-			return x == null ? typeof (string).GetHashCode() : x.GetHashCode();
+			return x == null ? typeof(string).GetHashCode() : x.GetHashCode();
 		}
 
 		public object Replace(object original, object target, ISessionImplementor session, object owner)

@@ -264,7 +264,7 @@ namespace NHibernate.Type
 
 		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet(rs, new string[] {name}, session, owner);
+			return NullSafeGet(rs, new string[] { name }, session, owner);
 		}
 
 		public object GetPropertyValue(object component, int i)
@@ -501,7 +501,7 @@ namespace NHibernate.Type
 			if (value != null)
 			{
 				object result = Instantiate(owner, session);
-				object[] values = (object[])value;
+				object[] values = (object[]) value;
 				object[] resolvedValues = new object[values.Length]; //only really need new array during semiresolve!
 				for (int i = 0; i < values.Length; i++)
 				{

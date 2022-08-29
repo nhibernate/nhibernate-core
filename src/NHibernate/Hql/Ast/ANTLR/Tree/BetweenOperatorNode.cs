@@ -64,7 +64,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private static void Check(IASTNode check, IASTNode first, IASTNode second)
 		{
 			if (!(check is IExpectedTypeAwareNode expectedTypeAwareNode) ||
-			    expectedTypeAwareNode.ExpectedType != null)
+				expectedTypeAwareNode.ExpectedType != null)
 			{
 				return;
 			}

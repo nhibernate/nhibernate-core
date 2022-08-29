@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Visitors;
-using System.Linq;
 using NHibernate.Util;
 
 namespace NHibernate.Linq.Functions
@@ -23,7 +23,7 @@ namespace NHibernate.Linq.Functions
 
 				ReflectHelper.GetMethodDefinition<byte>(x => x.CompareTo(x)),
 				ReflectHelper.GetMethodDefinition<sbyte>(x => x.CompareTo(x)),
-				
+
 				ReflectHelper.GetMethodDefinition<short>(x => x.CompareTo(x)),
 				ReflectHelper.GetMethodDefinition<ushort>(x => x.CompareTo(x)),
 
@@ -35,7 +35,7 @@ namespace NHibernate.Linq.Functions
 
 				ReflectHelper.GetMethodDefinition<float>(x => x.CompareTo(x)),
 				ReflectHelper.GetMethodDefinition<double>(x => x.CompareTo(x)),
-				
+
 				ReflectHelper.FastGetMethod(decimal.Compare, default(decimal), default(decimal)),
 				ReflectHelper.GetMethodDefinition<decimal>(x => x.CompareTo(x)),
 

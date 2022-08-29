@@ -32,9 +32,9 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlCommandInfo sqlCommand = insert.ToSqlCommandInfo();
 			SqlType[] actualParameterTypes = sqlCommand.ParameterTypes;
 
-		    string falseString = factoryImpl.Dialect.ToBooleanValueString(false);
+			string falseString = factoryImpl.Dialect.ToBooleanValueString(false);
 			string expectedSql =
-                "INSERT INTO test_insert_builder (intColumn, longColumn, literalColumn, stringColumn) VALUES (?, ?, " + falseString + ", 5)";
+				"INSERT INTO test_insert_builder (intColumn, longColumn, literalColumn, stringColumn) VALUES (?, ?, " + falseString + ", 5)";
 			Assert.AreEqual(expectedSql, sqlCommand.Text.ToString(), "SQL String");
 
 			Assert.AreEqual(2, actualParameterTypes.Length);
@@ -48,12 +48,12 @@ namespace NHibernate.Test.SqlCommandTest
 			Configuration cfg = new Configuration();
 			ISessionFactory factory = cfg.BuildSessionFactory();
 
-			ISessionFactoryImplementor factoryImpl = (ISessionFactoryImplementor)factory;
+			ISessionFactoryImplementor factoryImpl = (ISessionFactoryImplementor) factory;
 			SqlInsertBuilder insert = new SqlInsertBuilder(factoryImpl);
 
 			insert.SetTableName("test_insert_builder");
 
-			insert.AddColumn("stringColumn", "aSQLValue", (ILiteralType)NHibernateUtil.String);
+			insert.AddColumn("stringColumn", "aSQLValue", (ILiteralType) NHibernateUtil.String);
 			insert.SetComment("Test insert");
 			string expectedSql =
 	"/* Test insert */ INSERT INTO test_insert_builder (stringColumn) VALUES ('aSQLValue')";
@@ -66,12 +66,12 @@ namespace NHibernate.Test.SqlCommandTest
 			Configuration cfg = new Configuration();
 			ISessionFactory factory = cfg.BuildSessionFactory();
 
-			ISessionFactoryImplementor factoryImpl = (ISessionFactoryImplementor)factory;
+			ISessionFactoryImplementor factoryImpl = (ISessionFactoryImplementor) factory;
 			SqlInsertBuilder insert = new SqlInsertBuilder(factoryImpl);
 
 			insert.SetTableName("test_insert_builder");
 
-			insert.AddColumn("literalColumn", false, (ILiteralType)NHibernateUtil.Boolean);
+			insert.AddColumn("literalColumn", false, (ILiteralType) NHibernateUtil.Boolean);
 			insert.AddColumn("intColumn", NHibernateUtil.Int32);
 			insert.AddColumn("stringColumn", 5.ToString());
 			insert.AddColumn("longColumn", NHibernateUtil.Int64);
@@ -79,14 +79,14 @@ namespace NHibernate.Test.SqlCommandTest
 			SqlCommandInfo sqlCommand = insert.ToSqlCommandInfo();
 			SqlType[] actualParameterTypes = sqlCommand.ParameterTypes;
 
-            string falseString = factoryImpl.Dialect.ToBooleanValueString(false);
-            string expectedSql =
-                "INSERT INTO test_insert_builder (literalColumn, intColumn, stringColumn, longColumn) VALUES (" + falseString + ", ?, 5, ?)";
+			string falseString = factoryImpl.Dialect.ToBooleanValueString(false);
+			string expectedSql =
+				"INSERT INTO test_insert_builder (literalColumn, intColumn, stringColumn, longColumn) VALUES (" + falseString + ", ?, 5, ?)";
 			Assert.AreEqual(expectedSql, sqlCommand.Text.ToString(), "SQL String");
 
 			Assert.AreEqual(2, actualParameterTypes.Length);
 			Assert.AreEqual(SqlTypeFactory.Int32, actualParameterTypes[0], "First Parameter Type");
-			Assert.AreEqual(SqlTypeFactory.Int64, actualParameterTypes[1], "Second Parameter Type");			
+			Assert.AreEqual(SqlTypeFactory.Int64, actualParameterTypes[1], "Second Parameter Type");
 		}
 	}
 }

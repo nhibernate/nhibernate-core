@@ -26,14 +26,14 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Property(MemberInfo property, Action<IPropertyMapper> mapping)
 		{
-			var hbmProperty = new HbmKeyProperty {name = property.Name};
+			var hbmProperty = new HbmKeyProperty { name = property.Name };
 			mapping(new KeyPropertyMapper(property, hbmProperty));
 			AddProperty(hbmProperty);
 		}
 
 		public void ManyToOne(MemberInfo property, Action<IManyToOneMapper> mapping)
 		{
-			var hbm = new HbmKeyManyToOne {name = property.Name};
+			var hbm = new HbmKeyManyToOne { name = property.Name };
 			mapping(new KeyManyToOneMapper(property, hbm, mapDoc));
 			AddProperty(hbm);
 		}

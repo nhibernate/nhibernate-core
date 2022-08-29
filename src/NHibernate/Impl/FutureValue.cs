@@ -45,7 +45,7 @@ namespace NHibernate.Impl
 			// as input and directly yields the scalar result when the query is scalar.
 			var resultElement = (T) ExecuteOnEval.DynamicInvoke(collection.AsQueryable());
 
-			return new List<T> {resultElement};
+			return new List<T> { resultElement };
 		}
 	}
 }

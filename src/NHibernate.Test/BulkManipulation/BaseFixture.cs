@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
-using NHibernate.Hql.Ast.ANTLR;
 using System.Collections.Generic;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Util;
 
 namespace NHibernate.Test.BulkManipulation
 {
-	public class BaseFixture: TestCase
+	public class BaseFixture : TestCase
 	{
 		private readonly IDictionary<string, IFilter> emptyfilters = CollectionHelper.EmptyDictionary<string, IFilter>();
 

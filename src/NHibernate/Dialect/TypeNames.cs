@@ -45,7 +45,7 @@ namespace NHibernate.Dialect
 		public const string PrecisionPlaceHolder = "$p";
 		public const string ScalePlaceHolder = "$s";
 
-		private readonly Dictionary<DbType, SortedList<int, string>> weighted = 
+		private readonly Dictionary<DbType, SortedList<int, string>> weighted =
 			new Dictionary<DbType, SortedList<int, string>>();
 
 		private readonly Dictionary<DbType, string> defaults = new Dictionary<DbType, string>();

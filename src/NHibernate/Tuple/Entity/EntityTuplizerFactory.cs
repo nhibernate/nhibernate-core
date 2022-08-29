@@ -8,7 +8,7 @@ namespace NHibernate.Tuple.Entity
 	/// A registry allowing users to define the default <see cref="IEntityTuplizer"/> class to use per <see cref="EntityMode"/>.
 	/// </summary>
 	[Serializable]
-	public class EntityTuplizerFactory 
+	public class EntityTuplizerFactory
 	{
 		static readonly System.Type[] EntityTuplizerCtorSignature = { typeof(EntityMetamodel), typeof(PersistentClass) };
 
@@ -17,7 +17,7 @@ namespace NHibernate.Tuple.Entity
 			try
 			{
 				System.Type implClass = ReflectHelper.ClassForName(className);
-				return (IEntityTuplizer)implClass.GetConstructor(EntityTuplizerCtorSignature).Invoke(new object[] { em, pc });
+				return (IEntityTuplizer) implClass.GetConstructor(EntityTuplizerCtorSignature).Invoke(new object[] { em, pc });
 			}
 			catch (Exception t)
 			{

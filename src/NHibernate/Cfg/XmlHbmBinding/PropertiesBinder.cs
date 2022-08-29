@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
-using System;
 using NHibernate.Util;
 using Array = System.Array;
 
@@ -24,7 +24,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			: this(mappings, persistentClass)
 		{
 		}
-		
+
 		//Since v5.2
 		[Obsolete("Please use constructor without dialect parameter")]
 		public PropertiesBinder(Mappings mappings, Component component, string className, string path, bool isNullable, Dialect.Dialect dialect)
@@ -200,7 +200,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					property.LogMapped(log);
 					addToModelAction(property);
 				}
-			}			
+			}
 		}
 
 		private Component CreateNewComponent(Table table)
@@ -211,7 +211,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private System.Type GetPropertyType(string classMapping, System.Type containingType, string propertyName, string propertyAccess)
 		{
-			if(!string.IsNullOrEmpty(classMapping))
+			if (!string.IsNullOrEmpty(classMapping))
 				return ClassForNameChecked(classMapping, mappings, "could not find class: {0}");
 			else if (containingType == null)
 				return null;
@@ -250,7 +250,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				AddManyToOneSecondPass(model);
 			}
-			
+
 			if (manyToOneMapping.unique)
 			{
 				model.IsLogicalOneToOne = true;
@@ -275,8 +275,8 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void BindValueProperty(HbmProperty propertyMapping, Property property)
 		{
-			property.IsUpdateable = propertyMapping.updateSpecified ? propertyMapping.update:true;
-			property.IsInsertable = propertyMapping.insertSpecified ? propertyMapping.insert:true;
+			property.IsUpdateable = propertyMapping.updateSpecified ? propertyMapping.update : true;
+			property.IsInsertable = propertyMapping.insertSpecified ? propertyMapping.insert : true;
 			PropertyGeneration generation;
 			switch (propertyMapping.generated)
 			{
@@ -302,7 +302,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					// the user specifically supplied insert="true",
 					// which constitutes an illegal combo
 					throw new MappingException("cannot specify both insert=\"true\" and generated=\"" + generation
-					                           + "\" for property: " + propertyMapping.Name);
+											   + "\" for property: " + propertyMapping.Name);
 				}
 				property.IsInsertable = false;
 			}
@@ -314,7 +314,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					// the user specifically supplied update="true",
 					// which constitutes an illegal combo
 					throw new MappingException("cannot specify both update=\"true\" and generated=\"" + generation
-					                           + "\" for property: " + propertyMapping.Name);
+											   + "\" for property: " + propertyMapping.Name);
 				}
 				property.IsUpdateable = false;
 			}
@@ -415,15 +415,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				value.SetTypeUsingReflection(propertyOwnerClassName, propertyMapping.Name, propertyAccessorName);
 
 			var property = new Property
-					{
-						Name = propertyMapping.Name,
-						PropertyAccessorName = propertyAccessorName,
-						Value = value,
-                        IsLazy = propertyMapping.IsLazyProperty,
-						LazyGroup = propertyMapping.GetLazyGroup(),
-						IsOptimisticLocked = propertyMapping.OptimisticLock,
-						MetaAttributes = GetMetas(propertyMapping, inheritedMetas)
-					};
+			{
+				Name = propertyMapping.Name,
+				PropertyAccessorName = propertyAccessorName,
+				Value = value,
+				IsLazy = propertyMapping.IsLazyProperty,
+				LazyGroup = propertyMapping.GetLazyGroup(),
+				IsOptimisticLocked = propertyMapping.OptimisticLock,
+				MetaAttributes = GetMetas(propertyMapping, inheritedMetas)
+			};
 
 			return property;
 		}

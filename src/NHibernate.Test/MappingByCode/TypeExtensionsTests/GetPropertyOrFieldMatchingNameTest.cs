@@ -19,7 +19,7 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 			private int Method() { return 0; }
 		}
 
-		private class Inherited: MyClass
+		private class Inherited : MyClass
 		{
 			// Used by reflection
 #pragma warning disable CS0169 // The field is never used
@@ -34,7 +34,7 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 			int SomethingElse { get; set; }
 		}
 
-		private class MyClassWithExplicitImpl: IInterface
+		private class MyClassWithExplicitImpl : IInterface
 		{
 			int IInterface.Something
 			{
@@ -58,7 +58,7 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		[Test]
 		public void WhenNullTypeThenThrows()
 		{
-			Assert.That(() => ((System.Type)null).GetPropertyOrFieldMatchingName("A"), Throws.TypeOf<ArgumentNullException>());
+			Assert.That(() => ((System.Type) null).GetPropertyOrFieldMatchingName("A"), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]
@@ -79,7 +79,7 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 			var memberInfo = typeof(MyClass).GetPropertyOrFieldMatchingName("pField");
 			Assert.That(memberInfo, Is.Not.Null.And.InstanceOf<FieldInfo>());
 			Assert.That(memberInfo.Name, Is.EqualTo("pField"));
-			Assert.That(memberInfo.DeclaringType, Is.EqualTo(typeof (MyClass)));
+			Assert.That(memberInfo.DeclaringType, Is.EqualTo(typeof(MyClass)));
 		}
 
 		[Test]
@@ -97,7 +97,7 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 			var memberInfo = typeof(MyClass).GetPropertyOrFieldMatchingName("PrivateProperty");
 			Assert.That(memberInfo, Is.Not.Null.And.InstanceOf<PropertyInfo>());
 			Assert.That(memberInfo.Name, Is.EqualTo("PrivateProperty"));
-			Assert.That(memberInfo.DeclaringType, Is.EqualTo(typeof (MyClass)));
+			Assert.That(memberInfo.DeclaringType, Is.EqualTo(typeof(MyClass)));
 		}
 
 		[Test]

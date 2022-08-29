@@ -15,7 +15,7 @@ namespace NHibernate.Mapping
 
 		public override Table Table
 		{
-		    get { return table; }
+			get { return table; }
 		}
 
 		Table ITableOwner.Table

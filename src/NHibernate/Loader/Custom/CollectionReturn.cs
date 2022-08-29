@@ -14,7 +14,7 @@ namespace NHibernate.Loader.Custom
 		private readonly IEntityAliases elementEntityAliases;
 
 		public CollectionReturn(string alias, string ownerEntityName, string ownerProperty,
-		                        ICollectionAliases collectionAliases, IEntityAliases elementEntityAliases, LockMode lockMode)
+								ICollectionAliases collectionAliases, IEntityAliases elementEntityAliases, LockMode lockMode)
 			: base(alias, lockMode)
 		{
 			this.ownerEntityName = ownerEntityName;

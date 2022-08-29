@@ -20,7 +20,7 @@ namespace NHibernate.Persister.Entity
 		public static string PropertySelectFragment(this IQueryable query, string alias, string suffix, ICollection<string> fetchProperties)
 		{
 			return ReflectHelper.CastOrThrow<AbstractEntityPersister>(query, "individual lazy property fetches")
-			                    .PropertySelectFragment(alias, suffix, fetchProperties);
+								.PropertySelectFragment(alias, suffix, fetchProperties);
 		}
 	}
 

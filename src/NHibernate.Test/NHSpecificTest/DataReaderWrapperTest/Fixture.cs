@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using NUnit.Framework;
 using NHibernate.Multi;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 {
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				var crit = s.CreateCriteria(typeof (TheEntity));
+				var crit = s.CreateCriteria(typeof(TheEntity));
 				var multi = s.CreateMultiCriteria();
 				multi.Add(crit);
 				var res = (IList) multi.List()[0];
@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.DataReaderWrapperTest
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				var crit = s.CreateCriteria(typeof (TheEntity));
+				var crit = s.CreateCriteria(typeof(TheEntity));
 				var multi = s.CreateQueryBatch();
 				multi.Add<TheEntity>(crit);
 				var res = multi.GetResult<TheEntity>(0);

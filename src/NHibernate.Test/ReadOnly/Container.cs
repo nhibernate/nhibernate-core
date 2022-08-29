@@ -23,36 +23,36 @@ namespace NHibernate.Test.ReadOnly
 			get { return id; }
 			set { id = value; }
 		}
-		
+
 		public virtual string Name
 		{
 			get { return name; }
 			set { name = value; }
 		}
-		
-//		public virtual Owner NoProxyOwner
-//		{
-//			get { return noProxyOwner; }
-//			set { noProxyOwner = value; }
-//		}
-		
+
+		//		public virtual Owner NoProxyOwner
+		//		{
+		//			get { return noProxyOwner; }
+		//			set { noProxyOwner = value; }
+		//		}
+
 		public virtual Owner ProxyOwner
 		{
 			get { return proxyOwner; }
 			set { proxyOwner = value; }
 		}
-		
+
 		public virtual Owner NonLazyOwner
 		{
 			get { return nonLazyOwner; }
 			set { nonLazyOwner = value; }
 		}
 
-//		public virtual Info NoProxyInfo
-//		{
-//			get { return noProxyInfo; }
-//			set { noProxyInfo = value; }
-//		}
+		//		public virtual Info NoProxyInfo
+		//		{
+		//			get { return noProxyInfo; }
+		//			set { noProxyInfo = value; }
+		//		}
 
 		public virtual Info ProxyInfo
 		{
@@ -65,7 +65,7 @@ namespace NHibernate.Test.ReadOnly
 			get { return nonLazyInfo; }
 			set { nonLazyInfo = value; }
 		}
-		
+
 		public virtual ISet<DataPoint> LazyDataPoints
 		{
 			get { return lazyDataPoints; }
@@ -77,17 +77,17 @@ namespace NHibernate.Test.ReadOnly
 			get { return nonLazyJoinDataPoints; }
 			set { this.nonLazyJoinDataPoints = value; }
 		}
-		
+
 		public virtual ISet<DataPoint> NonLazySelectDataPoints
 		{
 			get { return nonLazySelectDataPoints; }
 			set { this.nonLazySelectDataPoints = value; }
 		}
-		
+
 		public Container()
 		{
 		}
-		
+
 		public Container(string name)
 		{
 			this.name = name;

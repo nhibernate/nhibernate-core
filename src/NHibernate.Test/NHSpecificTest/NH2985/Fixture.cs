@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2985
 {
@@ -39,8 +39,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 			}
 
 			// Clear the cache
-			Sfi.Evict(typeof (ClassA));
-			Sfi.Evict(typeof (WebImage));
+			Sfi.Evict(typeof(ClassA));
+			Sfi.Evict(typeof(WebImage));
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())

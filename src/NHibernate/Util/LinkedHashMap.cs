@@ -349,7 +349,7 @@ namespace NHibernate.Util
 
 		private bool RemoveImpl(TKey key)
 		{
-			if (!entries.Remove(key, out var e)) 
+			if (!entries.Remove(key, out var e))
 				return false;
 
 			version++;
@@ -359,7 +359,7 @@ namespace NHibernate.Util
 
 		void IDeserializationCallback.OnDeserialization(object sender)
 		{
-			((IDeserializationCallback)entries).OnDeserialization(sender);
+			((IDeserializationCallback) entries).OnDeserialization(sender);
 		}
 
 		#region System.Object Members
@@ -452,7 +452,7 @@ namespace NHibernate.Util
 
 			IEnumerator IEnumerable.GetEnumerator()
 			{
-				return ((IEnumerable<TKey>)this).GetEnumerator();
+				return ((IEnumerable<TKey>) this).GetEnumerator();
 			}
 
 			#endregion
@@ -541,7 +541,7 @@ namespace NHibernate.Util
 
 			IEnumerator IEnumerable.GetEnumerator()
 			{
-				return ((IEnumerable<TValue>)this).GetEnumerator();
+				return ((IEnumerable<TValue>) this).GetEnumerator();
 			}
 
 			#endregion
@@ -606,7 +606,7 @@ namespace NHibernate.Util
 
 			object IEnumerator.Current
 			{
-				get { return ((IEnumerator<T>)this).Current; }
+				get { return ((IEnumerator<T>) this).Current; }
 			}
 
 			#region IEnumerator<T> Members
@@ -677,7 +677,7 @@ namespace NHibernate.Util
 
 			object IEnumerator.Current
 			{
-				get { return ((IEnumerator<T>)this).Current; }
+				get { return ((IEnumerator<T>) this).Current; }
 			}
 
 			#region IEnumerator<T> Members

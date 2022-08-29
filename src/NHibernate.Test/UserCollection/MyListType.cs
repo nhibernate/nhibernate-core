@@ -40,11 +40,11 @@ namespace NHibernate.Test.UserCollection
 			if (entity != null && email == null)
 				return -1;
 
-			return ((IList<Email>)collection).IndexOf(email);
+			return ((IList<Email>) collection).IndexOf(email);
 		}
 
 		public object ReplaceElements(object original, object target, ICollectionPersister persister, object owner,
-		                              IDictionary copyCache, ISessionImplementor session)
+									  IDictionary copyCache, ISessionImplementor session)
 		{
 			IList<Email> result = (IList<Email>) target;
 			result.Clear();

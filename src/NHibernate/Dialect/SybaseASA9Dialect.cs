@@ -51,7 +51,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)"); // NUMERIC(18,5) is equivalent to DECIMAL(18,5)
-			// Sybase max precision is 38, but .Net is limited to 28-29.
+																 // Sybase max precision is 38, but .Net is limited to 28-29.
 			RegisterColumnType(DbType.Decimal, 29, "DECIMAL($p,$s)");
 			RegisterColumnType(DbType.Double, "DOUBLE");
 			RegisterColumnType(DbType.Guid, "CHAR(16)");

@@ -20,6 +20,6 @@
 		public virtual int Id { get; set; }
 	}
 
-	public class WireTransfer : Payment{}
+	public class WireTransfer : Payment { }
 	public class CreditCard : Payment { }
 }

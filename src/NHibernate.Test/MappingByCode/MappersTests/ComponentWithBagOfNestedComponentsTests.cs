@@ -1,9 +1,9 @@
-﻿using NHibernate.Cfg.MappingSchema;
-using NHibernate.Mapping.ByCode;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NHibernate.Cfg.MappingSchema;
+using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.MappersTests
@@ -32,7 +32,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 		}
 
-		class OwnerChildTwo: Owner
+		class OwnerChildTwo : Owner
 		{
 		}
 
@@ -101,7 +101,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 								.Single();
 
 			Assert.That(hbmBag.Item, Is.InstanceOf<HbmCompositeElement>());
-			HbmCompositeElement childElement = (HbmCompositeElement)hbmBag.Item;
+			HbmCompositeElement childElement = (HbmCompositeElement) hbmBag.Item;
 			Assert.That(childElement.Properties.Count(), Is.EqualTo(1));
 			HbmProperty propertyMapping = childElement.Properties.Cast<HbmProperty>().Single();
 			Assert.That(propertyMapping.Name, Is.EqualTo("NameOnClient"));
@@ -152,7 +152,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 								.Single();
 
 			Assert.That(hbmBag.Item, Is.InstanceOf<HbmCompositeElement>());
-			HbmCompositeElement childElement = (HbmCompositeElement)hbmBag.Item;
+			HbmCompositeElement childElement = (HbmCompositeElement) hbmBag.Item;
 			Assert.That(childElement.Properties.Count(), Is.EqualTo(1));
 			HbmProperty propertyMapping = childElement.Properties.Cast<HbmProperty>().Single();
 			Assert.That(propertyMapping.Name, Is.EqualTo("NameOnClient"));
@@ -226,7 +226,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 								.Properties.Cast<HbmBag>()
 								.Single();
 
-			HbmCompositeElement childElement1 = (HbmCompositeElement)bag1.Item;
+			HbmCompositeElement childElement1 = (HbmCompositeElement) bag1.Item;
 			HbmProperty propertyMapping1 = childElement1.Properties.Cast<HbmProperty>().Single();
 			Assert.That(propertyMapping1.Columns.Single().name, Is.EqualTo("OwnerChildOne_CustomColumnName"));
 
@@ -237,7 +237,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 								.Properties.Cast<HbmBag>()
 								.Single();
 
-			HbmCompositeElement childElement2 = (HbmCompositeElement)bag2.Item;
+			HbmCompositeElement childElement2 = (HbmCompositeElement) bag2.Item;
 			HbmProperty propertyMapping2 = childElement2.Properties.Cast<HbmProperty>().Single();
 			Assert.That(propertyMapping2.Columns.Single().name, Is.EqualTo("OwnerChildTwo_CustomColumnName"));
 		}

@@ -1,6 +1,6 @@
 using System.Linq;
-using NUnit.Framework;
 using NHibernate.DomainModel.Northwind.Entities;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {

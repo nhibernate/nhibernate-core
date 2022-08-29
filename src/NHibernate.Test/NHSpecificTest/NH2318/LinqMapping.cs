@@ -41,9 +41,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
 
 			return treeBuilder.MethodCall("Trim",
 										  treeBuilder.Ident(leadingOrTrailing),
-			                              visitor.Visit(arguments[1]).AsExpression(),
+										  visitor.Visit(arguments[1]).AsExpression(),
 										  treeBuilder.Ident("FROM"),
-			                              visitor.Visit(arguments[0]).AsExpression());
+										  visitor.Visit(arguments[0]).AsExpression());
 		}
 	}
 

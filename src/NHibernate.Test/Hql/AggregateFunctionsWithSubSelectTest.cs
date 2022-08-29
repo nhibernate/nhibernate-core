@@ -79,18 +79,18 @@ namespace NHibernate.Test.Hql
 		public void TestAggregateFunction(string functionName, object result)
 		{
 			var query = "SELECT " +
-			            "	d.Id, " +
+						"	d.Id, " +
 						$"	{functionName}(" +
-			            "		(" +
-			            "			SELECT COUNT(localized) " +
-			            "			FROM Person p " +
-			            "			LEFT JOIN p.Localized localized " +
-			            "			WHERE p.Id = c.Id" +
-			            "		)" +
-			            "	) AS LocalizedCount " +
-			            "FROM Document d " +
-			            "LEFT JOIN d.Contacts c " +
-			            "GROUP BY d.Id";
+						"		(" +
+						"			SELECT COUNT(localized) " +
+						"			FROM Person p " +
+						"			LEFT JOIN p.Localized localized " +
+						"			WHERE p.Id = c.Id" +
+						"		)" +
+						"	) AS LocalizedCount " +
+						"FROM Document d " +
+						"LEFT JOIN d.Contacts c " +
+						"GROUP BY d.Id";
 
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())

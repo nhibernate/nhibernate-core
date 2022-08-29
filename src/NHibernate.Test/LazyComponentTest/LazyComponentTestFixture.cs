@@ -8,7 +8,7 @@ namespace NHibernate.Test.LazyComponentTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"LazyComponentTest.Person.hbm.xml"}; }
+			get { return new[] { "LazyComponentTest.Person.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly

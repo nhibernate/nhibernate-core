@@ -14,7 +14,7 @@ namespace NHibernate.Test.CfgTest
 	[TestFixture]
 	public class MappingDocumentAggregatorTests
 	{
-		private readonly Assembly domainModelAssembly = typeof (DomainModel.A).Assembly;
+		private readonly Assembly domainModelAssembly = typeof(DomainModel.A).Assembly;
 
 		[Test]
 		public void CanAddDomainModelAssembly()

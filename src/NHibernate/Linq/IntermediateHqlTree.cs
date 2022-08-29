@@ -240,7 +240,7 @@ namespace NHibernate.Linq
 			}
 			else
 			{
-				var currentClause = (HqlBooleanExpression)currentWhere.Children.Single();
+				var currentClause = (HqlBooleanExpression) currentWhere.Children.Single();
 
 				currentWhere.ClearChildren();
 				currentWhere.AddChild(TreeBuilder.BooleanAnd(currentClause, where));
@@ -255,7 +255,7 @@ namespace NHibernate.Linq
 			}
 			else
 			{
-				var currentClause = (HqlBooleanExpression)_hqlHaving.Children.Single();
+				var currentClause = (HqlBooleanExpression) _hqlHaving.Children.Single();
 
 				_hqlHaving.ClearChildren();
 				_hqlHaving.AddChild(TreeBuilder.BooleanAnd(currentClause, where));

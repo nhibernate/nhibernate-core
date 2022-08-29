@@ -46,26 +46,26 @@ namespace NHibernate.Test.NHSpecificTest.NH2379
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var o1 = new Order {Name = "Order 1"};
+				var o1 = new Order { Name = "Order 1" };
 				session.Save(o1);
 
-				var o2 = new Order {Name = "Order 2"};
+				var o2 = new Order { Name = "Order 2" };
 				session.Save(o2);
 
-				session.Save(new OrderLine {Name = "Order Line 2 - 1", Order = o2});
+				session.Save(new OrderLine { Name = "Order Line 2 - 1", Order = o2 });
 
-				var o3 = new Order {Name = "Order 3"};
+				var o3 = new Order { Name = "Order 3" };
 				session.Save(o3);
 
-				session.Save(new OrderLine {Name = "Order Line 3 - 1", Order = o3});
-				session.Save(new OrderLine {Name = "Order Line 3 - 2", Order = o3});
+				session.Save(new OrderLine { Name = "Order Line 3 - 1", Order = o3 });
+				session.Save(new OrderLine { Name = "Order Line 3 - 2", Order = o3 });
 
-				var o4 = new Order {Name = "Order 4"};
+				var o4 = new Order { Name = "Order 4" };
 				session.Save(o4);
 
-				session.Save(new OrderLine {Name = "Order Line 4 - 1", Order = o4});
-				session.Save(new OrderLine {Name = "Order Line 4 - 2", Order = o4});
-				session.Save(new OrderLine {Name = "Order Line 4 - 3", Order = o4});
+				session.Save(new OrderLine { Name = "Order Line 4 - 1", Order = o4 });
+				session.Save(new OrderLine { Name = "Order Line 4 - 2", Order = o4 });
+				session.Save(new OrderLine { Name = "Order Line 4 - 3", Order = o4 });
 
 				transaction.Commit();
 			}
@@ -102,7 +102,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2379
 			{
 				var result = (from o in session.Query<Order>()
 							  from ol in o.OrderLines
-							  select new {OrderId = o.Id, OrderLineId = (Guid?) ol.Id}).ToList();
+							  select new { OrderId = o.Id, OrderLineId = (Guid?) ol.Id }).ToList();
 
 				Assert.AreEqual(6, result.Count);
 			}
@@ -128,7 +128,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2379
 			{
 				var result = (from o in session.Query<Order>()
 							  from ol in o.OrderLines.Where(x => x.Name.StartsWith("Order Line 3"))
-							  select new { OrderId = o.Id, OrderLineId = (Guid?)ol.Id }).ToList();
+							  select new { OrderId = o.Id, OrderLineId = (Guid?) ol.Id }).ToList();
 
 				Assert.AreEqual(2, result.Count);
 			}
@@ -156,7 +156,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2379
 				var result = (from o in session.Query<Order>()
 							  from ol in o.OrderLines
 							  where ol.Name.StartsWith("Order Line 3")
-							  select new { OrderId = o.Id, OrderLineId = (Guid?)ol.Id }).ToList();
+							  select new { OrderId = o.Id, OrderLineId = (Guid?) ol.Id }).ToList();
 
 				Assert.AreEqual(2, result.Count);
 			}
@@ -181,7 +181,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2379
 			{
 				var result = (from o in session.Query<Order>()
 							  from ol in o.OrderLines.DefaultIfEmpty()
-							  select new {OrderId = o.Id, OrderLineId = (Guid?) ol.Id}).ToList();
+							  select new { OrderId = o.Id, OrderLineId = (Guid?) ol.Id }).ToList();
 
 				Assert.AreEqual(7, result.Count);
 			}
@@ -207,7 +207,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2379
 			{
 				var result = (from o in session.Query<Order>()
 							  from ol in o.OrderLines.Where(x => x.Name.StartsWith("Order Line 3")).DefaultIfEmpty()
-							  select new {OrderId = o.Id, OrderLineId = (Guid?) ol.Id}).ToList();
+							  select new { OrderId = o.Id, OrderLineId = (Guid?) ol.Id }).ToList();
 
 				Assert.AreEqual(5, result.Count);
 			}
@@ -236,7 +236,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2379
 			{
 				var result = (from o in session.Query<Order>()
 							  from ol in o.OrderLines.DefaultIfEmpty().Where(x => x.Name.StartsWith("Order Line 3"))
-							  select new {OrderId = o.Id, OrderLineId = (Guid?) ol.Id}).ToList();
+							  select new { OrderId = o.Id, OrderLineId = (Guid?) ol.Id }).ToList();
 
 				Assert.AreEqual(2, result.Count);
 			}
@@ -264,7 +264,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2379
 				var result = (from o in session.Query<Order>()
 							  from ol in o.OrderLines.DefaultIfEmpty()
 							  where ol.Name.StartsWith("Order Line 3")
-							  select new {OrderId = o.Id, OrderLineId = (Guid?) ol.Id}).ToList();
+							  select new { OrderId = o.Id, OrderLineId = (Guid?) ol.Id }).ToList();
 
 				Assert.AreEqual(2, result.Count);
 			}

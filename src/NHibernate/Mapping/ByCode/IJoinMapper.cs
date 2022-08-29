@@ -26,6 +26,7 @@ namespace NHibernate.Mapping.ByCode
 		void Key(Action<IKeyMapper<TEntity>> keyMapping);
 	}
 
-	public interface IJoinMapper<TEntity> : IJoinAttributesMapper<TEntity>, ICollectionPropertiesContainerMapper<TEntity>, IBasePlainPropertyContainerMapper<TEntity> 
-		where TEntity : class {}
+	public interface IJoinMapper<TEntity> : IJoinAttributesMapper<TEntity>, ICollectionPropertiesContainerMapper<TEntity>, IBasePlainPropertyContainerMapper<TEntity>
+		where TEntity : class
+	{ }
 }

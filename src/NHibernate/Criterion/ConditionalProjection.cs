@@ -26,7 +26,7 @@ namespace NHibernate.Criterion
 		public ConditionalProjection(ICriterion criterion, IProjection whenTrue, IProjection whenFalse)
 		{
 			_elseProjection = whenFalse;
-			_cases = new[] {new ConditionalProjectionCase(criterion, whenTrue)};
+			_cases = new[] { new ConditionalProjectionCase(criterion, whenTrue) };
 		}
 
 		/// <summary>
@@ -134,8 +134,8 @@ namespace NHibernate.Criterion
 				if (!AreTypesEqual(elseTypes, subsequentTypes))
 				{
 					string msg = "All projections must return the same types." + Environment.NewLine +
-					             "But Else projection returns: [" + string.Join<IType>(", ", elseTypes) + "] " + Environment.NewLine +
-					             "And When projection " + i + " returns: [" + string.Join<IType>(", ", subsequentTypes) + "]";
+								 "But Else projection returns: [" + string.Join<IType>(", ", elseTypes) + "] " + Environment.NewLine +
+								 "And When projection " + i + " returns: [" + string.Join<IType>(", ", subsequentTypes) + "]";
 
 					throw new HibernateException(msg);
 				}
@@ -147,7 +147,7 @@ namespace NHibernate.Criterion
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			var typedValues = new List<TypedValue>();
-			
+
 			foreach (var projectionCase in _cases)
 			{
 				typedValues.AddRange(projectionCase.Criterion.GetTypedValues(criteria, criteriaQuery));
@@ -201,9 +201,9 @@ namespace NHibernate.Criterion
 
 		private void AddToGroupedSql(SqlStringBuilder sqlBuilder, IProjection[] projections, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			if (projections == null) 
+			if (projections == null)
 				return;
-			
+
 			foreach (var projection in projections)
 			{
 				AddToGroupedSql(sqlBuilder, projection, criteria, criteriaQuery);

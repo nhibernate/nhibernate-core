@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2568
 		private HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
-			mapper.Class<MyRelated>(rm=> rm.Id(x=> x.Id));
+			mapper.Class<MyRelated>(rm => rm.Id(x => x.Id));
 			mapper.Class<MyEntity>(rm =>
 			{
 				rm.Id(x => x.Id);
@@ -45,8 +45,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2568
 		}
 	}
 
-	public class MyCollectionPersister: OneToManyPersister
+	public class MyCollectionPersister : OneToManyPersister
 	{
-		public MyCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory) : base(collection, cache, factory) {}
+		public MyCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory) : base(collection, cache, factory) { }
 	}
 }

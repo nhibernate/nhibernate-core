@@ -6,31 +6,31 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1289
 {
 	[TestFixture, Ignore("Not fixed yet.")]
-	public class Fixture:BugTestCase
+	public class Fixture : BugTestCase
 	{
 		protected override void OnSetUp()
 		{
-			using(var ses=OpenSession())
-			using(var tran=ses.BeginTransaction())
+			using (var ses = OpenSession())
+			using (var tran = ses.BeginTransaction())
 			{
 				var purchaseOrder = new Cons_PurchaseOrder
-				                    	{
-				                    		PurchaseItems = new HashSet<PurchaseItem>(),
-				                    	};
+				{
+					PurchaseItems = new HashSet<PurchaseItem>(),
+				};
 				var product = new Cons_Product
-				              	{
-				              		ProductName = "abc",
-				              		Units = 5,
-				              		Price = "123",
-				              		Description = "desc",
-				              		ImageName = "abc"
-				              	};
+				{
+					ProductName = "abc",
+					Units = 5,
+					Price = "123",
+					Description = "desc",
+					ImageName = "abc"
+				};
 
 				var purchaseItem = new Cons_PurchaseItem
-				                   	{
-				                   		Product = product,
-				                   		PurchaseOrder = purchaseOrder
-				                   	};
+				{
+					Product = product,
+					PurchaseOrder = purchaseOrder
+				};
 				purchaseOrder.PurchaseItems.Add(purchaseItem);
 				ses.Save(product);
 				ses.Save(purchaseOrder);
@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1289
 				tran.Commit();
 			}
 		}
-		
+
 		protected override void OnTearDown()
 		{
 			using (var ses = OpenSession())

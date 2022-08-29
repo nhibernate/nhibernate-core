@@ -9,11 +9,11 @@ namespace NHibernate.Driver
 	{
 		const byte MaxTime = 5;
 
-		#if NETFX
+#if NETFX
 		private static readonly Action<object, SqlDbType> SetSqlDbType = (p, t) => ((System.Data.SqlClient.SqlParameter) p).SqlDbType = t;
-		#else
+#else
 		private static readonly Action<object, SqlDbType> SetSqlDbType = DelegateHelper.BuildPropertySetter<SqlDbType>(System.Type.GetType("System.Data.SqlClient.SqlParameter, System.Data.SqlClient", true), "SqlDbType");
-		#endif
+#endif
 
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlTypes.SqlType sqlType)
 		{

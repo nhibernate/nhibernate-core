@@ -49,14 +49,14 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
 		public virtual Client Client { get; set; }
-		public virtual Project Project { get; set; }		
+		public virtual Project Project { get; set; }
 	}
 
 	public class Invoice
 	{
 		public virtual Guid Id { get; set; }
 		public virtual int InvoiceNumber { get; set; }
-		public virtual Project Project { get; set; }		
+		public virtual Project Project { get; set; }
 		public virtual Issue Issue { get; set; }
 		public virtual int Amount { get; set; }
 		public virtual int? SpecialAmount { get; set; }

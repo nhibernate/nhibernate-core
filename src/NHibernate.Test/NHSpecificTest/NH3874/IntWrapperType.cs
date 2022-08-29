@@ -36,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3874
 		{
 			object obj = NHNullableType.NullSafeGet(dr, names[0], session);
 			if (obj == null) return null;
-			return new IntWrapper((int)obj);
+			return new IntWrapper((int) obj);
 		}
 
 		public void NullSafeSet(DbCommand cmd, object obj, int index, ISessionImplementor session)
@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3874
 			}
 			else
 			{
-				IntWrapper id = (IntWrapper)obj;
+				IntWrapper id = (IntWrapper) obj;
 				cmd.Parameters[index].Value = id.Id;
 			}
 		}

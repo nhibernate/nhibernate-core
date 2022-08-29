@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using NUnit.Framework;
 using NHibernate.Cfg;
 using NHibernate.Type;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1486
 {
@@ -128,7 +128,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1486
 					if (!(propertyType is ComponentType componentType) || componentType.ReturnedClass.Name != "Address")
 						continue;
 
-					var checkable = new [] { true, true, true };
+					var checkable = new[] { true, true, true };
 					Assert.That(
 						() => componentType.IsModified(new object[] { "", "", "" }, person.Address, checkable, sessionImplementor),
 						Throws.Nothing,

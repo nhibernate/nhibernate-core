@@ -53,7 +53,7 @@ namespace NHibernate.Multi
 		/// checked for up-to-date-ness.
 		/// </remarks>
 		IEnumerable<string> GetQuerySpaces();
-		
+
 		/// <summary>
 		/// Get the commands to execute for getting the not-already cached results of this query.
 		/// </summary>

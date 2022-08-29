@@ -20,7 +20,7 @@ namespace NHibernate.Test.UtilityTest
 
 			for (int i = 0; i < size; i++)
 			{
-				string data = (string)cache["key:" + i];
+				string data = (string) cache["key:" + i];
 				Assert.AreEqual("data:" + i, data, "Data is wrong.");
 			}
 		}
@@ -38,7 +38,7 @@ namespace NHibernate.Test.UtilityTest
 
 			for (int i = 0; i < size; i++)
 			{
-				string data = (string)cache["key:" + i];
+				string data = (string) cache["key:" + i];
 				Assert.AreEqual("data:" + i, data, "Data is wrong.");
 			}
 		}
@@ -89,7 +89,7 @@ namespace NHibernate.Test.UtilityTest
 
 			cache.Add("key", "data");
 
-			string data = (string)cache["key"];
+			string data = (string) cache["key"];
 			Assert.IsNull(data, "Data is wrong.");
 		}
 	}

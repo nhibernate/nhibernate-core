@@ -9,7 +9,7 @@ namespace NHibernate.Test.Stateless
 		public virtual string Description { get; set; }
 	}
 
-	public class Reptile: Animal
+	public class Reptile : Animal
 	{
 		public virtual float BodyTemperature { get; set; }
 	}
@@ -21,7 +21,7 @@ namespace NHibernate.Test.Stateless
 		public virtual DateTime? Birthdate { get; set; }
 	}
 
-	public class Family<T> where T: Animal
+	public class Family<T> where T : Animal
 	{
 		private ISet<T> childs;
 

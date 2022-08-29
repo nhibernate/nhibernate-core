@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3957
 		public class CustomDistinctRootEntityResultTransformer : DistinctRootEntityResultTransformer { }
 		public class CustomPassThroughResultTransformer : PassThroughResultTransformer { }
 		public class CustomRootEntityResultTransformer : RootEntityResultTransformer { }
-		
+
 		// Non reg test case
 		[Test]
 		public void AliasToEntityMapEquality()

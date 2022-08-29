@@ -6,7 +6,7 @@ namespace NHibernate.Test.Extralazy
 {
 	public class Photo
 	{
-		protected Photo() {}
+		protected Photo() { }
 		public Photo(string title, User owner)
 		{
 			this.Title = title;
@@ -14,7 +14,7 @@ namespace NHibernate.Test.Extralazy
 		}
 
 		public virtual string Title
-		{ 
+		{
 			get; set;
 		}
 

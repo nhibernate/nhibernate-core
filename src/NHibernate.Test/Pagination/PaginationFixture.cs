@@ -4,7 +4,7 @@ using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NUnit.Framework;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Pagination
 {
@@ -18,7 +18,7 @@ namespace NHibernate.Test.Pagination
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"Pagination.DataPoint.hbm.xml"}; }
+			get { return new[] { "Pagination.DataPoint.hbm.xml" }; }
 		}
 
 		protected override void Configure(Configuration configuration)
@@ -34,29 +34,29 @@ namespace NHibernate.Test.Pagination
 		[Test]
 		public void PagTest()
 		{
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				for (int i = 0; i < 10; i++)
 				{
-					var dp = new DataPoint {X = (i * 0.1d)};
+					var dp = new DataPoint { X = (i * 0.1d) };
 					dp.Y = Math.Cos(dp.X);
 					s.Persist(dp);
 				}
 				t.Commit();
 			}
 
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				int size =
 					s.CreateSQLQuery("select Id, xval, yval, Description from DataPoint order by xval, yval").AddEntity(
-						typeof (DataPoint)).SetMaxResults(5).List().Count;
+						typeof(DataPoint)).SetMaxResults(5).List().Count;
 				Assert.That(size, Is.EqualTo(5));
 				size = s.CreateQuery("from DataPoint dp order by dp.X, dp.Y").SetFirstResult(5).SetMaxResults(2).List().Count;
 				Assert.That(size, Is.EqualTo(2));
 				size =
-					s.CreateCriteria(typeof (DataPoint)).AddOrder(Order.Asc("X")).AddOrder(Order.Asc("Y")).SetFirstResult(8).List().
+					s.CreateCriteria(typeof(DataPoint)).AddOrder(Order.Asc("X")).AddOrder(Order.Asc("Y")).SetFirstResult(8).List().
 						Count;
 				Assert.That(size, Is.EqualTo(2));
 				size =
@@ -66,7 +66,7 @@ namespace NHibernate.Test.Pagination
 				t.Commit();
 			}
 
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Delete("from DataPoint");

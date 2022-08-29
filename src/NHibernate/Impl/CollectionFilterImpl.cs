@@ -1,10 +1,10 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Type;
-using System.Collections.Generic;
-using System.Linq;
-using System;
 using NHibernate.Util;
 
 namespace NHibernate.Impl
@@ -48,7 +48,7 @@ namespace NHibernate.Impl
 		{
 			if (collection == null)
 				throw new ArgumentNullException(nameof(collection), "null collection passed to filter");
-			
+
 			//NOTE: SessionImpl.GetFilterQueryPlan might do flushing to support not saved collections and handles collection role changes (?)
 			//It's not supported for Future queries
 

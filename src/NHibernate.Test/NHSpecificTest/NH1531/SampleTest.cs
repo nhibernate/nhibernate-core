@@ -11,11 +11,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1531
 		{
 			using (ISession session = OpenSession())
 			{
-				var entity = new Parent {Id = 1};
+				var entity = new Parent { Id = 1 };
 				entity.AddNewChild();
 				session.Save(entity);
 
-				var entity2 = new Parent {Id = 2};
+				var entity2 = new Parent { Id = 2 };
 				session.Save(entity2);
 
 				session.Flush();

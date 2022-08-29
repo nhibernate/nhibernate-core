@@ -8,11 +8,11 @@ using NHibernate.Linq.Visitors;
 
 namespace NHibernate.Linq.Functions
 {
-    public interface IHqlGeneratorForMethod
-    {
-        IEnumerable<MethodInfo> SupportedMethods { get; }
-        HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor);
-    }
+	public interface IHqlGeneratorForMethod
+	{
+		IEnumerable<MethodInfo> SupportedMethods { get; }
+		HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor);
+	}
 
 	// 6.0 TODO: Merge into IHqlGeneratorForMethod
 	internal interface IHqlGeneratorForMethodExtended

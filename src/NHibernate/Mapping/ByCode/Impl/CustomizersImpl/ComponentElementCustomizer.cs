@@ -22,7 +22,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			_customizersHolder = customizersHolder;
 
 			_explicitDeclarationsHolder.AddAsComponent(typeof(TComponent));
-			
+
 			if (propertyPath != null)
 			{
 				_explicitDeclarationsHolder.AddAsPersistentMember(propertyPath.LocalMember);
@@ -46,23 +46,23 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		public void Parent<TProperty>(Expression<Func<TComponent, TProperty>> parent, Action<IComponentParentMapper> parentMapping) where TProperty : class
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(parent);
-			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Parent(member, parentMapping));
+			_customizersHolder.AddCustomizer(typeof(TComponent), (IComponentAttributesMapper x) => x.Parent(member, parentMapping));
 			_explicitDeclarationsHolder.AddAsPersistentMember(member);
 		}
 
 		public void Update(bool consideredInUpdateQuery)
 		{
-			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Update(consideredInUpdateQuery));
+			_customizersHolder.AddCustomizer(typeof(TComponent), (IComponentAttributesMapper x) => x.Update(consideredInUpdateQuery));
 		}
 
 		public void Insert(bool consideredInInsertQuery)
 		{
-			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Insert(consideredInInsertQuery));
+			_customizersHolder.AddCustomizer(typeof(TComponent), (IComponentAttributesMapper x) => x.Insert(consideredInInsertQuery));
 		}
 
 		public void Lazy(bool isLazy)
 		{
-			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Lazy(isLazy));
+			_customizersHolder.AddCustomizer(typeof(TComponent), (IComponentAttributesMapper x) => x.Lazy(isLazy));
 		}
 
 		public void LazyGroup(string name)
@@ -77,7 +77,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Class<TConcrete>() where TConcrete : TComponent
 		{
-			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Class(typeof (TConcrete)));
+			_customizersHolder.AddCustomizer(typeof(TComponent), (IComponentAttributesMapper x) => x.Class(typeof(TConcrete)));
 		}
 
 		public void Property(string notVisiblePropertyOrFieldName, Action<IPropertyMapper> mapping)
@@ -162,17 +162,17 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Access(Accessor accessor)
 		{
-			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Access(accessor));
+			_customizersHolder.AddCustomizer(typeof(TComponent), (IComponentAttributesMapper x) => x.Access(accessor));
 		}
 
 		public void Access(System.Type accessorType)
 		{
-			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.Access(accessorType));
+			_customizersHolder.AddCustomizer(typeof(TComponent), (IComponentAttributesMapper x) => x.Access(accessorType));
 		}
 
 		public void OptimisticLock(bool takeInConsiderationForOptimisticLock)
 		{
-			_customizersHolder.AddCustomizer(typeof (TComponent), (IComponentAttributesMapper x) => x.OptimisticLock(takeInConsiderationForOptimisticLock));
+			_customizersHolder.AddCustomizer(typeof(TComponent), (IComponentAttributesMapper x) => x.OptimisticLock(takeInConsiderationForOptimisticLock));
 		}
 
 		#endregion

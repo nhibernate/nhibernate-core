@@ -16,14 +16,14 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			configure.AddResource("NHibernate.Test.CfgTest.Loquacious.EntityToCache.hbm.xml", GetType().Assembly);
 
 			configure.EntityCache<EntityToCache>(ce =>
-			                                     	{
-			                                     		ce.Strategy = EntityCacheUsage.NonStrictReadWrite;
-			                                     		ce.RegionName = "MyRegion";
-			                                     	});
+													 {
+														 ce.Strategy = EntityCacheUsage.NonStrictReadWrite;
+														 ce.RegionName = "MyRegion";
+													 });
 
-			var pc = (RootClass) configure.GetClassMapping(typeof (EntityToCache));
+			var pc = (RootClass) configure.GetClassMapping(typeof(EntityToCache));
 			Assert.That(pc.CacheConcurrencyStrategy,
-			            Is.EqualTo(EntityCacheUsageParser.ToString(EntityCacheUsage.NonStrictReadWrite)));
+						Is.EqualTo(EntityCacheUsageParser.ToString(EntityCacheUsage.NonStrictReadWrite)));
 			Assert.That(pc.CacheRegionName, Is.EqualTo("MyRegion"));
 		}
 
@@ -34,20 +34,20 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			configure.AddResource("NHibernate.Test.CfgTest.Loquacious.EntityToCache.hbm.xml", GetType().Assembly);
 
 			configure.EntityCache<EntityToCache>(ce =>
-			                                     	{
-			                                     		ce.Strategy = EntityCacheUsage.NonStrictReadWrite;
-			                                     		ce.RegionName = "MyRegion";
-			                                     		ce.Collection(e => e.Elements, cc =>
-			                                     		                               	{
-			                                     		                               		cc.RegionName = "MyCollectionRegion";
-			                                     		                               		cc.Strategy =
-			                                     		                               			EntityCacheUsage.NonStrictReadWrite;
-			                                     		                               	});
-			                                     	});
+													 {
+														 ce.Strategy = EntityCacheUsage.NonStrictReadWrite;
+														 ce.RegionName = "MyRegion";
+														 ce.Collection(e => e.Elements, cc =>
+																							{
+																								cc.RegionName = "MyCollectionRegion";
+																								cc.Strategy =
+																									EntityCacheUsage.NonStrictReadWrite;
+																							});
+													 });
 
 			Mapping.Collection pc = configure.GetCollectionMapping("NHibernate.Test.CfgTest.Loquacious.EntityToCache.Elements");
 			Assert.That(pc.CacheConcurrencyStrategy,
-			            Is.EqualTo(EntityCacheUsageParser.ToString(EntityCacheUsage.NonStrictReadWrite)));
+						Is.EqualTo(EntityCacheUsageParser.ToString(EntityCacheUsage.NonStrictReadWrite)));
 			Assert.That(pc.CacheRegionName, Is.EqualTo("MyCollectionRegion"));
 		}
 
@@ -58,13 +58,13 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			configure.AddResource("NHibernate.Test.CfgTest.Loquacious.EntityToCache.hbm.xml", GetType().Assembly);
 
 			configure.EntityCache<EntityToCache>(ce => ce.Collection(e => e.Elements, cc =>
-			                                                                          	{
-			                                                                          		cc.RegionName = "MyCollectionRegion";
-			                                                                          		cc.Strategy =
-			                                                                          			EntityCacheUsage.NonStrictReadWrite;
-			                                                                          	}));
+																						  {
+																							  cc.RegionName = "MyCollectionRegion";
+																							  cc.Strategy =
+																								  EntityCacheUsage.NonStrictReadWrite;
+																						  }));
 
-			var pc = (RootClass) configure.GetClassMapping(typeof (EntityToCache));
+			var pc = (RootClass) configure.GetClassMapping(typeof(EntityToCache));
 			Assert.That(pc.CacheConcurrencyStrategy, Is.Null);
 		}
 

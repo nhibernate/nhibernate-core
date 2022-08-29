@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1959
 		}
 	}
 
-	public class ClassB 
+	public class ClassB
 	{
 		public virtual Guid Id { get; set; }
 	}

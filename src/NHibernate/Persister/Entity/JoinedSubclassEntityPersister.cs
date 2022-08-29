@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Linq;
 
 namespace NHibernate.Persister.Entity
 {
@@ -163,7 +163,7 @@ namespace NHibernate.Persister.Entity
 				foreach (Column column in tab.PrimaryKey.ColumnIterator)
 					key.Add(column.GetQuotedName(factory.Dialect));
 
-				keyColumns.Add(key.ToArray());				
+				keyColumns.Add(key.ToArray());
 			}
 			subclassTableNameClosure = subtables.ToArray();
 			subclassTableKeyColumnClosure = keyColumns.ToArray();
@@ -282,7 +282,7 @@ namespace NHibernate.Persister.Entity
 															   factory.Settings.DefaultSchemaName), subclassTableNameClosure);
 				notNullColumnTableNumbers[subclassSpan - 1] = id;
 				notNullColumnNames = new string[subclassSpan];
-				notNullColumnNames[subclassSpan - 1] = subclassTableKeyColumnClosure[id][0]; 
+				notNullColumnNames[subclassSpan - 1] = subclassTableKeyColumnClosure[id][0];
 				//( (Column) model.getTable().getPrimaryKey().getColumnIterator().next() ).getName();
 			}
 			else
@@ -311,7 +311,7 @@ namespace NHibernate.Persister.Entity
 								sc.Table.GetQualifiedName(factory.Dialect, factory.Settings.DefaultCatalogName,
 														  factory.Settings.DefaultSchemaName), subclassTableNameClosure);
 						notNullColumnTableNumbers[k2] = id;
-						notNullColumnNames[k2] = subclassTableKeyColumnClosure[id][0]; 
+						notNullColumnNames[k2] = subclassTableKeyColumnClosure[id][0];
 						//( (Column) sc.getTable().getPrimaryKey().getColumnIterator().next() ).getName();
 					}
 				}
@@ -319,7 +319,7 @@ namespace NHibernate.Persister.Entity
 				{
 					throw new MappingException("Error parsing discriminator value", e);
 				}
-				k2++;				
+				k2++;
 			}
 
 			#endregion

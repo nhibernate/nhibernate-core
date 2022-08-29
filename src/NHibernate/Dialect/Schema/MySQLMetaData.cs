@@ -38,7 +38,7 @@ namespace NHibernate.Dialect.Schema
 
 		protected override string GetConstraintName(DataRow rs)
 		{
-		    return Convert.ToString(rs["CONSTRAINT_NAME"]);
+			return Convert.ToString(rs["CONSTRAINT_NAME"]);
 		}
 
 		protected override string GetColumnName(DataRow rs)
@@ -73,7 +73,7 @@ namespace NHibernate.Dialect.Schema
 			: base(rs)
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
-			
+
 			this.SetColumnSize(rs["CHARACTER_MAXIMUM_LENGTH"]);
 			this.SetNumericalPrecision(rs["NUMERIC_PRECISION"]);
 

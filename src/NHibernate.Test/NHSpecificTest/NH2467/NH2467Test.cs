@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 			base.OnSetUp();
 			using (var session = OpenSession())
 			{
-				var entity = new DomainClass {Id = 1, Data = "Test"};
+				var entity = new DomainClass { Id = 1, Data = "Test" };
 				session.Save(entity);
 				session.Flush();
 			}
@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				session.Flush();
 			}
 		}
-		
+
 		[Test]
 		public void ShouldNotThrowOnFuturePaging()
 		{
@@ -44,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				contentQuery.SetMaxResults(2);
 				contentQuery.SetFirstResult(0);
 				var content = contentQuery.Future<DomainClass>();
-					
+
 				var countQuery = session
 					.CreateCriteria<DomainClass>()
 					.Add(Restrictions.Eq("Data", "Test"));
@@ -54,8 +54,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				// triggers batch operation, should not throw
 				var result = content.GetEnumerable().ToList();
 			}
-		}		
-		
+		}
+
 		[Test]
 		public void ShouldNotThrowOnReversedFuturePaging()
 		{
@@ -77,8 +77,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				// triggers batch operation, should not throw
 				var result = content.GetEnumerable().ToList();
 			}
-		}		
-		
+		}
+
 		[Test]
 		public void ShouldNotThrowOnFuturePagingUsingHql()
 		{
@@ -93,7 +93,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				var countQuery = session.CreateQuery("select count(d) from DomainClass as d where d.Data = ?");
 				countQuery.SetString(0, "Test");
 				var count = countQuery.FutureValue<long>();
-				
+
 				Assert.AreEqual(1, content.GetEnumerable().ToList().Count);
 				Assert.AreEqual(1, count.Value);
 			}
@@ -113,7 +113,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				var countQuery = session.CreateQuery("select count(d) from DomainClass as d where d.Data = ?");
 				countQuery.SetString(0, "Test");
 				var count = countQuery.FutureValue<long>();
-				
+
 				Assert.AreEqual(1, content.GetEnumerable().ToList().Count);
 				Assert.AreEqual(1, count.Value);
 			}

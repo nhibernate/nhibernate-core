@@ -61,7 +61,7 @@ namespace NHibernate.Event.Default
 			ISessionImplementor session = Session;
 
 			ICollectionPersister persister = session.Factory.GetCollectionPersister(collectionType.Role);
-			
+
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			//TODO: move into collection type, so we can use polymorphism!
 

@@ -15,9 +15,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3187
 				var station = new Station();
 				session.Save(station);
 
-				session.Save(new Policeman {Name = "2Bob", Station = station, IsDeleted = true});
+				session.Save(new Policeman { Name = "2Bob", Station = station, IsDeleted = true });
 
-				session.Save(new Policeman {Name = "1Sally", Station = station});
+				session.Save(new Policeman { Name = "1Sally", Station = station });
 
 				session.Flush();
 				transaction.Commit();

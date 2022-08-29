@@ -18,8 +18,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 		public void WhenDefineJoinThenAddJoinWithTableNameAndKey()
 		{
 			var mapdoc = new HbmMapping();
-			var mapper = new ClassMapper(typeof(MyClass), mapdoc, For<MyClass>.Property(x=> x.Id));
-			mapper.Join("MyTable",x => { });
+			var mapper = new ClassMapper(typeof(MyClass), mapdoc, For<MyClass>.Property(x => x.Id));
+			mapper.Join("MyTable", x => { });
 
 			var hbmClass = mapdoc.RootClasses[0];
 			var hbmJoin = hbmClass.Joins.Single();
@@ -36,8 +36,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 			var called = false;
 			mapper.Join("MyTable", x =>
 						{
-										Assert.That(x, Is.Not.Null);
-										called = true;
+							Assert.That(x, Is.Not.Null);
+							called = true;
 						});
 
 			Assert.That(called, Is.True);
@@ -63,7 +63,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 			var mapdoc = new HbmMapping();
 			var mapper = new ClassMapper(typeof(MyClass), mapdoc, For<MyClass>.Property(x => x.Id));
 			mapper.Join("T1", x => { });
-			mapper.Join("T2",x => { });
+			mapper.Join("T2", x => { });
 
 			var hbmClass = mapdoc.RootClasses[0];
 			Assert.That(hbmClass.Joins.Count(), Is.EqualTo(2));

@@ -69,7 +69,7 @@ namespace NHibernate.Properties
 		[Serializable]
 		private class NoopSetter : ISetter
 		{
-			public void Set(object target, object value) {}
+			public void Set(object target, object value) { }
 
 			public string PropertyName { get { return null; } }
 

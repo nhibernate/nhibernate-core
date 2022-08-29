@@ -42,7 +42,7 @@ namespace NHibernate
 			CreateEntityCriteria(criteria, alias, withClause, joinType, entityName);
 			return criteria;
 		}
-		
+
 		public static ICriteria CreateEntityAlias<U>(this ICriteria criteria, Expression<Func<U>> alias, ICriterion withClause, JoinType joinType = JoinType.InnerJoin, string entityName = null)
 		{
 			CreateEntityCriteria(criteria, alias, withClause, joinType, entityName);

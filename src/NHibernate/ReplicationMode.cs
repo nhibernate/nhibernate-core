@@ -31,7 +31,7 @@ namespace NHibernate
 
 		private sealed class ExceptionReplicationMode : ReplicationMode
 		{
-			public ExceptionReplicationMode(string name) : base(name) {}
+			public ExceptionReplicationMode(string name) : base(name) { }
 
 			/// <summary>
 			/// Throw an exception when a row already exists
@@ -49,7 +49,7 @@ namespace NHibernate
 
 		private sealed class IgnoreReplicationMode : ReplicationMode
 		{
-			public IgnoreReplicationMode(string name) : base(name) {}
+			public IgnoreReplicationMode(string name) : base(name) { }
 
 			/// <summary>
 			/// Ignore replicated entities when a row already exists
@@ -67,7 +67,7 @@ namespace NHibernate
 
 		private sealed class LatestVersionReplicationMode : ReplicationMode
 		{
-			public LatestVersionReplicationMode(string name) : base(name) {}
+			public LatestVersionReplicationMode(string name) : base(name) { }
 
 			/// <summary>
 			/// When a row already exists, choose the latest version
@@ -91,7 +91,7 @@ namespace NHibernate
 
 		private sealed class OverwriteReplicationMode : ReplicationMode
 		{
-			public OverwriteReplicationMode(string name) : base(name) {}
+			public OverwriteReplicationMode(string name) : base(name) { }
 
 			/// <summary>
 			/// Overwrite existing rows when a row already exists

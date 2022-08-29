@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 #pragma warning restore 649
 		private string descript;
 		private B b;
-		public A() {}
+		public A() { }
 		public A(string descript)
 		{
 			this.descript = descript;

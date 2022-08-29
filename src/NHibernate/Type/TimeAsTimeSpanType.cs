@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
-using System.Collections.Generic;
-using System.Data;
 
 namespace NHibernate.Type
 {
@@ -67,7 +67,7 @@ namespace NHibernate.Type
 			if (session.Factory.ConnectionProvider.Driver.RequiresTimeSpanForTime)
 				st.Parameters[index].Value = value;
 			else
-				st.Parameters[index].Value = BaseDateValue.AddTicks(((TimeSpan)value).Ticks);
+				st.Parameters[index].Value = BaseDateValue.AddTicks(((TimeSpan) value).Ticks);
 		}
 
 		public override System.Type ReturnedClass
@@ -89,7 +89,7 @@ namespace NHibernate.Type
 		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val)
 		{
-			return ((TimeSpan)val).Ticks.ToString();
+			return ((TimeSpan) val).Ticks.ToString();
 		}
 
 		#region IVersionType Members
@@ -141,7 +141,7 @@ namespace NHibernate.Type
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return '\'' + ((TimeSpan)value).Ticks.ToString() + '\'';
+			return '\'' + ((TimeSpan) value).Ticks.ToString() + '\'';
 		}
 	}
 }

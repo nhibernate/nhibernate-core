@@ -48,20 +48,20 @@ namespace NHibernate.Event.Default
 			if (type.IsCollectionType)
 			{
 				//even process null collections
-				return ProcessCollection(value, (CollectionType)type);
+				return ProcessCollection(value, (CollectionType) type);
 			}
 			else if (type.IsEntityType)
 			{
-				return ProcessEntity(value, (EntityType)type);
+				return ProcessEntity(value, (EntityType) type);
 			}
 			else if (type.IsComponentType)
 			{
-				return ProcessComponent(value, (IAbstractComponentType)type);
+				return ProcessComponent(value, (IAbstractComponentType) type);
 			}
 			else
 			{
 				return null;
-			} 
+			}
 		}
 
 		/// <summary>

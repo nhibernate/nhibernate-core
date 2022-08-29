@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmIndex: IColumnsMapping, ITypeMapping
+	public partial class HbmIndex : IColumnsMapping, ITypeMapping
 	{
 		#region Implementation of IColumnsMapping
 
@@ -36,7 +36,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public HbmType Type
 		{
-			get { return string.IsNullOrEmpty(type) ? null : new HbmType {name = type}; }
+			get { return string.IsNullOrEmpty(type) ? null : new HbmType { name = type }; }
 		}
 
 		#endregion

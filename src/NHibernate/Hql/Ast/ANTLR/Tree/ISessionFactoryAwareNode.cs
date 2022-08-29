@@ -11,7 +11,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	public interface ISessionFactoryAwareNode
 	{
 		ISessionFactoryImplementor SessionFactory
-		{ 
+		{
 			set;
 		}
 	}

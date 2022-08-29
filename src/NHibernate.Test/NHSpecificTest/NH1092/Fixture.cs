@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1092
 {
 	[TestFixture]
-	public class Fixture: BugTestCase
+	public class Fixture : BugTestCase
 	{
 		[Test]
 		public void CountHasUniqueResult()
@@ -11,11 +11,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1092
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save(new Subscriber1 {Username = "u11"});
-				s.Save(new Subscriber1 {Username = "u12"});
-				s.Save(new Subscriber1 {Username = "u13"});
-				s.Save(new Subscriber2 {Username = "u21"});
-				s.Save(new Subscriber2 {Username = "u22"});
+				s.Save(new Subscriber1 { Username = "u11" });
+				s.Save(new Subscriber1 { Username = "u12" });
+				s.Save(new Subscriber1 { Username = "u13" });
+				s.Save(new Subscriber2 { Username = "u21" });
+				s.Save(new Subscriber2 { Username = "u22" });
 				t.Commit();
 			}
 
@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1092
 			{
 				var count =
 					s.CreateQuery("select count(*) from SubscriberAbstract SA where SA.Username like :username")
-					.SetString("username","u%")
+					.SetString("username", "u%")
 					.UniqueResult<long>();
 				Assert.That(count, Is.EqualTo(5));
 				t.Commit();

@@ -12,9 +12,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	[CLSCompliant(false)]
 	public class UpdateStatement : AbstractRestrictableStatement
 	{
-		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof (UpdateStatement));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(UpdateStatement));
 
-		public UpdateStatement(IToken token) : base(token) {}
+		public UpdateStatement(IToken token) : base(token) { }
 
 		public override bool NeedsExecutor
 		{

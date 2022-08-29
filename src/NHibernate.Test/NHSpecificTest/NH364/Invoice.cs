@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
 			if (obj.GetType() != typeof(InvoiceItem)) return false;
-			return Equals((InvoiceItem)obj);
+			return Equals((InvoiceItem) obj);
 		}
 
 		public override int GetHashCode()
@@ -112,7 +112,7 @@ namespace NHibernate.Test.NHSpecificTest.NH364
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (Product)) return false;
+			if (obj.GetType() != typeof(Product)) return false;
 			return Equals((Product) obj);
 		}
 

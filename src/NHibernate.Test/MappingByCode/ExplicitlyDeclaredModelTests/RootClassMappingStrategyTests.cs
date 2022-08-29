@@ -9,7 +9,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		private class MyClass
 		{
 		}
-		private class Inherited1: MyClass
+		private class Inherited1 : MyClass
 		{
 		}
 		private class Inherited2 : Inherited1
@@ -99,11 +99,11 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		public void WhenRegisteredAsRootThenCantRegisterAsSubclass()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsRootEntity(typeof (MyClass));
+			inspector.AddAsRootEntity(typeof(MyClass));
 			Assert.That(() =>
 			{
-				inspector.AddAsTablePerClassHierarchyEntity(typeof (MyClass));
-				inspector.IsTablePerClassHierarchy(typeof (MyClass));
+				inspector.AddAsTablePerClassHierarchyEntity(typeof(MyClass));
+				inspector.IsTablePerClassHierarchy(typeof(MyClass));
 			}, Throws.TypeOf<MappingException>());
 		}
 
@@ -111,11 +111,11 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		public void WhenRegisteredAsRootThenCantRegisterAsJoinedSubclass()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsRootEntity(typeof (MyClass));
+			inspector.AddAsRootEntity(typeof(MyClass));
 			Assert.That(() =>
 			{
-				inspector.AddAsTablePerClassEntity(typeof (MyClass));
-				inspector.IsTablePerClass(typeof (MyClass));
+				inspector.AddAsTablePerClassEntity(typeof(MyClass));
+				inspector.IsTablePerClass(typeof(MyClass));
 			}, Throws.TypeOf<MappingException>());
 		}
 
@@ -123,11 +123,11 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 		public void WhenRegisteredAsRootThenCantRegisterAsUnionSubclass()
 		{
 			var inspector = new ExplicitlyDeclaredModel();
-			inspector.AddAsRootEntity(typeof (MyClass));
+			inspector.AddAsRootEntity(typeof(MyClass));
 			Assert.That(() =>
 			{
-				inspector.AddAsTablePerConcreteClassEntity(typeof (MyClass));
-				inspector.IsTablePerClass(typeof (MyClass));
+				inspector.AddAsTablePerConcreteClassEntity(typeof(MyClass));
+				inspector.IsTablePerClass(typeof(MyClass));
 			}, Throws.TypeOf<MappingException>());
 		}
 
@@ -146,7 +146,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitlyDeclaredModelTests
 			var inspector = new ExplicitlyDeclaredModel();
 			inspector.AddAsRootEntity(typeof(MyClass));
 			inspector.AddAsRootEntity(typeof(Inherited1));
-			Assert.That(()=>
+			Assert.That(() =>
 			{
 				inspector.AddAsTablePerClassEntity(typeof(Inherited2));
 				inspector.IsTablePerClass(typeof(Inherited2));

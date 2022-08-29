@@ -20,7 +20,7 @@ namespace NHibernate.Engine
 		private object[] deletedState;
 		private bool existsInDatabase;
 		private object version;
-		
+
 		[NonSerialized]
 		private IEntityPersister persister; // for convenience to save some lookups
 
@@ -48,9 +48,9 @@ namespace NHibernate.Engine
 		// Since 5.3
 		[Obsolete("Use the constructor without lazyPropertiesAreUnfetched parameter")]
 		internal EntityEntry(Status status, object[] loadedState, object rowId, object id, object version, LockMode lockMode,
-		                     bool existsInDatabase, IEntityPersister persister,
-		                     bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
-			:this(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister, disableVersionIncrement)
+							 bool existsInDatabase, IEntityPersister persister,
+							 bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
+			: this(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister, disableVersionIncrement)
 		{
 			loadedWithLazyPropertiesUnfetched = lazyPropertiesAreUnfetched;
 		}
@@ -207,7 +207,7 @@ namespace NHibernate.Engine
 		{
 			get { return loadedWithLazyPropertiesUnfetched; }
 		}
-		
+
 		/// <summary>
 		/// Get the EntityKey based on this EntityEntry.
 		/// </summary>
@@ -281,7 +281,7 @@ namespace NHibernate.Engine
 			LockMode = LockMode.Force;
 			persister.SetPropertyValue(entity, Persister.VersionProperty, nextVersion);
 		}
-		
+
 		public bool IsNullifiable(bool earlyInsert, ISessionImplementor session)
 		{
 			return Status == Status.Saving || (earlyInsert ? !ExistsInDatabase : session.PersistenceContext.NullifiableEntityKeys.Contains(session.GenerateEntityKey(Id, Persister)));
@@ -294,7 +294,7 @@ namespace NHibernate.Engine
 				&& (Persister.HasMutableProperties || !Persister.IsInstrumented
 				|| (Persister.EntityMetamodel.BytecodeEnhancementMetadata.ExtractInterceptor(entity)?.IsDirty ?? true));
 		}
-		
+
 		/// <summary>
 		/// Can the entity be modified?
 		/// The entity is modifiable if all of the following are true:
@@ -307,7 +307,7 @@ namespace NHibernate.Engine
 		{
 			return (status != Status.ReadOnly) && !(status == Status.Deleted && previousStatus == Status.ReadOnly) && Persister.IsMutable;
 		}
-		
+
 		public bool IsReadOnly
 		{
 			get
@@ -324,7 +324,7 @@ namespace NHibernate.Engine
 		{
 			if (readOnly == IsReadOnly)
 				return; // simply return since the status is not being changed
-			
+
 			if (readOnly)
 			{
 				Status = Status.ReadOnly;

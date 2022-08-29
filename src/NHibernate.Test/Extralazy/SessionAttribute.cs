@@ -8,7 +8,7 @@ namespace NHibernate.Test.Extralazy
 		private string name;
 		private string stringData;
 		private object objectData;
-		protected SessionAttribute() {}
+		protected SessionAttribute() { }
 		public SessionAttribute(string name, string stringData)
 		{
 			this.name = name;

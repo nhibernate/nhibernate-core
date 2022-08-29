@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class ComponentAsIdMapper: IComponentAsIdMapper
+	public class ComponentAsIdMapper : IComponentAsIdMapper
 	{
 		private readonly IAccessorPropertyMapper accessorPropertyMapper;
 		private readonly HbmCompositeId id;
@@ -22,7 +22,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void UnsavedValue(UnsavedValueType unsavedValueType)
 		{
-			id.unsavedvalue = (HbmUnsavedValueType)Enum.Parse(typeof(HbmUnsavedValueType), unsavedValueType.ToString());
+			id.unsavedvalue = (HbmUnsavedValueType) Enum.Parse(typeof(HbmUnsavedValueType), unsavedValueType.ToString());
 		}
 
 		public HbmCompositeId CompositeId

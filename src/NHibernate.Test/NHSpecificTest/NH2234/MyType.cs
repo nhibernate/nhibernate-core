@@ -91,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2234
 			if (value == null)
 				NHibernateUtil.Int32.NullSafeSet(cmd, null, index, session);
 			else
-				NHibernateUtil.Int32.NullSafeSet(cmd, ((MyUsertype)value).Id, index, session);
+				NHibernateUtil.Int32.NullSafeSet(cmd, ((MyUsertype) value).Id, index, session);
 		}
 
 		public System.Type ReturnedType
@@ -101,7 +101,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2234
 
 		public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
-			int value = (int)NHibernateUtil.Int32.NullSafeGet(rs, names[0], session, owner);
+			int value = (int) NHibernateUtil.Int32.NullSafeGet(rs, names[0], session, owner);
 			return MyUserTypes.Find(value);
 		}
 

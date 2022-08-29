@@ -1,14 +1,14 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Text;
+using NHibernate.Action;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
-using System.Collections.Generic;
-using NHibernate.Action;
 
 namespace NHibernate.Type
 {
@@ -102,7 +102,7 @@ namespace NHibernate.Type
 
 		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
-			return NullSafeGet(rs, new string[] {name}, session, owner);
+			return NullSafeGet(rs, new string[] { name }, session, owner);
 		}
 
 		/// <summary> 
@@ -147,7 +147,7 @@ namespace NHibernate.Type
 				return persister.GetIdentifier(obj);
 			}
 		}
-		
+
 		public virtual int GetOwnerColumnSpan(IMapping session)
 		{
 			return GetColumnSpan(session);
@@ -383,7 +383,7 @@ namespace NHibernate.Type
 		{
 			string entityName = GetAssociatedEntityName();
 			bool isProxyUnwrapEnabled = unwrapProxy && session.Factory
-			                                                  .GetEntityPersister(entityName).IsInstrumented;
+															  .GetEntityPersister(entityName).IsInstrumented;
 
 			object proxyOrEntity = session.InternalLoad(entityName, id, eager, IsNullable && !isProxyUnwrapEnabled);
 

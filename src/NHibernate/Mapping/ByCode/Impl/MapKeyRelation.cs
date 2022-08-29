@@ -37,7 +37,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			if (mapKeyMapper == null)
 			{
-				var hbm = new HbmMapKey {type = dictionaryKeyType.GetNhTypeName()};
+				var hbm = new HbmMapKey { type = dictionaryKeyType.GetNhTypeName() };
 				mapKeyMapper = new MapKeyMapper(hbm);
 			}
 			mapping(mapKeyMapper);
@@ -48,7 +48,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			if (mapKeyManyToManyMapper == null)
 			{
-				var hbm = new HbmMapKeyManyToMany {@class = dictionaryKeyType.GetShortClassName(mapDoc)};
+				var hbm = new HbmMapKeyManyToMany { @class = dictionaryKeyType.GetShortClassName(mapDoc) };
 				mapKeyManyToManyMapper = new MapKeyManyToManyMapper(hbm);
 			}
 			mapping(mapKeyManyToManyMapper);

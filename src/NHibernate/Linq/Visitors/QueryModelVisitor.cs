@@ -398,9 +398,9 @@ namespace NHibernate.Linq.Visitors
 		private FetchOneRequest GetRelatedFetchRequest(QueryModel queryModel, NhJoinClause joinClause)
 		{
 			if (joinClause.Restrictions.Count > 0 ||
-			    !(joinClause.FromExpression is MemberExpression memberExpression) ||
-			    !(memberExpression.Expression is QuerySourceReferenceExpression querySource) ||
-			    !IsFetchSupported(queryModel))
+				!(joinClause.FromExpression is MemberExpression memberExpression) ||
+				!(memberExpression.Expression is QuerySourceReferenceExpression querySource) ||
+				!IsFetchSupported(queryModel))
 			{
 				return null;
 			}
@@ -411,7 +411,7 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			if (querySource.ReferencedQuerySource is NhJoinClause parentJoinClause &&
-			    RelatedJoinFetchRequests.TryGetValue(parentJoinClause, out var parentFetchRequest))
+				RelatedJoinFetchRequests.TryGetValue(parentJoinClause, out var parentFetchRequest))
 			{
 				return parentFetchRequest.InnerFetchRequests.OfType<FetchOneRequest>().FirstOrDefault(o => o.RelationMember == memberExpression.Member);
 			}
@@ -554,7 +554,7 @@ namespace NHibernate.Linq.Visitors
 				var orderBy = HqlGeneratorExpressionVisitor.Visit(clause.Expression, VisitorParameters).ToArithmeticExpression();
 				var direction = clause.OrderingDirection == OrderingDirection.Asc
 					? _hqlTree.TreeBuilder.Ascending()
-					: (HqlDirectionStatement)_hqlTree.TreeBuilder.Descending();
+					: (HqlDirectionStatement) _hqlTree.TreeBuilder.Descending();
 
 				_hqlTree.AddOrderByClause(orderBy, direction);
 			}

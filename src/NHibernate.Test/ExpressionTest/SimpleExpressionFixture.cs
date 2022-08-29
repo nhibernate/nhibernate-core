@@ -1,7 +1,7 @@
 using System;
+using NHibernate.Criterion;
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.NHSpecific;
-using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 
@@ -77,7 +77,7 @@ namespace NHibernate.Test.ExpressionTest
 				CreateObjects(typeof(NHibernate.DomainModel.Multi), session);
 
 				ICriterion expression = Expression.Eq("MisspelledProperty", DateTime.Now);
-				Assert.Throws<QueryException>(() =>expression.ToSqlString(criteria, criteriaQuery));
+				Assert.Throws<QueryException>(() => expression.ToSqlString(criteria, criteriaQuery));
 			}
 		}
 	}

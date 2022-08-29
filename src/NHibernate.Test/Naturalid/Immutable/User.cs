@@ -7,7 +7,7 @@ namespace NHibernate.Test.Naturalid.Immutable
 		private string userName;
 		private string password;
 		private string email;
-		public User() {}
+		public User() { }
 
 		public User(string userName, string password)
 		{

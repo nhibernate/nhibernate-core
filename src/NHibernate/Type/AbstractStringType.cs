@@ -10,7 +10,7 @@ using NHibernate.UserTypes;
 namespace NHibernate.Type
 {
 	[Serializable]
-	public abstract class AbstractStringType: ImmutableType, IDiscriminatorType, IParameterizedType
+	public abstract class AbstractStringType : ImmutableType, IDiscriminatorType, IParameterizedType
 	{
 		private static StringComparer _defaultComparer = StringComparer.Ordinal;
 		private StringComparer _comparer;
@@ -64,7 +64,7 @@ namespace NHibernate.Type
 			// set the parameter value before the size check, since ODBC changes the size automatically
 			parameter.Value = value;
 
-			if (parameter.Size > 0 && ((string)value).Length > parameter.Size)
+			if (parameter.Size > 0 && ((string) value).Length > parameter.Size)
 				throw new HibernateException("The length of the string value exceeds the length configured in the mapping/parameter.");
 		}
 
@@ -102,7 +102,7 @@ namespace NHibernate.Type
 		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val)
 		{
-			return (string)val;
+			return (string) val;
 		}
 
 		// Since 5.2
@@ -133,7 +133,7 @@ namespace NHibernate.Type
 
 		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return "'" + (string)value + "'";
+			return "'" + (string) value + "'";
 		}
 
 		#endregion
@@ -160,7 +160,7 @@ namespace NHibernate.Type
 		private static StringComparer GetComparer(string cultureName, bool ignoreCase)
 		{
 			if (cultureName == null ||
-			    string.Equals(cultureName, "ordinal", StringComparison.OrdinalIgnoreCase))
+				string.Equals(cultureName, "ordinal", StringComparison.OrdinalIgnoreCase))
 			{
 				return ignoreCase ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
 			}
@@ -174,7 +174,7 @@ namespace NHibernate.Type
 			{
 				return CultureInfo.InvariantCulture;
 			}
-			
+
 			if (string.Equals(cultureName, "current", StringComparison.OrdinalIgnoreCase))
 			{
 				return CultureInfo.CurrentCulture;

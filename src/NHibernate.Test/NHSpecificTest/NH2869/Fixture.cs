@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using NHibernate.Dialect;
-using NUnit.Framework;
-using NHibernate.Linq;
 using NHibernate.Cfg;
+using NHibernate.Dialect;
+using NHibernate.Linq;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2869
 {

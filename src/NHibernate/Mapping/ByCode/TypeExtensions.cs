@@ -10,16 +10,16 @@ namespace NHibernate.Mapping.ByCode
 {
 	public static class TypeExtensions
 	{
-		private const BindingFlags PropertiesOfClassHierarchy =	BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
+		private const BindingFlags PropertiesOfClassHierarchy = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 		private const BindingFlags PropertiesOrFieldOfClass = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
 		public static IEnumerable<System.Type> GetBaseTypes(this System.Type type)
 		{
 			foreach (var @interface in type.GetInterfaces())
 				yield return @interface;
-			
+
 			var analizing = type;
-			while (analizing != null && analizing != typeof (object))
+			while (analizing != null && analizing != typeof(object))
 			{
 				analizing = analizing.BaseType;
 				yield return analizing;
@@ -30,7 +30,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			var typeHierarchy = new Stack<System.Type>();
 			var analyzingType = type;
-			while (analyzingType != null && analyzingType != typeof (object))
+			while (analyzingType != null && analyzingType != typeof(object))
 			{
 				typeHierarchy.Push(analyzingType);
 				analyzingType = analyzingType.BaseType;
@@ -49,7 +49,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return ((FieldInfo) propertyOrField).FieldType;
 			}
-			
+
 			throw new ArgumentOutOfRangeException("propertyOrField",
 												  "Expected PropertyInfo or FieldInfo; found :" + propertyOrField.MemberType);
 		}
@@ -63,7 +63,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			if (expression.Body.NodeType != ExpressionType.MemberAccess)
 			{
-				if ((expression.Body.NodeType == ExpressionType.Convert) && (expression.Body.Type == typeof (TProperty)))
+				if ((expression.Body.NodeType == ExpressionType.Convert) && (expression.Body.Type == typeof(TProperty)))
 				{
 					return ((MemberExpression) ((UnaryExpression) expression.Body).Operand).Member;
 				}
@@ -95,7 +95,7 @@ namespace NHibernate.Mapping.ByCode
 		public static MemberInfo DecodeMemberAccessExpressionOf<TEntity, TProperty>(Expression<Func<TEntity, TProperty>> expression)
 		{
 			var memberOfDeclaringType = DecodeMemberAccessExpression(expression);
-			if (typeof (TEntity).IsInterface)
+			if (typeof(TEntity).IsInterface)
 			{
 				// Type.GetProperty(string name,Type returnType) does not work properly with interfaces
 				return memberOfDeclaringType;
@@ -104,11 +104,11 @@ namespace NHibernate.Mapping.ByCode
 			var propertyInfo = memberOfDeclaringType as PropertyInfo;
 			if (propertyInfo != null)
 			{
-				return typeof (TEntity).GetProperty(propertyInfo.Name, PropertiesOfClassHierarchy, null, propertyInfo.PropertyType, System.Type.EmptyTypes, null);
+				return typeof(TEntity).GetProperty(propertyInfo.Name, PropertiesOfClassHierarchy, null, propertyInfo.PropertyType, System.Type.EmptyTypes, null);
 			}
 			if (memberOfDeclaringType is FieldInfo)
 			{
-				return typeof (TEntity).GetField(memberOfDeclaringType.Name, PropertiesOfClassHierarchy);
+				return typeof(TEntity).GetField(memberOfDeclaringType.Name, PropertiesOfClassHierarchy);
 			}
 			throw new NotSupportedException();
 		}
@@ -238,10 +238,10 @@ namespace NHibernate.Mapping.ByCode
 				{
 					interfaces.Add(genericCollection);
 				}
-				System.Type enumerableInterface = interfaces.FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof (IEnumerable<>));
+				System.Type enumerableInterface = interfaces.FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IEnumerable<>));
 				if (enumerableInterface != null)
 				{
-					System.Type dictionaryInterface = interfaces.FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof (IDictionary<,>));
+					System.Type dictionaryInterface = interfaces.FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IDictionary<,>));
 					if (dictionaryInterface == null)
 					{
 						return enumerableInterface.GetGenericArguments()[0];
@@ -272,7 +272,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				interfaces.Add(genericDictionary);
 			}
-			return interfaces.FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof (IDictionary<,>));
+			return interfaces.FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IDictionary<,>));
 		}
 
 		public static System.Type DetermineDictionaryValueType(this System.Type genericDictionary)
@@ -290,7 +290,7 @@ namespace NHibernate.Mapping.ByCode
 
 		public static bool IsGenericCollection(this System.Type source)
 		{
-			return source.IsGenericType && typeof (IEnumerable).IsAssignableFrom(source);
+			return source.IsGenericType && typeof(IEnumerable).IsAssignableFrom(source);
 		}
 
 		public static MemberInfo GetFirstPropertyOfType(this System.Type propertyContainerType, System.Type propertyType)
@@ -362,7 +362,7 @@ namespace NHibernate.Mapping.ByCode
 				return false;
 			}
 			var typeofEnum = type.UnwrapIfNullable();
-			return typeofEnum.IsEnum && typeofEnum.GetCustomAttributes(typeof (FlagsAttribute), false).Length > 0;
+			return typeofEnum.IsEnum && typeofEnum.GetCustomAttributes(typeof(FlagsAttribute), false).Length > 0;
 		}
 
 		public static IEnumerable<System.Type> GetGenericInterfaceTypeDefinitions(this System.Type type)
@@ -463,7 +463,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 			var reflectedTypeProperties = reflectedType.GetProperties(PropertiesOfClassHierarchy);
 			var members = reflectedTypeProperties.Cast<MemberInfo>().Concat(reflectedType.GetFields(PropertiesOfClassHierarchy));
-			var result = members.FirstOrDefault(m=> m.Name.Equals(member.Name) && m.GetPropertyOrFieldType().Equals(member.GetPropertyOrFieldType()));
+			var result = members.FirstOrDefault(m => m.Name.Equals(member.Name) && m.GetPropertyOrFieldType().Equals(member.GetPropertyOrFieldType()));
 			return result ?? member;
 		}
 
@@ -514,7 +514,7 @@ namespace NHibernate.Mapping.ByCode
 
 		internal static IEnumerable<MemberInfo> GetPropertiesOfHierarchy(this System.Type type)
 		{
-			if(type.IsInterface)
+			if (type.IsInterface)
 			{
 				yield break;
 			}

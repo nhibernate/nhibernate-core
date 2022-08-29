@@ -49,7 +49,7 @@ namespace NHibernate.Linq.GroupBy
 
 				var newSubQueryModel = subQueryModel.Clone();
 				newSubQueryModel.ResultOperators.Add(cro);
-				newSubQueryModel.ResultTypeOverride = typeof (bool);
+				newSubQueryModel.ResultTypeOverride = typeof(bool);
 
 				var where = new WhereClause(new SubQueryExpression(newSubQueryModel));
 				queryModel.BodyClauses.Add(where);

@@ -9,7 +9,7 @@ namespace NHibernate.SqlCommand
 	public class WhereBuilder : SqlBaseBuilder
 	{
 		public WhereBuilder(Dialect.Dialect dialect, ISessionFactoryImplementor factory)
-			: base(dialect, factory) {}
+			: base(dialect, factory) { }
 
 		public SqlString WhereClause(string alias, string[] columnNames, IType whereType)
 		{

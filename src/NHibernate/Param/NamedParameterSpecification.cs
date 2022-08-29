@@ -67,7 +67,7 @@ namespace NHibernate.Param
 
 		public override int GetSkipValue(QueryParameters queryParameters)
 		{
-			return (int)queryParameters.NamedParameters[name].Value;
+			return (int) queryParameters.NamedParameters[name].Value;
 		}
 
 		public override void SetEffectiveType(QueryParameters queryParameters)

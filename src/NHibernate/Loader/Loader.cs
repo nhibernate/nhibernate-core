@@ -52,13 +52,13 @@ namespace NHibernate.Loader
 	/// <seealso cref="NHibernate.Persister.Entity.ILoadable"/>
 	public abstract partial class Loader
 	{
-		 /// <summary>
-		 /// DTO for providing all query cache related details
-		 /// </summary>
+		/// <summary>
+		/// DTO for providing all query cache related details
+		/// </summary>
 		public sealed class QueryCacheInfo
 		{
 			public IType[] CacheTypes { get; set; }
-			
+
 			/// <summary>
 			/// Loader.EntityPersister indexes to be cached. 
 			/// </summary>
@@ -283,9 +283,9 @@ namespace NHibernate.Loader
 			return DoQueryAndInitializeNonLazyCollections(session, queryParameters, returnProxies, null, null);
 		}
 
-		private IList DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, 
-		                                                     IResultTransformer forcedResultTransformer,
-		                                                     QueryCacheResultBuilder queryCacheResultBuilder)
+		private IList DoQueryAndInitializeNonLazyCollections(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies,
+															 IResultTransformer forcedResultTransformer,
+															 QueryCacheResultBuilder queryCacheResultBuilder)
 		{
 			IPersistenceContext persistenceContext = session.PersistenceContext;
 			bool defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
@@ -341,8 +341,8 @@ namespace NHibernate.Loader
 			{
 				result =
 					GetRowFromResultSet(resultSet, session, queryParameters, GetLockModes(queryParameters.LockModes), null,
-					                    hydratedObjects, new EntityKey[entitySpan], returnProxies, null, null,
-					                    (persister, data) => cacheBatcher.AddToBatch(persister, data));
+										hydratedObjects, new EntityKey[entitySpan], returnProxies, null, null,
+										(persister, data) => cacheBatcher.AddToBatch(persister, data));
 			}
 			catch (HibernateException)
 			{
@@ -384,7 +384,7 @@ namespace NHibernate.Loader
 											EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys,
 											bool returnProxies, IResultTransformer forcedResultTransformer,
 											QueryCacheResultBuilder queryCacheResultBuilder,
-		                                    Action<IEntityPersister, CachePutData> cacheBatchingHandler)
+											Action<IEntityPersister, CachePutData> cacheBatchingHandler)
 		{
 			ILoadable[] persisters = EntityPersisters;
 			int entitySpan = persisters.Length;
@@ -489,8 +489,8 @@ namespace NHibernate.Loader
 			return null;
 		}
 
-		private IList DoQuery(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies, 
-		                      IResultTransformer forcedResultTransformer, QueryCacheResultBuilder queryCacheResultBuilder)
+		private IList DoQuery(ISessionImplementor session, QueryParameters queryParameters, bool returnProxies,
+							  IResultTransformer forcedResultTransformer, QueryCacheResultBuilder queryCacheResultBuilder)
 		{
 			using (session.BeginProcess())
 			{
@@ -499,7 +499,7 @@ namespace NHibernate.Loader
 
 				int entitySpan = EntityPersisters.Length;
 
-				List<object> hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan*10);
+				List<object> hydratedObjects = entitySpan == 0 ? null : new List<object>(entitySpan * 10);
 
 				var st = PrepareQueryCommand(queryParameters, false, session);
 
@@ -538,7 +538,7 @@ namespace NHibernate.Loader
 						object result = GetRowFromResultSet(rs, session, queryParameters, lockModeArray, optionalObjectKey,
 															hydratedObjects,
 															keys, returnProxies, forcedResultTransformer, queryCacheResultBuilder,
-						                                    (persister, data) => cacheBatcher.AddToBatch(persister, data));
+															(persister, data) => cacheBatcher.AddToBatch(persister, data));
 						results.Add(result);
 
 						if (createSubselects)
@@ -675,7 +675,7 @@ namespace NHibernate.Loader
 			PostLoadEvent post;
 			if (session.IsEventSource)
 			{
-				var eventSourceSession = (IEventSource)session;
+				var eventSourceSession = (IEventSource) session;
 				pre = new PreLoadEvent(eventSourceSession);
 				post = new PostLoadEvent(eventSourceSession);
 			}
@@ -734,7 +734,7 @@ namespace NHibernate.Loader
 		}
 
 		private void EndCollectionLoad(DbDataReader reader, ISessionImplementor session, ICollectionPersister collectionPersister,
-		                               CacheBatcher cacheBatcher)
+									   CacheBatcher cacheBatcher)
 		{
 			//this is a query and we are loading multiple instances of the same collection role
 			session.PersistenceContext.LoadContexts.GetCollectionLoadContext(reader).EndLoadingCollections(
@@ -917,9 +917,9 @@ namespace NHibernate.Loader
 						if (Log.IsDebugEnabled())
 						{
 							Log.Debug("result set contains (possibly empty) collection: {0}",
-							          MessageHelper.CollectionInfoString(collectionPersisters[j], keys[i]));
+									  MessageHelper.CollectionInfoString(collectionPersisters[j], keys[i]));
 						}
-						session.PersistenceContext.LoadContexts.GetCollectionLoadContext((DbDataReader)resultSetId).GetLoadingCollection(
+						session.PersistenceContext.LoadContexts.GetCollectionLoadContext((DbDataReader) resultSetId).GetLoadingCollection(
 							collectionPersisters[j], keys[i]);
 					}
 				}
@@ -1015,7 +1015,7 @@ namespace NHibernate.Loader
 				EntityKey key = keys[i];
 
 				// null keys are handled in RegisterNonExists
-				if(key != null)
+				if (key != null)
 				{
 					//If the object is already loaded, return the loaded one
 					obj = session.GetEntityUsingInterceptor(key);
@@ -1108,7 +1108,7 @@ namespace NHibernate.Loader
 			var ukName = ownerAssociationTypes[i]?.RHSUniqueKeyPropertyName;
 			if (ukName == null)
 				return;
-			var index = ((IUniqueKeyLoadable)persister).GetPropertyIndex(ukName);
+			var index = ((IUniqueKeyLoadable) persister).GetPropertyIndex(ukName);
 			var ukValue = alreadyLoaded
 				? persister.GetPropertyValue(obj, index)
 				: session.PersistenceContext.GetEntry(obj).LoadedState[index];
@@ -1185,8 +1185,8 @@ namespace NHibernate.Loader
 		}
 
 		private void UpdateLazyPropertiesFromResultSet(DbDataReader rs, int i, object obj, EntityKey key,
-		                                               EntityEntry optionalEntry, ILoadable rootPersister, ISessionImplementor session,
-		                                               Action<IEntityPersister, CachePutData> cacheBatchingHandler)
+													   EntityEntry optionalEntry, ILoadable rootPersister, ISessionImplementor session,
+													   Action<IEntityPersister, CachePutData> cacheBatchingHandler)
 		{
 			var fetchAllProperties = IsEagerPropertyFetchEnabled(i);
 			var fetchLazyProperties = GetFetchLazyProperties(i);
@@ -1234,7 +1234,7 @@ namespace NHibernate.Loader
 			Action<IEntityPersister, CachePutData> cacheBatchingHandler)
 		{
 			if (entry.Status == Status.Loading || !persister.HasCache ||
-			    !session.CacheMode.HasFlag(CacheMode.Put) || !persister.IsLazyPropertiesCacheable)
+				!session.CacheMode.HasFlag(CacheMode.Put) || !persister.IsLazyPropertiesCacheable)
 			{
 				return;
 			}
@@ -1506,7 +1506,9 @@ namespace NHibernate.Loader
 				st,
 				new QueryParameters
 				{
-					HasAutoDiscoverScalarTypes = autoDiscoverTypes, Callable = callable, RowSelection = selection
+					HasAutoDiscoverScalarTypes = autoDiscoverTypes,
+					Callable = callable,
+					RowSelection = selection
 				},
 				session,
 				null);
@@ -1684,7 +1686,7 @@ namespace NHibernate.Loader
 			return LoadEntityBatch(session, persister, queryParameters);
 		}
 
-		protected internal IList LoadEntityBatch(ISessionImplementor session,  IEntityPersister persister, QueryParameters queryParameters)
+		protected internal IList LoadEntityBatch(ISessionImplementor session, IEntityPersister persister, QueryParameters queryParameters)
 		{
 			var ids = queryParameters.PositionalParameterValues;
 			if (Log.IsDebugEnabled())
@@ -1918,7 +1920,7 @@ namespace NHibernate.Loader
 		private CacheableResultTransformer CreateCacheableResultTransformer(QueryParameters queryParameters)
 		{
 			bool skipTransformer = QueryCacheResultBuilder.IsCacheWithFetches(this);
-			
+
 			return CacheableResultTransformer.Create(
 				queryParameters.ResultTransformer, ResultRowAliases, IncludeInResultRow,
 				queryParameters.HasAutoDiscoverScalarTypes, SqlString, skipTransformer);
@@ -1932,7 +1934,7 @@ namespace NHibernate.Loader
 				return null;
 
 			var result = queryCache.Get(
-				key, queryParameters, 
+				key, queryParameters,
 				queryParameters.HasAutoDiscoverScalarTypes
 					? null
 					: key.ResultTransformer.GetCachedResultTypes(CacheTypes),
@@ -1989,7 +1991,7 @@ namespace NHibernate.Loader
 		}
 
 		protected IList DoList(ISessionImplementor session, QueryParameters queryParameters, IResultTransformer forcedResultTransformer,
-		                       QueryCacheResultBuilder queryCacheResultBuilder)
+							   QueryCacheResultBuilder queryCacheResultBuilder)
 		{
 			Stopwatch stopWatch = null;
 			if (session.Factory.Statistics.IsStatisticsEnabled)
@@ -2103,8 +2105,8 @@ namespace NHibernate.Loader
 				bool hasFirstRow = GetFirstRow(selection) > 0;
 				bool useOffset = hasFirstRow && dialect.SupportsLimitOffset;
 				int max = GetMaxOrLimit(dialect, selection);
-				int? skip = useOffset ? (int?)dialect.GetOffsetValue(GetFirstRow(selection)) : null;
-				int? take = max != int.MaxValue ? (int?)max : null;
+				int? skip = useOffset ? (int?) dialect.GetOffsetValue(GetFirstRow(selection)) : null;
+				int? take = max != int.MaxValue ? (int?) max : null;
 
 				Parameter skipSqlParameter = null;
 				Parameter takeSqlParameter = null;

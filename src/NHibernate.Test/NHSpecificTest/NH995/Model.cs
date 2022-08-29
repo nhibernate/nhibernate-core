@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 			IdInstances.Add(this.ID, this);
 		}
 
-		public ClassBId(string code, ClassA a) 
+		public ClassBId(string code, ClassA a)
 			: this()
 		{
 			this.code = code;

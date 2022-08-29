@@ -26,7 +26,7 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			return new TRequestedType();
 		}
-		
+
 		public virtual TRequestedType AsBase2<TRequestedType>() where TRequestedType : MyGenericClassBase<object, int>, new()
 		{
 			return new TRequestedType();
@@ -36,18 +36,18 @@ namespace NHibernate.Test.DynamicProxyTests.GenericMethodsTests
 		{
 			return new TRequestedType();
 		}
-		
+
 		public virtual TRequestedType AsInterfaceBase2<TRequestedType>() where TRequestedType : class, IMyGenericInterfaceBase<object>, new()
 		{
 			return new TRequestedType();
 		}
 
-		public virtual TRequestedType As3<TRequestedType,T>() where TRequestedType : MyGenericClass<T>, new()
+		public virtual TRequestedType As3<TRequestedType, T>() where TRequestedType : MyGenericClass<T>, new()
 		{
 			return new TRequestedType();
 		}
-		
-		public virtual TRequestedType AsBase3<TRequestedType,T>() where TRequestedType : MyGenericClassBase<T, object>, new()
+
+		public virtual TRequestedType AsBase3<TRequestedType, T>() where TRequestedType : MyGenericClassBase<T, object>, new()
 		{
 			return new TRequestedType();
 		}

@@ -2,10 +2,10 @@ using System;
 using System.Data;
 using System.Data.Common;
 using NHibernate.Engine;
+using NHibernate.Exceptions;
+using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
-using NHibernate.Impl;
-using NHibernate.Exceptions;
 
 namespace NHibernate.Dialect.Lock
 {
@@ -97,13 +97,13 @@ namespace NHibernate.Dialect.Lock
 			catch (Exception sqle)
 			{
 				var exceptionContext = new AdoExceptionContextInfo
-				                       	{
-				                       		SqlException = sqle,
-				                       		Message = "could not lock: " + MessageHelper.InfoString(lockable, id, factory),
-				                       		Sql = sql.ToString(),
-				                       		EntityName = lockable.EntityName,
-				                       		EntityId = id
-				                       	};
+				{
+					SqlException = sqle,
+					Message = "could not lock: " + MessageHelper.InfoString(lockable, id, factory),
+					Sql = sql.ToString(),
+					EntityName = lockable.EntityName,
+					EntityId = id
+				};
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, exceptionContext);
 			}
 		}

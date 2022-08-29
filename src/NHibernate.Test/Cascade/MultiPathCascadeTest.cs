@@ -39,10 +39,10 @@ namespace NHibernate.Test.Cascade
 				a = s.Merge(a);
 				t.Commit();
 			}
-	
+
 			this.VerifyModifications(a.Id);
 		}
-		
+
 		[Test]
 		public void MultiPathMergeModifiedDetachedIntoProxy()
 		{
@@ -66,10 +66,10 @@ namespace NHibernate.Test.Cascade
 				Assert.That(s.Merge(a), Is.SameAs(aLoaded));
 				t.Commit();
 			}
-	
+
 			this.VerifyModifications(a.Id);
 		}
-		
+
 		[Test]
 		public void MultiPathUpdateModifiedDetached()
 		{
@@ -83,7 +83,7 @@ namespace NHibernate.Test.Cascade
 				s.Save(a);
 				t.Commit();
 			}
-	
+
 			// modify detached entity
 			this.ModifyEntity(a);
 
@@ -95,7 +95,7 @@ namespace NHibernate.Test.Cascade
 			}
 			this.VerifyModifications(a.Id);
 		}
-	
+
 		[Test]
 		public void MultiPathGetAndModify()
 		{
@@ -120,7 +120,7 @@ namespace NHibernate.Test.Cascade
 			}
 			this.VerifyModifications(a.Id);
 		}
-	
+
 		[Test]
 		public void MultiPathMergeNonCascadedTransientEntityInCollection()
 		{
@@ -133,7 +133,7 @@ namespace NHibernate.Test.Cascade
 				a.Data = "Anna";
 				s.Save(a);
 				t.Commit();
-			}	
+			}
 			// modify detached entity
 			this.ModifyEntity(a);
 
@@ -144,7 +144,7 @@ namespace NHibernate.Test.Cascade
 				t.Commit();
 			}
 			this.VerifyModifications(a.Id);
-	
+
 			// add a new (transient) G to collection in h
 			// there is no cascade from H to the collection, so this should fail when merged
 			Assert.That(a.Hs.Count, Is.EqualTo(1));
@@ -169,7 +169,7 @@ namespace NHibernate.Test.Cascade
 				}
 			}
 		}
-	
+
 		[Test]
 		public void MultiPathMergeNonCascadedTransientEntityInOneToOne()
 		{
@@ -193,7 +193,7 @@ namespace NHibernate.Test.Cascade
 				t.Commit();
 			}
 			this.VerifyModifications(a.Id);
-	
+
 			// change the one-to-one association from g to be a new (transient) A
 			// there is no cascade from G to A, so this should fail when merged
 			G g = a.G;
@@ -218,7 +218,7 @@ namespace NHibernate.Test.Cascade
 				}
 			}
 		}
-	
+
 		[Test]
 		public void MultiPathMergeNonCascadedTransientEntityInManyToOne()
 		{
@@ -242,7 +242,7 @@ namespace NHibernate.Test.Cascade
 				t.Commit();
 			}
 			this.VerifyModifications(a.Id);
-	
+
 			// change the many-to-one association from h to be a new (transient) A
 			// there is no cascade from H to A, so this should fail when merged
 			Assert.That(a.Hs.Count, Is.EqualTo(1));
@@ -267,7 +267,7 @@ namespace NHibernate.Test.Cascade
 				}
 			}
 		}
-		
+
 		protected override void OnTearDown()
 		{
 			using (ISession session = OpenSession())
@@ -280,28 +280,28 @@ namespace NHibernate.Test.Cascade
 			}
 			base.OnTearDown();
 		}
-		
+
 		private void ModifyEntity(A a)
 		{
 			// create a *circular* graph in detached entity
 			a.Data = "Anthony";
-	
+
 			G g = new G();
 			g.Data = "Giovanni";
-	
+
 			H h = new H();
 			h.Data = "Hellen";
-	
+
 			a.G = g;
 			g.A = a;
-	
+
 			a.Hs.Add(h);
 			h.A = a;
-	
+
 			g.Hs.Add(h);
 			h.Gs.Add(g);
 		}
-	
+
 		private void VerifyModifications(long aId)
 		{
 			using (var s = OpenSession())

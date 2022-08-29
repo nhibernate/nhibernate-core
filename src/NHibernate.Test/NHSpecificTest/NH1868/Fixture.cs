@@ -13,10 +13,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1868
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					cat = new Category {ValidUntil = DateTime.Now};
+					cat = new Category { ValidUntil = DateTime.Now };
 					session.Save(cat);
 
-					package = new Package {ValidUntil = DateTime.Now};
+					package = new Package { ValidUntil = DateTime.Now };
 					session.Save(package);
 
 					tx.Commit();

@@ -30,7 +30,7 @@ namespace NHibernate.Cfg.MappingSchema
 		[XmlIgnore]
 		public IEnumerable<HbmJoin> Joins
 		{
-			get { return Items1 != null ? Items1.OfType<HbmJoin>(): Array.Empty<HbmJoin>(); }
+			get { return Items1 != null ? Items1.OfType<HbmJoin>() : Array.Empty<HbmJoin>(); }
 		}
 
 		[XmlIgnore]
@@ -80,7 +80,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public bool? UseLazy
 		{
-			get { return lazySpecified ? lazy : (bool?)null; }
+			get { return lazySpecified ? lazy : (bool?) null; }
 		}
 
 		public HbmTuplizer[] Tuplizers
@@ -171,7 +171,7 @@ namespace NHibernate.Cfg.MappingSchema
 		[XmlIgnore]
 		public IEnumerable<IEntityPropertyMapping> Properties
 		{
-			get { return Items != null ? Items.Cast<IEntityPropertyMapping>(): Array.Empty<IEntityPropertyMapping>(); }
+			get { return Items != null ? Items.Cast<IEntityPropertyMapping>() : Array.Empty<IEntityPropertyMapping>(); }
 		}
 
 		#endregion

@@ -82,8 +82,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 					else
 					{
 						throw new ArgumentOutOfRangeException("accessor",
-						                                      "The property name " + propertyName
-						                                      + " does not match with any supported field naming strategies.");
+															  "The property name " + propertyName
+															  + " does not match with any supported field naming strategies.");
 					}
 					break;
 				case Accessor.ReadOnly:
@@ -107,7 +107,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException("accessorType");
 			}
-			if (typeof (IPropertyAccessor).IsAssignableFrom(accessorType))
+			if (typeof(IPropertyAccessor).IsAssignableFrom(accessorType))
 			{
 				setAccessor(accessorType.AssemblyQualifiedName);
 			}
@@ -128,7 +128,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		private static MemberInfo GetField(System.Type type, string fieldName)
 		{
-			if (type == typeof (object) || type == null)
+			if (type == typeof(object) || type == null)
 			{
 				return null;
 			}

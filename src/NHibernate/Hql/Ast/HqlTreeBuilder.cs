@@ -82,7 +82,7 @@ namespace NHibernate.Hql.Ast
 			return hqlFrom;
 		}
 
-		public HqlFrom From(HqlRange range, IEnumerable<HqlJoin>  joins)
+		public HqlFrom From(HqlRange range, IEnumerable<HqlJoin> joins)
 		{
 			var hqlFrom = new HqlFrom(_factory, range);
 			foreach (var join in joins)
@@ -214,9 +214,9 @@ namespace NHibernate.Hql.Ast
 				case TypeCode.Char:
 					return new HqlStringConstant(_factory, "\'" + value + "\'");
 				case TypeCode.DateTime:
-					return new HqlStringConstant(_factory, "\'" + (DateTime)value + "\'");
+					return new HqlStringConstant(_factory, "\'" + (DateTime) value + "\'");
 				case TypeCode.Boolean:
-					return (bool)value ? (HqlConstant)True() : (HqlConstant)False();
+					return (bool) value ? (HqlConstant) True() : (HqlConstant) False();
 				default:
 					throw new NotSupportedException(string.Format("The constant for '{0}' is not supported", value));
 			}

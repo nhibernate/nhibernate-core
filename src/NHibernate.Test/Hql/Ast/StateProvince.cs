@@ -29,11 +29,11 @@ namespace NHibernate.Test.Hql.Ast
 			if (!(obj is StateProvince))
 				return false;
 
-			var stateProvince = ((StateProvince)obj);
+			var stateProvince = ((StateProvince) obj);
 			if (Name == null ^ stateProvince.Name == null)
 			{
 				return false;
-			} 
+			}
 
 			if (Name != null && stateProvince.Name != null && !stateProvince.Name.Equals(Name))
 			{
@@ -43,7 +43,7 @@ namespace NHibernate.Test.Hql.Ast
 			if (IsoCode == null ^ stateProvince.IsoCode == null)
 			{
 				return false;
-			} 
+			}
 
 			if (IsoCode != null && stateProvince.IsoCode != null && !stateProvince.IsoCode.Equals(IsoCode))
 			{

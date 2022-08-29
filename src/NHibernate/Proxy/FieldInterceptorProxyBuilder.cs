@@ -76,7 +76,7 @@ namespace NHibernate.Proxy
 			var proxyInfoField = typeBuilder.DefineField("__proxyInfo", typeof(NHibernateProxyFactoryInfo), FieldAttributes.Private);
 
 			ImplementConstructor(typeBuilder, baseType, proxyInfoField);
-			
+
 			foreach (var method in ProxyBuilderHelper.GetProxiableMethods(baseType))
 			{
 				CreateProxiedMethod(typeBuilder, method, fieldInterceptorField);
@@ -139,7 +139,7 @@ namespace NHibernate.Proxy
 
 		private static void ImplementDeserializationConstructor(TypeBuilder typeBuilder, System.Type parentType)
 		{
-			var parameterTypes = new[] { typeof (SerializationInfo), typeof (StreamingContext) };
+			var parameterTypes = new[] { typeof(SerializationInfo), typeof(StreamingContext) };
 			var constructor = typeBuilder.DefineConstructor(constructorAttributes, CallingConventions.Standard, parameterTypes);
 			constructor.SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed);
 
@@ -183,7 +183,7 @@ namespace NHibernate.Proxy
 
 			var IL = methodBuilder.GetILGenerator();
 			IL.DeclareLocal(FieldInterceptorObjectReferenceType);
-			
+
 			// info.SetType(<FieldInterceptorObjectReferenceType>);
 			IL.Emit(OpCodes.Ldarg_1);
 			IL.Emit(OpCodes.Ldtoken, FieldInterceptorObjectReferenceType);
@@ -210,7 +210,7 @@ namespace NHibernate.Proxy
 					nameof(ISerializable.GetObjectData),
 					BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
 					null,
-					new[] { typeof (SerializationInfo), typeof (StreamingContext) },
+					new[] { typeof(SerializationInfo), typeof(StreamingContext) },
 					null);
 				if (parentGetObjectData == null)
 				{
@@ -266,7 +266,7 @@ namespace NHibernate.Proxy
 			const MethodAttributes attributes =
 				MethodAttributes.Private | MethodAttributes.Final | MethodAttributes.HideBySig |
 				MethodAttributes.SpecialName | MethodAttributes.NewSlot | MethodAttributes.Virtual;
-			
+
 			var getMethod = typeBuilder.DefineMethod(
 				$"{FieldInterceptorAccessorType.FullName}.get_{nameof(INHibernateProxy.HibernateLazyInitializer)}",
 				attributes, CallingConventions.HasThis, FieldInterceptorType, System.Type.EmptyTypes);
@@ -288,10 +288,10 @@ namespace NHibernate.Proxy
 			const MethodAttributes attributes =
 				MethodAttributes.Private | MethodAttributes.Final | MethodAttributes.HideBySig |
 				MethodAttributes.SpecialName | MethodAttributes.NewSlot | MethodAttributes.Virtual;
-			
+
 			var setMethod = typeBuilder.DefineMethod(
 				$"{FieldInterceptorAccessorType.FullName}.set_{nameof(INHibernateProxy.HibernateLazyInitializer)}",
-				attributes, CallingConventions.HasThis, null, new[] {FieldInterceptorType});
+				attributes, CallingConventions.HasThis, null, new[] { FieldInterceptorType });
 			setMethod.SetImplementationFlags(MethodImplAttributes.Managed | MethodImplAttributes.IL);
 
 			var IL = setMethod.GetILGenerator();

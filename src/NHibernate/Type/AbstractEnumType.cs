@@ -9,7 +9,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public abstract class AbstractEnumType : PrimitiveType, IDiscriminatorType
 	{
-		protected AbstractEnumType(SqlType sqlType,System.Type enumType)
+		protected AbstractEnumType(SqlType sqlType, System.Type enumType)
 			: base(sqlType)
 		{
 			if (enumType.IsEnum)

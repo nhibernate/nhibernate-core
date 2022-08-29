@@ -10,7 +10,7 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"MultipleCollectionFetchTest.PersonSet.hbm.xml"}; }
+			get { return new string[] { "MultipleCollectionFetchTest.PersonSet.hbm.xml" }; }
 		}
 
 		protected override void AddToCollection(ICollection<Person> persons, Person person)

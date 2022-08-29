@@ -22,7 +22,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 				get { return info; }
 			}
 		}
-		
+
 		[Test]
 		public void WhenAddThenHas()
 		{
@@ -30,10 +30,10 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
 			var propertyInfo = (new { A = 5 }).GetType().GetProperty("A");
-			
+
 			mapper.Property(propertyInfo, x => { });
 
-			Assert.That(component.Properties.Select(x => x.Name), Is.EquivalentTo(new[] {"A"}));
+			Assert.That(component.Properties.Select(x => x.Name), Is.EquivalentTo(new[] { "A" }));
 		}
 
 		[Test]

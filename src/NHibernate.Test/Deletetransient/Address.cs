@@ -4,7 +4,7 @@ namespace NHibernate.Test.Deletetransient
 	{
 		private long id;
 		private string info;
-		public Address() {}
+		public Address() { }
 		public Address(string info)
 		{
 			this.info = info;

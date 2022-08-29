@@ -197,8 +197,8 @@ namespace NHibernate.Dialect
 			// Modulo is not supported on real, float, money, and numeric data types
 			RegisterFunction("mod", new ModulusFunctionTemplate(false));
 
-			RegisterFunction("round", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0"}));
-			RegisterFunction("truncate", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0", "1"}));
+			RegisterFunction("round", new StandardSQLFunctionWithRequiredParameters("round", new object[] { null, "0" }));
+			RegisterFunction("truncate", new StandardSQLFunctionWithRequiredParameters("round", new object[] { null, "0", "1" }));
 
 			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "datalength(?1) * 8"));
 			RegisterFunction("extract", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(?1, ?3)"));
@@ -281,7 +281,7 @@ namespace NHibernate.Dialect
 		{
 			// SQL Server Compact doesn't support Schemas. So join schema name and table name with underscores
 			// similar to the SQLLite dialect.
-			
+
 			var qualifiedName = new StringBuilder();
 			bool quoted = false;
 
@@ -346,7 +346,7 @@ namespace NHibernate.Dialect
 			get
 			{
 				// MS SQL resolution is actually 3.33 ms, rounded here to 10 ms
-				return TimeSpan.TicksPerMillisecond*10L;
+				return TimeSpan.TicksPerMillisecond * 10L;
 			}
 		}
 

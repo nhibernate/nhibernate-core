@@ -23,7 +23,7 @@ namespace NHibernate.Util
 			return wait.IsCompleted ?
 				_releaserTask :
 				wait.ContinueWith(
-					(_, state) => (IDisposable)state,
+					(_, state) => (IDisposable) state,
 					_releaser, CancellationToken.None,
 					TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
 		}

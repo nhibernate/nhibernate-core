@@ -11,7 +11,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class UnaryLogicOperatorNode : HqlSqlWalkerNode, IUnaryOperatorNode 
+	public class UnaryLogicOperatorNode : HqlSqlWalkerNode, IUnaryOperatorNode
 	{
 		public UnaryLogicOperatorNode(IToken token) : base(token)
 		{

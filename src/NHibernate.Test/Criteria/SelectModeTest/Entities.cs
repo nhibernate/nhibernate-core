@@ -30,7 +30,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 		public IList<EntityEagerChild> ChildrenList { get; set; }
 	}
 
-	public class EntityEagerChild :BaseChild
+	public class EntityEagerChild : BaseChild
 	{
 	}
 

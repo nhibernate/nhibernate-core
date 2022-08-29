@@ -65,7 +65,7 @@ namespace NHibernate.Test.MappingTest
 		{
 			var tbl = new Table { Name = "name" };
 			Assert.That(
-				Constraint.GenerateName("FK_", tbl, null, new[] {new Column("col1"), new Column("col2")}),
+				Constraint.GenerateName("FK_", tbl, null, new[] { new Column("col1"), new Column("col2") }),
 				Is.EqualTo("FK_3B355A0C"));
 		}
 	}

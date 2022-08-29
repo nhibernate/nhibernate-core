@@ -1,7 +1,7 @@
 using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NHibernate.Util
 {
@@ -201,7 +201,7 @@ namespace NHibernate.Util
 
 		public IEnumerator GetEnumerator()
 		{
-			return ((IEnumerable<T>)this).GetEnumerator();
+			return ((IEnumerable<T>) this).GetEnumerator();
 		}
 
 		#endregion
@@ -280,7 +280,7 @@ namespace NHibernate.Util
 
 			public object Current
 			{
-				get { return ((IEnumerator<T>)this).Current; }
+				get { return ((IEnumerator<T>) this).Current; }
 			}
 
 			#endregion

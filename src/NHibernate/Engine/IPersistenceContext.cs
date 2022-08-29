@@ -55,7 +55,7 @@ namespace NHibernate.Engine
 		/// <summary>Is a flush cycle currently in process?</summary>
 		/// <remarks>Called before and after the flushcycle</remarks>
 		bool Flushing { get; set; }
-		
+
 		/// <summary>
 		/// The read-only status for entities (and proxies) loaded into this persistence context.
 		/// </summary>
@@ -176,8 +176,8 @@ namespace NHibernate.Engine
 		// Since 5.3
 		[Obsolete("Use the AddEntry extension method instead")]
 		EntityEntry AddEntry(object entity, Status status, object[] loadedState, object rowId, object id, object version,
-		                     LockMode lockMode, bool existsInDatabase, IEntityPersister persister, bool disableVersionIncrement,
-		                     bool lazyPropertiesAreUnfetched);
+							 LockMode lockMode, bool existsInDatabase, IEntityPersister persister, bool disableVersionIncrement,
+							 bool lazyPropertiesAreUnfetched);
 
 		/// <summary> Is the given collection associated with this persistence context?</summary>
 		bool ContainsCollection(IPersistentCollection collection);
@@ -397,7 +397,7 @@ namespace NHibernate.Engine
 		/// <seealso cref="IPersistenceContext.DefaultReadOnly" />
 		/// <seealso cref="IPersistenceContext.SetReadOnly(object, bool)" />
 		bool IsReadOnly(object entityOrProxy);
-		
+
 		void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId);
 
 		/// <summary>Is in a two-phase load? </summary>

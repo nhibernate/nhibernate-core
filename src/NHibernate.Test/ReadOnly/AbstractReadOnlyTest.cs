@@ -10,7 +10,7 @@ namespace NHibernate.Test.ReadOnly
 		{
 			get { return "NHibernate.Test"; }
 		}
-		
+
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);
@@ -24,17 +24,17 @@ namespace NHibernate.Test.ReadOnly
 			session.CacheMode = CacheMode.Ignore;
 			return session;
 		}
-		
+
 		protected void ClearCounts()
 		{
 			Sfi.Statistics.Clear();
 		}
-		
+
 		protected void AssertUpdateCount(int count)
 		{
 			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(count));
 		}
-		
+
 		protected void AssertInsertCount(int count)
 		{
 			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(count));

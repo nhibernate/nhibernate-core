@@ -64,16 +64,16 @@ namespace NHibernate.Linq.Visitors
 				return base.VisitMember(memberExpression);
 
 			var matchingAssignment = memberBindings
-			                         .Where(binding => binding.MatchesReadAccess(memberExpression.Member))
-			                         .LastOrDefault();
+									 .Where(binding => binding.MatchesReadAccess(memberExpression.Member))
+									 .LastOrDefault();
 
 			// Added logic: In some cases (e.g OData), the member can be from a different derived class, in such case
 			// we need to check the member DeclaringType instead of ReflectedType
 			if (matchingAssignment == null && memberExpression.Expression.NodeType == ExpressionType.MemberInit)
 			{
 				matchingAssignment = memberBindings
-				                     .Where(binding => AreEqual(binding.BoundMember, memberExpression.Member))
-				                     .LastOrDefault();
+									 .Where(binding => AreEqual(binding.BoundMember, memberExpression.Member))
+									 .LastOrDefault();
 			}
 
 			if (matchingAssignment == null)

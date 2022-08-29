@@ -1,4 +1,4 @@
 namespace NHibernate.Test.Subclass.EnumDiscriminator
 {
-	public class Bar : Foo {}
+	public class Bar : Foo { }
 }

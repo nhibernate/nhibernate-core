@@ -10,8 +10,8 @@ namespace NHibernate.Test.DynamicEntity
 
 		private static T NewProxy<T>(object id)
 		{
-			return (T)proxyGenerator.CreateProxy(typeof(T), new DataProxyHandler(typeof (T).FullName, id),
-			                                     new[] {typeof (IProxyMarker), typeof (T)});
+			return (T) proxyGenerator.CreateProxy(typeof(T), new DataProxyHandler(typeof(T).FullName, id),
+												 new[] { typeof(IProxyMarker), typeof(T) });
 		}
 
 		public static Person NewPersonProxy()

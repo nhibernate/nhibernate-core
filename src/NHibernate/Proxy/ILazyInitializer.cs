@@ -38,12 +38,12 @@ namespace NHibernate.Proxy
 		/// Get the session to which this proxy is associated, or null if it is not attached.
 		/// </summary>
 		ISessionImplementor Session { get; set; }
-		
+
 		/// <summary>
 		/// Is the read-only setting available?
 		/// </summary>
 		bool IsReadOnlySettingAvailable { get; }
-		
+
 		/// <summary>
 		/// Read-only status
 		/// </summary>
@@ -53,7 +53,7 @@ namespace NHibernate.Proxy
 		/// </para>
 		/// <para>
 		/// To check if the read-only setting is available, use <see cref="IsReadOnlySettingAvailable" />
-	 	/// </para>
+		/// </para>
 		/// <para>
 		/// The read-only status of the entity will be made to match the read-only status of the proxy
 		/// upon initialization.
@@ -90,7 +90,7 @@ namespace NHibernate.Proxy
 		/// </summary>
 		/// <param name="s">The session</param>
 		void SetSession(ISessionImplementor s);
-		
+
 		/// <summary>
 		/// Unset this initializer's reference to session.  It is assumed that the caller is also taking care or
 		/// cleaning up the owning proxy's reference in the persistence context.

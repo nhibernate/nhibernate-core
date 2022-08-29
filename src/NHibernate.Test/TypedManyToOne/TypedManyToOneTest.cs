@@ -61,7 +61,7 @@ namespace NHibernate.Test.TypedManyToOne
 			{
 				IList results = s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='abc123'").List();
 				//IList results = s.CreateQuery("from Customer cust left join fetch cust.BillingAddress left join fetch cust.ShippingAddress").List();
-				cust = (Customer)results[0];
+				cust = (Customer) results[0];
 				Assert.That(NHibernateUtil.IsInitialized(cust.ShippingAddress), Is.False);
 				Assert.That(NHibernateUtil.IsInitialized(cust.BillingAddress), Is.True);
 				Assert.That(cust.BillingAddress.Zip, Is.EqualTo("30326"));
@@ -106,7 +106,7 @@ namespace NHibernate.Test.TypedManyToOne
 			{
 				IList results = s.CreateQuery("from Customer cust left join fetch cust.BillingAddress where cust.CustomerId='xyz123'").List();
 				//IList results = s.CreateQuery("from Customer cust left join fetch cust.BillingAddress left join fetch cust.ShippingAddress").List();
-				cust = (Customer)results[0];
+				cust = (Customer) results[0];
 				Assert.That(cust.ShippingAddress, Is.Null);
 				Assert.That(cust.BillingAddress, Is.Null);
 				s.Delete(cust);

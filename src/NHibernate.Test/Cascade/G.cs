@@ -9,11 +9,11 @@ namespace NHibernate.Test.Cascade
 		private string data;
 		private A a; // A 1 <-> 1 G
 		private ISet<H> hs; // G * <-> * H
-		
+
 		public G() : this(null)
 		{
 		}
-	
+
 		public G(string data)
 		{
 			this.data = data;
@@ -25,7 +25,7 @@ namespace NHibernate.Test.Cascade
 			get { return id; }
 			set { id = value; }
 		}
-	
+
 		public virtual string Data
 		{
 			get { return data; }
@@ -37,7 +37,7 @@ namespace NHibernate.Test.Cascade
 			get { return a; }
 			set { a = value; }
 		}
-		
+
 		public virtual ISet<H> Hs
 		{
 			get { return hs; }

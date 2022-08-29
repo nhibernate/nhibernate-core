@@ -12,13 +12,13 @@ namespace NHibernate.Test.Join
 	{
 		protected override string[] Mappings
 		{
-			get 
-			{ 
-				return new []
+			get
+			{
+				return new[]
 				{
 					"Join.TennisPlayer.hbm.xml",
 					"Join.Person.hbm.xml"
-				}; 
+				};
 			}
 		}
 
@@ -100,7 +100,7 @@ namespace NHibernate.Test.Join
 
 		private static void CreateAndSavePlayer(ISession session, string name, string make, string model)
 		{
-			var s = new TennisPlayer() {Name = name, RacquetMake = make, RacquetModel = model};
+			var s = new TennisPlayer() { Name = name, RacquetMake = make, RacquetModel = model };
 			session.Save(s);
 		}
 	}

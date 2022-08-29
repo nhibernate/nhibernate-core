@@ -53,7 +53,7 @@ namespace NHibernate.SqlCommand.Parser
 					isDistinct = true;
 					if (!tokenEnum.MoveNext()) return false;
 				}
-				else if	(tokenEnum.Current.Equals("all", StringComparison.OrdinalIgnoreCase))
+				else if (tokenEnum.Current.Equals("all", StringComparison.OrdinalIgnoreCase))
 				{
 					if (!tokenEnum.MoveNext()) return false;
 				}

@@ -17,7 +17,7 @@ namespace NHibernate.Dialect
 	public class BitwiseFunctionOperation : Function.BitwiseFunctionOperation
 	{
 		/// <inheritdoc />
-		public BitwiseFunctionOperation(string functionName): base(functionName)
+		public BitwiseFunctionOperation(string functionName) : base(functionName)
 		{
 		}
 	}

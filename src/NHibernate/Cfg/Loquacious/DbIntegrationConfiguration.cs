@@ -1,15 +1,15 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using NHibernate.AdoNet;
 using NHibernate.Connection;
 using NHibernate.Driver;
-using NHibernate.AdoNet;
 using NHibernate.Exceptions;
 using NHibernate.Transaction;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	public class DbIntegrationConfiguration 
+	public class DbIntegrationConfiguration
 #pragma warning disable 618
 		: IDbIntegrationConfiguration
 #pragma warning restore 618
@@ -115,7 +115,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	public class DbSchemaIntegrationConfiguration 
+	public class DbSchemaIntegrationConfiguration
 #pragma warning disable 618
 		: IDbSchemaIntegrationConfiguration
 #pragma warning restore 618
@@ -190,7 +190,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	public class CommandsConfiguration 
+	public class CommandsConfiguration
 #pragma warning disable 618
 		: ICommandsConfiguration
 #pragma warning restore 618
@@ -292,7 +292,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	public class TransactionConfiguration 
+	public class TransactionConfiguration
 #pragma warning disable 618
 		: ITransactionConfiguration
 #pragma warning restore 618
@@ -385,7 +385,7 @@ namespace NHibernate.Cfg.Loquacious
 		#endregion
 	}
 
-	public class ConnectionConfiguration 
+	public class ConnectionConfiguration
 #pragma warning disable 618
 		: IConnectionConfiguration
 #pragma warning restore 618

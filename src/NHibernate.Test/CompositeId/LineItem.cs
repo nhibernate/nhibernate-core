@@ -7,7 +7,7 @@ namespace NHibernate.Test.CompositeId
 			private string customerId;
 			private int orderNumber;
 			private string productId;
-			public ID() {}
+			public ID() { }
 			public ID(string customerId, int orderNumber, string productId)
 			{
 				this.customerId = customerId;
@@ -45,7 +45,7 @@ namespace NHibernate.Test.CompositeId
 			public override int GetHashCode()
 			{
 				return (customerId != null ? customerId.GetHashCode() : 37) ^
-					(productId != null ? productId.GetHashCode() : 31) ^ 
+					(productId != null ? productId.GetHashCode() : 31) ^
 					orderNumber.GetHashCode();
 			}
 		}
@@ -54,7 +54,7 @@ namespace NHibernate.Test.CompositeId
 		private Order order;
 		private Product product;
 
-		public LineItem() {}
+		public LineItem() { }
 		public LineItem(Order order, Product product)
 		{
 			this.order = order;

@@ -116,8 +116,8 @@ namespace NHibernate.Cache
 		public override string ToString()
 		{
 			return "Item{version=" + Version +
-			       ",freshTimestamp=" + FreshTimestamp +
-			       "}";
+				   ",freshTimestamp=" + FreshTimestamp +
+				   "}";
 		}
 	}
 }

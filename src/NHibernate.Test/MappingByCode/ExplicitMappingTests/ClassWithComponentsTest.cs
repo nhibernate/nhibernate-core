@@ -55,7 +55,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 
 			var hbmComponents = hbmClass.Properties.OfType<HbmComponent>();
 			Assert.That(hbmComponents.Count(), Is.EqualTo(2));
-			Assert.That(hbmComponents.Select(x => x.Name), Is.EquivalentTo(new [] {"Name", "Address"}));
-		} 
+			Assert.That(hbmComponents.Select(x => x.Name), Is.EquivalentTo(new[] { "Name", "Address" }));
+		}
 	}
 }

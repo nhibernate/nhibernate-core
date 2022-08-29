@@ -20,19 +20,19 @@ namespace NHibernate.Test.NHSpecificTest.NH2439
 			using (var session = OpenSession())
 			{
 				var organisation = new Organisation();
-				var trainingComponent = new TrainingComponent {Code = "123", Title = "title"};
+				var trainingComponent = new TrainingComponent { Code = "123", Title = "title" };
 				var scope = new RtoScope
-								{
-									Nrt = trainingComponent,
-									Rto = organisation,
-									StartDate = DateTime.Today.AddDays(-100)
-								};
+				{
+					Nrt = trainingComponent,
+					Rto = organisation,
+					StartDate = DateTime.Today.AddDays(-100)
+				};
 
 				session.Save(organisation);
 				session.Save(trainingComponent);
 				session.Save(scope);
 
-				var searchResult = new OrganisationSearchResult {Organisation = organisation};
+				var searchResult = new OrganisationSearchResult { Organisation = organisation };
 				session.Save(searchResult);
 				session.Flush();
 			}

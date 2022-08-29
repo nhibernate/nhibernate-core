@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using NHibernate.AdoNet.Util;
 using NHibernate.Cfg;
 using NHibernate.Util;
-using Environment=NHibernate.Cfg.Environment;
-using NHibernate.AdoNet.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Tool.hbm2ddl
 {
 	public partial class SchemaUpdate
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (SchemaUpdate));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SchemaUpdate));
 		private bool wasInitialized;
 		private readonly Configuration configuration;
 		private readonly IConnectionHelper connectionHelper;
@@ -18,7 +18,7 @@ namespace NHibernate.Tool.hbm2ddl
 		private readonly List<Exception> exceptions;
 		private IFormatter formatter;
 
-		public SchemaUpdate(Configuration cfg) : this(cfg, cfg.Properties) {}
+		public SchemaUpdate(Configuration cfg) : this(cfg, cfg.Properties) { }
 
 		public SchemaUpdate(Configuration cfg, IDictionary<string, string> configProperties)
 		{

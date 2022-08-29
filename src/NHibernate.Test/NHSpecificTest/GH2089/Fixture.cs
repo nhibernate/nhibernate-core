@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2089
 				tx.Commit();
 			}
 		}
-		
+
 		[Test]
 		public virtual void CanAddChild()
 		{

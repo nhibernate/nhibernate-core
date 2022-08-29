@@ -29,7 +29,7 @@ namespace NHibernate.Test.MappingByCode.NatureDemo
 				comp.ManyToOne(address => address.StateProvince);
 			});
 
-			mapper.Class<Animal>(rc => 
+			mapper.Class<Animal>(rc =>
 			{
 				rc.Id(x => x.Id, map => map.Generator(Generators.Native));
 
@@ -53,9 +53,9 @@ namespace NHibernate.Test.MappingByCode.NatureDemo
 			});
 
 			mapper.JoinedSubclass<DomesticAnimal>(jsc =>
-			                                      {
-			                                      	jsc.ManyToOne(domesticAnimal => domesticAnimal.Owner);
-			                                      });
+												  {
+													  jsc.ManyToOne(domesticAnimal => domesticAnimal.Owner);
+												  });
 
 			mapper.JoinedSubclass<Cat>(jsc => { });
 
@@ -113,7 +113,7 @@ namespace NHibernate.Test.MappingByCode.NatureDemo
 				rc.Property(sp => sp.Name);
 				rc.Property(sp => sp.IsoCode);
 			});
-			return mapper.CompileMappingFor(typeof (Animal).Assembly.GetTypes().Where(t => t.Namespace == typeof (Animal).Namespace));
+			return mapper.CompileMappingFor(typeof(Animal).Assembly.GetTypes().Where(t => t.Namespace == typeof(Animal).Namespace));
 		}
 	}
 }

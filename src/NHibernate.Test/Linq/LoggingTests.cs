@@ -16,8 +16,8 @@ namespace NHibernate.Test.Linq
 				var subquery = db.Products.Where(p => p.ProductId > 5);
 
 				var list = db.Products.Where(p => subquery.Contains(p))
-				             .Skip(5).Take(10)
-				             .ToList();
+							 .Skip(5).Take(10)
+							 .ToList();
 
 				var logtext = spy.GetWholeLog();
 
@@ -38,8 +38,8 @@ namespace NHibernate.Test.Linq
 				Assert.That(NHibernateUtil.IsInitialized(productProxy), Is.False);
 
 				var result = from product in db.Products
-				             where product == productProxy
-				             select product;
+							 where product == productProxy
+							 select product;
 
 				Assert.That(result.Count(), Is.EqualTo(1));
 
@@ -53,7 +53,7 @@ namespace NHibernate.Test.Linq
 
 				// And verify that the proxy in the expression wasn't initialized.
 				Assert.That(NHibernateUtil.IsInitialized(productProxy), Is.False,
-				            "ERROR: We expected the proxy to NOT be initialized.");
+							"ERROR: We expected the proxy to NOT be initialized.");
 			}
 		}
 	}

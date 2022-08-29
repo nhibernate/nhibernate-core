@@ -13,7 +13,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WhenNullMethodInfoThenThrows()
 		{
-			Assert.Throws<ArgumentNullException>(() => ((MethodInfo) null).IsMethodOf(typeof (Object)));
+			Assert.Throws<ArgumentNullException>(() => ((MethodInfo) null).IsMethodOf(typeof(Object)));
 		}
 
 		[Test]
@@ -29,7 +29,7 @@ namespace NHibernate.Test.UtilityTest
 			Assert.That(ReflectHelper.GetMethodDefinition<List<int>>(t => t.Contains(5)).IsMethodOf(typeof(List<int>)), Is.True);
 		}
 
-		private class MyCollection: List<int>
+		private class MyCollection : List<int>
 		{
 		}
 
@@ -72,7 +72,7 @@ namespace NHibernate.Test.UtilityTest
 
 		private class MyClass : MyAbstractClass<int>
 		{
-			public override int MyMethod() {return 0; }
+			public override int MyMethod() { return 0; }
 		}
 
 		[Test]

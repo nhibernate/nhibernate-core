@@ -33,13 +33,13 @@ namespace NHibernate.Proxy.DynamicProxy
 			si => si.AddValue(null, null));
 
 		public ProxyFactory()
-			: this(new DefaultyProxyMethodBuilder()) {}
+			: this(new DefaultyProxyMethodBuilder()) { }
 
 		public ProxyFactory(IProxyAssemblyBuilder proxyAssemblyBuilder)
-			: this(new DefaultyProxyMethodBuilder(), proxyAssemblyBuilder) {}
+			: this(new DefaultyProxyMethodBuilder(), proxyAssemblyBuilder) { }
 
 		public ProxyFactory(IProxyMethodBuilder proxyMethodBuilder)
-			: this(proxyMethodBuilder, new DefaultProxyAssemblyBuilder()) {}
+			: this(proxyMethodBuilder, new DefaultProxyAssemblyBuilder()) { }
 
 		public ProxyFactory(IProxyMethodBuilder proxyMethodBuilder, IProxyAssemblyBuilder proxyAssemblyBuilder)
 		{
@@ -87,7 +87,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			ModuleBuilder moduleBuilder = ProxyAssemblyBuilder.DefineDynamicModule(assemblyBuilder, moduleName);
 
 			TypeAttributes typeAttributes = TypeAttributes.AutoClass | TypeAttributes.Class |
-			                                TypeAttributes.Public | TypeAttributes.BeforeFieldInit;
+											TypeAttributes.Public | TypeAttributes.BeforeFieldInit;
 
 			var interfaces = new HashSet<System.Type>();
 			interfaces.UnionWith(baseInterfaces);
@@ -98,13 +98,13 @@ namespace NHibernate.Proxy.DynamicProxy
 			System.Type parentType = baseType;
 			if (baseType.IsInterface)
 			{
-				parentType = typeof (ProxyDummy);
+				parentType = typeof(ProxyDummy);
 				interfaces.Add(baseType);
 				interfaces.UnionWith(baseType.GetInterfaces());
 			}
 
 			// Add the ISerializable interface so that it can be implemented
-			interfaces.Add(typeof (ISerializable));
+			interfaces.Add(typeof(ISerializable));
 
 			TypeBuilder typeBuilder = moduleBuilder.DefineType(typeName, typeAttributes, parentType, interfaces.ToArray());
 
@@ -115,7 +115,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			implementor.ImplementProxy(typeBuilder);
 
 			FieldInfo interceptorField = implementor.InterceptorField;
-			
+
 			// Provide a custom implementation of ISerializable
 			// instead of redirecting it back to the interceptor
 			foreach (MethodInfo method in ProxyBuilderHelper.GetProxiableMethods(baseType, interfaces).Where(method => method.DeclaringType != typeof(ISerializable)))
@@ -162,17 +162,17 @@ namespace NHibernate.Proxy.DynamicProxy
 		{
 			const MethodAttributes attributes = MethodAttributes.Public | MethodAttributes.HideBySig |
 												MethodAttributes.Virtual;
-			var parameterTypes = new[] {typeof (SerializationInfo), typeof (StreamingContext)};
+			var parameterTypes = new[] { typeof(SerializationInfo), typeof(StreamingContext) };
 
 			MethodBuilder methodBuilder =
-				typeBuilder.DefineMethod("GetObjectData", attributes, typeof (void), parameterTypes);
+				typeBuilder.DefineMethod("GetObjectData", attributes, typeof(void), parameterTypes);
 
 			ILGenerator IL = methodBuilder.GetILGenerator();
 			//LocalBuilder proxyBaseType = IL.DeclareLocal(typeof(Type));
 
 			// info.SetType(typeof(ProxyObjectReference));
 			IL.Emit(OpCodes.Ldarg_1);
-			IL.Emit(OpCodes.Ldtoken, typeof (ProxyObjectReference));
+			IL.Emit(OpCodes.Ldtoken, typeof(ProxyObjectReference));
 			IL.Emit(OpCodes.Call, ReflectionCache.TypeMethods.GetTypeFromHandle);
 			IL.Emit(OpCodes.Callvirt, setType);
 
@@ -194,7 +194,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Ldarg_1);
 			IL.Emit(OpCodes.Ldstr, "__baseInterfaceCount");
 			IL.Emit(OpCodes.Ldc_I4, baseInterfaceCount);
-			IL.Emit(OpCodes.Box, typeof (Int32));
+			IL.Emit(OpCodes.Box, typeof(Int32));
 			IL.Emit(OpCodes.Callvirt, addValue);
 
 			int index = 0;
@@ -215,7 +215,7 @@ namespace NHibernate.Proxy.DynamicProxy
 														   MethodAttributes.HideBySig | MethodAttributes.SpecialName |
 														   MethodAttributes.RTSpecialName;
 
-			var parameterTypes = new[] {typeof (SerializationInfo), typeof (StreamingContext)};
+			var parameterTypes = new[] { typeof(SerializationInfo), typeof(StreamingContext) };
 			ConstructorBuilder constructor = typeBuilder.DefineConstructor(constructorAttributes,
 																		   CallingConventions.Standard, parameterTypes);
 
@@ -226,7 +226,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 			constructor.SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed);
 
-			IL.Emit(OpCodes.Ldtoken, typeof (IInterceptor));
+			IL.Emit(OpCodes.Ldtoken, typeof(IInterceptor));
 			IL.Emit(OpCodes.Call, ReflectionCache.TypeMethods.GetTypeFromHandle);
 			IL.Emit(OpCodes.Stloc, interceptorType);
 
@@ -239,7 +239,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Ldstr, "__interceptor");
 			IL.Emit(OpCodes.Ldloc, interceptorType);
 			IL.Emit(OpCodes.Callvirt, getValue);
-			IL.Emit(OpCodes.Castclass, typeof (IInterceptor));
+			IL.Emit(OpCodes.Castclass, typeof(IInterceptor));
 			IL.Emit(OpCodes.Stfld, interceptorField);
 
 			IL.Emit(OpCodes.Ret);

@@ -60,7 +60,7 @@ namespace NHibernate.Test.TypeParameters
 			var statement = driver.GenerateCommand(
 				CommandType.Text,
 				SqlString.Parse("SELECT * FROM STRANGE_TYPED_OBJECT WHERE ID=?"),
-				new SqlType[] {SqlTypeFactory.Int32});
+				new SqlType[] { SqlTypeFactory.Int32 });
 			statement.Connection = connection;
 			t.Enlist(statement);
 			statement.Parameters[0].Value = id;
@@ -68,20 +68,20 @@ namespace NHibernate.Test.TypeParameters
 
 			Assert.IsTrue(reader.Read(), "A row should have been returned");
 			Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_ONE")) == DBNull.Value,
-			              "Default value should have been mapped to null");
+						  "Default value should have been mapped to null");
 			Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_TWO")) == DBNull.Value,
-			              "Default value should have been mapped to null");
+						  "Default value should have been mapped to null");
 			Assert.AreEqual(Convert.ToInt32(reader.GetValue(reader.GetOrdinal("VALUE_THREE"))), 5,
-			                "Non-Default value should not be changed");
+							"Non-Default value should not be changed");
 			Assert.IsTrue(reader.GetValue(reader.GetOrdinal("VALUE_FOUR")) == DBNull.Value,
-			              "Default value should have been mapped to null");
+						  "Default value should have been mapped to null");
 			reader.Close();
 
 			t.Commit();
 			s.Close();
 
-            DeleteData();
-        }
+			DeleteData();
+		}
 
 		[Test]
 		public void Loading()
@@ -92,14 +92,14 @@ namespace NHibernate.Test.TypeParameters
 			ITransaction t = s.BeginTransaction();
 
 			Widget obj = (Widget) s.CreateQuery("from Widget o where o.Str = :string")
-			                      	.SetString("string", "all-normal").UniqueResult();
+									  .SetString("string", "all-normal").UniqueResult();
 			Assert.AreEqual(obj.ValueOne, 7, "Non-Default value incorrectly loaded");
 			Assert.AreEqual(obj.ValueTwo, 8, "Non-Default value incorrectly loaded");
 			Assert.AreEqual(obj.ValueThree, 9, "Non-Default value incorrectly loaded");
 			Assert.AreEqual(obj.ValueFour, 10, "Non-Default value incorrectly loaded");
 
 			obj = (Widget) s.CreateQuery("from Widget o where o.Str = :string")
-			               	.SetString("string", "all-default").UniqueResult();
+							   .SetString("string", "all-default").UniqueResult();
 			Assert.AreEqual(obj.ValueOne, 1, "Default value incorrectly loaded");
 			Assert.AreEqual(obj.ValueTwo, 2, "Default value incorrectly loaded");
 			Assert.AreEqual(obj.ValueThree, -1, "Default value incorrectly loaded");
@@ -108,8 +108,8 @@ namespace NHibernate.Test.TypeParameters
 			t.Commit();
 			s.Close();
 
-            DeleteData();
-        }
+			DeleteData();
+		}
 
 		private void InitData()
 		{

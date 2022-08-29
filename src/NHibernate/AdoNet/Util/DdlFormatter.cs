@@ -4,7 +4,7 @@ using NHibernate.Util;
 
 namespace NHibernate.AdoNet.Util
 {
-	public class DdlFormatter: IFormatter
+	public class DdlFormatter : IFormatter
 	{
 		private static readonly INHibernateLogger Logger = NHibernateLogger.For(typeof(DdlFormatter));
 
@@ -131,7 +131,7 @@ namespace NHibernate.AdoNet.Util
 		private static bool IsBreak(string token)
 		{
 			return "drop".Equals(token) || "add".Equals(token) || "references".Equals(token) || "foreign".Equals(token)
-			       || "on".Equals(token);
+				   || "on".Equals(token);
 		}
 
 		private static bool IsQuote(string token)

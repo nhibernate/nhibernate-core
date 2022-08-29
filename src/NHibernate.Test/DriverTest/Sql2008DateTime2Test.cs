@@ -46,10 +46,10 @@ namespace NHibernate.Test.DriverTest
 			using (ITransaction t = s.BeginTransaction())
 			{
 				savedId = s.Save(new EntityForMs2008
-									{
-										DateTimeProp = expectedMoment,
-														TimeSpanProp = expectedLapse,
-													});
+				{
+					DateTimeProp = expectedMoment,
+					TimeSpanProp = expectedLapse,
+				});
 				t.Commit();
 			}
 

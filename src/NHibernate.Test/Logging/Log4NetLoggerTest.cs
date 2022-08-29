@@ -7,7 +7,7 @@ namespace NHibernate.Test.Logging
 	[TestFixture]
 	public class Log4NetLoggerTest
 	{
-		private class LogMock: ILog
+		private class LogMock : ILog
 		{
 			public int debug;
 			public int debugException;
@@ -253,8 +253,8 @@ namespace NHibernate.Test.Logging
 					return true;
 				}
 			}
-		} 
-	
+		}
+
 		[Test]
 		public void CallingMethods()
 		{
@@ -265,19 +265,19 @@ namespace NHibernate.Test.Logging
 			b = logger.IsFatalEnabled;
 			b = logger.IsInfoEnabled;
 			b = logger.IsWarnEnabled;
-			
+
 			logger.Debug(null);
 			logger.Debug(null, null);
 			logger.DebugFormat(null, null);
-			
+
 			logger.Error(null);
 			logger.Error(null, null);
 			logger.ErrorFormat(null, null);
-			
+
 			logger.Warn(null);
 			logger.Warn(null, null);
 			logger.WarnFormat(null, null);
-		
+
 			logger.Info(null);
 			logger.Info(null, null);
 			logger.InfoFormat(null, null);

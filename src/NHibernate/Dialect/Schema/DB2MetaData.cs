@@ -18,7 +18,7 @@ namespace NHibernate.Dialect.Schema
 
 		public override DataTable GetIndexColumns(string catalog, string schemaPattern, string tableName, string indexName)
 		{
-			var restrictions = new[] {tableName, indexName};
+			var restrictions = new[] { tableName, indexName };
 			return Connection.GetSchema("Indexes", restrictions);
 		}
 

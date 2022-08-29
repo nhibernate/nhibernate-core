@@ -23,7 +23,7 @@ namespace NHibernate
 		{
 		}
 
-		public ObjectNotFoundException(object identifier, string entityName) : base(identifier, entityName) {}
+		public ObjectNotFoundException(object identifier, string entityName) : base(identifier, entityName) { }
 
 		#region ISerializable Members
 

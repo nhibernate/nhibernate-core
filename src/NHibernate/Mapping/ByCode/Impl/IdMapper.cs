@@ -16,7 +16,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly HbmId hbmId;
 
 		public IdMapper(HbmId hbmId)
-			: this(null, hbmId) {}
+			: this(null, hbmId) { }
 
 		public IdMapper(MemberInfo member, HbmId hbmId)
 		{
@@ -74,7 +74,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException(nameof(persistentType));
 			}
-			if (!typeof (IUserType).IsAssignableFrom(persistentType) && !typeof (IType).IsAssignableFrom(persistentType) && !typeof (ICompositeUserType).IsAssignableFrom(persistentType))
+			if (!typeof(IUserType).IsAssignableFrom(persistentType) && !typeof(IType).IsAssignableFrom(persistentType) && !typeof(ICompositeUserType).IsAssignableFrom(persistentType))
 			{
 				throw new ArgumentOutOfRangeException(nameof(persistentType), "Expected type implementing IUserType, ICompositeUserType or IType.");
 			}
@@ -88,7 +88,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 							pi =>
 							{
 								object pvalue = pi.GetValue(parameters, null);
-								return new HbmParam {name = pi.Name, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
+								return new HbmParam { name = pi.Name, Text = new[] { ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString() } };
 							})
 				};
 				hbmId.type = hbmType;
@@ -128,7 +128,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				hbm.uniquekey != null ||
 				hbm.index != null)
 			{
-				hbmId.column = new[] {hbm};
+				hbmId.column = new[] { hbm };
 				ResetIdPlainValues();
 			}
 			else
@@ -171,8 +171,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		private void ApplyGenerator(IGeneratorDef generator)
 		{
-			var hbmGenerator = new HbmGenerator {@class = generator.Class};
-			if(hbmId.name == null)
+			var hbmGenerator = new HbmGenerator { @class = generator.Class };
+			if (hbmId.name == null)
 			{
 				// no member for the id
 				var defaultReturnType = generator.DefaultReturnType;
@@ -190,7 +190,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 					{
 						var pvalue = pi.GetValue(generatorParameters, null);
 						return
-							new HbmParam {name = pi.Name, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
+							new HbmParam { name = pi.Name, Text = new[] { ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString() } };
 					});
 			}
 			else
@@ -208,9 +208,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			#region IAccessorPropertyMapper Members
 
-			public void Access(Accessor accessor) {}
+			public void Access(Accessor accessor) { }
 
-			public void Access(System.Type accessorType) {}
+			public void Access(System.Type accessorType) { }
 
 			#endregion
 		}

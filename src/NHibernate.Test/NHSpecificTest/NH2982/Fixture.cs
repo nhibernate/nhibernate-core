@@ -1,6 +1,6 @@
 ﻿using System;
-using NUnit.Framework;
 using NHibernate.Criterion;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2982
 {

@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.Docs.ExampleParentChild
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecificTest.Docs.ExampleParentChild.Mappings.hbm.xml"}; }
+			get { return new string[] { "NHSpecificTest.Docs.ExampleParentChild.Mappings.hbm.xml" }; }
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)

@@ -12,7 +12,7 @@ namespace NHibernate.Linq.ReWriters
 		public static void ReWrite(QueryModel queryModel)
 		{
 			int len = queryModel.BodyClauses.Count;
-			for(int i=0; i<len; i++)
+			for (int i = 0; i < len; i++)
 			{
 				if (queryModel.BodyClauses[i] is OrderByClause clause)
 				{

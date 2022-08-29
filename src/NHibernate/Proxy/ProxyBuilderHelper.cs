@@ -23,7 +23,7 @@ namespace NHibernate.Proxy
 	{
 		private static readonly ConstructorInfo ObjectConstructor = typeof(object).GetConstructor(System.Type.EmptyTypes);
 		private static readonly ConstructorInfo SecurityCriticalAttributeConstructor = typeof(SecurityCriticalAttribute).GetConstructor(System.Type.EmptyTypes);
-		private static readonly ConstructorInfo IgnoresAccessChecksToAttributeConstructor = typeof(IgnoresAccessChecksToAttribute).GetConstructor(new[] {typeof(string)});
+		private static readonly ConstructorInfo IgnoresAccessChecksToAttributeConstructor = typeof(IgnoresAccessChecksToAttribute).GetConstructor(new[] { typeof(string) });
 
 		internal static readonly MethodInfo SerializableGetObjectDataMethod = typeof(ISerializable).GetMethod(nameof(ISerializable.GetObjectData));
 		internal static readonly MethodInfo SerializationInfoSetTypeMethod = ReflectHelper.GetMethod<SerializationInfo>(si => si.SetType(null));
@@ -231,7 +231,7 @@ namespace NHibernate.Proxy
 			// [assembly: System.Runtime.CompilerServices.IgnoresAccessChecksToAttribute(assemblyName)]
 			var customAttributeBuilder = new CustomAttributeBuilder(
 				IgnoresAccessChecksToAttributeConstructor,
-				new object[] {assemblyName});
+				new object[] { assemblyName });
 
 			assemblyBuilder.SetCustomAttribute(customAttributeBuilder);
 		}
@@ -256,9 +256,9 @@ namespace NHibernate.Proxy
 			var declaringTypeGenericArguments = declaringType.GetGenericArguments();
 
 			var parametersMap = declaringType
-			                    .GetGenericTypeDefinition()
-			                    .GetGenericArguments()
-			                    .ToDictionary(x => x, x => declaringTypeGenericArguments[x.GenericParameterPosition]);
+								.GetGenericTypeDefinition()
+								.GetGenericArguments()
+								.ToDictionary(x => x, x => declaringTypeGenericArguments[x.GenericParameterPosition]);
 
 			var args = new System.Type[constraintGenericArguments.Length];
 			var make = false;

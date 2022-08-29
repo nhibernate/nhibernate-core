@@ -46,7 +46,7 @@ namespace NHibernate.Util
 		}
 
 		public SoftLimitMRUCache()
-			: this(DefaultStrongRefCount) {}
+			: this(DefaultStrongRefCount) { }
 
 		#region IDeserializationCallback Members
 

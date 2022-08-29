@@ -28,7 +28,7 @@ namespace NHibernate.Type
 			isLogicalOneToOne = false;
 			PropertyName = null;
 		}
-		
+
 		//Since 5.3
 		[Obsolete("Use Constructor with property name")]
 		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)

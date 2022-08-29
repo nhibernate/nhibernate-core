@@ -18,7 +18,7 @@ namespace NHibernate.Cache
 		{
 			return loader.CacheTypes.Length > loader.ResultTypes.Length;
 		}
-		
+
 		internal QueryCacheResultBuilder(Loader.Loader loader)
 		{
 			_resultTypes = loader.ResultTypes;

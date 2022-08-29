@@ -53,7 +53,7 @@ namespace NHibernate.Test
 				else
 				{
 					Assert.IsTrue(actual.Contains(expected[i]),
-					              "The item " + expected[i].ToString() + " could not be found in the actual List.");
+								  "The item " + expected[i].ToString() + " could not be found in the actual List.");
 				}
 			}
 		}
@@ -64,7 +64,7 @@ namespace NHibernate.Test
 		/// <param name="expected"></param>
 		/// <param name="actual"></param>
 		/// <param name="compareValues">Set it to false when you only care about the keys, specifically with Sets.</param>
-		internal static void AreEqual<TKey, TItem>(IDictionary<TKey,TItem> expected, IDictionary<TKey,TItem> actual, bool compareValues)
+		internal static void AreEqual<TKey, TItem>(IDictionary<TKey, TItem> expected, IDictionary<TKey, TItem> actual, bool compareValues)
 		{
 			Assert.AreEqual(expected.Count, actual.Count);
 

@@ -8,7 +8,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public class FilterDefinitionFactory
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (FilterDefinitionFactory));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(FilterDefinitionFactory));
 
 		public static FilterDefinition CreateFilterDefinition(HbmFilterDef filterDefSchema)
 		{

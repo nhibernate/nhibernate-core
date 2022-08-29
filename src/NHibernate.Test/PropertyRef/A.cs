@@ -3,39 +3,39 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.PropertyRef
 {
-    public class A
-    {
-        private int _id;
-        private int _extraId;
-        private string _name;
-        private ISet<B> _items = new HashSet<B>();
+	public class A
+	{
+		private int _id;
+		private int _extraId;
+		private string _name;
+		private ISet<B> _items = new HashSet<B>();
 
-        public int Id
-        {
-            get { return _id; }
-            set { _id = value; }
-        }
+		public int Id
+		{
+			get { return _id; }
+			set { _id = value; }
+		}
 
-        public int ExtraId
-        {
-            get { return _extraId; }
-            set { _extraId = value; }
-        }
+		public int ExtraId
+		{
+			get { return _extraId; }
+			set { _extraId = value; }
+		}
 
-        public string Name
-        {
-            get { return _name; }
-            set { _name = value; }
-        }
+		public string Name
+		{
+			get { return _name; }
+			set { _name = value; }
+		}
 
-        public ISet<B> Items
-        {
-            get { return _items; }
-            set { _items = value; }
-        }
+		public ISet<B> Items
+		{
+			get { return _items; }
+			set { _items = value; }
+		}
 
-        public ISet<B> CItems { get; set; } = new HashSet<B>();
+		public ISet<B> CItems { get; set; } = new HashSet<B>();
 
-        public C C { get; set; }
-    }
+		public C C { get; set; }
+	}
 }

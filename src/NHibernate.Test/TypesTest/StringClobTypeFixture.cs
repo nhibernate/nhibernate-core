@@ -48,7 +48,7 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			{
 				StringClobClass b = (StringClobClass) s.CreateCriteria(
-				                                      	typeof(StringClobClass)).UniqueResult();
+														  typeof(StringClobClass)).UniqueResult();
 				Assert.AreEqual(longString, b.StringClob);
 				s.Delete(b);
 				s.Flush();
@@ -69,7 +69,7 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			{
 				StringClobClass b = (StringClobClass) s.CreateCriteria(
-				                                      	typeof(StringClobClass)).UniqueResult();
+														  typeof(StringClobClass)).UniqueResult();
 				Assert.IsNull(b.StringClob);
 				s.Delete(b);
 				s.Flush();

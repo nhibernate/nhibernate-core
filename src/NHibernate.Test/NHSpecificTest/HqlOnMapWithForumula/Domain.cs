@@ -4,47 +4,47 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.HqlOnMapWithForumula
 {
-    public class A
-    {
-        private int id;
-        private string value;
-    	private IDictionary<string, Info> myMap = new Dictionary<string, Info>();
+	public class A
+	{
+		private int id;
+		private string value;
+		private IDictionary<string, Info> myMap = new Dictionary<string, Info>();
 
-        public virtual string Value
-        {
-            get { return this.value; }
-            set { this.value = value; }
-        }
-
-        public virtual int ID
-        {
-            get { return id; }
-            set { id = value; }
+		public virtual string Value
+		{
+			get { return this.value; }
+			set { this.value = value; }
 		}
 
-    	public IDictionary<string, Info> MyMaps
-    	{
-    		get { return myMap; }
-    		set { myMap = value; }
-    	}
-    }
+		public virtual int ID
+		{
+			get { return id; }
+			set { id = value; }
+		}
 
-    public class Info
-    {
-    	private int rowCount;
+		public IDictionary<string, Info> MyMaps
+		{
+			get { return myMap; }
+			set { myMap = value; }
+		}
+	}
 
-    	private string dummy;
+	public class Info
+	{
+		private int rowCount;
 
-    	public string Dummy
-    	{
-    		get { return dummy; }
-    		set { dummy = value; }
-    	}
+		private string dummy;
 
-    	public int RowCount
-    	{
-    		get { return rowCount; }
-    		set { rowCount = value; }
-    	}
-    }
+		public string Dummy
+		{
+			get { return dummy; }
+			set { dummy = value; }
+		}
+
+		public int RowCount
+		{
+			get { return rowCount; }
+			set { rowCount = value; }
+		}
+	}
 }

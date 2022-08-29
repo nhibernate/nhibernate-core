@@ -28,10 +28,10 @@ namespace NHibernate.Test.NHSpecificTest.EntityNameAndCompositeId
 				using (ITransaction tx = s.BeginTransaction())
 				{
 					id = s.Save("Person", new Dictionary<string, object>
-					                      	{
-					                      		{"OuterId", new Dictionary<string, int> {{"InnerId", 1}}},
-					                      		{"Data", "hello"}
-					                      	});
+											  {
+												  {"OuterId", new Dictionary<string, int> {{"InnerId", 1}}},
+												  {"Data", "hello"}
+											  });
 					tx.Commit();
 				}
 			}

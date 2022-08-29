@@ -32,7 +32,7 @@ namespace NHibernate.SqlCommand
 
 		public override string ToString()
 		{
-			return Text != null ? Text.ToString().Trim(): GetType().FullName;
+			return Text != null ? Text.ToString().Trim() : GetType().FullName;
 		}
 	}
 }

@@ -89,12 +89,12 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public override IEnumerable<Table> TableClosureIterator
 		{
-			get { return new[] {Table}; }
+			get { return new[] { Table }; }
 		}
 
 		public override IEnumerable<IKeyValue> KeyClosureIterator
 		{
-			get { return new[] {Key}; }
+			get { return new[] { Key }; }
 		}
 
 		/// <summary>
@@ -379,7 +379,7 @@ namespace NHibernate.Mapping
 		private void CheckCompositeIdentifier()
 		{
 			Component id = Identifier as Component;
-			if (id!=null)
+			if (id != null)
 			{
 				if (!id.IsDynamic)
 				{

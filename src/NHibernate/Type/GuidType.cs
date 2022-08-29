@@ -20,15 +20,15 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			if (rs.GetFieldType(index) == typeof (Guid))
+			if (rs.GetFieldType(index) == typeof(Guid))
 			{
 				return rs.GetGuid(index);
 			}
 
 			if (rs.GetFieldType(index) == typeof(byte[]))
 			{
-				return new Guid((byte[])(rs[index]));
-			} 
+				return new Guid((byte[]) (rs[index]));
+			}
 
 			return new Guid(Convert.ToString(rs[index]));
 		}
@@ -48,7 +48,7 @@ namespace NHibernate.Type
 		{
 			var dp = cmd.Parameters[index];
 
-			dp.Value = dp.DbType == DbType.Binary ? ((Guid)value).ToByteArray() : value;
+			dp.Value = dp.DbType == DbType.Binary ? ((Guid) value).ToByteArray() : value;
 		}
 
 		/// <summary></summary>

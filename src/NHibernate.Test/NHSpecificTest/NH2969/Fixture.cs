@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2969
-{ 
+{
 	[TestFixture, Ignore("Not fixed yet.")]
 	public class Fixture : BugTestCase
 	{
@@ -10,18 +10,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2969
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var john = new Person {ID = 1, Name = "John"};
-				var garfield = new DomesticCat {ID = 2, Name = "Garfield", Owner = john};
+				var john = new Person { ID = 1, Name = "John" };
+				var garfield = new DomesticCat { ID = 2, Name = "Garfield", Owner = john };
 				session.Save(john);
 				session.Save(garfield);
 
-				var alice = new Person {ID = 3, Name = "Alice"};
-				var bubbles = new Goldfish {ID = 4, Name = "Bubbles", Owner = alice};
+				var alice = new Person { ID = 3, Name = "Alice" };
+				var bubbles = new Goldfish { ID = 4, Name = "Bubbles", Owner = alice };
 				session.Save(alice);
 				session.Save(bubbles);
 
-				var pirate = new Person {ID = 5, Name = "Pirate"};
-				var parrot = new Parrot {ID = 6, Name = "Parrot", Pirate = pirate};
+				var pirate = new Person { ID = 5, Name = "Pirate" };
+				var parrot = new Parrot { ID = 6, Name = "Parrot", Pirate = pirate };
 				session.Save(pirate);
 				session.Save(parrot);
 

@@ -64,7 +64,7 @@ namespace NHibernate
 			{
 				return base.Message + (wasSetter ? " setter of " : " getter of ") +
 					   (persistentType == null ? "UnknownType" : persistentType.FullName) +
-					   (string.IsNullOrEmpty(propertyName) ? string.Empty: "." + propertyName);
+					   (string.IsNullOrEmpty(propertyName) ? string.Empty : "." + propertyName);
 			}
 		}
 

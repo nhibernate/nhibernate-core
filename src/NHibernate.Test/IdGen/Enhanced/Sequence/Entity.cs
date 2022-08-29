@@ -16,7 +16,7 @@
 		{
 			get; set;
 		}
-		
+
 		public Entity() { }
 
 		public Entity(string name)

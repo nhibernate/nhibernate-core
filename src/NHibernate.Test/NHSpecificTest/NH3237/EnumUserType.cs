@@ -1,11 +1,11 @@
-using System.Linq;
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
-using NHibernate.UserTypes;
 using NHibernate.Type;
+using NHibernate.UserTypes;
 
 namespace NHibernate.Test.NHSpecificTest.NH3237
 {
@@ -52,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 			}
 			else
 			{
-				var paramVal = (int)value;
+				var paramVal = (int) value;
 
 				cmd.Parameters[index].Value = paramVal;
 			}
@@ -103,7 +103,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3237
 
 		public int Compare(object x, object y)
 		{
-			return ((DateTimeOffset)x).CompareTo((DateTimeOffset)y);
+			return ((DateTimeOffset) x).CompareTo((DateTimeOffset) y);
 		}
 	}
 }

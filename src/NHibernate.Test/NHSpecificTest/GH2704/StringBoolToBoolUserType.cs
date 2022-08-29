@@ -43,6 +43,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2704
 		}
 
 		public System.Type ReturnedType => typeof(bool);
-		public SqlType[] SqlTypes => new SqlType[] {new SqlType(DbType.String)};
+		public SqlType[] SqlTypes => new SqlType[] { new SqlType(DbType.String) };
 	}
 }

@@ -8,7 +8,7 @@ using NHibernate.UserTypes;
 
 namespace NHibernate.Test.NHSpecificTest.NH2394
 {
-    public class EnumStringUserType : EnumStringType<TypeOfA>
-    {
+	public class EnumStringUserType : EnumStringType<TypeOfA>
+	{
 	}
 }

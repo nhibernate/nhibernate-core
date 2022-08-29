@@ -22,7 +22,7 @@ namespace NHibernate.Test.CfgTest
 		}
 		private class InvalidNoCtorByteCodeProvider : AbstractBytecodeProvider
 		{
-			public InvalidNoCtorByteCodeProvider(string pizza) {}
+			public InvalidNoCtorByteCodeProvider(string pizza) { }
 
 			public override IReflectionOptimizer GetReflectionOptimizer(System.Type clazz, IGetter[] getters, ISetter[] setters)
 			{

@@ -34,8 +34,8 @@ namespace NHibernate.DomainModel
 		{
 			Multiplicity o = (Multiplicity) component;
 			return property == 0 ?
-			       (object) o.count :
-			       (object) o.glarch;
+				   (object) o.count :
+				   (object) o.glarch;
 		}
 
 		public void SetPropertyValue(object component, int property, object value)
@@ -129,8 +129,8 @@ namespace NHibernate.DomainModel
 			Multiplicity m = new Multiplicity();
 			m.count = (int) o[0];
 			m.glarch = o[1] == null ?
-			           null :
-			           (GlarchProxy) session.InternalLoad(typeof(Glarch).FullName, o[1], false, false);
+					   null :
+					   (GlarchProxy) session.InternalLoad(typeof(Glarch).FullName, o[1], false, false);
 			return m;
 		}
 
@@ -142,7 +142,7 @@ namespace NHibernate.DomainModel
 			}
 
 			Multiplicity m = (Multiplicity) value;
-			return new object[] {m.count, ForeignKeys.GetEntityIdentifierIfNotUnsaved(null, m.glarch, session)};
+			return new object[] { m.count, ForeignKeys.GetEntityIdentifierIfNotUnsaved(null, m.glarch, session) };
 		}
 
 		public object Replace(object original, object target, ISessionImplementor session, object owner)

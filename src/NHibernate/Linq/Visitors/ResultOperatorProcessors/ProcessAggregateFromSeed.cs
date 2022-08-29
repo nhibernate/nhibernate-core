@@ -11,7 +11,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 	{
 		public void Process(AggregateFromSeedResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{
-			var inputExpr = ((StreamedSequenceInfo)queryModelVisitor.PreviousEvaluationType).ItemExpression;
+			var inputExpr = ((StreamedSequenceInfo) queryModelVisitor.PreviousEvaluationType).ItemExpression;
 			var inputType = inputExpr.Type;
 			var paramExpr = Expression.Parameter(inputType, "item");
 			var accumulatorFunc = Expression.Lambda(

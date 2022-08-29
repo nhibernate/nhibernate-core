@@ -111,7 +111,7 @@ namespace NHibernate.DomainModel
 
 		public void OnLoad(ISession s, object id)
 		{
-			if (! (((String) id).Length == 32))
+			if (!(((String) id).Length == 32))
 			{
 				throw new ArgumentException("id problem");
 			}

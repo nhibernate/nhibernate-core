@@ -24,8 +24,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2286
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var c1 = new IndividualCustomer {Id = 2, Name = "2"};
-				var c2 = new IndividualCustomer {Id = 4, Name = "4"};
+				var c1 = new IndividualCustomer { Id = 2, Name = "2" };
+				var c2 = new IndividualCustomer { Id = 4, Name = "4" };
 				session.Save(c1);
 				session.Save(c2);
 

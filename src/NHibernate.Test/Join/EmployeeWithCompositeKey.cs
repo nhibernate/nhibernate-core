@@ -99,7 +99,7 @@ namespace NHibernate.Test.Join
 		public override bool Equals(object obj)
 		{
 			EmployeePk other = obj as EmployeePk;
-			if (other == null) 
+			if (other == null)
 				return false;
 			else
 				return (this.CompanyId == other.CompanyId && string.Equals(this.EmpNumber, other.EmpNumber));

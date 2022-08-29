@@ -72,15 +72,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 
 				var phone1 = new Phone
 				{
-					Id = 32, 
+					Id = 32,
 					Number = "123456"
 				};
 
 				session.Save(phone1);
-				
+
 				var phone2 = new Phone
 				{
-					Id = 33, 
+					Id = 33,
 					Number = "7891011"
 				};
 
@@ -216,7 +216,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			statistics.Clear();
 
 			using (var session = OpenSession())
-			using(var transaction = session.BeginTransaction())
+			using (var transaction = session.BeginTransaction())
 			{
 				ExecuteStatement(session, transaction, $"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 12, DEPARTMENT_ID_3 = 99999, DEPARTMENT_ID_4 = 14, DEPARTMENT_ID_5 = 25, ADDRESS_ID = 31 WHERE EMPLOYEE_ID = {employeeId}");
 				Assert.That(() => session.Get<Employee>(employeeId), Throws.InstanceOf<ObjectNotFoundException>());
@@ -251,7 +251,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 			statistics.Clear();
 
 			using (var session = OpenSession())
-			using(var transaction = session.BeginTransaction())
+			using (var transaction = session.BeginTransaction())
 			{
 				ExecuteStatement(session, transaction, $"UPDATE EMPLOYEES SET DEPARTMENT_ID_1 = 11, DEPARTMENT_ID_2 = 12, DEPARTMENT_ID_3 = 13, DEPARTMENT_ID_4 = 24, DEPARTMENT_ID_5 = 99999, ADDRESS_ID = 31 WHERE EMPLOYEE_ID = {employeeId}");
 				Assert.That(() => session.Get<Employee>(employeeId), Throws.InstanceOf<ObjectNotFoundByUniqueKeyException>());
@@ -302,7 +302,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 				Assert.That(statistics.PrepareStatementCount, Is.EqualTo(1));
 			}
 		}
-		
+
 		[Test]
 		public void Department2And4AreNull_QueryOver()
 		{

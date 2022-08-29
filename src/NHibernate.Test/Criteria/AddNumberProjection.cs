@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
-using NHibernate.Engine;
 using NHibernate.Criterion;
+using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
@@ -42,12 +42,12 @@ namespace NHibernate.Test.Criteria
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			IType projection = criteriaQuery.GetTypeUsingProjection(criteria, propertyName);
-			return new IType[] {projection};
+			return new IType[] { projection };
 		}
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new TypedValue[] {typedValue};
+			return new TypedValue[] { typedValue };
 		}
 
 		public override bool IsGrouped

@@ -20,13 +20,13 @@ namespace NHibernate.Test.NHSpecificTest.NH2852
 			{
 				var city = new City { Name = "London" };
 				session.Save(city);
-				var address = new Address {City = city, Name = "Tower"};
+				var address = new Address { City = city, Name = "Tower" };
 				session.Save(address);
-				var person = new Person {Address = address, Name = "Bill"};
+				var person = new Person { Address = address, Name = "Bill" };
 				session.Save(person);
-				var child = new Person {Parent = person};
+				var child = new Person { Parent = person };
 				session.Save(child);
-				var grandChild = new Person {Parent = child};
+				var grandChild = new Person { Parent = child };
 				session.Save(grandChild);
 
 				transction.Commit();
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2852
 				transction.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void ThenFetchCanExecute()
 		{

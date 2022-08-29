@@ -5,9 +5,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1408
 		private readonly object[] keys = new object[2];
 		private DbResource resource;
 
-		protected DbResourceKey() {}
+		protected DbResourceKey() { }
 
-		public DbResourceKey(string resourceId) : this(resourceId, null) {}
+		public DbResourceKey(string resourceId) : this(resourceId, null) { }
 
 		public DbResourceKey(string resourceId, string language)
 		{

@@ -30,7 +30,7 @@ namespace NHibernate.Cfg
 			{
 				return false;
 			}
-			return Equals((Hbm2DDLKeyWords)obj);
+			return Equals((Hbm2DDLKeyWords) obj);
 		}
 
 		public bool Equals(string other)

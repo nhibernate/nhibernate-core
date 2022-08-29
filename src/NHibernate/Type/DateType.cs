@@ -49,8 +49,8 @@ namespace NHibernate.Type
 				return false;
 			}
 
-			var date1 = (DateTime)x;
-			var date2 = (DateTime)y;
+			var date1 = (DateTime) x;
+			var date2 = (DateTime) y;
 			if (date1.Equals(date2))
 				return true;
 
@@ -62,7 +62,7 @@ namespace NHibernate.Type
 		/// <inheritdoc />
 		public override int GetHashCode(object x)
 		{
-			var date = (DateTime)x;
+			var date = (DateTime) x;
 			var hashCode = 1;
 			unchecked
 			{
@@ -94,13 +94,13 @@ namespace NHibernate.Type
 
 		/// <inheritdoc />
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect) =>
-			"\'" + ((DateTime)value).ToShortDateString() + "\'";
+			"\'" + ((DateTime) value).ToShortDateString() + "\'";
 
 		// Since v5
 		[Obsolete("Its only parameter, BaseValue, is obsolete.")]
 		public void SetParameterValues(IDictionary<string, string> parameters)
 		{
-			if(parameters == null)
+			if (parameters == null)
 			{
 				return;
 			}

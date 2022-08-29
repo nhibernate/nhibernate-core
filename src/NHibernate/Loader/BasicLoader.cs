@@ -9,12 +9,12 @@ namespace NHibernate.Loader
 {
 	public abstract class BasicLoader : Loader
 	{
-		protected static readonly string[] NoSuffix = {string.Empty};
+		protected static readonly string[] NoSuffix = { string.Empty };
 
 		private IEntityAliases[] descriptors;
 		private ICollectionAliases[] collectionDescriptors;
 
-		public BasicLoader(ISessionFactoryImplementor factory) : base(factory) {}
+		public BasicLoader(ISessionFactoryImplementor factory) : base(factory) { }
 
 		protected override sealed IEntityAliases[] EntityAliases
 		{
@@ -75,7 +75,7 @@ namespace NHibernate.Loader
 		private static bool IsBag(ICollectionPersister collectionPersister)
 		{
 			var type = collectionPersister.CollectionType.GetType();
-			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (GenericBagType<>);
+			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(GenericBagType<>);
 		}
 
 		/// <summary>

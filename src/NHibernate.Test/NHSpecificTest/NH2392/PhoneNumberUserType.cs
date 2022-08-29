@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2392
 
 		public object GetPropertyValue(object component, int property)
 		{
-			PhoneNumber phone = (PhoneNumber)component;
+			PhoneNumber phone = (PhoneNumber) component;
 
 			switch (property)
 			{
@@ -62,14 +62,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2392
 				return null;
 
 			return new PhoneNumber(
-				(int)NHibernateUtil.Int32.NullSafeGet(dr, names[0], session, owner),
-				(string)NHibernateUtil.String.NullSafeGet(dr, names[1], session, owner));
+				(int) NHibernateUtil.Int32.NullSafeGet(dr, names[0], session, owner),
+				(string) NHibernateUtil.String.NullSafeGet(dr, names[1], session, owner));
 		}
 
 		public void NullSafeSet(DbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
 		{
-			object countryCode = value == null ? null : (int?)((PhoneNumber)value).CountryCode;
-			object number = value == null ? null : ((PhoneNumber)value).Number;
+			object countryCode = value == null ? null : (int?) ((PhoneNumber) value).CountryCode;
+			object number = value == null ? null : ((PhoneNumber) value).Number;
 
 			if (settable[0]) NHibernateUtil.Int32.NullSafeSet(cmd, countryCode, index++, session);
 			if (settable[1]) NHibernateUtil.String.NullSafeSet(cmd, number, index, session);

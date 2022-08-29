@@ -42,9 +42,9 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2738
 		[Test]
 		public void DefaultOfWierdEnumIsZero()
 		{
-			Assert.That(Activator.CreateInstance(typeof (WierdEnum)), Is.EqualTo(WierdEnum.Zero));
-			Assert.That(Enum.ToObject(typeof (WierdEnum), 0), Is.EqualTo(WierdEnum.Zero));
-			Assert.That(Enum.GetValues(typeof (WierdEnum)).GetValue(0), Is.EqualTo(WierdEnum.Zero)); // This depends on implementation and can be wrong
+			Assert.That(Activator.CreateInstance(typeof(WierdEnum)), Is.EqualTo(WierdEnum.Zero));
+			Assert.That(Enum.ToObject(typeof(WierdEnum), 0), Is.EqualTo(WierdEnum.Zero));
+			Assert.That(Enum.GetValues(typeof(WierdEnum)).GetValue(0), Is.EqualTo(WierdEnum.Zero)); // This depends on implementation and can be wrong
 		}
 	}
 }

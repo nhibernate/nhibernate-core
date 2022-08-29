@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 		protected override void OnTearDown()
 		{
 			using (ISession s = OpenSession())
-			using(ITransaction tx = s.BeginTransaction())
+			using (ITransaction tx = s.BeginTransaction())
 			{
 				s.Delete("from ClassC");
 				s.Delete("from ClassB");
@@ -22,8 +22,8 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 		public void Test()
 		{
 			int a_id;
-			using(ISession s = OpenSession())
-			using(ITransaction tx = s.BeginTransaction())
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
 			{
 				// Create an A and save it
 				ClassA a = new ClassA();
@@ -50,8 +50,8 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 			Sfi.Evict(typeof(ClassA));
 			Sfi.Evict(typeof(ClassB));
 			Sfi.Evict(typeof(ClassC));
-			
-			using(ISession s = OpenSession())
+
+			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				// Load a so we can use it to load b
@@ -62,18 +62,18 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 
 				tx.Commit();
 			}
-			
-			using(ISession s = OpenSession())
-			using(ITransaction tx = s.BeginTransaction())
+
+			using (ISession s = OpenSession())
+			using (ITransaction tx = s.BeginTransaction())
 			{
 				using (SqlLogSpy sqlLogSpy = new SqlLogSpy())
 				{
-					IList<ClassC> c_list = s.CreateCriteria(typeof (ClassC)).List<ClassC>();
+					IList<ClassC> c_list = s.CreateCriteria(typeof(ClassC)).List<ClassC>();
 					// make sure we initialize B
 					NHibernateUtil.Initialize(c_list[0].B);
 
 					Assert.AreEqual(1, sqlLogSpy.Appender.GetEvents().Length,
-					                "Only one SQL should have been issued");
+									"Only one SQL should have been issued");
 				}
 
 				tx.Commit();

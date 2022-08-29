@@ -1,6 +1,6 @@
+using NHibernate.Criterion;
 using NHibernate.DomainModel;
 using NHibernate.Engine;
-using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 
@@ -69,7 +69,7 @@ namespace NHibernate.Test.ExpressionTest
 		public void ToStringTest()
 		{
 			Assert.AreEqual("(Address is null and Count between 5 and 10)",
-			                _conjunction.ToString());
+							_conjunction.ToString());
 		}
 	}
 }

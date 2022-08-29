@@ -9,7 +9,7 @@ namespace NHibernate
 	[Serializable]
 	public class FKUnmatchingColumnsException : MappingException
 	{
-				/// <summary>
+		/// <summary>
 		/// Initializes a new instance of the <see cref="MappingException"/> class.
 		/// </summary>
 		/// <param name="message">The message that describes the error. </param>

@@ -18,7 +18,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 	[CLSCompliant(false)]
 	public partial class MultiTableUpdateExecutor : AbstractStatementExecutor
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (MultiTableDeleteExecutor));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(MultiTableDeleteExecutor));
 		private readonly IQueryable persister;
 		private readonly SqlString idInsertSelect;
 		private readonly SqlString[] updates;
@@ -133,7 +133,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				catch (DbException e)
 				{
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not insert/select ids for bulk update",
-					                                 idInsertSelect);
+													 idInsertSelect);
 				}
 
 				// Start performing the updates
@@ -183,7 +183,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 
 		protected override IQueryable[] AffectedQueryables
 		{
-			get { return new[] {persister}; }
+			get { return new[] { persister }; }
 		}
 	}
 }

@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1941
 				return string.Empty;
 			}
 
-			return (Sex)enumValue == Sex.Male ? "M" : "F";
+			return (Sex) enumValue == Sex.Male ? "M" : "F";
 		}
 
 		public override object GetInstance(object value)

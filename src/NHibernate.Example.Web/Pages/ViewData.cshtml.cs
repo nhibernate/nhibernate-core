@@ -33,7 +33,7 @@ namespace NHibernate.Example.Web.Pages
 
 		public IActionResult OnPostEdit(int id)
 		{
-			return RedirectToPage(new {editing = id});
+			return RedirectToPage(new { editing = id });
 		}
 
 		public IActionResult OnPostDelete(int id)

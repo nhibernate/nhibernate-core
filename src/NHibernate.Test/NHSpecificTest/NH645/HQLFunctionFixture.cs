@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH645
 				catch (Exception ex)
 				{
 					if (ex.GetType().FullName == "Antlr.Runtime.Tree.RewriteEmptyStreamException" || ex is InvalidCastException)
-							Assert.Fail("The parser think that 'freetext' is a boolean function");
+						Assert.Fail("The parser think that 'freetext' is a boolean function");
 				}
 		}
 

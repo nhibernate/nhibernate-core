@@ -70,8 +70,8 @@ namespace NHibernate.Event.Default
 
 				bool canReplicate =
 					replicationMode.ShouldOverwriteCurrentVersion(entity, realOldVersion,
-					                                              persister.GetVersion(entity),
-					                                              persister.VersionType);
+																  persister.GetVersion(entity),
+																  persister.VersionType);
 
 				if (canReplicate)
 				{
@@ -111,13 +111,13 @@ namespace NHibernate.Event.Default
 			new OnReplicateVisitor(source, id, entity, true).Process(entity, persister);
 
 			source.PersistenceContext.AddEntity(
-				entity, 
+				entity,
 				persister.IsMutable ? Status.Loaded : Status.ReadOnly,
 				null,
 				source.GenerateEntityKey(id, persister),
-				version, 
-				LockMode.None, 
-				true, 
+				version,
+				LockMode.None,
+				true,
 				persister,
 				true);
 

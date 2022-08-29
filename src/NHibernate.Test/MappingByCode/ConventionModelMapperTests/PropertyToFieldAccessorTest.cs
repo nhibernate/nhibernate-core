@@ -104,7 +104,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 			var mapper = new ConventionModelMapper();
 			mapper.Class<MyClass>(mc => mc.Property(x => x.PropertyWithoutField));
 
-			var hbmMapping = mapper.CompileMappingFor(new[] {typeof (MyClass)});
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmProperty = hbmClass.Properties.Single(x => x.Name == "PropertyWithoutField");

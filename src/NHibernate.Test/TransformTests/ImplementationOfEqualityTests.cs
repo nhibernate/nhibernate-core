@@ -12,8 +12,8 @@ namespace NHibernate.Test.TransformTests
 	public class ImplementationOfEqualityTests
 	{
 		private readonly IEnumerable<System.Type> transformerTypes =
-			typeof (IResultTransformer).Assembly.GetTypes()
-									   .Where(t => typeof (IResultTransformer).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
+			typeof(IResultTransformer).Assembly.GetTypes()
+									   .Where(t => typeof(IResultTransformer).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
 									   .ToList();
 
 		[Test]
@@ -35,7 +35,7 @@ namespace NHibernate.Test.TransformTests
 				IResultTransformer transformer1;
 				try
 				{
-					transformer1 = (IResultTransformer)Activator.CreateInstance(transformerType);
+					transformer1 = (IResultTransformer) Activator.CreateInstance(transformerType);
 				}
 				catch (Exception e)
 				{
@@ -44,7 +44,7 @@ namespace NHibernate.Test.TransformTests
 					Console.WriteLine(e);
 					continue;
 				}
-				var transformer2= (IResultTransformer)Activator.CreateInstance(transformerType);
+				var transformer2 = (IResultTransformer) Activator.CreateInstance(transformerType);
 				Assert.That(transformer1, Is.EqualTo(transformer2));
 				Assert.That(transformer1.GetHashCode(), Is.EqualTo(transformer2.GetHashCode()));
 			}
@@ -87,7 +87,7 @@ namespace NHibernate.Test.TransformTests
 			Assert.That(transformer1, Is.EqualTo(transformer2));
 			Assert.That(transformer1.GetHashCode(), Is.EqualTo(transformer2.GetHashCode()));
 
-			Func<IEnumerable<object>, IEnumerable<int>> d3 = x => new [] { 1, 2, 3 };
+			Func<IEnumerable<object>, IEnumerable<int>> d3 = x => new[] { 1, 2, 3 };
 			var transformer3 = new ResultTransformer(d1, d3);
 			Assert.That(transformer1, Is.Not.EqualTo(transformer3));
 			Assert.That(transformer1.GetHashCode(), Is.Not.EqualTo(transformer3.GetHashCode()));

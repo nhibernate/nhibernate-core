@@ -39,8 +39,8 @@ namespace NHibernate.Linq.NestedSelects
 			var memberType = ReflectHelper.GetPropertyOrFieldType(expression.Member);
 
 			if (memberType != null && memberType.IsCollectionType()
-			    && IsChainedFromQuerySourceReference(expression)
-			    && IsMappedCollection(expression.Member))
+				&& IsChainedFromQuerySourceReference(expression)
+				&& IsMappedCollection(expression.Member))
 			{
 				Expressions.Add(expression);
 			}

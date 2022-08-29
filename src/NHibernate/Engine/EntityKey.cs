@@ -95,6 +95,6 @@ namespace NHibernate.Engine
 
 		[Obsolete("IDeserializationCallback interface has no usages and will be removed in a future version")]
 		public void OnDeserialization(object sender)
-		{}
+		{ }
 	}
 }

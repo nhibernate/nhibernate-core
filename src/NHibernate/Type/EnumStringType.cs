@@ -78,14 +78,14 @@ namespace NHibernate.Type
 		/// Initializes a new instance of <see cref="EnumStringType"/>.
 		/// </summary>
 		/// <param name="enumClass">The <see cref="System.Type"/> of the Enum.</param>
-		protected EnumStringType(System.Type enumClass) : this(enumClass, MaxLengthForEnumString) {}
+		protected EnumStringType(System.Type enumClass) : this(enumClass, MaxLengthForEnumString) { }
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="EnumStringType"/>.
 		/// </summary>
 		/// <param name="enumClass">The <see cref="System.Type"/> of the Enum.</param>
 		/// <param name="length">The length of the string that can be written to the column.</param>
-		protected EnumStringType(System.Type enumClass, int length) : base(SqlTypeFactory.GetString(length), enumClass) {}
+		protected EnumStringType(System.Type enumClass, int length) : base(SqlTypeFactory.GetString(length), enumClass) { }
 
 		/// <summary>
 		/// 
@@ -206,7 +206,7 @@ namespace NHibernate.Type
 		private readonly string typeName;
 
 		public EnumStringType()
-			: base(typeof (T))
+			: base(typeof(T))
 		{
 			System.Type type = GetType();
 			typeName = type.FullName + ", " + type.Assembly.GetName().Name;

@@ -1,7 +1,7 @@
 using log4net;
+using log4net.Core;
 using NHibernate.Cfg;
 using NUnit.Framework;
-using log4net.Core;
 
 namespace NHibernate.Test.NHSpecificTest.NH1093
 {
@@ -36,8 +36,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1093
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					s.Save(new SimpleCached {Description = "Simple 1"});
-					s.Save(new SimpleCached {Description = "Simple 2"});
+					s.Save(new SimpleCached { Description = "Simple 1" });
+					s.Save(new SimpleCached { Description = "Simple 2" });
 					tx.Commit();
 				}
 			}

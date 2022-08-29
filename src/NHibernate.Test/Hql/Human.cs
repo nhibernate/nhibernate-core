@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Test.Hql
 {
-	public class Human: Animal
+	public class Human : Animal
 	{
 		private Name _name;
 		public virtual Name Name

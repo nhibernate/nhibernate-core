@@ -41,10 +41,10 @@ namespace NHibernate
 			var value = TypeFactory.GetDefaultTypeFor(type);
 			if (value != null)
 				return value;
-			
+
 			if (type.IsEnum)
-				return (IType) Activator.CreateInstance(typeof (EnumType<>).MakeGenericType(type));
-			
+				return (IType) Activator.CreateInstance(typeof(EnumType<>).MakeGenericType(type));
+
 			if (typeof(IUserType).IsAssignableFrom(type) ||
 				typeof(ICompositeUserType).IsAssignableFrom(type))
 			{
@@ -400,7 +400,7 @@ namespace NHibernate
 			}
 			if (proxy.IsProxy())
 			{
-				((INHibernateProxy)proxy).HibernateLazyInitializer.Initialize();
+				((INHibernateProxy) proxy).HibernateLazyInitializer.Initialize();
 			}
 			else if (proxy is ILazyInitializedCollection coll)
 			{
@@ -422,7 +422,7 @@ namespace NHibernate
 		{
 			if (proxy.IsProxy())
 			{
-				return !((INHibernateProxy)proxy).HibernateLazyInitializer.IsUninitialized;
+				return !((INHibernateProxy) proxy).HibernateLazyInitializer.IsUninitialized;
 			}
 			else if (proxy is ILazyInitializedCollection coll)
 			{
@@ -449,7 +449,7 @@ namespace NHibernate
 		{
 			if (proxy.IsProxy())
 			{
-				return ((INHibernateProxy)proxy).HibernateLazyInitializer.GetImplementation().GetType();
+				return ((INHibernateProxy) proxy).HibernateLazyInitializer.GetImplementation().GetType();
 			}
 			else
 			{
@@ -574,7 +574,7 @@ namespace NHibernate
 			object entity;
 			if (proxy.IsProxy())
 			{
-				ILazyInitializer li = ((INHibernateProxy)proxy).HibernateLazyInitializer;
+				ILazyInitializer li = ((INHibernateProxy) proxy).HibernateLazyInitializer;
 				if (li.IsUninitialized)
 				{
 					return false;

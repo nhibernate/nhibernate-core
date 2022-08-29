@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using NUnit.Framework;
 using NHibernate.Hql.Ast.ANTLR;
+using NUnit.Framework;
 
 namespace NHibernate.Test.QueryTest
 {
@@ -13,7 +13,7 @@ namespace NHibernate.Test.QueryTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"Simple.hbm.xml"}; }
+			get { return new string[] { "Simple.hbm.xml" }; }
 		}
 
 		[Test]
@@ -29,7 +29,7 @@ namespace NHibernate.Test.QueryTest
 				q.SetAnsiString("Name", "Fred");
 
 				// Try to execute it
-				Assert.Throws<QueryException>(() =>q.List());
+				Assert.Throws<QueryException>(() => q.List());
 			}
 			finally
 			{
@@ -57,7 +57,7 @@ namespace NHibernate.Test.QueryTest
 				q.SetParameter("pName", null);
 				Assert.Fail("should throw if can't guess the type of parameter");
 			}
-			catch (ArgumentNullException) {}
+			catch (ArgumentNullException) { }
 			finally
 			{
 				s.Close();

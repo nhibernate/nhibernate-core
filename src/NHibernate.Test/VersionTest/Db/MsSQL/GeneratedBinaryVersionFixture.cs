@@ -29,7 +29,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 		{
 			// Note : if you are using identity-style strategy the value of version
 			// is available inmediately after save.
-			var e = new SimpleVersioned {Something = "something"};
+			var e = new SimpleVersioned { Something = "something" };
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction tx = s.BeginTransaction())
@@ -71,7 +71,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					var e = new SimpleVersioned {Something = "something"};
+					var e = new SimpleVersioned { Something = "something" };
 					savedId = s.Save(e);
 					tx.Commit();
 				}
@@ -82,7 +82,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 		[Test]
 		public void ShouldCheckStaleState()
 		{
-			var versioned = new SimpleVersioned {Something = "original string"};
+			var versioned = new SimpleVersioned { Something = "original string" };
 
 			try
 			{

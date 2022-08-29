@@ -865,19 +865,19 @@ namespace NHibernate.Test.Events.Collections
 		}
 
 		protected void CheckResult(CollectionListeners listeners, CollectionListeners.IListener listenerExpected,
-		                           IParentWithCollection parent, int index)
+								   IParentWithCollection parent, int index)
 		{
 			CheckResult(listeners, listenerExpected, parent, parent.Children, index);
 		}
 
 		protected void CheckResult(CollectionListeners listeners, CollectionListeners.IListener listenerExpected,
-		                           IEntity ownerExpected, object collExpected, int index)
+								   IEntity ownerExpected, object collExpected, int index)
 		{
 			Assert.That(listeners.ListenersCalled[index], Is.SameAs(listenerExpected));
 			Assert.That(listeners.Events[index].AffectedOwnerOrNull, Is.SameAs(ownerExpected));
 			Assert.That(listeners.Events[index].AffectedOwnerIdOrNull, Is.EqualTo(ownerExpected.Id));
 			Assert.That(listeners.Events[index].GetAffectedOwnerEntityName(),
-			            Is.EqualTo(ownerExpected.GetType().FullName));
+						Is.EqualTo(ownerExpected.GetType().FullName));
 			Assert.That(listeners.Events[index].Collection, Is.SameAs(collExpected));
 		}
 
@@ -888,7 +888,7 @@ namespace NHibernate.Test.Events.Collections
 		}
 
 		protected void CheckResult(CollectionListeners listeners, CollectionListeners.IListener listenerExpected,
-		                           ChildWithBidirectionalManyToMany child, int index)
+								   ChildWithBidirectionalManyToMany child, int index)
 		{
 			CheckResult(listeners, listenerExpected, child, child.Parents, index);
 		}

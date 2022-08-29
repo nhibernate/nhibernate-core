@@ -86,9 +86,9 @@ namespace NHibernate.Cache
 				return false;
 			}
 			return Version == null ?
-			       UnlockTimestamp < txTimestamp :
-			       comparator.Compare(Version, newVersion) < 0;
-				//by requiring <, we rely on lock timeout in the case of an unsuccessful update!
+				   UnlockTimestamp < txTimestamp :
+				   comparator.Compare(Version, newVersion) < 0;
+			//by requiring <, we rely on lock timeout in the case of an unsuccessful update!
 		}
 
 		/// <summary>
@@ -159,10 +159,10 @@ namespace NHibernate.Cache
 		public override string ToString()
 		{
 			return "CacheLock{id=" + Id +
-			       ",version=" + Version +
-			       ",multiplicity=" + Multiplicity +
-			       ",unlockTimestamp=" + UnlockTimestamp +
-			       "}";
+				   ",version=" + Version +
+				   ",multiplicity=" + Multiplicity +
+				   ",unlockTimestamp=" + UnlockTimestamp +
+				   "}";
 		}
 	}
 }

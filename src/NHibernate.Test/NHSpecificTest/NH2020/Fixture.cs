@@ -1,9 +1,9 @@
-using NUnit.Framework;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Test.ExceptionsTest;
-using NHibernate.Engine;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2020
 {
@@ -14,8 +14,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2020
 		{
 			configuration.SetProperty(Cfg.Environment.BatchSize, "10");
 
-			configuration.SetProperty(	Cfg.Environment.SqlExceptionConverter,
-										typeof (MSSQLExceptionConverterExample).AssemblyQualifiedName);
+			configuration.SetProperty(Cfg.Environment.SqlExceptionConverter,
+										typeof(MSSQLExceptionConverterExample).AssemblyQualifiedName);
 		}
 
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
@@ -45,8 +45,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2020
 		{
 			long oneId;
 
-			using(var s = OpenSession())
-			using(var tx = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
 				var one = new One();
 				s.Save(one);
@@ -59,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2020
 				oneId = one.Id;
 			}
 
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var one = s.Load<One>(oneId);

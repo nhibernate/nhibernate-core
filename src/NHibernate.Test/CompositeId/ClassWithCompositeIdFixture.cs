@@ -24,7 +24,7 @@ namespace NHibernate.Test.CompositeId
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"CompositeId.ClassWithCompositeId.hbm.xml"}; }
+			get { return new string[] { "CompositeId.ClassWithCompositeId.hbm.xml" }; }
 		}
 
 		protected override void OnSetUp()
@@ -80,16 +80,16 @@ namespace NHibernate.Test.CompositeId
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-			    theClass = new ClassWithCompositeId(id);
-			    theClass.OneProperty = 5;
+				theClass = new ClassWithCompositeId(id);
+				theClass.OneProperty = 5;
 
-			    theSecondClass = new ClassWithCompositeId(secondId);
-			    theSecondClass.OneProperty = 10;
+				theSecondClass = new ClassWithCompositeId(secondId);
+				theSecondClass.OneProperty = 10;
 
-			    s.Save(theClass);
-			    s.Save(theSecondClass);
+				s.Save(theClass);
+				s.Save(theSecondClass);
 
-			    t.Commit();
+				t.Commit();
 			}
 
 			// verify they were inserted and test the SELECT
@@ -102,8 +102,8 @@ namespace NHibernate.Test.CompositeId
 				Assert.AreEqual(id, theClass2.Id);
 
 				IList results2 = s2.CreateCriteria(typeof(ClassWithCompositeId))
-				                   .Add(Expression.Eq("Id", secondId))
-				                   .List();
+								   .Add(Expression.Eq("Id", secondId))
+								   .List();
 
 				Assert.AreEqual(1, results2.Count);
 				theSecondClass2 = (ClassWithCompositeId) results2[0];
@@ -161,8 +161,8 @@ namespace NHibernate.Test.CompositeId
 				}
 
 				IList results = s4.CreateCriteria(typeof(ClassWithCompositeId))
-				                  .Add(Expression.Eq("Id", secondId))
-				                  .List();
+								  .Add(Expression.Eq("Id", secondId))
+								  .List();
 
 				Assert.AreEqual(0, results.Count);
 			}
@@ -237,8 +237,8 @@ namespace NHibernate.Test.CompositeId
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save(new ClassWithCompositeId(id1) {OneProperty = 5});
-				s.Save(new ClassWithCompositeId(id2) {OneProperty = 10});
+				s.Save(new ClassWithCompositeId(id1) { OneProperty = 5 });
+				s.Save(new ClassWithCompositeId(id2) { OneProperty = 10 });
 				s.Save(new ClassWithCompositeId(id3));
 
 				t.Commit();
@@ -265,11 +265,11 @@ namespace NHibernate.Test.CompositeId
 					() =>
 					{
 						Assert.That(results1.Count, Is.EqualTo(2), "in multiple ids");
-						Assert.That(results1.Select(x => x.Id), Is.EquivalentTo(new[] {id1, id2}), "in multiple ids");
+						Assert.That(results1.Select(x => x.Id), Is.EquivalentTo(new[] { id1, id2 }), "in multiple ids");
 						Assert.That(results2.Count, Is.EqualTo(1), "in single id");
 						Assert.That(results2.Single().Id, Is.EqualTo(id1), "in single id");
 						Assert.That(results3.Count, Is.EqualTo(2), "not in single id");
-						Assert.That(results3.Select(x => x.Id), Is.EquivalentTo(new[] {id2, id3}), "not in single id");
+						Assert.That(results3.Select(x => x.Id), Is.EquivalentTo(new[] { id2, id3 }), "not in single id");
 						Assert.That(results4.Count, Is.EqualTo(1), "not in multiple ids");
 						Assert.That(results4.Single().Id, Is.EqualTo(id3), "not in multiple ids");
 					});
@@ -281,15 +281,15 @@ namespace NHibernate.Test.CompositeId
 		{
 			if (!TestDialect.SupportsRowValueConstructorSyntax)
 			{
-					Assert.Ignore();
+				Assert.Ignore();
 			}
 
 			// insert the new objects
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save(new ClassWithCompositeId(id) {OneProperty = 5});
-				s.Save(new ClassWithCompositeId(secondId) {OneProperty = 10});
+				s.Save(new ClassWithCompositeId(id) { OneProperty = 5 });
+				s.Save(new ClassWithCompositeId(secondId) { OneProperty = 10 });
 				s.Save(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime)));
 
 				t.Commit();
@@ -312,8 +312,8 @@ namespace NHibernate.Test.CompositeId
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save(new ClassWithCompositeId(id) {OneProperty = 5});
-				s.Save(new ClassWithCompositeId(secondId) {OneProperty = 10});
+				s.Save(new ClassWithCompositeId(id) { OneProperty = 5 });
+				s.Save(new ClassWithCompositeId(secondId) { OneProperty = 10 });
 				s.Save(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime)));
 
 				t.Commit();
@@ -338,8 +338,8 @@ namespace NHibernate.Test.CompositeId
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save(new ClassWithCompositeId(id) {OneProperty = 5});
-				s.Save(new ClassWithCompositeId(secondId) {OneProperty = 10});
+				s.Save(new ClassWithCompositeId(id) { OneProperty = 5 });
+				s.Save(new ClassWithCompositeId(secondId) { OneProperty = 10 });
 				s.Save(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime)));
 
 				t.Commit();
@@ -406,8 +406,8 @@ namespace NHibernate.Test.CompositeId
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save(new ClassWithCompositeId(id1) {OneProperty = 5});
-				s.Save(new ClassWithCompositeId(id2) {OneProperty = 10});
+				s.Save(new ClassWithCompositeId(id1) { OneProperty = 5 });
+				s.Save(new ClassWithCompositeId(id2) { OneProperty = 10 });
 				s.Save(new ClassWithCompositeId(id3));
 
 				t.Commit();
@@ -415,22 +415,22 @@ namespace NHibernate.Test.CompositeId
 
 			using (var s = OpenSession())
 			{
-				var results1 = s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] {id1, id2}).List();
-				var results2 = s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] {id1}).List();
-				var results3 = s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).Not.IsIn(new[] {id1, id2}).List();
-				var results4 = s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).Not.IsIn(new[] {id1}).List();
+				var results1 = s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] { id1, id2 }).List();
+				var results2 = s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] { id1 }).List();
+				var results3 = s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).Not.IsIn(new[] { id1, id2 }).List();
+				var results4 = s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).Not.IsIn(new[] { id1 }).List();
 
 				Assert.Multiple(
 					() =>
 					{
 						Assert.That(results1.Count, Is.EqualTo(2), "in multiple ids");
-						Assert.That(results1.Select(r => r.Id), Is.EquivalentTo(new[] {id1, id2}), "in multiple ids");
+						Assert.That(results1.Select(r => r.Id), Is.EquivalentTo(new[] { id1, id2 }), "in multiple ids");
 						Assert.That(results2.Count, Is.EqualTo(1), "in single id");
-						Assert.That(results2.Select(r => r.Id), Is.EquivalentTo(new[] {id1}), "in single id");
+						Assert.That(results2.Select(r => r.Id), Is.EquivalentTo(new[] { id1 }), "in single id");
 						Assert.That(results3.Count, Is.EqualTo(1), "not in multiple ids");
-						Assert.That(results3.Select(r => r.Id), Is.EquivalentTo(new[] {id3}), "not in multiple ids");
+						Assert.That(results3.Select(r => r.Id), Is.EquivalentTo(new[] { id3 }), "not in multiple ids");
 						Assert.That(results4.Count, Is.EqualTo(2), "not in single id");
-						Assert.That(results4.Select(r => r.Id), Is.EquivalentTo(new[] {id2, id3}), "not in single id");
+						Assert.That(results4.Select(r => r.Id), Is.EquivalentTo(new[] { id2, id3 }), "not in single id");
 					});
 			}
 		}

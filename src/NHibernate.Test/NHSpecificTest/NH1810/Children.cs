@@ -94,7 +94,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentChildren(session, (ISet<Child>)collection);
+			return new PersistentChildren(session, (ISet<Child>) collection);
 		}
 
 		protected override object Instantiate()
@@ -112,31 +112,31 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 
 		public virtual IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentGenericSet<T>(session, (ISet<T>)collection);
+			return new PersistentGenericSet<T>(session, (ISet<T>) collection);
 		}
 
 		public IEnumerable GetElements(object collection)
 		{
-			return (IEnumerable)collection;
+			return (IEnumerable) collection;
 		}
 
 		public bool Contains(object collection, object entity)
 		{
-			return ((ISet<T>)collection).Contains((T)entity);
+			return ((ISet<T>) collection).Contains((T) entity);
 		}
 
 		public object IndexOf(object collection, object entity)
 		{
-			return new List<T>((ISet<T>)collection).IndexOf((T)entity);
+			return new List<T>((ISet<T>) collection).IndexOf((T) entity);
 		}
 
 		public object ReplaceElements(object original, object target, ICollectionPersister persister, object owner, IDictionary copyCache, ISessionImplementor session)
 		{
-			var result = (ISet<T>)target;
+			var result = (ISet<T>) target;
 			result.Clear();
 
-			foreach (var o in (IEnumerable)original)
-				result.Add((T)o);
+			foreach (var o in (IEnumerable) original)
+				result.Add((T) o);
 
 			return result;
 		}

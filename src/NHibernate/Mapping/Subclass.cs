@@ -75,12 +75,12 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public override IEnumerable<Table> TableClosureIterator
 		{
-			get { return Superclass.TableClosureIterator.Concat(new[] {Table}); }
+			get { return Superclass.TableClosureIterator.Concat(new[] { Table }); }
 		}
 
 		public override IEnumerable<IKeyValue> KeyClosureIterator
 		{
-			get { return Superclass.KeyClosureIterator.Concat(new[] {Key}); }
+			get { return Superclass.KeyClosureIterator.Concat(new[] { Key }); }
 		}
 
 		/// <summary>
@@ -159,14 +159,15 @@ namespace NHibernate.Mapping
 
 		public override IDictionary<string, string> FilterMap
 		{
-			get {
-                var superclassFilters = Superclass.FilterMap;
-                var subclassFilters = base.FilterMap;
+			get
+			{
+				var superclassFilters = Superclass.FilterMap;
+				var subclassFilters = base.FilterMap;
 
-                return superclassFilters.Union(
-                        subclassFilters
-                ).ToDictionary(k => k.Key, v => v.Value);
-            }
+				return superclassFilters.Union(
+						subclassFilters
+				).ToDictionary(k => k.Key, v => v.Value);
+			}
 		}
 
 		public override IDictionary<EntityMode, string> TuplizerMap

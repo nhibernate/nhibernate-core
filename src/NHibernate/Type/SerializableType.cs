@@ -112,7 +112,7 @@ namespace NHibernate.Type
 		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
-			return FromBytes((byte[])binaryType.FromStringValue(xml));
+			return FromBytes((byte[]) binaryType.FromStringValue(xml));
 		}
 
 		/// <summary></summary>
@@ -121,7 +121,7 @@ namespace NHibernate.Type
 			get
 			{
 				return serializableClass == typeof(ISerializable) ? "serializable" : serializableClass.FullName;
-			} 
+			}
 		}
 
 		/// <summary>

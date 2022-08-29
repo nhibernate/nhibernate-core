@@ -6,7 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 {
 	[Explicit("Demonstration of not viability")]
 	[TestFixture]
-	public class CheckViability: BugTestCase
+	public class CheckViability : BugTestCase
 	{
 		public class FullInitializedRetrievedEntity : IDisposable
 		{
@@ -59,18 +59,18 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 		{
 			using (var scenario = new FullInitializedRetrievedEntity(Sfi))
 			{
-				((IPersistentCollection)scenario.Entity.Children).Owner = null;
-				((IPersistentCollection)scenario.Entity.Components).Owner = null;
-				((IPersistentCollection)scenario.Entity.Elements).Owner = null;
+				((IPersistentCollection) scenario.Entity.Children).Owner = null;
+				((IPersistentCollection) scenario.Entity.Components).Owner = null;
+				((IPersistentCollection) scenario.Entity.Elements).Owner = null;
 
 				// When I reassociate the collections the Owner has value
 				using (var session = OpenSession())
 				using (var tran = session.BeginTransaction())
 				{
-					var merged = (MyClass)session.Merge(scenario.Entity);
-					Assert.That(((IPersistentCollection)merged.Children).Owner, Is.Not.Null);
-					Assert.That(((IPersistentCollection)merged.Components).Owner, Is.Not.Null);
-					Assert.That(((IPersistentCollection)merged.Elements).Owner, Is.Not.Null);
+					var merged = (MyClass) session.Merge(scenario.Entity);
+					Assert.That(((IPersistentCollection) merged.Children).Owner, Is.Not.Null);
+					Assert.That(((IPersistentCollection) merged.Components).Owner, Is.Not.Null);
+					Assert.That(((IPersistentCollection) merged.Elements).Owner, Is.Not.Null);
 					tran.Commit();
 				}
 			}
@@ -81,9 +81,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 		{
 			using (var scenario = new FullInitializedRetrievedEntity(Sfi))
 			{
-				((IPersistentCollection)scenario.Entity.Children).Owner = null;
-				((IPersistentCollection)scenario.Entity.Components).Owner = null;
-				((IPersistentCollection)scenario.Entity.Elements).Owner = null;
+				((IPersistentCollection) scenario.Entity.Children).Owner = null;
+				((IPersistentCollection) scenario.Entity.Components).Owner = null;
+				((IPersistentCollection) scenario.Entity.Elements).Owner = null;
 
 				using (var session = OpenSession())
 				using (var tran = session.BeginTransaction())
@@ -114,9 +114,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 		{
 			using (var scenario = new FullInitializedRetrievedEntity(Sfi))
 			{
-				((IPersistentCollection)scenario.Entity.Children).Owner = null;
-				((IPersistentCollection)scenario.Entity.Components).Owner = null;
-				((IPersistentCollection)scenario.Entity.Elements).Owner = null;
+				((IPersistentCollection) scenario.Entity.Children).Owner = null;
+				((IPersistentCollection) scenario.Entity.Components).Owner = null;
+				((IPersistentCollection) scenario.Entity.Elements).Owner = null;
 
 				using (var session = OpenSession())
 				using (var tran = session.BeginTransaction())
@@ -146,9 +146,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 		{
 			using (var scenario = new FullInitializedRetrievedEntity(Sfi))
 			{
-				((IPersistentCollection)scenario.Entity.Children).Owner = null;
-				((IPersistentCollection)scenario.Entity.Components).Owner = null;
-				((IPersistentCollection)scenario.Entity.Elements).Owner = null;
+				((IPersistentCollection) scenario.Entity.Children).Owner = null;
+				((IPersistentCollection) scenario.Entity.Components).Owner = null;
+				((IPersistentCollection) scenario.Entity.Elements).Owner = null;
 
 				using (var session = OpenSession())
 				using (var tran = session.BeginTransaction())
@@ -178,9 +178,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1323
 		{
 			using (var scenario = new FullInitializedRetrievedEntity(Sfi))
 			{
-				((IPersistentCollection)scenario.Entity.Children).Owner = null;
-				((IPersistentCollection)scenario.Entity.Components).Owner = null;
-				((IPersistentCollection)scenario.Entity.Elements).Owner = null;
+				((IPersistentCollection) scenario.Entity.Children).Owner = null;
+				((IPersistentCollection) scenario.Entity.Components).Owner = null;
+				((IPersistentCollection) scenario.Entity.Elements).Owner = null;
 
 				using (var session = OpenSession())
 				using (var tran = session.BeginTransaction())

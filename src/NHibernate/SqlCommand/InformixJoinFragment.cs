@@ -40,7 +40,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
-		                             SqlString on)
+									 SqlString on)
 		{
 			//arbitrary on clause ignored!!
 			AddJoin(tableName, alias, fkColumns, pkColumns, joinType);

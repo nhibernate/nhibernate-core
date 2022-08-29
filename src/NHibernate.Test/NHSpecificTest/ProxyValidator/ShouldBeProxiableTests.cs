@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 	[TestFixture]
 	public class ShouldBeProxiableTests
 	{
-		private class MyClass: IDisposable
+		private class MyClass : IDisposable
 		{
 			public void Dispose()
 			{
@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 
 		private class NoVirtualMethods
 		{
-			protected void AProtected() {  }
+			protected void AProtected() { }
 			private void APrivate() { }
 			public void APublic() { }
 			internal void AInternal() { }
@@ -48,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		public void WhenProtectedNoVirtualPropertyThenShouldntBeProxiable()
 		{
 			var prop = typeof(ProtectedNoVirtualProperty).GetProperty("Aprop", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-			Assert.That(prop.ShouldBeProxiable(), Is.False);			
+			Assert.That(prop.ShouldBeProxiable(), Is.False);
 		}
 
 		[Test]

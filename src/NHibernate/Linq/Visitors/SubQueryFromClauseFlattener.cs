@@ -41,12 +41,12 @@ namespace NHibernate.Linq.Visitors
 
 		private static bool CheckFlattenable(QueryModel subQueryModel)
 		{
-			if (subQueryModel.BodyClauses.OfType<OrderByClause>().Any()) 
+			if (subQueryModel.BodyClauses.OfType<OrderByClause>().Any())
 				return false;
 
-			if (subQueryModel.ResultOperators.Count == 0) 
+			if (subQueryModel.ResultOperators.Count == 0)
 				return true;
-			
+
 			return HasJustAllFlattenableOperator(subQueryModel.ResultOperators);
 		}
 
@@ -94,7 +94,7 @@ namespace NHibernate.Linq.Visitors
 
 		private static void InsertBodyClauses(IEnumerable<IBodyClause> bodyClauses, QueryModel queryModel, int destinationIndex)
 		{
-			foreach (var bodyClause in  bodyClauses)
+			foreach (var bodyClause in bodyClauses)
 			{
 				queryModel.BodyClauses.Insert(destinationIndex, bodyClause);
 				++destinationIndex;

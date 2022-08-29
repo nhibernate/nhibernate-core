@@ -55,7 +55,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Reversed.Bidirectiona
 				Assert.AreEqual(1, empList.Count);
 
 				Employee emp = empList[0];
-				Assert.NotNull(emp.Info );
+				Assert.NotNull(emp.Info);
 
 				empId = emp.Id;
 				emp.Info = null;
@@ -69,7 +69,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Reversed.Bidirectiona
 				var emp = s.Get<Employee>(empId);
 				Assert.IsNull(emp.Info);
 				var empInfoList = s.CreateQuery("from EmployeeInfo").List<EmployeeInfo>();
-				Assert.AreEqual( 0, empInfoList.Count);
+				Assert.AreEqual(0, empInfoList.Count);
 
 				var empList = s.CreateQuery("from Employee").List<Employee>();
 				Assert.AreEqual(1, empList.Count);
@@ -84,7 +84,7 @@ namespace NHibernate.Test.Cascade.OneToOneCascadeDelete.Fk.Reversed.Bidirectiona
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"Cascade.OneToOneCascadeDelete.Fk.Reversed.Bidirectional.Mappings.hbm.xml"}; }
+			get { return new[] { "Cascade.OneToOneCascadeDelete.Fk.Reversed.Bidirectional.Mappings.hbm.xml" }; }
 		}
 	}
 

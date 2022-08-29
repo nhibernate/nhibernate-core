@@ -25,7 +25,7 @@ namespace NHibernate.Util
 		private LRUMap cache;
 
 		public SimpleMRUCache()
-			: this(DefaultStrongRefCount) {}
+			: this(DefaultStrongRefCount) { }
 
 		public SimpleMRUCache(int strongReferenceCount)
 		{

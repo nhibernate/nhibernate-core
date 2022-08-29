@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmId: AbstractDecoratable, IColumnsMapping, ITypeMapping
+	public partial class HbmId : AbstractDecoratable, IColumnsMapping, ITypeMapping
 	{
 		#region Implementation of IColumnsMapping
 

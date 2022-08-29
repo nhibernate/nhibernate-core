@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmElement: IColumnsMapping, IFormulasMapping, ITypeMapping
+	public partial class HbmElement : IColumnsMapping, IFormulasMapping, ITypeMapping
 	{
 		#region Implementation of IColumnsMapping
 
@@ -27,16 +27,16 @@ namespace NHibernate.Cfg.MappingSchema
 			{
 				yield return
 					new HbmColumn
-						{
-							name = column,
-							length = length,
-							scale = scale,
-							precision = precision,
-							notnull = notnull,
-							notnullSpecified = true,
-							unique = unique,
-							uniqueSpecified = true,
-						};
+					{
+						name = column,
+						length = length,
+						scale = scale,
+						precision = precision,
+						notnull = notnull,
+						notnullSpecified = true,
+						unique = unique,
+						uniqueSpecified = true,
+					};
 			}
 		}
 

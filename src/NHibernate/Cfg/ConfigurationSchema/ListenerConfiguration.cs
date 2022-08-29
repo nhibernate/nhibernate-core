@@ -75,7 +75,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			get { return clazz; }
 		}
 
-		private ListenerType type= ListenerType.NotValidType;
+		private ListenerType type = ListenerType.NotValidType;
 		/// <summary>
 		/// The listener type.
 		/// </summary>

@@ -39,7 +39,7 @@ namespace NHibernate.Test.Hql
 
 			ft =
 				new SQLFunctionTemplate(NHibernateUtil.String,
-				                        "replace( replace( rtrim( replace( replace( ?1, ' ', '${space}$' ), ?2, ' ' ) ), ' ', ?2 ), '${space}$', ' ' )");
+										"replace( replace( rtrim( replace( replace( ?1, ' ', '${space}$' ), ?2, ' ' ) ), ' ', ?2 ), '${space}$', ' ' )");
 			args.Add("'param1  '");
 			args.Add("'param2 ab '");
 			Assert.AreEqual(
@@ -65,9 +65,9 @@ namespace NHibernate.Test.Hql
 			args.Add(125.6D);
 			args.Add(0910.123456m);
 			string expected = string.Format("{0} {1} {2}",
-			                                DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo),
-			                                (125.6D).ToString(NumberFormatInfo.InvariantInfo),
-			                                (0910.123456m).ToString(NumberFormatInfo.InvariantInfo));
+											DateTime.Today.ToString(DateTimeFormatInfo.InvariantInfo),
+											(125.6D).ToString(NumberFormatInfo.InvariantInfo),
+											(0910.123456m).ToString(NumberFormatInfo.InvariantInfo));
 			Assert.AreEqual(expected, ft.Render(args, factoryImpl).ToString());
 		}
 

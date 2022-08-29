@@ -93,7 +93,7 @@ namespace NHibernate.Action
 			IPreCollectionUpdateEventListener[] preListeners = Session.Listeners.PreCollectionUpdateEventListeners;
 			if (preListeners.Length > 0)
 			{
-				PreCollectionUpdateEvent preEvent = new PreCollectionUpdateEvent(Persister, Collection, (IEventSource)Session);
+				PreCollectionUpdateEvent preEvent = new PreCollectionUpdateEvent(Persister, Collection, (IEventSource) Session);
 				for (int i = 0; i < preListeners.Length; i++)
 				{
 					preListeners[i].OnPreUpdateCollection(preEvent);
@@ -106,7 +106,7 @@ namespace NHibernate.Action
 			IPostCollectionUpdateEventListener[] postListeners = Session.Listeners.PostCollectionUpdateEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostCollectionUpdateEvent postEvent = new PostCollectionUpdateEvent(Persister, Collection, (IEventSource)Session);
+				PostCollectionUpdateEvent postEvent = new PostCollectionUpdateEvent(Persister, Collection, (IEventSource) Session);
 				for (int i = 0; i < postListeners.Length; i++)
 				{
 					postListeners[i].OnPostUpdateCollection(postEvent);

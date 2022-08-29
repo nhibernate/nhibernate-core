@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmDynamicComponent: AbstractDecoratable, IEntityPropertyMapping, IComponentMapping
+	public partial class HbmDynamicComponent : AbstractDecoratable, IEntityPropertyMapping, IComponentMapping
 	{
 		#region Implementation of IEntityPropertyMapping
 

@@ -7,7 +7,7 @@ namespace NHibernate.Test.GeneratedTest
 	[TestFixture]
 	public abstract class AbstractGeneratedPropertyTest : TestCase
 	{
-		protected override string  MappingsAssembly
+		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
 		}

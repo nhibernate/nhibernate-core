@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 	using Environment = NHibernate.Cfg.Environment;
 
 	[TestFixture]
-	public class Fixture:BugTestCase
+	public class Fixture : BugTestCase
 	{
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1850
 				session.Flush();
 
 				var wholeLog = spy.GetWholeLog();
-				var lines = wholeLog.Split(new[]{System.Environment.NewLine},StringSplitOptions.RemoveEmptyEntries);
+				var lines = wholeLog.Split(new[] { System.Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 				int batches = 0;
 				foreach (var line in lines)
 				{

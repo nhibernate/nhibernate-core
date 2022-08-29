@@ -38,10 +38,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3565
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity {Name = "Bob"};
+				var e1 = new Entity { Name = "Bob" };
 				session.Save(e1);
 
-				var e2 = new Entity {Name = "Sally"};
+				var e2 = new Entity { Name = "Sally" };
 				session.Save(e2);
 
 				transaction.Commit();
@@ -66,8 +66,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3565
 			using (var session = OpenSession())
 			{
 				var result = from e in session.Query<Entity>()
-							where NHibernate.Linq.SqlMethods.Like(e.Name, "Bob")
-							select e;
+							 where NHibernate.Linq.SqlMethods.Like(e.Name, "Bob")
+							 select e;
 
 				Assert.That(result.ToList(), Has.Count.EqualTo(1));
 				Assert.That(logSpy.GetWholeLog(), Does.Contain("Type: AnsiString"));
@@ -82,8 +82,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3565
 			using (var session = OpenSession())
 			{
 				var result = from e in session.Query<Entity>()
-							where e.Name.Contains("Bob")
-							select e;
+							 where e.Name.Contains("Bob")
+							 select e;
 
 				Assert.That(result.ToList(), Has.Count.EqualTo(1));
 				Assert.That(logSpy.GetWholeLog(), Does.Contain("Type: AnsiString"));
@@ -98,8 +98,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3565
 			using (var session = OpenSession())
 			{
 				var result = from e in session.Query<Entity>()
-							where e.Name.StartsWith("Bob")
-							select e;
+							 where e.Name.StartsWith("Bob")
+							 select e;
 
 				Assert.That(result.ToList(), Has.Count.EqualTo(1));
 				Assert.That(logSpy.GetWholeLog(), Does.Contain("Type: AnsiString"));

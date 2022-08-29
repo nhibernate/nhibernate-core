@@ -10,8 +10,8 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 	public class QueryOverCacheableTests : CriteriaNorthwindReadonlyTestCase
 	{
 		//Just for discoverability
-		private class CriteriaCacheableTest{}
-		
+		private class CriteriaCacheableTest { }
+
 		protected override void Configure(Configuration config)
 		{
 			config.SetProperty(Environment.UseQueryCache, "true");
@@ -255,7 +255,7 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 					.Future()
 					.ToList()
 					.First();
-			
+
 			AssertFetchedOrder(order);
 
 			Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(0), "Unexpected execution count");

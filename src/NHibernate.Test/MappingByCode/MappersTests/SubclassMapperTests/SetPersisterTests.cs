@@ -13,7 +13,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.SubclassMapperTests
 			public int Id { get; set; }
 		}
 
-		private class HineritedSimple: EntitySimple
+		private class HineritedSimple : EntitySimple
 		{
 		}
 

@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.DialectTest.SchemaTests
 {
 	[TestFixture]
-	public class NullInUniqueFixture: TestCaseMappingByCode
+	public class NullInUniqueFixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
@@ -46,9 +46,9 @@ namespace NHibernate.Test.DialectTest.SchemaTests
 			using (var transaction = session.BeginTransaction())
 			{
 				session.Save(new Entity { Name1 = "1" });
-				session.Save(new Entity { Name = "N", Name1 = "1", Name2 = "2"});
-				session.Save(new Entity { Name = "Na", Name1 = "2", Name2 = "1"});
-				session.Save(new Entity { Name = "Nam", Name1 = "2"});
+				session.Save(new Entity { Name = "N", Name1 = "1", Name2 = "2" });
+				session.Save(new Entity { Name = "Na", Name1 = "2", Name2 = "1" });
+				session.Save(new Entity { Name = "Nam", Name1 = "2" });
 				transaction.Commit();
 			}
 		}

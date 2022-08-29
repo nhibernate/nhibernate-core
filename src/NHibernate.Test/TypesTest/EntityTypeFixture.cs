@@ -16,7 +16,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Compare()
 		{
-			EntityType type = (EntityType) NHibernateUtil.Entity(typeof (EntityClass));
+			EntityType type = (EntityType) NHibernateUtil.Entity(typeof(EntityClass));
 
 			EntityClass a = new EntityClass(1);
 			EntityClass b = new EntityClass(2);
@@ -39,7 +39,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void Equals()
 		{
-			EntityType type = (EntityType) NHibernateUtil.Entity(typeof (EntityClass));
+			EntityType type = (EntityType) NHibernateUtil.Entity(typeof(EntityClass));
 
 			EntityClass a = new EntityClass(1);
 			EntityClass b = new EntityClass(2);

@@ -90,7 +90,7 @@ namespace NHibernate.Criterion
 
 			if (escapeChar.HasValue)
 				lhs.Add(" escape '" + escapeChar + "'");
-			
+
 			return lhs.ToSqlString();
 		}
 

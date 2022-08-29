@@ -30,7 +30,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(Entity).GetProperty("NickNames");
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsDictionary(mi), Is.True);
 		}
@@ -40,7 +40,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(Entity).GetField("emails", BindingFlags.NonPublic | BindingFlags.Instance);
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsDictionary(mi), Is.True);
 		}
@@ -50,7 +50,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(Entity).GetProperty("Emails");
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsDictionary(mi), Is.True);
 		}
@@ -60,7 +60,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(Entity).GetField("others", BindingFlags.NonPublic | BindingFlags.Instance);
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsDictionary(mi), Is.False);
 		}
@@ -70,7 +70,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(Entity).GetProperty("Others");
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsDictionary(mi), Is.False);
 		}

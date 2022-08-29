@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Permissions;
 using System.Text;
-using System.Collections.Generic;
 
 namespace NHibernate
 {
@@ -39,14 +39,14 @@ namespace NHibernate
 		public InvalidProxyTypeException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
-			Errors = (ICollection<string>)info.GetValue("errors", typeof(ICollection));
+			Errors = (ICollection<string>) info.GetValue("errors", typeof(ICollection));
 		}
 
 		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
-			info.AddValue("errors", Errors, typeof (ICollection));
+			info.AddValue("errors", Errors, typeof(ICollection));
 		}
 
 		#endregion

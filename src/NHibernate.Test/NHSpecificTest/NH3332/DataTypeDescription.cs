@@ -16,20 +16,20 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 		{
 			return base.GetHashCode();
 		}
-	
+
 		public override bool Equals(object obj)
 		{
 			return ReferenceEquals(this, obj);
 		}
-	
+
 		public virtual String Description
-		{ 
+		{
 			get { return _description; }
 			set { _description = value; }
 		}
 
 		public virtual Byte[] RowVersionId
-		{ 
+		{
 			get { return _rowVersionId; }
 		}
 
@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3332
 			get { return _culture; }
 			set { _culture = value; }
 		}
-		
+
 		public virtual DataType DataType
 		{
 			get { return _dataType; }

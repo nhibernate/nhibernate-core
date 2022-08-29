@@ -16,12 +16,12 @@ namespace NHibernate.Test.TypeParameters
 		{
 			get { return "NHibernate.Test"; }
 		}
-		
+
 		[Test]
 		public void HasParametrizedId()
 		{
 			var pc = cfg.GetClassMapping(typeof(EntityCustomId));
-			var idMap = (SimpleValue)pc.IdentifierProperty.Value;
+			var idMap = (SimpleValue) pc.IdentifierProperty.Value;
 			Assert.That(idMap.IdentifierGeneratorStrategy, Is.EqualTo("NHibernate.Id.TableHiLoGenerator, NHibernate"));
 			Assert.That(idMap.IdentifierGeneratorProperties["max_lo"], Is.EqualTo("99"));
 		}
@@ -43,7 +43,7 @@ namespace NHibernate.Test.TypeParameters
 
 			Assert.That(savedId1, Is.LessThan(200), "should be work with custo parameters");
 			Assert.That(savedId1, Is.GreaterThan(99));
-			Assert.That(savedId2, Is.EqualTo((int)savedId1 + 1));
+			Assert.That(savedId2, Is.EqualTo((int) savedId1 + 1));
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())

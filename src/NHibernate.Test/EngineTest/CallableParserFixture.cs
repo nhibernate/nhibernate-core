@@ -1,7 +1,7 @@
-using NUnit.Framework;
 using NHibernate.Engine.Query;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
+using NUnit.Framework;
 
 namespace NHibernate.Test.EngineTest
 {

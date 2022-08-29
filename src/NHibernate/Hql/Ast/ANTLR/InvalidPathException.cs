@@ -9,9 +9,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 	/// Ported by: Steve Strong
 	/// </summary>
 	[Serializable]
-	public class InvalidPathException : SemanticException 
+	public class InvalidPathException : SemanticException
 	{
-		public InvalidPathException(string s) : base(s) 
+		public InvalidPathException(string s) : base(s)
 		{
 		}
 

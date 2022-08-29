@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	public abstract class AbstractCharType : PrimitiveType, IDiscriminatorType
 	{
 		public AbstractCharType(SqlType sqlType)
-			: base(sqlType) {}
+			: base(sqlType) { }
 
 		public override object DefaultValue
 		{

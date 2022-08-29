@@ -8,7 +8,7 @@ namespace NHibernate.Test.Criteria
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
 	}
-	
+
 	public class EntityCustomEntityName
 	{
 		public virtual Guid Id { get; set; }

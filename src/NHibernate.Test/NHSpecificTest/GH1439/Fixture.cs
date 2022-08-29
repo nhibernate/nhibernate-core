@@ -44,10 +44,10 @@ namespace NHibernate.Test.NHSpecificTest.GH1439
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new CompositeEntity { Id = 1, Name = "Bob", LazyProperty = "LazyProperty"};
+				var e1 = new CompositeEntity { Id = 1, Name = "Bob", LazyProperty = "LazyProperty" };
 				session.Save(e1);
 				var e2 = new EntityWithComponentId
-					{ Id = new ComponentId { Id = 1, Name = "Bob" }, LazyProperty = "LazyProperty" };
+				{ Id = new ComponentId { Id = 1, Name = "Bob" }, LazyProperty = "LazyProperty" };
 				session.Save(e2);
 				transaction.Commit();
 			}

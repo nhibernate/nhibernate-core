@@ -7,7 +7,7 @@ namespace NHibernate.Linq.Visitors
 	/// <summary>
 	/// Some conditional expressions can be reduced to just their IfTrue or IfFalse part.
 	/// </summary>
-	internal class SimplifyConditionalVisitor :RelinqExpressionVisitor
+	internal class SimplifyConditionalVisitor : RelinqExpressionVisitor
 	{
 		protected override Expression VisitConditional(ConditionalExpression expression)
 		{
@@ -56,7 +56,7 @@ namespace NHibernate.Linq.Visitors
 			if (testExpression != null)
 			{
 				if ((IsConstruction(testExpression.Left) && VisitorUtil.IsNullConstant(testExpression.Right))
-				    || (IsConstruction(testExpression.Right) && VisitorUtil.IsNullConstant(testExpression.Left)))
+					|| (IsConstruction(testExpression.Right) && VisitorUtil.IsNullConstant(testExpression.Left)))
 				{
 					return true;
 				}

@@ -54,7 +54,7 @@ namespace NHibernate.Test.SqlTest
 		public override string ToString()
 		{
 			return "Value: '" + Value + "', " +
-			       "Currency: '" + Currency + "'";
+				   "Currency: '" + Currency + "'";
 		}
 
 		public int CompareTo(Object o)
@@ -72,11 +72,11 @@ namespace NHibernate.Test.SqlTest
 		public static MonetaryAmount FromString(string amount, string currencyCode)
 		{
 			return new MonetaryAmount(decimal.Parse(amount),
-			                          currencyCode);
+									  currencyCode);
 		}
 
 		public static MonetaryAmount Convert(MonetaryAmount amount,
-		                                     string toCurrency)
+											 string toCurrency)
 		{
 			// TODO: This requires some conversion magic and is therefore broken
 			return new MonetaryAmount(amount.Value, toCurrency);

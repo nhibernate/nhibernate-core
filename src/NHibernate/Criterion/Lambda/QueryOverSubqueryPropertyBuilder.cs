@@ -7,13 +7,13 @@ using NHibernate.SqlCommand;
 
 namespace NHibernate.Criterion.Lambda
 {
-	public class QueryOverSubqueryPropertyBuilder<TRoot,TSubType> : QueryOverSubqueryPropertyBuilderBase<QueryOver<TRoot,TSubType>, TRoot, TSubType>
+	public class QueryOverSubqueryPropertyBuilder<TRoot, TSubType> : QueryOverSubqueryPropertyBuilderBase<QueryOver<TRoot, TSubType>, TRoot, TSubType>
 	{
 		public QueryOverSubqueryPropertyBuilder()
 			: base() { }
 	}
 
-	public class IQueryOverSubqueryPropertyBuilder<TRoot,TSubType> : QueryOverSubqueryPropertyBuilderBase<IQueryOver<TRoot,TSubType>, TRoot, TSubType>
+	public class IQueryOverSubqueryPropertyBuilder<TRoot, TSubType> : QueryOverSubqueryPropertyBuilderBase<IQueryOver<TRoot, TSubType>, TRoot, TSubType>
 	{
 		public IQueryOverSubqueryPropertyBuilder()
 			: base() { }
@@ -27,7 +27,7 @@ namespace NHibernate.Criterion.Lambda
 	}
 
 	public class QueryOverSubqueryPropertyBuilderBase<TReturn, TRoot, TSubType> : QueryOverSubqueryPropertyBuilderBase
-		where TReturn : IQueryOver<TRoot,TSubType>
+		where TReturn : IQueryOver<TRoot, TSubType>
 	{
 		protected TReturn root;
 		protected string path;
@@ -39,7 +39,7 @@ namespace NHibernate.Criterion.Lambda
 
 		internal override QueryOverSubqueryPropertyBuilderBase Set(object root, string path, object value)
 		{
-			this.root = (TReturn)root;
+			this.root = (TReturn) root;
 			this.path = path;
 			this.value = value;
 			return this;

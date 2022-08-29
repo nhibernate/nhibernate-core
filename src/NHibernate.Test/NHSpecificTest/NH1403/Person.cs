@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1403
 		private int id;
 		private string name;
 
-		public Person() {}
+		public Person() { }
 
 		public Person(string name) : this()
 		{

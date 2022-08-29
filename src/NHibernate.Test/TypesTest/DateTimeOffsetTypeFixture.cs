@@ -377,7 +377,7 @@ namespace NHibernate.Test.TypesTest
 	public class DateTimeOffsetTypeWithScaleFixture : DateTimeOffsetTypeFixture
 	{
 		protected override string TypeName => "DateTimeOffsetWithScale";
-		protected override DateTimeOffsetType Type => (DateTimeOffsetType)TypeFactory.GetDateTimeOffsetType(3);
+		protected override DateTimeOffsetType Type => (DateTimeOffsetType) TypeFactory.GetDateTimeOffsetType(3);
 		protected override long DateAccuracyInTicks => Math.Max(TimeSpan.TicksPerMillisecond, base.DateAccuracyInTicks);
 		// The timestamp rounding in seeding does not account scale.
 		protected override bool RevisionCheck => false;

@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1355
 			Configuration cfg = new Configuration();
 			Assembly domain = typeof(Category).Assembly;
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1355.Category.hbm.xml", domain);
-			
+
 			try
 			{
 				cfg.BuildSessionFactory();

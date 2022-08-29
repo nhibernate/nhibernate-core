@@ -21,8 +21,8 @@ namespace NHibernate.Impl
 		{
 			return
 				session.CreateMultiQuery()
-				       .SetCacheable(isCacheable)
-				       .SetCacheRegion(cacheRegion);
+					   .SetCacheable(isCacheable)
+					   .SetCacheRegion(cacheRegion);
 		}
 
 		protected override void AddTo(IMultiQuery multiApproach, IQuery query, System.Type resultType)

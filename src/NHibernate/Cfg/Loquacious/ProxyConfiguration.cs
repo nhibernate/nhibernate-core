@@ -2,7 +2,7 @@ using NHibernate.Bytecode;
 
 namespace NHibernate.Cfg.Loquacious
 {
-	public class ProxyConfiguration 
+	public class ProxyConfiguration
 #pragma warning disable 618
 		: IProxyConfiguration
 #pragma warning restore 618

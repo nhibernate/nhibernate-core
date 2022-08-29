@@ -6,7 +6,7 @@ namespace NHibernate.Test.Cascade
 		private JobBatch batch;
 		private string processingInstructions;
 		private int status;
-		public Job() {}
+		public Job() { }
 		public Job(JobBatch batch)
 		{
 			this.batch = batch;

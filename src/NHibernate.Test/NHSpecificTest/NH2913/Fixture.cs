@@ -1,7 +1,7 @@
-﻿using NHibernate.Dialect;
-using NUnit.Framework;
+﻿using System.Linq;
+using NHibernate.Dialect;
 using NHibernate.Linq;
-using System.Linq;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2913
 {
@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2913
 		{
 			using (var session = OpenSession())
 			{
-				var excludedCostItems = (from ci in session.Query<CostItem>() 
+				var excludedCostItems = (from ci in session.Query<CostItem>()
 										 where ci.Id == 1
 										 select ci);
 

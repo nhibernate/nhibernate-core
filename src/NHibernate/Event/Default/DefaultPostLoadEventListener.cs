@@ -12,7 +12,7 @@ namespace NHibernate.Event.Default
 			if (@event.Persister.ImplementsLifecycle)
 			{
 				//log.debug( "calling onLoad()" );
-				((ILifecycle)@event.Entity).OnLoad(@event.Session, @event.Id);
+				((ILifecycle) @event.Entity).OnLoad(@event.Session, @event.Id);
 			}
 		}
 	}

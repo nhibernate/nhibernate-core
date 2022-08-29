@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1293
 			get
 			{
 				if (Dialect is PostgreSQLDialect)
-					return new[] {"MappingsFilterAsBoolean.hbm.xml"};
+					return new[] { "MappingsFilterAsBoolean.hbm.xml" };
 
 				return base.Mappings;
 			}
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1293
 				s.DisableFilter("onlyActive");
 				IFilter fltr = s.EnableFilter("onlyActive");
 
-				if(Dialect is PostgreSQLDialect)
+				if (Dialect is PostgreSQLDialect)
 					fltr.SetParameter("activeFlag", true);
 				else
 					fltr.SetParameter("activeFlag", 1);
@@ -54,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1293
 				Console.WriteLine(hqlResult.Count);
 
 				// with ICriteria, no Category.IsActive filter applied, result count=1
-				ICriteria criteria = s.CreateCriteria(typeof (Customer), "cust").CreateCriteria("Category", "cat");
+				ICriteria criteria = s.CreateCriteria(typeof(Customer), "cust").CreateCriteria("Category", "cat");
 				criteria.Add(Restrictions.Eq("cat.Name", "User"));
 				IList<Customer> criteriaResult = criteria.List<Customer>();
 

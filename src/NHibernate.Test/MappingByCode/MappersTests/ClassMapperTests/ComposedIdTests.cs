@@ -36,7 +36,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.ClassMapperTests
 			Assert.That(hbmCompositeId, Is.Not.Null);
 			Assert.That(hbmCompositeId.@class, Is.Null);
 			Assert.That(hbmCompositeId.Items, Has.Length.EqualTo(2));
-			Assert.That(hbmCompositeId.Items.Select(x => x.GetType()), Is.EquivalentTo(new [] {typeof(HbmKeyProperty), typeof(HbmKeyManyToOne)}));
+			Assert.That(hbmCompositeId.Items.Select(x => x.GetType()), Is.EquivalentTo(new[] { typeof(HbmKeyProperty), typeof(HbmKeyManyToOne) }));
 		}
 
 		[Test]

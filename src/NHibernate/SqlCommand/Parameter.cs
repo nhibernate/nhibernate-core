@@ -10,7 +10,7 @@ namespace NHibernate.SqlCommand
 	[Serializable]
 	public class Parameter
 	{
-		private Parameter() {}
+		private Parameter() { }
 
 		/// <summary>
 		/// We need to know what the position of the parameter was in a query
@@ -53,13 +53,13 @@ namespace NHibernate.SqlCommand
 		/// </summary>
 		public static Parameter WithIndex(int position)
 		{
-			return new Parameter {ParameterPosition = position};
+			return new Parameter { ParameterPosition = position };
 		}
 
 		public Parameter Clone()
 		{
 			// Note: don't clone parameterPosition
-			return new Parameter {BackTrack = BackTrack};
+			return new Parameter { BackTrack = BackTrack };
 		}
 
 		/// <summary>

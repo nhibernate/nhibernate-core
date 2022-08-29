@@ -632,7 +632,7 @@ namespace NHibernate.Cfg
 				var type = ReflectHelper.ClassForName(assemblyQualifiedName);
 				try
 				{
-					return (IBytecodeProvider)Activator.CreateInstance(type);
+					return (IBytecodeProvider) Activator.CreateInstance(type);
 				}
 				catch (MissingMethodException ex)
 				{
@@ -694,7 +694,7 @@ namespace NHibernate.Cfg
 				return null;
 
 			return ConfigurationProvider.Current.GetNamedConnectionString(connStringName)
-			       ?? throw new HibernateException($"Could not find named connection string '{connStringName}'.");
+				   ?? throw new HibernateException($"Could not find named connection string '{connStringName}'.");
 		}
 
 		/// <summary>
@@ -703,7 +703,7 @@ namespace NHibernate.Cfg
 		/// set either.
 		/// </summary>
 		internal static string GetConfiguredConnectionString(IDictionary<string, string> settings)
-		{ 
+		{
 			// Connection string in the configuration overrides named connection string.
 			if (!settings.TryGetValue(ConnectionString, out string connString))
 				connString = GetNamedConnectionString(settings);

@@ -5,12 +5,12 @@ using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Linq.Functions;
+using NHibernate.MultiTenancy;
 using NHibernate.Type;
 using NUnit.Framework;
-using NHibernate.Exceptions;
-using NHibernate.MultiTenancy;
 
 namespace NHibernate.Test.CfgTest.Loquacious
 {
@@ -38,7 +38,7 @@ namespace NHibernate.Test.CfgTest.Loquacious
 													p.Validation = false;
 													p.ProxyFactoryFactory<StaticProxyFactoryFactory>();
 												});
-			configure.Mappings(m=>
+			configure.Mappings(m =>
 								{
 									m.DefaultCatalog = "MyCatalog";
 									m.DefaultSchema = "MySche";

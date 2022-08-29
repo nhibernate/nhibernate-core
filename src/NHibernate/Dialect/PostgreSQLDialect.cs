@@ -98,7 +98,7 @@ namespace NHibernate.Dialect
 			// Register the date function, since when used in LINQ select clauses, NH must know the data type.
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
 			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
-			
+
 			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "?1::TEXT"));
 
 			// The uuid_generate_v4 is not native and must be installed, but SelectGUIDString property already uses it,
@@ -165,7 +165,7 @@ namespace NHibernate.Dialect
 
 		public override string GetSequenceNextValString(string sequenceName)
 		{
-			return string.Concat("select ",GetSelectSequenceNextValString(sequenceName));
+			return string.Concat("select ", GetSelectSequenceNextValString(sequenceName));
 		}
 
 		public override string GetSelectSequenceNextValString(string sequenceName)
@@ -185,7 +185,7 @@ namespace NHibernate.Dialect
 
 		public override SqlString AddIdentifierOutParameterToInsert(SqlString insertString, string identifierColumnName, string parameterName)
 		{
-			return insertString.Append(" returning ",  identifierColumnName);
+			return insertString.Append(" returning ", identifierColumnName);
 		}
 
 		public override InsertGeneratedIdentifierRetrievalMethod InsertGeneratedIdentifierRetrievalMethod
@@ -299,7 +299,7 @@ namespace NHibernate.Dialect
 		{
 			get { return "select uuid_generate_v4()"; }
 		}
-		
+
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new PostgreSQLDataBaseMetadata(connection);

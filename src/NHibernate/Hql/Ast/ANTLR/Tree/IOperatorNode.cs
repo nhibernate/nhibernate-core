@@ -7,7 +7,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: Steve Ebersole
 	/// Ported by: Steve Strong
 	/// </summary>
-	public interface IOperatorNode 
+	public interface IOperatorNode
 	{
 		/// <summary>
 		/// Called by the tree walker during hql-sql semantic analysis
@@ -20,7 +20,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// </summary>
 		/// <returns>The expression's data type.</returns>
 		IType DataType
-		{ 
+		{
 			get;
 		}
 	}

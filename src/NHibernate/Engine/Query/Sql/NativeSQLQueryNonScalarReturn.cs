@@ -1,6 +1,6 @@
 using System;
-using NHibernate.Util;
 using System.Collections.Generic;
+using NHibernate.Util;
 
 namespace NHibernate.Engine.Query.Sql
 {
@@ -26,7 +26,7 @@ namespace NHibernate.Engine.Query.Sql
 
 			this.alias = alias;
 			this.lockMode = lockMode;
-			
+
 			if (propertyResults != null)
 			{
 				ArrayHelper.AddAll(this.propertyResults, propertyResults);

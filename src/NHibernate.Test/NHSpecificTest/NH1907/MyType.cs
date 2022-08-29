@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1907
 			{
 				return false;
 			}
-			var other = (MyType)obj;
+			var other = (MyType) obj;
 			return ToPersist == other.ToPersist;
 		}
 
@@ -69,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1907
 			}
 			else
 			{
-				cmd.Parameters[index].Value = ((MyType)value).ToPersist;
+				cmd.Parameters[index].Value = ((MyType) value).ToPersist;
 			}
 		}
 
@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1907
 				return null;
 			}
 			int value = rs.GetInt32(index0);
-			return new MyType { ToPersist = value};
+			return new MyType { ToPersist = value };
 		}
 
 		public bool IsMutable

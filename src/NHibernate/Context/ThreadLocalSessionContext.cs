@@ -180,7 +180,7 @@ namespace NHibernate.Context
 		{
 			if (context == null)
 				return null;
-		
+
 			ISession result;
 			context.TryGetValue(factory, out result);
 			return result;

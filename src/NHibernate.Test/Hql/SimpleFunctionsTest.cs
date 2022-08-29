@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
 using NHibernate.Dialect.Function;
+using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
-using NHibernate.SqlCommand;
 
 namespace NHibernate.Test.Hql
 {

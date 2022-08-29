@@ -2,7 +2,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1343
 {
 	public class OrderLine
 	{
-		protected OrderLine() {}
+		protected OrderLine() { }
 
 		public OrderLine(string description, Product product)
 		{

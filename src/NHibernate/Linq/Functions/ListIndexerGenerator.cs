@@ -10,7 +10,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Linq.Functions
 {
-	internal class ListIndexerGenerator : BaseHqlGeneratorForMethod,IRuntimeMethodHqlGenerator
+	internal class ListIndexerGenerator : BaseHqlGeneratorForMethod, IRuntimeMethodHqlGenerator
 	{
 		private static readonly HashSet<MethodInfo> _supportedMethods = new HashSet<MethodInfo>
 		{

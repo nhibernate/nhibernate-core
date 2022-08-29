@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
-using NHibernate.Dialect.Function;
 using System.Reflection;
+using System.Text;
+using NHibernate.Dialect.Function;
+using NUnit.Framework;
 
 namespace NHibernate.Test.DialectTest.FunctionTests
 {

@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1033
 
 		public virtual string SerialNumber
 		{
-			get; 
+			get;
 			set;
 		}
 	}

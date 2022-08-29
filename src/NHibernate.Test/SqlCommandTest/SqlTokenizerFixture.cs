@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
-using NHibernate.SqlCommand;
+﻿using NHibernate.SqlCommand;
 using NHibernate.SqlCommand.Parser;
+using NUnit.Framework;
 
 namespace NHibernate.Test.SqlCommandTest
 {
@@ -26,9 +26,9 @@ namespace NHibernate.Test.SqlCommandTest
 			VerifyTokenizer("--", Comment("--"));
 			VerifyTokenizer("---", Comment("---"));
 			VerifyTokenizer("--\r", Comment("--"), Whitespace("\r"));
-			VerifyTokenizer("-- Any comment will do", 
+			VerifyTokenizer("-- Any comment will do",
 				Comment("-- Any comment will do"));
-			VerifyTokenizer("-- Two comments\n--will do too", 
+			VerifyTokenizer("-- Two comments\n--will do too",
 				Comment("-- Two comments"), Whitespace("\n"), Comment("--will do too"));
 		}
 
@@ -58,7 +58,7 @@ namespace NHibernate.Test.SqlCommandTest
 			VerifyTokenizer("()--()", BracketOpen(), BracketClose(), Comment("--()"));
 			VerifyTokenizer("(--\n)", BracketOpen(), Comment("--"), Whitespace("\n"), BracketClose());
 			VerifyTokenizer("(SELECT)", BracketOpen(), Text("SELECT"), BracketClose());
-			
+
 			VerifyTokenizer("SELECT (SELECT COUNT(*) FROM table), ?",
 				Text("SELECT"), Whitespace(" "),
 				BracketOpen(),
@@ -99,9 +99,9 @@ namespace NHibernate.Test.SqlCommandTest
 			VerifyTokenizer("--?", Comment("--?"));
 			VerifyTokenizer("/*?*/", Comment("/*?*/"));
 			VerifyTokenizer("(?)", BracketOpen(), Parameter(), BracketClose());
-			VerifyTokenizer("EXEC InsertSomething ?, ?", 
-				Text("EXEC"), Whitespace(" "), Text("InsertSomething"), 
-				Whitespace(" "), Parameter(), Comma(), 
+			VerifyTokenizer("EXEC InsertSomething ?, ?",
+				Text("EXEC"), Whitespace(" "), Text("InsertSomething"),
+				Whitespace(" "), Parameter(), Comma(),
 				Whitespace(" "), Parameter());
 		}
 
@@ -178,7 +178,7 @@ namespace NHibernate.Test.SqlCommandTest
 		private class ExpectedToken
 		{
 			public SqlTokenType TokenType { get; private set; }
-			public string Value  { get; private set; }
+			public string Value { get; private set; }
 
 			public ExpectedToken(SqlTokenType tokenType, string value)
 			{

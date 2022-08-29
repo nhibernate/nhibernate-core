@@ -219,13 +219,13 @@ namespace NHibernate.Cfg
 
 		public void AddUniquePropertyReference(string referencedClass, string propertyName)
 		{
-			var upr = new PropertyReference {referencedClass = referencedClass, propertyName = propertyName, unique = true};
+			var upr = new PropertyReference { referencedClass = referencedClass, propertyName = propertyName, unique = true };
 			propertyReferences.Add(upr);
 		}
 
 		public void AddPropertyReference(string referencedClass, string propertyName)
 		{
-			var upr = new PropertyReference {referencedClass = referencedClass, propertyName = propertyName};
+			var upr = new PropertyReference { referencedClass = referencedClass, propertyName = propertyName };
 			propertyReferences.Add(upr);
 		}
 
@@ -344,7 +344,7 @@ namespace NHibernate.Cfg
 			else
 			{
 				SchemaAction sa = SchemaAction.None;
-				string[] acts = schemaAction.Split(new[] {',', ' '});
+				string[] acts = schemaAction.Split(new[] { ',', ' ' });
 				foreach (var s in acts)
 				{
 					switch (s.ToLowerInvariant())
@@ -382,13 +382,13 @@ namespace NHibernate.Cfg
 			string key = subselect ?? BuildTableNameKey(schema, catalog, name);
 
 			Table table = new DenormalizedTable(includedTable)
-			              	{
-												IsAbstract = isAbstract, 
-												Name = name, 
-												Catalog = catalog, 
-												Schema = schema, 
-												Subselect = subselect
-											};
+			{
+				IsAbstract = isAbstract,
+				Name = name,
+				Catalog = catalog,
+				Schema = schema,
+				Subselect = subselect
+			};
 
 			var tableIndex = tables.Count;
 			if (tables.TryGetValue(key, out var existing))
@@ -524,7 +524,7 @@ namespace NHibernate.Cfg
 			FilterDefinition fd;
 			if (filterDefinitions.TryGetValue(definition.FilterName, out fd))
 			{
-				if(fd!=null)
+				if (fd != null)
 				{
 					throw new MappingException("Duplicated filter-def named: " + definition.FilterName);
 				}

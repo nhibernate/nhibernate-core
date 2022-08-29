@@ -54,7 +54,7 @@ namespace NHibernate.Test.Unionsubclass
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					Human gavin = (Human)s.CreateCriteria(typeof(Human)).UniqueResult();
+					Human gavin = (Human) s.CreateCriteria(typeof(Human)).UniqueResult();
 					Assert.AreEqual(gavin.Info.Count, 2);
 					s.Delete(gavin);
 					s.Delete(gavin.Location);
@@ -91,7 +91,7 @@ namespace NHibernate.Test.Unionsubclass
 
 			for (int i = 0; i < list.Count; i++)
 			{
-				Human h = (Human)list[i];
+				Human h = (Human) list[i];
 				Assert.IsTrue(NHibernateUtil.IsInitialized(h.Location));
 				Assert.IsTrue(NHibernateUtil.IsInitialized(h.Location.Beings));
 				s.Delete(h);
@@ -143,31 +143,31 @@ namespace NHibernate.Test.Unionsubclass
 			s.Flush();
 			s.Clear();
 
-			hive = (Hive)s.CreateQuery("from Hive h").UniqueResult();
+			hive = (Hive) s.CreateQuery("from Hive h").UniqueResult();
 			Assert.IsFalse(NHibernateUtil.IsInitialized(hive.Members));
 			Assert.AreEqual(2, hive.Members.Count);
 
 			s.Clear();
 
-			hive = (Hive)s.CreateQuery("from Hive h left join fetch h.location left join fetch h.members").UniqueResult();
+			hive = (Hive) s.CreateQuery("from Hive h left join fetch h.location left join fetch h.members").UniqueResult();
 			Assert.IsTrue(NHibernateUtil.IsInitialized(hive.Members));
 			Assert.AreEqual(2, hive.Members.Count);
 
 			s.Clear();
 
-			x23y4 = (Alien)s.CreateQuery("from Alien a left join fetch a.hivemates where a.identity like 'x%'").UniqueResult();
+			x23y4 = (Alien) s.CreateQuery("from Alien a left join fetch a.hivemates where a.identity like 'x%'").UniqueResult();
 			Assert.IsTrue(NHibernateUtil.IsInitialized(x23y4.Hivemates));
 			Assert.AreEqual(1, x23y4.Hivemates.Count);
 
 			s.Clear();
 
-			x23y4 = (Alien)s.CreateQuery("from Alien a where a.identity like 'x%'").UniqueResult();
+			x23y4 = (Alien) s.CreateQuery("from Alien a where a.identity like 'x%'").UniqueResult();
 			Assert.IsFalse(NHibernateUtil.IsInitialized(x23y4.Hivemates));
 			Assert.AreEqual(1, x23y4.Hivemates.Count);
 
 			s.Clear();
 
-			x23y4 = (Alien)s.CreateCriteria(typeof(Alien)).AddOrder(Order.Asc("identity")).List()[0];
+			x23y4 = (Alien) s.CreateCriteria(typeof(Alien)).AddOrder(Order.Asc("identity")).List()[0];
 			s.Delete(x23y4.Hive);
 			s.Delete(s.Get<Location>(mel.Id));
 			s.Delete(s.Get<Location>(mars.Id));
@@ -213,37 +213,37 @@ namespace NHibernate.Test.Unionsubclass
 
 			s.Clear();
 
-			thing = (Thing)s.CreateQuery("from Thing t left join fetch t.owner").UniqueResult();
+			thing = (Thing) s.CreateQuery("from Thing t left join fetch t.owner").UniqueResult();
 			Assert.IsTrue(NHibernateUtil.IsInitialized(thing.Owner));
 			Assert.AreEqual("gavin", thing.Owner.Identity);
 			s.Clear();
 
-			thing = (Thing)s.CreateQuery("select t from Thing t left join t.owner where t.owner.identity='gavin'").UniqueResult();
+			thing = (Thing) s.CreateQuery("select t from Thing t left join t.owner where t.owner.identity='gavin'").UniqueResult();
 			Assert.IsFalse(NHibernateUtil.IsInitialized(thing.Owner));
 			Assert.AreEqual("gavin", thing.Owner.Identity);
 			s.Clear();
 
-			gavin = (Human)s.CreateQuery("from Human h left join fetch h.things").UniqueResult();
+			gavin = (Human) s.CreateQuery("from Human h left join fetch h.things").UniqueResult();
 			Assert.IsTrue(NHibernateUtil.IsInitialized(gavin.Things));
-			Assert.AreEqual("some thing", ((Thing)gavin.Things[0]).Description);
+			Assert.AreEqual("some thing", ((Thing) gavin.Things[0]).Description);
 			s.Clear();
 
 			Assert.AreEqual(2, s.CreateQuery("from Being b left join fetch b.things").List().Count);
 			s.Clear();
 
-			gavin = (Human)s.CreateQuery("from Being b join fetch b.things").UniqueResult();
+			gavin = (Human) s.CreateQuery("from Being b join fetch b.things").UniqueResult();
 			Assert.IsTrue(NHibernateUtil.IsInitialized(gavin.Things));
-			Assert.AreEqual("some thing", ((Thing)gavin.Things[0]).Description);
+			Assert.AreEqual("some thing", ((Thing) gavin.Things[0]).Description);
 			s.Clear();
 
-			gavin = (Human)s.CreateQuery("select h from Human h join h.things t where t.description='some thing'").UniqueResult();
+			gavin = (Human) s.CreateQuery("select h from Human h join h.things t where t.description='some thing'").UniqueResult();
 			Assert.IsFalse(NHibernateUtil.IsInitialized(gavin.Things));
-			Assert.AreEqual("some thing", ((Thing)gavin.Things[0]).Description);
+			Assert.AreEqual("some thing", ((Thing) gavin.Things[0]).Description);
 			s.Clear();
 
-			gavin = (Human)s.CreateQuery("select b from Being b join b.things t where t.description='some thing'").UniqueResult();
+			gavin = (Human) s.CreateQuery("select b from Being b join b.things t where t.description='some thing'").UniqueResult();
 			Assert.IsFalse(NHibernateUtil.IsInitialized(gavin.Things));
-			Assert.AreEqual("some thing", ((Thing)gavin.Things[0]).Description);
+			Assert.AreEqual("some thing", ((Thing) gavin.Things[0]).Description);
 			s.Clear();
 
 			thing = s.Get<Thing>(thing.Id);
@@ -262,7 +262,7 @@ namespace NHibernate.Test.Unionsubclass
 			Assert.AreEqual("x23y4$$hu%3", thing.Owner.Identity);
 
 			s.Delete(thing);
-			x23y4 = (Alien)s.CreateCriteria(typeof(Alien)).UniqueResult();
+			x23y4 = (Alien) s.CreateCriteria(typeof(Alien)).UniqueResult();
 			s.Delete(x23y4.Hive);
 			s.Delete(s.Get<Location>(mel.Id));
 			s.Delete(s.Get<Location>(mars.Id));
@@ -366,7 +366,7 @@ namespace NHibernate.Test.Unionsubclass
 				atl.AddBeing(gavin);
 				Assert.AreEqual(1, s.CreateQuery("from Human h where h.location.name like '%GA'").List().Count);
 				s.Delete(gavin);
-				x23y4 = (Alien) s.CreateCriteria(typeof (Alien)).UniqueResult();
+				x23y4 = (Alien) s.CreateCriteria(typeof(Alien)).UniqueResult();
 				s.Delete(x23y4.Hive);
 				Assert.AreEqual(0, s.CreateQuery("from Being").List().Count);
 				t.Commit();
@@ -409,7 +409,7 @@ namespace NHibernate.Test.Unionsubclass
 			Assert.AreEqual(2, result.Count);
 			s.Delete(result[0]);
 			s.Delete(result[1]);
-			s.Delete(((Human)result[0]).Location);
+			s.Delete(((Human) result[0]).Location);
 			tx.Commit();
 			s.Close();
 		}

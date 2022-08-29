@@ -90,7 +90,7 @@ namespace NHibernate.Tool.HbmXsd
 
 		private static void AddXmlEnumAttribute(CodeTypeMember member)
 		{
-			CodeTypeReference attributeType = new CodeTypeReference(typeof (XmlEnumAttribute));
+			CodeTypeReference attributeType = new CodeTypeReference(typeof(XmlEnumAttribute));
 			CodePrimitiveExpression argumentValue = new CodePrimitiveExpression(member.Name);
 			CodeAttributeArgument argument = new CodeAttributeArgument(argumentValue);
 			CodeAttributeDeclaration attribute = new CodeAttributeDeclaration(attributeType, argument);
@@ -101,7 +101,7 @@ namespace NHibernate.Tool.HbmXsd
 		private void UpdateFieldEnumValueReferences(CodeTypeMember field)
 		{
 			foreach (CodeAttributeDeclaration attribute in field.CustomAttributes)
-				if (attribute.Name == typeof (DefaultValueAttribute).FullName)
+				if (attribute.Name == typeof(DefaultValueAttribute).FullName)
 				{
 					CodeFieldReferenceExpression reference = attribute.Arguments[0].Value
 						as CodeFieldReferenceExpression;

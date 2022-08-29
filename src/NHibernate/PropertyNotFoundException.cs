@@ -59,7 +59,7 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected PropertyNotFoundException(SerializationInfo info, StreamingContext context) 
+		protected PropertyNotFoundException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
 			foreach (var entry in info)

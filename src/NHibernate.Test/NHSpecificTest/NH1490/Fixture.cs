@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1490
 			{
 				s.DisableFilter("onlyActive");
 				IFilter fltr = s.EnableFilter("onlyActive");
-				
+
 				if (Dialect is PostgreSQLDialect)
 					fltr.SetParameter("activeFlag", true);
 				else

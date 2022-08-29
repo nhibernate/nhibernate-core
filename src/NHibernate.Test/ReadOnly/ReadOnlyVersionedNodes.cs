@@ -10,12 +10,12 @@ namespace NHibernate.Test.ReadOnly
 		{
 			get { return "NHibernate.Test"; }
 		}
-		
+
 		protected override string[] Mappings
 		{
 			get { return new string[] { "ReadOnly.VersionedNode.hbm.xml" }; }
 		}
-	
+
 		[Test]
 		public void SetReadOnlyTrueAndFalse()
 		{
@@ -93,7 +93,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		public void UpdateSetReadOnlyTwice()
 		{
@@ -132,7 +132,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		public void UpdateSetModifiable()
 		{
@@ -171,7 +171,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		[Ignore("Failure expected")]
 		public void UpdateSetReadOnlySetModifiableFailureExpected()
@@ -207,7 +207,7 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-	
+
 		[Test]
 		[Ignore("Failure expected")]
 		public void SetReadOnlyUpdateSetModifiableFailureExpected()
@@ -248,7 +248,7 @@ namespace NHibernate.Test.ReadOnly
 				s.Close();
 			}
 		}
-	
+
 		[Test]
 		public void AddNewChildToReadOnlyParent()
 		{
@@ -293,7 +293,7 @@ namespace NHibernate.Test.ReadOnly
 				t.Commit();
 			}
 		}
-	
+
 		[Test]
 		public void UpdateParentWithNewChildCommitWithReadOnlyParent()
 		{
@@ -306,7 +306,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 
 			ClearCounts();
-	
+
 			parent.Name = "new parent name";
 			VersionedNode child = new VersionedNode("child", "child");
 			parent.AddChild(child);
@@ -342,7 +342,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public void MergeDetachedParentWithNewChildCommitWithReadOnlyParent()
 		{
@@ -355,7 +355,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 
 			ClearCounts();
-	
+
 			parent.Name = "new parent name";
 			VersionedNode child = new VersionedNode("child", "child");
 			parent.AddChild(child);
@@ -404,7 +404,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 
 			ClearCounts();
-	
+
 			parent.Name = "new parent name";
 			VersionedNode child = new VersionedNode("child", "child");
 			parent.AddChild(child);
@@ -440,7 +440,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public void MergeUnchangedDetachedParentChildren()
 		{
@@ -506,7 +506,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public void AddNewParentToReadOnlyChild()
 		{
@@ -550,7 +550,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		public void UpdateChildWithNewParentCommitWithReadOnlyChild()
 		{
@@ -563,7 +563,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 
 			ClearCounts();
-	
+
 			child.Name = "new child name";
 			VersionedNode parent = new VersionedNode("parent", "parent");
 			parent.AddChild(child);
@@ -599,7 +599,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public void MergeDetachedChildWithNewParentCommitWithReadOnlyChild()
 		{
@@ -612,7 +612,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 
 			ClearCounts();
-	
+
 			child.Name = "new child name";
 			VersionedNode parent = new VersionedNode("parent", "parent");
 			parent.AddChild(child);
@@ -648,7 +648,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public void GetChildMakeReadOnlyThenMergeDetachedChildWithNewParent()
 		{
@@ -661,7 +661,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 
 			ClearCounts();
-	
+
 			child.Name = "new child name";
 			VersionedNode parent = new VersionedNode("parent", "parent");
 			parent.AddChild(child);
@@ -689,7 +689,7 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(parent, Is.Not.Null);
 				Assert.That(parent.Children.Count, Is.EqualTo(0));
 				Assert.That(parent.Version, Is.EqualTo(1));
-					// NH-specific: Hibernate incorrectly increments version number, NH does not
+				// NH-specific: Hibernate incorrectly increments version number, NH does not
 				s.SetReadOnly(parent, true);
 				s.SetReadOnly(child, true);
 				s.Delete(parent);
@@ -700,7 +700,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		protected override void OnTearDown()
 		{
 			using (var s = OpenSession())

@@ -13,7 +13,7 @@ namespace NHibernate.Tuple.Component
 		public object Instantiate() => new DynamicComponent();
 
 		public bool IsInstance(object obj) => obj is DynamicComponent ||
-		                                      obj is IDictionary<string, object> ||
-		                                      obj is IDictionary;
+											  obj is IDictionary<string, object> ||
+											  obj is IDictionary;
 	}
 }

@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1408
 
 	internal class StringDbResource : DbResource
 	{
-		protected StringDbResource() {}
+		protected StringDbResource() { }
 
 		public StringDbResource(string key, string language, string value)
 		{
@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1408
 
 	internal class IntDbResource : DbResource
 	{
-		protected IntDbResource() {}
+		protected IntDbResource() { }
 
 		public IntDbResource(string key, int xml)
 		{
@@ -67,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1408
 
 	internal class DecimalDbResource : DbResource
 	{
-		protected DecimalDbResource() {}
+		protected DecimalDbResource() { }
 
 		public DecimalDbResource(string key, decimal xml)
 		{

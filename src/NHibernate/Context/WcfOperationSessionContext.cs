@@ -18,7 +18,7 @@ namespace NHibernate.Context
 	/// </summary>
 	public class WcfOperationSessionContext : MapBasedSessionContext
 	{
-		public WcfOperationSessionContext(ISessionFactoryImplementor factory) : base(factory) {}
+		public WcfOperationSessionContext(ISessionFactoryImplementor factory) : base(factory) { }
 
 		private static WcfStateExtension WcfOperationState
 		{

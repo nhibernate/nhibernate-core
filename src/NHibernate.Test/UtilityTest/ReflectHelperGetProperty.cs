@@ -39,7 +39,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WhenNullSourceThenNotFound()
 		{
-			System.Type source= null;
+			System.Type source = null;
 			Assert.That(source.HasProperty("whatever"), Is.False);
 		}
 

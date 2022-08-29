@@ -12,7 +12,7 @@ namespace NHibernate.Test.MultiTenancy
 		protected override string GetTenantConnectionString(TenantConfiguration tenantConfiguration, ISessionFactoryImplementor sessionFactory)
 		{
 			return tenantConfiguration is TestTenantConfiguration tenant && tenant.IsSqlServerDialect
-				? new SqlConnectionStringBuilder(sessionFactory.ConnectionProvider.GetConnectionString()) {ApplicationName = tenantConfiguration.TenantIdentifier}.ToString()
+				? new SqlConnectionStringBuilder(sessionFactory.ConnectionProvider.GetConnectionString()) { ApplicationName = tenantConfiguration.TenantIdentifier }.ToString()
 				: sessionFactory.ConnectionProvider.GetConnectionString();
 		}
 	}

@@ -1,12 +1,11 @@
 using System;
-
+using System.Collections.Generic;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Param;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Persister.Entity;
-using System.Collections.Generic;
 
 namespace NHibernate.Hql.Ast.ANTLR.Util
 {
@@ -87,8 +86,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			if (hqlSqlWalker.IsFilter())
 			{
 				//if (whereFragment.IndexOfCaseInsensitive("?") >= 0)
-                if (whereFragment.IndexOfOrdinal("?") >= 0)
-                {
+				if (whereFragment.IndexOfOrdinal("?") >= 0)
+				{
 					IType collectionFilterKeyType = hqlSqlWalker.SessionFactoryHelper
 							.RequireQueryableCollection(hqlSqlWalker.CollectionFilterRole)
 							.KeyType;
@@ -144,7 +143,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 					}
 					else
 					{
-                        _filters.AddSibling(_thetaJoins);
+						_filters.AddSibling(_thetaJoins);
 					}
 				}
 

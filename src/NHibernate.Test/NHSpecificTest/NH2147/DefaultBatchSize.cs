@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2147
 		{
 			var cfg = TestConfigurationHelper.GetDefaultConfiguration();
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2147.Mappings.hbm.xml", GetType().Assembly);
-			var sf = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
+			var sf = (ISessionFactoryImplementor) cfg.BuildSessionFactory();
 			var persister = sf.GetEntityPersister("MyClassWithoutBatchSize");
 			Assert.That(persister.IsBatchLoadable, Is.False);
 
@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2147
 			cfg.SetProperty(Environment.DefaultBatchFetchSize, "20");
 
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2147.Mappings.hbm.xml", GetType().Assembly);
-			var sf = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
+			var sf = (ISessionFactoryImplementor) cfg.BuildSessionFactory();
 			var persister = sf.GetEntityPersister("MyClassWithoutBatchSize");
 
 			Assert.That(persister.IsBatchLoadable, Is.True);
@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2147
 			cfg.SetProperty(Environment.DefaultBatchFetchSize, "20");
 
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH2147.Mappings.hbm.xml", GetType().Assembly);
-			var sf = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
+			var sf = (ISessionFactoryImplementor) cfg.BuildSessionFactory();
 			var persister = sf.GetEntityPersister("MyClassWithBatchSize");
 
 			Assert.That(persister.IsBatchLoadable, Is.True);

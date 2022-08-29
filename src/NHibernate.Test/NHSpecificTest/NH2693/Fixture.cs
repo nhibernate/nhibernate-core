@@ -94,7 +94,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 			var expected = _firstLevels
 			   .Where(first => first.SecondLevels
 				  .Any(second => second.ThirdLevel is SpecificThirdLevel &&
-					 ((SpecificThirdLevel)second.ThirdLevel).FourthLevels
+					 ((SpecificThirdLevel) second.ThirdLevel).FourthLevels
 						.Any()
 				  )
 			   )
@@ -107,7 +107,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 					var result = session.Query<FirstLevel>()
 					   .Where(first => first.SecondLevels
 						  .Any(second => second.ThirdLevel is SpecificThirdLevel &&
-							 ((SpecificThirdLevel)second.ThirdLevel).FourthLevels
+							 ((SpecificThirdLevel) second.ThirdLevel).FourthLevels
 								.Any()
 						  )
 					   )
@@ -116,7 +116,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 					Assert.AreEqual(expected.Count, result.Count);
 					Assert.IsTrue(result
 					   .All(f => f.SecondLevels
-						  .Any(s => ((SpecificThirdLevel)s.ThirdLevel).FourthLevels
+						  .Any(s => ((SpecificThirdLevel) s.ThirdLevel).FourthLevels
 							 .Any()
 						  )
 					   )
@@ -155,7 +155,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 					Assert.AreEqual(expected.Count, result.Count);
 					Assert.IsTrue(result
 					   .All(f => f.SecondLevels
-						  .Any(s => ((SpecificThirdLevel)s.ThirdLevel).FourthLevels
+						  .Any(s => ((SpecificThirdLevel) s.ThirdLevel).FourthLevels
 							 .Any()
 						  )
 					   )
@@ -170,7 +170,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 			var expected = _firstLevels
 			   .Where(first => first.SecondLevels
 				  .Any(second => second.ThirdLevel is SpecificThirdLevel &&
-					 ((SpecificThirdLevel)second.ThirdLevel).FourthLevels
+					 ((SpecificThirdLevel) second.ThirdLevel).FourthLevels
 						.Any(fourth => fourth.SomeString == "first")
 				  )
 			   )
@@ -183,7 +183,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 					var result = session.Query<FirstLevel>()
 					   .Where(first => first.SecondLevels
 						  .Any(second => second.ThirdLevel is SpecificThirdLevel &&
-							 ((SpecificThirdLevel)second.ThirdLevel).FourthLevels
+							 ((SpecificThirdLevel) second.ThirdLevel).FourthLevels
 								.Any(fourth => fourth.SomeString == "first")
 						  )
 					   )
@@ -192,7 +192,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 					Assert.AreEqual(expected.Count, result.Count);
 					Assert.IsTrue(result
 					   .All(f => f.SecondLevels
-						  .Any(s => ((SpecificThirdLevel)s.ThirdLevel).FourthLevels
+						  .Any(s => ((SpecificThirdLevel) s.ThirdLevel).FourthLevels
 							 .Any(fo => fo.SomeString == "first")
 						  )
 					   )
@@ -231,7 +231,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 					Assert.AreEqual(expected.Count, result.Count);
 					Assert.IsTrue(result
 					   .All(f => f.SecondLevels
-						  .Any(s => ((SpecificThirdLevel)s.ThirdLevel).FourthLevels
+						  .Any(s => ((SpecificThirdLevel) s.ThirdLevel).FourthLevels
 							 .Any(fo => fo.SomeString == "first")
 						  )
 					   )

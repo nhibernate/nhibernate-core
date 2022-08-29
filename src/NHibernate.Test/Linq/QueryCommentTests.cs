@@ -12,7 +12,7 @@ namespace NHibernate.Test.Linq
 		{
 			configuration.SetProperty(Environment.UseSqlComments, "true");
 		}
-		
+
 		[Test]
 		public void CanSetCommentOnLinqQueries()
 		{
@@ -20,10 +20,10 @@ namespace NHibernate.Test.Linq
 			{
 				var comment = "This is my comment";
 				var result = (from e in db.Customers
-				              where e.CompanyName == "Bon app'"
-				              select e).WithOptions(o => o.SetComment(comment)).ToList();
+							  where e.CompanyName == "Bon app'"
+							  select e).WithOptions(o => o.SetComment(comment)).ToList();
 				var sql = sl.Appender.GetEvents()[0].RenderedMessage;
-				
+
 				Assert.That(sql.IndexOf(comment), Is.GreaterThan(0));
 			}
 		}
@@ -35,9 +35,9 @@ namespace NHibernate.Test.Linq
 			{
 				var comment = "This is my comment";
 				var result = (from e in db.Customers
-				              select e).Skip(1).Take(1).WithOptions(o => o.SetComment(comment)).ToList();
+							  select e).Skip(1).Take(1).WithOptions(o => o.SetComment(comment)).ToList();
 				var sql = sl.Appender.GetEvents()[0].RenderedMessage;
-				
+
 				Assert.That(sql.IndexOf(comment), Is.GreaterThan(0));
 			}
 		}
@@ -49,10 +49,10 @@ namespace NHibernate.Test.Linq
 			{
 				var comment = "This is my comment";
 				var result = (from e in db.Customers
-				              orderby e.CompanyName
-				              select e).WithOptions(o => o.SetComment(comment)).Skip(5).Take(5).ToList();
+							  orderby e.CompanyName
+							  select e).WithOptions(o => o.SetComment(comment)).Skip(5).Take(5).ToList();
 				var sql = sl.Appender.GetEvents()[0].RenderedMessage;
-				
+
 				Assert.That(sql.IndexOf(comment), Is.GreaterThan(0));
 			}
 		}

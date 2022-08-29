@@ -124,7 +124,7 @@ namespace NHibernate.AdoNet.Util
 						ExtractStringEnclosedBy("\"");
 					}
 
-					if(IsMultiQueryDelimiter(token))
+					if (IsMultiQueryDelimiter(token))
 					{
 						StartingNewQuery();
 					}
@@ -372,7 +372,7 @@ namespace NHibernate.AdoNet.Util
 				{
 					Out();
 					return;
-				} 
+				}
 				parensSinceSelect--;
 				if (parensSinceSelect < 0)
 				{
@@ -404,7 +404,7 @@ namespace NHibernate.AdoNet.Util
 
 			private void OpenParen()
 			{
-				if(endCommandFound)
+				if (endCommandFound)
 				{
 					Out();
 					return;
@@ -436,7 +436,7 @@ namespace NHibernate.AdoNet.Util
 				char begin = tok[0];
 				bool isIdentifier = (char.IsLetter(begin) || begin.CompareTo('$') == 0 || begin.CompareTo('_') == 0) || '"' == begin;
 				return isIdentifier && !logical.Contains(tok) && !endClauses.Contains(tok) && !quantifiers.Contains(tok)
-				       && !dml.Contains(tok) && !misc.Contains(tok);
+					   && !dml.Contains(tok) && !misc.Contains(tok);
 			}
 
 			private static bool IsWhitespace(string token)

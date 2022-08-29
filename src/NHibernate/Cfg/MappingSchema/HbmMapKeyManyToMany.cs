@@ -5,7 +5,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmMapKeyManyToMany: IColumnsMapping, IFormulasMapping, IRelationship
+	public partial class HbmMapKeyManyToMany : IColumnsMapping, IFormulasMapping, IRelationship
 	{
 		#region Implementation of IColumnsMapping
 

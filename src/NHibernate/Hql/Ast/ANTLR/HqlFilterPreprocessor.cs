@@ -1,13 +1,13 @@
-﻿using Antlr.Runtime.Tree;
-using NHibernate.Engine;
-using NHibernate.Hql.Ast.ANTLR.Tree;
-using NHibernate.Persister.Collection;
-using NHibernate.Type;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Antlr.Runtime.Tree;
+using NHibernate.Engine;
+using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Persister.Collection;
+using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
@@ -41,7 +41,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			var selectFromClause = ast.Where(x => x.Type == HqlParser.SELECT_FROM).Single();
 			var fromClause = selectFromClause.Where(x => x.Type == HqlParser.FROM).Single();
-			
+
 			fromClause.Text = "FROM"; // Just for prettier debug output
 			AddImpliedFromToFromNode(fromClause, collectionRole, factory);
 		}
@@ -60,8 +60,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			ITreeAdaptor adaptor = new ASTTreeAdaptor();
 
-			IASTNode fromElement = (IASTNode)adaptor.Create(HqlParser.FILTER_ENTITY, collectionElementEntityName);
-			IASTNode alias = (IASTNode)adaptor.Create(HqlParser.ALIAS, "this");
+			IASTNode fromElement = (IASTNode) adaptor.Create(HqlParser.FILTER_ENTITY, collectionElementEntityName);
+			IASTNode alias = (IASTNode) adaptor.Create(HqlParser.ALIAS, "this");
 
 			fromClause.AddChild(fromElement);
 			fromClause.AddChild(alias);

@@ -7,7 +7,7 @@ namespace NHibernate.Impl
 	[Obsolete("Replaced by QueryBatch")]
 	public partial class FutureCriteriaBatch : FutureBatch<ICriteria, IMultiCriteria>
 	{
-		public FutureCriteriaBatch(SessionImpl session) : base(session) {}
+		public FutureCriteriaBatch(SessionImpl session) : base(session) { }
 
 		protected override IList List(ICriteria query)
 		{
@@ -39,12 +39,12 @@ namespace NHibernate.Impl
 
 		protected override bool IsQueryCacheable(ICriteria query)
 		{
-			return ((CriteriaImpl)query).Cacheable;
+			return ((CriteriaImpl) query).Cacheable;
 		}
 
 		protected override string CacheRegion(ICriteria query)
 		{
-			return ((CriteriaImpl)query).CacheRegion;
+			return ((CriteriaImpl) query).CacheRegion;
 		}
 	}
 }

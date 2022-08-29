@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Data.Common;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Runtime.CompilerServices;
+using NHibernate.AdoNet.Util;
 using NHibernate.Engine;
 using NHibernate.Mapping;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.SqlCommand;
-using NHibernate.AdoNet.Util;
 
 namespace NHibernate.Id.Enhanced
 {
@@ -336,9 +336,9 @@ namespace NHibernate.Id.Enhanced
 		{
 			const string alias = "tbl";
 			SqlString select = new SqlString(
-				"select ", StringHelper.Qualify(alias, ValueColumnName), 
+				"select ", StringHelper.Qualify(alias, ValueColumnName),
 				" from ", TableName, " ", alias,
-				" where ", StringHelper.Qualify(alias, SegmentColumnName), " = ", Parameter.Placeholder, 
+				" where ", StringHelper.Qualify(alias, SegmentColumnName), " = ", Parameter.Placeholder,
 				"  ");
 
 			Dictionary<string, LockMode> lockOptions = new Dictionary<string, LockMode>();

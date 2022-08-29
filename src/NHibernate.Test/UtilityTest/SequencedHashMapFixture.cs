@@ -116,36 +116,36 @@ namespace NHibernate.Test.UtilityTest
 		public void GetEnumeratorModifyExceptionFromAdd()
 		{
 			Assert.Throws<InvalidOperationException>(() =>
-			                                     	{
-			                                     		foreach (DictionaryEntry de in _shm)
-			                                     		{
-			                                     			_shm["newkey"] = de.Value;
-			                                     		}
-			                                     	});
+													 {
+														 foreach (DictionaryEntry de in _shm)
+														 {
+															 _shm["newkey"] = de.Value;
+														 }
+													 });
 		}
 
 		[Test]
 		public void GetEnumeratorModifyExceptionFromRemove()
 		{
 			Assert.Throws<InvalidOperationException>(() =>
-			                                         	{
-			                                         		foreach (DictionaryEntry de in _shm)
-			                                         		{
-			                                         			_shm.Remove(de.Key);
-			                                         		}
-			                                         	});
+														 {
+															 foreach (DictionaryEntry de in _shm)
+															 {
+																 _shm.Remove(de.Key);
+															 }
+														 });
 		}
 
 		[Test]
 		public void GetEnumeratorModifyExceptionFromUpdate()
 		{
 			Assert.Throws<InvalidOperationException>(() =>
-			                                         	{
-			                                         		foreach (DictionaryEntry de in _shm)
-			                                         		{
-			                                         			_shm[de.Key] = new object();
-			                                         		}
-			                                         	});
+														 {
+															 foreach (DictionaryEntry de in _shm)
+															 {
+																 _shm[de.Key] = new object();
+															 }
+														 });
 		}
 
 		[Test]

@@ -34,7 +34,7 @@ namespace NHibernate.Event.Default
 				}
 				else
 				{
-					coll = (IPersistentCollection)collection;
+					coll = (IPersistentCollection) collection;
 				}
 
 				Collections.ProcessReachableCollection(coll, type, owner, Session);

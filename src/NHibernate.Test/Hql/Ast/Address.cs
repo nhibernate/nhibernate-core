@@ -43,12 +43,12 @@ namespace NHibernate.Test.Hql.Ast
 			if (!(obj is Address))
 				return false;
 
-			var otherAddress = ((Address)obj);
+			var otherAddress = ((Address) obj);
 
 			if (Street == null ^ otherAddress.Street == null)
 			{
 				return false;
-			} 
+			}
 
 			if (Street != null && otherAddress.Street != null && otherAddress.Street != Street)
 			{

@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3221
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (Todo)) return false;
+			if (obj.GetType() != typeof(Todo)) return false;
 			return Equals((Todo) obj);
 		}
 

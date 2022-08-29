@@ -62,7 +62,7 @@ namespace NHibernate.Type
 		/// </remarks>
 		public virtual object Disassemble(object value, ISessionImplementor session, object owner)
 		{
-			if (value == null) 
+			if (value == null)
 				return null;
 
 			return DeepCopy(value, session.Factory);
@@ -191,7 +191,7 @@ namespace NHibernate.Type
 			bool include;
 			if (IsAssociationType)
 			{
-				IAssociationType atype = (IAssociationType)this;
+				IAssociationType atype = (IAssociationType) this;
 				include = atype.ForeignKeyDirection == foreignKeyDirection;
 			}
 			else

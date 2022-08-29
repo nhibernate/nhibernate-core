@@ -32,7 +32,7 @@ namespace NHibernate.Test.TypesTest
 		{
 			using (var s = OpenSession())
 			{
-				var docEntity = new XmlDocClass {Id = 1 };
+				var docEntity = new XmlDocClass { Id = 1 };
 				docEntity.Document = new XmlDocument();
 				docEntity.Document.LoadXml("<MyNode>my Text</MyNode>");
 				s.Save(docEntity);
@@ -84,7 +84,7 @@ namespace NHibernate.Test.TypesTest
 		public void AutoDiscoverFromNetType()
 		{
 			// integration test to be 100% sure
-			var propertyType = Sfi.GetEntityPersister(typeof (XmlDocClass).FullName).GetPropertyType("AutoDocument");
+			var propertyType = Sfi.GetEntityPersister(typeof(XmlDocClass).FullName).GetPropertyType("AutoDocument");
 			Assert.That(propertyType, Is.InstanceOf<XmlDocType>());
 		}
 	}

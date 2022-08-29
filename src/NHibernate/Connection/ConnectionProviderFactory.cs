@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using NHibernate.Util;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Connection
 {

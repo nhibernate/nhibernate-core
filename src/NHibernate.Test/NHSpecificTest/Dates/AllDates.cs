@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		public TimeSpan Sql_TimeAsTimeSpan { get; set; }
 
 		public DateTime Sql_time { get; set; }
-		
+
 		public DateTime Sql_date { get; set; }
 	}
 }

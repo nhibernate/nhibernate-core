@@ -62,12 +62,12 @@ namespace NHibernate.Test.PropertyTest
 		{
 			_lowerunderscorefoo = value;
 		}
-		
+
 		public void InitCamelCaseMUnderscore(int value)
 		{
 			m_camelMUnderscore = value;
 		}
-		
+
 		public void Increment()
 		{
 			Id++;
@@ -133,7 +133,7 @@ namespace NHibernate.Test.PropertyTest
 				return _PascalUnderscoreFoo;
 			}
 		}
-		
+
 		public int CamelMUnderscore
 		{
 			get

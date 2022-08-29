@@ -17,7 +17,7 @@ namespace NHibernate.Test.Extendshbm
 			Configuration cfg = new Configuration();
 
 			cfg.AddResource(BaseForMappings + "Extendshbm.allinone.hbm.xml", typeof(ExtendsFixture).Assembly);
-			Assert.That(cfg.GetClassMapping(typeof (Customer).FullName), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping(typeof(Customer).FullName), Is.Not.Null);
 			Assert.That(cfg.GetClassMapping(typeof(Person).FullName), Is.Not.Null);
 			Assert.That(cfg.GetClassMapping(typeof(Employee).FullName), Is.Not.Null);
 		}
@@ -27,18 +27,18 @@ namespace NHibernate.Test.Extendshbm
 		{
 			Configuration cfg = new Configuration();
 
-			cfg.AddResource(BaseForMappings + "Extendshbm.Customer.hbm.xml", typeof (ExtendsFixture).Assembly);
+			cfg.AddResource(BaseForMappings + "Extendshbm.Customer.hbm.xml", typeof(ExtendsFixture).Assembly);
 
-			Assert.That(cfg.GetClassMapping(typeof (Customer).FullName), Is.Null, "cannot be in the configuration yet!");
+			Assert.That(cfg.GetClassMapping(typeof(Customer).FullName), Is.Null, "cannot be in the configuration yet!");
 
-			cfg.AddResource(BaseForMappings + "Extendshbm.Person.hbm.xml", typeof (ExtendsFixture).Assembly);
-			cfg.AddResource(BaseForMappings + "Extendshbm.Employee.hbm.xml", typeof (ExtendsFixture).Assembly);
+			cfg.AddResource(BaseForMappings + "Extendshbm.Person.hbm.xml", typeof(ExtendsFixture).Assembly);
+			cfg.AddResource(BaseForMappings + "Extendshbm.Employee.hbm.xml", typeof(ExtendsFixture).Assembly);
 
 			cfg.BuildSessionFactory();
 
-			Assert.That(cfg.GetClassMapping(typeof (Customer).FullName), Is.Not.Null);
-			Assert.That(cfg.GetClassMapping(typeof (Person).FullName), Is.Not.Null);
-			Assert.That(cfg.GetClassMapping(typeof (Employee).FullName), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping(typeof(Customer).FullName), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping(typeof(Person).FullName), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping(typeof(Employee).FullName), Is.Not.Null);
 		}
 
 		[Test]
@@ -46,18 +46,18 @@ namespace NHibernate.Test.Extendshbm
 		{
 			Configuration cfg = new Configuration();
 
-			cfg.AddResource(BaseForMappings + "Extendshbm.Customer.hbm.xml", typeof (ExtendsFixture).Assembly);
-			Assert.That(cfg.GetClassMapping(typeof (Customer).FullName), Is.Null, "cannot be in the configuration yet!");
+			cfg.AddResource(BaseForMappings + "Extendshbm.Customer.hbm.xml", typeof(ExtendsFixture).Assembly);
+			Assert.That(cfg.GetClassMapping(typeof(Customer).FullName), Is.Null, "cannot be in the configuration yet!");
 
-			cfg.AddResource(BaseForMappings + "Extendshbm.Employee.hbm.xml", typeof (ExtendsFixture).Assembly);
-			Assert.That(cfg.GetClassMapping(typeof (Employee).FullName), Is.Null, "cannot be in the configuration yet!");
+			cfg.AddResource(BaseForMappings + "Extendshbm.Employee.hbm.xml", typeof(ExtendsFixture).Assembly);
+			Assert.That(cfg.GetClassMapping(typeof(Employee).FullName), Is.Null, "cannot be in the configuration yet!");
 
-			cfg.AddResource(BaseForMappings + "Extendshbm.Person.hbm.xml", typeof (ExtendsFixture).Assembly);
+			cfg.AddResource(BaseForMappings + "Extendshbm.Person.hbm.xml", typeof(ExtendsFixture).Assembly);
 
 			cfg.BuildMappings();
-			Assert.That(cfg.GetClassMapping(typeof (Customer).FullName), Is.Not.Null);
-			Assert.That(cfg.GetClassMapping(typeof (Person).FullName), Is.Not.Null);
-			Assert.That(cfg.GetClassMapping(typeof (Employee).FullName), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping(typeof(Customer).FullName), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping(typeof(Person).FullName), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping(typeof(Employee).FullName), Is.Not.Null);
 		}
 
 		[Test]
@@ -67,15 +67,15 @@ namespace NHibernate.Test.Extendshbm
 
 			try
 			{
-				cfg.AddResource(BaseForMappings + "Extendshbm.Customer.hbm.xml", typeof (ExtendsFixture).Assembly);
-				Assert.That(cfg.GetClassMapping(typeof (Customer).FullName), Is.Null, "cannot be in the configuration yet!");
-				cfg.AddResource(BaseForMappings + "Extendshbm.Employee.hbm.xml", typeof (ExtendsFixture).Assembly);
+				cfg.AddResource(BaseForMappings + "Extendshbm.Customer.hbm.xml", typeof(ExtendsFixture).Assembly);
+				Assert.That(cfg.GetClassMapping(typeof(Customer).FullName), Is.Null, "cannot be in the configuration yet!");
+				cfg.AddResource(BaseForMappings + "Extendshbm.Employee.hbm.xml", typeof(ExtendsFixture).Assembly);
 
 				cfg.BuildSessionFactory();
 
 				Assert.Fail("Should not be able to build sessionfactory without a Person");
 			}
-			catch (HibernateException) {}
+			catch (HibernateException) { }
 		}
 
 		[Test]
@@ -83,12 +83,12 @@ namespace NHibernate.Test.Extendshbm
 		{
 			Configuration cfg = new Configuration();
 
-			cfg.AddResource(BaseForMappings + "Extendshbm.allseparateinone.hbm.xml", typeof (ExtendsFixture).Assembly);
+			cfg.AddResource(BaseForMappings + "Extendshbm.allseparateinone.hbm.xml", typeof(ExtendsFixture).Assembly);
 
 			cfg.BuildSessionFactory();
-			Assert.That(cfg.GetClassMapping(typeof (Customer).FullName), Is.Not.Null);
-			Assert.That(cfg.GetClassMapping(typeof (Person).FullName), Is.Not.Null);
-			Assert.That(cfg.GetClassMapping(typeof (Employee).FullName), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping(typeof(Customer).FullName), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping(typeof(Person).FullName), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping(typeof(Employee).FullName), Is.Not.Null);
 		}
 
 		[Test]
@@ -96,7 +96,7 @@ namespace NHibernate.Test.Extendshbm
 		{
 			Configuration cfg = new Configuration();
 
-			cfg.AddResource(BaseForMappings + "Extendshbm.entitynames.hbm.xml", typeof (ExtendsFixture).Assembly);
+			cfg.AddResource(BaseForMappings + "Extendshbm.entitynames.hbm.xml", typeof(ExtendsFixture).Assembly);
 
 			cfg.BuildMappings();
 			Assert.That(cfg.GetClassMapping("EntityHasName"), Is.Not.Null);
@@ -119,7 +119,7 @@ namespace NHibernate.Test.Extendshbm
 		public void EntityNamesWithPackageFailureExpected()
 		{
 			Configuration cfg = new Configuration();
-			cfg.AddResource(BaseForMappings + "Extendshbm.packageentitynames.hbm.xml", typeof (ExtendsFixture).Assembly);
+			cfg.AddResource(BaseForMappings + "Extendshbm.packageentitynames.hbm.xml", typeof(ExtendsFixture).Assembly);
 
 			cfg.BuildMappings();
 
@@ -157,12 +157,12 @@ namespace NHibernate.Test.Extendshbm
 		{
 			Configuration cfg = new Configuration();
 
-			cfg.AddResource(BaseForMappings + "Extendshbm.unionsubclass.hbm.xml", typeof (ExtendsFixture).Assembly);
+			cfg.AddResource(BaseForMappings + "Extendshbm.unionsubclass.hbm.xml", typeof(ExtendsFixture).Assembly);
 
 			cfg.BuildMappings();
 
-			Assert.That(cfg.GetClassMapping(typeof (Person).FullName), Is.Not.Null);
-			Assert.That(cfg.GetClassMapping(typeof (Customer).FullName), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping(typeof(Person).FullName), Is.Not.Null);
+			Assert.That(cfg.GetClassMapping(typeof(Customer).FullName), Is.Not.Null);
 		}
 	}
 }

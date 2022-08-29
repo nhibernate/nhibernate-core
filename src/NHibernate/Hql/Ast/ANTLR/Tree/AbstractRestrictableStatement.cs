@@ -24,7 +24,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				if (_fromClause == null)
 				{
-					_fromClause = (FromClause)ASTUtil.FindTypeInChildren(this, HqlSqlWalker.FROM);
+					_fromClause = (FromClause) ASTUtil.FindTypeInChildren(this, HqlSqlWalker.FROM);
 				}
 				return _fromClause;
 			}

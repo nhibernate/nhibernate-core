@@ -132,7 +132,7 @@ namespace NHibernate.Cfg.MappingSchema
 				return !ArrayHelper.IsNullOrEmpty(Items) ? Items : AsColumns().Cast<object>().Concat(AsFormulas());
 			}
 		}
-		
+
 		public HbmLaziness? Lazy
 		{
 			get { return lazySpecified ? lazy : (HbmLaziness?) null; }

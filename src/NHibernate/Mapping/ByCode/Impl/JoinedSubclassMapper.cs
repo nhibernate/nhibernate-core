@@ -18,7 +18,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.extends = subClass.BaseType.GetShortClassName(mapDoc);
 			if (classMapping.key == null)
 			{
-				classMapping.key = new HbmKey {column1 = subClass.BaseType.Name.ToLowerInvariant() + "_key"};
+				classMapping.key = new HbmKey { column1 = subClass.BaseType.Name.ToLowerInvariant() + "_key" };
 			}
 			keyMapper = new KeyMapper(subClass, classMapping.key);
 			mapDoc.Items = ArrayHelper.Append(mapDoc.Items, classMapping);
@@ -81,7 +81,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Persister<T>() where T : IEntityPersister
 		{
-			classMapping.persister = typeof (T).GetShortClassName(MapDoc);
+			classMapping.persister = typeof(T).GetShortClassName(MapDoc);
 		}
 
 		public void Synchronize(params string[] table)
@@ -124,7 +124,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.sqlinsert = new HbmCustomSQL();
 			}
-			classMapping.sqlinsert.Text = new[] {sql};
+			classMapping.sqlinsert.Text = new[] { sql };
 		}
 
 		public void SqlInsert(string sql, SqlCheck sqlCheck)
@@ -144,7 +144,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.sqlupdate = new HbmCustomSQL();
 			}
-			classMapping.sqlupdate.Text = new[] {sql};
+			classMapping.sqlupdate.Text = new[] { sql };
 		}
 
 		public void SqlUpdate(string sql, SqlCheck sqlCheck)
@@ -164,7 +164,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.sqldelete = new HbmCustomSQL();
 			}
-			classMapping.sqldelete.Text = new[] {sql};
+			classMapping.sqldelete.Text = new[] { sql };
 		}
 
 		public void SqlDelete(string sql, SqlCheck sqlCheck)
@@ -184,7 +184,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.subselect = new HbmSubselect();
 			}
-			classMapping.subselect.Text = new[] {sql};
+			classMapping.subselect.Text = new[] { sql };
 		}
 
 		#endregion
@@ -225,7 +225,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			if (!Container.GetBaseTypes().Contains(baseType))
 			{
 				throw new ArgumentOutOfRangeException("baseType",
-				                                      string.Format("{0} is a valid super-class of {1}", baseType, Container));
+													  string.Format("{0} is a valid super-class of {1}", baseType, Container));
 			}
 			classMapping.extends = baseType.GetShortClassName(MapDoc);
 		}
@@ -234,7 +234,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			classMapping.extends = entityOrClassName ?? throw new ArgumentNullException(nameof(entityOrClassName));
 		}
-		
+
 		public void SchemaAction(SchemaAction action)
 		{
 			classMapping.schemaaction = action.ToSchemaActionString();

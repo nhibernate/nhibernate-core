@@ -14,7 +14,7 @@ namespace NHibernate.Test.Naturalid.Immutable
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"Naturalid.Immutable.User.hbm.xml"}; }
+			get { return new string[] { "Naturalid.Immutable.User.hbm.xml" }; }
 		}
 
 		protected override void Configure(Configuration configuration)
@@ -71,7 +71,7 @@ namespace NHibernate.Test.Naturalid.Immutable
 				s.Flush();
 				Assert.Fail();
 			}
-			catch (HibernateException) {}
+			catch (HibernateException) { }
 			u.UserName = "steve";
 			s.Delete(u);
 			t.Commit();

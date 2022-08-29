@@ -46,20 +46,20 @@ namespace NHibernate.Test.NHSpecificTest.NH3459
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var o1 = new Order {Name = "Order 1"};
+				var o1 = new Order { Name = "Order 1" };
 				session.Save(o1);
 
-				var o2 = new Order {Name = "Order 2"};
+				var o2 = new Order { Name = "Order 2" };
 				session.Save(o2);
 
-				session.Save(new OrderLine {Manufacturer = "Manufacturer 1", Order = o2});
+				session.Save(new OrderLine { Manufacturer = "Manufacturer 1", Order = o2 });
 
-				var o3 = new Order {Name = "Order 3"};
+				var o3 = new Order { Name = "Order 3" };
 				session.Save(o3);
 
-				session.Save(new OrderLine {Manufacturer = "Manufacturer 1", Order = o3});
-				session.Save(new OrderLine {Manufacturer = "Manufacturer 2", Order = o3});
-				session.Save(new OrderLine {Manufacturer = "Manufacturer 3", Order = o3});
+				session.Save(new OrderLine { Manufacturer = "Manufacturer 1", Order = o3 });
+				session.Save(new OrderLine { Manufacturer = "Manufacturer 2", Order = o3 });
+				session.Save(new OrderLine { Manufacturer = "Manufacturer 3", Order = o3 });
 
 				transaction.Commit();
 			}
@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3459
 				var result = (from o in session.Query<Order>()
 							  from ol in o.OrderLines.DefaultIfEmpty()
 							  group ol by ol.Manufacturer into grp
-							  select new {grp.Key}).ToList();
+							  select new { grp.Key }).ToList();
 
 				Assert.AreEqual(4, result.Count);
 			}
@@ -101,7 +101,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3459
 				var result = (from o in session.Query<Order>()
 							  from ol in o.OrderLines.Where(x => x.Manufacturer == "Manufacturer 1").DefaultIfEmpty()
 							  group o by o.Name into grp
-							  select new {grp.Key}).ToList();
+							  select new { grp.Key }).ToList();
 
 				Assert.AreEqual(3, result.Count);
 			}

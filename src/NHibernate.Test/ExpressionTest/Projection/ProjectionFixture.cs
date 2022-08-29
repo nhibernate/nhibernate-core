@@ -1,5 +1,5 @@
-using NHibernate.DomainModel;
 using NHibernate.Criterion;
+using NHibernate.DomainModel;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -30,11 +30,11 @@ namespace NHibernate.Test.ExpressionTest.Projection
 			ISession session = factory.OpenSession();
 			IProjection expression = Projections.Avg("Pay");
 			CreateObjects(typeof(Simple), session);
-			IType nhType = NHibernateUtil.GuessType(typeof (double));
+			IType nhType = NHibernateUtil.GuessType(typeof(double));
 			SqlType[] sqlTypes = nhType.SqlTypes(this.factoryImpl);
 			string sqlTypeString = factoryImpl.Dialect.GetCastTypeName(sqlTypes[0]);
 			SqlString sqlString = expression.ToSqlString(criteria, 0, criteriaQuery);
-			string expectedSql = string.Format("avg(cast(sql_alias.Pay as {0})) as y0_",sqlTypeString);
+			string expectedSql = string.Format("avg(cast(sql_alias.Pay as {0})) as y0_", sqlTypeString);
 			CompareSqlStrings(sqlString, expectedSql, 0);
 			session.Close();
 		}
@@ -92,8 +92,8 @@ namespace NHibernate.Test.ExpressionTest.Projection
 		{
 			ISession session = factory.OpenSession();
 			IProjection expression = Projections.SqlFunction(new NvlFunction(),
-			                                                 NHibernateUtil.String, Projections.Property("Name"), Projections.Property("Address"));
-			CreateObjects(typeof (Simple), session);
+															 NHibernateUtil.String, Projections.Property("Name"), Projections.Property("Address"));
+			CreateObjects(typeof(Simple), session);
 			SqlString sqlString = expression.ToSqlString(criteria, 0, criteriaQuery);
 			string expectedSql = "nvl(sql_alias.Name, sql_alias.address) as y0_";
 			CompareSqlStrings(sqlString, expectedSql, 0);
@@ -156,8 +156,8 @@ namespace NHibernate.Test.ExpressionTest.Projection
 		{
 			ISession session = factory.OpenSession();
 			IProjection expression = Projections.SqlGroupProjection("count(Pay)", "Pay",
-			                                                        new string[] {"PayCount"},
-			                                                        new IType[] {NHibernateUtil.Double}
+																	new string[] { "PayCount" },
+																	new IType[] { NHibernateUtil.Double }
 				);
 			CreateObjects(typeof(Simple), session);
 			SqlString sqlString = expression.ToSqlString(criteria, 0, criteriaQuery);
@@ -171,8 +171,8 @@ namespace NHibernate.Test.ExpressionTest.Projection
 		{
 			ISession session = factory.OpenSession();
 			IProjection expression = Projections.SqlProjection("count(Pay)",
-			                                                   new string[] {"CountOfPay"}, new
-			                                                                                	IType[] {NHibernateUtil.Double});
+															   new string[] { "CountOfPay" }, new
+																								IType[] { NHibernateUtil.Double });
 			CreateObjects(typeof(Simple), session);
 			SqlString sqlString = expression.ToSqlString(criteria, 0, criteriaQuery);
 			string expectedSql = "count(Pay)";

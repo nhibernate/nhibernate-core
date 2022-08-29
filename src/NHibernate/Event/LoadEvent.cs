@@ -14,7 +14,7 @@ namespace NHibernate.Event
 		private readonly bool isAssociationFetch;
 		private object result;
 
-		private LoadEvent(object entityId,string entityClassName, object instanceToLoad, 
+		private LoadEvent(object entityId, string entityClassName, object instanceToLoad,
 			LockMode lockMode, bool isAssociationFetch, IEventSource source)
 			: base(source)
 		{
@@ -37,13 +37,13 @@ namespace NHibernate.Event
 		}
 
 		public LoadEvent(object entityId, object instanceToLoad, IEventSource source)
-			: this(entityId, null, instanceToLoad, null, false, source) {}
+			: this(entityId, null, instanceToLoad, null, false, source) { }
 
 		public LoadEvent(object entityId, string entityClassName, LockMode lockMode, IEventSource source)
-			: this(entityId, entityClassName, null, lockMode, false, source) {}
+			: this(entityId, entityClassName, null, lockMode, false, source) { }
 
 		public LoadEvent(object entityId, string entityClassName, bool isAssociationFetch, IEventSource source)
-			: this(entityId, entityClassName, null, null, isAssociationFetch, source) {}
+			: this(entityId, entityClassName, null, null, isAssociationFetch, source) { }
 
 		public bool IsAssociationFetch
 		{
@@ -57,7 +57,7 @@ namespace NHibernate.Event
 			{
 				if (value == null)
 					throw new InvalidOperationException("id to load is required for loading");
-				 entityId = value;
+				entityId = value;
 			}
 		}
 

@@ -73,12 +73,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Type<TPersistentType>()
 		{
-			Type(typeof (TPersistentType), null);
+			Type(typeof(TPersistentType), null);
 		}
 
 		public void Type<TPersistentType>(object parameters)
 		{
-			Type(typeof (TPersistentType), parameters);
+			Type(typeof(TPersistentType), parameters);
 		}
 
 		public void Type(System.Type persistentType, object parameters)
@@ -108,7 +108,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 						{
 							var pvalue = pi.GetValue(parameters, null);
 							return
-								new HbmParam {name = pi.Name, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
+								new HbmParam { name = pi.Name, Text = new[] { ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString() } };
 						})
 				};
 				propertyMapping.type = hbmType;
@@ -128,17 +128,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			HbmColumn hbm = propertyMapping.Columns.SingleOrDefault();
 			hbm = hbm
-			      ??
-			      new HbmColumn
-			      {
-			      	name = propertyMapping.column1,
-			      	length = propertyMapping.length,
-			      };
+				  ??
+				  new HbmColumn
+				  {
+					  name = propertyMapping.column1,
+					  length = propertyMapping.length,
+				  };
 			string defaultColumnName = member.Name;
 			columnMapper(new ColumnMapper(hbm, member != null ? defaultColumnName : "unnamedcolumn"));
 			if (ColumnTagIsRequired(hbm))
 			{
-				propertyMapping.column = new[] {hbm};
+				propertyMapping.column = new[] { hbm };
 				ResetColumnPlainValues();
 			}
 			else
@@ -231,8 +231,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private bool ColumnTagIsRequired(HbmColumn hbm)
 		{
 			return hbm.precision != null || hbm.scale != null || hbm.notnull || hbm.unique
-			       || hbm.uniquekey != null || hbm.sqltype != null || hbm.index != null || hbm.@default != null
-			       || hbm.check != null;
+				   || hbm.uniquekey != null || hbm.sqltype != null || hbm.index != null || hbm.@default != null
+				   || hbm.check != null;
 		}
 
 		private void ResetColumnPlainValues()

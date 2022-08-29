@@ -11,7 +11,7 @@ namespace NHibernate.Mapping
 	public class MetaAttribute
 	{
 		private readonly string name;
-		private readonly List<string> values= new List<string>();
+		private readonly List<string> values = new List<string>();
 
 		public MetaAttribute(string name)
 		{

@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3772
 		{
 			if (InstantiateInitializedCollection)
 				return new PersistentGenericSet<T>(session, new HashSet<T>(EqualityComparer<T>.Default));
-			
+
 			return new PersistentGenericSet<T>(session);
 		}
 

@@ -63,7 +63,7 @@ namespace NHibernate.Test.Hql.Ast
 			if (!(obj is Zoo))
 				return false;
 
-			var zoo = ((Zoo)obj);
+			var zoo = ((Zoo) obj);
 
 			if (Name == null ^ zoo.Name == null)
 			{

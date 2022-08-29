@@ -150,8 +150,8 @@ namespace NHibernate.Loader.Custom.Sql
 				// Collection may just contain elements and no entities, in which case resolution of
 				// collection properties is enough.
 				return collectionPersister.ElementType.IsEntityType
-				       	? selectFragment + ", " + ResolveProperties(aliasName, "*")
-				       	: selectFragment;
+						   ? selectFragment + ", " + ResolveProperties(aliasName, "*")
+						   : selectFragment;
 			}
 
 			if (propertyName.StartsWith("element.", StringComparison.Ordinal))
@@ -179,7 +179,7 @@ namespace NHibernate.Loader.Custom.Sql
 			if (columnAliases == null || columnAliases.Length == 0)
 			{
 				throw new QueryException("No column name found for property [" + propertyName + "] for alias [" + aliasName + "]",
-				                         originalQueryString);
+										 originalQueryString);
 			}
 			if (columnAliases.Length != 1)
 			{
@@ -220,7 +220,7 @@ namespace NHibernate.Loader.Custom.Sql
 				if (columnAliases == null || columnAliases.Length == 0)
 				{
 					throw new QueryException("No column name found for property [" + propertyName + "] for alias [" + aliasName + "]",
-					                         originalQueryString);
+											 originalQueryString);
 				}
 				if (columnAliases.Length != 1)
 				{

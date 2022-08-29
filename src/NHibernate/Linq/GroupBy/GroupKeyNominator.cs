@@ -98,9 +98,9 @@ namespace NHibernate.Linq.GroupBy
 
 		protected override Expression VisitBinary(BinaryExpression expression)
 		{
-			if (expression.NodeType != ExpressionType.ArrayIndex) 
+			if (expression.NodeType != ExpressionType.ArrayIndex)
 				return base.VisitBinary(expression);
-			
+
 			// If we encounter an array index then we need to attempt to flatten it before nomination
 			var flattenedExpression = new ArrayIndexExpressionFlattener().Visit(expression);
 			if (flattenedExpression != expression)

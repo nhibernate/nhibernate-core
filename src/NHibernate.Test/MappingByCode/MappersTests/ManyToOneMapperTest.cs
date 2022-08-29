@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
-using NHibernate.Mapping.ByCode;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
 
@@ -37,7 +37,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapper.Cascade(Mapping.ByCode.Cascade.Persist | Mapping.ByCode.Cascade.Remove);
 			Assert.That(hbm.cascade.Split(',').Select(w => w.Trim()), Contains.Item("persist").And.Contains("delete"));
 		}
-		
+
 		[Test]
 		public void AssignEntityName()
 		{
@@ -230,9 +230,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			Assert.That(mapping.Items[0], Is.TypeOf<HbmColumn>(), "first");
 			Assert.That(mapping.Items[1], Is.TypeOf<HbmFormula>(), "second");
 			Assert.That(mapping.Items[2], Is.TypeOf<HbmColumn>(), "third");
-			Assert.That(((HbmColumn)mapping.Items[0]).name, Is.EqualTo("pizza"));
-			Assert.That(((HbmFormula)mapping.Items[1]).Text, Has.Length.EqualTo(1).And.One.EqualTo("risotto"));
-			Assert.That(((HbmColumn)mapping.Items[2]).name, Is.EqualTo("pasta"));
+			Assert.That(((HbmColumn) mapping.Items[0]).name, Is.EqualTo("pizza"));
+			Assert.That(((HbmFormula) mapping.Items[1]).Text, Has.Length.EqualTo(1).And.One.EqualTo("risotto"));
+			Assert.That(((HbmColumn) mapping.Items[2]).name, Is.EqualTo("pasta"));
 			Assert.That(mapping.column, Is.Null, "column");
 			Assert.That(mapping.formula, Is.Null, "formula");
 		}

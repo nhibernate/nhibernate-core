@@ -27,7 +27,7 @@ namespace NHibernate.Test.Hql.EntityJoinHqlTestEntities
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
 	}
-	
+
 	public class PropRefEntity
 	{
 		public virtual Guid Id { get; set; }

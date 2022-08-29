@@ -54,7 +54,7 @@ namespace NHibernate.Test.Linq
 		private void WriteTab()
 		{
 			Write("  ");
-			while (_pos%8 != 0) Write(" ");
+			while (_pos % 8 != 0) Write(" ");
 		}
 
 		private void WriteObject(string prefix, object o)
@@ -112,13 +112,13 @@ namespace NHibernate.Test.Linq
 						Write(m.Name);
 						Write("=");
 						System.Type t = f != null ? f.FieldType : p.PropertyType;
-						if (t.IsValueType || t == typeof (string))
+						if (t.IsValueType || t == typeof(string))
 						{
 							WriteValue(f != null ? f.GetValue(o) : p.GetValue(o, null));
 						}
 						else
 						{
-							if (typeof (IEnumerable).IsAssignableFrom(t))
+							if (typeof(IEnumerable).IsAssignableFrom(t))
 							{
 								Write("...");
 							}
@@ -139,7 +139,7 @@ namespace NHibernate.Test.Linq
 						if (f != null || p != null)
 						{
 							System.Type t = f != null ? f.FieldType : p.PropertyType;
-							if (!(t.IsValueType || t == typeof (string)))
+							if (!(t.IsValueType || t == typeof(string)))
 							{
 								object value = f != null ? f.GetValue(o) : p.GetValue(o, null);
 								if (value != null)

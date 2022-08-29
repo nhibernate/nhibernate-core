@@ -16,7 +16,7 @@ namespace NHibernate.Engine
 	[Serializable]
 	public partial class CollectionEntry
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (CollectionEntry));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(CollectionEntry));
 
 		/// <summary>session-start/post-flush persistent state</summary>
 		private object snapshot;
@@ -399,7 +399,7 @@ namespace NHibernate.Engine
 			{
 				throw new AssertionFailure("no collection snapshot for orphan delete");
 			}
-			
+
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<ICollection>(cancellationToken);

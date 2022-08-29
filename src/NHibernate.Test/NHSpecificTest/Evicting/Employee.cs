@@ -4,30 +4,30 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.Evicting
 {
-    public class Employee
-    {
-        private int id;
+	public class Employee
+	{
+		private int id;
 
-        public int Id
-        {
-            get { return id; }
-            set { id = value; }
-        }
+		public int Id
+		{
+			get { return id; }
+			set { id = value; }
+		}
 
-        private string firstName;
+		private string firstName;
 
-        public string FirstName
-        {
-            get { return firstName; }
-            set { firstName = value; }
-        }
+		public string FirstName
+		{
+			get { return firstName; }
+			set { firstName = value; }
+		}
 
-        private string lastName;
+		private string lastName;
 
-        public string LastName
-        {
-            get { return lastName; }
-            set { lastName = value; }
-        }
-    }
+		public string LastName
+		{
+			get { return lastName; }
+			set { lastName = value; }
+		}
+	}
 }

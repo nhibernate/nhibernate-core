@@ -23,17 +23,17 @@ namespace NHibernate.Proxy
 		public static bool ShouldBeProxiable(this MethodInfo method)
 		{
 			// to use only for real methods (no getter/setter)
-			return (method.DeclaringType != typeof (MarshalByRefObject)) &&
-			       (method.DeclaringType != typeof (object) || !"finalize".Equals(method.Name, StringComparison.OrdinalIgnoreCase)) &&
-			       (!(method.DeclaringType == typeof (object) && "GetType".Equals(method.Name))) &&
-			       (!(method.DeclaringType == typeof (object) && "obj_address".Equals(method.Name))) && // Mono-specific method
-			       !IsDisposeMethod(method) &&
+			return (method.DeclaringType != typeof(MarshalByRefObject)) &&
+				   (method.DeclaringType != typeof(object) || !"finalize".Equals(method.Name, StringComparison.OrdinalIgnoreCase)) &&
+				   (!(method.DeclaringType == typeof(object) && "GetType".Equals(method.Name))) &&
+				   (!(method.DeclaringType == typeof(object) && "obj_address".Equals(method.Name))) && // Mono-specific method
+				   !IsDisposeMethod(method) &&
 						 (method.IsPublic || method.IsAssembly || method.IsFamilyOrAssembly);
 		}
 
 		public static bool ShouldBeProxiable(this PropertyInfo propertyInfo)
 		{
-			if(propertyInfo != null)
+			if (propertyInfo != null)
 			{
 				var accessors = propertyInfo.GetAccessors(true);
 				return accessors.Where(x => x.IsPublic || x.IsAssembly || x.IsFamilyOrAssembly).Any();

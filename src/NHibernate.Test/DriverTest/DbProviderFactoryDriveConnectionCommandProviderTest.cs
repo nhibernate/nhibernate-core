@@ -20,7 +20,7 @@ namespace NHibernate.Test.DriverTest
 		{
 			var factory = DbProviderFactories.GetFactory("System.Data.OracleClient");
 			var provider = new DbProviderFactoryDriveConnectionCommandProvider(factory);
-			using(var connection =provider.CreateConnection())
+			using (var connection = provider.CreateConnection())
 			{
 				Assert.That(connection, Is.Not.Null);
 			}

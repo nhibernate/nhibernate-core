@@ -46,7 +46,7 @@ namespace NHibernate.Test.EngineTest
 		[Test]
 		public void WhenTheTypeIsAnArray_ChoseTheDefaultComparer()
 		{
-			byte[] value = new byte[]{1,2,3};
+			byte[] value = new byte[] { 1, 2, 3 };
 
 			var tv = new TypedValue(NHibernateUtil.BinaryBlob, value);
 
@@ -76,7 +76,7 @@ namespace NHibernate.Test.EngineTest
 		static IEnumerable<T> ToLazyEnumerable<T>(params T[] array)
 		{
 			// We want to get an IEnumerable which is lazy (eg does not implement ICollection interface)
-	
+
 			// ReSharper disable once LoopCanBeConvertedToQuery
 			foreach (var item in array) yield return item;
 		}

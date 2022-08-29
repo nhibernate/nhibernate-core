@@ -223,7 +223,7 @@ namespace NHibernate.Properties
 		{
 			//TODO: this is temporary in that the end result will probably not take a Property reference per-se.
 			EntityMode modeToUse = mode ?? EntityMode.Poco;
-			switch(modeToUse)
+			switch (modeToUse)
 			{
 				case EntityMode.Poco:
 					return GetPocoPropertyAccessor(property.PropertyAccessorName);

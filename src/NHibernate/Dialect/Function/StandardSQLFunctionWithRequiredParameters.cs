@@ -16,7 +16,7 @@ namespace NHibernate.Dialect.Function
 		private readonly object[] _requiredArgs;
 
 		/// <inheritdoc />
-		public StandardSQLFunctionWithRequiredParameters(string name, object[] requiredArgs) 
+		public StandardSQLFunctionWithRequiredParameters(string name, object[] requiredArgs)
 			: base(name)
 		{
 			_requiredArgs = requiredArgs;
@@ -34,8 +34,8 @@ namespace NHibernate.Dialect.Function
 		{
 			var combinedArgs =
 				args.Cast<object>()
-				    .Concat(_requiredArgs.Skip(args.Count))
-				    .ToArray();
+					.Concat(_requiredArgs.Skip(args.Count))
+					.ToArray();
 			return base.Render(combinedArgs, factory);
 		}
 	}

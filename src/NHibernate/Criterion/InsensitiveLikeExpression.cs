@@ -99,7 +99,7 @@ namespace NHibernate.Criterion
 				typedValues.AddRange(projection.GetTypedValues(criteria, criteriaQuery));
 			}
 			typedValues.Add(GetParameterTypedValue(criteria, criteriaQuery));
-			
+
 			return typedValues.ToArray();
 		}
 
@@ -120,7 +120,7 @@ namespace NHibernate.Criterion
 
 		public override string ToString()
 		{
-			return (projection ?? (object)propertyName) + " ilike " + value;
+			return (projection ?? (object) propertyName) + " ilike " + value;
 		}
 	}
 }

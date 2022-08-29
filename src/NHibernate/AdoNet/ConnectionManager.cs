@@ -386,10 +386,10 @@ namespace NHibernate.AdoNet
 		private ConnectionManager(SerializationInfo info, StreamingContext context)
 		{
 			_ownConnection = info.GetBoolean("ownConnection");
-			Session = (ISessionImplementor)info.GetValue("session", typeof(ISessionImplementor));
+			Session = (ISessionImplementor) info.GetValue("session", typeof(ISessionImplementor));
 			_connectionReleaseMode =
-				(ConnectionReleaseMode)info.GetValue("connectionReleaseMode", typeof(ConnectionReleaseMode));
-			_interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
+				(ConnectionReleaseMode) info.GetValue("connectionReleaseMode", typeof(ConnectionReleaseMode));
+			_interceptor = (IInterceptor) info.GetValue("interceptor", typeof(IInterceptor));
 			_connectionAccess = (IConnectionAccess) info.GetValue("connectionAccess", typeof(IConnectionAccess));
 		}
 

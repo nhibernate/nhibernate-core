@@ -4,8 +4,8 @@ namespace NHibernate.Test.Events.Collections.Association.Bidirectional.OneToMany
 	{
 		private IParentWithCollection parent;
 
-		public ChildWithManyToOne() {}
-		public ChildWithManyToOne(string name) : base(name) {}
+		public ChildWithManyToOne() { }
+		public ChildWithManyToOne(string name) : base(name) { }
 
 		public virtual IParentWithCollection Parent
 		{

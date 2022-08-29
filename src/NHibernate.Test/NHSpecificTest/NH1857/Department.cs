@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1857
 {
 	public class Department
 	{
-		private Department() {}
+		private Department() { }
 
 		public Department(int id, string name)
 		{

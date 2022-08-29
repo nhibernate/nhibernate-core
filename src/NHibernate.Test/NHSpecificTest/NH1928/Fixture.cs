@@ -5,14 +5,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1928
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-        [Test]
-        public void SqlCommentAtBeginningOfLine()
-        {
-            using (ISession session = OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
-            {
-                var query = session.CreateSQLQuery(
-                    @"
+		[Test]
+		public void SqlCommentAtBeginningOfLine()
+		{
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
+			{
+				var query = session.CreateSQLQuery(
+					@"
 select 1
 from 
     Customer 
@@ -21,11 +21,11 @@ where
     Name = 'Joe'
     and Age > 50
 ");
-   
-                Assert.DoesNotThrow(() => query.List());
-                tx.Commit();
-            }
-        }
+
+				Assert.DoesNotThrow(() => query.List());
+				tx.Commit();
+			}
+		}
 
 		[Test]
 		public void SqlCommentAtBeginningOfLastLine()
@@ -48,14 +48,14 @@ where
 			}
 		}
 
-        [Test]
-        public void SqlCommentAfterBeginningOfLine()
-        {
-            using (ISession session = OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
-            {
-                var query = session.CreateSQLQuery(
-                    @"
+		[Test]
+		public void SqlCommentAfterBeginningOfLine()
+		{
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
+			{
+				var query = session.CreateSQLQuery(
+					@"
 select 1
 from 
     Customer 
@@ -65,9 +65,9 @@ where
     and Age > 50
 ");
 
-                Assert.DoesNotThrow(() => query.List());
-                tx.Commit();
-            }
-        }
-    }
+				Assert.DoesNotThrow(() => query.List());
+				tx.Commit();
+			}
+		}
+	}
 }

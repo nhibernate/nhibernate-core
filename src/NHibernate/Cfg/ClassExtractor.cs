@@ -1,7 +1,7 @@
-using System.Xml;
-using NHibernate.Util;
 using System.Collections.Generic;
+using System.Xml;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Util;
 
 namespace NHibernate.Cfg
 {
@@ -102,7 +102,7 @@ namespace NHibernate.Cfg
 			return classEntries;
 		}
 
-		private static IEnumerable<ClassEntry> GetRootClassesEntries(string assembly, string @namespace,IEnumerable<HbmClass> rootClasses)
+		private static IEnumerable<ClassEntry> GetRootClassesEntries(string assembly, string @namespace, IEnumerable<HbmClass> rootClasses)
 		{
 			foreach (var rootClass in rootClasses)
 			{
@@ -124,13 +124,13 @@ namespace NHibernate.Cfg
 		}
 
 		private static IEnumerable<ClassEntry> GetSubclassesEntries(string assembly, string @namespace, string defaultExtends,
-		                                                            IEnumerable<HbmSubclass> hbmSubclasses)
+																	IEnumerable<HbmSubclass> hbmSubclasses)
 		{
 			foreach (HbmSubclass subclass in hbmSubclasses)
 			{
 				string extends = subclass.extends ?? defaultExtends;
 				yield return new ClassEntry(extends, subclass.Name, subclass.EntityName, assembly, @namespace);
-				foreach (ClassEntry classEntry in GetSubclassesEntries(assembly, @namespace, subclass.EntityName,subclass.Subclasses))
+				foreach (ClassEntry classEntry in GetSubclassesEntries(assembly, @namespace, subclass.EntityName, subclass.Subclasses))
 				{
 					yield return classEntry;
 				}
@@ -138,8 +138,8 @@ namespace NHibernate.Cfg
 		}
 
 		private static IEnumerable<ClassEntry> GetJoinedSubclassesEntries(string assembly, string @namespace,
-		                                                                  string defaultExtends,
-		                                                                  IEnumerable<HbmJoinedSubclass> hbmJoinedSubclasses)
+																		  string defaultExtends,
+																		  IEnumerable<HbmJoinedSubclass> hbmJoinedSubclasses)
 		{
 			foreach (HbmJoinedSubclass subclass in hbmJoinedSubclasses)
 			{
@@ -153,14 +153,14 @@ namespace NHibernate.Cfg
 		}
 
 		private static IEnumerable<ClassEntry> GetUnionSubclassesEntries(string assembly, string @namespace,
-		                                                                 string defaultExtends,
-		                                                                 IEnumerable<HbmUnionSubclass> hbmUnionSubclasses)
+																		 string defaultExtends,
+																		 IEnumerable<HbmUnionSubclass> hbmUnionSubclasses)
 		{
 			foreach (HbmUnionSubclass subclass in hbmUnionSubclasses)
 			{
 				string extends = subclass.extends ?? defaultExtends;
 				yield return new ClassEntry(extends, subclass.Name, subclass.EntityName, assembly, @namespace);
-				foreach (ClassEntry classEntry in GetUnionSubclassesEntries(assembly, @namespace, subclass.EntityName,subclass.UnionSubclasses))
+				foreach (ClassEntry classEntry in GetUnionSubclassesEntries(assembly, @namespace, subclass.EntityName, subclass.UnionSubclasses))
 				{
 					yield return classEntry;
 				}

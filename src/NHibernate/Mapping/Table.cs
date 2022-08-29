@@ -831,7 +831,7 @@ namespace NHibernate.Mapping
 
 		public virtual UniqueKey CreateUniqueKey(IList<Column> keyColumns)
 		{
-			var keyName = Constraint.GenerateName( "UK_", this, null, keyColumns);
+			var keyName = Constraint.GenerateName("UK_", this, null, keyColumns);
 			var uk = GetOrCreateUniqueKey(keyName);
 			uk.AddColumns(keyColumns);
 			return uk;

@@ -23,8 +23,8 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return true; }
 		}
 
-		#endregion	
-		
+		#endregion
+
 		#region Overrides of AbstractDecoratable
 
 		protected override HbmMeta[] Metadatas
@@ -77,7 +77,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public HbmLaziness? Lazy
 		{
-			get { return lazySpecified ? lazy : (HbmLaziness?)null; }
+			get { return lazySpecified ? lazy : (HbmLaziness?) null; }
 		}
 
 		public bool IsLazyProperty

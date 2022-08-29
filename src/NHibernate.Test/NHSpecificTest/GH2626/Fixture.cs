@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2626
 		[Test]
 		public void SubqueryWithSelectOnSubclassProperty()
 		{
-			using(var logSpy = new SqlLogSpy())
+			using (var logSpy = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
 				var capabilitiesQuery = session
@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2626
 		[Test]
 		public void SubqueryWithOfTypeAndSelectOnSubclassProperty()
 		{
-			using(var logSpy = new SqlLogSpy())
+			using (var logSpy = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
 				var capabilitiesQuery = session

@@ -4,9 +4,9 @@ using System.Data.Common;
 
 namespace NHibernate.Dialect.Schema
 {
-	public class MsSqlDataBaseSchema: AbstractDataBaseSchema
+	public class MsSqlDataBaseSchema : AbstractDataBaseSchema
 	{
-		public MsSqlDataBaseSchema(DbConnection connection) : base(connection) {}
+		public MsSqlDataBaseSchema(DbConnection connection) : base(connection) { }
 
 		public override ITableMetadata GetTableMetadata(DataRow rs, bool extras)
 		{
@@ -14,7 +14,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class MsSqlTableMetadata: AbstractTableMetadata
+	public class MsSqlTableMetadata : AbstractTableMetadata
 	{
 		public MsSqlTableMetadata(DataRow rs, IDataBaseSchema meta, bool extras) : base(rs, meta, extras) { }
 
@@ -77,7 +77,7 @@ namespace NHibernate.Dialect.Schema
 		}
 	}
 
-	public class MsSqlIndexMetadata: AbstractIndexMetadata
+	public class MsSqlIndexMetadata : AbstractIndexMetadata
 	{
 		public MsSqlIndexMetadata(DataRow rs) : base(rs)
 		{

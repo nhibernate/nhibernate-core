@@ -1,7 +1,7 @@
-using log4net;
-using NUnit.Framework;
 using System;
 using System.Collections;
+using log4net;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Join
 {
@@ -19,7 +19,7 @@ namespace NHibernate.Test.Join
 		{
 			get
 			{
-				return new string[] { 
+				return new string[] {
 					"Join.CompositeKey.hbm.xml"
 				};
 			}

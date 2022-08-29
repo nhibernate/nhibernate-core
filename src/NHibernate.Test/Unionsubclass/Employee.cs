@@ -1,6 +1,6 @@
 namespace NHibernate.Test.Unionsubclass
 {
-	public class Employee: Human
+	public class Employee : Human
 	{
 		private double salary;
 

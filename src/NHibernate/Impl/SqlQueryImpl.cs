@@ -368,7 +368,7 @@ namespace NHibernate.Impl
 
 		public override int ExecuteUpdate()
 		{
-			IDictionary<string,TypedValue> namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
 			{

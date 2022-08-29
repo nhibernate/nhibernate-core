@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2976
 
 				_employeeId1 = employee1.Id;
 				_employeeId2 = employee2.Id;
-				
+
 				session.Save(employer);
 				session.Flush();
 				transaction.Commit();

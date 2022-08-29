@@ -43,7 +43,7 @@ namespace NHibernate.Test.BulkManipulation
 		{
 			_persister.HasCache.Returns(persisterHasCache);
 
-			var target = new BulkOperationCleanupAction(_session, new HashSet<string>(querySpaces.Split(new []{','},StringSplitOptions.RemoveEmptyEntries)));
+			var target = new BulkOperationCleanupAction(_session, new HashSet<string>(querySpaces.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)));
 
 			target.ExecuteAfterTransactionCompletion(true);
 

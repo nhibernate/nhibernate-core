@@ -18,9 +18,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 		}
 
-		public override void SetScalarColumnText(int i) 
+		public override void SetScalarColumnText(int i)
 		{
-			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i );
+			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i);
 		}
 
 		public override IType DataType
@@ -34,11 +34,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					case HqlSqlWalker.NUM_LONG:
 						return NHibernateUtil.Int64;
 					case HqlSqlWalker.NUM_FLOAT:
-                        return NHibernateUtil.Single;
-                    case HqlSqlWalker.NUM_DOUBLE:
-                        return NHibernateUtil.Double;
-                    case HqlSqlWalker.NUM_DECIMAL:
-				        return NHibernateUtil.Decimal;
+						return NHibernateUtil.Single;
+					case HqlSqlWalker.NUM_DOUBLE:
+						return NHibernateUtil.Double;
+					case HqlSqlWalker.NUM_DECIMAL:
+						return NHibernateUtil.Decimal;
 					case HqlSqlWalker.QUOTED_String:
 						return NHibernateUtil.String;
 					case HqlSqlWalker.TRUE:

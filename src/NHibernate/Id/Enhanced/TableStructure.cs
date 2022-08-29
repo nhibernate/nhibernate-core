@@ -1,11 +1,10 @@
 using System;
 using System.Data;
 using System.Data.Common;
-
+using NHibernate.AdoNet.Util;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
-using NHibernate.AdoNet.Util;
 
 namespace NHibernate.Id.Enhanced
 {
@@ -90,7 +89,7 @@ namespace NHibernate.Id.Enhanced
 
 		public virtual string[] SqlDropStrings(Dialect.Dialect dialect)
 		{
-			return new[] {dialect.GetDropTableString(_tableName) };
+			return new[] { dialect.GetDropTableString(_tableName) };
 		}
 
 		#endregion
@@ -118,7 +117,7 @@ namespace NHibernate.Id.Enhanced
 						selectedValue = selectCmd.ExecuteScalar();
 					}
 
-					if (selectedValue ==null)
+					if (selectedValue == null)
 					{
 						Log.Error("could not read a hi value - you need to populate the table: {0}", _tableName);
 						throw new IdentifierGenerationException("could not read a hi value - you need to populate the table: " + _tableName);

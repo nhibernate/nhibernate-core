@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (MedicalRecord)) return false;
+			if (obj.GetType() != typeof(MedicalRecord)) return false;
 			return Equals((MedicalRecord) obj);
 		}
 

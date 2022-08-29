@@ -23,7 +23,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		[Test]
 		public void TestFindMemberExpressionReferenceCast()
 		{
-			Expression<Func<Person, string>> e = (Person p) => ((CustomPerson)p).MiddleName;
+			Expression<Func<Person, string>> e = (Person p) => ((CustomPerson) p).MiddleName;
 			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("MiddleName", property);
 		}
@@ -41,7 +41,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		public void TestFindMemberExpressionReferenceCastAlias()
 		{
 			Person personAlias = null;
-			Expression<Func<string>> e = () => ((CustomPerson)personAlias).MiddleName;
+			Expression<Func<string>> e = () => ((CustomPerson) personAlias).MiddleName;
 			string property = ExpressionProcessor.FindMemberProjection(e.Body).AsProperty();
 			Assert.AreEqual("personAlias.MiddleName", property);
 		}
@@ -179,7 +179,7 @@ namespace NHibernate.Test.Criteria.Lambda
 				};
 
 			Assert.That(Projection(() => person.Name), Is.EqualTo("test name"));
-			Assert.That(Projection(() => ((CustomPerson)person).MiddleName), Is.EqualTo("test middle name"));
+			Assert.That(Projection(() => ((CustomPerson) person).MiddleName), Is.EqualTo("test middle name"));
 			Assert.That(Projection(() => "test name"), Is.EqualTo("test name"));
 			Assert.That(Projection(() => person.NullableAge.Value), Is.EqualTo(4));
 			Assert.That(Projection(() => person.GetType()), Is.EqualTo(typeof(CustomPerson)));
@@ -190,7 +190,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		private T Projection<T>(Expression<Func<T>> e)
 		{
 			var constantProjection = ExpressionProcessor.FindMemberProjection(e.Body).AsProjection();
-			return (T)typeof(ConstantProjection).GetField("value", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(constantProjection);
+			return (T) typeof(ConstantProjection).GetField("value", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(constantProjection);
 		}
 
 		[Test]
@@ -198,7 +198,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			string testName = "testName";
 			ICriterion criterion = ExpressionProcessor.ProcessExpression<Person>(p => p.Name == testName);
-			SimpleExpression simpleExpression = (SimpleExpression)criterion;
+			SimpleExpression simpleExpression = (SimpleExpression) criterion;
 			Assert.AreEqual("testName", simpleExpression.Value);
 		}
 
@@ -215,7 +215,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		{
 			Person.StaticName = "test name";
 			ICriterion criterion = ExpressionProcessor.ProcessExpression<Person>(p => p.Name == Person.StaticName);
-			SimpleExpression simpleExpression = (SimpleExpression)criterion;
+			SimpleExpression simpleExpression = (SimpleExpression) criterion;
 			Assert.AreEqual("test name", simpleExpression.Value);
 		}
 
@@ -264,7 +264,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			Person testPerson = new Person();
 			testPerson.Name = "testName";
 			ICriterion criterion = ExpressionProcessor.ProcessExpression<Person>(p => p.Name == testPerson.Name);
-			SimpleExpression simpleExpression = (SimpleExpression)criterion;
+			SimpleExpression simpleExpression = (SimpleExpression) criterion;
 			Assert.AreEqual("testName", simpleExpression.Value);
 		}
 

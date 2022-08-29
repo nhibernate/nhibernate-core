@@ -5,14 +5,14 @@ using NHibernate.Classic;
 
 namespace NHibernate.Test.Classic
 {
-	public class Video: IValidatable
+	public class Video : IValidatable
 	{
 		private int id;
 		private string name;
 		private double heigth;
 		private double width;
 
-		public Video() {}
+		public Video() { }
 
 		public Video(string name, double heigth, double width)
 		{

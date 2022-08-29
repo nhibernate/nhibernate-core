@@ -7,7 +7,7 @@ namespace NHibernate.Test.Events.Collections
 		private ICollection<IChild> children;
 		private long id;
 		private string name;
-		protected AbstractParentWithCollection() {}
+		protected AbstractParentWithCollection() { }
 
 		protected AbstractParentWithCollection(string name)
 		{

@@ -13,7 +13,7 @@ namespace NHibernate.Test.Legacy
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"Simple.hbm.xml"}; }
+			get { return new string[] { "Simple.hbm.xml" }; }
 		}
 
 		[Test]
@@ -74,7 +74,7 @@ namespace NHibernate.Test.Legacy
 			ISession s3 = OpenSession();
 			ITransaction t3 = s3.BeginTransaction();
 
-//			Simple simple3 = (Simple)s3.Load(typeof(Simple), key);
+			//			Simple simple3 = (Simple)s3.Load(typeof(Simple), key);
 			Simple simple3 = (Simple) s3.CreateQuery("from Simple as s where s.id = ? and '?'='?'").SetInt64(0, key).List()[0];
 			Simple otherSimple3;
 

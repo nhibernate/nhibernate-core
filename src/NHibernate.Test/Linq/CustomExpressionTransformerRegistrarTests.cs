@@ -59,7 +59,7 @@ namespace NHibernate.Test.Linq
 			public Expression Transform(MethodCallExpression expression)
 			{
 				if (ValueTransformers.TryGetValue(expression.Method, out var valueTransformer) &&
-				    expression.Arguments[0] is ConstantExpression constantExpression)
+					expression.Arguments[0] is ConstantExpression constantExpression)
 				{
 					return Expression.Call(
 						Like,
@@ -71,7 +71,7 @@ namespace NHibernate.Test.Linq
 				return expression;
 			}
 
-			public ExpressionType[] SupportedExpressionTypes { get; } = {ExpressionType.Call};
+			public ExpressionType[] SupportedExpressionTypes { get; } = { ExpressionType.Call };
 		}
 	}
 }

@@ -1,7 +1,7 @@
 using System;
-using NHibernate.Util;
 using System.Collections.Generic;
 using System.Linq;
+using NHibernate.Util;
 
 namespace NHibernate.Mapping
 {

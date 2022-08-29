@@ -13,12 +13,12 @@ namespace NHibernate.Criterion
 	{
 		private bool distinct;
 
-		protected internal CountProjection(String prop) : base("count", prop) {}
-		protected internal CountProjection(IProjection projection) : base("count", projection) {}
+		protected internal CountProjection(String prop) : base("count", prop) { }
+		protected internal CountProjection(IProjection projection) : base("count", projection) { }
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
-			return new IType[] {NHibernateUtil.Int32};
+			return new IType[] { NHibernateUtil.Int32 };
 		}
 
 		public override string ToString()

@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3570
 		public virtual Guid Id { get; set; }
 		public virtual IList<BiChild> Children { get; set; }
 		public virtual int Version { get; set; }
-		
+
 		public virtual void AddChild(BiChild child)
 		{
 			child.Parent = this;

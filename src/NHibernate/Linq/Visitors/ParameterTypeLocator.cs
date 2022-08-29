@@ -331,7 +331,7 @@ namespace NHibernate.Linq.Visitors
 				// Insert and Update statements have assign expressions, where the left side is a parameter and its name
 				// represents the property path to be assigned
 				if (!(leftNode is ParameterExpression parameterExpression) ||
-				    !(rightNode is ConstantExpression constantExpression))
+					!(rightNode is ConstantExpression constantExpression))
 				{
 					return;
 				}

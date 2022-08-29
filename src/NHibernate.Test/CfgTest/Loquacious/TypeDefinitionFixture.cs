@@ -14,11 +14,11 @@ namespace NHibernate.Test.CfgTest.Loquacious
 		{
 			var configure = new Configuration()
 				.DataBaseIntegration(db => db.Dialect<MsSql2005Dialect>());
-			configure.TypeDefinition<TableHiLoGenerator>(c=>
-			                                             	{
-			                                             		c.Alias = "HighLow";
-			                                             		c.Properties = new {max_lo = 99};
-			                                             	});
+			configure.TypeDefinition<TableHiLoGenerator>(c =>
+															 {
+																 c.Alias = "HighLow";
+																 c.Properties = new { max_lo = 99 };
+															 });
 			var mappings = configure.CreateMappings();
 			var typeDef = mappings.GetTypeDef("HighLow");
 			Assert.That(typeDef, Is.Not.Null);

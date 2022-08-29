@@ -190,7 +190,7 @@ namespace NHibernate.Engine.Loading
 			// in a temp collection.  the temp collection is then used to "drive"
 			// the #endRead processing.
 			List<CollectionKey> toRemove = new List<CollectionKey>();
-			List<LoadingCollectionEntry> matches =new List<LoadingCollectionEntry>();
+			List<LoadingCollectionEntry> matches = new List<LoadingCollectionEntry>();
 			foreach (CollectionKey collectionKey in localLoadingCollectionKeys)
 			{
 				ISessionImplementor session = LoadContext.PersistenceContext.Session;
@@ -198,7 +198,7 @@ namespace NHibernate.Engine.Loading
 				LoadingCollectionEntry lce = loadContexts.LocateLoadingCollectionEntry(collectionKey);
 				if (lce == null)
 				{
-					log.Warn("In CollectionLoadContext#endLoadingCollections, localLoadingCollectionKeys contained [{0}], but no LoadingCollectionEntry was found in loadContexts", 
+					log.Warn("In CollectionLoadContext#endLoadingCollections, localLoadingCollectionKeys contained [{0}], but no LoadingCollectionEntry was found in loadContexts",
 						collectionKey);
 				}
 				else if (lce.ResultSet == resultSet && lce.Persister == persister)
@@ -235,7 +235,7 @@ namespace NHibernate.Engine.Loading
 		}
 
 		private void EndLoadingCollections(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, bool skipCache,
-		                                   CacheBatcher cacheBatcher = null)
+										   CacheBatcher cacheBatcher = null)
 		{
 			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
 			{
@@ -258,7 +258,7 @@ namespace NHibernate.Engine.Loading
 			for (int i = 0; i < count; i++)
 			{
 				EndLoadingCollection(
-					matchedCollectionEntries[i], 
+					matchedCollectionEntries[i],
 					persister,
 					data => cacheBatcher.AddToBatch(persister, data),
 					skipCache);
@@ -273,7 +273,7 @@ namespace NHibernate.Engine.Loading
 		}
 
 		private void EndLoadingCollection(
-			LoadingCollectionEntry lce, 
+			LoadingCollectionEntry lce,
 			ICollectionPersister persister,
 			Action<CachePutData> cacheBatchingHandler,
 			bool skipCache)
@@ -339,7 +339,7 @@ namespace NHibernate.Engine.Loading
 		/// <param name="persister">The persister </param>
 		/// <param name="cacheBatchingHandler">The action for handling cache batching</param>
 		private void AddCollectionToCache(LoadingCollectionEntry lce, ICollectionPersister persister,
-		                                  Action<CachePutData> cacheBatchingHandler)
+										  Action<CachePutData> cacheBatchingHandler)
 		{
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
 			ISessionFactoryImplementor factory = session.Factory;
@@ -393,8 +393,8 @@ namespace NHibernate.Engine.Loading
 			else
 			{
 				bool put = persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry),
-				                               session.Timestamp, version, versionComparator,
-				                               factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);
+											   session.Timestamp, version, versionComparator,
+											   factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);
 
 				if (put && factory.Statistics.IsStatisticsEnabled)
 				{
@@ -407,7 +407,7 @@ namespace NHibernate.Engine.Loading
 		{
 			if (!(localLoadingCollectionKeys.Count == 0))
 			{
-				log.Warn("On CollectionLoadContext#cleanup, localLoadingCollectionKeys contained [{0}] entries", 
+				log.Warn("On CollectionLoadContext#cleanup, localLoadingCollectionKeys contained [{0}] entries",
 					localLoadingCollectionKeys.Count);
 			}
 			LoadContext.CleanupCollectionXRefs(localLoadingCollectionKeys);

@@ -11,5 +11,5 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 		}
 	}
 
-	public class UnitTestException : Exception{}
+	public class UnitTestException : Exception { }
 }

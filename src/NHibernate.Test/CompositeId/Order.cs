@@ -9,7 +9,7 @@ namespace NHibernate.Test.CompositeId
 		{
 			private string customerId;
 			private int orderNumber;
-			public ID() {}
+			public ID() { }
 
 			public ID(string customerId, int orderNumber)
 			{
@@ -49,7 +49,7 @@ namespace NHibernate.Test.CompositeId
 		private IList<LineItem> lineItems = new List<LineItem>();
 		private decimal total;
 
-		public Order() {}
+		public Order() { }
 		public Order(Customer customer)
 		{
 			this.customer = customer;
@@ -91,7 +91,7 @@ namespace NHibernate.Test.CompositeId
 		public virtual LineItem GenerateLineItem(Product product, int quantity)
 		{
 			LineItem li = new LineItem(this, product);
-			li.Quantity= quantity;
+			li.Quantity = quantity;
 			lineItems.Add(li);
 			return li;
 		}

@@ -33,7 +33,7 @@ namespace NHibernate.Test.CacheTest
 			const string filterName = "DescriptionLike";
 			var f = new FilterImpl(Sfi.GetFilterDefinition(filterName));
 			f.SetParameter("pLike", "so%");
-			var fk =  new FilterKey(f);
+			var fk = new FilterKey(f);
 			ISet<FilterKey> fks = new HashSet<FilterKey> { fk };
 			qk = new QueryKey(Sfi, SqlAll, new QueryParameters(), fks, null, null);
 

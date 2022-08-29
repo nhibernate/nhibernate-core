@@ -25,10 +25,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1275
 		public void Retrieving()
 		{
 			object savedId;
-			using(ISession s = OpenSession())
-			using(ITransaction t = s.BeginTransaction())
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				A a  = new A("hunabKu");
+				A a = new A("hunabKu");
 				savedId = s.Save(a);
 				t.Commit();
 			}

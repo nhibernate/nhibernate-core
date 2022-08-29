@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmListIndex: IColumnsMapping
+	public partial class HbmListIndex : IColumnsMapping
 	{
 		[XmlIgnore]
 		public IEnumerable<HbmColumn> Columns

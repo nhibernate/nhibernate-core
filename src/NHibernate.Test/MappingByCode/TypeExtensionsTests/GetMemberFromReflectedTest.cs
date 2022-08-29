@@ -61,7 +61,7 @@ namespace NHibernate.Test.MappingByCode.TypeExtensionsTests
 		[Test]
 		public void WhenNullMemberThenThrows()
 		{
-			Assert.That(() => ((MemberInfo)null).GetMemberFromReflectedType(typeof(MyClass)), Throws.TypeOf<ArgumentNullException>());
+			Assert.That(() => ((MemberInfo) null).GetMemberFromReflectedType(typeof(MyClass)), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]

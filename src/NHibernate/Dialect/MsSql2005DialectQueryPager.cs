@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using NHibernate.SqlCommand.Parser;
 using NHibernate.SqlCommand;
+using NHibernate.SqlCommand.Parser;
 
 namespace NHibernate.Dialect
 {

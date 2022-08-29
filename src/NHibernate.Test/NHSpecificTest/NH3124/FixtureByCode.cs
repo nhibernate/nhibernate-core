@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3124
 			using (ISession session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.Save(new Person {Id = 1000, Name = "Test", Type = 'A'});
+				session.Save(new Person { Id = 1000, Name = "Test", Type = 'A' });
 				transaction.Commit();
 			}
 		}

@@ -24,28 +24,28 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 			using (ITransaction transaction = session.BeginTransaction())
 			{
 				var bobsConnection = new Connection
-					{
-						Address = "test.com",
-						ConnectionType = "http",
-						PortName = "80"
-					};
+				{
+					Address = "test.com",
+					ConnectionType = "http",
+					PortName = "80"
+				};
 				var e1 = new Person
-					{
-						Name = "Bob", 
-						Connection = bobsConnection
-					};
+				{
+					Name = "Bob",
+					Connection = bobsConnection
+				};
 				session.Save(e1);
 
 				var sallysConnection = new Connection
-					{
-						Address = "test.com",
-						ConnectionType = "http",
-					};
+				{
+					Address = "test.com",
+					ConnectionType = "http",
+				};
 				var e2 = new Person
-					{
-						Name = "Sally", 
-						Connection = sallysConnection
-					};
+				{
+					Name = "Sally",
+					Connection = sallysConnection
+				};
 				session.Save(e2);
 
 				var cachedNullConnection = new Connection
@@ -92,29 +92,29 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 		[Test]
 		public void QueryOverComponentWithANullProperty()
 		{
-//			Broken at the time NH3634 was reported
-//			Generates the following Rpc(exec sp_executesql)
-//			SELECT this_.Id as Id0_0_, 
-//				   this_.Name as Name0_0_, 
-//				   this_.ConnectionType as Connecti3_0_0_, 
-//				   this_.Address as Address0_0_, 
-//				   this_.PortName as PortName0_0_ 
-//			  FROM people this_ 
-//			 WHERE this_.ConnectionType = @p0 
-//			   and this_.Address = @p1 
-//			   and this_.PortName = @p2
-//
-//			@p0=N'http',@p1=N'test.com',@p2=NULL
+			//			Broken at the time NH3634 was reported
+			//			Generates the following Rpc(exec sp_executesql)
+			//			SELECT this_.Id as Id0_0_, 
+			//				   this_.Name as Name0_0_, 
+			//				   this_.ConnectionType as Connecti3_0_0_, 
+			//				   this_.Address as Address0_0_, 
+			//				   this_.PortName as PortName0_0_ 
+			//			  FROM people this_ 
+			//			 WHERE this_.ConnectionType = @p0 
+			//			   and this_.Address = @p1 
+			//			   and this_.PortName = @p2
+			//
+			//			@p0=N'http',@p1=N'test.com',@p2=NULL
 
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
 				var componentToCompare = new Connection
-					{
-						ConnectionType = "http",
-						Address = "test.com", 
-						PortName = null
-					};
+				{
+					ConnectionType = "http",
+					Address = "test.com",
+					PortName = null
+				};
 				var sally = session.QueryOver<Person>()
 								   .Where(p => p.Connection == componentToCompare)
 								   .SingleOrDefault<Person>();
@@ -128,19 +128,19 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 		[Test]
 		public void QueryAgainstComponentWithANullPropertyUsingCriteria()
 		{
-//			Broken at the time NH3634 was reported
-//			Generates the following Rpc(exec sp_executesql)
-//			SELECT this_.Id as Id0_0_, 
-//				   this_.Name as Name0_0_, 
-//				   this_.ConnectionType as Connecti3_0_0_, 
-//				   this_.Address as Address0_0_, 
-//				   this_.PortName as PortName0_0_ 
-//			  FROM people this_ 
-//			 WHERE this_.ConnectionType = @p0 
-//			   and this_.Address = @p1 
-//			   and this_.PortName = @p2
-//
-//			@p0=N'http',@p1=N'test.com',@p2=NULL
+			//			Broken at the time NH3634 was reported
+			//			Generates the following Rpc(exec sp_executesql)
+			//			SELECT this_.Id as Id0_0_, 
+			//				   this_.Name as Name0_0_, 
+			//				   this_.ConnectionType as Connecti3_0_0_, 
+			//				   this_.Address as Address0_0_, 
+			//				   this_.PortName as PortName0_0_ 
+			//			  FROM people this_ 
+			//			 WHERE this_.ConnectionType = @p0 
+			//			   and this_.Address = @p1 
+			//			   and this_.PortName = @p2
+			//
+			//			@p0=N'http',@p1=N'test.com',@p2=NULL
 
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
@@ -152,8 +152,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 					PortName = null
 				};
 				var sally = session.CreateCriteria<Person>()
-				                   .Add(Restrictions.Eq("Connection", componentToCompare))
-				                   .UniqueResult<Person>();
+								   .Add(Restrictions.Eq("Connection", componentToCompare))
+								   .UniqueResult<Person>();
 
 				Assert.That(sally, Is.Not.Null);
 				Assert.That(sally.Name, Is.EqualTo("Sally"));
@@ -165,11 +165,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 		public void CachedQueryMissesWithDifferentNotNullComponent()
 		{
 			var componentToCompare = new Connection
-				{
-					ConnectionType = "http",
-					Address = "test.com",
-					PortName = null
-				};
+			{
+				ConnectionType = "http",
+				Address = "test.com",
+				PortName = null
+			};
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
@@ -199,9 +199,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 			{
 				//Cache should not return cached entity, because it no longer matches criteria
 				var cachedPeople = session.CreateCriteria<CachedPerson>()
-				                          .Add(Restrictions.Eq("Connection", componentToCompare))
-				                          .SetCacheable(true)
-				                          .List<CachedPerson>();
+										  .Add(Restrictions.Eq("Connection", componentToCompare))
+										  .SetCacheable(true)
+										  .List<CachedPerson>();
 
 				Assert.That(cachedPeople, Is.Empty);
 
@@ -213,11 +213,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 		public void CachedQueryMissesWithDifferentNullComponent()
 		{
 			var componentToCompare = new Connection
-				{
-					ConnectionType = "http",
-					Address = "test.com",
-					PortName = "port"
-				};
+			{
+				ConnectionType = "http",
+				Address = "test.com",
+				PortName = "port"
+			};
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
@@ -247,9 +247,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 			{
 				//Cache should not return cached entity, because it no longer matches criteria
 				var cachedPeople = session.CreateCriteria<CachedPerson>()
-				                          .Add(Restrictions.Eq("Connection", componentToCompare))
-				                          .SetCacheable(true)
-				                          .List<CachedPerson>();
+										  .Add(Restrictions.Eq("Connection", componentToCompare))
+										  .SetCacheable(true)
+										  .List<CachedPerson>();
 
 				Assert.That(cachedPeople, Is.Empty);
 
@@ -261,11 +261,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 		public void CachedQueryAgainstComponentWithANullPropertyUsingCriteria()
 		{
 			var componentToCompare = new Connection
-				{
-					ConnectionType = "http",
-					Address = "test.com",
-					PortName = null
-				};
+			{
+				ConnectionType = "http",
+				Address = "test.com",
+				PortName = null
+			};
 
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
@@ -342,11 +342,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 				Assert.That(person, Is.Not.Null);
 			}
 		}
-		
+
 		[Test]
 		public void HqlComponentIsNull()
 		{
-			using(new SqlLogSpy())
+			using (new SqlLogSpy())
 			using (ISession session = OpenSession())
 			{
 				var p = session.CreateQuery("from Person where Connection is null").UniqueResult<Person>();
@@ -369,24 +369,24 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 		[Test]
 		public void QueryOverANullComponentProperty()
 		{
-//          Works at the time NH3634 was reported 
-//			Generates the following SqlBatch:			
-//			SELECT this_.Id as Id0_0_, 
-//				   this_.Name as Name0_0_, 
-//				   this_.ConnectionType as Connecti3_0_0_, 
-//				   this_.Address as Address0_0_, 
-//				   this_.PortName as PortName0_0_ 
-//			  FROM people this_ 
-//			 WHERE this_.PortName is null
+			//          Works at the time NH3634 was reported 
+			//			Generates the following SqlBatch:			
+			//			SELECT this_.Id as Id0_0_, 
+			//				   this_.Name as Name0_0_, 
+			//				   this_.ConnectionType as Connecti3_0_0_, 
+			//				   this_.Address as Address0_0_, 
+			//				   this_.PortName as PortName0_0_ 
+			//			  FROM people this_ 
+			//			 WHERE this_.PortName is null
 
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
 				var sally = session.QueryOver<Person>()
-				                   .Where(p => p.Connection.PortName == null)
-				                   .And(p => p.Connection.Address == "test.com")
-				                   .And(p => p.Connection.ConnectionType == "http")
-				                   .SingleOrDefault<Person>();
+								   .Where(p => p.Connection.PortName == null)
+								   .And(p => p.Connection.Address == "test.com")
+								   .And(p => p.Connection.ConnectionType == "http")
+								   .SingleOrDefault<Person>();
 
 				Assert.That(sally, Is.Not.Null);
 				Assert.That(sally.Name, Is.EqualTo("Sally"));
@@ -401,10 +401,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 			using (session.BeginTransaction())
 			{
 				var sally = session.CreateCriteria<Person>()
-				                   .Add(Restrictions.Eq("Connection.PortName", null))
-				                   .Add(Restrictions.Eq("Connection.Address", "test.com"))
-				                   .Add(Restrictions.Eq("Connection.ConnectionType", "http"))
-				                   .UniqueResult<Person>();
+								   .Add(Restrictions.Eq("Connection.PortName", null))
+								   .Add(Restrictions.Eq("Connection.Address", "test.com"))
+								   .Add(Restrictions.Eq("Connection.ConnectionType", "http"))
+								   .UniqueResult<Person>();
 
 				Assert.That(sally, Is.Not.Null);
 				Assert.That(sally.Name, Is.EqualTo("Sally"));

@@ -175,7 +175,7 @@ namespace NHibernate.Intercept
 
 		private object InitializeOrGetAssociation(INHibernateProxy value, string fieldName)
 		{
-			if(value.HibernateLazyInitializer.IsUninitialized)
+			if (value.HibernateLazyInitializer.IsUninitialized)
 			{
 				value.HibernateLazyInitializer.Initialize();
 				value.HibernateLazyInitializer.Unwrap = true; // means that future Load/Get from the session will get the implementation

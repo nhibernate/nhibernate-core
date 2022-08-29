@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.GH0750
 		private decimal? _unitPrice;
 		private int _productId;
 		private string _name;
-		
+
 		public Product()
 		{
 			_orderLines = new List<OrderLine>();
@@ -26,13 +26,13 @@ namespace NHibernate.Test.NHSpecificTest.GH0750
 			get { return _name; }
 			set { _name = value; }
 		}
-		
+
 		public virtual decimal? UnitPrice
 		{
 			get { return _unitPrice; }
 			set { _unitPrice = value; }
 		}
-		
+
 		public virtual ReadOnlyCollection<OrderLine> OrderLines
 		{
 			get { return new ReadOnlyCollection<OrderLine>(_orderLines); }

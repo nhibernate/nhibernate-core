@@ -53,7 +53,7 @@ namespace NHibernate.Test.MappingTest
 			{
 				var ma = element.MetaAttributes;
 				Assert.That(ma, Is.Not.Null);
-				Assert.That(element.GetMetaAttribute("global"), Is.Not.Null,"inherited attribute missing for prop {0}",element.Name);
+				Assert.That(element.GetMetaAttribute("global"), Is.Not.Null, "inherited attribute missing for prop {0}", element.Name);
 				MetaAttribute metaAttribute2 = element.GetMetaAttribute("implements");
 				Assert.That(metaAttribute2, Is.Not.Null);
 				Assert.That(element.GetMetaAttribute("globalnoinherit"), Is.Null);
@@ -71,7 +71,7 @@ namespace NHibernate.Test.MappingTest
 			Assert.That(compimplements, Is.Not.Null);
 			Assert.That(compimplements.Value, Is.EqualTo("AnotherInterface"));
 
-			Property xp = ((NHibernate.Mapping.Component)prop.Value).GetProperty("X");
+			Property xp = ((NHibernate.Mapping.Component) prop.Value).GetProperty("X");
 			MetaAttribute propximplements = xp.GetMetaAttribute("implements");
 			Assert.That(propximplements, Is.Not.Null);
 			Assert.That(propximplements.Value, Is.EqualTo("AnotherInterface"));
@@ -97,7 +97,7 @@ namespace NHibernate.Test.MappingTest
 			assertEquals( "wicked level", propertyAttribute.getValues().get(1) );*/
 			Assert.That(propertyAttribute.Value, Is.EqualTo("monetaryamount level"));
 
-			var component = (NHibernate.Mapping.Component)property.Value;
+			var component = (NHibernate.Mapping.Component) property.Value;
 			property = component.GetProperty("X");
 			propertyAttribute = property.GetMetaAttribute("globalmutated");
 
@@ -125,8 +125,8 @@ namespace NHibernate.Test.MappingTest
 			assertEquals( "top level", propertyAttribute.getValues().get(0) );*/
 			Assert.That(propertyAttribute.Value, Is.EqualTo("wicked level"));
 
-			var bag = (Bag)property.Value;
-			component = (NHibernate.Mapping.Component)bag.Element;
+			var bag = (Bag) property.Value;
+			component = (NHibernate.Mapping.Component) bag.Element;
 
 			Assert.That(component.MetaAttributes.Count, Is.EqualTo(4));
 
@@ -163,7 +163,7 @@ namespace NHibernate.Test.MappingTest
 			PersistentClass cm = cfg.GetClassMapping("NHibernate.Test.MappingTest.Wicked");
 
 			Property property = cm.GetProperty("SortedEmployee");
-			var col = (Mapping.Collection)property.Value;
+			var col = (Mapping.Collection) property.Value;
 			Assert.That(col.ComparerClassName, Does.StartWith("NHibernate.Test.MappingTest.NonExistingComparator"));
 		}
 
@@ -173,11 +173,11 @@ namespace NHibernate.Test.MappingTest
 			PersistentClass cm = cfg.GetClassMapping("NHibernate.Test.MappingTest.DomesticAnimal");
 			MetaAttribute metaAttribute = cm.GetMetaAttribute("Auditable");
 			Assert.That(metaAttribute, Is.Not.Null);
-			
+
 			cm = cfg.GetClassMapping("NHibernate.Test.MappingTest.Cat");
 			metaAttribute = cm.GetMetaAttribute("Auditable");
 			Assert.That(metaAttribute, Is.Not.Null);
-			
+
 			cm = cfg.GetClassMapping("NHibernate.Test.MappingTest.Dog");
 			metaAttribute = cm.GetMetaAttribute("Auditable");
 			Assert.That(metaAttribute, Is.Not.Null);

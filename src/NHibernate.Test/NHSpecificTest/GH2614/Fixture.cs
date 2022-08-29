@@ -10,8 +10,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2614
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				s.Save(new ConcreteClass1 {Name = "C1"});
-				s.Save(new ConcreteClass2 {Name = "C2"});
+				s.Save(new ConcreteClass1 { Name = "C1" });
+				s.Save(new ConcreteClass2 { Name = "C2" });
 				t.Commit();
 			}
 		}

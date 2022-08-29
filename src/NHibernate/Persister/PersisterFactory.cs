@@ -95,7 +95,7 @@ namespace NHibernate.Persister
 
 			try
 			{
-				return (IEntityPersister) pc.Invoke(new object[] {model, cache, factory, cfg});
+				return (IEntityPersister) pc.Invoke(new object[] { model, cache, factory, cfg });
 			}
 			catch (TargetInvocationException tie)
 			{
@@ -127,17 +127,17 @@ namespace NHibernate.Persister
 			{
 				throw new MappingException("Could not get constructor for " + persisterClass.Name, e);
 			}
-			if(pc == null)
+			if (pc == null)
 			{
 				var messageBuilder = new StringBuilder();
 				messageBuilder.Append("Could not find a public constructor for ").Append(persisterClass.Name).AppendLine(";");
 				messageBuilder.Append("- The ctor may have ").Append(CollectionPersisterConstructorArgs.Length).AppendLine(" parameters of types (in order):");
-				System.Array.ForEach(CollectionPersisterConstructorArgs, t=> messageBuilder.AppendLine(t.FullName));
+				System.Array.ForEach(CollectionPersisterConstructorArgs, t => messageBuilder.AppendLine(t.FullName));
 				throw new MappingException(messageBuilder.ToString());
 			}
 			try
 			{
-				return (ICollectionPersister) pc.Invoke(new object[] {model, cache, factory});
+				return (ICollectionPersister) pc.Invoke(new object[] { model, cache, factory });
 			}
 			catch (TargetInvocationException tie)
 			{

@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2390
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				var class1 = (Class1)(s.CreateQuery("FROM Class1").UniqueResult());
+				var class1 = (Class1) (s.CreateQuery("FROM Class1").UniqueResult());
 
 				Assert.That(rowsUpdated, Is.EqualTo(1), "UPDATE did not alter the expected number of rows");
 				Assert.That(class1.Property1, Is.EqualTo(1), "UPDATE did not alter Property1");

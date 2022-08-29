@@ -56,8 +56,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1712
 
 		private GenericEntity<TId> QueryId<TId>(string name, TId id, ISession session) where TId : IEquatable<TId>
 			=> (from e in session.Query<GenericEntity<TId>>(name)
-			    where e.Id.Equals(id)
-			    select e).FirstOrDefault();
+				where e.Id.Equals(id)
+				select e).FirstOrDefault();
 
 		[Test]
 		public void QueryWithDefaultEqualsShouldNotThrow()

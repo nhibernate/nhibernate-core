@@ -19,7 +19,7 @@ namespace NHibernate.Test.Interceptor
 		}
 
 		public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState,
-		                                  string[] propertyNames, IType[] types)
+										  string[] propertyNames, IType[] types)
 		{
 			if (!(entity is Log))
 			{

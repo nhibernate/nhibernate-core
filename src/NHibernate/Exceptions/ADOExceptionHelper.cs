@@ -14,7 +14,7 @@ namespace NHibernate.Exceptions
 
 		public static Exception Convert(ISQLExceptionConverter converter, AdoExceptionContextInfo exceptionContextInfo)
 		{
-			if(exceptionContextInfo == null)
+			if (exceptionContextInfo == null)
 			{
 				throw new AssertionFailure("The argument exceptionContextInfo is null.");
 			}
@@ -38,7 +38,7 @@ namespace NHibernate.Exceptions
 		{
 			return Convert(converter,
 						   new AdoExceptionContextInfo
-							{SqlException = sqlException, Message = message, Sql = sql != null ? sql.ToString() : null});
+						   { SqlException = sqlException, Message = message, Sql = sql != null ? sql.ToString() : null });
 		}
 
 		/// <summary> 
@@ -52,7 +52,7 @@ namespace NHibernate.Exceptions
 		public static Exception Convert(ISQLExceptionConverter converter, Exception sqlException, string message)
 		{
 			var sql = TryGetActualSqlQuery(sqlException, SQLNotAvailable);
-			return Convert(converter, new AdoExceptionContextInfo {SqlException = sqlException, Message = message, Sql = sql});
+			return Convert(converter, new AdoExceptionContextInfo { SqlException = sqlException, Message = message, Sql = sql });
 		}
 
 		public static Exception Convert(ISQLExceptionConverter converter, Exception sqle, string message, SqlString sql,
@@ -118,7 +118,7 @@ namespace NHibernate.Exceptions
 
 		public static string TryGetActualSqlQuery(Exception sqle, string sql)
 		{
-			var query = (string)sqle.Data["actual-sql-query"];
+			var query = (string) sqle.Data["actual-sql-query"];
 			return query ?? sql;
 		}
 	}

@@ -44,7 +44,7 @@ namespace NHibernate.Test.MappingTest
 		public void ToStringDoesNotThrow()
 		{
 			var key = new ForeignKey
-				{
+			{
 				Table = new Table("TestTable"),
 				Name = "TestForeignKey"
 			};

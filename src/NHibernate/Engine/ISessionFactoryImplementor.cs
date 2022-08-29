@@ -148,7 +148,7 @@ namespace NHibernate.Engine
 		/// <returns>An appropriate session.</returns>
 		[Obsolete("Please use WithOptions() instead.")]
 		ISession OpenSession(DbConnection connection, bool flushBeforeCompletionEnabled, bool autoCloseSessionEnabled,
-		                     ConnectionReleaseMode connectionReleaseMode);
+							 ConnectionReleaseMode connectionReleaseMode);
 
 		/// <summary> 
 		/// Retrieves a set of all the collection roles in which the given entity

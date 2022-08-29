@@ -54,7 +54,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 													.GetClassMetadata(resultOperator.RelationMember.ReflectedType);
 					propType = metadata?.GetPropertyType(resultOperator.RelationMember.Name);
 				}
-				
+
 				if (propType != null && !propType.IsAssociationType)
 				{
 					if (currentNode == null)

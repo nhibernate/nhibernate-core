@@ -18,7 +18,7 @@ namespace NHibernate.Criterion
 		{
 			_subQuery = subquery;
 		}
-		
+
 		public override string ToString()
 		{
 			return _subQuery.ToString();
@@ -49,7 +49,7 @@ namespace NHibernate.Criterion
 		{
 			throw new InvalidOperationException("not a grouping projection");
 		}
-		
+
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			return _subQuery.GetTypedValues(criteria, criteriaQuery);

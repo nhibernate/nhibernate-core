@@ -1,6 +1,6 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.DialectTest.FunctionTests
@@ -27,7 +27,7 @@ namespace NHibernate.Test.DialectTest.FunctionTests
 		[TestCaseSource(nameof(GetAllDialectTypes))]
 		public void DialectSupportingSequencesMustFullfillSequenceContract(System.Type dialectType)
 		{
-			var dialect = (NHibernate.Dialect.Dialect)Activator.CreateInstance(dialectType);
+			var dialect = (NHibernate.Dialect.Dialect) Activator.CreateInstance(dialectType);
 
 			if (!dialect.SupportsSequences)
 				Assert.Ignore("This test applies only to dialects that support sequences.");

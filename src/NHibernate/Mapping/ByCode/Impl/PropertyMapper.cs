@@ -85,12 +85,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Type<TPersistentType>()
 		{
-			Type(typeof (TPersistentType), null);
+			Type(typeof(TPersistentType), null);
 		}
 
 		public void Type<TPersistentType>(object parameters)
 		{
-			Type(typeof (TPersistentType), parameters);
+			Type(typeof(TPersistentType), parameters);
 		}
 
 		public void Type(System.Type persistentType, object parameters)
@@ -99,7 +99,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException("persistentType");
 			}
-			if (!typeof (IUserType).IsAssignableFrom(persistentType) && !typeof (IType).IsAssignableFrom(persistentType) && !typeof (ICompositeUserType).IsAssignableFrom(persistentType))
+			if (!typeof(IUserType).IsAssignableFrom(persistentType) && !typeof(IType).IsAssignableFrom(persistentType) && !typeof(ICompositeUserType).IsAssignableFrom(persistentType))
 			{
 				throw new ArgumentOutOfRangeException("persistentType", "Expected type implementing IUserType, ICompositeUserType or IType.");
 			}
@@ -113,7 +113,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 						pi =>
 						{
 							var pvalue = pi.GetValue(parameters, null);
-							return new HbmParam {name = pi.Name, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
+							return new HbmParam { name = pi.Name, Text = new[] { ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString() } };
 						})
 				};
 				propertyMapping.type = hbmType;
@@ -134,25 +134,25 @@ namespace NHibernate.Mapping.ByCode.Impl
 			propertyMapping.formula = null;
 			HbmColumn hbm = propertyMapping.Columns.SingleOrDefault();
 			hbm = hbm
-			      ??
-			      new HbmColumn
-			      {
-			      	name = propertyMapping.column,
-			      	length = propertyMapping.length,
-			      	scale = propertyMapping.scale,
-			      	precision = propertyMapping.precision,
-			      	notnull = propertyMapping.notnull,
-			      	notnullSpecified = propertyMapping.notnullSpecified,
-			      	unique = propertyMapping.unique,
-			      	uniqueSpecified = propertyMapping.unique,
-			      	uniquekey = propertyMapping.uniquekey,
-			      	index = propertyMapping.index
-			      };
+				  ??
+				  new HbmColumn
+				  {
+					  name = propertyMapping.column,
+					  length = propertyMapping.length,
+					  scale = propertyMapping.scale,
+					  precision = propertyMapping.precision,
+					  notnull = propertyMapping.notnull,
+					  notnullSpecified = propertyMapping.notnullSpecified,
+					  unique = propertyMapping.unique,
+					  uniqueSpecified = propertyMapping.unique,
+					  uniquekey = propertyMapping.uniquekey,
+					  index = propertyMapping.index
+				  };
 			string defaultColumnName = member.Name;
 			columnMapper(new ColumnMapper(hbm, member != null ? defaultColumnName : "unnamedcolumn"));
 			if (hbm.sqltype != null || hbm.@default != null || hbm.check != null)
 			{
-				propertyMapping.Items = new[] {hbm};
+				propertyMapping.Items = new[] { hbm };
 				ResetColumnPlainValues();
 			}
 			else
@@ -294,7 +294,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
 			if (formulaLines.Length > 1)
 			{
-				propertyMapping.Items = new object[] {new HbmFormula {Text = formulaLines}};
+				propertyMapping.Items = new object[] { new HbmFormula { Text = formulaLines } };
 			}
 			else
 			{

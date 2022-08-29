@@ -54,45 +54,45 @@ namespace NHibernate.Test.NHSpecificTest.GH2858
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var deptA = new Department {Name = "A"};
+				var deptA = new Department { Name = "A" };
 				session.Save(deptA);
-				var deptB = new Department {Name = "B"};
+				var deptB = new Department { Name = "B" };
 				session.Save(deptB);
-				var deptC = new Department {Name = "C"};
+				var deptC = new Department { Name = "C" };
 				session.Save(deptC);
-				var deptD = new Department {Name = "D"};
+				var deptD = new Department { Name = "D" };
 				session.Save(deptD);
-				var deptE = new Department {Name = "E"};
+				var deptE = new Department { Name = "E" };
 				session.Save(deptE);
 
-				var projectX = new Project {Name = "X", Department = deptA};
+				var projectX = new Project { Name = "X", Department = deptA };
 				session.Save(projectX);
-				var projectY = new Project {Name = "Y", Department = deptC};
+				var projectY = new Project { Name = "Y", Department = deptC };
 				session.Save(projectY);
-				var projectZ = new Project {Name = "Z", Department = deptE};
+				var projectZ = new Project { Name = "Z", Department = deptE };
 				session.Save(projectZ);
 
-				var issue1 = new Issue {Name = "TEST-1", Project = projectX,};
+				var issue1 = new Issue { Name = "TEST-1", Project = projectX, };
 				session.Save(issue1);
-				var issue2 = new Issue {Name = "TEST-2", Project = projectX, Departments = {deptA},};
+				var issue2 = new Issue { Name = "TEST-2", Project = projectX, Departments = { deptA }, };
 				session.Save(issue2);
-				var issue3 = new Issue {Name = "TEST-3", Project = projectX, Departments = {deptA, deptB},};
+				var issue3 = new Issue { Name = "TEST-3", Project = projectX, Departments = { deptA, deptB }, };
 				session.Save(issue3);
-				var issue4 = new Issue {Name = "TEST-4", Project = projectY,};
+				var issue4 = new Issue { Name = "TEST-4", Project = projectY, };
 				session.Save(issue4);
-				var issue5 = new Issue {Name = "TEST-5", Project = projectY, Departments = {deptD}};
+				var issue5 = new Issue { Name = "TEST-5", Project = projectY, Departments = { deptD } };
 				session.Save(issue5);
 
-				session.Save(new TimeChunk {Issue = issue1});
-				session.Save(new TimeChunk {Issue = issue1});
-				session.Save(new TimeChunk {Issue = issue2});
-				session.Save(new TimeChunk {Issue = issue2});
-				session.Save(new TimeChunk {Issue = issue3});
-				session.Save(new TimeChunk {Issue = issue3});
-				session.Save(new TimeChunk {Issue = issue4});
-				session.Save(new TimeChunk {Issue = issue4});
-				session.Save(new TimeChunk {Issue = issue5});
-				session.Save(new TimeChunk {Issue = issue5});
+				session.Save(new TimeChunk { Issue = issue1 });
+				session.Save(new TimeChunk { Issue = issue1 });
+				session.Save(new TimeChunk { Issue = issue2 });
+				session.Save(new TimeChunk { Issue = issue2 });
+				session.Save(new TimeChunk { Issue = issue3 });
+				session.Save(new TimeChunk { Issue = issue3 });
+				session.Save(new TimeChunk { Issue = issue4 });
+				session.Save(new TimeChunk { Issue = issue4 });
+				session.Save(new TimeChunk { Issue = issue5 });
+				session.Save(new TimeChunk { Issue = issue5 });
 
 				transaction.Commit();
 			}
@@ -114,9 +114,9 @@ namespace NHibernate.Test.NHSpecificTest.GH2858
 			using (var session = OpenSession())
 			{
 				var query = session.Query<ITimeChunk>()
-									.Select(x => new object[] {(object) x})
-									.GroupBy(g => new object[] {(Guid?) (((ITimeChunk) g[0]).Issue.Project.Id)}, v => (ITimeChunk) v[0])
-									.Select(r => new object[] {r.Key, r.Sum(t => (int?) t.Seconds)});
+									.Select(x => new object[] { (object) x })
+									.GroupBy(g => new object[] { (Guid?) (((ITimeChunk) g[0]).Issue.Project.Id) }, v => (ITimeChunk) v[0])
+									.Select(r => new object[] { r.Key, r.Sum(t => (int?) t.Seconds) });
 
 				var results = query.ToList();
 				Assert.That(results, Has.Count.EqualTo(2));
@@ -129,9 +129,9 @@ namespace NHibernate.Test.NHSpecificTest.GH2858
 			using (var session = OpenSession())
 			{
 				var query = session.Query<ITimeChunk>()
-									.Select(x => new object[] {x})
-									.GroupBy(g => new object[] {((ITimeChunk) g[0]).Issue.Project.Id}, v => (ITimeChunk) v[0])
-									.Select(r => new object[] {r.Key, r.Sum(t => (int?) t.Seconds)});
+									.Select(x => new object[] { x })
+									.GroupBy(g => new object[] { ((ITimeChunk) g[0]).Issue.Project.Id }, v => (ITimeChunk) v[0])
+									.Select(r => new object[] { r.Key, r.Sum(t => (int?) t.Seconds) });
 
 				var results = query.ToList();
 				Assert.That(results, Has.Count.EqualTo(2));
@@ -150,7 +150,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2858
 
 				var result = session.Query<IDepartment>()
 									.Where(d => usedDepartments.Contains(d.Id))
-									.Select(d => new {d.Id, d.Name});
+									.Select(d => new { d.Id, d.Name });
 
 				Assert.That(result.ToList(), Has.Count.EqualTo(4));
 			}
@@ -166,7 +166,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2858
 
 				var result = session.Query<IDepartment>()
 									.Where(d => usedDepartments.Contains(d.Id))
-									.Select(d => new {d.Id, d.Name});
+									.Select(d => new { d.Id, d.Name });
 
 				Assert.That(result.ToList(), Has.Count.EqualTo(4));
 			}

@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3221
 			myStuff = new List<Stuff>();
 		}
 
-		public Person(string name):this()
+		public Person(string name) : this()
 		{
 			Name = name;
 		}

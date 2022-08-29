@@ -5,7 +5,7 @@ namespace NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMan
 	public class ChildWithBidirectionalManyToMany : ChildEntity
 	{
 		private ICollection<ParentWithBidirectionalManyToMany> parents;
-		public ChildWithBidirectionalManyToMany() {}
+		public ChildWithBidirectionalManyToMany() { }
 
 		public ChildWithBidirectionalManyToMany(string name, ICollection<ParentWithBidirectionalManyToMany> parents)
 			: base(name)

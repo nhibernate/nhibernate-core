@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using NUnit.Framework;
 using NHibernate.Engine.Query.Sql;
+using NUnit.Framework;
 
 namespace NHibernate.Test.EngineTest
 {

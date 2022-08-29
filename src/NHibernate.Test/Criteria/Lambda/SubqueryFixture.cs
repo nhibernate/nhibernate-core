@@ -1,13 +1,11 @@
 using System;
 using System.Collections;
-
-using NUnit.Framework;
-
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Criteria.Lambda
 {

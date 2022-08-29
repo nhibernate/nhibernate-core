@@ -48,6 +48,6 @@ namespace NHibernate.Test.TypesTest
 			!(factory.ConnectionProvider.Driver is OdbcDriver);
 
 		protected override string TypeName => "DateTime2WithScale";
-		protected override AbstractDateTimeType Type => (AbstractDateTimeType)TypeFactory.GetDateTime2Type(3);
+		protected override AbstractDateTimeType Type => (AbstractDateTimeType) TypeFactory.GetDateTime2Type(3);
 	}
 }

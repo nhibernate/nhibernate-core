@@ -130,5 +130,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1574
 			get { return id; }
 			set { id = value; }
 		}
-	} ;
+	};
 }

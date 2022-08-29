@@ -113,7 +113,7 @@ namespace NHibernate.Properties
 									CSharpBinderFlags.None,
 									t.Item2,
 									t.Item1,
-									new[] {CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)})));
+									new[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) })));
 
 						return site.Target(site, target);
 				}

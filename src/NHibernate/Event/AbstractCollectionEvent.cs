@@ -24,7 +24,7 @@ namespace NHibernate.Event
 		/// that is affected by this event; can be null if unavailable
 		/// </param>
 		protected AbstractCollectionEvent(ICollectionPersister collectionPersister, IPersistentCollection collection,
-		                               IEventSource source, object affectedOwner, object affectedOwnerId) : base(source)
+									   IEventSource source, object affectedOwner, object affectedOwnerId) : base(source)
 		{
 			this.collection = collection;
 			this.affectedOwner = affectedOwner;
@@ -59,7 +59,7 @@ namespace NHibernate.Event
 		}
 
 		protected static ICollectionPersister GetLoadedCollectionPersister(IPersistentCollection collection,
-		                                                                   IEventSource source)
+																		   IEventSource source)
 		{
 			CollectionEntry ce = source.PersistenceContext.GetCollectionEntry(collection);
 			return (ce == null ? null : ce.LoadedPersister);
@@ -82,7 +82,7 @@ namespace NHibernate.Event
 		}
 
 		protected static string GetAffectedOwnerEntityName(ICollectionPersister collectionPersister, object affectedOwner,
-		                                                   IEventSource source)
+														   IEventSource source)
 		{
 			// collectionPersister should not be null, but we don't want to throw
 			// an exception if it is null

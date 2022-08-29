@@ -66,12 +66,12 @@ namespace NHibernate.Type
 
 		protected override void Add(object collection, object element)
 		{
-			((ISet<T>)collection).Add((T)element);
+			((ISet<T>) collection).Add((T) element);
 		}
 
 		protected override void Clear(object collection)
 		{
-			((ISet<T>)collection).Clear();
+			((ISet<T>) collection).Clear();
 		}
 
 		public override object Instantiate(int anticipatedSize)
@@ -81,8 +81,8 @@ namespace NHibernate.Type
 
 		protected override bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
 		{
-			var set = original as ISet<T> ?? new HashSet<T>((IEnumerable<T>)original);
-			return set.SetEquals((IEnumerable<T>)target);
+			var set = original as ISet<T> ?? new HashSet<T>((IEnumerable<T>) original);
+			return set.SetEquals((IEnumerable<T>) target);
 		}
 	}
 }

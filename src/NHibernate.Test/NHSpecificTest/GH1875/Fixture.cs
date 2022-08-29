@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1875
 				Assert.That(
 					() => factory = cfg.BuildSessionFactory(),
 					Throws.TypeOf<MappingException>().And.Message.Contains("BadlyMappedEntity").And.InnerException
-					      .Message.Contains("SameColumn"));
+						  .Message.Contains("SameColumn"));
 			}
 			finally
 			{

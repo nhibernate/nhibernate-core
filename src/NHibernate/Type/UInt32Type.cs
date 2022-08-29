@@ -87,7 +87,7 @@ namespace NHibernate.Type
 
 		public virtual object Next(object current, ISessionImplementor session)
 		{
-			return (UInt32)current + 1;
+			return (UInt32) current + 1;
 		}
 
 		public virtual object Seed(ISessionImplementor session)

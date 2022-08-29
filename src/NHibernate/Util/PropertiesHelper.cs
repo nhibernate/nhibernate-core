@@ -48,7 +48,7 @@ namespace NHibernate.Util
 		{
 			string value;
 			properties.TryGetValue(property, out value);
-			if(value == string.Empty)
+			if (value == string.Empty)
 			{
 				value = null;
 			}

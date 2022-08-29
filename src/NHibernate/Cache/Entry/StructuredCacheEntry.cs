@@ -17,8 +17,8 @@ namespace NHibernate.Cache.Entry
 
 		public object Destructure(object item, ISessionFactoryImplementor factory)
 		{
-			IDictionary map = (IDictionary)item;
-			string subclass = (string)map["_subclass"];
+			IDictionary map = (IDictionary) item;
+			string subclass = (string) map["_subclass"];
 			object version = map["_version"];
 			IEntityPersister subclassPersister = factory.GetEntityPersister(subclass);
 			string[] names = subclassPersister.PropertyNames;
@@ -37,7 +37,7 @@ namespace NHibernate.Cache.Entry
 
 		public object Structure(object item)
 		{
-			CacheEntry entry = (CacheEntry)item;
+			CacheEntry entry = (CacheEntry) item;
 			string[] names = persister.PropertyNames;
 			IDictionary map = new Hashtable(names.Length + 2);
 			map["_subclass"] = entry.Subclass;

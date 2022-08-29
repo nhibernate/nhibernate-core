@@ -8,5 +8,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2705
 		public virtual SubItemDetails Details { get; set; }
 	}
 
-	public class SubItemComponent : SubItemBase {}
+	public class SubItemComponent : SubItemBase { }
 }

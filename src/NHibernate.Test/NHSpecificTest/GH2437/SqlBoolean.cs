@@ -1,9 +1,9 @@
-﻿using NHibernate.Engine;
-using NHibernate.SqlTypes;
-using NHibernate.UserTypes;
-using System;
+﻿using System;
 using System.Data;
 using System.Data.Common;
+using NHibernate.Engine;
+using NHibernate.SqlTypes;
+using NHibernate.UserTypes;
 
 namespace NHibernate.Test.NHSpecificTest.GH2437
 {

@@ -46,7 +46,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
-			var propertyInfo = (new { A = (MyClass)null }).GetType().GetProperty("A");
+			var propertyInfo = (new { A = (MyClass) null }).GetType().GetProperty("A");
 
 			mapper.Component(propertyInfo, (IComponentMapper x) => { });
 
@@ -59,7 +59,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<PersonWithGenericInfo>.Property(p => p.Info), mapdoc);
-			var propertyInfo = (new { A = (MyClass)null }).GetType().GetProperty("A");
+			var propertyInfo = (new { A = (MyClass) null }).GetType().GetProperty("A");
 
 			mapper.Component(propertyInfo, (IComponentMapper x) => { });
 
@@ -72,7 +72,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
-			var propertyInfo = (new { A = (MyClass)null }).GetType().GetProperty("A");
+			var propertyInfo = (new { A = (MyClass) null }).GetType().GetProperty("A");
 
 			var called = false;
 			mapper.Component(propertyInfo, (IComponentMapper x) => called = true);
@@ -86,7 +86,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<PersonWithGenericInfo>.Property(p => p.Info), mapdoc);
-			var propertyInfo = (new { A = (MyClass)null }).GetType().GetProperty("A");
+			var propertyInfo = (new { A = (MyClass) null }).GetType().GetProperty("A");
 
 			var called = false;
 			mapper.Component(propertyInfo, (IComponentMapper x) => called = true);
@@ -100,7 +100,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
-			var propertyInfo = (new { A = (MyClass)null }).GetType().GetProperty("A");
+			var propertyInfo = (new { A = (MyClass) null }).GetType().GetProperty("A");
 
 			mapper.Component(propertyInfo, (IComponentMapper x) => x.Access(Accessor.Field));
 
@@ -113,7 +113,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<PersonWithGenericInfo>.Property(p => p.Info), mapdoc);
-			var propertyInfo = (new { A = (MyClass)null }).GetType().GetProperty("A");
+			var propertyInfo = (new { A = (MyClass) null }).GetType().GetProperty("A");
 
 			mapper.Component(propertyInfo, (IComponentMapper x) => x.Access(Accessor.Field));
 

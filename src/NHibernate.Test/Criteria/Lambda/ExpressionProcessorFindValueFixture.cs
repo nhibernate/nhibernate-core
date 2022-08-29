@@ -236,7 +236,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			Assert.AreEqual(expected, actual);
 		}
-		
+
 		[Test]
 		public void IntegerToObjectImplicitCast()
 		{
@@ -278,7 +278,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			Assert.AreEqual(expected, actual);
 		}
-		
+
 		[Test]
 		public void ObjectToIntegerCast()
 		{
@@ -306,7 +306,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			Assert.AreEqual(expected, actual);
 		}
-		
+
 		[Test]
 		public void NullObjectToNullableIntegerCast()
 		{
@@ -362,7 +362,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			Assert.AreEqual(expected, actual);
 		}
-		
+
 		[Test]
 		public void StringObjectToStringCast()
 		{
@@ -376,7 +376,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			Assert.AreEqual(expected, actual);
 		}
-		
+
 		[Test]
 		public void StringToIntegerCastFails()
 		{

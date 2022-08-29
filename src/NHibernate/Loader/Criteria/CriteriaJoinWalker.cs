@@ -35,8 +35,8 @@ namespace NHibernate.Loader.Criteria
 		private static readonly INHibernateLogger logger = NHibernateLogger.For(typeof(CriteriaJoinWalker));
 
 		public CriteriaJoinWalker(IOuterJoinLoadable persister, CriteriaQueryTranslator translator,
-		                          ISessionFactoryImplementor factory, ICriteria criteria, string rootEntityName,
-		                          IDictionary<string, IFilter> enabledFilters)
+								  ISessionFactoryImplementor factory, ICriteria criteria, string rootEntityName,
+								  IDictionary<string, IFilter> enabledFilters)
 			: base(translator.RootSQLAlias, persister, factory, enabledFilters)
 		{
 			this.translator = translator;
@@ -210,7 +210,7 @@ namespace NHibernate.Loader.Criteria
 				case SelectMode.JoinOnly:
 					IsDuplicateAssociation(lhsTable, lhsColumns, type); //deliberately ignore return value!
 					return GetJoinType(nullable, currentDepth);
-				
+
 				case SelectMode.Skip:
 					return JoinType.None;
 				default:

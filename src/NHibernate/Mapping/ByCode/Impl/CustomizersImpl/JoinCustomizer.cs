@@ -100,7 +100,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		protected override void RegisterSetMapping<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Action<ISetPropertiesMapper<TEntity, TElement>> collectionMapping, Action<ICollectionElementRelation<TElement>> mapping)
 		{
 			MemberInfo member = TypeExtensions.DecodeMemberAccessExpression(property);
-			ExplicitDeclarationsHolder.AddAsPropertySplit(new SplitDefinition(typeof (TEntity), splitGroupId, member));
+			ExplicitDeclarationsHolder.AddAsPropertySplit(new SplitDefinition(typeof(TEntity), splitGroupId, member));
 			base.RegisterSetMapping(property, collectionMapping, mapping);
 		}
 

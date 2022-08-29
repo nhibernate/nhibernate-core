@@ -12,7 +12,7 @@ namespace NHibernate.Test.ReadOnly
 		{
 			get { return studentName; }
 		}
-		
+
 		public string Description
 		{
 			get { return courseDescription; }

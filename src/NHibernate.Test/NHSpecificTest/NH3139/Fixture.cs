@@ -36,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3139
 			{
 				using (var tran = session.BeginTransaction())
 				{
-					Brand brand = new Brand(){Name = "Brand"};
+					Brand brand = new Brand() { Name = "Brand" };
 					session.Save(brand);
 
 					//this product has no inventory row
@@ -71,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3139
 		{
 			using (var session = OpenSession())
 			{
-				Product product = session.CreateCriteria(typeof (Product))
+				Product product = session.CreateCriteria(typeof(Product))
 					.Add(Restrictions.Eq("Name", "First"))
 					.UniqueResult<Product>();
 

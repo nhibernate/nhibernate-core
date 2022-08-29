@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1714
 	{
 		public bool OnPreInsert(PreInsertEvent e)
 		{
-			if(e.Entity is DomainClass == false)
+			if (e.Entity is DomainClass == false)
 				return false;
 
 			// this will join into the parent's transaction

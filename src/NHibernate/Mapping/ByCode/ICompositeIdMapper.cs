@@ -1,6 +1,6 @@
 namespace NHibernate.Mapping.ByCode
 {
-	public interface IComposedIdMapper : IMinimalPlainPropertyContainerMapper {}
+	public interface IComposedIdMapper : IMinimalPlainPropertyContainerMapper { }
 
 	public interface IComponentAsIdAttributesMapper : IAccessorPropertyMapper
 	{

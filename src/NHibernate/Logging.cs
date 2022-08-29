@@ -1,6 +1,6 @@
 using System;
-using NHibernate.Cfg;
 using System.Runtime.CompilerServices;
+using NHibernate.Cfg;
 
 namespace NHibernate
 {
@@ -52,7 +52,7 @@ namespace NHibernate
 
 #pragma warning disable 618
 		private static ILoggerFactory _legacyLoggerFactory;
-		internal static ILoggerFactory LegacyLoggerFactory => LogWrapper.LegacyLoggerFactory; 
+		internal static ILoggerFactory LegacyLoggerFactory => LogWrapper.LegacyLoggerFactory;
 #pragma warning restore 618
 
 		private static class LogWrapper
@@ -181,7 +181,7 @@ namespace NHibernate
 		}
 	}
 
-	internal class NoLoggingNHibernateLoggerFactory: INHibernateLoggerFactory
+	internal class NoLoggingNHibernateLoggerFactory : INHibernateLoggerFactory
 	{
 		private static readonly INHibernateLogger Nologging = new NoLoggingNHibernateLogger();
 		public INHibernateLogger LoggerFor(string keyName)
@@ -195,7 +195,7 @@ namespace NHibernate
 		}
 	}
 
-	internal class NoLoggingNHibernateLogger: INHibernateLogger
+	internal class NoLoggingNHibernateLogger : INHibernateLogger
 	{
 		public void Log(NHibernateLogLevel logLevel, NHibernateLogValues state, Exception exception)
 		{

@@ -17,7 +17,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private ICacheMapper cacheMapper;
 
 		public MapMapper(System.Type ownerType, System.Type keyType, System.Type valueType, HbmMap mapping, HbmMapping mapDoc)
-			: this(ownerType, keyType, valueType, new AccessorPropertyMapper(ownerType, mapping.Name, x => mapping.access = x), mapping, mapDoc) {}
+			: this(ownerType, keyType, valueType, new AccessorPropertyMapper(ownerType, mapping.Name, x => mapping.access = x), mapping, mapDoc) { }
 
 		public MapMapper(System.Type ownerType, System.Type keyType, System.Type valueType, IAccessorPropertyMapper accessorMapper, HbmMap mapping, HbmMapping mapDoc)
 		{
@@ -48,13 +48,13 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			keyMapper = new KeyMapper(ownerType, mapping.Key);
 
-			if (KeyType.IsValueType || KeyType == typeof (string))
+			if (KeyType.IsValueType || KeyType == typeof(string))
 			{
-				mapping.Item = new HbmMapKey {type = KeyType.GetNhTypeName()};
+				mapping.Item = new HbmMapKey { type = KeyType.GetNhTypeName() };
 			}
 			else
 			{
-				mapping.Item = new HbmMapKeyManyToMany {@class = KeyType.GetShortClassName(mapDoc)};
+				mapping.Item = new HbmMapKeyManyToMany { @class = KeyType.GetShortClassName(mapDoc) };
 			}
 			entityPropertyMapper = accessorMapper;
 		}
@@ -132,7 +132,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			mapping.sort = "natural";
 		}
 
-		public void Sort<TComparer>() {}
+		public void Sort<TComparer>() { }
 
 		public void Cascade(Cascade cascadeStyle)
 		{
@@ -141,7 +141,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Type<TCollection>() where TCollection : IUserCollectionType
 		{
-			mapping.collectiontype = typeof (TCollection).AssemblyQualifiedName;
+			mapping.collectiontype = typeof(TCollection).AssemblyQualifiedName;
 		}
 
 		public void Type(System.Type collectionType)
@@ -150,12 +150,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException("collectionType");
 			}
-			if (!typeof (IUserCollectionType).IsAssignableFrom(collectionType))
+			if (!typeof(IUserCollectionType).IsAssignableFrom(collectionType))
 			{
 				throw new ArgumentOutOfRangeException("collectionType",
-				                                      string.Format(
-				                                      	"The collection type should be an implementation of IUserCollectionType.({0})",
-				                                      	collectionType));
+													  string.Format(
+														  "The collection type should be an implementation of IUserCollectionType.({0})",
+														  collectionType));
 			}
 			mapping.collectiontype = collectionType.AssemblyQualifiedName;
 		}
@@ -266,7 +266,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				mapping.sqlinsert = new HbmCustomSQL();
 			}
-			mapping.sqlinsert.Text = new[] {sql};
+			mapping.sqlinsert.Text = new[] { sql };
 		}
 
 		public void SqlInsert(string sql, SqlCheck sqlCheck)
@@ -275,7 +275,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				mapping.sqlinsert = new HbmCustomSQL();
 			}
-			mapping.sqlinsert.Text = new[] {sql};
+			mapping.sqlinsert.Text = new[] { sql };
 			mapping.sqlinsert.checkSpecified = true;
 			mapping.sqlinsert.check = sqlCheck.ToHbmSqlCheck();
 		}
@@ -286,7 +286,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				mapping.sqlupdate = new HbmCustomSQL();
 			}
-			mapping.sqlupdate.Text = new[] {sql};
+			mapping.sqlupdate.Text = new[] { sql };
 		}
 
 		public void SqlUpdate(string sql, SqlCheck sqlCheck)
@@ -295,7 +295,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				mapping.sqlupdate = new HbmCustomSQL();
 			}
-			mapping.sqlupdate.Text = new[] {sql};
+			mapping.sqlupdate.Text = new[] { sql };
 			mapping.sqlupdate.checkSpecified = true;
 			mapping.sqlupdate.check = sqlCheck.ToHbmSqlCheck();
 		}
@@ -306,7 +306,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				mapping.sqldelete = new HbmCustomSQL();
 			}
-			mapping.sqldelete.Text = new[] {sql};
+			mapping.sqldelete.Text = new[] { sql };
 		}
 
 		public void SqlDelete(string sql, SqlCheck sqlCheck)
@@ -315,7 +315,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				mapping.sqldelete = new HbmCustomSQL();
 			}
-			mapping.sqldelete.Text = new[] {sql};
+			mapping.sqldelete.Text = new[] { sql };
 			mapping.sqldelete.checkSpecified = true;
 			mapping.sqldelete.check = sqlCheck.ToHbmSqlCheck();
 		}
@@ -326,7 +326,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				mapping.sqldeleteall = new HbmCustomSQL();
 			}
-			mapping.sqldeleteall.Text = new[] {sql};
+			mapping.sqldeleteall.Text = new[] { sql };
 		}
 
 		public void SqlDeleteAll(string sql, SqlCheck sqlCheck)
@@ -335,7 +335,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				mapping.sqldeleteall = new HbmCustomSQL();
 			}
-			mapping.sqldeleteall.Text = new[] {sql};
+			mapping.sqldeleteall.Text = new[] { sql };
 			mapping.sqldeleteall.checkSpecified = true;
 			mapping.sqldeleteall.check = sqlCheck.ToHbmSqlCheck();
 		}
@@ -346,7 +346,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				mapping.subselect = new HbmSubselect();
 			}
-			mapping.subselect.Text = new[] {sql};
+			mapping.subselect.Text = new[] { sql };
 		}
 
 		#endregion

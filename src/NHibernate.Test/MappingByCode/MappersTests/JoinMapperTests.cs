@@ -71,11 +71,11 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
 			mapper.TableNameChanged += (m, x) =>
 									   {
-																	 Assert.That(m, Is.SameAs(mapper));
-																	 Assert.That(x.OldName, Is.EqualTo("AA"));
-																	 Assert.That(x.NewName, Is.EqualTo("Pizza"));
-																	 eventCalled = true;
-																 };
+										   Assert.That(m, Is.SameAs(mapper));
+										   Assert.That(x.OldName, Is.EqualTo("AA"));
+										   Assert.That(x.NewName, Is.EqualTo("Pizza"));
+										   eventCalled = true;
+									   };
 			mapper.Table("   Pizza   ");
 			Assert.That(eventCalled, Is.True);
 		}
@@ -250,7 +250,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmJoin = new HbmJoin();
 			var mapper = new JoinMapper(typeof(MyClass), "AA", hbmJoin, mapdoc);
 			IKeyMapper firstCallInstance = null;
-			IKeyMapper secondCallInstance= null;
+			IKeyMapper secondCallInstance = null;
 
 			mapper.Key(km => firstCallInstance = km);
 			mapper.Key(km => secondCallInstance = km);

@@ -17,7 +17,7 @@ namespace NHibernate.Dialect.Schema
 	{
 		private readonly Dialect _dialect;
 
-		protected AbstractDataBaseSchema(DbConnection connection) : this(connection, null) {}
+		protected AbstractDataBaseSchema(DbConnection connection) : this(connection, null) { }
 
 		protected AbstractDataBaseSchema(DbConnection connection, Dialect dialect)
 		{
@@ -105,15 +105,15 @@ namespace NHibernate.Dialect.Schema
 		public abstract ITableMetadata GetTableMetadata(DataRow rs, bool extras);
 
 		public virtual DataTable GetColumns(string catalog, string schemaPattern, string tableNamePattern,
-		                                    string columnNamePattern)
+											string columnNamePattern)
 		{
 			if (UseDialectQualifyInsteadOfTableName)
 			{
 				var actualTablePattern = GetActualTableName(catalog, schemaPattern, tableNamePattern);
-				return Connection.GetSchema("Columns", new[] {null, null, actualTablePattern, columnNamePattern});
+				return Connection.GetSchema("Columns", new[] { null, null, actualTablePattern, columnNamePattern });
 			}
 
-			var restrictions = new[] {catalog, schemaPattern, tableNamePattern, columnNamePattern};
+			var restrictions = new[] { catalog, schemaPattern, tableNamePattern, columnNamePattern };
 			return Connection.GetSchema("Columns", restrictions);
 		}
 
@@ -122,10 +122,10 @@ namespace NHibernate.Dialect.Schema
 			if (UseDialectQualifyInsteadOfTableName)
 			{
 				var actualTableName = GetActualTableName(catalog, schemaPattern, tableName);
-				return Connection.GetSchema("Indexes", new[] {null, null, actualTableName, null});
+				return Connection.GetSchema("Indexes", new[] { null, null, actualTableName, null });
 			}
 
-			var restrictions = new[] {catalog, schemaPattern, tableName, null};
+			var restrictions = new[] { catalog, schemaPattern, tableName, null };
 			return Connection.GetSchema("Indexes", restrictions);
 		}
 
@@ -134,10 +134,10 @@ namespace NHibernate.Dialect.Schema
 			if (UseDialectQualifyInsteadOfTableName)
 			{
 				var actualTableName = GetActualTableName(catalog, schemaPattern, tableName);
-				return Connection.GetSchema("IndexColumns", new[] {null, null, actualTableName, indexName, null});
+				return Connection.GetSchema("IndexColumns", new[] { null, null, actualTableName, indexName, null });
 			}
 
-			var restrictions = new[] {catalog, schemaPattern, tableName, indexName, null};
+			var restrictions = new[] { catalog, schemaPattern, tableName, indexName, null };
 			return Connection.GetSchema("IndexColumns", restrictions);
 		}
 
@@ -146,10 +146,10 @@ namespace NHibernate.Dialect.Schema
 			if (UseDialectQualifyInsteadOfTableName)
 			{
 				var actualTableName = GetActualTableName(catalog, schema, table);
-				return Connection.GetSchema(ForeignKeysSchemaName, new[] {null, null, actualTableName, null});
+				return Connection.GetSchema(ForeignKeysSchemaName, new[] { null, null, actualTableName, null });
 			}
 
-			var restrictions = new[] {catalog, schema, table, null};
+			var restrictions = new[] { catalog, schema, table, null };
 			return Connection.GetSchema(ForeignKeysSchemaName, restrictions);
 		}
 

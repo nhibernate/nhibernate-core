@@ -76,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2029
 		public void NullableIntOverflow()
 		{
 			var hasCast = Dialect.GetCastTypeName(NHibernateUtil.Int32.SqlType) !=
-			              Dialect.GetCastTypeName(NHibernateUtil.Int64.SqlType);
+						  Dialect.GetCastTypeName(NHibernateUtil.Int64.SqlType);
 
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
@@ -100,7 +100,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2029
 		public void IntOverflow()
 		{
 			var hasCast = Dialect.GetCastTypeName(NHibernateUtil.Int32.SqlType) !=
-			              Dialect.GetCastTypeName(NHibernateUtil.Int64.SqlType);
+						  Dialect.GetCastTypeName(NHibernateUtil.Int64.SqlType);
 
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
@@ -128,11 +128,12 @@ namespace NHibernate.Test.NHSpecificTest.GH2029
 			using (var sqlLog = new SqlLogSpy())
 			{
 				var groups = session.Query<TestClass>()
-				                    .GroupBy(i => 1)
-				                    .Select(g => new {
-					                    s = g.Sum(i => i.NullableInt64Prop)
-				                    })
-				                    .ToList();
+									.GroupBy(i => 1)
+									.Select(g => new
+									{
+										s = g.Sum(i => i.NullableInt64Prop)
+									})
+									.ToList();
 
 				Assert.That(sqlLog.GetWholeLog(), Does.Not.Contains("cast"));
 				Assert.That(groups, Has.Count.EqualTo(1));
@@ -148,11 +149,12 @@ namespace NHibernate.Test.NHSpecificTest.GH2029
 			using (var sqlLog = new SqlLogSpy())
 			{
 				var groups = session.Query<TestClass>()
-				                    .GroupBy(i => 1)
-				                    .Select(g => new {
-					                    s = g.Sum(i => i.Int64Prop)
-				                    })
-				                    .ToList();
+									.GroupBy(i => 1)
+									.Select(g => new
+									{
+										s = g.Sum(i => i.Int64Prop)
+									})
+									.ToList();
 
 				Assert.That(sqlLog.GetWholeLog(), Does.Not.Contains("cast"));
 				Assert.That(groups, Has.Count.EqualTo(1));

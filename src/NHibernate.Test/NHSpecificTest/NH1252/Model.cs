@@ -18,6 +18,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1252
 		}
 	}
 
-	public class SubClass1 : SomeClass {}
+	public class SubClass1 : SomeClass { }
 	public class SubClass2 : SomeClass { }
 }

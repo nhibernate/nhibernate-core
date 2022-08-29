@@ -1,24 +1,24 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
 using Remotion.Linq.Clauses.ResultOperators;
-using System.Linq;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 {
-    public class ProcessGroupBy : IResultOperatorProcessor<GroupResultOperator>
-    {
-        public void Process(GroupResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
-        {
+	public class ProcessGroupBy : IResultOperatorProcessor<GroupResultOperator>
+	{
+		public void Process(GroupResultOperator resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
+		{
 			IEnumerable<Expression> groupByKeys;
 			if (resultOperator.KeySelector is NewExpression)
 				groupByKeys = (resultOperator.KeySelector as NewExpression).Arguments;
 			else
-				groupByKeys = new[] {resultOperator.KeySelector};
+				groupByKeys = new[] { resultOperator.KeySelector };
 
 			IEnumerable<HqlExpression> hqlGroupByKeys = groupByKeys.Select(k => HqlGeneratorExpressionVisitor.Visit(k, queryModelVisitor.VisitorParameters).AsExpression());
 
-        	tree.AddGroupByClause(tree.TreeBuilder.GroupBy(hqlGroupByKeys.ToArray()));
-        }
-    }
+			tree.AddGroupByClause(tree.TreeBuilder.GroupBy(hqlGroupByKeys.ToArray()));
+		}
+	}
 }

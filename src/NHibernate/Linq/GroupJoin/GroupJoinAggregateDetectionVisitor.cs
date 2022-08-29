@@ -67,7 +67,7 @@ namespace NHibernate.Linq.GroupJoin
 			else if (fromClause.FromExpression is QuerySourceReferenceExpression querySourceReference)
 			{
 				if (querySourceReference.ReferencedQuerySource is GroupJoinClause groupJoinClause &&
-				    _groupJoinClauses.Contains(groupJoinClause))
+					_groupJoinClauses.Contains(groupJoinClause))
 				{
 					if (_inAggregate.FlagIsFalse)
 					{

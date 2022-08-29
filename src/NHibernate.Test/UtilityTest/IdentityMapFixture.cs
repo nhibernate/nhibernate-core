@@ -81,7 +81,7 @@ namespace NHibernate.Test.UtilityTest
 
 				Assert.IsTrue(map.Contains(noCode), "The Key in the concurrent map should have been in the original map's Keys");
 				Assert.IsTrue(noCodeValue == map[noCode],
-				              "The Value identified by the Key in concurrent map should be the same as the IdentityMap");
+							  "The Value identified by the Key in concurrent map should be the same as the IdentityMap");
 			}
 		}
 
@@ -154,7 +154,7 @@ namespace NHibernate.Test.UtilityTest
 
 			Assert.AreSame(item1, item1Copy);
 			Assert.IsTrue(map.Contains(item1Copy), "We should be able to get the same object out of the IdentityMap with " +
-			                                       "two different references to the same object.");
+												   "two different references to the same object.");
 		}
 
 		/// <summary>
@@ -171,7 +171,7 @@ namespace NHibernate.Test.UtilityTest
 			item1.HashCodeField = 5;
 
 			Assert.IsTrue(map.Contains(item1),
-			              "Even though item1's HashCode field change the IdentityMap.Contains() should still return true");
+						  "Even though item1's HashCode field change the IdentityMap.Contains() should still return true");
 		}
 
 		/// <summary>

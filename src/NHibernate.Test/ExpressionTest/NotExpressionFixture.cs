@@ -1,6 +1,6 @@
+using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
-using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 

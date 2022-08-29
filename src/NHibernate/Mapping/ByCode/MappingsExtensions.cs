@@ -41,7 +41,7 @@ namespace NHibernate.Mapping.ByCode
 		{
 			string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 			string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
-			string binPath = relativeSearchPath != null ? Path.Combine(baseDir, relativeSearchPath): baseDir;
+			string binPath = relativeSearchPath != null ? Path.Combine(baseDir, relativeSearchPath) : baseDir;
 			string mappingsFolderPath = Path.Combine(binPath, "Mappings");
 
 			if (!Directory.Exists(mappingsFolderPath))

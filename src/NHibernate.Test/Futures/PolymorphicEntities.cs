@@ -6,7 +6,7 @@ namespace NHibernate.Test.Futures
 	{
 		public virtual Guid Id { get; set; }
 	}
-	
+
 	public class PolymorphicB : PolymorphicA
 	{
 	}

@@ -14,8 +14,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1763
 			{
 				session.CreateCriteria<Customer>()
 					.SetProjection(Projections.Conditional(Restrictions.IdEq(1),
-					                                       Projections.Property("Name"),
-					                                       Projections.Property("Name2")))
+														   Projections.Property("Name"),
+														   Projections.Property("Name2")))
 					.List();
 			}
 		}

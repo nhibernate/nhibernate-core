@@ -43,7 +43,7 @@ namespace NHibernate.Dialect.Function
 
 		public override SqlString Render(System.Collections.IList args, NHibernate.Engine.ISessionFactoryImplementor factory)
 		{
-			if (args.Count!= allowedArgsCount)
+			if (args.Count != allowedArgsCount)
 			{
 				throw new QueryException(string.Format("function '{0}' takes {1} arguments.", name, allowedArgsCount));
 			}

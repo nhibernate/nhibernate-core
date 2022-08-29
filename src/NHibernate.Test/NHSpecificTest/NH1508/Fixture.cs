@@ -1,6 +1,6 @@
 ﻿using System;
-using NUnit.Framework;
 using NHibernate.Multi;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1508
 {
@@ -67,8 +67,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1508
 			{
 				var sqlQuery = session.CreateQuery("from Document");
 				var q = session
-				        .CreateQueryBatch()
-				        .Add<Document>(sqlQuery);
+						.CreateQueryBatch()
+						.Add<Document>(sqlQuery);
 				q.Execute();
 			}
 		}

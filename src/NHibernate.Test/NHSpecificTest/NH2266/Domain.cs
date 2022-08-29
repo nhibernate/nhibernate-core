@@ -6,5 +6,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2266
 
 	public class SecurityToken : Token { public virtual string Owner { get; set; } }
 
-	public abstract class TemporaryToken : Token { public virtual DateTime ExpiryDate { get; set; } } 
+	public abstract class TemporaryToken : Token { public virtual DateTime ExpiryDate { get; set; } }
 }

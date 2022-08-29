@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1587
 			cfg.AddResource("NHibernate.Test.NHSpecificTest.NH1587.Mappings.hbm.xml", GetType().Assembly);
 			cfg.Configure();
 
-			bool useOptimizer= false;
+			bool useOptimizer = false;
 			using (var ls = new LogSpy("NHibernate.Tuple.Entity.PocoEntityTuplizer"))
 			{
 				cfg.BuildSessionFactory();

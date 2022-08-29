@@ -45,7 +45,7 @@ namespace NHibernate.Criterion.Lambda
 			lastProjection = Projections.Alias(lastProjection, aliasContainer);
 			return this;
 		}
-		
+
 		/// <summary>
 		/// Create an alias for the previous projection
 		/// </summary>

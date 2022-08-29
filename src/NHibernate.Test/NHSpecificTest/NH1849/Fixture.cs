@@ -38,19 +38,19 @@ namespace NHibernate.Test.NHSpecificTest.NH1849
 		}
 
 		/// <summary>
-	  /// We don't actually execute the query, since it will throw an ado exception due to the absence of a full text index,
-	  /// however the query should compile
-	  /// </summary>
+		/// We don't actually execute the query, since it will throw an ado exception due to the absence of a full text index,
+		/// however the query should compile
+		/// </summary>
 		[Test]
 		public void ExecutesCustomSqlFunctionContains()
 		{
-		 string hql = @"from Customer c where contains(c.Name, :smth)";
+			string hql = @"from Customer c where contains(c.Name, :smth)";
 
-		 HQLQueryPlan plan = new QueryExpressionPlan(new StringQueryExpression(hql), false, CollectionHelper.EmptyDictionary<string, IFilter>(), Sfi);
+			HQLQueryPlan plan = new QueryExpressionPlan(new StringQueryExpression(hql), false, CollectionHelper.EmptyDictionary<string, IFilter>(), Sfi);
 
-		 Assert.AreEqual(1, plan.ParameterMetadata.NamedParameterNames.Count);
-		 Assert.AreEqual(1, plan.QuerySpaces.Count);
-		 Assert.AreEqual(1, plan.SqlStrings.Length);
-	  }
+			Assert.AreEqual(1, plan.ParameterMetadata.NamedParameterNames.Count);
+			Assert.AreEqual(1, plan.QuerySpaces.Count);
+			Assert.AreEqual(1, plan.SqlStrings.Length);
+		}
 	}
 }

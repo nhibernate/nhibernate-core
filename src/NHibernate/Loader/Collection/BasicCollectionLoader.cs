@@ -16,18 +16,18 @@ namespace NHibernate.Loader.Collection
 	/// <seealso cref="OneToManyLoader"/>
 	public class BasicCollectionLoader : CollectionLoader
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (BasicCollectionLoader));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(BasicCollectionLoader));
 
 		public BasicCollectionLoader(IQueryableCollection collectionPersister, ISessionFactoryImplementor session,
-		                             IDictionary<string, IFilter> enabledFilters)
-			: this(collectionPersister, 1, session, enabledFilters) {}
+									 IDictionary<string, IFilter> enabledFilters)
+			: this(collectionPersister, 1, session, enabledFilters) { }
 
 		public BasicCollectionLoader(IQueryableCollection collectionPersister, int batchSize,
-		                             ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
-			: this(collectionPersister, batchSize, null, factory, enabledFilters) {}
+									 ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
+			: this(collectionPersister, batchSize, null, factory, enabledFilters) { }
 
 		protected BasicCollectionLoader(IQueryableCollection collectionPersister, int batchSize, SqlString subquery,
-		                                ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
+										ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 			: base(collectionPersister, factory, enabledFilters)
 		{
 			InitializeFromWalker(collectionPersister, subquery, batchSize, enabledFilters, factory);

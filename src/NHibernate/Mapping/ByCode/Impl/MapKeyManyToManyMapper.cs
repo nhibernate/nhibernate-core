@@ -54,7 +54,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
 			if (formulaLines.Length > 1)
 			{
-				mapping.Items = new object[] {new HbmFormula {Text = formulaLines}};
+				mapping.Items = new object[] { new HbmFormula { Text = formulaLines } };
 			}
 			else
 			{
@@ -72,7 +72,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			mapping.Items =
 				formulas
 					.ToArray(
-						f => (object) new HbmFormula {Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None)});
+						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) });
 		}
 
 		#endregion
@@ -88,15 +88,15 @@ namespace NHibernate.Mapping.ByCode.Impl
 			mapping.formula = null;
 			HbmColumn hbm = mapping.Columns.SingleOrDefault();
 			hbm = hbm
-			      ??
-			      new HbmColumn
-			      {
-			      	name = mapping.column,
-			      };
+				  ??
+				  new HbmColumn
+				  {
+					  name = mapping.column,
+				  };
 			columnMapper(new ColumnMapper(hbm, DefaultColumnName));
 			if (ColumnTagIsRequired(hbm))
 			{
-				mapping.Items = new[] {hbm};
+				mapping.Items = new[] { hbm };
 				ResetColumnPlainValues();
 			}
 			else
@@ -129,8 +129,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private bool ColumnTagIsRequired(HbmColumn hbm)
 		{
 			return hbm.length != null || hbm.precision != null || hbm.scale != null || hbm.notnull || hbm.unique
-			       || hbm.uniquekey != null || hbm.sqltype != null || hbm.index != null || hbm.@default != null
-			       || hbm.check != null;
+				   || hbm.uniquekey != null || hbm.sqltype != null || hbm.index != null || hbm.@default != null
+				   || hbm.check != null;
 		}
 
 		private void ResetColumnPlainValues()

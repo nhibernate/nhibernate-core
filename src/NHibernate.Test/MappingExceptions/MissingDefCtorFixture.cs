@@ -18,7 +18,7 @@ namespace NHibernate.Test.MappingExceptions
 			string resource = "NHibernate.Test.MappingExceptions.MissingDefCtor.hbm.xml";
 			Configuration cfg = new Configuration();
 			cfg.AddResource(resource, this.GetType().Assembly);
-			Assert.Throws<InstantiationException>(() =>cfg.BuildSessionFactory());
+			Assert.Throws<InstantiationException>(() => cfg.BuildSessionFactory());
 		}
 	}
 }

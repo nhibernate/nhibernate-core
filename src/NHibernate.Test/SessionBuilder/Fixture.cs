@@ -105,7 +105,7 @@ namespace NHibernate.Test.SessionBuilder
 
 				if (sb is ISharedSessionBuilder ssb)
 				{
-					var sharedOptions = (ISharedSessionCreationOptions)options;
+					var sharedOptions = (ISharedSessionCreationOptions) options;
 					Assert.IsFalse(sharedOptions.IsTransactionCoordinatorShared, $"{sbType}: Transaction coordinator shared before sharing");
 					Assert.IsNull(sharedOptions.ConnectionManager, $"{sbType}: Connection manager shared before sharing");
 
@@ -149,7 +149,7 @@ namespace NHibernate.Test.SessionBuilder
 
 				if (sb is ISharedStatelessSessionBuilder ssb)
 				{
-					var sharedOptions = (ISharedSessionCreationOptions)options;
+					var sharedOptions = (ISharedSessionCreationOptions) options;
 					Assert.IsFalse(sharedOptions.IsTransactionCoordinatorShared, $"{sbType}: Transaction coordinator shared before sharing");
 					Assert.IsNull(sharedOptions.ConnectionManager, $"{sbType}: Connection manager shared before sharing");
 

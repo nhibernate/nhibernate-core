@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.CacheTest
 {
 	[TestFixture]
-	public class FilterKeyFixture: TestCase
+	public class FilterKeyFixture : TestCase
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
@@ -74,7 +74,7 @@ namespace NHibernate.Test.CacheTest
 			fk = new FilterKey(f);
 
 			var f1 = new FilterImpl(Sfi.GetFilterDefinition(filterName));
-			f1.SetParameterList("pIn", sameValue ? (ICollection<int>)new [] { 10, 11 } : new HashSet<int> { 10, 12 });
+			f1.SetParameterList("pIn", sameValue ? (ICollection<int>) new[] { 10, 11 } : new HashSet<int> { 10, 12 });
 			fk1 = new FilterKey(f1);
 		}
 

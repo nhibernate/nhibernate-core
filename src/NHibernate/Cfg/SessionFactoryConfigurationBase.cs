@@ -8,10 +8,10 @@ namespace NHibernate.Cfg
 		private string name = string.Empty;
 		private readonly Dictionary<string, string> properties = new Dictionary<string, string>();
 		private readonly List<MappingConfiguration> mappings = new List<MappingConfiguration>();
-		private readonly List<ClassCacheConfiguration> classesCache= new List<ClassCacheConfiguration>();
-		private readonly List<CollectionCacheConfiguration> collectionsCache= new List<CollectionCacheConfiguration>();
-		private readonly List<EventConfiguration> events= new List<EventConfiguration>();
-		private readonly List<ListenerConfiguration> listeners= new List<ListenerConfiguration>();
+		private readonly List<ClassCacheConfiguration> classesCache = new List<ClassCacheConfiguration>();
+		private readonly List<CollectionCacheConfiguration> collectionsCache = new List<CollectionCacheConfiguration>();
+		private readonly List<EventConfiguration> events = new List<EventConfiguration>();
+		private readonly List<ListenerConfiguration> listeners = new List<ListenerConfiguration>();
 
 		/// <summary>
 		/// The session factory name.
@@ -25,7 +25,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Session factory properties bag.
 		/// </summary>
-		public IDictionary<string,string> Properties
+		public IDictionary<string, string> Properties
 		{
 			get { return properties; }
 		}

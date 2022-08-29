@@ -4,12 +4,12 @@ using System.Text;
 
 namespace NHibernate.Test.NHSpecificTest.NH1264
 {
-   public class Name
+	public class Name
 	{
 		private string first;
 		private string last;
 		private string display;
-		
+
 		public string First
 		{
 			get { return first; }
@@ -26,6 +26,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1264
 		{
 			get { return display ?? first + " " + last; }
 			set { display = value; }
-		}	
+		}
 	}
 }

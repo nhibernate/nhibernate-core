@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1526
 
 			var type1 = _providerFromNHTest.GetAnonymousType();
 			var type2 = _providerFromNHDoMo.GetAnonymousType();
-			
+
 			Assert.That(type1.FullName, Is.EqualTo(type2.FullName),
 				"The two tested types must have the same FullName for demonstrating the bug.");
 

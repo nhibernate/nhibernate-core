@@ -17,7 +17,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaUpdate
 	{
 		private Configuration _configurationToDrop;
 		private FirebirdClientDriver _fireBirdDriver;
-		
+
 		[OneTimeSetUp]
 		public void OneTimeSetup()
 		{

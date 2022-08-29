@@ -25,7 +25,7 @@ namespace NHibernate.Hql
 			get { return _queryString; }
 		}
 
-		public System.Type Type { get { return typeof (object); } }
+		public System.Type Type { get { return typeof(object); } }
 		public IList<NamedParameterDescriptor> ParameterDescriptors { get; private set; }
 	}
 

@@ -1,9 +1,9 @@
 using System;
-using NHibernate.DomainModel;
+using System.Linq;
 using NHibernate.Criterion;
+using NHibernate.DomainModel;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
-using System.Linq;
 
 namespace NHibernate.Test.ExpressionTest
 {

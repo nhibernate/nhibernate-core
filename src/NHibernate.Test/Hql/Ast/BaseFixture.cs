@@ -6,10 +6,10 @@ using NHibernate.Util;
 
 namespace NHibernate.Test.Hql.Ast
 {
-	public class BaseFixture: TestCase
+	public class BaseFixture : TestCase
 	{
 		private readonly IDictionary<string, IFilter> emptyfilters = CollectionHelper.EmptyDictionary<string, IFilter>();
-		
+
 		#region Overrides of TestCase
 
 		protected override string[] Mappings

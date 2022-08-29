@@ -17,10 +17,10 @@ namespace NHibernate.Collection
 	/// </summary>
 	/// <remarks> Use of Hibernate arrays is not really recommended. </remarks>
 	[Serializable]
-	[DebuggerTypeProxy(typeof (CollectionProxy))]
+	[DebuggerTypeProxy(typeof(CollectionProxy))]
 	public partial class PersistentArrayHolder : AbstractPersistentCollection, ICollection
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (PersistentArrayHolder));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(PersistentArrayHolder));
 
 		private Array array;
 
@@ -52,7 +52,7 @@ namespace NHibernate.Collection
 			get { return array; }
 			protected set
 			{
-				array = (Array)value;
+				array = (Array) value;
 			}
 		}
 
@@ -177,7 +177,7 @@ namespace NHibernate.Collection
 			return true;
 		}
 
-		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize) {}
+		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize) { }
 
 		public override bool IsDirectlyAccessible
 		{

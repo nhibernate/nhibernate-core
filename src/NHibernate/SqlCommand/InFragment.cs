@@ -73,7 +73,7 @@ namespace NHibernate.SqlCommand
 					}
 					else if (NotNull.Equals(value))
 					{
-						throw new NotSupportedException(string.Format("not null makes no sense for in expression (column:{0})",columnName));
+						throw new NotSupportedException(string.Format("not null makes no sense for in expression (column:{0})", columnName));
 					}
 					else
 					{

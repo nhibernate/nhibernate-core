@@ -41,7 +41,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentOutOfRangeException("property", "Can't add a property of another graph");
 			}
-			var hbmProperty = new HbmProperty {name = property.Name};
+			var hbmProperty = new HbmProperty { name = property.Name };
 			mapping(new PropertyMapper(property, hbmProperty));
 			AddProperty(hbmProperty);
 		}

@@ -11,11 +11,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2037
 			var country = new Country { Name = "Argentina" };
 
 			var city = new City
-			           	{
-			           		CityCode = 5,
-			           		Country = country,
-			           		Name = "Cordoba"
-			           	};
+			{
+				CityCode = 5,
+				Country = country,
+				Name = "Cordoba"
+			};
 
 
 			using (ISession session = OpenSession())

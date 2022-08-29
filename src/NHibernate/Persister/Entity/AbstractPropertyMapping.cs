@@ -35,7 +35,7 @@ namespace NHibernate.Persister.Entity
 			IType type;
 			if (!typesByPropertyPath.TryGetValue(propertyName, out type))
 				throw PropertyException(propertyName);
-			
+
 			return type;
 		}
 
@@ -101,7 +101,7 @@ namespace NHibernate.Persister.Entity
 				formulaTemplatesByPropertyPath[path] = formulaTemplates;
 		}
 
-		protected internal void InitPropertyPaths( string path, IType type, string[] columns, string[] formulaTemplates, IMapping factory )
+		protected internal void InitPropertyPaths(string path, IType type, string[] columns, string[] formulaTemplates, IMapping factory)
 		{
 			if (columns.Length != type.GetOwnerColumnSpan(factory))
 			{
@@ -112,7 +112,7 @@ namespace NHibernate.Persister.Entity
 
 			if (type.IsAssociationType)
 			{
-				var actType = (IAssociationType)type;
+				var actType = (IAssociationType) type;
 				if (actType.UseLHSPrimaryKey)
 				{
 					columns = IdentifierColumnNames;
@@ -137,7 +137,7 @@ namespace NHibernate.Persister.Entity
 
 			if (type.IsComponentType)
 			{
-				var actype = (IAbstractComponentType)type;
+				var actype = (IAbstractComponentType) type;
 				InitComponentPropertyPaths(path, actype, columns, formulaTemplates, factory);
 				if (actype.IsEmbedded)
 				{
@@ -210,7 +210,7 @@ namespace NHibernate.Persister.Entity
 		{
 			if (string.IsNullOrEmpty(path))
 				return property;
-			
+
 			return StringHelper.Qualify(path, property);
 		}
 

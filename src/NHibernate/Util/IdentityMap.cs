@@ -62,12 +62,12 @@ namespace NHibernate.Util
 		/// <returns>A Collection of DictionaryEntries</returns>
 		public static ICollection ConcurrentEntries(IDictionary map)
 		{
-			return ((IdentityMap)map).EntryList;
+			return ((IdentityMap) map).EntryList;
 		}
 
 		public static ICollection Entries(IDictionary map)
 		{
-			return ((IdentityMap)map).EntryList;
+			return ((IdentityMap) map).EntryList;
 		}
 
 		/// <summary>
@@ -271,7 +271,7 @@ namespace NHibernate.Util
 
 		public void OnDeserialization(object sender)
 		{
-			((IDeserializationCallback)map).OnDeserialization(sender);
+			((IDeserializationCallback) map).OnDeserialization(sender);
 		}
 	}
 }

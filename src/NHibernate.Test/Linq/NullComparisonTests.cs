@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NHibernate.Dialect;
-using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
@@ -13,11 +13,11 @@ namespace NHibernate.Test.Linq
 	[TestFixture]
 	public class NullComparisonTests : LinqTestCase
 	{
-		private static readonly AnotherEntity OutputSet = new AnotherEntity {Output = "output"};
-		private static readonly AnotherEntity InputSet = new AnotherEntity {Input = "input"};
-		private static readonly AnotherEntity BothSame = new AnotherEntity {Input = "i/o", Output = "i/o"};
+		private static readonly AnotherEntity OutputSet = new AnotherEntity { Output = "output" };
+		private static readonly AnotherEntity InputSet = new AnotherEntity { Input = "input" };
+		private static readonly AnotherEntity BothSame = new AnotherEntity { Input = "i/o", Output = "i/o" };
 		private static readonly AnotherEntity BothNull = new AnotherEntity();
-		private static readonly AnotherEntity BothDifferent = new AnotherEntity {Input = "input", Output = "output"};
+		private static readonly AnotherEntity BothDifferent = new AnotherEntity { Input = "input", Output = "output" };
 
 		[Test]
 		public void NullInequalityWithNotNull()
@@ -485,7 +485,7 @@ namespace NHibernate.Test.Linq
 			Expect(db.NumericEntities.Where(o => 3L == o.NullableShort), WithoutIsNullAndWithoutCast());
 
 			Expect(db.NumericEntities.Where(o => o.NullableShort.Value == 3L), WithoutIsNullAndWithoutCast());
-			Expect(db.NumericEntities.Where(o => 3L == o.NullableShort.Value),  WithoutIsNullAndWithoutCast());
+			Expect(db.NumericEntities.Where(o => 3L == o.NullableShort.Value), WithoutIsNullAndWithoutCast());
 			Expect(db.NumericEntities.Where(o => o.Short == 3L), WithoutIsNullAndWithoutCast());
 			Expect(db.NumericEntities.Where(o => 3L == o.Short), WithoutIsNullAndWithoutCast());
 		}
@@ -763,11 +763,11 @@ namespace NHibernate.Test.Linq
 
 		private void Expect(IQueryable<AnotherEntity> q, params AnotherEntity[] entities)
 		{
-			IList<AnotherEntity> results = q.ToList().OrderBy(l=> Key(l)).ToList();
+			IList<AnotherEntity> results = q.ToList().OrderBy(l => Key(l)).ToList();
 			IList<AnotherEntity> check = entities.OrderBy(l => Key(l)).ToList();
 
 			Assert.AreEqual(check.Count, results.Count);
-			for(int i=0; i<check.Count; i++)
+			for (int i = 0; i < check.Count; i++)
 				Assert.AreEqual(Key(check[i]), Key(results[i]));
 		}
 

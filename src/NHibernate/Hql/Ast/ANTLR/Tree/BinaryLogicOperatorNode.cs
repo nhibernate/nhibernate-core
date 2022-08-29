@@ -42,25 +42,25 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public virtual void Initialize()
 		{
 			IASTNode lhs = LeftHandOperand;
-			if ( lhs == null ) 
+			if (lhs == null)
 			{
-				throw new SemanticException( "left-hand operand of a binary operator was null" );
+				throw new SemanticException("left-hand operand of a binary operator was null");
 			}
 			IASTNode rhs = RightHandOperand;
-			if ( rhs == null ) 
+			if (rhs == null)
 			{
-				throw new SemanticException( "right-hand operand of a binary operator was null" );
+				throw new SemanticException("right-hand operand of a binary operator was null");
 			}
 
 			ProcessMetaTypeDiscriminatorIfNecessary(lhs, rhs);
-			IType lhsType = ExtractDataType( lhs );
-			IType rhsType = ExtractDataType( rhs );
+			IType lhsType = ExtractDataType(lhs);
+			IType rhsType = ExtractDataType(rhs);
 
-			if ( lhsType == null ) 
+			if (lhsType == null)
 			{
 				lhsType = rhsType;
 			}
-			if ( rhsType == null ) 
+			if (rhsType == null)
 			{
 				rhsType = lhsType;
 			}
@@ -75,7 +75,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				rshTypeAwareNode.ExpectedType = lhsType;
 			}
 
-			MutateRowValueConstructorSyntaxesIfNecessary( lhsType, rhsType );
+			MutateRowValueConstructorSyntaxesIfNecessary(lhsType, rhsType);
 		}
 
 		protected void MutateRowValueConstructorSyntaxesIfNecessary(IType lhsType, IType rhsType)
@@ -93,7 +93,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				if (lhsColumnSpan != rhsColumnSpan && !AreCompatibleEntityTypes(lhsType, rhsType))
 				{
 					throw new TypeMismatchException("left and right hand sides of a binary logic operator were incompatibile ["
-					                                + lhsType.Name + " : " + rhsType.Name + "]");
+													+ lhsType.Name + " : " + rhsType.Name + "]");
 				}
 				if (lhsColumnSpan > 1)
 				{
@@ -109,7 +109,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private static bool AreCompatibleEntityTypes(IType lhsType, IType rhsType)
 		{
-			if(lhsType.IsEntityType && rhsType.IsEntityType)
+			if (lhsType.IsEntityType && rhsType.IsEntityType)
 			{
 				return lhsType.ReturnedClass.IsAssignableFrom(rhsType.ReturnedClass) ||
 					rhsType.ReturnedClass.IsAssignableFrom(lhsType.ReturnedClass);
@@ -128,7 +128,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		 *
 		 * @param valueElements The number of elements in the row value constructor list.
 		 */
-		private void MutateRowValueConstructorSyntax(int valueElements) 
+		private void MutateRowValueConstructorSyntax(int valueElements)
 		{
 			// Reduce the new tree in just one SqlFragment, to manage parameters
 
@@ -160,7 +160,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
 		{
-			if(!HasEmbeddedParameters)
+			if (!HasEmbeddedParameters)
 			{
 				// this expression was not changed by MutateRowValueConstructorSyntax
 				return base.RenderText(sessionFactory);
@@ -209,9 +209,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return string.Concat("(", string.Join(" and ", multicolumnComparisonClauses), ")");
 		}
 
-		private protected static string[] ExtractMutationTexts(IASTNode operand, int count) 
+		private protected static string[] ExtractMutationTexts(IASTNode operand, int count)
 		{
-			if ( operand is ParameterNode )
+			if (operand is ParameterNode)
 			{
 				return ArrayHelper.Fill("?", count);
 			}
@@ -235,20 +235,20 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 				return splits;
 			}
-			if (operand.Type == HqlSqlWalker.VECTOR_EXPR) 
+			if (operand.Type == HqlSqlWalker.VECTOR_EXPR)
 			{
 				var rtn = new string[operand.ChildCount];
 
 				for (int x = 0; x < operand.ChildCount; x++)
 				{
-					rtn[ x ] = operand.GetChild(x).Text;
+					rtn[x] = operand.GetChild(x).Text;
 				}
 				return rtn;
 			}
-			throw new HibernateException( "dont know how to extract row value elements from node : " + operand );
+			throw new HibernateException("dont know how to extract row value elements from node : " + operand);
 		}
 
-		protected static IType ExtractDataType(IASTNode operand) 
+		protected static IType ExtractDataType(IASTNode operand)
 		{
 			IType type = null;
 

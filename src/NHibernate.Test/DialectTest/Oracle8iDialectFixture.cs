@@ -14,9 +14,9 @@ namespace NHibernate.Test.DialectTest
 		public void GetLimitStringWithTableStartingWithSelectKeyword()
 		{
 			var dialect = new Oracle8iDialect();
-			var sqlString=new SqlString(@"select selectlimi0_.""Id"" as column1_2_,selectlimi0_.""FirstName"" as column2_2_,selectlimi0_.""LastName"" as column3_2_ from ""SelectLimit"" selectlimi0_");
+			var sqlString = new SqlString(@"select selectlimi0_.""Id"" as column1_2_,selectlimi0_.""FirstName"" as column2_2_,selectlimi0_.""LastName"" as column3_2_ from ""SelectLimit"" selectlimi0_");
 			var expected = new SqlString(@"select column1_2_,column2_2_,column3_2_ from ( select selectlimi0_.""Id"" as column1_2_,selectlimi0_.""FirstName"" as column2_2_,selectlimi0_.""LastName"" as column3_2_ from ""SelectLimit"" selectlimi0_ ) where rownum <=1");
-			var limited=dialect.GetLimitString(sqlString, null, new SqlString("1"));
+			var limited = dialect.GetLimitString(sqlString, null, new SqlString("1"));
 			Assert.AreEqual(limited, expected);
 		}
 
@@ -26,7 +26,7 @@ namespace NHibernate.Test.DialectTest
 			var dialect = new Oracle8iDialect();
 			var sqlString = new SqlString(@"select eselectlimi0_.""Id"" as column1_2_,eselectlimi0_.""FirstName"" as column2_2_,eselectlimi0_.""LastName"" as column3_2_ from ""ESelectLimit"" eselectlimi0_");
 			var expected = new SqlString(@"select column1_2_,column2_2_,column3_2_ from ( select eselectlimi0_.""Id"" as column1_2_,eselectlimi0_.""FirstName"" as column2_2_,eselectlimi0_.""LastName"" as column3_2_ from ""ESelectLimit"" eselectlimi0_ ) where rownum <=1");
-			
+
 			var limited = dialect.GetLimitString(sqlString, null, new SqlString("1"));
 			Assert.AreEqual(limited, expected);
 		}

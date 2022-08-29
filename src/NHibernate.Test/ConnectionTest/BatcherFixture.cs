@@ -37,7 +37,7 @@ namespace NHibernate.Test.ConnectionTest
 				var silly = new YetAnother { Name = "Silly" };
 				s.Save(silly);
 				s.GetSessionImplementation().ConnectionManager.Batcher.CloseCommands();
-				
+
 				Assert.DoesNotThrow(s.Flush, "Flush failure after closing commands.");
 			}
 		}

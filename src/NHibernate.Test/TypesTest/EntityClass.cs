@@ -6,7 +6,7 @@ namespace NHibernate.Test.TypesTest
 	{
 		private int _id;
 
-		public EntityClass() {}
+		public EntityClass() { }
 
 		public EntityClass(int _id)
 		{
@@ -22,11 +22,11 @@ namespace NHibernate.Test.TypesTest
 
 	public class ComparableEntityClass : EntityClass, IComparable
 	{
-		public ComparableEntityClass() {}
+		public ComparableEntityClass() { }
 
 		#region IComparable Members
 
-		public ComparableEntityClass(int _id) : base(_id) {}
+		public ComparableEntityClass(int _id) : base(_id) { }
 
 		public int CompareTo(object obj)
 		{

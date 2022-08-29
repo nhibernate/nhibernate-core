@@ -15,7 +15,7 @@ namespace NHibernate
 		///</summary>
 		public static DetachedCriteria TransformToRowCount(DetachedCriteria criteria)
 		{
-			CriteriaImpl clonedCriteria = TransformToRowCount((CriteriaImpl)criteria.GetCriteriaImpl().Clone());
+			CriteriaImpl clonedCriteria = TransformToRowCount((CriteriaImpl) criteria.GetCriteriaImpl().Clone());
 			return new DetachedCriteria(clonedCriteria);
 		}
 
@@ -25,7 +25,7 @@ namespace NHibernate
 		///</summary>
 		public static ICriteria TransformToRowCount(ICriteria criteria)
 		{
-			return TransformToRowCount((CriteriaImpl)criteria.Clone());
+			return TransformToRowCount((CriteriaImpl) criteria.Clone());
 		}
 
 		private static CriteriaImpl TransformToRowCount(CriteriaImpl criteria)

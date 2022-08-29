@@ -504,7 +504,7 @@ namespace NHibernate.Mapping
 			filters[name] = condition;
 		}
 
-		public IDictionary<string,string> FilterMap
+		public IDictionary<string, string> FilterMap
 		{
 			get { return filters; }
 		}
@@ -561,11 +561,11 @@ namespace NHibernate.Mapping
 			CheckColumnDuplication(cols, Key.ColumnIterator);
 			if (IsIndexed)
 			{
-				CheckColumnDuplication(cols, ((IndexedCollection)this).Index.ColumnIterator);
+				CheckColumnDuplication(cols, ((IndexedCollection) this).Index.ColumnIterator);
 			}
 			if (IsIdentified)
 			{
-				CheckColumnDuplication(cols, ((IdentifierCollection)this).Identifier.ColumnIterator);
+				CheckColumnDuplication(cols, ((IdentifierCollection) this).Identifier.ColumnIterator);
 			}
 			if (!IsOneToMany)
 			{
@@ -577,13 +577,13 @@ namespace NHibernate.Mapping
 		{
 			foreach (ISelectable s in columns)
 			{
-				if(!s.IsFormula)
+				if (!s.IsFormula)
 				{
-					Column col = (Column)s;
+					Column col = (Column) s;
 					if (!distinctColumns.Add(col.Name))
 					{
 						throw new MappingException(string.Format("Repeated column in mapping for collection: {0} column: {1}", Role, col.Name));
-					}					
+					}
 				}
 			}
 		}

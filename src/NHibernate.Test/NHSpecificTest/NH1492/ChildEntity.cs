@@ -5,7 +5,7 @@
 		private string _description;
 		private int _id;
 		private Entity _parent;
-		public ChildEntity() {}
+		public ChildEntity() { }
 
 		public ChildEntity(Entity parent, string description)
 		{

@@ -6,8 +6,8 @@ namespace NHibernate.Linq.NestedSelects
 {
 	internal class Tuple : IEquatable<Tuple>
 	{
-		public static readonly ConstructorInfo Constructor = typeof (Tuple).GetConstructor(new[] { typeof (object[]) });
-		public static readonly PropertyInfo ItemsProperty = typeof (Tuple).GetProperty("Items");
+		public static readonly ConstructorInfo Constructor = typeof(Tuple).GetConstructor(new[] { typeof(object[]) });
+		public static readonly PropertyInfo ItemsProperty = typeof(Tuple).GetProperty("Items");
 		private readonly object[] _items;
 
 		public Tuple(object[] items)

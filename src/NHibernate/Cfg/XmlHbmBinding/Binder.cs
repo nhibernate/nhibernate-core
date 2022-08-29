@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
-
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Cfg.MappingSchema;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
 	public abstract class Binder
 	{
-		protected static readonly INHibernateLogger log = NHibernateLogger.For(typeof (Binder));
+		protected static readonly INHibernateLogger log = NHibernateLogger.For(typeof(Binder));
 
 		protected static readonly IDictionary<string, MetaAttribute> EmptyMeta =
 			CollectionHelper.EmptyDictionary<string, MetaAttribute>();
@@ -64,15 +63,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		protected static bool NeedQualifiedClassName(string className)
 		{
-			if(string.IsNullOrEmpty(className))
+			if (string.IsNullOrEmpty(className))
 			{
 				return false;
 			}
-			if(className.IndexOf('.') > 0)
+			if (className.IndexOf('.') > 0)
 			{
 				return false;
 			}
-			if(TypeFactory.Basic(className) != null)
+			if (TypeFactory.Basic(className) != null)
 			{
 				return false;
 			}
@@ -135,15 +134,15 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		public static IDictionary<string, MetaAttribute> GetMetas(IDecoratable decoratable, IDictionary<string, MetaAttribute> inheritedMeta, bool onlyInheritable)
 		{
-			if(decoratable == null)
+			if (decoratable == null)
 			{
 				return EmptyMeta;
 			}
 			var map = new Dictionary<string, MetaAttribute>(inheritedMeta);
 
 			IDictionary<string, MetaAttribute> metaAttributes = onlyInheritable
-			                                                    	? decoratable.InheritableMetaData
-			                                                    	: decoratable.MappedMetaData;
+																	? decoratable.InheritableMetaData
+																	: decoratable.MappedMetaData;
 
 			foreach (var metaAttribute in metaAttributes)
 			{

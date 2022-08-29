@@ -14,13 +14,13 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 		public ContractVariation()
 		{
 		}
-		
+
 		public ContractVariation(Contract contract)
 		{
 			this.contract = contract;
 			this.contract.Variations.Add(this);
 		}
-		
+
 		public virtual int Id
 		{
 			get { return id; }
@@ -32,13 +32,13 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			get { return contract; }
 			set { contract = value; }
 		}
-		
+
 		public virtual string Text
 		{
 			get { return text; }
 			set { text = value; }
 		}
-		
+
 		public virtual ISet<Info> Infos
 		{
 			get { return infos; }

@@ -18,7 +18,7 @@ namespace NHibernate.Test.JoinedSubclass
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"JoinedSubclass.JoinedSubclass.hbm.xml"}; }
+			get { return new string[] { "JoinedSubclass.JoinedSubclass.hbm.xml" }; }
 		}
 
 		private DateTime testDateTime = new DateTime(2003, 8, 16);
@@ -211,7 +211,7 @@ namespace NHibernate.Test.JoinedSubclass
 			// the object with id=2 was loaded using the base class - lets make sure it actually loaded
 			// the subclass
 			Assert.AreEqual(typeof(Employee), empAsPerson.GetType(),
-			                "even though person was queried, should have returned correct subclass.");
+							"even though person was queried, should have returned correct subclass.");
 			emp = (Employee) s.Load(typeof(Employee), empId);
 
 			// lets update the objects
@@ -238,7 +238,7 @@ namespace NHibernate.Test.JoinedSubclass
 			t = s.BeginTransaction();
 
 			IList results = s.CreateCriteria(typeof(Person))
-				.Add(Expression.In("Name", new string[] {"Did it get updated", "Updated Employee String"}))
+				.Add(Expression.In("Name", new string[] { "Did it get updated", "Updated Employee String" }))
 				.List();
 
 			Assert.AreEqual(2, results.Count);

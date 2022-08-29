@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
-using NHibernate.Util;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
 
 namespace NHibernate.Engine.Query
 {

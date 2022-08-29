@@ -33,7 +33,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var mapper = new ModelMapper(autoinspector);
 			mapper.Class<AComponent>(map => { });
 
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsEntity(typeof(AComponent)), Is.True);
 		}
 
@@ -41,7 +41,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void ClassWithPoidIsEntity()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsEntity(typeof(AEntity)), Is.True);
 		}
 
@@ -49,7 +49,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void ClassWithoutPoidIsNotEntity()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsEntity(typeof(AComponent)), Is.False);
 		}
 
@@ -57,7 +57,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void ClassWithPoidFieldIsEntity()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsEntity(typeof(Entity)), Is.True);
 		}
 
@@ -65,7 +65,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void EnumIsNotEntity()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsEntity(typeof(Something)), Is.False);
 		}
 
@@ -73,7 +73,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		public void StringIsNotEntity()
 		{
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsEntity(typeof(string)), Is.False);
 		}
 	}

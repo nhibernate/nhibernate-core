@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NHibernate.Engine;
-using System.Linq;
 
 namespace NHibernate.Stat
 {
@@ -18,7 +18,7 @@ namespace NHibernate.Stat
 		private long entityFetchCount;
 		private long entityUpdateCount;
 		// log operations that take longer than this value
-		private TimeSpan operationThreshold = TimeSpan.MaxValue; 
+		private TimeSpan operationThreshold = TimeSpan.MaxValue;
 		private long queryExecutionCount;
 		private TimeSpan queryExecutionMaxTime;
 		private string queryExecutionMaxTimeQueryString;
@@ -205,7 +205,7 @@ namespace NHibernate.Stat
 			get
 			{
 				var result = new string[queryStatistics.Keys.Count];
-				queryStatistics.Keys.CopyTo(result,0);
+				queryStatistics.Keys.CopyTo(result, 0);
 				return result;
 			}
 		}

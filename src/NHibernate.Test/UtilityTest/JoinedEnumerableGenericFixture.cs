@@ -15,7 +15,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WrapsSingle()
 		{
-			int[] expected = new int[] {1, 2, 3};
+			int[] expected = new int[] { 1, 2, 3 };
 
 			EnumerableTester<int> first;
 			JoinedEnumerable<int> joined = InitSingle(out first);
@@ -35,7 +35,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WrapsSingleBreak()
 		{
-			int[] expected = new int[] {1, 2, 3};
+			int[] expected = new int[] { 1, 2, 3 };
 
 			EnumerableTester<int> first;
 			JoinedEnumerable<int> joined = InitSingle(out first);
@@ -52,7 +52,7 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void WrapsMultiple()
 		{
-			int[] expected = new int[] {1, 2, 3, 4, 5, 6};
+			int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
 
 			EnumerableTester<int> first;
 			EnumerableTester<int> second;
@@ -83,7 +83,7 @@ namespace NHibernate.Test.UtilityTest
 
 		private static void WrapsMultipleBreak(int breakIndex)
 		{
-			int[] expected = new int[] {1, 2, 3, 4, 5, 6};
+			int[] expected = new int[] { 1, 2, 3, 4, 5, 6 };
 
 			EnumerableTester<int> first;
 			EnumerableTester<int> second;
@@ -139,7 +139,7 @@ namespace NHibernate.Test.UtilityTest
 
 		public IEnumerator GetEnumerator()
 		{
-			return ((IEnumerable<T>)this).GetEnumerator();
+			return ((IEnumerable<T>) this).GetEnumerator();
 		}
 
 		#endregion
@@ -178,7 +178,7 @@ namespace NHibernate.Test.UtilityTest
 
 			public object Current
 			{
-				get { return ((IEnumerator<T2>)this).Current; }
+				get { return ((IEnumerator<T2>) this).Current; }
 			}
 
 			#region IEnumerator<T2> Members

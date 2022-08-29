@@ -8,7 +8,7 @@ namespace NHibernate.Param
 	/// Author: Steve Ebersole
 	/// Ported by: Steve Strong
 	/// </summary>
-	public interface IExplicitParameterSpecification : IParameterSpecification 
+	public interface IExplicitParameterSpecification : IParameterSpecification
 	{
 		/// <summary>
 		/// Retrieves the line number on which this parameter occurs in the source query.

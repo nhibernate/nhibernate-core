@@ -5,10 +5,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-
+using NHibernate.Engine;
 using NHibernate.Properties;
 using NHibernate.Type;
-using NHibernate.Engine;
 
 namespace NHibernate.Util
 {
@@ -61,7 +60,7 @@ namespace NHibernate.Util
 			if (method == null)
 				throw new ArgumentNullException(nameof(method));
 
-			return ((MethodCallExpression)method.Body).Method;
+			return ((MethodCallExpression) method.Body).Method;
 		}
 
 		/// <summary>
@@ -101,7 +100,7 @@ namespace NHibernate.Util
 			if (method == null)
 				throw new ArgumentNullException(nameof(method));
 
-			return ((MethodCallExpression)method.Body).Method;
+			return ((MethodCallExpression) method.Body).Method;
 		}
 
 		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
@@ -235,7 +234,7 @@ namespace NHibernate.Util
 			{
 				throw new ArgumentNullException(nameof(property));
 			}
-			return ((MemberExpression)property.Body).Member;
+			return ((MemberExpression) property.Body).Member;
 		}
 
 		/// <summary>
@@ -250,7 +249,7 @@ namespace NHibernate.Util
 			{
 				throw new ArgumentNullException(nameof(property));
 			}
-			return ((MemberExpression)property.Body).Member;
+			return ((MemberExpression) property.Body).Member;
 		}
 
 		internal static bool ParameterTypesMatch(ParameterInfo[] parameters, System.Type[] types)
@@ -467,38 +466,38 @@ namespace NHibernate.Util
 		}
 
 		/// <summary>
-				/// Load a System.Type given its name.
-				/// </summary>
-				/// <param name="classFullName">The class FullName or AssemblyQualifiedName</param>
-				/// <returns>The System.Type or null</returns>
-				/// <remarks>
-				/// If the <paramref name="classFullName"/> don't represent an <see cref="System.Type.AssemblyQualifiedName"/>
-				/// the method try to find the System.Type scanning all Assemblies of the <see cref="AppDomain.CurrentDomain"/>.
-				/// </remarks>
-				public static System.Type ClassForFullNameOrNull(string classFullName)
+		/// Load a System.Type given its name.
+		/// </summary>
+		/// <param name="classFullName">The class FullName or AssemblyQualifiedName</param>
+		/// <returns>The System.Type or null</returns>
+		/// <remarks>
+		/// If the <paramref name="classFullName"/> don't represent an <see cref="System.Type.AssemblyQualifiedName"/>
+		/// the method try to find the System.Type scanning all Assemblies of the <see cref="AppDomain.CurrentDomain"/>.
+		/// </remarks>
+		public static System.Type ClassForFullNameOrNull(string classFullName)
+		{
+			System.Type result = null;
+			AssemblyQualifiedTypeName parsedName = TypeNameParser.Parse(classFullName);
+			if (!string.IsNullOrEmpty(parsedName.Assembly))
+			{
+				result = TypeFromAssembly(parsedName, false);
+			}
+			else
+			{
+				if (!string.IsNullOrEmpty(classFullName))
 				{
-					System.Type result = null;
-					AssemblyQualifiedTypeName parsedName = TypeNameParser.Parse(classFullName);
-					if (!string.IsNullOrEmpty(parsedName.Assembly))
+					Assembly[] ass = AppDomain.CurrentDomain.GetAssemblies();
+					foreach (Assembly a in ass)
 					{
-						result = TypeFromAssembly(parsedName, false);
+						result = a.GetType(classFullName, false, false);
+						if (result != null)
+							break; //<<<<<================
 					}
-					else
-					{
-						if (!string.IsNullOrEmpty(classFullName))
-						{
-							Assembly[] ass = AppDomain.CurrentDomain.GetAssemblies();
-							foreach (Assembly a in ass)
-							{
-								result = a.GetType(classFullName, false, false);
-								if (result != null)
-									break; //<<<<<================
-							}
-						}
-					}
-
-					return result;
 				}
+			}
+
+			return result;
+		}
 
 		public static System.Type TypeFromAssembly(string type, string assembly, bool throwIfError)
 		{
@@ -794,9 +793,9 @@ namespace NHibernate.Util
 
 			List<System.Type> typesToSearch = new List<System.Type>();
 			MethodInfo foundMethod = null;
-			
+
 			typesToSearch.Add(type);
-		
+
 			if (type.IsInterface)
 			{
 				// Methods on parent interfaces are not actually inherited
@@ -816,7 +815,7 @@ namespace NHibernate.Util
 					break;
 				}
 			}
-			
+
 			return foundMethod;
 		}
 
@@ -925,66 +924,66 @@ namespace NHibernate.Util
 				throw new ArgumentNullException("collectionInstance");
 			}
 			var collectionType = collectionInstance.GetType();
-				return GetCollectionElementType(collectionType);
+			return GetCollectionElementType(collectionType);
 		}
 
-			public static System.Type GetCollectionElementType(System.Type collectionType)
+		public static System.Type GetCollectionElementType(System.Type collectionType)
+		{
+			if (collectionType == null)
 			{
-				if (collectionType == null)
+				throw new ArgumentNullException("collectionType");
+			}
+			if (collectionType.IsArray)
+			{
+				return collectionType.GetElementType();
+			}
+			if (collectionType.IsGenericType)
+			{
+				List<System.Type> interfaces = collectionType.GetInterfaces().Where(t => t.IsGenericType).ToList();
+				if (collectionType.IsInterface)
 				{
-					throw new ArgumentNullException("collectionType");
+					interfaces.Add(collectionType);
 				}
-				if (collectionType.IsArray)
+				var enumerableInterface = interfaces.FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+				if (enumerableInterface != null)
 				{
-					return collectionType.GetElementType();
+					return enumerableInterface.GetGenericArguments()[0];
 				}
-				if (collectionType.IsGenericType)
-				{
-					List<System.Type> interfaces = collectionType.GetInterfaces().Where(t => t.IsGenericType).ToList();
-					if (collectionType.IsInterface)
-					{
-						interfaces.Add(collectionType);
-					}
-					var enumerableInterface = interfaces.FirstOrDefault(t => t.GetGenericTypeDefinition() == typeof (IEnumerable<>));
-					if (enumerableInterface != null)
-					{
-						return enumerableInterface.GetGenericArguments()[0];
-					}
-				}
-				return null;
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Try to find a property, that can be managed by NHibernate, from a given type.
+		/// </summary>
+		/// <param name="source">The given <see cref="System.Type"/>. </param>
+		/// <param name="propertyName">The name of the property to find.</param>
+		/// <returns>true if the property exists; otherwise false.</returns>
+		/// <remarks>
+		/// When the user defines a field.xxxxx access strategy should be because both the property and the field exists.
+		/// NHibernate can work even when the property does not exist but in this case the user should use the appropriate accessor.
+		/// </remarks>
+		public static bool HasProperty(this System.Type source, string propertyName)
+		{
+			if (source == typeof(object) || source == null)
+			{
+				return false;
+			}
+			if (string.IsNullOrEmpty(propertyName))
+			{
+				return false;
 			}
 
-			/// <summary>
-			/// Try to find a property, that can be managed by NHibernate, from a given type.
-			/// </summary>
-			/// <param name="source">The given <see cref="System.Type"/>. </param>
-			/// <param name="propertyName">The name of the property to find.</param>
-			/// <returns>true if the property exists; otherwise false.</returns>
-			/// <remarks>
-			/// When the user defines a field.xxxxx access strategy should be because both the property and the field exists.
-			/// NHibernate can work even when the property does not exist but in this case the user should use the appropriate accessor.
-			/// </remarks>
-			public static bool HasProperty(this System.Type source, string propertyName)
+			PropertyInfo property = source.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+
+			if (property != null)
 			{
-				if (source == typeof (object) || source == null)
-				{
-					return false;
-				}
-				if (string.IsNullOrEmpty(propertyName))
-				{
-					return false;
-				}
-
-				PropertyInfo property = source.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-
-				if (property != null)
-				{
-					return true;
-				}
-				return HasProperty(source.BaseType, propertyName) || source.GetInterfaces().Any(@interface => HasProperty(@interface, propertyName));
+				return true;
 			}
+			return HasProperty(source.BaseType, propertyName) || source.GetInterfaces().Any(@interface => HasProperty(@interface, propertyName));
+		}
 
-					/// <summary>
+		/// <summary>
 		/// Check if a method is declared in a given <see cref="System.Type"/>.
 		/// </summary>
 		/// <param name="source">The method to check.</param>
@@ -1001,11 +1000,11 @@ namespace NHibernate.Util
 				throw new ArgumentNullException("realDeclaringType");
 			}
 			var methodDeclaringType = source.DeclaringType;
-			if(realDeclaringType == methodDeclaringType)
+			if (realDeclaringType == methodDeclaringType)
 			{
 				return true;
 			}
-			if (methodDeclaringType.IsGenericType && !methodDeclaringType.IsGenericTypeDefinition && 
+			if (methodDeclaringType.IsGenericType && !methodDeclaringType.IsGenericTypeDefinition &&
 				realDeclaringType == methodDeclaringType.GetGenericTypeDefinition())
 			{
 				return true;
@@ -1013,10 +1012,10 @@ namespace NHibernate.Util
 			if (realDeclaringType.IsInterface)
 			{
 				var declaringTypeInterfaces = methodDeclaringType.GetInterfaces();
-				if(declaringTypeInterfaces.Contains(realDeclaringType))
+				if (declaringTypeInterfaces.Contains(realDeclaringType))
 				{
 					var methodsMap = methodDeclaringType.GetInterfaceMap(realDeclaringType);
-					if(methodsMap.TargetMethods.Contains(source))
+					if (methodsMap.TargetMethods.Contains(source))
 					{
 						return true;
 					}

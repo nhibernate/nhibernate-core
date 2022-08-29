@@ -33,7 +33,7 @@ namespace NHibernate.Test.TypesTest
 			const decimal lhs = 5.6435M;
 			const decimal rhs = 5.6435M;
 
-			var type = (CurrencyType)NHibernateUtil.Currency;
+			var type = (CurrencyType) NHibernateUtil.Currency;
 			Assert.IsTrue(type.IsEqual(lhs, rhs));
 		}
 
@@ -42,7 +42,7 @@ namespace NHibernate.Test.TypesTest
 		{
 			const decimal expected = 5.6435M;
 
-			var basic = new CurrencyClass {CurrencyValue = expected};
+			var basic = new CurrencyClass { CurrencyValue = expected };
 			ISession s = OpenSession();
 			object savedId = s.Save(basic);
 			s.Flush();
@@ -61,7 +61,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void UnsavedValue()
 		{
-			var type = (CurrencyType)NHibernateUtil.Currency;
+			var type = (CurrencyType) NHibernateUtil.Currency;
 			object mappedValue = type.StringToObject("0");
 			Assert.AreEqual(0m, mappedValue);
 			Assert.IsTrue(type.IsEqual(mappedValue, 0m), "'0' in the mapping file should have been converted to a 0m");

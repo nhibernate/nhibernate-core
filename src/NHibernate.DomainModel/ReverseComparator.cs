@@ -10,7 +10,7 @@ namespace NHibernate.DomainModel
 
 		public int Compare(string x, string y)
 		{
-			return - (x).CompareTo(y);
+			return -(x).CompareTo(y);
 		}
 
 		#endregion

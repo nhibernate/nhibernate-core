@@ -94,7 +94,7 @@ namespace NHibernate.Driver
 				var candidates = GetCastCandidates(expWithParams);
 
 				var index = 0;
-				
+
 				foreach (DbParameter p in command.Parameters)
 				{
 					if (candidates.Contains(p.ParameterName))
@@ -170,7 +170,7 @@ namespace NHibernate.Driver
 				using (var clearConnection = CreateConnection())
 				{
 					clearConnection.ConnectionString = connectionString;
-					_clearPool.Invoke(null, new object[] {clearConnection});
+					_clearPool.Invoke(null, new object[] { clearConnection });
 				}
 				return;
 			}

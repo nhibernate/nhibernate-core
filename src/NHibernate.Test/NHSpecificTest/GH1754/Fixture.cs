@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 			using (var session = OpenSession())
 			{
 				Sfi.Statistics.Clear();
-				session.Persist(new Entity {Name = "Test"});
+				session.Persist(new Entity { Name = "Test" });
 
 				Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(0));
 
@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 		{
 			using (var session = OpenSession())
 			{
-				session.Persist(new Entity {Name = "Test"});
+				session.Persist(new Entity { Name = "Test" });
 			}
 
 			using (var session = OpenSession())

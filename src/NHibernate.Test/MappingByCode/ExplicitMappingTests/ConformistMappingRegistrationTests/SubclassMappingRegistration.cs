@@ -1,8 +1,8 @@
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
-using NUnit.Framework;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
+using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {
@@ -14,12 +14,12 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 			public int Id { get; set; }
 			public string Something { get; set; }
 		}
-		public class Inherited: MyClass
+		public class Inherited : MyClass
 		{
 			public string SomethingElse { get; set; }
 		}
 
-		private class MyClassMap: ClassMapping<MyClass>
+		private class MyClassMap : ClassMapping<MyClass>
 		{
 			public MyClassMap()
 			{

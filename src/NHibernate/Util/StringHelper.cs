@@ -12,7 +12,7 @@ namespace NHibernate.Util
 		/// <summary>
 		/// This allows for both CRLF and lone LF line separators.
 		/// </summary>
-		internal static readonly string[] LineSeparators = {"\r\n", "\n"};
+		internal static readonly string[] LineSeparators = { "\r\n", "\n" };
 
 		public const string WhiteSpace = " \n\r\f\t";
 
@@ -219,7 +219,7 @@ namespace NHibernate.Util
 		{
 			return qualifiedName.Substring(qualifiedName.LastIndexOf(seperator) + 1);
 		}
-		
+
 		internal static string Unqualify(string qualifiedName, char seperator)
 		{
 			return qualifiedName.Substring(qualifiedName.LastIndexOf(seperator) + 1);
@@ -394,8 +394,8 @@ namespace NHibernate.Util
 			pathToProperty = fullPath.Substring(0, loc);
 			return true;
 		}
-		
-		
+
+
 		/// <summary>
 		/// Converts a <see cref="String"/> in the format of "true", "t", "false", or "f" to
 		/// a <see cref="Boolean"/>.
@@ -462,7 +462,7 @@ namespace NHibernate.Util
 		/// <returns></returns>
 		public static string[] Multiply(string str, IEnumerable<object> placeholders, IEnumerable<object> replacements)
 		{
-			var result = new [] { str };
+			var result = new[] { str };
 			using (var replacementsIterator = replacements.GetEnumerator())
 			{
 				foreach (var placeholder in placeholders)
@@ -590,7 +590,7 @@ namespace NHibernate.Util
 		{
 			return FirstIndexOfChar(sqlString, str.ToCharArray(), startIndex);
 		}
-		
+
 		internal static int FirstIndexOfChar(string sqlString, char[] chars, int startIndex)
 		{
 			return sqlString.IndexOfAny(chars, startIndex);
@@ -835,7 +835,7 @@ namespace NHibernate.Util
 		public static int IndexOfAnyNewLine(this string str, int startIndex, out int newLineLength)
 		{
 			newLineLength = 0;
-			var matchStartIdx = str.IndexOfAny(new[] {'\r', '\n'}, startIndex);
+			var matchStartIdx = str.IndexOfAny(new[] { '\r', '\n' }, startIndex);
 
 			if (matchStartIdx == -1)
 				return -1;

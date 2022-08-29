@@ -65,7 +65,7 @@ namespace NHibernate.Linq.Visitors
 		private readonly ISessionFactoryImplementor _sessionFactory;
 
 		private readonly Stack<bool> _handled = new Stack<bool>();
-		
+
 		// Stack of result values of each expression.  After an expression has processed itself, it adds itself to the stack.
 		private readonly Stack<ExpressionValues> _values = new Stack<ExpressionValues>();
 
@@ -281,7 +281,7 @@ namespace NHibernate.Linq.Visitors
 			{
 				HandleUnaryOperation(pvs => pvs.UnaryPlus(expression.Type));
 			}
-			
+
 			return result;
 		}
 

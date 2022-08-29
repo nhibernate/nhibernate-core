@@ -40,16 +40,16 @@ namespace NHibernate.Mapping.ByCode.Impl
 			}
 			HbmColumn hbm = versionMapping.Columns.SingleOrDefault();
 			hbm = hbm
-			      ??
-			      new HbmColumn
-			      {
-			      	name = versionMapping.column1
-			      };
+				  ??
+				  new HbmColumn
+				  {
+					  name = versionMapping.column1
+				  };
 			string defaultColumnName = member.Name;
 			columnMapper(new ColumnMapper(hbm, member != null ? defaultColumnName : "unnamedcolumn"));
 			if (ColumnTagIsRequired(hbm))
 			{
-				versionMapping.column = new[] {hbm};
+				versionMapping.column = new[] { hbm };
 				ResetColumnPlainValues();
 			}
 			else
@@ -81,8 +81,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private bool ColumnTagIsRequired(HbmColumn hbm)
 		{
 			return hbm.length != null || hbm.precision != null || hbm.scale != null || hbm.notnull || hbm.unique
-			       || hbm.uniquekey != null || hbm.sqltype != null || hbm.index != null || hbm.@default != null
-			       || hbm.check != null;
+				   || hbm.uniquekey != null || hbm.sqltype != null || hbm.index != null || hbm.@default != null
+				   || hbm.check != null;
 		}
 
 		private void ResetColumnPlainValues()
@@ -104,7 +104,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Type<TPersistentType>() where TPersistentType : IUserVersionType
 		{
-			Type(typeof (TPersistentType));
+			Type(typeof(TPersistentType));
 		}
 
 		public void Type(System.Type persistentType)
@@ -113,7 +113,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentNullException("persistentType");
 			}
-			if (!typeof (IUserVersionType).IsAssignableFrom(persistentType))
+			if (!typeof(IUserVersionType).IsAssignableFrom(persistentType))
 			{
 				throw new ArgumentOutOfRangeException("persistentType", "Expected type implementing IUserVersionType");
 			}

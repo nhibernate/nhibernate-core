@@ -31,15 +31,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1908
 			}
 		}
 
-        [Test]
-        public void QueryPropertyInBothFilterAndQueryUsingWith()
-        {
-            using (ISession s = OpenSession())
-            {
-                s.EnableFilter("validity")
-                    .SetParameter("date", DateTime.Now);
+		[Test]
+		public void QueryPropertyInBothFilterAndQueryUsingWith()
+		{
+			using (ISession s = OpenSession())
+			{
+				s.EnableFilter("validity")
+					.SetParameter("date", DateTime.Now);
 
-                s.CreateQuery(@"
+				s.CreateQuery(@"
 				select 
 					inv.ID
 				from 
@@ -50,11 +50,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1908
 					inv.ID = :invId
 					and inv.Issued < :now
 				")
-                    .SetDateTime("now", DateTime.Now)
-                    .SetInt32("invId", -999)
-                    .SetInt32("myInt", -888)
-                    .List();
-            }
-        }
+					.SetDateTime("now", DateTime.Now)
+					.SetInt32("invId", -999)
+					.SetInt32("myInt", -888)
+					.List();
+			}
+		}
 	}
 }

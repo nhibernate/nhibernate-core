@@ -27,7 +27,7 @@ namespace NHibernate.Type
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof (string); }
+			get { return typeof(string); }
 		}
 
 		public override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
@@ -35,7 +35,7 @@ namespace NHibernate.Type
 			return NullSafeGet(rs, names[0], session, owner);
 		}
 
-		public override object NullSafeGet(DbDataReader rs,string name,ISessionImplementor session,object owner)
+		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session, object owner)
 		{
 			int index = rs.GetOrdinal(name);
 
@@ -55,7 +55,7 @@ namespace NHibernate.Type
 			if (settable[0]) NullSafeSet(st, value, index, session);
 		}
 
-		public override void NullSafeSet(DbCommand st,object value,int index,ISessionImplementor session)
+		public override void NullSafeSet(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			if (value == null)
 			{
@@ -69,7 +69,7 @@ namespace NHibernate.Type
 
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{
-			return (string)value;
+			return (string) value;
 		}
 
 		public override string Name

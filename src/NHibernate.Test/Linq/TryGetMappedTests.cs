@@ -87,7 +87,7 @@ namespace NHibernate.Test.Linq
 		{
 			get
 			{
-				return 
+				return
 					new[]
 					{
 						"ABC.hbm.xml",
@@ -677,7 +677,7 @@ namespace NHibernate.Test.Linq
 			var query = from o in db.Orders
 						from p in db.Products
 						join d in db.OrderLines
-							on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
+							on new { o.OrderId, p.ProductId } equals new { d.Order.OrderId, d.Product.ProductId }
 							into details
 						from d in details
 						select d.UnitPrice;

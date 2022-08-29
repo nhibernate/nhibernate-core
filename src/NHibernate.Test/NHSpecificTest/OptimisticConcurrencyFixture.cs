@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"Multi.hbm.xml", "NHSpecific.Optimistic.hbm.xml"}; }
+			get { return new string[] { "Multi.hbm.xml", "NHSpecific.Optimistic.hbm.xml" }; }
 		}
 
 		// NH-768
@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest
 			using (ISession s = OpenSession())
 			{
 				Optimistic op = new Optimistic();
-				op.Bag = new List<string> {"xyz"};
+				op.Bag = new List<string> { "xyz" };
 
 				s.Save(op);
 			}

@@ -33,7 +33,7 @@ namespace NHibernate.Event.Default
 				//reassociating the proxy
 				if (obj.IsProxy())
 				{
-					((INHibernateProxy)obj).HibernateLazyInitializer.Identifier = requestedId;
+					((INHibernateProxy) obj).HibernateLazyInitializer.Identifier = requestedId;
 				}
 			}
 
@@ -105,7 +105,7 @@ namespace NHibernate.Event.Default
 				{
 					if (!entityEntry.Persister.IdentifierType.IsEqual(requestedId, entityEntry.Id))
 					{
-						throw new PersistentObjectException("object passed to save() was already persistent: " + 
+						throw new PersistentObjectException("object passed to save() was already persistent: " +
 							MessageHelper.InfoString(entityEntry.Persister, requestedId, factory));
 					}
 					savedId = requestedId;
@@ -114,7 +114,7 @@ namespace NHibernate.Event.Default
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("object already associated with session: {0}",
-					          MessageHelper.InfoString(entityEntry.Persister, savedId, factory));
+							  MessageHelper.InfoString(entityEntry.Persister, savedId, factory));
 				}
 
 				return savedId;
@@ -254,13 +254,13 @@ namespace NHibernate.Event.Default
 			}*/
 
 			source.PersistenceContext.AddEntity(
-				entity, 
+				entity,
 				persister.IsMutable ? Status.Loaded : Status.ReadOnly,
-				null, 
+				null,
 				key,
-				persister.GetVersion(entity), 
-				LockMode.None, 
-				true, 
+				persister.GetVersion(entity),
+				LockMode.None,
+				true,
 				persister,
 				false);
 
@@ -279,7 +279,7 @@ namespace NHibernate.Event.Default
 			if (persister.ImplementsLifecycle)
 			{
 				log.Debug("calling onUpdate()");
-				if (((ILifecycle)entity).OnUpdate(source) == LifecycleVeto.Veto)
+				if (((ILifecycle) entity).OnUpdate(source) == LifecycleVeto.Veto)
 				{
 					log.Debug("update vetoed by onUpdate()");
 					return true;

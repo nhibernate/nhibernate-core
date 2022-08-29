@@ -8,7 +8,7 @@ namespace NHibernate.Cfg
 {
 	public class NamedXmlDocument
 	{
-		private static readonly XmlSerializer mappingDocumentSerializer = new XmlSerializer(typeof (HbmMapping));
+		private static readonly XmlSerializer mappingDocumentSerializer = new XmlSerializer(typeof(HbmMapping));
 		private readonly string name;
 		private readonly HbmMapping document;
 
@@ -32,7 +32,7 @@ namespace NHibernate.Cfg
 			}
 			using (var reader = new StringReader(document.DocumentElement.OuterXml))
 			{
-				this.document = (HbmMapping)serializer.Deserialize(reader);
+				this.document = (HbmMapping) serializer.Deserialize(reader);
 			}
 		}
 

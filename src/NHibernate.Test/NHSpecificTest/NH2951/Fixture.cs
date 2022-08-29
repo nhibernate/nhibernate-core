@@ -27,28 +27,28 @@ namespace NHibernate.Test.NHSpecificTest.NH2951
 		[Test]
 		public void UpdateWithSubqueryToJoinedSubclass()
 		{
-            using (ISession session = OpenSession())
-            using (ITransaction transaction = session.BeginTransaction())
-            {
-                var c = new Customer { Name = "Bob" };
-                session.Save(c);
+			using (ISession session = OpenSession())
+			using (ITransaction transaction = session.BeginTransaction())
+			{
+				var c = new Customer { Name = "Bob" };
+				session.Save(c);
 
-                var i = new Invoice { Amount = 10 };
-                session.Save(i);
+				var i = new Invoice { Amount = 10 };
+				session.Save(i);
 
-                session.Flush();
-                transaction.Commit();
-            }
+				session.Flush();
+				transaction.Commit();
+			}
 
-            using (ISession session = OpenSession())
+			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-                // Using (select c.Id ...) works.
-                string hql = "update Invoice i set i.Customer = (select c from Customer c where c.Name = 'Bob')";
+				// Using (select c.Id ...) works.
+				string hql = "update Invoice i set i.Customer = (select c from Customer c where c.Name = 'Bob')";
 
-			    int result = session.CreateQuery(hql).ExecuteUpdate();
+				int result = session.CreateQuery(hql).ExecuteUpdate();
 
-                Assert.AreEqual(1, result);
+				Assert.AreEqual(1, result);
 			}
 		}
 	}

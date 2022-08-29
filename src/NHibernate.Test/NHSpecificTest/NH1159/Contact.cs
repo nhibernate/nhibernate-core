@@ -104,7 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 		{
 			if (this == obj) return true;
 			if ((obj == null) || (obj.GetType() != this.GetType())) return false;
-			Contact castObj = (Contact)obj;
+			Contact castObj = (Contact) obj;
 			return (castObj != null) &&
 				(this.id == castObj.Id);
 		}

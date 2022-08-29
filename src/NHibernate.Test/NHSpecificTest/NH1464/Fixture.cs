@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.Proxy;
 using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1464
 {
@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1464
 			}
 		}
 
-		public class Another: IDisposable
+		public class Another : IDisposable
 		{
 			protected void Dispose(bool disposing)
 			{
@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1464
 		[Test]
 		public void NoExceptionForDispose()
 		{
-			ICollection<string> errs = pv.ValidateType(typeof (CPPMimic));
+			ICollection<string> errs = pv.ValidateType(typeof(CPPMimic));
 			Assert.That(errs, Is.Null);
 			errs = pv.ValidateType(typeof(Another));
 			Assert.That(errs, Is.Null);

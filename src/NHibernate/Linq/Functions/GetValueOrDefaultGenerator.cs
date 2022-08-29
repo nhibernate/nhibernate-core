@@ -13,7 +13,7 @@ namespace NHibernate.Linq.Functions
 	{
 		public bool SupportsMethod(MethodInfo method)
 		{
-			return method != null && String.Equals(method.Name, "GetValueOrDefault", StringComparison.OrdinalIgnoreCase) && method.IsMethodOf(typeof (Nullable<>));
+			return method != null && String.Equals(method.Name, "GetValueOrDefault", StringComparison.OrdinalIgnoreCase) && method.IsMethodOf(typeof(Nullable<>));
 		}
 
 		public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)

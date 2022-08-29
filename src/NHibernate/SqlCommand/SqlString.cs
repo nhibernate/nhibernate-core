@@ -1,10 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Collections;
-using NHibernate.SqlCommand.Parser;
 using System.Text.RegularExpressions;
+using NHibernate.SqlCommand.Parser;
 
 namespace NHibernate.SqlCommand
 {
@@ -196,7 +196,7 @@ namespace NHibernate.SqlCommand
 		/// values.</param>
 		/// <remarks>The <see cref="SqlString"/> instance is automatically compacted.</remarks>
 		public SqlString(params object[] parts)
-			: this((IEnumerable<object>)parts)
+			: this((IEnumerable<object>) parts)
 		{ }
 
 		internal SqlString(IEnumerable<object> parts)
@@ -235,7 +235,7 @@ namespace NHibernate.SqlCommand
 		}
 
 		private static IEnumerable<object> ParseParts(string text)
-			{
+		{
 			if (string.IsNullOrEmpty(text)) yield break;
 
 			int offset = 0;
@@ -269,15 +269,15 @@ namespace NHibernate.SqlCommand
 						break;
 					case '-':
 						if (offset + 1 < maxOffset && text[offset + 1] == '-')
-							{
+						{
 							offset += SqlParserUtils.ReadLineComment(text, maxOffset, offset);
 							continue;
-							}
-						break;
 						}
+						break;
+				}
 
 				offset++;
-				}
+			}
 
 			if (maxOffset > partOffset)
 			{
@@ -898,7 +898,7 @@ namespace NHibernate.SqlCommand
 			{
 				part = _parts[partIndex++];
 				yield return part.IsParameter
-					? (object)_parameters[part.SqlIndex]
+					? (object) _parameters[part.SqlIndex]
 					: part.Content;
 			}
 
@@ -956,11 +956,11 @@ namespace NHibernate.SqlCommand
 				// directly, as that may contain elements no longer part of this string.
 				foreach (var part in this)
 				{
-					hashCode ^= (uint)part.GetHashCode();
+					hashCode ^= (uint) part.GetHashCode();
 					hashCode *= FNV_PRIME;
 				}
 
-				return (int)hashCode;
+				return (int) hashCode;
 			}
 		}
 
@@ -1081,7 +1081,7 @@ namespace NHibernate.SqlCommand
 
 			public override bool Equals(object obj)
 			{
-				return (obj is Part && Equals((Part)obj));
+				return (obj is Part && Equals((Part) obj));
 			}
 
 			public override int GetHashCode()

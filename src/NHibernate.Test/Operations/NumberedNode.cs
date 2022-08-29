@@ -7,7 +7,7 @@ namespace NHibernate.Test.Operations
 	{
 		private readonly ISet<NumberedNode> children = new HashSet<NumberedNode>();
 
-		protected NumberedNode() {}
+		protected NumberedNode() { }
 
 		public NumberedNode(string name, DateTime created)
 		{

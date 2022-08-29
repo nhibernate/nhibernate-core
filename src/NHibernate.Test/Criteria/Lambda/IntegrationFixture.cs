@@ -2,11 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
-using NUnit.Framework;
-
 using NHibernate.Criterion;
 using NHibernate.Multi;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
@@ -87,8 +85,8 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Save(new Person() { Name = "John" }
-						.AddChild(new Child() { Nickname = "John"})
-						.AddChild(new Child() { Nickname = "Judy"}));
+						.AddChild(new Child() { Nickname = "John" })
+						.AddChild(new Child() { Nickname = "Judy" }));
 
 				s.Save(new Person() { Name = "Jean" });
 				s.Save(new Child() { Nickname = "James" });
@@ -429,10 +427,10 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				var query =
 					QueryOver.Of<Person>()
-					         .JoinQueryOver(p => p.Children)
-					         .OrderBy(c => c.Age).Desc
-					         .Skip(2)
-					         .Take(1);
+							 .JoinQueryOver(p => p.Children)
+							 .OrderBy(c => c.Age).Desc
+							 .Skip(2)
+							 .Take(1);
 
 				var multiCriteria =
 					s.CreateQueryBatch()
@@ -455,16 +453,16 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Save(new Person() { Name = "Name 1", Age = 1 }
-						.AddChild(new Child() { Nickname = "Name 1.1", Age = 1}));
+						.AddChild(new Child() { Nickname = "Name 1.1", Age = 1 }));
 
 				s.Save(new Person() { Name = "Name 2", Age = 2 }
-						.AddChild(new Child() { Nickname = "Name 2.1", Age = 3}));
+						.AddChild(new Child() { Nickname = "Name 2.1", Age = 3 }));
 
 				s.Save(new Person() { Name = "Name 3", Age = 3 }
-						.AddChild(new Child() { Nickname = "Name 3.1", Age = 2}));
+						.AddChild(new Child() { Nickname = "Name 3.1", Age = 2 }));
 
 				s.Save(new Person() { Name = "Name 4", Age = 4 }
-						.AddChild(new Child() { Nickname = "Name 4.1", Age = 4}));
+						.AddChild(new Child() { Nickname = "Name 4.1", Age = 4 }));
 
 				t.Commit();
 			}
@@ -505,8 +503,8 @@ namespace NHibernate.Test.Criteria.Lambda
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				s.Save(new Person() {Name = "test person 1", Age = 20});
-				s.Save(new Person() {Name = "test person 2", Age = 50});
+				s.Save(new Person() { Name = "test person 1", Age = 20 });
+				s.Save(new Person() { Name = "test person 2", Age = 50 });
 				t.Commit();
 			}
 

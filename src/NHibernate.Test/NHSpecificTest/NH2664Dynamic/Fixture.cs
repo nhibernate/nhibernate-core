@@ -1,9 +1,9 @@
 ﻿using System.Collections;
-using System.Linq;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Linq.Dynamic.Core;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2664Dynamic
 {
@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2664Dynamic
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override string[] Mappings => new[] {"NHSpecificTest.NH2664Dynamic.Mappings.hbm.xml"};
+		protected override string[] Mappings => new[] { "NHSpecificTest.NH2664Dynamic.Mappings.hbm.xml" };
 
 		/// <summary>
 		/// push some data into the database
@@ -77,9 +77,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2664Dynamic
 			using (var session = OpenSession())
 			{
 				var product = session
-				              .Query<Product>()
-				              .Where("Properties.Name == @0", "First Product")
-				              .Single();
+							  .Query<Product>()
+							  .Where("Properties.Name == @0", "First Product")
+							  .Single();
 
 				Assert.That(product, Is.Not.Null);
 				Assert.That((object) product.Properties["Name"], Is.EqualTo("First Product"));

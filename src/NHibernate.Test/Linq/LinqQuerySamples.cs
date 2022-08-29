@@ -73,7 +73,7 @@ namespace NHibernate.Test.Linq
 			IOrderedQueryable<Customer> q =
 				from c in db.Customers
 				where c.Address.City == "London"
-				orderby c.CustomerId 
+				orderby c.CustomerId
 				select c;
 
 			AssertByIds(q, new[]
@@ -133,7 +133,7 @@ namespace NHibernate.Test.Linq
 		{
 			var q =
 				from c in db.Customers
-				select new {c.ContactName, c.Address.PhoneNumber};
+				select new { c.ContactName, c.Address.PhoneNumber };
 			var items = q.ToList();
 
 			Assert.AreEqual(91, items.Count);
@@ -154,7 +154,7 @@ namespace NHibernate.Test.Linq
 		{
 			var q =
 				from e in db.Employees
-				select new {Name = e.FirstName + " " + e.LastName, Phone = e.Address.PhoneNumber};
+				select new { Name = e.FirstName + " " + e.LastName, Phone = e.Address.PhoneNumber };
 			var items = q.ToList();
 			Assert.AreEqual(9, items.Count);
 
@@ -174,10 +174,10 @@ namespace NHibernate.Test.Linq
 		{
 			var q =
 				from p in db.Products
-				select new {p.ProductId, p.UnitPrice, HalfPrice = p.UnitPrice/2};
+				select new { p.ProductId, p.UnitPrice, HalfPrice = p.UnitPrice / 2 };
 			foreach (var item in q)
 			{
-				Assert.AreEqual((item.UnitPrice/2), item.HalfPrice);
+				Assert.AreEqual((item.UnitPrice / 2), item.HalfPrice);
 			}
 		}
 
@@ -187,10 +187,10 @@ namespace NHibernate.Test.Linq
 		{
 			var q =
 				from p in db.Products
-				select new {p.ProductId, p.UnitPrice, HalfPrice = p.UnitPrice*2};
+				select new { p.ProductId, p.UnitPrice, HalfPrice = p.UnitPrice * 2 };
 			foreach (var item in q)
 			{
-				Assert.IsTrue(item.UnitPrice*2 == item.HalfPrice);
+				Assert.IsTrue(item.UnitPrice * 2 == item.HalfPrice);
 			}
 		}
 
@@ -200,7 +200,7 @@ namespace NHibernate.Test.Linq
 		{
 			var q =
 				from p in db.Products
-				select new {p.ProductId, p.UnitPrice, HalfPrice = p.UnitPrice + 2};
+				select new { p.ProductId, p.UnitPrice, HalfPrice = p.UnitPrice + 2 };
 			foreach (var item in q)
 			{
 				Assert.IsTrue(item.UnitPrice + 2 == item.HalfPrice);
@@ -213,7 +213,7 @@ namespace NHibernate.Test.Linq
 		{
 			var q =
 				from p in db.Products
-				select new {p.ProductId, p.UnitPrice, HalfPrice = p.UnitPrice - 2};
+				select new { p.ProductId, p.UnitPrice, HalfPrice = p.UnitPrice - 2 };
 			foreach (var item in q)
 			{
 				Assert.IsTrue(item.UnitPrice - 2 == item.HalfPrice);
@@ -227,7 +227,7 @@ namespace NHibernate.Test.Linq
 		{
 			var q =
 				from p in db.Products
-				select new {p.Name, Availability = p.UnitsInStock - p.UnitsOnOrder < 0 ? "Out Of Stock" : "In Stock"};
+				select new { p.Name, Availability = p.UnitsInStock - p.UnitsOnOrder < 0 ? "Out Of Stock" : "In Stock" };
 
 			ObjectDumper.Write(q, 1);
 		}
@@ -238,7 +238,7 @@ namespace NHibernate.Test.Linq
 		{
 			IQueryable<Name> q =
 				from e in db.Employees
-				select new Name {FirstName = e.FirstName, LastName = e.LastName};
+				select new Name { FirstName = e.FirstName, LastName = e.LastName };
 
 			ObjectDumper.Write(q, 1);
 		}
@@ -267,12 +267,12 @@ namespace NHibernate.Test.Linq
 			var q =
 				from c in db.Customers
 				select new
-						   {
-							   c.CustomerId,
-							   CompanyInfo = new {c.CompanyName, c.Address.City, c.Address.Country},
-							   ContactInfo = new {c.ContactName, c.ContactTitle},
-							   Count = c.Orders.Count()
-						   };
+				{
+					c.CustomerId,
+					CompanyInfo = new { c.CompanyName, c.Address.City, c.Address.Country },
+					ContactInfo = new { c.ContactName, c.ContactTitle },
+					Count = c.Orders.Count()
+				};
 
 			ObjectDumper.Write(q, 1);
 		}
@@ -361,8 +361,8 @@ namespace NHibernate.Test.Linq
 				var q3 = dbOrders3.SubQueryBatcher(orderId => orderId,
 								   ids =>
 									   (from o in db.Orders
-									   from ol in o.OrderLines
-									   select new { OrderLines = ol, FreeShippingDiscount = o.Freight, o.OrderId })
+										from ol in o.OrderLines
+										select new { OrderLines = ol, FreeShippingDiscount = o.Freight, o.OrderId })
 									   .ToList()
 									   .Where(o => ids.Contains(o.OrderId))
 									   .GroupBy(k => k.OrderId, e => new { e.OrderLines, e.FreeShippingDiscount })
@@ -389,14 +389,15 @@ namespace NHibernate.Test.Linq
 			var q =
 				from o in db.Orders
 				select new
-						   {
-							   o.OrderId,
-							   DiscountedProducts =
+				{
+					o.OrderId,
+					DiscountedProducts =
 									from od in o.OrderLines
-//                                    from od in o.OrderLines.Cast<OrderLine>()
+										//                                    from od in o.OrderLines.Cast<OrderLine>()
 									where od.Discount > 0.0m
-									select od, FreeShippingDiscount = o.Freight
-						   };
+									select od,
+					FreeShippingDiscount = o.Freight
+				};
 
 			ObjectDumper.Write(q, 1);
 		}
@@ -411,14 +412,14 @@ namespace NHibernate.Test.Linq
 			var q =
 				from o in db.Orders
 				select new
-						   {
-							   o.OrderId,
-							   DiscountedProducts =
+				{
+					o.OrderId,
+					DiscountedProducts =
 					from od in o.OrderLines
 					where od.Discount > 0.0m
-					select new {od.Quantity, od.UnitPrice},
-							   FreeShippingDiscount = o.Freight
-						   };
+					select new { od.Quantity, od.UnitPrice },
+					FreeShippingDiscount = o.Freight
+				};
 
 			ObjectDumper.Write(q, 1);
 		}
@@ -434,16 +435,16 @@ namespace NHibernate.Test.Linq
 			var q =
 				from o in db.Orders
 				select new
-						   {
-							   o.OrderId,
-							   DiscountedProducts =
+				{
+					o.OrderId,
+					DiscountedProducts =
 					from od in o.OrderLines
-//                    from od in o.OrderLines.Cast<OrderLine>()
+						//                    from od in o.OrderLines.Cast<OrderLine>()
 					where od.Discount > 0.0m
 					orderby od.Discount descending
 					select od,
-							   FreeShippingDiscount = o.Freight
-						   };
+					FreeShippingDiscount = o.Freight
+				};
 
 			ObjectDumper.Write(q, 1);
 		}
@@ -478,7 +479,7 @@ namespace NHibernate.Test.Linq
 				where e.HireDate >= new DateTime(1994, 1, 1)
 				select e;
 
-			AssertByIds(q, new[] {7, 8, 9}, x => x.EmployeeId);
+			AssertByIds(q, new[] { 7, 8, 9 }, x => x.EmployeeId);
 		}
 
 		[Category("COUNT/SUM/MIN/MAX/AVG")]
@@ -536,7 +537,7 @@ namespace NHibernate.Test.Linq
 					)
 					.List<object[]>()
 					.GroupBy(input => input[0])
-					.Select(input => new {CategoryId = (int) input.Key, CheapestProducts = from g in input select (Product) g[1]});
+					.Select(input => new { CategoryId = (int) input.Key, CheapestProducts = from g in input select (Product) g[1] });
 			}
 
 			/*
@@ -568,14 +569,14 @@ namespace NHibernate.Test.Linq
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
-					select new
-							   {
-								   CategoryId = g.Key,
-								   CheapestProducts =
-					(IEnumerable<Product>) (from p2 in g
-											where p2.UnitPrice == g.Min(p3 => p3.UnitPrice)
-											select p2)
-							   };
+				select new
+				{
+					CategoryId = g.Key,
+					CheapestProducts =
+				(IEnumerable<Product>) (from p2 in g
+										where p2.UnitPrice == g.Min(p3 => p3.UnitPrice)
+										select p2)
+				};
 
 			Console.WriteLine(ObjectDumper.Write(categories, 1));
 		}
@@ -606,14 +607,14 @@ namespace NHibernate.Test.Linq
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
-					select new
-							   {
-								   g.Key,
-								   MostExpensiveProducts =
-					from p2 in g
-					where p2.UnitPrice == g.Max(p3 => p3.UnitPrice)
-					select p2
-							   };
+				select new
+				{
+					g.Key,
+					MostExpensiveProducts =
+				from p2 in g
+				where p2.UnitPrice == g.Max(p3 => p3.UnitPrice)
+				select p2
+				};
 
 			ObjectDumper.Write(categories, 1);
 		}
@@ -638,7 +639,7 @@ namespace NHibernate.Test.Linq
 				where p.UnitsInStock <= p.ReorderLevel && !p.Discontinued
 				select p;
 
-			AssertByIds(q, new[] {2, 3, 11, 21, 30, 31, 32, 37, 43, 45, 48, 49, 56, 64, 66, 68, 70, 74,},
+			AssertByIds(q, new[] { 2, 3, 11, 21, 30, 31, 32, 37, 43, 45, 48, 49, 56, 64, 66, 68, 70, 74, },
 						x => x.ProductId);
 		}
 
@@ -660,14 +661,14 @@ namespace NHibernate.Test.Linq
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
-					select new
-							   {
-								   g.Key,
-								   ExpensiveProducts =
-					from p2 in g
-					where p2.UnitPrice > g.Average(p3 => p3.UnitPrice)
-					select p2
-							   };
+				select new
+				{
+					g.Key,
+					ExpensiveProducts =
+				from p2 in g
+				where p2.UnitPrice > g.Average(p3 => p3.UnitPrice)
+				select p2
+				};
 
 			ObjectDumper.Write(categories, 1);
 		}
@@ -718,7 +719,7 @@ namespace NHibernate.Test.Linq
 		{
 			IOrderedQueryable<Customer> q =
 				from c in db.Customers
-				orderby c.Address.City , c.ContactName
+				orderby c.Address.City, c.ContactName
 				select c;
 
 			ObjectDumper.Write(q);
@@ -736,7 +737,7 @@ namespace NHibernate.Test.Linq
 				where p.UnitsInStock <= p.ReorderLevel && p.Discontinued == false
 				select p;
 
-			AssertByIds(q, new[] {2, 3, 11, 21, 30, 31, 32, 37, 43, 45, 48, 49, 56, 64, 66, 68, 70, 74,},
+			AssertByIds(q, new[] { 2, 3, 11, 21, 30, 31, 32, 37, 43, 45, 48, 49, 56, 64, 66, 68, 70, 74, },
 						x => x.ProductId);
 		}
 
@@ -774,7 +775,7 @@ namespace NHibernate.Test.Linq
 			IOrderedQueryable<Order> q =
 				from o in db.Orders
 				where o.Employee.EmployeeId == 1
-				orderby o.ShippingAddress.Country , o.Freight descending
+				orderby o.ShippingAddress.Country, o.Freight descending
 				select o;
 
 			ObjectDumper.Write(q);
@@ -790,15 +791,15 @@ namespace NHibernate.Test.Linq
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
-					orderby g.Key
-					select new
-							   {
-								   g.Key,
-								   MostExpensiveProducts =
-					from p2 in g
-					where p2.UnitPrice == g.Max(p3 => p3.UnitPrice)
-					select p2
-							   };
+				orderby g.Key
+				select new
+				{
+					g.Key,
+					MostExpensiveProducts =
+				from p2 in g
+				where p2.UnitPrice == g.Max(p3 => p3.UnitPrice)
+				select p2
+				};
 
 			ObjectDumper.Write(categories, 1);
 		}
@@ -812,7 +813,7 @@ namespace NHibernate.Test.Linq
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
-					select g;
+				select g;
 
 			ObjectDumper.Write(q, 1);
 
@@ -836,11 +837,11 @@ namespace NHibernate.Test.Linq
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
-					select new
-							   {
-								   g.Key,
-								   MaxPrice = g.Max(p => p.UnitPrice)
-							   };
+				select new
+				{
+					g.Key,
+					MaxPrice = g.Max(p => p.UnitPrice)
+				};
 
 			ObjectDumper.Write(q, 1);
 		}
@@ -854,11 +855,11 @@ namespace NHibernate.Test.Linq
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
-					select new
-							   {
-								   g.Key,
-								   MinPrice = g.Min(p => p.UnitPrice)
-							   };
+				select new
+				{
+					g.Key,
+					MinPrice = g.Min(p => p.UnitPrice)
+				};
 
 			ObjectDumper.Write(q, 1);
 		}
@@ -872,11 +873,11 @@ namespace NHibernate.Test.Linq
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
-					select new
-							   {
-								   g.Key,
-								   AveragePrice = g.Average(p2 => p2.UnitPrice)
-							   };
+				select new
+				{
+					g.Key,
+					AveragePrice = g.Average(p2 => p2.UnitPrice)
+				};
 
 			ObjectDumper.Write(q, 1);
 		}
@@ -890,11 +891,11 @@ namespace NHibernate.Test.Linq
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
-					select new
-							   {
-								   g.Key,
-								   TotalPrice = g.Sum(p => p.UnitPrice)
-							   };
+				select new
+				{
+					g.Key,
+					TotalPrice = g.Sum(p => p.UnitPrice)
+				};
 
 			ObjectDumper.Write(q, 1);
 		}
@@ -908,11 +909,11 @@ namespace NHibernate.Test.Linq
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
-					select new
-							   {
-								   g.Key,
-								   NumProducts = g.Count()
-							   };
+				select new
+				{
+					g.Key,
+					NumProducts = g.Count()
+				};
 
 			ObjectDumper.Write(q, 1);
 		}
@@ -927,11 +928,11 @@ namespace NHibernate.Test.Linq
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
-					select new
-							   {
-								   g.Key,
-								   NumProducts = g.Count(p => p.Discontinued)
-							   };
+				select new
+				{
+					g.Key,
+					NumProducts = g.Count(p => p.Discontinued)
+				};
 
 			ObjectDumper.Write(q, 1);
 		}
@@ -946,11 +947,11 @@ namespace NHibernate.Test.Linq
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
-					select new
-							   {
-								   g.Key,
-								   NumProducts = g.Count(p => !p.Discontinued)
-							   };
+				select new
+				{
+					g.Key,
+					NumProducts = g.Count(p => !p.Discontinued)
+				};
 
 			ObjectDumper.Write(q, 1);
 		}
@@ -964,12 +965,12 @@ namespace NHibernate.Test.Linq
 				from p in db.Products
 				group p by p.Category.CategoryId
 				into g
-					where g.Count() >= 10
-					select new
-							   {
-								   g.Key,
-								   ProductCount = g.Count()
-							   };
+				where g.Count() >= 10
+				select new
+				{
+					g.Key,
+					ProductCount = g.Count()
+				};
 
 			ObjectDumper.Write(q, 1);
 		}
@@ -982,7 +983,7 @@ namespace NHibernate.Test.Linq
 			IEnumerable<Product> q =
 				db.Products.Where(p => p.UnitPrice > 10m).Where(p => p.Discontinued);
 
-			AssertByIds(q, new[] {5, 9, 17, 28, 29, 42, 53,}, x => x.ProductId);
+			AssertByIds(q, new[] { 5, 9, 17, 28, 29, 42, 53, }, x => x.ProductId);
 		}
 
 		[Category("GROUP BY/HAVING")]
@@ -993,17 +994,17 @@ namespace NHibernate.Test.Linq
 
 			var categories =
 				from p in db.Products
-				group p by new {p.Category.CategoryId, p.Supplier.SupplierId}
+				group p by new { p.Category.CategoryId, p.Supplier.SupplierId }
 				into g
-					select new {g.Key, g};
+				select new { g.Key, g };
 
 			var nhOutput = ObjectDumper.Write(categories, 1);
 
 			var categories2 =
 				from p in db.Products.ToList()
-				group p by new {p.Category.CategoryId, p.Supplier.SupplierId}
+				group p by new { p.Category.CategoryId, p.Supplier.SupplierId }
 				into g
-					select new {g.Key, g};
+				select new { g.Key, g };
 
 			string linq2ObjectsOutput = ObjectDumper.Write(categories2, 1);
 
@@ -1019,9 +1020,9 @@ namespace NHibernate.Test.Linq
 		{
 			var categories =
 				from p in db.Products
-				group p by new {Criterion = p.UnitPrice > 10}
+				group p by new { Criterion = p.UnitPrice > 10 }
 				into g
-					select g;
+				select g;
 
 			ObjectDumper.Write(categories, 1);
 		}
@@ -1033,7 +1034,7 @@ namespace NHibernate.Test.Linq
 			IQueryable<Customer> q =
 				from c in db.Customers
 				where !c.Orders.Any()
-//                where !c.Orders.Cast<Order>().Any()
+				//                where !c.Orders.Cast<Order>().Any()
 				select c;
 
 			ObjectDumper.Write(q);
@@ -1049,7 +1050,7 @@ namespace NHibernate.Test.Linq
 			IQueryable<Customer> q =
 				from c in db.Customers
 				where c.Orders.Any()
-//                where c.Orders.Cast<Order>().Any()
+				//                where c.Orders.Cast<Order>().Any()
 				select c;
 
 			ObjectDumper.Write(q);
@@ -1066,7 +1067,7 @@ namespace NHibernate.Test.Linq
 			IQueryable<ProductCategory> q =
 				from c in db.Categories
 				where c.Products.Any(p => p.Discontinued)
-//                where c.Products.Cast<Product>().Any(p => p.Discontinued)
+				//                where c.Products.Cast<Product>().Any(p => p.Discontinued)
 				select c;
 
 			ObjectDumper.Write(q);
@@ -1083,7 +1084,7 @@ namespace NHibernate.Test.Linq
 			IQueryable<ProductCategory> q =
 				from c in db.Categories
 				where c.Products.Any(p => !p.Discontinued)
-//                where c.Products.Cast<Product>().Any(p => !p.Discontinued)
+				//                where c.Products.Cast<Product>().Any(p => !p.Discontinued)
 				select c;
 
 			ObjectDumper.Write(q);
@@ -1100,7 +1101,7 @@ namespace NHibernate.Test.Linq
 			IQueryable<ProductCategory> q =
 				from c in db.Categories
 				where !c.Products.Any(p => p.Discontinued)
-//                where !c.Products.Cast<Product>().Any(p => p.Discontinued)
+				//                where !c.Products.Cast<Product>().Any(p => p.Discontinued)
 				select c;
 
 			ObjectDumper.Write(q);
@@ -1117,7 +1118,7 @@ namespace NHibernate.Test.Linq
 			IQueryable<ProductCategory> q =
 				from c in db.Categories
 				where !c.Products.Any(p => !p.Discontinued)
-//                where !c.Products.Cast<Product>().Any(p => !p.Discontinued)
+				//                where !c.Products.Cast<Product>().Any(p => !p.Discontinued)
 				select c;
 
 			ObjectDumper.Write(q);
@@ -1134,7 +1135,7 @@ namespace NHibernate.Test.Linq
 			IQueryable<Customer> q =
 				from c in db.Customers
 				where c.Orders.All(o => o.ShippingAddress.City == c.Address.City)
-//                where c.Orders.Cast<Order>().All(o => o.ShippingAddress.City == c.Address.City)
+				//                where c.Orders.Cast<Order>().All(o => o.ShippingAddress.City == c.Address.City)
 				select c;
 
 			ObjectDumper.Write(q);
@@ -1174,10 +1175,10 @@ namespace NHibernate.Test.Linq
 		{
 			var q = (
 						from c in db.Customers
-						select new {Name = c.CompanyName, Phone = c.Address.PhoneNumber}
+						select new { Name = c.CompanyName, Phone = c.Address.PhoneNumber }
 					).Concat(
 				from e in db.Employees
-				select new {Name = e.FirstName + " " + e.LastName, Phone = e.Address.PhoneNumber}
+				select new { Name = e.FirstName + " " + e.LastName, Phone = e.Address.PhoneNumber }
 				);
 
 			ObjectDumper.Write(q);
@@ -1338,7 +1339,7 @@ namespace NHibernate.Test.Linq
 			IQueryable<Order> q =
 				from c in db.Customers
 				from o in c.Orders
-//                from o in c.Orders.Cast<Order>()
+					//                from o in c.Orders.Cast<Order>()
 				where c.Address.City == "London"
 				select o;
 
@@ -1380,7 +1381,7 @@ namespace NHibernate.Test.Linq
 				join e in db.Employees
 					on o.Employee.EmployeeId equals (int?) e.EmployeeId into emps
 				from e in emps
-				select new {o.OrderId, e.FirstName};
+				select new { o.OrderId, e.FirstName };
 
 			ObjectDumper.Write(q);
 		}
@@ -1393,9 +1394,9 @@ namespace NHibernate.Test.Linq
 			var q =
 				from c in db.Customers
 				from o in c.Orders
-//                from o in c.Orders.Cast<Order>()
+					//                from o in c.Orders.Cast<Order>()
 				where c.Address.City == "London"
-				select new {o.OrderDate, o.ShippingAddress.Region};
+				select new { o.OrderDate, o.ShippingAddress.Region };
 
 			ObjectDumper.Write(q);
 		}
@@ -1408,9 +1409,9 @@ namespace NHibernate.Test.Linq
 			var q =
 				from c in db.Customers
 				from o in c.Orders
-//                from o in c.Orders.Cast<Order>()
+					//                from o in c.Orders.Cast<Order>()
 				where c.Address.City == "London"
-				select new {c.Address.City, o.OrderDate, o.ShippingAddress.Region};
+				select new { c.Address.City, o.OrderDate, o.ShippingAddress.Region };
 
 			ObjectDumper.Write(q);
 		}
@@ -1423,7 +1424,7 @@ namespace NHibernate.Test.Linq
 			IQueryable<Order> q =
 				from c in db.Customers
 				from o in c.Orders
-//                from o in c.Orders.Cast<Order>()
+					//                from o in c.Orders.Cast<Order>()
 				select o;
 
 			List<Order> list = q.ToList();
@@ -1438,7 +1439,7 @@ namespace NHibernate.Test.Linq
 		{
 			IQueryable<DateTime?> q =
 				from c in db.Customers
-//                from o in c.Orders.Cast<Order>()
+					//                from o in c.Orders.Cast<Order>()
 				from o in c.Orders
 				select o.OrderDate;
 
@@ -1455,7 +1456,7 @@ namespace NHibernate.Test.Linq
 			IQueryable<Customer> q =
 				from c in db.Customers
 				from o in c.Orders
-//                from o in c.Orders.Cast<Order>()
+					//                from o in c.Orders.Cast<Order>()
 				select c;
 
 			List<Customer> list = q.ToList();
@@ -1492,9 +1493,9 @@ namespace NHibernate.Test.Linq
 			var q =
 				from e in db.Employees
 				from et in e.Territories
-//                from et in e.Territories.Cast<Territory>()
+					//                from et in e.Territories.Cast<Territory>()
 				where e.Address.City == "Seattle"
-				select new {e.FirstName, e.LastName, et.Region.Description};
+				select new { e.FirstName, e.LastName, et.Region.Description };
 
 			using (var sqlSpy = new SqlLogSpy())
 			{
@@ -1518,16 +1519,16 @@ namespace NHibernate.Test.Linq
 			var q =
 				from e1 in db.Employees
 				from e2 in e1.Subordinates
-//                from e2 in e1.Subordinates.Cast<Employee>()
+					//                from e2 in e1.Subordinates.Cast<Employee>()
 				where e1.Address.City == e2.Address.City
 				select new
-						   {
-							   FirstName1 = e1.FirstName,
-							   LastName1 = e1.LastName,
-							   FirstName2 = e2.FirstName,
-							   LastName2 = e2.LastName,
-							   e1.Address.City
-						   };
+				{
+					FirstName1 = e1.FirstName,
+					LastName1 = e1.LastName,
+					FirstName2 = e2.FirstName,
+					LastName2 = e2.LastName,
+					e1.Address.City
+				};
 
 			using (var sqlSpy = new SqlLogSpy())
 			{
@@ -1546,9 +1547,9 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
 
 			var q =
-				from c in db.Customers 
+				from c in db.Customers
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into orders
-				select new {c.ContactName, OrderCount = orders.Average(x => x.Freight)};
+				select new { c.ContactName, OrderCount = orders.Average(x => x.Freight) };
 
 			using (var sqlSpy = new SqlLogSpy())
 			{
@@ -1605,7 +1606,7 @@ namespace NHibernate.Test.Linq
 					join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
 					group new { c, o } by c.ContactName
 						into g
-						select new { ContactName = g.Key, OrderCount = g.Average(i => i.o.Freight) };
+					select new { ContactName = g.Key, OrderCount = g.Average(i => i.o.Freight) };
 
 			ObjectDumper.Write(q);
 		}
@@ -1616,7 +1617,7 @@ namespace NHibernate.Test.Linq
 		{
 			var q =
 				from c in db.Customers
-				join o in db.Orders on new {c.CustomerId} equals new {o.Customer.CustomerId}
+				join o in db.Orders on new { c.CustomerId } equals new { o.Customer.CustomerId }
 				select new { c.ContactName, o.OrderId };
 
 			ObjectDumper.Write(q);
@@ -1629,8 +1630,8 @@ namespace NHibernate.Test.Linq
 			var q =
 				from c in db.Customers
 				join o in db.Orders on
-					new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals
-					new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null }
+					new { c.CustomerId, HasContractTitle = c.ContactTitle != null } equals
+					new { o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null }
 				select new { c.ContactName, o.OrderId };
 
 			using (var sqlSpy = new SqlLogSpy())
@@ -1651,10 +1652,10 @@ namespace NHibernate.Test.Linq
 			var q =
 				from c in db.Customers
 				join o in db.Orders on
-					new {c.CustomerId, HasContractTitle = c.ContactTitle != null} equals
-					new {o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null} into orders
+					new { c.CustomerId, HasContractTitle = c.ContactTitle != null } equals
+					new { o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null } into orders
 				from o in orders.DefaultIfEmpty()
-				select new {c.ContactName, OrderId = (int?) o.OrderId};
+				select new { c.ContactName, OrderId = (int?) o.OrderId };
 
 			ObjectDumper.Write(q);
 		}
@@ -1704,11 +1705,11 @@ namespace NHibernate.Test.Linq
 		{
 			var q =
 				from o in db.Orders
-				join c in db.Customers on 
-					new { o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null } equals 
+				join c in db.Customers on
+					new { o.Customer.CustomerId, HasContractTitle = o.Customer.ContactTitle != null } equals
 					new { c.CustomerId, HasContractTitle = c.ContactTitle != null }
 				select new { c.ContactName, o.OrderId };
-			
+
 			using (var sqlSpy = new SqlLogSpy())
 			{
 				ObjectDumper.Write(q);
@@ -1752,7 +1753,7 @@ namespace NHibernate.Test.Linq
 				from c in db.Customers
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into ords
 				join e in db.Employees on c.Address.City equals e.Address.City into emps
-				select new {c.ContactName, ords = ords.Count(), emps = emps.Count()};
+				select new { c.ContactName, ords = ords.Count(), emps = emps.Count() };
 
 			using (var sqlSpy = new SqlLogSpy())
 			{
@@ -1774,7 +1775,7 @@ namespace NHibernate.Test.Linq
 				from e in db.Employees
 				join o in db.Orders on e equals o.Employee into ords
 				from o in ords.DefaultIfEmpty()
-				select new {e.FirstName, e.LastName, Order = o};
+				select new { e.FirstName, e.LastName, Order = o };
 
 			using (var sqlSpy = new SqlLogSpy())
 			{
@@ -1794,7 +1795,7 @@ namespace NHibernate.Test.Linq
 				join o in db.Orders on c.CustomerId equals o.Customer.CustomerId into ords
 				let z = c.Address.City + c.Address.Country
 				from o in ords
-				select new {c.ContactName, o.OrderId, z};
+				select new { c.ContactName, o.OrderId, z };
 
 			using (var sqlSpy = new SqlLogSpy())
 			{
@@ -1833,12 +1834,12 @@ namespace NHibernate.Test.Linq
 
 				var actual =
 					(from o in db.Orders
-					from p in db.Products
-					join d in db.OrderLines
-						on new { o.OrderId, p.ProductId } equals new { d.Order.OrderId, d.Product.ProductId }
-						into details
-					from d in details
-					select new { o.OrderId, p.ProductId, d.UnitPrice }).ToList();
+					 from p in db.Products
+					 join d in db.OrderLines
+						 on new { o.OrderId, p.ProductId } equals new { d.Order.OrderId, d.Product.ProductId }
+						 into details
+					 from d in details
+					 select new { o.OrderId, p.ProductId, d.UnitPrice }).ToList();
 
 				var sql = sqlSpy.GetWholeLog();
 				Assert.That(actual.Count, Is.EqualTo(2155));
@@ -1876,13 +1877,13 @@ namespace NHibernate.Test.Linq
 
 				var actual =
 					(from o in db.Orders
-					from p in db.Products
-					join d in db.OrderLines
-						on new {o.OrderId, p.ProductId} equals new {d.Order.OrderId, d.Product.ProductId}
-						into details
-					from d in details.DefaultIfEmpty()
-					where d != null && d.UnitPrice > 50
-					select new {o.OrderId, p.ProductId, d.UnitPrice}).ToList();
+					 from p in db.Products
+					 join d in db.OrderLines
+						 on new { o.OrderId, p.ProductId } equals new { d.Order.OrderId, d.Product.ProductId }
+						 into details
+					 from d in details.DefaultIfEmpty()
+					 where d != null && d.UnitPrice > 50
+					 select new { o.OrderId, p.ProductId, d.UnitPrice }).ToList();
 
 				var sql = sqlSpy.GetWholeLog();
 				Assert.That(actual.Count, Is.EqualTo(163));
@@ -1896,9 +1897,9 @@ namespace NHibernate.Test.Linq
 		public void DLinqJoin9b()
 		{
 			var q = from c in db.Customers
-					 join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
-					 group o by c into x
-					 select new { CustomerName = x.Key.ContactName, Order = x };
+					join o in db.Orders on c.CustomerId equals o.Customer.CustomerId
+					group o by c into x
+					select new { CustomerName = x.Key.ContactName, Order = x };
 
 			ObjectDumper.Write(q);
 		}
@@ -1988,7 +1989,7 @@ namespace NHibernate.Test.Linq
 		public void ReplaceFunctionWithNullArgument()
 		{
 			var query = from e in db.Employees
-			            select e.FirstName.Replace(e.LastName, null);
+						select e.FirstName.Replace(e.LastName, null);
 			List<string> results = null;
 			Assert.That(
 				() =>
@@ -2061,7 +2062,7 @@ namespace NHibernate.Test.Linq
 			}
 
 			// Get the keys for this batch
-			var keys = _inputStream.Skip(batch*BatchSize).Take(BatchSize).Select(_keySelector).ToArray();
+			var keys = _inputStream.Skip(batch * BatchSize).Take(BatchSize).Select(_keySelector).ToArray();
 
 			// And get the children for this set of keys
 			var children = _childSelector(keys);
@@ -2075,7 +2076,7 @@ namespace NHibernate.Test.Linq
 
 			_batchesFetched.Add(batch);
 		}
-	} 
+	}
 
 	public static class MyEnumerableExtensions
 	{

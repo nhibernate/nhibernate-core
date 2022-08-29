@@ -18,7 +18,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1447
 		}
 
 		public virtual int Id
-		{ get;
+		{
+			get;
 			set;
 		}
 

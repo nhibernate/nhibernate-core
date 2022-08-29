@@ -129,9 +129,9 @@ namespace NHibernate.Test.NHSpecificTest.GH2437
 			{
 				var results = session.Query<UserSession>()
 					.Where(x => x.OpenDate == DateTime.Now)
-					.Select(x => new NullableBooleanResult() {IsOpen = x.User.IsOpen})
+					.Select(x => new NullableBooleanResult() { IsOpen = x.User.IsOpen })
 					.ToList();
-				
+
 				Assert.That(results, Has.Count.EqualTo(10));
 			}
 		}

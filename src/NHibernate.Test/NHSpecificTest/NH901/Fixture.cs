@@ -99,7 +99,7 @@ namespace NHibernate.Test.NHSpecificTest.NH901
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"NHSpecificTest.NH901.Mappings.hbm.xml"}; }
+			get { return new[] { "NHSpecificTest.NH901.Mappings.hbm.xml" }; }
 		}
 	}
 

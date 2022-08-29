@@ -11,7 +11,7 @@ namespace NHibernate.Loader.Entity
 		private readonly CascadingAction cascadeAction;
 
 		public CascadeEntityJoinWalker(IOuterJoinLoadable persister, CascadingAction action,
-		                               ISessionFactoryImplementor factory)
+									   ISessionFactoryImplementor factory)
 			: base(persister, factory, CollectionHelper.EmptyDictionary<string, IFilter>())
 		{
 			cascadeAction = action;

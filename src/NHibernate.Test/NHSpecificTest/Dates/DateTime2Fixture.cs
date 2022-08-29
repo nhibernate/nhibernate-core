@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"NHSpecificTest.Dates.Mappings.DateTime2.hbm.xml"}; }
+			get { return new[] { "NHSpecificTest.Dates.Mappings.DateTime2.hbm.xml" }; }
 		}
 
 		protected override DbType? AppliesTo()
@@ -23,8 +23,8 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		{
 			DateTime Now = DateTime.Now;
 
-			SavingAndRetrievingAction(new AllDates {Sql_datetime2 = Now},
-			                          entity => DateTimeAssert.AreEqual(entity.Sql_datetime2, Now));
+			SavingAndRetrievingAction(new AllDates { Sql_datetime2 = Now },
+									  entity => DateTimeAssert.AreEqual(entity.Sql_datetime2, Now));
 
 			SavingAndRetrievingAction(new AllDates { Sql_datetime2 = DateTime.MinValue },
 									  entity => DateTimeAssert.AreEqual(entity.Sql_datetime2, DateTime.MinValue));

@@ -250,7 +250,7 @@ namespace NHibernate.Dialect
 
 			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
 			pagingBuilder
-				.Add("select " )
+				.Add("select ")
 				.Add(string.Join(",", selectColumns))
 				.Add(" from (select ")
 				.Add(rownumClause)

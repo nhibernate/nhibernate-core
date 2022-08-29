@@ -6,7 +6,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1867
 	[TestFixture]
 	public class AddMappingTest
 	{
-		private const string mappingTemplate = 
+		private const string mappingTemplate =
 @"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-mapping xmlns='urn:nhibernate-mapping-2.2' auto-import='true'>
   <class name='{0},NHibernate.Test'>

@@ -54,7 +54,7 @@ namespace NHibernate.Id
 			private readonly IType[] uniqueKeyTypes;
 
 			internal SelectGeneratorDelegate(IPostInsertIdentityPersister persister, ISessionFactoryImplementor factory,
-			                                 string suppliedUniqueKeyPropertyNames) : base(persister)
+											 string suppliedUniqueKeyPropertyNames) : base(persister)
 			{
 				this.persister = persister;
 				this.factory = factory;

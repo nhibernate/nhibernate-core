@@ -14,13 +14,13 @@ namespace NHibernate.Test.ReadOnly
 		public VersionedNode()
 		{
 		}
-	
+
 		public VersionedNode(string id, string name)
 		{
 			this.id = id;
 			this.name = name;
 		}
-	
+
 		public virtual string Id
 		{
 			get { return id; }
@@ -32,13 +32,13 @@ namespace NHibernate.Test.ReadOnly
 			get { return name; }
 			set { name = value; }
 		}
-	
+
 		public virtual long Version
 		{
 			get { return version; }
 			set { version = value; }
 		}
-		
+
 		public virtual VersionedNode Parent
 		{
 			get { return parent; }
@@ -50,7 +50,7 @@ namespace NHibernate.Test.ReadOnly
 			get { return children; }
 			set { children = value; }
 		}
-	
+
 		public virtual void AddChild(VersionedNode child)
 		{
 			child.Parent = this;

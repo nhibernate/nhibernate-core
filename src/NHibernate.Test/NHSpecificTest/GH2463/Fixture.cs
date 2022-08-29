@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2463
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"ABC.hbm.xml"}; }
+			get { return new[] { "ABC.hbm.xml" }; }
 		}
 
 		protected override void OnSetUp()
@@ -23,10 +23,10 @@ namespace NHibernate.Test.NHSpecificTest.GH2463
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var a = new A {Name = "A", AnotherName = "X"};
+				var a = new A { Name = "A", AnotherName = "X" };
 				session.Save(a);
 
-				var b = new B {Name = "B", AnotherName = "X"};
+				var b = new B { Name = "B", AnotherName = "X" };
 				session.Save(b);
 
 				transaction.Commit();
@@ -55,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2463
 					a => a.AnotherName,
 					b => b.AnotherName,
 					(a, b) =>
-						new {a, b}).ToList();
+						new { a, b }).ToList();
 			}
 		}
 

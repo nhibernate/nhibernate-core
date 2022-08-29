@@ -25,7 +25,7 @@ namespace NHibernate.Test.Criteria
 		{
 			byte[] bytes = SerializationHelper.Serialize(dc);
 
-			DetachedCriteria dcs = (DetachedCriteria)SerializationHelper.Deserialize(bytes);
+			DetachedCriteria dcs = (DetachedCriteria) SerializationHelper.Deserialize(bytes);
 
 			using (ISession s = OpenSession())
 			{

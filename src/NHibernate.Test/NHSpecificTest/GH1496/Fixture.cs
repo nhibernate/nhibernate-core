@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using NUnit.Framework;
 using NHibernate.Cfg;
 using NHibernate.Event;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1496
 {
@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1496
 		private const string HOME_TYPENAME = "HOME";
 		private Person testPerson;
 		private Employee testEmployee;
-		
+
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);
@@ -119,7 +119,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1496
 					{
 						session.Flush();
 						transaction.Commit();
-					},  "Saving data failed.");
+					}, "Saving data failed.");
 				}
 			}
 		}

@@ -1,8 +1,7 @@
-using NUnit.Framework;
-
 using System;
 using System.Collections;
 using System.Text;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1064
 {

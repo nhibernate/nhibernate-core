@@ -62,8 +62,8 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var mapper = new ModelMapper();
 			mapper.Class<MyClass>(map => map.ComponentAsId(x => x.Id, idmap =>
 																	  {
-																		idmap.Property(y => y.Code);
-																		idmap.Property(y => y.Name);
+																		  idmap.Property(y => y.Code);
+																		  idmap.Property(y => y.Name);
 																	  }));
 
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
@@ -71,7 +71,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmCompositId = hbmClass.CompositeId;
 			var keyProperties = hbmCompositId.Items.OfType<HbmKeyProperty>();
 			Assert.That(keyProperties.Count(), Is.EqualTo(2));
-			Assert.That(keyProperties.Select(x => x.Name), Is.EquivalentTo(new [] {"Code", "Name"}));
+			Assert.That(keyProperties.Select(x => x.Name), Is.EquivalentTo(new[] { "Code", "Name" }));
 			Assert.That(hbmCompositId.name, Is.EqualTo(For<MyClass>.Property(x => x.Id).Name));
 		}
 
@@ -98,8 +98,8 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var mapper = new ModelMapper();
 			mapper.Component<IMyCompo>(x =>
 									   {
-																	 x.Property(y => y.Code, pm => pm.Length(10));
-																	 x.Property(y => y.Name);
+										   x.Property(y => y.Code, pm => pm.Length(10));
+										   x.Property(y => y.Name);
 									   });
 			mapper.Class<MyClass>(map => map.ComponentAsId(x => x.Id));
 
@@ -108,7 +108,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmCompositId = hbmClass.CompositeId;
 			var keyProperties = hbmCompositId.Items.OfType<HbmKeyProperty>();
 			Assert.That(keyProperties.Count(), Is.EqualTo(2));
-			Assert.That(keyProperties.Select(x => x.Name), Is.EquivalentTo(new [] {"Code", "Name"}));
+			Assert.That(keyProperties.Select(x => x.Name), Is.EquivalentTo(new[] { "Code", "Name" }));
 			Assert.That(keyProperties.Single(x => x.Name == "Code").length, Is.EqualTo("10"));
 		}
 
@@ -118,7 +118,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var mapper = new ModelMapper();
 			mapper.Component<IMyCompo>(x =>
 			{
-				x.Property(y => y.Code, pm=> pm.Length(10));
+				x.Property(y => y.Code, pm => pm.Length(10));
 				x.Property(y => y.Name, pm => pm.Length(20));
 			});
 			mapper.Class<MyClass>(map => map.ComponentAsId(x => x.Id, idmap =>
@@ -131,7 +131,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var hbmClass = hbmMapping.RootClasses[0];
 			var hbmCompositId = hbmClass.CompositeId;
 			var keyProperties = hbmCompositId.Items.OfType<HbmKeyProperty>();
-			Assert.That(keyProperties.Select(x => x.length), Is.EquivalentTo(new [] {"15", "25"}));
+			Assert.That(keyProperties.Select(x => x.length), Is.EquivalentTo(new[] { "15", "25" }));
 		}
 
 		[Test]

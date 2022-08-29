@@ -4,9 +4,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 	{
 		#region IAccessorPropertyMapper Members
 
-		public void Access(Accessor accessor) {}
+		public void Access(Accessor accessor) { }
 
-		public void Access(System.Type accessorType) {}
+		public void Access(System.Type accessorType) { }
 
 		#endregion
 	}

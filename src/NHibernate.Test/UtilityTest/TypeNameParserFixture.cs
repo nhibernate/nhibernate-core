@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.Util;
 using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace NHibernate.Test.UtilityTest
 {
@@ -296,6 +296,6 @@ namespace NHibernate.Test.UtilityTest
 		{
 			CheckInput(typeof(Aa<int>.Bb<int, short, string>).FullName, typeof(Aa<int>.Bb<int, short, string>).FullName, null);
 			CheckInput(typeof(Aa<int>.Bb<int, short, string>.C).FullName, typeof(Aa<int>.Bb<int, short, string>.C).FullName, null);
-		} 
+		}
 	}
 }

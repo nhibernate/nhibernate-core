@@ -335,7 +335,7 @@ namespace NHibernate.Test.ReadOnly
 				CheckReadOnly(s, dp, true);
 				Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 				DataPoint dpFromQuery = s.CreateQuery("from DataPoint where id = " + dpOrig.Id).SetReadOnly(false)
-				                         .UniqueResult<DataPoint>();
+										 .UniqueResult<DataPoint>();
 				Assert.That(NHibernateUtil.IsInitialized(dpFromQuery), Is.True);
 				Assert.That(dpFromQuery, Is.SameAs(dp));
 				CheckReadOnly(s, dp, true);
@@ -376,7 +376,7 @@ namespace NHibernate.Test.ReadOnly
 				s.SetReadOnly(dp, true);
 				CheckReadOnly(s, dp, true);
 				DataPoint dpFromQuery = s.CreateQuery("from DataPoint where Id = " + dpOrig.Id).SetReadOnly(true)
-				                         .UniqueResult<DataPoint>();
+										 .UniqueResult<DataPoint>();
 				Assert.That(NHibernateUtil.IsInitialized(dpFromQuery), Is.True);
 				Assert.That(dpFromQuery, Is.SameAs(dp));
 				CheckReadOnly(s, dp, true);
@@ -415,7 +415,7 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 				CheckReadOnly(s, dp, false);
 				DataPoint dpFromQuery = s.CreateQuery("from DataPoint where Id = " + dpOrig.Id).SetReadOnly(false)
-				                         .UniqueResult<DataPoint>();
+										 .UniqueResult<DataPoint>();
 				Assert.That(NHibernateUtil.IsInitialized(dpFromQuery), Is.True);
 				Assert.That(dpFromQuery, Is.SameAs(dp));
 				CheckReadOnly(s, dp, false);
@@ -454,7 +454,7 @@ namespace NHibernate.Test.ReadOnly
 				CheckReadOnly(s, dp, false);
 				Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 				DataPoint dpFromQuery = s.CreateQuery("from DataPoint where id=" + dpOrig.Id).SetReadOnly(true)
-				                         .UniqueResult<DataPoint>();
+										 .UniqueResult<DataPoint>();
 				Assert.That(NHibernateUtil.IsInitialized(dpFromQuery), Is.True);
 				Assert.That(dpFromQuery, Is.SameAs(dp));
 				CheckReadOnly(s, dp, false);

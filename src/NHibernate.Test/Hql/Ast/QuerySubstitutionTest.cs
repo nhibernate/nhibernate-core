@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using NHibernate.Cfg;
-using NUnit.Framework;
 using NHibernate.Cfg.Loquacious;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Hql.Ast
 {
 	[TestFixture]
-	public class QuerySubstitutionTest: BaseFixture
+	public class QuerySubstitutionTest : BaseFixture
 	{
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
@@ -18,7 +18,7 @@ namespace NHibernate.Test.Hql.Ast
 		public void WhenSubstitutionsConfiguredThenUseItInTranslation()
 		{
 			const string query = "from SimpleClass s where s.IntValue > pizza";
-			var sql = GetSql(query, new Dictionary<string, string>{{"pizza","1"}});
+			var sql = GetSql(query, new Dictionary<string, string> { { "pizza", "1" } });
 			Assert.That(sql, Does.Not.Contain("pizza"));
 		}
 

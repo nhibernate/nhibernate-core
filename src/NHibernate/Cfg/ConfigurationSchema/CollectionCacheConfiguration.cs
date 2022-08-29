@@ -35,7 +35,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 		/// <param name="region">The cache region.</param>
 		/// <exception cref="ArgumentException">When <paramref name="collection"/> is null or empty.</exception>
 		public CollectionCacheConfiguration(string collection, EntityCacheUsage usage, string region)
-			:this(collection,usage)
+			: this(collection, usage)
 		{
 			this.region = region;
 		}

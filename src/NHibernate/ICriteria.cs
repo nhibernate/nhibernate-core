@@ -60,7 +60,7 @@ namespace NHibernate
 		/// </summary>
 		/// <value>The alias for the encapsulated entity.</value>
 		string Alias { get; }
-		
+
 		/// <summary>
 		/// Was the read-only mode explicitly initialized?
 		/// </summary>
@@ -273,7 +273,7 @@ namespace NHibernate
 		/// <param name="comment">a human-readable string </param>
 		/// <returns> this (for method chaining) </returns>
 		ICriteria SetComment(string comment);
-		
+
 		/// <summary> Override the flush mode for this particular query. </summary>
 		/// <param name="flushMode">The flush mode to use. </param>
 		/// <returns> this (for method chaining) </returns>
@@ -347,7 +347,7 @@ namespace NHibernate
 		/// <seealso cref="ICriteria.IsReadOnly" />
 		/// <seealso cref="ICriteria.IsReadOnlyInitialized" />
 		ICriteria SetReadOnly(bool readOnly);
-	
+
 		#region NHibernate specific
 
 		/// <summary>

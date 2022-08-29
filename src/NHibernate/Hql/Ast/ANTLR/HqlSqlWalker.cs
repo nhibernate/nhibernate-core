@@ -68,7 +68,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private IASTFactory _nodeFactory;
 		private readonly List<AssignmentSpecification> assignmentSpecifications = new List<AssignmentSpecification>();
 		private int numberOfParametersInSetClause;
-		private Stack<int> clauseStack=new Stack<int>();
+		private Stack<int> clauseStack = new Stack<int>();
 
 		public HqlSqlWalker(
 			QueryTranslatorImpl qti,
@@ -167,7 +167,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			get { return _sessionFactoryHelper; }
 		}
-		
+
 		public int CurrentStatementType
 		{
 			get { return _currentStatementType; }
@@ -185,12 +185,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public IType[] ReturnTypes
 		{
-			get { return _selectClause.QueryReturnTypes; }	
+			get { return _selectClause.QueryReturnTypes; }
 		}
 
 		public string CollectionFilterRole
 		{
-			get { return _collectionFilterRole; }	
+			get { return _collectionFilterRole; }
 		}
 
 		public SelectClause SelectClause
@@ -230,7 +230,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		void PrepareVersioned(IASTNode updateNode, IASTNode versioned)
 		{
-			var updateStatement = (UpdateStatement)updateNode;
+			var updateStatement = (UpdateStatement) updateNode;
 			FromClause fromClause = updateStatement.FromClause;
 			if (versioned != null)
 			{
@@ -257,7 +257,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				{
 					versionIncrementNode = ASTFactory.CreateNode(PARAM, "?");
 					IParameterSpecification paramSpec = new VersionTypeSeedParameterSpecification(versionType);
-					((ParameterNode)versionIncrementNode).HqlParameterSpecification = paramSpec;
+					((ParameterNode) versionIncrementNode).HqlParameterSpecification = paramSpec;
 					Parameters.Insert(0, paramSpec);
 				}
 				else
@@ -289,18 +289,18 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		void PostProcessUpdate(IASTNode update)
 		{
-			var updateStatement = (UpdateStatement)update;
+			var updateStatement = (UpdateStatement) update;
 			PostProcessDML(updateStatement);
 		}
 
 		void PostProcessDelete(IASTNode delete)
 		{
-			PostProcessDML((DeleteStatement)delete);
+			PostProcessDML((DeleteStatement) delete);
 		}
 
 		void PostProcessInsert(IASTNode insert)
 		{
-			var insertStatement = (InsertStatement)insert;
+			var insertStatement = (InsertStatement) insert;
 			insertStatement.Validate();
 
 			SelectClause selectClause = insertStatement.SelectClause;
@@ -356,7 +356,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				{
 					versionValueNode = ASTFactory.CreateNode(PARAM, "?");
 					IParameterSpecification paramSpec = new VersionTypeSeedParameterSpecification(versionType);
-					((ParameterNode)versionValueNode).HqlParameterSpecification = paramSpec;
+					((ParameterNode) versionValueNode).HqlParameterSpecification = paramSpec;
 					_parameters.Insert(0, paramSpec);
 				}
 				else
@@ -421,7 +421,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public static bool SupportsIdGenWithBulkInsertion(IIdentifierGenerator generator)
 		{
-			return generator is SequenceGenerator 
+			return generator is SequenceGenerator
 				|| generator is IPostInsertIdentifierGenerator;
 		}
 
@@ -464,7 +464,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				throw new SemanticException("Mismatched clause parsing");
 			}
-			_currentClauseType=clauseStack.Pop();
+			_currentClauseType = clauseStack.Pop();
 		}
 
 		void FinishFromClause()
@@ -490,7 +490,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if (node != null)
 			{
 				// This is called when it's time to fully resolve a path expression.
-				IResolvableNode r = (IResolvableNode)node;
+				IResolvableNode r = (IResolvableNode) node;
 
 				if (_inFunctionCall)
 				{
@@ -498,7 +498,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				}
 				else
 				{
-					r.Resolve(false, true);	// Generate implicit joins, only if necessary.
+					r.Resolve(false, true); // Generate implicit joins, only if necessary.
 				}
 			}
 
@@ -507,56 +507,60 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		void ProcessQuery(IASTNode select, IASTNode query)
 		{
-			if ( log.IsDebugEnabled() ) {
+			if (log.IsDebugEnabled())
+			{
 				log.Debug("processQuery() : {0}", query.ToStringTree());
 			}
 
-			try {
-				QueryNode qn = ( QueryNode ) query;
+			try
+			{
+				QueryNode qn = (QueryNode) query;
 
 				// Was there an explicit select expression?
 				bool explicitSelect = select != null && select.ChildCount > 0;
 
-				if ( !explicitSelect ) {
+				if (!explicitSelect)
+				{
 					// No explicit select expression; render the id and properties
 					// projection lists for every persister in the from clause into
 					// a single 'token node'.
 					//TODO: the only reason we need this stuff now is collection filters,
 					//      we should get rid of derived select clause completely!
-					CreateSelectClauseFromFromClause( qn );
+					CreateSelectClauseFromFromClause(qn);
 				}
-				else {
+				else
+				{
 					// Use the explicitly declared select expression; determine the
 					// return types indicated by each select token
-					UseSelectClause( select );
+					UseSelectClause(select);
 				}
 
 				// After that, process the JOINs.
 				// Invoke a delegate to do the work, as this is farily complex.
-				JoinProcessor joinProcessor = new JoinProcessor( this );
+				JoinProcessor joinProcessor = new JoinProcessor(this);
 				IRestrictableStatement rs = qn;
 				joinProcessor.ProcessJoins(rs);
 
 				// Attach any mapping-defined "ORDER BY" fragments
 				foreach (FromElement fromElement in qn.FromClause.GetProjectionListTyped())
 				{
-					if ( fromElement.IsFetch && fromElement.QueryableCollection != null ) 
+					if (fromElement.IsFetch && fromElement.QueryableCollection != null)
 					{
 						// Does the collection referenced by this FromElement
 						// specify an order-by attribute?  If so, attach it to
 						// the query's order-by
-						if ( fromElement.QueryableCollection.HasOrdering) 
+						if (fromElement.QueryableCollection.HasOrdering)
 						{
 							string orderByFragment = fromElement
 									.QueryableCollection
-									.GetSQLOrderByString( fromElement.TableAlias );
-							qn.GetOrderByClause().AddOrderFragment( orderByFragment );
+									.GetSQLOrderByString(fromElement.TableAlias);
+							qn.GetOrderByClause().AddOrderFragment(orderByFragment);
 						}
-						if ( fromElement.QueryableCollection.HasManyToManyOrdering ) 
+						if (fromElement.QueryableCollection.HasManyToManyOrdering)
 						{
 							string orderByFragment = fromElement.QueryableCollection
-									.GetManyToManyOrderByString( fromElement.TableAlias );
-							qn.GetOrderByClause().AddOrderFragment( orderByFragment );
+									.GetManyToManyOrderByString(fromElement.TableAlias);
+							qn.GetOrderByClause().AddOrderFragment(orderByFragment);
 						}
 					}
 				}
@@ -576,14 +580,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private void CreateSelectClauseFromFromClause(IASTNode qn)
 		{
 			// TODO - check this.  Not *exactly* the same logic as the Java original
-			qn.InsertChild(0, (IASTNode)adaptor.Create(SELECT_CLAUSE, "{derived select clause}"));
+			qn.InsertChild(0, (IASTNode) adaptor.Create(SELECT_CLAUSE, "{derived select clause}"));
 
-			_selectClause = ( SelectClause ) qn.GetChild(0);
-			_selectClause.InitializeDerivedSelectClause( _currentFromClause );
+			_selectClause = (SelectClause) qn.GetChild(0);
+			_selectClause.InitializeDerivedSelectClause(_currentFromClause);
 
-			if ( log.IsDebugEnabled() ) 
+			if (log.IsDebugEnabled())
 			{
-				log.Debug( "Derived SELECT clause created." );
+				log.Debug("Derived SELECT clause created.");
 			}
 		}
 
@@ -597,7 +601,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		static void ProcessConstructor(IASTNode constructor)
 		{
-			ConstructorNode constructorNode = (ConstructorNode)constructor;
+			ConstructorNode constructorNode = (ConstructorNode) constructor;
 			constructorNode.Prepare();
 		}
 
@@ -663,7 +667,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			if (IsSubQuery)
 				throw new SemanticException("References to result variables in subqueries are not supported.");
-			
+
 			((ResultVariableRefNode) resultVariableRef).SetSelectExpression(selectExpressionsByResultVariable[(resultVariableRef.Text)]);
 		}
 
@@ -674,12 +678,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 			switch (type)
 			{
 				case DOT:
-					DotNode dot = (DotNode)node;
+					DotNode dot = (DotNode) node;
 					dot.ResolveSelectExpression();
 					break;
 				case ALIAS_REF:
 					// Notify the FROM element that it is being referenced by the select.
-					FromReferenceNode aliasRefNode = (FromReferenceNode)node;
+					FromReferenceNode aliasRefNode = (FromReferenceNode) node;
 
 					aliasRefNode.Resolve(false, false); //TODO: is it kosher to do it here?
 					FromElement fromElement = aliasRefNode.FromElement;
@@ -699,10 +703,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				// Handle collection-filter compilation.
 				// filter-implied FROM element is already converted by HqlFilterPreprocessor
-				
+
 				// Create a parameter specification for the collection filter...
 				IType collectionFilterKeyType = _sessionFactoryHelper.RequireQueryableCollection(_collectionFilterRole).KeyType;
-				ParameterNode collectionFilterKeyParameter = (ParameterNode)adaptor.Create(PARAM, "?");
+				ParameterNode collectionFilterKeyParameter = (ParameterNode) adaptor.Create(PARAM, "?");
 				CollectionFilterKeyParameterSpecification collectionFilterKeyParameterSpec = new CollectionFilterKeyParameterSpecification(
 						_collectionFilterRole, collectionFilterKeyType, _positionalParameterCount++
 				);
@@ -720,9 +724,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 				IASTNode with)
 		{
 			bool fetch = fetchNode != null;
-			if ( fetch && IsSubQuery ) 
+			if (fetch && IsSubQuery)
 			{
-				throw new QueryException( "fetch not allowed in subquery from-elements" );
+				throw new QueryException("fetch not allowed in subquery from-elements");
 			}
 
 			// the incoming "path" can be either:
@@ -737,22 +741,22 @@ namespace NHibernate.Hql.Ast.ANTLR
 				return;
 			}
 			// The path AST should be a DotNode, and it should have been evaluated already.
-			if ( path.Type != DOT ) 
+			if (path.Type != DOT)
 			{
-				throw new SemanticException( "Path expected for join!" );
+				throw new SemanticException("Path expected for join!");
 			}
 
-			DotNode dot = ( DotNode ) path;
+			DotNode dot = (DotNode) path;
 			//JoinType hibernateJoinType = JoinProcessor.ToHibernateJoinType( joinType );
 			JoinType hibernateJoinType = _impliedJoinType;
 
-			dot.JoinType = hibernateJoinType;	// Tell the dot node about the join type.
+			dot.JoinType = hibernateJoinType;   // Tell the dot node about the join type.
 			dot.Fetch = fetch;
 
 			// Generate an explicit join for the root dot node.   The implied joins will be collected and passed up
 			// to the root dot node.
 			dot.SkipSemiResolve = true;
-			dot.Resolve( true, false, alias == null ? null : alias.Text );
+			dot.Resolve(true, false, alias == null ? null : alias.Text);
 
 			FromElement fromElement;
 			if (dot.DataType != null && dot.DataType.IsComponentType)
@@ -791,9 +795,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 				}
 			}
 
-			if ( log.IsDebugEnabled() )
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("createFromJoinElement() : {0}", _printer.ShowAsString( fromElement, "-- join tree --" ));
+				log.Debug("createFromJoinElement() : {0}", _printer.ShowAsString(fromElement, "-- join tree --"));
 			}
 
 			void ProcessAsEntityJoin()
@@ -954,7 +958,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			if (!persister.IsOneToMany)
 			{
-				join.AddJoin((IAssociationType)persister.ElementType,
+				join.AddJoin((IAssociationType) persister.ElementType,
 						fromElement.TableAlias,
 						JoinType.InnerJoin,
 						persister.GetElementColumnNames(fkTableAlias));
@@ -982,19 +986,19 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		void PushFromClause(IASTNode fromNode)
 		{
-			FromClause newFromClause = (FromClause)fromNode;
+			FromClause newFromClause = (FromClause) fromNode;
 			newFromClause.SetParentFromClause(_currentFromClause);
 			_currentFromClause = newFromClause;
 		}
 
 		static void PrepareArithmeticOperator(IASTNode op)
 		{
-			((IOperatorNode)op).Initialize();
+			((IOperatorNode) op).Initialize();
 		}
 
 		static void ProcessFunction(IASTNode functionCall, bool inSelect)
 		{
-			MethodNode methodNode = (MethodNode)functionCall;
+			MethodNode methodNode = (MethodNode) functionCall;
 			methodNode.Resolve(inSelect);
 		}
 
@@ -1005,7 +1009,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		static void PrepareLogicOperator(IASTNode operatorNode)
 		{
-			( ( IOperatorNode ) operatorNode ).Initialize();
+			((IOperatorNode) operatorNode).Initialize();
 		}
 
 		void ProcessNumericLiteral(IASTNode literal)
@@ -1024,7 +1028,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		static void ProcessIndex(IASTNode indexOp)
 		{
-			IndexNode indexNode = (IndexNode)indexOp;
+			IndexNode indexNode = (IndexNode) indexOp;
 			indexNode.Resolve(true, true);
 		}
 
@@ -1032,13 +1036,13 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			string identText = ident.Text;
 
-			if ( _currentFromClause.IsFromElementAlias( identText ) ) 
+			if (_currentFromClause.IsFromElementAlias(identText))
 			{
 				return false;
 			}
 
 			var fromElements = _currentFromClause.GetExplicitFromElementsTyped();
-			if ( fromElements.Count == 1 )
+			if (fromElements.Count == 1)
 			{
 				FromElement fromElement = fromElements[0];
 
@@ -1054,8 +1058,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 		IASTNode LookupNonQualifiedProperty(IASTNode property)
 		{
 			FromElement fromElement = _currentFromClause.GetExplicitFromElementsTyped()[0];
-			IASTNode syntheticDotNode = GenerateSyntheticDotNodeForNonQualifiedPropertyRef( property, fromElement );
-			return LookupProperty( syntheticDotNode, false, _currentClauseType == SELECT );
+			IASTNode syntheticDotNode = GenerateSyntheticDotNodeForNonQualifiedPropertyRef(property, fromElement);
+			return LookupProperty(syntheticDotNode, false, _currentClauseType == SELECT);
 		}
 
 		IASTNode GenerateSyntheticDotNodeForNonQualifiedPropertyRef(IASTNode property, FromElement fromElement)
@@ -1063,9 +1067,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 			IASTNode dot = (IASTNode) adaptor.Create(DOT, "{non-qualified-property-ref}");
 
 			// TODO : better way?!?
-			((DotNode)dot).PropertyPath = ((FromReferenceNode)property).Path;
+			((DotNode) dot).PropertyPath = ((FromReferenceNode) property).Path;
 
-			IdentNode syntheticAlias = (IdentNode)adaptor.Create(IDENT, "{synthetic-alias}");
+			IdentNode syntheticAlias = (IdentNode) adaptor.Create(IDENT, "{synthetic-alias}");
 			syntheticAlias.FromElement = fromElement;
 			syntheticAlias.IsResolved = true;
 
@@ -1078,7 +1082,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		void LookupAlias(IASTNode aliasRef)
 		{
 			FromElement alias = _currentFromClause.GetFromElement(aliasRef.Text);
-			FromReferenceNode aliasRefNode = (FromReferenceNode)aliasRef;
+			FromReferenceNode aliasRefNode = (FromReferenceNode) aliasRef;
 			aliasRefNode.FromElement = alias;
 		}
 
@@ -1123,7 +1127,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				// NH TODO: remove this limitation
 				throw new SemanticException("cannot define positional parameter after any named parameters have been defined");
 			}
-			ParameterNode parameter = (ParameterNode)adaptor.Create(PARAM, "?");
+			ParameterNode parameter = (ParameterNode) adaptor.Create(PARAM, "?");
 			PositionalParameterSpecification paramSpec = new PositionalParameterSpecification(
 					inputNode.Line,
 					inputNode.CharPositionInLine,
@@ -1139,7 +1143,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			get { return _currentFromClause; }
 		}
 
-		public int StatementType 
+		public int StatementType
 		{
 			get { return _statementType; }
 		}
@@ -1151,7 +1155,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public int CurrentClauseType
 		{
-				get { return _currentClauseType; }
+			get { return _currentClauseType; }
 		}
 
 		// Note: CurrentClauseType tracks the current clause within the current
@@ -1182,7 +1186,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public bool IsInSelect
 		{
-				get { return _inSelect; }
+			get { return _inSelect; }
 		}
 
 		public IDictionary<string, string> TokenReplacements
@@ -1208,10 +1212,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public bool IsShallowQuery
 		{
-			get 
+			get
 			{
 				// select clauses for insert statements should alwasy be treated as shallow
-				return StatementType == INSERT ||  _qti.IsShallowQuery;
+				return StatementType == INSERT || _qti.IsShallowQuery;
 			}
 		}
 
@@ -1279,17 +1283,17 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-		private void TrackNamedParameterPositions(string name) 
+		private void TrackNamedParameterPositions(string name)
 		{
 			int loc = _parameterCount++;
 			object o = _namedParameterLocations[name];
-			if ( o == null ) 
+			if (o == null)
 			{
 				_namedParameterLocations.Add(name, loc);
 			}
 			else if (o is int)
 			{
-				List<int> list = new List<int>(4) {(int) o, loc};
+				List<int> list = new List<int>(4) { (int) o, loc };
 				_namedParameterLocations[name] = list;
 			}
 			else
@@ -1336,11 +1340,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 		}
 	}
 
-	class WithClauseVisitor : IVisitationStrategy 
+	class WithClauseVisitor : IVisitationStrategy
 	{
 		private readonly FromElement _joinFragment;
 
-		public WithClauseVisitor(FromElement fromElement) 
+		public WithClauseVisitor(FromElement fromElement)
 		{
 			_joinFragment = fromElement;
 		}
@@ -1357,19 +1361,19 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-		private void ApplyParameterSpecifications(IParameterContainer parameterContainer) 
+		private void ApplyParameterSpecifications(IParameterContainer parameterContainer)
 		{
-			if ( parameterContainer.HasEmbeddedParameters) 
+			if (parameterContainer.HasEmbeddedParameters)
 			{
 				IParameterSpecification[] specs = parameterContainer.GetEmbeddedParameters();
-				for ( int i = 0; i < specs.Length; i++ ) 
+				for (int i = 0; i < specs.Length; i++)
 				{
-					ApplyParameterSpecification( specs[i] );
+					ApplyParameterSpecification(specs[i]);
 				}
 			}
 		}
 
-		private void ApplyParameterSpecification(IParameterSpecification paramSpec) 
+		private void ApplyParameterSpecification(IParameterSpecification paramSpec)
 		{
 			_joinFragment.AddEmbeddedParameter(paramSpec);
 		}

@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		public virtual string Name { get; protected set; }
 		public virtual int Version { get; protected set; }
 
-		protected Person() {}
+		protected Person() { }
 
 		public Person(string name)
 		{

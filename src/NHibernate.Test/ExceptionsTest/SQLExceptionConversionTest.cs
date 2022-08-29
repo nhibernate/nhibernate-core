@@ -36,7 +36,7 @@ namespace NHibernate.Test.ExceptionsTest
 
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			if(Dialect is MsSql2000Dialect)
+			if (Dialect is MsSql2000Dialect)
 			{
 				configuration.SetProperty(
 					Cfg.Environment.SqlExceptionConverter,
@@ -154,9 +154,9 @@ namespace NHibernate.Test.ExceptionsTest
 			}
 			catch (Exception sqle)
 			{
-				Assert.AreEqual(typeof (SQLGrammarException),
-				                converter.Convert(new AdoExceptionContextInfo {SqlException = sqle}).GetType(),
-				                "Bad conversion [" + sqle.Message + "]");
+				Assert.AreEqual(typeof(SQLGrammarException),
+								converter.Convert(new AdoExceptionContextInfo { SqlException = sqle }).GetType(),
+								"Bad conversion [" + sqle.Message + "]");
 			}
 			finally
 			{

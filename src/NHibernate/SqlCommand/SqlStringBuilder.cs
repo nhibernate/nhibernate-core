@@ -178,7 +178,7 @@ namespace NHibernate.SqlCommand
 		/// </remarks>
 		public SqlStringBuilder Add(SqlString sqlString, string prefix, string op, string postfix)
 		{
-			return Add(new SqlString[] {sqlString}, prefix, op, postfix, false);
+			return Add(new SqlString[] { sqlString }, prefix, op, postfix, false);
 		}
 
 		/// <summary>

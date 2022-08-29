@@ -43,7 +43,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(Entity).GetProperty("NickNames");
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsBag(mi), Is.True);
 		}
@@ -53,7 +53,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(Entity).GetField("emails", BindingFlags.NonPublic | BindingFlags.Instance);
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsBag(mi), Is.True);
 		}
@@ -63,7 +63,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(Entity).GetProperty("Emails");
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsBag(mi), Is.True);
 		}
@@ -73,7 +73,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(Entity).GetProperty("Simple");
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsBag(mi), Is.False);
 		}
@@ -83,7 +83,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var mi = typeof(Entity).GetProperty("Bytes");
 			var autoinspector = new SimpleModelInspector();
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			Assert.That(inspector.IsBag(mi), Is.False);
 		}
@@ -95,7 +95,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var mapper = new ModelMapper(autoinspector);
 			mapper.BeforeMapBag += (insp, prop, map) => map.Key(km => km.Column(prop.GetContainerEntity(insp).Name + "Id"));
 
-			var hbmMapping = mapper.CompileMappingFor(new[] {typeof(Parent)});
+			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(Parent) });
 			var hbmBag = hbmMapping.RootClasses[0].Properties.OfType<HbmBag>().Single();
 			Assert.That(hbmBag.Key.Columns.Single().name, Is.EqualTo("ParentId"));
 		}

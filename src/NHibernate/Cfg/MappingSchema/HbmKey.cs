@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmKey: IColumnsMapping
+	public partial class HbmKey : IColumnsMapping
 	{
 		#region Implementation of IColumnsMapping
 
@@ -36,12 +36,12 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public bool? IsNullable
 		{
-			get { return notnullSpecified ? !notnull : (bool?)null; }
+			get { return notnullSpecified ? !notnull : (bool?) null; }
 		}
 
 		public bool? IsUpdatable
 		{
-			get { return updateSpecified ? update : (bool?)null; }
+			get { return updateSpecified ? update : (bool?) null; }
 		}
 	}
 }

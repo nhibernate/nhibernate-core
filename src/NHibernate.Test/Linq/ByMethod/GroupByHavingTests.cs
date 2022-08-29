@@ -12,7 +12,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			base.Configure(configuration);
 			configuration.SetProperty(Cfg.Environment.ShowSql, "true");
-		} 
+		}
 
 		[Test]
 		public void HavingCountSelectCount()
@@ -73,7 +73,7 @@ namespace NHibernate.Test.Linq.ByMethod
 						group o by o.OrderDate
 						into g
 						where g.Count() > 4
-						select new {g.Key, Count = g.Count()}).ToList();
+						select new { g.Key, Count = g.Count() }).ToList();
 
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(list.Single().Count, Is.EqualTo(5));
@@ -86,7 +86,7 @@ namespace NHibernate.Test.Linq.ByMethod
 						group o by o.OrderDate
 						into g
 						where g.Count() > 4
-						select new {g.Key, Count = g.Select(x => x.OrderId).Count()}).ToList();
+						select new { g.Key, Count = g.Select(x => x.OrderId).Count() }).ToList();
 
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(list.Single().Count, Is.EqualTo(5));
@@ -100,10 +100,10 @@ namespace NHibernate.Test.Linq.ByMethod
 						into g
 						where g.Count() > 4
 						select new
-								   {
-									   g.Key,
-									   Count = g.SelectMany(x => x.OrderLines).Count()
-								   }).ToList();
+						{
+							g.Key,
+							Count = g.SelectMany(x => x.OrderLines).Count()
+						}).ToList();
 
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(list.Single().Count, Is.EqualTo(14));
@@ -146,27 +146,27 @@ namespace NHibernate.Test.Linq.ByMethod
 			  .Select(g => g.Count())
 			  .ToList();
 			db.Users
-			  .GroupBy(p => new StringEnumGroup {Enum = p.Enum1})
+			  .GroupBy(p => new StringEnumGroup { Enum = p.Enum1 })
 			  .Where(g => g.Key.Enum == EnumStoredAsString.Large)
 			  .Select(g => g.Count())
 			  .ToList();
 			db.Users
-			  .GroupBy(p => new[] {p.Enum1})
+			  .GroupBy(p => new[] { p.Enum1 })
 			  .Where(g => g.Key[0] == EnumStoredAsString.Large)
 			  .Select(g => g.Count())
 			  .ToList();
 			db.Users
-			  .GroupBy(p => new {p.Enum1})
+			  .GroupBy(p => new { p.Enum1 })
 			  .Where(g => g.Key.Enum1 == EnumStoredAsString.Large)
 			  .Select(g => g.Count())
 			  .ToList();
 			db.Users
-			  .GroupBy(p => new {Test = new {Test2 = p.Enum1}})
+			  .GroupBy(p => new { Test = new { Test2 = p.Enum1 } })
 			  .Where(g => g.Key.Test.Test2 == EnumStoredAsString.Large)
 			  .Select(g => g.Count())
 			  .ToList();
 			db.Users
-			  .GroupBy(p => new {Test = new[] {p.Enum1}})
+			  .GroupBy(p => new { Test = new[] { p.Enum1 } })
 			  .Where(g => g.Key.Test[0] == EnumStoredAsString.Large)
 			  .Select(g => g.Count())
 			  .ToList();

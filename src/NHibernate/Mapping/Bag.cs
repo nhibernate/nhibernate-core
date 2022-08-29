@@ -25,7 +25,7 @@ namespace NHibernate.Mapping
 		{
 			get
 			{
-				System.Type elementType = typeof (object);
+				System.Type elementType = typeof(object);
 				if (IsGeneric)
 				{
 					CheckGenericArgumentsLength(1);

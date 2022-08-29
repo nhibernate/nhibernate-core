@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2907
 								};
 				var loan = new Dictionary<string, object>
 								{
-									{"CompId", loanId}, 
+									{"CompId", loanId},
 									{"Name", "money!!!"}
 								};
 				s.Save("Loan", loan);
@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2907
 				var loan = s.CreateQuery("select l from Loan l")
 					 .UniqueResult<IDictionary>();
 
-				var compId = (IDictionary)loan["CompId"];
+				var compId = (IDictionary) loan["CompId"];
 				var group = compId["Group"];
 
 				Assert.That(@group, Is.Not.Null);

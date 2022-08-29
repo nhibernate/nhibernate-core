@@ -49,7 +49,7 @@ namespace NHibernate.Impl
 		public override IQuery GetExecutableQuery(ISession session)
 		{
 			IQuery result = session.GetNamedQuery(queryName);
-			SetDefaultProperties((ISessionFactoryImplementor)session.SessionFactory);
+			SetDefaultProperties((ISessionFactoryImplementor) session.SessionFactory);
 			SetQueryProperties(result);
 			return result;
 		}
@@ -68,9 +68,9 @@ namespace NHibernate.Impl
 				cacheRegion = nqd.CacheRegion;
 			}
 
-			if(!timeoutWasSet && nqd.Timeout != -1)
+			if (!timeoutWasSet && nqd.Timeout != -1)
 			{
-				selection.Timeout= nqd.Timeout;
+				selection.Timeout = nqd.Timeout;
 			}
 
 			if (!fetchSizeWasSet && nqd.FetchSize != -1)
@@ -93,7 +93,7 @@ namespace NHibernate.Impl
 				comment = nqd.Comment;
 			}
 
-			if(!flushModeWasSet)
+			if (!flushModeWasSet)
 			{
 				flushMode = nqd.FlushMode;
 			}

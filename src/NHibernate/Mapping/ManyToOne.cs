@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using NHibernate.Type;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using NHibernate.Type;
 
 namespace NHibernate.Mapping
 {
@@ -23,7 +23,7 @@ namespace NHibernate.Mapping
 			// the case of a foreign key to something other than the pk is handled in createPropertyRefConstraints
 			if (ReferencedPropertyName == null && !HasFormula && !IsIgnoreNotFound)
 			{
-				CreateForeignKeyOfEntity(((EntityType)Type).GetAssociatedEntityName());
+				CreateForeignKeyOfEntity(((EntityType) Type).GetAssociatedEntityName());
 			}
 		}
 
@@ -41,7 +41,7 @@ namespace NHibernate.Mapping
 			get { return isLogicalOneToOne; }
 			set { isLogicalOneToOne = value; }
 		}
-		
+
 		public string PropertyName { get; set; }
 
 		private IType type;
@@ -83,7 +83,7 @@ namespace NHibernate.Mapping
 					ForeignKey.AlignColumns(ConstraintColumns, ce);
 
 					ForeignKey fk =
-						Table.CreateForeignKey(ForeignKeyName, ConstraintColumns, ((EntityType)Type).GetAssociatedEntityName(), ce);
+						Table.CreateForeignKey(ForeignKeyName, ConstraintColumns, ((EntityType) Type).GetAssociatedEntityName(), ce);
 					fk.CascadeDeleteEnabled = IsCascadeDeleteEnabled;
 				}
 			}

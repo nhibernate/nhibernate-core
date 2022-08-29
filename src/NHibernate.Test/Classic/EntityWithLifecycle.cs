@@ -9,7 +9,7 @@ namespace NHibernate.Test.Classic
 		public virtual string Name { get; set; }
 		public virtual double Heigth { get; set; }
 		public virtual double Width { get; set; }
-		public EntityWithLifecycle() {}
+		public EntityWithLifecycle() { }
 		public EntityWithLifecycle(string name, double heigth, double width)
 		{
 			Name = name;

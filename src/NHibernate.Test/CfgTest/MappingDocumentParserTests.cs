@@ -18,7 +18,7 @@ namespace NHibernate.Test.CfgTest
 				"NHibernate.DomainModel.ABCProxy.hbm.xml",
 			};
 
-			Assembly domainModelAssembly = typeof (DomainModel.A).Assembly;
+			Assembly domainModelAssembly = typeof(DomainModel.A).Assembly;
 			MappingDocumentParser parser = new MappingDocumentParser();
 
 			foreach (string embeddedResource in someEmbeddedResources)

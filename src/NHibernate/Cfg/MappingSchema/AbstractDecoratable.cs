@@ -63,7 +63,7 @@ namespace NHibernate.Cfg.MappingSchema
 				{
 					attribute = new MetaAttribute(hbmMeta.attribute);
 					mappedMetaData[hbmMeta.attribute] = attribute;
-					if(hbmMeta.inherit)
+					if (hbmMeta.inherit)
 					{
 						inheritableMetaData[hbmMeta.attribute] = attribute;
 					}

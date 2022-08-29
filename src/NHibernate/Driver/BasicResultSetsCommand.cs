@@ -12,7 +12,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Driver
 {
-	public partial class BasicResultSetsCommand: IResultSetsCommand
+	public partial class BasicResultSetsCommand : IResultSetsCommand
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(BasicResultSetsCommand));
 		private SqlString _sqlString = SqlString.Empty;
@@ -99,7 +99,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// Datareader wrapper with the same life cycle of its command (through the batcher)
 	/// </summary>
-	public partial class BatcherDataReaderWrapper: DbDataReader
+	public partial class BatcherDataReaderWrapper : DbDataReader
 	{
 		private readonly IBatcher batcher;
 		private readonly DbCommand command;

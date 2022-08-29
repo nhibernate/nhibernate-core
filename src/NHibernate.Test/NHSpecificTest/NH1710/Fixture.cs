@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1710
 
 			cfg.AddResource(GetResourceFullName(), GetType().Assembly);
 
-			factory = (ISessionFactoryImplementor)cfg.BuildSessionFactory();
+			factory = (ISessionFactoryImplementor) cfg.BuildSessionFactory();
 
 			expectedExportString = GetDialect().GetTypeName(NHibernateUtil.Decimal.SqlType, 0, 5, 2);
 		}

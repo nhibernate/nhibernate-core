@@ -48,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (Disease)) return false;
+			if (obj.GetType() != typeof(Disease)) return false;
 			return Equals((Disease) obj);
 		}
 
@@ -62,8 +62,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1810
 				unchecked
 				{
 					int result = (Name != null ? Name.GetHashCode() : 0);
-					result = (result*397) ^ Duration;
-					result = (result*397) ^ (MedicalRecord != null ? MedicalRecord.GetHashCode() : 0);
+					result = (result * 397) ^ Duration;
+					result = (result * 397) ^ (MedicalRecord != null ? MedicalRecord.GetHashCode() : 0);
 					hashCode = result;
 				}
 

@@ -9,67 +9,67 @@ namespace NHibernate.Test.Component.Basic
 		private string address;
 		private string currentAddress;
 		private string previousAddress;
-		private int yob;		
-		private double heightInches;	
-		
-		public virtual string Name 
+		private int yob;
+		private double heightInches;
+
+		public virtual string Name
 		{
 			get { return name; }
 			set { name = value; }
 		}
-		
-		public virtual DateTime Dob 
+
+		public virtual DateTime Dob
 		{
 			get { return dob; }
 			set { dob = value; }
-		}		
-		
-		public virtual string Address 
+		}
+
+		public virtual string Address
 		{
 			get { return address; }
 			set { address = value; }
 		}
-		
-		public virtual string CurrentAddress 
+
+		public virtual string CurrentAddress
 		{
 			get { return currentAddress; }
 			set { currentAddress = value; }
 		}
-		
-		public virtual string PreviousAddress 
+
+		public virtual string PreviousAddress
 		{
 			get { return previousAddress; }
 			set { previousAddress = value; }
 		}
-		
-		public virtual int Yob 
+
+		public virtual int Yob
 		{
 			get { return yob; }
 			set { yob = value; }
 		}
-		
-		public virtual double HeightInches 
+
+		public virtual double HeightInches
 		{
 			get { return heightInches; }
 			set { heightInches = value; }
 		}
-		
+
 		public Person()
 		{
 		}
-		
-		public Person(String name, DateTime dob, String address) 
+
+		public Person(String name, DateTime dob, String address)
 		{
 			this.name = name;
 			this.dob = dob;
 			this.address = address;
 			this.currentAddress = address;
 		}
-		
-		public virtual void ChangeAddress(String add) 
+
+		public virtual void ChangeAddress(String add)
 		{
 			this.PreviousAddress = this.Address;
 			this.Address = add;
-		}		
+		}
 	}
 }

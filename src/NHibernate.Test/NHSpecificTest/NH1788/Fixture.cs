@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1788
 				var person = session.Get<Person>(1);
 				person.Name = "other";
 				tx.Commit();
-			} 
+			}
 
 			using (ISession session = OpenSession())
 			using (var tx = session.BeginTransaction())

@@ -56,7 +56,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Component(Action<IComponentElementMapper<TElement>> mapping)
 		{
-			explicitDeclarationsHolder.AddAsComponent(typeof (TElement));
+			explicitDeclarationsHolder.AddAsComponent(typeof(TElement));
 			var componetElementCustomizer = new ComponentElementCustomizer<TElement>(explicitDeclarationsHolder, propertyPath, customizersHolder);
 			mapping(componetElementCustomizer);
 		}

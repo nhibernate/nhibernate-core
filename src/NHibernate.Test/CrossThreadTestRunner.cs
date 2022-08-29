@@ -19,16 +19,16 @@ namespace NHibernate.Test
 		private const string remoteStackTraceFieldName = "_remoteStackTraceString";
 
 		private static readonly FieldInfo RemoteStackTraceField = typeof(Exception).GetField(remoteStackTraceFieldName,
-		                                                                                     BindingFlags.Instance |
-		                                                                                     BindingFlags.NonPublic);
+																							 BindingFlags.Instance |
+																							 BindingFlags.NonPublic);
 
 		public CrossThreadTestRunner(ThreadStart start)
 		{
 			_start = start;
 			_thread = new Thread(Run);
-			#if NET5_0_OR_GREATER
+#if NET5_0_OR_GREATER
 			if (OperatingSystem.IsWindows())
-			#endif
+#endif
 			{
 				_thread.SetApartmentState(ApartmentState.STA);
 			}

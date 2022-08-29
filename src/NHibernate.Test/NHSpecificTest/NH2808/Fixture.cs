@@ -60,11 +60,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2808
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var a = (Entity)session.Get("Entity1", 1);
+				var a = (Entity) session.Get("Entity1", 1);
 				a.Name = "A'";
 
-				session.Update("Entity1",a, 1);
-				
+				session.Update("Entity1", a, 1);
+
 				transaction.Commit();
 			}
 
@@ -72,7 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2808
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var a = (Entity)session.Get("Entity1", 1);
+				var a = (Entity) session.Get("Entity1", 1);
 
 				Assert.AreEqual("A'", a.Name);
 			}
@@ -95,10 +95,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2808
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var a = (Entity)session.Get("Entity1", 1);
+				var a = (Entity) session.Get("Entity1", 1);
 				a.Name = "A'";
 
-				var b = new Entity {Name = "B"};
+				var b = new Entity { Name = "B" };
 
 				session.SaveOrUpdate("Entity1", a, 1);
 				session.SaveOrUpdate("Entity1", b, 2);
@@ -110,8 +110,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2808
 			using (ISession session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var a = (Entity)session.Get("Entity1", 1);
-				var b = (Entity)session.Get("Entity1", 2);
+				var a = (Entity) session.Get("Entity1", 1);
+				var b = (Entity) session.Get("Entity1", 2);
 
 				Assert.AreEqual("A'", a.Name);
 				Assert.AreEqual("B", b.Name);

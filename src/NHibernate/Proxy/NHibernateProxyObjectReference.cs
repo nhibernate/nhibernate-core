@@ -13,8 +13,8 @@ namespace NHibernate.Proxy
 
 		[Obsolete("Use overload taking an implementation parameter")]
 		public NHibernateProxyObjectReference(NHibernateProxyFactoryInfo proxyFactoryInfo, object identifier)
-			: this (proxyFactoryInfo, identifier, null)
-		{}
+			: this(proxyFactoryInfo, identifier, null)
+		{ }
 
 		public NHibernateProxyObjectReference(NHibernateProxyFactoryInfo proxyFactoryInfo, object identifier, object implementation)
 		{

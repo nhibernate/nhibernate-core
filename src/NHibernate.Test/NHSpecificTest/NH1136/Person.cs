@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1136
 		{
 			get { return _id; }
 		}
-		
+
 		public string Name
 		{
 			get { return _name; }

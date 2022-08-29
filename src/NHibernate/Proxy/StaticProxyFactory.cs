@@ -63,7 +63,7 @@ namespace NHibernate.Proxy
 		{
 			var proxyBuilder = new NHibernateProxyBuilder(GetIdentifierMethod, SetIdentifierMethod, ComponentIdType, OverridesEquals);
 			var type = proxyBuilder.CreateProxyType(pke.BaseType, pke.Interfaces);
-			var ctor = type.GetConstructor(new[] {typeof(ILazyInitializer), typeof(NHibernateProxyFactoryInfo)});
+			var ctor = type.GetConstructor(new[] { typeof(ILazyInitializer), typeof(NHibernateProxyFactoryInfo) });
 			var li = Expression.Parameter(typeof(ILazyInitializer));
 			var pf = Expression.Parameter(typeof(NHibernateProxyFactoryInfo));
 			return Expression.Lambda<Func<ILazyInitializer, NHibernateProxyFactoryInfo, INHibernateProxy>>(Expression.New(ctor, li, pf), li, pf).Compile();

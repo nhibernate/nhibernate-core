@@ -30,9 +30,9 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			Assert.That(mapping.Items[0], Is.TypeOf<HbmColumn>(), "first");
 			Assert.That(mapping.Items[1], Is.TypeOf<HbmFormula>(), "second");
 			Assert.That(mapping.Items[2], Is.TypeOf<HbmColumn>(), "third");
-			Assert.That(((HbmColumn)mapping.Items[0]).name, Is.EqualTo("pizza"));
-			Assert.That(((HbmFormula)mapping.Items[1]).Text, Has.Length.EqualTo(1).And.One.EqualTo("risotto"));
-			Assert.That(((HbmColumn)mapping.Items[2]).name, Is.EqualTo("pasta"));
+			Assert.That(((HbmColumn) mapping.Items[0]).name, Is.EqualTo("pizza"));
+			Assert.That(((HbmFormula) mapping.Items[1]).Text, Has.Length.EqualTo(1).And.One.EqualTo("risotto"));
+			Assert.That(((HbmColumn) mapping.Items[2]).name, Is.EqualTo("pasta"));
 			Assert.That(mapping.column, Is.Null, "column");
 			Assert.That(mapping.formula, Is.Null, "formula");
 		}

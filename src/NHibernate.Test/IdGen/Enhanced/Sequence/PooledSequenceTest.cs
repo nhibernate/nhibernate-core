@@ -1,6 +1,6 @@
 using System.Collections;
-using NUnit.Framework;
 using NHibernate.Id.Enhanced;
+using NUnit.Framework;
 
 namespace NHibernate.Test.IdGen.Enhanced.Sequence
 {
@@ -23,10 +23,10 @@ namespace NHibernate.Test.IdGen.Enhanced.Sequence
 			var persister = Sfi.GetEntityPersister(typeof(Entity).FullName);
 			Assert.That(persister.IdentifierGenerator, Is.TypeOf<SequenceStyleGenerator>());
 
-			var generator = (SequenceStyleGenerator)persister.IdentifierGenerator;
+			var generator = (SequenceStyleGenerator) persister.IdentifierGenerator;
 			Assert.That(generator.Optimizer, Is.TypeOf<OptimizerFactory.PooledOptimizer>());
 
-			var optimizer = (OptimizerFactory.PooledOptimizer)generator.Optimizer;
+			var optimizer = (OptimizerFactory.PooledOptimizer) generator.Optimizer;
 
 			int increment = optimizer.IncrementSize;
 			var entities = new Entity[increment + 1];

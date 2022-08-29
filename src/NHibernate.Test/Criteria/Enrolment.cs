@@ -11,7 +11,7 @@ namespace NHibernate.Test.Criteria
 		private string courseCode = string.Empty;
 		private short year;
 		private short semester;
-		
+
 		public virtual Student Student
 		{
 			get { return student; }

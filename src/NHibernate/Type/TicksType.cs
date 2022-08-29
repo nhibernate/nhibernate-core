@@ -21,7 +21,7 @@ namespace NHibernate.Type
 	{
 		/// <summary></summary>
 		public TicksType()
-			: base(SqlTypeFactory.Int64) {}
+			: base(SqlTypeFactory.Int64) { }
 
 		/// <summary>
 		/// Get the <see cref="DateTime" /> in the <see cref="DbDataReader"/> for the Property.
@@ -63,7 +63,7 @@ namespace NHibernate.Type
 		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val)
 		{
-			return ((DateTime)val).Ticks.ToString();
+			return ((DateTime) val).Ticks.ToString();
 		}
 
 		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
@@ -100,7 +100,7 @@ namespace NHibernate.Type
 		/// <inheritdoc />
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return '\'' + ((DateTime)value).Ticks.ToString() + '\'';
+			return '\'' + ((DateTime) value).Ticks.ToString() + '\'';
 		}
 	}
 }

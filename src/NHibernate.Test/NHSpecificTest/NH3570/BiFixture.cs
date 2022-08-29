@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3570
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					id = (Guid)s.Save(parent);
+					id = (Guid) s.Save(parent);
 					parent.Children.Clear();
 					parent.AddChild(new BiChild());
 					tx.Commit();

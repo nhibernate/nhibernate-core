@@ -97,7 +97,7 @@ namespace NHibernate.Linq.GroupBy
 
 			return IsMemberOfModel(querySourceRef);
 		}
-		
+
 		private bool IsMemberOfModel(QuerySourceReferenceExpression expression)
 		{
 			var fromClause = expression.ReferencedQuerySource as FromClauseBase;
@@ -135,8 +135,8 @@ namespace NHibernate.Linq.GroupBy
 			{
 				var where = expression.QueryModel.BodyClauses.OfType<WhereClause>().FirstOrDefault();
 				if (where != null &&
-				    expression.QueryModel.SelectClause.Selector is NhCountExpression countExpression &&
-				    countExpression.Expression is NhStarExpression)
+					expression.QueryModel.SelectClause.Selector is NhCountExpression countExpression &&
+					countExpression.Expression is NhStarExpression)
 				{
 					//return it as a CASE [column] WHEN [predicate] THEN 1 ELSE NULL END
 					return

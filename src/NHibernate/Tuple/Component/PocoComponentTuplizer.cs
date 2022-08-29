@@ -31,7 +31,7 @@ namespace NHibernate.Tuple.Component
 			{
 				// Fix for NH-3119:
 				// Also set the InstantiationOptimizer on the deserialized PocoInstantiator.
-				((PocoInstantiator)instantiator).SetOptimizer(optimizer.InstantiationOptimizer);
+				((PocoInstantiator) instantiator).SetOptimizer(optimizer.InstantiationOptimizer);
 			}
 
 			ClearOptimizerWhenUsingCustomAccessors();

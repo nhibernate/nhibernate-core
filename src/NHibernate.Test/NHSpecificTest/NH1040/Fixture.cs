@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1040
 			using (session.BeginTransaction())
 			{
 				var result = (from e in session.Query<Consumer>()
-							select e).First();
+							  select e).First();
 
 				Assert.That(result.Child, Is.Not.Null);
 				Assert.DoesNotThrow(() => NHibernateUtil.Initialize(result.Child));
@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1040
 			using (session.BeginTransaction())
 			{
 				var result = (from e in session.Query<Consumer>().Fetch(x => x.Child)
-							select e).First();
+							  select e).First();
 
 				Assert.That(result.Child, Is.Not.Null);
 				Assert.That(NHibernateUtil.IsInitialized(result.Child), Is.True);
@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1040
 			using (session.BeginTransaction())
 			{
 				var result = (from e in session.Query<Consumer>().Fetch(x => x.Child)
-							select e).First();
+							  select e).First();
 
 				Assert.That(result.Child, Is.Not.Null);
 				Assert.That(NHibernateUtil.IsInitialized(result.Child), Is.True);

@@ -8,7 +8,7 @@ namespace NHibernate.Dialect.Schema
 	// Metadata for connections using the iAnywhere.Data.SQLAnywhere ADO.NET provider
 	public class SybaseAnywhereDataBaseMetaData : AbstractDataBaseSchema
 	{
-		public SybaseAnywhereDataBaseMetaData(DbConnection pObjConnection) : base(pObjConnection) {}
+		public SybaseAnywhereDataBaseMetaData(DbConnection pObjConnection) : base(pObjConnection) { }
 
 		public override ITableMetadata GetTableMetadata(DataRow rs, bool extras)
 		{
@@ -25,24 +25,24 @@ namespace NHibernate.Dialect.Schema
 			}
 			return result;
 		}
-		
+
 		public override DataTable GetTables(string catalog, string schemaPattern, string tableNamePattern, string[] types)
 		{
-			var restrictions = new[] {schemaPattern, tableNamePattern, null};
+			var restrictions = new[] { schemaPattern, tableNamePattern, null };
 			DataTable objTbl = Connection.GetSchema("Tables", restrictions);
 			return objTbl;
 		}
 
 		public override DataTable GetIndexInfo(string catalog, string schemaPattern, string tableName)
 		{
-			var restrictions = new[] {schemaPattern, tableName, null};
+			var restrictions = new[] { schemaPattern, tableName, null };
 			DataTable objTbl = Connection.GetSchema("Indexes", restrictions);
 			return objTbl;
 		}
 
 		public override DataTable GetIndexColumns(string catalog, string schemaPattern, string tableName, string indexName)
 		{
-			var restrictions = new[] {schemaPattern, tableName, indexName, null};
+			var restrictions = new[] { schemaPattern, tableName, indexName, null };
 			DataTable objTbl = Connection.GetSchema("IndexColumns", restrictions);
 			return objTbl;
 		}
@@ -50,14 +50,14 @@ namespace NHibernate.Dialect.Schema
 		public override DataTable GetColumns(string catalog, string schemaPattern, string tableNamePattern,
 												string columnNamePattern)
 		{
-			var restrictions = new[] {schemaPattern, tableNamePattern, null};
+			var restrictions = new[] { schemaPattern, tableNamePattern, null };
 			DataTable objTbl = Connection.GetSchema("Columns", restrictions);
 			return objTbl;
 		}
 
 		public override DataTable GetForeignKeys(string catalog, string schema, string table)
 		{
-			var restrictions = new[] {schema, table, null};
+			var restrictions = new[] { schema, table, null };
 			DataTable objTbl = Connection.GetSchema("ForeignKeys", restrictions);
 			return objTbl;
 		}
@@ -65,7 +65,7 @@ namespace NHibernate.Dialect.Schema
 
 	public class SybaseAnywhereTableMetaData : AbstractTableMetadata
 	{
-		public SybaseAnywhereTableMetaData(DataRow rs, IDataBaseSchema meta, bool extras) : base(rs, meta, extras) {}
+		public SybaseAnywhereTableMetaData(DataRow rs, IDataBaseSchema meta, bool extras) : base(rs, meta, extras) { }
 
 		protected override IColumnMetadata GetColumnMetadata(DataRow rs)
 		{
@@ -116,7 +116,7 @@ namespace NHibernate.Dialect.Schema
 		public SybaseAnywhereColumnMetaData(DataRow rs) : base(rs)
 		{
 			Name = Convert.ToString(rs["COLUMN_NAME"]);
-			
+
 			this.SetColumnSize(rs["COLUMN_SIZE"]);
 			this.SetNumericalPrecision(rs["PRECISION"]);
 

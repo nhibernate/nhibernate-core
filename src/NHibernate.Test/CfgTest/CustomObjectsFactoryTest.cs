@@ -31,7 +31,7 @@ namespace NHibernate.Test.CfgTest
 		}
 		private class InvalidNoCtorObjectsFactory : MyObjectsFactory
 		{
-			public InvalidNoCtorObjectsFactory(string pizza) {}
+			public InvalidNoCtorObjectsFactory(string pizza) { }
 		}
 
 		[Test]

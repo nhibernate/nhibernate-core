@@ -22,9 +22,9 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 					props["Foo"] = "Sweden";
 					props["Bar"] = "IsCold";
 					s.Save("DynamicEntity", new Dictionary<string, object>
-					                      	{
-					                      		{"SomeProps", props},
-					                      	});
+											  {
+												  {"SomeProps", props},
+											  });
 					tx.Commit();
 				}
 			}
@@ -52,8 +52,8 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 					var l = s.CreateQuery("from DynamicEntity de where de.SomeProps.Foo=:fooParam")
 						.SetString("fooParam", "Sweden").List();
 					Assert.AreEqual(1, l.Count);
-					var props = ((IDictionary)l[0])["SomeProps"];
-					Assert.AreEqual("IsCold", ((IDictionary)props)["Bar"]);
+					var props = ((IDictionary) l[0])["SomeProps"];
+					Assert.AreEqual("IsCold", ((IDictionary) props)["Bar"]);
 				}
 			}
 		}

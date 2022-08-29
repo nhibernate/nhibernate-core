@@ -1,11 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
-
 using NHibernate.Driver;
 using NHibernate.Util;
-using Environment=NHibernate.Cfg.Environment;
-using System.Collections.Generic;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Connection
 {
@@ -57,10 +56,10 @@ namespace NHibernate.Connection
 			if (connString == null)
 			{
 				throw new HibernateException("Could not find connection string setting (set " +
-				                             Environment.ConnectionString +
-				                             " or " +
-				                             Environment.ConnectionStringName +
-				                             " property)");
+											 Environment.ConnectionString +
+											 " or " +
+											 Environment.ConnectionStringName +
+											 " property)");
 			}
 
 			ConfigureDriver(settings);
@@ -93,7 +92,7 @@ namespace NHibernate.Connection
 			if (!settings.TryGetValue(Environment.ConnectionDriver, out driverClass))
 			{
 				throw new HibernateException("The " + Environment.ConnectionDriver +
-				                             " must be specified in the NHibernate configuration section.");
+											 " must be specified in the NHibernate configuration section.");
 			}
 			else
 			{

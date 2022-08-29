@@ -108,8 +108,8 @@ namespace NHibernate.SqlCommand
 			if (isQuoted)
 			{
 				return openQuote +
-				       unquoted +
-				       closeQuote;
+					   unquoted +
+					   closeQuote;
 			}
 
 			return unquoted;
@@ -129,7 +129,7 @@ namespace NHibernate.SqlCommand
 			var quoteType = Dialect.Dialect.PossibleQuoteChars.IndexOf(openQuote);
 
 			return quoteType >= 0 &&
-			       closeQuote == Dialect.Dialect.PossibleClosedQuoteChars[quoteType];
+				   closeQuote == Dialect.Dialect.PossibleClosedQuoteChars[quoteType];
 		}
 
 		/// <summary>

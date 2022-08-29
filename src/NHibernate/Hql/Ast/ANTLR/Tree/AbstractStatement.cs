@@ -17,12 +17,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		}
 
 		public abstract bool NeedsExecutor
-		{ 
+		{
 			get;
 		}
 
 		public abstract int StatementType
-		{ 
+		{
 			get;
 		}
 

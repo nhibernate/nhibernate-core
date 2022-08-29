@@ -212,7 +212,7 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.Binary, 2147483647, "BLOB");
 		}
 
-		protected virtual void RegisterReverseHibernateTypeMappings() {}
+		protected virtual void RegisterReverseHibernateTypeMappings() { }
 
 		protected virtual void RegisterFunctions()
 		{
@@ -579,7 +579,7 @@ namespace NHibernate.Dialect
 		[Serializable]
 		private class CurrentTimeStamp : NoArgSQLFunction
 		{
-			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.LocalDateTime, true) {}
+			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.LocalDateTime, true) { }
 
 			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
 			{

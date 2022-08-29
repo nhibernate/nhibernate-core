@@ -7,10 +7,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 	[Serializable]
 	public class InvalidWithClauseException : QuerySyntaxException
 	{
-		protected InvalidWithClauseException() {}
-		public InvalidWithClauseException(string message) : base(message) {}
-		public InvalidWithClauseException(string message, Exception inner) : base(message, inner) {}
+		protected InvalidWithClauseException() { }
+		public InvalidWithClauseException(string message) : base(message) { }
+		public InvalidWithClauseException(string message, Exception inner) : base(message, inner) { }
 
-		protected InvalidWithClauseException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+		protected InvalidWithClauseException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 }

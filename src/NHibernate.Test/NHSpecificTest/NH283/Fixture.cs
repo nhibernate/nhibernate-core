@@ -15,11 +15,11 @@ namespace NHibernate.Test.NHSpecificTest.NH283
 			Configuration cfg = new Configuration();
 			Assembly assembly = Assembly.GetExecutingAssembly();
 			cfg.AddResource("NHibernate.DomainModel.MasterDetail.hbm.xml",
-			                Assembly.GetAssembly(typeof(Master))
+							Assembly.GetAssembly(typeof(Master))
 				);
 
 			string script = string.Join("\n",
-			                            cfg.GenerateSchemaCreationScript(new MsSql2008Dialect()));
+										cfg.GenerateSchemaCreationScript(new MsSql2008Dialect()));
 
 			Assert.IsTrue(script.IndexOf("add constraint AA") >= 0);
 			Assert.IsTrue(script.IndexOf("add constraint BB") >= 0);

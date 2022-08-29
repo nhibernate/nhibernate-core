@@ -7,7 +7,7 @@ namespace NHibernate.Test.ConnectionTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"ConnectionTest.Silly.hbm.xml"}; }
+			get { return new string[] { "ConnectionTest.Silly.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly

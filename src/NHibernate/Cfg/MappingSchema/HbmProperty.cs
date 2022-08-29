@@ -55,7 +55,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		private IEnumerable<HbmColumn> AsColumns()
 		{
-			if(string.IsNullOrEmpty(column))
+			if (string.IsNullOrEmpty(column))
 			{
 				yield break;
 			}
@@ -103,7 +103,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public HbmType Type
 		{
-			get { return type ?? (!string.IsNullOrEmpty(type1) ? new HbmType {name = type1} : null); }
+			get { return type ?? (!string.IsNullOrEmpty(type1) ? new HbmType { name = type1 } : null); }
 		}
 
 		#endregion

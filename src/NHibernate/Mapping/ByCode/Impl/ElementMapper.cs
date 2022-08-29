@@ -41,21 +41,21 @@ namespace NHibernate.Mapping.ByCode.Impl
 			elementMapping.formula = null;
 			HbmColumn hbm = elementMapping.Columns.SingleOrDefault();
 			hbm = hbm
-			      ??
-			      new HbmColumn
-			      {
-			      	name = elementMapping.column,
-			      	length = elementMapping.length,
-			      	scale = elementMapping.scale,
-			      	precision = elementMapping.precision,
-			      	notnull = elementMapping.notnull,
-			      	unique = elementMapping.unique,
-			      	uniqueSpecified = elementMapping.unique,
-			      };
+				  ??
+				  new HbmColumn
+				  {
+					  name = elementMapping.column,
+					  length = elementMapping.length,
+					  scale = elementMapping.scale,
+					  precision = elementMapping.precision,
+					  notnull = elementMapping.notnull,
+					  unique = elementMapping.unique,
+					  uniqueSpecified = elementMapping.unique,
+				  };
 			columnMapper(new ColumnMapper(hbm, DefaultColumnName));
 			if (ColumnTagIsRequired(hbm))
 			{
-				elementMapping.Items = new[] {hbm};
+				elementMapping.Items = new[] { hbm };
 				ResetColumnPlainValues();
 			}
 			else
@@ -130,7 +130,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			string[] formulaLines = formula.Split(StringHelper.LineSeparators, StringSplitOptions.None);
 			if (formulaLines.Length > 1)
 			{
-				elementMapping.Items = new object[] {new HbmFormula {Text = formulaLines}};
+				elementMapping.Items = new object[] { new HbmFormula { Text = formulaLines } };
 			}
 			else
 			{
@@ -148,7 +148,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			elementMapping.Items =
 				formulas
 					.ToArray(
-						f => (object) new HbmFormula {Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None)});
+						f => (object) new HbmFormula { Text = f.Split(StringHelper.LineSeparators, StringSplitOptions.None) });
 		}
 
 		#endregion
@@ -166,12 +166,12 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Type<TPersistentType>()
 		{
-			Type(typeof (TPersistentType), null);
+			Type(typeof(TPersistentType), null);
 		}
 
 		public void Type<TPersistentType>(object parameters)
 		{
-			Type(typeof (TPersistentType), parameters);
+			Type(typeof(TPersistentType), parameters);
 		}
 
 		public void Type(System.Type persistentType, object parameters)
@@ -201,7 +201,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 						{
 							var pvalue = pi.GetValue(parameters, null);
 							return
-								new HbmParam {name = pi.Name, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
+								new HbmParam { name = pi.Name, Text = new[] { ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString() } };
 						})
 				};
 				elementMapping.type = hbmType;

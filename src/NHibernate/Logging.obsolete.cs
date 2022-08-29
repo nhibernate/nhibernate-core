@@ -325,7 +325,7 @@ namespace NHibernate
 
 	// Since 5.1
 	[Obsolete("To set no-logging, use NHibernateLogger.SetLoggersFactory(default(INHibernateLoggerFactory))")]
-	public class NoLoggingLoggerFactory: ILoggerFactory
+	public class NoLoggingLoggerFactory : ILoggerFactory
 	{
 		private static readonly IInternalLogger Nologging = new NoLoggingInternalLogger();
 		public IInternalLogger LoggerFor(string keyName)
@@ -341,7 +341,7 @@ namespace NHibernate
 
 	// Since 5.1
 	[Obsolete("To set no-logging, use NHibernateLogger.SetLoggersFactory(default(INHibernateLoggerFactory))")]
-	public class NoLoggingInternalLogger: IInternalLogger
+	public class NoLoggingInternalLogger : IInternalLogger
 	{
 		public bool IsErrorEnabled
 		{

@@ -46,7 +46,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public bool? UseLazy
 		{
-			get { return lazySpecified ? lazy : (bool?)null; }
+			get { return lazySpecified ? lazy : (bool?) null; }
 		}
 
 		public HbmTuplizer[] Tuplizers
@@ -66,7 +66,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public int? BatchSize
 		{
-			get { return !string.IsNullOrEmpty(batchsize) ? int.Parse(batchsize) : (int?)null; }
+			get { return !string.IsNullOrEmpty(batchsize) ? int.Parse(batchsize) : (int?) null; }
 		}
 
 		public bool SelectBeforeUpdate
@@ -81,7 +81,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public bool? IsAbstract
 		{
-			get { return abstractSpecified ? @abstract : (bool?)null; }
+			get { return abstractSpecified ? @abstract : (bool?) null; }
 		}
 
 		public HbmSynchronize[] Synchronize

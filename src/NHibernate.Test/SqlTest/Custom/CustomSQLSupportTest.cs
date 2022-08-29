@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.SqlTest.Custom
 {
 	[TestFixture]
-	public abstract class CustomSQLSupportTest: TestCase
+	public abstract class CustomSQLSupportTest : TestCase
 	{
 		protected override string MappingsAssembly
 		{
@@ -47,9 +47,9 @@ namespace NHibernate.Test.SqlTest.Custom
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			jboss = (Organization)s.Get(typeof(Organization), orgId);
+			jboss = (Organization) s.Get(typeof(Organization), orgId);
 			Assert.AreEqual(jboss.Employments.Count, 2);
-			emp = (Employment)GetFirstItem(jboss.Employments);
+			emp = (Employment) GetFirstItem(jboss.Employments);
 			gavin = emp.Employee;
 			Assert.AreEqual(gavin.Name, "GAVIN");
 			Assert.AreEqual(s.GetCurrentLockMode(gavin), LockMode.Upgrade);
@@ -63,7 +63,7 @@ namespace NHibernate.Test.SqlTest.Custom
 			t = s.BeginTransaction();
 			IEnumerator iter = s.GetNamedQuery("allOrganizationsWithEmployees").List().GetEnumerator();
 			Assert.IsTrue(iter.MoveNext());
-			Organization o = (Organization)iter.Current;
+			Organization o = (Organization) iter.Current;
 			Assert.AreEqual(o.Employments.Count, 3);
 
 			foreach (Employment e in o.Employments)

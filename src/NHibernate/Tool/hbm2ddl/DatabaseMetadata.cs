@@ -12,7 +12,7 @@ namespace NHibernate.Tool.hbm2ddl
 {
 	public class DatabaseMetadata : IDatabaseMetadata
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (DatabaseMetadata));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DatabaseMetadata));
 
 		private readonly Dictionary<string, ITableMetadata> tables = new Dictionary<string, ITableMetadata>();
 		private readonly HashSet<string> sequences = new HashSet<string>();
@@ -20,7 +20,7 @@ namespace NHibernate.Tool.hbm2ddl
 		private readonly Dialect.Dialect dialect;
 		private readonly IDataBaseSchema meta;
 		private readonly ISQLExceptionConverter sqlExceptionConverter;
-		private static readonly string[] Types = {"TABLE", "VIEW"};
+		private static readonly string[] Types = { "TABLE", "VIEW" };
 
 		public DatabaseMetadata(DbConnection connection, Dialect.Dialect dialect)
 			: this(connection, dialect, true)

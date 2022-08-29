@@ -101,7 +101,7 @@ namespace NHibernate.Test.Linq
 		public void SubClassAsUnamppedInterfaceStringEnumTest()
 		{
 			AssertResults(
-				new Dictionary<string, Predicate<IType>> {{"0", o => o is EnumStoredAsStringType}},
+				new Dictionary<string, Predicate<IType>> { { "0", o => o is EnumStoredAsStringType } },
 				db.Animals.Where(o => o.Children.OfType<IReptile>().Any(r => r.Enum1 == EnumStoredAsString.Unspecified)),
 				db.Animals.Where(o => o.Children.OfType<IReptile>().Any(r => EnumStoredAsString.Unspecified == r.Enum1))
 				);
@@ -201,7 +201,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void ContainsStringEnumTest()
 		{
-			var values = new[] {EnumStoredAsString.Small};
+			var values = new[] { EnumStoredAsString.Small };
 			AssertResults(
 				new Dictionary<string, Predicate<IType>>
 				{
@@ -477,7 +477,7 @@ namespace NHibernate.Test.Linq
 				},
 				QueryMode.Insert,
 				db.Users.Where(o => o.InvalidLoginAttempts > 0),
-				o => new User {Name = "val", Enum1 = EnumStoredAsString.Large}
+				o => new User { Name = "val", Enum1 = EnumStoredAsString.Large }
 			);
 		}
 
@@ -492,7 +492,7 @@ namespace NHibernate.Test.Linq
 				},
 				QueryMode.Insert,
 				db.Users.Where(o => o.InvalidLoginAttempts > 0),
-				o => new User {Component = new UserComponent {Property1 = "prop1"}}
+				o => new User { Component = new UserComponent { Property1 = "prop1" } }
 			);
 		}
 
@@ -509,7 +509,7 @@ namespace NHibernate.Test.Linq
 				db.Users.Where(o => o.InvalidLoginAttempts > 0),
 				o => new User
 				{
-					Component = new UserComponent {OtherComponent = new UserComponent2 {OtherProperty1 = "other"}}
+					Component = new UserComponent { OtherComponent = new UserComponent2 { OtherProperty1 = "other" } }
 				}
 			);
 		}
@@ -526,7 +526,7 @@ namespace NHibernate.Test.Linq
 				},
 				QueryMode.Insert,
 				db.Users.Where(o => o.InvalidLoginAttempts > 0),
-				o => new {Name = "val", Enum1 = EnumStoredAsString.Large}
+				o => new { Name = "val", Enum1 = EnumStoredAsString.Large }
 			);
 		}
 
@@ -541,7 +541,7 @@ namespace NHibernate.Test.Linq
 				},
 				QueryMode.Insert,
 				db.Users.Where(o => o.InvalidLoginAttempts > 0),
-				o => new {Component = new {Property1 = "prop1"}}
+				o => new { Component = new { Property1 = "prop1" } }
 			);
 		}
 
@@ -556,7 +556,7 @@ namespace NHibernate.Test.Linq
 				},
 				QueryMode.Insert,
 				db.Users.Where(o => o.InvalidLoginAttempts > 0),
-				o => new {Component = new {OtherComponent = new {OtherProperty1 = "other"}}}
+				o => new { Component = new { OtherComponent = new { OtherProperty1 = "other" } } }
 			);
 		}
 

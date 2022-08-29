@@ -15,14 +15,14 @@ namespace NHibernate.MultiTenancy
 		/// Multi-tenancy implemented as separate database per tenant.
 		/// </summary>
 		Database,
-//		/// <summary>
-//		/// Multi-tenancy implemented by use of discriminator columns.
-//		/// </summary>
-//		Discriminator,
-//
-//		/// <summary>
-//		/// Multi-tenancy implemented as separate schemas.
-//		/// </summary>
-//		Schema,
+		//		/// <summary>
+		//		/// Multi-tenancy implemented by use of discriminator columns.
+		//		/// </summary>
+		//		Discriminator,
+		//
+		//		/// <summary>
+		//		/// Multi-tenancy implemented as separate schemas.
+		//		/// </summary>
+		//		Schema,
 	}
 }

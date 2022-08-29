@@ -14,14 +14,14 @@ namespace NHibernate.Test.Immutable
 		public ContractVariation()
 		{
 		}
-		
+
 		public ContractVariation(int version, Contract contract)
 		{
 			this.version = version;
 			this.contract = contract;
 			this.contract.Variations.Add(this);
 		}
-		
+
 		public virtual long Version
 		{
 			get { return version; }
@@ -33,19 +33,19 @@ namespace NHibernate.Test.Immutable
 			get { return contract; }
 			set { contract = value; }
 		}
-		
+
 		public virtual string Text
 		{
 			get { return text; }
 			set { text = value; }
 		}
-		
+
 		public virtual ISet<Info> Infos
 		{
 			get { return infos; }
 			set { infos = value; }
 		}
-		
+
 		public override int GetHashCode()
 		{
 			int hashCode = 0;

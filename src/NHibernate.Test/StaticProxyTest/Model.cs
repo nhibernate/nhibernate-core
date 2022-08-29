@@ -45,7 +45,7 @@ namespace NHibernate.Test.StaticProxyTest
 	{
 		public virtual int Test { get; set; }
 	}
-	
+
 	[Serializable]
 	public class InterfacedLazyTextEntity : ILazyTextEntity
 	{

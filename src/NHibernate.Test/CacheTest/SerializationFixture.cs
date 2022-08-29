@@ -199,18 +199,18 @@ namespace NHibernate.Test.CacheTest
 			sessionImpl.BestGuessEntityName(Arg.Any<object>()).Returns(o => o[0].GetType().Name);
 			sessionImpl.GetContextEntityIdentifier(Arg.Is<object>(o => o is MyEntity)).Returns(o => ((MyEntity) o[0]).Id);
 			return TypeHelper.Disassemble(
-				                 types.Values.ToArray(),
-				                 types.Keys.Cast<ICacheAssembler>().ToArray(),
-				                 null,
-				                 sessionImpl,
-				                 null)
-			                 .Concat(
-				                 new[]
-				                 {
-					                 LazyPropertyInitializer.UnfetchedProperty,
-					                 BackrefPropertyAccessor.Unknown
-				                 })
-			                 .ToArray();
+								 types.Values.ToArray(),
+								 types.Keys.Cast<ICacheAssembler>().ToArray(),
+								 null,
+								 sessionImpl,
+								 null)
+							 .Concat(
+								 new[]
+								 {
+									 LazyPropertyInitializer.UnfetchedProperty,
+									 BackrefPropertyAccessor.Unknown
+								 })
+							 .ToArray();
 		}
 
 		private AnyType.ObjectTypeCacheEntry CreateObjectTypeCacheEntry()
@@ -356,7 +356,7 @@ namespace NHibernate.Test.CacheTest
 			var serializer = new BinaryFormatter();
 			using (var stream = new MemoryStream(value))
 			{
-				return (T)serializer.Deserialize(stream);
+				return (T) serializer.Deserialize(stream);
 			}
 		}
 	}

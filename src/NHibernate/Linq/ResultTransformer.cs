@@ -78,7 +78,7 @@ namespace NHibernate.Linq
 			{
 				int lt = (_listTransformation != null ? _listTransformation.GetHashCode() : 0);
 				int it = (_itemTransformation != null ? _itemTransformation.GetHashCode() : 0);
-				return (lt*397) ^ (it*17);
+				return (lt * 397) ^ (it * 17);
 			}
 		}
 	}

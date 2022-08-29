@@ -32,12 +32,12 @@ namespace NHibernate.Test.CfgTest
 
 			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.ShowSql));
 			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.UseQueryCache));
-			Assert.IsFalse(cfg.Properties.ContainsKey(Environment.PrepareSql), 
+			Assert.IsFalse(cfg.Properties.ContainsKey(Environment.PrepareSql),
 				"Our default conf should not include override the possible Dialect default configuration.");
 			Assert.IsTrue(cfg.Properties.ContainsKey(Environment.Isolation));
 			Assert.AreEqual("true 1, false 0, yes 1, no 0", cfg.Properties[Environment.QuerySubstitutions]);
 			Assert.AreEqual("Server=localhost;initial catalog=nhibernate;User Id=;Password=",
-			                cfg.Properties[Environment.ConnectionString]);
+							cfg.Properties[Environment.ConnectionString]);
 		}
 
 		/// <summary>
@@ -81,7 +81,7 @@ namespace NHibernate.Test.CfgTest
 
 			Assert.AreEqual("true 1, false 0, yes 1, no 0", cfg.Properties[Environment.QuerySubstitutions]);
 			Assert.AreEqual("Server=localhost;initial catalog=nhibernate;User Id=;Password=",
-			                cfg.Properties[Environment.ConnectionString]);
+							cfg.Properties[Environment.ConnectionString]);
 		}
 
 		/// <summary>
@@ -175,7 +175,7 @@ namespace NHibernate.Test.CfgTest
 							</hibernate-configuration>";
 
 			Configuration cfg = new Configuration();
-			Assert.Throws<HibernateConfigException>(()=>cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null)));
+			Assert.Throws<HibernateConfigException>(() => cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null)));
 		}
 
 		[Test]
@@ -191,7 +191,7 @@ namespace NHibernate.Test.CfgTest
 							</hibernate-configuration>";
 
 			Configuration cfg = new Configuration();
-			Assert.Throws<HibernateConfigException>(()=>cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null)));
+			Assert.Throws<HibernateConfigException>(() => cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null)));
 		}
 
 		[Test]
@@ -200,7 +200,7 @@ namespace NHibernate.Test.CfgTest
 			string cfgString = @"<?xml version='1.0' encoding='utf-8' ?><someElement />";
 
 			Configuration cfg = new Configuration();
-			Assert.Throws<HibernateConfigException>(()=>cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null)));
+			Assert.Throws<HibernateConfigException>(() => cfg.Configure(new XmlTextReader(cfgString, XmlNodeType.Document, null)));
 		}
 
 		[Test]
@@ -427,7 +427,7 @@ namespace NHibernate.Test.CfgTest
 			{
 			}
 
-			protected SampleQueryProvider(ISessionImplementor session, object collection,  NhQueryableOptions options) : base(session, collection, options)
+			protected SampleQueryProvider(ISessionImplementor session, object collection, NhQueryableOptions options) : base(session, collection, options)
 			{
 			}
 

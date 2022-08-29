@@ -25,7 +25,7 @@ namespace NHibernate.Engine
 		/// <param name="value">The value.</param>
 		/// <remarks>The logic for infering if the value should be considered as a list value is minimal and will not
 		/// catch all cases, like hashset.</remarks>
-		public TypedValue(IType type, object value) : this (type, value, !type.IsCollectionType && value is ICollection && !type.ReturnedClass.IsArray)
+		public TypedValue(IType type, object value) : this(type, value, !type.IsCollectionType && value is ICollection && !type.ReturnedClass.IsArray)
 		{
 		}
 

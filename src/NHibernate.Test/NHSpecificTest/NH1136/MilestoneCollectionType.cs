@@ -16,12 +16,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1136
 
 		public IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentMilestoneCollection<TKey, TValue>(session, (IMilestoneCollection <TKey, TValue>) collection);
+			return new PersistentMilestoneCollection<TKey, TValue>(session, (IMilestoneCollection<TKey, TValue>) collection);
 		}
 
 		public IEnumerable GetElements(object collection)
 		{
-			return (IEnumerable)((IMilestoneCollection<TKey, TValue>) collection).Values;
+			return (IEnumerable) ((IMilestoneCollection<TKey, TValue>) collection).Values;
 		}
 
 		public bool Contains(object collection, object entity)

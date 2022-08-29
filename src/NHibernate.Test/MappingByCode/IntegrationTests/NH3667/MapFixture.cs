@@ -33,7 +33,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 				});
 
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapElementElement).Name);
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof(ClassWithMapElementElement).Name);
 			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
 			Assert.That(hbmMap, Is.Not.Null);
@@ -73,7 +73,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 				});
 
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapEntityEntity).Name);
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof(ClassWithMapEntityEntity).Name);
 			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
 			Assert.That(hbmMap, Is.Not.Null);
@@ -113,7 +113,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 
-			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapEntityElement).Name);
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof(ClassWithMapEntityElement).Name);
 			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 			Assert.That(hbmMap, Is.Not.Null);
 			Assert.That(hbmMap.Item, Is.TypeOf<HbmMapKeyManyToMany>());
@@ -152,7 +152,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 				});
 
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapElementEntity).Name);
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof(ClassWithMapElementEntity).Name);
 			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
 			Assert.That(hbmMap, Is.Not.Null);
@@ -198,7 +198,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 				});
 
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapEntityComponent).Name);
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof(ClassWithMapEntityComponent).Name);
 			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
 			Assert.That(hbmMap, Is.Not.Null);
@@ -236,7 +236,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 				});
 
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapElementComponent).Name);
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof(ClassWithMapElementComponent).Name);
 			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
 			Assert.That(hbmMap, Is.Not.Null);
@@ -279,7 +279,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 				});
 
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapComponentComponent).Name);
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof(ClassWithMapComponentComponent).Name);
 			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
 			Assert.That(hbmMap, Is.Not.Null);
@@ -322,7 +322,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 				});
 
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapComponentElement).Name);
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof(ClassWithMapComponentElement).Name);
 			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
 			Assert.That(hbmMap, Is.Not.Null);
@@ -374,7 +374,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3667
 				});
 
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof (ClassWithMapComponentEntity).Name);
+			var hbmClass = mappings.RootClasses.FirstOrDefault(c => c.Name == typeof(ClassWithMapComponentEntity).Name);
 			var hbmMap = hbmClass.Properties.OfType<HbmMap>().SingleOrDefault();
 
 			Assert.That(hbmMap, Is.Not.Null);

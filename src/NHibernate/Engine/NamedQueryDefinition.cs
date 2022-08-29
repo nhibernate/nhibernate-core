@@ -20,8 +20,8 @@ namespace NHibernate.Engine
 
 		public NamedQueryDefinition(string query, bool cacheable, string cacheRegion, int timeout,
 			int fetchSize, FlushMode flushMode, bool readOnly, string comment, IDictionary<string, string> parameterTypes)
-			: this(query,cacheable,cacheRegion,timeout,fetchSize,flushMode,null,readOnly,comment,parameterTypes) 
-		{}
+			: this(query, cacheable, cacheRegion, timeout, fetchSize, flushMode, null, readOnly, comment, parameterTypes)
+		{ }
 
 		public NamedQueryDefinition(
 			string query,
@@ -33,7 +33,7 @@ namespace NHibernate.Engine
 			CacheMode? cacheMode,
 			bool readOnly,
 			string comment,
-			IDictionary<string,string> parameterTypes
+			IDictionary<string, string> parameterTypes
 			)
 		{
 			this.query = query;

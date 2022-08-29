@@ -88,7 +88,7 @@ namespace NHibernate.Engine
 				}
 				else
 				{
-					return ((IPropertyMapping)Persister).ToColumns(Alias, propertyName); //bad cast
+					return ((IPropertyMapping) Persister).ToColumns(Alias, propertyName); //bad cast
 				}
 			}
 		}
@@ -188,7 +188,7 @@ namespace NHibernate.Engine
 
 	public class IdPropertiesLhsAssociationTypeSqlInfo : AbstractLhsAssociationTypeSqlInfo
 	{
-		public IdPropertiesLhsAssociationTypeSqlInfo(string alias, IOuterJoinLoadable persister, IMapping mapping) : base(alias, persister, mapping) {}
+		public IdPropertiesLhsAssociationTypeSqlInfo(string alias, IOuterJoinLoadable persister, IMapping mapping) : base(alias, persister, mapping) { }
 
 		#region Overrides of AbstractLhsAssociationTypeSqlInfo
 

@@ -12,7 +12,7 @@ namespace NHibernate.Loader.Custom.Sql
 {
 	public class SQLQueryReturnProcessor
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (SQLQueryReturnProcessor));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SQLQueryReturnProcessor));
 
 		private readonly INativeSQLQueryReturn[] queryReturns;
 
@@ -181,7 +181,7 @@ namespace NHibernate.Loader.Custom.Sql
 			}
 		}
 
-		private void ProcessScalarReturn(NativeSQLQueryScalarReturn typeReturn) {}
+		private void ProcessScalarReturn(NativeSQLQueryScalarReturn typeReturn) { }
 
 		private void ProcessRootReturn(NativeSQLQueryRootReturn rootReturn)
 		{
@@ -385,7 +385,7 @@ namespace NHibernate.Loader.Custom.Sql
 							new CollectionFetchReturn(alias, ownerCustomReturn, rtn.OwnerProperty, collectionAliases, elementEntityAliases,
 													  rtn.LockMode);
 					}
-					else 
+					else
 					{
 						IEntityAliases entityAliases;
 						if (queryHadAliases || HasPropertyResultMap(alias))

@@ -1,6 +1,6 @@
 using System;
-using NUnit.Framework;
 using NHibernate.Test.Immutable.EntityWithMutableCollection;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 {
@@ -14,7 +14,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 				return new string[] { "Immutable.EntityWithMutableCollection.Inverse.ContractVariationVersionedOneToManyJoin.hbm.xml" };
 			}
 		}
-		
+
 		[Test]
 		[Ignore("known to fail with inverse collection")]
 		// Also [Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
@@ -35,7 +35,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 		public override void CreateWithEmptyOneToManyCollectionMergeWithExistingElement()
 		{
 		}
-		
+
 		[Test]
 		[Ignore("known to fail with inverse collection")]
 		public override void RemoveOneToManyElementUsingUpdate()
@@ -47,13 +47,13 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 		public override void RemoveOneToManyElementUsingMerge()
 		{
 		}
-		
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override void CreateWithNonEmptyOneToManyCollectionOfExisting()
 		{
 		}
-			
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override void DeleteOneToManyElement()

@@ -66,12 +66,12 @@ namespace NHibernate.Test.Bytecode
 		public void CreateInstanceWithArguments()
 		{
 			IObjectsFactory of = GetObjectsFactory();
-			Assert.Throws<ArgumentNullException>(() => of.CreateInstance(null, new[] {1}));
+			Assert.Throws<ArgumentNullException>(() => of.CreateInstance(null, new[] { 1 }));
 			var value = "a value";
-			var instance = of.CreateInstance(typeof(WithOutPublicParameterLessCtor), new[]{value});
+			var instance = of.CreateInstance(typeof(WithOutPublicParameterLessCtor), new[] { value });
 			Assert.That(instance, Is.Not.Null);
 			Assert.That(instance, Is.InstanceOf<WithOutPublicParameterLessCtor>());
-			Assert.That(((WithOutPublicParameterLessCtor)instance).Something, Is.EqualTo(value));
+			Assert.That(((WithOutPublicParameterLessCtor) instance).Something, Is.EqualTo(value));
 		}
 	}
 }

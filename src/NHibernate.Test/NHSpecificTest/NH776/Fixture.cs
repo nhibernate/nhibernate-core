@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH776
 					A loadedA = (A) session.Load(typeof(A), 1);
 					Assert.IsNull(loadedA.NotProxied);
 					Assert.IsNull(loadedA.Proxied,
-					              "one-to-one to proxied types not handling missing associated classes correctly (as null)");
+								  "one-to-one to proxied types not handling missing associated classes correctly (as null)");
 				}
 			}
 			finally

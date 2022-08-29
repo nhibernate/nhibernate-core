@@ -69,11 +69,11 @@ namespace NHibernate.Test.IdGen.Enhanced
 			var props = new Dictionary<string, string>();
 			props[SequenceStyleGenerator.OptimizerParam] = OptimizerFactory.None;
 			props[SequenceStyleGenerator.IncrementParam] = "20";
-			
+
 			var generator = new SequenceStyleGenerator();
 			generator.Configure(NHibernateUtil.Int64, props, dialect);
-			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof (SequenceStructure)));
-			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof (OptimizerFactory.NoopOptimizer)));
+			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(SequenceStructure)));
+			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.NoopOptimizer)));
 			Assert.That(generator.Optimizer.IncrementSize, Is.EqualTo(1));
 			Assert.That(generator.DatabaseStructure.IncrementSize, Is.EqualTo(1));
 
@@ -83,8 +83,8 @@ namespace NHibernate.Test.IdGen.Enhanced
 			props[SequenceStyleGenerator.IncrementParam] = "20";
 			generator = new SequenceStyleGenerator();
 			generator.Configure(NHibernateUtil.Int64, props, dialect);
-			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof (SequenceStructure)));
-			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof (OptimizerFactory.HiLoOptimizer)));
+			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(SequenceStructure)));
+			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.HiLoOptimizer)));
 			Assert.That(generator.Optimizer.IncrementSize, Is.EqualTo(20));
 			Assert.That(generator.DatabaseStructure.IncrementSize, Is.EqualTo(20));
 
@@ -96,8 +96,8 @@ namespace NHibernate.Test.IdGen.Enhanced
 			generator.Configure(NHibernateUtil.Int64, props, dialect);
 			// because the dialect reports that it does not support pooled sequences, the expectation is that we will
 			// use a table for the backing structure...
-			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof (TableStructure)));
-			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof (OptimizerFactory.PooledOptimizer)));
+			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(TableStructure)));
+			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.PooledOptimizer)));
 			Assert.That(generator.Optimizer.IncrementSize, Is.EqualTo(20));
 			Assert.That(generator.DatabaseStructure.IncrementSize, Is.EqualTo(20));
 		}
@@ -106,13 +106,13 @@ namespace NHibernate.Test.IdGen.Enhanced
 		public void PreferPooledLoSettingHonored()
 		{
 			var dialect = new PooledSequenceDialect();
-			
+
 			var props = new Dictionary<string, string>();
 			props[SequenceStyleGenerator.IncrementParam] = "20";
 
 			var generator = new SequenceStyleGenerator();
 			generator.Configure(NHibernateUtil.Int64, props, dialect);
-			
+
 			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(SequenceStructure)));
 			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.PooledOptimizer)));
 
@@ -133,8 +133,8 @@ namespace NHibernate.Test.IdGen.Enhanced
 
 			generator.Configure(NHibernateUtil.Int64, props, dialect);
 
-			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof (SequenceStructure)));
-			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof (OptimizerFactory.NoopOptimizer)));
+			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(SequenceStructure)));
+			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.NoopOptimizer)));
 			Assert.That(generator.DatabaseStructure.Name, Is.EqualTo(SequenceStyleGenerator.DefaultSequenceName));
 		}
 
@@ -148,8 +148,8 @@ namespace NHibernate.Test.IdGen.Enhanced
 
 			generator.Configure(NHibernateUtil.Int64, props, dialect);
 
-			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof (TableStructure)));
-			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof (OptimizerFactory.NoopOptimizer)));
+			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(TableStructure)));
+			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.NoopOptimizer)));
 			Assert.That(generator.DatabaseStructure.Name, Is.EqualTo(SequenceStyleGenerator.DefaultSequenceName));
 		}
 
@@ -168,16 +168,16 @@ namespace NHibernate.Test.IdGen.Enhanced
 			var dialect = new SequenceDialect();
 			var generator = new SequenceStyleGenerator();
 			generator.Configure(NHibernateUtil.Int64, props, dialect);
-			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof (TableStructure)));
-			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof (OptimizerFactory.PooledOptimizer)));
+			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(TableStructure)));
+			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.PooledOptimizer)));
 			Assert.That(generator.DatabaseStructure.Name, Is.EqualTo(SequenceStyleGenerator.DefaultSequenceName));
 
 			// for dialects which do support pooled sequences, we default to pooled+sequence
 			dialect = new PooledSequenceDialect();
 			generator = new SequenceStyleGenerator();
 			generator.Configure(NHibernateUtil.Int64, props, dialect);
-			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof (SequenceStructure)));
-			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof (OptimizerFactory.PooledOptimizer)));
+			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(SequenceStructure)));
+			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.PooledOptimizer)));
 			Assert.That(generator.DatabaseStructure.Name, Is.EqualTo(SequenceStyleGenerator.DefaultSequenceName));
 		}
 
@@ -193,8 +193,8 @@ namespace NHibernate.Test.IdGen.Enhanced
 			var generator = new SequenceStyleGenerator();
 			generator.Configure(NHibernateUtil.Int64, props, dialect);
 
-			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof (TableStructure)));
-			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof (OptimizerFactory.PooledOptimizer)));
+			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(TableStructure)));
+			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.PooledOptimizer)));
 			Assert.That(generator.DatabaseStructure.Name, Is.EqualTo(SequenceStyleGenerator.DefaultSequenceName));
 		}
 
@@ -207,8 +207,8 @@ namespace NHibernate.Test.IdGen.Enhanced
 			props[SequenceStyleGenerator.ForceTableParam] = "true";
 			var generator = new SequenceStyleGenerator();
 			generator.Configure(NHibernateUtil.Int64, props, dialect);
-			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof (TableStructure)));
-			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof (OptimizerFactory.NoopOptimizer)));
+			Assert.That(generator.DatabaseStructure, Is.AssignableFrom(typeof(TableStructure)));
+			Assert.That(generator.Optimizer, Is.AssignableFrom(typeof(OptimizerFactory.NoopOptimizer)));
 			Assert.That(generator.DatabaseStructure.Name, Is.EqualTo(SequenceStyleGenerator.DefaultSequenceName));
 		}
 

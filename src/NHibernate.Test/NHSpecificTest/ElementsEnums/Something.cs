@@ -4,7 +4,7 @@ namespace NHibernate.Test.NHSpecificTest.ElementsEnums
 {
 	public enum Something
 	{
-		A,B,C,D,E,F
+		A, B, C, D, E, F
 	}
 
 	public class SimpleWithEnums

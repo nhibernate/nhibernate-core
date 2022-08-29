@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3316
 					r.Component(c =>
 					{
 						c.Parent(x => x.Parent);
-						c.Property(x => x.Value, pm=>pm.Column("`Value`"));
+						c.Property(x => x.Value, pm => pm.Column("`Value`"));
 					});
 				});
 			});

@@ -83,7 +83,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			FromElement elem = CreateAndAddFromElement(_path,
 							_classAlias,
 							entityPersister,
-							(EntityType)((IQueryable)entityPersister).Type,
+							(EntityType) ((IQueryable) entityPersister).Type,
 							null);
 
 			// Add to the query spaces.
@@ -119,7 +119,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// is a correlated subselect.  If it's a correlated sub-select, use the existing table alias.  Otherwise
 			// generate a new one.
 			bool correlatedSubselect = pathAlias == parentFromElement.ClassAlias;
-			
+
 			string tableAlias = correlatedSubselect ? fromElement.TableAlias : null;
 
 			//To properly generete subselect implicit join is required by SqlGenerator
@@ -140,7 +140,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 								path,
 								classAlias,
 								entityPersister,
-								(EntityType)((IQueryable)entityPersister).Type,
+								(EntityType) ((IQueryable) entityPersister).Type,
 								tableAlias
 				);
 			}
@@ -218,7 +218,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if (explicitSubqueryFromElement)
 			{
-				elem.InProjectionList = true;	// Treat explict from elements in sub-queries properly.
+				elem.InProjectionList = true;   // Treat explict from elements in sub-queries properly.
 			}
 
 			if (fetchFlag)
@@ -253,7 +253,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				associatedEntityName,
 				_classAlias,
 				targetEntityPersister,
-				(EntityType)queryableCollection.ElementType,
+				(EntityType) queryableCollection.ElementType,
 				tableAlias
 				);
 
@@ -278,8 +278,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// Create the join element under the from element.
 			JoinSequence joinSequence = sfh.CreateJoinSequence(_implied, elementAssociationType, tableAlias, JoinType.InnerJoin, targetColumns);
 			FromElement elem = InitializeJoin(_path, destination, joinSequence, targetColumns, _origin, false);
-			elem.UseFromFragment = true;	// The associated entity is implied, but it must be included in the FROM.
-			elem.CollectionTableAlias = roleAlias;	// The collection alias is the role.
+			elem.UseFromFragment = true;    // The associated entity is implied, but it must be included in the FROM.
+			elem.CollectionTableAlias = roleAlias;  // The collection alias is the role.
 			return elem;
 		}
 
@@ -340,7 +340,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 						bool implicitJoin)
 		{
 			FromElement elem;
-			IQueryable entityPersister = (IQueryable)_queryableCollection.ElementPersister;
+			IQueryable entityPersister = (IQueryable) _queryableCollection.ElementPersister;
 			string associatedEntityName = entityPersister.EntityName;
 
 			// Get the class name of the associated entity.
@@ -363,7 +363,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					Log.Debug("createManyToMany() : path = {0} role = {1} associatedEntityName = {2}", _path, role, associatedEntityName);
 				}
 
-				elem = CreateManyToMany(role, associatedEntityName, roleAlias, entityPersister, (EntityType)_queryableCollection.ElementType, joinType, implicitJoin);
+				elem = CreateManyToMany(role, associatedEntityName, roleAlias, entityPersister, (EntityType) _queryableCollection.ElementType, joinType, implicitJoin);
 				_fromClause.Walker.AddQuerySpaces(_queryableCollection);
 			}
 			elem.CollectionTableAlias = roleAlias;
@@ -375,7 +375,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			string text = _queryableCollection.TableName;
 			IASTNode ast = CreateFromElement(text);
-			FromElement destination = (FromElement)ast;
+			FromElement destination = (FromElement) ast;
 			IType elementType = _queryableCollection.ElementType;
 
 			if (elementType.IsCollectionType)
@@ -384,17 +384,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 
 			destination.InitializeCollection(_fromClause, _classAlias, tableAlias);
-			destination.Type = HqlSqlWalker.JOIN_FRAGMENT;		// Tag this node as a JOIN.
-			destination.SetIncludeSubclasses(false);	// Don't include subclasses in the join.
-			destination.CollectionJoin = true;		// This is a clollection join.
+			destination.Type = HqlSqlWalker.JOIN_FRAGMENT;      // Tag this node as a JOIN.
+			destination.SetIncludeSubclasses(false);    // Don't include subclasses in the join.
+			destination.CollectionJoin = true;      // This is a clollection join.
 			destination.JoinSequence = collectionJoinSequence;
 			destination.SetOrigin(_origin, false);
 			destination.CollectionTableAlias = tableAlias;
 			//		origin.addDestination( destination );
 			// This was the cause of HHH-242
 			//		origin.setType( FROM_FRAGMENT );			// Set the parent node type so that the AST is properly formed.
-			_origin.Text = "";						// The destination node will have all the FROM text.
-			_origin.CollectionJoin = true;			// The parent node is a collection join too (voodoo - see JoinProcessor)
+			_origin.Text = "";                      // The destination node will have all the FROM text.
+			_origin.CollectionJoin = true;          // The parent node is a collection join too (voodoo - see JoinProcessor)
 			_fromClause.AddCollectionJoinFromElementByPath(_path, destination);
 			_fromClause.Walker.AddQuerySpaces(_queryableCollection);
 			return destination;
@@ -482,7 +482,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private FromElement EvaluateFromElementPath(string path, string classAlias)
 		{
-			FromReferenceNode pathNode = (FromReferenceNode)PathHelper.ParsePath(path, _fromClause.ASTFactory);
+			FromReferenceNode pathNode = (FromReferenceNode) PathHelper.ParsePath(path, _fromClause.ASTFactory);
 
 			pathNode.RecursiveResolve(FromReferenceNode.RootLevel, // This is the root level node.
 							false, // Generate an explicit from clause at the root.
@@ -502,10 +502,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private FromElement CreateFromElement(IEntityPersister entityPersister)
 		{
-			IJoinable joinable = (IJoinable)entityPersister;
+			IJoinable joinable = (IJoinable) entityPersister;
 			string text = joinable.TableName;
 			IASTNode ast = CreateFromElement(text);
-			FromElement element = (FromElement)ast;
+			FromElement element = (FromElement) ast;
 			return element;
 		}
 

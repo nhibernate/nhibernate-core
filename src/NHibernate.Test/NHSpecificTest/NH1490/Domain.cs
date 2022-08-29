@@ -6,7 +6,7 @@
 		private string name;
 		private Category category;
 		private bool isActive;
-		public Customer() {}
+		public Customer() { }
 		public Customer(string name)
 		{
 			this.name = name;
@@ -42,7 +42,7 @@
 		private int id;
 		private string name;
 		private bool isActive;
-		public Category() {}
+		public Category() { }
 		public Category(string name)
 		{
 			this.name = name;

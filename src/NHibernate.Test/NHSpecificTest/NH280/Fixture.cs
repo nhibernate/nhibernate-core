@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH280
 		[Test]
 		public void ConstInSelect()
 		{
-			using (ISession s= OpenSession())
+			using (ISession s = OpenSession())
 			{
 				Foo f = new Foo("Fiammy");
 				s.Save(f);
@@ -64,7 +64,7 @@ namespace NHibernate.Test.NHSpecificTest.NH280
 		{
 			using (ISession s = OpenSession())
 			{
-				Assert.Throws<QueryException>(() =>s.CreateQuery("select 123, notRecognized, f.Description from Foo f").List());
+				Assert.Throws<QueryException>(() => s.CreateQuery("select 123, notRecognized, f.Description from Foo f").List());
 			}
 		}
 	}

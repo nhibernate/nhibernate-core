@@ -9,7 +9,7 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public class IngresDriver : ReflectionBasedDriver
 	{
-		public IngresDriver() : base("Ingres.Client", "Ingres.Client.IngresConnection", "Ingres.Client.IngresCommand") {}
+		public IngresDriver() : base("Ingres.Client", "Ingres.Client.IngresConnection", "Ingres.Client.IngresCommand") { }
 
 		public override bool UseNamedPrefixInSql
 		{

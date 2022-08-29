@@ -9,7 +9,7 @@ namespace NHibernate.Test.SqlTest.Custom.Firebird
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"SqlTest.Custom.Firebird.FireBirdEmployment.hbm.xml"}; }
+			get { return new[] { "SqlTest.Custom.Firebird.FireBirdEmployment.hbm.xml" }; }
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)

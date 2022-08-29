@@ -21,14 +21,14 @@ namespace NHibernate.Criterion
 
 		protected QueryOver() { }
 
-		public static QueryOver<T,T> Of<T>()
+		public static QueryOver<T, T> Of<T>()
 		{
-			return new QueryOver<T,T>();
+			return new QueryOver<T, T>();
 		}
 
-		public static QueryOver<T,T> Of<T>(Expression<Func<T>> alias)
+		public static QueryOver<T, T> Of<T>(Expression<Func<T>> alias)
 		{
-			return new QueryOver<T,T>(alias);
+			return new QueryOver<T, T>(alias);
 		}
 
 		public static QueryOver<T, T> Of<T>(string entityName)
@@ -113,28 +113,28 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Get an executable instance of <c>IQueryOver&lt;TRoot&gt;</c>,
 		/// to actually run the query.</summary>
-		public IQueryOver<TRoot,TRoot> GetExecutableQueryOver(ISession session)
+		public IQueryOver<TRoot, TRoot> GetExecutableQueryOver(ISession session)
 		{
 			impl.Session = session.GetSessionImplementation();
-			return new QueryOver<TRoot,TRoot>(impl);
+			return new QueryOver<TRoot, TRoot>(impl);
 		}
 
 		/// <summary>
 		/// Get an executable instance of <c>IQueryOver&lt;TRoot&gt;</c>,
 		/// to actually run the query.</summary>
-		public IQueryOver<TRoot,TRoot> GetExecutableQueryOver(IStatelessSession session)
+		public IQueryOver<TRoot, TRoot> GetExecutableQueryOver(IStatelessSession session)
 		{
-			impl.Session = (ISessionImplementor)session;
-			return new QueryOver<TRoot,TRoot>(impl);
+			impl.Session = (ISessionImplementor) session;
+			return new QueryOver<TRoot, TRoot>(impl);
 		}
 
 		/// <summary>
 		/// Clones the QueryOver, clears the orders and paging, and projects the RowCount
 		/// </summary>
 		/// <returns></returns>
-		public QueryOver<TRoot,TRoot> ToRowCountQuery()
+		public QueryOver<TRoot, TRoot> ToRowCountQuery()
 		{
-			return (QueryOver<TRoot,TRoot>)
+			return (QueryOver<TRoot, TRoot>)
 				Clone()
 					.Select(Projections.RowCount())
 					.ClearOrders()
@@ -146,9 +146,9 @@ namespace NHibernate.Criterion
 		/// Clones the QueryOver, clears the orders and paging, and projects the RowCount (Int64)
 		/// </summary>
 		/// <returns></returns>
-		public QueryOver<TRoot,TRoot> ToRowCountInt64Query()
+		public QueryOver<TRoot, TRoot> ToRowCountInt64Query()
 		{
-			return (QueryOver<TRoot,TRoot>)
+			return (QueryOver<TRoot, TRoot>)
 				Clone()
 					.Select(Projections.RowCountInt64())
 					.ClearOrders()
@@ -159,9 +159,9 @@ namespace NHibernate.Criterion
 		/// <summary>
 		/// Creates an exact clone of the QueryOver
 		/// </summary>
-		public QueryOver<TRoot,TRoot> Clone()
+		public QueryOver<TRoot, TRoot> Clone()
 		{
-			return new QueryOver<TRoot,TRoot>((CriteriaImpl)criteria.Clone());
+			return new QueryOver<TRoot, TRoot>((CriteriaImpl) criteria.Clone());
 		}
 
 		public QueryOver<TRoot> ClearOrders()
@@ -223,10 +223,10 @@ namespace NHibernate.Criterion
 		IList<U> IQueryOver<TRoot>.List<U>()
 		{ return List<U>(); }
 
-		IQueryOver<TRoot,TRoot> IQueryOver<TRoot>.ToRowCountQuery()
+		IQueryOver<TRoot, TRoot> IQueryOver<TRoot>.ToRowCountQuery()
 		{ return ToRowCountQuery(); }
 
-		IQueryOver<TRoot,TRoot> IQueryOver<TRoot>.ToRowCountInt64Query()
+		IQueryOver<TRoot, TRoot> IQueryOver<TRoot>.ToRowCountInt64Query()
 		{ return ToRowCountInt64Query(); }
 
 		int IQueryOver<TRoot>.RowCount()
@@ -253,7 +253,7 @@ namespace NHibernate.Criterion
 		IFutureValue<U> IQueryOver<TRoot>.FutureValue<U>()
 		{ return FutureValue<U>(); }
 
-		IQueryOver<TRoot,TRoot> IQueryOver<TRoot>.Clone()
+		IQueryOver<TRoot, TRoot> IQueryOver<TRoot>.Clone()
 		{ return Clone(); }
 
 		IQueryOver<TRoot> IQueryOver<TRoot>.ClearOrders()
@@ -282,7 +282,7 @@ namespace NHibernate.Criterion
 	/// Implementation of the <see cref="IQueryOver&lt;TRoot, TSubType&gt;"/> interface
 	/// </summary>
 	[Serializable]
-	public class QueryOver<TRoot,TSubType> : QueryOver<TRoot>, IQueryOver<TRoot,TSubType>,
+	public class QueryOver<TRoot, TSubType> : QueryOver<TRoot>, IQueryOver<TRoot, TSubType>,
 		ISupportEntityJoinQueryOver<TRoot>, ISupportSelectModeQueryOver<TRoot, TSubType>
 	{
 		protected internal QueryOver()
@@ -323,27 +323,27 @@ namespace NHibernate.Criterion
 			this.criteria = criteria;
 		}
 
-		public QueryOver<TRoot,TSubType> And(Expression<Func<TSubType, bool>> expression)
+		public QueryOver<TRoot, TSubType> And(Expression<Func<TSubType, bool>> expression)
 		{
 			return Add(expression);
 		}
 
-		public QueryOver<TRoot,TSubType> And(Expression<Func<bool>> expression)
+		public QueryOver<TRoot, TSubType> And(Expression<Func<bool>> expression)
 		{
 			return Add(expression);
 		}
 
-		public QueryOver<TRoot,TSubType> And(ICriterion expression)
+		public QueryOver<TRoot, TSubType> And(ICriterion expression)
 		{
 			return Add(expression);
 		}
 
-		public QueryOver<TRoot,TSubType> AndNot(Expression<Func<TSubType, bool>> expression)
+		public QueryOver<TRoot, TSubType> AndNot(Expression<Func<TSubType, bool>> expression)
 		{
 			return AddNot(expression);
 		}
 
-		public QueryOver<TRoot,TSubType> AndNot(Expression<Func<bool>> expression)
+		public QueryOver<TRoot, TSubType> AndNot(Expression<Func<bool>> expression)
 		{
 			return AddNot(expression);
 		}
@@ -352,38 +352,38 @@ namespace NHibernate.Criterion
 		{
 			return AddNot(expression);
 		}
-		
-		public QueryOverRestrictionBuilder<TRoot,TSubType> AndRestrictionOn(Expression<Func<TSubType, object>> expression)
+
+		public QueryOverRestrictionBuilder<TRoot, TSubType> AndRestrictionOn(Expression<Func<TSubType, object>> expression)
 		{
-			return new QueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body));
+			return new QueryOverRestrictionBuilder<TRoot, TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
-		public QueryOverRestrictionBuilder<TRoot,TSubType> AndRestrictionOn(Expression<Func<object>> expression)
+		public QueryOverRestrictionBuilder<TRoot, TSubType> AndRestrictionOn(Expression<Func<object>> expression)
 		{
-			return new QueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body));
+			return new QueryOverRestrictionBuilder<TRoot, TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
-		public QueryOver<TRoot,TSubType> Where(Expression<Func<TSubType, bool>> expression)
-		{
-			return Add(expression);
-		}
-
-		public QueryOver<TRoot,TSubType> Where(Expression<Func<bool>> expression)
+		public QueryOver<TRoot, TSubType> Where(Expression<Func<TSubType, bool>> expression)
 		{
 			return Add(expression);
 		}
 
-		public QueryOver<TRoot,TSubType> Where(ICriterion expression)
+		public QueryOver<TRoot, TSubType> Where(Expression<Func<bool>> expression)
 		{
 			return Add(expression);
 		}
 
-		public QueryOver<TRoot,TSubType> WhereNot(Expression<Func<TSubType, bool>> expression)
+		public QueryOver<TRoot, TSubType> Where(ICriterion expression)
+		{
+			return Add(expression);
+		}
+
+		public QueryOver<TRoot, TSubType> WhereNot(Expression<Func<TSubType, bool>> expression)
 		{
 			return AddNot(expression);
 		}
 
-		public QueryOver<TRoot,TSubType> WhereNot(Expression<Func<bool>> expression)
+		public QueryOver<TRoot, TSubType> WhereNot(Expression<Func<bool>> expression)
 		{
 			return AddNot(expression);
 		}
@@ -393,23 +393,23 @@ namespace NHibernate.Criterion
 			return AddNot(expression);
 		}
 
-		public QueryOverRestrictionBuilder<TRoot,TSubType> WhereRestrictionOn(Expression<Func<TSubType, object>> expression)
+		public QueryOverRestrictionBuilder<TRoot, TSubType> WhereRestrictionOn(Expression<Func<TSubType, object>> expression)
 		{
-			return new QueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body));
+			return new QueryOverRestrictionBuilder<TRoot, TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
-		public QueryOverRestrictionBuilder<TRoot,TSubType> WhereRestrictionOn(Expression<Func<object>> expression)
+		public QueryOverRestrictionBuilder<TRoot, TSubType> WhereRestrictionOn(Expression<Func<object>> expression)
 		{
-			return new QueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body));
+			return new QueryOverRestrictionBuilder<TRoot, TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body));
 		}
 
-		public QueryOver<TRoot,TSubType> Select(params Expression<Func<TRoot, object>>[] projections)
+		public QueryOver<TRoot, TSubType> Select(params Expression<Func<TRoot, object>>[] projections)
 		{
 			criteria.SetProjection(projections.ToArray(x => Projections.Select(x)));
 			return this;
 		}
 
-		public QueryOver<TRoot,TSubType> Select(params IProjection[] projections)
+		public QueryOver<TRoot, TSubType> Select(params IProjection[] projections)
 		{
 			criteria.SetProjection(projections);
 			return this;
@@ -421,132 +421,132 @@ namespace NHibernate.Criterion
 			return this;
 		}
 
-		public QueryOverOrderBuilder<TRoot,TSubType> OrderBy(Expression<Func<TSubType, object>> path)
+		public QueryOverOrderBuilder<TRoot, TSubType> OrderBy(Expression<Func<TSubType, object>> path)
 		{
-			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path);
+			return new QueryOverOrderBuilder<TRoot, TSubType>(this, path);
 		}
 
-		public QueryOverOrderBuilder<TRoot,TSubType> OrderBy(Expression<Func<object>> path)
+		public QueryOverOrderBuilder<TRoot, TSubType> OrderBy(Expression<Func<object>> path)
 		{
-			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path, false);
+			return new QueryOverOrderBuilder<TRoot, TSubType>(this, path, false);
 		}
 
-		public QueryOverOrderBuilder<TRoot,TSubType> OrderBy(IProjection projection)
+		public QueryOverOrderBuilder<TRoot, TSubType> OrderBy(IProjection projection)
 		{
-			return new QueryOverOrderBuilder<TRoot,TSubType>(this, ExpressionProcessor.ProjectionInfo.ForProjection(projection));
+			return new QueryOverOrderBuilder<TRoot, TSubType>(this, ExpressionProcessor.ProjectionInfo.ForProjection(projection));
 		}
 
-		public QueryOverOrderBuilder<TRoot,TSubType> OrderByAlias(Expression<Func<object>> path)
+		public QueryOverOrderBuilder<TRoot, TSubType> OrderByAlias(Expression<Func<object>> path)
 		{
-			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path, true);
+			return new QueryOverOrderBuilder<TRoot, TSubType>(this, path, true);
 		}
 
-		public QueryOverOrderBuilder<TRoot,TSubType> ThenBy(Expression<Func<TSubType, object>> path)
+		public QueryOverOrderBuilder<TRoot, TSubType> ThenBy(Expression<Func<TSubType, object>> path)
 		{
-			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path);
+			return new QueryOverOrderBuilder<TRoot, TSubType>(this, path);
 		}
 
-		public QueryOverOrderBuilder<TRoot,TSubType> ThenBy(Expression<Func<object>> path)
+		public QueryOverOrderBuilder<TRoot, TSubType> ThenBy(Expression<Func<object>> path)
 		{
-			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path, false);
+			return new QueryOverOrderBuilder<TRoot, TSubType>(this, path, false);
 		}
 
-		public QueryOverOrderBuilder<TRoot,TSubType> ThenBy(IProjection projection)
+		public QueryOverOrderBuilder<TRoot, TSubType> ThenBy(IProjection projection)
 		{
-			return new QueryOverOrderBuilder<TRoot,TSubType>(this, ExpressionProcessor.ProjectionInfo.ForProjection(projection));
+			return new QueryOverOrderBuilder<TRoot, TSubType>(this, ExpressionProcessor.ProjectionInfo.ForProjection(projection));
 		}
 
-		public QueryOverOrderBuilder<TRoot,TSubType> ThenByAlias(Expression<Func<object>> path)
+		public QueryOverOrderBuilder<TRoot, TSubType> ThenByAlias(Expression<Func<object>> path)
 		{
-			return new QueryOverOrderBuilder<TRoot,TSubType>(this, path, true);
+			return new QueryOverOrderBuilder<TRoot, TSubType>(this, path, true);
 		}
 
-		public QueryOver<TRoot,TSubType> TransformUsing(IResultTransformer resultTransformer)
+		public QueryOver<TRoot, TSubType> TransformUsing(IResultTransformer resultTransformer)
 		{
 			criteria.SetResultTransformer(resultTransformer);
 			return this;
 		}
 
-		public QueryOverSubqueryBuilder<TRoot,TSubType> WithSubquery
+		public QueryOverSubqueryBuilder<TRoot, TSubType> WithSubquery
 		{
-			get { return new QueryOverSubqueryBuilder<TRoot,TSubType>(this); }
+			get { return new QueryOverSubqueryBuilder<TRoot, TSubType>(this); }
 		}
 
 		// Since v5.2
 		[Obsolete("Use Fetch(SelectMode mode, Expression<Func<TSubType, object>> path) instead")]
-		public QueryOverFetchBuilder<TRoot,TSubType> Fetch(Expression<Func<TRoot, object>> path)
+		public QueryOverFetchBuilder<TRoot, TSubType> Fetch(Expression<Func<TRoot, object>> path)
 		{
-			return new QueryOverFetchBuilder<TRoot,TSubType>(this, path);
+			return new QueryOverFetchBuilder<TRoot, TSubType>(this, path);
 		}
 
-		public QueryOverLockBuilder<TRoot,TSubType> Lock()
+		public QueryOverLockBuilder<TRoot, TSubType> Lock()
 		{
-			return new QueryOverLockBuilder<TRoot,TSubType>(this, null);
+			return new QueryOverLockBuilder<TRoot, TSubType>(this, null);
 		}
 
-		public QueryOverLockBuilder<TRoot,TSubType> Lock(Expression<Func<object>> alias)
+		public QueryOverLockBuilder<TRoot, TSubType> Lock(Expression<Func<object>> alias)
 		{
-			return new QueryOverLockBuilder<TRoot,TSubType>(this, alias);
+			return new QueryOverLockBuilder<TRoot, TSubType>(this, alias);
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body)));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<U>> path)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body)));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					ExpressionProcessor.FindMemberExpression(alias.Body)));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					ExpressionProcessor.FindMemberExpression(alias.Body)));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, JoinType joinType)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, JoinType joinType)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					joinType));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path, JoinType joinType)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<U>> path, JoinType joinType)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					joinType));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, JoinType joinType)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, JoinType joinType)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					ExpressionProcessor.FindMemberExpression(alias.Body),
 					joinType));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					ExpressionProcessor.FindMemberExpression(alias.Body),
@@ -554,18 +554,18 @@ namespace NHibernate.Criterion
 					withClause));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					ExpressionProcessor.FindMemberExpression(alias.Body),
 					joinType));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					ExpressionProcessor.FindMemberExpression(alias.Body),
@@ -573,48 +573,48 @@ namespace NHibernate.Criterion
 					withClause));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					ExpressionProcessor.FindMemberExpression(alias.Body)));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					ExpressionProcessor.FindMemberExpression(alias.Body)));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body)));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body)));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					ExpressionProcessor.FindMemberExpression(alias.Body),
 					joinType));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					ExpressionProcessor.FindMemberExpression(alias.Body),
@@ -622,18 +622,18 @@ namespace NHibernate.Criterion
 					withClause));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					ExpressionProcessor.FindMemberExpression(alias.Body),
 					joinType));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					ExpressionProcessor.FindMemberExpression(alias.Body),
@@ -641,17 +641,17 @@ namespace NHibernate.Criterion
 					withClause));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, JoinType joinType)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, JoinType joinType)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					joinType));
 		}
 
-		public QueryOver<TRoot,U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, JoinType joinType)
+		public QueryOver<TRoot, U> JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, JoinType joinType)
 		{
-			return new QueryOver<TRoot,U>(impl,
+			return new QueryOver<TRoot, U>(impl,
 				criteria.CreateCriteria(
 					ExpressionProcessor.FindMemberExpression(path.Body),
 					joinType));
@@ -667,7 +667,7 @@ namespace NHibernate.Criterion
 			return Create<U>(criteria.CreateEntityCriteria(alias, withClause, joinType, entityName));
 		}
 
-		public QueryOver<TRoot,TSubType> JoinAlias(Expression<Func<TSubType, object>> path, Expression<Func<object>> alias)
+		public QueryOver<TRoot, TSubType> JoinAlias(Expression<Func<TSubType, object>> path, Expression<Func<object>> alias)
 		{
 			return AddAlias(
 				ExpressionProcessor.FindMemberExpression(path.Body),
@@ -675,7 +675,7 @@ namespace NHibernate.Criterion
 				JoinType.InnerJoin);
 		}
 
-		public QueryOver<TRoot,TSubType> JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias)
+		public QueryOver<TRoot, TSubType> JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias)
 		{
 			return AddAlias(
 				ExpressionProcessor.FindMemberExpression(path.Body),
@@ -683,7 +683,7 @@ namespace NHibernate.Criterion
 				JoinType.InnerJoin);
 		}
 
-		public QueryOver<TRoot,TSubType> JoinAlias(Expression<Func<TSubType, object>> path, Expression<Func<object>> alias, JoinType joinType)
+		public QueryOver<TRoot, TSubType> JoinAlias(Expression<Func<TSubType, object>> path, Expression<Func<object>> alias, JoinType joinType)
 		{
 			return AddAlias(
 				ExpressionProcessor.FindMemberExpression(path.Body),
@@ -691,7 +691,7 @@ namespace NHibernate.Criterion
 				joinType);
 		}
 
-		public QueryOver<TRoot,TSubType> JoinAlias<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		public QueryOver<TRoot, TSubType> JoinAlias<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{
 			return AddAlias(
 				ExpressionProcessor.FindMemberExpression(path.Body),
@@ -700,7 +700,7 @@ namespace NHibernate.Criterion
 				withClause);
 		}
 
-		public QueryOver<TRoot,TSubType> JoinAlias<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		public QueryOver<TRoot, TSubType> JoinAlias<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{
 			return AddAlias(
 				ExpressionProcessor.FindMemberExpression(path.Body),
@@ -709,7 +709,7 @@ namespace NHibernate.Criterion
 				withClause);
 		}
 
-		public QueryOver<TRoot,TSubType> JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias, JoinType joinType)
+		public QueryOver<TRoot, TSubType> JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias, JoinType joinType)
 		{
 			return AddAlias(
 				ExpressionProcessor.FindMemberExpression(path.Body),
@@ -717,7 +717,7 @@ namespace NHibernate.Criterion
 				joinType);
 		}
 
-		public QueryOver<TRoot,TSubType> JoinAlias<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		public QueryOver<TRoot, TSubType> JoinAlias<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{
 			return AddAlias(
 				ExpressionProcessor.FindMemberExpression(path.Body),
@@ -726,7 +726,7 @@ namespace NHibernate.Criterion
 				withClause);
 		}
 
-		public QueryOver<TRoot,TSubType> JoinAlias<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		public QueryOver<TRoot, TSubType> JoinAlias<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{
 			return AddAlias(
 				ExpressionProcessor.FindMemberExpression(path.Body),
@@ -735,63 +735,63 @@ namespace NHibernate.Criterion
 				withClause);
 		}
 
-		public QueryOverJoinBuilder<TRoot,TSubType> Inner
+		public QueryOverJoinBuilder<TRoot, TSubType> Inner
 		{
-			get { return new QueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.InnerJoin); }
+			get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.InnerJoin); }
 		}
 
-		public QueryOverJoinBuilder<TRoot,TSubType> Left
+		public QueryOverJoinBuilder<TRoot, TSubType> Left
 		{
-			get { return new QueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.LeftOuterJoin); }
+			get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.LeftOuterJoin); }
 		}
 
-		public QueryOverJoinBuilder<TRoot,TSubType> Right
+		public QueryOverJoinBuilder<TRoot, TSubType> Right
 		{
-			get { return new QueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.RightOuterJoin); }
+			get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.RightOuterJoin); }
 		}
 
-		public QueryOverJoinBuilder<TRoot,TSubType> Full
+		public QueryOverJoinBuilder<TRoot, TSubType> Full
 		{
-			get { return new QueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.FullJoin); }
+			get { return new QueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.FullJoin); }
 		}
 
-		private QueryOver<TRoot,TSubType> AddAlias(string path, string alias, JoinType joinType)
+		private QueryOver<TRoot, TSubType> AddAlias(string path, string alias, JoinType joinType)
 		{
 			criteria.CreateAlias(path, alias, joinType);
 			return this;
 		}
 
-		private QueryOver<TRoot,TSubType> AddAlias(string path, string alias, JoinType joinType, ICriterion withClause)
+		private QueryOver<TRoot, TSubType> AddAlias(string path, string alias, JoinType joinType, ICriterion withClause)
 		{
 			criteria.CreateAlias(path, alias, joinType, withClause);
 			return this;
 		}
 
-		private QueryOver<TRoot,TSubType> Add(Expression<Func<TSubType, bool>> expression)
+		private QueryOver<TRoot, TSubType> Add(Expression<Func<TSubType, bool>> expression)
 		{
 			criteria.Add(ExpressionProcessor.ProcessExpression<TSubType>(expression));
 			return this;
 		}
 
-		private QueryOver<TRoot,TSubType> Add(Expression<Func<bool>> expression)
+		private QueryOver<TRoot, TSubType> Add(Expression<Func<bool>> expression)
 		{
 			criteria.Add(ExpressionProcessor.ProcessExpression(expression));
 			return this;
 		}
 
-		private QueryOver<TRoot,TSubType> Add(ICriterion expression)
+		private QueryOver<TRoot, TSubType> Add(ICriterion expression)
 		{
 			criteria.Add(expression);
 			return this;
 		}
 
-		private QueryOver<TRoot,TSubType> AddNot(Expression<Func<TSubType, bool>> expression)
+		private QueryOver<TRoot, TSubType> AddNot(Expression<Func<TSubType, bool>> expression)
 		{
 			criteria.Add(Restrictions.Not(ExpressionProcessor.ProcessExpression<TSubType>(expression)));
 			return this;
 		}
 
-		private QueryOver<TRoot,TSubType> AddNot(Expression<Func<bool>> expression)
+		private QueryOver<TRoot, TSubType> AddNot(Expression<Func<bool>> expression)
 		{
 			criteria.Add(Restrictions.Not(ExpressionProcessor.ProcessExpression(expression)));
 			return this;
@@ -802,17 +802,17 @@ namespace NHibernate.Criterion
 			criteria.Add(Restrictions.Not(expression));
 			return this;
 		}
-		
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.And(Expression<Func<TSubType, bool>> expression)
+
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.And(Expression<Func<TSubType, bool>> expression)
 		{ return And(expression); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.And(Expression<Func<bool>> expression)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.And(Expression<Func<bool>> expression)
 		{ return And(expression); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.And(ICriterion expression)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.And(ICriterion expression)
 		{ return And(expression); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.AndNot(Expression<Func<TSubType, bool>> expression)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.AndNot(Expression<Func<TSubType, bool>> expression)
 		{ return AndNot(expression); }
 
 		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.AndNot(Expression<Func<bool>> expression)
@@ -821,168 +821,168 @@ namespace NHibernate.Criterion
 		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.AndNot(ICriterion expression)
 		{ return AndNot(expression); }
 
-		IQueryOverRestrictionBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.AndRestrictionOn(Expression<Func<TSubType, object>> expression)
-		{ return new IQueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body)); }
+		IQueryOverRestrictionBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.AndRestrictionOn(Expression<Func<TSubType, object>> expression)
+		{ return new IQueryOverRestrictionBuilder<TRoot, TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body)); }
 
-		IQueryOverRestrictionBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.AndRestrictionOn(Expression<Func<object>> expression)
-		{ return new IQueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body)); }
+		IQueryOverRestrictionBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.AndRestrictionOn(Expression<Func<object>> expression)
+		{ return new IQueryOverRestrictionBuilder<TRoot, TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body)); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Where(Expression<Func<TSubType, bool>> expression)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.Where(Expression<Func<TSubType, bool>> expression)
 		{ return Where(expression); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Where(Expression<Func<bool>> expression)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.Where(Expression<Func<bool>> expression)
 		{ return Where(expression); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Where(ICriterion expression)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.Where(ICriterion expression)
 		{ return Where(expression); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.WhereNot(Expression<Func<TSubType, bool>> expression)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.WhereNot(Expression<Func<TSubType, bool>> expression)
 		{ return WhereNot(expression); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.WhereNot(Expression<Func<bool>> expression)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.WhereNot(Expression<Func<bool>> expression)
 		{ return WhereNot(expression); }
 
 		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.WhereNot(ICriterion expression)
 		{ return WhereNot(expression); }
 
-		IQueryOverRestrictionBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.WhereRestrictionOn(Expression<Func<TSubType, object>> expression)
-		{ return new IQueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body)); }
+		IQueryOverRestrictionBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.WhereRestrictionOn(Expression<Func<TSubType, object>> expression)
+		{ return new IQueryOverRestrictionBuilder<TRoot, TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body)); }
 
-		IQueryOverRestrictionBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.WhereRestrictionOn(Expression<Func<object>> expression)
-		{ return new IQueryOverRestrictionBuilder<TRoot,TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body)); }
+		IQueryOverRestrictionBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.WhereRestrictionOn(Expression<Func<object>> expression)
+		{ return new IQueryOverRestrictionBuilder<TRoot, TSubType>(this, ExpressionProcessor.FindMemberProjection(expression.Body)); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Select(params Expression<Func<TRoot, object>>[] projections)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.Select(params Expression<Func<TRoot, object>>[] projections)
 		{ return Select(projections); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Select(params IProjection[] projections)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.Select(params IProjection[] projections)
 		{ return Select(projections); }
 
 		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.SelectList(Func<QueryOverProjectionBuilder<TRoot>, QueryOverProjectionBuilder<TRoot>> list)
 		{ return SelectList(list); }
 
-		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.OrderBy(Expression<Func<TSubType, object>> path)
-		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path); }
+		IQueryOverOrderBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.OrderBy(Expression<Func<TSubType, object>> path)
+		{ return new IQueryOverOrderBuilder<TRoot, TSubType>(this, path); }
 
-		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.OrderBy(Expression<Func<object>> path)
-		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, false); }
+		IQueryOverOrderBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.OrderBy(Expression<Func<object>> path)
+		{ return new IQueryOverOrderBuilder<TRoot, TSubType>(this, path, false); }
 
-		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.OrderBy(IProjection projection)
-		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, ExpressionProcessor.ProjectionInfo.ForProjection(projection)); }
+		IQueryOverOrderBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.OrderBy(IProjection projection)
+		{ return new IQueryOverOrderBuilder<TRoot, TSubType>(this, ExpressionProcessor.ProjectionInfo.ForProjection(projection)); }
 
-		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.OrderByAlias(Expression<Func<object>> path)
-		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, true); }
+		IQueryOverOrderBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.OrderByAlias(Expression<Func<object>> path)
+		{ return new IQueryOverOrderBuilder<TRoot, TSubType>(this, path, true); }
 
-		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.ThenBy(Expression<Func<TSubType, object>> path)
-		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path); }
+		IQueryOverOrderBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.ThenBy(Expression<Func<TSubType, object>> path)
+		{ return new IQueryOverOrderBuilder<TRoot, TSubType>(this, path); }
 
-		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.ThenBy(Expression<Func<object>> path)
-		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, false); }
+		IQueryOverOrderBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.ThenBy(Expression<Func<object>> path)
+		{ return new IQueryOverOrderBuilder<TRoot, TSubType>(this, path, false); }
 
-		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.ThenBy(IProjection projection)
-		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, ExpressionProcessor.ProjectionInfo.ForProjection(projection)); }
+		IQueryOverOrderBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.ThenBy(IProjection projection)
+		{ return new IQueryOverOrderBuilder<TRoot, TSubType>(this, ExpressionProcessor.ProjectionInfo.ForProjection(projection)); }
 
-		IQueryOverOrderBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.ThenByAlias(Expression<Func<object>> path)
-		{ return new IQueryOverOrderBuilder<TRoot,TSubType>(this, path, true); }
+		IQueryOverOrderBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.ThenByAlias(Expression<Func<object>> path)
+		{ return new IQueryOverOrderBuilder<TRoot, TSubType>(this, path, true); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.TransformUsing(IResultTransformer resultTransformer)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.TransformUsing(IResultTransformer resultTransformer)
 		{ return TransformUsing(resultTransformer); }
 
-		IQueryOverSubqueryBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.WithSubquery
-		{ get { return new IQueryOverSubqueryBuilder<TRoot,TSubType>(this); } }
+		IQueryOverSubqueryBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.WithSubquery
+		{ get { return new IQueryOverSubqueryBuilder<TRoot, TSubType>(this); } }
 
 		// Since v5.2
 		[Obsolete("Use Fetch(SelectMode mode, Expression<Func<TSubType, object>> path) instead")]
-		IQueryOverFetchBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Fetch(Expression<Func<TRoot, object>> path)
-		{ return new IQueryOverFetchBuilder<TRoot,TSubType>(this, path); }
+		IQueryOverFetchBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.Fetch(Expression<Func<TRoot, object>> path)
+		{ return new IQueryOverFetchBuilder<TRoot, TSubType>(this, path); }
 
-		IQueryOverLockBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Lock()
-		{ return new IQueryOverLockBuilder<TRoot,TSubType>(this, null); }
+		IQueryOverLockBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.Lock()
+		{ return new IQueryOverLockBuilder<TRoot, TSubType>(this, null); }
 
-		IQueryOverLockBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Lock(Expression<Func<object>> alias)
-		{ return new IQueryOverLockBuilder<TRoot,TSubType>(this, alias); }
+		IQueryOverLockBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.Lock(Expression<Func<object>> alias)
+		{ return new IQueryOverLockBuilder<TRoot, TSubType>(this, alias); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, U>> path)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, U>> path)
 		{ return JoinQueryOver(path); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<U>> path)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<U>> path)
 		{ return JoinQueryOver(path); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias)
 		{ return JoinQueryOver(path, alias); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias)
 		{ return JoinQueryOver(path, alias); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, U>> path, JoinType joinType)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, U>> path, JoinType joinType)
 		{ return JoinQueryOver(path, joinType); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<U>> path, JoinType joinType)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<U>> path, JoinType joinType)
 		{ return JoinQueryOver(path, joinType); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, JoinType joinType)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, JoinType joinType)
 		{ return JoinQueryOver(path, alias, joinType); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{ return JoinQueryOver(path, alias, joinType, withClause); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType)
 		{ return JoinQueryOver(path, alias, joinType); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{ return JoinQueryOver(path, alias, joinType, withClause); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path)
 		{ return JoinQueryOver(path); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path)
 		{ return JoinQueryOver(path); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias)
 		{ return JoinQueryOver(path, alias); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias)
 		{ return JoinQueryOver(path, alias); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, JoinType joinType)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, JoinType joinType)
 		{ return JoinQueryOver(path, joinType); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, JoinType joinType)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, JoinType joinType)
 		{ return JoinQueryOver(path, joinType); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType)
 		{ return JoinQueryOver(path, alias, joinType); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{ return JoinQueryOver(path, alias, joinType, withClause); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType)
 		{ return JoinQueryOver(path, alias, joinType); }
 
-		IQueryOver<TRoot,U> IQueryOver<TRoot,TSubType>.JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		IQueryOver<TRoot, U> IQueryOver<TRoot, TSubType>.JoinQueryOver<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{ return JoinQueryOver(path, alias, joinType, withClause); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.JoinAlias(Expression<Func<TSubType, object>> path, Expression<Func<object>> alias)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.JoinAlias(Expression<Func<TSubType, object>> path, Expression<Func<object>> alias)
 		{ return JoinAlias(path, alias); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias)
 		{ return JoinAlias(path, alias); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.JoinAlias(Expression<Func<TSubType, object>> path, Expression<Func<object>> alias, JoinType joinType)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.JoinAlias(Expression<Func<TSubType, object>> path, Expression<Func<object>> alias, JoinType joinType)
 		{ return JoinAlias(path, alias, joinType); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.JoinAlias<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.JoinAlias<U>(Expression<Func<TSubType, U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{ return JoinAlias(path, alias, joinType, withClause); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.JoinAlias<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.JoinAlias<U>(Expression<Func<TSubType, IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{ return JoinAlias(path, alias, joinType, withClause); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias, JoinType joinType)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.JoinAlias(Expression<Func<object>> path, Expression<Func<object>> alias, JoinType joinType)
 		{ return JoinAlias(path, alias, joinType); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.JoinAlias<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.JoinAlias<U>(Expression<Func<U>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{ return JoinAlias(path, alias, joinType, withClause); }
 
-		IQueryOver<TRoot,TSubType> IQueryOver<TRoot,TSubType>.JoinAlias<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
+		IQueryOver<TRoot, TSubType> IQueryOver<TRoot, TSubType>.JoinAlias<U>(Expression<Func<IEnumerable<U>>> path, Expression<Func<U>> alias, JoinType joinType, ICriterion withClause)
 		{ return JoinAlias(path, alias, joinType, withClause); }
 
 		IQueryOver<TRoot, U> ISupportEntityJoinQueryOver<TRoot>.JoinEntityQueryOver<U>(Expression<Func<U>> alias, ICriterion withClause, JoinType joinType, string entityName)
@@ -990,17 +990,17 @@ namespace NHibernate.Criterion
 			return JoinEntityQueryOver(alias, withClause, joinType, entityName);
 		}
 
-		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Inner
-		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.InnerJoin); } }
+		IQueryOverJoinBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.Inner
+		{ get { return new IQueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.InnerJoin); } }
 
-		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Left
-		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.LeftOuterJoin); } }
+		IQueryOverJoinBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.Left
+		{ get { return new IQueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.LeftOuterJoin); } }
 
-		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Right
-		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.RightOuterJoin); } }
+		IQueryOverJoinBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.Right
+		{ get { return new IQueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.RightOuterJoin); } }
 
-		IQueryOverJoinBuilder<TRoot,TSubType> IQueryOver<TRoot,TSubType>.Full
-		{ get { return new IQueryOverJoinBuilder<TRoot,TSubType>(this, JoinType.FullJoin); } }
+		IQueryOverJoinBuilder<TRoot, TSubType> IQueryOver<TRoot, TSubType>.Full
+		{ get { return new IQueryOverJoinBuilder<TRoot, TSubType>(this, JoinType.FullJoin); } }
 
 		IQueryOver<TRoot, TSubType> ISupportSelectModeQueryOver<TRoot, TSubType>.Fetch(SelectMode mode, Expression<Func<TSubType, object>> path)
 		{

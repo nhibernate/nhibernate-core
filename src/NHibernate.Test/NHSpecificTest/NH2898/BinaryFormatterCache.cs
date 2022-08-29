@@ -85,7 +85,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 
 		public override int Timeout
 		{
-			get { return Timestamper.OneMs*60000; }
+			get { return Timestamper.OneMs * 60000; }
 		}
 
 		public override string RegionName

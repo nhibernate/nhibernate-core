@@ -21,13 +21,13 @@ namespace NHibernate.Loader.Criteria
 		internal static List<T> LoadAllToList<T>(this IList<CriteriaLoader> loaders, ISessionImplementor session)
 		{
 			var subresults = new List<IList>(loaders.Count);
-			foreach(var l in loaders)
+			foreach (var l in loaders)
 			{
 				subresults.Add(l.List(session));
 			}
 
 			var results = new List<T>(subresults.Sum(r => r.Count));
-			foreach(var list in subresults)
+			foreach (var list in subresults)
 			{
 				ArrayHelper.AddAll(results, list);
 			}
@@ -219,7 +219,7 @@ namespace NHibernate.Loader.Criteria
 					LockMode lockMode;
 					if (lockModes.TryGetValue(drivingSqlAliases[i], out lockMode))
 					{
-						ILockable drivingPersister = (ILockable)EntityPersisters[i];
+						ILockable drivingPersister = (ILockable) EntityPersisters[i];
 						string rootSqlAlias = drivingPersister.GetRootTableAlias(drivingSqlAliases[i]);
 						aliasedLockModes[rootSqlAlias] = lockMode;
 						if (keyColumnNames != null)

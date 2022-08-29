@@ -37,7 +37,7 @@ namespace NHibernate.Stat
 
 		public IList<CollectionKey> CollectionKeys
 		{
-			get 
+			get
 			{
 				List<CollectionKey> result = new List<CollectionKey>();
 				result.AddRange(session.PersistenceContext.CollectionsByKey.Keys);

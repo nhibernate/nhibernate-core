@@ -13,27 +13,27 @@ namespace NHibernate.Test.NHSpecificTest.NH2510
 	}
 
 	[TestFixture]
-	public class Fixture: TestCaseMappingByCode
+	public class Fixture : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
 			mapper.Class<Image>(rc =>
-			                    {
-														rc.Cache(map => map.Usage(CacheUsage.NonstrictReadWrite));
-														rc.Id(x=> x.Id);
-														rc.Property(x => x.Data, map=> map.Lazy(true));
-			                    });
+								{
+									rc.Cache(map => map.Usage(CacheUsage.NonstrictReadWrite));
+									rc.Id(x => x.Id);
+									rc.Property(x => x.Data, map => map.Lazy(true));
+								});
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			return mappings;
 		}
 
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			configuration.Cache(x=> x.Provider<HashtableCacheProvider>());
+			configuration.Cache(x => x.Provider<HashtableCacheProvider>());
 		}
 
-		private class Scenario: IDisposable
+		private class Scenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 

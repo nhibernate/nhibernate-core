@@ -11,7 +11,7 @@ namespace NHibernate.Linq
 	{
 		public static bool IsGroupingKey(this MemberExpression expression)
 		{
-			return expression.Member.Name == "Key" && expression.Member.DeclaringType!=null &&
+			return expression.Member.Name == "Key" && expression.Member.DeclaringType != null &&
 					 expression.Member.DeclaringType.IsGenericType && expression.Member.DeclaringType.GetGenericTypeDefinition() == typeof(IGrouping<,>);
 		}
 
@@ -23,8 +23,8 @@ namespace NHibernate.Linq
 				fromClause.FromExpression is SubQueryExpression query)
 			{
 				groupBy = query.QueryModel.ResultOperators
-				               .OfType<GroupResultOperator>()
-				               .FirstOrDefault(o => o.KeySelector.Type == keyExpression.Type);
+							   .OfType<GroupResultOperator>()
+							   .FirstOrDefault(o => o.KeySelector.Type == keyExpression.Type);
 				return groupBy != null;
 			}
 
@@ -32,22 +32,22 @@ namespace NHibernate.Linq
 			return false;
 		}
 
-		public static bool IsGroupingKeyOf(this MemberExpression expression,GroupResultOperator groupBy)
+		public static bool IsGroupingKeyOf(this MemberExpression expression, GroupResultOperator groupBy)
 		{
 			if (!expression.IsGroupingKey())
 			{
 				return false;
 			}
-			
+
 			var querySource = expression.Expression as QuerySourceReferenceExpression;
 			if (querySource == null) return false;
-			
+
 			var fromClause = querySource.ReferencedQuerySource as MainFromClause;
 			if (fromClause == null) return false;
-			
+
 			var query = fromClause.FromExpression as SubQueryExpression;
 			if (query == null) return false;
-	
+
 			return query.QueryModel.ResultOperators.Contains(groupBy);
 		}
 

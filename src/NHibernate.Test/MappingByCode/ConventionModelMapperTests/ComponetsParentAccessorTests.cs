@@ -87,7 +87,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 			var hbmClass = mapping.RootClasses[0];
 			var hbmBag = hbmClass.Properties.OfType<HbmBag>().Single();
 
-			var hbmMyCompo = (HbmCompositeElement)hbmBag.ElementRelationship;
+			var hbmMyCompo = (HbmCompositeElement) hbmBag.ElementRelationship;
 			var hbmMyNestedCompo = hbmMyCompo.Properties.OfType<HbmNestedCompositeElement>().Single();
 
 			Assert.That(hbmMyNestedCompo.Parent.access, Does.Contain("camelcase"));
@@ -111,7 +111,7 @@ namespace NHibernate.Test.MappingByCode.ConventionModelMapperTests
 			var hbmClass = mapping.RootClasses[0];
 			var hbmBag = hbmClass.Properties.OfType<HbmBag>().Single();
 
-			var hbmMyCompo = (HbmCompositeElement)hbmBag.ElementRelationship;
+			var hbmMyCompo = (HbmCompositeElement) hbmBag.ElementRelationship;
 			Assert.That(hbmMyCompo.Parent.access, Does.Contain("camelcase"));
 		}
 	}

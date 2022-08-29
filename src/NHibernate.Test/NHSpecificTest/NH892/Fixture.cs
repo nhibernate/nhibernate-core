@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH892
 				session.Flush();
 				session.Clear();
 
-				User poster = (User) session.Get(typeof (User), user1.ID);
+				User poster = (User) session.Get(typeof(User), user1.ID);
 
 				string hql = "from BlogPost b where b.Poster = :poster";
 				IList list = session.CreateQuery(hql).SetParameter("poster", poster).List();

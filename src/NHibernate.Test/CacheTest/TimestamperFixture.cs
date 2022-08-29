@@ -10,7 +10,7 @@ namespace NHibernate.Test.CacheTest
 	[TestFixture]
 	public class TimestamperFixture
 	{
-		[Test,Explicit]
+		[Test, Explicit]
 		public void VerifyIncrease()
 		{
 			long currentTicks = 0;
@@ -23,7 +23,7 @@ namespace NHibernate.Test.CacheTest
 				if ((newTicks - currentTicks) == 0)
 				{
 					Assert.Fail("diff was " + (newTicks - currentTicks) + ".  It should always increase.  Loop i=" + i +
-					            " with currentTicks = " + currentTicks + " and newTicks = " + newTicks);
+								" with currentTicks = " + currentTicks + " and newTicks = " + newTicks);
 				}
 				currentTicks = newTicks;
 			}

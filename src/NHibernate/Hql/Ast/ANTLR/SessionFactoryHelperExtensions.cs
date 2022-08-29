@@ -10,7 +10,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using IASTNode=NHibernate.Hql.Ast.ANTLR.Tree.IASTNode;
+using IASTNode = NHibernate.Hql.Ast.ANTLR.Tree.IASTNode;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR
@@ -173,7 +173,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			try
 			{
-				return (IQueryableCollection)_sfi.GetCollectionPersister(collectionFilterRole);
+				return (IQueryableCollection) _sfi.GetCollectionPersister(collectionFilterRole);
 			}
 			catch (InvalidCastException cce)
 			{
@@ -224,7 +224,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <returns>The AssociationType of the elements of the collection.</returns>
 		public IAssociationType GetElementAssociationType(CollectionType collectionType)
 		{
-			return (IAssociationType)GetElementType(collectionType);
+			return (IAssociationType) GetElementType(collectionType);
 		}
 
 		/// <summary>
@@ -237,7 +237,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			try
 			{
-				IQueryableCollection queryableCollection = (IQueryableCollection)_sfi.GetCollectionPersister(role);
+				IQueryableCollection queryableCollection = (IQueryableCollection) _sfi.GetCollectionPersister(role);
 				if (queryableCollection != null)
 				{
 					_collectionPropertyMappingByRole.Add(role, new CollectionPropertyMapping(queryableCollection));
@@ -263,17 +263,17 @@ namespace NHibernate.Hql.Ast.ANTLR
 		public IEntityPersister RequireClassPersister(string name)
 		{
 			IEntityPersister cp;
-			try 
+			try
 			{
-				cp = FindEntityPersisterByName( name );
-				if ( cp == null ) 
+				cp = FindEntityPersisterByName(name);
+				if (cp == null)
 				{
-					throw new QuerySyntaxException( name + " is not mapped" );
+					throw new QuerySyntaxException(name + " is not mapped");
 				}
 			}
-			catch ( MappingException e ) 
+			catch (MappingException e)
 			{
-				throw new QueryException( e.Message, e );
+				throw new QueryException(e.Message, e);
 			}
 			return cp;
 		}
@@ -294,7 +294,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <param name="sfi">The session factory implementor.</param>
 		/// <param name="className">The (potentially unqualified) class name.</param>
 		/// <returns>The defined persister for this class, or null if none found.</returns>
-		private static IQueryable FindQueryableUsingImports(ISessionFactoryImplementor sfi, string className) 
+		private static IQueryable FindQueryableUsingImports(ISessionFactoryImplementor sfi, string className)
 		{
 			return new SessionFactoryHelper(sfi).FindQueryableUsingImports(className);
 		}
@@ -345,11 +345,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <param name="joinType">The type of join to render (inner, outer, etc)</param>
 		/// <param name="columns">The columns making up the condition of the join.</param>
 		/// <returns>The generated join sequence.</returns>
-		public JoinSequence CreateJoinSequence(bool implicitJoin, IAssociationType associationType, string tableAlias, JoinType joinType, string[] columns) 
+		public JoinSequence CreateJoinSequence(bool implicitJoin, IAssociationType associationType, string tableAlias, JoinType joinType, string[] columns)
 		{
 			JoinSequence joinSequence = CreateJoinSequence();
-			joinSequence.SetUseThetaStyle(implicitJoin);	// Implicit joins use theta style (WHERE pk = fk), explicit joins use JOIN (after from)
-			joinSequence.AddJoin( associationType, tableAlias, joinType, columns );
+			joinSequence.SetUseThetaStyle(implicitJoin);    // Implicit joins use theta style (WHERE pk = fk), explicit joins use JOIN (after from)
+			joinSequence.AddJoin(associationType, tableAlias, joinType, columns);
 			return joinSequence;
 		}
 

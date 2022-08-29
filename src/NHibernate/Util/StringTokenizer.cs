@@ -104,8 +104,8 @@ namespace NHibernate.Util
 
 			public bool MoveNext()
 			{
-			  _next = GetNext();
-			  return _next != null;
+				_next = GetNext();
+				return _next != null;
 			}
 
 			public void Reset()

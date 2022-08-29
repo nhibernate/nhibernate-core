@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH898
 				t.Commit();
 			}
 
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Delete("from ClassA");

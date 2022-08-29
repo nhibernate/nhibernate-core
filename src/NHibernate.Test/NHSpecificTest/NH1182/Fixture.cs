@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1182
 {
 	[TestFixture]
-	public class Fixture: BugTestCase
+	public class Fixture : BugTestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{
@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1182
 				}
 				string wholeLog = ls.GetWholeLog();
 				Assert.That(wholeLog, Does.Not.Contain("UPDATE ObjectA"));
-				Assert.That(wholeLog, Does.Contain("UPDATE ObjectB"),"should create orphans");
+				Assert.That(wholeLog, Does.Contain("UPDATE ObjectB"), "should create orphans");
 			}
 
 			using (ISession s = OpenSession())

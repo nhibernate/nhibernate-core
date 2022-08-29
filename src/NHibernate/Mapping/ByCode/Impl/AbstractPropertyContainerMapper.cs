@@ -6,22 +6,22 @@ namespace NHibernate.Mapping.ByCode.Impl
 {
 	public abstract class AbstractPropertyContainerMapper : AbstractBasePropertyContainerMapper, IPropertyContainerMapper
 	{
-		protected AbstractPropertyContainerMapper(System.Type container, HbmMapping mapDoc) : base(container, mapDoc) {}
+		protected AbstractPropertyContainerMapper(System.Type container, HbmMapping mapDoc) : base(container, mapDoc) { }
 
 		#region Implementation of IPropertyContainerMapper
 
 		public virtual void OneToOne(MemberInfo property, Action<IOneToOneMapper> mapping)
 		{
-			var hbm = new HbmOneToOne {name = property.Name};
+			var hbm = new HbmOneToOne { name = property.Name };
 			var type = typeof(OneToOneMapper<>).MakeGenericType(property.GetPropertyOrFieldType());
-			var mapper = (IOneToOneMapper)Activator.CreateInstance(type, property, hbm);
+			var mapper = (IOneToOneMapper) Activator.CreateInstance(type, property, hbm);
 			mapping(mapper);
 			AddProperty(hbm);
 		}
 
 		public virtual void Set(MemberInfo property, Action<ISetPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
 		{
-			var hbm = new HbmSet {name = property.Name};
+			var hbm = new HbmSet { name = property.Name };
 			System.Type collectionElementType = property.DetermineRequiredCollectionElementType();
 			collectionMapping(new SetMapper(container, collectionElementType, hbm));
 			mapping(new CollectionElementRelation(collectionElementType, MapDoc, rel => hbm.Item = rel));
@@ -30,7 +30,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public virtual void Bag(MemberInfo property, Action<IBagPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
 		{
-			var hbm = new HbmBag {name = property.Name};
+			var hbm = new HbmBag { name = property.Name };
 			System.Type collectionElementType = property.DetermineRequiredCollectionElementType();
 			collectionMapping(new BagMapper(container, collectionElementType, hbm));
 			mapping(new CollectionElementRelation(collectionElementType, MapDoc, rel => hbm.Item = rel));
@@ -39,7 +39,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public virtual void List(MemberInfo property, Action<IListPropertiesMapper> collectionMapping, Action<ICollectionElementRelation> mapping)
 		{
-			var hbm = new HbmList {name = property.Name};
+			var hbm = new HbmList { name = property.Name };
 			System.Type collectionElementType = property.DetermineRequiredCollectionElementType();
 			collectionMapping(new ListMapper(container, collectionElementType, hbm));
 			mapping(new CollectionElementRelation(collectionElementType, MapDoc, rel => hbm.Item1 = rel));
@@ -49,7 +49,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public virtual void Map(MemberInfo property, Action<IMapPropertiesMapper> collectionMapping,
 								Action<IMapKeyRelation> keyMapping, Action<ICollectionElementRelation> mapping)
 		{
-			var hbm = new HbmMap {name = property.Name};
+			var hbm = new HbmMap { name = property.Name };
 			System.Type propertyType = property.GetPropertyOrFieldType();
 			System.Type dictionaryKeyType = propertyType.DetermineDictionaryKeyType();
 			System.Type dictionaryValueType = propertyType.DetermineDictionaryValueType();

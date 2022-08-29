@@ -13,14 +13,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 			set { _version = value; }
 		}
 
-		public virtual int				Id		{ get; set; }
-		public virtual string			Name	{ get; set; }
-		public virtual IList<Page>		Pages	{ get; set; }
+		public virtual int Id { get; set; }
+		public virtual string Name { get; set; }
+		public virtual IList<Page> Pages { get; set; }
 	}
 
 	public class Page
 	{
-		public virtual int				Id		{ get; set; }
+		public virtual int Id { get; set; }
 	}
 
 	public class BookNotGenerated
@@ -33,8 +33,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 			set { _version = value; }
 		}
 
-		public virtual int				Id		{ get; set; }
-		public virtual string			Name	{ get; set; }
-		public virtual IList<Page>		Pages	{ get; set; }
+		public virtual int Id { get; set; }
+		public virtual string Name { get; set; }
+		public virtual IList<Page> Pages { get; set; }
 	}
 }

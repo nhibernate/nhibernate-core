@@ -7,9 +7,9 @@ using System.Runtime.Serialization;
 namespace NHibernate.Util
 {
 	[Serializable]
-	public sealed class DynamicComponent : DynamicObject, 
-		IDictionary, 
-		IDictionary<string, object>, 
+	public sealed class DynamicComponent : DynamicObject,
+		IDictionary,
+		IDictionary<string, object>,
 		ISerializable,
 		IDeserializationCallback
 	{
@@ -51,7 +51,7 @@ namespace NHibernate.Util
 				return _data.TryGetValue(key, out result);
 			return base.TryGetIndex(binder, indexes, out result);
 		}
-		
+
 		public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
 		{
 			if (indexes.Length == 1 && indexes[0] is string key)

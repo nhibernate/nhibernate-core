@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecific.BasicSerializable.hbm.xml"}; }
+			get { return new string[] { "NHSpecific.BasicSerializable.hbm.xml" }; }
 		}
 
 		/// <summary>
@@ -44,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest
 			ser = (BasicSerializable) s.Load(typeof(BasicSerializable), ser.Id);
 			Assert.IsTrue(ser.Serial is SerializableClass, "should have been a SerializableClass");
 			Assert.AreEqual(ser.SerializableProperty, ser.Serial,
-			                "SerializablePorperty and Serial should both be 5 and 'serialize me'");
+							"SerializablePorperty and Serial should both be 5 and 'serialize me'");
 
 			IDictionary props = new Hashtable();
 			props["foo"] = "bar";

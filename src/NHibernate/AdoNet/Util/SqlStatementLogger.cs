@@ -80,7 +80,7 @@ namespace NHibernate.AdoNet.Util
 			}
 			else
 			{
-				var output = new StringBuilder(command.CommandText.Length + (command.Parameters.Count*20));
+				var output = new StringBuilder(command.CommandText.Length + (command.Parameters.Count * 20));
 				output.Append(command.CommandText.TrimEnd(' ', ';', '\n'));
 				output.Append(";");
 
@@ -141,7 +141,7 @@ namespace NHibernate.AdoNet.Util
 			const int maxBytes = 128;
 			int bufferLength = buffer.Length;
 
-			var sb = new StringBuilder(maxBytes*2 + 8);
+			var sb = new StringBuilder(maxBytes * 2 + 8);
 			sb.Append("0x");
 			for (int i = 0; i < bufferLength && i < maxBytes; i++)
 			{
@@ -157,7 +157,7 @@ namespace NHibernate.AdoNet.Util
 		private static bool IsStringType(DbType dbType)
 		{
 			return DbType.String.Equals(dbType) || DbType.AnsiString.Equals(dbType)
-			       || DbType.AnsiStringFixedLength.Equals(dbType) || DbType.StringFixedLength.Equals(dbType);
+				   || DbType.AnsiStringFixedLength.Equals(dbType) || DbType.StringFixedLength.Equals(dbType);
 		}
 
 		public FormatStyle DetermineActualStyle(FormatStyle style)

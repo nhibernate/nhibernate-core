@@ -7,7 +7,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3105
 		public virtual EntityId ComponentId { get; set; }
 		public virtual Guid Id { get; set; }
 	}
-	
+
 	class Entity : EntityBase
 	{
 		public virtual string Name { get; set; }

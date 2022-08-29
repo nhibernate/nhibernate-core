@@ -43,8 +43,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1738
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity { Name = "Bob"};
-				e1.Children.Add(new Child() {Name = "Child", Parent = e1});
+				var e1 = new Entity { Name = "Bob" };
+				e1.Children.Add(new Child() { Name = "Child", Parent = e1 });
 				session.Save(e1);
 				transaction.Commit();
 				_id = e1.Id;

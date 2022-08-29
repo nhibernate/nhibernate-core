@@ -11,7 +11,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public abstract class SelectExpressionList : HqlSqlWalkerNode 
+	public abstract class SelectExpressionList : HqlSqlWalkerNode
 	{
 		protected SelectExpressionList(IToken token) : base(token)
 		{
@@ -28,7 +28,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <summary>
 		/// Returns an array of SelectExpressions gathered from the children of the given parent AST node.
 		/// </summary>
-		public ISelectExpression[] CollectSelectExpressions(bool recurse) 
+		public ISelectExpression[] CollectSelectExpressions(bool recurse)
 		{
 			// Get the first child to be considered.  Sub-classes may do this differently in order to skip nodes that
 			// are not select expressions (e.g. DISTINCT).
@@ -78,7 +78,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					{
 						throw new InvalidOperationException("Unexpected AST: " + n.GetType().FullName + " " +
 															new ASTPrinter().ShowAsString(n, ""));
-					}					
+					}
 				}
 			}
 

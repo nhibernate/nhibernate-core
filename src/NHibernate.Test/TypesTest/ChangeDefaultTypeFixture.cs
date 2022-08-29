@@ -70,9 +70,9 @@ namespace NHibernate.Test.TypesTest
 			{
 				// Query where the parameter type cannot be deducted from compared entity property
 				var q = s.CreateQuery($"from {nameof(ChangeDefaultTypeClass)} where :date1 = :date2 or :date1 = :date3")
-				         .SetParameter("date1", DateTime.Now)
-				         .SetDateTime("date2", DateTime.Now)
-				         .SetDateTimeNoMs("date3", DateTime.Now);
+						 .SetParameter("date1", DateTime.Now)
+						 .SetDateTime("date2", DateTime.Now)
+						 .SetDateTimeNoMs("date3", DateTime.Now);
 
 				var namedParameters = namedParametersField.GetValue(q) as Dictionary<string, TypedValue>;
 				Assert.That(namedParameters, Is.Not.Null, "Unable to retrieve parameters internal field");

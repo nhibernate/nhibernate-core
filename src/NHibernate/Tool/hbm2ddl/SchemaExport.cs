@@ -9,7 +9,7 @@ using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.MultiTenancy;
 using NHibernate.Util;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Tool.hbm2ddl
 {
@@ -22,7 +22,7 @@ namespace NHibernate.Tool.hbm2ddl
 	/// </remarks>
 	public partial class SchemaExport
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (SchemaExport));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SchemaExport));
 		private bool wasInitialized;
 		private readonly Configuration cfg;
 		private readonly IDictionary<string, string> configProperties;
@@ -38,7 +38,7 @@ namespace NHibernate.Tool.hbm2ddl
 		/// Create a schema exported for a given Configuration
 		/// </summary>
 		/// <param name="cfg">The NHibernate Configuration to generate the schema from.</param>
-		public SchemaExport(Configuration cfg) : this(cfg, cfg.Properties) {}
+		public SchemaExport(Configuration cfg) : this(cfg, cfg.Properties) { }
 
 		/// <summary>
 		/// Create a schema exporter for the given Configuration, with the given
@@ -54,7 +54,7 @@ namespace NHibernate.Tool.hbm2ddl
 
 		private void Initialize()
 		{
-			if(wasInitialized)
+			if (wasInitialized)
 			{
 				return;
 			}

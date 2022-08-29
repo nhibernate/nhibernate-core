@@ -5,7 +5,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 	public class ComposedIdCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IComposedIdMapper<TEntity> where TEntity : class
 	{
 		public ComposedIdCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizersHolder)
-			: base(explicitDeclarationsHolder, customizersHolder, null) {}
+			: base(explicitDeclarationsHolder, customizersHolder, null) { }
 
 		protected override void RegisterPropertyMapping<TProperty>(System.Linq.Expressions.Expression<System.Func<TEntity, TProperty>> property, System.Action<IPropertyMapper> mapping)
 		{

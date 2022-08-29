@@ -1,6 +1,6 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
 using NUnit.Framework;
@@ -25,7 +25,7 @@ namespace NHibernate.Test.DialectTest.FunctionTests
 		[TestCaseSource(nameof(GetAllDialectTypes))]
 		public void DialectShouldUseCorrectSubstringImplementation(System.Type dialectType)
 		{
-			var dialect = (NHibernate.Dialect.Dialect)Activator.CreateInstance(dialectType);
+			var dialect = (NHibernate.Dialect.Dialect) Activator.CreateInstance(dialectType);
 
 			if (!dialect.Functions.ContainsKey("substring"))
 				Assert.Ignore("Dialect does not support the substring function.");

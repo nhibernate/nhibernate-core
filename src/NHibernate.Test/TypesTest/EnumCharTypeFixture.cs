@@ -43,10 +43,10 @@ namespace NHibernate.Test.TypesTest
 		{
 			using (ISession s = OpenSession())
 			{
-				EnumCharClass basic = (EnumCharClass) s.Load(typeof (EnumCharClass), 1);
+				EnumCharClass basic = (EnumCharClass) s.Load(typeof(EnumCharClass), 1);
 				Assert.AreEqual(SampleCharEnum.Dimmed, basic.EnumValue);
 
-				EnumCharClass basic2 = (EnumCharClass) s.Load(typeof (EnumCharClass), 2);
+				EnumCharClass basic2 = (EnumCharClass) s.Load(typeof(EnumCharClass), 2);
 				Assert.AreEqual(SampleCharEnum.On, basic2.EnumValue);
 			}
 		}
@@ -59,7 +59,7 @@ namespace NHibernate.Test.TypesTest
 				IList results;
 				IQuery q = s.CreateQuery("from EnumCharClass as ecc where ecc.EnumValue=:value");
 
-				q.SetParameter("value", SampleCharEnum.On,new EnumCharType<SampleCharEnum>());
+				q.SetParameter("value", SampleCharEnum.On, new EnumCharType<SampleCharEnum>());
 				results = q.List();
 
 				Assert.AreEqual(1, results.Count, "only 1 was 'On'");

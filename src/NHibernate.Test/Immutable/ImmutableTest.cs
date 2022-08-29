@@ -21,17 +21,17 @@ namespace NHibernate.Test.Immutable
 			configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
 			configuration.SetProperty(NHibernate.Cfg.Environment.BatchSize, "0");
 		}
-		
+
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
 		}
-		
+
 		protected override string[] Mappings
 		{
 			get { return new string[] { "Immutable.ContractVariation.hbm.xml" }; }
 		}
-	
+
 		[Test]
 		public void ChangeImmutableEntityProxyToModifiable()
 		{
@@ -40,9 +40,9 @@ namespace NHibernate.Test.Immutable
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-	
+
 			ClearCounts();
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			s.Persist(c);
@@ -51,11 +51,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -71,7 +71,7 @@ namespace NHibernate.Test.Immutable
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-	
+
 			try
 			{
 				Assert.That(c, Is.InstanceOf<INHibernateProxy>());
@@ -86,7 +86,7 @@ namespace NHibernate.Test.Immutable
 				t.Rollback();
 				s.Close();
 			}
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Delete(c);
@@ -94,7 +94,7 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
@@ -107,9 +107,9 @@ namespace NHibernate.Test.Immutable
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-	
+
 			ClearCounts();
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			s.Persist(c);
@@ -118,11 +118,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -138,11 +138,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-	
+
 			try
 			{
 				Assert.That(c, Is.InstanceOf<INHibernateProxy>());
-				s.SetReadOnly(((INHibernateProxy)c).HibernateLazyInitializer.GetImplementation(), false);
+				s.SetReadOnly(((INHibernateProxy) c).HibernateLazyInitializer.GetImplementation(), false);
 			}
 			catch (System.InvalidOperationException)
 			{
@@ -153,7 +153,7 @@ namespace NHibernate.Test.Immutable
 				t.Rollback();
 				s.Close();
 			}
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Delete(c);
@@ -161,7 +161,7 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
@@ -174,9 +174,9 @@ namespace NHibernate.Test.Immutable
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-	
+
 			ClearCounts();
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			s.Persist(c);
@@ -185,11 +185,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -210,7 +210,7 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
@@ -223,9 +223,9 @@ namespace NHibernate.Test.Immutable
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-	
+
 			ClearCounts();
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			s.Persist(c);
@@ -235,11 +235,11 @@ namespace NHibernate.Test.Immutable
 			c.CustomerName = "gail";
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -260,16 +260,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void SaveImmutable()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -283,11 +283,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -308,16 +308,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void SaveOrUpdateImmutable()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -331,11 +331,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -356,22 +356,22 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void RefreshImmutable()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			s.SaveOrUpdate(c);
@@ -380,11 +380,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			// refresh detached
@@ -403,13 +403,13 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			c.CustomerName = "joe";
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			// refresh updated detached
@@ -428,11 +428,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Delete(c);
@@ -440,16 +440,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void Immutable()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -463,11 +463,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -484,11 +484,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.Contains(cv2), Is.False);
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -509,16 +509,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void PersistAndUpdateImmutable()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -533,11 +533,11 @@ namespace NHibernate.Test.Immutable
 			c.CustomerName = "Sherman";
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -554,11 +554,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.Contains(cv2), Is.False);
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -579,16 +579,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void UpdateAndDeleteManagedImmutable()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -599,11 +599,11 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -625,7 +625,7 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
@@ -634,7 +634,7 @@ namespace NHibernate.Test.Immutable
 		public void GetAndDeleteManagedImmutable()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -645,11 +645,11 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.Get<Contract>(c.Id);
@@ -671,16 +671,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void DeleteDetachedImmutable()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -691,11 +691,11 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Delete(c);
@@ -703,16 +703,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(c, Is.Null);
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void DeleteDetachedModifiedImmutable()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -723,27 +723,27 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.CustomerName = "Sherman";
 			s.Delete(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void ImmutableParentEntityWithUpdate()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -754,31 +754,31 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.CustomerName = "foo bar";
 			s.Update(c);
 			Assert.That(s.IsReadOnly(c), Is.True);
-			foreach(ContractVariation variation in c.Variations)
+			foreach (ContractVariation variation in c.Variations)
 			{
 				Assert.That(s.Contains(variation), Is.True);
 			}
 			t.Commit();
 			Assert.That(s.IsReadOnly(c), Is.True);
-			foreach(ContractVariation variation in c.Variations)
+			foreach (ContractVariation variation in c.Variations)
 			{
 				Assert.That(s.Contains(variation), Is.True);
 				Assert.That(s.IsReadOnly(variation), Is.True);
 			}
 			s.Close();
-	
+
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -796,16 +796,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void ImmutableChildEntityWithUpdate()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -816,11 +816,11 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1 = c.Variations.First();
@@ -834,9 +834,9 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			s.Close();
-	
+
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -854,16 +854,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void ImmutableCollectionWithUpdate()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -874,10 +874,10 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.Variations.Add(new ContractVariation(3, c));
@@ -885,7 +885,7 @@ namespace NHibernate.Test.Immutable
 			try
 			{
 				t.Commit();
-				Assert.Fail( "should have failed because reassociated object has a dirty collection");
+				Assert.Fail("should have failed because reassociated object has a dirty collection");
 			}
 			catch (HibernateException)
 			{
@@ -896,9 +896,9 @@ namespace NHibernate.Test.Immutable
 				t.Rollback();
 				s.Close();
 			}
-	
+
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -916,16 +916,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void UnmodifiedImmutableParentEntityWithMerge()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -936,14 +936,14 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Contract)s.Merge(c);
+			c = (Contract) s.Merge(c);
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(NHibernateUtil.IsInitialized(c.Variations), Is.True);
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -955,9 +955,9 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -975,16 +975,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void ImmutableParentEntityWithMerge()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -995,15 +995,15 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.CustomerName = "foo bar";
-			c = (Contract)s.Merge(c);
+			c = (Contract) s.Merge(c);
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(NHibernateUtil.IsInitialized(c.Variations), Is.True);
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1015,9 +1015,9 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(c), Is.True);
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -1035,16 +1035,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void ImmutableChildEntityWithMerge()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -1055,16 +1055,16 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1 = c.Variations.First();
 			cv1.Text = "blah blah";
-			c = (Contract)s.Merge(c);
+			c = (Contract) s.Merge(c);
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(NHibernateUtil.IsInitialized(c.Variations), Is.True);
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1076,9 +1076,9 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(c), Is.True);
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -1096,16 +1096,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void ImmutableCollectionWithMerge()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -1116,12 +1116,12 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
-	
+
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.Variations.Add(new ContractVariation(3, c));
@@ -1131,7 +1131,7 @@ namespace NHibernate.Test.Immutable
 				t.Commit();
 				Assert.Fail("should have failed because an immutable collection was changed");
 			}
-			catch ( HibernateException )
+			catch (HibernateException)
 			{
 				// expected
 				t.Rollback();
@@ -1140,7 +1140,7 @@ namespace NHibernate.Test.Immutable
 			{
 				s.Close();
 			}
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -1158,16 +1158,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void NewEntityViaImmutableEntityWithImmutableCollectionUsingSaveOrUpdate()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -1178,21 +1178,21 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1.Infos.Add(new Info("cv1 info"));
 			s.SaveOrUpdate(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -1212,16 +1212,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(4);
 		}
-	
+
 		[Test]
 		public void NewEntityViaImmutableEntityWithImmutableCollectionUsingMerge()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -1232,21 +1232,21 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1.Infos.Add(new Info("cv1 info"));
 			s.Merge(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -1266,20 +1266,20 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(4);
 		}
-	
+
 		[Test]
 		public void UpdatedEntityViaImmutableEntityWithImmutableCollectionUsingSaveOrUpdate()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
-			Info cv1Info = new Info( "cv1 info" );
+			Info cv1Info = new Info("cv1 info");
 			cv1.Infos.Add(cv1Info);
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
@@ -1288,22 +1288,22 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1Info.Text = "new cv1 info";
 			s.SaveOrUpdate(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(1);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -1323,20 +1323,20 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(4);
 		}
-	
+
 		[Test]
 		public void UpdatedEntityViaImmutableEntityWithImmutableCollectionUsingMerge()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
-			Info cv1Info = new Info( "cv1 info" );
+			Info cv1Info = new Info("cv1 info");
 			cv1.Infos.Add(cv1Info);
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
@@ -1345,22 +1345,22 @@ namespace NHibernate.Test.Immutable
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1Info.Text = "new cv1 info";
 			s.Merge(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(1);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -1380,16 +1380,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(4);
 		}
-	
+
 		[Test]
 		public void ImmutableEntityAddImmutableToInverseMutableCollection()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -1402,29 +1402,29 @@ namespace NHibernate.Test.Immutable
 			s.Persist(party);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.AddParty(new Party("a new party"));
 			s.Update(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.AddParty(party);
 			s.Update(c);
 			t.Commit();
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -1444,45 +1444,45 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(5); // NH-specific
 		}
-		
+
 		[Test]
 		public void ImmutableEntityRemoveImmutableFromInverseMutableCollection()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-			Party party = new Party( "party1" );
+			Party party = new Party("party1");
 			c.AddParty(party);
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			party = c.Parties.First();
 			c.RemoveParty(party);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Update(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -1501,45 +1501,45 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(4);
 		}
-	
+
 		[Test]
 		public void ImmutableEntityRemoveImmutableFromInverseMutableCollectionByDelete()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-			Party party = new Party( "party1" );
+			Party party = new Party("party1");
 			c.AddParty(party);
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			party = c.Parties.First();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Delete(party);
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -1558,52 +1558,52 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public void ImmutableEntityRemoveImmutableFromInverseMutableCollectionByDeref()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-			Party party = new Party( "party1" );
+			Party party = new Party("party1");
 			c.AddParty(party);
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			s.Persist(c);
 			t.Commit();
 			s.Close();
-	
+
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			party = c.Parties.First();
 			party.Contract = null;
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.Update(party);
 			t.Commit();
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			party = s.Get<Party>(party.Id);
 			Assert.That(party.Contract, Is.Not.Null);
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
@@ -1617,7 +1617,7 @@ namespace NHibernate.Test.Immutable
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(c.Parties.Count, Is.EqualTo(1));
-		    party = c.Parties.First();
+			party = c.Parties.First();
 			Assert.That(party.Name, Is.EqualTo("party1"));
 			Assert.That(party.Contract, Is.SameAs(c));
 			s.Delete(c);
@@ -1625,21 +1625,21 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResult(), Is.EqualTo(0));
 			t.Commit();
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(4);
 		}
-		
+
 		protected void ClearCounts()
 		{
 			Sfi.Statistics.Clear();
 		}
-		
+
 		protected void AssertUpdateCount(int count)
 		{
 			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(count), "unexpected update counts");
 		}
-		
+
 		protected void AssertInsertCount(int count)
 		{
 			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(count), "unexpected insert counts");

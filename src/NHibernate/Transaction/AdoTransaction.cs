@@ -177,7 +177,7 @@ namespace NHibernate.Transaction
 			NotifyLocalSynchsAfterTransactionCompletion(successful);
 			foreach (var dependentSession in session.ConnectionManager.DependentSessions)
 				dependentSession.AfterTransactionCompletion(successful, this);
-	
+
 			session = null;
 			begun = false;
 		}

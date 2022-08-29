@@ -92,7 +92,7 @@ namespace NHibernate.Bytecode
 			{
 				throw new ArgumentNullException("typeAssemblyQualifiedName");
 			}
-			System.Type ctf= ReflectHelper.ClassForName(typeAssemblyQualifiedName);
+			System.Type ctf = ReflectHelper.ClassForName(typeAssemblyQualifiedName);
 			SetCollectionTypeFactoryClass(ctf);
 		}
 

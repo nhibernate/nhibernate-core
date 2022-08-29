@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1531
 
 		public void AddNewChild()
 		{
-			var c = new Child {Name = "New Child", Parent = this};
+			var c = new Child { Name = "New Child", Parent = this };
 			_children.Add(c);
 		}
 

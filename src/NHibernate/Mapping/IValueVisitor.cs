@@ -5,7 +5,7 @@ namespace NHibernate.Mapping
 		object Accept(IValue visited);
 	}
 
-	public interface IValueVisitor<T> : IValueVisitor where T: IValue 
+	public interface IValueVisitor<T> : IValueVisitor where T : IValue
 	{
 		object Accept(T visited);
 	}

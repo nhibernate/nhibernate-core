@@ -17,12 +17,12 @@ namespace NHibernate.Dialect
 		protected override void RegisterFunctions()
 		{
 			base.RegisterFunctions();
-			
+
 			RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "concat(hex(reverse(substr(?1, 1, 4))), '-', hex(reverse(substring(?1, 5, 2))), '-', hex(reverse(substr(?1, 7, 2))), '-', hex(substr(?1, 9, 2)), '-', hex(substr(?1, 11)))"));
 			RegisterFunction("new_uuid", new NoArgSQLFunction("uuid", NHibernateUtil.Guid));
 		}
 
-		protected override void RegisterCastTypes() 
+		protected override void RegisterCastTypes()
 		{
 			base.RegisterCastTypes();
 			// MySql 5 also supports DECIMAL as a cast type target
@@ -62,7 +62,7 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		public override SqlString AppendIdentitySelectToInsert (NHibernate.SqlCommand.SqlString insertString)
+		public override SqlString AppendIdentitySelectToInsert(NHibernate.SqlCommand.SqlString insertString)
 		{
 			return insertString.Append(";" + IdentitySelectString);
 		}

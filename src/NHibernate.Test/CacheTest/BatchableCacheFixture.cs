@@ -109,7 +109,7 @@ namespace NHibernate.Test.CacheTest
 			Assert.That(persister.Cache.Cache, Is.Not.Null);
 			Assert.That(persister.Cache.Cache, Is.TypeOf<BatchableCache>());
 			var ids = new List<int>();
-			
+
 			using (var s = Sfi.OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
@@ -1226,8 +1226,8 @@ namespace NHibernate.Test.CacheTest
 			using (var tx = s.BeginTransaction())
 			{
 				items = s.Query<ReadOnlyItem>()
-				         .WithOptions(o => o.SetCacheable(true))
-				         .ToList();
+						 .WithOptions(o => o.SetCacheable(true))
+						 .ToList();
 
 				tx.Commit();
 			}
@@ -1255,8 +1255,8 @@ namespace NHibernate.Test.CacheTest
 			using (var tx = s.BeginTransaction())
 			{
 				items = s.Query<ReadOnlyItem>()
-				         .WithOptions(o => o.SetCacheable(true))
-				         .ToList();
+						 .WithOptions(o => o.SetCacheable(true))
+						 .ToList();
 
 				tx.Commit();
 			}
@@ -1324,18 +1324,18 @@ namespace NHibernate.Test.CacheTest
 					 .ToFuture();
 
 					items = s.Query<ReadOnly>()
-					         .WithOptions(o => o.SetCacheable(true))
-					         .FetchMany(o => o.Items)
-					         .Where(o => o.Id <= middleId)
-					         .ToFuture()
-					         .ToList();
+							 .WithOptions(o => o.SetCacheable(true))
+							 .FetchMany(o => o.Items)
+							 .Where(o => o.Id <= middleId)
+							 .ToFuture()
+							 .ToList();
 				}
 				else
 				{
 					items = s.Query<ReadOnly>()
-					         .WithOptions(o => o.SetCacheable(true))
-					         .FetchMany(o => o.Items)
-					         .ToList();
+							 .WithOptions(o => o.SetCacheable(true))
+							 .FetchMany(o => o.Items)
+							 .ToList();
 				}
 
 				tx.Commit();
@@ -1380,18 +1380,18 @@ namespace NHibernate.Test.CacheTest
 					 .ToFuture();
 
 					items = s.Query<ReadOnly>()
-					         .WithOptions(o => o.SetCacheable(true))
-					         .FetchMany(o => o.Items)
-					         .Where(o => o.Id <= middleId)
-					         .ToFuture()
-					         .ToList();
+							 .WithOptions(o => o.SetCacheable(true))
+							 .FetchMany(o => o.Items)
+							 .Where(o => o.Id <= middleId)
+							 .ToFuture()
+							 .ToList();
 				}
 				else
 				{
 					items = s.Query<ReadOnly>()
-					         .WithOptions(o => o.SetCacheable(true))
-					         .FetchMany(o => o.Items)
-					         .ToList();
+							 .WithOptions(o => o.SetCacheable(true))
+							 .FetchMany(o => o.Items)
+							 .ToList();
 				}
 
 				tx.Commit();
@@ -1555,7 +1555,7 @@ namespace NHibernate.Test.CacheTest
 			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(future ? 2 : 1), "Unexpected cache hit count");
 		}
 
-		private void AssertMultipleCacheCalls<TEntity>(IEnumerable<int> loadIds,  IReadOnlyList<int> getIds, int idIndex, 
+		private void AssertMultipleCacheCalls<TEntity>(IEnumerable<int> loadIds, IReadOnlyList<int> getIds, int idIndex,
 														int[][] fetchedIdIndexes, int[] putIdIndexes, Func<int, bool> cacheBeforeLoadFn = null)
 			where TEntity : CacheEntity
 		{

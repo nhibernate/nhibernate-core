@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1039Generic
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				Person person = (Person)s.CreateCriteria(typeof(Person)).UniqueResult();
+				Person person = (Person) s.CreateCriteria(typeof(Person)).UniqueResult();
 
 				Assert.AreEqual("1", person.ID);
 				Assert.AreEqual("John Doe", person.Name);

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Driver;
 using NHibernate.Linq;
 using NUnit.Framework;
-using System.Linq;
 
 namespace NHibernate.Test.Futures
 {
@@ -382,7 +382,7 @@ namespace NHibernate.Test.Futures
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var p1 = new Person { Name = "Person name", Age = 15};
+				var p1 = new Person { Name = "Person name", Age = 15 };
 				var p2 = new Person { Name = "Person name", Age = 5 };
 
 				s.Save(p1);
@@ -404,7 +404,7 @@ namespace NHibernate.Test.Futures
 				foreach (var query in list)
 				{
 					var result = query.ToList();
-					Assert.That(result.Count,Is.EqualTo(1));
+					Assert.That(result.Count, Is.EqualTo(1));
 				}
 			}
 		}
@@ -490,7 +490,7 @@ namespace NHibernate.Test.Futures
 					Assert.That(result.Count, Is.EqualTo(2));
 				}
 
-				Assert.That(Sfi.Statistics.PrepareStatementCount , Is.EqualTo(0), "Future queries must be retrieved from cache");
+				Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(0), "Future queries must be retrieved from cache");
 			}
 		}
 

@@ -78,7 +78,7 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public void UsingSqlFunctions_Concat_WithCast()
 		{
-			if(Dialect is Oracle8iDialect)
+			if (Dialect is Oracle8iDialect)
 			{
 				Assert.Ignore("Not supported by the active dialect:{0}.", Dialect);
 			}

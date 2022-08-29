@@ -55,7 +55,7 @@ namespace NHibernate.Cache.Entry
 		}
 
 		public static CacheEntry Create(object[] state, IEntityPersister persister, object version,
-		                                ISessionImplementor session, object owner)
+										ISessionImplementor session, object owner)
 		{
 			return new CacheEntry
 			{
@@ -108,7 +108,7 @@ namespace NHibernate.Cache.Entry
 		}
 
 		public object[] Assemble(object instance, object id, IEntityPersister persister, IInterceptor interceptor,
-		                         ISessionImplementor session)
+								 ISessionImplementor session)
 		{
 			if (!persister.EntityName.Equals(Subclass))
 			{
@@ -119,17 +119,17 @@ namespace NHibernate.Cache.Entry
 		}
 
 		private static object[] Assemble(object[] values, object result, object id, IEntityPersister persister,
-		                                 IInterceptor interceptor, ISessionImplementor session)
+										 IInterceptor interceptor, ISessionImplementor session)
 		{
 			//assembled state gets put in a new array (we read from cache by value!)
 			object[] assembledProps = TypeHelper.Assemble(values, persister.PropertyTypes, session, result);
-	
+
 			//from h3.2 TODO: reuse the PreLoadEvent
 			PreLoadEvent preLoadEvent = new PreLoadEvent((IEventSource) session);
 			preLoadEvent.Entity = result;
-			preLoadEvent.State=assembledProps;
+			preLoadEvent.State = assembledProps;
 			preLoadEvent.Id = id;
-			preLoadEvent.Persister=persister;
+			preLoadEvent.Persister = persister;
 
 			IPreLoadEventListener[] listeners = session.Listeners.PreLoadEventListeners;
 			for (int i = 0; i < listeners.Length; i++)

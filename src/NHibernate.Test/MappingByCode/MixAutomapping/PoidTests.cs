@@ -29,7 +29,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			var mapper = new ModelMapper(autoinspector);
 			mapper.Class<MyClass>(map => map.Id(x => x.EntityIdentificator));
 
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsPersistentId(typeof(MyClass).GetProperty("EntityIdentificator")), Is.True);
 		}
 
@@ -38,7 +38,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var autoinspector = new SimpleModelInspector();
 
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsPersistentId(typeof(TestEntity).GetProperty("Id")), Is.True);
 			Assert.That(inspector.IsPersistentId(typeof(TestEntity).GetProperty("id")), Is.True);
 			Assert.That(inspector.IsPersistentId(typeof(TestEntity).GetProperty("PoId")), Is.True);
@@ -52,7 +52,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		{
 			var autoinspector = new SimpleModelInspector();
 
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 			Assert.That(inspector.IsPersistentId(typeof(TestEntity).GetProperty("testEntityId")), Is.False);
 			Assert.That(inspector.IsPersistentId(typeof(TestEntity).GetProperty("Something")), Is.False);
 		}

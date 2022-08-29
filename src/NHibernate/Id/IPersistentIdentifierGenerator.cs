@@ -9,7 +9,7 @@ namespace NHibernate.Id
 		{
 			SqlStatementLogger = new SqlStatementLogger(false, false);
 		}
-		
+
 		/// <summary> The configuration parameter holding the schema name</summary>
 		public readonly static string Schema = "schema";
 

@@ -194,7 +194,7 @@ namespace NHibernate.Id.Enhanced
 		{
 			if (OptimizerFactory.None.Equals(optimizationStrategy) && incrementSize > 1)
 			{
-				Log.Warn("config specified explicit optimizer of [{0}], but [{1}={2}; honoring optimizer setting", 
+				Log.Warn("config specified explicit optimizer of [{0}], but [{1}={2}; honoring optimizer setting",
 					OptimizerFactory.None, IncrementParam, incrementSize);
 				incrementSize = 1;
 			}

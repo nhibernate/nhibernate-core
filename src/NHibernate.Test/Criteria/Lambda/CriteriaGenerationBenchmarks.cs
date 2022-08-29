@@ -26,7 +26,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		protected override void OnTearDown()
 		{
 		}
-		
+
 		//NH-1200 - Exception occurs when using criteria exist queries
 		[Test, Explicit]
 		public void Subquery()
@@ -100,12 +100,12 @@ namespace NHibernate.Test.Criteria.Lambda
 			for (int j = 0; j < 5; j++)
 			{
 				using (Timer.Start)
-				for (int i = 0; i < iterations; i++)
-				{
-					var batchItem = new Multi.CriteriaBatchItem<Person>(criteria);
-					batchItem.Init(s.GetSessionImplementation());
-					commands.AddRange(batchItem.GetCommands());
-				}
+					for (int i = 0; i < iterations; i++)
+					{
+						var batchItem = new Multi.CriteriaBatchItem<Person>(criteria);
+						batchItem.Init(s.GetSessionImplementation());
+						commands.AddRange(batchItem.GetCommands());
+					}
 				Console.WriteLine("Elapsed time (ms): " + Timer.ElapsedMilliseconds);
 			}
 		}

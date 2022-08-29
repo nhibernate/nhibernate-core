@@ -11,7 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1515
 
 		public class ClassWithInternal
 		{
-			internal virtual void DoSomething() {}
+			internal virtual void DoSomething() { }
 		}
 
 		public class ClassWithInternalProperty

@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2061
 		public virtual Guid Id { get; set; }
 		public virtual GroupComponent GroupComponent { get; set; }
 	}
-	
+
 	public class GroupComponent
 	{
 		public virtual IList<Country> Countries { get; set; }
@@ -17,5 +17,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2061
 	public class Country
 	{
 		public virtual string CountryCode { get; set; }
-	} 
+	}
 }

@@ -45,7 +45,7 @@ namespace NHibernate.Mapping.ByCode
 			BeforeMapSet += MemberReadOnlyAccessor;
 			BeforeMapMap += MemberReadOnlyAccessor;
 			BeforeMapList += MemberReadOnlyAccessor;
-			
+
 			BeforeMapManyToOne += MemberToFieldAccessor;
 			BeforeMapOneToOne += MemberToFieldAccessor;
 			BeforeMapAny += MemberToFieldAccessor;
@@ -66,7 +66,7 @@ namespace NHibernate.Mapping.ByCode
 			MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, member.LocalMember.ReflectedType);
 			if (parentReferenceProperty != null && MatchPropertyToField(parentReferenceProperty))
 			{
-				componentMapper.Parent(parentReferenceProperty, cp=> cp.Access(Accessor.Field));
+				componentMapper.Parent(parentReferenceProperty, cp => cp.Access(Accessor.Field));
 			}
 		}
 
@@ -156,9 +156,9 @@ namespace NHibernate.Mapping.ByCode
 		protected virtual void NoSetterPoidToField(IModelInspector modelInspector, System.Type type, IClassAttributesMapper classCustomizer)
 		{
 			MemberInfo poidPropertyOrField = MembersProvider.GetEntityMembersForPoid(type).FirstOrDefault(modelInspector.IsPersistentId);
-			if(MatchNoSetterProperty(poidPropertyOrField))
+			if (MatchNoSetterProperty(poidPropertyOrField))
 			{
-				classCustomizer.Id(idm=> idm.Access(Accessor.NoSetter));
+				classCustomizer.Id(idm => idm.Access(Accessor.NoSetter));
 			}
 		}
 
@@ -185,7 +185,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				return;
 			}
-			classCustomizer.Id(null, idm=> idm.Generator(Generators.Guid));
+			classCustomizer.Id(null, idm => idm.Generator(Generators.Guid));
 		}
 
 		protected SimpleModelInspector SimpleModelInspector

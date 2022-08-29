@@ -77,12 +77,12 @@ namespace NHibernate.Type
 
 		protected override void Clear(object collection)
 		{
-			((IList<T>)collection).Clear();
+			((IList<T>) collection).Clear();
 		}
 
 		protected override void Add(object collection, object element)
 		{
-			((IList<T>)collection).Add((T)element);
+			((IList<T>) collection).Add((T) element);
 		}
 
 		public override object ReplaceElements(
@@ -95,7 +95,7 @@ namespace NHibernate.Type
 			var elemType = GetElementType(session.Factory);
 			var targetPc = target as PersistentIdentifierBag<T>;
 			var originalPc = original as IPersistentCollection;
-			var iterOriginal = (IList<T>)original;
+			var iterOriginal = (IList<T>) original;
 			var clearTargetsDirtyFlag = false;
 			var clearTarget = true;
 
@@ -133,7 +133,7 @@ namespace NHibernate.Type
 				{
 					var currTarget = targetPc[i];
 					var orgToUse = originalLookup[currTarget].First();
-					targetPc[i] = (T)elemType.Replace(orgToUse, null, session, owner, copyCache);
+					targetPc[i] = (T) elemType.Replace(orgToUse, null, session, owner, copyCache);
 				}
 			}
 
@@ -147,7 +147,7 @@ namespace NHibernate.Type
 
 		protected override bool AreCollectionElementsEqual(IEnumerable original, IEnumerable target)
 		{
-			return CollectionHelper.BagEquals((IEnumerable<T>)original, (IEnumerable<T>)target);
+			return CollectionHelper.BagEquals((IEnumerable<T>) original, (IEnumerable<T>) target);
 		}
 	}
 }

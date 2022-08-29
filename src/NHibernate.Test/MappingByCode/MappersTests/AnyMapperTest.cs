@@ -248,7 +248,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			mapper.MetaValue('A', typeof(MyReferenceClass));
 			mapper.MetaValue('B', typeof(MyClass));
 			Assert.That(hbmAny.metavalue, Has.Length.EqualTo(2));
-			Assert.That(hbmAny.metavalue.Select(mv => mv.value), Is.EquivalentTo(new [] {"A", "B"}));
+			Assert.That(hbmAny.metavalue.Select(mv => mv.value), Is.EquivalentTo(new[] { "A", "B" }));
 			Assert.That(hbmAny.metavalue.Any(mv => mv.@class.Contains("MyReferenceClass")), Is.True);
 			Assert.That(hbmAny.metavalue.Any(mv => mv.@class.Contains("MyClass")), Is.True);
 		}

@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1492
 		private string _deleted;
 		private string _description;
 		private int _id;
-		public Entity() {}
+		public Entity() { }
 
 		public Entity(int code, string description)
 		{

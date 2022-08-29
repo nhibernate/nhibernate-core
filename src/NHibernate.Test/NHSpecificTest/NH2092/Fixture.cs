@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2092
 				{
 					var person = new Person { Id = 1, Name = "Person1" };
 					var employee = new Employee { Id = 1, Name = "Emp1", Person = person };
-					
+
 					s.Save(person);
 					s.Save(employee);
 

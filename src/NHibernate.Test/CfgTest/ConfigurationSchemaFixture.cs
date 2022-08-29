@@ -1,8 +1,8 @@
-using NHibernate.Event;
-using NUnit.Framework;
+using System.Xml;
 using NHibernate.Cfg;
 using NHibernate.Cfg.ConfigurationSchema;
-using System.Xml;
+using NHibernate.Event;
+using NUnit.Framework;
 
 namespace NHibernate.Test.CfgTest
 {
@@ -30,7 +30,7 @@ namespace NHibernate.Test.CfgTest
 			Assert.IsTrue(hc.UseReflectionOptimizer);
 			Assert.AreEqual("NHibernate.Test", hc.SessionFactory.Name);
 		}
- 
+
 		[Test]
 		public void ByteCodeProvider()
 		{
@@ -98,7 +98,7 @@ namespace NHibernate.Test.CfgTest
 </hibernate-configuration>";
 
 			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
-			Assert.Throws<HibernateConfigException>(()=> new HibernateConfiguration(xtr));
+			Assert.Throws<HibernateConfigException>(() => new HibernateConfiguration(xtr));
 		}
 
 		[Test]
@@ -119,8 +119,8 @@ namespace NHibernate.Test.CfgTest
 		[Test]
 		public void Properties()
 		{
-				string xml =
-				@"<?xml version='1.0' encoding='utf-8' ?>
+			string xml =
+			@"<?xml version='1.0' encoding='utf-8' ?>
 <hibernate-configuration xmlns='urn:nhibernate-configuration-2.2'>
 	<session-factory>
 		<property name='connection.provider'>Value of connection.provider</property>
@@ -197,7 +197,7 @@ namespace NHibernate.Test.CfgTest
 </hibernate-configuration>";
 
 			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
-			Assert.Throws<HibernateConfigException>(()=>new HibernateConfiguration(xtr));
+			Assert.Throws<HibernateConfigException>(() => new HibernateConfiguration(xtr));
 		}
 
 		[Test]

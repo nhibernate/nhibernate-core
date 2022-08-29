@@ -1,8 +1,8 @@
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
-using NUnit.Framework;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
+using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {
@@ -15,7 +15,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 			public string Something { get; set; }
 		}
 
-		private class MyClassBaseMap<T> : ClassMapping<T> where T:MyClass
+		private class MyClassBaseMap<T> : ClassMapping<T> where T : MyClass
 		{
 			public MyClassBaseMap()
 			{
@@ -23,7 +23,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 			}
 		}
 
-		private class MyClassMap: ClassMapping<MyClass>
+		private class MyClassMap : ClassMapping<MyClass>
 		{
 			public MyClassMap()
 			{
@@ -60,7 +60,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 		public void WhenRegisterClassMappingThroughCollectionOfTypeThenMapTheClass()
 		{
 			var mapper = new ModelMapper();
-			mapper.AddMappings(new []{typeof(MyClassMap)});
+			mapper.AddMappings(new[] { typeof(MyClassMap) });
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
 
 			ModelIsWellFormed(hbmMapping);

@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2707
 
 	public class SimpleCustomType : IUserType
 	{
-		private static readonly SqlType[] ReturnSqlTypes = {SqlTypeFactory.Int32};
+		private static readonly SqlType[] ReturnSqlTypes = { SqlTypeFactory.Int32 };
 
 		#region IUserType Members
 
@@ -111,7 +111,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2707
 			}
 
 			int value = rs.GetInt32(index0);
-			return new MyType {ToPersist = value};
+			return new MyType { ToPersist = value };
 		}
 
 		public bool IsMutable

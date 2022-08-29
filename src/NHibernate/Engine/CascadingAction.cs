@@ -98,7 +98,7 @@ namespace NHibernate.Engine
 			{
 				// does not handle arrays (that's ok, cos they can't be lazy)
 				// or newly instantiated collections, so we can do the cast
-				return ((IPersistentCollection)collection).QueuedAdditionIterator;
+				return ((IPersistentCollection) collection).QueuedAdditionIterator;
 			}
 		}
 
@@ -119,26 +119,26 @@ namespace NHibernate.Engine
 		public static readonly CascadingAction Lock = new LockCascadingAction();
 
 		/// <seealso cref="ISession.Refresh(object)"/>
-		public static readonly CascadingAction Refresh= new RefreshCascadingAction();
+		public static readonly CascadingAction Refresh = new RefreshCascadingAction();
 
 		/// <seealso cref="ISession.Evict(object)"/>
-		public static readonly CascadingAction Evict= new EvictCascadingAction();
+		public static readonly CascadingAction Evict = new EvictCascadingAction();
 
 		/// <seealso cref="ISession.SaveOrUpdate(object)"/>
-		public static readonly CascadingAction SaveUpdate= new SaveUpdateCascadingAction();
+		public static readonly CascadingAction SaveUpdate = new SaveUpdateCascadingAction();
 
 		/// <seealso cref="ISession.Merge(object)"/>
-		public static readonly CascadingAction Merge= new MergeCascadingAction();
-        
+		public static readonly CascadingAction Merge = new MergeCascadingAction();
+
 		/// <seealso cref="ISession.Persist(object)"/>
-		public static readonly CascadingAction Persist= new PersistCascadingAction();
+		public static readonly CascadingAction Persist = new PersistCascadingAction();
 
 		/// <summary> Execute persist during flush time </summary>
 		/// <seealso cref="ISession.Persist(object)"/>
-		public static readonly CascadingAction PersistOnFlush= new PersistOnFlushCascadingAction();
+		public static readonly CascadingAction PersistOnFlush = new PersistOnFlushCascadingAction();
 
 		/// <seealso cref="ISession.Replicate(object, ReplicationMode)"/>
-		public static readonly CascadingAction Replicate= new ReplicateCascadingAction();
+		public static readonly CascadingAction Replicate = new ReplicateCascadingAction();
 
 		#endregion
 
@@ -150,7 +150,7 @@ namespace NHibernate.Engine
 				{
 					log.Debug("cascading to delete: {0}", entityName);
 				}
-				session.Delete(entityName, child, isCascadeDeleteEnabled, (ISet<object>)anything);
+				session.Delete(entityName, child, isCascadeDeleteEnabled, (ISet<object>) anything);
 			}
 
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
@@ -195,7 +195,7 @@ namespace NHibernate.Engine
 				{
 					log.Debug("cascading to refresh: {0}", entityName);
 				}
-				session.Refresh(child, (IDictionary)anything);
+				session.Refresh(child, (IDictionary) anything);
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{
@@ -267,7 +267,7 @@ namespace NHibernate.Engine
 				{
 					log.Debug("cascading to merge: {0}", entityName);
 				}
-				session.Merge(entityName, child, (IDictionary)anything);
+				session.Merge(entityName, child, (IDictionary) anything);
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{
@@ -281,7 +281,7 @@ namespace NHibernate.Engine
 				get { return false; }
 			}
 		}
-        
+
 		private partial class PersistCascadingAction : CascadingAction
 		{
 			public override void Cascade(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled)
@@ -290,7 +290,7 @@ namespace NHibernate.Engine
 				{
 					log.Debug("cascading to persist: {0}", entityName);
 				}
-				session.Persist(entityName, child, (IDictionary)anything);
+				session.Persist(entityName, child, (IDictionary) anything);
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{
@@ -315,7 +315,7 @@ namespace NHibernate.Engine
 				{
 					log.Debug("cascading to persistOnFlush: {0}", entityName);
 				}
-				session.PersistOnFlush(entityName, child, (IDictionary)anything);
+				session.PersistOnFlush(entityName, child, (IDictionary) anything);
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{
@@ -340,7 +340,7 @@ namespace NHibernate.Engine
 				IType type = persister.PropertyTypes[propertyIndex];
 				if (type.IsEntityType)
 				{
-					string childEntityName = ((EntityType)type).GetAssociatedEntityName(session.Factory);
+					string childEntityName = ((EntityType) type).GetAssociatedEntityName(session.Factory);
 
 					if (!IsInManagedState(child, session) && !child.IsProxy() && ForeignKeys.IsTransientSlow(childEntityName, child, session))
 					{
@@ -373,7 +373,7 @@ namespace NHibernate.Engine
 				{
 					log.Debug("cascading to replicate: {0}", entityName);
 				}
-				session.Replicate(entityName, child, (ReplicationMode)anything);
+				session.Replicate(entityName, child, (ReplicationMode) anything);
 			}
 			public override IEnumerable GetCascadableChildrenIterator(IEventSource session, CollectionType collectionType, object collection)
 			{

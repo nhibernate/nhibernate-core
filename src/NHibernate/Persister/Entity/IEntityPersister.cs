@@ -1,14 +1,14 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Engine;
 using NHibernate.Id;
+using NHibernate.Intercept;
 using NHibernate.Metadata;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
-using System.Collections;
-using System.Collections.Generic;
-using NHibernate.Intercept;
 using NHibernate.Util;
 
 namespace NHibernate.Persister.Entity

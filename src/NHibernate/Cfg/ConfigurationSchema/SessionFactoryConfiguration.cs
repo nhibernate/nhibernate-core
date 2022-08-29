@@ -52,7 +52,7 @@ namespace NHibernate.Cfg.ConfigurationSchema
 			XPathNodeIterator xpni = navigator.Select(CfgXmlHelper.SessionFactoryPropertiesExpression);
 			while (xpni.MoveNext())
 			{
-				string propValue = xpni.Current.Value!=null ? xpni.Current.Value.Trim() : string.Empty;
+				string propValue = xpni.Current.Value != null ? xpni.Current.Value.Trim() : string.Empty;
 				XPathNavigator pNav = xpni.Current.Clone();
 				pNav.MoveToFirstAttribute();
 				string propName = pNav.Value;

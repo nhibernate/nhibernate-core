@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2710
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e = new Entity {MbrId = 1, MrcDailyMoved = "N"};
+				var e = new Entity { MbrId = 1, MrcDailyMoved = "N" };
 				session.Save(e);
 
 				transaction.Commit();
@@ -50,8 +50,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2710
 			{
 				session.EnableFilter("Filter").SetParameter("MbrId", 5);
 				session.Query<Entity>()
-				       .Where(o => ids.Contains(o.Id))
-				       .Update(o => new Entity { MrcDailyMoved = "Y" });
+					   .Where(o => ids.Contains(o.Id))
+					   .Update(o => new Entity { MrcDailyMoved = "Y" });
 
 				t.Commit();
 			}

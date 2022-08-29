@@ -12,13 +12,13 @@ namespace NHibernate.Engine.Transaction
 	/// </summary>
 	/// <remarks>
 	/// <list type="bullet">
-  /// <listheader>
+	/// <listheader>
 	///      <description>Processing comes in two flavors:</description>
-  ///  </listheader>
-  ///  <item>
+	///  </listheader>
+	///  <item>
 	///      <term><see cref="DoIsolatedWork"/> </term>
 	///      <description>makes sure the work to be done is performed in a separate, distinct transaction</description>
-  ///  </item>
+	///  </item>
 	///  <item>
 	///      <term><see cref="DoNonTransactedWork"/> </term>
 	///      <description>makes sure the work to be done is performed outside the scope of any transaction</description>

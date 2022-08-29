@@ -25,12 +25,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 
 		private OffsetStartsAtOneTestDialect OffsetStartsAtOneTestDialect
 		{
-			get { return (OffsetStartsAtOneTestDialect)Sfi.Dialect; }
+			get { return (OffsetStartsAtOneTestDialect) Sfi.Dialect; }
 		}
 
 		private OffsetTestDriver CustomDriver
 		{
-			get { return (OffsetTestDriver)Sfi.ConnectionProvider.Driver; }
+			get { return (OffsetTestDriver) Sfi.ConnectionProvider.Driver; }
 		}
 
 		protected override void OnSetUp()
@@ -119,7 +119,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 			if (!hasLimit)
 				return;
 
-			OffsetParameterValueFromCommand = (int)command.Parameters[_offsetParameterIndex].Value;
+			OffsetParameterValueFromCommand = (int) command.Parameters[_offsetParameterIndex].Value;
 		}
 	}
 }

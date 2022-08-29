@@ -1,9 +1,8 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Antlr.Runtime;
-
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
@@ -46,7 +45,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public FromElement(IToken token) : base(token)
 		{
-			_token= token;
+			_token = token;
 		}
 
 		/// <summary>
@@ -55,7 +54,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <param name="fromClause">The FROM clause to which this element belongs.</param>
 		/// <param name="origin">The origin (LHS) of this element.</param>
 		/// <param name="alias">The alias applied to this element.</param>
-		protected FromElement(FromClause fromClause,FromElement origin,string alias):this(origin._token)
+		protected FromElement(FromClause fromClause, FromElement origin, string alias) : this(origin._token)
 		{
 			_fromClause = fromClause;
 			_origin = origin;
@@ -185,7 +184,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public bool IsDereferencedBySuperclassOrSubclassProperty
 		{
-			get 
+			get
 			{
 				return _dereferencedBySubclassProperty || _dereferencedBySuperclassProperty;
 			}
@@ -420,8 +419,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public virtual bool InProjectionList
 		{
 			get { return !IsImplied && IsFromOrJoinFragment; }
-			set 
-			{ 
+			set
+			{
 				// Do nothing, eplicit from elements are *always* in the projection list. 
 			}
 		}
@@ -604,7 +603,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				// HHH-276 : implied joins in a subselect where clause - The destination needs to be added
 				// to the destination's from clause.
-				FromClause.AddChild(this);	// Not sure if this is will fix everything, but it works.
+				FromClause.AddChild(this);  // Not sure if this is will fix everything, but it works.
 			}
 			else
 			{
@@ -717,10 +716,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("{0} :  {1} ({2}) -> {3}",
-				          fromClause,
-				          className,
-				          (classAlias ?? "no alias"),
-				          tableAlias);
+						  fromClause,
+						  className,
+						  (classAlias ?? "no alias"),
+						  tableAlias);
 			}
 		}
 

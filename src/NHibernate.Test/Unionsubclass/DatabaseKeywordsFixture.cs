@@ -1,6 +1,6 @@
-﻿using NHibernate.Cfg;
+﻿using System.Collections;
+using NHibernate.Cfg;
 using NUnit.Framework;
-using System.Collections;
 
 namespace NHibernate.Test.Unionsubclass
 {

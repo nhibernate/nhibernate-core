@@ -29,7 +29,7 @@ namespace NHibernate.Loader.Collection
 			// NH Different behavior : passing enabledFilters instead empty-filter
 			allAssociations.Add(
 				new OuterJoinableAssociation(collectionPersister.CollectionType, null, null, alias, JoinType.LeftOuterJoin, null, Factory,
-				                             enabledFilters));
+											 enabledFilters));
 
 			InitPersisters(allAssociations, LockMode.None);
 			InitStatementString(alias, batchSize, subquery);
@@ -54,7 +54,7 @@ namespace NHibernate.Loader.Collection
 				// define the many-to-many; we need that OJA so that we can
 				// use its alias here
 				// TODO : is there a better way here?
-				IAssociationType associationType = (IAssociationType)collectionPersister.ElementType;
+				IAssociationType associationType = (IAssociationType) collectionPersister.ElementType;
 				foreach (OuterJoinableAssociation oja in associations)
 				{
 					if (oja.JoinableType == associationType)
@@ -72,7 +72,7 @@ namespace NHibernate.Loader.Collection
 			SqlSelectBuilder select =
 				new SqlSelectBuilder(Factory)
 				.SetSelectClause(collectionPersister.SelectFragment(alias, CollectionSuffixes[0])
-				                                              + SelectString(associations))
+															  + SelectString(associations))
 				.SetFromClause(collectionPersister.TableName, alias)
 				.SetWhereClause(whereString.ToSqlString())
 				.SetOuterJoins(ojf.ToFromFragmentString, ojf.ToWhereFragmentString);

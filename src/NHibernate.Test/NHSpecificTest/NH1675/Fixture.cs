@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1675
 			{
 				for (var i = 0; i < 5; i++)
 				{
-					s.Save(new Person {FirstName = "Name" + i});
+					s.Save(new Person { FirstName = "Name" + i });
 				}
 				tx.Commit();
 			}

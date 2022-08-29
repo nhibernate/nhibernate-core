@@ -109,7 +109,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public int? BatchSize
 		{
-			get { return batchsizeSpecified ? batchsize : (int?)null; }
+			get { return batchsizeSpecified ? batchsize : (int?) null; }
 		}
 
 		public string PersisterQualifiedName

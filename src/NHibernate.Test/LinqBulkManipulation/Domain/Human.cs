@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.LinqBulkManipulation.Domain
 {
-	public class Human: Mammal
+	public class Human : Mammal
 	{
 		private Name name;
 		private string nickName;

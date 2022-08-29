@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1163
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
-			mapper.Class<Account>(m=>
+			mapper.Class<Account>(m =>
 			{
 				m.Table("account");
 				m.Id(x => x.Id, c =>

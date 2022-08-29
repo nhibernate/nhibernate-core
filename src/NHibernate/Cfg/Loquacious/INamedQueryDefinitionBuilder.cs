@@ -85,7 +85,7 @@ namespace NHibernate.Cfg.Loquacious
 
 		internal NamedQueryDefinition Build()
 		{
-			return new NamedQueryDefinition(Query, IsCacheable, CacheRegion, Timeout, FetchSize, FlushMode, CacheMode ,IsReadOnly, Comment, new Dictionary<string, string>(1));
+			return new NamedQueryDefinition(Query, IsCacheable, CacheRegion, Timeout, FetchSize, FlushMode, CacheMode, IsReadOnly, Comment, new Dictionary<string, string>(1));
 		}
 	}
 }

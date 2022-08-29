@@ -40,7 +40,7 @@ namespace NHibernate.Util
 
 		internal static bool IsCollectionType(this System.Type type)
 		{
-			return typeof (IEnumerable).IsAssignableFrom(type) && type != typeof (string);
+			return typeof(IEnumerable).IsAssignableFrom(type) && type != typeof(string);
 		}
 
 		internal static System.Type UnwrapIfNullable(this System.Type type)
@@ -55,9 +55,9 @@ namespace NHibernate.Util
 		{
 			var code = System.Type.GetTypeCode(type);
 			if (code == TypeCode.SByte || code == TypeCode.Byte ||
-			    code == TypeCode.Int16 || code == TypeCode.UInt16 ||
-			    code == TypeCode.Int32 || code == TypeCode.UInt32 ||
-			    code == TypeCode.Int64 || code == TypeCode.UInt64)
+				code == TypeCode.Int16 || code == TypeCode.UInt16 ||
+				code == TypeCode.Int32 || code == TypeCode.UInt32 ||
+				code == TypeCode.Int64 || code == TypeCode.UInt64)
 			{
 				return true;
 			}

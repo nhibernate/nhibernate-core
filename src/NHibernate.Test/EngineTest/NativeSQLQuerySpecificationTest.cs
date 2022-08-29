@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using NHibernate.Engine.Query.Sql;
 using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace NHibernate.Test.EngineTest
 {

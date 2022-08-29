@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using NHibernate.Criterion;
-using NUnit.Framework;
-using NHibernate.Linq;
 using System.Linq;
+using NHibernate.Criterion;
+using NHibernate.Linq;
 using NHibernate.Linq.Functions;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2394
 {

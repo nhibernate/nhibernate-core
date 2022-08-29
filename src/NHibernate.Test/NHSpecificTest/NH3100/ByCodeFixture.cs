@@ -33,9 +33,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3100
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.Save(new Entity {Flag = true});
-				session.Save(new Entity {Flag = false});
-				session.Save(new Entity {Flag = null});
+				session.Save(new Entity { Flag = true });
+				session.Save(new Entity { Flag = false });
+				session.Save(new Entity { Flag = null });
 				session.Flush();
 				transaction.Commit();
 			}

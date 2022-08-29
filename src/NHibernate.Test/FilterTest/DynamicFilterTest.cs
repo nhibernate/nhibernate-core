@@ -50,8 +50,8 @@ namespace NHibernate.Test.FilterTest
 			{
 				session.EnableFilter("fulfilledOrders").SetParameter("asOfDate", testData.lastMonth);
 				var sp = (Salesperson) session.CreateQuery("from Salesperson as s where s.id = :id")
-				                          .SetInt64("id", testData.steveId)
-				                          .UniqueResult();
+										  .SetInt64("id", testData.steveId)
+										  .UniqueResult();
 				Assert.AreEqual(1, sp.Orders.Count, "Filtered-collection not bypassing 2L-cache");
 
 				CollectionCacheEntry cachedData2 = (CollectionCacheEntry) persister.Cache.Cache.Get(cacheKey);
@@ -140,7 +140,7 @@ namespace NHibernate.Test.FilterTest
 				session.EnableFilter("region").SetParameter("region", "APAC");
 
 				session.EnableFilter("effectiveDate")
-				       .SetParameter("asOfDate", testData.lastMonth);
+					   .SetParameter("asOfDate", testData.lastMonth);
 
 				log.Info("HQL against Salesperson...");
 				IList results = session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").List();
@@ -167,22 +167,22 @@ namespace NHibernate.Test.FilterTest
 				session.EnableFilter("region").SetParameter("region", "APAC");
 
 				session.EnableFilter("fulfilledOrders")
-				       .SetParameter("asOfDate", testData.lastMonth);
+					   .SetParameter("asOfDate", testData.lastMonth);
 
 				session.EnableFilter("effectiveDate")
-				       .SetParameter("asOfDate", testData.lastMonth);
+					   .SetParameter("asOfDate", testData.lastMonth);
 
 				log.Info("Criteria query against Salesperson...");
 				IList salespersons = session.CreateCriteria(typeof(Salesperson))
-				                            .Fetch("orders")
-				                            .List();
+											.Fetch("orders")
+											.List();
 				Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 				Assert.AreEqual(1, ((Salesperson) salespersons[0]).Orders.Count, "Incorrect order count");
 
 				log.Info("Criteria query against Product...");
 				IList products = session.CreateCriteria(typeof(Product))
-				                        .Add(Expression.Eq("StockNumber", 124))
-				                        .List();
+										.Add(Expression.Eq("StockNumber", 124))
+										.List();
 				Assert.AreEqual(1, products.Count, "Incorrect product count");
 			}
 		}
@@ -324,7 +324,7 @@ namespace NHibernate.Test.FilterTest
 			using (var session = OpenSession())
 			{
 				session.EnableFilter("seniorSalespersons")
-				       .SetParameter("asOfDate", testData.lastMonth);
+					   .SetParameter("asOfDate", testData.lastMonth);
 
 				log.Info("Performing Load of Department...");
 				Department department = (Department) session.Load(typeof(Department), testData.deptId);
@@ -343,7 +343,7 @@ namespace NHibernate.Test.FilterTest
 			using (var session = OpenSession())
 			{
 				session.EnableFilter("regionlist")
-				       .SetParameterList("regions", new [] { "LA", "APAC" });
+					   .SetParameterList("regions", new[] { "LA", "APAC" });
 
 				log.Debug("Performing query of Salespersons");
 				IList salespersons = session.CreateQuery("from Salesperson").List();
@@ -364,14 +364,14 @@ namespace NHibernate.Test.FilterTest
 					() =>
 					{
 						session.EnableFilter("regionlist")
-						       .SetParameterList("regions", new HashSet<string> { "LA", "APAC" });
+							   .SetParameterList("regions", new HashSet<string> { "LA", "APAC" });
 
 						log.Debug("Performing query of Salespersons");
 						var salespersons = session.CreateQuery("from Salesperson").List();
 						Assert.That(salespersons.Count, Is.EqualTo(1), "Incorrect salesperson count");
 
 						session.EnableFilter("guidlist")
-						       .SetParameterList("guids", new HashSet<Guid> { testData.Product1Guid, testData.Product2Guid });
+							   .SetParameterList("guids", new HashSet<Guid> { testData.Product1Guid, testData.Product2Guid });
 
 						log.Debug("Performing query of Products");
 						var products = session.CreateQuery("from Product").List();
@@ -388,9 +388,9 @@ namespace NHibernate.Test.FilterTest
 				session.EnableFilter("effectiveDate").SetParameter("asOfDate", DateTime.Today);
 
 				Product prod = (Product) session.CreateCriteria(typeof(Product))
-				                                .SetResultTransformer(new DistinctRootEntityResultTransformer())
-				                                .Add(Expression.Eq("id", testData.prod1Id))
-				                                .UniqueResult();
+												.SetResultTransformer(new DistinctRootEntityResultTransformer())
+												.Add(Expression.Eq("id", testData.prod1Id))
+												.UniqueResult();
 
 				Assert.IsNotNull(prod);
 				Assert.AreEqual(1, prod.Categories.Count, "Incorrect Product.categories count for filter");
@@ -450,8 +450,8 @@ namespace NHibernate.Test.FilterTest
 
 				// Force the categories to not get initialized here
 				IList result = session.CreateQuery("from Product as p where p.id = :id")
-				                      .SetInt64("id", testData.prod1Id)
-				                      .List();
+									  .SetInt64("id", testData.prod1Id)
+									  .List();
 				Assert.IsTrue(result.Count > 0, "No products returned from HQL");
 
 				Product prod = (Product) result[0];
@@ -528,8 +528,8 @@ namespace NHibernate.Test.FilterTest
 			using (var session = OpenSession())
 			{
 				IList result = session.CreateCriteria(typeof(Product))
-				                      .Add(Expression.Eq("id", testData.prod1Id))
-				                      .List();
+									  .Add(Expression.Eq("id", testData.prod1Id))
+									  .List();
 
 				Product prod = (Product) result[0];
 
@@ -571,7 +571,7 @@ namespace NHibernate.Test.FilterTest
 
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override string[] Mappings => new []
+		protected override string[] Mappings => new[]
 		{
 			"FilterTest.defs.hbm.xml",
 			"FilterTest.classes.hbm.xml",

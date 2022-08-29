@@ -1,6 +1,6 @@
 using System;
-using NHibernate.SqlCommand;
 using NHibernate.Engine;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Criterion
@@ -30,7 +30,7 @@ namespace NHibernate.Criterion
 		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public virtual string[] GetColumnAliases(int loc)
 		{
-			return new[] {GetColumnAlias(loc)};
+			return new[] { GetColumnAlias(loc) };
 		}
 
 		protected string GetColumnAlias(int position)
@@ -43,7 +43,7 @@ namespace NHibernate.Criterion
 			return GetColumnAliases(alias, position);
 		}
 
-		public String[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery) 
+		public String[] GetColumnAliases(int position, ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			int numColumns = this.GetColumnCount(criteria, criteriaQuery);
 			string[] aliases = new string[numColumns];
@@ -79,12 +79,12 @@ namespace NHibernate.Criterion
 		public abstract SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery);
 
 		public abstract IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery);
-		
+
 		private int GetColumnCount(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			IType[] types = this.GetTypes(criteria, criteriaQuery);
 			int count = 0;
-			for (int i = 0; i < types.Length; i++) 
+			for (int i = 0; i < types.Length; i++)
 			{
 				count += types[i].GetColumnSpan(criteriaQuery.Factory);
 			}

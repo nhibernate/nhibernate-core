@@ -7,7 +7,7 @@ namespace NHibernate.Test.Generatedkeys.Select
 		private int id;
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
 		private string name;
-		protected MyEntity() {}
+		protected MyEntity() { }
 
 		public MyEntity(string name)
 		{

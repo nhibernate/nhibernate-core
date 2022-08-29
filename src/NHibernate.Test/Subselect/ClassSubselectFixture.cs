@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Subselect
 {
 	[TestFixture]
-	public class ClassSubselectFixture: TestCase
+	public class ClassSubselectFixture : TestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
@@ -17,7 +17,7 @@ namespace NHibernate.Test.Subselect
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"Subselect.Beings.hbm.xml"}; }
+			get { return new[] { "Subselect.Beings.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly
@@ -50,7 +50,7 @@ namespace NHibernate.Test.Subselect
 				Assert.That(being.Species, Is.Not.Null.And.Not.Empty);
 			}
 			s.Clear();
-			Sfi.Evict(typeof (Being));
+			Sfi.Evict(typeof(Being));
 			Being gav = s.Get<Being>(gavin.Id);
 			Assert.That(gav.Location, Is.Not.Null.And.Not.Empty);
 			Assert.That(gav.Identity, Is.Not.Null.And.Not.Empty);

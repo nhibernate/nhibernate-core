@@ -7,14 +7,14 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1159
 {
 	[TestFixture]
-	public class Fixture:BugTestCase
+	public class Fixture : BugTestCase
 	{
-		protected override void  OnSetUp()
+		protected override void OnSetUp()
 		{
 			using (ISession session = OpenSession())
 			using (ITransaction tran = session.BeginTransaction())
 			{
-				Contact c=new Contact{Id=1,Forename ="David",Surname="Bates",PreferredName="Davey"};
+				Contact c = new Contact { Id = 1, Forename = "David", Surname = "Bates", PreferredName = "Davey" };
 				session.Save(c);
 				tran.Commit();
 			}
@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 			{
 				session.FlushMode = FlushMode.Commit;
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(0));
-				Contact contact = session.Get<Contact>((Int64)1);
+				Contact contact = session.Get<Contact>((Int64) 1);
 				contact.PreferredName = "Updated preferred name";
 				session.Flush();
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
 				ICriteria query = session.CreateCriteria(typeof(Contact));
-				query.Add(Expression.Eq("Id", (Int64)1));
+				query.Add(Expression.Eq("Id", (Int64) 1));
 				query.UniqueResult<Contact>();
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
@@ -69,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 			{
 				session.FlushMode = FlushMode.Manual;
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(0));
-				Contact contact = session.Get<Contact>((Int64)1);
+				Contact contact = session.Get<Contact>((Int64) 1);
 				contact.PreferredName = "Updated preferred name";
 				session.Flush();
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
 				ICriteria query = session.CreateCriteria(typeof(Contact));
-				query.Add(Expression.Eq("Id", (Int64)1));
+				query.Add(Expression.Eq("Id", (Int64) 1));
 				query.UniqueResult<Contact>();
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
@@ -100,7 +100,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				session.FlushMode = FlushMode.Auto;
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(0));
 
-				Contact contact = session.Get<Contact>((Int64)1);
+				Contact contact = session.Get<Contact>((Int64) 1);
 				contact.PreferredName = "Updated preferred name";
 				session.Flush();
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
@@ -110,7 +110,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
 				ICriteria query = session.CreateCriteria(typeof(Contact));
-				query.Add(Expression.Eq("Id", (Int64)1));
+				query.Add(Expression.Eq("Id", (Int64) 1));
 				query.UniqueResult<Contact>();
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(2));

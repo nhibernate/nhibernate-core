@@ -20,7 +20,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	public class ResultVariableRefNode : HqlSqlWalkerNode
 	{
 		private ISelectExpression _selectExpression;
-		
+
 		public ResultVariableRefNode(IToken token)
 			: base(token)
 		{

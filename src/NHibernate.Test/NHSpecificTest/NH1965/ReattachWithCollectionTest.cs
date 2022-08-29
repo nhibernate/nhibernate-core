@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1965
 		public virtual IList<Cat> Children { get; set; }
 	}
 
-	public class ReattachWithCollectionTest: TestCaseMappingByCode
+	public class ReattachWithCollectionTest : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
@@ -23,8 +23,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1965
 			// Note: DeleteOrphans has no sense, only added to match the case reported.
 			mapper.Class<Cat>(cm =>
 							  {
-								cm.Id(x => x.Id, map => map.Generator(Generators.Identity));
-													cm.Bag(x => x.Children, map => map.Cascade(Mapping.ByCode.Cascade.All.Include(Mapping.ByCode.Cascade.DeleteOrphans)), rel => rel.OneToMany());
+								  cm.Id(x => x.Id, map => map.Generator(Generators.Identity));
+								  cm.Bag(x => x.Children, map => map.Cascade(Mapping.ByCode.Cascade.All.Include(Mapping.ByCode.Cascade.DeleteOrphans)), rel => rel.OneToMany());
 							  });
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			return mappings;

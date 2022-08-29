@@ -20,7 +20,7 @@ namespace NHibernate.Test.Cascade
 		[Test]
 		public void RefreshCascade()
 		{
-			using(ISession session = OpenSession())
+			using (ISession session = OpenSession())
 			{
 				using (ITransaction txn = session.BeginTransaction())
 				{

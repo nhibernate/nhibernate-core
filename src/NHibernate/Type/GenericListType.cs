@@ -80,7 +80,7 @@ namespace NHibernate.Type
 
 		public override object IndexOf(object collection, object element)
 		{
-			var list = (IList<T>)collection;
+			var list = (IList<T>) collection;
 			int i = list.IndexOf((T) element);
 			if (i < 0)
 				return null;

@@ -44,7 +44,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			System.Type proxyType = factory.CreateProxyType(_baseType, interfaceList.ToArray());
 
 			// Initialize the proxy with the deserialized data
-			var args = new object[] {info, context};
+			var args = new object[] { info, context };
 			_proxy = (IProxy) Activator.CreateInstance(proxyType, args);
 		}
 
@@ -61,7 +61,7 @@ namespace NHibernate.Proxy.DynamicProxy
 		#region ISerializable Members
 
 		[SecurityCritical]
-		public void GetObjectData(SerializationInfo info, StreamingContext context) {}
+		public void GetObjectData(SerializationInfo info, StreamingContext context) { }
 
 		#endregion
 	}

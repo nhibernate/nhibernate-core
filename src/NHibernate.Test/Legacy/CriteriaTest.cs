@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using NHibernate.DomainModel;
 using NHibernate.Criterion;
+using NHibernate.DomainModel;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 
@@ -121,7 +121,7 @@ namespace NHibernate.Test.Legacy
 		{
 			using (ISession s = OpenSession())
 			{
-				Assert.Throws<QueryException>(() =>s.CreateCriteria(typeof(Master))
+				Assert.Throws<QueryException>(() => s.CreateCriteria(typeof(Master))
 					.Add(Expression.Like("Details", "SomeString"))
 					.List());
 			}
@@ -147,7 +147,7 @@ namespace NHibernate.Test.Legacy
 		{
 			using (ISession s = OpenSession())
 			{
-				Assert.Throws<QueryException>(() =>s.CreateCriteria(typeof(Master))
+				Assert.Throws<QueryException>(() => s.CreateCriteria(typeof(Master))
 					.Add(Expression.Eq("Details.I", 10))
 					.List());
 			}
@@ -161,9 +161,9 @@ namespace NHibernate.Test.Legacy
 				s.Save(new Master());
 				s.Flush();
 				Assert.AreEqual(1, s.CreateCriteria(typeof(Master))
-				                   	.CreateAlias("Details", "detail", JoinType.LeftOuterJoin)
-				                   	.Fetch("Details")
-				                   	.List().Count);
+									   .CreateAlias("Details", "detail", JoinType.LeftOuterJoin)
+									   .Fetch("Details")
+									   .List().Count);
 				s.Delete("from Master");
 				s.Flush();
 			}
@@ -174,7 +174,7 @@ namespace NHibernate.Test.Legacy
 		{
 			using (ISession s = OpenSession())
 			{
-				Assert.AreEqual(typeof(Master), 
+				Assert.AreEqual(typeof(Master),
 					s.CreateCriteria(typeof(Master)).GetRootEntityTypeIfAvailable());
 			}
 		}

@@ -190,7 +190,7 @@ namespace NHibernate.Test.SystemTransactions
 		{
 			if (!Sfi.ConnectionProvider.Driver.SupportsSystemTransactions)
 				Assert.Ignore("Driver does not support System.Transactions. Ignoring test.");
-			
+
 			// Note: For system transaction, calling Close() on the session isn't
 			// supported, so we don't need to test that scenario.
 

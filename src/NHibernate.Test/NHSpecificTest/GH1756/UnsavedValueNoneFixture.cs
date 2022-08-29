@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1756
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity { Id = Guid.NewGuid(), Name = "Bob"};
+				var e1 = new Entity { Id = Guid.NewGuid(), Name = "Bob" };
 				session.Save(e1);
 
 				transaction.Commit();
@@ -62,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1756
 		[Test]
 		public void ShouldFailByTryingToUpdate()
 		{
-			var e = new Entity { Id = Guid.NewGuid(), Name = "Sally"};
+			var e = new Entity { Id = Guid.NewGuid(), Name = "Sally" };
 
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())

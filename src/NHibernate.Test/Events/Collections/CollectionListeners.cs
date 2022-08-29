@@ -29,7 +29,7 @@ namespace NHibernate.Test.Events.Collections
 			postCollectionRecreateListener = new PostCollectionRecreateListener(this);
 			postCollectionRemoveListener = new PostCollectionRemoveListener(this);
 			postCollectionUpdateListener = new PostCollectionUpdateListener(this);
-			var listeners = ((DebugSessionFactory)sf).EventListeners;
+			var listeners = ((DebugSessionFactory) sf).EventListeners;
 			listeners.InitializeCollectionEventListeners =
 				new IInitializeCollectionEventListener[] { initializeCollectionListener };
 			listeners.PreCollectionRecreateEventListeners =

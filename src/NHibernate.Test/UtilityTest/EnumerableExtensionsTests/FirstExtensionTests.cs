@@ -13,7 +13,7 @@ namespace NHibernate.Test.UtilityTest.EnumerableExtensionsTests
 		[Test]
 		public void WhenNullThenThenThrows()
 		{
-			Assert.That(() => ((IEnumerable)null).First(), Throws.TypeOf<ArgumentNullException>());
+			Assert.That(() => ((IEnumerable) null).First(), Throws.TypeOf<ArgumentNullException>());
 		}
 
 		[Test]

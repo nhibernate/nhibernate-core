@@ -11,8 +11,8 @@ namespace NHibernate.Exceptions
 	[Serializable]
 	public class DataException : ADOException
 	{
-		public DataException(SerializationInfo info, StreamingContext context) : base(info, context) {}
-		public DataException(string message, Exception innerException, string sql) : base(message, innerException, sql) {}
-		public DataException(string message, Exception innerException) : base(message, innerException) {}
+		public DataException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+		public DataException(string message, Exception innerException, string sql) : base(message, innerException, sql) { }
+		public DataException(string message, Exception innerException) : base(message, innerException) { }
 	}
 }

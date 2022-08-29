@@ -14,8 +14,8 @@ namespace NHibernate.Hql.Util
 	public class SessionFactoryHelper
 	{
 		private readonly ISessionFactoryImplementor sfi;
-		private readonly Dictionary<string,CollectionPropertyMapping> collectionPropertyMappingByRole = 
-			new Dictionary<string,CollectionPropertyMapping>();
+		private readonly Dictionary<string, CollectionPropertyMapping> collectionPropertyMappingByRole =
+			new Dictionary<string, CollectionPropertyMapping>();
 
 		public SessionFactoryHelper(ISessionFactoryImplementor sfi)
 		{
@@ -83,7 +83,7 @@ namespace NHibernate.Hql.Util
 		{
 			try
 			{
-				return (IQueryableCollection)sfi.GetCollectionPersister(role);
+				return (IQueryableCollection) sfi.GetCollectionPersister(role);
 			}
 			catch (InvalidCastException ice)
 			{
@@ -172,7 +172,7 @@ namespace NHibernate.Hql.Util
 		{
 			try
 			{
-				IQueryableCollection queryableCollection = (IQueryableCollection)sfi
+				IQueryableCollection queryableCollection = (IQueryableCollection) sfi
 						.GetCollectionPersister(role);
 				if (queryableCollection != null)
 				{

@@ -4,7 +4,7 @@ namespace NHibernate.Test.Any
 	{
 		private long id;
 		private int value;
-		public IntegerPropertyValue() {}
+		public IntegerPropertyValue() { }
 
 		public IntegerPropertyValue(int value)
 		{

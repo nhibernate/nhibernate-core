@@ -26,9 +26,9 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 					var p2 = new Person { Name = "Max", UserId = "max" };
 					var act = new Account { Type = Convert.ToChar("c"), User = p2 };
 					p2.Accounts.Add(act);
-					p_id = (long)s.Save(p);
+					p_id = (long) s.Save(p);
 					s.Save(a);
-					p2_id = (long)s.Save(p2);
+					p2_id = (long) s.Save(p2);
 					s.Save(act);
 					tx.Commit();
 				}
@@ -52,11 +52,11 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 		[Test]
 		public void MappingOuterJoin()
 		{
-			using(var s = OpenSession())
+			using (var s = OpenSession())
 			{
 				using (s.BeginTransaction())
 				{
-					var	p = s.Get<Person>(p_id); //get address reference by outer join
+					var p = s.Get<Person>(p_id); //get address reference by outer join
 					var p2 = s.Get<Person>(p2_id); //get null address reference by outer join
 					Assert.IsNull(p2.Address);
 					Assert.IsNotNull(p.Address);
@@ -74,12 +74,12 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 			{
 				using (s.BeginTransaction())
 				{
-					var l = s.CreateQuery("from Person p order by p.Name").List<Person>(); 
+					var l = s.CreateQuery("from Person p order by p.Name").List<Person>();
 					Assert.AreEqual(l.Count, 2);
 					Assert.IsNull(l[0].Address);
 					Assert.IsNotNull(l[1].Address);
 				}
-			}		
+			}
 		}
 
 		[Test]
@@ -102,7 +102,7 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 						Assert.IsNotNull(l[0].Address);
 					}
 				}
-			}		
+			}
 		}
 
 		[Test]
@@ -115,8 +115,8 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 					var l = s.CreateQuery("from Person p left join p.Accounts").List();
 					for (var i = 0; i < 2; i++)
 					{
-						var row = (object[])l[i];
-						var px = (Person)row[0];
+						var row = (object[]) l[i];
+						var px = (Person) row[0];
 						var accounts = px.Accounts;
 						Assert.IsFalse(NHibernateUtil.IsInitialized(accounts));
 						Assert.IsTrue(px.Accounts.Count > 0 || row[1] == null);

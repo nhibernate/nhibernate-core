@@ -41,10 +41,10 @@ namespace NHibernate.Test.QueryTest
 			using (var s = Sfi.OpenSession())
 			{
 				var multiQuery = s.CreateMultiQuery()
-					.Add(s.CreateSQLQuery("select * from ITEM where Id in (:ids)").AddEntity(typeof (Item)))
-					.Add(s.CreateSQLQuery("select * from ITEM where Id in (:ids2)").AddEntity(typeof (Item)))
-					.SetParameterList("ids", new[] {50})
-					.SetParameterList("ids2", new[] {50});
+					.Add(s.CreateSQLQuery("select * from ITEM where Id in (:ids)").AddEntity(typeof(Item)))
+					.Add(s.CreateSQLQuery("select * from ITEM where Id in (:ids2)").AddEntity(typeof(Item)))
+					.SetParameterList("ids", new[] { 50 })
+					.SetParameterList("ids2", new[] { 50 });
 				multiQuery.List();
 			}
 		}
@@ -70,15 +70,15 @@ namespace NHibernate.Test.QueryTest
 			DoMutiQueryAndAssert();
 
 			var cacheHashtable = MultipleQueriesFixture.GetHashTableUsedAsQueryCache(Sfi);
-			var cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
-			var cachedQuery = (IList)cachedListEntry[1];
+			var cachedListEntry = (IList) new ArrayList(cacheHashtable.Values)[0];
+			var cachedQuery = (IList) cachedListEntry[1];
 
-			var firstQueryResults = (IList)cachedQuery[0];
+			var firstQueryResults = (IList) cachedQuery[0];
 			firstQueryResults.Clear();
 			firstQueryResults.Add(3);
 			firstQueryResults.Add(4);
 
-			var secondQueryResults = (IList)cachedQuery[1];
+			var secondQueryResults = (IList) cachedQuery[1];
 			secondQueryResults[0] = 2L;
 
 			using (var s = Sfi.OpenSession())
@@ -91,9 +91,9 @@ namespace NHibernate.Test.QueryTest
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
 				var results = multiQuery.List();
-				var items = (IList)results[0];
+				var items = (IList) results[0];
 				Assert.AreEqual(2, items.Count);
-				var count = (long)((IList)results[1])[0];
+				var count = (long) ((IList) results[1])[0];
 				Assert.AreEqual(2L, count);
 			}
 		}
@@ -141,9 +141,9 @@ namespace NHibernate.Test.QueryTest
 
 				multiQuery.SetCacheable(true);
 				var results = multiQuery.List();
-				var items = (IList)results[0];
+				var items = (IList) results[0];
 				Assert.AreEqual(89, items.Count);
-				var count = (long)((IList)results[1])[0];
+				var count = (long) ((IList) results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
 
@@ -157,10 +157,10 @@ namespace NHibernate.Test.QueryTest
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
 				var results = multiQuery.List();
-				var items = (IList)results[0];
+				var items = (IList) results[0];
 				Assert.AreEqual(79, items.Count,
 								"Should have gotten different result here, because the paging is different");
-				var count = (long)((IList)results[1])[0];
+				var count = (long) ((IList) results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
 		}
@@ -190,9 +190,9 @@ namespace NHibernate.Test.QueryTest
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
 				var results = multiQuery.List();
-				var items = (IList)results[0];
+				var items = (IList) results[0];
 				Assert.AreEqual(89, items.Count);
-				var count = (long)((IList)results[1])[0];
+				var count = (long) ((IList) results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
 		}
@@ -236,9 +236,9 @@ namespace NHibernate.Test.QueryTest
 					.Add(countItems)
 					.SetInt32("id", 50)
 					.List();
-				var items = (IList)results[0];
+				var items = (IList) results[0];
 				Assert.AreEqual(89, items.Count);
-				var count = (long)((IList)results[1])[0];
+				var count = (long) ((IList) results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
 		}
@@ -262,12 +262,12 @@ namespace NHibernate.Test.QueryTest
 					.SetParameterList("items", new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 })
 					.List();
 
-				var items = (IList)results[0];
-				var fromDb = (Item)items[0];
+				var items = (IList) results[0];
+				var fromDb = (Item) items[0];
 				Assert.AreEqual(1, fromDb.Id);
 
-				var counts = (IList)results[1];
-				var count = (long)counts[0];
+				var counts = (IList) results[1];
+				var count = (long) counts[0];
 				Assert.AreEqual(1L, count);
 			}
 		}
@@ -292,12 +292,12 @@ namespace NHibernate.Test.QueryTest
 					.Add(getItems)
 					.Add(countItems)
 					.List();
-				var items = (IList)results[0];
-				var fromDb = (Item)items[0];
+				var items = (IList) results[0];
+				var fromDb = (Item) items[0];
 				Assert.AreEqual(1, fromDb.Id);
 
-				var counts = (IList)results[1];
-				var count = (long)counts[0];
+				var counts = (IList) results[1];
+				var count = (long) counts[0];
 				Assert.AreEqual(1L, count);
 			}
 		}
@@ -318,8 +318,8 @@ namespace NHibernate.Test.QueryTest
 
 				multiQuery.Add("first", firstQuery).Add("second", secondQuery);
 
-				var secondResult = (IList)multiQuery.GetResult("second");
-				var firstResult = (IList)multiQuery.GetResult("first");
+				var secondResult = (IList) multiQuery.GetResult("second");
+				var firstResult = (IList) multiQuery.GetResult("first");
 
 				Assert.Greater(secondResult.Count, firstResult.Count);
 			}

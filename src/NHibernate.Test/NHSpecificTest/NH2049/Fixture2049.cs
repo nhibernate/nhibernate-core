@@ -12,14 +12,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2049
 			using (ISession session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var p = new Person {Id = 1, Name = "Name"};
+				var p = new Person { Id = 1, Name = "Name" };
 				session.Save(p);
-				var ic = new IndividualCustomer {Deleted = false, Person = p, Id = 1};
+				var ic = new IndividualCustomer { Deleted = false, Person = p, Id = 1 };
 				session.Save(ic);
 
-				var deletedPerson = new Person {Id = 2, Name = "Name Deleted"};
+				var deletedPerson = new Person { Id = 2, Name = "Name Deleted" };
 				session.Save(deletedPerson);
-				var deletedCustomer = new IndividualCustomer {Deleted = true, Person = deletedPerson, Id = 2};
+				var deletedCustomer = new IndividualCustomer { Deleted = true, Person = deletedPerson, Id = 2 };
 				session.Save(deletedCustomer);
 
 				tx.Commit();

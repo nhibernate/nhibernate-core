@@ -1,8 +1,8 @@
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
-using NUnit.Framework;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
+using NUnit.Framework;
 
 namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRegistrationTests
 {
@@ -69,6 +69,6 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests.ConformistMappingRe
 			var hbmProperty = hbmClass.Properties.OfType<HbmProperty>().Single();
 			Assert.That(hbmProperty.name, Is.EqualTo("SomethingElse"));
 			Assert.That(hbmProperty.length, Is.EqualTo("15"));
-		}		
+		}
 	}
 }

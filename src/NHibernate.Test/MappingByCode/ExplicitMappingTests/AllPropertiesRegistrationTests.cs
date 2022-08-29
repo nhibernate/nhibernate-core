@@ -105,10 +105,10 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 		}
 		private class Related
 		{
-			public int  Id { get; set; }
+			public int Id { get; set; }
 		}
 
-		private class Inherited:MyClass
+		private class Inherited : MyClass
 		{
 		}
 
@@ -123,30 +123,30 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var mapper = new ModelMapper(inspector);
 			mapper.Class<MyClass>(mc =>
 								  {
-									mc.Id(x => x.Id);
-									mc.Property(x => x.Simple, map => map.Access(Accessor.Field));
-									mc.Property(x => x.ComplexType, map => map.Access(Accessor.Field));
-									mc.Bag(x => x.Bag, y => y.Access(Accessor.Field));
-									mc.IdBag(x => x.IdBag, y => y.Access(Accessor.Field));
-									mc.List(x => x.List, y => y.Access(Accessor.Field));
-									mc.Set(x => x.Set, y => y.Access(Accessor.Field));
-									mc.Map(x => x.Map, y => y.Access(Accessor.Field));
-															mc.OneToOne(x => x.OneToOne, y => y.Access(Accessor.Field));
-															mc.ManyToOne(x => x.ManyToOne, y => y.Access(Accessor.Field));
-															mc.Any(x => x.Any, typeof(int), y => y.Access(Accessor.Field));
-															mc.Component(x => x.DynamicCompo, new { A = 2 }, y => y.Access(Accessor.Field));
-															mc.Component(x => x.Compo, y =>
-															   {
-																y.Access(Accessor.Field);
-																y.Property(c => c.Something);
-															   });
+									  mc.Id(x => x.Id);
+									  mc.Property(x => x.Simple, map => map.Access(Accessor.Field));
+									  mc.Property(x => x.ComplexType, map => map.Access(Accessor.Field));
+									  mc.Bag(x => x.Bag, y => y.Access(Accessor.Field));
+									  mc.IdBag(x => x.IdBag, y => y.Access(Accessor.Field));
+									  mc.List(x => x.List, y => y.Access(Accessor.Field));
+									  mc.Set(x => x.Set, y => y.Access(Accessor.Field));
+									  mc.Map(x => x.Map, y => y.Access(Accessor.Field));
+									  mc.OneToOne(x => x.OneToOne, y => y.Access(Accessor.Field));
+									  mc.ManyToOne(x => x.ManyToOne, y => y.Access(Accessor.Field));
+									  mc.Any(x => x.Any, typeof(int), y => y.Access(Accessor.Field));
+									  mc.Component(x => x.DynamicCompo, new { A = 2 }, y => y.Access(Accessor.Field));
+									  mc.Component(x => x.Compo, y =>
+										 {
+											 y.Access(Accessor.Field);
+											 y.Property(c => c.Something);
+										 });
 								  });
-			mapper.Class<Inherited>(mc =>{});
+			mapper.Class<Inherited>(mc => { });
 
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			var hbmClass = mappings.RootClasses[0];
 			Assert.That(mappings.JoinedSubclasses, Is.Empty);
-			Assert.That(hbmClass.Properties.Select(p => p.Name), Is.EquivalentTo(new [] {"Simple", "ComplexType", "Bag", "IdBag", "List", "Set", "Map", "Compo", "OneToOne", "ManyToOne", "Any", "DynamicCompo"}));
+			Assert.That(hbmClass.Properties.Select(p => p.Name), Is.EquivalentTo(new[] { "Simple", "ComplexType", "Bag", "IdBag", "List", "Set", "Map", "Compo", "OneToOne", "ManyToOne", "Any", "DynamicCompo" }));
 			Assert.That(hbmClass.Properties.Select(p => p.Access).All(x => x.StartsWith("field.")), Is.True);
 		}
 
@@ -161,30 +161,30 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			var mapper = new ModelMapper(inspector);
 			mapper.Class<MyClass>(mc =>
 								  {
-									mc.Id(x => x.Id);
-									mc.Property("Simple", map => map.Access(Accessor.Field));
-									mc.Property("ComplexType", map => map.Access(Accessor.Field));
-									mc.Bag<string>("Bag", y => y.Access(Accessor.Field));
-									mc.IdBag<MyCompo>("IdBag", y => y.Access(Accessor.Field));
-									mc.List<string>("List", y => y.Access(Accessor.Field));
-									mc.Set<string>("Set", y => y.Access(Accessor.Field));
-									mc.Map<int, string>("Map", y => y.Access(Accessor.Field));
-									mc.OneToOne<Related>("OneToOne", y => y.Access(Accessor.Field));
-									mc.ManyToOne<Related>("ManyToOne", y => y.Access(Accessor.Field));
-									mc.Any<object>("Any", typeof (int), y => y.Access(Accessor.Field));
-									mc.Component("DynamicCompo", new {A = 2}, y => y.Access(Accessor.Field));
-									mc.Component<MyCompo>("Compo", y =>
-																   {
-																	y.Access(Accessor.Field);
-																	y.Property(c => c.Something);
-																   });
+									  mc.Id(x => x.Id);
+									  mc.Property("Simple", map => map.Access(Accessor.Field));
+									  mc.Property("ComplexType", map => map.Access(Accessor.Field));
+									  mc.Bag<string>("Bag", y => y.Access(Accessor.Field));
+									  mc.IdBag<MyCompo>("IdBag", y => y.Access(Accessor.Field));
+									  mc.List<string>("List", y => y.Access(Accessor.Field));
+									  mc.Set<string>("Set", y => y.Access(Accessor.Field));
+									  mc.Map<int, string>("Map", y => y.Access(Accessor.Field));
+									  mc.OneToOne<Related>("OneToOne", y => y.Access(Accessor.Field));
+									  mc.ManyToOne<Related>("ManyToOne", y => y.Access(Accessor.Field));
+									  mc.Any<object>("Any", typeof(int), y => y.Access(Accessor.Field));
+									  mc.Component("DynamicCompo", new { A = 2 }, y => y.Access(Accessor.Field));
+									  mc.Component<MyCompo>("Compo", y =>
+																	 {
+																		 y.Access(Accessor.Field);
+																		 y.Property(c => c.Something);
+																	 });
 								  });
 			mapper.Class<Inherited>(mc => { });
 
 			HbmMapping mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			HbmClass hbmClass = mappings.RootClasses[0];
 			Assert.That(mappings.JoinedSubclasses, Is.Empty);
-			Assert.That(hbmClass.Properties.Select(p => p.Name), Is.EquivalentTo(new [] {"Simple", "ComplexType", "Bag", "IdBag", "List", "Set", "Map", "Compo", "OneToOne", "ManyToOne", "Any", "DynamicCompo"}));
+			Assert.That(hbmClass.Properties.Select(p => p.Name), Is.EquivalentTo(new[] { "Simple", "ComplexType", "Bag", "IdBag", "List", "Set", "Map", "Compo", "OneToOne", "ManyToOne", "Any", "DynamicCompo" }));
 			Assert.That(hbmClass.Properties.Select(p => p.Access).All(a => a.StartsWith("field.")), Is.True);
 		}
 
@@ -294,7 +294,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 			Assert.That(() => mapper.Class<MyClass>(mc =>
 			{
 				mc.Id(x => x.Id);
-				mc.Any<Related>("Any", typeof(int),y => y.Access(Accessor.Field));
+				mc.Any<Related>("Any", typeof(int), y => y.Access(Accessor.Field));
 			}), Throws.TypeOf<MappingException>());
 		}
 	}

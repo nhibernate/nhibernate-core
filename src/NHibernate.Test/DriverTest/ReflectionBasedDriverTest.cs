@@ -33,7 +33,7 @@ namespace NHibernate.Test.DriverTest
 				get { throw new NotImplementedException(); }
 			}
 		}
-		
+
 		private class MyDriverWithNoDbProviderFactory : ReflectionBasedDriver
 		{
 			public MyDriverWithNoDbProviderFactory() : base(

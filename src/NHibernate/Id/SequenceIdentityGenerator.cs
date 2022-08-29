@@ -22,8 +22,8 @@ namespace NHibernate.Id
 		#region Implementation of IPostInsertIdentifierGenerator
 
 		public IInsertGeneratedIdentifierDelegate GetInsertGeneratedIdentifierDelegate(IPostInsertIdentityPersister persister,
-		                                                                               ISessionFactoryImplementor factory,
-		                                                                               bool isGetGeneratedKeysEnabled)
+																					   ISessionFactoryImplementor factory,
+																					   bool isGetGeneratedKeysEnabled)
 		{
 			return new SequenceIdentityDelegate(persister, factory, SequenceName);
 		}
@@ -37,7 +37,7 @@ namespace NHibernate.Id
 			private readonly string sequenceNextValFragment;
 
 			public SequenceIdentityDelegate(IPostInsertIdentityPersister persister, ISessionFactoryImplementor factory,
-			                                string sequenceName) : base(persister, factory)
+											string sequenceName) : base(persister, factory)
 			{
 				sequenceNextValFragment = factory.Dialect.GetSelectSequenceNextValString(sequenceName);
 			}

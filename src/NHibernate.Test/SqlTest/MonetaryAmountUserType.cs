@@ -9,7 +9,7 @@ namespace NHibernate.Test.SqlTest
 	[Serializable]
 	public class MonetaryAmountUserType : IUserType
 	{
-		private static readonly SqlType[] MySqlTypes = {SqlTypeFactory.Decimal, SqlTypeFactory.GetString(3)};
+		private static readonly SqlType[] MySqlTypes = { SqlTypeFactory.Decimal, SqlTypeFactory.GetString(3) };
 
 		public SqlType[] SqlTypes
 		{

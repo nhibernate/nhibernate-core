@@ -109,17 +109,17 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			{
 				EnableFilters(s);
 				resCriteria = s.CreateCriteria(typeof(Parent), "p")
-				               .CreateCriteria("Child", "c")
-				               .Fetch("Child")
-				               .Add(Restrictions.Eq("p.ParentString", "a"))
-				               .Add(Restrictions.Eq("c.ChildString", "b"))
-				               .List<Parent>();
+							   .CreateCriteria("Child", "c")
+							   .Fetch("Child")
+							   .Add(Restrictions.Eq("p.ParentString", "a"))
+							   .Add(Restrictions.Eq("c.ChildString", "b"))
+							   .List<Parent>();
 
 				resHql = s.CreateQuery(
-					          @"select p from Parent p
+							  @"select p from Parent p
 				                join fetch p.Child c
 				                where p.ParentString='a' and c.ChildString='b'")
-				          .List<Parent>();
+						  .List<Parent>();
 			}
 			Assert.That(resCriteria.Count, Is.EqualTo(1));
 			Assert.That(resCriteria[0].Child, Is.Not.Null);
@@ -228,11 +228,11 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 				 .SetParameter("active", true);
 
 				var resCriteria = s.CreateCriteria(typeof(Parent))
-				                   .Fetch("Address")
-				                   .List<Parent>();
+								   .Fetch("Address")
+								   .List<Parent>();
 
 				var resHql = s.CreateQuery("select p from Parent p join p.Address")
-				              .List<Parent>();
+							  .List<Parent>();
 
 				Assert.That(resCriteria.Count, Is.EqualTo(1));
 				Assert.That(resCriteria[0].Address, Is.Not.Null);

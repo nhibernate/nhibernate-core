@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class ColumnsBinder: Binder
+	public class ColumnsBinder : Binder
 	{
 		private readonly SimpleValue value;
 
@@ -15,12 +15,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			this.value = value;
 		}
-		
+
 		public void Bind(HbmColumn column, bool isNullable)
 		{
 			this.BindColumn(column, value.Table, isNullable);
 		}
-		
+
 		public void Bind(IEnumerable<HbmColumn> columns, bool isNullable, Func<HbmColumn> defaultColumnDelegate)
 		{
 			var table = value.Table;
@@ -37,7 +37,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private void BindColumn(HbmColumn hbmColumn, Table table, bool isNullable)
 		{
-			var col = new Column {Value = value};
+			var col = new Column { Value = value };
 			BindColumn(hbmColumn, col, isNullable);
 
 			if (table != null)

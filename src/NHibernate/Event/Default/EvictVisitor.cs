@@ -34,7 +34,7 @@ namespace NHibernate.Event.Default
 			}
 			else if (value is IPersistentCollection)
 			{
-				pc = (IPersistentCollection)value;
+				pc = (IPersistentCollection) value;
 			}
 			else
 			{
@@ -48,7 +48,7 @@ namespace NHibernate.Event.Default
 
 		private void EvictCollection(IPersistentCollection collection)
 		{
-			CollectionEntry ce = (CollectionEntry)Session.PersistenceContext.CollectionEntries[collection];
+			CollectionEntry ce = (CollectionEntry) Session.PersistenceContext.CollectionEntries[collection];
 			Session.PersistenceContext.CollectionEntries.Remove(collection);
 			if (log.IsDebugEnabled())
 				log.Debug("evicting collection: {0}", MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, Session));

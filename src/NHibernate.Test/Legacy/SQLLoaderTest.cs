@@ -5,7 +5,7 @@ using System.Dynamic;
 using NHibernate.Dialect;
 using NHibernate.DomainModel;
 using NUnit.Framework;
-using Single=NHibernate.DomainModel.Single;
+using Single = NHibernate.DomainModel.Single;
 
 namespace NHibernate.Test.Legacy
 {
@@ -131,7 +131,7 @@ namespace NHibernate.Test.Legacy
 
 			IQuery query =
 				session.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = :Name")
-				.AddEntity("category",typeof(Category));
+				.AddEntity("category", typeof(Category));
 			query.SetProperties(s);
 
 			query.List();
@@ -156,7 +156,7 @@ namespace NHibernate.Test.Legacy
 
 				var query =
 					session.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = :Name")
-					       .AddEntity("category", typeof(Category));
+						   .AddEntity("category", typeof(Category));
 				var parameters = new Dictionary<string, object>
 				{
 					{ nameof(s.Name), s.Name }
@@ -185,7 +185,7 @@ namespace NHibernate.Test.Legacy
 
 				var query =
 					session.CreateSQLQuery("select {category.*} from Category {category} where {category}.Name = :Name")
-					       .AddEntity("category", typeof(Category));
+						   .AddEntity("category", typeof(Category));
 				dynamic parameters = new ExpandoObject();
 				parameters.Name = s.Name;
 				// dynamic does not work on inherited interface method calls. https://stackoverflow.com/q/3071634
@@ -208,7 +208,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "NAME";
 			Assignable assn = new Assignable();
 			assn.Id = "i.d.";
-			assn.Categories = new List<Category> {c};
+			assn.Categories = new List<Category> { c };
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();
@@ -234,7 +234,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "NAME";
 			Assignable assn = new Assignable();
 			assn.Id = "i.d.";
-			assn.Categories = new List<Category> {c};
+			assn.Categories = new List<Category> { c };
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();
@@ -260,7 +260,7 @@ namespace NHibernate.Test.Legacy
 			{
 				IList list =
 					s.CreateSQLQuery("select {category.*}, {assignable.*} from Category {category}, \"assign able\" {assignable}")
-					.AddEntity("category",   typeof(Category))
+					.AddEntity("category", typeof(Category))
 					.AddEntity("assignable", typeof(Assignable))
 					.List();
 				Assert.AreEqual(6, list.Count, "Count differs"); // cross-product of 2 categories x 3 assignables;
@@ -289,7 +289,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "Best";
 			assn = new Assignable();
 			assn.Id = "i.d.2";
-			assn.Categories = new List<Category> {c};
+			assn.Categories = new List<Category> { c };
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();
@@ -297,7 +297,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "Better";
 			assn = new Assignable();
 			assn.Id = "i.d.7";
-			assn.Categories = new List<Category> {c};
+			assn.Categories = new List<Category> { c };
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();
@@ -417,7 +417,7 @@ namespace NHibernate.Test.Legacy
 					" from A a, A b" +
 					" where a.identifier_column = b.identifier_column")
 					.AddEntity("a1", typeof(A))
-					.AddEntity("a2",typeof(A));
+					.AddEntity("a2", typeof(A));
 			IList list = query.List();
 
 			Assert.IsNotNull(list);
@@ -682,7 +682,7 @@ namespace NHibernate.Test.Legacy
 			c.Name = "NAME";
 			Assignable assn = new Assignable();
 			assn.Id = "i.d.";
-			assn.Categories = new List<Category> {c};
+			assn.Categories = new List<Category> { c };
 			c.Assignable = assn;
 			s.Save(assn);
 			s.Flush();

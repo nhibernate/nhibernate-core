@@ -1,8 +1,8 @@
 using System;
 using System.Data.Common;
-using NHibernate.SqlCommand;
 using NHibernate.Engine;
 using NHibernate.Loader.Criteria;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Criterion

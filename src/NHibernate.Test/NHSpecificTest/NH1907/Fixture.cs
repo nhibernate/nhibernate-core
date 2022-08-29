@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1907
 		public virtual MyType Relation { get; set; }
 	}
 	[TestFixture]
-	public class Fixture: BugTestCase
+	public class Fixture : BugTestCase
 	{
 		[Test]
 		public void CanSetParameterQueryByName()
@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1907
 			using (ISession s = OpenSession())
 			{
 				var q = s.CreateQuery("from Something s where s.Relation = :aParam");
-				Assert.DoesNotThrow(()=>q.SetParameter("aParam", new MyType{ ToPersist = 1}));
+				Assert.DoesNotThrow(() => q.SetParameter("aParam", new MyType { ToPersist = 1 }));
 			}
 		}
 
@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1907
 			using (ISession s = OpenSession())
 			{
 				var q = s.CreateQuery("from Something s where s.Relation = ?");
-				q.SetParameter(0, new MyType {ToPersist = 1});
+				q.SetParameter(0, new MyType { ToPersist = 1 });
 				Assert.DoesNotThrow(() => q.SetParameter(0, new MyType { ToPersist = 1 }));
 			}
 		}

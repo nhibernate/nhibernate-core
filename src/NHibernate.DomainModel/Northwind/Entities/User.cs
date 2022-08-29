@@ -5,14 +5,14 @@ using NHibernate.Type;
 
 namespace NHibernate.DomainModel.Northwind.Entities
 {
-    [Flags]
-    public enum FeatureSet 
-    {
-        HasThis = 1,
-        HasThat = 2,
-        HasMore = 4,
-        HasAll = 8
-    }
+	[Flags]
+	public enum FeatureSet
+	{
+		HasThis = 1,
+		HasThat = 2,
+		HasMore = 4,
+		HasAll = 8
+	}
 
 	public interface IUser
 	{
@@ -22,7 +22,7 @@ namespace NHibernate.DomainModel.Northwind.Entities
 		DateTime RegisteredAt { get; set; }
 		DateTime? LastLoginDate { get; set; }
 		UserComponent Component { get; set; }
-        FeatureSet Features { get; set; }
+		FeatureSet Features { get; set; }
 		Role Role { get; set; }
 		EnumStoredAsString Enum1 { get; set; }
 		EnumStoredAsInt32 Enum2 { get; set; }
@@ -46,7 +46,7 @@ namespace NHibernate.DomainModel.Northwind.Entities
 
 		public virtual Role Role { get; set; }
 
-        public virtual FeatureSet Features { get; set; }
+		public virtual FeatureSet Features { get; set; }
 
 		public virtual User NotMappedUser => this;
 
@@ -86,7 +86,7 @@ namespace NHibernate.DomainModel.Northwind.Entities
 
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			if (value is EnumStoredAsString && (EnumStoredAsString)value == EnumStoredAsString.Unspecified)
+			if (value is EnumStoredAsString && (EnumStoredAsString) value == EnumStoredAsString.Unspecified)
 				base.Set(cmd, null, index, session);
 			else
 				base.Set(cmd, value, index, session);

@@ -12,7 +12,7 @@ namespace NHibernate.Test.Events.Collections.Association.Bidirectional.OneToMany
 			get
 			{
 				return new string[]
-				       	{"Events.Collections.Association.Bidirectional.OneToMany.BidirectionalOneToManySetMapping.hbm.xml"};
+						   {"Events.Collections.Association.Bidirectional.OneToMany.BidirectionalOneToManySetMapping.hbm.xml"};
 			}
 		}
 

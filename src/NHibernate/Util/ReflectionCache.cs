@@ -34,7 +34,7 @@ namespace NHibernate.Util
 			internal static readonly MethodInfo CastDefinition =
 				ReflectHelper.FastGetMethodDefinition(Enumerable.Cast<object>, default(IEnumerable));
 
-			internal static readonly MethodInfo GroupByWithElementSelectorDefinition = 
+			internal static readonly MethodInfo GroupByWithElementSelectorDefinition =
 				ReflectHelper.FastGetMethodDefinition(Enumerable.GroupBy, default(IEnumerable<object>), default(Func<object, object>), default(Func<object, object>));
 
 			internal static readonly MethodInfo MaxDefinition =
@@ -103,7 +103,7 @@ namespace NHibernate.Util
 				ReflectHelper.FastGetMethodDefinition(Queryable.Any, default(IQueryable<object>));
 			internal static readonly MethodInfo AnyWithPredicateDefinition =
 				ReflectHelper.FastGetMethodDefinition(Queryable.Any, default(IQueryable<object>), default(Expression<Func<object, bool>>));
-			
+
 			internal static readonly MethodInfo AllDefinition =
 				ReflectHelper.FastGetMethodDefinition(Queryable.All, default(IQueryable<object>), default(Expression<Func<object, bool>>));
 

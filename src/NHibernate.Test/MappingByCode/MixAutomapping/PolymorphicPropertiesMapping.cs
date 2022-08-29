@@ -9,7 +9,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 	public class PolymorphicPropertiesMapping
 	{
 		const BindingFlags RootClassPropertiesBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
-	
+
 		private interface IBaseEntity
 		{
 			int Id { get; }
@@ -28,7 +28,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 
 		private abstract class BaseProduct : BaseEntity, IProduct
 		{
-			public abstract string Description { get;  }
+			public abstract string Description { get; }
 		}
 
 		private class Product : BaseProduct
@@ -42,7 +42,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		[Test]
 		public void WhenMapIdThroughBaseInterfaceThenFindIt()
 		{
-			var inspector = (IModelInspector)new SimpleModelInspector();
+			var inspector = (IModelInspector) new SimpleModelInspector();
 			var mapper = new ModelMapper(inspector);
 			mapper.Class<IBaseEntity>(
 				map =>
@@ -55,7 +55,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		[Test]
 		public void WhenMapPropertyThroughBaseConcreteClassThenFindIt()
 		{
-			var inspector = (IModelInspector)new SimpleModelInspector();
+			var inspector = (IModelInspector) new SimpleModelInspector();
 			var mapper = new ModelMapper(inspector);
 
 			mapper.Class<BaseEntity>(map => map.Property(x => x.LastChange));
@@ -66,7 +66,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		[Test]
 		public void WhenMapPropertyThroughBaseInterfaceThenFindIt()
 		{
-			var inspector = (IModelInspector)new SimpleModelInspector();
+			var inspector = (IModelInspector) new SimpleModelInspector();
 			var mapper = new ModelMapper(inspector);
 
 			mapper.Class<IProduct>(map => map.Property(x => x.Description));
@@ -77,7 +77,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		[Test]
 		public void WhenMapPropertyThroughBaseAbstractClassThenFindIt()
 		{
-			var inspector = (IModelInspector)new SimpleModelInspector();
+			var inspector = (IModelInspector) new SimpleModelInspector();
 			var mapper = new ModelMapper(inspector);
 
 			mapper.Class<BaseProduct>(map => map.Property(x => x.Description));
@@ -88,7 +88,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 		[Test]
 		public void WhenMapPropertyThroughClassThenFindIt()
 		{
-			var inspector = (IModelInspector)new SimpleModelInspector();
+			var inspector = (IModelInspector) new SimpleModelInspector();
 			var mapper = new ModelMapper(inspector);
 
 			mapper.Class<Product>(map => map.Property(x => x.Description));

@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1898
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var entity = new DomainClass {Id = 1, Data = "some oldValue data"};
+					var entity = new DomainClass { Id = 1, Data = "some oldValue data" };
 					session.Save(entity);
 					tx.Commit();
 				}

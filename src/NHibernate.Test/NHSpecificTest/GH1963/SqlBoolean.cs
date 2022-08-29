@@ -9,8 +9,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1963
 {
 	[Serializable]
 	public class SqlBoolean : IUserType
-		// Uncomment for checking implementing this solves the query exception
-		//, IEnhancedUserType
+	// Uncomment for checking implementing this solves the query exception
+	//, IEnhancedUserType
 	{
 		/// <summary>
 		/// Compare two instances of the class mapped by this type for persistent "equality"

@@ -20,8 +20,8 @@ namespace NHibernate.Proxy.Poco
 		protected internal bool overridesEquals;
 		protected internal IAbstractComponentType componentIdType;
 
-		protected internal BasicLazyInitializer(string entityName, System.Type persistentClass, object id, 
-			MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod, 
+		protected internal BasicLazyInitializer(string entityName, System.Type persistentClass, object id,
+			MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
 			IAbstractComponentType componentIdType, ISessionImplementor session, bool overridesEquals)
 			: base(entityName, id, session)
 		{
@@ -92,7 +92,7 @@ namespace NHibernate.Proxy.Poco
 				{
 					return ReferenceComparer<object>.Instance.Equals(args[0], proxy);
 				}
-				else if (setIdentifierMethod!=null&&method.Equals(setIdentifierMethod))
+				else if (setIdentifierMethod != null && method.Equals(setIdentifierMethod))
 				{
 					Initialize();
 					Identifier = args[0];
@@ -106,8 +106,8 @@ namespace NHibernate.Proxy.Poco
 				// proxies for us, but other providers might not.
 				if (methodName == "GetObjectData")
 				{
-					SerializationInfo info = (SerializationInfo)args[0];
-					StreamingContext context = (StreamingContext)args[1]; // not used !?!
+					SerializationInfo info = (SerializationInfo) args[0];
+					StreamingContext context = (StreamingContext) args[1]; // not used !?!
 
 					if (Target == null & Session != null)
 					{

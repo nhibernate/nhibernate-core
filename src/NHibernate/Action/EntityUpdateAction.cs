@@ -22,9 +22,9 @@ namespace NHibernate.Action
 		private object cacheEntry;
 		private ISoftLock slock;
 
-		public EntityUpdateAction(object id, object[] state, 
-			int[] dirtyProperties, bool hasDirtyCollection, 
-			object[] previousState, object previousVersion, object nextVersion, object instance, 
+		public EntityUpdateAction(object id, object[] state,
+			int[] dirtyProperties, bool hasDirtyCollection,
+			object[] previousState, object previousVersion, object nextVersion, object instance,
 			IEntityPersister persister, ISessionImplementor session)
 			: base(session, id, instance, persister)
 		{
@@ -161,13 +161,13 @@ namespace NHibernate.Action
 				PostCommitUpdate();
 			}
 		}
-		
+
 		private void PostUpdate()
 		{
 			IPostUpdateEventListener[] postListeners = Session.Listeners.PostUpdateEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostUpdateEvent postEvent = new PostUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource)Session);
+				PostUpdateEvent postEvent = new PostUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource) Session);
 				foreach (IPostUpdateEventListener listener in postListeners)
 				{
 					listener.OnPostUpdate(postEvent);
@@ -180,7 +180,7 @@ namespace NHibernate.Action
 			IPostUpdateEventListener[] postListeners = Session.Listeners.PostCommitUpdateEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostUpdateEvent postEvent = new PostUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource)Session);
+				PostUpdateEvent postEvent = new PostUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource) Session);
 				foreach (IPostUpdateEventListener listener in postListeners)
 				{
 					listener.OnPostUpdate(postEvent);

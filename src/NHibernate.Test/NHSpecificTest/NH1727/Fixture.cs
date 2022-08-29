@@ -43,26 +43,26 @@ namespace NHibernate.Test.NHSpecificTest.NH1727
                                     where a.Name=:name
                                         and a.Value in (:aValues)";
 			ClassB b = new ClassB();
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Save(b);
 				t.Commit();
 			}
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
 				s.EnableFilter("bEquals").SetParameter("b", b.Id);
 				s.CreateQuery(hql)
 					.SetString("name", "Sweden")
-					.SetParameterList("aValues", new []{1,3,4})
+					.SetParameterList("aValues", new[] { 1, 3, 4 })
 					.List<ClassA>();
 			}
 		}
 
 		protected override void OnTearDown()
 		{
-			using(ISession s = OpenSession())
-			using(ITransaction t = s.BeginTransaction())
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				s.Delete("from ClassB");
 				s.Delete("from ClassA");

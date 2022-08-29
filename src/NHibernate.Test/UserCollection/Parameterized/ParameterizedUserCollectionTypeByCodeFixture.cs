@@ -16,7 +16,7 @@ namespace NHibernate.Test.UserCollection.Parameterized
 				c =>
 				{
 					c.Alias = "DefaultableList";
-					c.Properties = new {@default = "Hello"};
+					c.Properties = new { @default = "Hello" };
 				});
 
 			base.AddMappings(configuration);
@@ -45,7 +45,7 @@ namespace NHibernate.Test.UserCollection.Parameterized
 							lm.Element(em => em.Column("VAL"));
 						});
 				});
-			
+
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 

@@ -69,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3787
 			using (var t = s.BeginTransaction())
 			{
 				var queryResult = (from test in s.Query<TestEntity>()
-				                   select new RateDto { Rate = test.UsePreviousRate ? test.PreviousRate : test.Rate }).ToList();
+								   select new RateDto { Rate = test.UsePreviousRate ? test.PreviousRate : test.Rate }).ToList();
 
 				// Check it has not been truncated to the default scale (10) of NHibernate.
 				Assert.That(queryResult[0].Rate, Is.EqualTo(_testRate));

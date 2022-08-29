@@ -89,7 +89,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <param name="shallow">Does this represent a shallow (scalar or entity-id) select?</param>
 		public void Compile(IDictionary<string, string> replacements, bool shallow)
 		{
-			DoCompile( replacements, shallow, null );
+			DoCompile(replacements, shallow, null);
 		}
 
 		/// <summary>
@@ -108,30 +108,30 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			// Delegate to the QueryLoader...
 			ErrorIfDML();
-			var query = ( QueryNode ) _sqlAst;
+			var query = (QueryNode) _sqlAst;
 			bool hasLimit = queryParameters.RowSelection != null && queryParameters.RowSelection.DefinesLimits;
-			bool needsDistincting = ( query.GetSelectClause().IsDistinct || hasLimit ) && ContainsCollectionFetches;
+			bool needsDistincting = (query.GetSelectClause().IsDistinct || hasLimit) && ContainsCollectionFetches;
 
 			QueryParameters queryParametersToUse;
 
-			if ( hasLimit && ContainsCollectionFetches ) 
+			if (hasLimit && ContainsCollectionFetches)
 			{
-				log.Warn( "firstResult/maxResults specified with collection fetch; applying in memory!" );
+				log.Warn("firstResult/maxResults specified with collection fetch; applying in memory!");
 				var selection = new RowSelection
-											{
-												FetchSize = queryParameters.RowSelection.FetchSize,
-												Timeout = queryParameters.RowSelection.Timeout
-											};
-				queryParametersToUse = queryParameters.CreateCopyUsing( selection );
+				{
+					FetchSize = queryParameters.RowSelection.FetchSize,
+					Timeout = queryParameters.RowSelection.Timeout
+				};
+				queryParametersToUse = queryParameters.CreateCopyUsing(selection);
 			}
-			else 
+			else
 			{
 				queryParametersToUse = queryParameters;
 			}
 
 			IList results = _queryLoader.List(session, queryParametersToUse);
 
-			if ( needsDistincting ) 
+			if (needsDistincting)
 			{
 				int includedCount = -1;
 				// NOTE : firstRow is zero-based
@@ -146,21 +146,21 @@ namespace NHibernate.Hql.Ast.ANTLR
 				var tmp = new List<object>();
 				var distinction = new HashSet<object>(ReferenceComparer<object>.Instance);
 
-				for ( int i = 0; i < size; i++ ) 
+				for (int i = 0; i < size; i++)
 				{
 					object result = results[i];
-					if ( !distinction.Add(result ) ) 
+					if (!distinction.Add(result))
 					{
 						continue;
 					}
 					includedCount++;
-					if ( includedCount < first ) 
+					if (includedCount < first)
 					{
 						continue;
 					}
-					tmp.Add( result );
+					tmp.Add(result);
 					// NOTE : ( max - 1 ) because first is zero-based while max is not...
-					if ( max >= 0 && ( includedCount - first ) >= ( max - 1 ) ) 
+					if (max >= 0 && (includedCount - first) >= (max - 1))
 					{
 						break;
 					}
@@ -209,7 +209,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				specifications.OfType<PositionalParameterSpecification>().Select(op => new OrdinalParameterDescriptor(op.HqlPosition, op.ExpectedType));
 			Dictionary<string, NamedParameterDescriptor> nameds = specifications.OfType<NamedParameterSpecification>()
 				.Distinct()
-				.Select(np => new {np.Name, Descriptor = new NamedParameterDescriptor(np.Name, np.ExpectedType, false)})
+				.Select(np => new { np.Name, Descriptor = new NamedParameterDescriptor(np.Name, np.ExpectedType, false) })
 				.ToDictionary(ep => ep.Name, ep => ep.Descriptor);
 			return new ParameterMetadata(ordinals, nameds);
 		}
@@ -310,7 +310,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			get
 			{
 				ErrorIfDML();
-				var collectionFetches = ((QueryNode)_sqlAst).FromClause.GetCollectionFetchesTyped();
+				var collectionFetches = ((QueryNode) _sqlAst).FromClause.GetCollectionFetchesTyped();
 				return collectionFetches.Count > 0;
 			}
 		}
@@ -322,11 +322,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 				ErrorIfDML();
 				var persisters =
 					ASTUtil.IterateChildrenOfType<FromReferenceNode>(
-						       ((QueryNode) _sqlAst).WhereClause,
-						       skipSearchInChildrenWhen: node => node.FromElement != null)
-					       .Select(rn => rn.FromElement)
-					       .Where(fr => fr?.IsFetch == true && fr.QueryableCollection?.HasCache == true)
-					       .Select(fr => fr.QueryableCollection);
+							   ((QueryNode) _sqlAst).WhereClause,
+							   skipSearchInChildrenWhen: node => node.FromElement != null)
+						   .Select(rn => rn.FromElement)
+						   .Where(fr => fr?.IsFetch == true && fr.QueryableCollection?.HasCache == true)
+						   .Select(fr => fr.QueryableCollection);
 
 				return new HashSet<ICollectionPersister>(persisters);
 			}
@@ -348,14 +348,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <param name="replacements">Defined query substitutions.</param>
 		/// <param name="shallow">Does this represent a shallow (scalar or entity-id) select?</param>
 		/// <param name="collectionRole">the role name of the collection used as the basis for the filter, NULL if this is not a filter.</param>
-		private void DoCompile(IDictionary<string, string> replacements, bool shallow, String collectionRole) 
+		private void DoCompile(IDictionary<string, string> replacements, bool shallow, String collectionRole)
 		{
 			// If the query is already compiled, skip the compilation.
-			if ( _compiled ) 
+			if (_compiled)
 			{
-				if ( log.IsDebugEnabled() ) 
+				if (log.IsDebugEnabled())
 				{
-					log.Debug( "compile() : The query is already compiled, skipping..." );
+					log.Debug("compile() : The query is already compiled, skipping...");
 				}
 				return;
 			}
@@ -365,7 +365,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			_shallowQuery = shallow;
 
-			try 
+			try
 			{
 				// PHASE 1 : Analyze the HQL AST, and produce an SQL AST.
 				var translator = Analyze(collectionRole);
@@ -383,11 +383,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 				// QueryLoader currently even has a dependency on this at all; does
 				// it need it?  Ideally like to see the walker itself given to the delegates directly...
 
-				if (_sqlAst.NeedsExecutor) 
+				if (_sqlAst.NeedsExecutor)
 				{
 					_statementExecutor = BuildAppropriateStatementExecutor(_sqlAst);
 				}
-				else 
+				else
 				{
 					// PHASE 2 : Generate the SQL.
 					_generator = new HqlSqlGenerator(_sqlAst, _factory);
@@ -398,14 +398,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				_compiled = true;
 			}
-			catch ( QueryException qe ) 
+			catch (QueryException qe)
 			{
 				qe.QueryString = _queryIdentifier;
 				throw;
 			}
-			catch ( RecognitionException e ) 
+			catch (RecognitionException e)
 			{
-				if ( log.IsInfoEnabled() ) 
+				if (log.IsInfoEnabled())
 				{
 					log.Info(e, "converted antlr.RecognitionException");
 				}
@@ -449,7 +449,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			else if (walker.StatementType == HqlSqlWalker.INSERT)
 			{
-				return new BasicExecutor(statement, ((InsertStatement)statement).IntoClause.Queryable);
+				return new BasicExecutor(statement, ((InsertStatement) statement).IntoClause.Queryable);
 			}
 			else
 			{
@@ -497,7 +497,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			var lex = new HqlLexer(new CaseInsensitiveStringStream(_hql));
 			_tokens = new CommonTokenStream(lex);
 
-			var parser = new HqlParser(_tokens) {TreeAdaptor = new ASTTreeAdaptor(), Filter = _filter};
+			var parser = new HqlParser(_tokens) { TreeAdaptor = new ASTTreeAdaptor(), Filter = _filter };
 
 			if (log.IsDebugEnabled())
 			{
@@ -638,7 +638,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public HqlSqlGenerator(IStatement ast, ISessionFactoryImplementor sfi)
 		{
-			_ast = (IASTNode)ast;
+			_ast = (IASTNode) ast;
 			_sfi = sfi;
 		}
 

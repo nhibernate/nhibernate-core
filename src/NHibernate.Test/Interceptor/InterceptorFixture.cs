@@ -1,6 +1,6 @@
 using System.Collections;
-using NUnit.Framework;
 using NHibernate.Type;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Interceptor
 {
@@ -134,7 +134,7 @@ namespace NHibernate.Test.Interceptor
 			ITransaction t = s.BeginTransaction();
 			Image i = new Image();
 			i.Name = "compincomp";
-			i = (Image)s.Merge(i);
+			i = (Image) s.Merge(i);
 			Assert.IsNotNull(i.Details);
 			Assert.AreEqual(checkPerm, i.Details.Perm1);
 			Assert.AreEqual(checkComment, i.Details.Comment);

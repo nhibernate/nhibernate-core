@@ -37,15 +37,15 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 
 			// This does not
 			ActivitySet loadedActivitySet = (ActivitySet) session
-			                                              	.CreateCriteria(typeof(ActivitySet))
-			                                              	.Add(Expression.Eq("Id", activitySet.Id))
-			                                              	.UniqueResult();
+															  .CreateCriteria(typeof(ActivitySet))
+															  .Add(Expression.Eq("Id", activitySet.Id))
+															  .UniqueResult();
 
 			session.Flush();
 
 			foreach (object o in loadedActivitySet.Activities)
 			{
-				session.Delete(o);				
+				session.Delete(o);
 			}
 			session.Delete(loadedActivitySet);
 

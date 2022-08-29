@@ -38,7 +38,7 @@ namespace NHibernate.Test.CompositeId
 		{
 			Order order = new Order(this);
 			order.OrderDate = DateTime.Today;
-			order.Total=total;
+			order.Total = total;
 
 			return order;
 		}

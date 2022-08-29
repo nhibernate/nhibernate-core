@@ -82,7 +82,7 @@ namespace NHibernate.DomainModel.NHSpecific
 				return Equals((NullableInt32) obj);
 			else
 				return false;
-					//if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
+			//if this is reached, it is either some other type, or DBnull is compared with this and we have a Value.
 		}
 
 		public bool Equals(NullableInt32 x)

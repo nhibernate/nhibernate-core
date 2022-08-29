@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1713
 		public void Can_Save_Money_Column()
 		{
 			Assert.That(PropertiesHelper.GetBoolean(Environment.PrepareSql, cfg.Properties, false));
-			var item = new A {Amount = 2600};
+			var item = new A { Amount = 2600 };
 
 			using (ISession s = OpenSession())
 			{
@@ -57,13 +57,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1713
 		{
 			Assert.That(PropertiesHelper.GetBoolean(Environment.PrepareSql, cfg.Properties, false));
 			object savedId;
-			var item = new A {Amount = (decimal?) 2600.55};
+			var item = new A { Amount = (decimal?) 2600.55 };
 
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					savedId= s.Save(item);
+					savedId = s.Save(item);
 					tx.Commit();
 				}
 			}

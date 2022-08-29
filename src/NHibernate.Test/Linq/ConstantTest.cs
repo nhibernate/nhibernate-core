@@ -20,10 +20,10 @@ namespace NHibernate.Test.Linq
 		public void ConstantNonCached()
 		{
 			var c1 = (from c in db.Customers
-			          select "customer1").First();
+					  select "customer1").First();
 
 			var c2 = (from c in db.Customers
-			          select "customer2").First();
+					  select "customer2").First();
 
 			Assert.That(c1, Is.EqualTo("customer1"));
 			Assert.That(c2, Is.EqualTo("customer2"));
@@ -33,12 +33,12 @@ namespace NHibernate.Test.Linq
 		public void ConstantNonCachedInAnonymousNewExpression()
 		{
 			var c1 = (from c in db.Customers
-			          where c.CustomerId == "ALFKI"
-			          select new { c.CustomerId, c.ContactName, Constant = 1 }).First();
+					  where c.CustomerId == "ALFKI"
+					  select new { c.CustomerId, c.ContactName, Constant = 1 }).First();
 
 			var c2 = (from c in db.Customers
-			          where c.CustomerId == "ANATR"
-			          select new { c.CustomerId, c.ContactName, Constant = 2 }).First();
+					  where c.CustomerId == "ANATR"
+					  select new { c.CustomerId, c.ContactName, Constant = 2 }).First();
 
 			Assert.That(c1.Constant, Is.EqualTo(1), "c1.Constant");
 			Assert.That(c2.Constant, Is.EqualTo(2), "c2.Constant");
@@ -50,20 +50,20 @@ namespace NHibernate.Test.Linq
 		public void ConstantNonCachedInNestedAnonymousNewExpressions()
 		{
 			var c1 = (from c in db.Customers
-			          select new
-			          {
-				          c.ContactName,
-				          Number = 1,
-				          Customer = new { c.CustomerId, Label = "customer1" }
-			          }).First();
+					  select new
+					  {
+						  c.ContactName,
+						  Number = 1,
+						  Customer = new { c.CustomerId, Label = "customer1" }
+					  }).First();
 
 			var c2 = (from c in db.Customers
-			          select new
-			          {
-				          c.ContactName,
-				          Number = 2,
-				          Customer = new { c.CustomerId, Label = "customer2" }
-			          }).First();
+					  select new
+					  {
+						  c.ContactName,
+						  Number = 2,
+						  Customer = new { c.CustomerId, Label = "customer2" }
+					  }).First();
 
 			Assert.That(c1.Number, Is.EqualTo(1), "c1.Number");
 			Assert.That(c1.Customer.Label, Is.EqualTo("customer1"), "c1.Customer.Label");
@@ -75,12 +75,12 @@ namespace NHibernate.Test.Linq
 		public void ConstantNonCachedInNewExpression()
 		{
 			var c1 = (from c in db.Customers
-			          where c.CustomerId == "ALFKI"
-			          select new KeyValuePair<string, string>(c.ContactName, "one")).First();
+					  where c.CustomerId == "ALFKI"
+					  select new KeyValuePair<string, string>(c.ContactName, "one")).First();
 
 			var c2 = (from c in db.Customers
-			          where c.CustomerId == "ANATR"
-			          select new KeyValuePair<string, string>(c.ContactName, "two")).First();
+					  where c.CustomerId == "ANATR"
+					  select new KeyValuePair<string, string>(c.ContactName, "two")).First();
 
 			Assert.That(c1.Value, Is.EqualTo("one"), "c1.Value");
 			Assert.That(c2.Value, Is.EqualTo("two"), "c2.Value");
@@ -97,20 +97,20 @@ namespace NHibernate.Test.Linq
 		public void ConstantNonCachedInMemberInitExpression()
 		{
 			var s1 = (from s in db.Shippers
-			          select new ShipperDto
-			          {
-				          Number = 1,
-				          CompanyName = s.CompanyName,
-				          Name = "shipper1"
-			          }).ToList();
+					  select new ShipperDto
+					  {
+						  Number = 1,
+						  CompanyName = s.CompanyName,
+						  Name = "shipper1"
+					  }).ToList();
 
 			var s2 = (from s in db.Shippers
-			          select new ShipperDto
-			          {
-				          Number = 2,
-				          CompanyName = s.CompanyName,
-				          Name = "shipper2"
-			          }).ToList();
+					  select new ShipperDto
+					  {
+						  Number = 2,
+						  CompanyName = s.CompanyName,
+						  Name = "shipper2"
+					  }).ToList();
 
 			Assert.That(s1, Has.Count.GreaterThan(0), "s1 Count");
 			Assert.That(s2, Has.Count.GreaterThan(0), "s2 Count");
@@ -133,17 +133,17 @@ namespace NHibernate.Test.Linq
 		private ShipperDto GetShipper(int id)
 		{
 			return db.Shippers.Where(o => o.ShipperId == id)
-			         .Select(o => new ShipperDto {Number = id, CompanyName = o.CompanyName}).Single();
+					 .Select(o => new ShipperDto { Number = id, CompanyName = o.CompanyName }).Single();
 		}
 
 		[Test]
 		public void ConstantInNewArrayExpression()
 		{
 			var c1 = (from c in db.Categories
-			          select new[] { c.Name, "category1" }).ToList();
+					  select new[] { c.Name, "category1" }).ToList();
 
 			var c2 = (from c in db.Categories
-			          select new[] { c.Name, "category2" }).ToList();
+					  select new[] { c.Name, "category2" }).ToList();
 
 			Assert.That(c1, Has.Count.GreaterThan(0), "c1 Count");
 			Assert.That(c2, Has.Count.GreaterThan(0), "c2 Count");
@@ -155,18 +155,18 @@ namespace NHibernate.Test.Linq
 		public void ConstantsInNewArrayExpression()
 		{
 			var p1 = (from p in db.Products
-			          select new Dictionary<string, int>()
-			          {
-				          { p.Name, 1 },
-				          { "product1", p.ProductId }
-			          }).First();
+					  select new Dictionary<string, int>()
+					  {
+						  { p.Name, 1 },
+						  { "product1", p.ProductId }
+					  }).First();
 
 			var p2 = (from p in db.Products
-			          select new Dictionary<string, int>()
-			          {
-				          { p.Name, 2 },
-				          { "product2", p.ProductId }
-			          }).First();
+					  select new Dictionary<string, int>()
+					  {
+						  { p.Name, 2 },
+						  { "product2", p.ProductId }
+					  }).First();
 
 			Assert.That(p1.ElementAt(0).Value == 1 && p1.ElementAt(1).Key == "product1", Is.True, "p1");
 			Assert.That(p2.ElementAt(0).Value == 2 && p2.ElementAt(1).Key == "product2", Is.True, "p2");
@@ -193,10 +193,10 @@ namespace NHibernate.Test.Linq
 		{
 			var builder = new InfoBuilder(1);
 			var v1 = (from p in db.Products
-			          select builder.GetItemValue(p)).First();
+					  select builder.GetItemValue(p)).First();
 			builder = new InfoBuilder(2);
 			var v2 = (from p in db.Products
-			          select builder.GetItemValue(p)).First();
+					  select builder.GetItemValue(p)).First();
 
 			Assert.That(v1, Is.EqualTo(1), "v1");
 			Assert.That(v2, Is.EqualTo(2), "v2");
@@ -213,10 +213,10 @@ namespace NHibernate.Test.Linq
 		{
 			var closureVariable = 1;
 			var v1 = (from p in db.Products
-			          select TestFunc(p, closureVariable)).First();
+					  select TestFunc(p, closureVariable)).First();
 			closureVariable = 2;
 			var v2 = (from p in db.Products
-			          select TestFunc(p, closureVariable)).First();
+					  select TestFunc(p, closureVariable)).First();
 
 			Assert.That(v1, Is.EqualTo(1), "v1");
 			Assert.That(v2, Is.EqualTo(2), "v2");
@@ -226,11 +226,11 @@ namespace NHibernate.Test.Linq
 		public void ConstantInWhereDoesNotCauseManyKeys()
 		{
 			var q1 = (from c in db.Customers
-			          where c.CustomerId == "ALFKI"
-			          select c);
+					  where c.CustomerId == "ALFKI"
+					  select c);
 			var q2 = (from c in db.Customers
-			          where c.CustomerId == "ANATR"
-			          select c);
+					  where c.CustomerId == "ANATR"
+					  select c);
 			var preTransformParameters = new PreTransformationParameters(QueryMode.Select, Sfi);
 			var preTransformResult = NhRelinqQueryParser.PreTransform(q1.Expression, preTransformParameters);
 			var parameters1 = ExpressionParameterVisitor.Visit(preTransformResult);
@@ -292,9 +292,9 @@ namespace NHibernate.Test.Linq
 
 			using (session.BeginTransaction())
 			{
-				db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer {CompanyName = "Constant1"});
-				db.Customers.Where(c => c.CustomerId == "ALFKI").Update(x => new Customer {CompanyName = x.CompanyName});
-				db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer {ContactName = "Constant1"});
+				db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer { CompanyName = "Constant1" });
+				db.Customers.Where(c => c.CustomerId == "ALFKI").Update(x => new Customer { CompanyName = x.CompanyName });
+				db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer { ContactName = "Constant1" });
 				Assert.That(
 					cache,
 					Has.Count.EqualTo(3),
@@ -305,9 +305,9 @@ namespace NHibernate.Test.Linq
 					//Queries below should hit plan cache.
 					using (var sqlSpy = new SqlLogSpy())
 					{
-						db.Customers.Where(c => c.CustomerId == "ANATR").Update(x => new Customer {CompanyName = x.CompanyName});
-						db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer {CompanyName = "Constant2"});
-						db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer {ContactName = "Constant2"});
+						db.Customers.Where(c => c.CustomerId == "ANATR").Update(x => new Customer { CompanyName = x.CompanyName });
+						db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer { CompanyName = "Constant2" });
+						db.Customers.Where(c => c.CustomerId == "UNKNOWN").Update(x => new Customer { ContactName = "Constant2" });
 
 						var sqlEvents = sqlSpy.Appender.GetEvents();
 						Assert.That(
@@ -333,7 +333,7 @@ namespace NHibernate.Test.Linq
 							.Contain("located HQL query plan in cache")
 							.And.Not.Contain("unable to locate HQL query plan in cache"));
 
-					db.Customers.Where(c => c.CustomerId == "ANATR").Update(x => new Customer {ContactName = x.ContactName});
+					db.Customers.Where(c => c.CustomerId == "ANATR").Update(x => new Customer { ContactName = x.ContactName });
 					Assert.That(cache, Has.Count.EqualTo(4), "Query should be cached");
 				}
 			}
@@ -370,9 +370,9 @@ namespace NHibernate.Test.Linq
 					.GetValue(Sfi.QueryPlanCache);
 			cache.Clear();
 
-			var ids = new[] {"ANATR", "UNKNOWN"}.ToList();
+			var ids = new[] { "ANATR", "UNKNOWN" }.ToList();
 			db.Customers.Where(x => ids.Contains(x.CustomerId)).Select(
-				c => new {c.CustomerId, c.ContactName, Constant = 1}).First();
+				c => new { c.CustomerId, c.ContactName, Constant = 1 }).First();
 
 			Assert.That(
 				cache,
@@ -394,7 +394,7 @@ namespace NHibernate.Test.Linq
 
 			using (session.BeginTransaction())
 			{
-				var list = new[] {"UNKNOWN", "UNKNOWN2"}.ToList();
+				var list = new[] { "UNKNOWN", "UNKNOWN2" }.ToList();
 				db.Customers.Where(x => list.Contains(x.CustomerId)).Update(
 					x => new Customer
 					{

@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest
 			var aliasString = alias.ToAliasString("[Hello]]World]", new MsSql2000Dialect());
 			Assert.That(aliasString, Is.EqualTo("[Hello]]WorldPK]"));
 		}
-		
+
 		[Test]
 		public void TestDialectQuotedAliasWithEscapedStringAtTheEdge()
 		{
@@ -34,7 +34,7 @@ namespace NHibernate.Test.NHSpecificTest
 			var aliasString = alias.ToAliasString("[Table0123456]]7890]", new MsSql2000Dialect());
 			Assert.That(aliasString, Is.EqualTo("[Table0123456]]PK]"));
 		}
-		
+
 		[Test]
 		public void TestQuotedAlias()
 		{
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest
 			var aliasString = alias.ToAliasString("[Hello]]World]");
 			Assert.That(aliasString, Is.EqualTo("[Hello]]WorldPK]"));
 		}
-		
+
 		[Test]
 		public void TestQuotedAliasWithEscapedStringAtTheEdge()
 		{

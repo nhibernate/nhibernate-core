@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3141
 			//after fix: 0.8s
 			Console.WriteLine(watch.Elapsed);
 		}
-		
+
 		[Test]
 		public void ShouldThrowExceptionIfIdChangedOnUnloadEntity()
 		{
@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3141
 			using (var tx = s.BeginTransaction())
 			{
 				var entity = s.Load<Entity>(id);
-				entity.Id ++;
+				entity.Id++;
 				Assert.Throws<HibernateException>(tx.Commit);
 			}
 		}

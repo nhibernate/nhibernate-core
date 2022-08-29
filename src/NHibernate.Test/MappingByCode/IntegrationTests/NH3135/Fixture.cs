@@ -97,7 +97,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3135
 			Assert.That(e3Bag, Is.Not.Null);
 			Assert.That(e3Bag.Table, Is.EqualTo("Entity3_Component"));
 		}
-		
+
 		[Test]
 		public void Set_InBaseEntity_WithDifferentTables_ShouldBeMappedAccordingly()
 		{

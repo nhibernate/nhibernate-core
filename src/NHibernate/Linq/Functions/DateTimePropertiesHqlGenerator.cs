@@ -20,7 +20,7 @@ namespace NHibernate.Linq.Functions
 					ReflectHelper.GetProperty((DateTime x) => x.Minute),
 					ReflectHelper.GetProperty((DateTime x) => x.Second),
 					ReflectHelper.GetProperty((DateTime x) => x.Date),
-					
+
 					ReflectHelper.GetProperty((DateTimeOffset x) => x.Year),
 					ReflectHelper.GetProperty((DateTimeOffset x) => x.Month),
 					ReflectHelper.GetProperty((DateTimeOffset x) => x.Day),

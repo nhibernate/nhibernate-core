@@ -13,7 +13,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 	{
 		public EntityWithUserTypePropertyIsEquivalentGenerator()
 		{
-			SupportedMethods = new[] {ReflectHelper.GetMethodDefinition((IExample e) => e.IsEquivalentTo(null))};
+			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition((IExample e) => e.IsEquivalentTo(null)) };
 		}
 
 		public override HqlTreeNode BuildHql(

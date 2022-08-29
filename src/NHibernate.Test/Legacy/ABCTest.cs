@@ -15,7 +15,7 @@ namespace NHibernate.Test.Legacy
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"ABC.hbm.xml"}; }
+			get { return new string[] { "ABC.hbm.xml" }; }
 		}
 
 		[Test]
@@ -24,7 +24,7 @@ namespace NHibernate.Test.Legacy
 			string[] commands = cfg.GenerateSchemaCreationScript(Dialect);
 
 			Assert.IsTrue(ContainsCommandWithSubstring(commands, "create index indx_a_name"),
-			              "Unable to locate indx_a_name index creation");
+						  "Unable to locate indx_a_name index creation");
 		}
 
 		[Test]
@@ -33,7 +33,7 @@ namespace NHibernate.Test.Legacy
 			string[] commands = cfg.GenerateSchemaCreationScript(Dialect);
 
 			Assert.IsTrue(ContainsCommandWithSubstring(commands, "create index indx_a_anothername"),
-			              "Unable to locate indx_a_anothername index creation");
+						  "Unable to locate indx_a_anothername index creation");
 		}
 
 		[Test]

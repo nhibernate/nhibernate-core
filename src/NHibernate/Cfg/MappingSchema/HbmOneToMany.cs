@@ -2,7 +2,7 @@ using System;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmOneToMany: IRelationship
+	public partial class HbmOneToMany : IRelationship
 	{
 		#region Implementation of IRelationship
 
@@ -21,6 +21,6 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return notfound; }
 		}
 
-		#endregion	
+		#endregion
 	}
 }

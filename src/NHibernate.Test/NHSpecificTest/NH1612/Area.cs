@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		public virtual int Version { get; protected set; }
 		public virtual IDictionary<int, AreaStatistics> Statistics { get; protected set; }
 
-		protected Area() {}
+		protected Area() { }
 
 		protected Area(string code, string name)
 		{

@@ -53,20 +53,20 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			HbmReturnScalar returnScalarSchema = item as HbmReturnScalar;
 
 			if (returnScalarSchema != null)
-					return CreateScalarReturn(returnScalarSchema);
+				return CreateScalarReturn(returnScalarSchema);
 
 			else if (returnSchema != null)
-					return CreateReturn(returnSchema, count);
+				return CreateReturn(returnSchema, count);
 
 			else if (returnJoinSchema != null)
-					return CreateJoinReturn(returnJoinSchema);
+				return CreateJoinReturn(returnJoinSchema);
 
 			else if (loadCollectionSchema != null)
-					return CreateLoadCollectionReturn(loadCollectionSchema);
+				return CreateLoadCollectionReturn(loadCollectionSchema);
 
 			else
-					return null;
-			}
+				return null;
+		}
 
 		private INativeSQLQueryReturn CreateScalarReturn(HbmReturnScalar returnScalarSchema)
 		{
@@ -101,7 +101,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (string.IsNullOrEmpty(returnSchema.@class) && string.IsNullOrEmpty(returnSchema.entityname))
 				throw new MappingException("<return alias='" + alias + "'> must specify either a class or entity-name");
 
-			string entityName = returnSchema.entityname ??  GetClassName(returnSchema.@class, mappings);
+			string entityName = returnSchema.entityname ?? GetClassName(returnSchema.@class, mappings);
 
 			LockMode lockMode = GetLockMode(returnSchema.lockmode);
 
@@ -290,7 +290,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				//			String key = StringHelper.root( name );
 				string key = name;
 				string[] intermediateResults;
-				if (!propertyresults.TryGetValue(key,out intermediateResults))
+				if (!propertyresults.TryGetValue(key, out intermediateResults))
 					propertyresults[key] = allResultColumns.ToArray();
 				else
 				{
@@ -310,7 +310,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				newPropertyResults[entry.Key] = entry.Value;
 			}
-			return newPropertyResults.Count == 0 ? (IDictionary<string, string[]>)CollectionHelper.EmptyDictionary<string, string[]>() : newPropertyResults;
+			return newPropertyResults.Count == 0 ? (IDictionary<string, string[]>) CollectionHelper.EmptyDictionary<string, string[]>() : newPropertyResults;
 		}
 
 		private static List<string> GetResultColumns(HbmReturnProperty returnPropertySchema)

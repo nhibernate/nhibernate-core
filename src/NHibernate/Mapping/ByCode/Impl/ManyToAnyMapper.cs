@@ -7,7 +7,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class ManyToAnyMapper: IManyToAnyMapper
+	public class ManyToAnyMapper : IManyToAnyMapper
 	{
 		private const string DefaultIdColumnNameWhenNoProperty = "ReferencedId";
 		private const string DefaultMetaColumnNameWhenNoProperty = "ReferencedClass";
@@ -113,7 +113,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				throw new ArgumentOutOfRangeException("value", "System.Type is invalid meta-type (you don't need to set meta-values).");
 			}
-			if(!elementType.IsAssignableFrom(entityType))
+			if (!elementType.IsAssignableFrom(entityType))
 			{
 				throw new ArgumentOutOfRangeException("entityType", string.Format("A {0} is not assignable to the collection's elements which type is {1}", entityType, elementType));
 			}
@@ -135,7 +135,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 						metavalueKey, existingClassMetavalue, newClassMetavalue));
 			}
 			values[metavalueKey] = newClassMetavalue;
-			manyToAny.metavalue = values.ToArray(vd => new HbmMetaValue {value = vd.Key, @class = vd.Value});
+			manyToAny.metavalue = values.ToArray(vd => new HbmMetaValue { value = vd.Key, @class = vd.Value });
 		}
 
 		private void CheckMetaTypeImmutability(string nhTypeName)

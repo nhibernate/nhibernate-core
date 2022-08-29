@@ -13,7 +13,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			{
 				throw new ArgumentNullException("explicitDeclarationsHolder");
 			}
-			explicitDeclarationsHolder.AddAsComponent(typeof (TComponent));
+			explicitDeclarationsHolder.AddAsComponent(typeof(TComponent));
 		}
 
 		public ComponentCustomizer(IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizersHolder, PropertyPath propertyPath)
@@ -23,8 +23,8 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			{
 				throw new ArgumentNullException("explicitDeclarationsHolder");
 			}
-			explicitDeclarationsHolder.AddAsComponent(typeof (TComponent));
-			if(propertyPath != null)
+			explicitDeclarationsHolder.AddAsComponent(typeof(TComponent));
+			if (propertyPath != null)
 			{
 				explicitDeclarationsHolder.AddAsPersistentMember(propertyPath.LocalMember);
 			}
@@ -71,12 +71,12 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Unique(bool unique)
 		{
-			AddCustomizer(m=>m.Unique(unique));
+			AddCustomizer(m => m.Unique(unique));
 		}
 
 		public void Class<TConcrete>() where TConcrete : TComponent
 		{
-			AddCustomizer(m => m.Class(typeof (TConcrete)));
+			AddCustomizer(m => m.Class(typeof(TConcrete)));
 		}
 
 		#endregion
@@ -104,7 +104,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 		{
 			if (PropertyPath == null)
 			{
-				CustomizersHolder.AddCustomizer(typeof (TComponent), classCustomizer);
+				CustomizersHolder.AddCustomizer(typeof(TComponent), classCustomizer);
 			}
 			else
 			{

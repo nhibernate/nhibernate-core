@@ -7,7 +7,7 @@ using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
-using Status=NHibernate.Engine.Status;
+using Status = NHibernate.Engine.Status;
 
 namespace NHibernate.Event.Default
 {
@@ -73,14 +73,14 @@ namespace NHibernate.Event.Default
 				version = persister.GetVersion(entity);
 
 				entityEntry = persistenceContext.AddEntity(
-					entity, 
+					entity,
 					persister.IsMutable ? Status.Loaded : Status.ReadOnly,
-					persister.GetPropertyValues(entity), 
+					persister.GetPropertyValues(entity),
 					key,
-					version, 
-					LockMode.None, 
-					true, 
-					persister, 
+					version,
+					LockMode.None,
+					true,
+					persister,
 					false);
 			}
 			else
@@ -109,7 +109,7 @@ namespace NHibernate.Event.Default
 		}
 
 		#endregion
-		
+
 		/// <summary> Called when we have recognized an attempt to delete a detached entity. </summary>
 		/// <param name="event">The event. </param>
 		/// <remarks>
@@ -141,7 +141,7 @@ namespace NHibernate.Event.Default
 		{
 			log.Info("handling transient entity in delete processing");
 			// NH different impl : NH-1895
-			if(transientEntities == null)
+			if (transientEntities == null)
 			{
 				transientEntities = new HashSet<object>(ReferenceComparer<object>.Instance);
 			}
@@ -230,7 +230,7 @@ namespace NHibernate.Event.Default
 			if (persister.ImplementsLifecycle)
 			{
 				log.Debug("calling onDelete()");
-				if (((ILifecycle)entity).OnDelete(session) == LifecycleVeto.Veto)
+				if (((ILifecycle) entity).OnDelete(session) == LifecycleVeto.Veto)
 				{
 					log.Debug("deletion vetoed by onDelete()");
 					return true;

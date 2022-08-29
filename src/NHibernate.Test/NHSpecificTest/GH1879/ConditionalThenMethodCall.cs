@@ -44,8 +44,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 			AreEqual(
 				// Conditional style
 				q => q.Where(e => (e.ReviewAsPrimary ? e.ReviewIssues : e.WorkIssues).Any(i => i.Client.Name == "Beta")),
-			    // Expected
-			    q => q.Where(e => e.ReviewAsPrimary ? e.ReviewIssues.Any(i => i.Client.Name == "Beta") : e.WorkIssues.Any(i => i.Client.Name == "Beta"))
+				// Expected
+				q => q.Where(e => e.ReviewAsPrimary ? e.ReviewIssues.Any(i => i.Client.Name == "Beta") : e.WorkIssues.Any(i => i.Client.Name == "Beta"))
 			);
 		}
 
@@ -55,10 +55,10 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 			AreEqual(
 				// Conditional style
 				q => q.OrderBy(e => e.Name)
-				      .Select(e => (e.ReviewAsPrimary ? e.ReviewIssues : e.WorkIssues).Any(i => i.Client.Name == "Beta")),
+					  .Select(e => (e.ReviewAsPrimary ? e.ReviewIssues : e.WorkIssues).Any(i => i.Client.Name == "Beta")),
 				// Expected
 				q => q.OrderBy(e => e.Name)
-				      .Select(e => e.ReviewAsPrimary ? e.ReviewIssues.Any(i => i.Client.Name == "Beta") : e.WorkIssues.Any(i => i.Client.Name == "Beta"))
+					  .Select(e => e.ReviewAsPrimary ? e.ReviewIssues.Any(i => i.Client.Name == "Beta") : e.WorkIssues.Any(i => i.Client.Name == "Beta"))
 			);
 		}
 
@@ -68,10 +68,10 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 			AreEqual(
 				// Conditional style
 				q => q.OrderBy(e => e.Name)
-				      .Select(e => new { e.Name, Beta = (e.ReviewAsPrimary ? e.ReviewIssues : e.WorkIssues).Any(i => i.Client.Name == "Beta") }),
+					  .Select(e => new { e.Name, Beta = (e.ReviewAsPrimary ? e.ReviewIssues : e.WorkIssues).Any(i => i.Client.Name == "Beta") }),
 				// Expected
 				q => q.OrderBy(e => e.Name)
-				      .Select(e => new { e.Name, Beta = e.ReviewAsPrimary ? e.ReviewIssues.Any(i => i.Client.Name == "Beta") : e.WorkIssues.Any(i => i.Client.Name == "Beta") })
+					  .Select(e => new { e.Name, Beta = e.ReviewAsPrimary ? e.ReviewIssues.Any(i => i.Client.Name == "Beta") : e.WorkIssues.Any(i => i.Client.Name == "Beta") })
 			);
 		}
 
@@ -81,12 +81,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 			AreEqual(
 				// Conditional style
 				q => q.OrderBy(e => (e.ReviewAsPrimary ? e.ReviewIssues : e.WorkIssues).Count())
-				      .ThenBy(p => p.Name)
-				      .Select(p => p.Name),
+					  .ThenBy(p => p.Name)
+					  .Select(p => p.Name),
 				// Expected
 				q => q.OrderBy(e => e.ReviewAsPrimary ? e.ReviewIssues.Count() : e.WorkIssues.Count())
-				      .ThenBy(p => p.Name)
-				      .Select(p => p.Name)
+					  .ThenBy(p => p.Name)
+					  .Select(p => p.Name)
 			);
 		}
 
@@ -96,12 +96,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 			AreEqual(
 				// Conditional style
 				q => q.GroupBy(e => (e.ReviewAsPrimary ? e.ReviewIssues : e.WorkIssues).Count())
-				      .OrderBy(x => x.Key)
-				      .Select(grp => grp.Count()),
+					  .OrderBy(x => x.Key)
+					  .Select(grp => grp.Count()),
 				// Expected
 				q => q.GroupBy(e => e.ReviewAsPrimary ? e.ReviewIssues.Count() : e.WorkIssues.Count())
-				      .OrderBy(x => x.Key)
-				      .Select(grp => grp.Count())
+					  .OrderBy(x => x.Key)
+					  .Select(grp => grp.Count())
 			);
 		}
 	}

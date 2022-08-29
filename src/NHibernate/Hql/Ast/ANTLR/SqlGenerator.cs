@@ -139,7 +139,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			else if (n is SqlNode)
 			{
-				Out(((SqlNode)n).RenderText(sessionFactory));
+				Out(((SqlNode) n).RenderText(sessionFactory));
 			}
 			else
 			{
@@ -152,7 +152,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 			else if (n is IParameterContainer)
 			{
-				var parameterContainer = (IParameterContainer)n;
+				var parameterContainer = (IParameterContainer) n;
 				if (parameterContainer.HasEmbeddedParameters)
 				{
 					IParameterSpecification[] specifications = parameterContainer.GetEmbeddedParameters();
@@ -196,7 +196,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// writes something to the SQL
 			while (right != null && !HasText(right))
 			{
-				right = (FromElement)right.NextSibling;
+				right = (FromElement) right.NextSibling;
 			}
 
 			if (right == null)
@@ -229,8 +229,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 				if (parent != null && HasText(parent))
 				{
 					// again, both should be FromElements
-					var left = (FromElement)parent;
-					var right = (FromElement)d;
+					var left = (FromElement) parent;
+					var right = (FromElement) d;
 					if (right.RealOrigin == left)
 					{
 						// right represents a joins originating from left...
@@ -262,7 +262,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void BeginFunctionTemplate(IASTNode m, IASTNode i)
 		{
-			var methodNode = (MethodNode)m;
+			var methodNode = (MethodNode) m;
 			ISQLFunction template = methodNode.SQLFunction;
 			if (template == null)
 			{
@@ -280,7 +280,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void EndFunctionTemplate(IASTNode m)
 		{
-			var methodNode = (MethodNode)m;
+			var methodNode = (MethodNode) m;
 			ISQLFunction template = methodNode.SQLFunction;
 			if (template == null)
 			{
@@ -289,7 +289,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			else
 			{
 				// this function has a template -> restore output, apply the template and write the result out
-				var functionArguments = (FunctionArguments)writer; // TODO: Downcast to avoid using an interface?  Yuck.
+				var functionArguments = (FunctionArguments) writer; // TODO: Downcast to avoid using an interface?  Yuck.
 				writer = outputStack[0];
 				outputStack.RemoveAt(0);
 				Out(template.Render(functionArguments.Args, sessionFactory));
@@ -315,7 +315,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void EndQuery()
 		{
-			SqlString sqlString = GetSqlStringWithLimitsIfNeeded((QueryWriter)writer);
+			SqlString sqlString = GetSqlStringWithLimitsIfNeeded((QueryWriter) writer);
 
 			writer = outputStack[0];
 			outputStack.RemoveAt(0);
@@ -346,10 +346,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			var dialect = sessionFactory.Dialect;
 			return dialect.GetLimitString(queryWriter.ToSqlString(),
 										  queryWriter.Skip.HasValue
-											  ? (int?)dialect.GetOffsetValue(queryWriter.Skip.Value)
+											  ? (int?) dialect.GetOffsetValue(queryWriter.Skip.Value)
 											  : null,
 										  queryWriter.Take.HasValue
-											  ? (int?)dialect.GetLimitValue(queryWriter.Skip ?? 0, queryWriter.Take.Value)
+											  ? (int?) dialect.GetLimitValue(queryWriter.Skip ?? 0, queryWriter.Take.Value)
 											  : null,
 										  skipParameter,
 										  takeParameter);
@@ -357,11 +357,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void Skip(IASTNode node)
 		{
-			var queryWriter = (QueryWriter)writer;
+			var queryWriter = (QueryWriter) writer;
 			var pnode = node as ParameterNode;
 			if (pnode != null)
 			{
-				queryWriter.SkipParameter = (IPageableParameterSpecification)pnode.HqlParameterSpecification;
+				queryWriter.SkipParameter = (IPageableParameterSpecification) pnode.HqlParameterSpecification;
 				collectedParameters.Add(pnode.HqlParameterSpecification);
 				return;
 			}
@@ -370,11 +370,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private void Take(IASTNode node)
 		{
-			var queryWriter = (QueryWriter)writer;
+			var queryWriter = (QueryWriter) writer;
 			var pnode = node as ParameterNode;
 			if (pnode != null)
 			{
-				queryWriter.TakeParameter = (IPageableParameterSpecification)pnode.HqlParameterSpecification;
+				queryWriter.TakeParameter = (IPageableParameterSpecification) pnode.HqlParameterSpecification;
 				collectedParameters.Add(pnode.HqlParameterSpecification);
 				return;
 			}
@@ -397,7 +397,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if (function == null)
 				return;
 
-			var functionArguments = (BitwiseOpWriter)writer;
+			var functionArguments = (BitwiseOpWriter) writer;
 			writer = outputStack[0];
 			outputStack.RemoveAt(0);
 

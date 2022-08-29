@@ -40,7 +40,7 @@ namespace NHibernate.Type
 				}
 			}
 		}
-		
+
 		/// <summary>Apply the <see cref="ICacheAssembler.BeforeAssemble" /> operation across a series of values.</summary>
 		/// <param name="row">The values</param>
 		/// <param name="types">The value types</param>
@@ -55,7 +55,7 @@ namespace NHibernate.Type
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// Apply the <see cref="ICacheAssembler.Assemble" /> operation across a series of values.
 		/// </summary>
@@ -173,7 +173,7 @@ namespace NHibernate.Type
 			}
 			return disassembled;
 		}
-		
+
 		/// <summary>
 		/// Apply the <see cref="IType.Replace(object, object, ISessionImplementor, object, IDictionary)" /> operation across a series of values.
 		/// </summary>
@@ -297,16 +297,16 @@ namespace NHibernate.Type
 				else if (types[i].IsComponentType)
 				{
 					// need to extract the component values and check for subtype replacements...
-					IAbstractComponentType componentType = (IAbstractComponentType)types[i];
+					IAbstractComponentType componentType = (IAbstractComponentType) types[i];
 					IType[] subtypes = componentType.Subtypes;
 					object[] origComponentValues = original[i] == null ? new object[subtypes.Length] : componentType.GetPropertyValues(original[i], session);
 					object[] targetComponentValues = target[i] == null ? new object[subtypes.Length] : componentType.GetPropertyValues(target[i], session);
 
 					object[] componentCopy = ReplaceAssociations(origComponentValues, targetComponentValues, subtypes, session, null, copyCache, foreignKeyDirection);
-					
+
 					if (!componentType.IsAnyType && target[i] != null)
 						componentType.SetPropertyValues(target[i], componentCopy);
-					
+
 					copied[i] = target[i];
 				}
 				else if (!types[i].IsAssociationType)
@@ -320,7 +320,7 @@ namespace NHibernate.Type
 			}
 			return copied;
 		}
-		
+
 		/// <summary>
 		/// <para>Determine if any of the given field values are dirty, returning an array containing
 		/// indices of the dirty fields.</para>

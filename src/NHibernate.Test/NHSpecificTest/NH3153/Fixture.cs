@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3153
 			var mappings = conf.CreateMappings();
 
 			var pc = mappings.GetClass(typeof(A).FullName);
-			Assert.That(((SimpleValue)pc.Identifier).IdentifierGeneratorProperties["schema"], Is.EqualTo("Test"));
+			Assert.That(((SimpleValue) pc.Identifier).IdentifierGeneratorProperties["schema"], Is.EqualTo("Test"));
 		}
 
 		[Test]
@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3153
 			var mappings = conf.CreateMappings();
 
 			var pc = mappings.GetClass(typeof(A).FullName);
-			Assert.That(((SimpleValue)pc.Identifier).IdentifierGeneratorProperties["schema"], Is.EqualTo("Test"));
+			Assert.That(((SimpleValue) pc.Identifier).IdentifierGeneratorProperties["schema"], Is.EqualTo("Test"));
 		}
 	}
 }

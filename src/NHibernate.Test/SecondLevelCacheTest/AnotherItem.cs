@@ -4,8 +4,8 @@ namespace NHibernate.Test.SecondLevelCacheTests
 	{
 		private int id;
 		private string name;
-		private string description= string.Empty;
-		
+		private string description = string.Empty;
+
 		public AnotherItem()
 		{
 		}

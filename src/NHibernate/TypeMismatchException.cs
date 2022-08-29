@@ -11,6 +11,6 @@ namespace NHibernate
 	{
 		public TypeMismatchException(string message) : base(message) { }
 		public TypeMismatchException(string message, Exception inner) : base(message, inner) { }
-		protected TypeMismatchException(SerializationInfo info,StreamingContext context): base(info, context) { }
+		protected TypeMismatchException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 	}
 }

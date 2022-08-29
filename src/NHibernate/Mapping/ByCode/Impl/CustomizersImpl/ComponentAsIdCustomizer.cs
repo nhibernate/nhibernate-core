@@ -15,7 +15,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			{
 				throw new ArgumentNullException("propertyPath");
 			}
-			explicitDeclarationsHolder.AddAsComponent(typeof (TComponent));
+			explicitDeclarationsHolder.AddAsComponent(typeof(TComponent));
 			explicitDeclarationsHolder.AddAsPoid(propertyPath.LocalMember);
 		}
 

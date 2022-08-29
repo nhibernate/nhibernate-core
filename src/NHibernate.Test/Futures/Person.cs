@@ -10,7 +10,7 @@ namespace NHibernate.Test.Futures
 		private int? age;
 		private Person parent;
 
-        public virtual string Name { get; set; }
+		public virtual string Name { get; set; }
 
 		public virtual Person Parent
 		{

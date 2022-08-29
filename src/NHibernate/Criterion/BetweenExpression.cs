@@ -103,7 +103,7 @@ namespace NHibernate.Criterion
 
 		public override IProjection[] GetProjections()
 		{
-			if(_projection != null)
+			if (_projection != null)
 			{
 				return new IProjection[] { _projection };
 			}

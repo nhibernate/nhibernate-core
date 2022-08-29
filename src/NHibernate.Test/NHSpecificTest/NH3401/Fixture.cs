@@ -28,10 +28,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3401
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity {Name = "Bob"};
+				var e1 = new Entity { Name = "Bob" };
 				session.Save(e1);
 
-				var e2 = new Entity {Name = "Sally", YesNo = true};
+				var e2 = new Entity { Name = "Sally", YesNo = true };
 				session.Save(e2);
 
 				session.Flush();
@@ -42,8 +42,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3401
 			using (session.BeginTransaction())
 			{
 				var result = from e in session.Query<Entity>()
-					where e.YesNo
-					select e;
+							 where e.YesNo
+							 select e;
 
 				Assert.AreEqual(1, result.ToList().Count);
 			}

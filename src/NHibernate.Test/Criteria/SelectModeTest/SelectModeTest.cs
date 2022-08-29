@@ -414,7 +414,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				session
 					.QueryOver(() => root)
 					.Fetch(SelectMode.JoinOnly, () => root.ChildrenList)
-					.Fetch(SelectMode.ChildFetch,() => root, () => root.ChildrenList[0].Children)
+					.Fetch(SelectMode.ChildFetch, () => root, () => root.ChildrenList[0].Children)
 					.Fetch(SelectMode.Fetch, () => root.ChildrenList[0].Children[0].Children)
 					.Future();
 
@@ -453,7 +453,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				session
 					.QueryOver(() => root)
 					.Fetch(SelectMode.JoinOnly, () => root.ChildrenList)
-					.Fetch(SelectMode.ChildFetch,() => root, () => root.ChildrenList[0].Children)
+					.Fetch(SelectMode.ChildFetch, () => root, () => root.ChildrenList[0].Children)
 					.Fetch(SelectMode.Fetch, () => root.ChildrenList[0].Children[0].Children)
 					.List();
 
@@ -714,48 +714,48 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				mapper,
 				rc => { rc.Lazy(false); });
 
-		mapper.Class<EntityComplex>(
-				rc =>
-				{
-					rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
-
-					rc.Version(ep => ep.Version, vm => { });
-
-					rc.Property(x => x.Name);
-
-					rc.Property(ep => ep.LazyProp, m =>
+			mapper.Class<EntityComplex>(
+					rc =>
 					{
-						m.Lazy(true);
-						m.FetchGroup("LazyGroup");
-					});
-					rc.Property(ep => ep.LazyProp2, m =>
-					{
-						m.Lazy(true);
-						m.FetchGroup("LazyGroup2");
-					});
+						rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 
-					rc.ManyToOne(
-						ep => ep.Child1,
-						m =>
+						rc.Version(ep => ep.Version, vm => { });
+
+						rc.Property(x => x.Name);
+
+						rc.Property(ep => ep.LazyProp, m =>
 						{
-							m.Column("Child1Id");
+							m.Lazy(true);
+							m.FetchGroup("LazyGroup");
+						});
+						rc.Property(ep => ep.LazyProp2, m =>
+						{
+							m.Lazy(true);
+							m.FetchGroup("LazyGroup2");
+						});
+
+						rc.ManyToOne(
+							ep => ep.Child1,
+							m =>
+							{
+								m.Column("Child1Id");
+								m.ForeignKey("none");
+							});
+						rc.ManyToOne(
+							ep => ep.Child2,
+							m =>
+							{
+								m.Column("Child2Id");
+								m.ForeignKey("none");
+							});
+						rc.ManyToOne(ep => ep.SameTypeChild, m =>
+						{
+							m.Column("SameTypeChildId");
 							m.ForeignKey("none");
 						});
-					rc.ManyToOne(
-						ep => ep.Child2,
-						m =>
-						{
-							m.Column("Child2Id");
-							m.ForeignKey("none");
-						});
-					rc.ManyToOne(ep => ep.SameTypeChild, m =>
-					{
-						m.Column("SameTypeChildId");
-						m.ForeignKey("none");
+						MapList(rc, ep => ep.ChildrenList, mapper: m => m.OrderBy("OrderIdx desc"));
+						MapList(rc, ep => ep.ChildrenListEmpty);
 					});
-					MapList(rc, ep => ep.ChildrenList, mapper: m => m.OrderBy("OrderIdx desc"));
-					MapList(rc, ep => ep.ChildrenListEmpty);
-				});
 
 			MapSimpleChild(
 				mapper,
@@ -793,7 +793,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 				});
 		}
 
-		private static void MapList<TParent, TElement>(IClassMapper<TParent> rc, Expression<Func<TParent, IEnumerable<TElement>>> expression, CollectionFetchMode fetchMode =  null, Action<IBagPropertiesMapper<TParent, TElement>> mapper = null) where TParent : class
+		private static void MapList<TParent, TElement>(IClassMapper<TParent> rc, Expression<Func<TParent, IEnumerable<TElement>>> expression, CollectionFetchMode fetchMode = null, Action<IBagPropertiesMapper<TParent, TElement>> mapper = null) where TParent : class
 		{
 			rc.Bag(
 				expression,
@@ -911,7 +911,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 						LazyProp = "LazyProp1",
 						LazyProp2 = "LazyProp2",
 					},
-					ChildrenList = new List<EntitySimpleChild> {child3, child1, child4 },
+					ChildrenList = new List<EntitySimpleChild> { child3, child1, child4 },
 					ChildrenListEmpty = new List<EntityComplex> { },
 				};
 				session.Save(new EntityEager()

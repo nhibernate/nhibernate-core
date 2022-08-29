@@ -8,7 +8,7 @@ namespace NHibernate.Dialect.Schema
 	{
 		// Since v5.2
 		[Obsolete("Use overload with dialect argument.")]
-		public SQLiteDataBaseMetaData(DbConnection connection) : this(connection, Dialect.GetDialect()) {}
+		public SQLiteDataBaseMetaData(DbConnection connection) : this(connection, Dialect.GetDialect()) { }
 
 		public SQLiteDataBaseMetaData(DbConnection connection, Dialect dialect) : base(connection, dialect)
 		{
@@ -44,7 +44,7 @@ namespace NHibernate.Dialect.Schema
 
 	public class SQLiteTableMetaData : AbstractTableMetadata
 	{
-		public SQLiteTableMetaData(DataRow rs, IDataBaseSchema meta, bool extras) : base(rs, meta, extras) {}
+		public SQLiteTableMetaData(DataRow rs, IDataBaseSchema meta, bool extras) : base(rs, meta, extras) { }
 
 		protected override IColumnMetadata GetColumnMetadata(DataRow rs)
 		{
@@ -58,8 +58,8 @@ namespace NHibernate.Dialect.Schema
 
 		protected override string GetConstraintName(DataRow rs)
 		{
-            return Convert.ToString(rs["CONSTRAINT_NAME"]);
-        }
+			return Convert.ToString(rs["CONSTRAINT_NAME"]);
+		}
 
 		protected override IForeignKeyMetadata GetForeignKeyMetadata(DataRow rs)
 		{

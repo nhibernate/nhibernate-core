@@ -33,15 +33,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1691
 		public void ComplexNest()
 		{
 			Component comp1 = GetInitializedComponent();
-			var nest = new Nest {Name = "NAME", Components = new List<Component> {comp1}};
-			var deep1 = new DeepComponent {Prop1 = "PROP1", Prop2 = "PROP2", Prop3 = "PROP3", Prop4 = "PROP4"};
+			var nest = new Nest { Name = "NAME", Components = new List<Component> { comp1 } };
+			var deep1 = new DeepComponent { Prop1 = "PROP1", Prop2 = "PROP2", Prop3 = "PROP3", Prop4 = "PROP4" };
 			Component innerComp = GetInitializedComponent();
 			deep1.Component = innerComp;
 			Component innerComp2 = GetInitializedComponent();
 			var deep2 = new DeepComponent
-			            	{Prop1 = "PROP1", Prop2 = "PROP2", Prop3 = "PROP3", Prop4 = "PROP4", Component = innerComp2};
+			{ Prop1 = "PROP1", Prop2 = "PROP2", Prop3 = "PROP3", Prop4 = "PROP4", Component = innerComp2 };
 
-			nest.ComplexComponents = new List<DeepComponent> {deep1, deep2};
+			nest.ComplexComponents = new List<DeepComponent> { deep1, deep2 };
 
 			object nestId;
 			using (ISession session = OpenSession())
@@ -80,10 +80,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1691
 		[Test]
 		public void NestedComponentCollection()
 		{
-			var nest = new Nest {Name = "NAME"};
+			var nest = new Nest { Name = "NAME" };
 			Component comp1 = GetInitializedComponent();
 
-			nest.Components = new List<Component> {comp1};
+			nest.Components = new List<Component> { comp1 };
 
 			object nestId;
 			using (ISession session = OpenSession())

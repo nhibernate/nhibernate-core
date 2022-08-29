@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NHibernate.Dialect;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1773
 {

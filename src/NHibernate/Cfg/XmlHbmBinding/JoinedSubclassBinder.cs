@@ -1,8 +1,8 @@
 using System;
+using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using NHibernate.Persister.Entity;
-using System.Collections.Generic;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -12,7 +12,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			: base(mappings)
 		{
 		}
-		
+
 		//Since v5.2
 		[Obsolete("Please use constructor without a dialect parameter.")]
 		public JoinedSubclassBinder(Mappings mappings, Dialect.Dialect dialect)
@@ -49,7 +49,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			string catalog = joinedSubclassMapping.catalog ?? mappings.CatalogName;
 
 			Table mytable = mappings.AddTable(schema, catalog, GetClassTableName(subclass, joinedSubclassMapping.table), joinedSubclassMapping.Subselect, false, joinedSubclassMapping.schemaaction);
-			((ITableOwner)subclass).Table = mytable;
+			((ITableOwner) subclass).Table = mytable;
 
 			log.Info("Mapping joined-subclass: {0} -> {1}", subclass.EntityName, subclass.Table.Name);
 
@@ -72,7 +72,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			BindJoinedSubclasses(joinedSubclassMapping.JoinedSubclasses, subclass, inheritedMetas);
 
-            new FiltersBinder(subclass, Mappings).Bind(joinedSubclassMapping.filter);
+			new FiltersBinder(subclass, Mappings).Bind(joinedSubclassMapping.filter);
 
 			model.AddSubclass(subclass);
 			mappings.AddClass(subclass);

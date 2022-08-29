@@ -20,7 +20,7 @@ namespace NHibernate.SqlCommand
 		private string comment;
 
 		public SqlDeleteBuilder(Dialect.Dialect dialect, IMapping mapping)
-			: base(dialect, mapping) {}
+			: base(dialect, mapping) { }
 
 		public SqlDeleteBuilder SetTableName(string tableName)
 		{
@@ -108,7 +108,7 @@ namespace NHibernate.SqlCommand
 		{
 			if (StringHelper.IsNotEmpty(whereSql))
 			{
-				whereStrings = new List<SqlString>(new[]{ new SqlString(whereSql)});
+				whereStrings = new List<SqlString>(new[] { new SqlString(whereSql) });
 			}
 			return this;
 		}
@@ -151,16 +151,16 @@ namespace NHibernate.SqlCommand
 				if (initialCapacity < sqlBuilder.Count)
 				{
 					log.Debug("The initial capacity was set too low at: {0} for the DeleteSqlBuilder that needed a capacity of: {1} for the table {2}",
-					          initialCapacity,
-					          sqlBuilder.Count,
-					          tableName);
+							  initialCapacity,
+							  sqlBuilder.Count,
+							  tableName);
 				}
 				else if (initialCapacity > 16 && ((float) initialCapacity / sqlBuilder.Count) > 1.2)
 				{
 					log.Debug("The initial capacity was set too high at: {0} for the DeleteSqlBuilder that needed a capacity of: {1} for the table {2}",
-					          initialCapacity,
-					          sqlBuilder.Count,
-					          tableName);
+							  initialCapacity,
+							  sqlBuilder.Count,
+							  tableName);
 				}
 			}
 			return sqlBuilder.ToSqlString();

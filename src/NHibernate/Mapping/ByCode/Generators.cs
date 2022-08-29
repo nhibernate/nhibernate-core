@@ -48,17 +48,17 @@ namespace NHibernate.Mapping.ByCode
 
 		public static IGeneratorDef UUIDHex()
 		{
-			return new UUIDHexGeneratorDef(); 
+			return new UUIDHexGeneratorDef();
 		}
 
 		public static IGeneratorDef UUIDHex(string format)
 		{
-			return new UUIDHexGeneratorDef(format); 
+			return new UUIDHexGeneratorDef(format);
 		}
 
 		public static IGeneratorDef UUIDHex(string format, string separator)
 		{
-			return new UUIDHexGeneratorDef(format, separator); 
+			return new UUIDHexGeneratorDef(format, separator);
 		}
 
 		public static IGeneratorDef UUIDString { get; private set; }
@@ -430,7 +430,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("foreignProperty");
 			}
-			param = new {property = foreignProperty.Name};
+			param = new { property = foreignProperty.Name };
 		}
 
 		#region Implementation of IGeneratorDef

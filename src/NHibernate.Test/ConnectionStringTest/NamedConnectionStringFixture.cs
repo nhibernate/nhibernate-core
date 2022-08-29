@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Connection;
 using NUnit.Framework;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.ConnectionStringTest
 {
@@ -16,7 +16,7 @@ namespace NHibernate.Test.ConnectionStringTest
 			Dictionary<string, string> settings = new Dictionary<string, string>();
 			settings.Add(Environment.ConnectionStringName, "MyConStr");
 			ConnectionProvider cp = new MockConnectionProvider();
-			Assert.Throws<HibernateException>(()=>cp.Configure(settings), "Could not find named connection string MyConStr");
+			Assert.Throws<HibernateException>(() => cp.Configure(settings), "Could not find named connection string MyConStr");
 		}
 
 		[Test]
@@ -43,7 +43,7 @@ namespace NHibernate.Test.ConnectionStringTest
 			Assert.AreEqual("TestConnectionString-TestConnectionString", cp.PublicConnectionString);
 		}
 	}
-	
+
 	public partial class MockConnectionProvider : ConnectionProvider
 	{
 		public string PublicConnectionString

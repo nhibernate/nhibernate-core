@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH1069
 {
 	[TestFixture]
-	public class ImproveLazyExceptionFixture: BugTestCase
+	public class ImproveLazyExceptionFixture : BugTestCase
 	{
 		[Test]
 		public void LazyEntity()
@@ -23,8 +23,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 				le = s.Load<LazyE>(savedId);
 			}
 			string n;
-			var ex = Assert.Throws<LazyInitializationException>(() => n= le.Name);
-			Assert.That(ex.EntityName, Is.EqualTo(typeof (LazyE).FullName));
+			var ex = Assert.Throws<LazyInitializationException>(() => n = le.Name);
+			Assert.That(ex.EntityName, Is.EqualTo(typeof(LazyE).FullName));
 			Assert.That(ex.EntityId, Is.EqualTo(1));
 			Assert.That(ex.Message, Does.Contain(typeof(LazyE).FullName));
 			Assert.That(ex.Message, Does.Contain("#1"));
@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 		[Test]
 		public void LazyCollection()
 		{
-			object savedId=1;
+			object savedId = 1;
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{

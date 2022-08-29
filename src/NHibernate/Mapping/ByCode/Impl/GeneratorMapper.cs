@@ -19,8 +19,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Params(object generatorParameters)
 		{
 			var dictionary = generatorParameters.GetType()
-			                                    .GetProperties()
-			                                    .ToDictionary(x => x.Name, x => x.GetValue(generatorParameters, null));
+												.GetProperties()
+												.ToDictionary(x => x.Name, x => x.GetValue(generatorParameters, null));
 			Params(dictionary);
 		}
 
@@ -35,7 +35,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				pi =>
 				{
 					object pvalue = pi.Value;
-					return new HbmParam {name = pi.Key, Text = new[] {ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString()}};
+					return new HbmParam { name = pi.Key, Text = new[] { ReferenceEquals(pvalue, null) ? "null" : pvalue.ToString() } };
 				});
 		}
 

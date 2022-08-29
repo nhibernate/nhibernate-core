@@ -48,7 +48,7 @@ namespace NHibernate.Util
 			}
 			var type = WhiteSpaces.Replace(typeName, " ");
 			type = MultipleSpaces.Replace(type, " ").Replace(", [", ",[").Replace("[ [", "[[").Replace("] ]", "]]");
-			if (type.Trim(' ','[', ']', '\\', ',') == string.Empty)
+			if (type.Trim(' ', '[', ']', '\\', ',') == string.Empty)
 			{
 				throw new ArgumentException(string.Format("The type to parse is not a type name:{0}", typeName), "typeName");
 			}
@@ -67,7 +67,7 @@ namespace NHibernate.Util
 			else
 			{
 				var isArrayType = type.EndsWith("[]");
-				if(genericTypeCardinalityIdx < 0)
+				if (genericTypeCardinalityIdx < 0)
 				{
 					throw new ParserException("Invalid generic fully-qualified type name:" + type);
 				}
@@ -95,7 +95,7 @@ namespace NHibernate.Util
 		}
 
 		public AssemblyQualifiedTypeName MakeGenericType(AssemblyQualifiedTypeName qualifiedName, bool isArrayType,
-		                                                 AssemblyQualifiedTypeName[] typeArguments)
+														 AssemblyQualifiedTypeName[] typeArguments)
 		{
 			Debug.Assert(typeArguments.Length > 0);
 
@@ -105,14 +105,14 @@ namespace NHibernate.Util
 			sb.Append('[');
 			for (int i = 0; i < typeArguments.Length; i++)
 			{
-				if(i>0)
+				if (i > 0)
 				{
 					sb.Append(",");
 				}
 				sb.Append('[').Append(typeArguments[i].ToString()).Append(']');
 			}
 			sb.Append(']');
-			if(isArrayType)
+			if (isArrayType)
 			{
 				sb.Append("[]");
 			}
@@ -191,7 +191,7 @@ namespace NHibernate.Util
 				else
 				{
 					assembliQualifiedName = null;
-					typeFullName = typeName.Trim();					
+					typeFullName = typeName.Trim();
 				}
 			}
 
@@ -207,7 +207,7 @@ namespace NHibernate.Util
 		{
 			for (int i = 0; i < typeName.Length; i++)
 			{
-				if(typeName[i] == ',' && typeName[i-1] != '\\')
+				if (typeName[i] == ',' && typeName[i - 1] != '\\')
 				{
 					return i;
 				}

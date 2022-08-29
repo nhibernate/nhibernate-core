@@ -10,7 +10,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	internal class EntityJoinFromElement : FromElement
 	{
 		public EntityJoinFromElement(FromClause fromClause, IQueryable entityPersister, JoinType joinType, string alias)
-			:base(new CommonToken(HqlSqlWalker.ENTITY_JOIN, entityPersister.TableName))
+			: base(new CommonToken(HqlSqlWalker.ENTITY_JOIN, entityPersister.TableName))
 		{
 			string tableAlias = fromClause.AliasGenerator.CreateName(entityPersister.EntityName);
 
@@ -18,7 +18,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			InitializeEntity(fromClause, entityPersister.EntityName, entityPersister, entityType, alias, tableAlias);
 
 			//NH Specific: hibernate uses special class EntityJoinJoinSequenceImpl
-			JoinSequence = new JoinSequence(SessionFactoryHelper.Factory) {ForceFilter = true}
+			JoinSequence = new JoinSequence(SessionFactoryHelper.Factory) { ForceFilter = true }
 				.AddJoin(entityType, tableAlias, joinType, Array.Empty<string>());
 
 			fromClause.Walker.AddQuerySpaces(entityPersister);

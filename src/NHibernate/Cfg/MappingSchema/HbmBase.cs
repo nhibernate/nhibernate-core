@@ -8,12 +8,12 @@ namespace NHibernate.Cfg.MappingSchema
 	{
 		protected static T Find<T>(object[] array)
 		{
-			return (T) Array.Find(array, delegate(object obj) { return obj is T; });
+			return (T) Array.Find(array, delegate (object obj) { return obj is T; });
 		}
 
 		protected static T[] FindAll<T>(object[] array)
 		{
-			object[] objects = Array.FindAll(array, delegate(object obj) { return obj is T; });
+			object[] objects = Array.FindAll(array, delegate (object obj) { return obj is T; });
 			T[] results = new T[objects.Length];
 
 			for (int i = 0; i < results.Length; i++)

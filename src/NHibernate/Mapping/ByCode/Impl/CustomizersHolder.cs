@@ -78,7 +78,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		private readonly Dictionary<System.Type, List<Action<IUnionSubclassAttributesMapper>>> unionClassCustomizers =
 			new Dictionary<System.Type, List<Action<IUnionSubclassAttributesMapper>>>();
 
-		private readonly Dictionary<System.Type, List<Action<IJoinAttributesMapper>>> joinCustomizers = 
+		private readonly Dictionary<System.Type, List<Action<IJoinAttributesMapper>>> joinCustomizers =
 			new Dictionary<System.Type, List<Action<IJoinAttributesMapper>>>();
 
 		#region ICustomizersHolder Members
@@ -373,7 +373,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		#endregion
 
-		private void MergeDictionary<TSubject, TCustomizable>(Dictionary<TSubject, List<Action<TCustomizable>>> destination,Dictionary<TSubject, List<Action<TCustomizable>>> source)
+		private void MergeDictionary<TSubject, TCustomizable>(Dictionary<TSubject, List<Action<TCustomizable>>> destination, Dictionary<TSubject, List<Action<TCustomizable>>> source)
 		{
 			foreach (var element in source)
 			{

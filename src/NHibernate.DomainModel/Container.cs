@@ -48,8 +48,8 @@ namespace NHibernate.DomainModel
 			public override string ToString()
 			{
 				return _name + " = " + _simple.Count
-				       + "/" + (_one == null ? "nil" : _one.Key.ToString())
-				       + "/" + (_many == null ? "nii" : _many.Key.ToString());
+					   + "/" + (_one == null ? "nil" : _one.Key.ToString())
+					   + "/" + (_many == null ? "nii" : _many.Key.ToString());
 			}
 
 			#endregion

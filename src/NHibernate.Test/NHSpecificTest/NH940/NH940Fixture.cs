@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH940
 				IList l = s.CreateCriteria(typeof(A)).List();
 				try
 				{
-					((A)l[0]).Execute();
+					((A) l[0]).Execute();
 					Assert.Fail("Should have thrown MyException");
 				}
 				catch (MyException)

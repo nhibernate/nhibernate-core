@@ -50,7 +50,7 @@ namespace NHibernate.Linq.Functions
 			return generator;
 		}
 	}
-	
+
 	public abstract class DictionaryRuntimeMethodHqlGeneratorBase<TGenerator> : IRuntimeMethodHqlGenerator
 		where TGenerator : IHqlGeneratorForMethod, new()
 	{
@@ -76,7 +76,7 @@ namespace NHibernate.Linq.Functions
 			get { return "ContainsKey"; }
 		}
 	}
-	
+
 	public class DictionaryContainsKeyRuntimeHqlGenerator : DictionaryRuntimeMethodHqlGeneratorBase<DictionaryContainsKeyGenerator>
 	{
 		protected override string MethodName
@@ -92,7 +92,7 @@ namespace NHibernate.Linq.Functions
 			get { return "get_Item"; }
 		}
 	}
-	
+
 	public class GenericDictionaryItemRuntimeHqlGenerator : GenericDictionaryRuntimeMethodHqlGeneratorBase<DictionaryItemGenerator>
 	{
 		protected override string MethodName

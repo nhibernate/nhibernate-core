@@ -16,25 +16,25 @@ namespace NHibernate.Test.NHSpecificTest.NH2278
 
 		public bool Contains(object collection, object entity)
 		{
-			return ((IList<T>)collection).Contains((T)entity);
+			return ((IList<T>) collection).Contains((T) entity);
 		}
 
 		public IEnumerable GetElements(object collection)
 		{
-			return (IEnumerable)collection;
+			return (IEnumerable) collection;
 		}
 
 		public object IndexOf(object collection, object entity)
 		{
-			return ((IList<T>)collection).IndexOf((T)entity);
+			return ((IList<T>) collection).IndexOf((T) entity);
 		}
 
 		public object ReplaceElements(object original, object target, ICollectionPersister persister, object owner, IDictionary copyCache, ISessionImplementor session)
 		{
-			IList<T> result = (IList<T>)target;
+			IList<T> result = (IList<T>) target;
 			result.Clear();
-			foreach (object item in ((IEnumerable)original))
-				result.Add((T)item);
+			foreach (object item in ((IEnumerable) original))
+				result.Add((T) item);
 			return result;
 		}
 
@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2278
 
 		public IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new CustomPersistentIdentifierBag<T>(session, (ICollection<T>)collection);
+			return new CustomPersistentIdentifierBag<T>(session, (ICollection<T>) collection);
 		}
 
 		#endregion

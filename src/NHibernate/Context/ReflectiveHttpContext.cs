@@ -42,13 +42,13 @@ namespace NHibernate.Context
 		{
 			PropertyInfo currentProperty = HttpContextType.GetProperty("Current", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 			Expression propertyExpression = Expression.Property(null, currentProperty);
-			Expression convertedExpression = Expression.Convert(propertyExpression, typeof (object));
+			Expression convertedExpression = Expression.Convert(propertyExpression, typeof(object));
 			HttpContextCurrentGetter = (Func<object>) Expression.Lambda(convertedExpression).Compile();
 		}
 
 		private static void CreateHttpContextItemsGetter()
 		{
-			ParameterExpression contextParam = Expression.Parameter(typeof (object), "context");
+			ParameterExpression contextParam = Expression.Parameter(typeof(object), "context");
 			Expression convertedParam = Expression.Convert(contextParam, HttpContextType);
 			Expression itemsProperty = Expression.Property(convertedParam, "Items");
 			HttpContextItemsGetter = (Func<object, IDictionary>) Expression.Lambda(itemsProperty, contextParam).Compile();

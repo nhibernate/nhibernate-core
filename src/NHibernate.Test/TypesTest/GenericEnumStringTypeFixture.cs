@@ -44,10 +44,10 @@ namespace NHibernate.Test.TypesTest
 		{
 			ISession s = OpenSession();
 
-			GenericEnumStringClass basic = (GenericEnumStringClass)s.Load(typeof(GenericEnumStringClass), 1);
+			GenericEnumStringClass basic = (GenericEnumStringClass) s.Load(typeof(GenericEnumStringClass), 1);
 			Assert.AreEqual(SampleEnum.Dimmed, basic.EnumValue);
 
-			GenericEnumStringClass basic2 = (GenericEnumStringClass)s.Load(typeof(GenericEnumStringClass), 2);
+			GenericEnumStringClass basic2 = (GenericEnumStringClass) s.Load(typeof(GenericEnumStringClass), 2);
 			Assert.AreEqual(SampleEnum.On, basic2.EnumValue);
 
 			s.Close();

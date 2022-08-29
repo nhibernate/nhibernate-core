@@ -72,7 +72,7 @@ namespace NHibernate.Test.SystemTransactions
 			}
 			_log.Info("Scope disposed");
 		}
-		
+
 		[Test]
 		public void DistributedNpgsqlCommit([Values(false, true)] bool enlistInPrepare)
 		{

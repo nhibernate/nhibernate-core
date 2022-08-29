@@ -81,7 +81,7 @@ namespace NHibernate.Test.MappingTest
 			// Test case is meant for a max length of 10, adjusts name if it is more.
 			columnName = AdjustColumnNameToMaxLength(columnName, dialect, 10);
 
-			var table = new Table() {UniqueInteger = 1};
+			var table = new Table() { UniqueInteger = 1 };
 			var column = new Column(columnName);
 
 			string generatedAlias = column.GetAlias(dialect, table);

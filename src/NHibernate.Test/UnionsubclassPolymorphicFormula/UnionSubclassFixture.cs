@@ -1,5 +1,5 @@
-﻿using NUnit.Framework;
-using System.Collections;
+﻿using System.Collections;
+using NUnit.Framework;
 
 namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 {
@@ -32,7 +32,7 @@ namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 					s.Save(person);
 
 					var result = s.QueryOver<Party>().Where(p => p.Name == "Mark Mannson").SingleOrDefault();
-					
+
 					Assert.NotNull(result);
 					s.Delete(result);
 					t.Commit();

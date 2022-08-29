@@ -391,8 +391,8 @@ namespace NHibernate.Test.UtilityTest
 			public bool Validate()
 			{
 				return (ReadLockCount == 0 && WriteLockCount == 0) ||
-				       (ReadLockCount > 0 && WriteLockCount == 0) ||
-				       (ReadLockCount == 0 && WriteLockCount == 1);
+					   (ReadLockCount > 0 && WriteLockCount == 0) ||
+					   (ReadLockCount == 0 && WriteLockCount == 1);
 			}
 		}
 
@@ -454,7 +454,7 @@ namespace NHibernate.Test.UtilityTest
 				{
 					Thread.Sleep(step);
 				}
-				
+
 				currentTime += step;
 				if (getValueFunc().Equals(value))
 				{

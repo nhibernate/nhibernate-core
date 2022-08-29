@@ -9,7 +9,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1594
 		{
 #if NETFX
 			const string localValuesFieldName = "_localValues";
-#else			
+#else
 			const string localValuesFieldName = "m_localValues";
 #endif
 			var f = typeof(ExecutionContext).GetField(localValuesFieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);

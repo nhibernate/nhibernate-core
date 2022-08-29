@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecific.BasicTime.hbm.xml"}; }
+			get { return new string[] { "NHSpecific.BasicTime.hbm.xml" }; }
 		}
 
 		private void IgnoreOnMySQL()
@@ -71,7 +71,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			Assert.AreEqual(0, basicLoaded.TimeArray.Length);
 
-			basicLoaded.TimeArray = new DateTime[] {new DateTime(2000, 01, 01, 12, 1, 1), new DateTime(1500, 1, 1)};
+			basicLoaded.TimeArray = new DateTime[] { new DateTime(2000, 01, 01, 12, 1, 1), new DateTime(1500, 1, 1) };
 
 			s.Flush();
 			s.Close();

@@ -1,7 +1,6 @@
-using System.Collections.Generic;
-
-using NHibernate.Engine.Query.Sql;
 using System;
+using System.Collections.Generic;
+using NHibernate.Engine.Query.Sql;
 
 namespace NHibernate.Engine
 {

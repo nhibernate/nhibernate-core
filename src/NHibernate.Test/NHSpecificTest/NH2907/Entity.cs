@@ -20,7 +20,7 @@
 			var casted = obj as Group;
 			if (casted == null)
 				return false;
-			return casted.Id==Id && casted.Name.Equals(Name);
+			return casted.Id == Id && casted.Name.Equals(Name);
 		}
 	}
 }

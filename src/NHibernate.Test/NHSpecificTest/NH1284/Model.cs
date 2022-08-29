@@ -4,7 +4,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1284
 	{
 		private Address? _address;
 		private string _name;
-		protected Person() {}
+		protected Person() { }
 
 		public Person(string name)
 		{

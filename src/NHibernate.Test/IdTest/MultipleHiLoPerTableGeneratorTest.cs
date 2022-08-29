@@ -27,9 +27,9 @@ namespace NHibernate.Test.IdTest
 			for (int i = 0; i < 8; i++)
 			{
 				cars[i] = new Car();
-				cars[i].Color="Color" + i;
+				cars[i].Color = "Color" + i;
 				planes[i] = new Plane();
-				planes[i].NbrOfSeats=i;
+				planes[i].NbrOfSeats = i;
 				s.Persist(cars[i]);
 			}
 			tx.Commit();
@@ -56,7 +56,7 @@ namespace NHibernate.Test.IdTest
 			for (int i = 0; i < testLength; i++)
 			{
 				car = new Car();
-				car.Color="color " + i;
+				car.Color = "color " + i;
 				s.Save(car);
 				lastId = car.Id;
 			}
@@ -66,7 +66,7 @@ namespace NHibernate.Test.IdTest
 			s = OpenSession();
 			tx = s.BeginTransaction();
 			car = new Car();
-			car.Color="blue";
+			car.Color = "blue";
 			s.Save(car);
 			s.Flush();
 			tx.Commit();
@@ -86,11 +86,11 @@ namespace NHibernate.Test.IdTest
 			ISession s = OpenSession();
 			ITransaction tx = s.BeginTransaction();
 			Radio radio = new Radio();
-			radio.Frequency="32 MHz";
+			radio.Frequency = "32 MHz";
 			s.Persist(radio);
 			Assert.AreEqual(1, radio.Id);
 			radio = new Radio();
-			radio.Frequency="32 MHz";
+			radio.Frequency = "32 MHz";
 			s.Persist(radio);
 			Assert.AreEqual(2, radio.Id);
 			tx.Commit();
@@ -100,7 +100,7 @@ namespace NHibernate.Test.IdTest
 			tx = s.BeginTransaction();
 			s.Delete("from Radio");
 			tx.Commit();
-			s.Close();			
+			s.Close();
 		}
 	}
 }

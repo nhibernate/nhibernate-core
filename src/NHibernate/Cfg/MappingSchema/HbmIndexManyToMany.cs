@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 
 namespace NHibernate.Cfg.MappingSchema
 {
-	public partial class HbmIndexManyToMany: IColumnsMapping, IRelationship
+	public partial class HbmIndexManyToMany : IColumnsMapping, IRelationship
 	{
 		#region Implementation of IColumnsMapping
 

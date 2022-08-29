@@ -89,22 +89,22 @@ namespace NHibernate.Impl
 		private SessionImpl(SerializationInfo info, StreamingContext context)
 		{
 			Timestamp = info.GetInt64("timestamp");
-			SessionFactoryImpl fact = (SessionFactoryImpl)info.GetValue("factory", typeof(SessionFactoryImpl));
+			SessionFactoryImpl fact = (SessionFactoryImpl) info.GetValue("factory", typeof(SessionFactoryImpl));
 			Factory = fact;
 			listeners = fact.EventListeners;
-			persistenceContext = (StatefulPersistenceContext)info.GetValue("persistenceContext", typeof(StatefulPersistenceContext));
+			persistenceContext = (StatefulPersistenceContext) info.GetValue("persistenceContext", typeof(StatefulPersistenceContext));
 
-			actionQueue = (ActionQueue)info.GetValue("actionQueue", typeof(ActionQueue));
+			actionQueue = (ActionQueue) info.GetValue("actionQueue", typeof(ActionQueue));
 
-			FlushMode = (FlushMode)info.GetValue("flushMode", typeof(FlushMode));
-			cacheMode = (CacheMode)info.GetValue("cacheMode", typeof(CacheMode));
+			FlushMode = (FlushMode) info.GetValue("flushMode", typeof(FlushMode));
+			cacheMode = (CacheMode) info.GetValue("cacheMode", typeof(CacheMode));
 
-			Interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
+			Interceptor = (IInterceptor) info.GetValue("interceptor", typeof(IInterceptor));
 
-			enabledFilters = (IDictionary<string, IFilter>)info.GetValue("enabledFilters", typeof(Dictionary<string, IFilter>));
-			enabledFilterNames = (List<string>)info.GetValue("enabledFilterNames", typeof(List<string>));
+			enabledFilters = (IDictionary<string, IFilter>) info.GetValue("enabledFilters", typeof(Dictionary<string, IFilter>));
+			enabledFilterNames = (List<string>) info.GetValue("enabledFilterNames", typeof(List<string>));
 
-			ConnectionManager = (ConnectionManager)info.GetValue("connectionManager", typeof(ConnectionManager));
+			ConnectionManager = (ConnectionManager) info.GetValue("connectionManager", typeof(ConnectionManager));
 			TenantConfiguration = info.GetValue<TenantConfiguration>(nameof(TenantConfiguration));
 		}
 
@@ -166,11 +166,11 @@ namespace NHibernate.Impl
 			// OnDeserialization() must be called manually on all Dictionaries and Hashtables,
 			// otherwise they are still empty at this point (the .NET deserialization code calls
 			// OnDeserialization() on them AFTER it calls the current method).
-			((IDeserializationCallback)enabledFilters).OnDeserialization(sender);
+			((IDeserializationCallback) enabledFilters).OnDeserialization(sender);
 
 			foreach (string filterName in enabledFilterNames)
 			{
-				FilterImpl filter = (FilterImpl)enabledFilters[filterName];
+				FilterImpl filter = (FilterImpl) enabledFilters[filterName];
 				filter.AfterDeserialize(Factory.GetFilterDefinition(filterName));
 			}
 		}
@@ -812,7 +812,7 @@ namespace NHibernate.Impl
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("flushing to force deletion of re-saved object: {0}",
-					          MessageHelper.InfoString(entityEntry.Persister, entityEntry.Id, Factory));
+							  MessageHelper.InfoString(entityEntry.Persister, entityEntry.Id, Factory));
 				}
 
 				if (persistenceContext.CascadeLevel > 0)
@@ -912,12 +912,12 @@ namespace NHibernate.Impl
 
 		public T Merge<T>(T entity) where T : class
 		{
-			return (T)Merge((object)entity);
+			return (T) Merge((object) entity);
 		}
 
 		public T Merge<T>(string entityName, T entity) where T : class
 		{
-			return (T)Merge(entityName, (object)entity);
+			return (T) Merge(entityName, (object) entity);
 		}
 
 		public object Merge(object obj)
@@ -1085,7 +1085,7 @@ namespace NHibernate.Impl
 		{
 			using (BeginProcess())
 			{
-				return (T)Load(typeof(T), id);
+				return (T) Load(typeof(T), id);
 			}
 		}
 
@@ -1093,7 +1093,7 @@ namespace NHibernate.Impl
 		{
 			using (BeginProcess())
 			{
-				return (T)Load(typeof(T), id, lockMode);
+				return (T) Load(typeof(T), id, lockMode);
 			}
 		}
 
@@ -1716,7 +1716,7 @@ namespace NHibernate.Impl
 				{
 					try
 					{
-						var results = loaders.LoadAllToList<T>(this); 
+						var results = loaders.LoadAllToList<T>(this);
 						success = true;
 						return results;
 					}
@@ -2401,7 +2401,7 @@ namespace NHibernate.Impl
 			private bool _shareTransactionContext;
 
 			public SharedSessionBuilderImpl(SessionImpl session)
-				: base((SessionFactoryImpl)session.Factory)
+				: base((SessionFactoryImpl) session.Factory)
 			{
 				_session = session;
 				TenantConfiguration = session.TenantConfiguration;
@@ -2418,7 +2418,7 @@ namespace NHibernate.Impl
 				// Ensure any previously user supplied connection is removed.
 				base.Connection(null);
 				// We share the connection manager
-				_shareTransactionContext = true; 
+				_shareTransactionContext = true;
 				return this;
 			}
 
@@ -2454,7 +2454,7 @@ namespace NHibernate.Impl
 			private bool _shareTransactionContext;
 
 			public SharedStatelessSessionBuilderImpl(SessionImpl session)
-				: base((SessionFactoryImpl)session.Factory)
+				: base((SessionFactoryImpl) session.Factory)
 			{
 				_session = session;
 				TenantConfiguration = session.TenantConfiguration;
@@ -2485,7 +2485,7 @@ namespace NHibernate.Impl
 				// Ensure any previously user supplied connection is removed.
 				base.Connection(null);
 				// We share the connection manager
-				_shareTransactionContext = true; 
+				_shareTransactionContext = true;
 				return this;
 			}
 

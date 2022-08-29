@@ -17,7 +17,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			{
 				throw new ArgumentNullException("explicitDeclarationsHolder");
 			}
-			explicitDeclarationsHolder.AddAsRootEntity(typeof (TEntity));
+			explicitDeclarationsHolder.AddAsRootEntity(typeof(TEntity));
 
 			// Add an empty customizer as a way to register the class as explicity declared
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => { });
@@ -52,7 +52,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 				member = TypeExtensions.DecodeMemberAccessExpression(idProperty);
 				ExplicitDeclarationsHolder.AddAsPoid(member);
 			}
-			CustomizersHolder.AddCustomizer(typeof (TEntity), m => m.Id(member, idMapper));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), m => m.Id(member, idMapper));
 		}
 
 		public void Id(string notVisiblePropertyOrFieldName, Action<IIdMapper> idMapper)
@@ -104,7 +104,7 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 
 		public void Discriminator(Action<IDiscriminatorMapper> discriminatorMapping)
 		{
-			CustomizersHolder.AddCustomizer(typeof (TEntity), (IClassMapper m) => m.Discriminator(discriminatorMapping));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Discriminator(discriminatorMapping));
 		}
 
 		public void DiscriminatorValue(object value)

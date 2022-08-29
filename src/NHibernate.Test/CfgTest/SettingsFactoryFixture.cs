@@ -20,8 +20,8 @@ namespace NHibernate.Test.CfgTest
 			Assert.That(!settings.IsAutoQuoteEnabled);
 		}
 
-		[Test,TestCaseSource(nameof(TestCases))]
-		public object ReadsSettingsCorrectly(string key, string value, Func<Settings,object> settingsProp)
+		[Test, TestCaseSource(nameof(TestCases))]
+		public object ReadsSettingsCorrectly(string key, string value, Func<Settings, object> settingsProp)
 		{
 			//Dialect needed to prevent exception
 			var properties = new Dictionary<string, string>
@@ -32,7 +32,7 @@ namespace NHibernate.Test.CfgTest
 			properties[key] = value;
 
 			var settings = new SettingsFactory().BuildSettings(properties);
-			
+
 			return settingsProp(settings);
 		}
 

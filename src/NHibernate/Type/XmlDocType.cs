@@ -25,7 +25,7 @@ namespace NHibernate.Type
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof (XmlDocument); }
+			get { return typeof(XmlDocument); }
 		}
 
 		/// <inheritdoc />

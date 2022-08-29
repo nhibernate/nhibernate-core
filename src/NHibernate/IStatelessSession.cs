@@ -104,12 +104,12 @@ namespace NHibernate
 		/// application should not close the connection.
 		/// </remarks>
 		DbConnection Connection { get; }
-		
+
 		/// <summary>Get the current NHibernate transaction.</summary>
 		// Since v5.3
 		[Obsolete("Use GetCurrentTransaction extension method instead, and check for null.")]
 		ITransaction Transaction { get; }
-		
+
 		/// <summary>
 		/// Is the <c>IStatelessSession</c> still open?
 		/// </summary>
@@ -233,7 +233,7 @@ namespace NHibernate
 		/// the mapping file.
 		/// </summary>
 		/// <remarks>
- 		/// The query can be either in <c>HQL</c> or <c>SQL</c> format.
+		/// The query can be either in <c>HQL</c> or <c>SQL</c> format.
 		/// Entities returned by the query are detached.
 		/// </remarks>
 		IQuery GetNamedQuery(string queryName);
@@ -245,7 +245,7 @@ namespace NHibernate
 		/// <typeparam name="T">A class, which is persistent, or has persistent subclasses</typeparam>
 		/// <returns>The <see cref="ICriteria "/>.</returns>
 		/// <remarks>Entities returned by the query are detached.</remarks>
-		ICriteria CreateCriteria<T>() where T: class;
+		ICriteria CreateCriteria<T>() where T : class;
 
 		/// <summary>
 		/// Create a new <see cref="ICriteria "/> instance, for the given entity class,
@@ -299,14 +299,14 @@ namespace NHibernate
 		/// </summary>
 		/// <typeparam name="T">The entity class</typeparam>
 		/// <returns>An ICriteria&lt;T&gt; object</returns>
-		IQueryOver<T,T> QueryOver<T>() where T : class;
+		IQueryOver<T, T> QueryOver<T>() where T : class;
 
 		/// <summary>
 		/// Creates a new <c>IQueryOver&lt;T&gt;</c> for the entity class.
 		/// </summary>
 		/// <typeparam name="T">The entity class</typeparam>
 		/// <returns>An ICriteria&lt;T&gt; object</returns>
-		IQueryOver<T,T> QueryOver<T>(Expression<Func<T>> alias) where T : class;
+		IQueryOver<T, T> QueryOver<T>(Expression<Func<T>> alias) where T : class;
 
 		/// <summary>
 		/// Create a new instance of <see cref="ISQLQuery "/> for the given SQL query string.

@@ -167,7 +167,7 @@ namespace NHibernate.Dialect
 				string connectionString = Cfg.Environment.GetConfiguredConnectionString(settings);
 				if (!string.IsNullOrWhiteSpace(connectionString))
 				{
-					var builder = new DbConnectionStringBuilder {ConnectionString = connectionString};
+					var builder = new DbConnectionStringBuilder { ConnectionString = connectionString };
 
 					strBinaryGuid = GetConnectionStringProperty(builder, "BinaryGuid");
 				}
@@ -371,14 +371,14 @@ namespace NHibernate.Dialect
 		{
 			StringBuilder qualifiedName = new StringBuilder();
 			bool quoted = false;
-			
+
 			if (!string.IsNullOrEmpty(catalog))
 			{
 				if (catalog.StartsWith(OpenQuote))
 				{
 					catalog = catalog.Substring(1, catalog.Length - 1);
 					quoted = true;
-				} 
+				}
 				if (catalog.EndsWith(CloseQuote))
 				{
 					catalog = catalog.Substring(0, catalog.Length - 1);
@@ -397,7 +397,7 @@ namespace NHibernate.Dialect
 				{
 					schema = schema.Substring(0, schema.Length - 1);
 					quoted = true;
-				} 
+				}
 				qualifiedName.Append(schema).Append(StringHelper.Underscore);
 			}
 

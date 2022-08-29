@@ -94,7 +94,7 @@ namespace NHibernate.Test.NHSpecificTest.NH251
 				return Get(owner);
 			}
 
-// Optional operation (return null)
+			// Optional operation (return null)
 		}
 
 		public class CustomSetter : ISetter

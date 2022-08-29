@@ -162,7 +162,7 @@ namespace NHibernate.Cfg
 			}
 			var tdConfiguration = TypeDefConfigurationProperties.Create<TDef>();
 			typeDefConfiguration(tdConfiguration);
-			if(string.IsNullOrEmpty(tdConfiguration.Alias))
+			if (string.IsNullOrEmpty(tdConfiguration.Alias))
 			{
 				return configuration;
 			}

@@ -1,4 +1,4 @@
 ﻿namespace NHibernate.Test.NHSpecificTest.NH1574
 {
-	public class SpecializedPrincipal : Principal {} ;
+	public class SpecializedPrincipal : Principal { };
 }

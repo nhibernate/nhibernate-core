@@ -11,7 +11,8 @@ namespace NHibernate.Param
 	public partial class AggregatedIndexCollectionSelectorParameterSpecifications : IParameterSpecification
 	{
 		private readonly IList<IParameterSpecification> _paramSpecs;
-		public AggregatedIndexCollectionSelectorParameterSpecifications(IList<IParameterSpecification> paramSpecs) {
+		public AggregatedIndexCollectionSelectorParameterSpecifications(IList<IParameterSpecification> paramSpecs)
+		{
 			_paramSpecs = paramSpecs;
 		}
 
@@ -52,7 +53,7 @@ namespace NHibernate.Param
 			throw new NotImplementedException();
 		}
 
-		private string CollectDisplayInfo() 
+		private string CollectDisplayInfo()
 		{
 			StringBuilder buffer = new StringBuilder();
 

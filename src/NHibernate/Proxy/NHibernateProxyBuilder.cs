@@ -78,7 +78,7 @@ namespace NHibernate.Proxy
 
 #if NETFX || NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 			var assemblyNamesToIgnoreAccessCheck =
-				new[] {baseType}
+				new[] { baseType }
 					.Concat(interfaces).Where(i => !i.IsVisible)
 					.Select(i => i.Assembly.GetName().Name)
 					.Distinct();
@@ -87,7 +87,7 @@ namespace NHibernate.Proxy
 #else
 			interfaces.RemoveWhere(i => !i.IsVisible);
 #endif
-			
+
 			var typeBuilder = moduleBuilder.DefineType(typeName, typeAttributes, parentType, interfaces.ToArray());
 
 			var lazyInitializerField = typeBuilder.DefineField("__lazyInitializer", LazyInitializerType, FieldAttributes.Private);
@@ -96,7 +96,7 @@ namespace NHibernate.Proxy
 			ImplementConstructor(typeBuilder, parentType, lazyInitializerField, proxyInfoField);
 
 			// Provide a custom implementation of ISerializable instead of redirecting it back to the interceptor
-			foreach (var method in ProxyBuilderHelper.GetProxiableMethods(baseType, interfaces.Except(new[] {typeof(ISerializable)})))
+			foreach (var method in ProxyBuilderHelper.GetProxiableMethods(baseType, interfaces.Except(new[] { typeof(ISerializable) })))
 			{
 				CreateProxiedMethod(typeBuilder, method, lazyInitializerField, parentType);
 			}
@@ -127,7 +127,7 @@ namespace NHibernate.Proxy
 			{
 				ImplementSetIdentifier(typeBuilder, method, lazyInitializerField, parentType);
 			}
-			else if (!_overridesEquals && method.Name == "Equals" && method.GetBaseDefinition() == typeof(object).GetMethod("Equals", new[] {typeof(object)}))
+			else if (!_overridesEquals && method.Name == "Equals" && method.GetBaseDefinition() == typeof(object).GetMethod("Equals", new[] { typeof(object) }))
 			{
 				//skip
 			}
@@ -147,7 +147,7 @@ namespace NHibernate.Proxy
 
 		private static void ImplementConstructor(TypeBuilder typeBuilder, System.Type parentType, FieldInfo lazyInitializerField, FieldInfo proxyInfoField)
 		{
-			var constructor = typeBuilder.DefineConstructor(constructorAttributes, CallingConventions.Standard, new[] {LazyInitializerType, typeof(NHibernateProxyFactoryInfo)});
+			var constructor = typeBuilder.DefineConstructor(constructorAttributes, CallingConventions.Standard, new[] { LazyInitializerType, typeof(NHibernateProxyFactoryInfo) });
 
 			var IL = constructor.GetILGenerator();
 
@@ -170,7 +170,7 @@ namespace NHibernate.Proxy
 
 		private static void ImplementDeserializationConstructor(TypeBuilder typeBuilder, System.Type parentType)
 		{
-			var parameterTypes = new[] {typeof (SerializationInfo), typeof (StreamingContext)};
+			var parameterTypes = new[] { typeof(SerializationInfo), typeof(StreamingContext) };
 			var constructor = typeBuilder.DefineConstructor(constructorAttributes, CallingConventions.Standard, parameterTypes);
 			constructor.SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed);
 
@@ -188,7 +188,7 @@ namespace NHibernate.Proxy
 
 			// info.SetType(typeof(NHibernateProxyObjectReference));
 			IL.Emit(OpCodes.Ldarg_1);
-			IL.Emit(OpCodes.Ldtoken, typeof (NHibernateProxyObjectReference));
+			IL.Emit(OpCodes.Ldtoken, typeof(NHibernateProxyObjectReference));
 			IL.Emit(OpCodes.Call, ReflectionCache.TypeMethods.GetTypeFromHandle);
 			IL.Emit(OpCodes.Callvirt, ProxyBuilderHelper.SerializationInfoSetTypeMethod);
 
@@ -247,7 +247,7 @@ namespace NHibernate.Proxy
 			const MethodAttributes attributes =
 				MethodAttributes.Private | MethodAttributes.Final | MethodAttributes.HideBySig |
 				MethodAttributes.SpecialName | MethodAttributes.NewSlot | MethodAttributes.Virtual;
-			
+
 			var getMethod = typeBuilder.DefineMethod($"{NHibernateProxyType.FullName}.get_{nameof(INHibernateProxy.HibernateLazyInitializer)}", attributes, CallingConventions.HasThis, LazyInitializerType, System.Type.EmptyTypes);
 			getMethod.SetImplementationFlags(MethodImplAttributes.Managed | MethodImplAttributes.IL);
 
@@ -397,7 +397,7 @@ namespace NHibernate.Proxy
 			IL.Emit(OpCodes.Bne_Un, skipBaseCall);
 
 			if (method.DeclaringType.IsInterface &&
-			    method.DeclaringType.IsAssignableFrom(parentType))
+				method.DeclaringType.IsAssignableFrom(parentType))
 			{
 				var interfaceMap = parentType.GetInterfaceMap(method.DeclaringType);
 				var methodIndex = Array.IndexOf(interfaceMap.InterfaceMethods, method);
@@ -409,7 +409,7 @@ namespace NHibernate.Proxy
 				/*
 				 * return default(<ReturnType>);
 				 */
-				
+
 				if (!method.ReturnType.IsValueType)
 				{
 					IL.Emit(OpCodes.Ldnull);
@@ -431,11 +431,11 @@ namespace NHibernate.Proxy
 				 * var delegate = (<delegateType>)mi.CreateDelegate(typeof(<delegateType>), this);
 				 * delegate.Invoke(args...);
 				 */
-				
+
 				var parameters = method.GetParameters();
 
 				var delegateType = Expression.GetDelegateType(
-					parameters.Select(p => p.ParameterType).Concat(new[] {method.ReturnType}).ToArray());
+					parameters.Select(p => p.ParameterType).Concat(new[] { method.ReturnType }).ToArray());
 
 				var invokeDelegate = delegateType.GetMethod("Invoke");
 
@@ -450,7 +450,7 @@ namespace NHibernate.Proxy
 					OpCodes.Callvirt,
 					typeof(MethodInfo).GetMethod(
 						nameof(MethodInfo.CreateDelegate),
-						new[] {typeof(System.Type), typeof(object)}));
+						new[] { typeof(System.Type), typeof(object) }));
 				IL.Emit(OpCodes.Castclass, delegateType);
 
 				EmitCallMethod(IL, OpCodes.Callvirt, invokeDelegate);
@@ -461,7 +461,7 @@ namespace NHibernate.Proxy
 				/*
 				 * base.<method>(args...);
 				 */
-				
+
 				IL.Emit(OpCodes.Ldarg_0);
 				EmitCallMethod(IL, OpCodes.Call, method);
 				IL.Emit(OpCodes.Ret);

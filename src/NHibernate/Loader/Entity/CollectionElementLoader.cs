@@ -15,7 +15,7 @@ namespace NHibernate.Loader.Entity
 {
 	public partial class CollectionElementLoader : OuterJoinLoader
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (CollectionElementLoader));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(CollectionElementLoader));
 
 		private readonly IOuterJoinLoadable persister;
 		private readonly IType keyType;
@@ -24,7 +24,7 @@ namespace NHibernate.Loader.Entity
 		private IParameterSpecification[] parametersSpecifications;
 
 		public CollectionElementLoader(IQueryableCollection collectionPersister, ISessionFactoryImplementor factory,
-		                               IDictionary<string, IFilter> enabledFilters) : base(factory, enabledFilters)
+									   IDictionary<string, IFilter> enabledFilters) : base(factory, enabledFilters)
 		{
 			keyType = collectionPersister.KeyType;
 			indexType = collectionPersister.IndexType;
@@ -33,8 +33,8 @@ namespace NHibernate.Loader.Entity
 
 			JoinWalker walker =
 				new EntityJoinWalker(persister,
-				                     ArrayHelper.Join(collectionPersister.KeyColumnNames, collectionPersister.IndexColumnNames), 1,
-				                     LockMode.None, factory, enabledFilters);
+									 ArrayHelper.Join(collectionPersister.KeyColumnNames, collectionPersister.IndexColumnNames), 1,
+									 LockMode.None, factory, enabledFilters);
 			InitFromWalker(walker);
 
 			PostInstantiate();
@@ -45,10 +45,10 @@ namespace NHibernate.Loader.Entity
 		private IEnumerable<IParameterSpecification> CreateParameterSpecificationsAndAssignBackTrack(IEnumerable<Parameter> sqlPatameters)
 		{
 			var specifications = new IParameterSpecification[]
-			                     {
-			                     	new PositionalParameterSpecification(1, 0, 0) {ExpectedType = keyType},
-			                     	new PositionalParameterSpecification(1, 0, 1) {ExpectedType = indexType},
-			                     };
+								 {
+									 new PositionalParameterSpecification(1, 0, 0) {ExpectedType = keyType},
+									 new PositionalParameterSpecification(1, 0, 1) {ExpectedType = indexType},
+								 };
 			Parameter[] parameters = sqlPatameters.ToArray();
 			int sqlParameterPos = 0;
 			IEnumerable<string> paramTrackers = specifications.SelectMany(specification => specification.GetIdsForBackTrack(Factory));
@@ -95,7 +95,7 @@ namespace NHibernate.Loader.Entity
 		}
 
 		protected override object GetResultColumnOrRow(object[] row, IResultTransformer transformer, DbDataReader rs,
-		                                               ISessionImplementor session)
+													   ISessionImplementor session)
 		{
 			return row[row.Length - 1];
 		}

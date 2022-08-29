@@ -66,7 +66,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void OptimisticLock(OptimisticLockMode mode)
 		{
-			classMapping.optimisticlock = (HbmOptimisticLockMode)Enum.Parse(typeof(OptimisticLockMode), mode.ToString());
+			classMapping.optimisticlock = (HbmOptimisticLockMode) Enum.Parse(typeof(OptimisticLockMode), mode.ToString());
 		}
 
 		public void Id(Action<IIdMapper> mapper)
@@ -77,14 +77,14 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Id(MemberInfo idProperty, Action<IIdMapper> mapper)
 		{
 			var id = classMapping.Item as HbmId;
-			if(id == null)
+			if (id == null)
 			{
 				var propertyDescription = idProperty != null ? " '" + idProperty.Name + "'" : ", with generator, ";
 				throw new MappingException(string.Format("Ambiguous mapping of {0} id. A ComponentAsId or a ComposedId was used and you are trying to map the property{1} as id.",
 					Container.FullName, propertyDescription));
 			}
 			mapper(new IdMapper(idProperty, id));
-			if(idProperty != null)
+			if (idProperty != null)
 			{
 				simpleIdPropertyWasUsed = true;
 			}
@@ -111,7 +111,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 					, Container.FullName, idProperty.GetPropertyOrFieldType().FullName, idProperty.Name));
 			}
 			var id = classMapping.Item as HbmCompositeId;
-			if(id == null)
+			if (id == null)
 			{
 				id = new HbmCompositeId();
 				classMapping.Item = id;
@@ -122,7 +122,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void ComposedId(Action<IComposedIdMapper> idPropertiesMapping)
 		{
-			if(componentAsIdWasUsed)
+			if (componentAsIdWasUsed)
 			{
 				throw new MappingException(string.Format("Ambiguous mapping of {0} id. A Component as id was used and you are trying to map an id composed by various properties of {0}.", Container.FullName));
 			}
@@ -159,7 +159,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				classMapping.discriminatorvalue = value.ToString();
 				Discriminator(x => { });
 				System.Type valueType = value.GetType();
-				if (valueType != typeof (string))
+				if (valueType != typeof(string))
 				{
 					classMapping.discriminator.type = valueType.GetNhTypeName();
 				}
@@ -253,7 +253,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Join(string splitGroupId, Action<IJoinMapper> splitMapping)
 		{
 			IJoinMapper splitGroup;
-			if(!JoinMappers.TryGetValue(splitGroupId, out splitGroup))
+			if (!JoinMappers.TryGetValue(splitGroupId, out splitGroup))
 			{
 				var hbmJoin = new HbmJoin();
 				splitGroup = new JoinMapper(Container, splitGroupId, hbmJoin, MapDoc);
@@ -323,7 +323,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Persister<T>() where T : IEntityPersister
 		{
-			classMapping.persister = typeof (T).GetShortClassName(MapDoc);
+			classMapping.persister = typeof(T).GetShortClassName(MapDoc);
 		}
 
 		public void Synchronize(params string[] table)
@@ -366,7 +366,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.sqlinsert = new HbmCustomSQL();
 			}
-			classMapping.sqlinsert.Text = new[] {sql};
+			classMapping.sqlinsert.Text = new[] { sql };
 		}
 
 		public void SqlInsert(string sql, SqlCheck sqlCheck)
@@ -386,7 +386,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.sqlupdate = new HbmCustomSQL();
 			}
-			classMapping.sqlupdate.Text = new[] {sql};
+			classMapping.sqlupdate.Text = new[] { sql };
 		}
 
 		public void SqlUpdate(string sql, SqlCheck sqlCheck)
@@ -406,7 +406,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.sqldelete = new HbmCustomSQL();
 			}
-			classMapping.sqldelete.Text = new[] {sql};
+			classMapping.sqldelete.Text = new[] { sql };
 		}
 
 		public void SqlDelete(string sql, SqlCheck sqlCheck)
@@ -426,7 +426,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 			{
 				classMapping.subselect = new HbmSubselect();
 			}
-			classMapping.subselect.Text = new[] {sql};
+			classMapping.subselect.Text = new[] { sql };
 		}
 
 		#endregion

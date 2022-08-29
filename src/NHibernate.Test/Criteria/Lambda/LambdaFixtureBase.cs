@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 
-using NHibernate.Criterion; 
+using NHibernate.Criterion;
 using NHibernate.Impl;
 
 using NUnit.Framework;
@@ -27,18 +27,18 @@ namespace NHibernate.Test.Criteria.Lambda
 			return new CriteriaImpl(persistentClass, alias, null);
 		}
 
-		protected IQueryOver<T,T> CreateTestQueryOver<T>()
+		protected IQueryOver<T, T> CreateTestQueryOver<T>()
 		{
-			return (IQueryOver<T,T>)
-				typeof(QueryOver<T,T>).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new System.Type[] { typeof(CriteriaImpl) }, null)
+			return (IQueryOver<T, T>)
+				typeof(QueryOver<T, T>).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new System.Type[] { typeof(CriteriaImpl) }, null)
 					.Invoke(new object[] { new CriteriaImpl(typeof(T), null) });
 		}
 
-		protected IQueryOver<T,T> CreateTestQueryOver<T>(Expression<Func<object>> alias)
+		protected IQueryOver<T, T> CreateTestQueryOver<T>(Expression<Func<object>> alias)
 		{
 			string aliasContainer = ExpressionProcessor.FindMemberExpression(alias.Body);
-			return (IQueryOver<T,T>)
-				typeof(QueryOver<T,T>).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new System.Type[] { typeof(CriteriaImpl) }, null)
+			return (IQueryOver<T, T>)
+				typeof(QueryOver<T, T>).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new System.Type[] { typeof(CriteriaImpl) }, null)
 					.Invoke(new object[] { new CriteriaImpl(typeof(T), aliasContainer, null) });
 		}
 
@@ -54,7 +54,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 		protected void AssertCriteriaAreEqual<T>(ICriteria expected, IQueryOver<T> actual)
 		{
-			AssertObjectsAreEqual(expected, ((QueryOver<T>)actual).UnderlyingCriteria);
+			AssertObjectsAreEqual(expected, ((QueryOver<T>) actual).UnderlyingCriteria);
 		}
 
 		protected DetachedCriteria ToDetachedCriteria<T>(QueryOver<T> actual)
@@ -90,7 +90,7 @@ namespace NHibernate.Test.Criteria.Lambda
 		private void AssertListsAreEqual(IList expected, IList actual)
 		{
 			Assert.AreEqual(expected.Count, actual.Count, _fieldPath.Peek() + ".Count");
-			for (int i=0; i<expected.Count; i++)
+			for (int i = 0; i < expected.Count; i++)
 			{
 				AssertObjectsAreEqual(expected[i], actual[i], "[" + i.ToString() + "]");
 			}
@@ -144,14 +144,14 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			if (expected is IDictionary)
 			{
-				AssertDictionariesAreEqual((IDictionary)expected, (IDictionary)actual);
+				AssertDictionariesAreEqual((IDictionary) expected, (IDictionary) actual);
 				_fieldPath.Pop();
 				return;
 			}
 
 			if (expected is IList)
 			{
-				AssertListsAreEqual((IList)expected, (IList)actual);
+				AssertListsAreEqual((IList) expected, (IList) actual);
 				_fieldPath.Pop();
 				return;
 			}

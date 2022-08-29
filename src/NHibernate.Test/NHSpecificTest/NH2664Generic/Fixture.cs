@@ -1,9 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.Linq;
 using NUnit.Framework;
-using System.Linq.Expressions;
-using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2664Generic
 {
@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2664Generic
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override string[] Mappings => new[] {"NHSpecificTest.NH2664Generic.Mappings.hbm.xml"};
+		protected override string[] Mappings => new[] { "NHSpecificTest.NH2664Generic.Mappings.hbm.xml" };
 
 		/// <summary>
 		/// push some data into the database
@@ -116,8 +116,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2664Generic
 			using (var session = OpenSession())
 			{
 				Expression<Func<IEnumerable>> key1 = () =>
-					from a in session.Query<Product>() 
-					where (string) a.Properties["Name"] == "val" 
+					from a in session.Query<Product>()
+					where (string) a.Properties["Name"] == "val"
 					select a;
 				Expression<Func<IEnumerable>> key2 = () =>
 					from a in session.Query<Product>()

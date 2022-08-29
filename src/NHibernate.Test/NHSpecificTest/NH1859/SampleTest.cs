@@ -10,7 +10,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1859
 			base.OnSetUp();
 			using (ISession session = OpenSession())
 			{
-				session.Save(new DomainClass {Id = 1});
+				session.Save(new DomainClass { Id = 1 });
 				session.Flush();
 			}
 		}
@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1859
 			using (ISession session = OpenSession())
 			{
 				IQuery qry = session.CreateSQLQuery("select /* first comment */ o.* /* second comment*/ from domainclass o")
-					.AddEntity("o", typeof (DomainClass));
+					.AddEntity("o", typeof(DomainClass));
 				var res = qry.List<DomainClass>();
 				Assert.AreEqual(res[0].Id, 1);
 			}

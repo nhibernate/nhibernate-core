@@ -27,7 +27,7 @@ namespace NHibernate.Test.UtilityTest
 		{
 			var obj = new object();
 			var se = new SingletonEnumerable<object>(obj);
-			int i=0;
+			int i = 0;
 			foreach (var o in se)
 			{
 				i++;

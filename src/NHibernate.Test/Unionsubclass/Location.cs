@@ -17,7 +17,7 @@ namespace NHibernate.Test.Unionsubclass
 
 		public virtual void AddBeing(Being b)
 		{
-			b.Location=this;
+			b.Location = this;
 			beings.Add(b);
 		}
 

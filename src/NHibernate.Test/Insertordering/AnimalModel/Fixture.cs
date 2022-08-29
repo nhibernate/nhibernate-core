@@ -97,7 +97,7 @@ namespace NHibernate.Test.Insertordering.AnimalModel
 		[Test]
 		public void InsertShouldNotInitializeManyToOneProxy()
 		{
-			var person = new Person {  Name = "AnimalOwner" };
+			var person = new Person { Name = "AnimalOwner" };
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
@@ -123,7 +123,7 @@ namespace NHibernate.Test.Insertordering.AnimalModel
 		[Test]
 		public void InsertShouldNotInitializeOneToManyProxy()
 		{
-			var cat = new Cat {  Name = "Felix" };
+			var cat = new Cat { Name = "Felix" };
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{

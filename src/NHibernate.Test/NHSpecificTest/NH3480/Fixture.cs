@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using NHibernate.Linq;
 using NHibernate.Collection;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3480

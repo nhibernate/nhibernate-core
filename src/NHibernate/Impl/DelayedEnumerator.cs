@@ -35,7 +35,7 @@ namespace NHibernate.Impl
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return ((IEnumerable)GetEnumerable()).GetEnumerator();
+			return ((IEnumerable) GetEnumerable()).GetEnumerator();
 		}
 
 		[Obsolete("Please use GetEnumerable() or GetEnumerableAsync(cancellationToken) instead")]

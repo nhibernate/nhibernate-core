@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 			using (ISession session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var customer = new Customer {Name = "Alkampfer"};
+				var customer = new Customer { Name = "Alkampfer" };
 				session.Save(customer);
 				var testClass = new TestClass { Id = new TestClassId { Customer = customer, SomeInt = 42 }, Value = "TESTVALUE" };
 				session.Save(testClass);
@@ -48,8 +48,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 			using (ISession session = OpenSession())
 			{
 				ICriteria c =
-					session.CreateCriteria(typeof (TestClass)).CreateAlias("Id.Customer", "IdCust").Add(Restrictions.Eq("IdCust.Name",
-					                                                                                                    "Alkampfer"));
+					session.CreateCriteria(typeof(TestClass)).CreateAlias("Id.Customer", "IdCust").Add(Restrictions.Eq("IdCust.Name",
+																														"Alkampfer"));
 				IList<TestClass> retvalue = c.List<TestClass>();
 				criteriaCount = retvalue.Count;
 			}

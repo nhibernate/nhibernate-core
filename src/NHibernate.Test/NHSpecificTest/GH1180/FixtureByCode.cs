@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 			mapper.Class<Entity>(rc =>
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
-				rc.Property(x => x.Name, m => {m.Type(NHibernateUtil.AnsiString); m.Length(5); });
+				rc.Property(x => x.Name, m => { m.Type(NHibernateUtil.AnsiString); m.Length(5); });
 				rc.Property(x => x.Amount, m => { m.Precision(8); m.Scale(2); });
 			});
 
@@ -39,17 +39,17 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 		{
 			var whenFalse =
 				Dialect is Oracle8iDialect
-				//Most dialects allow to return DbType.String and DbType.AnsiString in case statement
-				//But Oracle throws 'ORA-12704: character set mismatch' 
+					//Most dialects allow to return DbType.String and DbType.AnsiString in case statement
+					//But Oracle throws 'ORA-12704: character set mismatch' 
 					? Projections.Constant("otherstring", NHibernateUtil.AnsiString)
 					: Projections.Constant("otherstring");
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
 				// data
-				session.Save(new Entity {Name = "Alpha"});
-				session.Save(new Entity {Name = "Beta"});
-				session.Save(new Entity {Name = "Gamma"});
+				session.Save(new Entity { Name = "Alpha" });
+				session.Save(new Entity { Name = "Beta" });
+				session.Save(new Entity { Name = "Gamma" });
 
 				transaction.Commit();
 			}
@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 				// run query
 				var results = tagCriteria.List();
 
-				Assert.That(results, Is.EquivalentTo(new[] {"otherstring", "Beta", "otherstring"}));
+				Assert.That(results, Is.EquivalentTo(new[] { "otherstring", "Beta", "otherstring" }));
 			}
 
 			// whenTrue is property, whenFalse is constant
@@ -87,7 +87,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 				// run query
 				var results = tagCriteria.List();
 
-				Assert.That(results, Is.EquivalentTo(new[] {"otherstring", "Beta", "otherstring"}));
+				Assert.That(results, Is.EquivalentTo(new[] { "otherstring", "Beta", "otherstring" }));
 			}
 		}
 
@@ -99,9 +99,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.Save(new Entity {Amount = 3.141m});
-				session.Save(new Entity {Amount = 42.131m});
-				session.Save(new Entity {Amount = 17.991m});
+				session.Save(new Entity { Amount = 3.141m });
+				session.Save(new Entity { Amount = 42.131m });
+				session.Save(new Entity { Amount = 17.991m });
 
 				transaction.Commit();
 			}
@@ -122,7 +122,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 				// run query
 				var results = tagCriteria.List();
 
-				Assert.That(results, Is.EquivalentTo(new[] {20.123m, propertyResult, 20.123m}));
+				Assert.That(results, Is.EquivalentTo(new[] { 20.123m, propertyResult, 20.123m }));
 			}
 
 			// whenTrue is property, whenFalse is constant
@@ -139,7 +139,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1180
 				// run query
 				var results = tagCriteria.List();
 
-				Assert.That(results, Is.EquivalentTo(new[] {20.123m, propertyResult, 20.123m}));
+				Assert.That(results, Is.EquivalentTo(new[] { 20.123m, propertyResult, 20.123m }));
 			}
 		}
 	}

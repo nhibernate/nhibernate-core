@@ -108,18 +108,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			for (int i = 0; i < _types.Length; i++)
 			{
-                if (selectTypes[i] == null)
-                    selectTypes[i] = _types[i];
-                else
-                {
-                    if (!AreCompatible(_types[i], selectTypes[i]))
-                    {
-                        throw new QueryException(
-                                "insertion type [" + _types[i] + "] and selection type [" +
-                                selectTypes[i] + "] at position " + i + " are not compatible"
-                        );
-                    }
-                }
+				if (selectTypes[i] == null)
+					selectTypes[i] = _types[i];
+				else
+				{
+					if (!AreCompatible(_types[i], selectTypes[i]))
+					{
+						throw new QueryException(
+								"insertion type [" + _types[i] + "] and selection type [" +
+								selectTypes[i] + "] at position " + i + " are not compatible"
+						);
+					}
+				}
 			}
 
 			// otherwise, everything ok.

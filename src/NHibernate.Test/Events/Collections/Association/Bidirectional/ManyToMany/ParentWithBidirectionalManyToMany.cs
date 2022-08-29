@@ -4,9 +4,9 @@ namespace NHibernate.Test.Events.Collections.Association.Bidirectional.ManyToMan
 {
 	public class ParentWithBidirectionalManyToMany : AbstractParentWithCollection
 	{
-		public ParentWithBidirectionalManyToMany() {}
+		public ParentWithBidirectionalManyToMany() { }
 
-		public ParentWithBidirectionalManyToMany(string name) : base(name) {}
+		public ParentWithBidirectionalManyToMany(string name) : base(name) { }
 
 		public override IChild CreateChild(string name)
 		{

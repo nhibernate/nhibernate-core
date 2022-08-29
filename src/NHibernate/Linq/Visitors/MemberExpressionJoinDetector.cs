@@ -49,7 +49,7 @@ namespace NHibernate.Linq.Visitors
 				_memberExpressionDepth++;
 
 			var result = base.VisitMember(expression);
-			
+
 			if (!isIdentifier)
 				_memberExpressionDepth--;
 

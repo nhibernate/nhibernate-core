@@ -9,7 +9,7 @@ namespace NHibernate.Test.QueryTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"QueryTest.Aggregated.hbm.xml"}; }
+			get { return new string[] { "QueryTest.Aggregated.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly

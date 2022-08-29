@@ -50,7 +50,7 @@ namespace NHibernate.Proxy.Map
 				return li.GenericMap.TryGetValue(key, out result);
 			return base.TryGetIndex(binder, indexes, out result);
 		}
-		
+
 		public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
 		{
 			if (indexes.Length == 1 && indexes[0] is string key)

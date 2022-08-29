@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
 using System.Linq;
+using Iesi.Collections.Generic;
 
 namespace NHibernate.DomainModel
 {
@@ -191,7 +191,7 @@ namespace NHibernate.DomainModel
 		/// <summary>
 		/// Get/set for cachedMap
 		/// </summary>
-		public IDictionary<Baz,CompositeElement> CachedMap
+		public IDictionary<Baz, CompositeElement> CachedMap
 		{
 			get { return this._cachedMap; }
 			set { this._cachedMap = value; }
@@ -383,23 +383,23 @@ namespace NHibernate.DomainModel
 		{
 			DateTime today = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
 
-			StringSet = new HashSet<string> {"foo", "bar", "baz"};
+			StringSet = new HashSet<string> { "foo", "bar", "baz" };
 
 			StringDateMap = new SortedList<string, DateTime?>();
 			StringDateMap.Add("now", DateTime.Now);
 			StringDateMap.Add("never", null); // value is persisted since NH-2199
-			// according to SQL Server the big bag happened in 1753 ;)
+											  // according to SQL Server the big bag happened in 1753 ;)
 			StringDateMap.Add("big bang", new DateTime(1753, 01, 01));
 			//StringDateMap.Add( "millenium", new DateTime( 2000, 01, 01 ) );
 			StringArray = StringSet.ToArray();
 			StringList = new List<string>(StringArray);
-			IntArray = new int[] {1, 3, 3, 7};
+			IntArray = new int[] { 1, 3, 3, 7 };
 			FooArray = Array.Empty<Foo>();
-			
+
 			Customs = new List<string[]>();
-			Customs.Add(new String[] {"foo", "bar"});
-			Customs.Add(new String[] {"A", "B"});
-			Customs.Add(new String[] {"1", "2"});
+			Customs.Add(new String[] { "foo", "bar" });
+			Customs.Add(new String[] { "A", "B" });
+			Customs.Add(new String[] { "1", "2" });
 
 			FooSet = new HashSet<FooProxy>();
 			Components = new FooComponent[]
@@ -418,9 +418,9 @@ namespace NHibernate.DomainModel
 			Count = 667;
 			Name = "Bazza";
 			TopComponents = new List<FooComponent>();
-			TopComponents.Add(new FooComponent("foo", 11, new DateTime[] {today, new DateTime(2123, 1, 1)}, null));
+			TopComponents.Add(new FooComponent("foo", 11, new DateTime[] { today, new DateTime(2123, 1, 1) }, null));
 			TopComponents.Add(
-				new FooComponent("bar", 22, new DateTime[] {new DateTime(2007, 2, 3), new DateTime(1945, 6, 1)}, null));
+				new FooComponent("bar", 22, new DateTime[] { new DateTime(2007, 2, 3), new DateTime(1945, 6, 1) }, null));
 			TopComponents.Add(null);
 			Bag = new List<string>();
 			Bag.Add("duplicate");

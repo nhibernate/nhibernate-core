@@ -80,7 +80,7 @@ namespace NHibernate.Linq.Visitors
 				return null;
 
 			if (expression.NodeType == ExpressionType.Lambda || !_partialEvaluationInfo.IsEvaluatableExpression(expression) ||
-				#region NH additions
+			#region NH additions
 				// Variables should be evaluated only when they are part of an evaluatable expression (e.g. o => string.Format("...", variable))
 				ContainsVariable(expression))
 				#endregion
@@ -114,10 +114,10 @@ namespace NHibernate.Linq.Visitors
 
 			// Variables in expressions are never a constant, they are encapsulated as fields of a compiler generated class.
 			if (expression.NodeType != ExpressionType.Constant &&
-			    _preTransformationParameters.MinimizeParameters &&
-			    evaluatedExpression is ConstantExpression variableConstant &&
-			    !_preTransformationParameters.QueryVariables.ContainsKey(variableConstant) &&
-			    ExpressionsHelper.IsVariable(expression, out var path, out var closureContext))
+				_preTransformationParameters.MinimizeParameters &&
+				evaluatedExpression is ConstantExpression variableConstant &&
+				!_preTransformationParameters.QueryVariables.ContainsKey(variableConstant) &&
+				ExpressionsHelper.IsVariable(expression, out var path, out var closureContext))
 			{
 				_preTransformationParameters.QueryVariables.Add(variableConstant, new QueryVariable(path, closureContext));
 			}
@@ -168,11 +168,11 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			return ExpressionsHelper.IsVariable(unaryExpression.Operand, out _, out _) ||
-			       // Check whether the variable is casted due to comparison with a nullable expression
-			       // (e.g. o.NullableShort == shortVariable)
-			       unaryExpression.Operand is UnaryExpression subUnaryExpression &&
-			       unaryExpression.Type.UnwrapIfNullable() == subUnaryExpression.Type &&
-			       ExpressionsHelper.IsVariable(subUnaryExpression.Operand, out _, out _);
+				   // Check whether the variable is casted due to comparison with a nullable expression
+				   // (e.g. o.NullableShort == shortVariable)
+				   unaryExpression.Operand is UnaryExpression subUnaryExpression &&
+				   unaryExpression.Type.UnwrapIfNullable() == subUnaryExpression.Type &&
+				   ExpressionsHelper.IsVariable(subUnaryExpression.Operand, out _, out _);
 		}
 
 		#endregion

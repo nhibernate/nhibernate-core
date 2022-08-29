@@ -1,10 +1,10 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 {
@@ -30,7 +30,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
-			var propertyInfo = (new { A = (IEnumerable<int>)null }).GetType().GetProperty("A");
+			var propertyInfo = (new { A = (IEnumerable<int>) null }).GetType().GetProperty("A");
 
 			mapper.Bag(propertyInfo, x => { }, rel => { });
 
@@ -43,7 +43,7 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
-			var propertyInfo = (new { A = (IEnumerable<int>)null }).GetType().GetProperty("A");
+			var propertyInfo = (new { A = (IEnumerable<int>) null }).GetType().GetProperty("A");
 
 			var called = false;
 			mapper.Bag(propertyInfo, x => called = true, rel => { });
@@ -57,11 +57,11 @@ namespace NHibernate.Test.MappingByCode.MappersTests.DynamicComponentMapperTests
 			var mapdoc = new HbmMapping();
 			var component = new HbmDynamicComponent();
 			var mapper = new DynamicComponentMapper(component, For<Person>.Property(p => p.Info), mapdoc);
-			var propertyInfo = (new { A = (IEnumerable<int>)null }).GetType().GetProperty("A");
+			var propertyInfo = (new { A = (IEnumerable<int>) null }).GetType().GetProperty("A");
 
 			mapper.Bag(propertyInfo, x => x.Access(Accessor.Field), rel => { });
 
 			Assert.That(component.Properties.OfType<HbmBag>().Single().Access, Is.Null.Or.Empty);
-		}		
+		}
 	}
 }

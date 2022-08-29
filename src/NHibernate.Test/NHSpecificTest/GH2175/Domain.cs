@@ -109,7 +109,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2175
 		{
 			unchecked
 			{
-				return ((this.CodeSource?.GetHashCode() ?? 0) * 397) 
+				return ((this.CodeSource?.GetHashCode() ?? 0) * 397)
 					^ (this.Value?.GetHashCode() ?? 0);
 			}
 		}

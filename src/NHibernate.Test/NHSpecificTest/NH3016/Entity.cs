@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3016
 			public override bool Equals(object obj)
 			{
 				if (obj == null) return false;
-				return Id.Equals(((Key)obj).Id);
+				return Id.Equals(((Key) obj).Id);
 			}
 
 			public override int GetHashCode()

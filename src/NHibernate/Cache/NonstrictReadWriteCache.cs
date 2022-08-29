@@ -146,7 +146,7 @@ namespace NHibernate.Cache
 		/// Add an item to the cache
 		/// </summary>
 		public bool Put(CacheKey key, object value, long txTimestamp, object version, IComparer versionComparator,
-		                bool minimalPut)
+						bool minimalPut)
 		{
 			if (txTimestamp == long.MinValue)
 			{

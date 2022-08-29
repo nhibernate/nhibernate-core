@@ -172,7 +172,7 @@ namespace NHibernate.Linq.Functions
 			ParameterExpression param = Expression.Parameter(targetObject.Type, "x");
 			HqlWhere where = treeBuilder.Where(visitor.Visit(Expression.Lambda(
 				Expression.Equal(param, arguments[0]), param))
-			                                   	.AsExpression());
+												   .AsExpression());
 
 			return treeBuilder.Exists(
 				treeBuilder.Query(

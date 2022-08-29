@@ -38,10 +38,10 @@ namespace NHibernate.Test.TypesTest
 			Assert.IsFalse(string25 == string30, "string25 & string30 should be different strings");
 		}
 
-	/// <summary>
-	/// Test that Nullable&lt;&gt; wrappers around structs are returning the
-	/// correct NH IType.
-	/// </summary>
+		/// <summary>
+		/// Test that Nullable&lt;&gt; wrappers around structs are returning the
+		/// correct NH IType.
+		/// </summary>
 		[Test]
 		public void GetNullableGeneric()
 		{
@@ -49,10 +49,10 @@ namespace NHibernate.Test.TypesTest
 
 			//Assert.AreEqual(int64Type, TypeFactory.HeuristicType("Int64?"), "'Int64?' should return a NH Int64Type");
 
-			System.Type reflectedType = Util.ReflectHelper.ReflectedPropertyClass( typeof(GenericPropertyClass), "GenericInt64", "property" );
-			Assert.AreEqual( int64Type, TypeFactory.HeuristicType( reflectedType ), "using System.Type should return nh Int64Type" );
-			Assert.AreEqual( int64Type, TypeFactory.HeuristicType( reflectedType.AssemblyQualifiedName ), "using AQN should return nh Int64Type" );
-			Assert.AreEqual( int64Type, TypeFactory.HeuristicType( reflectedType.FullName ), "using FullName should return nh Int64Type" );
+			System.Type reflectedType = Util.ReflectHelper.ReflectedPropertyClass(typeof(GenericPropertyClass), "GenericInt64", "property");
+			Assert.AreEqual(int64Type, TypeFactory.HeuristicType(reflectedType), "using System.Type should return nh Int64Type");
+			Assert.AreEqual(int64Type, TypeFactory.HeuristicType(reflectedType.AssemblyQualifiedName), "using AQN should return nh Int64Type");
+			Assert.AreEqual(int64Type, TypeFactory.HeuristicType(reflectedType.FullName), "using FullName should return nh Int64Type");
 		}
 
 		public class GenericPropertyClass
@@ -127,7 +127,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void WhenUseEnumThenReturnGenericEnumType()
 		{
-			var iType = TypeFactory.HeuristicType(typeof (MyEnum).AssemblyQualifiedName);
+			var iType = TypeFactory.HeuristicType(typeof(MyEnum).AssemblyQualifiedName);
 			Assert.That(iType, Is.TypeOf<EnumType<MyEnum>>());
 		}
 
@@ -137,11 +137,11 @@ namespace NHibernate.Test.TypesTest
 			var iType = TypeFactory.HeuristicType(typeof(MyEnum?).AssemblyQualifiedName);
 			Assert.That(iType, Is.TypeOf<EnumType<MyEnum>>());
 		}
-		
+
 		[Test]
 		public void WhenUseEnumTypeThenReturnGenericEnumType()
 		{
-			var iType = TypeFactory.HeuristicType(typeof (MyEnum));
+			var iType = TypeFactory.HeuristicType(typeof(MyEnum));
 			Assert.That(iType, Is.TypeOf<EnumType<MyEnum>>());
 		}
 

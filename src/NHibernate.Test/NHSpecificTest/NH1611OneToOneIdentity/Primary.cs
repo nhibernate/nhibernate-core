@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 			get { return description; }
 			set { description = value; }
 		}
-	
+
 		virtual public Adjunct Adjunct
 		{
 			get { return adjunct; }
@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (Primary)) return false;
+			if (obj.GetType() != typeof(Primary)) return false;
 			return Equals((Primary) obj);
 		}
 
@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 		{
 			unchecked
 			{
-				return (id*397);
+				return (id * 397);
 			}
 		}
 	}

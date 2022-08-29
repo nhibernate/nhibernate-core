@@ -40,19 +40,19 @@ namespace NHibernate.Test.NHSpecificTest.EntityWithUserTypeCanHaveLinqGenerators
 			{
 				return null;
 			}
-			return Convert.ToDouble((string)obj);
+			return Convert.ToDouble((string) obj);
 		}
 
 		public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			if (value == null)
 			{
-				((IDataParameter)cmd.Parameters[index]).Value = DBNull.Value;
+				((IDataParameter) cmd.Parameters[index]).Value = DBNull.Value;
 			}
 			else
 			{
-				var doubleValue = (double)value;
-				((IDataParameter)cmd.Parameters[index]).Value = doubleValue.ToString();
+				var doubleValue = (double) value;
+				((IDataParameter) cmd.Parameters[index]).Value = doubleValue.ToString();
 			}
 		}
 

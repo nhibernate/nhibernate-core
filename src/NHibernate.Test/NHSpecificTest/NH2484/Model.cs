@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2484
 		public virtual int Id { get; set; }
 		public virtual System.Drawing.Image Image { get; set; }
 	}
-	
+
 	public class ClassWithSerializableType
 	{
 		public virtual int Id { get; set; }

@@ -32,8 +32,8 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void GetFullClassNameForGenericType()
 		{
-			string typeName = typeof (IDictionary<int, string>).AssemblyQualifiedName;
-			string expected = typeof (IDictionary<int, string>).FullName;
+			string typeName = typeof(IDictionary<int, string>).AssemblyQualifiedName;
+			string expected = typeof(IDictionary<int, string>).FullName;
 			Assert.AreEqual(expected, StringHelper.GetFullClassname(typeName));
 			typeName = "some.namespace.SomeType`1[[System.Int32, mscorlib], System.Int32], some.assembly";
 			expected = "some.namespace.SomeType`1[[System.Int32, mscorlib],[System.Int32]]";
@@ -143,7 +143,7 @@ namespace NHibernate.Test.UtilityTest
 		[TestCase("a\nb", 0, 1, 1)]
 		[TestCase("ab\r\nfoo\r\n", 4, 7, 2)]
 		public void IndexOfAnyNewLineReturnsIndexAndLength(string str, int startIndex, int expectedIndex,
-		                                                   int expectedMatchLength)
+														   int expectedMatchLength)
 		{
 			int matchLength;
 			var matchIndex = str.IndexOfAnyNewLine(startIndex, out matchLength);
@@ -157,7 +157,7 @@ namespace NHibernate.Test.UtilityTest
 		[TestCase("a\nb", 1, true, 1)]
 		[TestCase("a\r\nb", 1, true, 2)]
 		public void IsAnyNewLineMatchAndLength(string str, int startIndex, bool expectNewLine,
-		                                       int expectedMatchLength)
+											   int expectedMatchLength)
 		{
 			int matchLength;
 			var isNewLine = str.IsAnyNewLine(startIndex, out matchLength);

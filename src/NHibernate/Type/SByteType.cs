@@ -85,14 +85,14 @@ namespace NHibernate.Type
 		[Obsolete("This member has no more usage and will be removed in a future version.")]
 		public virtual object Next(object current, ISessionImplementor session)
 		{
-			return (SByte)((SByte)current + 1);
+			return (SByte) ((SByte) current + 1);
 		}
 
 		// Since 5.2
 		[Obsolete("This member has no more usage and will be removed in a future version.")]
 		public virtual object Seed(ISessionImplementor session)
 		{
-			return (SByte)1;
+			return (SByte) 1;
 		}
 
 		// Since 5.2

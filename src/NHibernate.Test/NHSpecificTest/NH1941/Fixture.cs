@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1941
 				t.Commit();
 			}
 		}
-		
+
 		[Test]
 		public void SaveCanOverrideStringEnumGetValue()
 		{
@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1941
 
 					t.Commit();
 				}
-				
+
 				var log = ls.GetWholeLog();
 				Assert.That(log.Contains(paramPrefix + "p0 = 'M'"), Is.True);
 			}
@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1941
 
 					Assert.That(person, Is.Null);
 				}
-			   
+
 				string log = ls.GetWholeLog();
 				Assert.IsTrue(log.Contains(paramPrefix + "p0 = 'F'"));
 			}

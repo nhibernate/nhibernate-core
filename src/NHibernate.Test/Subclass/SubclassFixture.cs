@@ -21,7 +21,7 @@ namespace NHibernate.Test.Subclass
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"Subclass.Subclass.hbm.xml"}; }
+			get { return new string[] { "Subclass.Subclass.hbm.xml" }; }
 		}
 
 		[Test]
@@ -88,7 +88,7 @@ namespace NHibernate.Test.Subclass
 			ITransaction t3 = s3.BeginTransaction();
 
 			IList results3 = s3.CreateCriteria(typeof(SubclassBase))
-				.Add(Expression.In("TestString", new string[] {"Did it get updated", "Updated SubclassOne String"}))
+				.Add(Expression.In("TestString", new string[] { "Did it get updated", "Updated SubclassOne String" }))
 				.List();
 
 			Assert.AreEqual(2, results3.Count);

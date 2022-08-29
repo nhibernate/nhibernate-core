@@ -9,9 +9,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1179
 		private int id;
 		private string description;
 		private RelatedClass related;
-		
-		public MainClass(){}
-		
+
+		public MainClass() { }
+
 		public MainClass(string description, RelatedClass related)
 		{
 			this.description = description;
@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1179
 		private int id;
 		private int aValue;
 
-		public RelatedClass(){}
+		public RelatedClass() { }
 
 		public RelatedClass(int aValue)
 		{

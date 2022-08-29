@@ -1,9 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using NHibernate.DomainModel;
 using NHibernate.Util;
 using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace NHibernate.Test.UtilityTest
 {
@@ -34,7 +34,7 @@ namespace NHibernate.Test.UtilityTest
 		{
 		}
 
-		public interface IComplex: IEmpty, IMyInheritedWithEqual
+		public interface IComplex : IEmpty, IMyInheritedWithEqual
 		{
 		}
 
@@ -45,7 +45,7 @@ namespace NHibernate.Test.UtilityTest
 			Assert.IsTrue(ReflectHelper.OverridesEquals(typeof(string)), "String does override equals");
 			Assert.IsFalse(ReflectHelper.OverridesEquals(typeof(IDisposable)), "IDisposable does not override equals");
 			Assert.IsTrue(ReflectHelper.OverridesEquals(typeof(BRhf)), "Base class overrides equals");
-			Assert.That(!ReflectHelper.OverridesEquals(typeof (object)), "System.Object does not override.");
+			Assert.That(!ReflectHelper.OverridesEquals(typeof(object)), "System.Object does not override.");
 		}
 
 		[Test]
@@ -119,10 +119,10 @@ namespace NHibernate.Test.UtilityTest
 		[Test]
 		public void GetGenericMethodFrom()
 		{
-			var signature = new[] {typeof (string), typeof (string), typeof (bool)};
+			var signature = new[] { typeof(string), typeof(string), typeof(bool) };
 			// This is the fixture for this obsolete member, so disable the obsolete warning.
 #pragma warning disable CS0618 // Type or member is obsolete
-			Assert.That(ReflectHelper.GetGenericMethodFrom<ISomething>("List", new[] {typeof (BRhf)}, signature), Is.Not.Null);
+			Assert.That(ReflectHelper.GetGenericMethodFrom<ISomething>("List", new[] { typeof(BRhf) }, signature), Is.Not.Null);
 			Assert.That(ReflectHelper.GetGenericMethodFrom<ISomething>("List", new[] { typeof(int), typeof(string) }, signature), Is.Not.Null);
 			Assert.That(ReflectHelper.GetGenericMethodFrom<ISomething>("List", new[] { typeof(int), typeof(string) }
 				, new[] { typeof(string), typeof(string), typeof(bool), typeof(IComparer<>).MakeGenericType(typeof(int)) }), Is.Not.Null);
@@ -161,7 +161,7 @@ namespace NHibernate.Test.UtilityTest
 		string Name { get; set; }
 	}
 
-	public interface IMyInterface: IMyBaseInterface
+	public interface IMyInterface : IMyBaseInterface
 	{
 		string Description { get; }
 	}
@@ -177,9 +177,9 @@ namespace NHibernate.Test.UtilityTest
 		public string Description { get; set; }
 	}
 
-	public class MyImplementation: IMyInterface
+	public class MyImplementation : IMyInterface
 	{
-		public int Id{ get; set; }
+		public int Id { get; set; }
 		public string Name { get; set; }
 		public string Description { get; set; }
 	}

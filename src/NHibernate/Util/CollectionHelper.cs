@@ -420,7 +420,7 @@ namespace NHibernate.Util
 
 			public IEnumerator GetEnumerator()
 			{
-				return ((IEnumerable<T>)this).GetEnumerator();
+				return ((IEnumerable<T>) this).GetEnumerator();
 			}
 
 			#endregion
@@ -581,7 +581,7 @@ namespace NHibernate.Util
 
 			public IEnumerator GetEnumerator()
 			{
-				return ((IEnumerable<KeyValuePair<TKey, TValue>>)this).GetEnumerator();
+				return ((IEnumerable<KeyValuePair<TKey, TValue>>) this).GetEnumerator();
 			}
 
 			#endregion

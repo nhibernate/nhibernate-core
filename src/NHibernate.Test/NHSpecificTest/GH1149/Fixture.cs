@@ -60,7 +60,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1149
 				using (ITransaction tx = session.BeginTransaction())
 				{
 					var company = new CompanyO2O { Name = "Test Company" };
-					var address = new AddressO2O {AddressLine1 = "Company Address"};
+					var address = new AddressO2O { AddressLine1 = "Company Address" };
 
 					address.SetCompany(company);
 

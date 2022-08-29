@@ -9,15 +9,15 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"NHSpecificTest.Dates.Mappings.Date.hbm.xml"}; }
+			get { return new[] { "NHSpecificTest.Dates.Mappings.Date.hbm.xml" }; }
 		}
 
 		[Test]
 		public void SavingAndRetrievingTest()
 		{
 			DateTime Now = DateTime.Now;
-			SavingAndRetrievingAction(new AllDates {Sql_date = Now},
-			                          entity => DateTimeAssert.AreEqual(entity.Sql_date, Now, true));
+			SavingAndRetrievingAction(new AllDates { Sql_date = Now },
+									  entity => DateTimeAssert.AreEqual(entity.Sql_date, Now, true));
 		}
 	}
 }

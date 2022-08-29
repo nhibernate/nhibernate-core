@@ -1,6 +1,6 @@
 using System.Collections;
-using NHibernate.Type;
 using System.Collections.Generic;
+using NHibernate.Type;
 
 namespace NHibernate.Id
 {

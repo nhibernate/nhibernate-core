@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -144,7 +144,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void FetchManyWithWhere()
 		{
-					// NH-2381 NH-2362
+			// NH-2381 NH-2362
 			(from s
 				in session.Query<Supplier>().FetchMany(a => a.Products)
 			 where s.SupplierId == 1
@@ -208,7 +208,7 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].Customer));
 		}
-		
+
 		[Test]
 		public void WhereBeforeFetchManyAndOrderBy()
 		{
@@ -226,7 +226,7 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
 		}
-		
+
 		[Test]
 		public void WhereBeforeFetchManyThenFetchAndOrderBy()
 		{
@@ -264,7 +264,7 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].Customer));
 		}
-		
+
 		[Test]
 		public void WhereBeforeFetchManyAndSelect()
 		{
@@ -282,7 +282,7 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
 		}
-		
+
 		[Test]
 		public void WhereBeforeFetchManyThenFetchAndSelect()
 		{
@@ -319,7 +319,7 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].Customer));
 		}
-		
+
 		[Test]
 		public void WhereBeforeFetchManyAndWhere()
 		{
@@ -336,7 +336,7 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(829, orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(orders[0].OrderLines));
 		}
-		
+
 		[Test]
 		public void WhereBeforeFetchManyThenFetchAndWhere()
 		{
@@ -378,10 +378,10 @@ namespace NHibernate.Test.Linq
 			using (var logSpy = new SqlLogSpy())
 			{
 				orderLine = db.OrderLines
-				              .Where(o => o.Order.Customer.ContactName == "Maria Anders")
-				              .Fetch(o => o.Order).ThenFetch(o => o.Customer)
-				              .ToList()
-				              .First();
+							  .Where(o => o.Order.Customer.ContactName == "Maria Anders")
+							  .Fetch(o => o.Order).ThenFetch(o => o.Customer)
+							  .ToList()
+							  .First();
 
 				var sql = logSpy.GetWholeLog();
 				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
@@ -394,10 +394,10 @@ namespace NHibernate.Test.Linq
 			using (var logSpy = new SqlLogSpy())
 			{
 				orderLine = db.OrderLines
-				              .Where(o => o.Order.Customer.ContactName == "Maria Anders")
-				              .Fetch(o => o.Order)
-				              .ToList()
-				              .First();
+							  .Where(o => o.Order.Customer.ContactName == "Maria Anders")
+							  .Fetch(o => o.Order)
+							  .ToList()
+							  .First();
 
 				var sql = logSpy.GetWholeLog();
 				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
@@ -410,10 +410,10 @@ namespace NHibernate.Test.Linq
 			using (var logSpy = new SqlLogSpy())
 			{
 				orderLine = db.OrderLines
-				              .Where(o => o.Order.OrderLines.Any(l => l.Product.Name == "Tofu"))
-				              .Fetch(o => o.Order).ThenFetch(o => o.Customer)
-				              .ToList()
-				              .First();
+							  .Where(o => o.Order.OrderLines.Any(l => l.Product.Name == "Tofu"))
+							  .Fetch(o => o.Order).ThenFetch(o => o.Customer)
+							  .ToList()
+							  .First();
 
 				var sql = logSpy.GetWholeLog();
 				sql = sql.Substring(0, sql.IndexOf("where"));
@@ -459,11 +459,11 @@ namespace NHibernate.Test.Linq
 			using (var logSpy = new SqlLogSpy())
 			{
 				orderLine = db.OrderLines
-				              .Where(o => o.Order.OrderId == 10248)
-				              .OrderBy(o => o.Order.Customer.ContactName)
-				              .Fetch(o => o.Order).ThenFetch(o => o.Customer)
-				              .ToList()
-				              .First();
+							  .Where(o => o.Order.OrderId == 10248)
+							  .OrderBy(o => o.Order.Customer.ContactName)
+							  .Fetch(o => o.Order).ThenFetch(o => o.Customer)
+							  .ToList()
+							  .First();
 
 				var sql = logSpy.GetWholeLog();
 				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
@@ -476,11 +476,11 @@ namespace NHibernate.Test.Linq
 			using (var logSpy = new SqlLogSpy())
 			{
 				orderLine = db.OrderLines
-				              .Where(o => o.Order.OrderId == 10248)
-				              .OrderBy(o => o.Order.Customer.ContactName)
-				              .Fetch(o => o.Order)
-				              .ToList()
-				              .First();
+							  .Where(o => o.Order.OrderId == 10248)
+							  .OrderBy(o => o.Order.Customer.ContactName)
+							  .Fetch(o => o.Order)
+							  .ToList()
+							  .First();
 
 				var sql = logSpy.GetWholeLog();
 				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
@@ -524,11 +524,11 @@ namespace NHibernate.Test.Linq
 			using (var logSpy = new SqlLogSpy())
 			{
 				orderLine = db.OrderLines
-				              .Where(o => o.Order.Customer.ContactName == "Maria Anders")
-				              .OrderBy(o => o.Order.Customer.ContactName)
-				              .Fetch(o => o.Order).ThenFetch(o => o.Customer)
-				              .ToList()
-				              .First();
+							  .Where(o => o.Order.Customer.ContactName == "Maria Anders")
+							  .OrderBy(o => o.Order.Customer.ContactName)
+							  .Fetch(o => o.Order).ThenFetch(o => o.Customer)
+							  .ToList()
+							  .First();
 
 				var sql = logSpy.GetWholeLog();
 				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
@@ -541,11 +541,11 @@ namespace NHibernate.Test.Linq
 			using (var logSpy = new SqlLogSpy())
 			{
 				orderLine = db.OrderLines
-				              .Where(o => o.Order.Customer.ContactName == "Maria Anders")
-				              .OrderBy(o => o.Order.Customer.ContactName)
-				              .Fetch(o => o.Order)
-				              .ToList()
-				              .First();
+							  .Where(o => o.Order.Customer.ContactName == "Maria Anders")
+							  .OrderBy(o => o.Order.Customer.ContactName)
+							  .Fetch(o => o.Order)
+							  .ToList()
+							  .First();
 
 				var sql = logSpy.GetWholeLog();
 				Assert.That(GetTotalOccurrences(sql, "join"), Is.EqualTo(2));
@@ -589,10 +589,10 @@ namespace NHibernate.Test.Linq
 		public void FetchBeforeSelect()
 		{
 			var result = db.Orders
-			               .Where(o => o.OrderId == 10248)
-			               .Fetch(x => x.Customer)
-			               .Select(x => new {x.Customer.ContactName})
-			               .ToList();
+						   .Where(o => o.OrderId == 10248)
+						   .Fetch(x => x.Customer)
+						   .Select(x => new { x.Customer.ContactName })
+						   .ToList();
 
 			Assert.True(result.Any());
 		}

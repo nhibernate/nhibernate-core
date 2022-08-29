@@ -19,7 +19,7 @@ namespace NHibernate.Test.TypesTest
 
 			Assert.IsTrue(next is TimeSpan, "Next should be TimeSpan");
 			Assert.IsTrue((TimeSpan) next > (TimeSpan) current,
-			              "next should be greater than current (could be equal depending on how quickly this occurs)");
+						  "next should be greater than current (could be equal depending on how quickly this occurs)");
 		}
 
 		[Test]
@@ -44,9 +44,9 @@ namespace NHibernate.Test.TypesTest
 			var ticks = new TimeSpan(1982);
 
 			var entity = new TimeSpanClass
-			             	{
-			             		TimeSpanValue = ticks
-			             	};
+			{
+				TimeSpanValue = ticks
+			};
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())

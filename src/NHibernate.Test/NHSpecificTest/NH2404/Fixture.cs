@@ -14,16 +14,16 @@ namespace NHibernate.Test.NHSpecificTest.NH2404
 			using (var transaction = session.BeginTransaction())
 			{
 				session.Save(new TestEntity
-					{
-						Id = 1,
-						Name = "Test Entity"
-					});
+				{
+					Id = 1,
+					Name = "Test Entity"
+				});
 
 				session.Save(new TestEntity
-					{
-						Id = 2,
-						Name = "Test Entity"
-					});
+				{
+					Id = 2,
+					Name = "Test Entity"
+				});
 
 				transaction.Commit();
 			}
@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2404
 				transaction.Commit();
 			}
 		}
-	
+
 		[Test]
 		public void ProjectionsShouldWorkWithLinqProviderAndFutures()
 		{
@@ -46,12 +46,12 @@ namespace NHibernate.Test.NHSpecificTest.NH2404
 			using (session.BeginTransaction())
 			{
 				var query1 = (from entity in session.Query<TestEntity>()
-							  select new TestEntityDto {EntityId = entity.Id, EntityName = entity.Name}).ToList();
+							  select new TestEntityDto { EntityId = entity.Id, EntityName = entity.Name }).ToList();
 
 				Assert.AreEqual(2, query1.Count());
 
 				var query2 = (from entity in session.Query<TestEntity>()
-							  select new TestEntityDto {EntityId = entity.Id, EntityName = entity.Name}).ToFuture();
+							  select new TestEntityDto { EntityId = entity.Id, EntityName = entity.Name }).ToFuture();
 
 				Assert.AreEqual(2, query2.GetEnumerable().Count());
 			}
@@ -65,14 +65,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2404
 			{
 				var query1 =
 					session.CreateQuery("select e.Id as EntityId, e.Name as EntityName from TestEntity e").SetResultTransformer(
-						Transformers.AliasToBean(typeof (TestEntityDto)))
+						Transformers.AliasToBean(typeof(TestEntityDto)))
 						.List<TestEntityDto>();
 
 				Assert.AreEqual(2, query1.Count());
 
 				var query2 =
 					session.CreateQuery("select e.Id as EntityId, e.Name as EntityName from TestEntity e").SetResultTransformer(
-						Transformers.AliasToBean(typeof (TestEntityDto)))
+						Transformers.AliasToBean(typeof(TestEntityDto)))
 						.Future<TestEntityDto>();
 
 				Assert.AreEqual(2, query2.GetEnumerable().Count());

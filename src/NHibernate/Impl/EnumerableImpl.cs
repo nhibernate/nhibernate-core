@@ -162,7 +162,7 @@ namespace NHibernate.Impl
 			PostMoveNext(readResult);
 			return _hasNext;
 		}
-		
+
 		private void PostNext()
 		{
 			log.Debug("attempting to retrieve next results");
@@ -191,14 +191,14 @@ namespace NHibernate.Impl
 			_startedReading = true;
 			_hasNext = hasNext;
 			_currentRow++;
-			
+
 			if (_selection != null && _selection.MaxRows != RowSelection.NoValue)
 			{
 				_hasNext = _hasNext && (_currentRow < _selection.MaxRows);
 			}
-			
+
 			bool sessionDefaultReadOnlyOrig = _session.DefaultReadOnly;
-			
+
 			_session.DefaultReadOnly = _readOnly;
 
 			try
@@ -221,7 +221,7 @@ namespace NHibernate.Impl
 					else
 					{
 						object[] currentResults = new object[_types.Length];
-	
+
 						// move through each of the ITypes contained in the DbDataReader and convert them
 						// to their objects.  
 						for (int i = 0; i < _types.Length; i++)
@@ -248,8 +248,8 @@ namespace NHibernate.Impl
 			{
 				_session.DefaultReadOnly = sessionDefaultReadOnlyOrig;
 			}
-		}		
-		
+		}
+
 		public void Reset()
 		{
 			//can't reset the reader...we are SOL

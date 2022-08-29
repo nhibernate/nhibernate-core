@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2603
 				{
 					var entity = new Parent();
 					var child = new Child();
-					entity.ListChildren = new List<Child> {null, child, null};
+					entity.ListChildren = new List<Child> { null, child, null };
 					s.Save(entity);
 					t.Commit();
 				}

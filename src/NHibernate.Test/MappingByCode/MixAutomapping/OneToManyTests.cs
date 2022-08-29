@@ -127,7 +127,7 @@ namespace NHibernate.Test.MappingByCode.MixAutomapping
 			mapper.Class<MyClass>(map => map.Bag(x => x.DicRelateds, cm => { }, relMap => relMap.ManyToMany()));
 			mapper.Class<Related>(x => { });
 			mapper.Class<Bidirectional>(x => { });
-			var inspector = (IModelInspector)autoinspector;
+			var inspector = (IModelInspector) autoinspector;
 
 			var pi = Mapping.ByCode.TypeExtensions.DecodeMemberAccessExpression<MyClass>(x => x.DicRelateds);
 

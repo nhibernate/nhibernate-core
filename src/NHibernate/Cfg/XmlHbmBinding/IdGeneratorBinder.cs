@@ -5,9 +5,9 @@ using NHibernate.Util;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
-	public class IdGeneratorBinder: Binder
+	public class IdGeneratorBinder : Binder
 	{
-		public IdGeneratorBinder(Mappings mappings) : base(mappings) {}
+		public IdGeneratorBinder(Mappings mappings) : base(mappings) { }
 
 		public void BindGenerator(SimpleValue id, HbmGenerator generatorMapping)
 		{

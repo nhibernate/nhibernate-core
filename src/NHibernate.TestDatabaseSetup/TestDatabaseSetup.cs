@@ -70,7 +70,7 @@ namespace NHibernate.TestDatabaseSetup
 					{
 						cmd.ExecuteNonQuery();
 					}
-					catch(Exception e)
+					catch (Exception e)
 					{
 						Console.WriteLine(e);
 					}
@@ -97,7 +97,7 @@ namespace NHibernate.TestDatabaseSetup
 					{
 						cmd.ExecuteNonQuery();
 					}
-					catch(Exception e)
+					catch (Exception e)
 					{
 						Console.WriteLine(e);
 					}
@@ -122,7 +122,7 @@ namespace NHibernate.TestDatabaseSetup
 			// With UTF8 charset, string takes up to four times as many space, causing the
 			// default page-size of 4096 to no more be enough for index key sizes. (Index key
 			// size is limited to a quarter of the page size.)
-			FbConnection.CreateDatabase(connStr, pageSize:16384, forcedWrites:false);
+			FbConnection.CreateDatabase(connStr, pageSize: 16384, forcedWrites: false);
 		}
 
 #if NETFX

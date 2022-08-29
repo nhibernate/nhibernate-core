@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1054
 			configuration.Properties[Cfg.Environment.TransactionStrategy] =
 				"NHibernate.Test.NHSpecificTest.NH1054.DummyTransactionFactory, " + this.GetType().Assembly.FullName;
 
-			ISessionFactoryImplementor sessionFactory = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
+			ISessionFactoryImplementor sessionFactory = (ISessionFactoryImplementor) configuration.BuildSessionFactory();
 
 			Assert.That(sessionFactory.Settings.TransactionFactory, Is.InstanceOf<DummyTransactionFactory>());
 		}
@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1054
 		public void AdoNetWithDistributedTransactionFactoryIsDefaultTransactionFactory()
 		{
 			Configuration configuration = new Configuration();
-			ISessionFactoryImplementor sessionFactory = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
+			ISessionFactoryImplementor sessionFactory = (ISessionFactoryImplementor) configuration.BuildSessionFactory();
 
 			Assert.That(sessionFactory.Settings.TransactionFactory, Is.InstanceOf<NHibernate.Transaction.AdoNetWithSystemTransactionFactory>());
 		}

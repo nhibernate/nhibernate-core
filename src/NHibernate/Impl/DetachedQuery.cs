@@ -10,7 +10,7 @@ namespace NHibernate.Impl
 	/// <seealso cref="IDetachedQuery"/>
 	/// <seealso cref="IQuery"/>
 	[Serializable]
-	public class DetachedQuery: AbstractDetachedQuery
+	public class DetachedQuery : AbstractDetachedQuery
 	{
 		private readonly string hql;
 		/// <summary>

@@ -43,7 +43,7 @@ namespace NHibernate.Test.PropertyTest
 
 	public class MyAutoProp
 	{
-		public MyAutoProp() {}
+		public MyAutoProp() { }
 
 		public MyAutoProp(int readOnlyAutoProp)
 		{

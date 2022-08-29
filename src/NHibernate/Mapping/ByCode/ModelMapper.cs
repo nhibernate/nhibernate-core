@@ -18,16 +18,16 @@ namespace NHibernate.Mapping.ByCode
 
 		public ModelMapper() : this(new ExplicitlyDeclaredModel()) { }
 
-		public ModelMapper(IModelInspector modelInspector) : this(modelInspector, modelInspector as IModelExplicitDeclarationsHolder) {}
+		public ModelMapper(IModelInspector modelInspector) : this(modelInspector, modelInspector as IModelExplicitDeclarationsHolder) { }
 
 		public ModelMapper(IModelInspector modelInspector, ICandidatePersistentMembersProvider membersProvider)
-			: this(modelInspector, modelInspector as IModelExplicitDeclarationsHolder, new CustomizersHolder(), membersProvider) {}
+			: this(modelInspector, modelInspector as IModelExplicitDeclarationsHolder, new CustomizersHolder(), membersProvider) { }
 
 		public ModelMapper(IModelInspector modelInspector, IModelExplicitDeclarationsHolder explicitDeclarationsHolder)
-			: this(modelInspector, explicitDeclarationsHolder, new CustomizersHolder(), new DefaultCandidatePersistentMembersProvider()) {}
+			: this(modelInspector, explicitDeclarationsHolder, new CustomizersHolder(), new DefaultCandidatePersistentMembersProvider()) { }
 
 		public ModelMapper(IModelInspector modelInspector, IModelExplicitDeclarationsHolder explicitDeclarationsHolder, ICustomizersHolder customizerHolder,
-		                   ICandidatePersistentMembersProvider membersProvider)
+						   ICandidatePersistentMembersProvider membersProvider)
 		{
 			if (modelInspector == null)
 			{
@@ -609,7 +609,7 @@ namespace NHibernate.Mapping.ByCode
 
 		private HbmMapping NewHbmMapping(string defaultAssemblyName, string defaultNamespace)
 		{
-			var hbmMapping = new HbmMapping {assembly = defaultAssemblyName, @namespace = defaultNamespace};
+			var hbmMapping = new HbmMapping { assembly = defaultAssemblyName, @namespace = defaultNamespace };
 
 			imports.ForEach(i => i.AddToMapping(hbmMapping));
 			imports.Clear();
@@ -739,7 +739,7 @@ namespace NHibernate.Mapping.ByCode
 		private static System.Type GetEntityBaseType(System.Type type, ICollection<System.Type> mappedEntities)
 		{
 			System.Type analyzingType = type;
-			while (analyzingType != null && analyzingType != typeof (object))
+			while (analyzingType != null && analyzingType != typeof(object))
 			{
 				analyzingType = analyzingType.BaseType;
 				if (mappedEntities.Contains(analyzingType))
@@ -769,55 +769,55 @@ namespace NHibernate.Mapping.ByCode
 			if (poidPropertyOrField != null && modelInspector.IsComponent(poidPropertyOrField.GetPropertyOrFieldType()))
 			{
 				classMapper.ComponentAsId(poidPropertyOrField, compoAsId =>
-				                                               {
-				                                               	var memberPath = new PropertyPath(null, poidPropertyOrField);
-				                                               	var componentMapper = new ComponentAsIdLikeComponentAttributesMapper(compoAsId);
-				                                               	InvokeBeforeMapComponent(memberPath, componentMapper);
+															   {
+																   var memberPath = new PropertyPath(null, poidPropertyOrField);
+																   var componentMapper = new ComponentAsIdLikeComponentAttributesMapper(compoAsId);
+																   InvokeBeforeMapComponent(memberPath, componentMapper);
 
-				                                               	System.Type componentType = poidPropertyOrField.GetPropertyOrFieldType();
-				                                               	IEnumerable<MemberInfo> componentPersistentProperties =
-				                                               		membersProvider.GetComponentMembers(componentType).Where(p => modelInspector.IsPersistentProperty(p));
+																   System.Type componentType = poidPropertyOrField.GetPropertyOrFieldType();
+																   IEnumerable<MemberInfo> componentPersistentProperties =
+																	   membersProvider.GetComponentMembers(componentType).Where(p => modelInspector.IsPersistentProperty(p));
 
-				                                               	customizerHolder.InvokeCustomizers(componentType, componentMapper);
-				                                               	ForEachMemberPath(poidPropertyOrField, memberPath, pp => customizerHolder.InvokeCustomizers(pp, compoAsId));
-				                                               	InvokeAfterMapComponent(memberPath, componentMapper);
+																   customizerHolder.InvokeCustomizers(componentType, componentMapper);
+																   ForEachMemberPath(poidPropertyOrField, memberPath, pp => customizerHolder.InvokeCustomizers(pp, compoAsId));
+																   InvokeAfterMapComponent(memberPath, componentMapper);
 
-				                                               	foreach (MemberInfo property in componentPersistentProperties)
-				                                               	{
-				                                               		MapComposedIdProperties(compoAsId, new PropertyPath(memberPath, property));
-				                                               	}
-				                                               });
+																   foreach (MemberInfo property in componentPersistentProperties)
+																   {
+																	   MapComposedIdProperties(compoAsId, new PropertyPath(memberPath, property));
+																   }
+															   });
 			}
 
 			MemberInfo[] composedIdPropeties = persistentProperties.Where(mi => modelInspector.IsMemberOfComposedId(mi)).ToArray();
 			if (composedIdPropeties.Length > 0)
 			{
 				classMapper.ComposedId(composedIdMapper =>
-				                       {
-				                       	foreach (MemberInfo property in composedIdPropeties)
-				                       	{
-				                       		MapComposedIdProperties(composedIdMapper, new PropertyPath(null, property));
-				                       	}
-				                       });
+									   {
+										   foreach (MemberInfo property in composedIdPropeties)
+										   {
+											   MapComposedIdProperties(composedIdMapper, new PropertyPath(null, property));
+										   }
+									   });
 			}
 
 			MemberInfo[] naturalIdPropeties = persistentProperties.Except(composedIdPropeties).Where(mi => modelInspector.IsMemberOfNaturalId(mi)).ToArray();
 			if (naturalIdPropeties.Length > 0)
 			{
 				classMapper.NaturalId(naturalIdMapper =>
-				                      {
-				                      	foreach (var property in naturalIdPropeties)
-				                      	{
-				                      		MapNaturalIdProperties(type, naturalIdMapper, property);
-				                      	}
-				                      });
+									  {
+										  foreach (var property in naturalIdPropeties)
+										  {
+											  MapNaturalIdProperties(type, naturalIdMapper, property);
+										  }
+									  });
 			}
 			var splitGroups = modelInspector.GetPropertiesSplits(type);
 			var propertiesToMap = persistentProperties.Except(naturalIdPropeties).Except(composedIdPropeties).Where(mi => !modelInspector.IsVersion(mi) && !modelInspector.IsVersion(mi.GetMemberFromDeclaringType())).ToList();
 			var propertiesInSplits = new HashSet<MemberInfo>();
 			foreach (var splitGroup in splitGroups)
 			{
-				var groupId= splitGroup;
+				var groupId = splitGroup;
 				var propertiesOfTheGroup = propertiesToMap.Where(p => modelInspector.IsTablePerClassSplit(type, groupId, p)).ToList();
 				IJoinMapper joinMapper;
 				if (propertiesOfTheGroup.Count > 0 && classMapper.JoinMappers.TryGetValue(groupId, out joinMapper))
@@ -931,7 +931,7 @@ namespace NHibernate.Mapping.ByCode
 							 || modelInspector.IsList(member) || modelInspector.IsBag(member))
 			{
 				throw new ArgumentOutOfRangeException("propertyPath",
-				                                      string.Format("The property {0} of {1} can't be part of composite-id.",
+													  string.Format("The property {0} of {1} can't be part of composite-id.",
 																														member.Name, member.DeclaringType));
 			}
 			else
@@ -962,12 +962,12 @@ namespace NHibernate.Mapping.ByCode
 				MapComponent(member, memberPath, propertyType, naturalIdMapper, rootEntityType);
 			}
 			else if (modelInspector.IsOneToOne(member) || modelInspector.IsSet(property)
-			         || modelInspector.IsDictionary(property) || modelInspector.IsArray(property)
-			         || modelInspector.IsList(property) || modelInspector.IsBag(property))
+					 || modelInspector.IsDictionary(property) || modelInspector.IsArray(property)
+					 || modelInspector.IsList(property) || modelInspector.IsBag(property))
 			{
 				throw new ArgumentOutOfRangeException("property",
-				                                      string.Format("The property {0} of {1} can't be part of natural-id.",
-				                                                    property.Name, property.DeclaringType));
+													  string.Format("The property {0} of {1} can't be part of natural-id.",
+																	property.Name, property.DeclaringType));
 			}
 			else
 			{
@@ -976,13 +976,13 @@ namespace NHibernate.Mapping.ByCode
 		}
 
 		private void MapProperties(System.Type propertiesContainerType, IEnumerable<MemberInfo> propertiesToMap,
-		                           IPropertyContainerMapper propertiesContainer)
+								   IPropertyContainerMapper propertiesContainer)
 		{
 			MapProperties(propertiesContainerType, propertiesToMap, propertiesContainer, null);
 		}
 
 		private void MapProperties(System.Type propertiesContainerType, IEnumerable<MemberInfo> propertiesToMap,
-		                           IPropertyContainerMapper propertiesContainer, PropertyPath path)
+								   IPropertyContainerMapper propertiesContainer, PropertyPath path)
 		{
 			foreach (var property in propertiesToMap)
 			{
@@ -1059,30 +1059,30 @@ namespace NHibernate.Mapping.ByCode
 
 		private void MapAny(MemberInfo member, PropertyPath memberPath, IBasePlainPropertyContainerMapper propertiesContainer)
 		{
-			propertiesContainer.Any(member, typeof (int), anyMapper =>
-			                                              {
-			                                              	InvokeBeforeMapAny(memberPath, anyMapper);
-			                                              	MemberInfo poidPropertyOrField =
-			                                              		membersProvider.GetEntityMembersForPoid(memberPath.GetRootMember().DeclaringType).FirstOrDefault(
-			                                              			mi => modelInspector.IsPersistentId(mi));
+			propertiesContainer.Any(member, typeof(int), anyMapper =>
+														  {
+															  InvokeBeforeMapAny(memberPath, anyMapper);
+															  MemberInfo poidPropertyOrField =
+																  membersProvider.GetEntityMembersForPoid(memberPath.GetRootMember().DeclaringType).FirstOrDefault(
+																	  mi => modelInspector.IsPersistentId(mi));
 
-			                                              	if (poidPropertyOrField != null)
-			                                              	{
-			                                              		anyMapper.IdType(poidPropertyOrField.GetPropertyOrFieldType());
-			                                              	}
-			                                              	ForEachMemberPath(member, memberPath, pp => customizerHolder.InvokeCustomizers(pp, anyMapper));
-			                                              	InvokeAfterMapAny(memberPath, anyMapper);
-			                                              });
+															  if (poidPropertyOrField != null)
+															  {
+																  anyMapper.IdType(poidPropertyOrField.GetPropertyOrFieldType());
+															  }
+															  ForEachMemberPath(member, memberPath, pp => customizerHolder.InvokeCustomizers(pp, anyMapper));
+															  InvokeAfterMapAny(memberPath, anyMapper);
+														  });
 		}
 
 		private void MapProperty(MemberInfo member, PropertyPath propertyPath, IMinimalPlainPropertyContainerMapper propertiesContainer)
 		{
 			propertiesContainer.Property(member, propertyMapper =>
-			                                     {
-			                                     	InvokeBeforeMapProperty(propertyPath, propertyMapper);
-			                                     	ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, propertyMapper));
-			                                     	InvokeAfterMapProperty(propertyPath, propertyMapper);
-			                                     });
+												 {
+													 InvokeBeforeMapProperty(propertyPath, propertyMapper);
+													 ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, propertyMapper));
+													 InvokeAfterMapProperty(propertyPath, propertyMapper);
+												 });
 		}
 
 		protected void ForEachMemberPath(MemberInfo member, PropertyPath progressivePath, Action<PropertyPath> invoke)
@@ -1145,26 +1145,26 @@ namespace NHibernate.Mapping.ByCode
 		}
 
 		private void MapComponent(MemberInfo member, PropertyPath memberPath, System.Type propertyType, IBasePlainPropertyContainerMapper propertiesContainer,
-		                          System.Type propertiesContainerType)
+								  System.Type propertiesContainerType)
 		{
 			propertiesContainer.Component(member, componentMapper =>
-			                                      {
-			                                      	InvokeBeforeMapComponent(memberPath, componentMapper); // <<== perhaps is better after find the parent
-			                                      	System.Type componentType = propertyType;
-			                                      	IEnumerable<MemberInfo> persistentProperties =
-			                                      		membersProvider.GetComponentMembers(componentType).Where(p => modelInspector.IsPersistentProperty(p));
+												  {
+													  InvokeBeforeMapComponent(memberPath, componentMapper); // <<== perhaps is better after find the parent
+													  System.Type componentType = propertyType;
+													  IEnumerable<MemberInfo> persistentProperties =
+														  membersProvider.GetComponentMembers(componentType).Where(p => modelInspector.IsPersistentProperty(p));
 
-			                                      	MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, propertiesContainerType);
-			                                      	if (parentReferenceProperty != null)
-			                                      	{
-			                                      		componentMapper.Parent(parentReferenceProperty);
-			                                      	}
-																							customizerHolder.InvokeCustomizers(componentType, componentMapper);
-			                                      	ForEachMemberPath(member, memberPath, pp => customizerHolder.InvokeCustomizers(pp, componentMapper));
-			                                      	InvokeAfterMapComponent(memberPath, componentMapper);
+													  MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, propertiesContainerType);
+													  if (parentReferenceProperty != null)
+													  {
+														  componentMapper.Parent(parentReferenceProperty);
+													  }
+													  customizerHolder.InvokeCustomizers(componentType, componentMapper);
+													  ForEachMemberPath(member, memberPath, pp => customizerHolder.InvokeCustomizers(pp, componentMapper));
+													  InvokeAfterMapComponent(memberPath, componentMapper);
 
-			                                      	MapProperties(propertyType, persistentProperties.Where(pi => pi != parentReferenceProperty), componentMapper, memberPath);
-			                                      });
+													  MapProperties(propertyType, persistentProperties.Where(pi => pi != parentReferenceProperty), componentMapper, memberPath);
+												  });
 		}
 
 		protected MemberInfo GetComponentParentReferenceProperty(IEnumerable<MemberInfo> persistentProperties, System.Type propertiesContainerType)
@@ -1178,41 +1178,41 @@ namespace NHibernate.Mapping.ByCode
 		}
 
 		private void MapBag(MemberInfo member, PropertyPath propertyPath, System.Type propertyType, ICollectionPropertiesContainerMapper propertiesContainer,
-		                    System.Type propertiesContainerType)
+							System.Type propertiesContainerType)
 		{
 			System.Type collectionElementType = GetCollectionElementTypeOrThrow(propertiesContainerType, member, propertyType);
 			ICollectionElementRelationMapper cert = DetermineCollectionElementRelationType(member, propertyPath, collectionElementType);
 			propertiesContainer.Bag(member, collectionPropertiesMapper =>
-			                                {
-			                                	cert.MapCollectionProperties(collectionPropertiesMapper);
-																				InvokeBeforeMapBag(propertyPath, collectionPropertiesMapper);
-																				ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
-			                                	InvokeAfterMapBag(propertyPath, collectionPropertiesMapper);
-			                                }, cert.Map);
+											{
+												cert.MapCollectionProperties(collectionPropertiesMapper);
+												InvokeBeforeMapBag(propertyPath, collectionPropertiesMapper);
+												ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
+												InvokeAfterMapBag(propertyPath, collectionPropertiesMapper);
+											}, cert.Map);
 		}
 
 		private void MapList(MemberInfo member, PropertyPath propertyPath, System.Type propertyType, ICollectionPropertiesContainerMapper propertiesContainer,
-		                     System.Type propertiesContainerType)
+							 System.Type propertiesContainerType)
 		{
 			System.Type collectionElementType = GetCollectionElementTypeOrThrow(propertiesContainerType, member, propertyType);
 			ICollectionElementRelationMapper cert = DetermineCollectionElementRelationType(member, propertyPath, collectionElementType);
 			propertiesContainer.List(member, collectionPropertiesMapper =>
-			                                 {
-			                                 	cert.MapCollectionProperties(collectionPropertiesMapper);
-																				InvokeBeforeMapList(propertyPath, collectionPropertiesMapper);
-																				ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
-			                                 	InvokeAfterMapList(propertyPath, collectionPropertiesMapper);
-			                                 }, cert.Map);
+											 {
+												 cert.MapCollectionProperties(collectionPropertiesMapper);
+												 InvokeBeforeMapList(propertyPath, collectionPropertiesMapper);
+												 ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
+												 InvokeAfterMapList(propertyPath, collectionPropertiesMapper);
+											 }, cert.Map);
 		}
 
 		private void MapDictionary(MemberInfo member, PropertyPath propertyPath, System.Type propertyType, ICollectionPropertiesContainerMapper propertiesContainer,
-		                           System.Type propertiesContainerType)
+								   System.Type propertiesContainerType)
 		{
 			System.Type dictionaryKeyType = propertyType.DetermineDictionaryKeyType();
 			if (dictionaryKeyType == null)
 			{
 				throw new NotSupportedException(string.Format("Can't determine collection element relation (property {0} in {1})",
-				                                              member.Name, propertiesContainerType));
+															  member.Name, propertiesContainerType));
 			}
 			IMapKeyRelationMapper mkrm = DetermineMapKeyRelationType(member, propertyPath, dictionaryKeyType);
 
@@ -1220,26 +1220,26 @@ namespace NHibernate.Mapping.ByCode
 			ICollectionElementRelationMapper cert = DetermineCollectionElementRelationType(member, propertyPath, dictionaryValueType);
 
 			propertiesContainer.Map(member, collectionPropertiesMapper =>
-			                                {
-			                                	cert.MapCollectionProperties(collectionPropertiesMapper);
-																				InvokeBeforeMapMap(propertyPath, collectionPropertiesMapper);
-																				ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
-			                                	InvokeAfterMapMap(propertyPath, collectionPropertiesMapper);
-			                                }, mkrm.Map, cert.Map);
+											{
+												cert.MapCollectionProperties(collectionPropertiesMapper);
+												InvokeBeforeMapMap(propertyPath, collectionPropertiesMapper);
+												ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
+												InvokeAfterMapMap(propertyPath, collectionPropertiesMapper);
+											}, mkrm.Map, cert.Map);
 		}
 
 		private void MapSet(MemberInfo member, PropertyPath propertyPath, System.Type propertyType, ICollectionPropertiesContainerMapper propertiesContainer,
-		                    System.Type propertiesContainerType)
+							System.Type propertiesContainerType)
 		{
 			System.Type collectionElementType = GetCollectionElementTypeOrThrow(propertiesContainerType, member, propertyType);
 			ICollectionElementRelationMapper cert = DetermineCollectionElementRelationType(member, propertyPath, collectionElementType);
 			propertiesContainer.Set(member, collectionPropertiesMapper =>
-			                                {
-			                                	cert.MapCollectionProperties(collectionPropertiesMapper);
-																				InvokeBeforeMapSet(propertyPath, collectionPropertiesMapper);
-																				ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
-			                                	InvokeAfterMapSet(propertyPath, collectionPropertiesMapper);
-			                                }, cert.Map);
+											{
+												cert.MapCollectionProperties(collectionPropertiesMapper);
+												InvokeBeforeMapSet(propertyPath, collectionPropertiesMapper);
+												ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, collectionPropertiesMapper));
+												InvokeAfterMapSet(propertyPath, collectionPropertiesMapper);
+											}, cert.Map);
 		}
 
 		private void MapIdBag(MemberInfo member, PropertyPath propertyPath, System.Type propertyType, ICollectionPropertiesContainerMapper propertiesContainer,
@@ -1263,21 +1263,21 @@ namespace NHibernate.Mapping.ByCode
 		private void MapOneToOne(MemberInfo member, PropertyPath propertyPath, IPlainPropertyContainerMapper propertiesContainer)
 		{
 			propertiesContainer.OneToOne(member, oneToOneMapper =>
-			                                     {
-			                                     	InvokeBeforeMapOneToOne(propertyPath, oneToOneMapper);
-			                                     	ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, oneToOneMapper));
-			                                     	InvokeAfterMapOneToOne(propertyPath, oneToOneMapper);
-			                                     });
+												 {
+													 InvokeBeforeMapOneToOne(propertyPath, oneToOneMapper);
+													 ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, oneToOneMapper));
+													 InvokeAfterMapOneToOne(propertyPath, oneToOneMapper);
+												 });
 		}
 
 		private void MapManyToOne(MemberInfo member, PropertyPath propertyPath, IMinimalPlainPropertyContainerMapper propertiesContainer)
 		{
 			propertiesContainer.ManyToOne(member, manyToOneMapper =>
-			                                      {
-			                                      	InvokeBeforeMapManyToOne(propertyPath, manyToOneMapper);
-			                                      	ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, manyToOneMapper));
-			                                      	InvokeAfterMapManyToOne(propertyPath, manyToOneMapper);
-			                                      });
+												  {
+													  InvokeBeforeMapManyToOne(propertyPath, manyToOneMapper);
+													  ForEachMemberPath(member, propertyPath, pp => customizerHolder.InvokeCustomizers(pp, manyToOneMapper));
+													  InvokeAfterMapManyToOne(propertyPath, manyToOneMapper);
+												  });
 		}
 
 		private System.Type GetCollectionElementTypeOrThrow(System.Type type, MemberInfo property, System.Type propertyType)
@@ -1286,7 +1286,7 @@ namespace NHibernate.Mapping.ByCode
 			if (collectionElementType == null)
 			{
 				throw new NotSupportedException(string.Format("Can't determine collection element relation (property {0} in {1})",
-				                                              property.Name, type));
+															  property.Name, type));
 			}
 			return collectionElementType;
 		}
@@ -1343,7 +1343,7 @@ namespace NHibernate.Mapping.ByCode
 			private readonly System.Type ownerType;
 
 			public ComponentRelationMapper(PropertyPath propertyPath, System.Type ownerType, System.Type componentType, ICandidatePersistentMembersProvider membersProvider,
-			                               IModelInspector domainInspector, ICustomizersHolder customizersHolder, ModelMapper modelMapper)
+										   IModelInspector domainInspector, ICustomizersHolder customizersHolder, ModelMapper modelMapper)
 			{
 				this.propertyPath = propertyPath;
 				this.ownerType = ownerType;
@@ -1373,7 +1373,7 @@ namespace NHibernate.Mapping.ByCode
 													 });
 			}
 
-			public void MapCollectionProperties(ICollectionPropertiesMapper mapped) {}
+			public void MapCollectionProperties(ICollectionPropertiesMapper mapped) { }
 
 			#endregion
 
@@ -1394,44 +1394,44 @@ namespace NHibernate.Mapping.ByCode
 					if (domainInspector.IsManyToOne(member))
 					{
 						propertiesContainer.ManyToOne(member, manyToOneMapper =>
-						                                      {
-						                                      	modelMapper.InvokeBeforeMapManyToOne(propertyPath, manyToOneMapper);
-						                                      	modelMapper.ForEachMemberPath(member, propertyPath, pp => customizersHolder.InvokeCustomizers(pp, manyToOneMapper));
-						                                      	modelMapper.InvokeAfterMapManyToOne(propertyPath, manyToOneMapper);
-						                                      });
+															  {
+																  modelMapper.InvokeBeforeMapManyToOne(propertyPath, manyToOneMapper);
+																  modelMapper.ForEachMemberPath(member, propertyPath, pp => customizersHolder.InvokeCustomizers(pp, manyToOneMapper));
+																  modelMapper.InvokeAfterMapManyToOne(propertyPath, manyToOneMapper);
+															  });
 					}
 					else if (domainInspector.IsComponent(propertyType))
 					{
 						propertiesContainer.Component(member, x =>
-						                                      {
-						                                      	modelMapper.InvokeBeforeMapComponent(propertyPath, x);
-						                                      	// Note: for nested-components the Parent discovering is mandatory (recursive nested-component); 
-						                                      	// for the same reason you can't have more than one property of the type of the Parent component
-						                                      	System.Type componentOwnerType = type;
-						                                      	System.Type componentPropertyType = propertyType;
+															  {
+																  modelMapper.InvokeBeforeMapComponent(propertyPath, x);
+																  // Note: for nested-components the Parent discovering is mandatory (recursive nested-component); 
+																  // for the same reason you can't have more than one property of the type of the Parent component
+																  System.Type componentOwnerType = type;
+																  System.Type componentPropertyType = propertyType;
 
-						                                      	IEnumerable<MemberInfo> componentProperties = GetPersistentProperties(componentPropertyType);
+																  IEnumerable<MemberInfo> componentProperties = GetPersistentProperties(componentPropertyType);
 
-																										MemberInfo parentReferenceProperty = modelMapper.GetComponentParentReferenceProperty(componentProperties, componentOwnerType);
-						                                      	if (parentReferenceProperty != null)
-						                                      	{
-						                                      		x.Parent(parentReferenceProperty);
-						                                      	}
-						                                      	customizersHolder.InvokeCustomizers(componentPropertyType, x);
-						                                      	modelMapper.ForEachMemberPath(member, propertyPath, pp => customizersHolder.InvokeCustomizers(pp, x));
-						                                      	modelMapper.InvokeAfterMapComponent(propertyPath, x);
+																  MemberInfo parentReferenceProperty = modelMapper.GetComponentParentReferenceProperty(componentProperties, componentOwnerType);
+																  if (parentReferenceProperty != null)
+																  {
+																	  x.Parent(parentReferenceProperty);
+																  }
+																  customizersHolder.InvokeCustomizers(componentPropertyType, x);
+																  modelMapper.ForEachMemberPath(member, propertyPath, pp => customizersHolder.InvokeCustomizers(pp, x));
+																  modelMapper.InvokeAfterMapComponent(propertyPath, x);
 
-						                                      	MapProperties(componentPropertyType, propertyPath, x, componentProperties.Where(pi => pi != parentReferenceProperty));
-						                                      });
+																  MapProperties(componentPropertyType, propertyPath, x, componentProperties.Where(pi => pi != parentReferenceProperty));
+															  });
 					}
 					else
 					{
 						propertiesContainer.Property(member, propertyMapper =>
-						                                     {
-						                                     	modelMapper.InvokeBeforeMapProperty(propertyPath, propertyMapper);
-						                                     	modelMapper.ForEachMemberPath(member, propertyPath, pp => customizersHolder.InvokeCustomizers(pp, propertyMapper));
-						                                     	modelMapper.InvokeAfterMapProperty(propertyPath, propertyMapper);
-						                                     });
+															 {
+																 modelMapper.InvokeBeforeMapProperty(propertyPath, propertyMapper);
+																 modelMapper.ForEachMemberPath(member, propertyPath, pp => customizersHolder.InvokeCustomizers(pp, propertyMapper));
+																 modelMapper.InvokeAfterMapProperty(propertyPath, propertyMapper);
+															 });
 					}
 				}
 			}
@@ -1459,14 +1459,14 @@ namespace NHibernate.Mapping.ByCode
 			public void Map(ICollectionElementRelation relation)
 			{
 				relation.Element(x =>
-				                 {
-				                 	modelMapper.InvokeBeforeMapElement(propertyPath, x);
-				                 	customizersHolder.InvokeCustomizers(propertyPath, x);
-				                 	modelMapper.InvokeAfterMapElement(propertyPath, x);
-				                 });
+								 {
+									 modelMapper.InvokeBeforeMapElement(propertyPath, x);
+									 customizersHolder.InvokeCustomizers(propertyPath, x);
+									 modelMapper.InvokeAfterMapElement(propertyPath, x);
+								 });
 			}
 
-			public void MapCollectionProperties(ICollectionPropertiesMapper mapped) {}
+			public void MapCollectionProperties(ICollectionPropertiesMapper mapped) { }
 
 			#endregion
 		}
@@ -1504,7 +1504,7 @@ namespace NHibernate.Mapping.ByCode
 			private readonly PropertyPath propertyPath;
 
 			public KeyComponentRelationMapper(System.Type dictionaryKeyType, PropertyPath propertyPath, ICandidatePersistentMembersProvider membersProvider, IModelInspector domainInspector,
-			                                  ICustomizersHolder customizersHolder, ModelMapper modelMapper)
+											  ICustomizersHolder customizersHolder, ModelMapper modelMapper)
 			{
 				this.dictionaryKeyType = dictionaryKeyType;
 				this.propertyPath = propertyPath;
@@ -1519,11 +1519,11 @@ namespace NHibernate.Mapping.ByCode
 			public void Map(IMapKeyRelation relation)
 			{
 				relation.Component(x =>
-				                   {
-				                   	IEnumerable<MemberInfo> persistentProperties = GetPersistentProperties(dictionaryKeyType);
+								   {
+									   IEnumerable<MemberInfo> persistentProperties = GetPersistentProperties(dictionaryKeyType);
 
-				                   	MapProperties(x, persistentProperties);
-				                   });
+									   MapProperties(x, persistentProperties);
+								   });
 			}
 
 			#endregion
@@ -1542,22 +1542,22 @@ namespace NHibernate.Mapping.ByCode
 					if (domainInspector.IsManyToOne(member))
 					{
 						propertiesContainer.ManyToOne(member, manyToOneMapper =>
-						                                      {
-						                                      	var progressivePath = new PropertyPath(propertyPath, member);
-						                                      	modelMapper.InvokeBeforeMapManyToOne(progressivePath, manyToOneMapper);
-						                                      	modelMapper.ForEachMemberPath(member, progressivePath, pp => customizersHolder.InvokeCustomizers(pp, manyToOneMapper));
-						                                      	modelMapper.InvokeAfterMapManyToOne(progressivePath, manyToOneMapper);
-						                                      });
+															  {
+																  var progressivePath = new PropertyPath(propertyPath, member);
+																  modelMapper.InvokeBeforeMapManyToOne(progressivePath, manyToOneMapper);
+																  modelMapper.ForEachMemberPath(member, progressivePath, pp => customizersHolder.InvokeCustomizers(pp, manyToOneMapper));
+																  modelMapper.InvokeAfterMapManyToOne(progressivePath, manyToOneMapper);
+															  });
 					}
 					else
 					{
 						propertiesContainer.Property(member, propertyMapper =>
-						                                     {
-						                                     	var progressivePath = new PropertyPath(propertyPath, member);
-						                                     	modelMapper.InvokeBeforeMapProperty(progressivePath, propertyMapper);
-						                                     	modelMapper.ForEachMemberPath(member, progressivePath, pp => customizersHolder.InvokeCustomizers(pp, propertyMapper));
-						                                     	modelMapper.InvokeAfterMapProperty(progressivePath, propertyMapper);
-						                                     });
+															 {
+																 var progressivePath = new PropertyPath(propertyPath, member);
+																 modelMapper.InvokeBeforeMapProperty(progressivePath, propertyMapper);
+																 modelMapper.ForEachMemberPath(member, progressivePath, pp => customizersHolder.InvokeCustomizers(pp, propertyMapper));
+																 modelMapper.InvokeAfterMapProperty(progressivePath, propertyMapper);
+															 });
 					}
 				}
 			}
@@ -1585,11 +1585,11 @@ namespace NHibernate.Mapping.ByCode
 			public void Map(IMapKeyRelation relation)
 			{
 				relation.Element(x =>
-				                 {
-				                 	modelMapper.InvokeBeforeMapMapKey(propertyPath, x);
-				                 	customizersHolder.InvokeCustomizers(propertyPath, x);
-				                 	modelMapper.InvokeAfterMapMapKey(propertyPath, x);
-				                 });
+								 {
+									 modelMapper.InvokeBeforeMapMapKey(propertyPath, x);
+									 customizersHolder.InvokeCustomizers(propertyPath, x);
+									 modelMapper.InvokeAfterMapMapKey(propertyPath, x);
+								 });
 			}
 
 			#endregion
@@ -1617,11 +1617,11 @@ namespace NHibernate.Mapping.ByCode
 			public void Map(IMapKeyRelation relation)
 			{
 				relation.ManyToMany(x =>
-				                    {
-				                    	modelMapper.InvokeBeforeMapMapKeyManyToMany(propertyPath, x);
-				                    	customizersHolder.InvokeCustomizers(propertyPath, x);
-				                    	modelMapper.InvokeAfterMapMapKeyManyToMany(propertyPath, x);
-				                    });
+									{
+										modelMapper.InvokeBeforeMapMapKeyManyToMany(propertyPath, x);
+										customizersHolder.InvokeCustomizers(propertyPath, x);
+										modelMapper.InvokeAfterMapMapKeyManyToMany(propertyPath, x);
+									});
 			}
 
 			#endregion
@@ -1649,14 +1649,14 @@ namespace NHibernate.Mapping.ByCode
 			public void Map(ICollectionElementRelation relation)
 			{
 				relation.ManyToMany(x =>
-				                    {
-				                    	modelMapper.InvokeBeforeMapManyToMany(propertyPath, x);
-				                    	customizersHolder.InvokeCustomizers(propertyPath, x);
-				                    	modelMapper.InvokeAfterMapManyToMany(propertyPath, x);
-				                    });
+									{
+										modelMapper.InvokeBeforeMapManyToMany(propertyPath, x);
+										customizersHolder.InvokeCustomizers(propertyPath, x);
+										modelMapper.InvokeAfterMapManyToMany(propertyPath, x);
+									});
 			}
 
-			public void MapCollectionProperties(ICollectionPropertiesMapper mapped) {}
+			public void MapCollectionProperties(ICollectionPropertiesMapper mapped) { }
 
 			#endregion
 		}
@@ -1705,7 +1705,7 @@ namespace NHibernate.Mapping.ByCode
 			private readonly PropertyPath propertyPath;
 
 			public OneToManyRelationMapper(PropertyPath propertyPath, System.Type ownerType, System.Type collectionElementType, IModelInspector domainInspector,
-			                               ICustomizersHolder customizersHolder, ModelMapper modelMapper)
+										   ICustomizersHolder customizersHolder, ModelMapper modelMapper)
 			{
 				this.propertyPath = propertyPath;
 				this.ownerType = ownerType;
@@ -1720,11 +1720,11 @@ namespace NHibernate.Mapping.ByCode
 			public void Map(ICollectionElementRelation relation)
 			{
 				relation.OneToMany(x =>
-				                   {
-				                   	modelMapper.InvokeBeforeMapOneToMany(propertyPath, x);
-				                   	customizersHolder.InvokeCustomizers(propertyPath, x);
-				                   	modelMapper.InvokeAfterMapOneToMany(propertyPath, x);
-				                   });
+								   {
+									   modelMapper.InvokeBeforeMapOneToMany(propertyPath, x);
+									   customizersHolder.InvokeCustomizers(propertyPath, x);
+									   modelMapper.InvokeAfterMapOneToMany(propertyPath, x);
+								   });
 			}
 
 			public void MapCollectionProperties(ICollectionPropertiesMapper mapped)
@@ -1753,7 +1753,7 @@ namespace NHibernate.Mapping.ByCode
 
 		#endregion
 
-		public void AddMapping<T>() where T: IConformistHoldersProvider, new()
+		public void AddMapping<T>() where T : IConformistHoldersProvider, new()
 		{
 			AddMapping(new T());
 		}
@@ -1787,7 +1787,7 @@ namespace NHibernate.Mapping.ByCode
 			}
 
 			var mapping = mappingInstance as IConformistHoldersProvider;
-			if(mapping == null)
+			if (mapping == null)
 			{
 				throw new ArgumentOutOfRangeException("type", "The mapping class must be an implementation of IConformistHoldersProvider.");
 			}
@@ -1800,7 +1800,7 @@ namespace NHibernate.Mapping.ByCode
 			{
 				throw new ArgumentNullException("types");
 			}
-			foreach (var type in types.Where(x=> typeof(IConformistHoldersProvider).IsAssignableFrom(x) && !x.IsGenericTypeDefinition))
+			foreach (var type in types.Where(x => typeof(IConformistHoldersProvider).IsAssignableFrom(x) && !x.IsGenericTypeDefinition))
 			{
 				AddMapping(type);
 			}

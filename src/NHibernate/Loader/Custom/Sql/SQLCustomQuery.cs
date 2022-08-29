@@ -15,7 +15,7 @@ namespace NHibernate.Loader.Custom.Sql
 	///<remarks>This support is built on top of the notion of "custom queries"...</remarks>
 	public class SQLCustomQuery : ICustomQuery
 	{
-		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (SQLCustomQuery));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SQLCustomQuery));
 
 		private readonly List<IReturn> customQueryReturns = new List<IReturn>();
 		private readonly HashSet<string> querySpaces = new HashSet<string>();
@@ -23,7 +23,7 @@ namespace NHibernate.Loader.Custom.Sql
 		private readonly List<IParameterSpecification> parametersSpecifications;
 
 		public SQLCustomQuery(INativeSQLQueryReturn[] queryReturns, string sqlQuery, ICollection<string> additionalQuerySpaces,
-		                      ISessionFactoryImplementor factory)
+							  ISessionFactoryImplementor factory)
 		{
 			log.Debug("starting processing of sql query [{0}]", sqlQuery);
 			SQLQueryReturnProcessor processor = new SQLQueryReturnProcessor(queryReturns, factory);
@@ -105,7 +105,7 @@ namespace NHibernate.Loader.Custom.Sql
 				return aliasContext.GetCollectionSuffix(alias);
 			}
 
-			public IDictionary<string,string[]> GetPropertyResultsMapByAlias(string alias)
+			public IDictionary<string, string[]> GetPropertyResultsMapByAlias(string alias)
 			{
 				return aliasContext.GetPropertyResultsMap(alias);
 			}

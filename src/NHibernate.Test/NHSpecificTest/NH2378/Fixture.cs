@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2378
 				entity.Name = "Test Entity";
 				entity.TestPerson = new Person { Id = 1, Name = "TestUser" };
 				session.Save(entity);
-				
+
 				var entity1 = new TestEntity();
 				entity1.Id = 2;
 				entity1.Name = "Test Entity";

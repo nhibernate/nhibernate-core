@@ -82,7 +82,7 @@ namespace NHibernate.Linq.Visitors
 						$"{nameof(LinqExtensionMethods.MappedAs)} type must be supplied as {nameof(ConstantExpression)}. " +
 						$"It was {expression.Arguments[1]?.GetType().Name ?? "null"} instead.");
 
-				_parameters[parameter].Type = (IType)type.Value;
+				_parameters[parameter].Type = (IType) type.Value;
 
 				return rawParameter;
 			}
@@ -104,7 +104,7 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			if (_functionRegistry != null &&
-			    _functionRegistry.TryGetGenerator(method, out var generator) &&
+				_functionRegistry.TryGetGenerator(method, out var generator) &&
 				generator.TryGetCollectionParameters(expression, out var collectionParameter))
 			{
 				_collectionParameters.Add(collectionParameter);
@@ -148,8 +148,8 @@ namespace NHibernate.Linq.Visitors
 			// because it might be necessary if the types are incompatible with each other, which might happen if
 			// the expression uses an implicitly or explicitly defined cast operator.
 			if (node.NodeType == ExpressionType.Convert &&
-			    node.Method != null && // The implicit/explicit operator method
-			    node.Operand is ConstantExpression constantExpression)
+				node.Method != null && // The implicit/explicit operator method
+				node.Operand is ConstantExpression constantExpression)
 			{
 				// Instead of getting constantExpression.Value, invoke method
 				var value = node.Method.Invoke(null, new[] { constantExpression.Value });

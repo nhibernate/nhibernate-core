@@ -14,7 +14,7 @@ namespace NHibernate.Context
 		[ThreadStatic]
 		private static IDictionary _map;
 
-		public ThreadStaticSessionContext(ISessionFactoryImplementor factory) : base (factory) { }
+		public ThreadStaticSessionContext(ISessionFactoryImplementor factory) : base(factory) { }
 
 		protected override IDictionary GetMap()
 		{

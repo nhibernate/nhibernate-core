@@ -39,7 +39,7 @@ namespace NHibernate.Id
 			{
 				parameterTypes = new[] { collectionPersister.KeyType, collectionPersister.ElementType };
 			}
-			else 
+			else
 			{
 				throw new IdentifierGenerationException(
 					$"Persister type {persister.GetType()} is not supported by post insert identity persisters");

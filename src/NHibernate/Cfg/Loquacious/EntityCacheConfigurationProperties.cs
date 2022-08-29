@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using System.Linq.Expressions;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg.Loquacious
@@ -32,13 +32,13 @@ namespace NHibernate.Cfg.Loquacious
 				throw new ArgumentNullException(nameof(collectionProperty));
 			}
 			var mi = ExpressionsHelper.DecodeMemberAccessExpression(collectionProperty);
-			if(mi.DeclaringType != typeof(TEntity))
+			if (mi.DeclaringType != typeof(TEntity))
 			{
-				throw new ArgumentOutOfRangeException(nameof(collectionProperty), "Collection not owned by " + typeof (TEntity).FullName);
+				throw new ArgumentOutOfRangeException(nameof(collectionProperty), "Collection not owned by " + typeof(TEntity).FullName);
 			}
 			var ecc = new EntityCollectionCacheConfigurationProperties();
 			collectionCacheConfiguration(ecc);
-			collections.Add(typeof (TEntity).FullName + "." + mi.Name, ecc);
+			collections.Add(typeof(TEntity).FullName + "." + mi.Name, ecc);
 		}
 
 #pragma warning disable 618
@@ -59,7 +59,7 @@ namespace NHibernate.Cfg.Loquacious
 		}
 	}
 
-	public class EntityCollectionCacheConfigurationProperties 
+	public class EntityCollectionCacheConfigurationProperties
 #pragma warning disable 618
 		: IEntityCollectionCacheConfigurationProperties
 #pragma warning restore 618

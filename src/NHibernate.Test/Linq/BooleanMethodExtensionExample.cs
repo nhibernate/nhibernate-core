@@ -5,12 +5,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Cfg;
+using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
-using NHibernate.DomainModel.Northwind.Entities;
-using NUnit.Framework;
 using NHibernate.Util;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
@@ -26,7 +26,7 @@ namespace NHibernate.Test.Linq
 	{
 		public FreetextGenerator()
 		{
-			SupportedMethods = new[] {ReflectHelper.GetMethodDefinition(() => BooleanLinqExtensions.FreeText(null, null))};
+			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition(() => BooleanLinqExtensions.FreeText(null, null)) };
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject,

@@ -5,5 +5,5 @@ namespace NHibernate.Mapping.ByCode
 		void Mutable(bool isMutable);
 	}
 
-	public interface INaturalIdMapper : INaturalIdAttributesMapper, IBasePlainPropertyContainerMapper {}
+	public interface INaturalIdMapper : INaturalIdAttributesMapper, IBasePlainPropertyContainerMapper { }
 }
