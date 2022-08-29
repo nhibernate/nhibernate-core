@@ -19,7 +19,7 @@ namespace NHibernate.Test.CacheTest
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class CacheFixtureAsync: TestCase
+	public class CacheFixtureAsync : TestCase
 	{
 		[Test]
 		public async Task TestSimpleCacheAsync()

@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var book = new BookNotGenerated {Name = "test book", Pages = new List<Page>(),};
+					var book = new BookNotGenerated { Name = "test book", Pages = new List<Page>(), };
 					await (session.SaveAsync(book));
 					book.Name = "modified test book";
 					await (transaction.CommitAsync());
@@ -98,7 +98,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1756
 			{
 				using (ITransaction transaction = session.BeginTransaction())
 				{
-					var book = new Book {Name = "test book", Pages = new List<Page>(),};
+					var book = new Book { Name = "test book", Pages = new List<Page>(), };
 					await (session.SaveAsync(book));
 					book.Name = "modified test book";
 					await (session.FlushAsync());

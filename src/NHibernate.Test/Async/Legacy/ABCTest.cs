@@ -26,7 +26,7 @@ namespace NHibernate.Test.Legacy
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"ABC.hbm.xml"}; }
+			get { return new string[] { "ABC.hbm.xml" }; }
 		}
 
 		[Test]

@@ -16,141 +16,141 @@ using NHibernate.Linq;
 
 namespace NHibernate.Test.Linq
 {
-    using System.Threading.Tasks;
-    using System.Threading;
-    [TestFixture]
-    public class QueryReuseTestsAsync : LinqTestCase
-    {
-        private IQueryable<User> _query;
+	using System.Threading.Tasks;
+	using System.Threading;
+	[TestFixture]
+	public class QueryReuseTestsAsync : LinqTestCase
+	{
+		private IQueryable<User> _query;
 
-        protected override void OnSetUp()
-        {
-            base.OnSetUp();
+		protected override void OnSetUp()
+		{
+			base.OnSetUp();
 
-            _query = db.Users;
-        }
+			_query = db.Users;
+		}
 
-        private async Task AssertQueryReuseableAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            IList<User> users = await (_query.ToListAsync(cancellationToken));
-            Assert.AreEqual(3, users.Count);
-        }
+		private async Task AssertQueryReuseableAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			IList<User> users = await (_query.ToListAsync(cancellationToken));
+			Assert.AreEqual(3, users.Count);
+		}
 
-        [Test]
-        public async Task CanReuseAfterFirstAsync()
-        {
-            var user = await (_query.FirstAsync(u => u.Name == "rahien"));
+		[Test]
+		public async Task CanReuseAfterFirstAsync()
+		{
+			var user = await (_query.FirstAsync(u => u.Name == "rahien"));
 
-            Assert.IsNotNull(user);
-            await (AssertQueryReuseableAsync());
-        }
+			Assert.IsNotNull(user);
+			await (AssertQueryReuseableAsync());
+		}
 
-        [Test]
-        public async Task CanReuseAfterFirstOrDefaultAsync()
-        {
-            var user = await (_query.FirstOrDefaultAsync(u => u.Name == "rahien"));
+		[Test]
+		public async Task CanReuseAfterFirstOrDefaultAsync()
+		{
+			var user = await (_query.FirstOrDefaultAsync(u => u.Name == "rahien"));
 
-            Assert.IsNotNull(user);
-            await (AssertQueryReuseableAsync());
-        }
+			Assert.IsNotNull(user);
+			await (AssertQueryReuseableAsync());
+		}
 
-        [Test]
-        public async Task CanReuseAfterSingleAsync()
-        {
-            var user = await (_query.SingleAsync(u => u.Name == "rahien"));
+		[Test]
+		public async Task CanReuseAfterSingleAsync()
+		{
+			var user = await (_query.SingleAsync(u => u.Name == "rahien"));
 
-            Assert.IsNotNull(user);
-            await (AssertQueryReuseableAsync());
-        }
+			Assert.IsNotNull(user);
+			await (AssertQueryReuseableAsync());
+		}
 
-        [Test]
-        public async Task CanReuseAfterSingleOrDefaultAsync()
-        {
-            User user = await (_query.SingleOrDefaultAsync(u => u.Name == "rahien"));
+		[Test]
+		public async Task CanReuseAfterSingleOrDefaultAsync()
+		{
+			User user = await (_query.SingleOrDefaultAsync(u => u.Name == "rahien"));
 
-            Assert.IsNotNull(user);
-            await (AssertQueryReuseableAsync());
-        }
+			Assert.IsNotNull(user);
+			await (AssertQueryReuseableAsync());
+		}
 
-        [Test]
-        public async Task CanReuseAfterAggregateAsync()
-        {
-            User user = _query.Aggregate((u1, u2) => u1);
+		[Test]
+		public async Task CanReuseAfterAggregateAsync()
+		{
+			User user = _query.Aggregate((u1, u2) => u1);
 
-            Assert.IsNotNull(user);
-            await (AssertQueryReuseableAsync());
-        }
+			Assert.IsNotNull(user);
+			await (AssertQueryReuseableAsync());
+		}
 
-        [Test]
-        public async Task CanReuseAfterAverageAsync()
-        {
-            double average = await (_query.AverageAsync(u => u.InvalidLoginAttempts));
+		[Test]
+		public async Task CanReuseAfterAverageAsync()
+		{
+			double average = await (_query.AverageAsync(u => u.InvalidLoginAttempts));
 
-            Assert.AreEqual(5.0, average);
-            await (AssertQueryReuseableAsync());
-        }
+			Assert.AreEqual(5.0, average);
+			await (AssertQueryReuseableAsync());
+		}
 
-        [Test]
-        public async Task CanReuseAfterCountAsync()
-        {
-            int totalCount = await (_query.CountAsync());
+		[Test]
+		public async Task CanReuseAfterCountAsync()
+		{
+			int totalCount = await (_query.CountAsync());
 
-            Assert.AreEqual(3, totalCount);
-            await (AssertQueryReuseableAsync());
-        }
+			Assert.AreEqual(3, totalCount);
+			await (AssertQueryReuseableAsync());
+		}
 
-        [Test]
-        public async Task CanReuseAfterCountWithPredicateAsync()
-        {
-            int count = await (_query.CountAsync(u => u.LastLoginDate != null));
+		[Test]
+		public async Task CanReuseAfterCountWithPredicateAsync()
+		{
+			int count = await (_query.CountAsync(u => u.LastLoginDate != null));
 
-            Assert.AreEqual(1, count);
-            await (AssertQueryReuseableAsync());
-        }
+			Assert.AreEqual(1, count);
+			await (AssertQueryReuseableAsync());
+		}
 
-        [Test]
-        public async Task CanReuseAfterLongCountAsync()
-        {
-            long totalCount = await (_query.LongCountAsync());
+		[Test]
+		public async Task CanReuseAfterLongCountAsync()
+		{
+			long totalCount = await (_query.LongCountAsync());
 
-            Assert.AreEqual(3, totalCount);
-            await (AssertQueryReuseableAsync());
-        }
+			Assert.AreEqual(3, totalCount);
+			await (AssertQueryReuseableAsync());
+		}
 
-        [Test]
-        public async Task CanReuseAfterLongCountWithPredicateAsync()
-        {
-            long totalCount = await (_query.LongCountAsync(u => u.LastLoginDate != null));
+		[Test]
+		public async Task CanReuseAfterLongCountWithPredicateAsync()
+		{
+			long totalCount = await (_query.LongCountAsync(u => u.LastLoginDate != null));
 
-            Assert.AreEqual(1, totalCount);
-            await (AssertQueryReuseableAsync());
-        }
+			Assert.AreEqual(1, totalCount);
+			await (AssertQueryReuseableAsync());
+		}
 
-        [Test]
-        public async Task CanReuseAfterMaxAsync()
-        {
-            int max = await (_query.MaxAsync(u => u.InvalidLoginAttempts));
+		[Test]
+		public async Task CanReuseAfterMaxAsync()
+		{
+			int max = await (_query.MaxAsync(u => u.InvalidLoginAttempts));
 
-            Assert.AreEqual(6, max);
-            await (AssertQueryReuseableAsync());
-        }
+			Assert.AreEqual(6, max);
+			await (AssertQueryReuseableAsync());
+		}
 
-        [Test]
-        public async Task CanReuseAfterMinAsync()
-        {
-            int min = await (_query.MinAsync(u => u.InvalidLoginAttempts));
+		[Test]
+		public async Task CanReuseAfterMinAsync()
+		{
+			int min = await (_query.MinAsync(u => u.InvalidLoginAttempts));
 
-            Assert.AreEqual(4, min);
-            await (AssertQueryReuseableAsync());
-        }
+			Assert.AreEqual(4, min);
+			await (AssertQueryReuseableAsync());
+		}
 
-        [Test]
-        public async Task CanReuseAfterSumAsync()
-        {
-            int sum = await (_query.SumAsync(u => u.InvalidLoginAttempts));
+		[Test]
+		public async Task CanReuseAfterSumAsync()
+		{
+			int sum = await (_query.SumAsync(u => u.InvalidLoginAttempts));
 
-            Assert.AreEqual(4 + 5 + 6, sum);
-            await (AssertQueryReuseableAsync());
-        }
-    }
+			Assert.AreEqual(4 + 5 + 6, sum);
+			await (AssertQueryReuseableAsync());
+		}
+	}
 }

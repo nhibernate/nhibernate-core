@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3754
 		{
 			base.OnSetUp();
 			cfg.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
-			cfg.Properties[Environment.UseQueryCache] = "true";			
+			cfg.Properties[Environment.UseQueryCache] = "true";
 		}
 
 		[Test]
@@ -46,9 +46,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3754
 					await (session.FlushAsync());
 					session.Clear();
 					var list = await (session.CreateCriteria<User>()
-					                  .SetProjection(Projections.Property<User>(x => x.Name).As("Name")).SetResultTransformer(new AliasToBeanResultTransformer(typeof (TestEntity)))
-					                  .SetCacheable(false)
-					                  .ListAsync<TestEntity>());
+									  .SetProjection(Projections.Property<User>(x => x.Name).As("Name")).SetResultTransformer(new AliasToBeanResultTransformer(typeof(TestEntity)))
+									  .SetCacheable(false)
+									  .ListAsync<TestEntity>());
 					Assert.AreEqual(1, list.Count);
 					Assert.AreEqual("Test", list[0].Name);
 
@@ -56,6 +56,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3754
 					await (t.CommitAsync());
 				}
 			}
-		}		
+		}
 	}
 }

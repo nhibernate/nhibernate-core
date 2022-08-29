@@ -34,7 +34,7 @@ namespace NHibernate.Test.ListIndex
 			using (var tx = s.BeginTransaction())
 			{
 				var galery = new Galery();
-				galery.Images.Add(new Image {Path = "image01.jpg"});
+				galery.Images.Add(new Image { Path = "image01.jpg" });
 				await (s.PersistAsync(galery));
 				Assert.DoesNotThrowAsync(() => tx.CommitAsync());
 			}

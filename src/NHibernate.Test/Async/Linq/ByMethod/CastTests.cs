@@ -35,8 +35,8 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			var pregnatMammal = await ((from a
 									in session.Query<Animal>().Cast<Cat>()
-								  where a.Pregnant
-								  select a).FirstOrDefaultAsync());
+								 where a.Pregnant
+								 select a).FirstOrDefaultAsync());
 			Assert.That(pregnatMammal, Is.Not.Null);
 		}
 
@@ -54,7 +54,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		public void OrderByAfterCastAsync()
 		{
 			// NH-2657
-			var query = session.Query<Dog>().Cast<Animal>().OrderBy(a=> a.BodyWeight);
+			var query = session.Query<Dog>().Cast<Animal>().OrderBy(a => a.BodyWeight);
 			Assert.That(() => query.ToListAsync(), Throws.Nothing);
 		}
 	}

@@ -39,10 +39,10 @@ namespace NHibernate.Test.NHSpecificTest.EntityNameAndCompositeId
 				using (ITransaction tx = s.BeginTransaction())
 				{
 					id = await (s.SaveAsync("Person", new Dictionary<string, object>
-					                      	{
-					                      		{"OuterId", new Dictionary<string, int> {{"InnerId", 1}}},
-					                      		{"Data", "hello"}
-					                      	}));
+											  {
+												  {"OuterId", new Dictionary<string, int> {{"InnerId", 1}}},
+												  {"Data", "hello"}
+											  }));
 					await (tx.CommitAsync());
 				}
 			}

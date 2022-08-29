@@ -11,10 +11,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using NHibernate.AdoNet.Util;
 using NHibernate.Cfg;
 using NHibernate.Util;
-using Environment=NHibernate.Cfg.Environment;
-using NHibernate.AdoNet.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Tool.hbm2ddl
 {

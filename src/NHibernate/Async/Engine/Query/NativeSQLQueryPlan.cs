@@ -57,7 +57,7 @@ namespace NHibernate.Engine.Query
 
 				var sqlParametersList = sql.GetParameters().ToList();
 				SqlType[] sqlTypes = parametersSpecifications.GetQueryParameterTypes(sqlParametersList, session.Factory);
-				
+
 				var ps = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, sqlTypes, cancellationToken)).ConfigureAwait(false);
 
 				try
@@ -72,7 +72,7 @@ namespace NHibernate.Engine.Query
 					{
 						await (parameterSpecification.BindAsync(ps, sqlParametersList, queryParameters, session, cancellationToken)).ConfigureAwait(false);
 					}
-					
+
 					result = await (session.Batcher.ExecuteNonQueryAsync(ps, cancellationToken)).ConfigureAwait(false);
 				}
 				finally

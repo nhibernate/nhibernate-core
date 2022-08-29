@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecific.BasicClass.hbm.xml"}; }
+			get { return new string[] { "NHSpecific.BasicClass.hbm.xml" }; }
 		}
 
 		/// <summary>
@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest
 				await (tx.CommitAsync());
 			}
 		}
-		
+
 		[Test]
 		public async Task CachingAsync()
 		{
@@ -386,7 +386,7 @@ namespace NHibernate.Test.NHSpecificTest
 			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
-			bc[index].StringArray = new string[] {"string one", "string two"};
+			bc[index].StringArray = new string[] { "string one", "string two" };
 			await (s[index].UpdateAsync(bc[index]));
 
 			await (t[index].CommitAsync());
@@ -454,7 +454,7 @@ namespace NHibernate.Test.NHSpecificTest
 			bc[index] = (BasicClass) await (s[index].LoadAsync(typeof(BasicClass), id));
 			AssertPropertiesEqual(bc[index - 1], bc[index]);
 
-			bc[index].Int32Array = new int[] {1, 2, 3, 4, 5, 6};
+			bc[index].Int32Array = new int[] { 1, 2, 3, 4, 5, 6 };
 			await (s[index].UpdateAsync(bc[index]));
 
 			await (t[index].CommitAsync());
@@ -714,7 +714,7 @@ namespace NHibernate.Test.NHSpecificTest
 			// This transaction was removed since it was causing a deadlock with SQLite.
 			// This is a theoretical improvement as well, since the transaction could
 			// be in a mode that would prevent non-repeatable reads, hence breaking the test.
-			
+
 			ISession s2 = OpenSession();
 			ITransaction t2 = s2.BeginTransaction();
 
@@ -828,7 +828,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 			int id = 1;
 
-			bc.StringList = new string[] {"one", "two"};
+			bc.StringList = new string[] { "one", "two" };
 
 			await (s.SaveAsync(bc, id));
 			await (t.CommitAsync());
@@ -851,55 +851,55 @@ namespace NHibernate.Test.NHSpecificTest
 		public async Task TestLinqWhereOnDictionaryPropertyAsync()
 		{
 			// TODO: Move to Linq test namespace
-			
+
 			await (InsertBasicClassAsync(1));
-			
+
 			using (var session = OpenSession())
 			using (var trans = session.BeginTransaction())
 			{
 				IQueryable<BasicClass> bcs = null;
 				IList<BasicClass> bcsList = null;
-				
+
 				// IDictionary[]
 				bcs = session.Query<BasicClass>()
-					.Where(bc => (string)bc.StringMap["keyZero"] == "string zero");
+					.Where(bc => (string) bc.StringMap["keyZero"] == "string zero");
 
 				Assert.That(await (bcs.CountAsync()), Is.EqualTo(1));
 				bcsList = await (bcs.ToListAsync<BasicClass>());
 				Assert.That(bcsList.All(f => f.StringMap != null), Is.True);
 				Assert.That(bcsList.All(f => f.StringMap.Count == 3), Is.True);
-				Assert.That(bcsList.All(f => ((f.StringMap.ContainsKey("keyZero")) && ((string)f.StringMap["keyZero"] == "string zero"))), Is.True);
-				
+				Assert.That(bcsList.All(f => ((f.StringMap.ContainsKey("keyZero")) && ((string) f.StringMap["keyZero"] == "string zero"))), Is.True);
+
 				// IDictionary<,>[]
 				bcs = session.Query<BasicClass>()
 					.Where(bc => bc.StringMapGeneric["keyOne"] == "string one");
-				
+
 				Assert.That(await (bcs.CountAsync()), Is.EqualTo(1));
 				bcsList = await (bcs.ToListAsync<BasicClass>());
 				Assert.That(bcsList.All(f => f.StringMapGeneric != null), Is.True);
 				Assert.That(bcsList.All(f => f.StringMapGeneric.Count == 3), Is.True);
 				Assert.That(bcsList.All(f => ((f.StringMapGeneric.ContainsKey("keyOne")) && (f.StringMapGeneric["keyOne"] == "string one"))), Is.True);
-				
+
 				// IDictionary.Contains
 				bcs = session.Query<BasicClass>()
 					.Where(bc => bc.StringMap.ContainsKey("keyZero"));
-				
+
 				Assert.That(await (bcs.CountAsync()), Is.EqualTo(1));
 				bcsList = await (bcs.ToListAsync<BasicClass>());
 				Assert.That(bcsList.All(f => f.StringMap != null), Is.True);
 				Assert.That(bcsList.All(f => f.StringMap.Count == 3), Is.True);
-				Assert.That(bcsList.All(f => ((f.StringMap.ContainsKey("keyZero")) && ((string)f.StringMap["keyZero"] == "string zero"))), Is.True);
-				
+				Assert.That(bcsList.All(f => ((f.StringMap.ContainsKey("keyZero")) && ((string) f.StringMap["keyZero"] == "string zero"))), Is.True);
+
 				// IDictionary<,>.ContainsKey
 				bcs = session.Query<BasicClass>()
 					.Where(bc => bc.StringMapGeneric.ContainsKey("keyZero"));
-				
+
 				Assert.That(await (bcs.CountAsync()), Is.EqualTo(1));
 				bcsList = await (bcs.ToListAsync<BasicClass>());
 				Assert.That(bcsList.All(f => f.StringMapGeneric != null), Is.True);
 				Assert.That(bcsList.All(f => f.StringMapGeneric.Count == 3), Is.True);
 				Assert.That(bcsList.All(f => ((f.StringMapGeneric.ContainsKey("keyOne")) && (f.StringMapGeneric["keyOne"] == "string one"))), Is.True);
-				
+
 				await (session.DeleteAsync("from BasicClass"));
 				await (trans.CommitAsync());
 			}
@@ -912,7 +912,7 @@ namespace NHibernate.Test.NHSpecificTest
 		public async Task TestHqlParameterizedDictionaryLookupProducesCorrectSqlParameterOrderAsync()
 		{
 			var bc = await (InsertBasicClassAsync(1));
-			
+
 			using (var session = OpenSession())
 			using (var trans = session.BeginTransaction())
 			{
@@ -927,7 +927,7 @@ namespace NHibernate.Test.NHSpecificTest
 				await (trans.CommitAsync());
 			}
 		}
-		
+
 		internal async Task AssertDeleteAsync(int id, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			ISession s = OpenSession();
@@ -1033,8 +1033,8 @@ namespace NHibernate.Test.NHSpecificTest
 			basicClass.TrueFalseProperty = true;
 			basicClass.YesNoProperty = true;
 
-			basicClass.StringArray = new string[] {"3 string", "2 string", "1 string"};
-			basicClass.Int32Array = new int[] {5, 4, 3, 2, 1};
+			basicClass.StringArray = new string[] { "3 string", "2 string", "1 string" };
+			basicClass.Int32Array = new int[] { 5, 4, 3, 2, 1 };
 
 			IList<string> stringBag = new List<string>(3);
 			stringBag.Add("string 0");

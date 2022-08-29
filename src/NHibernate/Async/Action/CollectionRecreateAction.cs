@@ -67,7 +67,7 @@ namespace NHibernate.Action
 			IPreCollectionRecreateEventListener[] preListeners = Session.Listeners.PreCollectionRecreateEventListeners;
 			if (preListeners.Length > 0)
 			{
-				PreCollectionRecreateEvent preEvent = new PreCollectionRecreateEvent(Persister, Collection, (IEventSource)Session);
+				PreCollectionRecreateEvent preEvent = new PreCollectionRecreateEvent(Persister, Collection, (IEventSource) Session);
 				for (int i = 0; i < preListeners.Length; i++)
 				{
 					await (preListeners[i].OnPreRecreateCollectionAsync(preEvent, cancellationToken)).ConfigureAwait(false);
@@ -81,7 +81,7 @@ namespace NHibernate.Action
 			IPostCollectionRecreateEventListener[] postListeners = Session.Listeners.PostCollectionRecreateEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostCollectionRecreateEvent postEvent = new PostCollectionRecreateEvent(Persister, Collection, (IEventSource)Session);
+				PostCollectionRecreateEvent postEvent = new PostCollectionRecreateEvent(Persister, Collection, (IEventSource) Session);
 				for (int i = 0; i < postListeners.Length; i++)
 				{
 					await (postListeners[i].OnPostRecreateCollectionAsync(postEvent, cancellationToken)).ConfigureAwait(false);

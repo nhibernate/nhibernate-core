@@ -9,8 +9,8 @@
 
 
 using System;
-using NUnit.Framework;
 using NHibernate.Test.Immutable.EntityWithMutableCollection;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 {
@@ -25,7 +25,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 				return new string[] { "Immutable.EntityWithMutableCollection.Inverse.ContractVariationVersioned.hbm.xml" };
 			}
 		}
-		
+
 		[Test]
 		[Ignore("known to fail with versioned entity with inverse collection")]
 		public override Task AddExistingOneToManyElementToPersistentEntityAsync()
@@ -46,7 +46,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 		{
 			return Task.CompletedTask;
 		}
-		
+
 		[Test]
 		[Ignore("known to fail with versioned entity with inverse collection")]
 		public override Task RemoveOneToManyElementUsingUpdateAsync()

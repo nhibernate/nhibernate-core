@@ -18,7 +18,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class PolymorphicGetAndLoadTestAsync: TestCase
+	public class PolymorphicGetAndLoadTestAsync : TestCase
 	{
 		protected override string MappingsAssembly
 		{
@@ -69,7 +69,7 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 			public ScenarioWithB(ISessionFactory factory)
 			{
 				this.factory = factory;
-				b = new B { Name = "Patrick", Occupation = "hincha pelotas (en el buen sentido), but good candidate to be committer."};
+				b = new B { Name = "Patrick", Occupation = "hincha pelotas (en el buen sentido), but good candidate to be committer." };
 				using (var s = factory.OpenSession())
 				{
 					s.Save(b);
@@ -166,8 +166,8 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 
 					Assert.That(NHibernateProxyHelper.GetClassWithoutInitializingProxy(narrowedProxy), Is.EqualTo(typeof(B)));
 
-					var firstLoadedImpl = ((INHibernateProxy)loadedEntity).HibernateLazyInitializer.GetImplementation((ISessionImplementor)s);
-					var secondLoadedImpl = ((INHibernateProxy)narrowedProxy).HibernateLazyInitializer.GetImplementation((ISessionImplementor)s);
+					var firstLoadedImpl = ((INHibernateProxy) loadedEntity).HibernateLazyInitializer.GetImplementation((ISessionImplementor) s);
+					var secondLoadedImpl = ((INHibernateProxy) narrowedProxy).HibernateLazyInitializer.GetImplementation((ISessionImplementor) s);
 					Assert.That(firstLoadedImpl, Is.SameAs(secondLoadedImpl));
 				}
 			}
@@ -188,8 +188,8 @@ namespace NHibernate.Test.PolymorphicGetAndLoad
 
 					Assert.That(NHibernateProxyHelper.GetClassWithoutInitializingProxy(narrowedProxy), Is.EqualTo(typeof(B)));
 
-					var firstLoadedImpl = ((INHibernateProxy)loadedEntity).HibernateLazyInitializer.GetImplementation((ISessionImplementor)s);
-					var secondLoadedImpl = ((INHibernateProxy)narrowedProxy).HibernateLazyInitializer.GetImplementation((ISessionImplementor)s);
+					var firstLoadedImpl = ((INHibernateProxy) loadedEntity).HibernateLazyInitializer.GetImplementation((ISessionImplementor) s);
+					var secondLoadedImpl = ((INHibernateProxy) narrowedProxy).HibernateLazyInitializer.GetImplementation((ISessionImplementor) s);
 					Assert.That(firstLoadedImpl, Is.SameAs(secondLoadedImpl));
 				}
 			}

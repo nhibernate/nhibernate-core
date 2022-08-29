@@ -48,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1039Generic
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				Person person = (Person)await (s.CreateCriteria(typeof(Person)).UniqueResultAsync());
+				Person person = (Person) await (s.CreateCriteria(typeof(Person)).UniqueResultAsync());
 
 				Assert.AreEqual("1", person.ID);
 				Assert.AreEqual("John Doe", person.Name);

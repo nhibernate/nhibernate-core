@@ -9,7 +9,10 @@
 
 
 using System;
+using System.Data;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using NHibernate.Action;
@@ -23,9 +26,6 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Transaction;
 using NHibernate.Util;
-using System.Data;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {

@@ -9,8 +9,8 @@
 
 
 using System;
-using System.Linq;
 using System.Collections;
+using System.Linq;
 using NHibernate.Criterion;
 using NHibernate.Engine.Query;
 using NHibernate.Hql;
@@ -75,7 +75,7 @@ namespace NHibernate.Test.Hql.Ast
 			{
 				await (s.CreateQuery("select distinct z from Animal a join a.zoo as z order by z.name").ListAsync());
 			}
-		} 
+		}
 
 		[Test]
 		public async Task CaseClauseInSelectAsync()
@@ -84,19 +84,19 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Animal {BodyWeight = 12, Description = "Polliwog"}));
+				await (s.SaveAsync(new Animal { BodyWeight = 12, Description = "Polliwog" }));
 				await (t.CommitAsync());
 			}
-		
+
 			using (ISession s = OpenSession())
 			{
 				var l = await (s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end from Animal a").ListAsync());
-				var element = (IList)l[0];
+				var element = (IList) l[0];
 				Assert.That(element[1], Is.EqualTo(2));
 
 				// work with alias
 				l = await (s.CreateQuery("select a.id, case when a.description = 'Polliwog' then 2 else 0 end as value from Animal a").ListAsync());
-				element = (IList)l[0];
+				element = (IList) l[0];
 				Assert.That(element[1], Is.EqualTo(2));
 			}
 
@@ -270,9 +270,9 @@ namespace NHibernate.Test.Hql.Ast
 			using (var t = s.BeginTransaction())
 			{
 				// arrange
-				await (s.SaveAsync(new Animal() {Description = "cat1", BodyWeight = 2.1f}));
-				await (s.SaveAsync(new Animal() {Description = "cat2", BodyWeight = 2.5f}));
-				await (s.SaveAsync(new Animal() {Description = "cat3", BodyWeight = 2.7f}));
+				await (s.SaveAsync(new Animal() { Description = "cat1", BodyWeight = 2.1f }));
+				await (s.SaveAsync(new Animal() { Description = "cat2", BodyWeight = 2.5f }));
+				await (s.SaveAsync(new Animal() { Description = "cat3", BodyWeight = 2.7f }));
 
 				// act
 				await (s.CreateQuery("insert into Animal (description, bodyWeight) select a.description, :weight from Animal a where a.bodyWeight < :weight")
@@ -280,7 +280,7 @@ namespace NHibernate.Test.Hql.Ast
 
 				// assert
 				Assert.AreEqual(3, await (s.CreateCriteria<Animal>().SetProjection(Projections.RowCount())
-				                    .Add(Restrictions.Gt("bodyWeight", 5.5f)).UniqueResultAsync<int>()));
+									.Add(Restrictions.Gt("bodyWeight", 5.5f)).UniqueResultAsync<int>()));
 
 				await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
 				await (t.CommitAsync());
@@ -293,7 +293,7 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (ITransaction txn = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Animal {Description = "cat1", BodyWeight = 1}));
+				await (s.SaveAsync(new Animal { Description = "cat1", BodyWeight = 1 }));
 
 				// NH-2290: Unary minus before parentheses wasn't handled correctly (this query returned 0).
 				int actual = (await (s.CreateQuery("select -(1+1) from Animal as h")
@@ -312,7 +312,7 @@ namespace NHibernate.Test.Hql.Ast
 		public async Task CountDistinctOnFunctionAsync()
 		{
 			var hql = @"SELECT COUNT(DISTINCT DATE(m.birthdate)) FROM Mammal m";
-			using(var s = OpenSession())
+			using (var s = OpenSession())
 				await (s.CreateQuery(hql).ListAsync());
 		}
 	}

@@ -10,14 +10,14 @@
 
 using System.Collections.Generic;
 using NHibernate.Cfg;
-using NUnit.Framework;
 using NHibernate.Cfg.Loquacious;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Hql.Ast
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class QuerySubstitutionTestAsync: BaseFixture
+	public class QuerySubstitutionTestAsync : BaseFixture
 	{
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{

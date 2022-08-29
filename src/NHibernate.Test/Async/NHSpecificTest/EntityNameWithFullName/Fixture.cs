@@ -16,76 +16,76 @@ namespace NHibernate.Test.NHSpecificTest.EntityNameWithFullName
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-    public class FixtureAsync : BugTestCase
-    {
-        protected override void OnTearDown()
-        {
-            using (var s = OpenSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    s.CreateSQLQuery("delete from Parent").ExecuteUpdate();
-                    tx.Commit();
-                }
-            }
-        }
+	public class FixtureAsync : BugTestCase
+	{
+		protected override void OnTearDown()
+		{
+			using (var s = OpenSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					s.CreateSQLQuery("delete from Parent").ExecuteUpdate();
+					tx.Commit();
+				}
+			}
+		}
 
-        [Test]
-        public async Task CanPersistAndReadAsync()
-        {
-            using (var s = OpenSession())
-            {
-                using (var tx = s.BeginTransaction())
-                {
-                    await (s.SaveAsync("NHibernate.Test.NHSpecificTest.EntityNameWithFullName.Parent", new Dictionary<string, object>
-					                      	{
-					                      		{"SomeData", "hello"}
-					                      	}));
-                    await (tx.CommitAsync());
-                }
-            }
-            using (var s = OpenSession())
-            {
-                using (s.BeginTransaction())
-                {
-                    var p = (IDictionary)(await (s.CreateQuery(@"select p from NHibernate.Test.NHSpecificTest.EntityNameWithFullName.Parent p where p.SomeData = :data")
-                            .SetString("data", "hello")
-                            .ListAsync()))[0];
-                    Assert.AreEqual("hello", p["SomeData"]);
-                }
-            }
-        }
+		[Test]
+		public async Task CanPersistAndReadAsync()
+		{
+			using (var s = OpenSession())
+			{
+				using (var tx = s.BeginTransaction())
+				{
+					await (s.SaveAsync("NHibernate.Test.NHSpecificTest.EntityNameWithFullName.Parent", new Dictionary<string, object>
+											  {
+												  {"SomeData", "hello"}
+											  }));
+					await (tx.CommitAsync());
+				}
+			}
+			using (var s = OpenSession())
+			{
+				using (s.BeginTransaction())
+				{
+					var p = (IDictionary) (await (s.CreateQuery(@"select p from NHibernate.Test.NHSpecificTest.EntityNameWithFullName.Parent p where p.SomeData = :data")
+							.SetString("data", "hello")
+							.ListAsync()))[0];
+					Assert.AreEqual("hello", p["SomeData"]);
+				}
+			}
+		}
 
-        [Test]
-        public async Task OnlyOneSelectAsync()
-        {
-            using (var s = OpenSession())
-            {
-                var sf = s.SessionFactory;
-                var onOffBefore = turnOnStatistics(s);
-                try
-                {
-                    using (s.BeginTransaction())
-                    {
-                        await (s.CreateQuery(@"select p from NHibernate.Test.NHSpecificTest.EntityNameWithFullName.Parent p where p.SomeData = :data")
-                                .SetString("data", "hello")
-                                .ListAsync());
-                    }
-                    Assert.AreEqual(1, sf.Statistics.QueryExecutionCount);
-                }
-                finally
-                {
-                    sf.Statistics.IsStatisticsEnabled = onOffBefore;                    
-                }
-            }
-        }
+		[Test]
+		public async Task OnlyOneSelectAsync()
+		{
+			using (var s = OpenSession())
+			{
+				var sf = s.SessionFactory;
+				var onOffBefore = turnOnStatistics(s);
+				try
+				{
+					using (s.BeginTransaction())
+					{
+						await (s.CreateQuery(@"select p from NHibernate.Test.NHSpecificTest.EntityNameWithFullName.Parent p where p.SomeData = :data")
+								.SetString("data", "hello")
+								.ListAsync());
+					}
+					Assert.AreEqual(1, sf.Statistics.QueryExecutionCount);
+				}
+				finally
+				{
+					sf.Statistics.IsStatisticsEnabled = onOffBefore;
+				}
+			}
+		}
 
-        private static bool turnOnStatistics(ISession session)
-        {
-            var onOff = session.SessionFactory.Statistics.IsStatisticsEnabled;
-            session.SessionFactory.Statistics.IsStatisticsEnabled = true;
-            session.SessionFactory.Statistics.Clear();
-            return onOff;
-        }
-    }
+		private static bool turnOnStatistics(ISession session)
+		{
+			var onOff = session.SessionFactory.Statistics.IsStatisticsEnabled;
+			session.SessionFactory.Statistics.IsStatisticsEnabled = true;
+			session.SessionFactory.Statistics.Clear();
+			return onOff;
+		}
+	}
 }

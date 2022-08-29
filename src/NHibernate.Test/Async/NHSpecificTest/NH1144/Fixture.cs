@@ -38,14 +38,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 			}
 
 			MainClass[] mc = new MainClass[]
-			                 	{
-			                 		new MainClass("d0"), new MainClass("d0"), new MainClass("d1"), new MainClass("d1"),
-			                 		new MainClass("d1")
-			                 	};
+								 {
+									 new MainClass("d0"), new MainClass("d0"), new MainClass("d1"), new MainClass("d1"),
+									 new MainClass("d1")
+								 };
 
 			bool executedBatch = false;
 
-			using (LogSpy spy = new LogSpy(typeof (AbstractBatcher)))
+			using (LogSpy spy = new LogSpy(typeof(AbstractBatcher)))
 			{
 				using (ISession s = OpenSession())
 				{

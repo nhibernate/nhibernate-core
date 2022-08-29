@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH266
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecificTest.NH266.Mappings.hbm.xml"}; }
+			get { return new string[] { "NHSpecificTest.NH266.Mappings.hbm.xml" }; }
 		}
 
 		protected override void OnSetUp()

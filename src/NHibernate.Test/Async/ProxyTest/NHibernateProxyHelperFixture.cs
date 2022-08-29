@@ -29,7 +29,7 @@ namespace NHibernate.Test.ProxyTest
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"ProxyTest.AProxy.hbm.xml"}; }
+			get { return new string[] { "ProxyTest.AProxy.hbm.xml" }; }
 		}
 
 		[Test]

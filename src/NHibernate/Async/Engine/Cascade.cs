@@ -92,7 +92,7 @@ namespace NHibernate.Engine
 			{
 				if (type.IsAssociationType)
 				{
-					IAssociationType associationType = (IAssociationType)type;
+					IAssociationType associationType = (IAssociationType) type;
 					if (CascadeAssociationNow(associationType))
 					{
 						await (CascadeAssociationAsync(parent, child, type, style, anything, isCascadeDeleteEnabled, cancellationToken)).ConfigureAwait(false);
@@ -100,13 +100,13 @@ namespace NHibernate.Engine
 				}
 				else if (type.IsComponentType)
 				{
-					await (CascadeComponentAsync(parent, child, (IAbstractComponentType)type, propertyName, anything, cancellationToken)).ConfigureAwait(false);
+					await (CascadeComponentAsync(parent, child, (IAbstractComponentType) type, propertyName, anything, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			else
 			{
 				// potentially we need to handle orphan deletes for one-to-ones here...
-				if (type.IsEntityType && ((EntityType)type).IsLogicalOneToOne())
+				if (type.IsEntityType && ((EntityType) type).IsLogicalOneToOne())
 				{
 					// We have a physical or logical one-to-one and from previous checks we know we
 					// have a null value.  See if the attribute cascade settings and action-type require
@@ -191,7 +191,7 @@ namespace NHibernate.Engine
 				}
 				else if (type.IsCollectionType)
 				{
-					return CascadeCollectionAsync(parent, child, style, anything, (CollectionType)type, cancellationToken);
+					return CascadeCollectionAsync(parent, child, style, anything, (CollectionType) type, cancellationToken);
 				}
 				return Task.CompletedTask;
 			}
@@ -223,7 +223,7 @@ namespace NHibernate.Engine
 		private async Task CascadeToOneAsync(object parent, object child, IType type, CascadeStyle style, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			string entityName = type.IsEntityType ? ((EntityType)type).GetAssociatedEntityName() : null;
+			string entityName = type.IsEntityType ? ((EntityType) type).GetAssociatedEntityName() : null;
 			if (style.ReallyDoCascade(action))
 			{
 				//not really necessary, but good for consistency...
@@ -244,7 +244,7 @@ namespace NHibernate.Engine
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			bool reallyDoCascade = style.ReallyDoCascade(action)
-			                       && child != CollectionType.UnfetchedCollection;
+								   && child != CollectionType.UnfetchedCollection;
 
 			if (reallyDoCascade)
 			{
@@ -258,7 +258,7 @@ namespace NHibernate.Engine
 
 			var childAsPersColl = child as IPersistentCollection;
 			bool deleteOrphans = style.HasOrphanDelete && action.DeleteOrphans && elemType.IsEntityType
-			                     && childAsPersColl != null; //a newly instantiated collection can't have orphans
+								 && childAsPersColl != null; //a newly instantiated collection can't have orphans
 
 			if (deleteOrphans)
 			{

@@ -95,8 +95,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			Assert.That(
 				() => validator.ValidateAsync(),
 				Throws.TypeOf<SchemaValidationException>()
-				      .And.Message.EqualTo("Schema validation failed: see list of validation errors")
-				      .And.Property("ValidationErrors").Contains("Missing table: Home_Validate"));
+					  .And.Message.EqualTo("Schema validation failed: see list of validation errors")
+					  .And.Property("ValidationErrors").Contains("Missing table: Home_Validate"));
 		}
 
 		private Configuration GetConfiguration()

@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3372
 				entity.Content = "Some other text";
 				await (session.UpdateAsync(entity));
 				await (session.FlushAsync());
-				
+
 				Assert.That(entity.ShardId, Is.Not.Null & Has.Length.GreaterThan(0));
 			}
 		}

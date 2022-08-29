@@ -17,8 +17,8 @@ namespace NHibernate.Test.NHSpecificTest.NH958
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-    public class NH958FixtureAsync : BugTestCase
-    {
+	public class NH958FixtureAsync : BugTestCase
+	{
 		[Test]
 		public async Task MergeWithAny1Async()
 		{
@@ -72,12 +72,12 @@ namespace NHibernate.Test.NHSpecificTest.NH958
 			person.AddHobby(new Hobby("Hobby_2"));
 
 			using (ISession session = OpenSession())
-            using (ITransaction transaction = session.BeginTransaction())
-            {
-                // the transient hobby "test" is inserted and updated
-                person = await (session.MergeAsync(person));
-                await (transaction.CommitAsync());
-            }
+			using (ITransaction transaction = session.BeginTransaction())
+			{
+				// the transient hobby "test" is inserted and updated
+				person = await (session.MergeAsync(person));
+				await (transaction.CommitAsync());
+			}
 
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
@@ -85,6 +85,6 @@ namespace NHibernate.Test.NHSpecificTest.NH958
 				await (session.DeleteAsync(person));
 				await (transaction.CommitAsync());
 			}
-        }
-    }
+		}
+	}
 }

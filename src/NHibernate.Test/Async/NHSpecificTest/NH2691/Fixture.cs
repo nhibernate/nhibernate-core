@@ -18,14 +18,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2691
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync: TestCaseMappingByCode
+	public class FixtureAsync : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ConventionModelMapper();
 			mapper.IsTablePerClass((type, declared) => false);
 			mapper.IsTablePerClassHierarchy((type, declared) => true);
-			var mappings = mapper.CompileMappingFor(new[] {typeof (Animal), typeof (Reptile), typeof (Mammal), typeof (Lizard), typeof (Dog), typeof (Cat)});
+			var mappings = mapper.CompileMappingFor(new[] { typeof(Animal), typeof(Reptile), typeof(Mammal), typeof(Lizard), typeof(Dog), typeof(Cat) });
 			return mappings;
 		}
 

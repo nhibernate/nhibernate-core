@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class CachingWithTransformerTestsAsync: TestCaseMappingByCode
+	public class CachingWithTransformerTestsAsync : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
@@ -32,8 +32,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			mapper.BeforeMapClass += (inspector, type, map) => map.Table(type.Name + "s");
 			mapper.BeforeMapSet += (inspector, property, map) =>
 								   {
-									map.Cascade(Mapping.ByCode.Cascade.All);
-									map.Cache(x => x.Usage(CacheUsage.ReadWrite));
+									   map.Cascade(Mapping.ByCode.Cascade.All);
+									   map.Cache(x => x.Usage(CacheUsage.ReadWrite));
 								   };
 			var mapping = mapper.CompileMappingFor(new[] { typeof(Blog), typeof(Post), typeof(Comment) });
 			return mapping;
@@ -48,14 +48,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 								});
 		}
 
-		private class Scenario: IDisposable
+		private class Scenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 
 			public Scenario(ISessionFactory factory)
 			{
 				this.factory = factory;
-				using (var session= factory.OpenSession())
+				using (var session = factory.OpenSession())
 				using (var tx = session.BeginTransaction())
 				{
 					var blog = new Blog { Author = "Gabriel", Name = "Keep on running" };
@@ -92,10 +92,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = await (session.CreateQuery("from Blog b where b.Author = : author")
-					                   .SetString("author", "Gabriel")
-					                   .SetCacheable(true)
-					                   .SetResultTransformer(new DistinctRootEntityResultTransformer())
-					                   .ListAsync<Blog>());
+									   .SetString("author", "Gabriel")
+									   .SetCacheable(true)
+									   .SetResultTransformer(new DistinctRootEntityResultTransformer())
+									   .ListAsync<Blog>());
 					await (tx.CommitAsync());
 				}
 			}
@@ -110,9 +110,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = await (session.QueryOver<Blog>().Where(x => x.Author == "Gabriel")
-					                   .TransformUsing(new DistinctRootEntityResultTransformer())
-					                   .Cacheable()
-					                   .ListAsync<Blog>());
+									   .TransformUsing(new DistinctRootEntityResultTransformer())
+									   .Cacheable()
+									   .ListAsync<Blog>());
 					await (tx.CommitAsync());
 				}
 			}
@@ -148,7 +148,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var session = OpenSession())
 				using (var tx = session.BeginTransaction())
 				{
-					var query = session.QueryOver<Blog>().Select(x=> x.Author, x=> x.Name).Where(x => x.Author == "Gabriel")
+					var query = session.QueryOver<Blog>().Select(x => x.Author, x => x.Name).Where(x => x.Author == "Gabriel")
 						.TransformUsing(transformer)
 						.Cacheable();
 					await (query.ListAsync<BlogAuthorDto>());
@@ -158,9 +158,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = await (session.QueryOver<Blog>().Select(x => x.Author, x => x.Name).Where(x => x.Author == "Gabriel")
-					                   .TransformUsing(transformer)
-					                   .Cacheable()
-					                   .ListAsync<BlogAuthorDto>());
+									   .TransformUsing(transformer)
+									   .Cacheable()
+									   .ListAsync<BlogAuthorDto>());
 					await (tx.CommitAsync());
 				}
 			}
@@ -176,9 +176,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = await (session.CreateCriteria<Blog>()
-					                   .Fetch("Posts")
-					                   .SetCacheable(true)
-					                   .ListAsync<Blog>());
+									   .Fetch("Posts")
+									   .SetCacheable(true)
+									   .ListAsync<Blog>());
 					await (tx.CommitAsync());
 				}
 			}
@@ -193,11 +193,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = (await (session.CreateCriteria<Blog>()
-					                   .Fetch("Posts")
-					                   .SetCacheable(true)
-					                   .Future<Blog>()
-					                   .GetEnumerableAsync()))
-					                   .ToList();
+									   .Fetch("Posts")
+									   .SetCacheable(true)
+									   .Future<Blog>()
+									   .GetEnumerableAsync()))
+									   .ToList();
 					await (tx.CommitAsync());
 				}
 			}
@@ -212,9 +212,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 				using (var tx = session.BeginTransaction())
 				{
 					var query = await (session.CreateQuery("select b from Blog b join fetch b.Posts where b.Author = : author")
-					                   .SetString("author", "Gabriel")
-					                   .SetCacheable(true)
-					                   .ListAsync<Blog>());
+									   .SetString("author", "Gabriel")
+									   .SetCacheable(true)
+									   .ListAsync<Blog>());
 					await (tx.CommitAsync());
 				}
 			}
@@ -265,9 +265,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2673
 			using (session.BeginTransaction())
 			{
 				var query = await (session.QueryOver<Blog>().Where(x => x.Author == "Gabriel")
-				                   .Left.JoinAlias(x => x.Posts, () => posts)
-				                   .Cacheable()
-				                   .ListAsync<Blog>());
+								   .Left.JoinAlias(x => x.Posts, () => posts)
+								   .Cacheable()
+								   .ListAsync<Blog>());
 			}
 		}
 	}

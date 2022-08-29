@@ -34,13 +34,13 @@ namespace NHibernate.Loader.Criteria
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var subresults = new List<IList>(loaders.Count);
-			foreach(var l in loaders)
+			foreach (var l in loaders)
 			{
 				subresults.Add(await (l.ListAsync(session, cancellationToken)).ConfigureAwait(false));
 			}
 
 			var results = new List<T>(subresults.Sum(r => r.Count));
-			foreach(var list in subresults)
+			foreach (var list in subresults)
 			{
 				ArrayHelper.AddAll(results, list);
 			}

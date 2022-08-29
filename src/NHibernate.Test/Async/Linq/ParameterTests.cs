@@ -33,7 +33,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingArrayParameterTwiceAsync()
 		{
-			var ids = new[] {11008, 11019, 11039};
+			var ids = new[] { 11008, 11019, 11039 };
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids.Contains(o.OrderId)),
 				ids.Length,
@@ -43,8 +43,8 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingTwoArrayParametersAsync()
 		{
-			var ids = new[] {11008, 11019, 11039};
-			var ids2 = new[] {11008, 11019, 11039};
+			var ids = new[] { 11008, 11019, 11039 };
+			var ids2 = new[] { 11008, 11019, 11039 };
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids2.Contains(o.OrderId)),
 				ids.Length + ids2.Length,
@@ -54,7 +54,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingListParameterTwiceAsync()
 		{
-			var ids = new List<int> {11008, 11019, 11039};
+			var ids = new List<int> { 11008, 11019, 11039 };
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids.Contains(o.OrderId)),
 				ids.Count,
@@ -64,8 +64,8 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingTwoListParametersAsync()
 		{
-			var ids = new List<int> {11008, 11019, 11039};
-			var ids2 = new List<int> {11008, 11019, 11039};
+			var ids = new List<int> { 11008, 11019, 11039 };
+			var ids2 = new List<int> { 11008, 11019, 11039 };
 			await (AssertTotalParametersAsync(
 				db.Orders.Where(o => ids.Contains(o.OrderId) && ids2.Contains(o.OrderId)),
 				ids.Count + ids2.Count,
@@ -140,7 +140,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingEntityListParameterForCollectionSelectionAsync()
 		{
-			var items = new[] {await (db.OrderLines.FirstAsync())};
+			var items = new[] { await (db.OrderLines.FirstAsync()) };
 			await (AssertTotalParametersAsync(
 				db.Orders.SelectMany(o => o.OrderLines).Where(o => items.Contains(o)),
 				1));
@@ -149,7 +149,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingFieldProxyListParameterForCollectionSelectionAsync()
 		{
-			var items = new[] {await (session.Query<AnotherEntityRequired>().FirstAsync())};
+			var items = new[] { await (session.Query<AnotherEntityRequired>().FirstAsync()) };
 			await (AssertTotalParametersAsync(
 				session.Query<AnotherEntityRequired>().SelectMany(o => o.RequiredRelatedItems).Where(o => items.Contains(o)),
 				1));
@@ -187,7 +187,7 @@ namespace NHibernate.Test.Linq
 				Assert.Ignore();
 			}
 
-			var enumerable = new[] {await (db.DynamicUsers.FirstAsync())};
+			var enumerable = new[] { await (db.DynamicUsers.FirstAsync()) };
 			await (AssertTotalParametersAsync(
 				db.DynamicUsers.Where(o => enumerable.Contains(o) && enumerable.Contains(o)),
 				1));
@@ -435,8 +435,8 @@ namespace NHibernate.Test.Linq
 				{db.NumericEntities.Where(o => o.NullableDouble == doubleParam || o.NullableSingle == doubleParam), "Double"}
 			};
 			var sameType = Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Single.SqlType, out var singleCast) &&
-			               Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Double.SqlType, out var doubleCast) &&
-			               singleCast == doubleCast;
+						   Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Double.SqlType, out var doubleCast) &&
+						   singleCast == doubleCast;
 			var odbcDriver = Sfi.ConnectionProvider.Driver is OdbcDriver;
 
 			foreach (var pair in queriables)
@@ -559,16 +559,17 @@ namespace NHibernate.Test.Linq
 			};
 
 			var sameType = Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Int16.SqlType, out var shortCast) &&
-			               Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Int32.SqlType, out var intCast) &&
-			               shortCast == intCast;
+						   Sfi.Dialect.TryGetCastTypeName(NHibernateUtil.Int32.SqlType, out var intCast) &&
+						   shortCast == intCast;
 			foreach (var query in queriables)
 			{
 				await (AssertTotalParametersAsync(
 					query,
 					1,
-					sql => {
+					sql =>
+					{
 						// SQLiteDialect uses sql cast for transparentcast method
-						Assert.That(sql, !sameType || Sfi.Dialect is SQLiteDialect ? Does.Match("where\\s+cast") : (IResolveConstraint)Does.Not.Contain("cast"));
+						Assert.That(sql, !sameType || Sfi.Dialect is SQLiteDialect ? Does.Match("where\\s+cast") : (IResolveConstraint) Does.Not.Contain("cast"));
 						Assert.That(GetTotalOccurrences(sql, "cast"), Is.EqualTo(!sameType || Sfi.Dialect is SQLiteDialect ? 1 : 0));
 					}));
 			}
@@ -580,10 +581,11 @@ namespace NHibernate.Test.Linq
 			short value = 1;
 			await (AssertTotalParametersAsync(
 				db.NumericEntities.Where(o => o.NullableShort == value && o.NullableShort != value && o.Short == value),
-				1, sql => {
-				
-				Assert.That(GetTotalOccurrences(sql, "cast"), Is.EqualTo(0));
-			}));
+				1, sql =>
+				{
+
+					Assert.That(GetTotalOccurrences(sql, "cast"), Is.EqualTo(0));
+				}));
 		}
 
 		[Test]
@@ -612,7 +614,7 @@ namespace NHibernate.Test.Linq
 			var guid = Guid.Parse("2D7E6EB3-BD08-4A40-A4E7-5150F7895821");
 			await (db.Orders.Where(o => o.ShippedTo.Contains($"VALUE {guid}")).ToListAsync());
 
-			var names = new[] {"name"};
+			var names = new[] { "name" };
 			await (db.Users.Where(x => names.Length == 0 || names.Contains(x.Name)).ToListAsync());
 			names = new string[] { };
 			await (db.Users.Where(x => names.Length == 0 || names.Contains(x.Name)).ToListAsync());
@@ -679,12 +681,12 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingParameterOnSelectorsAsync()
 		{
-			var user = new User() {Id = 1};
+			var user = new User() { Id = 1 };
 			await (db.Users.Where(o => o == user).ToListAsync());
 			await (db.Users.FirstOrDefaultAsync(o => o == user));
 			await (db.Timesheets.Where(o => o.Users.Any(u => u == user)).ToListAsync());
 
-			var users = new[] {new User() {Id = 1}};
+			var users = new[] { new User() { Id = 1 } };
 			await (db.Users.Where(o => users.Contains(o)).ToListAsync());
 			await (db.Users.FirstOrDefaultAsync(o => users.Contains(o)));
 			await (db.Timesheets.Where(o => o.Users.Any(u => users.Contains(u))).ToListAsync());
@@ -713,7 +715,7 @@ namespace NHibernate.Test.Linq
 		{
 			var id = 11008;
 			await (AssertTotalParametersAsync(
-				db.Orders.Where(o => new[] {id, 11019}.Contains(o.OrderId) && new[] {id, 11019}.Contains(o.OrderId)),
+				db.Orders.Where(o => new[] { id, 11019 }.Contains(o.OrderId) && new[] { id, 11019 }.Contains(o.OrderId)),
 				4,
 				2));
 		}
@@ -750,7 +752,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingObjectPropertyParameterTwiceAsync()
 		{
-			var value = new Product {Name = "test"};
+			var value = new Product { Name = "test" };
 			await (AssertTotalParametersAsync(
 				db.Products.Where(o => o.Name == value.Name && o.Name != value.Name),
 				1));
@@ -759,8 +761,8 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingTwoObjectPropertyParametersAsync()
 		{
-			var value = new Product {Name = "test"};
-			var value2 = new Product {Name = "test"};
+			var value = new Product { Name = "test" };
+			var value2 = new Product { Name = "test" };
 			await (AssertTotalParametersAsync(
 				db.Products.Where(o => o.Name == value.Name && o.Name != value2.Name),
 				2));
@@ -785,7 +787,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingObjectNestedPropertyParameterTwiceAsync()
 		{
-			var value = new Employee {Superior = new Employee {Superior = new Employee {FirstName = "test"}}};
+			var value = new Employee { Superior = new Employee { Superior = new Employee { FirstName = "test" } } };
 			await (AssertTotalParametersAsync(
 				db.Employees.Where(o => o.FirstName == value.Superior.Superior.FirstName && o.FirstName != value.Superior.Superior.FirstName),
 				1));
@@ -794,7 +796,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingDifferentObjectNestedPropertyParameterAsync()
 		{
-			var value = new Employee {Superior = new Employee {FirstName = "test", Superior = new Employee {FirstName = "test"}}};
+			var value = new Employee { Superior = new Employee { FirstName = "test", Superior = new Employee { FirstName = "test" } } };
 			await (AssertTotalParametersAsync(
 				db.Employees.Where(o => o.FirstName == value.Superior.FirstName && o.FirstName != value.Superior.Superior.FirstName),
 				2));
@@ -803,7 +805,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingMethodObjectPropertyParameterTwiceAsync()
 		{
-			var value = new Product {Name = "test"};
+			var value = new Product { Name = "test" };
 			await (AssertTotalParametersAsync(
 				db.Products.Where(o => o.Name == value.Name.Trim() && o.Name != value.Name.Trim()),
 				2));
@@ -812,7 +814,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingStaticMethodObjectPropertyParameterTwiceAsync()
 		{
-			var value = new Product {Name = "test"};
+			var value = new Product { Name = "test" };
 			await (AssertTotalParametersAsync(
 #pragma warning disable CS0618
 				db.Products.Where(o => o.Name == string.Copy(value.Name) && o.Name != string.Copy(value.Name)),
@@ -823,7 +825,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingObjectPropertyParameterWithSecondLevelClosureAsync()
 		{
-			var value = new Product {Name = "test"};
+			var value = new Product { Name = "test" };
 			Expression<Func<Product, bool>> predicate = o => o.Name == value.Name && o.Name != value.Name;
 			await (AssertTotalParametersAsync(
 				db.Products.Where(predicate),
@@ -833,7 +835,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task UsingObjectPropertyParameterWithThirdLevelClosureAsync()
 		{
-			var value = new Product {Name = "test"};
+			var value = new Product { Name = "test" };
 			Expression<Func<OrderLine, bool>> orderLinePredicate = o => o.Order.ShippedTo == value.Name && o.Order.ShippedTo != value.Name;
 			Expression<Func<Product, bool>> predicate = o => o.Name == value.Name && o.OrderLines.AsQueryable().Any(orderLinePredicate);
 			await (AssertTotalParametersAsync(
@@ -848,7 +850,7 @@ namespace NHibernate.Test.Linq
 			await (AssertTotalParametersAsync(
 				QueryMode.Insert,
 				db.Customers.Where(c => c.CustomerId == value),
-				x => new Customer {CustomerId = value, ContactName = value, CompanyName = value},
+				x => new Customer { CustomerId = value, ContactName = value, CompanyName = value },
 				4));
 		}
 
@@ -862,7 +864,7 @@ namespace NHibernate.Test.Linq
 			await (AssertTotalParametersAsync(
 				QueryMode.Insert,
 				db.Customers.Where(c => c.CustomerId == value3),
-				x => new Customer {CustomerId = value4, ContactName = value2, CompanyName = value},
+				x => new Customer { CustomerId = value4, ContactName = value2, CompanyName = value },
 				4));
 		}
 
@@ -873,7 +875,7 @@ namespace NHibernate.Test.Linq
 			await (AssertTotalParametersAsync(
 				QueryMode.Update,
 				db.Customers.Where(c => c.CustomerId == value),
-				x => new Customer {ContactName = value, CompanyName = value},
+				x => new Customer { ContactName = value, CompanyName = value },
 				3));
 		}
 

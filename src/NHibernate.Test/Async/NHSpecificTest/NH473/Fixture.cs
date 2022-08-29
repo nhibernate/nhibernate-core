@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH473
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync:BugTestCase
+	public class FixtureAsync : BugTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
@@ -23,13 +23,13 @@ namespace NHibernate.Test.NHSpecificTest.NH473
 
 		protected override void OnSetUp()
 		{
-			using(var session=this.OpenSession())
-			using(var tran=session.BeginTransaction())
+			using (var session = this.OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
 				var parent = new Parent();
-				var child1 = new Child {Name = "Fabio"};
-				var child2 = new Child {Name = "Ayende"};
-				var child3 = new Child {Name = "Dario"};
+				var child1 = new Child { Name = "Fabio" };
+				var child2 = new Child { Name = "Ayende" };
+				var child3 = new Child { Name = "Dario" };
 				parent.Children.Add(child1);
 				parent.Children.Add(child2);
 				parent.Children.Add(child3);
@@ -50,13 +50,13 @@ namespace NHibernate.Test.NHSpecificTest.NH473
 		[Test]
 		public async Task ChildItemsGetInOrderWhenUsingFetchJoinAsync()
 		{
-			using(var session=this.OpenSession())
-			using(var tran=session.BeginTransaction())
+			using (var session = this.OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
-				var result = await (session.CreateCriteria(typeof (Parent))
+				var result = await (session.CreateCriteria(typeof(Parent))
 					.Fetch("Children")
 					.ListAsync<Parent>());
-				Assert.That(result[0].Children[0].Name,Is.EqualTo("Ayende"));
+				Assert.That(result[0].Children[0].Name, Is.EqualTo("Ayende"));
 				Assert.That(result[0].Children[1].Name, Is.EqualTo("Dario"));
 				Assert.That(result[0].Children[2].Name, Is.EqualTo("Fabio"));
 			}

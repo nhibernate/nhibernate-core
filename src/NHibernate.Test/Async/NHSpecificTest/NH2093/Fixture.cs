@@ -10,96 +10,96 @@
 
 using NHibernate.Proxy;
 using NUnit.Framework;
- 
+
 namespace NHibernate.Test.NHSpecificTest.NH2093
- {
-   using System.Threading.Tasks;
-  [TestFixture]
-  public class FixtureAsync : BugTestCase
-  {
-    [Test]
-    public async Task NHibernateProxyHelperReturnsCorrectTypeAsync()
-    {
-      try
-      {
-        using (var s = OpenSession())
-        {
-          var person = new Person { Id = 1, Name = "Person1" };
-          var employee = new Employee { Id = 1, Name = "Emp1", Person = person };
+{
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class FixtureAsync : BugTestCase
+	{
+		[Test]
+		public async Task NHibernateProxyHelperReturnsCorrectTypeAsync()
+		{
+			try
+			{
+				using (var s = OpenSession())
+				{
+					var person = new Person { Id = 1, Name = "Person1" };
+					var employee = new Employee { Id = 1, Name = "Emp1", Person = person };
 
-          await (s.SaveAsync(person));
-          await (s.SaveAsync(employee));
+					await (s.SaveAsync(person));
+					await (s.SaveAsync(employee));
 
-          await (s.FlushAsync());
-        }
+					await (s.FlushAsync());
+				}
 
-        using (var s = OpenSession())
-        {
-          var person = await (s.LoadAsync<Person>(1));
+				using (var s = OpenSession())
+				{
+					var person = await (s.LoadAsync<Person>(1));
 
-          var type = NHibernateProxyHelper.GuessClass(person);
+					var type = NHibernateProxyHelper.GuessClass(person);
 
-          Assert.AreEqual(type, typeof(Person));
-        }
+					Assert.AreEqual(type, typeof(Person));
+				}
 
-        using (var s = OpenSession())
-        {
-          var person = await (s.GetAsync<Person>(1));
+				using (var s = OpenSession())
+				{
+					var person = await (s.GetAsync<Person>(1));
 
-          var type = NHibernateProxyHelper.GuessClass(person);
+					var type = NHibernateProxyHelper.GuessClass(person);
 
-          Assert.AreEqual(type, typeof(Person));
-        }
-      }
-      finally
-      {
-        using (var s = OpenSession())
-        {
-          await (s.DeleteAsync("from Employee"));
-          await (s.DeleteAsync("from Person"));
+					Assert.AreEqual(type, typeof(Person));
+				}
+			}
+			finally
+			{
+				using (var s = OpenSession())
+				{
+					await (s.DeleteAsync("from Employee"));
+					await (s.DeleteAsync("from Person"));
 
-          await (s.FlushAsync());
-        }
-      }
-    }
+					await (s.FlushAsync());
+				}
+			}
+		}
 
-    [Test]
-    public async Task CanUseFieldInterceptingProxyAsHQLArgumentAsync()
-    {
-      try
-      {
-        using (var s = OpenSession())
-        {
-          var person = new Person { Id = 1, Name = "Person1" };
-          var employee = new Employee { Id = 1, Name = "Emp1", Person = person };
+		[Test]
+		public async Task CanUseFieldInterceptingProxyAsHQLArgumentAsync()
+		{
+			try
+			{
+				using (var s = OpenSession())
+				{
+					var person = new Person { Id = 1, Name = "Person1" };
+					var employee = new Employee { Id = 1, Name = "Emp1", Person = person };
 
-          await (s.SaveAsync(person));
-          await (s.SaveAsync(employee));
+					await (s.SaveAsync(person));
+					await (s.SaveAsync(employee));
 
-          await (s.FlushAsync());
-        }
+					await (s.FlushAsync());
+				}
 
-        using (var s = OpenSession())
-        {
-          var person = await (s.GetAsync<Person>(1));
+				using (var s = OpenSession())
+				{
+					var person = await (s.GetAsync<Person>(1));
 
-          var list = await (s.CreateQuery("from Employee where Person = :p")
-            .SetEntity("p", person)
-            .ListAsync<Employee>());
+					var list = await (s.CreateQuery("from Employee where Person = :p")
+					  .SetEntity("p", person)
+					  .ListAsync<Employee>());
 
-          Assert.AreEqual(list.Count, 1);
-        }
-      }
-      finally
-      {
-        using (var s = OpenSession())
-        {
-          await (s.DeleteAsync("from Employee"));
-          await (s.DeleteAsync("from Person"));
+					Assert.AreEqual(list.Count, 1);
+				}
+			}
+			finally
+			{
+				using (var s = OpenSession())
+				{
+					await (s.DeleteAsync("from Employee"));
+					await (s.DeleteAsync("from Person"));
 
-          await (s.FlushAsync());
-        }
-      }
-    }
-  }
- }
+					await (s.FlushAsync());
+				}
+			}
+		}
+	}
+}

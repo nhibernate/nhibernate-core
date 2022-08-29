@@ -23,9 +23,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2789
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				session.Save(new EntityWithAByteValue {ByteValue = null});
-				session.Save(new EntityWithAByteValue {ByteValue = 1});
-				session.Save(new EntityWithAByteValue {ByteValue = 2});
+				session.Save(new EntityWithAByteValue { ByteValue = null });
+				session.Save(new EntityWithAByteValue { ByteValue = 1 });
+				session.Save(new EntityWithAByteValue { ByteValue = 2 });
 				tx.Commit();
 			}
 		}

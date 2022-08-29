@@ -29,9 +29,9 @@ namespace NHibernate.Test.DialectTest
 			// Generic Dialect inherits all of the Quoting functions from
 			// Dialect (which is abstract)
 			d = new MsSql2000Dialect();
-			tableWithNothingToBeQuoted = new string[] {"plainname", "[plainname]"};
-			tableAlreadyQuoted = new string[] {"[Quote[d[Na]]$`]", "[Quote[d[Na]]$`]", "Quote[d[Na]$`"};
-			tableThatNeedsToBeQuoted = new string[] {"Quote[d[Na]$`", "[Quote[d[Na]]$`]", "Quote[d[Na]$`"};
+			tableWithNothingToBeQuoted = new string[] { "plainname", "[plainname]" };
+			tableAlreadyQuoted = new string[] { "[Quote[d[Na]]$`]", "[Quote[d[Na]]$`]", "Quote[d[Na]$`" };
+			tableThatNeedsToBeQuoted = new string[] { "Quote[d[Na]$`", "[Quote[d[Na]]$`]", "Quote[d[Na]$`" };
 		}
 	}
 }

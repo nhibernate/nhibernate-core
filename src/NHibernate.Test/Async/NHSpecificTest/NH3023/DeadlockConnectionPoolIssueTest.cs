@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 		{
 			RunScript("db-seed.sql");
 
-			((Logger)_log.Logger).Level = log4net.Core.Level.Debug;
+			((Logger) _log.Logger).Level = log4net.Core.Level.Debug;
 		}
 
 		protected override void OnTearDown()
@@ -104,7 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 						try
 						{
 							await (new DeadlockHelper().ForceDeadlockOnConnectionAsync(
-								(SqlConnection)session.Connection,
+								(SqlConnection) session.Connection,
 								GetConnectionString()));
 						}
 						catch (SqlException x)
@@ -136,7 +136,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 								new DomainClass
 								{
 									Id = id++,
-									ByteData = new byte[] {1, 2, 3}
+									ByteData = new byte[] { 1, 2, 3 }
 								}));
 
 							await (session.FlushAsync());

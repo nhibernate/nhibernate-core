@@ -26,7 +26,7 @@ namespace NHibernate.Test.Stateless
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"Stateless.Contact.hbm.xml"}; }
+			get { return new[] { "Stateless.Contact.hbm.xml" }; }
 		}
 
 		protected override void Configure(Configuration configuration)

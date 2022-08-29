@@ -8,14 +8,14 @@
 //------------------------------------------------------------------------------
 
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System;
-using NHibernate.Cfg;
 
 namespace NHibernate.Test.NHSpecificTest.NH3050
 {

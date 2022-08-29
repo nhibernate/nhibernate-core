@@ -99,7 +99,7 @@ namespace NHibernate.Test.Hql.Ast
 				await (CheckTestOrderByResultsAsync(await (s.CreateQuery("select name, address from Zoo order by name").ListAsync()),
 										data.Zoo2, data.Zoo4, null, null, data.ZoosWithSameName));
 
-                await (txn.CommitAsync());
+				await (txn.CommitAsync());
 			}
 		}
 
@@ -285,14 +285,14 @@ namespace NHibernate.Test.Hql.Ast
 
 				// NHibernate different behaviour hashtable does not maintain identity 
 				Assert.AreEqual(5, list.Count);
-				Assert.AreEqual(data.Zoo2.Name, ((Hashtable)list[0])["zname"]);
-				Assert.AreEqual(data.Zoo2.Address, ((Hashtable)list[0])["zaddress"]);
-				Assert.AreEqual(data.Zoo4.Name, ((Hashtable)list[1])["zname"]);
-				Assert.AreEqual(data.Zoo4.Address, ((Hashtable)list[1])["zaddress"]);
-				Assert.AreEqual(data.Zoo3.Name, ((Hashtable)list[2])["zname"]);
-				Assert.AreEqual(data.Zoo3.Address, ((Hashtable)list[2])["zaddress"]);
-				Assert.AreEqual(data.Zoo1.Name, ((Hashtable)list[3])["zname"]);
-				Assert.AreEqual(data.Zoo1.Address, ((Hashtable)list[3])["zaddress"]);
+				Assert.AreEqual(data.Zoo2.Name, ((Hashtable) list[0])["zname"]);
+				Assert.AreEqual(data.Zoo2.Address, ((Hashtable) list[0])["zaddress"]);
+				Assert.AreEqual(data.Zoo4.Name, ((Hashtable) list[1])["zname"]);
+				Assert.AreEqual(data.Zoo4.Address, ((Hashtable) list[1])["zaddress"]);
+				Assert.AreEqual(data.Zoo3.Name, ((Hashtable) list[2])["zname"]);
+				Assert.AreEqual(data.Zoo3.Address, ((Hashtable) list[2])["zaddress"]);
+				Assert.AreEqual(data.Zoo1.Name, ((Hashtable) list[3])["zname"]);
+				Assert.AreEqual(data.Zoo1.Address, ((Hashtable) list[3])["zaddress"]);
 
 				// ordered by address, name:
 				//   zoo3  Zoo         1312 Mockingbird Lane, Anywhere, IL USA
@@ -304,14 +304,14 @@ namespace NHibernate.Test.Hql.Ast
 						"select new map( z.name as zname, z.address as zaddress ) from Zoo z left join z.mammals m order by zaddress, zname"
 						).ListAsync());
 				Assert.AreEqual(5, list.Count);
-				Assert.AreEqual(data.Zoo3.Name, ((Hashtable)list[0])["zname"]);
-				Assert.AreEqual(data.Zoo3.Address, ((Hashtable)list[0])["zaddress"]);
-				Assert.AreEqual(data.Zoo4.Name, ((Hashtable)list[1])["zname"]);
-				Assert.AreEqual(data.Zoo4.Address, ((Hashtable)list[1])["zaddress"]);
-				Assert.AreEqual(data.Zoo2.Name, ((Hashtable)list[2])["zname"]);
-				Assert.AreEqual(data.Zoo2.Address, ((Hashtable)list[2])["zaddress"]);
-				Assert.AreEqual(data.Zoo1.Name, ((Hashtable)list[3])["zname"]);
-				Assert.AreEqual(data.Zoo1.Address, ((Hashtable)list[3])["zaddress"]);
+				Assert.AreEqual(data.Zoo3.Name, ((Hashtable) list[0])["zname"]);
+				Assert.AreEqual(data.Zoo3.Address, ((Hashtable) list[0])["zaddress"]);
+				Assert.AreEqual(data.Zoo4.Name, ((Hashtable) list[1])["zname"]);
+				Assert.AreEqual(data.Zoo4.Address, ((Hashtable) list[1])["zaddress"]);
+				Assert.AreEqual(data.Zoo2.Name, ((Hashtable) list[2])["zname"]);
+				Assert.AreEqual(data.Zoo2.Address, ((Hashtable) list[2])["zaddress"]);
+				Assert.AreEqual(data.Zoo1.Name, ((Hashtable) list[3])["zname"]);
+				Assert.AreEqual(data.Zoo1.Address, ((Hashtable) list[3])["zaddress"]);
 
 				await (txn.CommitAsync());
 			}
@@ -333,12 +333,12 @@ namespace NHibernate.Test.Hql.Ast
 						"select z.name as zname, count(*) as cnt from Zoo z group by z.name order by cnt desc, zname"
 						).ListAsync());
 				Assert.AreEqual(3, list.Count);
-				Assert.AreEqual(data.Zoo3.Name, ((Object[])list[0])[0]);
-				Assert.AreEqual(2L, ((Object[])list[0])[1]);
-				Assert.AreEqual(data.Zoo2.Name, ((Object[])list[1])[0]);
-				Assert.AreEqual(1L, ((Object[])list[1])[1]);
-				Assert.AreEqual(data.Zoo4.Name, ((Object[])list[2])[0]);
-				Assert.AreEqual(1L, ((Object[])list[2])[1]);
+				Assert.AreEqual(data.Zoo3.Name, ((Object[]) list[0])[0]);
+				Assert.AreEqual(2L, ((Object[]) list[0])[1]);
+				Assert.AreEqual(data.Zoo2.Name, ((Object[]) list[1])[0]);
+				Assert.AreEqual(1L, ((Object[]) list[1])[1]);
+				Assert.AreEqual(data.Zoo4.Name, ((Object[]) list[2])[0]);
+				Assert.AreEqual(1L, ((Object[]) list[2])[1]);
 
 				await (txn.CommitAsync());
 			}
@@ -455,7 +455,7 @@ namespace NHibernate.Test.Hql.Ast
 				using (ISession session = tc.OpenNewSession())
 				using (ITransaction txn = session.BeginTransaction())
 				{
-					_stateProvince = new StateProvince {Name = "IL"};
+					_stateProvince = new StateProvince { Name = "IL" };
 
 					_zoo1 = new Zoo
 					{
@@ -470,10 +470,10 @@ namespace NHibernate.Test.Hql.Ast
 						Mammals = new Dictionary<string, Mammal>()
 					};
 
-					_zooMammal1 = new Mammal {Description = "zooMammal1", Zoo = Zoo1};
+					_zooMammal1 = new Mammal { Description = "zooMammal1", Zoo = Zoo1 };
 					Zoo1.Mammals.Add("type1", ZooMammal1);
 
-					_zooMammal2 = new Mammal {Description = "zooMammal2", Zoo = Zoo1};
+					_zooMammal2 = new Mammal { Description = "zooMammal2", Zoo = Zoo1 };
 					Zoo1.Mammals.Add("type2", ZooMammal2);
 
 					_zoo2 = new Zoo
@@ -537,7 +537,7 @@ namespace NHibernate.Test.Hql.Ast
 				using (ISession session = tc.OpenNewSession())
 				using (ITransaction txn = session.BeginTransaction())
 				{
-					_stateProvince = new StateProvince {Name = "IL"};
+					_stateProvince = new StateProvince { Name = "IL" };
 
 					_zoo1 = new Zoo
 					{
@@ -552,10 +552,10 @@ namespace NHibernate.Test.Hql.Ast
 						Mammals = new Dictionary<string, Mammal>()
 					};
 
-					_zooMammal1 = new Mammal {Description = "zooMammal1", Zoo = Zoo1};
+					_zooMammal1 = new Mammal { Description = "zooMammal1", Zoo = Zoo1 };
 					Zoo1.Mammals.Add("type1", ZooMammal1);
 
-					_zooMammal2 = new Mammal {Description = "zooMammal2", Zoo = Zoo1};
+					_zooMammal2 = new Mammal { Description = "zooMammal2", Zoo = Zoo1 };
 					Zoo1.Mammals.Add("type2", ZooMammal2);
 
 					_zoo2 = new Zoo

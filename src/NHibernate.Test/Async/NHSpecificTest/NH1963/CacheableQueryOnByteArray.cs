@@ -17,91 +17,91 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1963
 {
-    using System.Threading.Tasks;
-    [TestFixture]
-    public class CacheableQueryOnByteArrayAsync : BugTestCase
-    {
-        protected override void OnSetUp()
-        {
-            base.OnSetUp();
-            using (ISession session = this.OpenSession())
-            {
-                DomainClass entity = new DomainClass();
-                entity.Id = 1;
-                entity.ByteData = new byte[] {1, 2, 3};
-                session.Save(entity);
-                session.Flush();
-            }
-        }
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class CacheableQueryOnByteArrayAsync : BugTestCase
+	{
+		protected override void OnSetUp()
+		{
+			base.OnSetUp();
+			using (ISession session = this.OpenSession())
+			{
+				DomainClass entity = new DomainClass();
+				entity.Id = 1;
+				entity.ByteData = new byte[] { 1, 2, 3 };
+				session.Save(entity);
+				session.Flush();
+			}
+		}
 
-        protected override void OnTearDown()
-        {
-            base.OnTearDown();
-            using (ISession session = this.OpenSession())
-            {
-                string hql = "from System.Object";
-                session.Delete(hql);
-                session.Flush();
-            }
-        }
+		protected override void OnTearDown()
+		{
+			base.OnTearDown();
+			using (ISession session = this.OpenSession())
+			{
+				string hql = "from System.Object";
+				session.Delete(hql);
+				session.Flush();
+			}
+		}
 
-        protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
-        {
-            return dialect as MsSql2000Dialect != null;
-        }
+		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
+		{
+			return dialect as MsSql2000Dialect != null;
+		}
 
-        [Test]
-        public async Task Should_be_able_to_do_cacheable_query_on_byte_array_fieldAsync()
-        {
-            using (ISession session = this.OpenSession())
-            {
-                var data = new byte[] { 1, 2, 3 };
+		[Test]
+		public async Task Should_be_able_to_do_cacheable_query_on_byte_array_fieldAsync()
+		{
+			using (ISession session = this.OpenSession())
+			{
+				var data = new byte[] { 1, 2, 3 };
 
-                var result = await (session.CreateQuery("from DomainClass d where d.ByteData = :data")
-                    .SetBinary("data", data)
-                    .SetCacheable(true)
-                    .UniqueResultAsync<DomainClass>());
+				var result = await (session.CreateQuery("from DomainClass d where d.ByteData = :data")
+					.SetBinary("data", data)
+					.SetCacheable(true)
+					.UniqueResultAsync<DomainClass>());
 
-                Assert.IsNotNull(result);
-            }
+				Assert.IsNotNull(result);
+			}
 
-            using (ISession session = this.OpenSession())
-            {
-                var data = new byte[] { 1, 2, 3 };
+			using (ISession session = this.OpenSession())
+			{
+				var data = new byte[] { 1, 2, 3 };
 
-                var result = await (session.CreateQuery("from DomainClass d where d.ByteData = :data")
+				var result = await (session.CreateQuery("from DomainClass d where d.ByteData = :data")
 										.SetBinary("data", data)
-                    .SetCacheable(true)
-                    .UniqueResultAsync<DomainClass>());
+					.SetCacheable(true)
+					.UniqueResultAsync<DomainClass>());
 
-                Assert.IsNotNull(result);
-            }
-        }
+				Assert.IsNotNull(result);
+			}
+		}
 
-        [Test]
-        public async Task Should_work_when_query_is_not_cachableAsync()
-        {
-            using (ISession session = this.OpenSession())
-            {
-                var data = new byte[] { 1, 2, 3 };
+		[Test]
+		public async Task Should_work_when_query_is_not_cachableAsync()
+		{
+			using (ISession session = this.OpenSession())
+			{
+				var data = new byte[] { 1, 2, 3 };
 
-                var result = await (session.CreateQuery("from DomainClass d where d.ByteData = :data")
-                    .SetParameter("data", data)
-                    .UniqueResultAsync<DomainClass>());
+				var result = await (session.CreateQuery("from DomainClass d where d.ByteData = :data")
+					.SetParameter("data", data)
+					.UniqueResultAsync<DomainClass>());
 
-                Assert.IsNotNull(result);
-            }
+				Assert.IsNotNull(result);
+			}
 
-            using (ISession session = this.OpenSession())
-            {
-                var data = new byte[] { 1, 2, 3 };
+			using (ISession session = this.OpenSession())
+			{
+				var data = new byte[] { 1, 2, 3 };
 
-                var result = await (session.CreateQuery("from DomainClass d where d.ByteData = :data")
-                    .SetParameter("data", data)
-                    .UniqueResultAsync<DomainClass>());
+				var result = await (session.CreateQuery("from DomainClass d where d.ByteData = :data")
+					.SetParameter("data", data)
+					.UniqueResultAsync<DomainClass>());
 
-                Assert.IsNotNull(result);
-            }
-        }
-    }
+				Assert.IsNotNull(result);
+			}
+		}
+	}
 }

@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3505
 			using (ISession s = Sfi.OpenSession())
 			{
 				s.Delete("from Student");
-			    s.Delete("from Teacher");
+				s.Delete("from Teacher");
 				s.Flush();
 			}
 		}
@@ -35,17 +35,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3505
 		[Test]
 		public async Task StatelessSessionLazyUpdateAsync()
 		{
-		    var s = OpenSession();
-		    Guid studentId;
-		    Guid teacherId;
+			var s = OpenSession();
+			Guid studentId;
+			Guid teacherId;
 			try
 			{
-			    var teacher = new Teacher {Name = "Wise Man"};
+				var teacher = new Teacher { Name = "Wise Man" };
 				await (s.SaveAsync(teacher));
-			    teacherId = teacher.Id;
-			    var student = new Student {Name = "Rebelious Teenager", Teacher = teacher};
-			    await (s.SaveAsync(student));
-			    studentId = student.Id;
+				teacherId = teacher.Id;
+				var student = new Student { Name = "Rebelious Teenager", Teacher = teacher };
+				await (s.SaveAsync(student));
+				studentId = student.Id;
 				await (s.FlushAsync());
 			}
 			finally
@@ -56,22 +56,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3505
 			var ss = Sfi.OpenStatelessSession();
 			try
 			{
-			    var trans = ss.BeginTransaction();
-                try
-                {
-                    var student = await (ss.GetAsync<Student>(studentId));
-                    Assert.AreEqual(teacherId, student.Teacher.Id);
-                    Assert.AreEqual("Rebelious Teenager", student.Name);
-                    student.Name = "Young Protege";
-                    await (ss.UpdateAsync(student));
-                    await (trans.CommitAsync());
-                }
-                catch
-                {
-                    await (trans.RollbackAsync());
-                    throw;
-                }
-            }
+				var trans = ss.BeginTransaction();
+				try
+				{
+					var student = await (ss.GetAsync<Student>(studentId));
+					Assert.AreEqual(teacherId, student.Teacher.Id);
+					Assert.AreEqual("Rebelious Teenager", student.Name);
+					student.Name = "Young Protege";
+					await (ss.UpdateAsync(student));
+					await (trans.CommitAsync());
+				}
+				catch
+				{
+					await (trans.RollbackAsync());
+					throw;
+				}
+			}
 			finally
 			{
 				ss.Close();
@@ -80,9 +80,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3505
 			s = OpenSession();
 			try
 			{
-			    var student = await (s.GetAsync<Student>(studentId));
-                Assert.AreEqual(teacherId, student.Teacher.Id);
-			    Assert.AreEqual("Young Protege", student.Name);
+				var student = await (s.GetAsync<Student>(studentId));
+				Assert.AreEqual(teacherId, student.Teacher.Id);
+				Assert.AreEqual("Young Protege", student.Name);
 			}
 			finally
 			{

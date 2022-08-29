@@ -12,47 +12,47 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2094
 {
-  using System.Threading.Tasks;
-  [TestFixture]
-  public class FixtureAsync : BugTestCase
-  {
-	[Test]
-	public async Task CanAccessInitializedPropertiesOutsideOfSessionAsync()
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class FixtureAsync : BugTestCase
 	{
-	  try
-	  {
-		using (var s = OpenSession())
+		[Test]
+		public async Task CanAccessInitializedPropertiesOutsideOfSessionAsync()
 		{
-		  var p = new Person { Id = 1, Name = "Person1", LazyField = "Long field"};
- 
-		  await (s.SaveAsync(p));
+			try
+			{
+				using (var s = OpenSession())
+				{
+					var p = new Person { Id = 1, Name = "Person1", LazyField = "Long field" };
 
-		  await (s.FlushAsync());
+					await (s.SaveAsync(p));
+
+					await (s.FlushAsync());
+				}
+
+				Person person;
+
+				using (var s = OpenSession())
+				{
+					person = await (s.GetAsync<Person>(1));
+
+					Assert.AreEqual("Person1", person.Name);
+					Assert.AreEqual("Long field", person.LazyField);
+				}
+
+				Assert.AreEqual("Person1", person.Name);
+				Assert.AreEqual("Long field", person.LazyField);
+			}
+			finally
+			{
+				using (var s = OpenSession())
+				{
+					await (s.DeleteAsync("from Person"));
+
+					await (s.FlushAsync());
+				}
+			}
 		}
-
-		Person person;
-
-		using (var s = OpenSession())
-		{
-		  person = await (s.GetAsync<Person>(1));
-
-		  Assert.AreEqual("Person1", person.Name);
-		  Assert.AreEqual("Long field", person.LazyField);
-		}
-
-		Assert.AreEqual("Person1", person.Name);
-		Assert.AreEqual("Long field", person.LazyField);
-	  }
-	  finally
-	  {
-		using (var s = OpenSession())
-		{
-		  await (s.DeleteAsync("from Person"));
-
-		  await (s.FlushAsync());
-		}
-	  }
-	}
 
 		[Test]
 		public async Task WhenAccessNoLazyPropertiesOutsideOfSessionThenNotThrowsAsync()
@@ -123,5 +123,5 @@ namespace NHibernate.Test.NHSpecificTest.NH2094
 				}
 			}
 		}
-  }
+	}
 }

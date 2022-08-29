@@ -20,7 +20,7 @@ namespace NHibernate.Test.SqlTest.Query
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"SqlTest.Query.Item.hbm.xml"}; }
+			get { return new[] { "SqlTest.Query.Item.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly
@@ -54,7 +54,7 @@ namespace NHibernate.Test.SqlTest.Query
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var item1 = (Item) await (session.GetAsync(typeof (Item), 1));
+					var item1 = (Item) await (session.GetAsync(typeof(Item), 1));
 					Assert.AreEqual(2, item1.AlternativeItems.Count);
 
 					await (session.DeleteAsync("from Item"));

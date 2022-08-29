@@ -12,9 +12,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
-using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Stateless.FetchingLazyCollections
@@ -29,16 +29,16 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 			mapper.BeforeMapClass += (mi, t, cm) => cm.Id(im => im.Generator(Generators.HighLow));
 			mapper.Class<Animal>(mc =>
 								 {
-									mc.Id(x => x.Id);
-									mc.Discriminator(dm => dm.Column("kind"));
-									mc.Property(x => x.Description);
+									 mc.Id(x => x.Id);
+									 mc.Discriminator(dm => dm.Column("kind"));
+									 mc.Property(x => x.Description);
 								 });
 			mapper.Subclass<Reptile>(mc => { mc.Property(x => x.BodyTemperature); });
 			mapper.Subclass<Human>(mc =>
 								   {
-									mc.Property(x => x.Name);
-									mc.Property(x => x.NickName);
-									mc.Property(x => x.Birthdate, pm => pm.Type(NHibernateUtil.Date));
+									   mc.Property(x => x.Name);
+									   mc.Property(x => x.NickName);
+									   mc.Property(x => x.Birthdate, pm => pm.Type(NHibernateUtil.Date));
 								   });
 			mapper.AddMapping<FamilyMap<Reptile>>();
 			mapper.AddMapping<FamilyMap<Human>>();
@@ -52,7 +52,7 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 		{
 			public FamilyMap()
 			{
-				string familyOf = typeof (T).Name;
+				string familyOf = typeof(T).Name;
 
 				Id(x => x.Id);
 				EntityName(familyOf + "Family");
@@ -62,20 +62,20 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 				Where(string.Format("familyKind = '{0}'", familyOf));
 				ManyToOne(x => x.Father, map =>
 										 {
-											map.Lazy(LazyRelation.NoLazy);
-											map.Class(typeof (T));
-											map.Cascade(Mapping.ByCode.Cascade.All);
+											 map.Lazy(LazyRelation.NoLazy);
+											 map.Class(typeof(T));
+											 map.Cascade(Mapping.ByCode.Cascade.All);
 										 });
 				ManyToOne(x => x.Mother, map =>
 										 {
-											map.Lazy(LazyRelation.NoLazy);
-											map.Class(typeof (T));
-											map.Cascade(Mapping.ByCode.Cascade.All);
+											 map.Lazy(LazyRelation.NoLazy);
+											 map.Class(typeof(T));
+											 map.Cascade(Mapping.ByCode.Cascade.All);
 										 });
 				Set(x => x.Childs, cam =>
 								   {
-									cam.Key(km => km.Column("familyId"));
-									cam.Cascade(Mapping.ByCode.Cascade.All);
+									   cam.Key(km => km.Column("familyId"));
+									   cam.Cascade(Mapping.ByCode.Cascade.All);
 								   },
 					rel => rel.OneToMany());
 			}

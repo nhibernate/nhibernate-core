@@ -87,8 +87,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2959
 			using (session.BeginTransaction())
 			{
 				var results = await (session.CreateQueryBatch()
-				                     .Add<BaseEntity>(session.CreateCriteria(typeof(BaseEntity)))
-				                     .GetResultAsync<BaseEntity>(0));
+									 .Add<BaseEntity>(session.CreateCriteria(typeof(BaseEntity)))
+									 .GetResultAsync<BaseEntity>(0));
 
 				Assert.That(results, Has.Count.EqualTo(2));
 			}
@@ -101,8 +101,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2959
 			using (session.BeginTransaction())
 			{
 				var results = await (session.CreateQueryBatch()
-				                     .Add<BaseEntity>(session.CreateQuery("from " + typeof(BaseEntity).FullName))
-				                     .GetResultAsync<BaseEntity>(0));
+									 .Add<BaseEntity>(session.CreateQuery("from " + typeof(BaseEntity).FullName))
+									 .GetResultAsync<BaseEntity>(0));
 
 				Assert.That(results, Has.Count.EqualTo(2));
 			}

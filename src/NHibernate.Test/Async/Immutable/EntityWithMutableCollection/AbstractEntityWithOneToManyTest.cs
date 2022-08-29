@@ -12,8 +12,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate;
-using NHibernate.Impl;
 using NHibernate.Criterion;
+using NHibernate.Impl;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection
@@ -29,28 +29,28 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 		private bool isContractPartiesBidirectional;
 		private bool isContractVariationsBidirectional;
 		private bool isContractVersioned;
-	
+
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
 		}
-		
+
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
 			configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
 			configuration.SetProperty(NHibernate.Cfg.Environment.BatchSize, "0");
 		}
-	
+
 		protected virtual bool CheckUpdateCountsAfterAddingExistingElement()
 		{
 			return true;
 		}
-	
+
 		protected virtual bool CheckUpdateCountsAfterRemovingElementWithoutDelete()
 		{
 			return true;
 		}
-	
+
 		protected override void OnSetUp()
 		{
 			isContractPartiesInverse = Sfi.GetCollectionPersister(typeof(Contract).FullName + ".Parties").IsInverse;
@@ -72,15 +72,15 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			{
 				isContractVariationsBidirectional = false;
 			}
-	
+
 			isContractVersioned = Sfi.GetEntityPersister(typeof(Contract).FullName).IsVersioned;
 		}
-		
+
 		[Test]
 		public virtual async Task UpdatePropertyAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			c.AddParty(new Party("party"));
 			ISession s = OpenSession();
@@ -88,11 +88,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -102,10 +102,10 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			party.Name = "new party";
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -121,16 +121,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public virtual async Task CreateWithNonEmptyOneToManyCollectionOfNewAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			c.AddParty(new Party("party"));
 			ISession s = OpenSession();
@@ -138,11 +138,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -158,27 +158,27 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public virtual async Task CreateWithNonEmptyOneToManyCollectionOfExistingAsync()
 		{
 			ClearCounts();
-	
+
 			Party party = new Party("party");
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(party));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			c.AddParty(party);
 			s = OpenSession();
@@ -186,12 +186,12 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.SaveAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			// BUG, should be assertUpdateCount( ! isContractPartiesInverse && isPartyVersioned ? 1 : 0 );
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -217,27 +217,27 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public virtual async Task AddNewOneToManyElementToPersistentEntityAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.GetAsync<Contract>(c.Id));
@@ -245,11 +245,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			c.AddParty(new Party("party"));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -265,16 +265,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public virtual async Task AddExistingOneToManyElementToPersistentEntityAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			Party party = new Party("party");
 			ISession s = OpenSession();
@@ -283,11 +283,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(party));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.GetAsync<Contract>(c.Id));
@@ -300,14 +300,14 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			c.AddParty(party);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			if (CheckUpdateCountsAfterAddingExistingElement())
 			{
 				AssertUpdateCount(isContractVersioned && !isContractPartiesInverse ? 1 : 0);
 			}
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -331,45 +331,45 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-		
+
 		[Test]
 		public virtual async Task CreateWithEmptyOneToManyCollectionUpdateWithExistingElementAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			Party party = new Party("party");
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
 			await (s.PersistAsync(party));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			c.AddParty(party);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.UpdateAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			if (CheckUpdateCountsAfterAddingExistingElement())
 			{
 				AssertUpdateCount(isContractVersioned && !isContractPartiesInverse ? 1 : 0);
 			}
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -393,16 +393,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public virtual async Task CreateWithNonEmptyOneToManyCollectionUpdateWithNewElementAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			Party party = new Party("party");
 			c.AddParty(party);
@@ -411,24 +411,24 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			Party newParty = new Party("new party");
 			c.AddParty(newParty);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.UpdateAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -457,45 +457,45 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public virtual async Task CreateWithEmptyOneToManyCollectionMergeWithExistingElementAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			Party party = new Party("party");
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
 			await (s.PersistAsync(party));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			c.AddParty(party);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Contract)await (s.MergeAsync(c));
+			c = (Contract) await (s.MergeAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			if (CheckUpdateCountsAfterAddingExistingElement())
 			{
 				AssertUpdateCount(isContractVersioned && !isContractPartiesInverse ? 1 : 0);
 			}
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -519,16 +519,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public virtual async Task CreateWithNonEmptyOneToManyCollectionMergeWithNewElementAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			Party party = new Party("party");
 			c.AddParty(party);
@@ -537,24 +537,24 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			Party newParty = new Party("new party");
 			c.AddParty(newParty);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Contract)await (s.MergeAsync(c));
+			c = (Contract) await (s.MergeAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -579,16 +579,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public virtual async Task MoveOneToManyElementToNewEntityCollectionAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			c.AddParty(new Party("party"));
 			ISession s = OpenSession();
@@ -596,11 +596,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -617,11 +617,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.SaveAsync(c2));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().Add(Restrictions.IdEq(c.Id)).UniqueResultAsync<Contract>());
@@ -654,16 +654,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public virtual async Task MoveOneToManyElementToExistingEntityCollectionAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			c.AddParty(new Party("party"));
 			Contract c2 = new Contract(null, "david", "phone");
@@ -673,11 +673,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(c2));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().Add(Restrictions.IdEq(c.Id)).UniqueResultAsync<Contract>());
@@ -693,11 +693,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			c2.AddParty(party);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(isContractVersioned ? 2 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().Add(Restrictions.IdEq(c.Id)).UniqueResultAsync<Contract>());
@@ -730,120 +730,51 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public virtual async Task RemoveOneToManyElementUsingUpdateAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			Party party = new Party("party");
 			c.AddParty(party);
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			c.RemoveParty(party);
 			Assert.That(c.Parties.Count, Is.EqualTo(0));
 			if (isContractPartiesBidirectional)
 			{
 				Assert.That(party.Contract, Is.Null);
 			}
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.UpdateAsync(c));
 			await (s.UpdateAsync(party));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			if (CheckUpdateCountsAfterRemovingElementWithoutDelete())
 			{
 				AssertUpdateCount(isContractVersioned && !isContractPartiesInverse ? 1 : 0);
 			}
 			AssertDeleteCount(0);
 			ClearCounts();
-	
-			s = OpenSession();
-			t = s.BeginTransaction();
-			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
-			if (isContractPartiesInverse)
-			{
-				Assert.That(c.Parties.Count, Is.EqualTo(1));
-				party = c.Parties.First();
-				Assert.That(party.Name, Is.EqualTo("party"));
-				Assert.That(party.Contract, Is.SameAs(c));
-			}
-			else
-			{
-				Assert.That(c.Parties.Count, Is.EqualTo(0));
-				party = await (s.CreateCriteria<Party>().UniqueResultAsync<Party>());
-				if (isContractPartiesBidirectional) {
-					Assert.That(party.Contract, Is.Null);
-				}
-				await (s.DeleteAsync(party));
-			}
-			await (s.DeleteAsync(c));
-			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
-			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
-			await (t.CommitAsync());
-			s.Close();
-	
-			AssertUpdateCount(0);
-			AssertDeleteCount(2);
-		}
-	
-		[Test]
-		public virtual async Task RemoveOneToManyElementUsingMergeAsync()
-		{
-			ClearCounts();
-	
-			Contract c = new Contract(null, "gail", "phone");
-			Party party = new Party("party");
-			c.AddParty(party);
-	
-			ISession s = OpenSession();
-			ITransaction t = s.BeginTransaction();
-			await (s.PersistAsync(c));
-			await (t.CommitAsync());
-			s.Close();
-	
-			AssertInsertCount(2);
-			AssertUpdateCount(0);
-			ClearCounts();
-	
-			c.RemoveParty(party);
-			Assert.That(c.Parties.Count, Is.EqualTo(0));
-			if (isContractPartiesBidirectional)
-			{
-				Assert.That(party.Contract, Is.Null);
-			}
-	
-			s = OpenSession();
-			t = s.BeginTransaction();
-			c = (Contract)await (s.MergeAsync(c));
-			party = (Party)await (s.MergeAsync(party));
-			await (t.CommitAsync());
-			s.Close();
-	
-			if (CheckUpdateCountsAfterRemovingElementWithoutDelete())
-			{
-				AssertUpdateCount(isContractVersioned && !isContractPartiesInverse ? 1 : 0);
-			}
-			AssertDeleteCount(0);
-			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -869,30 +800,100 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
-		public virtual async Task DeleteOneToManyElementAsync()
+		public virtual async Task RemoveOneToManyElementUsingMergeAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			Party party = new Party("party");
 			c.AddParty(party);
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
+			c.RemoveParty(party);
+			Assert.That(c.Parties.Count, Is.EqualTo(0));
+			if (isContractPartiesBidirectional)
+			{
+				Assert.That(party.Contract, Is.Null);
+			}
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			c = (Contract) await (s.MergeAsync(c));
+			party = (Party) await (s.MergeAsync(party));
+			await (t.CommitAsync());
+			s.Close();
+
+			if (CheckUpdateCountsAfterRemovingElementWithoutDelete())
+			{
+				AssertUpdateCount(isContractVersioned && !isContractPartiesInverse ? 1 : 0);
+			}
+			AssertDeleteCount(0);
+			ClearCounts();
+
+			s = OpenSession();
+			t = s.BeginTransaction();
+			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
+			if (isContractPartiesInverse)
+			{
+				Assert.That(c.Parties.Count, Is.EqualTo(1));
+				party = c.Parties.First();
+				Assert.That(party.Name, Is.EqualTo("party"));
+				Assert.That(party.Contract, Is.SameAs(c));
+			}
+			else
+			{
+				Assert.That(c.Parties.Count, Is.EqualTo(0));
+				party = await (s.CreateCriteria<Party>().UniqueResultAsync<Party>());
+				if (isContractPartiesBidirectional)
+				{
+					Assert.That(party.Contract, Is.Null);
+				}
+				await (s.DeleteAsync(party));
+			}
+			await (s.DeleteAsync(c));
+			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
+			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
+			await (t.CommitAsync());
+			s.Close();
+
+			AssertUpdateCount(0);
+			AssertDeleteCount(2);
+		}
+
+		[Test]
+		public virtual async Task DeleteOneToManyElementAsync()
+		{
+			ClearCounts();
+
+			Contract c = new Contract(null, "gail", "phone");
+			Party party = new Party("party");
+			c.AddParty(party);
+
+			ISession s = OpenSession();
+			ITransaction t = s.BeginTransaction();
+			await (s.PersistAsync(c));
+			await (t.CommitAsync());
+			s.Close();
+
+			AssertInsertCount(2);
+			AssertUpdateCount(0);
+			ClearCounts();
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.UpdateAsync(c));
@@ -900,11 +901,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.DeleteAsync(party));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			AssertDeleteCount(1);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -916,48 +917,48 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		public virtual async Task RemoveOneToManyElementByDeleteAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			Party party = new Party("party");
 			c.AddParty(party);
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			c.RemoveParty(party);
 			Assert.That(c.Parties.Count, Is.EqualTo(0));
 			if (isContractPartiesBidirectional)
 			{
 				Assert.That(party.Contract, Is.Null);
 			}
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.UpdateAsync(c));
 			await (s.DeleteAsync(party));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			AssertDeleteCount(1);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -967,49 +968,49 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		public virtual async Task RemoveOneToManyOrphanUsingUpdateAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			ContractVariation cv = new ContractVariation(c);
 			cv.Text = "cv1";
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			c.Variations.Remove(cv);
 			cv.Contract = null;
 			Assert.That(c.Variations.Count, Is.EqualTo(0));
-			
+
 			if (isContractVariationsBidirectional)
 			{
 				Assert.That(cv.Contract, Is.Null);
 			}
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.UpdateAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			AssertDeleteCount(1);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1021,27 +1022,27 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		public virtual async Task RemoveOneToManyOrphanUsingMergeAsync()
 		{
 			Contract c = new Contract(null, "gail", "phone");
 			ContractVariation cv = new ContractVariation(c);
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			c.Variations.Remove(cv);
 			cv.Contract = null;
 			Assert.That(c.Variations.Count, Is.EqualTo(0));
@@ -1049,18 +1050,18 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			{
 				Assert.That(cv.Contract, Is.Null);
 			}
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Contract)await (s.MergeAsync(c));
-			cv = (ContractVariation)await (s.MergeAsync(cv));
+			c = (Contract) await (s.MergeAsync(c));
+			cv = (ContractVariation) await (s.MergeAsync(cv));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			AssertDeleteCount(1);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1072,29 +1073,29 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		public virtual async Task DeleteOneToManyOrphanAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			ContractVariation cv = new ContractVariation(c);
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.UpdateAsync(c));
@@ -1104,11 +1105,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.DeleteAsync(cv));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			AssertDeleteCount(1);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1120,16 +1121,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		public virtual async Task OneToManyCollectionOptimisticLockingWithMergeAsync()
 		{
 			ClearCounts();
-	
+
 			Contract cOrig = new Contract(null, "gail", "phone");
 			Party partyOrig = new Party("party");
 			cOrig.AddParty(partyOrig);
@@ -1138,11 +1139,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(cOrig));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			Contract c = await (s.GetAsync<Contract>(cOrig.Id));
@@ -1150,11 +1151,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			c.AddParty(newParty);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cOrig.RemoveParty(partyOrig);
@@ -1172,7 +1173,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 				await (t.RollbackAsync());
 			}
 			s.Close();
-			
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1181,16 +1182,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public virtual async Task OneToManyCollectionOptimisticLockingWithUpdateAsync()
 		{
 			ClearCounts();
-	
+
 			Contract cOrig = new Contract(null, "gail", "phone");
 			Party partyOrig = new Party("party");
 			cOrig.AddParty(partyOrig);
@@ -1199,11 +1200,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(cOrig));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			Contract c = await (s.GetAsync<Contract>(cOrig.Id));
@@ -1211,11 +1212,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			c.AddParty(newParty);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cOrig.RemoveParty(partyOrig);
@@ -1231,7 +1232,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 				await (t.RollbackAsync());
 			}
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1258,17 +1259,17 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		protected void ClearCounts()
 		{
 			Sfi.Statistics.Clear();
 		}
-		
+
 		protected void AssertUpdateCount(int count)
 		{
 			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(count), "unexpected update counts");
 		}
-		
+
 		protected void AssertInsertCount(int count)
 		{
 			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(count), "unexpected insert count");

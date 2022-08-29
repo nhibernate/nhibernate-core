@@ -65,20 +65,20 @@ namespace NHibernate.Event.Default
 				if (type.IsCollectionType)
 				{
 					//even process null collections
-					return ProcessCollectionAsync(value, (CollectionType)type, cancellationToken);
+					return ProcessCollectionAsync(value, (CollectionType) type, cancellationToken);
 				}
 				else if (type.IsEntityType)
 				{
-					return Task.FromResult<object>(ProcessEntity(value, (EntityType)type));
+					return Task.FromResult<object>(ProcessEntity(value, (EntityType) type));
 				}
 				else if (type.IsComponentType)
 				{
-					return ProcessComponentAsync(value, (IAbstractComponentType)type, cancellationToken);
+					return ProcessComponentAsync(value, (IAbstractComponentType) type, cancellationToken);
 				}
 				else
 				{
 					return Task.FromResult<object>(null);
-				} 
+				}
 			}
 			catch (System.Exception ex)
 			{

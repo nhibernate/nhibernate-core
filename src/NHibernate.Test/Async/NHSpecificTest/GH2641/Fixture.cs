@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2641
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var entity = new Entity {Id = 1, Value = 0.00000000000000422030887989616};
+				var entity = new Entity { Id = 1, Value = 0.00000000000000422030887989616 };
 				session.Save(entity);
 
 				transaction.Commit();

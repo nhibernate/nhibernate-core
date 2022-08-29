@@ -56,7 +56,7 @@ namespace NHibernate.Impl
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object result = await (UniqueResultAsync(cancellationToken)).ConfigureAwait(false);
-			if (result == null && typeof (T).IsValueType)
+			if (result == null && typeof(T).IsValueType)
 			{
 				return default(T);
 			}

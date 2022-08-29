@@ -25,7 +25,7 @@ namespace NHibernate.Test.SqlTest.Custom
 			IQuery namedQuery = s.GetNamedQuery("simpleScalar");
 			namedQuery.SetInt64("number", 43L);
 			IList list = await (namedQuery.ListAsync());
-			object[] o = (object[])list[0];
+			object[] o = (object[]) list[0];
 			Assert.AreEqual(o[0], "getAll");
 			Assert.AreEqual(o[1], 43L);
 			s.Close();
@@ -40,7 +40,7 @@ namespace NHibernate.Test.SqlTest.Custom
 			namedQuery.SetInt64(0, 10L);
 			namedQuery.SetInt64(1, 20L);
 			IList list = await (namedQuery.ListAsync());
-			object[] o = (Object[])list[0];
+			object[] o = (Object[]) list[0];
 			Assert.AreEqual(o[0], 10L);
 			Assert.AreEqual(o[1], 20L);
 
@@ -48,7 +48,7 @@ namespace NHibernate.Test.SqlTest.Custom
 			namedQuery.SetInt64(0, 10L);
 			namedQuery.SetInt64("second", 20L);
 			list = await (namedQuery.ListAsync());
-			o = (object[])list[0];
+			o = (object[]) list[0];
 			Assert.AreEqual(o[0], 10L);
 			Assert.AreEqual(o[1], 20L);
 			s.Close();

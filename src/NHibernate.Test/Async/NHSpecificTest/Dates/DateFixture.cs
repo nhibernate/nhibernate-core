@@ -20,15 +20,15 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"NHSpecificTest.Dates.Mappings.Date.hbm.xml"}; }
+			get { return new[] { "NHSpecificTest.Dates.Mappings.Date.hbm.xml" }; }
 		}
 
 		[Test]
 		public async Task SavingAndRetrievingTestAsync()
 		{
 			DateTime Now = DateTime.Now;
-			await (SavingAndRetrievingActionAsync(new AllDates {Sql_date = Now},
-			                          entity => DateTimeAssert.AreEqual(entity.Sql_date, Now, true)));
+			await (SavingAndRetrievingActionAsync(new AllDates { Sql_date = Now },
+									  entity => DateTimeAssert.AreEqual(entity.Sql_date, Now, true)));
 		}
 	}
 }

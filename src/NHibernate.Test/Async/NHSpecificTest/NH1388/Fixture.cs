@@ -33,13 +33,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 			{
 				ITransaction t = session.BeginTransaction();
 				var student = new Student();
-				var subject1 = new Subject {Id = 1};
-				var subject2 = new Subject {Id = 2};
+				var subject1 = new Subject { Id = 1 };
+				var subject2 = new Subject { Id = 2 };
 
 				// Create major objects.
-				var major1 = new Major {Note = ""};
+				var major1 = new Major { Note = "" };
 
-				var major2 = new Major {Note = ""};
+				var major2 = new Major { Note = "" };
 
 				// Set major objects.
 				student.Majors[subject1] = major1;
@@ -98,11 +98,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 			using (var session = OpenSession())
 			using (var tran = session.BeginTransaction())
 			{
-				foreach (var student in session.CreateCriteria(typeof (Student)).List<Student>())
+				foreach (var student in session.CreateCriteria(typeof(Student)).List<Student>())
 				{
 					session.Delete(student);
 				}
-				foreach (var subject in session.CreateCriteria(typeof (Subject)).List<Subject>())
+				foreach (var subject in session.CreateCriteria(typeof(Subject)).List<Subject>())
 				{
 					session.Delete(subject);
 				}

@@ -8,11 +8,11 @@
 //------------------------------------------------------------------------------
 
 
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3666
 {
@@ -54,9 +54,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3666
 			using (var transaction = session.BeginTransaction())
 			{
 				var result = await (session.CreateSQLQuery("SELECT * FROM Entity WHERE Property = 'Test2'")
-				                    .AddEntity(typeof(Entity))
-				                    .SetCacheable(true)
-				                    .ListAsync<Entity>());
+									.AddEntity(typeof(Entity))
+									.SetCacheable(true)
+									.ListAsync<Entity>());
 
 				Assert.That(result, Is.Not.Empty, "Non cached result is empty");
 
@@ -64,9 +64,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3666
 				Assert.That(result[0].Id, Is.EqualTo(2), "Unexpected non cached result id");
 
 				result = await (session.CreateSQLQuery("SELECT * FROM Entity WHERE Property = 'Test2'")
-				                .AddEntity(typeof(Entity))
-				                .SetCacheable(true)
-				                .ListAsync<Entity>());
+								.AddEntity(typeof(Entity))
+								.SetCacheable(true)
+								.ListAsync<Entity>());
 
 				Assert.That(result, Is.Not.Empty, "Cached result is empty");
 
@@ -82,9 +82,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3666
 			using (var transaction = session.BeginTransaction())
 			{
 				var result = await (session.GetNamedQuery("QueryName")
-				                    .SetCacheable(true)
-				                    .SetString("prop", "Test2")
-				                    .ListAsync<Entity>());
+									.SetCacheable(true)
+									.SetString("prop", "Test2")
+									.ListAsync<Entity>());
 
 				Assert.That(result, Is.Not.Empty, "Non cached result is empty");
 
@@ -92,9 +92,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3666
 				Assert.That(result[0].Id, Is.EqualTo(2), "Unexpected non cached result id");
 
 				result = await (session.GetNamedQuery("QueryName")
-				                .SetCacheable(true)
-				                .SetString("prop", "Test2")
-				                .ListAsync<Entity>());
+								.SetCacheable(true)
+								.SetString("prop", "Test2")
+								.ListAsync<Entity>());
 
 				Assert.That(result, Is.Not.Empty, "Cached result is empty");
 

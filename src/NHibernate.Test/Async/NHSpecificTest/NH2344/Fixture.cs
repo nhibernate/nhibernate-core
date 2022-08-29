@@ -36,8 +36,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2344
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				var p1 = new Person { Name = "inserted name" };
-				var p2 = new Person { Name = null};
-				
+				var p2 = new Person { Name = null };
+
 				await (s.SaveAsync(p1));
 				await (s.SaveAsync(p2));
 				personId = p2.Id;

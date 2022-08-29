@@ -8,8 +8,8 @@
 //------------------------------------------------------------------------------
 
 
-using NUnit.Framework;
 using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.ElementsEnums
 {

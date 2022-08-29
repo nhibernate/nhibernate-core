@@ -9,8 +9,8 @@
 
 
 using NHibernate.Cfg;
-using NUnit.Framework;
 using NHibernate.Stat;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1643
 {
@@ -35,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1643
 				emp.Id = 1;
 				emp.FirstName = "John";
 				emp.LastName = "Doe";
-                emp.Departments.Add(dept);
+				emp.Departments.Add(dept);
 
 				await (sess.SaveAsync(emp));
 
@@ -44,14 +44,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1643
 				employeeId = emp.Id;
 			}
 
-            using (ISession sess = OpenSession())
-            using (ITransaction tx = sess.BeginTransaction())
-            {
-                var load = await (sess.LoadAsync<Employee>(employeeId));
-                Assert.AreEqual(1, load.Departments.Count);
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				var load = await (sess.LoadAsync<Employee>(employeeId));
+				Assert.AreEqual(1, load.Departments.Count);
 
-                await (tx.CommitAsync());
-            }
+				await (tx.CommitAsync());
+			}
 
 			using (ISession sess = OpenSession())
 			using (ITransaction tx = sess.BeginTransaction())

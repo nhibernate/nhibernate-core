@@ -21,14 +21,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2074
 		{
 			return dialect is MsSql2000Dialect;
 		}
-     
+
 		[Test]
-      	public async Task CanQueryOnPropertyUsingUnicodeTokenAsync()
+		public async Task CanQueryOnPropertyUsingUnicodeTokenAsync()
 		{
-            using (var s = OpenSession())
-            {
-            	await (s.CreateQuery("from Person").ListAsync());
-            }
-		} 
+			using (var s = OpenSession())
+			{
+				await (s.CreateQuery("from Person").ListAsync());
+			}
+		}
 	}
 }

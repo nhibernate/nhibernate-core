@@ -108,7 +108,7 @@ namespace NHibernate.Test.CfgTest
 			{
 			}
 
-			protected SampleQueryProvider(ISessionImplementor session, object collection,  NhQueryableOptions options) : base(session, collection, options)
+			protected SampleQueryProvider(ISessionImplementor session, object collection, NhQueryableOptions options) : base(session, collection, options)
 			{
 			}
 

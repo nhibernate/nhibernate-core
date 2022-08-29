@@ -23,7 +23,7 @@ namespace NHibernate.Test.QueryTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"Simple.hbm.xml"}; }
+			get { return new string[] { "Simple.hbm.xml" }; }
 		}
 
 		[Test]

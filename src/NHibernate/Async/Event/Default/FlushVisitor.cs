@@ -36,7 +36,7 @@ namespace NHibernate.Event.Default
 				}
 				else
 				{
-					coll = (IPersistentCollection)collection;
+					coll = (IPersistentCollection) collection;
 				}
 
 				await (Collections.ProcessReachableCollectionAsync(coll, type, owner, Session, cancellationToken)).ConfigureAwait(false);

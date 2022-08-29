@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecific.Node.hbm.xml"}; }
+			get { return new string[] { "NHSpecific.Node.hbm.xml" }; }
 		}
 
 		[Test]
@@ -64,8 +64,8 @@ namespace NHibernate.Test.NHSpecificTest
 			ITransaction t2 = s2.BeginTransaction();
 
 			Node startNode2 = (Node) (await (s2.CreateCriteria(typeof(Node))
-			                         	.Add(Expression.Eq("Id", "start"))
-			                         	.ListAsync()))[0];
+										 .Add(Expression.Eq("Id", "start"))
+										 .ListAsync()))[0];
 
 			Assert.AreEqual(1, startNode2.DestinationNodes.Count, "Start Node goes to 1 Node");
 			Assert.AreEqual(0, startNode2.PreviousNodes.Count, "Start Node has no previous Nodes");
@@ -133,7 +133,7 @@ namespace NHibernate.Test.NHSpecificTest
 			foreach (Node node in endNode.PreviousNodes)
 			{
 				Assert.IsFalse(node.Equals(levelThreeNode),
-				               "one of the Prev Nodes in should not be the level 3 node, only level 4 nodes");
+							   "one of the Prev Nodes in should not be the level 3 node, only level 4 nodes");
 			}
 
 			await (t.CommitAsync());

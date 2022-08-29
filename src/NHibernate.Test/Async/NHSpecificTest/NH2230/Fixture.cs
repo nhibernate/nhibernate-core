@@ -8,9 +8,9 @@
 //------------------------------------------------------------------------------
 
 
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2230
 {
@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2230
 		public async Task CanCreacteRetrieveDeleteComponentsWithPrivateReferenceSetterToParentAsync()
 		{
 			var entity = new MyEntity();
-			var component = new MyComponentWithParent(entity){Something = "A"};
+			var component = new MyComponentWithParent(entity) { Something = "A" };
 			entity.Component = component;
 			entity.Children = new List<MyComponentWithParent>
 								{
@@ -46,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2230
 				Assert.That(myComponentWithParent.Parent, Is.SameAs(savedEntity));
 				Assert.That(myComponentWithParent.Something, Is.EqualTo("A"));
 
-				Assert.That(savedEntity.Children.Select(c => c.Something), Is.EquivalentTo(new [] {"B", "C"}));
+				Assert.That(savedEntity.Children.Select(c => c.Something), Is.EquivalentTo(new[] { "B", "C" }));
 				Assert.That(savedEntity.Children.All(c => ReferenceEquals(c.Parent, savedEntity)), Is.True);
 
 				await (s.DeleteAsync(savedEntity));

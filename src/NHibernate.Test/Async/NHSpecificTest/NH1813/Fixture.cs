@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1813
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync: BugTestCase
+	public class FixtureAsync : BugTestCase
 	{
 		protected override void Configure(Configuration configuration)
 		{
@@ -27,9 +27,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1813
 		public async Task ContainSQLInInsertAsync()
 		{
 			using (ISession s = OpenSession())
-			using(ITransaction t = s .BeginTransaction())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new EntityWithUnique {Id = 1, Description = "algo"}));
+				await (s.SaveAsync(new EntityWithUnique { Id = 1, Description = "algo" }));
 				await (t.CommitAsync());
 			}
 			using (ISession s = OpenSession())

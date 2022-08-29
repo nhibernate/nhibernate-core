@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1362
 				s.Clear();
 
 				ClassA loaded = await (s.LoadAsync<ClassA>(a.Id));
-                
+
 				//work with first child object
 				loaded.B = null;
 				await (s.RefreshAsync(loaded));

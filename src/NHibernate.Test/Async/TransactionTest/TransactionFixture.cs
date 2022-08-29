@@ -134,7 +134,7 @@ namespace NHibernate.Test.TransactionTest
 				using (var s1 = builder.Interceptor(new TestInterceptor(1, flushOrder)).OpenSession())
 				using (var s2 = builder.Interceptor(new TestInterceptor(2, flushOrder)).OpenSession())
 				using (var s3 = s1.SessionWithOptions().Connection().Interceptor(new TestInterceptor(3, flushOrder))
-				                  .OpenSession())
+								  .OpenSession())
 				using (var t = s.BeginTransaction())
 				{
 					var p1 = new Person();

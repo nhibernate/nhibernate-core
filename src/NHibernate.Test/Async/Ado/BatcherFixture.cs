@@ -17,7 +17,7 @@ namespace NHibernate.Test.Ado
 	using System.Threading.Tasks;
 	using System.Threading;
 	[TestFixture]
-	public class BatcherFixtureAsync: TestCase
+	public class BatcherFixtureAsync : TestCase
 	{
 		protected override string MappingsAssembly
 		{
@@ -68,9 +68,9 @@ namespace NHibernate.Test.Ado
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new VerySimple {Id = 1, Name = "Fabio", Weight = 119.5}, cancellationToken));
-				await (s.SaveAsync(new VerySimple {Id = 2, Name = "Fiamma", Weight = 9.8}, cancellationToken));
-				await (s.SaveAsync(new VerySimple {Id = 3, Name = "Roberto", Weight = 98.8 }, cancellationToken));
+				await (s.SaveAsync(new VerySimple { Id = 1, Name = "Fabio", Weight = 119.5 }, cancellationToken));
+				await (s.SaveAsync(new VerySimple { Id = 2, Name = "Fiamma", Weight = 9.8 }, cancellationToken));
+				await (s.SaveAsync(new VerySimple { Id = 3, Name = "Roberto", Weight = 98.8 }, cancellationToken));
 				await (tx.CommitAsync(cancellationToken));
 			}
 		}
@@ -185,7 +185,7 @@ namespace NHibernate.Test.Ado
 					foreach (var loggingEvent in sl.Appender.GetEvents())
 					{
 						string message = loggingEvent.RenderedMessage;
-						if(message.ToLowerInvariant().Contains("insert"))
+						if (message.ToLowerInvariant().Contains("insert"))
 						{
 							Assert.That(message, Does.Contain("batch").IgnoreCase);
 						}
@@ -229,13 +229,13 @@ namespace NHibernate.Test.Ado
 					foreach (var loggingEvent in sl.Appender.GetEvents())
 					{
 						string message = loggingEvent.RenderedMessage;
-						if(message.StartsWith("Adding"))
+						if (message.StartsWith("Adding"))
 						{
 							// should be the line with the formatted SQL
 							var strings = message.Split(System.Environment.NewLine.ToCharArray());
 							foreach (var sqlLine in strings)
 							{
-								if(sqlLine.Contains("p0"))
+								if (sqlLine.Contains("p0"))
 								{
 									Assert.That(sqlLine, Does.Contain("p1"));
 									Assert.That(sqlLine, Does.Contain("p2"));

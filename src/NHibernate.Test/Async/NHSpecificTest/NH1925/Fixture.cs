@@ -33,16 +33,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1925
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					var joe = new Customer {Name = NAME_JOE};
+					var joe = new Customer { Name = NAME_JOE };
 					session.Save(joe);
 
-					var allen = new Customer {Name = NAME_ALLEN};
+					var allen = new Customer { Name = NAME_ALLEN };
 					session.Save(allen);
 
-					var joeInvoice0 = new Invoice {Customer = joe, Number = 0};
+					var joeInvoice0 = new Invoice { Customer = joe, Number = 0 };
 					session.Save(joeInvoice0);
 
-					var allenInvoice1 = new Invoice {Customer = allen, Number = 1};
+					var allenInvoice1 = new Invoice { Customer = allen, Number = 1 };
 					session.Save(allenInvoice1);
 
 					tx.Commit();

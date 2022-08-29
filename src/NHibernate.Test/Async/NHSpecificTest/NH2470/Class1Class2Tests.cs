@@ -51,9 +51,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2470
 					await (s.SaveAsync(c2));
 					await (s.SaveAsync(c1));
 
-					class1dto = new Class1DTO {ID = c1.ID, EntityVersion = c1.EntityVersion};
+					class1dto = new Class1DTO { ID = c1.ID, EntityVersion = c1.EntityVersion };
 
-					class1dto.Class2Ary = c1.Class2List.Select(cl2 => new Class2DTO {ID = cl2.ID, EntityVersion = cl2.EntityVersion}).ToArray();
+					class1dto.Class2Ary = c1.Class2List.Select(cl2 => new Class2DTO { ID = cl2.ID, EntityVersion = cl2.EntityVersion }).ToArray();
 
 					await (tx.CommitAsync());
 				}
@@ -94,7 +94,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2470
 				{
 					// NH-2470 If inverse="true" in Class1.hbm.xml you must add the next line to prevent erroneous version increment
 					// s.Refresh(c1, LockMode.None);
-					dto = new Class1DTO {ID = c1.ID, EntityVersion = c1.EntityVersion};
+					dto = new Class1DTO { ID = c1.ID, EntityVersion = c1.EntityVersion };
 					await (tx.CommitAsync());
 				}
 
@@ -128,7 +128,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2470
 
 					await (s.SaveAsync(c1));
 
-					dto = new Class1DTO {ID = c1.ID, EntityVersion = c1.EntityVersion};
+					dto = new Class1DTO { ID = c1.ID, EntityVersion = c1.EntityVersion };
 
 					await (tx.CommitAsync());
 				}
@@ -173,8 +173,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2470
 				{
 					// NH-2470 If inverse="true" in Class1.hbm.xml you must add the next line to prevent erroneous version increment
 					// s.Refresh(c1, LockMode.None);
-					var class1dto = new Class1DTO {ID = c1.ID, EntityVersion = c1.EntityVersion};
-					class1dto.Class2Ary = c1.Class2List.Select(cl2 => new Class2DTO {ID = cl2.ID, EntityVersion = cl2.EntityVersion}).ToArray();
+					var class1dto = new Class1DTO { ID = c1.ID, EntityVersion = c1.EntityVersion };
+					class1dto.Class2Ary = c1.Class2List.Select(cl2 => new Class2DTO { ID = cl2.ID, EntityVersion = cl2.EntityVersion }).ToArray();
 					await (tx.CommitAsync());
 				}
 				Assert.AreEqual(1, c1.EntityVersion);
@@ -221,8 +221,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2470
 				{
 					// NH-2470 If inverse="true" in Class1.hbm.xml you must add the next line to prevent erroneous version increment
 					// s.Refresh(c1);
-					class1dto = new Class1DTO {ID = c1.ID, EntityVersion = c1.EntityVersion};
-					class1dto.Class2Ary = c1.Class2List.Select(cl2 => new Class2DTO {ID = cl2.ID, EntityVersion = cl2.EntityVersion}).ToArray();
+					class1dto = new Class1DTO { ID = c1.ID, EntityVersion = c1.EntityVersion };
+					class1dto.Class2Ary = c1.Class2List.Select(cl2 => new Class2DTO { ID = cl2.ID, EntityVersion = cl2.EntityVersion }).ToArray();
 					await (tx.CommitAsync());
 					c1ev = c1.EntityVersion;
 					Assert.AreEqual(1, c1ev);
@@ -281,8 +281,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2470
 				{
 					cl1 = await (s.GetAsync<Class1>(c1id));
 
-					class1dto = new Class1DTO {ID = cl1.ID, EntityVersion = cl1.EntityVersion};
-					class1dto.Class2Ary = cl1.Class2List.Select(cl2 => new Class2DTO {ID = cl2.ID, EntityVersion = cl2.EntityVersion}).ToArray();
+					class1dto = new Class1DTO { ID = cl1.ID, EntityVersion = cl1.EntityVersion };
+					class1dto.Class2Ary = cl1.Class2List.Select(cl2 => new Class2DTO { ID = cl2.ID, EntityVersion = cl2.EntityVersion }).ToArray();
 
 					await (tx.CommitAsync());
 				}

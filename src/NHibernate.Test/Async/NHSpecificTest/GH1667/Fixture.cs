@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1667
 
 		protected override void OnSetUp()
 		{
-			_defaultLogger = (INHibernateLoggerFactory)_loggerFactoryField.GetValue(null);
+			_defaultLogger = (INHibernateLoggerFactory) _loggerFactoryField.GetValue(null);
 			NHibernateLogger.SetLoggersFactory(new EnumeratingLoggerFactory());
 
 			using (var session = OpenSession())

@@ -42,7 +42,7 @@ namespace NHibernate.Test.Linq
 			using (session.BeginTransaction())
 			{
 				var result = await ((from e in db.Customers
-				              select e).WithLock(LockMode.Upgrade).ToListAsync());
+							  select e).WithLock(LockMode.Upgrade).ToListAsync());
 
 				Assert.That(result, Has.Count.EqualTo(91));
 				Assert.That(session.GetCurrentLockMode(result[0]), Is.EqualTo(LockMode.Upgrade));
@@ -56,7 +56,7 @@ namespace NHibernate.Test.Linq
 			using (session.BeginTransaction())
 			{
 				var result = await ((from e in db.Customers.WithLock(LockMode.Upgrade)
-				              select e).ToListAsync());
+							  select e).ToListAsync());
 
 				Assert.That(result, Has.Count.EqualTo(91));
 				Assert.That(session.GetCurrentLockMode(result[0]), Is.EqualTo(LockMode.Upgrade));
@@ -82,8 +82,8 @@ namespace NHibernate.Test.Linq
 			using (session.BeginTransaction())
 			{
 				var result = await ((from c in db.Customers
-				              from o in c.Orders.WithLock(LockMode.Upgrade)
-				              select o).ToListAsync());
+							  from o in c.Orders.WithLock(LockMode.Upgrade)
+							  select o).ToListAsync());
 
 				Assert.That(result, Has.Count.EqualTo(830));
 				Assert.That(session.GetCurrentLockMode(result[0]), Is.EqualTo(LockMode.Upgrade));
@@ -96,8 +96,8 @@ namespace NHibernate.Test.Linq
 			using (session.BeginTransaction())
 			{
 				var result = await ((from c in db.Customers
-				              from o in c.Orders
-				              select o).WithLock(LockMode.Upgrade).ToListAsync());
+							  from o in c.Orders
+							  select o).WithLock(LockMode.Upgrade).ToListAsync());
 
 				Assert.That(result, Has.Count.EqualTo(830));
 				Assert.That(session.GetCurrentLockMode(result[0]), Is.EqualTo(LockMode.Upgrade));
@@ -112,7 +112,7 @@ namespace NHibernate.Test.Linq
 				var query = (
 					from c in db.Customers
 					from o in c.Orders
-					select new {o, c}
+					select new { o, c }
 				).WithLock(LockMode.Upgrade);
 
 				Assert.ThrowsAsync<NotSupportedException>(() => query.ToListAsync());
@@ -140,7 +140,7 @@ namespace NHibernate.Test.Linq
 				var result = await ((
 					from c in db.Customers.WithLock(LockMode.Upgrade)
 					from o in c.Orders.WithLock(LockMode.Upgrade)
-					select new {o, c}
+					select new { o, c }
 				).ToListAsync());
 
 				Assert.That(result, Has.Count.EqualTo(830));
@@ -157,7 +157,7 @@ namespace NHibernate.Test.Linq
 				var result = await ((
 					from c in db.Customers.Where(x => true).WithLock(LockMode.Upgrade)
 					from o in c.Orders.Where(x => true).WithLock(LockMode.Upgrade)
-					select new {o, c}
+					select new { o, c }
 				).ToListAsync());
 
 				Assert.That(result, Has.Count.EqualTo(830));
@@ -173,7 +173,7 @@ namespace NHibernate.Test.Linq
 			using (session.BeginTransaction())
 			{
 				var result = await ((from e in db.Customers
-				              select e).Skip(5).Take(5).WithLock(LockMode.Upgrade).ToListAsync());
+							  select e).Skip(5).Take(5).WithLock(LockMode.Upgrade).ToListAsync());
 
 				Assert.That(result, Has.Count.EqualTo(5));
 				Assert.That(session.GetCurrentLockMode(result[0]), Is.EqualTo(LockMode.Upgrade));
@@ -189,13 +189,13 @@ namespace NHibernate.Test.Linq
 			using (session.BeginTransaction())
 			{
 				var result = await ((from e in db.Customers
-				              orderby e.CompanyName
-				              select e)
-				             .WithLock(LockMode.Upgrade).Skip(5).Take(5).ToListAsync());
+							  orderby e.CompanyName
+							  select e)
+							 .WithLock(LockMode.Upgrade).Skip(5).Take(5).ToListAsync());
 
 				Assert.That(result, Has.Count.EqualTo(5));
 				Assert.That(session.GetCurrentLockMode(result[0]), Is.EqualTo(LockMode.Upgrade));
-			
+
 				await (AssertSeparateTransactionIsLockedOutAsync(result[0].CustomerId));
 			}
 		}

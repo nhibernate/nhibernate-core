@@ -10,7 +10,7 @@
 
 using System;
 using NUnit.Framework;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.NHSpecificTest.NH548
 {

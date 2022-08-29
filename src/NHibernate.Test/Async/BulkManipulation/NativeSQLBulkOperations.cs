@@ -40,7 +40,7 @@ namespace NHibernate.Test.BulkManipulation
 
 			string ssql =
 				string.Format("insert into VEHICLE (id, TofC, Vin, Owner) select {0}, 22, Vin, Owner from VEHICLE where TofC = 10",
-				              GetNewId());
+							  GetNewId());
 			await (s.CreateSQLQuery(ssql).ExecuteUpdateAsync());
 			l = await (s.CreateQuery("from Vehicle").ListAsync());
 			Assert.AreEqual(5, l.Count);
@@ -90,26 +90,26 @@ namespace NHibernate.Test.BulkManipulation
 
 			Car car = new Car();
 			car.Id = GetNewId();
-			car.Vin="123c";
-			car.Owner="Kirsten";
+			car.Vin = "123c";
+			car.Owner = "Kirsten";
 			await (s.SaveAsync(car, cancellationToken));
 
 			Truck truck = new Truck();
 			truck.Id = GetNewId();
 			truck.Vin = "123t";
-			truck.Owner="Steve";
+			truck.Owner = "Steve";
 			await (s.SaveAsync(truck, cancellationToken));
 
 			SUV suv = new SUV();
 			suv.Id = GetNewId();
 			suv.Vin = "123s";
-			suv.Owner="Joe";
+			suv.Owner = "Joe";
 			await (s.SaveAsync(suv, cancellationToken));
 
 			Pickup pickup = new Pickup();
 			pickup.Id = GetNewId();
 			pickup.Vin = "123p";
-			pickup.Owner="Cecelia";
+			pickup.Owner = "Cecelia";
 			await (s.SaveAsync(pickup, cancellationToken));
 
 			await (txn.CommitAsync(cancellationToken));

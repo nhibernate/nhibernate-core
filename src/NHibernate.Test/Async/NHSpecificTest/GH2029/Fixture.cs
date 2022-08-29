@@ -88,7 +88,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2029
 		public async Task NullableIntOverflowAsync()
 		{
 			var hasCast = Dialect.GetCastTypeName(NHibernateUtil.Int32.SqlType) !=
-			              Dialect.GetCastTypeName(NHibernateUtil.Int64.SqlType);
+						  Dialect.GetCastTypeName(NHibernateUtil.Int64.SqlType);
 
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
@@ -112,7 +112,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2029
 		public async Task IntOverflowAsync()
 		{
 			var hasCast = Dialect.GetCastTypeName(NHibernateUtil.Int32.SqlType) !=
-			              Dialect.GetCastTypeName(NHibernateUtil.Int64.SqlType);
+						  Dialect.GetCastTypeName(NHibernateUtil.Int64.SqlType);
 
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
@@ -140,11 +140,12 @@ namespace NHibernate.Test.NHSpecificTest.GH2029
 			using (var sqlLog = new SqlLogSpy())
 			{
 				var groups = await (session.Query<TestClass>()
-				                    .GroupBy(i => 1)
-				                    .Select(g => new {
-					                    s = g.Sum(i => i.NullableInt64Prop)
-				                    })
-				                    .ToListAsync());
+									.GroupBy(i => 1)
+									.Select(g => new
+									{
+										s = g.Sum(i => i.NullableInt64Prop)
+									})
+									.ToListAsync());
 
 				Assert.That(sqlLog.GetWholeLog(), Does.Not.Contains("cast"));
 				Assert.That(groups, Has.Count.EqualTo(1));
@@ -160,11 +161,12 @@ namespace NHibernate.Test.NHSpecificTest.GH2029
 			using (var sqlLog = new SqlLogSpy())
 			{
 				var groups = await (session.Query<TestClass>()
-				                    .GroupBy(i => 1)
-				                    .Select(g => new {
-					                    s = g.Sum(i => i.Int64Prop)
-				                    })
-				                    .ToListAsync());
+									.GroupBy(i => 1)
+									.Select(g => new
+									{
+										s = g.Sum(i => i.Int64Prop)
+									})
+									.ToListAsync());
 
 				Assert.That(sqlLog.GetWholeLog(), Does.Not.Contains("cast"));
 				Assert.That(groups, Has.Count.EqualTo(1));

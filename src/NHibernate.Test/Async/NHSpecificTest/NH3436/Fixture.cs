@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3436
 				transaction.Commit();
 			}
 		}
-		
+
 		[Test]
 		public async Task TestQueryWithContainsAsync()
 		{

@@ -11,14 +11,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using NUnit.Framework;
 using System.Collections.ObjectModel;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1421
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync: BugTestCase
+	public class FixtureAsync : BugTestCase
 	{
 
 		[Test]

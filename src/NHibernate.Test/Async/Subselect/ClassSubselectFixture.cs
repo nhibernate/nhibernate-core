@@ -16,7 +16,7 @@ namespace NHibernate.Test.Subselect
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class ClassSubselectFixtureAsync: TestCase
+	public class ClassSubselectFixtureAsync : TestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
@@ -28,7 +28,7 @@ namespace NHibernate.Test.Subselect
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"Subselect.Beings.hbm.xml"}; }
+			get { return new[] { "Subselect.Beings.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly
@@ -61,7 +61,7 @@ namespace NHibernate.Test.Subselect
 				Assert.That(being.Species, Is.Not.Null.And.Not.Empty);
 			}
 			s.Clear();
-			await (Sfi.EvictAsync(typeof (Being)));
+			await (Sfi.EvictAsync(typeof(Being)));
 			Being gav = await (s.GetAsync<Being>(gavin.Id));
 			Assert.That(gav.Location, Is.Not.Null.And.Not.Empty);
 			Assert.That(gav.Identity, Is.Not.Null.And.Not.Empty);

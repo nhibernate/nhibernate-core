@@ -62,9 +62,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2828
 
 		private async Task<Guid> CreateScenarioAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var company = new Company() {Name = "Company test"};
-			var address = new Address() {Name = "Address test"};
-			var bankAccount = new BankAccount() {Name = "Bank test"};
+			var company = new Company() { Name = "Company test" };
+			var address = new Address() { Name = "Address test" };
+			var bankAccount = new BankAccount() { Name = "Bank test" };
 			company.AddAddress(address);
 			company.AddBank(bankAccount);
 			using (ISession session = Sfi.OpenSession())

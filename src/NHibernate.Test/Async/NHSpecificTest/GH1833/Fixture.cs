@@ -26,18 +26,18 @@ namespace NHibernate.Test.NHSpecificTest.GH1833
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity {Id = "Bob", Name = "Bob"};
+				var e1 = new Entity { Id = "Bob", Name = "Bob" };
 				session.Save(e1);
 
-				var e2 = new Entity {Id = "Sally", Name = "Sally"};
+				var e2 = new Entity { Id = "Sally", Name = "Sally" };
 				session.Save(e2);
 
 				session.Flush();
 
-				var c1 = new Child {ParentName = "Bob", Name = "Max"};
+				var c1 = new Child { ParentName = "Bob", Name = "Max" };
 				session.Save(c1);
 
-				var c2 = new Child {ParentName = "sally", Name = "Cindy"};
+				var c2 = new Child { ParentName = "sally", Name = "Cindy" };
 				session.Save(c2);
 
 				transaction.Commit();

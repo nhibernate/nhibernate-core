@@ -57,7 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.NH732
 				User user = await (session.GetAsync<User>("domain\\user"));
 				Assert.AreEqual(1, user.UserToRoles.Count);
 			}
-			
+
 			using (ISession session = OpenSession())
 			{
 				await (session.DeleteAsync("from System.Object o"));

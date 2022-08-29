@@ -14,21 +14,21 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2234
 {
-  using System.Threading.Tasks;
+	using System.Threading.Tasks;
 
 	[TestFixture]
-	public class FixtureAsync: BugTestCase
+	public class FixtureAsync : BugTestCase
 	{
-	  [Test]
-	  public async Task CanQueryViaLinqAsync()
-	  {
-		using (var s = OpenSession())
+		[Test]
+		public async Task CanQueryViaLinqAsync()
 		{
-		var qry = from item in s.Query<SomethingLinq>() where item.Relation == MyUserTypes.Value1 select item;
+			using (var s = OpenSession())
+			{
+				var qry = from item in s.Query<SomethingLinq>() where item.Relation == MyUserTypes.Value1 select item;
 
-			await (qry.ToListAsync());
-			Assert.That(() => qry.ToListAsync(), Throws.Nothing);
+				await (qry.ToListAsync());
+				Assert.That(() => qry.ToListAsync(), Throws.Nothing);
+			}
 		}
-	  }
 	}
 }

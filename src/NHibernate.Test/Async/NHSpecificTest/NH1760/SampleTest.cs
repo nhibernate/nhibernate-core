@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 			using (ISession session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var customer = new Customer {Name = "Alkampfer"};
+				var customer = new Customer { Name = "Alkampfer" };
 				await (session.SaveAsync(customer, cancellationToken));
 				var testClass = new TestClass { Id = new TestClassId { Customer = customer, SomeInt = 42 }, Value = "TESTVALUE" };
 				await (session.SaveAsync(testClass, cancellationToken));
@@ -60,8 +60,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1760
 			using (ISession session = OpenSession())
 			{
 				ICriteria c =
-					session.CreateCriteria(typeof (TestClass)).CreateAlias("Id.Customer", "IdCust").Add(Restrictions.Eq("IdCust.Name",
-					                                                                                                    "Alkampfer"));
+					session.CreateCriteria(typeof(TestClass)).CreateAlias("Id.Customer", "IdCust").Add(Restrictions.Eq("IdCust.Name",
+																														"Alkampfer"));
 				IList<TestClass> retvalue = await (c.ListAsync<TestClass>());
 				criteriaCount = retvalue.Count;
 			}

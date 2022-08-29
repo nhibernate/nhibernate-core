@@ -23,9 +23,9 @@ namespace NHibernate.Test.NHSpecificTest.GH2856
 			using (var s = Sfi.OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				s.Save(new Entity {Name = "Company", Phone = new PhoneNumber("745-555-1234"),});
-				s.Save(new Entity {Name = "Bob", Phone = new PhoneNumber("745-555-1234", "x123"),});
-				s.Save(new Entity {Name = "Jane", Phone = new PhoneNumber("745-555-1235"),});
+				s.Save(new Entity { Name = "Company", Phone = new PhoneNumber("745-555-1234"), });
+				s.Save(new Entity { Name = "Bob", Phone = new PhoneNumber("745-555-1234", "x123"), });
+				s.Save(new Entity { Name = "Jane", Phone = new PhoneNumber("745-555-1235"), });
 				s.Flush();
 				t.Commit();
 			}

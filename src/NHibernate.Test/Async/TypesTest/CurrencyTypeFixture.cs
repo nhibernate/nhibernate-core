@@ -28,7 +28,7 @@ namespace NHibernate.Test.TypesTest
 		{
 			const decimal expected = 5.6435M;
 
-			var basic = new CurrencyClass {CurrencyValue = expected};
+			var basic = new CurrencyClass { CurrencyValue = expected };
 			ISession s = OpenSession();
 			object savedId = await (s.SaveAsync(basic));
 			await (s.FlushAsync());

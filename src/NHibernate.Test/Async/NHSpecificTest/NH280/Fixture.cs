@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH280
 		[Test]
 		public async Task ConstInSelectAsync()
 		{
-			using (ISession s= OpenSession())
+			using (ISession s = OpenSession())
 			{
 				Foo f = new Foo("Fiammy");
 				await (s.SaveAsync(f));
@@ -75,7 +75,7 @@ namespace NHibernate.Test.NHSpecificTest.NH280
 		{
 			using (ISession s = OpenSession())
 			{
-				Assert.ThrowsAsync<QueryException>(() =>s.CreateQuery("select 123, notRecognized, f.Description from Foo f").ListAsync());
+				Assert.ThrowsAsync<QueryException>(() => s.CreateQuery("select 123, notRecognized, f.Description from Foo f").ListAsync());
 			}
 		}
 	}

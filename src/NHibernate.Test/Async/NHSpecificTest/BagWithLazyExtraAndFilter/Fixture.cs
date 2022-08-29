@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.BagWithLazyExtraAndFilter
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync: BugTestCase
+	public class FixtureAsync : BugTestCase
 	{
 		[Test]
 		public async Task CanUseFilterForLazyExtraAsync()

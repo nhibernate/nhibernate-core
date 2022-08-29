@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1761
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
-				rc.Bag(x => x.FundingPrograms, m => {}, r => r.OneToMany());
+				rc.Bag(x => x.FundingPrograms, m => { }, r => r.OneToMany());
 			});
 			mapper.Class<FundingProgram>(rc =>
 			{

@@ -147,14 +147,14 @@ namespace NHibernate.Action
 				await (PostCommitUpdateAsync(cancellationToken)).ConfigureAwait(false);
 			}
 		}
-		
+
 		private async Task PostUpdateAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IPostUpdateEventListener[] postListeners = Session.Listeners.PostUpdateEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostUpdateEvent postEvent = new PostUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource)Session);
+				PostUpdateEvent postEvent = new PostUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource) Session);
 				foreach (IPostUpdateEventListener listener in postListeners)
 				{
 					await (listener.OnPostUpdateAsync(postEvent, cancellationToken)).ConfigureAwait(false);
@@ -168,7 +168,7 @@ namespace NHibernate.Action
 			IPostUpdateEventListener[] postListeners = Session.Listeners.PostCommitUpdateEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostUpdateEvent postEvent = new PostUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource)Session);
+				PostUpdateEvent postEvent = new PostUpdateEvent(Instance, Id, state, previousState, Persister, (IEventSource) Session);
 				foreach (IPostUpdateEventListener listener in postListeners)
 				{
 					await (listener.OnPostUpdateAsync(postEvent, cancellationToken)).ConfigureAwait(false);

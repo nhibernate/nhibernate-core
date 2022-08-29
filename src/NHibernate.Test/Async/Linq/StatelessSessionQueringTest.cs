@@ -11,8 +11,8 @@
 using System.Linq;
 using System.Text;
 using NHibernate.DomainModel.Northwind.Entities;
-using NUnit.Framework;
 using NHibernate.Linq;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {

@@ -31,16 +31,16 @@ namespace NHibernate.Type
 
 			var targetPc = target as IPersistentCollection;
 			var originalPc = original as IPersistentCollection;
-			var iterOriginal = (IDictionary<TKey, TValue>)original;
+			var iterOriginal = (IDictionary<TKey, TValue>) original;
 			var clearTargetsDirtyFlag = ShouldTargetsDirtyFlagBeCleared(targetPc, originalPc, iterOriginal);
 
-			var result = (IDictionary<TKey, TValue>)target;
+			var result = (IDictionary<TKey, TValue>) target;
 			result.Clear();
 
 			foreach (var me in iterOriginal)
 			{
-				var key = (TKey)await (cp.IndexType.ReplaceAsync(me.Key, null, session, owner, copyCache, cancellationToken)).ConfigureAwait(false);
-				var value = (TValue)await (cp.ElementType.ReplaceAsync(me.Value, null, session, owner, copyCache, cancellationToken)).ConfigureAwait(false);
+				var key = (TKey) await (cp.IndexType.ReplaceAsync(me.Key, null, session, owner, copyCache, cancellationToken)).ConfigureAwait(false);
+				var value = (TValue) await (cp.ElementType.ReplaceAsync(me.Value, null, session, owner, copyCache, cancellationToken)).ConfigureAwait(false);
 				result[key] = value;
 			}
 

@@ -34,18 +34,18 @@ namespace NHibernate.Test.NHSpecificTest.GH2673
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var role1 = new Role {Id = 1, Name = "role1"};
+				var role1 = new Role { Id = 1, Name = "role1" };
 				session.Save(role1);
-				var role2 = new Role {Id = 2, Name = "role2"};
+				var role2 = new Role { Id = 2, Name = "role2" };
 				session.Save(role2);
 
-				var r1 = new Resource() {Id = 1, Name = "r1", ResourceRole = role1};
+				var r1 = new Resource() { Id = 1, Name = "r1", ResourceRole = role1 };
 				session.Save(r1);
 
-				var r2 = new Resource() {Id = 2, Name = "r2", ResourceRole = role2};
+				var r2 = new Resource() { Id = 2, Name = "r2", ResourceRole = role2 };
 				session.Save(r2);
 
-				var r3 = new Resource() {Id = 3, Name = "r3", ResourceRole = role2};
+				var r3 = new Resource() { Id = 3, Name = "r3", ResourceRole = role2 };
 				session.Save(r3);
 
 				r1.Manager = r2;

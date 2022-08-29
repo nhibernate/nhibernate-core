@@ -9,8 +9,8 @@
 
 
 using System;
-using NHibernate.Engine;
 using System.Data;
+using NHibernate.Engine;
 
 namespace NHibernate.Type
 {

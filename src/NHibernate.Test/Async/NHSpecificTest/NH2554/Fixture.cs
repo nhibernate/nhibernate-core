@@ -15,23 +15,23 @@ namespace NHibernate.Test.NHSpecificTest.NH2554
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync: BugTestCase
+	public class FixtureAsync : BugTestCase
 	{
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
 		{
 			return (dialect is NHibernate.Dialect.MsSql2005Dialect) || (dialect is NHibernate.Dialect.MsSql2008Dialect);
 		}
-		
+
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
 			configuration.SetProperty(NHibernate.Cfg.Environment.Hbm2ddlKeyWords, "keywords");
 			base.Configure(configuration);
 		}
-		
+
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			
+
 			using (ISession session = Sfi.OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2554
 				transaction.Commit();
 			}
 		}
-		
+
 		protected override void OnTearDown()
 		{
 			using (ISession session = Sfi.OpenSession())
@@ -48,10 +48,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2554
 				session.CreateQuery("delete from Student").ExecuteUpdate();
 				transaction.Commit();
 			}
-			
+
 			base.OnTearDown();
 		}
-		
+
 		[Test]
 		public async Task TestMappedFormulasContainingSqlServerDataTypeKeywordsAsync()
 		{
@@ -67,11 +67,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2554
 				Assert.That(students[0].FullNameAsBinary256.Length, Is.EqualTo(256));
 				Assert.That(students[0].FullNameAsVarChar.Length, Is.EqualTo(14));
 				Assert.That(students[0].FullNameAsVarChar125.Length, Is.EqualTo(14));
-				
+
 				await (transaction.CommitAsync());
 			}
 		}
-		
+
 		[Test]
 		public async Task TestHqlStatementsContainingSqlServerDataTypeKeywordsAsync()
 		{
@@ -81,21 +81,21 @@ namespace NHibernate.Test.NHSpecificTest.NH2554
 				var students = await (session
 					.CreateQuery("from Student where length(convert(varbinary, FullName)) = 28")
 					.ListAsync<Student>());
-				
+
 				Assert.That(students.Count, Is.EqualTo(1));
-				
+
 				students = await (session
 					.CreateQuery("from Student where length(convert(varbinary(256), FullName)) = 28")
 					.ListAsync<Student>());
-				
+
 				Assert.That(students.Count, Is.EqualTo(1));
-				
+
 				students = await (session
 					.CreateQuery("from Student where convert(int, 1) = 1")
 					.ListAsync<Student>());
-				
+
 				Assert.That(students.Count, Is.EqualTo(1));
-				
+
 				await (transaction.CommitAsync());
 			}
 		}

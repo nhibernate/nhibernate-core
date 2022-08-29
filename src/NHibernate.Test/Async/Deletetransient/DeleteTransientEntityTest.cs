@@ -24,7 +24,7 @@ namespace NHibernate.Test.Deletetransient
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"Deletetransient.Person.hbm.xml"}; }
+			get { return new string[] { "Deletetransient.Person.hbm.xml" }; }
 		}
 
 		[Test]

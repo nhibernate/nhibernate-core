@@ -28,13 +28,13 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3280
 			using (var tx = session.BeginTransaction())
 			{
 				var person1 = new Person { FirstName = "Jack" };
-				_person1Id = (int)session.Save(person1);
+				_person1Id = (int) session.Save(person1);
 
 				var person2 = new Person { FirstName = "Robert" };
-				_person2Id = (int)session.Save(person2);
+				_person2Id = (int) session.Save(person2);
 
 				var personDetail = new PersonDetail { LastName = "Smith", Person = person1 };
-				_personDetailId = (int)session.Save(personDetail);
+				_personDetailId = (int) session.Save(personDetail);
 
 				tx.Commit();
 			}
@@ -84,7 +84,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3280
 					m.OneToOne(t => t.PersonDetail,
 							   oo =>
 								   {
-									   oo.PropertyReference(typeof (PersonDetail).GetProperty("Person"));
+									   oo.PropertyReference(typeof(PersonDetail).GetProperty("Person"));
 									   oo.Cascade(Mapping.ByCode.Cascade.All);
 								   });
 				});

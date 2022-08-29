@@ -18,8 +18,8 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
-  using System.Threading.Tasks;
-  [TestFixture]
+	using System.Threading.Tasks;
+	[TestFixture]
 	public class XDocTypeFixtureAsync : TypeFixtureBase
 	{
 		protected override string TypeName
@@ -43,8 +43,8 @@ namespace NHibernate.Test.TypesTest
 		{
 			using (var s = OpenSession())
 			{
-				var docEntity = new XDocClass {Id = 1 };
-		docEntity.Document = XDocument.Parse("<MyNode>my Text</MyNode>");
+				var docEntity = new XDocClass { Id = 1 };
+				docEntity.Document = XDocument.Parse("<MyNode>my Text</MyNode>");
 				await (s.SaveAsync(docEntity));
 				await (s.FlushAsync());
 			}
@@ -55,16 +55,16 @@ namespace NHibernate.Test.TypesTest
 				var document = docEntity.Document;
 				Assert.That(document, Is.Not.Null);
 				Assert.That(document.Document.Root.ToString(SaveOptions.DisableFormatting), Does.Contain("<MyNode>my Text</MyNode>"));
-			  var xmlElement = new XElement("Pizza", new XAttribute("temp", "calda"));
-		document.Document.Root.Add(xmlElement);
+				var xmlElement = new XElement("Pizza", new XAttribute("temp", "calda"));
+				document.Document.Root.Add(xmlElement);
 				await (s.SaveAsync(docEntity));
 				await (s.FlushAsync());
 			}
 			using (var s = OpenSession())
 			{
 				var docEntity = await (s.GetAsync<XDocClass>(1));
-		var document = docEntity.Document;
-		Assert.That(document.Document.Root.ToString(SaveOptions.DisableFormatting), Does.Contain("Pizza temp=\"calda\""));
+				var document = docEntity.Document;
+				Assert.That(document.Document.Root.ToString(SaveOptions.DisableFormatting), Does.Contain("Pizza temp=\"calda\""));
 				await (s.DeleteAsync(docEntity));
 				await (s.FlushAsync());
 			}

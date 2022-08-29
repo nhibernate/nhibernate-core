@@ -45,7 +45,7 @@ namespace NHibernate.Test.TypeParameters
 
 			Assert.That(savedId1, Is.LessThan(200), "should be work with custo parameters");
 			Assert.That(savedId1, Is.GreaterThan(99));
-			Assert.That(savedId2, Is.EqualTo((int)savedId1 + 1));
+			Assert.That(savedId2, Is.EqualTo((int) savedId1 + 1));
 
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())

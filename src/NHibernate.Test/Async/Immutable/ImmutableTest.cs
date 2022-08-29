@@ -33,17 +33,17 @@ namespace NHibernate.Test.Immutable
 			configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
 			configuration.SetProperty(NHibernate.Cfg.Environment.BatchSize, "0");
 		}
-		
+
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
 		}
-		
+
 		protected override string[] Mappings
 		{
 			get { return new string[] { "Immutable.ContractVariation.hbm.xml" }; }
 		}
-	
+
 		[Test]
 		public async Task ChangeImmutableEntityProxyToModifiableAsync()
 		{
@@ -52,9 +52,9 @@ namespace NHibernate.Test.Immutable
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-	
+
 			ClearCounts();
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
@@ -63,11 +63,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -83,7 +83,7 @@ namespace NHibernate.Test.Immutable
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-	
+
 			try
 			{
 				Assert.That(c, Is.InstanceOf<INHibernateProxy>());
@@ -98,7 +98,7 @@ namespace NHibernate.Test.Immutable
 				await (t.RollbackAsync());
 				s.Close();
 			}
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.DeleteAsync(c));
@@ -106,7 +106,7 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
@@ -119,9 +119,9 @@ namespace NHibernate.Test.Immutable
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-	
+
 			ClearCounts();
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
@@ -130,11 +130,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -150,11 +150,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
-	
+
 			try
 			{
 				Assert.That(c, Is.InstanceOf<INHibernateProxy>());
-				s.SetReadOnly(await (((INHibernateProxy)c).HibernateLazyInitializer.GetImplementationAsync(CancellationToken.None)), false);
+				s.SetReadOnly(await (((INHibernateProxy) c).HibernateLazyInitializer.GetImplementationAsync(CancellationToken.None)), false);
 			}
 			catch (System.InvalidOperationException)
 			{
@@ -165,7 +165,7 @@ namespace NHibernate.Test.Immutable
 				await (t.RollbackAsync());
 				s.Close();
 			}
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.DeleteAsync(c));
@@ -173,7 +173,7 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
@@ -186,9 +186,9 @@ namespace NHibernate.Test.Immutable
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-	
+
 			ClearCounts();
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
@@ -197,11 +197,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -222,7 +222,7 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
@@ -235,9 +235,9 @@ namespace NHibernate.Test.Immutable
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-	
+
 			ClearCounts();
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
@@ -247,11 +247,11 @@ namespace NHibernate.Test.Immutable
 			c.CustomerName = "gail";
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -272,16 +272,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task SaveImmutableAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -295,11 +295,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -320,16 +320,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task SaveOrUpdateImmutableAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -343,11 +343,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -368,22 +368,22 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task RefreshImmutableAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.SaveOrUpdateAsync(c));
@@ -392,11 +392,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			// refresh detached
@@ -415,13 +415,13 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			c.CustomerName = "joe";
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			// refresh updated detached
@@ -440,11 +440,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.DeleteAsync(c));
@@ -452,16 +452,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task ImmutableAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -475,11 +475,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -496,11 +496,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.Contains(cv2), Is.False);
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -521,16 +521,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task PersistAndUpdateImmutableAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -545,11 +545,11 @@ namespace NHibernate.Test.Immutable
 			c.CustomerName = "Sherman";
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -566,11 +566,11 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.Contains(cv2), Is.False);
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -591,16 +591,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task UpdateAndDeleteManagedImmutableAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -611,11 +611,11 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -637,7 +637,7 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
@@ -646,7 +646,7 @@ namespace NHibernate.Test.Immutable
 		public async Task GetAndDeleteManagedImmutableAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -657,11 +657,11 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.GetAsync<Contract>(c.Id));
@@ -683,16 +683,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task DeleteDetachedImmutableAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -703,11 +703,11 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.DeleteAsync(c));
@@ -715,16 +715,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(c, Is.Null);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task DeleteDetachedModifiedImmutableAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -735,27 +735,27 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.CustomerName = "Sherman";
 			await (s.DeleteAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task ImmutableParentEntityWithUpdateAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -766,31 +766,31 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.CustomerName = "foo bar";
 			await (s.UpdateAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
-			foreach(ContractVariation variation in c.Variations)
+			foreach (ContractVariation variation in c.Variations)
 			{
 				Assert.That(s.Contains(variation), Is.True);
 			}
 			await (t.CommitAsync());
 			Assert.That(s.IsReadOnly(c), Is.True);
-			foreach(ContractVariation variation in c.Variations)
+			foreach (ContractVariation variation in c.Variations)
 			{
 				Assert.That(s.Contains(variation), Is.True);
 				Assert.That(s.IsReadOnly(variation), Is.True);
 			}
 			s.Close();
-	
+
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -808,16 +808,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task ImmutableChildEntityWithUpdateAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -828,11 +828,11 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1 = c.Variations.First();
@@ -846,9 +846,9 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv1), Is.True);
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			s.Close();
-	
+
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -866,16 +866,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task ImmutableCollectionWithUpdateAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -886,10 +886,10 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.Variations.Add(new ContractVariation(3, c));
@@ -897,7 +897,7 @@ namespace NHibernate.Test.Immutable
 			try
 			{
 				await (t.CommitAsync());
-				Assert.Fail( "should have failed because reassociated object has a dirty collection");
+				Assert.Fail("should have failed because reassociated object has a dirty collection");
 			}
 			catch (HibernateException)
 			{
@@ -908,9 +908,9 @@ namespace NHibernate.Test.Immutable
 				await (t.RollbackAsync());
 				s.Close();
 			}
-	
+
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -928,16 +928,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task UnmodifiedImmutableParentEntityWithMergeAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -948,14 +948,14 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = (Contract)await (s.MergeAsync(c));
+			c = (Contract) await (s.MergeAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(NHibernateUtil.IsInitialized(c.Variations), Is.True);
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -967,9 +967,9 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(cv2), Is.True);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -987,16 +987,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task ImmutableParentEntityWithMergeAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -1007,15 +1007,15 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.CustomerName = "foo bar";
-			c = (Contract)await (s.MergeAsync(c));
+			c = (Contract) await (s.MergeAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(NHibernateUtil.IsInitialized(c.Variations), Is.True);
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1027,9 +1027,9 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(c), Is.True);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1047,16 +1047,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task ImmutableChildEntityWithMergeAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -1067,16 +1067,16 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1 = c.Variations.First();
 			cv1.Text = "blah blah";
-			c = (Contract)await (s.MergeAsync(c));
+			c = (Contract) await (s.MergeAsync(c));
 			Assert.That(s.IsReadOnly(c), Is.True);
 			Assert.That(NHibernateUtil.IsInitialized(c.Variations), Is.True);
 			IEnumerator<ContractVariation> it = c.Variations.GetEnumerator();
@@ -1088,9 +1088,9 @@ namespace NHibernate.Test.Immutable
 			Assert.That(s.IsReadOnly(c), Is.True);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1108,16 +1108,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task ImmutableCollectionWithMergeAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -1128,12 +1128,12 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
-	
+
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.Variations.Add(new ContractVariation(3, c));
@@ -1143,7 +1143,7 @@ namespace NHibernate.Test.Immutable
 				await (t.CommitAsync());
 				Assert.Fail("should have failed because an immutable collection was changed");
 			}
-			catch ( HibernateException )
+			catch (HibernateException)
 			{
 				// expected
 				await (t.RollbackAsync());
@@ -1152,7 +1152,7 @@ namespace NHibernate.Test.Immutable
 			{
 				s.Close();
 			}
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1170,16 +1170,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task NewEntityViaImmutableEntityWithImmutableCollectionUsingSaveOrUpdateAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -1190,21 +1190,21 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1.Infos.Add(new Info("cv1 info"));
 			await (s.SaveOrUpdateAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1224,16 +1224,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(4);
 		}
-	
+
 		[Test]
 		public async Task NewEntityViaImmutableEntityWithImmutableCollectionUsingMergeAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -1244,21 +1244,21 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1.Infos.Add(new Info("cv1 info"));
 			await (s.MergeAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(0);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1278,20 +1278,20 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(4);
 		}
-	
+
 		[Test]
 		public async Task UpdatedEntityViaImmutableEntityWithImmutableCollectionUsingSaveOrUpdateAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
-			Info cv1Info = new Info( "cv1 info" );
+			Info cv1Info = new Info("cv1 info");
 			cv1.Infos.Add(cv1Info);
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
@@ -1300,22 +1300,22 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1Info.Text = "new cv1 info";
 			await (s.SaveOrUpdateAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(1);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1335,20 +1335,20 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(4);
 		}
-	
+
 		[Test]
 		public async Task UpdatedEntityViaImmutableEntityWithImmutableCollectionUsingMergeAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
-			Info cv1Info = new Info( "cv1 info" );
+			Info cv1Info = new Info("cv1 info");
 			cv1.Infos.Add(cv1Info);
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
@@ -1357,22 +1357,22 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			cv1Info.Text = "new cv1 info";
 			await (s.MergeAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(1);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1392,16 +1392,16 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(4);
 		}
-	
+
 		[Test]
 		public async Task ImmutableEntityAddImmutableToInverseMutableCollectionAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
@@ -1414,29 +1414,29 @@ namespace NHibernate.Test.Immutable
 			await (s.PersistAsync(party));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.AddParty(new Party("a new party"));
 			await (s.UpdateAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c.AddParty(party);
 			await (s.UpdateAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1456,45 +1456,45 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(5); // NH-specific
 		}
-		
+
 		[Test]
 		public async Task ImmutableEntityRemoveImmutableFromInverseMutableCollectionAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-			Party party = new Party( "party1" );
+			Party party = new Party("party1");
 			c.AddParty(party);
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			party = c.Parties.First();
 			c.RemoveParty(party);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.UpdateAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1513,45 +1513,45 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(4);
 		}
-	
+
 		[Test]
 		public async Task ImmutableEntityRemoveImmutableFromInverseMutableCollectionByDeleteAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-			Party party = new Party( "party1" );
+			Party party = new Party("party1");
 			c.AddParty(party);
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			party = c.Parties.First();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.DeleteAsync(party));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1570,52 +1570,52 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task ImmutableEntityRemoveImmutableFromInverseMutableCollectionByDerefAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gavin", "phone");
 			ContractVariation cv1 = new ContractVariation(1, c);
 			cv1.Text = "expensive";
 			ContractVariation cv2 = new ContractVariation(2, c);
 			cv2.Text = "more expensive";
-			Party party = new Party( "party1" );
+			Party party = new Party("party1");
 			c.AddParty(party);
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			party = c.Parties.First();
 			party.Contract = null;
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.UpdateAsync(party));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			party = await (s.GetAsync<Party>(party.Id));
 			Assert.That(party.Contract, Is.Not.Null);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
@@ -1629,7 +1629,7 @@ namespace NHibernate.Test.Immutable
 			cv2 = it.Current;
 			Assert.That(cv2.Text, Is.EqualTo("more expensive"));
 			Assert.That(c.Parties.Count, Is.EqualTo(1));
-		    party = c.Parties.First();
+			party = c.Parties.First();
 			Assert.That(party.Name, Is.EqualTo("party1"));
 			Assert.That(party.Contract, Is.SameAs(c));
 			await (s.DeleteAsync(c));
@@ -1637,21 +1637,21 @@ namespace NHibernate.Test.Immutable
 			Assert.That(await (s.CreateCriteria<ContractVariation>().SetProjection(Projections.RowCount()).UniqueResultAsync()), Is.EqualTo(0));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(4);
 		}
-		
+
 		protected void ClearCounts()
 		{
 			Sfi.Statistics.Clear();
 		}
-		
+
 		protected void AssertUpdateCount(int count)
 		{
 			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(count), "unexpected update counts");
 		}
-		
+
 		protected void AssertInsertCount(int count)
 		{
 			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(count), "unexpected insert counts");

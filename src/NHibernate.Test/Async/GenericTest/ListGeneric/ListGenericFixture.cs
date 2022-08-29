@@ -86,26 +86,26 @@ namespace NHibernate.Test.GenericTest.ListGeneric
 
 			B b1 = new B();
 			b1.Name = "b1";
-			a.Items.Add( b1 );
+			a.Items.Add(b1);
 
 			B b2 = new B();
 			b2.Name = "b2";
-			a.Items.Add( b2 );
+			a.Items.Add(b2);
 
 			A copiedA;
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				copiedA = await (s.MergeAsync(a));
 				await (t.CommitAsync());
 			}
 
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				A loadedA = await (s.GetAsync<A>( copiedA.Id ));
-				Assert.IsNotNull( loadedA );
-				await (s.DeleteAsync( loadedA ));
+				A loadedA = await (s.GetAsync<A>(copiedA.Id));
+				Assert.IsNotNull(loadedA);
+				await (s.DeleteAsync(loadedA));
 				await (t.CommitAsync());
 			}
 		}

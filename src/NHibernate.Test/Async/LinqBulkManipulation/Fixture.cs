@@ -303,7 +303,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 		[Test(Description = "GH2594")]
 		public async Task InsertIntoWithSubqueryAsync()
 		{
-			if(!Dialect.SupportsScalarSubSelects)
+			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore("Dialect does not support scalar sub-select");
 
 			using (var s = OpenSession())
@@ -326,7 +326,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 		[Test]
 		public async Task UpdateWithSubqueryAsync()
 		{
-			if(!TestDialect.SupportsModifyAndSelectSameTable || !Dialect.SupportsScalarSubSelects)
+			if (!TestDialect.SupportsModifyAndSelectSameTable || !Dialect.SupportsScalarSubSelects)
 				Assert.Ignore("Not supported by dialect");
 
 			using (var s = OpenSession())
@@ -349,10 +349,10 @@ namespace NHibernate.Test.LinqBulkManipulation
 		[Test]
 		public async Task MultiTableUpdateWithSubqueryAsync()
 		{
-			if (!Dialect.SupportsTemporaryTables) 
+			if (!Dialect.SupportsTemporaryTables)
 				Assert.Ignore("Cannot perform multi-table updates using dialect not supporting temp tables.");
 
-			if(!TestDialect.SupportsModifyAndSelectSameTable || !Dialect.SupportsScalarSubSelects)
+			if (!TestDialect.SupportsModifyAndSelectSameTable || !Dialect.SupportsScalarSubSelects)
 				Assert.Ignore("Not supported by dialect");
 
 			using (var s = OpenSession())
@@ -1063,7 +1063,7 @@ namespace NHibernate.Test.LinqBulkManipulation
 		[Test]
 		public async Task DeleteWithSubquery2Async()
 		{
-			if(!TestDialect.SupportsModifyAndSelectSameTable || !Dialect.SupportsScalarSubSelects)
+			if (!TestDialect.SupportsModifyAndSelectSameTable || !Dialect.SupportsScalarSubSelects)
 				Assert.Ignore("Not supported by dialect");
 
 			using (var s = OpenSession())

@@ -9,8 +9,8 @@
 
 
 using System;
-using NUnit.Framework;
 using NHibernate.Test.Immutable.EntityWithMutableCollection;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 {
@@ -25,24 +25,24 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 				return new string[] { "Immutable.EntityWithMutableCollection.Inverse.ContractVariationVersionedOneToManyJoin.hbm.xml" };
 			}
 		}
-		
+
 		protected override bool CheckUpdateCountsAfterAddingExistingElement()
 		{
 			return false;
 		}
-	
+
 		protected override bool CheckUpdateCountsAfterRemovingElementWithoutDelete()
 		{
 			return false;
 		}
-		
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override Task AddExistingOneToManyElementToPersistentEntityAsync()
 		{
 			return Task.CompletedTask;
 		}
-		
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override Task CreateWithEmptyOneToManyCollectionUpdateWithExistingElementAsync()
@@ -56,14 +56,14 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 		{
 			return Task.CompletedTask;
 		}
-		
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override Task CreateWithNonEmptyOneToManyCollectionOfExistingAsync()
 		{
 			return Task.CompletedTask;
 		}
-			
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override Task DeleteOneToManyElementAsync()

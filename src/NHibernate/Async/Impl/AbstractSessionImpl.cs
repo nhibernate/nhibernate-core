@@ -50,7 +50,7 @@ namespace NHibernate.Impl
 		public virtual async Task<IList> ListAsync(IQueryExpression queryExpression, QueryParameters parameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var results = (IList)typeof(List<>)
+			var results = (IList) typeof(List<>)
 				.MakeGenericType(queryExpression.Type)
 				.GetConstructor(System.Type.EmptyTypes)
 				.Invoke(null);
@@ -99,7 +99,7 @@ namespace NHibernate.Impl
 		public async Task<IList> ListFilterAsync(object collection, IQueryExpression queryExpression, QueryParameters parameters, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var results = (IList)typeof(List<>).MakeGenericType(queryExpression.Type)
+			var results = (IList) typeof(List<>).MakeGenericType(queryExpression.Type)
 									.GetConstructor(System.Type.EmptyTypes)
 									.Invoke(null);
 

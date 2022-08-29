@@ -137,7 +137,7 @@ namespace NHibernate.Test.Hql.Ast
 
 			await (s.CreateQuery(
 				"insert into Animal (description, bodyWeight, mother) select description, bodyWeight, :mother from Human")
-				.SetEntity("mother",mother)
+				.SetEntity("mother", mother)
 				.ExecuteUpdateAsync());
 
 			await (t.CommitAsync());
@@ -227,7 +227,7 @@ namespace NHibernate.Test.Hql.Ast
 		public async Task InsertWithGeneratedIdAsync()
 		{
 			// Make sure the env supports bulk inserts with generated ids...
-			IEntityPersister persister = Sfi.GetEntityPersister(typeof (PettingZoo).FullName);
+			IEntityPersister persister = Sfi.GetEntityPersister(typeof(PettingZoo).FullName);
 			IIdentifierGenerator generator = persister.IdentifierGenerator;
 			if (!HqlSqlWalker.SupportsIdGenWithBulkInsertion(generator))
 			{
@@ -235,7 +235,7 @@ namespace NHibernate.Test.Hql.Ast
 			}
 
 			// create a Zoo
-			var zoo = new Zoo {Name = "zoo"};
+			var zoo = new Zoo { Name = "zoo" };
 
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
@@ -270,7 +270,7 @@ namespace NHibernate.Test.Hql.Ast
 		public async Task InsertWithGeneratedVersionAndIdAsync()
 		{
 			// Make sure the env supports bulk inserts with generated ids...
-			IEntityPersister persister = Sfi.GetEntityPersister(typeof (IntegerVersioned).FullName);
+			IEntityPersister persister = Sfi.GetEntityPersister(typeof(IntegerVersioned).FullName);
 			IIdentifierGenerator generator = persister.IdentifierGenerator;
 			if (!HqlSqlWalker.SupportsIdGenWithBulkInsertion(generator))
 			{
@@ -280,7 +280,7 @@ namespace NHibernate.Test.Hql.Ast
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			var entity = new IntegerVersioned {Name = "int-vers"};
+			var entity = new IntegerVersioned { Name = "int-vers" };
 			await (s.SaveAsync(entity));
 			await (s.CreateQuery("select id, name, version from IntegerVersioned").ListAsync());
 			await (t.CommitAsync());
@@ -321,7 +321,7 @@ namespace NHibernate.Test.Hql.Ast
 		public async Task InsertWithGeneratedTimestampVersionAsync()
 		{
 			// Make sure the env supports bulk inserts with generated ids...
-			IEntityPersister persister = Sfi.GetEntityPersister(typeof (TimestampVersioned).FullName);
+			IEntityPersister persister = Sfi.GetEntityPersister(typeof(TimestampVersioned).FullName);
 			IIdentifierGenerator generator = persister.IdentifierGenerator;
 			if (!HqlSqlWalker.SupportsIdGenWithBulkInsertion(generator))
 			{
@@ -331,7 +331,7 @@ namespace NHibernate.Test.Hql.Ast
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			var entity = new TimestampVersioned {Name = "int-vers"};
+			var entity = new TimestampVersioned { Name = "int-vers" };
 			await (s.SaveAsync(entity));
 			await (s.CreateQuery("select id, name, version from TimestampVersioned").ListAsync());
 			await (t.CommitAsync());
@@ -394,9 +394,9 @@ namespace NHibernate.Test.Hql.Ast
 			// multi-table ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
-			var joe = new Human {Name = new Name {First = "Joe", Initial = 'Q', Last = "Public"}};
+			var joe = new Human { Name = new Name { First = "Joe", Initial = 'Q', Last = "Public" } };
 			await (s.SaveAsync(joe));
-			var doll = new Human {Name = new Name {First = "Kyu", Initial = 'P', Last = "Doll"}, Friends = new[] {joe}};
+			var doll = new Human { Name = new Name { First = "Kyu", Initial = 'P', Last = "Doll" }, Friends = new[] { joe } };
 			await (s.SaveAsync(doll));
 			await (t.CommitAsync());
 			s.Close();
@@ -458,7 +458,7 @@ namespace NHibernate.Test.Hql.Ast
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				entity = new IntegerVersioned {Name = "int-vers", Data = "foo"};
+				entity = new IntegerVersioned { Name = "int-vers", Data = "foo" };
 				await (s.SaveAsync(entity));
 				await (t.CommitAsync());
 			}
@@ -495,7 +495,7 @@ namespace NHibernate.Test.Hql.Ast
 			TimestampVersioned entity;
 
 			using (ISession s = OpenSession())
-			using(ITransaction t = s.BeginTransaction())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				entity = new TimestampVersioned { Name = "ts-vers", Data = "foo" };
 				await (s.SaveAsync(entity));
@@ -536,7 +536,7 @@ namespace NHibernate.Test.Hql.Ast
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			var human = new Human {Name = new Name {First = "Stevee", Initial = 'X', Last = "Ebersole"}};
+			var human = new Human { Name = new Name { First = "Stevee", Initial = 'X', Last = "Ebersole" } };
 
 			await (s.SaveAsync(human));
 			await (t.CommitAsync());
@@ -583,9 +583,9 @@ namespace NHibernate.Test.Hql.Ast
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 
-			var human = new Human {Name = new Name {First = "Steve", Initial = 'E', Last = null}};
+			var human = new Human { Name = new Name { First = "Steve", Initial = 'E', Last = null } };
 
-			var mother = new Human {Name = new Name {First = "Jane", Initial = 'E', Last = null}};
+			var mother = new Human { Name = new Name { First = "Jane", Initial = 'E', Last = null } };
 			human.Mother = (mother);
 
 			await (s.SaveAsync(human));
@@ -662,7 +662,7 @@ namespace NHibernate.Test.Hql.Ast
 
 			count =
 				await (s.CreateQuery("update Animal set description = :newDesc where description = :desc")
-				.SetString("desc",data.Polliwog.Description)
+				.SetString("desc", data.Polliwog.Description)
 				.SetString("newDesc", "Tadpole")
 				.ExecuteUpdateAsync());
 			Assert.That(count, Is.EqualTo(1), "Incorrect entity-updated count");
@@ -704,7 +704,7 @@ namespace NHibernate.Test.Hql.Ast
 						.SetString("newDesc", "Tadpole")
 						.SetSingle("w1", 3)
 						.ExecuteUpdateAsync());
-				
+
 				Assert.That(count, Is.EqualTo(1));
 				await (t.CommitAsync());
 			}
@@ -830,10 +830,10 @@ namespace NHibernate.Test.Hql.Ast
 		[Test]
 		public async Task UpdateMultitableWithWhereExistsSubqueryAsync()
 		{
-			if (!Dialect.SupportsTemporaryTables) 
+			if (!Dialect.SupportsTemporaryTables)
 				Assert.Ignore("Cannot perform multi-table updates using dialect not supporting temp tables.");
 
-			if(!Dialect.SupportsScalarSubSelects)
+			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore("Dialect does not support scalar sub-select");
 
 			using (var s = OpenSession())
@@ -1101,18 +1101,18 @@ namespace NHibernate.Test.Hql.Ast
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				var owner = new SimpleEntityWithAssociation {Name = "myEntity-1"};
+				var owner = new SimpleEntityWithAssociation { Name = "myEntity-1" };
 				owner.AddAssociation("assoc-1");
 				owner.AddAssociation("assoc-2");
 				owner.AddAssociation("assoc-3");
 				await (s.SaveAsync(owner, cancellationToken));
-				var owner2 = new SimpleEntityWithAssociation {Name = "myEntity-2"};
+				var owner2 = new SimpleEntityWithAssociation { Name = "myEntity-2" };
 				owner2.AddAssociation("assoc-1");
 				owner2.AddAssociation("assoc-2");
 				owner2.AddAssociation("assoc-3");
 				owner2.AddAssociation("assoc-4");
 				await (s.SaveAsync(owner2, cancellationToken));
-				var owner3 = new SimpleEntityWithAssociation {Name = "myEntity-3"};
+				var owner3 = new SimpleEntityWithAssociation { Name = "myEntity-3" };
 				await (s.SaveAsync(owner3, cancellationToken));
 				await (t.CommitAsync(cancellationToken));
 				s.Close();
@@ -1153,16 +1153,16 @@ namespace NHibernate.Test.Hql.Ast
 				ISession s = tc.OpenNewSession();
 				ITransaction txn = s.BeginTransaction();
 
-				Polliwog = new Animal {BodyWeight = 12, Description = "Polliwog"};
+				Polliwog = new Animal { BodyWeight = 12, Description = "Polliwog" };
 
-				Catepillar = new Animal {BodyWeight = 10, Description = "Catepillar"};
+				Catepillar = new Animal { BodyWeight = 10, Description = "Catepillar" };
 
-				Frog = new Animal {BodyWeight = 34, Description = "Frog"};
+				Frog = new Animal { BodyWeight = 34, Description = "Frog" };
 
 				Polliwog.Father = Frog;
 				Frog.AddOffspring(Polliwog);
 
-				Butterfly = new Animal {BodyWeight = 9, Description = "Butterfly"};
+				Butterfly = new Animal { BodyWeight = 9, Description = "Butterfly" };
 
 				Catepillar.Mother = Butterfly;
 				Butterfly.AddOffspring(Catepillar);
@@ -1172,36 +1172,36 @@ namespace NHibernate.Test.Hql.Ast
 				await (s.SaveAsync(Butterfly, cancellationToken));
 				await (s.SaveAsync(Catepillar, cancellationToken));
 
-				var dog = new Dog {BodyWeight = 200, Description = "dog"};
+				var dog = new Dog { BodyWeight = 200, Description = "dog" };
 				await (s.SaveAsync(dog, cancellationToken));
 
-				var cat = new Cat {BodyWeight = 100, Description = "cat"};
+				var cat = new Cat { BodyWeight = 100, Description = "cat" };
 				await (s.SaveAsync(cat, cancellationToken));
 
-				Zoo = new Zoo {Name = "Zoo"};
-				var add = new Address {City = "MEL", Country = "AU", Street = "Main st", PostalCode = "3000"};
+				Zoo = new Zoo { Name = "Zoo" };
+				var add = new Address { City = "MEL", Country = "AU", Street = "Main st", PostalCode = "3000" };
 				Zoo.Address = add;
 
-				PettingZoo = new PettingZoo {Name = "Petting Zoo"};
-				var addr = new Address {City = "Sydney", Country = "AU", Street = "High st", PostalCode = "2000"};
+				PettingZoo = new PettingZoo { Name = "Petting Zoo" };
+				var addr = new Address { City = "Sydney", Country = "AU", Street = "High st", PostalCode = "2000" };
 				PettingZoo.Address = addr;
 
 				await (s.SaveAsync(Zoo, cancellationToken));
 				await (s.SaveAsync(PettingZoo, cancellationToken));
 
-				var joiner = new Joiner {JoinedName = "joined-name", Name = "name"};
+				var joiner = new Joiner { JoinedName = "joined-name", Name = "name" };
 				await (s.SaveAsync(joiner, cancellationToken));
 
-				var car = new Car {Vin = "123c", Owner = "Kirsten"};
+				var car = new Car { Vin = "123c", Owner = "Kirsten" };
 				await (s.SaveAsync(car, cancellationToken));
 
-				var truck = new Truck {Vin = "123t", Owner = "Steve"};
+				var truck = new Truck { Vin = "123t", Owner = "Steve" };
 				await (s.SaveAsync(truck, cancellationToken));
 
-				var suv = new SUV {Vin = "123s", Owner = "Joe"};
+				var suv = new SUV { Vin = "123s", Owner = "Joe" };
 				await (s.SaveAsync(suv, cancellationToken));
 
-				var pickup = new Pickup {Vin = "123p", Owner = "Cecelia"};
+				var pickup = new Pickup { Vin = "123p", Owner = "Cecelia" };
 				await (s.SaveAsync(pickup, cancellationToken));
 
 				var b = new BooleanLiteralEntity();

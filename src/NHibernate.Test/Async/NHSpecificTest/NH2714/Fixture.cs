@@ -32,9 +32,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2714
 		[Test]
 		public async Task PropertyRefUsesOtherColumnsAsync()
 		{
-			var information = new Information {Name = "First", ExtraId = ExtraId};
+			var information = new Information { Name = "First", ExtraId = ExtraId };
 
-			var item = new Item {Id = 1, Name = information.Name, ExtraId = information.ExtraId};
+			var item = new Item { Id = 1, Name = information.Name, ExtraId = information.ExtraId };
 
 			using (ISession session = OpenSession())
 			{
@@ -53,9 +53,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2714
 		[Test]
 		public async Task ChildKeyPropertiesOfParentAreRetrievedAsync()
 		{
-			var information = new Information {Name = "First", ExtraId = ExtraId};
+			var information = new Information { Name = "First", ExtraId = ExtraId };
 
-			var item = new Item {Id = 1, Name = information.Name, ExtraId = information.ExtraId};
+			var item = new Item { Id = 1, Name = information.Name, ExtraId = information.ExtraId };
 
 			using (ISession session = OpenSession())
 			{

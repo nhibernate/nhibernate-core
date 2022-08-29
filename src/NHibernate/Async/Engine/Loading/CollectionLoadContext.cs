@@ -88,7 +88,7 @@ namespace NHibernate.Engine.Loading
 			// in a temp collection.  the temp collection is then used to "drive"
 			// the #endRead processing.
 			List<CollectionKey> toRemove = new List<CollectionKey>();
-			List<LoadingCollectionEntry> matches =new List<LoadingCollectionEntry>();
+			List<LoadingCollectionEntry> matches = new List<LoadingCollectionEntry>();
 			foreach (CollectionKey collectionKey in localLoadingCollectionKeys)
 			{
 				ISessionImplementor session = LoadContext.PersistenceContext.Session;
@@ -96,7 +96,7 @@ namespace NHibernate.Engine.Loading
 				LoadingCollectionEntry lce = loadContexts.LocateLoadingCollectionEntry(collectionKey);
 				if (lce == null)
 				{
-					log.Warn("In CollectionLoadContext#endLoadingCollections, localLoadingCollectionKeys contained [{0}], but no LoadingCollectionEntry was found in loadContexts", 
+					log.Warn("In CollectionLoadContext#endLoadingCollections, localLoadingCollectionKeys contained [{0}], but no LoadingCollectionEntry was found in loadContexts",
 						collectionKey);
 				}
 				else if (lce.ResultSet == resultSet && lce.Persister == persister)
@@ -133,7 +133,7 @@ namespace NHibernate.Engine.Loading
 		}
 
 		private async Task EndLoadingCollectionsAsync(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, bool skipCache,
-		                                   CacheBatcher cacheBatcher = null, CancellationToken cancellationToken = default(CancellationToken))
+										   CacheBatcher cacheBatcher = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
@@ -157,7 +157,7 @@ namespace NHibernate.Engine.Loading
 			for (int i = 0; i < count; i++)
 			{
 				await (EndLoadingCollectionAsync(
-					matchedCollectionEntries[i], 
+					matchedCollectionEntries[i],
 					persister,
 					data => cacheBatcher.AddToBatch(persister, data),
 					skipCache, cancellationToken)).ConfigureAwait(false);
@@ -172,7 +172,7 @@ namespace NHibernate.Engine.Loading
 		}
 
 		private async Task EndLoadingCollectionAsync(
-			LoadingCollectionEntry lce, 
+			LoadingCollectionEntry lce,
 			ICollectionPersister persister,
 			Action<CachePutData> cacheBatchingHandler,
 			bool skipCache, CancellationToken cancellationToken)
@@ -240,7 +240,7 @@ namespace NHibernate.Engine.Loading
 		/// <param name="cacheBatchingHandler">The action for handling cache batching</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		private async Task AddCollectionToCacheAsync(LoadingCollectionEntry lce, ICollectionPersister persister,
-		                                  Action<CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
+										  Action<CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
@@ -295,8 +295,8 @@ namespace NHibernate.Engine.Loading
 			else
 			{
 				bool put = await (persister.Cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(entry),
-				                               session.Timestamp, version, versionComparator,
-				                               factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh, cancellationToken)).ConfigureAwait(false);
+											   session.Timestamp, version, versionComparator,
+											   factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh, cancellationToken)).ConfigureAwait(false);
 
 				if (put && factory.Statistics.IsStatisticsEnabled)
 				{

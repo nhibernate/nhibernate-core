@@ -8,14 +8,14 @@
 //------------------------------------------------------------------------------
 
 
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using log4net;
 using NHibernate.Criterion;
 using NUnit.Framework;
-using System;
-using System.Collections;
-using System.Data;
-using System.Data.Common;
 
 namespace NHibernate.Test.Join
 {
@@ -36,7 +36,7 @@ namespace NHibernate.Test.Join
 		{
 			get
 			{
-				return new string[] { 
+				return new string[] {
 					"Join.Person.hbm.xml",
 					"Subclass.Subclass.hbm.xml"
 				};
@@ -111,8 +111,8 @@ namespace NHibernate.Test.Join
 				Assert.AreEqual(1, customers.Count);
 				s.Clear();
 
-				mark = (Employee) await (s.GetAsync(typeof (Employee), mark.Id));
-				joe = (Customer) await (s.GetAsync(typeof (Customer), joe.Id));
+				mark = (Employee) await (s.GetAsync(typeof(Employee), mark.Id));
+				joe = (Customer) await (s.GetAsync(typeof(Customer), joe.Id));
 
 				mark.Zip = "30306";
 				await (s.FlushAsync());
@@ -195,7 +195,7 @@ namespace NHibernate.Test.Join
 			{
 				int count = ExecuteStatement(s, tx,
 					string.Format("insert into inversed_stuff (stuff_id, StuffName) values ({0}, '{1}')",
-					              p.Id, stuffName));
+								  p.Id, stuffName));
 				Assert.AreEqual(1, count, "Insert statement failed.");
 			}
 
@@ -211,7 +211,7 @@ namespace NHibernate.Test.Join
 				string stuffName = "name of the stuff";
 				Person p = await (PreparePersonWithInverseJoinAsync(s, tx, "John", stuffName));
 
-				Person result = (Person) await (s.GetAsync(typeof (Person), p.Id));
+				Person result = (Person) await (s.GetAsync(typeof(Person), p.Id));
 				Assert.IsNotNull(result);
 				Assert.AreEqual(stuffName, result.StuffName);
 
@@ -231,14 +231,14 @@ namespace NHibernate.Test.Join
 
 				Person p = await (PreparePersonWithInverseJoinAsync(s, tx, "John", stuffName));
 
-				Person personToUpdate = (Person) await (s.GetAsync(typeof (Person), p.Id));
+				Person personToUpdate = (Person) await (s.GetAsync(typeof(Person), p.Id));
 				Assert.IsNotNull(personToUpdate);
 
 				personToUpdate.StuffName = "new stuff name";
 				await (s.FlushAsync());
 				s.Clear();
 
-				Person loaded = (Person) await (s.GetAsync(typeof (Person), p.Id));
+				Person loaded = (Person) await (s.GetAsync(typeof(Person), p.Id));
 				Assert.AreEqual(stuffName, loaded.StuffName, "StuffName should not have been updated");
 
 				ExecuteStatement(s, tx, "delete from inversed_stuff");
@@ -260,7 +260,7 @@ namespace NHibernate.Test.Join
 				await (s.FlushAsync());
 				s.Clear();
 
-				Person result = (Person) await (s.GetAsync(typeof (Person), p.Id));
+				Person result = (Person) await (s.GetAsync(typeof(Person), p.Id));
 				Assert.IsNotNull(result);
 				Assert.IsNull(result.StuffName);
 
@@ -314,7 +314,7 @@ namespace NHibernate.Test.Join
 			p.Country = "Canada";
 			p.HomePhone = "555-1234";
 			p.BusinessPhone = "555-4321";
-			p.OthersPhones = new HashSet<string> {"555-9876", "555-6789"};
+			p.OthersPhones = new HashSet<string> { "555-9876", "555-6789" };
 			return p;
 		}
 
@@ -327,7 +327,7 @@ namespace NHibernate.Test.Join
 			if (!string.Equals(x.Country, y.Country)) return false;
 			if (!string.Equals(x.HomePhone, y.HomePhone)) return false;
 			if (!string.Equals(x.BusinessPhone, y.BusinessPhone)) return false;
-			if(x.OthersPhones.Count != y.OthersPhones.Count)
+			if (x.OthersPhones.Count != y.OthersPhones.Count)
 			{
 				return false;
 			}
@@ -363,7 +363,7 @@ namespace NHibernate.Test.Join
 				await (s.FlushAsync());
 				s.Clear();
 
-				Person p = (Person) await (s.GetAsync(typeof (Person), john.Id));
+				Person p = (Person) await (s.GetAsync(typeof(Person), john.Id));
 				Assert.IsTrue(PersonsAreEqual(john, p));
 
 				await (tx.CommitAsync());
@@ -378,7 +378,7 @@ namespace NHibernate.Test.Join
 			{
 				Person[] people = await (CreateAndInsertPersonsAsync(s, 3));
 
-				ICriteria criteria = s.CreateCriteria(typeof (Person))
+				ICriteria criteria = s.CreateCriteria(typeof(Person))
 					.Add(Expression.Eq("Name", people[1].Name));
 				IList list = await (criteria.ListAsync());
 
@@ -421,7 +421,7 @@ namespace NHibernate.Test.Join
 
 			p.Title = title;
 			p.Salary = 100;
-			p.Meetings.Add(new Meeting {Employee = p, Description = "salary definition"});
+			p.Meetings.Add(new Meeting { Employee = p, Description = "salary definition" });
 			p.Meetings.Add(new Meeting { Employee = p, Description = "targets definition" });
 			return p;
 		}
@@ -520,7 +520,7 @@ namespace NHibernate.Test.Join
 			{
 				Employee[] employees = await (CreateAndInsertEmployeesAsync(s, 3));
 
-				Employee emp0 = (Employee) await (s.GetAsync(typeof (Employee), employees[0].Id));
+				Employee emp0 = (Employee) await (s.GetAsync(typeof(Employee), employees[0].Id));
 				Assert.IsNotNull(emp0);
 				emp0.Address = "Address";
 				emp0.BusinessPhone = "BusinessPhone";
@@ -539,7 +539,7 @@ namespace NHibernate.Test.Join
 				await (s.FlushAsync());
 				s.Clear();
 
-				Employee emp0updated = (Employee) await (s.GetAsync(typeof (Employee), employees[0].Id));
+				Employee emp0updated = (Employee) await (s.GetAsync(typeof(Employee), employees[0].Id));
 				Assert.IsTrue(EmployeesAreEqual(emp0, emp0updated));
 
 				await (tx.CommitAsync());
@@ -559,7 +559,7 @@ namespace NHibernate.Test.Join
 				await (s.FlushAsync());
 				s.Clear();
 
-				SubclassOne result = (SubclassOne) await (s.GetAsync(typeof (SubclassBase), one.Id));
+				SubclassOne result = (SubclassOne) await (s.GetAsync(typeof(SubclassBase), one.Id));
 				Assert.IsNotNull(result);
 				Assert.IsTrue(result is SubclassOne);
 
@@ -576,7 +576,7 @@ namespace NHibernate.Test.Join
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				Employee[] employees = await (CreateAndInsertEmployeesAsync(s, 1));
-				Employee emp0 = (Employee) await (s.GetAsync(typeof (Person), employees[0].Id));
+				Employee emp0 = (Employee) await (s.GetAsync(typeof(Person), employees[0].Id));
 				Assert.IsNotNull(emp0);
 				Assert.IsTrue(emp0 is Employee);
 

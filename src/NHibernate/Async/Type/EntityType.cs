@@ -10,15 +10,15 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Text;
+using NHibernate.Action;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
-using System.Collections.Generic;
-using NHibernate.Action;
 
 namespace NHibernate.Type
 {
@@ -33,7 +33,7 @@ namespace NHibernate.Type
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return NullSafeGetAsync(rs, new string[] {name}, session, owner, cancellationToken);
+			return NullSafeGetAsync(rs, new string[] { name }, session, owner, cancellationToken);
 		}
 
 		protected internal Task<object> GetIdentifierAsync(object value, ISessionImplementor session, CancellationToken cancellationToken)
@@ -160,7 +160,7 @@ namespace NHibernate.Type
 			cancellationToken.ThrowIfCancellationRequested();
 			string entityName = GetAssociatedEntityName();
 			bool isProxyUnwrapEnabled = unwrapProxy && session.Factory
-			                                                  .GetEntityPersister(entityName).IsInstrumented;
+															  .GetEntityPersister(entityName).IsInstrumented;
 
 			object proxyOrEntity = await (session.InternalLoadAsync(entityName, id, eager, IsNullable && !isProxyUnwrapEnabled, cancellationToken)).ConfigureAwait(false);
 

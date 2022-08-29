@@ -96,13 +96,13 @@ namespace NHibernate.Test.Linq.ByMethod
 			using (var sqlSpy = new SqlLogSpy())
 			{
 				var orders = await (db.Orders
-				               .LeftJoin(
-					               db.Orders,
-					               x => new {x.OrderId, x.Customer.CustomerId},
-					               x => new {x.OrderId, x.Customer.CustomerId},
-					               (order, order1) => new {order, order1})
-				               .Select(x => new {FirstId = x.order.OrderId, SecondId = x.order1.OrderId})
-				               .ToListAsync());
+							   .LeftJoin(
+								   db.Orders,
+								   x => new { x.OrderId, x.Customer.CustomerId },
+								   x => new { x.OrderId, x.Customer.CustomerId },
+								   (order, order1) => new { order, order1 })
+							   .Select(x => new { FirstId = x.order.OrderId, SecondId = x.order1.OrderId })
+							   .ToListAsync());
 
 				var sql = sqlSpy.GetWholeLog();
 				Assert.That(orders.Count, Is.EqualTo(830));
@@ -155,14 +155,14 @@ namespace NHibernate.Test.Linq.ByMethod
 			using (var sqlSpy = new SqlLogSpy())
 			{
 				var total = await (db.Orders
-				                .LeftJoin(
-					                db.OrderLines,
-					                x => x,
-					                x => x.Order,
-					                (order, line) => new { order, line })
-				                
-				                .Select(x => new { x.order.OrderId, x.line.Discount })
-				                .CountAsync());
+								.LeftJoin(
+									db.OrderLines,
+									x => x,
+									x => x.Order,
+									(order, line) => new { order, line })
+
+								.Select(x => new { x.order.OrderId, x.line.Discount })
+								.CountAsync());
 				var sql = sqlSpy.GetWholeLog();
 				Assert.That(total, Is.EqualTo(2155));
 				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
@@ -181,8 +181,8 @@ namespace NHibernate.Test.Linq.ByMethod
 								   x => x.Id,
 								   (animal, mammal) => new { animal, mammal })
 							   .Where(x => x.mammal.SerialNumber.StartsWith("9"))
-							   .Select(x=>x.animal);
-				
+							   .Select(x => x.animal);
+
 				var animals = await (db.Animals
 							   .LeftJoin(
 								   innerAnimals,
@@ -224,13 +224,13 @@ namespace NHibernate.Test.Linq.ByMethod
 			using (var sqlSpy = new SqlLogSpy())
 			{
 				var total = await (db.Animals
-				              .LeftJoin(
-					              db.Mammals,
-					              x => x.Id,
-					              x => x.Id,
-					              (animal, mammal) => new {animal, mammal})
-				              .Select(x => x.animal)
-				              .CountAsync());
+							  .LeftJoin(
+								  db.Mammals,
+								  x => x.Id,
+								  x => x.Id,
+								  (animal, mammal) => new { animal, mammal })
+							  .Select(x => x.animal)
+							  .CountAsync());
 
 				var sql = sqlSpy.GetWholeLog();
 				Assert.That(total, Is.EqualTo(6));
@@ -266,14 +266,14 @@ namespace NHibernate.Test.Linq.ByMethod
 			using (var sqlSpy = new SqlLogSpy())
 			{
 				var total = await (db.Animals
-				              .LeftJoin(
-					              db.Mammals,
-					              x => x.Id,
-					              x => x.Id,
-					              (animal, mammal) => new {animal, mammal})
-				              .OrderBy(x => x.mammal.SerialNumber ?? "z")
-				              .Select(x => new {SerialNumber = x.animal.SerialNumber})
-				              .CountAsync());
+							  .LeftJoin(
+								  db.Mammals,
+								  x => x.Id,
+								  x => x.Id,
+								  (animal, mammal) => new { animal, mammal })
+							  .OrderBy(x => x.mammal.SerialNumber ?? "z")
+							  .Select(x => new { SerialNumber = x.animal.SerialNumber })
+							  .CountAsync());
 
 				var sql = sqlSpy.GetWholeLog();
 				Assert.That(total, Is.EqualTo(6));
@@ -297,9 +297,9 @@ namespace NHibernate.Test.Linq.ByMethod
 				substitute.Value.SupportsCrossJoin.Returns(useCrossJoin);
 
 				var result = await ((from o in db.Orders
-							from o2 in db.Orders.Where(x => x.Freight > 50)
-							where (o.OrderId == o2.OrderId + 1) || (o.OrderId == o2.OrderId - 1)
-							select new { o.OrderId, OrderId2 = o2.OrderId }).ToListAsync());
+							  from o2 in db.Orders.Where(x => x.Freight > 50)
+							  where (o.OrderId == o2.OrderId + 1) || (o.OrderId == o2.OrderId - 1)
+							  select new { o.OrderId, OrderId2 = o2.OrderId }).ToListAsync());
 
 				var sql = sqlSpy.GetWholeLog();
 				Assert.That(result.Count, Is.EqualTo(720));
@@ -312,8 +312,8 @@ namespace NHibernate.Test.Linq.ByMethod
 		public async Task CanJoinOnEntityWithSubclassesAsync()
 		{
 			var result = await ((from o in db.Animals
-						from o2 in db.Animals.Where(x => x.BodyWeight > 50)
-						select new {o, o2}).Take(1).ToListAsync());
+						  from o2 in db.Animals.Where(x => x.BodyWeight > 50)
+						  select new { o, o2 }).Take(1).ToListAsync());
 		}
 
 		[Test]
@@ -333,8 +333,8 @@ namespace NHibernate.Test.Linq.ByMethod
 		public async Task CanInnerJoinOnSubclassWithBaseTableReferenceInOnClauseAsync()
 		{
 			var result = await ((from o in db.Animals
-			              join o2 in db.Mammals on o.BodyWeight equals o2.BodyWeight
-			              select new { o, o2 }).Take(1).ToListAsync());
+						  join o2 in db.Mammals on o.BodyWeight equals o2.BodyWeight
+						  select new { o, o2 }).Take(1).ToListAsync());
 		}
 
 		[Test(Description = "GH-2805")]

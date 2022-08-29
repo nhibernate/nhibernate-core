@@ -84,7 +84,7 @@ namespace NHibernate.Test.Criteria
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
-		
+
 		//check JoinEntityQueryOver - JoinQueryOver analog for entity join
 		[Test]
 		public async Task CanJoinEntityQueryOverAsync()
@@ -104,7 +104,7 @@ namespace NHibernate.Test.Criteria
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
-		
+
 		//check JoinEntityQueryOver - JoinQueryOver analog for entity join
 		[Test]
 		public async Task CanJoinEntityQueryOver_ExpressionAsync()
@@ -124,7 +124,7 @@ namespace NHibernate.Test.Criteria
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
-		
+
 		//can join not associated entity and join associated entities for it via JoinQueryOver
 		[Test]
 		public async Task CanQueryOverForAssociationInNotAssociatedEntityAsync()
@@ -162,7 +162,7 @@ namespace NHibernate.Test.Criteria
 							.Select((e) => ejComplex.Name)
 							.Take(1)
 							.SingleOrDefaultAsync<string>());
-				
+
 				Assert.That(name, Is.Not.Empty);
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
@@ -189,8 +189,8 @@ namespace NHibernate.Test.Criteria
 						)
 						.SingleOrDefaultAsync<object[]>());
 				var rootObj = (EntityComplex) r[0];
-				var mappedObj =  (EntityComplex) r[1];
-				var entityJoinObj =  (EntitySimpleChild) r[2];
+				var mappedObj = (EntityComplex) r[1];
+				var entityJoinObj = (EntitySimpleChild) r[2];
 
 				Assert.That(rootObj, Is.Not.Null);
 				Assert.That(mappedObj, Is.Not.Null);
@@ -267,8 +267,8 @@ namespace NHibernate.Test.Criteria
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 #pragma warning restore CS8073 //The result of the expression is always 'false'
-		}	
-		
+		}
+
 		[Test]
 		public async Task NullLeftEntityJoinWithEntityProjectionAsync()
 		{
@@ -301,7 +301,7 @@ namespace NHibernate.Test.Criteria
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				EntityCustomEntityName ejCustomEntity= null;
+				EntityCustomEntityName ejCustomEntity = null;
 				EntityWithNoAssociation root = null;
 				root = await (session.QueryOver(() => root)
 							.JoinEntityAlias(() => ejCustomEntity, Restrictions.Where(() => ejCustomEntity.Id == root.CustomEntityNameId), JoinType.InnerJoin, customEntityName)
@@ -314,14 +314,14 @@ namespace NHibernate.Test.Criteria
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
-		
+
 		[Test]
 		public async Task EntityJoinForCustomEntityName_ExpressionAsync()
 		{
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				EntityCustomEntityName ejCustomEntity= null;
+				EntityCustomEntityName ejCustomEntity = null;
 				EntityWithNoAssociation root = null;
 				root = await (session.QueryOver(() => root)
 							.JoinEntityAlias(() => ejCustomEntity, () => ejCustomEntity.Id == root.CustomEntityNameId, JoinType.InnerJoin, customEntityName)
@@ -362,7 +362,7 @@ namespace NHibernate.Test.Criteria
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
 			}
 		}
-		
+
 		[Test]
 		public async Task EntityJoinFoSubquery_JoinQueryOverAsync()
 		{
@@ -440,7 +440,7 @@ namespace NHibernate.Test.Criteria
 
 					rc.Property(e => e.Name);
 				});
-			
+
 			mapper.Class<EntityWithCompositeId>(
 				rc =>
 				{

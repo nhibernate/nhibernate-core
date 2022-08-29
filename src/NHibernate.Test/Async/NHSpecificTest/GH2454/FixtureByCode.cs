@@ -59,23 +59,23 @@ namespace NHibernate.Test.NHSpecificTest.GH2454
 			using (var transaction = session.BeginTransaction())
 			{
 				// alpha entities
-				var projectAlpha = new Project {Name = "Alpha"};
+				var projectAlpha = new Project { Name = "Alpha" };
 				session.Save(projectAlpha);
 
-				var componentAlpha = new Component {Project = projectAlpha, Name = "Thingie"};
+				var componentAlpha = new Component { Project = projectAlpha, Name = "Thingie" };
 				session.Save(componentAlpha);
 
-				var tagAlpha = new Tag {Component1 = componentAlpha, Name = "A20"};
+				var tagAlpha = new Tag { Component1 = componentAlpha, Name = "A20" };
 				session.Save(tagAlpha);
 
 				// beta entities
-				var projectBeta = new Project {Name = "Beta"};
+				var projectBeta = new Project { Name = "Beta" };
 				session.Save(projectBeta);
 
-				var componentBeta = new Component {Project = projectBeta, Name = "Thingie"};
+				var componentBeta = new Component { Project = projectBeta, Name = "Thingie" };
 				session.Save(componentBeta);
 
-				var tagBeta = new Tag {Component1 = componentBeta, Name = "B17"};
+				var tagBeta = new Tag { Component1 = componentBeta, Name = "B17" };
 				session.Save(tagBeta);
 
 				transaction.Commit();
@@ -123,7 +123,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2454
 				// run query
 				var results = await (tagCriteria.ListAsync());
 
-				Assert.That(results, Is.EquivalentTo(new[] {"B17"}));
+				Assert.That(results, Is.EquivalentTo(new[] { "B17" }));
 			}
 		}
 	}

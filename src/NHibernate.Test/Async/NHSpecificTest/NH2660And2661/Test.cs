@@ -36,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2660And2661
 			base.OnTearDown();
 			using (ISession session = OpenSession())
 			{
-								session.CreateQuery("delete from DomainClass").ExecuteUpdate();
+				session.CreateQuery("delete from DomainClass").ExecuteUpdate();
 				session.Flush();
 			}
 		}
@@ -46,21 +46,21 @@ namespace NHibernate.Test.NHSpecificTest.NH2660And2661
 			return dialect is MsSql2008Dialect;
 		}
 
-				protected override void Configure(Configuration configuration)
-				{
-					// to be sure we are using the new drive
-					base.Configure(configuration);
-					configuration.DataBaseIntegration(x=> x.Driver<Sql2008ClientDriver>());
-				}
+		protected override void Configure(Configuration configuration)
+		{
+			// to be sure we are using the new drive
+			base.Configure(configuration);
+			configuration.DataBaseIntegration(x => x.Driver<Sql2008ClientDriver>());
+		}
 
 		[Test]
 		public void ShouldBeAbleToQueryEntityAsync()
 		{
 			using (ISession session = OpenSession())
 			{
-			   var query =
-					session.CreateQuery(
-						@"from DomainClass entity where Data = :data");
+				var query =
+					 session.CreateQuery(
+						 @"from DomainClass entity where Data = :data");
 				query.SetParameter("data", DateTime.Parse("10:00"), NHibernateUtil.Time);
 				Assert.That(() => query.ListAsync(), Throws.Nothing);
 			}

@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2347
 				var totalQuantity = await ((from e in session.Query<Entity>()
 									 select e).SumAsync(x => (long) x.Quantity));
 
-				const long expected = (long)int.MaxValue + int.MaxValue;
+				const long expected = (long) int.MaxValue + int.MaxValue;
 				Assert.That(totalQuantity, Is.EqualTo(expected));
 			}
 		}
@@ -51,8 +51,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2347
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.Save(new Entity {Quantity = int.MaxValue});
-				session.Save(new Entity {Quantity = int.MaxValue});
+				session.Save(new Entity { Quantity = int.MaxValue });
+				session.Save(new Entity { Quantity = int.MaxValue });
 
 				session.Flush();
 				transaction.Commit();

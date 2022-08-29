@@ -11,11 +11,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq.Dynamic.Core;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using Antlr.Runtime.Misc;
-using NUnit.Framework;
 using NHibernate.Criterion;
+using NUnit.Framework;
 using NHibernate.Linq;
 
 namespace NHibernate.Test.EntityModeTest.Map.Basic
@@ -32,7 +32,7 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"EntityModeTest.Map.Basic.ProductLine.hbm.xml"}; }
+			get { return new[] { "EntityModeTest.Map.Basic.ProductLine.hbm.xml" }; }
 		}
 
 		public delegate IDictionary SingleCarQueryDelegate(ISession session);
@@ -76,7 +76,7 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 				hsv["Name"] = "hsv";
 				hsv["Description"] = "Holden hsv";
 
-				models = new List<IDictionary> {monaro, hsv};
+				models = new List<IDictionary> { monaro, hsv };
 
 				cars["Models"] = models;
 
@@ -88,7 +88,7 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 			{
 				t = s.BeginTransaction();
 				cars = singleCarQueryHandler(s);
-				models = (IList)cars["Models"];
+				models = (IList) cars["Models"];
 				Assert.IsFalse(NHibernateUtil.IsInitialized(models));
 				Assert.AreEqual(2, models.Count);
 				Assert.IsTrue(NHibernateUtil.IsInitialized(models));
@@ -98,8 +98,8 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 				{
 					Assert.IsFalse(NHibernateUtil.IsInitialized(ht["ProductLine"]));
 				}
-				var model = (IDictionary)list[0];
-				Assert.IsTrue(((IList)((IDictionary)model["ProductLine"])["Models"]).Contains(model));
+				var model = (IDictionary) list[0];
+				Assert.IsTrue(((IList) ((IDictionary) model["ProductLine"])["Models"]).Contains(model));
 				s.Clear();
 
 				await (t.CommitAsync(cancellationToken));
@@ -161,7 +161,7 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 					["Description"] = "Holden hsv"
 				};
 
-				var models = new List<IDictionary<string, object>> {monaro, hsv};
+				var models = new List<IDictionary<string, object>> { monaro, hsv };
 
 				cars["Models"] = models;
 
@@ -210,7 +210,7 @@ namespace NHibernate.Test.EntityModeTest.Map.Basic
 				hsv.Name = "hsv";
 				hsv.Description = "Holden hsv";
 
-				var models = new List<dynamic> {monaro, hsv};
+				var models = new List<dynamic> { monaro, hsv };
 
 				cars.Models = models;
 

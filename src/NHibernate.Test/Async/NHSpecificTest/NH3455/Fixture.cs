@@ -23,13 +23,19 @@ namespace NHibernate.Test.NHSpecificTest.NH3455
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new Person { Name = "Bob", Age = 31, Weight = 185, Address = new Address
+				var e1 = new Person
+				{
+					Name = "Bob",
+					Age = 31,
+					Weight = 185,
+					Address = new Address
 					{
 						City = "Abington",
 						State = "VA",
 						Street = "Avenue",
 						Zip = "11121"
-					}};
+					}
+				};
 				session.Save(e1);
 
 				var e2 = new Person
@@ -93,9 +99,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3455
 			using (session.BeginTransaction())
 			{
 				var selectList = Projections.ProjectionList()
-				                            .Add(Projections.Property("Id"), "Id")
-				                            .Add(Projections.Property("Name"), "Name")
-				                            .Add(Projections.Property("Address"), "Address")
+											.Add(Projections.Property("Id"), "Id")
+											.Add(Projections.Property("Name"), "Name")
+											.Add(Projections.Property("Address"), "Address")
 											.Add(Projections.Property("Age"), "Age");
 				var order = new Order("Age", false);
 				var people = await (session.CreateCriteria<Person>()

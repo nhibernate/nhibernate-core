@@ -33,13 +33,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1552
 				{
 					MyClass newServ = new MyClass();
 					newServ.Name = "tuna";
-                    MyClass newServ2 = new MyClass();
-                    newServ2.Name = "sidar";
-                    MyClass newServ3 = new MyClass();
-                    newServ3.Name = "berker";
+					MyClass newServ2 = new MyClass();
+					newServ2.Name = "sidar";
+					MyClass newServ3 = new MyClass();
+					newServ3.Name = "berker";
 					session.Save(newServ);
-                    session.Save(newServ2);
-                    session.Save(newServ3);
+					session.Save(newServ2);
+					session.Save(newServ3);
 					tran.Commit();
 				}
 			}
@@ -69,48 +69,48 @@ namespace NHibernate.Test.NHSpecificTest.NH1552
 						.SetFirstResult(1)
 						.ListAsync<MyClass>());
 					Assert.That(list.Count, Is.EqualTo(2));
-				    Assert.That(list[0].Name, Is.EqualTo("sidar"));
-                    Assert.That(list[1].Name, Is.EqualTo("tuna"));
+					Assert.That(list[0].Name, Is.EqualTo("sidar"));
+					Assert.That(list[1].Name, Is.EqualTo("tuna"));
 				}
 			}
 		}
 
-        [Test]
-        public async Task Paging_with_sql_works_as_expected_with_MaxResultAsync()
-        {
-            using (var session = this.OpenSession())
-            {
-                using (var tran = session.BeginTransaction())
-                {
-                    string sql = "select * from MyClass order by Name asc";
-                    IList<MyClass> list = await (session.CreateSQLQuery(sql)
-                        .AddEntity(typeof(MyClass))
-                        .SetMaxResults(2)
-                        .ListAsync<MyClass>());
-                    Assert.That(list.Count, Is.EqualTo(2));
-                    Assert.That(list[0].Name, Is.EqualTo("berker"));
-                    Assert.That(list[1].Name, Is.EqualTo("sidar"));
-                }
-            }
-        }
+		[Test]
+		public async Task Paging_with_sql_works_as_expected_with_MaxResultAsync()
+		{
+			using (var session = this.OpenSession())
+			{
+				using (var tran = session.BeginTransaction())
+				{
+					string sql = "select * from MyClass order by Name asc";
+					IList<MyClass> list = await (session.CreateSQLQuery(sql)
+						.AddEntity(typeof(MyClass))
+						.SetMaxResults(2)
+						.ListAsync<MyClass>());
+					Assert.That(list.Count, Is.EqualTo(2));
+					Assert.That(list[0].Name, Is.EqualTo("berker"));
+					Assert.That(list[1].Name, Is.EqualTo("sidar"));
+				}
+			}
+		}
 
-        [Test]
-        public async Task Paging_with_sql_works_as_expected_with_FirstResultMaxResultAsync()
-        {
-            using (var session = this.OpenSession())
-            {
-                using (var tran = session.BeginTransaction())
-                {
-                    string sql = "select * from MyClass";
-                    IList<MyClass> list = await (session.CreateSQLQuery(sql)
-                        .AddEntity(typeof(MyClass))
-                        .SetFirstResult(1)
-                        .SetMaxResults(1)
-                        .ListAsync<MyClass>());
-                    Assert.That(list.Count, Is.EqualTo(1));
-                    Assert.That(list[0].Name, Is.EqualTo("sidar"));
-                }
-            }
-        }
+		[Test]
+		public async Task Paging_with_sql_works_as_expected_with_FirstResultMaxResultAsync()
+		{
+			using (var session = this.OpenSession())
+			{
+				using (var tran = session.BeginTransaction())
+				{
+					string sql = "select * from MyClass";
+					IList<MyClass> list = await (session.CreateSQLQuery(sql)
+						.AddEntity(typeof(MyClass))
+						.SetFirstResult(1)
+						.SetMaxResults(1)
+						.ListAsync<MyClass>());
+					Assert.That(list.Count, Is.EqualTo(1));
+					Assert.That(list[0].Name, Is.EqualTo("sidar"));
+				}
+			}
+		}
 	}
 }

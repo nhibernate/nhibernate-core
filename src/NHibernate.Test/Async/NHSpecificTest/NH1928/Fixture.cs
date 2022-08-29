@@ -16,14 +16,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1928
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-        [Test]
-        public async Task SqlCommentAtBeginningOfLineAsync()
-        {
-            using (ISession session = OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
-            {
-                var query = session.CreateSQLQuery(
-                    @"
+		[Test]
+		public async Task SqlCommentAtBeginningOfLineAsync()
+		{
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
+			{
+				var query = session.CreateSQLQuery(
+					@"
 select 1
 from 
     Customer 
@@ -32,11 +32,11 @@ where
     Name = 'Joe'
     and Age > 50
 ");
-   
-                Assert.DoesNotThrowAsync(() => query.ListAsync());
-                await (tx.CommitAsync());
-            }
-        }
+
+				Assert.DoesNotThrowAsync(() => query.ListAsync());
+				await (tx.CommitAsync());
+			}
+		}
 
 		[Test]
 		public async Task SqlCommentAtBeginningOfLastLineAsync()
@@ -59,14 +59,14 @@ where
 			}
 		}
 
-        [Test]
-        public async Task SqlCommentAfterBeginningOfLineAsync()
-        {
-            using (ISession session = OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
-            {
-                var query = session.CreateSQLQuery(
-                    @"
+		[Test]
+		public async Task SqlCommentAfterBeginningOfLineAsync()
+		{
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
+			{
+				var query = session.CreateSQLQuery(
+					@"
 select 1
 from 
     Customer 
@@ -76,9 +76,9 @@ where
     and Age > 50
 ");
 
-                Assert.DoesNotThrowAsync(() => query.ListAsync());
-                await (tx.CommitAsync());
-            }
-        }
-    }
+				Assert.DoesNotThrowAsync(() => query.ListAsync());
+				await (tx.CommitAsync());
+			}
+		}
+	}
 }

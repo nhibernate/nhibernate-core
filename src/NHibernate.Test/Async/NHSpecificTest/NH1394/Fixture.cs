@@ -72,7 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 		{
 			using (ISession s = OpenSession())
 			{
-				ICriteria c = s.CreateCriteria(typeof (Person)).AddOrder(Order.Desc(Projections.Property("IQ")));
+				ICriteria c = s.CreateCriteria(typeof(Person)).AddOrder(Order.Desc(Projections.Property("IQ")));
 				IList<Person> list = await (c.ListAsync<Person>());
 
 				for (int i = 0; i < list.Count - 1; i++)
@@ -92,11 +92,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 			{
 				using (new SqlLogSpy())
 				{
-                    DetachedCriteria dc = DetachedCriteria.For<Person>("sub");
+					DetachedCriteria dc = DetachedCriteria.For<Person>("sub");
 					dc.CreateCriteria("Pets", "pets").SetProjection(Projections.Min("pets.Weight")).Add(
 						Restrictions.EqProperty("this.Id", "sub.Id"));
 
-					ICriteria c = s.CreateCriteria(typeof (Person)).AddOrder(Order.Asc(Projections.SubQuery(dc)));
+					ICriteria c = s.CreateCriteria(typeof(Person)).AddOrder(Order.Asc(Projections.SubQuery(dc)));
 					Console.WriteLine("list()");
 					IList<Person> list = await (c.ListAsync<Person>());
 					int nullRelationOffSet = 2;
@@ -124,7 +124,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 				dc.CreateCriteria("Pets", "pets").SetProjection(Projections.Min("pets.Weight")).Add(
 					Restrictions.EqProperty("this.Id", "sub.Id"));
 
-				ICriteria c = s.CreateCriteria(typeof (Person)).AddOrder(Order.Desc(Projections.SubQuery(dc)));
+				ICriteria c = s.CreateCriteria(typeof(Person)).AddOrder(Order.Desc(Projections.SubQuery(dc)));
 				IList<Person> list = await (c.ListAsync<Person>());
 
 				int nullRelationOffSet = 0;
@@ -133,8 +133,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 					// Oracle order NULL First (DESC)
 					nullRelationOffSet = 2;
 				}
-				Assert.AreEqual(list[nullRelationOffSet+2].Name, "Tim");
-				Assert.AreEqual(list[nullRelationOffSet+1].Name, "Joe");
+				Assert.AreEqual(list[nullRelationOffSet + 2].Name, "Tim");
+				Assert.AreEqual(list[nullRelationOffSet + 1].Name, "Joe");
 				Assert.AreEqual(list[nullRelationOffSet].Name, "Sally");
 			}
 		}
@@ -146,9 +146,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 			{
 				ISQLFunction arithmaticAddition = new VarArgsSQLFunction("(", "+", ")");
 				ICriteria c =
-					s.CreateCriteria(typeof (Person)).AddOrder(
-						Order.Asc(Projections.SqlFunction(arithmaticAddition, NHibernateUtil.GuessType(typeof (double)),
-						                                  Projections.Property("IQ"), Projections.Property("ShoeSize"))));
+					s.CreateCriteria(typeof(Person)).AddOrder(
+						Order.Asc(Projections.SqlFunction(arithmaticAddition, NHibernateUtil.GuessType(typeof(double)),
+														  Projections.Property("IQ"), Projections.Property("ShoeSize"))));
 				IList<Person> list = await (c.ListAsync<Person>());
 
 				for (int i = 0; i < list.Count - 1; i++)
@@ -165,9 +165,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 			{
 				ISQLFunction arithmaticAddition = new VarArgsSQLFunction("(", "+", ")");
 				ICriteria c =
-					s.CreateCriteria(typeof (Person)).AddOrder(
-						Order.Desc(Projections.SqlFunction(arithmaticAddition, NHibernateUtil.GuessType(typeof (double)),
-						                                   Projections.Property("IQ"), Projections.Property("ShoeSize"))));
+					s.CreateCriteria(typeof(Person)).AddOrder(
+						Order.Desc(Projections.SqlFunction(arithmaticAddition, NHibernateUtil.GuessType(typeof(double)),
+														   Projections.Property("IQ"), Projections.Property("ShoeSize"))));
 				IList<Person> list = await (c.ListAsync<Person>());
 
 				for (int i = 0; i < list.Count - 1; i++)

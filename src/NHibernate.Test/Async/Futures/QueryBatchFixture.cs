@@ -250,7 +250,7 @@ namespace NHibernate.Test.Futures
 			{
 				var ecFutureList = session.QueryOver<EntityEager>().Future();
 
-				foreach(var ec in await (ecFutureList.GetEnumerableAsync()))
+				foreach (var ec in await (ecFutureList.GetEnumerableAsync()))
 				{
 					//trouble causes ec.ChildrenListEager with eager select mapping
 					Assert.DoesNotThrowAsync(() => session.RefreshAsync(ec), "session.Refresh should not throw exception");
@@ -508,7 +508,7 @@ namespace NHibernate.Test.Futures
 					new EntityEager
 					{
 						Name = "EagerManyToOneAssociation",
-						EagerEntity = new EntityEagerChild {Name = "association"}
+						EagerEntity = new EntityEagerChild { Name = "association" }
 					}));
 				await (t.CommitAsync());
 			}
@@ -520,7 +520,7 @@ namespace NHibernate.Test.Futures
 				s.QueryOver<EntityEager>().Fetch(SelectMode.Skip, x => x.EagerEntity).Future();
 				await (s.QueryOver<EntityEager>().Fetch(SelectMode.Fetch, x => x.EagerEntity).Future().GetEnumerableAsync());
 
-				if(SupportsMultipleQueries)
+				if (SupportsMultipleQueries)
 					Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			}
 		}

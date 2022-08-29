@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1796Generic
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync: BugTestCase
+	public class FixtureAsync : BugTestCase
 	{
 		[Test]
 		public async Task MergeAsync()

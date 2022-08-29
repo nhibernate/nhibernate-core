@@ -25,7 +25,7 @@ namespace NHibernate.Test.UserCollection
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"UserCollection.UserPermissions.hbm.xml"}; }
+			get { return new string[] { "UserCollection.UserPermissions.hbm.xml" }; }
 		}
 
 		[Test]

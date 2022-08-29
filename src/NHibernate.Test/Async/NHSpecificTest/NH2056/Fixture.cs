@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2056
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync:BugTestCase
+	public class FixtureAsync : BugTestCase
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{

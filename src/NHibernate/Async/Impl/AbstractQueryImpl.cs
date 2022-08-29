@@ -11,6 +11,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql;
@@ -19,10 +23,6 @@ using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace NHibernate.Impl
 {
@@ -47,7 +47,7 @@ namespace NHibernate.Impl
 			}
 			else
 			{
-				return (T)result;
+				return (T) result;
 			}
 		}
 

@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1324
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				int? result = await (s.CreateCriteria(typeof (Person))
+				int? result = await (s.CreateCriteria(typeof(Person))
 					.SetProjection(Projections.Property("IQ"))
 					.UniqueResultAsync<int?>());
 				Assert.IsNull(result);

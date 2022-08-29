@@ -45,7 +45,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				try
 				{
 					CheckParametersExpectedType(parameters); // NH Different behavior (NH-1898)
-					// Create a copy of Parameters as ExpandDynamicFilterParameters may modify it
+															 // Create a copy of Parameters as ExpandDynamicFilterParameters may modify it
 					var parameterSpecifications = Parameters.ToList();
 					var sqlString = FilterHelper.ExpandDynamicFilterParameters(sql, parameterSpecifications, session);
 					var sqlQueryParametersList = sqlString.GetParameters().ToList();

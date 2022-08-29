@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1391
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class Fixture2Async:BugTestCase
+	public class Fixture2Async : BugTestCase
 	{
 		object _personId;
 
@@ -61,8 +61,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1391
 			{
 				var personWithAnimals = await (session.GetAsync<PersonWithAllTypes>(_personId));
 				Assert.That(personWithAnimals.AnimalsGeneric, Has.Count.EqualTo(4));
-				Assert.That(personWithAnimals.CatsGeneric,Has.Count.EqualTo(1));
-				Assert.That(personWithAnimals.DogsGeneric,Has.Count.EqualTo(2));
+				Assert.That(personWithAnimals.CatsGeneric, Has.Count.EqualTo(1));
+				Assert.That(personWithAnimals.DogsGeneric, Has.Count.EqualTo(2));
 				Assert.That(personWithAnimals.SivasKangalsGeneric, Has.Count.EqualTo(1));
 			}
 		}

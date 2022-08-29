@@ -126,8 +126,8 @@ namespace NHibernate.Test.Operations
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					p = new Person {Name = "steve"};
-					a = new Address {StreetAddress = "123 Main", City = "Austin", Country = "US", Resident = p};
+					p = new Person { Name = "steve" };
+					a = new Address { StreetAddress = "123 Main", City = "Austin", Country = "US", Resident = p };
 					await (s.PersistAsync(a));
 					await (s.PersistAsync(p));
 					await (tx.CommitAsync());
@@ -167,8 +167,8 @@ namespace NHibernate.Test.Operations
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				p = new Person {Name = "steve"};
-				new PersonalDetails {SomePersonalDetail = "I have big feet", Person = p};
+				p = new Person { Name = "steve" };
+				new PersonalDetails { SomePersonalDetail = "I have big feet", Person = p };
 				await (s.PersistAsync(p));
 				await (tx.CommitAsync());
 			}
@@ -330,7 +330,7 @@ namespace NHibernate.Test.Operations
 			AssertUpdateCount(1);
 			ClearCounts();
 
-			await (Sfi.EvictAsync(typeof (NumberedNode)));
+			await (Sfi.EvictAsync(typeof(NumberedNode)));
 
 			var child2 = new NumberedNode("child2", RoundForDialect(DateTime.Now));
 			var grandchild3 = new NumberedNode("grandchild3", RoundForDialect(DateTime.Now));
@@ -418,7 +418,7 @@ namespace NHibernate.Test.Operations
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				competition = new Competition();
-				competition.Competitors.Add(new Competitor {Name = "Name"});
+				competition.Competitors.Add(new Competitor { Name = "Name" });
 				competition.Competitors.Add(new Competitor());
 				competition.Competitors.Add(new Competitor());
 				await (s.PersistAsync(competition));
@@ -460,8 +460,8 @@ namespace NHibernate.Test.Operations
 		[Test]
 		public async Task MergeStaleVersionFailsAsync()
 		{
-			var entity = new VersionedEntity {Id = "entity", Name = "entity"};
-			using(ISession s = OpenSession())
+			var entity = new VersionedEntity { Id = "entity", Name = "entity" };
+			using (ISession s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				await (s.PersistAsync(entity));
@@ -469,7 +469,7 @@ namespace NHibernate.Test.Operations
 			}
 
 			// make the detached 'entity' reference stale...
-			using(var s = OpenSession())
+			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				var entity2 = await (s.GetAsync<VersionedEntity>(entity.Id));
@@ -515,7 +515,7 @@ namespace NHibernate.Test.Operations
 				Created = RoundForDialect(DateTime.Now),
 				Name = "child"
 			};
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				root.AddChild(child);
@@ -537,7 +537,7 @@ namespace NHibernate.Test.Operations
 
 			root.AddChild(secondChild);
 
-			using(var s = OpenSession())
+			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
 				await (s.MergeAsync(root));
@@ -555,7 +555,7 @@ namespace NHibernate.Test.Operations
 
 			var root = new NumberedNode("root", RoundForDialect(DateTime.Now));
 			var child = new NumberedNode("child", RoundForDialect(DateTime.Now));
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				root.AddChild(child);
@@ -573,7 +573,7 @@ namespace NHibernate.Test.Operations
 
 			root.AddChild(secondChild);
 
-			using(var s = OpenSession())
+			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
 				await (s.MergeAsync(root));
@@ -592,7 +592,7 @@ namespace NHibernate.Test.Operations
 				Created = RoundForDialect(DateTime.Now),
 				Name = "test"
 			};
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				await (s.PersistAsync(node));
@@ -603,7 +603,7 @@ namespace NHibernate.Test.Operations
 
 			// node is now detached, but we have made no changes.  so attempt to merge it
 			// into this new session; this should cause no updates...
-			using(var s = OpenSession())
+			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				node = (Node) await (s.MergeAsync(node));
@@ -617,7 +617,7 @@ namespace NHibernate.Test.Operations
 			// as a control measure, now update the node while it is detached and
 			// make sure we get an update as a result...
 			node.Description = "new description";
-			using(var s = OpenSession())
+			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				node = (Node) await (s.MergeAsync(node));
@@ -631,7 +631,7 @@ namespace NHibernate.Test.Operations
 		[Test]
 		public async Task NoExtraUpdatesOnMergeVersionedAsync()
 		{
-			var entity = new VersionedEntity {Id = "entity", Name = "entity"};
+			var entity = new VersionedEntity { Id = "entity", Name = "entity" };
 			using (ISession s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
@@ -659,7 +659,7 @@ namespace NHibernate.Test.Operations
 			// as a control measure, now update the node while it is detached and
 			// make sure we get an update as a result...
 			entity.Name = "new name";
-			using(var s = OpenSession())
+			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				entity = (VersionedEntity) await (s.MergeAsync(entity));
@@ -673,10 +673,10 @@ namespace NHibernate.Test.Operations
 		[Test]
 		public async Task NoExtraUpdatesOnMergeVersionedWithCollectionAsync()
 		{
-			var parent = new VersionedEntity {Id = "parent", Name = "parent"};
-			var child = new VersionedEntity {Id = "child", Name = "child"};
+			var parent = new VersionedEntity { Id = "parent", Name = "parent" };
+			var child = new VersionedEntity { Id = "child", Name = "child" };
 
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				parent.Children.Add(child);
@@ -690,7 +690,7 @@ namespace NHibernate.Test.Operations
 			// parent is now detached, but we have made no changes.  so attempt to merge it
 			// into this new session; this should cause no updates...
 			VersionedEntity mergedParent;
-			using(var s = OpenSession())
+			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				mergedParent = (VersionedEntity) await (s.MergeAsync(parent));
@@ -709,8 +709,8 @@ namespace NHibernate.Test.Operations
 			// as a control measure, now update the node while it is detached and
 			// make sure we get an update as a result...
 			mergedParent.Name = "new name";
-			mergedParent.Children.Add(new VersionedEntity {Id = "child2", Name = "new child"});
-			using(var s = OpenSession())
+			mergedParent.Children.Add(new VersionedEntity { Id = "child2", Name = "new child" });
+			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				parent = (VersionedEntity) await (s.MergeAsync(mergedParent));
@@ -729,7 +729,7 @@ namespace NHibernate.Test.Operations
 				Created = RoundForDialect(DateTime.Now),
 				Name = "parent"
 			};
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				var child = new Node
@@ -747,7 +747,7 @@ namespace NHibernate.Test.Operations
 
 			// parent is now detached, but we have made no changes.  so attempt to merge it
 			// into this new session; this should cause no updates...
-			using(var s = OpenSession())
+			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				parent = (Node) await (s.MergeAsync(parent));
@@ -769,7 +769,7 @@ namespace NHibernate.Test.Operations
 					Created = RoundForDialect(DateTime.Now),
 					Name = "second child"
 				});
-			using(var s = OpenSession())
+			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				parent = (Node) await (s.MergeAsync(parent));
@@ -783,17 +783,17 @@ namespace NHibernate.Test.Operations
 		[Test]
 		public async Task PersistThenMergeInSameTxnWithTimestampAsync()
 		{
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				var entity = new TimestampedEntity {Id = "test", Name = "test"};
+				var entity = new TimestampedEntity { Id = "test", Name = "test" };
 				await (s.PersistAsync(entity));
-				await (s.MergeAsync(new TimestampedEntity {Id = "test", Name = "test-2"}));
+				await (s.MergeAsync(new TimestampedEntity { Id = "test", Name = "test-2" }));
 
 				try
 				{
 					// control operation...
-					await (s.SaveOrUpdateAsync(new TimestampedEntity {Id = "test", Name = "test-3"}));
+					await (s.SaveOrUpdateAsync(new TimestampedEntity { Id = "test", Name = "test-3" }));
 					Assert.Fail("saveOrUpdate() should fail here");
 				}
 				catch (NonUniqueObjectException)
@@ -808,17 +808,17 @@ namespace NHibernate.Test.Operations
 		[Test]
 		public async Task PersistThenMergeInSameTxnWithVersionAsync()
 		{
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				var entity = new VersionedEntity {Id = "test", Name = "test"};
+				var entity = new VersionedEntity { Id = "test", Name = "test" };
 				await (s.PersistAsync(entity));
-				await (s.MergeAsync(new VersionedEntity {Id = "test", Name = "test-2"}));
+				await (s.MergeAsync(new VersionedEntity { Id = "test", Name = "test-2" }));
 
 				try
 				{
 					// control operation...
-					await (s.SaveOrUpdateAsync(new VersionedEntity {Id = "test", Name = "test-3"}));
+					await (s.SaveOrUpdateAsync(new VersionedEntity { Id = "test", Name = "test-3" }));
 					Assert.Fail("saveOrUpdate() should fail here");
 				}
 				catch (NonUniqueObjectException)
@@ -842,7 +842,7 @@ namespace NHibernate.Test.Operations
 				{
 					var jboss = new Employer();
 					var gavin = new Employee();
-					jboss.Employees = new List<Employee> {gavin};
+					jboss.Employees = new List<Employee> { gavin };
 					await (s.MergeAsync(jboss));
 					await (s.FlushAsync());
 					jboss = await (s.CreateQuery("from Employer e join fetch e.Employees").UniqueResultAsync<Employer>());

@@ -311,7 +311,7 @@ namespace NHibernate.Cache
 				}
 				else
 				{
-					cacheable.Add(await (TypeHelper.DisassembleAsync((object[])row, returnTypes, null, session, null, cancellationToken)).ConfigureAwait(false));
+					cacheable.Add(await (TypeHelper.DisassembleAsync((object[]) row, returnTypes, null, session, null, cancellationToken)).ConfigureAwait(false));
 				}
 			}
 

@@ -402,7 +402,7 @@ namespace NHibernate.Event.Default
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ISessionImplementor source = @event.Session;
-			bool useCache = persister.HasCache && source.CacheMode .HasFlag(CacheMode.Get)
+			bool useCache = persister.HasCache && source.CacheMode.HasFlag(CacheMode.Get)
 				&& @event.LockMode.LessThan(LockMode.Read);
 
 			if (!useCache)
@@ -412,7 +412,7 @@ namespace NHibernate.Event.Default
 			ISessionFactoryImplementor factory = source.Factory;
 			var batchSize = persister.GetBatchSize();
 			var entityBatch = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue
-			                        ?.GetEntityBatch(persister, @event.EntityId);
+									?.GetEntityBatch(persister, @event.EntityId);
 			if (entityBatch != null || batchSize > 1 && persister.Cache.PreferMultipleGet())
 			{
 				// The first item in the array is the item that we want to load
@@ -539,12 +539,12 @@ namespace NHibernate.Event.Default
 				{
 					// this is already a proxy for this impl
 					// only set the status to read-only if the proxy is read-only
-					isReadOnly = ((INHibernateProxy)proxy).HibernateLazyInitializer.ReadOnly;
+					isReadOnly = ((INHibernateProxy) proxy).HibernateLazyInitializer.ReadOnly;
 				}
 			}
 			else
 				isReadOnly = true;
-			
+
 			persistenceContext.AddEntry(
 				result,
 				isReadOnly ? Status.ReadOnly : Status.Loaded,
@@ -556,7 +556,7 @@ namespace NHibernate.Event.Default
 				true,
 				subclassPersister,
 				false);
-			
+
 			subclassPersister.AfterInitialize(result, session);
 			await (persistenceContext.InitializeNonLazyCollectionsAsync(cancellationToken)).ConfigureAwait(false);
 			// upgrade the lock if necessary:

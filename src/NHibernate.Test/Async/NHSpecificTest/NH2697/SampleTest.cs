@@ -24,7 +24,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			using (ISession session = this.OpenSession()) {
+			using (ISession session = this.OpenSession())
+			{
 				ArticleGroupItem agrp_1 = new ArticleGroupItem();
 				agrp_1.Name = "Article group 1";
 				session.Save(agrp_1);
@@ -59,7 +60,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 		{
 			base.OnTearDown();
 
-			using (ISession session = this.OpenSession()) {
+			using (ISession session = this.OpenSession())
+			{
 				IList<ArticleItem> list = session.CreateCriteria("Article").List<ArticleItem>();
 				foreach (ArticleItem item in list)
 					session.Delete("Article", item);
@@ -73,7 +75,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			//    session.Flush();
 			//}
 
-			using (ISession session = this.OpenSession()) {
+			using (ISession session = this.OpenSession())
+			{
 				string hql = "from ArticleGroupItem";
 				session.Delete(hql);
 				session.Flush();
@@ -87,7 +90,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			IList<ArticleGroupItem> result;
 
 			//add new
-			using (ISession session = this.OpenSession()) {
+			using (ISession session = this.OpenSession())
+			{
 				ArticleGroupItem item = new ArticleGroupItem();
 				item.Name = "Test article group";
 				await (session.SaveAsync(item));
@@ -95,7 +99,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			}
 
 			HQL = "from ArticleGroupItem";
-			using (ISession session = this.OpenSession()) {
+			using (ISession session = this.OpenSession())
+			{
 				result = await (session.CreateQuery(HQL).ListAsync<ArticleGroupItem>());
 			}
 			Assert.That(result.Count, Is.GreaterThan(0));
@@ -108,7 +113,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 			IList<ArticleItem> result;
 
 			//add new
-			using (ISession session = this.OpenSession()) {
+			using (ISession session = this.OpenSession())
+			{
 				ArticleItem item = new ArticleItem();
 				item.Name = "Test article";
 				item.IsFavorite = 0;
@@ -118,7 +124,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 
 			//here first problem, no entities are returned <========
 			HQL = "from Article";
-			using (ISession session = this.OpenSession()) {
+			using (ISession session = this.OpenSession())
+			{
 				result = await (session.CreateQuery(HQL).ListAsync<ArticleItem>());
 			}
 			Assert.That(result.Count, Is.GreaterThan(0));
@@ -134,10 +141,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 
 			//set  isFavorite for all articles
 			HQL = "update Article a set a.IsFavorite= :Fav";
-			using (ISession session = this.OpenSession()) {
+			using (ISession session = this.OpenSession())
+			{
 				await (session.CreateQuery(HQL)
 							.SetInt16("Fav", isFavValue) //Exception !!
-							//.SetParameter("Fav", isFavValue) //Exception also !!
+														 //.SetParameter("Fav", isFavValue) //Exception also !!
 							.ExecuteUpdateAsync());
 
 				await (session.FlushAsync());
@@ -145,10 +153,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2697
 
 			//Check if some articles have isFavorite=1
 			HQL = "from Article a where a.IsFavorite=1";
-			using (ISession session = this.OpenSession()) {
+			using (ISession session = this.OpenSession())
+			{
 				result = await (session.CreateQuery(HQL).ListAsync<ArticleItem>());
 			}
 			Assert.That(result.Count, Is.GreaterThan(0));
-}
+		}
 	}
 }

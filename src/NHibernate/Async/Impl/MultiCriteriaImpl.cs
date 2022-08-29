@@ -184,8 +184,8 @@ namespace NHibernate.Impl
 
 							object o =
 								await (loader.GetRowFromResultSetAsync(reader, session, queryParameters, loader.GetLockModes(queryParameters.LockModes),
-								                           null, hydratedObjects[i], keys, true, null, null,
-								                           (persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
+														   null, hydratedObjects[i], keys, true, null, null,
+														   (persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
 							if (createSubselects[i])
 							{
 								subselectResultKeys[i].Add(keys);

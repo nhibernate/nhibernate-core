@@ -9,8 +9,8 @@
 
 
 using System;
-using NUnit.Framework;
 using NHibernate.Test.Immutable.EntityWithMutableCollection;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 {
@@ -25,12 +25,12 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.Inverse
 				return new string[] { "Immutable.EntityWithMutableCollection.Inverse.ContractVariationVersioned.hbm.xml" };
 			}
 		}
-		
+
 		protected override bool CheckUpdateCountsAfterAddingExistingElement()
 		{
 			return false;
 		}
-	
+
 		protected override bool CheckUpdateCountsAfterRemovingElementWithoutDelete()
 		{
 			return false;

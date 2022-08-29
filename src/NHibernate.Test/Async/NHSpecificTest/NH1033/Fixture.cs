@@ -9,11 +9,11 @@
 
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using NHibernate.Criterion;
 using NUnit.Framework;
-using System.Collections;
 namespace NHibernate.Test.NHSpecificTest.NH1033
 {
 	using System.Threading.Tasks;
@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1033
 	{
 		protected override void OnSetUp()
 		{
-			using(var session=OpenSession())
+			using (var session = OpenSession())
 			{
 				using (var tran = session.BeginTransaction())
 				{
@@ -54,15 +54,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1033
 		[Test]
 		public async Task CanUseClassConstraintAsync()
 		{
-			using(ISession session=OpenSession())
+			using (ISession session = OpenSession())
 			{
 				var crit = session
-					.CreateCriteria(typeof (Animal), "a")
+					.CreateCriteria(typeof(Animal), "a")
 					.Add(Property
-					     	.ForName("a.class")
+							 .ForName("a.class")
 							.Eq(typeof(Animal)));
 				var results = await (crit.ListAsync<Animal>());
-				Assert.AreEqual(1,results.Count);
+				Assert.AreEqual(1, results.Count);
 				Assert.AreEqual(typeof(Animal), await (NHibernateUtil.GetClassAsync(results[0])));
 			}
 		}

@@ -68,7 +68,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1714
 	{
 		public async Task<bool> OnPreInsertAsync(PreInsertEvent e, CancellationToken cancellationToken)
 		{
-			if(e.Entity is DomainClass == false)
+			if (e.Entity is DomainClass == false)
 				return false;
 
 			// this will join into the parent's transaction

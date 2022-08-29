@@ -12,20 +12,20 @@ using System;
 using System.IO;
 using System.Runtime.Serialization;
 using NHibernate.Engine;
-using NHibernate.Persister.Entity;
-using NHibernate.Util;
 using NHibernate.Impl;
 using NHibernate.Persister;
+using NHibernate.Persister.Entity;
+using NHibernate.Util;
 
 namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public abstract partial class EntityAction : 
+	public abstract partial class EntityAction :
 		IAsyncExecutable,
 		IBeforeTransactionCompletionProcess,
 		IAfterTransactionCompletionProcess,
-		IComparable<EntityAction>, 
+		IComparable<EntityAction>,
 		IDeserializationCallback,
 		ICacheableExecutable
 	{
@@ -55,7 +55,7 @@ namespace NHibernate.Action
 				return Task.FromException<object>(ex);
 			}
 		}
-		
+
 		protected virtual Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)

@@ -27,10 +27,10 @@ namespace NHibernate.Test.Linq
 		{
 			var orders = await (db.Orders
 				.Select(o => new
-								 {
-									 o.OrderId,
-									 OrderLinesIds = o.OrderLines.Select(ol => ol.Id).ToArray()
-								 })
+				{
+					o.OrderId,
+					OrderLinesIds = o.OrderLines.Select(ol => ol.Id).ToArray()
+				})
 				.ToListAsync());
 
 			Assert.That(orders.Count, Is.EqualTo(830));
@@ -41,9 +41,9 @@ namespace NHibernate.Test.Linq
 		{
 			var orders = await (db.Orders
 				.Select(o => new
-								 {
-									 OrderLinesIds = o.OrderLines.Select(ol => ol.Id).ToArray()
-								 })
+				{
+					OrderLinesIds = o.OrderLines.Select(ol => ol.Id).ToArray()
+				})
 				.ToListAsync());
 
 			Assert.That(orders.Count, Is.EqualTo(830));
@@ -54,10 +54,10 @@ namespace NHibernate.Test.Linq
 		{
 			var orders = await (db.Orders
 				.Select(o => new
-								 {
-									 o.OrderId,
-									 OrderLinesIds = o.OrderLines.Select(ol => ol.Id)
-								 })
+				{
+					o.OrderId,
+					OrderLinesIds = o.OrderLines.Select(ol => ol.Id)
+				})
 				.ToListAsync());
 
 			Assert.That(orders.Count, Is.EqualTo(830));
@@ -70,15 +70,15 @@ namespace NHibernate.Test.Linq
 			var orders = await (db.Orders
 				.Select(o =>
 						new
-							{
-								o.OrderId,
-								OrderLines = o.OrderLines.Select(ol =>
-																 new
-																	 {
-																		 ol.Id,
-																		 ol.Discount
-																	 }).ToArray()
-							})
+						{
+							o.OrderId,
+							OrderLines = o.OrderLines.Select(ol =>
+															 new
+															 {
+																 ol.Id,
+																 ol.Discount
+															 }).ToArray()
+						})
 				.ToListAsync());
 
 			Assert.That(orders.Count, Is.EqualTo(830));
@@ -90,31 +90,31 @@ namespace NHibernate.Test.Linq
 			var orders = await (db.Orders
 				.Select(o =>
 						new
-							{
-								o.OrderId,
-								o.OrderDate,
-								OrderLines = o.OrderLines.Select(ol =>
-																 new
-																	 {
-																		 ol.Id,
-																		 ol.Discount
-																	 }).ToArray()
-							})
+						{
+							o.OrderId,
+							o.OrderDate,
+							OrderLines = o.OrderLines.Select(ol =>
+															 new
+															 {
+																 ol.Id,
+																 ol.Discount
+															 }).ToArray()
+						})
 				.ToListAsync());
 
 			Assert.That(orders.Count, Is.EqualTo(830));
 		}
-		
+
 		[Test]
 		public async Task TimesheetIdAndUserLastLoginDatesAsync()
 		{
 			var timesheets = await (db.Timesheets
 				.Select(o =>
 						new
-							{
-								o.Id,
-								Users = o.Users.Select(x => x.LastLoginDate).ToArray()
-							})
+						{
+							o.Id,
+							Users = o.Users.Select(x => x.LastLoginDate).ToArray()
+						})
 				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
@@ -127,11 +127,11 @@ namespace NHibernate.Test.Linq
 			var timesheets = await (db.Timesheets
 				.Select(o =>
 						new
-							{
-								o.Id,
-								LastLoginDates = o.Users.Select(u => u.LastLoginDate).ToArray(),
-								EntriesIds = o.Entries.Select(e => e.Id).ToArray()
-							})
+						{
+							o.Id,
+							LastLoginDates = o.Users.Select(u => u.LastLoginDate).ToArray(),
+							EntriesIds = o.Entries.Select(e => e.Id).ToArray()
+						})
 				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
@@ -144,10 +144,10 @@ namespace NHibernate.Test.Linq
 			var timesheets = await (db.Timesheets
 				.Select(o =>
 						new
-							{
-								o.Id,
-								Users = o.Users.Select(x => x)
-							})
+						{
+							o.Id,
+							Users = o.Users.Select(x => x)
+						})
 				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
@@ -160,10 +160,10 @@ namespace NHibernate.Test.Linq
 			var timesheets = await (db.Timesheets
 				.Select(o =>
 						new
-							{
-								o,
-								Users = o.Users.Select(x => x)
-							})
+						{
+							o,
+							Users = o.Users.Select(x => x)
+						})
 				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
@@ -176,9 +176,9 @@ namespace NHibernate.Test.Linq
 			var timesheets = await (db.Timesheets
 				.Select(o =>
 						new
-							{
-								Users = o.Users.Select(x => x)
-							})
+						{
+							Users = o.Users.Select(x => x)
+						})
 				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
@@ -191,11 +191,11 @@ namespace NHibernate.Test.Linq
 			var timesheets = await (db.Timesheets
 				.Select(o =>
 						new
-							{
-								o.Id,
-								Users = o.Users.Select(x => x),
-								Entries = o.Entries.Select(x => x)
-							})
+						{
+							o.Id,
+							Users = o.Users.Select(x => x),
+							Entries = o.Entries.Select(x => x)
+						})
 				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
@@ -208,11 +208,11 @@ namespace NHibernate.Test.Linq
 			var timesheets = await (db.Timesheets
 				.Select(o =>
 						new
-							{
-								o,
-								Users = o.Users.Select(x => x),
-								Entries = o.Entries.Select(x => x)
-							})
+						{
+							o,
+							Users = o.Users.Select(x => x),
+							Entries = o.Entries.Select(x => x)
+						})
 				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
@@ -225,10 +225,10 @@ namespace NHibernate.Test.Linq
 			var timesheets = await (db.Timesheets
 				.Select(o =>
 						new
-							{
-								Users = o.Users.Select(x => x),
-								Entries = o.Entries.Select(x => x)
-							})
+						{
+							Users = o.Users.Select(x => x),
+							Entries = o.Entries.Select(x => x)
+						})
 				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
@@ -273,9 +273,9 @@ namespace NHibernate.Test.Linq
 			var timesheets = await (db.Timesheets
 				.Select(o =>
 						new
-							{
-								o.Users
-							})
+						{
+							o.Users
+						})
 				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
@@ -322,10 +322,10 @@ namespace NHibernate.Test.Linq
 			var timesheets = await (db.Timesheets
 				.Select(o =>
 						new
-							{
-								o.Users,
-								o.Entries
-							})
+						{
+							o.Users,
+							o.Entries
+						})
 				.ToListAsync());
 
 			Assert.That(timesheets.Count, Is.EqualTo(3));
@@ -338,10 +338,10 @@ namespace NHibernate.Test.Linq
 			var emplyees = await (db.Employees
 				.Select(o =>
 						new
-							{
-								o.EmployeeId,
-								SubordinatesIds = o.Subordinates.Select(so => so.EmployeeId).ToArray()
-							})
+						{
+							o.EmployeeId,
+							SubordinatesIds = o.Subordinates.Select(so => so.EmployeeId).ToArray()
+						})
 				.ToListAsync());
 
 			Assert.That(emplyees.Count, Is.EqualTo(9));
@@ -352,13 +352,13 @@ namespace NHibernate.Test.Linq
 		{
 			var orders = await (db.Orders
 				.Select(o => new
-								 {
-									 o.OrderId,
-									 OrderLinesIds = o.OrderLines
+				{
+					o.OrderId,
+					OrderLinesIds = o.OrderLines
 										.Where(ol => ol.Discount > 1)
 										.Select(ol => ol.Id)
 										.ToArray()
-								 })
+				})
 				.ToListAsync());
 
 			Assert.That(orders.Count, Is.EqualTo(830));
@@ -369,13 +369,13 @@ namespace NHibernate.Test.Linq
 		public async Task NoNestedSelects_AnyOnGroupBySubqueryAsync()
 		{
 			var subQuery = from vms in db.Animals
-							group vms by vms.Father
+						   group vms by vms.Father
 							into vmReqs
-							select vmReqs.Max(x => x.Id);
+						   select vmReqs.Max(x => x.Id);
 
 			var outerQuery = from vm in db.Animals
-							where subQuery.Any(x => vm.Id == x)
-							select vm;
+							 where subQuery.Any(x => vm.Id == x)
+							 select vm;
 			var animals = await (outerQuery.ToListAsync());
 			Assert.That(animals.Count, Is.EqualTo(2));
 		}
@@ -385,14 +385,14 @@ namespace NHibernate.Test.Linq
 		public async Task NoNestedSelects_ContainsOnGroupBySubqueryAsync()
 		{
 			var subQuery = from vms in db.Animals
-							where vms.BodyWeight > 0
-							group vms by vms.Father
+						   where vms.BodyWeight > 0
+						   group vms by vms.Father
 							into vmReqs
-							select vmReqs.Max(x => x.Id);
+						   select vmReqs.Max(x => x.Id);
 
 			var outerQuery = from vm in db.Animals
-							where subQuery.Contains(vm.Id)
-							select vm;
+							 where subQuery.Contains(vm.Id)
+							 select vm;
 
 			var animals = await (outerQuery.ToListAsync());
 			Assert.That(animals.Count, Is.EqualTo(2));

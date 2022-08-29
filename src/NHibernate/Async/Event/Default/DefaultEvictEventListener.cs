@@ -31,7 +31,7 @@ namespace NHibernate.Event.Default
 
 			if (obj.IsProxy())
 			{
-				ILazyInitializer li = ((INHibernateProxy)obj).HibernateLazyInitializer;
+				ILazyInitializer li = ((INHibernateProxy) obj).HibernateLazyInitializer;
 				object id = li.Identifier;
 				IEntityPersister persister = source.Factory.GetEntityPersister(li.EntityName);
 				if (id == null)

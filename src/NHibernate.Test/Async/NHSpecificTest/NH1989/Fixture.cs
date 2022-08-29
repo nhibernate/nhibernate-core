@@ -9,13 +9,11 @@
 
 
 using System.Data.Common;
-
-using NUnit.Framework;
-
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NHibernate.Engine;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1989
 {

@@ -194,7 +194,7 @@ namespace NHibernate.Test.UtilityTest
 				{
 					await (Task.Delay(step, cancellationToken));
 				}
-				
+
 				currentTime += step;
 				if (getValueFunc().Equals(value))
 				{

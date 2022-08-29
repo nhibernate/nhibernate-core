@@ -20,14 +20,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1978
 		[Test]
 		public async Task ShouldReturnPlanFromEmployeeAsync()
 		{
-			using(var s = OpenSession())
+			using (var s = OpenSession())
 			using (var trans = s.BeginTransaction())
 			{
-				var plan = new _401k {PlanName = "test"};
+				var plan = new _401k { PlanName = "test" };
 				await (s.SaveAsync(plan));
 				await (s.FlushAsync());
 				await (s.RefreshAsync(plan));
-				var emp = new Employee {EmpName = "name", PlanParent = plan};
+				var emp = new Employee { EmpName = "name", PlanParent = plan };
 				await (s.SaveAsync(emp));
 
 				await (trans.RollbackAsync());

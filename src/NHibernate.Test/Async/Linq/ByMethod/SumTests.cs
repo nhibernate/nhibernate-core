@@ -36,7 +36,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		[Test]
 		public async Task EmptySumCastNullableDecimalAsync()
 		{
-			decimal total = await (db.OrderLines.Where(ol => false).SumAsync(ol => (decimal?)ol.Discount)) ?? 0;
+			decimal total = await (db.OrderLines.Where(ol => false).SumAsync(ol => (decimal?) ol.Discount)) ?? 0;
 			Assert.AreEqual(0, total);
 		}
 

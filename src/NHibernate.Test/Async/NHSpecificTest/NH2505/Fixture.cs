@@ -21,24 +21,24 @@ namespace NHibernate.Test.NHSpecificTest.NH2505
 	using System.Threading.Tasks;
 
 	[TestFixture]
-	public class FixtureAsync: TestCaseMappingByCode
+	public class FixtureAsync : TestCaseMappingByCode
 	{
-		private Regex caseClause = new Regex("case",RegexOptions.IgnoreCase);
+		private Regex caseClause = new Regex("case", RegexOptions.IgnoreCase);
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ConventionModelMapper();
-			mapper.BeforeMapClass += (mi, t, x) => x.Id(map=> map.Generator(Generators.Guid));
+			mapper.BeforeMapClass += (mi, t, x) => x.Id(map => map.Generator(Generators.Guid));
 			return mapper.CompileMappingFor(new[] { typeof(MyClass) });
 		}
 
-		private class Scenario: IDisposable
+		private class Scenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 
 			public Scenario(ISessionFactory factory)
 			{
 				this.factory = factory;
-				using (var session= factory.OpenSession())
+				using (var session = factory.OpenSession())
 				{
 					session.Save(new MyClass { Alive = true });
 					session.Save(new MyClass { Alive = false, MayBeAlive = true });

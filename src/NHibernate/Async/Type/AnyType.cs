@@ -10,15 +10,15 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Reflection;
+using System.Runtime.Serialization;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace NHibernate.Type
 {
@@ -35,7 +35,7 @@ namespace NHibernate.Type
 		public override async Task<object> NullSafeGetAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			return await (ResolveAnyAsync((string)await (metaType.NullSafeGetAsync(rs, names[0], session, owner, cancellationToken)).ConfigureAwait(false), 
+			return await (ResolveAnyAsync((string) await (metaType.NullSafeGetAsync(rs, names[0], session, owner, cancellationToken)).ConfigureAwait(false),
 				await (identifierType.NullSafeGetAsync(rs, names[1], session, owner, cancellationToken)).ConfigureAwait(false), session, cancellationToken)).ConfigureAwait(false);
 		}
 
@@ -203,10 +203,10 @@ namespace NHibernate.Type
 				return old != null;
 			if (old == null)
 				return current != null;
-			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry)old;
+			ObjectTypeCacheEntry holder = (ObjectTypeCacheEntry) old;
 			bool[] idcheckable = new bool[checkable.Length - 1];
 			Array.Copy(checkable, 1, idcheckable, 0, idcheckable.Length);
-			return (checkable[0] && !holder.EntityName.Equals(session.BestGuessEntityName(current))) || 
+			return (checkable[0] && !holder.EntityName.Equals(session.BestGuessEntityName(current))) ||
 				await (identifierType.IsModifiedAsync(holder.Id, await (IdAsync(current, session, cancellationToken)).ConfigureAwait(false), idcheckable, session, cancellationToken)).ConfigureAwait(false);
 		}
 

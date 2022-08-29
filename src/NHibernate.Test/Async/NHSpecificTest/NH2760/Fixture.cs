@@ -11,9 +11,9 @@
 using System;
 using System.Collections;
 using System.Linq;
-using NUnit.Framework;
 using NHibernate;
 using NHibernate.Linq;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2760
 {

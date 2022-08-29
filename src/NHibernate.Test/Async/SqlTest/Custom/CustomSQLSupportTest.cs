@@ -16,7 +16,7 @@ namespace NHibernate.Test.SqlTest.Custom
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public abstract class CustomSQLSupportTestAsync: TestCase
+	public abstract class CustomSQLSupportTestAsync : TestCase
 	{
 		protected override string MappingsAssembly
 		{
@@ -58,9 +58,9 @@ namespace NHibernate.Test.SqlTest.Custom
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			jboss = (Organization)await (s.GetAsync(typeof(Organization), orgId));
+			jboss = (Organization) await (s.GetAsync(typeof(Organization), orgId));
 			Assert.AreEqual(jboss.Employments.Count, 2);
-			emp = (Employment)GetFirstItem(jboss.Employments);
+			emp = (Employment) GetFirstItem(jboss.Employments);
 			gavin = emp.Employee;
 			Assert.AreEqual(gavin.Name, "GAVIN");
 			Assert.AreEqual(s.GetCurrentLockMode(gavin), LockMode.Upgrade);
@@ -74,7 +74,7 @@ namespace NHibernate.Test.SqlTest.Custom
 			t = s.BeginTransaction();
 			IEnumerator iter = (await (s.GetNamedQuery("allOrganizationsWithEmployees").ListAsync())).GetEnumerator();
 			Assert.IsTrue(iter.MoveNext());
-			Organization o = (Organization)iter.Current;
+			Organization o = (Organization) iter.Current;
 			Assert.AreEqual(o.Employments.Count, 3);
 
 			foreach (Employment e in o.Employments)

@@ -18,7 +18,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Test.NHSpecificTest.GH2508
 {
-	public partial class AuditEventListener :  IPreCollectionUpdateEventListener
+	public partial class AuditEventListener : IPreCollectionUpdateEventListener
 	{
 		public Task OnPreUpdateCollectionAsync(PreCollectionUpdateEvent @event, CancellationToken cancellationToken)
 		{

@@ -76,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 					.ListAsync());
 
 				Assert.AreEqual(2, list.Count);
-				Assert.AreEqual("Fred Fred", ((object[])list[0])[0]);
+				Assert.AreEqual("Fred Fred", ((object[]) list[0])[0]);
 				await (tx.CommitAsync());
 			}
 		}
@@ -160,7 +160,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 					.ListAsync());
 
 				Assert.AreEqual(1, list.Count);
-				Assert.AreEqual("Fred", ((Person)list[0]).Name);
+				Assert.AreEqual("Fred", ((Person) list[0]).Name);
 				await (tx.CommitAsync());
 			}
 		}
@@ -188,7 +188,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 					.ListAsync());
 
 				Assert.AreEqual(1, list.Count);
-				Assert.AreEqual("Joe", ((Person)list[0]).Name);
+				Assert.AreEqual("Joe", ((Person) list[0]).Name);
 				await (tx.CommitAsync());
 			}
 		}

@@ -9,9 +9,9 @@
 
 
 using System;
-using NUnit.Framework;
-using NHibernate.Mapping.ByCode;
 using NHibernate.Cfg;
+using NHibernate.Mapping.ByCode;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3046
 {

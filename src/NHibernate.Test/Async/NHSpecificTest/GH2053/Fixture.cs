@@ -47,14 +47,14 @@ namespace NHibernate.Test.NHSpecificTest.GH2053
 		[Test]
 		public async Task TestAsync()
 		{
-			var descriptions = new [] { "DESCRIPTION" };
+			var descriptions = new[] { "DESCRIPTION" };
 
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
 				var result = await (session.Query<Entity>()
-				                    .Where(x => descriptions.Contains(x.Description))
-				                    .UpdateAsync(x => new Entity {Description = "DESCRIPTION_UPDATED"}));
+									.Where(x => descriptions.Contains(x.Description))
+									.UpdateAsync(x => new Entity { Description = "DESCRIPTION_UPDATED" }));
 				Assert.That(result, Is.EqualTo(1));
 
 				await (transaction.CommitAsync());

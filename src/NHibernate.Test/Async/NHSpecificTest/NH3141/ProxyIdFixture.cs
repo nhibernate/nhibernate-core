@@ -65,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3141
 			//after fix: 0.8s
 			Console.WriteLine(watch.Elapsed);
 		}
-		
+
 		[Test]
 		public async Task ShouldThrowExceptionIfIdChangedOnUnloadEntityAsync()
 		{
@@ -73,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3141
 			using (var tx = s.BeginTransaction())
 			{
 				var entity = await (s.LoadAsync<Entity>(id));
-				entity.Id ++;
+				entity.Id++;
 				Assert.ThrowsAsync<HibernateException>(() => tx.CommitAsync());
 			}
 		}

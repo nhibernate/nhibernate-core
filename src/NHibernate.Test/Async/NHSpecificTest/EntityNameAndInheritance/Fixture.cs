@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.EntityNameAndInheritance
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					id = (int)s.Save(entityName, new Hashtable());
+					id = (int) s.Save(entityName, new Hashtable());
 					tx.Commit();
 				}
 			}

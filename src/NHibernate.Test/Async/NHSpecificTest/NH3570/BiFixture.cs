@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3570
 			{
 				using (var tx = s.BeginTransaction())
 				{
-					id = (Guid)await (s.SaveAsync(parent));
+					id = (Guid) await (s.SaveAsync(parent));
 					parent.Children.Clear();
 					parent.AddChild(new BiChild());
 					await (tx.CommitAsync());

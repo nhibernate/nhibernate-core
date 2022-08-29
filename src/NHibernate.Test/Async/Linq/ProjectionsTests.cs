@@ -295,29 +295,29 @@ namespace NHibernate.Test.Linq
 		{
 			var query = from o in db.Orders
 						select new ExpandedWrapper<Order, ISet<OrderLine>>
-							{
-								ExpandedElement = o,
-								ProjectedProperty0 = o.OrderLines,
-								Description = "OrderLine",
-								ReferenceDescription = "OrderLine"
-							};
+						{
+							ExpandedElement = o,
+							ProjectedProperty0 = o.OrderLines,
+							Description = "OrderLine",
+							ReferenceDescription = "OrderLine"
+						};
 
 			var result = await (query.ToListAsync());
 			Assert.That(result.Count, Is.EqualTo(830));
 			Assert.That(result[0].ExpandedElement.OrderLines, Is.EquivalentTo(result[0].ProjectedProperty0));
 		}
-		
+
 		[Test]
 		public async Task ProjectKnownTypeWithCollection2Async()
 		{
 			var query = from o in db.Orders
 						select new ExpandedWrapper<Order, IEnumerable<OrderLine>>
-							{
-								ExpandedElement = o,
-								ProjectedProperty0 = o.OrderLines.Select(x => x),
-								Description = "OrderLine",
-								ReferenceDescription = "OrderLine"
-							};
+						{
+							ExpandedElement = o,
+							ProjectedProperty0 = o.OrderLines.Select(x => x),
+							Description = "OrderLine",
+							ReferenceDescription = "OrderLine"
+						};
 
 			var result = await (query.ToListAsync());
 			Assert.That(result.Count, Is.EqualTo(830));
@@ -328,19 +328,19 @@ namespace NHibernate.Test.Linq
 		public async Task ProjectNestedKnownTypeWithCollectionAsync()
 		{
 			var query = from o in db.Products
-				select new ExpandedWrapper<Product, ExpandedWrapper<Supplier, IEnumerable<Product>>>
-				{
-					ExpandedElement = o,
-					ProjectedProperty0 = new ExpandedWrapper<Supplier, IEnumerable<Product>>
-					{
-						ExpandedElement = o.Supplier,
-						ProjectedProperty0 = o.Supplier.Products,
-						Description = "Products",
-						ReferenceDescription = ""
-					},
-					Description = "Supplier",
-					ReferenceDescription = "Supplier"
-				};
+						select new ExpandedWrapper<Product, ExpandedWrapper<Supplier, IEnumerable<Product>>>
+						{
+							ExpandedElement = o,
+							ProjectedProperty0 = new ExpandedWrapper<Supplier, IEnumerable<Product>>
+							{
+								ExpandedElement = o.Supplier,
+								ProjectedProperty0 = o.Supplier.Products,
+								Description = "Products",
+								ReferenceDescription = ""
+							},
+							Description = "Supplier",
+							ReferenceDescription = "Supplier"
+						};
 
 			var result = await (query.ToListAsync());
 			Assert.That(result, Has.Count.EqualTo(77));
@@ -353,19 +353,19 @@ namespace NHibernate.Test.Linq
 		public async Task ProjectNestedAnonymousTypeWithCollectionAsync()
 		{
 			var query = from o in db.Products
-				select new
-				{
-					ExpandedElement = o,
-					ProjectedProperty0 = new
-					{
-						ExpandedElement = o.Supplier,
-						ProjectedProperty0 = o.Supplier.Products,
-						Description = "Products",
-						ReferenceDescription = ""
-					},
-					Description = "Supplier",
-					ReferenceDescription = "Supplier"
-				};
+						select new
+						{
+							ExpandedElement = o,
+							ProjectedProperty0 = new
+							{
+								ExpandedElement = o.Supplier,
+								ProjectedProperty0 = o.Supplier.Products,
+								Description = "Products",
+								ReferenceDescription = ""
+							},
+							Description = "Supplier",
+							ReferenceDescription = "Supplier"
+						};
 
 			var result = await (query.ToListAsync());
 			Assert.That(result, Has.Count.EqualTo(77));
@@ -378,19 +378,19 @@ namespace NHibernate.Test.Linq
 		public async Task ProjectNestedAnonymousTypeWithProjectedCollectionAsync()
 		{
 			var query = from o in db.Products
-				select new
-				{
-					ExpandedElement = o,
-					ProjectedProperty0 = new
-					{
-						ExpandedElement = o.Supplier,
-						ProjectedProperty0 = o.Supplier.Products.Select(x => new {x.Name}),
-						Description = "Products",
-						ReferenceDescription = ""
-					},
-					Description = "Supplier",
-					ReferenceDescription = "Supplier"
-				};
+						select new
+						{
+							ExpandedElement = o,
+							ProjectedProperty0 = new
+							{
+								ExpandedElement = o.Supplier,
+								ProjectedProperty0 = o.Supplier.Products.Select(x => new { x.Name }),
+								Description = "Products",
+								ReferenceDescription = ""
+							},
+							Description = "Supplier",
+							ReferenceDescription = "Supplier"
+						};
 
 			var result = await (query.ToListAsync());
 			Assert.That(result, Has.Count.EqualTo(77));
@@ -454,7 +454,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Users
 						select new
 						{
-							isPresent  = lookup.ContainsKey(item.Id),
+							isPresent = lookup.ContainsKey(item.Id),
 						};
 
 			var result = await (query.ToListAsync());
@@ -502,10 +502,10 @@ namespace NHibernate.Test.Linq
 
 			var query = from item in db.Users
 						select new
-								   {
-									   Start = item.Id % 10,
-									   Value = value.Substring(item.Id % 10),
-								   };
+						{
+							Start = item.Id % 10,
+							Value = value.Substring(item.Id % 10),
+						};
 
 			var result = await (query.ToListAsync());
 

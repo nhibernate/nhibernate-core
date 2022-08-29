@@ -347,7 +347,7 @@ namespace NHibernate.Test.ReadOnly
 				await (CheckReadOnlyAsync(s, dp, true));
 				Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 				DataPoint dpFromQuery = await (s.CreateQuery("from DataPoint where id = " + dpOrig.Id).SetReadOnly(false)
-				                         .UniqueResultAsync<DataPoint>());
+										 .UniqueResultAsync<DataPoint>());
 				Assert.That(NHibernateUtil.IsInitialized(dpFromQuery), Is.True);
 				Assert.That(dpFromQuery, Is.SameAs(dp));
 				await (CheckReadOnlyAsync(s, dp, true));
@@ -388,7 +388,7 @@ namespace NHibernate.Test.ReadOnly
 				s.SetReadOnly(dp, true);
 				await (CheckReadOnlyAsync(s, dp, true));
 				DataPoint dpFromQuery = await (s.CreateQuery("from DataPoint where Id = " + dpOrig.Id).SetReadOnly(true)
-				                         .UniqueResultAsync<DataPoint>());
+										 .UniqueResultAsync<DataPoint>());
 				Assert.That(NHibernateUtil.IsInitialized(dpFromQuery), Is.True);
 				Assert.That(dpFromQuery, Is.SameAs(dp));
 				await (CheckReadOnlyAsync(s, dp, true));
@@ -427,7 +427,7 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 				await (CheckReadOnlyAsync(s, dp, false));
 				DataPoint dpFromQuery = await (s.CreateQuery("from DataPoint where Id = " + dpOrig.Id).SetReadOnly(false)
-				                         .UniqueResultAsync<DataPoint>());
+										 .UniqueResultAsync<DataPoint>());
 				Assert.That(NHibernateUtil.IsInitialized(dpFromQuery), Is.True);
 				Assert.That(dpFromQuery, Is.SameAs(dp));
 				await (CheckReadOnlyAsync(s, dp, false));
@@ -466,7 +466,7 @@ namespace NHibernate.Test.ReadOnly
 				await (CheckReadOnlyAsync(s, dp, false));
 				Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 				DataPoint dpFromQuery = await (s.CreateQuery("from DataPoint where id=" + dpOrig.Id).SetReadOnly(true)
-				                         .UniqueResultAsync<DataPoint>());
+										 .UniqueResultAsync<DataPoint>());
 				Assert.That(NHibernateUtil.IsInitialized(dpFromQuery), Is.True);
 				Assert.That(dpFromQuery, Is.SameAs(dp));
 				await (CheckReadOnlyAsync(s, dp, false));

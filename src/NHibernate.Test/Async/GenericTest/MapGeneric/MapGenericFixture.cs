@@ -12,11 +12,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using NHibernate.Collection.Generic;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 using NHibernate.Type;
 using NUnit.Framework;
-using NHibernate.Collection.Generic;
-using NHibernate.Persister.Collection;
 
 namespace NHibernate.Test.GenericTest.MapGeneric
 {
@@ -36,9 +36,9 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 
 		protected override void OnTearDown()
 		{
-			using( ISession s = Sfi.OpenSession() )
+			using (ISession s = Sfi.OpenSession())
 			{
-				s.Delete( "from A" );
+				s.Delete("from A");
 				s.Flush();
 			}
 		}
@@ -54,8 +54,8 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			B secondB = new B();
 			secondB.Name = "second b";
 
-			a.Items.Add( "first", firstB );
-			a.Items.Add( "second", secondB );
+			a.Items.Add("first", firstB);
+			a.Items.Add("second", secondB);
 
 			using (ISession s = OpenSession())
 			{
@@ -65,10 +65,10 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 				await (s.FlushAsync());
 			}
 
-			Assert.IsNotNull( a.Id );
+			Assert.IsNotNull(a.Id);
 			// should have cascaded down to B
-			Assert.IsNotNull( firstB.Id );
-			Assert.IsNotNull( secondB.Id );
+			Assert.IsNotNull(firstB.Id);
+			Assert.IsNotNull(secondB.Id);
 
 			using (ISession s = OpenSession())
 			{
@@ -84,7 +84,7 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			// NH-839
 			using (ISession s = OpenSession())
 			{
-				a = await (s.LoadAsync<A>( a.Id ));
+				a = await (s.LoadAsync<A>(a.Id));
 				a.Items["second"] = a.Items["third"];
 				await (s.FlushAsync());
 			}
@@ -133,7 +133,7 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 					Assert.That(enumerable, Is.InstanceOf<KeyValuePair<string, B>>());
 				}
 			}
-		} 
+		}
 
 		// NH-669
 		[Test]
@@ -142,20 +142,20 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			A a = new A();
 			a.Name = "A";
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				await (s.SaveAsync( a ));
+				await (s.SaveAsync(a));
 				await (s.FlushAsync());
 			}
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
-				a = await (s.LoadAsync<A>( a.Id ));
+				a = await (s.LoadAsync<A>(a.Id));
 				a.SortedList.Add("abc", 10);
 				await (s.FlushAsync());
 			}
 
-			using( ISession s = OpenSession() )
+			using (ISession s = OpenSession())
 			{
 				await (s.DeleteAsync("from A"));
 				await (s.FlushAsync());
@@ -171,26 +171,26 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 
 			B b1 = new B();
 			b1.Name = "b1";
-			a.Items[ "b1" ] = b1;
+			a.Items["b1"] = b1;
 
 			B b2 = new B();
 			b2.Name = "b2";
-			a.Items[ "b2" ] = b2;
+			a.Items["b2"] = b2;
 
 			A copiedA;
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				copiedA = await (s.MergeAsync(a));
 				await (t.CommitAsync());
 			}
 
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				A loadedA = await (s.GetAsync<A>( copiedA.Id ));
-				Assert.IsNotNull( loadedA );
-				await (s.DeleteAsync( loadedA ));
+				A loadedA = await (s.GetAsync<A>(copiedA.Id));
+				Assert.IsNotNull(loadedA);
+				await (s.DeleteAsync(loadedA));
 				await (t.CommitAsync());
 			}
 		}
@@ -202,28 +202,28 @@ namespace NHibernate.Test.GenericTest.MapGeneric
 			a.SortedDictionary = new SortedDictionary<string, int>();
 			a.SortedList = new SortedList<string, int>();
 
-			a.SortedDictionary[ "10" ] = 5;
-			a.SortedList[ "20" ] = 10;
+			a.SortedDictionary["10"] = 5;
+			a.SortedList["20"] = 10;
 
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync( a ));
+				await (s.SaveAsync(a));
 				await (t.CommitAsync());
 			}
 
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				a = await (s.LoadAsync<A>( a.Id ));
+				a = await (s.LoadAsync<A>(a.Id));
 
-				ISessionFactoryImplementor si = (ISessionFactoryImplementor)Sfi;
+				ISessionFactoryImplementor si = (ISessionFactoryImplementor) Sfi;
 				ICollectionPersister cpSortedList = si.GetCollectionPersister(typeof(A).FullName + ".SortedList");
 				ICollectionPersister cpSortedDictionary = si.GetCollectionPersister(typeof(A).FullName + ".SortedDictionary");
 
 				PersistentGenericMap<string, int> sd = a.SortedDictionary as PersistentGenericMap<string, int>;
 
-				Assert.IsNotNull( sd );
+				Assert.IsNotNull(sd);
 				Assert.IsTrue(cpSortedList.CollectionType is GenericSortedListType<string, int>);
 				Assert.IsTrue(cpSortedDictionary.CollectionType is GenericSortedDictionaryType<string, int>);
 

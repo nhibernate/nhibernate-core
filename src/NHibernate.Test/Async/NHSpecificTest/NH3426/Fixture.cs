@@ -114,15 +114,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 				Assert.That(list[0].Id.ToUpper(), Is.EqualTo(id.ToUpper()));
 			}
 		}
-		
+
 		[Test]
 		public async Task WhereGuidToStringAsync()
 		{
 			using (var session = OpenSession())
 			{
 				var list = await (session.Query<Entity>()
-				                  .Where(x => x.Id.ToString().ToUpper() == id)
-				                  .ToListAsync());
+								  .Where(x => x.Id.ToString().ToUpper() == id)
+								  .ToListAsync());
 
 				Assert.That(list, Has.Count.EqualTo(1));
 			}
@@ -134,8 +134,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 			using (var session = OpenSession())
 			{
 				var list = await (session.Query<Entity>()
-				                  .Where(x => x.Id.ToString() == x.Name)
-				                  .ToListAsync());
+								  .Where(x => x.Id.ToString() == x.Name)
+								  .ToListAsync());
 
 				Assert.That(list, Has.Count.EqualTo(0));
 			}
@@ -147,8 +147,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 			using (var session = OpenSession())
 			{
 				var list = await (session.Query<Entity>()
-				                  .Where(x => ((Guid?) x.Id).ToString() == x.Id.ToString())
-				                  .ToListAsync());
+								  .Where(x => ((Guid?) x.Id).ToString() == x.Id.ToString())
+								  .ToListAsync());
 
 				Assert.That(list, Has.Count.EqualTo(1));
 			}

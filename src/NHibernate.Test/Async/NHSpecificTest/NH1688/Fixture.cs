@@ -35,12 +35,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1688
 		public async Task UsingExpressionFunctionProjectionAsync()
 		{
 			await (TestActionAsync(criteria => criteria.Add(Restrictions.Eq(
-			                                    	Projections.Conditional(
-			                                    		Restrictions.Eq(Projections.Property("alias.BooleanData"), true),
-			                                    		Projections.Property("alias.BooleanData"),
-			                                    		Projections.Constant(false)), 
-			                                    	false)
-			                       	)));
+													Projections.Conditional(
+														Restrictions.Eq(Projections.Property("alias.BooleanData"), true),
+														Projections.Property("alias.BooleanData"),
+														Projections.Constant(false)),
+													false)
+									   )));
 		}
 
 		protected override void OnSetUp()
@@ -48,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1688
 			base.OnSetUp();
 			using (ISession session = OpenSession())
 			{
-				var entity = new DomainClass {Id = 1, BooleanData = true};
+				var entity = new DomainClass { Id = 1, BooleanData = true };
 				session.Save(entity);
 				session.Flush();
 			}

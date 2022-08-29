@@ -9,8 +9,8 @@
 
 
 using System;
-using NUnit.Framework;
 using NHibernate.Test.Immutable.EntityWithMutableCollection;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection.NonInverse
 {

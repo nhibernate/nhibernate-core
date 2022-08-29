@@ -78,7 +78,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public async Task CanWriteAndReadUsingBothHeuristicAndExplicitGenericDeclarationAsync()
 		{
-			var persistentEnumClass = new PersistentEnumClass {Id = 1, A = A.Two, B = B.One};
+			var persistentEnumClass = new PersistentEnumClass { Id = 1, A = A.Two, B = B.One };
 			using (ISession s = OpenSession())
 			{
 				await (s.SaveAsync(persistentEnumClass));

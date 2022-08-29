@@ -36,7 +36,7 @@ namespace NHibernate.Type
 			var elemType = GetElementType(session.Factory);
 			var targetPc = target as PersistentIdentifierBag<T>;
 			var originalPc = original as IPersistentCollection;
-			var iterOriginal = (IList<T>)original;
+			var iterOriginal = (IList<T>) original;
 			var clearTargetsDirtyFlag = false;
 			var clearTarget = true;
 
@@ -74,7 +74,7 @@ namespace NHibernate.Type
 				{
 					var currTarget = targetPc[i];
 					var orgToUse = originalLookup[currTarget].First();
-					targetPc[i] = (T)await (elemType.ReplaceAsync(orgToUse, null, session, owner, copyCache, cancellationToken)).ConfigureAwait(false);
+					targetPc[i] = (T) await (elemType.ReplaceAsync(orgToUse, null, session, owner, copyCache, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 

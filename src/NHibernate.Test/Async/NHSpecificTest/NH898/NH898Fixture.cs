@@ -50,7 +50,7 @@ namespace NHibernate.Test.NHSpecificTest.NH898
 				await (t.CommitAsync());
 			}
 
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				await (s.DeleteAsync("from ClassA"));

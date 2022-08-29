@@ -14,7 +14,7 @@ namespace NHibernate.Test.BulkManipulation
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class HqlBulkOperationsAsync: BaseFixture
+	public class HqlBulkOperationsAsync : BaseFixture
 	{
 		[Test]
 		public async Task SimpleDeleteAsync()
@@ -22,8 +22,8 @@ namespace NHibernate.Test.BulkManipulation
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new SimpleClass {Description = "simple1"}));
-				await (s.SaveAsync(new SimpleClass {Description = "simple2"}));
+				await (s.SaveAsync(new SimpleClass { Description = "simple1" }));
+				await (s.SaveAsync(new SimpleClass { Description = "simple2" }));
 				await (tx.CommitAsync());
 			}
 

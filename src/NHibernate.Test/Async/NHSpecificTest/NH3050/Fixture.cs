@@ -11,16 +11,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-
 using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.Util;
-
 using NUnit.Framework;
-using System.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH3050
 {
@@ -67,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3050
 
 			var cache = new SoftLimitMRUCache(1);
 
-			var queryPlanCacheType = typeof (QueryPlanCache);
+			var queryPlanCacheType = typeof(QueryPlanCache);
 
 			// get the planCache field on the QueryPlanCache and overwrite it with the restricted cache
 			queryPlanCacheType

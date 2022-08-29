@@ -76,10 +76,10 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 			using (var s = Sfi.OpenSession())
 			{
 				var list = await (s.CreateCriteria<Employee>()
-				            .CreateCriteria("ManagedEmployees")
-				            .Add(Restrictions.Eq("Position", "parent"))
-				            .SetResultTransformer(new RootEntityResultTransformer())
-				            .ListAsync());
+							.CreateCriteria("ManagedEmployees")
+							.Add(Restrictions.Eq("Position", "parent"))
+							.SetResultTransformer(new RootEntityResultTransformer())
+							.ListAsync());
 				Assert.That(list, Has.Count.EqualTo(1));
 				Assert.That(list[0], Is.Not.Null);
 				Assert.That(list[0], Is.TypeOf<Employee>());
@@ -93,10 +93,10 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 			using (var s = Sfi.OpenSession())
 			{
 				var list = await (s.CreateCriteria<Employee>()
-				            .CreateCriteria("Amounts")
-				            .Add(Restrictions.Gt("Amount", 5m))
-				            .SetResultTransformer(new RootEntityResultTransformer())
-				            .ListAsync());
+							.CreateCriteria("Amounts")
+							.Add(Restrictions.Gt("Amount", 5m))
+							.SetResultTransformer(new RootEntityResultTransformer())
+							.ListAsync());
 				Assert.That(list, Has.Count.EqualTo(1));
 				Assert.That(list[0], Is.Not.Null);
 				Assert.That(list[0], Is.TypeOf<Employee>());
@@ -111,10 +111,10 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 			using (var s = Sfi.OpenSession())
 			{
 				var list = await (s.CreateCriteria<Employee>("x")
-				            .CreateAlias("x.Amounts", "amount", joinType)
-				            .Add(Restrictions.Gt("amount.Amount", 5m))
-				            .SetResultTransformer(new RootEntityResultTransformer())
-				            .ListAsync());
+							.CreateAlias("x.Amounts", "amount", joinType)
+							.Add(Restrictions.Gt("amount.Amount", 5m))
+							.SetResultTransformer(new RootEntityResultTransformer())
+							.ListAsync());
 				Assert.That(list, Has.Count.EqualTo(1));
 				Assert.That(list[0], Is.Not.Null);
 				Assert.That(list[0], Is.TypeOf<Employee>());
@@ -128,12 +128,12 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 			using (var s = Sfi.OpenSession())
 			{
 				var list = await (s.CreateCriteria<Employee>()
-				            .Add(Subqueries.PropertyIn("id",
-				                                       DetachedCriteria.For<Employee>()
-				                                                       .SetProjection(Projections.Id())
-				                                                       .CreateCriteria("Amounts")
-				                                                       .Add(Restrictions.Gt("Amount", 5m))))
-				            .ListAsync());
+							.Add(Subqueries.PropertyIn("id",
+													   DetachedCriteria.For<Employee>()
+																	   .SetProjection(Projections.Id())
+																	   .CreateCriteria("Amounts")
+																	   .Add(Restrictions.Gt("Amount", 5m))))
+							.ListAsync());
 				Assert.That(list, Has.Count.EqualTo(1));
 				Assert.That(list[0], Is.Not.Null);
 				Assert.That(list[0], Is.TypeOf<Employee>());
@@ -143,7 +143,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"NHSpecificTest.CriteriaQueryOnComponentCollection.Mappings.hbm.xml"}; }
+			get { return new[] { "NHSpecificTest.CriteriaQueryOnComponentCollection.Mappings.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly

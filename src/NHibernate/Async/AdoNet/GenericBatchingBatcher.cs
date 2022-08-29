@@ -27,7 +27,7 @@ namespace NHibernate.AdoNet
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var batchCommand = CurrentCommand;
-			if (_maxNumberOfParameters.HasValue && 
+			if (_maxNumberOfParameters.HasValue &&
 				_currentBatch.CountOfParameters + batchCommand.Parameters.Count > _maxNumberOfParameters)
 			{
 				await (ExecuteBatchWithTimingAsync(batchCommand, cancellationToken)).ConfigureAwait(false);

@@ -12,64 +12,64 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.ListsWithHoles
 {
-    using System.Collections;
-    using System.Threading.Tasks;
+	using System.Collections;
+	using System.Threading.Tasks;
 
-    [TestFixture]
-    public class FixtureAsync : TestCase
-    {
-        protected override bool AppliesTo(Dialect.Dialect dialect)
-        {
-            return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
-        }
+	[TestFixture]
+	public class FixtureAsync : TestCase
+	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
 
-        protected override string[] Mappings
-        {
-            get { return new string[] { "NHSpecificTest.ListsWithHoles.Mappings.hbm.xml" }; }
-        }
+		protected override string[] Mappings
+		{
+			get { return new string[] { "NHSpecificTest.ListsWithHoles.Mappings.hbm.xml" }; }
+		}
 
-        protected override string MappingsAssembly
-        {
-            get { return "NHibernate.Test"; }
-        }
+		protected override string MappingsAssembly
+		{
+			get { return "NHibernate.Test"; }
+		}
 
-        [Test]
-        public async Task CanHandleHolesInListAsync()
-        {
-            int parentId, firstChildId;
-            using (ISession sess = OpenSession())
-            using (ITransaction tx = sess.BeginTransaction())
-            {
-                Employee e = new Employee();
-                e.Children.Add(new Employee());
-                e.Children.Add(new Employee());
-                await (sess.SaveAsync(e));
-                await (tx.CommitAsync());
-                parentId = e.Id;
-                firstChildId = e.Children[0].Id;
-            }
+		[Test]
+		public async Task CanHandleHolesInListAsync()
+		{
+			int parentId, firstChildId;
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				Employee e = new Employee();
+				e.Children.Add(new Employee());
+				e.Children.Add(new Employee());
+				await (sess.SaveAsync(e));
+				await (tx.CommitAsync());
+				parentId = e.Id;
+				firstChildId = e.Children[0].Id;
+			}
 
-            using (ISession sess = OpenSession())
-            using (ITransaction tx = sess.BeginTransaction())
-            {
-                await (sess.DeleteAsync(await (sess.GetAsync<Employee>(firstChildId))));
-                await (tx.CommitAsync());
-            }
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				await (sess.DeleteAsync(await (sess.GetAsync<Employee>(firstChildId))));
+				await (tx.CommitAsync());
+			}
 
-            using (ISession sess = OpenSession())
-            using (ITransaction tx = sess.BeginTransaction())
-            {
-                Employee employee = await (sess.GetAsync<Employee>(parentId));
-                employee.Children.Add(new Employee());
-                await (tx.CommitAsync());
-            }
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				Employee employee = await (sess.GetAsync<Employee>(parentId));
+				employee.Children.Add(new Employee());
+				await (tx.CommitAsync());
+			}
 
-            using (ISession sess = OpenSession())
-            using (ITransaction tx = sess.BeginTransaction())
-            {
-                await (sess.DeleteAsync("from Employee"));
-                await (tx.CommitAsync());
-            }
-        }
-    }
+			using (ISession sess = OpenSession())
+			using (ITransaction tx = sess.BeginTransaction())
+			{
+				await (sess.DeleteAsync("from Employee"));
+				await (tx.CommitAsync());
+			}
+		}
+	}
 }

@@ -64,7 +64,7 @@ namespace NHibernate.Action
 			if (preListeners.Length > 0)
 			{
 				PreCollectionRemoveEvent preEvent = new PreCollectionRemoveEvent(Persister, Collection, (IEventSource) Session,
-				                                                                 affectedOwner);
+																				 affectedOwner);
 				for (int i = 0; i < preListeners.Length; i++)
 				{
 					await (preListeners[i].OnPreRemoveCollectionAsync(preEvent, cancellationToken)).ConfigureAwait(false);
@@ -79,7 +79,7 @@ namespace NHibernate.Action
 			if (postListeners.Length > 0)
 			{
 				PostCollectionRemoveEvent postEvent = new PostCollectionRemoveEvent(Persister, Collection, (IEventSource) Session,
-				                                                                    affectedOwner);
+																					affectedOwner);
 				for (int i = 0; i < postListeners.Length; i++)
 				{
 					await (postListeners[i].OnPostRemoveCollectionAsync(postEvent, cancellationToken)).ConfigureAwait(false);

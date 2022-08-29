@@ -10,8 +10,8 @@
 
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 using NHibernate.Criterion;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1911
 {

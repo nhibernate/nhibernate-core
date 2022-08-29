@@ -40,7 +40,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 		{
 			// Note : if you are using identity-style strategy the value of version
 			// is available inmediately after save.
-			var e = new SimpleVersioned {Something = "something"};
+			var e = new SimpleVersioned { Something = "something" };
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction tx = s.BeginTransaction())
@@ -82,7 +82,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					var e = new SimpleVersioned {Something = "something"};
+					var e = new SimpleVersioned { Something = "something" };
 					savedId = await (s.SaveAsync(e, cancellationToken));
 					await (tx.CommitAsync(cancellationToken));
 				}
@@ -93,7 +93,7 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 		[Test]
 		public async System.Threading.Tasks.Task ShouldCheckStaleStateAsync()
 		{
-			var versioned = new SimpleVersioned {Something = "original string"};
+			var versioned = new SimpleVersioned { Something = "original string" };
 
 			try
 			{

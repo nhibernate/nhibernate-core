@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH892
 				await (session.FlushAsync());
 				session.Clear();
 
-				User poster = (User) await (session.GetAsync(typeof (User), user1.ID));
+				User poster = (User) await (session.GetAsync(typeof(User), user1.ID));
 
 				string hql = "from BlogPost b where b.Poster = :poster";
 				IList list = await (session.CreateQuery(hql).SetParameter("poster", poster).ListAsync());

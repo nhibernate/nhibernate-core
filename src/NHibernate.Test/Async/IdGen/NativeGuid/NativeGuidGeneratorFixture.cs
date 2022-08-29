@@ -39,18 +39,18 @@ namespace NHibernate.Test.IdGen.NativeGuid
 		{
 			try
 			{
-				var str = Dialect.Dialect.GetDialect().SelectGUIDString;	
+				var str = Dialect.Dialect.GetDialect().SelectGUIDString;
 			}
 			catch (NotSupportedException)
 			{
 				Assert.Ignore("This test does not apply to {0}", Dialect.Dialect.GetDialect());
 			}
-			 
+
 			var gen = new NativeGuidGenerator();
 			using (ISession s = sessions.OpenSession())
 			{
-				object result = await (gen.GenerateAsync((ISessionImplementor)s, null, CancellationToken.None));
-				Assert.That(result, Is.TypeOf(typeof (Guid)));
+				object result = await (gen.GenerateAsync((ISessionImplementor) s, null, CancellationToken.None));
+				Assert.That(result, Is.TypeOf(typeof(Guid)));
 				Assert.That(result, Is.Not.EqualTo(Guid.Empty));
 			}
 		}

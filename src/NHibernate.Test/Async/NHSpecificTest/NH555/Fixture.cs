@@ -49,8 +49,8 @@ namespace NHibernate.Test.NHSpecificTest.NH555
 			using (ISession s = OpenSession())
 			{
 				string hql = "select sum (ol.ArticlePrice * ol.NumberOfItems) " +
-				             "from Order o, OrderLine ol, Customer c " +
-				             "where c.Id = :custId and o.OrderDate >= :orderDate";
+							 "from Order o, OrderLine ol, Customer c " +
+							 "where c.Id = :custId and o.OrderDate >= :orderDate";
 
 				IQuery q = s.CreateQuery(hql);
 				q.SetInt32("custId", custId);

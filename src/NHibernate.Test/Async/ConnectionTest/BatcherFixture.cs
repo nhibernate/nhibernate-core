@@ -48,7 +48,7 @@ namespace NHibernate.Test.ConnectionTest
 				var silly = new YetAnother { Name = "Silly" };
 				await (s.SaveAsync(silly));
 				s.GetSessionImplementation().ConnectionManager.Batcher.CloseCommands();
-				
+
 				Assert.DoesNotThrowAsync(() => s.FlushAsync(), "Flush failure after closing commands.");
 			}
 		}

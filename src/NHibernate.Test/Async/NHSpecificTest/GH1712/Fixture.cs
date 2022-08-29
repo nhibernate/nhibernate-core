@@ -69,8 +69,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1712
 
 		private Task<GenericEntity<TId>> QueryIdAsync<TId>(string name, TId id, ISession session, CancellationToken cancellationToken = default(CancellationToken)) where TId : IEquatable<TId>
 			=> (from e in session.Query<GenericEntity<TId>>(name)
-			    where e.Id.Equals(id)
-			    select e).FirstOrDefaultAsync(cancellationToken);
+				where e.Id.Equals(id)
+				select e).FirstOrDefaultAsync(cancellationToken);
 
 		[Test]
 		public async Task QueryWithDefaultEqualsShouldNotThrowAsync()

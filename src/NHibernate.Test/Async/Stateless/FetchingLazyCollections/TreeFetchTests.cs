@@ -11,8 +11,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Mapping.ByCode;
 using NHibernate.Linq;
+using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Stateless.FetchingLazyCollections
@@ -46,12 +46,12 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
-				var root = new TreeNode {Content = "Root"};
-				var child1 = new TreeNode {Content = "Child1"};
+				var root = new TreeNode { Content = "Root" };
+				var child1 = new TreeNode { Content = "Child1" };
 				root.Children.Add(child1);
-				root.Children.Add(new TreeNode {Content = "Child2"});
-				child1.Children.Add(new TreeNode {Content = "Child1Child1"});
-				child1.Children.Add(new TreeNode {Content = "Child1Child2"});
+				root.Children.Add(new TreeNode { Content = "Child2" });
+				child1.Children.Add(new TreeNode { Content = "Child1Child1" });
+				child1.Children.Add(new TreeNode { Content = "Child1Child2" });
 				await (s.SaveAsync(root));
 				await (tx.CommitAsync());
 			}
@@ -60,8 +60,8 @@ namespace NHibernate.Test.Stateless.FetchingLazyCollections
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				IList<TreeNode> rootNodes = await (s.Query<TreeNode>().Where(t => t.Content == "Root")
-				                             .FetchMany(f => f.Children)
-				                             .ThenFetchMany(f => f.Children).ToListAsync());
+											 .FetchMany(f => f.Children)
+											 .ThenFetchMany(f => f.Children).ToListAsync());
 				Assert.That(rootNodes.Count, Is.EqualTo(1));
 				Assert.That(rootNodes.First().Children.Count, Is.EqualTo(2));
 

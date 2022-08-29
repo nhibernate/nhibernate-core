@@ -29,10 +29,10 @@ namespace NHibernate.Test.NHSpecificTest.GH1594
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new GH1594.Entity {Name = "Bob"};
+				var e1 = new GH1594.Entity { Name = "Bob" };
 				session.Save(e1);
 
-				var e2 = new GH1594.Entity {Name = "Sally"};
+				var e2 = new GH1594.Entity { Name = "Sally" };
 				session.Save(e2);
 
 				transaction.Commit();

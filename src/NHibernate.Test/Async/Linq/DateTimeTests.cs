@@ -23,8 +23,8 @@ namespace NHibernate.Test.Linq
 		public async Task CanQueryByYearAsync()
 		{
 			var x = await ((from o in db.Orders
-				where o.OrderDate.Value.Year == 1998
-				select o).ToListAsync());
+					 where o.OrderDate.Value.Year == 1998
+					 select o).ToListAsync());
 
 			Assert.AreEqual(270, x.Count());
 		}
@@ -33,8 +33,8 @@ namespace NHibernate.Test.Linq
 		public async Task CanQueryByDateAsync()
 		{
 			var x = await ((from o in db.Orders
-				where o.OrderDate.Value.Date == new DateTime(1998, 02, 26)
-				select o).ToListAsync());
+					 where o.OrderDate.Value.Date == new DateTime(1998, 02, 26)
+					 select o).ToListAsync());
 
 			Assert.AreEqual(6, x.Count());
 		}
@@ -43,8 +43,8 @@ namespace NHibernate.Test.Linq
 		public async Task CanQueryByDateTimeAsync()
 		{
 			var x = await ((from o in db.Orders
-				where o.OrderDate.Value == new DateTime(1998, 02, 26)
-				select o).ToListAsync());
+					 where o.OrderDate.Value == new DateTime(1998, 02, 26)
+					 select o).ToListAsync());
 
 			Assert.AreEqual(5, x.Count());
 		}
@@ -53,8 +53,8 @@ namespace NHibernate.Test.Linq
 		public async Task CanQueryByDateTime2Async()
 		{
 			var x = await ((from o in db.Orders
-				where o.OrderDate.Value == new DateTime(1998, 02, 26, 0, 1, 0)
-				select o).ToListAsync());
+					 where o.OrderDate.Value == new DateTime(1998, 02, 26, 0, 1, 0)
+					 select o).ToListAsync());
 
 			Assert.AreEqual(1, x.Count());
 		}
@@ -63,8 +63,8 @@ namespace NHibernate.Test.Linq
 		public async Task CanSelectYearAsync()
 		{
 			var x = await ((from o in db.Orders
-				where o.OrderDate.Value.Year == 1998
-				select o.OrderDate.Value.Year).ToListAsync());
+					 where o.OrderDate.Value.Year == 1998
+					 select o.OrderDate.Value.Year).ToListAsync());
 
 			Assert.That(x, Has.All.EqualTo(1998));
 			Assert.AreEqual(270, x.Count());
@@ -74,8 +74,8 @@ namespace NHibernate.Test.Linq
 		public async Task CanSelectDateAsync()
 		{
 			var x = await ((from o in db.Orders
-				where o.OrderDate.Value.Date == new DateTime(1998, 02, 26)
-				select o.OrderDate.Value.Date).ToListAsync());
+					 where o.OrderDate.Value.Date == new DateTime(1998, 02, 26)
+					 select o.OrderDate.Value.Date).ToListAsync());
 
 			Assert.That(x, Has.All.EqualTo(new DateTime(1998, 02, 26)));
 			Assert.AreEqual(6, x.Count());
@@ -85,8 +85,8 @@ namespace NHibernate.Test.Linq
 		public async Task CanSelectDateTimeAsync()
 		{
 			var x = await ((from o in db.Orders
-				where o.OrderDate.Value == new DateTime(1998, 02, 26)
-				select o.OrderDate.Value).ToListAsync());
+					 where o.OrderDate.Value == new DateTime(1998, 02, 26)
+					 select o.OrderDate.Value).ToListAsync());
 
 			Assert.That(x, Has.All.EqualTo(new DateTime(1998, 02, 26)));
 			Assert.AreEqual(5, x.Count());
@@ -96,8 +96,8 @@ namespace NHibernate.Test.Linq
 		public async Task CanSelectDateTime2Async()
 		{
 			var x = await ((from o in db.Orders
-				where o.OrderDate.Value == new DateTime(1998, 02, 26, 0, 1, 0)
-				select o.OrderDate.Value).ToListAsync());
+					 where o.OrderDate.Value == new DateTime(1998, 02, 26, 0, 1, 0)
+					 select o.OrderDate.Value).ToListAsync());
 
 			Assert.That(x, Has.All.EqualTo(new DateTime(1998, 02, 26, 0, 1, 0)));
 			Assert.AreEqual(1, x.Count());

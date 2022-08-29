@@ -75,7 +75,7 @@ namespace NHibernate.Test.Legacy
 			{
 				// Check Oracle Dialect mix of dialect functions - no args (no parenthesis and single arg functions
 				IList rset = await (s.CreateQuery("select s.Name, sysdate, trunc(s.Pay), round(s.Pay) from s in class Simple").ListAsync());
-				object[] row = (object[])rset[0];
+				object[] row = (object[]) rset[0];
 				Assert.IsNotNull(row[0], "Name string should have been returned");
 				Assert.IsNotNull(row[1], "Todays Date should have been returned");
 				Assert.AreEqual(45f, row[2], "trunc(45.8) result was incorrect");
@@ -151,7 +151,7 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
-			await (s.SaveAsync(simple, (long)10));
+			await (s.SaveAsync(simple, (long) 10));
 			IQuery q = s.CreateQuery("from s in class Simple where s.Name=:Name and s.Count=:Count");
 			q.SetProperties(simple);
 			Assert.AreEqual(simple, (await (q.ListAsync()))[0]);
@@ -293,7 +293,7 @@ namespace NHibernate.Test.Legacy
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			b = (Broken)await (s.LoadAsync(typeof(Broken), b));
+			b = (Broken) await (s.LoadAsync(typeof(Broken), b));
 			await (t.CommitAsync());
 			s.Close();
 
@@ -311,19 +311,19 @@ namespace NHibernate.Test.Legacy
 			ITransaction t = s.BeginTransaction();
 			Simple simple = new Simple();
 			simple.Name = "Simple 1";
-			await (s.SaveAsync(simple, (long)10));
+			await (s.SaveAsync(simple, (long) 10));
 			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.UpdateAsync(simple, (long)10));
+			await (s.UpdateAsync(simple, (long) 10));
 			await (t.CommitAsync());
 			s.Close();
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-			await (s.UpdateAsync(simple, (long)10));
+			await (s.UpdateAsync(simple, (long) 10));
 			await (s.DeleteAsync(simple));
 			await (t.CommitAsync());
 			s.Close();
@@ -355,7 +355,7 @@ namespace NHibernate.Test.Legacy
 			q.SetString("name", "Simple 1");
 			Assert.AreEqual(1, (await (q.ListAsync())).Count);
 
-			simple = (Simple)(await (q.ListAsync()))[0];
+			simple = (Simple) (await (q.ListAsync()))[0];
 
 			q.SetString("name", "Simple 2");
 			Assert.AreEqual(0, (await (q.ListAsync())).Count);
@@ -521,7 +521,7 @@ namespace NHibernate.Test.Legacy
 			q.SetCacheable(true);
 			q.SetString("name", "Simple 1");
 			Assert.AreEqual(1, (await (q.ListAsync())).Count);
-			simple = (Simple)(await (q.ListAsync()))[0];
+			simple = (Simple) (await (q.ListAsync()))[0];
 
 			q.SetString("name", "Simple 2");
 			Assert.AreEqual(0, (await (q.ListAsync())).Count);
@@ -559,7 +559,7 @@ namespace NHibernate.Test.Legacy
 				ITransaction t = s.BeginTransaction();
 				Simple simple = new Simple();
 				simple.Name = "Simple 1";
-				await (s.SaveAsync(simple, (long)10));
+				await (s.SaveAsync(simple, (long) 10));
 
 				if (Dialect is DB2Dialect)
 				{
@@ -601,7 +601,7 @@ namespace NHibernate.Test.Legacy
 				other.Name = "Simple 2";
 				other.Count = 12;
 				simple.Other = other;
-				await (s.SaveAsync(other, (long)20));
+				await (s.SaveAsync(other, (long) 20));
 				Assert.AreEqual(1, (await (s.CreateQuery("from s in class Simple where upper( s.Other.Name )='SIMPLE 2'").ListAsync())).Count);
 				Assert.AreEqual(0, (await (s.CreateQuery("from s in class Simple where not (upper(s.Other.Name)='SIMPLE 2')").ListAsync())).Count);
 				Assert.AreEqual(1,
@@ -616,7 +616,7 @@ namespace NHibernate.Test.Legacy
 				Simple min = new Simple();
 				min.Count = -1;
 
-				await (s.SaveAsync(min, (long)30));
+				await (s.SaveAsync(min, (long) 30));
 
 				if (Dialect.SupportsSubSelects && TestDialect.SupportsOperatorSome)
 				{
@@ -643,7 +643,7 @@ namespace NHibernate.Test.Legacy
 					(await (s.CreateQuery("select sum(s.Count) from s in class Simple group by s.Count having sum(s.Count) > 10 ").EnumerableAsync()))
 						.GetEnumerator();
 				Assert.IsTrue(enumer.MoveNext());
-				Assert.AreEqual(12, (Int64)enumer.Current); // changed cast from Int32 to Int64 (H3.2)
+				Assert.AreEqual(12, (Int64) enumer.Current); // changed cast from Int32 to Int64 (H3.2)
 				Assert.IsFalse(enumer.MoveNext());
 
 				if (Dialect.SupportsSubSelects)
@@ -711,7 +711,7 @@ namespace NHibernate.Test.Legacy
 				list.Add("Simple 1");
 				list.Add("foo");
 				q.SetParameterList("name_list", list);
-				q.SetParameter("count", (int)-1);
+				q.SetParameter("count", (int) -1);
 				Assert.AreEqual(1, (await (q.ListAsync())).Count);
 
 				await (s.DeleteAsync(other));

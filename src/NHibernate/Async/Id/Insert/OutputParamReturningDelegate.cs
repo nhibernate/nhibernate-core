@@ -31,15 +31,15 @@ namespace NHibernate.Id.Insert
 			var command = await (session.Batcher.PrepareCommandAsync(CommandType.Text, insertSQL.Text, insertSQL.ParameterTypes, cancellationToken)).ConfigureAwait(false);
 			//Add the output parameter
 			var idParameter = factory.ConnectionProvider.Driver.GenerateParameter(command, ReturnParameterName,
-			                                                                                         paramType);
+																									 paramType);
 			driveGeneratedParamName = idParameter.ParameterName;
 
-            if (factory.Dialect.InsertGeneratedIdentifierRetrievalMethod == InsertGeneratedIdentifierRetrievalMethod.OutputParameter)
-                idParameter.Direction = ParameterDirection.Output;
-            else if (factory.Dialect.InsertGeneratedIdentifierRetrievalMethod == InsertGeneratedIdentifierRetrievalMethod.ReturnValueParameter)
-                idParameter.Direction = ParameterDirection.ReturnValue;
-            else
-                throw new System.NotImplementedException("Unsupported InsertGeneratedIdentifierRetrievalMethod: " + factory.Dialect.InsertGeneratedIdentifierRetrievalMethod);
+			if (factory.Dialect.InsertGeneratedIdentifierRetrievalMethod == InsertGeneratedIdentifierRetrievalMethod.OutputParameter)
+				idParameter.Direction = ParameterDirection.Output;
+			else if (factory.Dialect.InsertGeneratedIdentifierRetrievalMethod == InsertGeneratedIdentifierRetrievalMethod.ReturnValueParameter)
+				idParameter.Direction = ParameterDirection.ReturnValue;
+			else
+				throw new System.NotImplementedException("Unsupported InsertGeneratedIdentifierRetrievalMethod: " + factory.Dialect.InsertGeneratedIdentifierRetrievalMethod);
 
 			command.Parameters.Add(idParameter);
 			return command;

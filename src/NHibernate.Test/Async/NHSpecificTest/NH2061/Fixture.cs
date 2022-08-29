@@ -8,7 +8,7 @@
 //------------------------------------------------------------------------------
 
 
-using System; 
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
@@ -17,27 +17,27 @@ namespace NHibernate.Test.NHSpecificTest.NH2061
 	using System.Threading.Tasks;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
-	{	
+	{
 		[Test]
 		public async Task merge_with_many_to_many_inside_component_that_is_nullAsync()
 		{
 			// Order with null GroupComponent
 			Order newOrder = new Order();
 			newOrder.GroupComponent = null;
-			
+
 			Order mergedCopy = null;
-			
+
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				mergedCopy = (Order)await (session.MergeAsync(newOrder));
+				mergedCopy = (Order) await (session.MergeAsync(newOrder));
 				await (tx.CommitAsync());
 			}
-			
+
 			Assert.That(mergedCopy, Is.Not.Null);
 			Assert.That(mergedCopy.GroupComponent, Is.Null);
-	}
-		
+		}
+
 		protected override void OnTearDown()
 		{
 			using (ISession session = OpenSession())

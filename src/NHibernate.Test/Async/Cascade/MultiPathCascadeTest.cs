@@ -51,10 +51,10 @@ namespace NHibernate.Test.Cascade
 				a = await (s.MergeAsync(a));
 				await (t.CommitAsync());
 			}
-	
+
 			await (this.VerifyModificationsAsync(a.Id));
 		}
-		
+
 		[Test]
 		public async Task MultiPathMergeModifiedDetachedIntoProxyAsync()
 		{
@@ -78,10 +78,10 @@ namespace NHibernate.Test.Cascade
 				Assert.That(await (s.MergeAsync(a)), Is.SameAs(aLoaded));
 				await (t.CommitAsync());
 			}
-	
+
 			await (this.VerifyModificationsAsync(a.Id));
 		}
-		
+
 		[Test]
 		public async Task MultiPathUpdateModifiedDetachedAsync()
 		{
@@ -95,7 +95,7 @@ namespace NHibernate.Test.Cascade
 				await (s.SaveAsync(a));
 				await (t.CommitAsync());
 			}
-	
+
 			// modify detached entity
 			this.ModifyEntity(a);
 
@@ -107,7 +107,7 @@ namespace NHibernate.Test.Cascade
 			}
 			await (this.VerifyModificationsAsync(a.Id));
 		}
-	
+
 		[Test]
 		public async Task MultiPathGetAndModifyAsync()
 		{
@@ -132,7 +132,7 @@ namespace NHibernate.Test.Cascade
 			}
 			await (this.VerifyModificationsAsync(a.Id));
 		}
-	
+
 		[Test]
 		public async Task MultiPathMergeNonCascadedTransientEntityInCollectionAsync()
 		{
@@ -145,7 +145,7 @@ namespace NHibernate.Test.Cascade
 				a.Data = "Anna";
 				await (s.SaveAsync(a));
 				await (t.CommitAsync());
-			}	
+			}
 			// modify detached entity
 			this.ModifyEntity(a);
 
@@ -156,7 +156,7 @@ namespace NHibernate.Test.Cascade
 				await (t.CommitAsync());
 			}
 			await (this.VerifyModificationsAsync(a.Id));
-	
+
 			// add a new (transient) G to collection in h
 			// there is no cascade from H to the collection, so this should fail when merged
 			Assert.That(a.Hs.Count, Is.EqualTo(1));
@@ -181,7 +181,7 @@ namespace NHibernate.Test.Cascade
 				}
 			}
 		}
-	
+
 		[Test]
 		public async Task MultiPathMergeNonCascadedTransientEntityInOneToOneAsync()
 		{
@@ -205,7 +205,7 @@ namespace NHibernate.Test.Cascade
 				await (t.CommitAsync());
 			}
 			await (this.VerifyModificationsAsync(a.Id));
-	
+
 			// change the one-to-one association from g to be a new (transient) A
 			// there is no cascade from G to A, so this should fail when merged
 			G g = a.G;
@@ -230,7 +230,7 @@ namespace NHibernate.Test.Cascade
 				}
 			}
 		}
-	
+
 		[Test]
 		public async Task MultiPathMergeNonCascadedTransientEntityInManyToOneAsync()
 		{
@@ -254,7 +254,7 @@ namespace NHibernate.Test.Cascade
 				await (t.CommitAsync());
 			}
 			await (this.VerifyModificationsAsync(a.Id));
-	
+
 			// change the many-to-one association from h to be a new (transient) A
 			// there is no cascade from H to A, so this should fail when merged
 			Assert.That(a.Hs.Count, Is.EqualTo(1));
@@ -279,7 +279,7 @@ namespace NHibernate.Test.Cascade
 				}
 			}
 		}
-		
+
 		protected override void OnTearDown()
 		{
 			using (ISession session = OpenSession())
@@ -292,28 +292,28 @@ namespace NHibernate.Test.Cascade
 			}
 			base.OnTearDown();
 		}
-		
+
 		private void ModifyEntity(A a)
 		{
 			// create a *circular* graph in detached entity
 			a.Data = "Anthony";
-	
+
 			G g = new G();
 			g.Data = "Giovanni";
-	
+
 			H h = new H();
 			h.Data = "Hellen";
-	
+
 			a.G = g;
 			g.A = a;
-	
+
 			a.Hs.Add(h);
 			h.A = a;
-	
+
 			g.Hs.Add(h);
 			h.Gs.Add(g);
 		}
-	
+
 		private async Task VerifyModificationsAsync(long aId, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (var s = OpenSession())

@@ -14,10 +14,10 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Futures
 {
-    using System.Threading.Tasks;
-    [TestFixture]
-    public class FutureCriteriaFixtureAsync : FutureFixture
-    {
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class FutureCriteriaFixtureAsync : FutureFixture
+	{
 		[Test]
 		public async Task DefaultReadOnlyTestAsync()
 		{
@@ -32,62 +32,62 @@ namespace NHibernate.Test.Futures
 			}
 		}
 
-        [Test]
-        public async Task CanUseFutureCriteriaAsync()
-        {
-            using (var s = Sfi.OpenSession())
-            {
-                IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-
-                var persons10 = s.CreateCriteria(typeof(Person))
-                    .SetMaxResults(10)
-                    .Future<Person>();
-                var persons5 = s.CreateCriteria(typeof(Person))
-                    .SetMaxResults(5)
-                    .Future<int>();
-
-                using (var logSpy = new SqlLogSpy())
-                {
-                    foreach (var person in await (persons5.GetEnumerableAsync()))
-                    {
-                    }
-
-                    foreach (var person in await (persons10.GetEnumerableAsync()))
-                    {
-                    }
-
-                    var events = logSpy.Appender.GetEvents();
-                    Assert.AreEqual(1, events.Length);
-                }
-            }
-        }
-
-    	[Test]
-        public async Task TwoFuturesRunInTwoRoundTripsAsync()
-        {
-            using (var s = Sfi.OpenSession())
-            {
+		[Test]
+		public async Task CanUseFutureCriteriaAsync()
+		{
+			using (var s = Sfi.OpenSession())
+			{
 				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
 
-                using (var logSpy = new SqlLogSpy())
-                {
-                    var persons10 = s.CreateCriteria(typeof(Person))
-                        .SetMaxResults(10)
-                        .Future<Person>();
+				var persons10 = s.CreateCriteria(typeof(Person))
+					.SetMaxResults(10)
+					.Future<Person>();
+				var persons5 = s.CreateCriteria(typeof(Person))
+					.SetMaxResults(5)
+					.Future<int>();
 
-                    foreach (var person in await (persons10.GetEnumerableAsync())) { } // fire first future round-trip
+				using (var logSpy = new SqlLogSpy())
+				{
+					foreach (var person in await (persons5.GetEnumerableAsync()))
+					{
+					}
 
-                    var persons5 = s.CreateCriteria(typeof(Person))
-                        .SetMaxResults(5)
-                        .Future<int>();
+					foreach (var person in await (persons10.GetEnumerableAsync()))
+					{
+					}
 
-                    foreach (var person in await (persons5.GetEnumerableAsync())) { } // fire second future round-trip
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(1, events.Length);
+				}
+			}
+		}
 
-                    var events = logSpy.Appender.GetEvents();
-                    Assert.AreEqual(2, events.Length);
-                }
-            }
-        }
+		[Test]
+		public async Task TwoFuturesRunInTwoRoundTripsAsync()
+		{
+			using (var s = Sfi.OpenSession())
+			{
+				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
+
+				using (var logSpy = new SqlLogSpy())
+				{
+					var persons10 = s.CreateCriteria(typeof(Person))
+						.SetMaxResults(10)
+						.Future<Person>();
+
+					foreach (var person in await (persons10.GetEnumerableAsync())) { } // fire first future round-trip
+
+					var persons5 = s.CreateCriteria(typeof(Person))
+						.SetMaxResults(5)
+						.Future<int>();
+
+					foreach (var person in await (persons5.GetEnumerableAsync())) { } // fire second future round-trip
+
+					var events = logSpy.Appender.GetEvents();
+					Assert.AreEqual(2, events.Length);
+				}
+			}
+		}
 
 		[Test]
 		public async Task CanCombineSingleFutureValueWithEnumerableFuturesAsync()

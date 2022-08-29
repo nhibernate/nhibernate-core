@@ -15,48 +15,53 @@ using log4net.Repository.Hierarchy;
 using NHibernate.Dialect;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.NH2386 {
-    using System.Threading.Tasks;
-    [TestFixture]
-    public class TestAsync : BugTestCase {
-        private MemoryAppender memoryAppender;
+namespace NHibernate.Test.NHSpecificTest.NH2386
+{
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class TestAsync : BugTestCase
+	{
+		private MemoryAppender memoryAppender;
 
-        protected override bool AppliesTo(Dialect.Dialect dialect)
-        {
-            // This test uses the automatically generated timestamp type, which is a MSSQL feature.
-            return dialect is MsSql2000Dialect;
-        }
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// This test uses the automatically generated timestamp type, which is a MSSQL feature.
+			return dialect is MsSql2000Dialect;
+		}
 
-        protected override void OnTearDown() {
-            if (memoryAppender != null) {
-                var repository = (Hierarchy) LogManager.GetRepository(typeof(TestAsync).Assembly);
-                repository.Root.RemoveAppender(memoryAppender);
-                memoryAppender = null;
-            }
-            base.OnTearDown();
-        }
+		protected override void OnTearDown()
+		{
+			if (memoryAppender != null)
+			{
+				var repository = (Hierarchy) LogManager.GetRepository(typeof(TestAsync).Assembly);
+				repository.Root.RemoveAppender(memoryAppender);
+				memoryAppender = null;
+			}
+			base.OnTearDown();
+		}
 
-        [Test]
-        public async Task TheTestAsync()
-        {
-            using (ISession session = OpenSession()) {
-                var organisation = new Organisation();
-                await (session.SaveOrUpdateAsync(organisation));
-                await (session.FlushAsync());
+		[Test]
+		public async Task TheTestAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				var organisation = new Organisation();
+				await (session.SaveOrUpdateAsync(organisation));
+				await (session.FlushAsync());
 
-                organisation.TradingNames.Add(new TradingName(organisation)
-                                              {Name = "Trading Name", StartDate = DateTime.Today});
-                
-                await (session.SaveOrUpdateAsync(organisation));
+				organisation.TradingNames.Add(new TradingName(organisation)
+				{ Name = "Trading Name", StartDate = DateTime.Today });
 
-                //this line below fails 
-                //AbstractBatcher:0 - Could not execute command: UPDATE tblTrnOrganisation SET  WHERE OrganisationId = @p0 AND RVersion = @p1
-                //System.Data.SqlClient.SqlException: Incorrect syntax near the keyword 'WHERE'.
-                await (session.FlushAsync());
+				await (session.SaveOrUpdateAsync(organisation));
 
-                await (session.DeleteAsync(organisation));
-                await (session.FlushAsync());
-            }
-        }
-    }
+				//this line below fails 
+				//AbstractBatcher:0 - Could not execute command: UPDATE tblTrnOrganisation SET  WHERE OrganisationId = @p0 AND RVersion = @p1
+				//System.Data.SqlClient.SqlException: Incorrect syntax near the keyword 'WHERE'.
+				await (session.FlushAsync());
+
+				await (session.DeleteAsync(organisation));
+				await (session.FlushAsync());
+			}
+		}
+	}
 }

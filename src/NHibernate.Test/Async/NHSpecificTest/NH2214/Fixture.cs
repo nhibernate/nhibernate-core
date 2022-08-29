@@ -8,7 +8,7 @@
 //------------------------------------------------------------------------------
 
 
-﻿using System.Linq;
+using System.Linq;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NHibernate.Linq;
@@ -29,14 +29,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 		{
 			using (var session = OpenSession())
 			{
-				session.Save(new DomainClass {Id = 1, Name = "Name"});
-				session.Save(new DomainClass {Id = 2, Name = "Name"});
-				session.Save(new DomainClass {Id = 3, Name = "Name1"});
-				session.Save(new DomainClass {Id = 4, Name = "Name1"});
-				session.Save(new DomainClass {Id = 5, Name = "Name2"});
-				session.Save(new DomainClass {Id = 6, Name = "Name2"});
-				session.Save(new DomainClass {Id = 7, Name = "Name3"});
-				session.Save(new DomainClass {Id = 8, Name = "Name3"});
+				session.Save(new DomainClass { Id = 1, Name = "Name" });
+				session.Save(new DomainClass { Id = 2, Name = "Name" });
+				session.Save(new DomainClass { Id = 3, Name = "Name1" });
+				session.Save(new DomainClass { Id = 4, Name = "Name1" });
+				session.Save(new DomainClass { Id = 5, Name = "Name2" });
+				session.Save(new DomainClass { Id = 6, Name = "Name2" });
+				session.Save(new DomainClass { Id = 7, Name = "Name3" });
+				session.Save(new DomainClass { Id = 8, Name = "Name3" });
 				session.Flush();
 			}
 		}
@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 				var criteria = DetachedCriteria
 					.For<DomainClass>("d")
 					.SetProjection(Projections.Distinct(Projections.ProjectionList().Add(Projections.Property("Name"))))
-					.SetFirstResult((page - 1)*rows)
+					.SetFirstResult((page - 1) * rows)
 					.SetMaxResults(rows)
 					.AddOrder(Order.Asc("Name"));
 
@@ -84,7 +84,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 				var criteria = DetachedCriteria
 					.For<DomainClass>("d")
 					.SetProjection(Projections.Distinct(Projections.ProjectionList().Add(Projections.Property("Name"))))
-					.SetFirstResult((page - 1)*rows)
+					.SetFirstResult((page - 1) * rows)
 					.SetMaxResults(rows)
 					.AddOrder(Order.Asc("Id"));
 
@@ -103,8 +103,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2214
 				const int rows = 2;
 
 				var query = (from t in session.Query<DomainClass>()
-				             orderby t.Name
-				             select t.Name).Distinct().Skip((page - 1)*rows).Take(rows);
+							 orderby t.Name
+							 select t.Name).Distinct().Skip((page - 1) * rows).Take(rows);
 
 				var result = await (query.ToListAsync());
 

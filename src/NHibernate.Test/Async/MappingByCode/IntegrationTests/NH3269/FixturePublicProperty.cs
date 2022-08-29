@@ -61,7 +61,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3269
 							m.NotNullable(true);
 						});
 				});
-	
+
 			mapper.Class<Inherited2>(rc =>
 				{
 					rc.Id(x => x.Id, m => m.Generator(Generators.Guid));

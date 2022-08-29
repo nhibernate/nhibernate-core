@@ -10,13 +10,13 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
-using System.Collections.Generic;
 using NHibernate.Util;
 
 namespace NHibernate.Type

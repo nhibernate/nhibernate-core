@@ -120,7 +120,7 @@ namespace NHibernate.Test.Linq.ByMethod
 						on o equals ol.Order
 						group ol by ol.Product.ProductId
 							into temp
-							select new { temp.Key, count = temp.Count() };
+						select new { temp.Key, count = temp.Count() };
 
 			var result = await (query.ToListAsync());
 

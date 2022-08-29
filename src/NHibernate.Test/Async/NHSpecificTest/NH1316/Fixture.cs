@@ -31,18 +31,18 @@ namespace NHibernate.Test.NHSpecificTest.NH1316
 				var command = s.Connection.CreateCommand();
 
 				command.CommandText = "CREATE OR REPLACE FUNCTION audit_parent() RETURNS trigger AS $audit_parent$" +
-				                      Environment.NewLine +
-				                      "BEGIN" + Environment.NewLine +
+									  Environment.NewLine +
+									  "BEGIN" + Environment.NewLine +
 									  "INSERT INTO parent_history SELECT nextval('parent_history_histid_seq'), now(), NEW.*;" +
-				                      Environment.NewLine +
-				                      "RETURN NEW;" + Environment.NewLine +
-				                      "END" + Environment.NewLine +
-				                      " $audit_parent$ LANGUAGE 'plpgsql';";
+									  Environment.NewLine +
+									  "RETURN NEW;" + Environment.NewLine +
+									  "END" + Environment.NewLine +
+									  " $audit_parent$ LANGUAGE 'plpgsql';";
 				command.ExecuteNonQuery();
 
 				command.CommandText = "CREATE TRIGGER parent_audit" + Environment.NewLine +
-				                      "AFTER INSERT OR UPDATE ON parent" + Environment.NewLine +
-				                      "FOR EACH ROW EXECUTE PROCEDURE audit_parent();";
+									  "AFTER INSERT OR UPDATE ON parent" + Environment.NewLine +
+									  "FOR EACH ROW EXECUTE PROCEDURE audit_parent();";
 				command.ExecuteNonQuery();
 			}
 		}
@@ -66,9 +66,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1316
 		public async Task Correct_Id_Returned_When_Using_TriggerAsync()
 		{
 			//We expected this test to fail - if the problem has been fixed, clean-up the test.
-			var entity1 = new Parent {Name = "Parent1_0"}; // when saved this entity should have the id of 1
-			var entity2 = new Parent {Name = "Parent2_0"}; // when saved this entity should have the id of 2
-			var entity3 = new Parent {Name = "Parent3_0"}; // when saved this entity should have the id of 3
+			var entity1 = new Parent { Name = "Parent1_0" }; // when saved this entity should have the id of 1
+			var entity2 = new Parent { Name = "Parent2_0" }; // when saved this entity should have the id of 2
+			var entity3 = new Parent { Name = "Parent3_0" }; // when saved this entity should have the id of 3
 
 			using (var s = OpenSession())
 			{

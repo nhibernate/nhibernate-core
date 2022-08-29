@@ -21,18 +21,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2243
 	[TestFixture]
 	public class FixtureAsync
 	{
-			[Test]
-			public async Task ShouldCreateSchemaWithDefaultClauseAsync()
-			{
-				var script = new StringBuilder();
-				const string mapping = "NHibernate.Test.NHSpecificTest.NH2243.Mappings.hbm.xml";
+		[Test]
+		public async Task ShouldCreateSchemaWithDefaultClauseAsync()
+		{
+			var script = new StringBuilder();
+			const string mapping = "NHibernate.Test.NHSpecificTest.NH2243.Mappings.hbm.xml";
 
-				Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
-				using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(mapping))
-					cfg.AddInputStream(stream);
-				await (new SchemaExport(cfg).ExecuteAsync(s => script.AppendLine(s), false, false));
+			Configuration cfg = TestConfigurationHelper.GetDefaultConfiguration();
+			using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(mapping))
+				cfg.AddInputStream(stream);
+			await (new SchemaExport(cfg).ExecuteAsync(s => script.AppendLine(s), false, false));
 
-				Assert.That(script.ToString(), Does.Contain("MyNameForFK"));
-			}
+			Assert.That(script.ToString(), Does.Contain("MyNameForFK"));
+		}
 	}
 }

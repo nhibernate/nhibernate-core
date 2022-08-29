@@ -8,11 +8,11 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Linq;
+using NHibernate.Dialect;
 using NHibernate.Linq;
 using NUnit.Framework;
-using System;
-using NHibernate.Dialect;
 
 namespace NHibernate.Test.NHSpecificTest.NH3377
 {

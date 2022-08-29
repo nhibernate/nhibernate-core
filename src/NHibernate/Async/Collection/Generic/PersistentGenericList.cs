@@ -72,8 +72,8 @@ namespace NHibernate.Collection.Generic
 		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var element = (T)await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session, cancellationToken)).ConfigureAwait(false);
-			int index = (int)await (role.ReadIndexAsync(rs, descriptor.SuffixedIndexAliases, Session, cancellationToken)).ConfigureAwait(false);
+			var element = (T) await (role.ReadElementAsync(rs, owner, descriptor.SuffixedElementAliases, Session, cancellationToken)).ConfigureAwait(false);
+			int index = (int) await (role.ReadIndexAsync(rs, descriptor.SuffixedIndexAliases, Session, cancellationToken)).ConfigureAwait(false);
 
 			//pad with nulls from the current last element up to the new index
 			for (int i = WrappedList.Count; i <= index; i++)
@@ -95,7 +95,7 @@ namespace NHibernate.Collection.Generic
 		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			object[] array = (object[])disassembled;
+			object[] array = (object[]) disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i++)
@@ -152,7 +152,7 @@ namespace NHibernate.Collection.Generic
 		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var sn = (IList<T>)GetSnapshot();
+			var sn = (IList<T>) GetSnapshot();
 			return i < sn.Count && sn[i] != null && WrappedList[i] != null && await (elemType.IsDirtyAsync(WrappedList[i], sn[i], Session, cancellationToken)).ConfigureAwait(false);
 		}
 	}

@@ -52,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1792
 				{
 					for (int i = 0; i < 10; i++)
 					{
-						var prod = new Product {Name = "Product" + i};
+						var prod = new Product { Name = "Product" + i };
 
 						session.Save(prod);
 					}

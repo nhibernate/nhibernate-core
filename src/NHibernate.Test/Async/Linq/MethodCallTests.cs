@@ -59,7 +59,7 @@ namespace NHibernate.Test.Linq
 		public async Task CanSelectPropertiesIntoObjectArrayAsync()
 		{
 			var result = await (db.Users
-				.Select(u => new object[] {u.Id, u.Name, u.InvalidLoginAttempts})
+				.Select(u => new object[] { u.Id, u.Name, u.InvalidLoginAttempts })
 				.FirstAsync());
 
 			Assert.That(result.Length, Is.EqualTo(3));
@@ -71,14 +71,14 @@ namespace NHibernate.Test.Linq
 		public async Task CanSelectComponentsIntoObjectArrayAsync()
 		{
 			var result = await (db.Users
-				.Select(u => new object[] {u.Component, u.Component.OtherComponent})
+				.Select(u => new object[] { u.Component, u.Component.OtherComponent })
 				.FirstAsync());
 
 			Assert.That(result.Length, Is.EqualTo(2));
 			Assert.That(result[0], Is.TypeOf<UserComponent>());
 			Assert.That(result[1], Is.TypeOf<UserComponent2>());
 
-			var component = (UserComponent)result[0];
+			var component = (UserComponent) result[0];
 			Assert.That(component.Property1, Is.EqualTo("test1"));
 
 			var otherComponent = (UserComponent2) result[1];
@@ -90,7 +90,7 @@ namespace NHibernate.Test.Linq
 		{
 			var result = await (db.Users
 				.Where(u => u.Name == "nhibernate")
-				.Select(u => new object[] {u.Enum1, u.Enum2, u.Features})
+				.Select(u => new object[] { u.Enum1, u.Enum2, u.Features })
 				.FirstAsync());
 
 			Assert.That(result.Length, Is.EqualTo(3));
@@ -106,7 +106,7 @@ namespace NHibernate.Test.Linq
 			const string name = "Julian";
 
 			var result = await (db.Users
-				.Select(u => new object[] {u.Id, pi, name, DateTime.MinValue})
+				.Select(u => new object[] { u.Id, pi, name, DateTime.MinValue })
 				.FirstAsync());
 
 			Assert.That(result.Length, Is.EqualTo(4));
@@ -115,11 +115,11 @@ namespace NHibernate.Test.Linq
 			Assert.That(result[3], Is.EqualTo(DateTime.MinValue));
 		}
 
-		[Test, Description("NH-2744")] 
+		[Test, Description("NH-2744")]
 		public async Task CanSelectPropertiesFromAssociationsIntoObjectArrayAsync()
 		{
 			var result = await (db.Users
-				.Select(u => new object[] {u.Id, u.Role.Name, u.Role.Entity.Output})
+				.Select(u => new object[] { u.Id, u.Role.Name, u.Role.Entity.Output })
 				.FirstAsync());
 
 			Assert.That(result.Length, Is.EqualTo(3));
@@ -127,7 +127,7 @@ namespace NHibernate.Test.Linq
 			Assert.That(result[2], Is.EqualTo("output"));
 		}
 
-		[Test(Description = "NH-2782")] 
+		[Test(Description = "NH-2782")]
 		public async Task CanSelectPropertiesIntoObjectArrayInPropertyAsync()
 		{
 			var result = await (db.Users
@@ -140,7 +140,7 @@ namespace NHibernate.Test.Linq
 			Assert.That(cells[2], Is.InstanceOf<object[]>().And.Length.EqualTo(cells[0]));
 		}
 
-		[Test(Description = "NH-2782")] 
+		[Test(Description = "NH-2782")]
 		public async Task CanSelectPropertiesIntoPropertyListInPropertyAsync()
 		{
 			var result = await (db.Users
@@ -151,12 +151,12 @@ namespace NHibernate.Test.Linq
 			Assert.That(cells.Count, Is.EqualTo(3));
 			Assert.That(cells[1], Is.EqualTo("ayende"));
 			Assert.That(cells[2], Is.InstanceOf<object[]>().And.Length.EqualTo(cells[0]));
-		} 
+		}
 
 		[Test, Description("NH-2744")]
 		public async Task CanSelectPropertiesIntoNestedObjectArraysAsync()
 		{
-			var query = db.Users.Select(u => new object[] {"Root", new object[] {"Sub1", u.Name, new object[] {"Sub2", u.Name}}});
+			var query = db.Users.Select(u => new object[] { "Root", new object[] { "Sub1", u.Name, new object[] { "Sub2", u.Name } } });
 			var result = await (query.FirstAsync());
 
 			Assert.That(result.Length, Is.EqualTo(2));

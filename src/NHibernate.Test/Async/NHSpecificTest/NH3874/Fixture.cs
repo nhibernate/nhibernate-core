@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3874
 				var two = new Two { One = one };
 				two.One.Twos = new[] { two };
 				_id = session.Save(one);
-				 session.Save(two);
+				session.Save(two);
 
 				tx.Commit();
 			}

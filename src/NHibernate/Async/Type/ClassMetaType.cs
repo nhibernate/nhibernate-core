@@ -36,7 +36,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task<object> NullSafeGetAsync(DbDataReader rs,string name,ISessionImplementor session,object owner, CancellationToken cancellationToken)
+		public override Task<object> NullSafeGetAsync(DbDataReader rs, string name, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -69,7 +69,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task NullSafeSetAsync(DbCommand st,object value,int index,ISessionImplementor session, CancellationToken cancellationToken)
+		public override Task NullSafeSetAsync(DbCommand st, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

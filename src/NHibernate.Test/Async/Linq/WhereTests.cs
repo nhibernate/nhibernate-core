@@ -15,9 +15,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using log4net.Core;
+using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Engine.Query;
 using NHibernate.Linq;
-using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Linq.Functions;
 using NUnit.Framework;
 
@@ -302,11 +302,11 @@ namespace NHibernate.Test.Linq
 			var query = from user in db.Users
 						where user.Role.Entity.Output != null
 						select new
-							{
-								user.Name,
-								RoleName = user.Role.Name,
-								user.Role.Entity.Output
-							};
+						{
+							user.Name,
+							RoleName = user.Role.Name,
+							user.Role.Entity.Output
+						};
 
 			var list = await (query.ToListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
@@ -355,9 +355,9 @@ namespace NHibernate.Test.Linq
 			// ReSharper disable SimplifyConditionalTernaryExpression
 			var query = db.Users
 						  .Where(user =>
-								 (user.Name == null ? null : (bool?)user.Name.Contains("123")) == null
+								 (user.Name == null ? null : (bool?) user.Name.Contains("123")) == null
 									 ? false
-									 : (user.Name == null ? null : (bool?)user.Name.Contains("123")).Value);
+									 : (user.Name == null ? null : (bool?) user.Name.Contains("123")).Value);
 			// ReSharper restore SimplifyConditionalTernaryExpression
 
 			await (query.ToListAsync());
@@ -389,7 +389,7 @@ namespace NHibernate.Test.Linq
 			// expression trees, so we need to construct the query gradually.
 
 			var nullAsNullableBool = Expression.Constant(null, typeof(bool?));
-			var valueProperty = typeof (bool?).GetProperty("Value");
+			var valueProperty = typeof(bool?).GetProperty("Value");
 
 			Expression<Func<Product, bool>> quantityIsNull = x => x.QuantityPerUnit == null;
 			Expression<Func<Product, bool>> nameIsNull = x => x.Name == null;
@@ -495,7 +495,7 @@ namespace NHibernate.Test.Linq
 							 where names.Contains(user.Name)
 							 select user).ToListAsync());
 
-				Assert.AreEqual(2, query.Count); 
+				Assert.AreEqual(2, query.Count);
 
 				names.Clear();
 			}
@@ -727,10 +727,10 @@ namespace NHibernate.Test.Linq
 			var featureSet = FeatureSet.HasThat;
 			var query = await ((
 				from o in session.Query<User>()
-				// When converted to SQL, "undue" parenthesis are stripped out. For most DB, binary operators have same precedence,
-				// causing "((o.Features | featureSet) & featureSet)" to be equivalent to "o.Features | featureSet & featureSet"
-				// But for MySql, & take precedence on |, wrecking the test for it. So it is needed to write the test in a way
-				// such as the parenthesis will be preserved.
+					// When converted to SQL, "undue" parenthesis are stripped out. For most DB, binary operators have same precedence,
+					// causing "((o.Features | featureSet) & featureSet)" to be equivalent to "o.Features | featureSet & featureSet"
+					// But for MySql, & take precedence on |, wrecking the test for it. So it is needed to write the test in a way
+					// such as the parenthesis will be preserved.
 				where (featureSet & (o.Features | featureSet)) == featureSet
 				select o).ToListAsync());
 
@@ -841,9 +841,9 @@ namespace NHibernate.Test.Linq
 			var animal = await (session.Query<Animal>().SingleAsync(a => a.SerialNumber == "123"));
 
 			var result = await (session.Query<Animal>()
-			                    .Where(e => animal.Children.Contains(e.Father))
-			                    .OrderBy(e => e.Id)
-			                    .FirstOrDefaultAsync());
+								.Where(e => animal.Children.Contains(e.Father))
+								.OrderBy(e => e.Id)
+								.FirstOrDefaultAsync());
 			Assert.That(result, Is.Not.Null);
 			Assert.That(result.SerialNumber, Is.EqualTo("1121"));
 		}
@@ -857,9 +857,9 @@ namespace NHibernate.Test.Linq
 			}
 
 			await (session.Query<Customer>()
-			       .Select(o => new AggregateDate { Id = o.CustomerId, MaxDate = o.Orders.Max(l => l.RequiredOrderDate)})
-			       .Where(o => o.MaxDate <= DateTime.Today && o.MaxDate >= DateTime.Today)
-			       .ToListAsync());
+				   .Select(o => new AggregateDate { Id = o.CustomerId, MaxDate = o.Orders.Max(l => l.RequiredOrderDate) })
+				   .Where(o => o.MaxDate <= DateTime.Today && o.MaxDate >= DateTime.Today)
+				   .ToListAsync());
 		}
 
 		private class AggregateDate

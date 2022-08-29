@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3918
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var bob =  CreateOwner(session, "Bob");
+				var bob = CreateOwner(session, "Bob");
 				var carl = CreateOwner(session, "Carl");
 				var doug = CreateOwner(session, "Doug");
 
@@ -136,7 +136,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3918
 				var resultsFromWhere = await (queryWithWhere.ToListAsync());
 				var resultsFromSelect = await (queryWithSelect.ToListAsync());
 
-				Assert.That(resultsFromSelect.Where(x => (bool)x[1]).Select(x => (string)x[0]), Is.EquivalentTo(resultsFromWhere));
+				Assert.That(resultsFromSelect.Where(x => (bool) x[1]).Select(x => (string) x[0]), Is.EquivalentTo(resultsFromWhere));
 			}
 		}
 

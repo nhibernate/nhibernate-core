@@ -34,9 +34,9 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 			var persister = Sfi.GetEntityPersister(typeof(Entity).FullName);
 			Assert.That(persister.IdentifierGenerator, Is.TypeOf<TableGenerator>());
 
-			var generator = (TableGenerator)persister.IdentifierGenerator;
+			var generator = (TableGenerator) persister.IdentifierGenerator;
 			Assert.That(generator.Optimizer, Is.TypeOf<OptimizerFactory.PooledLoOptimizer>());
-			var optimizer = (OptimizerFactory.PooledLoOptimizer)generator.Optimizer;
+			var optimizer = (OptimizerFactory.PooledLoOptimizer) generator.Optimizer;
 
 			int increment = optimizer.IncrementSize;
 			Entity[] entities = new Entity[increment + 1];

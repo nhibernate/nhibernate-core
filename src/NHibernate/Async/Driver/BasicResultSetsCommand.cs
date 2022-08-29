@@ -22,7 +22,7 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Driver
 {
-	public partial class BasicResultSetsCommand: IResultSetsCommand
+	public partial class BasicResultSetsCommand : IResultSetsCommand
 	{
 
 		public virtual async Task<DbDataReader> GetReaderAsync(int? commandTimeout, CancellationToken cancellationToken)
@@ -42,7 +42,7 @@ namespace NHibernate.Driver
 		}
 	}
 
-	public partial class BatcherDataReaderWrapper: DbDataReader
+	public partial class BatcherDataReaderWrapper : DbDataReader
 	{
 
 		public static async Task<BatcherDataReaderWrapper> CreateAsync(IBatcher batcher, DbCommand command, CancellationToken cancellationToken)

@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3079
 				{
 					var personCpId = new PersonCpId { IdA = gId++, IdB = gId++ };
 					var personObj = new Person
-						{ CpId = personCpId, Name = "PERSON_" + personCpId.IdA + "_" + personCpId.IdB };
+					{ CpId = personCpId, Name = "PERSON_" + personCpId.IdA + "_" + personCpId.IdB };
 					s.Save(personObj);
 					personList.Add(personObj);
 				}
@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3079
 				{
 					var employerCpId = new EmployerCpId { IdA = gId++, IdB = gId++ };
 					var employerObj = new Employer
-						{ CpId = employerCpId, Name = "EMPLOYER_" + employerCpId.IdA + "_" + employerCpId.IdB };
+					{ CpId = employerCpId, Name = "EMPLOYER_" + employerCpId.IdA + "_" + employerCpId.IdB };
 					s.Save(employerObj);
 					employerList.Add(employerObj);
 				}

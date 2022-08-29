@@ -9,16 +9,16 @@
 
 
 using System;
-using System.Data.Common;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Runtime.CompilerServices;
+using NHibernate.AdoNet.Util;
 using NHibernate.Engine;
 using NHibernate.Mapping;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.SqlCommand;
-using NHibernate.AdoNet.Util;
 
 namespace NHibernate.Id.Enhanced
 {

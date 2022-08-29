@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1985
 
 			ExecuteStatement("DELETE FROM DomainClass WHERE Id=1;");
 		}
-		
+
 		[Test]
 		public async Task AllowDeletionOfImmutableObjectAsync()
 		{

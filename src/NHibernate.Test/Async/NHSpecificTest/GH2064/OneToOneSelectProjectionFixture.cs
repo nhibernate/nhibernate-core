@@ -46,8 +46,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2064
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var nullableOwner = new ParentEntity() {Name = "Owner",};
-				var oneToOne = new OneToOneEntity() {Name = "OneToOne"};
+				var nullableOwner = new ParentEntity() { Name = "Owner", };
+				var oneToOne = new OneToOneEntity() { Name = "OneToOne" };
 				nullableOwner.OneToOne = oneToOne;
 				session.Save(nullableOwner);
 				oneToOne.Id = nullableOwner.Id;
@@ -99,12 +99,12 @@ namespace NHibernate.Test.NHSpecificTest.GH2064
 							x => new
 							{
 								x.Id,
-								SubType = new {x.OneToOne, x.Name},
+								SubType = new { x.OneToOne, x.Name },
 								SubType2 = new
 								{
 									x.Id,
 									x.OneToOne,
-									SubType3 = new {x.Id, x.OneToOne}
+									SubType3 = new { x.Id, x.OneToOne }
 								},
 								x.OneToOne
 							}).FirstOrDefaultAsync());

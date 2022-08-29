@@ -144,20 +144,20 @@ namespace NHibernate.Test.Linq
 		public async Task Customers11to20And21to30ShouldNoCacheQueryAsync()
 		{
 			var query = await ((from c in db.Customers
-							orderby c.CustomerId
-							select c.CustomerId).Skip(10).Take(10).ToListAsync());
+						 orderby c.CustomerId
+						 select c.CustomerId).Skip(10).Take(10).ToListAsync());
 			Assert.AreEqual(query[0], "BSBEV");
 			Assert.AreEqual(10, query.Count);
 
 			query = await ((from c in db.Customers
-						orderby c.CustomerId
-						select c.CustomerId).Skip(20).Take(10).ToListAsync());
+					 orderby c.CustomerId
+					 select c.CustomerId).Skip(20).Take(10).ToListAsync());
 			Assert.AreNotEqual(query[0], "BSBEV");
 			Assert.AreEqual(10, query.Count);
 
 			query = await ((from c in db.Customers
-						orderby c.CustomerId
-						select c.CustomerId).Skip(10).Take(20).ToListAsync());
+					 orderby c.CustomerId
+					 select c.CustomerId).Skip(10).Take(20).ToListAsync());
 			Assert.AreEqual(query[0], "BSBEV");
 			Assert.AreEqual(20, query.Count);
 		}
@@ -172,10 +172,10 @@ namespace NHibernate.Test.Linq
 				.Select(p => p.ProductId)
 				.ToList();
 
-			var ids = await (db.Products 
-				.OrderBy(p => p.ProductId) 
-				.Skip(10).Take(20) 
-				.Select(p => p.ProductId) 
+			var ids = await (db.Products
+				.OrderBy(p => p.ProductId)
+				.Skip(10).Take(20)
+				.Select(p => p.ProductId)
 				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
@@ -185,14 +185,14 @@ namespace NHibernate.Test.Linq
 		public async Task OrderedPagedProductsWithInnerProjectionAsync()
 		{
 			//NH-3108 (not failing)
-			var inMemoryIds = (await (db.Products.ToListAsync())) 
-				.OrderBy(p => p.ProductId) 
+			var inMemoryIds = (await (db.Products.ToListAsync()))
+				.OrderBy(p => p.ProductId)
 				.Select(p => p.ProductId)
 				.Skip(10).Take(20)
 				.ToList();
 
-			var ids = await (db.Products 
-				.OrderBy(p => p.ProductId) 
+			var ids = await (db.Products
+				.OrderBy(p => p.ProductId)
 				.Select(p => p.ProductId)
 				.Skip(10).Take(20)
 				.ToListAsync());
@@ -211,9 +211,9 @@ namespace NHibernate.Test.Linq
 				.ToList();
 
 			var ids = await (db.Products
-				.OrderByDescending(p => p.ProductId) 
-				.Skip(10).Take(20) 
-				.Select(p => p.ProductId) 
+				.OrderByDescending(p => p.ProductId)
+				.Skip(10).Take(20)
+				.Select(p => p.ProductId)
 				.ToListAsync());
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
@@ -224,13 +224,13 @@ namespace NHibernate.Test.Linq
 		{
 			//NH-3108 (not failing)
 			var inMemoryIds = (await (db.Products.ToListAsync()))
-				.OrderByDescending(p => p.ProductId) 
+				.OrderByDescending(p => p.ProductId)
 				.Select(p => p.ProductId)
 				.Skip(10).Take(20)
 				.ToList();
 
 			var ids = await (db.Products
-				.OrderByDescending(p => p.ProductId) 
+				.OrderByDescending(p => p.ProductId)
 				.Select(p => p.ProductId)
 				.Skip(10).Take(20)
 				.ToListAsync());
@@ -359,7 +359,7 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(ids, Is.EqualTo(inMemoryIds));
 		}
-		
+
 		[Test]
 		public async Task PagedProductsWithOuterWhereClauseAndComplexProjectionAsync()
 		{

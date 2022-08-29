@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1864
 		[Test]
 		public void BugAsync()
 		{
-			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s=> s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
+			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
 		}
 
 		[Test]
@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1864
 			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
 			Assert.DoesNotThrowAsync(() => ExecuteQueryAsync(s => s.EnableFilter("validity").SetParameter("date", DateTime.Now)));
 		}
-		
+
 		private async Task ExecuteQueryAsync(Action<ISession> sessionModifier, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (ISession session = OpenSession())
@@ -46,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1864
 				using (ITransaction tx = session.BeginTransaction())
 				{
 					sessionModifier(session);
-					
+
 					await (session
 						.CreateQuery(@"select cat from Invoice inv, Category cat where cat.ValidUntil = :now and inv.Foo = :foo")
 						.SetInt32("foo", 42)

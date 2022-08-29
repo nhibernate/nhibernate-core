@@ -34,7 +34,7 @@ namespace NHibernate.Test.Associations
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-		
+
 		//NH-3778 (GH-1368)
 		[Test]
 		public async Task OneToOneCompositeQueryOverByEntityParamAsync()
@@ -47,7 +47,7 @@ namespace NHibernate.Test.Associations
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-	
+
 		[Test]
 		public async Task OneToOneCompositeQueryByKeyAsync()
 		{
@@ -59,7 +59,7 @@ namespace NHibernate.Test.Associations
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-		
+
 		[Test]
 		public async Task OneToOneCompositeQueryOverByKeyAsync()
 		{
@@ -83,7 +83,7 @@ namespace NHibernate.Test.Associations
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-		
+
 		[Test]
 		public async Task OneToOneCompositeQueryOverByNotNullAsync()
 		{
@@ -94,7 +94,7 @@ namespace NHibernate.Test.Associations
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-		
+
 		[Test]
 		public async Task OneToOneCompositeQueryCompareWithJoinAsync()
 		{
@@ -105,12 +105,12 @@ namespace NHibernate.Test.Associations
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-		
+
 		[Explicit("Expression in Restrictions.Where can't recognize direct alias comparison.")]
 		[Test]
 		public async Task OneToOneCompositeQueryOverCompareWithJoinAsync()
 		{
-			using(new SqlLogSpy())			
+			using (new SqlLogSpy())
 			using (var session = OpenSession())
 			{
 				Parent parent = null;
@@ -123,7 +123,7 @@ namespace NHibernate.Test.Associations
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-		
+
 		[Test]
 		public async Task OneToOneCompositeQueryOverCompareWithJoinByIdAsync()
 		{
@@ -145,10 +145,10 @@ namespace NHibernate.Test.Associations
 		[Test]
 		public async Task OneToOneCompositeQuerySelectProjectionAsync()
 		{
-			using(var logSpy = new LogSpy(typeof(ReflectHelper)))
+			using (var logSpy = new LogSpy(typeof(ReflectHelper)))
 			using (var session = OpenSession())
 			{
-				var loadedProjection = await (session.Query<Parent>().Select(x => new {x.OneToOneComp, x.Key}).FirstOrDefaultAsync());
+				var loadedProjection = await (session.Query<Parent>().Select(x => new { x.OneToOneComp, x.Key }).FirstOrDefaultAsync());
 
 				Assert.That(loadedProjection.OneToOneComp, Is.Not.Null);
 				// GH-2855 Error is logged
@@ -169,7 +169,7 @@ namespace NHibernate.Test.Associations
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-		
+
 		#region Test Setup
 
 		protected override HbmMapping GetMappings()

@@ -52,7 +52,7 @@ namespace NHibernate.Engine
 				}
 				else if (type.IsEntityType)
 				{
-					EntityType entityType = (EntityType)type;
+					EntityType entityType = (EntityType) type;
 					if (entityType.IsOneToOne)
 					{
 						return value;
@@ -69,7 +69,7 @@ namespace NHibernate.Engine
 				}
 				else if (type.IsComponentType)
 				{
-					IAbstractComponentType actype = (IAbstractComponentType)type;
+					IAbstractComponentType actype = (IAbstractComponentType) type;
 					object[] subvalues = await (actype.GetPropertyValuesAsync(value, session, cancellationToken)).ConfigureAwait(false);
 					IType[] subtypes = actype.Subtypes;
 					bool substitute = false;
@@ -103,9 +103,9 @@ namespace NHibernate.Engine
 
 				if (obj.IsProxy())
 				{
-                    INHibernateProxy proxy = obj as INHibernateProxy;
-                    
-                    // if its an uninitialized proxy it can't be transient
+					INHibernateProxy proxy = obj as INHibernateProxy;
+
+					// if its an uninitialized proxy it can't be transient
 					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					if (li.GetImplementation(session) == null)
 					{
@@ -210,7 +210,7 @@ namespace NHibernate.Engine
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return await (IsTransientFastAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false) ??
-			       await (HasDbSnapshotAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false);
+				   await (HasDbSnapshotAsync(entityName, entity, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		static async Task<bool> HasDbSnapshotAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken)
@@ -222,7 +222,7 @@ namespace NHibernate.Engine
 				// When using assigned identifiers we cannot tell if an entity
 				// is transient or detached without querying the database.
 				// This could potentially cause Select N+1 in cascaded saves, so warn the user.
-				log.Warn("Unable to determine if {0} with assigned identifier {1} is transient or detached; querying the database. Use explicit Save() or Update() in session to prevent this.", 
+				log.Warn("Unable to determine if {0} with assigned identifier {1} is transient or detached; querying the database. Use explicit Save() or Update() in session to prevent this.",
 					entity, persister.GetIdentifier(entity));
 			}
 

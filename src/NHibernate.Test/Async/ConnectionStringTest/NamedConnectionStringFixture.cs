@@ -13,13 +13,13 @@ using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Connection;
 using NUnit.Framework;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.ConnectionStringTest
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	
+
 	public partial class MockConnectionProvider : ConnectionProvider
 	{
 

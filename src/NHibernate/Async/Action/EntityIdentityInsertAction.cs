@@ -77,7 +77,7 @@ namespace NHibernate.Action
 			IPostInsertEventListener[] postListeners = Session.Listeners.PostInsertEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostInsertEvent postEvent = new PostInsertEvent(Instance, generatedId, State, Persister, (IEventSource)Session);
+				PostInsertEvent postEvent = new PostInsertEvent(Instance, generatedId, State, Persister, (IEventSource) Session);
 				foreach (IPostInsertEventListener listener in postListeners)
 				{
 					await (listener.OnPostInsertAsync(postEvent, cancellationToken)).ConfigureAwait(false);

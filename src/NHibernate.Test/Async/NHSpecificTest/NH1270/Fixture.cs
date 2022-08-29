@@ -26,32 +26,32 @@ namespace NHibernate.Test.NHSpecificTest.NH1270
 			var mapper = new ModelMapper();
 			mapper.Class<User>(rt =>
 							   {
-								rt.Id(x => x.Id, map => map.Generator(Generators.Guid));
-								rt.Property(x => x.Name);
-													rt.Set(x => x.Roles, map =>
-																							 {
-																								 map.Table("UsersToRoles");
-																								 map.Inverse(true);
-																								 map.Key(km => km.Column("UserId"));
-																							 }, rel => rel.ManyToMany(mm =>
-																													  {
-																																					mm.Column("RoleId");
-																														mm.ForeignKey("FK_RoleInUser");
-																													  }));
+								   rt.Id(x => x.Id, map => map.Generator(Generators.Guid));
+								   rt.Property(x => x.Name);
+								   rt.Set(x => x.Roles, map =>
+																			{
+																				map.Table("UsersToRoles");
+																				map.Inverse(true);
+																				map.Key(km => km.Column("UserId"));
+																			}, rel => rel.ManyToMany(mm =>
+																									 {
+																										 mm.Column("RoleId");
+																										 mm.ForeignKey("FK_RoleInUser");
+																									 }));
 							   });
 			mapper.Class<Role>(rt =>
 							   {
-								rt.Id(x => x.Id, map => map.Generator(Generators.Guid));
-								rt.Property(x => x.Name);
-								rt.Set(x => x.Users, map =>
-													 {
-														map.Table("UsersToRoles");
-																								map.Key(km => km.Column("RoleId"));
-																							 }, rel => rel.ManyToMany(mm =>
-																													  {
-																																					mm.Column("UserId");
-																														mm.ForeignKey("FK_UserInRole");
-																													  }));
+								   rt.Id(x => x.Id, map => map.Generator(Generators.Guid));
+								   rt.Property(x => x.Name);
+								   rt.Set(x => x.Users, map =>
+														{
+															map.Table("UsersToRoles");
+															map.Key(km => km.Column("RoleId"));
+														}, rel => rel.ManyToMany(mm =>
+																			  {
+																															 mm.Column("UserId");
+																															 mm.ForeignKey("FK_UserInRole");
+																														 }));
 							   });
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			return mappings;
@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1270
 		public async Task WhenMapCustomFkNamesThenUseItAsync()
 		{
 			var conf = TestConfigurationHelper.GetDefaultConfiguration();
-			conf.DataBaseIntegration(i=> i.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote);
+			conf.DataBaseIntegration(i => i.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote);
 			conf.AddMapping(GetMappings());
 			var sb = new StringBuilder();
 			await ((new SchemaExport(conf)).CreateAsync(s => sb.AppendLine(s), true));

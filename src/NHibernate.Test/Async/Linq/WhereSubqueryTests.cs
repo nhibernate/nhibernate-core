@@ -38,11 +38,11 @@ namespace NHibernate.Test.Linq
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
 
-// ReSharper disable UseMethodAny.1
+			// ReSharper disable UseMethodAny.1
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.Count() >= 1
 						 select timesheet).ToListAsync());
-// ReSharper restore UseMethodAny.1
+			// ReSharper restore UseMethodAny.1
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -53,11 +53,11 @@ namespace NHibernate.Test.Linq
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
 
-// ReSharper disable UseMethodAny.1
+			// ReSharper disable UseMethodAny.1
 			var query = await ((from timesheet in db.Timesheets
 						 where 1 <= timesheet.Entries.Count()
 						 select timesheet).ToListAsync());
-// ReSharper restore UseMethodAny.1
+			// ReSharper restore UseMethodAny.1
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -366,12 +366,12 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test(Description = "NH-2999 and NH-2988")]
 		public async Task OrderLinesWithImpliedJoinAndSubQueryAsync()
 		{
-// ReSharper disable SimplifyLinqExpression
+			// ReSharper disable SimplifyLinqExpression
 			var lines = await ((from l in db.OrderLines
 						 where l.Order.Customer.CustomerId == "VINET"
 						 where !l.Order.Employee.Subordinates.Any(x => x.EmployeeId == 100)
 						 select l).ToListAsync());
-// ReSharper restore SimplifyLinqExpression
+			// ReSharper restore SimplifyLinqExpression
 
 			Assert.That(lines.Count, Is.EqualTo(10));
 		}
@@ -530,14 +530,14 @@ where c.Order.Customer.CustomerId = 'VINET'
 				Assert.Ignore("MS SQL CE does not support sorting on a subquery.");
 
 			var ordersQuery = db.Orders
-			                    .OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId)
-			                    .Take(2);
+								.OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId)
+								.Take(2);
 
 			var orderLineQuery = ordersQuery.SelectMany(x => x.OrderLines);
 			var productsNotInLargestOrders = await (db.Products
-			                                   .Where(x => orderLineQuery.All(p => p.Product != x))
-			                                   .OrderBy(x => x.ProductId)
-			                                   .ToListAsync());
+											   .Where(x => orderLineQuery.All(p => p.Product != x))
+											   .OrderBy(x => x.ProductId)
+											   .ToListAsync());
 
 			Assert.That(productsNotInLargestOrders.Count, Is.EqualTo(49), nameof(productsNotInLargestOrders));
 		}
@@ -546,13 +546,13 @@ where c.Order.Customer.CustomerId = 'VINET'
 		public async Task OrdersWithSubquery11AAsync()
 		{
 			var ordersQuery = db.Orders
-			                    .OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId);
+								.OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId);
 
 			var orderLineQuery = ordersQuery.SelectMany(x => x.OrderLines);
 			var productsNotInLargestOrders = await (db.Products
-			                                   .Where(x => orderLineQuery.All(p => p.Product != x))
-			                                   .OrderBy(x => x.ProductId)
-			                                   .ToListAsync());
+											   .Where(x => orderLineQuery.All(p => p.Product != x))
+											   .OrderBy(x => x.ProductId)
+											   .ToListAsync());
 
 			Assert.That(productsNotInLargestOrders.Count, Is.EqualTo(0), nameof(productsNotInLargestOrders));
 		}
@@ -599,11 +599,11 @@ where c.Order.Customer.CustomerId = 'VINET'
 		[Test(Description = "NH-2762")]
 		public async Task ProductsWithSubqueryAsIEnumerableAsync()
 		{
-// ReSharper disable RedundantEnumerableCastCall
+			// ReSharper disable RedundantEnumerableCastCall
 			var categories = (await ((from c in db.Categories
 							  where c.Name == "Confections"
 							  select c).ToListAsync())).OfType<ProductCategory>();
-// ReSharper restore RedundantEnumerableCastCall
+			// ReSharper restore RedundantEnumerableCastCall
 
 			var result = await ((from p in db.Products
 						  where categories.Contains(p.Category)
@@ -757,7 +757,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 			// to just the IfFalse expression. Without this collapsing, we cannot generate HQL.
 
 			var result = await (db.Products
-				.Select(p => new {Name = p.Name, Pr2 = new {ReorderLevel = p.ReorderLevel}})
+				.Select(p => new { Name = p.Name, Pr2 = new { ReorderLevel = p.ReorderLevel } })
 				.Where(pr1 => (pr1.Pr2 == null ? (int?) null : pr1.Pr2.ReorderLevel) > 6)
 				.ToListAsync());
 
@@ -783,7 +783,7 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			var result = await (db.Products
 				.Select(p => new Pr1 { Name = p.Name, Pr2 = new Pr2 { ReorderLevel = p.ReorderLevel } })
-				.Where(pr1 => (pr1.Pr2 == null ? (int?)null : pr1.Pr2.ReorderLevel) > 6)
+				.Where(pr1 => (pr1.Pr2 == null ? (int?) null : pr1.Pr2.ReorderLevel) > 6)
 				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(45));

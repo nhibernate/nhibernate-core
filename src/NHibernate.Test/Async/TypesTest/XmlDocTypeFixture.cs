@@ -43,7 +43,7 @@ namespace NHibernate.Test.TypesTest
 		{
 			using (var s = OpenSession())
 			{
-				var docEntity = new XmlDocClass {Id = 1 };
+				var docEntity = new XmlDocClass { Id = 1 };
 				docEntity.Document = new XmlDocument();
 				docEntity.Document.LoadXml("<MyNode>my Text</MyNode>");
 				await (s.SaveAsync(docEntity));

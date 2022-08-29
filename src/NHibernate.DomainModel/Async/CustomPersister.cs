@@ -81,14 +81,14 @@ namespace NHibernate.DomainModel
 		{
 			// fails when optional object is supplied
 			Custom clone = null;
-			Custom obj = (Custom)Instances[id];
+			Custom obj = (Custom) Instances[id];
 			if (obj != null)
 			{
-				clone = (Custom)obj.Clone();
+				clone = (Custom) obj.Clone();
 				TwoPhaseLoad.AddUninitializedEntity(session.GenerateEntityKey(id, this), clone, this, LockMode.None, session);
-				TwoPhaseLoad.PostHydrate(this, id, new String[] {obj.Name}, null, clone, LockMode.None, session);
+				TwoPhaseLoad.PostHydrate(this, id, new String[] { obj.Name }, null, clone, LockMode.None, session);
 				await (TwoPhaseLoad.InitializeEntityAsync(clone, false, session, new PreLoadEvent((IEventSource) session),
-				                              new PostLoadEvent((IEventSource) session), cancellationToken));
+											  new PostLoadEvent((IEventSource) session), cancellationToken));
 			}
 			return clone;
 		}
@@ -102,7 +102,7 @@ namespace NHibernate.DomainModel
 		{
 			try
 			{
-				Instances[id] = ((Custom)obj).Clone();
+				Instances[id] = ((Custom) obj).Clone();
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)
@@ -130,11 +130,11 @@ namespace NHibernate.DomainModel
 		}
 
 		public Task UpdateAsync(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection, object[] oldFields,
-		                   object oldVersion, object obj, object rowId, ISessionImplementor session, CancellationToken cancellationToken)
+						   object oldVersion, object obj, object rowId, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			try
 			{
-				Instances[id] = ((Custom)obj).Clone();
+				Instances[id] = ((Custom) obj).Clone();
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)

@@ -21,8 +21,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1413
 		[Test]
 		public async Task BugAsync()
 		{
-			using(ISession session = OpenSession())
-			using(ITransaction t = session.BeginTransaction())
+			using (ISession session = OpenSession())
+			using (ITransaction t = session.BeginTransaction())
 			{
 				await (session.PersistAsync(new Foo("Foo1", DateTime.Today.AddDays(5))));
 				await (session.PersistAsync(new Foo("Foo2", DateTime.Today.AddDays(1))));
@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1413
 				await (t.CommitAsync());
 			}
 
-			DetachedCriteria criteria = DetachedCriteria.For(typeof (Foo));
+			DetachedCriteria criteria = DetachedCriteria.For(typeof(Foo));
 			criteria.Add(Restrictions.Like("Name", "Foo", MatchMode.Start));
 			criteria.AddOrder(Order.Desc("Name"));
 			criteria.AddOrder(Order.Asc("BirthDate"));

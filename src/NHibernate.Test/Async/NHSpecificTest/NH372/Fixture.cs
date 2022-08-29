@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 				BaseParent p = (BaseParent) await (session.GetAsync(type, id, cancellationToken));
 
 				Assert.AreEqual(0, p.Component.FieldNotInserted,
-				                "Field should not have been inserted.");
+								"Field should not have been inserted.");
 
 				await (tx.CommitAsync(cancellationToken));
 			}
@@ -86,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 				BaseParent p = (BaseParent) await (session.GetAsync(type, id, cancellationToken));
 
 				Assert.AreEqual(fieldInitialValue, p.Component.FieldNotUpdated,
-				                String.Format("Field should have initial inserted value of {0}.", fieldInitialValue));
+								String.Format("Field should have initial inserted value of {0}.", fieldInitialValue));
 
 				p.Component.FieldNotUpdated = fieldNewValue;
 				p.Component.NormalField = 10;
@@ -100,7 +100,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 				BaseParent p = (BaseParent) await (session.GetAsync(type, id, cancellationToken));
 
 				Assert.AreEqual(fieldInitialValue, p.Component.FieldNotUpdated,
-				                "Field should not have been updated.");
+								"Field should not have been updated.");
 
 				await (tx.CommitAsync(cancellationToken));
 			}
@@ -142,7 +142,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 				BaseParent p = (BaseParent) await (session.GetAsync(type, id, cancellationToken));
 
 				Assert.AreEqual(0, p.Component.SubComponent.FieldNotInserted,
-				                "Field should not have been inserted.");
+								"Field should not have been inserted.");
 
 				await (tx.CommitAsync(cancellationToken));
 			}
@@ -186,7 +186,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 				BaseParent p = (BaseParent) await (session.GetAsync(type, id, cancellationToken));
 
 				Assert.AreEqual(fieldInitialValue, p.Component.SubComponent.FieldNotUpdated,
-				                String.Format("Field should have initial inserted value of {0}.", fieldInitialValue));
+								String.Format("Field should have initial inserted value of {0}.", fieldInitialValue));
 
 				p.Component.SubComponent.FieldNotUpdated = fieldNewValue;
 				p.Component.SubComponent.NormalField = 10;
@@ -200,7 +200,7 @@ namespace NHibernate.Test.NHSpecificTest.NH372
 				BaseParent p = (BaseParent) await (session.GetAsync(type, id, cancellationToken));
 
 				Assert.AreEqual(fieldInitialValue, p.Component.SubComponent.FieldNotUpdated,
-				                "Field should not have been updated.");
+								"Field should not have been updated.");
 
 				await (tx.CommitAsync(cancellationToken));
 			}

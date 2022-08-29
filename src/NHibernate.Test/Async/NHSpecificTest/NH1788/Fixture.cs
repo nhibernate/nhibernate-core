@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1788
 				var person = await (session.GetAsync<Person>(1));
 				person.Name = "other";
 				await (tx.CommitAsync());
-			} 
+			}
 
 			using (ISession session = OpenSession())
 			using (var tx = session.BeginTransaction())

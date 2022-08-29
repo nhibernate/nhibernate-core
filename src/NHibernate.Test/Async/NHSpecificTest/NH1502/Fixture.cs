@@ -55,16 +55,17 @@ namespace NHibernate.Test.NHSpecificTest.NH1502
 		}
 
 		[Test]
-		public async Task OrderProjectionTestAsync() 
+		public async Task OrderProjectionTestAsync()
 		{
 			ISQLFunction arithmaticMultiplication = new VarArgsSQLFunction("(", "*", ")");
-			using (ISession session = this.OpenSession()) {
-				ICriteria criteria = session.CreateCriteria(typeof (Person), "c");
+			using (ISession session = this.OpenSession())
+			{
+				ICriteria criteria = session.CreateCriteria(typeof(Person), "c");
 
 				criteria.AddOrder(Order.Asc(
-				                  	Projections.SqlFunction(arithmaticMultiplication, NHibernateUtil.GuessType(typeof (int)),
-				                  	                        Projections.Property("IQ"), Projections.Constant(-1))));
-				IList<Person> results=await (criteria.ListAsync<Person>());
+									  Projections.SqlFunction(arithmaticMultiplication, NHibernateUtil.GuessType(typeof(int)),
+															  Projections.Property("IQ"), Projections.Constant(-1))));
+				IList<Person> results = await (criteria.ListAsync<Person>());
 				Assert.AreEqual(5, results.Count);
 				Assert.AreEqual("Sally", results[0].Name);
 				Assert.AreEqual("Joe", results[4].Name);

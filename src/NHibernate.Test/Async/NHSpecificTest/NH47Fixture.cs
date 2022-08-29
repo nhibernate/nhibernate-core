@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecific.UnsavedType.hbm.xml"}; }
+			get { return new string[] { "NHSpecific.UnsavedType.hbm.xml" }; }
 		}
 
 		public async Task<TimeSpan> BatchInsertAsync(object[] objs, CancellationToken cancellationToken = default(CancellationToken))
@@ -82,7 +82,7 @@ namespace NHibernate.Test.NHSpecificTest
 			}
 
 			Console.WriteLine("Finish average in " + (tspan.TotalMilliseconds / times).ToString() + " milliseconds for " +
-			                  times.ToString() + " times");
+							  times.ToString() + " times");
 			Console.Read();
 		}
 	}

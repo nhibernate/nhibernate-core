@@ -32,7 +32,7 @@ namespace NHibernate.Test.Cascade
 		[Test]
 		public async Task RefreshCascadeAsync()
 		{
-			using(ISession session = OpenSession())
+			using (ISession session = OpenSession())
 			{
 				using (ITransaction txn = session.BeginTransaction())
 				{

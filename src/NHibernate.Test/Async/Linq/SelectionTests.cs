@@ -131,7 +131,7 @@ namespace NHibernate.Test.Linq
 						{
 							InvalidLoginAttempts = user.InvalidLoginAttempts,
 							Dto2 = new UserDto2
-									   {
+							{
 								RegisteredAt = user.RegisteredAt,
 								Enum = user.Enum2
 							},
@@ -154,7 +154,7 @@ namespace NHibernate.Test.Linq
 							user.Name,
 							user.InvalidLoginAttempts,
 							Dto = new UserDto2
-									  {
+							{
 								RegisteredAt = user.RegisteredAt,
 								Enum = user.Enum2
 							},
@@ -374,39 +374,39 @@ namespace NHibernate.Test.Linq
 			var moreThanTwoOrderLinesBool = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? true : false }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesBool.Count(x => x.HasMoreThanTwo == true), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNBool = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? true : (bool?)null }).ToListAsync());
+			var moreThanTwoOrderLinesNBool = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? true : (bool?) null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNBool.Count(x => x.HasMoreThanTwo == true), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesShort = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? (short)1 : (short)0 }).ToListAsync());
+			var moreThanTwoOrderLinesShort = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? (short) 1 : (short) 0 }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesShort.Count(x => x.HasMoreThanTwo == 1), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNShort = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? (short?)1 : (short?)null }).ToListAsync());
+			var moreThanTwoOrderLinesNShort = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? (short?) 1 : (short?) null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNShort.Count(x => x.HasMoreThanTwo == 1), Is.EqualTo(410));
 
 			var moreThanTwoOrderLinesInt = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1 : 0 }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesInt.Count(x => x.HasMoreThanTwo == 1), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNInt = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1 : (int?)null }).ToListAsync());
+			var moreThanTwoOrderLinesNInt = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1 : (int?) null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNInt.Count(x => x.HasMoreThanTwo == 1), Is.EqualTo(410));
 
 			var moreThanTwoOrderLinesDecimal = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1m : 0m }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesDecimal.Count(x => x.HasMoreThanTwo == 1m), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNDecimal = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1m : (decimal?)null }).ToListAsync());
+			var moreThanTwoOrderLinesNDecimal = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1m : (decimal?) null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNDecimal.Count(x => x.HasMoreThanTwo == 1m), Is.EqualTo(410));
 
 			var moreThanTwoOrderLinesSingle = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1f : 0f }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesSingle.Count(x => x.HasMoreThanTwo == 1f), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNSingle = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1f : (float?)null }).ToListAsync());
+			var moreThanTwoOrderLinesNSingle = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1f : (float?) null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNSingle.Count(x => x.HasMoreThanTwo == 1f), Is.EqualTo(410));
 
 			var moreThanTwoOrderLinesDouble = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1d : 0d }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesDouble.Count(x => x.HasMoreThanTwo == 1d), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNDouble = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1d : (double?)null }).ToListAsync());
+			var moreThanTwoOrderLinesNDouble = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? 1d : (double?) null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNDouble.Count(x => x.HasMoreThanTwo == 1d), Is.EqualTo(410));
-			
+
 			var moreThanTwoOrderLinesString = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? "yes" : "no" }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesString.Count(x => x.HasMoreThanTwo == "yes"), Is.EqualTo(410));
 
@@ -420,7 +420,7 @@ namespace NHibernate.Test.Linq
 			var moreThanTwoOrderLinesGuid = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? o.Shipper.Reference : Guid.Empty }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesGuid.Count(x => x.HasMoreThanTwo != Guid.Empty), Is.EqualTo(410));
 
-			var moreThanTwoOrderLinesNGuid = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? o.Shipper.Reference : (Guid?)null }).ToListAsync());
+			var moreThanTwoOrderLinesNGuid = await (db.Orders.Select(o => new { Id = o.OrderId, HasMoreThanTwo = o.OrderLines.Count() > 2 ? o.Shipper.Reference : (Guid?) null }).ToListAsync());
 			Assert.That(moreThanTwoOrderLinesNGuid.Count(x => x.HasMoreThanTwo != null), Is.EqualTo(410));
 		}
 
@@ -434,7 +434,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CanSelectConditionalEntityWithCastAsync()
 		{
-			var fatherInsteadOfChild = await (db.Mammals.Select(a => a.Father.SerialNumber == "5678" ? (object)a.Father : (object)a).ToListAsync());
+			var fatherInsteadOfChild = await (db.Mammals.Select(a => a.Father.SerialNumber == "5678" ? (object) a.Father : (object) a).ToListAsync());
 			Assert.That(fatherInsteadOfChild, Has.Exactly(2).With.Property("SerialNumber").EqualTo("5678"));
 		}
 
@@ -457,30 +457,30 @@ namespace NHibernate.Test.Linq
 		public async Task CanExecuteMethodWithNullObjectAndSubselectAsync()
 		{
 			var list1 = await (db.Animals.Select(
-				              a => new
-				              {
-					              NullableId = (int?) a.Father.Father.Id,
-				              })
-			              .ToListAsync());
+							  a => new
+							  {
+								  NullableId = (int?) a.Father.Father.Id,
+							  })
+						  .ToListAsync());
 			Assert.That(list1, Has.Count.GreaterThan(0));
 			Assert.That(list1[0].NullableId, Is.Null);
 
 			var list2 = await (db.Animals.Select(
-				              a => new
-				              {
-					              Descriptions = a.Children.Select(z => z.Description)
-				              })
-			              .ToListAsync());
+							  a => new
+							  {
+								  Descriptions = a.Children.Select(z => z.Description)
+							  })
+						  .ToListAsync());
 			Assert.That(list2, Has.Count.GreaterThan(0));
 			Assert.That(list2[0].Descriptions, Is.Not.Null);
 
 			var list3 = await (db.Animals.Select(
-				              a => new
-				              {
-					              NullableId = (int?) a.Father.Father.Id,
-					              Descriptions = a.Children.Select(z => z.Description)
-				              })
-			              .ToListAsync());
+							  a => new
+							  {
+								  NullableId = (int?) a.Father.Father.Id,
+								  Descriptions = a.Children.Select(z => z.Description)
+							  })
+						  .ToListAsync());
 			Assert.That(list3, Has.Count.GreaterThan(0));
 			Assert.That(list3[0].NullableId, Is.Null);
 			Assert.That(list3[0].Descriptions, Is.Not.Null);
@@ -496,7 +496,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CanSelectConditionalObjectAsync()
 		{
-			var fatherIsKnown = await (db.Animals.Select(a => new { a.SerialNumber, Superior = a.Father.SerialNumber, FatherIsKnown = a.Father.SerialNumber == "5678" ? (object)true : (object)false }).ToListAsync());
+			var fatherIsKnown = await (db.Animals.Select(a => new { a.SerialNumber, Superior = a.Father.SerialNumber, FatherIsKnown = a.Father.SerialNumber == "5678" ? (object) true : (object) false }).ToListAsync());
 			Assert.That(fatherIsKnown, Has.Exactly(1).With.Property("FatherIsKnown").True);
 		}
 
@@ -504,9 +504,9 @@ namespace NHibernate.Test.Linq
 		public async Task CanCastToDerivedTypeAsync()
 		{
 			var dogs = await (db.Animals
-			                      .Where(a => ((Dog) a).Pregnant)
-			                      .Select(a => new {a.SerialNumber})
-			                      .ToListAsync());
+								  .Where(a => ((Dog) a).Pregnant)
+								  .Select(a => new { a.SerialNumber })
+								  .ToListAsync());
 			Assert.That(dogs, Has.Exactly(1).With.Property("SerialNumber").Not.Null);
 		}
 

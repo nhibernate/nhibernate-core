@@ -23,7 +23,7 @@ namespace NHibernate.Test.Linq
 		{
 			configuration.SetProperty(Environment.UseSqlComments, "true");
 		}
-		
+
 		[Test]
 		public async Task CanSetCommentOnLinqQueriesAsync()
 		{
@@ -31,10 +31,10 @@ namespace NHibernate.Test.Linq
 			{
 				var comment = "This is my comment";
 				var result = await ((from e in db.Customers
-				              where e.CompanyName == "Bon app'"
-				              select e).WithOptions(o => o.SetComment(comment)).ToListAsync());
+							  where e.CompanyName == "Bon app'"
+							  select e).WithOptions(o => o.SetComment(comment)).ToListAsync());
 				var sql = sl.Appender.GetEvents()[0].RenderedMessage;
-				
+
 				Assert.That(sql.IndexOf(comment), Is.GreaterThan(0));
 			}
 		}
@@ -46,9 +46,9 @@ namespace NHibernate.Test.Linq
 			{
 				var comment = "This is my comment";
 				var result = await ((from e in db.Customers
-				              select e).Skip(1).Take(1).WithOptions(o => o.SetComment(comment)).ToListAsync());
+							  select e).Skip(1).Take(1).WithOptions(o => o.SetComment(comment)).ToListAsync());
 				var sql = sl.Appender.GetEvents()[0].RenderedMessage;
-				
+
 				Assert.That(sql.IndexOf(comment), Is.GreaterThan(0));
 			}
 		}
@@ -60,10 +60,10 @@ namespace NHibernate.Test.Linq
 			{
 				var comment = "This is my comment";
 				var result = await ((from e in db.Customers
-				              orderby e.CompanyName
-				              select e).WithOptions(o => o.SetComment(comment)).Skip(5).Take(5).ToListAsync());
+							  orderby e.CompanyName
+							  select e).WithOptions(o => o.SetComment(comment)).Skip(5).Take(5).ToListAsync());
 				var sql = sl.Appender.GetEvents()[0].RenderedMessage;
-				
+
 				Assert.That(sql.IndexOf(comment), Is.GreaterThan(0));
 			}
 		}

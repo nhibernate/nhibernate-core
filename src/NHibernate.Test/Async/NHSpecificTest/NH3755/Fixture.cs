@@ -23,15 +23,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3755
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var c = new Circle {Property1 = "Circle1", Property2 = "Circle2", Property3 = "Circle3"};
+				var c = new Circle { Property1 = "Circle1", Property2 = "Circle2", Property3 = "Circle3" };
 				session.Save(c);
 
-				var s = new Square {Property1 = "Square1", Property2 = "Square2", Property3 = "Square3"};
+				var s = new Square { Property1 = "Square1", Property2 = "Square2", Property3 = "Square3" };
 				session.Save(c);
 				session.Save(s);
 
-				var sc1 = new ShapeContainer {Name = "Circle", Shape = c};
-				var sc2 = new ShapeContainer {Name = "Square", Shape = s};
+				var sc1 = new ShapeContainer { Name = "Circle", Shape = c };
+				var sc2 = new ShapeContainer { Name = "Square", Shape = s };
 
 				session.Save(sc1);
 				session.Save(sc2);
@@ -60,12 +60,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3755
 			using (session.BeginTransaction())
 			{
 				var result1 = await ((from e in session.Query<ShapeContainer>()
-				               where e.Name == "Circle"
-				               select e).ToListAsync());
+							   where e.Name == "Circle"
+							   select e).ToListAsync());
 
 				var result2 = await ((from e in session.Query<ShapeContainer>()
-				               where e.Name == "Square"
-				               select e).ToListAsync());
+							   where e.Name == "Square"
+							   select e).ToListAsync());
 
 				var circle = (ICircle) result1[0].Shape;
 				var square = (ISquare) result2[0].Shape;

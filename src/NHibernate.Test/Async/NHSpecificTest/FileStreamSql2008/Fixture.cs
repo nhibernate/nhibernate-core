@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.FileStreamSql2008
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"NHSpecificTest.FileStreamSql2008.Mappings.hbm.xml"}; }
+			get { return new[] { "NHSpecificTest.FileStreamSql2008.Mappings.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly
@@ -46,30 +46,30 @@ namespace NHibernate.Test.NHSpecificTest.FileStreamSql2008
 				@"Data Source=localhost\SQLEXPRESS;Initial Catalog=FileStreamDB;Integrated Security=True;Pooling=False";
 
 			#region CREATE DATABASE example
-/*
-			CREATE DATABASE FileStreamDB ON PRIMARY
-			  ( NAME = FileStreamDB_data,
-				FILENAME = N'C:\FSDemo\FileStreamDB_data.mdf',
-				SIZE = 10MB,
-				MAXSIZE = 50MB,
-				FILEGROWTH = 10%),
-			FILEGROUP RowGroup1
-			  ( NAME = FileStreamDB_group1,
-				FILENAME = N'C:\FSDemo\FileStreamDB_group1.ndf',
-				SIZE = 10MB,
-				MAXSIZE = 50MB,
-				FILEGROWTH = 5MB),
-			FILEGROUP FileStreamGroup1 CONTAINS FILESTREAM
-			  ( NAME = FileStreamDBResumes,
-				FILENAME = N'C:\FSDemo\VendorCatalog')
-			LOG ON
-			  ( NAME = 'FileStreamDB_log',
-				FILENAME = N'C:\FSDemo\FileStreamDB_log.ldf',
-				SIZE = 5MB,
-				MAXSIZE = 25MB,
-				FILEGROWTH = 5MB);
-*/
-#endregion
+			/*
+						CREATE DATABASE FileStreamDB ON PRIMARY
+						  ( NAME = FileStreamDB_data,
+							FILENAME = N'C:\FSDemo\FileStreamDB_data.mdf',
+							SIZE = 10MB,
+							MAXSIZE = 50MB,
+							FILEGROWTH = 10%),
+						FILEGROUP RowGroup1
+						  ( NAME = FileStreamDB_group1,
+							FILENAME = N'C:\FSDemo\FileStreamDB_group1.ndf',
+							SIZE = 10MB,
+							MAXSIZE = 50MB,
+							FILEGROWTH = 5MB),
+						FILEGROUP FileStreamGroup1 CONTAINS FILESTREAM
+						  ( NAME = FileStreamDBResumes,
+							FILENAME = N'C:\FSDemo\VendorCatalog')
+						LOG ON
+						  ( NAME = 'FileStreamDB_log',
+							FILENAME = N'C:\FSDemo\FileStreamDB_log.ldf',
+							SIZE = 5MB,
+							MAXSIZE = 25MB,
+							FILEGROWTH = 5MB);
+			*/
+			#endregion
 		}
 
 		[Test]
@@ -78,11 +78,11 @@ namespace NHibernate.Test.NHSpecificTest.FileStreamSql2008
 			Guid rowId = Guid.NewGuid();
 
 			var entity = new VendorCatalog
-			             	{
-			             		Name = "Dario",
-			             		CatalogID = rowId,
-			             		Catalog = Convert.ToBytes("Aqui me pongo a cantar...al compas de la viguela")
-			             	};
+			{
+				Name = "Dario",
+				CatalogID = rowId,
+				Catalog = Convert.ToBytes("Aqui me pongo a cantar...al compas de la viguela")
+			};
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
@@ -99,7 +99,7 @@ namespace NHibernate.Test.NHSpecificTest.FileStreamSql2008
 
 				Assert.AreEqual("Dario", entityReturned.Name);
 				Assert.AreEqual(rowId.ToString(), entityReturned.CatalogID.ToString());
-				Assert.AreEqual("Aqui me pongo a cantar...al compas de la viguela",Convert.ToStr(entityReturned.Catalog));
+				Assert.AreEqual("Aqui me pongo a cantar...al compas de la viguela", Convert.ToStr(entityReturned.Catalog));
 			}
 
 			using (ISession s = OpenSession())

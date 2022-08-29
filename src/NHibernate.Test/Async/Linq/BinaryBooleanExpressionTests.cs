@@ -17,102 +17,102 @@ using NHibernate.Linq;
 
 namespace NHibernate.Test.Linq
 {
-    using System.Threading.Tasks;
-    [TestFixture]
-    public class BinaryBooleanExpressionTestsAsync : LinqTestCase
-    {
-        [Test]
-        public async Task TimesheetsWithEqualsTrueAsync()
-        {
-            var query = await ((from timesheet in db.Timesheets
-                         where timesheet.Entries.Any()
-                         select timesheet).ToListAsync());
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class BinaryBooleanExpressionTestsAsync : LinqTestCase
+	{
+		[Test]
+		public async Task TimesheetsWithEqualsTrueAsync()
+		{
+			var query = await ((from timesheet in db.Timesheets
+						 where timesheet.Entries.Any()
+						 select timesheet).ToListAsync());
 
-            Assert.AreEqual(2, query.Count);
-        }
+			Assert.AreEqual(2, query.Count);
+		}
 
-        [Test]
-        public async Task NegativeTimesheetsWithEqualsTrueAsync()
-        {
-            var query = await ((from timesheet in db.Timesheets
-                         where !timesheet.Entries.Any()
-                         select timesheet).ToListAsync());
+		[Test]
+		public async Task NegativeTimesheetsWithEqualsTrueAsync()
+		{
+			var query = await ((from timesheet in db.Timesheets
+						 where !timesheet.Entries.Any()
+						 select timesheet).ToListAsync());
 
-            Assert.AreEqual(1, query.Count);
-        }
+			Assert.AreEqual(1, query.Count);
+		}
 
-        [Test]
-        public async Task TimesheetsWithEqualsFalseAsync()
-        {
-            var query = await ((from timesheet in db.Timesheets
-                         where timesheet.Entries.Any() == false
-                         select timesheet).ToListAsync());
+		[Test]
+		public async Task TimesheetsWithEqualsFalseAsync()
+		{
+			var query = await ((from timesheet in db.Timesheets
+						 where timesheet.Entries.Any() == false
+						 select timesheet).ToListAsync());
 
-            Assert.AreEqual(1, query.Count);
-        }
+			Assert.AreEqual(1, query.Count);
+		}
 
-        [Test]
-        public async Task NegativeTimesheetsWithEqualsFalseAsync()
-        {
-            var query = await ((from timesheet in db.Timesheets
-                         where !timesheet.Entries.Any() == false
-                         select timesheet).ToListAsync());
+		[Test]
+		public async Task NegativeTimesheetsWithEqualsFalseAsync()
+		{
+			var query = await ((from timesheet in db.Timesheets
+						 where !timesheet.Entries.Any() == false
+						 select timesheet).ToListAsync());
 
-            Assert.AreEqual(2, query.Count);
-        }
+			Assert.AreEqual(2, query.Count);
+		}
 
-        [Test]
-        public async Task TimesheetsWithNotEqualsTrueAsync()
-        {
-            var query = await ((from timesheet in db.Timesheets
-                         where timesheet.Entries.Any() != true
-                         select timesheet).ToListAsync());
+		[Test]
+		public async Task TimesheetsWithNotEqualsTrueAsync()
+		{
+			var query = await ((from timesheet in db.Timesheets
+						 where timesheet.Entries.Any() != true
+						 select timesheet).ToListAsync());
 
-            Assert.AreEqual(1, query.Count);
-        }
+			Assert.AreEqual(1, query.Count);
+		}
 
-        [Test]
-        public async Task NegativeTimesheetsWithNotEqualsTrueAsync()
-        {
-            var query = await ((from timesheet in db.Timesheets
-                         where !timesheet.Entries.Any() != true
-                         select timesheet).ToListAsync());
+		[Test]
+		public async Task NegativeTimesheetsWithNotEqualsTrueAsync()
+		{
+			var query = await ((from timesheet in db.Timesheets
+						 where !timesheet.Entries.Any() != true
+						 select timesheet).ToListAsync());
 
-            Assert.AreEqual(2, query.Count);
-        }
+			Assert.AreEqual(2, query.Count);
+		}
 
-        [Test]
-        public async Task TimesheetsWithNotEqualsFalseAsync()
-        {
-            var query = await ((from timesheet in db.Timesheets
-                         where timesheet.Entries.Any() != false
-                         select timesheet).ToListAsync());
+		[Test]
+		public async Task TimesheetsWithNotEqualsFalseAsync()
+		{
+			var query = await ((from timesheet in db.Timesheets
+						 where timesheet.Entries.Any() != false
+						 select timesheet).ToListAsync());
 
-            Assert.AreEqual(2, query.Count);
-        }
+			Assert.AreEqual(2, query.Count);
+		}
 
-        [Test]
-        public async Task NegativeTimesheetsWithNotEqualsFalseAsync()
-        {
-            var query = await ((from timesheet in db.Timesheets
-                         where !timesheet.Entries.Any() != false
-                         select timesheet).ToListAsync());
+		[Test]
+		public async Task NegativeTimesheetsWithNotEqualsFalseAsync()
+		{
+			var query = await ((from timesheet in db.Timesheets
+						 where !timesheet.Entries.Any() != false
+						 select timesheet).ToListAsync());
 
-            Assert.AreEqual(1, query.Count);
-        }
+			Assert.AreEqual(1, query.Count);
+		}
 
-        [Test]
-        public async Task BooleanPropertyComparisonAsync()
-        {
-            var query = db.Timesheets.Where(t => t.Submitted == true);
-            Assert.AreEqual(2, (await (query.ToListAsync())).Count);
-        }
+		[Test]
+		public async Task BooleanPropertyComparisonAsync()
+		{
+			var query = db.Timesheets.Where(t => t.Submitted == true);
+			Assert.AreEqual(2, (await (query.ToListAsync())).Count);
+		}
 
-        [Test]
-        public async Task BooleanPropertyAloneAsync()
-        {
-            var query = db.Timesheets.Where(t => t.Submitted);
-            Assert.AreEqual(2, (await (query.ToListAsync())).Count);
-        }
-    }
+		[Test]
+		public async Task BooleanPropertyAloneAsync()
+		{
+			var query = db.Timesheets.Where(t => t.Submitted);
+			Assert.AreEqual(2, (await (query.ToListAsync())).Count);
+		}
+	}
 }

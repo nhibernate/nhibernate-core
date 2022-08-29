@@ -91,8 +91,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			using (ISession session = OpenSession())
 			{
 				var query = session.GetNamedQuery("LoadCountryCitiesWithSimpleHbmAliasInjection")
-				                   .SetString("country_code", country.Code)
-				                   .SetCacheable(WithQueryCache);
+								   .SetString("country_code", country.Code)
+								   .SetCacheable(WithQueryCache);
 				var c = await (query.UniqueResultAsync<Country>());
 				if (WithQueryCache)
 					// Re-get it for obtaining it from cache.
@@ -111,8 +111,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			using (ISession session = OpenSession())
 			{
 				var query = session.GetNamedQuery("LoadCountryCitiesWithComplexHbmAliasInjection")
-				                   .SetString("country_code", country.Code)
-				                   .SetCacheable(WithQueryCache);
+								   .SetString("country_code", country.Code)
+								   .SetCacheable(WithQueryCache);
 				var c = await (query.UniqueResultAsync<Country>());
 				if (WithQueryCache)
 					// Re-get it for obtaining it from cache.
@@ -131,8 +131,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			using (ISession session = OpenSession())
 			{
 				var query = session.GetNamedQuery("LoadCountryCitiesWithCustomAliases")
-				                   .SetString("country_code", country.Code)
-				                   .SetCacheable(WithQueryCache);
+								   .SetString("country_code", country.Code)
+								   .SetCacheable(WithQueryCache);
 				var c = await (query.UniqueResultAsync<Country>());
 				if (WithQueryCache)
 					// Re-get it for obtaining it from cache.
@@ -287,7 +287,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 					// Native SQL Query outcome is not validated against <return-*> 
 					// resultset declarations.
 					var query = session.GetNamedQuery("ScalarQueryWithUndefinedResultset")
-					                   .SetReadOnly(WithQueryCache);
+									   .SetReadOnly(WithQueryCache);
 					var result = await (query.UniqueResultAsync<int>());
 					if (WithQueryCache)
 						result = await (query.UniqueResultAsync<int>());
@@ -310,7 +310,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 					// Native SQL Query outcome is not validated against <return-*> 
 					// resultset declarations.
 					var query = session.GetNamedQuery("ScalarQueryWithDefinedResultset")
-					                   .SetReadOnly(WithQueryCache);
+									   .SetReadOnly(WithQueryCache);
 					var result = await (query.UniqueResultAsync<int>());
 					if (WithQueryCache)
 						result = await (query.UniqueResultAsync<int>());
@@ -378,12 +378,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 
 		private static string[] CreateRoutes()
 		{
-			return new[] {"Yellow Road", "Muddy Path"};
+			return new[] { "Yellow Road", "Muddy Path" };
 		}
 
 		private static City[] CreateCities()
 		{
-			return new[] {new City("EMR", "Emerald City"), new City("GLD", "Golden Town"), new City("NTH", "North End")};
+			return new[] { new City("EMR", "Emerald City"), new City("GLD", "Golden Town"), new City("NTH", "North End") };
 		}
 
 		private static IDictionary<int, AreaStatistics> CreateStatistics()
@@ -392,18 +392,18 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 			var archibald = new Person("Archibald");
 			var amy = new Person("Amy");
 			return new Dictionary<int, AreaStatistics>
-			       	{
-			       		{
-			       			1850,
-			       			new AreaStatistics {CitizenCount = 10000, GDP = new MonetaryValue("USD", 20000), Reporter = archimedes}
-			       			},
-			       		{
-			       			1900,
-			       			new AreaStatistics {CitizenCount = 20000, GDP = new MonetaryValue("USD", 50000), Reporter = archibald}
-			       			},
-			       		{1950, new AreaStatistics {CitizenCount = 40000, GDP = new MonetaryValue("USD", 125000)}},
-			       		{2000, new AreaStatistics {CitizenCount = 80000, GDP = new MonetaryValue("USD", 500000), Reporter = amy}},
-			       	};
+					   {
+						   {
+							   1850,
+							   new AreaStatistics {CitizenCount = 10000, GDP = new MonetaryValue("USD", 20000), Reporter = archimedes}
+							   },
+						   {
+							   1900,
+							   new AreaStatistics {CitizenCount = 20000, GDP = new MonetaryValue("USD", 50000), Reporter = archibald}
+							   },
+						   {1950, new AreaStatistics {CitizenCount = 40000, GDP = new MonetaryValue("USD", 125000)}},
+						   {2000, new AreaStatistics {CitizenCount = 80000, GDP = new MonetaryValue("USD", 500000), Reporter = amy}},
+					   };
 		}
 
 		#endregion

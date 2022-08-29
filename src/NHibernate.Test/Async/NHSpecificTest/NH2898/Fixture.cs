@@ -37,11 +37,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 				for (var i = 0; i < 5; i++)
 				{
 					var obj = new ItemWithLazyProperty
-								  {
-									  Id = i + 1,
-									  Name = "Name #" + i,
-									  Description = "Description #" + i,
-								  };
+					{
+						Id = i + 1,
+						Name = "Name #" + i,
+						Description = "Description #" + i,
+					};
 					session.Save(obj);
 				}
 
@@ -63,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 		{
 			using (var session = OpenSession())
 			{
-				var list = await (session.CreateCriteria(typeof (ItemWithLazyProperty))
+				var list = await (session.CreateCriteria(typeof(ItemWithLazyProperty))
 					.Add(Restrictions.Gt("Id", 2))
 					.SetCacheable(true)
 					.ListAsync());
@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 			using (var session = OpenSession())
 			{
 				//should bring from cache
-				var list = await (session.CreateCriteria(typeof (ItemWithLazyProperty))
+				var list = await (session.CreateCriteria(typeof(ItemWithLazyProperty))
 					.Add(Restrictions.Gt("Id", 2))
 					.SetCacheable(true)
 					.ListAsync());

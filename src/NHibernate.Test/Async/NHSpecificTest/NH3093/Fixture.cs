@@ -59,19 +59,19 @@ namespace NHibernate.Test.NHSpecificTest.NH3093
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var s = new Segment {Name = "segment 1"};
+				var s = new Segment { Name = "segment 1" };
 				session.Save(s);
 
-				var f = new Family {Name = "fam 1", Segment = s};
+				var f = new Family { Name = "fam 1", Segment = s };
 				session.Save(f);
 
-				var c = new Cultivation {Name = "Sample", Family = f};
+				var c = new Cultivation { Name = "Sample", Family = f };
 				session.Save(c);
 
-				var p1 = new Product {Name = "product 1", Family = f};
+				var p1 = new Product { Name = "product 1", Family = f };
 				session.Save(p1);
 
-				var p2 = new Product {Name = "product 2"};
+				var p2 = new Product { Name = "product 2" };
 				session.Save(p2);
 
 				session.Flush();
@@ -103,7 +103,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3093
 								where p.Family.Cultivations.Any(c => cultivationsId.Contains(c.Id))
 									  && p.Family.Segment.Name == "segment 1"
 								select p).ToListAsync());
-				
+
 				Assert.AreEqual(1, products.Count);
 			}
 		}
@@ -120,7 +120,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3093
 								where p.Family.Cultivations.Any(c => cultivationsId.Contains(c.Id))
 								orderby p.Family.Segment.Name
 								select p).ToListAsync());
-				
+
 				Assert.AreEqual(1, products.Count);
 			}
 		}
@@ -135,7 +135,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3093
 								where p.Family.Cultivations.Any(c => c.Name == "Sample")
 									  && p.Family.Segment.Name == "segment 1"
 								select p).ToListAsync());
-				
+
 				Assert.AreEqual(1, products.Count);
 			}
 		}

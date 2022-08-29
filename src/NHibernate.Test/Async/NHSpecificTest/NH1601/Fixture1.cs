@@ -12,142 +12,142 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1601
 {
-    using System.Threading.Tasks;
-    using System.Threading;
-    [TestFixture]
-    public class Fixture1Async : BugTestCase
-    {
-        protected override bool AppliesTo(Dialect.Dialect dialect)
-        {
-            return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
-        }
+	using System.Threading.Tasks;
+	using System.Threading;
+	[TestFixture]
+	public class Fixture1Async : BugTestCase
+	{
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsEmptyInsertsOrHasNonIdentityNativeGenerator;
+		}
 
-        /// <summary>
-        /// Loads the project do not call Count on the list assigned.
-        /// </summary>
-        [Test]
-        public async Task TestSaveAndLoadWithoutCountAsync()
-        {
-            ProjectWithOneList.TestAccessToList = false;
-            await (SaveAndLoadProjectWithOneListAsync());
-        }
+		/// <summary>
+		/// Loads the project do not call Count on the list assigned.
+		/// </summary>
+		[Test]
+		public async Task TestSaveAndLoadWithoutCountAsync()
+		{
+			ProjectWithOneList.TestAccessToList = false;
+			await (SaveAndLoadProjectWithOneListAsync());
+		}
 
-        /// <summary>
-        /// Refreshes the project do not call Count on the list assigned.
-        /// </summary>     
-        [Test]
-        public async Task TestRefreshWithoutCountAsync()
-        {
-            ProjectWithOneList.TestAccessToList = false;
-            await (SaveLoadAndRefreshProjectWithOneListAsync());
-        }
+		/// <summary>
+		/// Refreshes the project do not call Count on the list assigned.
+		/// </summary>     
+		[Test]
+		public async Task TestRefreshWithoutCountAsync()
+		{
+			ProjectWithOneList.TestAccessToList = false;
+			await (SaveLoadAndRefreshProjectWithOneListAsync());
+		}
 
-        /// <summary>
-        /// Loads the project and when Scenario1 is assigned call Count on the list.
-        /// </summary>
-        [Test]
-        public async Task TestSaveAndLoadWithCountAsync()
-        {
-            ProjectWithOneList.TestAccessToList = true;
-            await (SaveAndLoadProjectWithOneListAsync());
-        }
+		/// <summary>
+		/// Loads the project and when Scenario1 is assigned call Count on the list.
+		/// </summary>
+		[Test]
+		public async Task TestSaveAndLoadWithCountAsync()
+		{
+			ProjectWithOneList.TestAccessToList = true;
+			await (SaveAndLoadProjectWithOneListAsync());
+		}
 
-        /// <summary>
-        /// Refreshes the project and when Scenario1 is assigned call Count on the list.
-        /// </summary>     
-        [Test]
-        public async Task TestRefreshWithCountAsync()
-        {
-            ProjectWithOneList.TestAccessToList = true;
-            await (SaveLoadAndRefreshProjectWithOneListAsync());
-        }
+		/// <summary>
+		/// Refreshes the project and when Scenario1 is assigned call Count on the list.
+		/// </summary>     
+		[Test]
+		public async Task TestRefreshWithCountAsync()
+		{
+			ProjectWithOneList.TestAccessToList = true;
+			await (SaveLoadAndRefreshProjectWithOneListAsync());
+		}
 
-        /// <summary>
-        /// Create and save a Project
-        /// </summary>
-        /// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-        public async Task SaveAndLoadProjectWithOneListAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            await (SaveProjectAsync(cancellationToken));
-            await (LoadProjectAsync(cancellationToken));
-        }
+		/// <summary>
+		/// Create and save a Project
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public async Task SaveAndLoadProjectWithOneListAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			await (SaveProjectAsync(cancellationToken));
+			await (LoadProjectAsync(cancellationToken));
+		}
 
-        /// <summary>
-        /// Create, save and refresh projects
-        /// </summary>
-        /// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-        public async Task SaveLoadAndRefreshProjectWithOneListAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            await (SaveProjectAsync(cancellationToken));
-            ProjectWithOneList project = await (LoadProjectAsync(cancellationToken));
-            await (RefreshProjectAsync(project, cancellationToken));
-        }
+		/// <summary>
+		/// Create, save and refresh projects
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public async Task SaveLoadAndRefreshProjectWithOneListAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			await (SaveProjectAsync(cancellationToken));
+			ProjectWithOneList project = await (LoadProjectAsync(cancellationToken));
+			await (RefreshProjectAsync(project, cancellationToken));
+		}
 
-        public async Task<ProjectWithOneList> SaveProjectAsync( CancellationToken cancellationToken = default(CancellationToken))
-        {
-            ProjectWithOneList project;
-            
-            using( ISession session = OpenSession( ) )
-            using( ITransaction tx = session.BeginTransaction( ) )
-            {
-                //Create a project scenario
-                project = new ProjectWithOneList();
-                Scenario scenario = new Scenario( );
-               
-                //Add the scenario to both lists 
-                project.ScenarioList1.Add(scenario);
+		public async Task<ProjectWithOneList> SaveProjectAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			ProjectWithOneList project;
 
-                //Set the primary key on the project
-                project.Name = "Test";
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
+			{
+				//Create a project scenario
+				project = new ProjectWithOneList();
+				Scenario scenario = new Scenario();
 
-                //Save the created project
-                await (session.SaveAsync( project , cancellationToken));
+				//Add the scenario to both lists 
+				project.ScenarioList1.Add(scenario);
 
-                await (tx.CommitAsync( cancellationToken));
-            }
-            return project;
-        }
+				//Set the primary key on the project
+				project.Name = "Test";
 
-        public async Task<ProjectWithOneList> LoadProjectAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            ProjectWithOneList project;
-            using (ISession session = OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
-            {
-                //The project is loaded and Scenario1, Scenario2 and Scenario3 properties can be set
-                //This will succeed regardless of whether the scenario list is accessed during the set
-                project = await (session.GetAsync<ProjectWithOneList>("Test", cancellationToken));
+				//Save the created project
+				await (session.SaveAsync(project, cancellationToken));
 
-                //Commit the transaction and cloase the session
-                await (tx.CommitAsync(cancellationToken));
-            }
-            return project;
-        }
+				await (tx.CommitAsync(cancellationToken));
+			}
+			return project;
+		}
 
-        public async Task RefreshProjectAsync(ProjectWithOneList project, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            using (ISession session = OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
-            {
-							//The project is refreshed and Scenario1, Scenario2 and Scenario3 properties can be set
-                //This will succeed when the scenario list is set and accessed during the set but only for
-                //Scenario 2 and Scenario3. It will fail if the scenario list is accessed during the set for Scenario1
-                await (session.RefreshAsync(project, cancellationToken));
-            }
-        }
+		public async Task<ProjectWithOneList> LoadProjectAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			ProjectWithOneList project;
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
+			{
+				//The project is loaded and Scenario1, Scenario2 and Scenario3 properties can be set
+				//This will succeed regardless of whether the scenario list is accessed during the set
+				project = await (session.GetAsync<ProjectWithOneList>("Test", cancellationToken));
 
-        protected override void OnTearDown( )
-        {
-            base.OnTearDown( );
-            using( ISession session = OpenSession( ) )
-            {
-                using( ITransaction tx = session.BeginTransaction( ) )
-                {
-                    session.Delete(" from ProjectWithOneList");
-                    session.Delete( "from Scenario" );
-                    tx.Commit( );
-                }
-            }
-        }
-    }
+				//Commit the transaction and cloase the session
+				await (tx.CommitAsync(cancellationToken));
+			}
+			return project;
+		}
+
+		public async Task RefreshProjectAsync(ProjectWithOneList project, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
+			{
+				//The project is refreshed and Scenario1, Scenario2 and Scenario3 properties can be set
+				//This will succeed when the scenario list is set and accessed during the set but only for
+				//Scenario 2 and Scenario3. It will fail if the scenario list is accessed during the set for Scenario1
+				await (session.RefreshAsync(project, cancellationToken));
+			}
+		}
+
+		protected override void OnTearDown()
+		{
+			base.OnTearDown();
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					session.Delete(" from ProjectWithOneList");
+					session.Delete("from Scenario");
+					tx.Commit();
+				}
+			}
+		}
+	}
 }

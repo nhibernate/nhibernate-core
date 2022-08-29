@@ -8,8 +8,8 @@
 //------------------------------------------------------------------------------
 
 
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -107,7 +107,7 @@ namespace NHibernate.Test.NHSpecificTest.GH0819
 				await (transaction.CommitAsync());
 			}
 		}
-		
+
 		[Test]
 		public async Task CanUseElementAtInQueryAsync()
 		{

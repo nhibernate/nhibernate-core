@@ -9,10 +9,10 @@
 
 
 using System;
+using System.Text.RegularExpressions;
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
-using System.Text.RegularExpressions;
 
 namespace NHibernate.Test.NHSpecificTest.NH1785
 {
@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1785
 		{
 			using (var session = OpenSession())
 			{
-				ICriteria criteria = session.CreateCriteria(typeof (Entity1));
+				ICriteria criteria = session.CreateCriteria(typeof(Entity1));
 				criteria.CreateAlias("Entities2", "ent2", JoinType.InnerJoin);
 				criteria.CreateAlias("ent2.Id.Entity3", "ent3", JoinType.InnerJoin);
 				criteria.CreateAlias("ent3.Entity4", "ent4", JoinType.InnerJoin);

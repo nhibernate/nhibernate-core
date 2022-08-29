@@ -61,7 +61,7 @@ namespace NHibernate.Test.DialectTest
 			{
 				Assert.Ignore("This test does not apply to " + dialect.GetType().FullName);
 			}
-			var sessions = (ISessionFactoryImplementor)conf.BuildSessionFactory();
+			var sessions = (ISessionFactoryImplementor) conf.BuildSessionFactory();
 			sessions.ConnectionProvider.Configure(conf.Properties);
 			IDriver driver = sessions.ConnectionProvider.Driver;
 

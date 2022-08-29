@@ -110,7 +110,7 @@ namespace NHibernate.Test.OneToOneType
 				Assert.IsNotNull(owner.Details);
 			}
 		}
-		
+
 		[Test]
 		public async Task CanInsertByStatelessSessionAsync()
 		{

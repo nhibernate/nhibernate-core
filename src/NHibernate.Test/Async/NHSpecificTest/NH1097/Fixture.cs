@@ -17,14 +17,14 @@ namespace NHibernate.Test.NHSpecificTest.NH1097
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync:BugTestCase
+	public class FixtureAsync : BugTestCase
 	{
 		protected override void OnSetUp()
 		{
-			using(var session=this.OpenSession())
-			using(var tran=session.BeginTransaction())
+			using (var session = this.OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
-				session.Save(new Person {Name = "Fabio"});
+				session.Save(new Person { Name = "Fabio" });
 				session.Save(new Person { Name = "Dario" });
 				tran.Commit();
 			}
@@ -48,11 +48,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1097
 			using (var tran = session.BeginTransaction())
 			{
 				Assert.ThrowsAsync<QueryException>(delegate
-				                              	{
-													var query = session.CreateQuery("from Person p where p.namecolumn=:nameOfPerson");
-													query.SetString("nameOfPerson", "Dario");
-				                              		return query.ListAsync();
-				                              	});
+												  {
+													  var query = session.CreateQuery("from Person p where p.namecolumn=:nameOfPerson");
+													  query.SetString("nameOfPerson", "Dario");
+													  return query.ListAsync();
+												  });
 			}
 		}
 	}

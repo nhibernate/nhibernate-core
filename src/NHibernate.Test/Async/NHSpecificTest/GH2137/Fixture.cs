@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2137
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				e1 = new Entity {Name = "Bob"};
+				e1 = new Entity { Name = "Bob" };
 				session.Save(e1);
 
 				transaction.Commit();

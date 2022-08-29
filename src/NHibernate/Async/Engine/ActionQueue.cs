@@ -24,7 +24,7 @@ namespace NHibernate.Engine
 	public partial class ActionQueue
 	{
 
-		private async Task ExecuteActionsAsync<T>(List<T> list, CancellationToken cancellationToken) where T: IExecutable
+		private async Task ExecuteActionsAsync<T>(List<T> list, CancellationToken cancellationToken) where T : IExecutable
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			// Actions may raise events to which user code can react and cause changes to action list.
@@ -117,7 +117,7 @@ namespace NHibernate.Engine
 			}
 		}
 
-		private static async Task PrepareActionsAsync<T>(List<T> queue, CancellationToken cancellationToken) where T: IExecutable
+		private static async Task PrepareActionsAsync<T>(List<T> queue, CancellationToken cancellationToken) where T : IExecutable
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			foreach (var executable in queue)
@@ -140,7 +140,7 @@ namespace NHibernate.Engine
 		/// Execute any registered <see cref="IBeforeTransactionCompletionProcess" />
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public Task BeforeTransactionCompletionAsync(CancellationToken cancellationToken) 
+		public Task BeforeTransactionCompletionAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -172,16 +172,16 @@ namespace NHibernate.Engine
 
 			executedSpaces.Clear();
 		}
-		private partial class BeforeTransactionCompletionProcessQueue 
+		private partial class BeforeTransactionCompletionProcessQueue
 		{
-	
-			public async Task BeforeTransactionCompletionAsync(CancellationToken cancellationToken) 
+
+			public async Task BeforeTransactionCompletionAsync(CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				int size = processes.Count;
 				for (int i = 0; i < size; i++)
 				{
-					try 
+					try
 					{
 						var process = processes[i];
 						await (process.ExecuteBeforeTransactionCompletionAsync(cancellationToken)).ConfigureAwait(false);
@@ -191,7 +191,7 @@ namespace NHibernate.Engine
 					{
 						throw;
 					}
-					catch (Exception e) 
+					catch (Exception e)
 					{
 						throw new AssertionFailure("Unable to perform BeforeTransactionCompletion callback", e);
 					}
@@ -199,14 +199,14 @@ namespace NHibernate.Engine
 				processes.Clear();
 			}
 		}
-		private partial class AfterTransactionCompletionProcessQueue 
+		private partial class AfterTransactionCompletionProcessQueue
 		{
-	
-			public async Task AfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken) 
+
+			public async Task AfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				int size = processes.Count;
-				
+
 				for (int i = 0; i < size; i++)
 				{
 					try

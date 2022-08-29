@@ -178,7 +178,7 @@ namespace NHibernate.Engine
 		Task ListCustomQueryAsync(ICustomQuery customQuery, QueryParameters queryParameters, IList results, CancellationToken cancellationToken);
 
 		Task<IList<T>> ListCustomQueryAsync<T>(ICustomQuery customQuery, QueryParameters queryParameters, CancellationToken cancellationToken);
-		
+
 		// Since v5.2
 		[Obsolete("This method has no usages and will be removed in a future version")]
 		Task<IQueryTranslator[]> GetQueriesAsync(IQueryExpression query, bool scalar, CancellationToken cancellationToken); // NH specific for MultiQuery

@@ -19,7 +19,7 @@ namespace NHibernate.Test.GenericTest.OrderedSetGeneric
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"GenericTest.OrderedSetGeneric.OrderedSetFixture.hbm.xml"}; }
+			get { return new[] { "GenericTest.OrderedSetGeneric.OrderedSetFixture.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly
@@ -43,15 +43,15 @@ namespace NHibernate.Test.GenericTest.OrderedSetGeneric
 		[Test]
 		public async Task OrderedSetIsInOrderAsync()
 		{
-			var names = new[] {"First B", "Second B"};
+			var names = new[] { "First B", "Second B" };
 			const int TheId = 100;
 
-			var a = new A {Name = "First", Id = TheId};
+			var a = new A { Name = "First", Id = TheId };
 
-			var b = new B {Name = names[1], OrderBy = 3, AId = TheId};
+			var b = new B { Name = names[1], OrderBy = 3, AId = TheId };
 			a.Items.Add(b);
 
-			var b2 = new B {Name = names[0], OrderBy = 1, AId = TheId};
+			var b2 = new B { Name = names[0], OrderBy = 1, AId = TheId };
 			a.Items.Add(b2);
 
 			ISession s = OpenSession();

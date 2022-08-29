@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH952
 	{
 		private static readonly Assembly MyAssembly = typeof(NH952FixtureAsync).Assembly;
 		private static readonly string MyNamespace = typeof(NH952FixtureAsync).Namespace;
-		
+
 		private static readonly string[] Resources = new string[]
 			{
 				// Order is important!

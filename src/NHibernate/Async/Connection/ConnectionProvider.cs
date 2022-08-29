@@ -10,12 +10,11 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
-
 using NHibernate.Driver;
 using NHibernate.Util;
-using Environment=NHibernate.Cfg.Environment;
-using System.Collections.Generic;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Connection
 {

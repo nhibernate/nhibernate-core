@@ -109,14 +109,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3844
 				Assert.That(await (baseQuery.SumAsync(x => x.TimeInHours)), Is.EqualTo(78));
 
 				var query = baseQuery.Select(t => new object[] { t })
-					.GroupBy(j => new object[] { ((TimeRecord)j[0]).Project.Job.BillingType == BillingType.None ? 0 : 1 }, j => (TimeRecord)j[0])
-					.Select(g => new object[] { g.Key, g.Count(), g.Sum(t => (decimal?)t.TimeInHours) });
+					.GroupBy(j => new object[] { ((TimeRecord) j[0]).Project.Job.BillingType == BillingType.None ? 0 : 1 }, j => (TimeRecord) j[0])
+					.Select(g => new object[] { g.Key, g.Count(), g.Sum(t => (decimal?) t.TimeInHours) });
 
-				var results = (await (query.ToListAsync())).OrderBy(x => (int)((object[])x[0])[0]);
+				var results = (await (query.ToListAsync())).OrderBy(x => (int) ((object[]) x[0])[0]);
 				Assert.That(results.Select(x => x[1]), Is.EquivalentTo(new[] { 4, 8 }));
 				Assert.That(results.Select(x => x[2]), Is.EquivalentTo(new[] { 10, 68 }));
 
-				Assert.That(results.Sum(x => (decimal?)x[2]), Is.EqualTo(78));
+				Assert.That(results.Sum(x => (decimal?) x[2]), Is.EqualTo(78));
 
 				await (transaction.RollbackAsync());
 			}
@@ -133,15 +133,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3844
 				Assert.That(await (baseQuery.SumAsync(x => x.TimeInHours)), Is.EqualTo(78));
 
 				var query = baseQuery.Select(t => new object[] { t })
-					.SelectMany(t => ((TimeRecord)t[0]).Components.Select(c => (object)c.Id).DefaultIfEmpty().Select(c => new[] { t[0], c }))
-					.GroupBy(j => new object[] { ((TimeRecord)j[0]).Project.Job.BillingType == BillingType.None ? 0 : 1 }, j => (TimeRecord)j[0])
-					.Select(g => new object[] { g.Key, g.Count(), g.Sum(t => (decimal?)t.TimeInHours) });
+					.SelectMany(t => ((TimeRecord) t[0]).Components.Select(c => (object) c.Id).DefaultIfEmpty().Select(c => new[] { t[0], c }))
+					.GroupBy(j => new object[] { ((TimeRecord) j[0]).Project.Job.BillingType == BillingType.None ? 0 : 1 }, j => (TimeRecord) j[0])
+					.Select(g => new object[] { g.Key, g.Count(), g.Sum(t => (decimal?) t.TimeInHours) });
 
-				var results = (await (query.ToListAsync())).OrderBy(x => (int)((object[])x[0])[0]);
+				var results = (await (query.ToListAsync())).OrderBy(x => (int) ((object[]) x[0])[0]);
 				Assert.That(results.Select(x => x[1]), Is.EquivalentTo(new[] { 5, 10 }));
 				Assert.That(results.Select(x => x[2]), Is.EquivalentTo(new[] { 14, 88 }));
 
-				Assert.That(results.Sum(x => (decimal?)x[2]), Is.EqualTo(102));
+				Assert.That(results.Sum(x => (decimal?) x[2]), Is.EqualTo(102));
 
 				await (transaction.RollbackAsync());
 			}
@@ -158,15 +158,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3844
 				Assert.That(await (baseQuery.SumAsync(x => x.TimeInHours)), Is.EqualTo(78));
 
 				var query = baseQuery.Select(t => new object[] { t })
-					.SelectMany(t => ((TimeRecord)t[0]).Components.Select(c => (object)c.Id).DefaultIfEmpty().Select(c => new[] { t[0], c }))
-					.GroupBy(j => new object[] { ((TimeRecord)j[0]).Project.Job.BillingType == BillingType.None ? 0 : 1, ((Component)j[1]).Name }, j => (TimeRecord)j[0])
-					.Select(g => new object[] { g.Key, g.Count(), g.Sum(t => (decimal?)t.TimeInHours) });
+					.SelectMany(t => ((TimeRecord) t[0]).Components.Select(c => (object) c.Id).DefaultIfEmpty().Select(c => new[] { t[0], c }))
+					.GroupBy(j => new object[] { ((TimeRecord) j[0]).Project.Job.BillingType == BillingType.None ? 0 : 1, ((Component) j[1]).Name }, j => (TimeRecord) j[0])
+					.Select(g => new object[] { g.Key, g.Count(), g.Sum(t => (decimal?) t.TimeInHours) });
 
-				var results = (await (query.ToListAsync())).OrderBy(x => (int)((object[])x[0])[0]).ThenBy(x => (string)((object[])x[0])[1]);
+				var results = (await (query.ToListAsync())).OrderBy(x => (int) ((object[]) x[0])[0]).ThenBy(x => (string) ((object[]) x[0])[1]);
 				Assert.That(results.Select(x => x[1]), Is.EquivalentTo(new[] { 1, 2, 2, 2, 2, 2, 2, 2 }));
 				Assert.That(results.Select(x => x[2]), Is.EquivalentTo(new[] { 1, 6, 7, 14, 14, 15, 22, 23 }));
 
-				Assert.That(results.Sum(x => (decimal?)x[2]), Is.EqualTo(102));
+				Assert.That(results.Sum(x => (decimal?) x[2]), Is.EqualTo(102));
 
 				await (transaction.RollbackAsync());
 			}

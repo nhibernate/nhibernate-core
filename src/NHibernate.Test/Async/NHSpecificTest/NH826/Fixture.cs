@@ -48,15 +48,15 @@ namespace NHibernate.Test.NHSpecificTest.NH826
 
 			// This does not
 			ActivitySet loadedActivitySet = (ActivitySet) await (session
-			                                              	.CreateCriteria(typeof(ActivitySet))
-			                                              	.Add(Expression.Eq("Id", activitySet.Id))
-			                                              	.UniqueResultAsync());
+															  .CreateCriteria(typeof(ActivitySet))
+															  .Add(Expression.Eq("Id", activitySet.Id))
+															  .UniqueResultAsync());
 
 			await (session.FlushAsync());
 
 			foreach (object o in loadedActivitySet.Activities)
 			{
-				await (session.DeleteAsync(o));				
+				await (session.DeleteAsync(o));
 			}
 			await (session.DeleteAsync(loadedActivitySet));
 

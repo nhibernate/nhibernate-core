@@ -10,11 +10,11 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using NHibernate.Cfg;
+using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NUnit.Framework;
-using NHibernate.Criterion;
-using System.Collections.Generic;
 
 namespace NHibernate.Test.DriverTest
 {

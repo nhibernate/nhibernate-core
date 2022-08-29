@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH940
 				IList l = await (s.CreateCriteria(typeof(A)).ListAsync());
 				try
 				{
-					((A)l[0]).Execute();
+					((A) l[0]).Execute();
 					Assert.Fail("Should have thrown MyException");
 				}
 				catch (MyException)

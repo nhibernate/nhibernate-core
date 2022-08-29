@@ -55,8 +55,8 @@ namespace NHibernate.Collection.Generic
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var elementType = persister.ElementType;
-			var snapshot = (SetSnapShot<T>)GetSnapshot();
-			if (((ICollection)snapshot).Count != WrappedSet.Count)
+			var snapshot = (SetSnapShot<T>) GetSnapshot();
+			if (((ICollection) snapshot).Count != WrappedSet.Count)
 			{
 				return false;
 			}
@@ -81,7 +81,7 @@ namespace NHibernate.Collection.Generic
 		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var array = (object[])disassembled;
+			var array = (object[]) disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i++)
@@ -123,8 +123,8 @@ namespace NHibernate.Collection.Generic
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IType elementType = persister.ElementType;
-			var sn = (SetSnapShot<T>)GetSnapshot();
-			var deletes = new List<T>(((ICollection<T>)sn).Count);
+			var sn = (SetSnapShot<T>) GetSnapshot();
+			var deletes = new List<T>(((ICollection<T>) sn).Count);
 
 			deletes.AddRange(sn.Where(obj => !WrappedSet.Contains(obj)));
 
@@ -141,7 +141,7 @@ namespace NHibernate.Collection.Generic
 		public override async Task<bool> NeedsInsertingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var sn = (SetSnapShot<T>)GetSnapshot();
+			var sn = (SetSnapShot<T>) GetSnapshot();
 			T oldKey;
 
 			// note that it might be better to iterate the snapshot but this is safe,

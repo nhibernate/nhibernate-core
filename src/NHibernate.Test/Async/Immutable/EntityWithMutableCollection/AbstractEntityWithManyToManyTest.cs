@@ -12,8 +12,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate;
-using NHibernate.Impl;
 using NHibernate.Criterion;
+using NHibernate.Impl;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection
@@ -34,7 +34,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 		{
 			get { return "NHibernate.Test"; }
 		}
-		
+
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
 			configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
@@ -44,7 +44,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			
+
 			isPlanContractsInverse = Sfi.GetCollectionPersister(typeof(Plan).FullName + ".Contracts").IsInverse;
 
 			try
@@ -60,12 +60,12 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			isPlanVersioned = Sfi.GetEntityPersister(typeof(Plan).FullName).IsVersioned;
 			isContractVersioned = Sfi.GetEntityPersister(typeof(Contract).FullName).IsVersioned;
 		}
-		
+
 		[Test]
 		public async Task UpdatePropertyAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			p.AddContract(new Contract(null, "gail", "phone"));
 			ISession s = OpenSession();
@@ -73,11 +73,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -87,10 +87,10 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			c.CustomerName = "yogi";
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -107,16 +107,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Plan>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task CreateWithNonEmptyManyToManyCollectionOfNewAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			p.AddContract(new Contract(null, "gail", "phone"));
 			ISession s = OpenSession();
@@ -124,11 +124,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -145,27 +145,27 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Plan>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task CreateWithNonEmptyManyToManyCollectionOfExistingAsync()
 		{
 			ClearCounts();
-	
+
 			Contract c = new Contract(null, "gail", "phone");
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			p.AddContract(c);
 			s = OpenSession();
@@ -173,11 +173,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.SaveAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -194,27 +194,27 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Plan>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task AddNewManyToManyElementToPersistentEntityAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.GetAsync<Plan>(p.Id));
@@ -222,11 +222,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			p.AddContract(new Contract(null, "gail", "phone"));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -243,16 +243,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Plan>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task AddExistingManyToManyElementToPersistentEntityAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			Contract c = new Contract(null, "gail", "phone");
 			ISession s = OpenSession();
@@ -261,11 +261,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.GetAsync<Plan>(p.Id));
@@ -278,11 +278,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			p.AddContract(c);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(isContractVersioned && isPlanVersioned ? 2 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -298,49 +298,50 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task CreateWithEmptyManyToManyCollectionUpdateWithExistingElementAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			Contract c = new Contract(null, "gail", "phone");
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(p));
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			p.AddContract(c);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.UpdateAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(isContractVersioned && isPlanVersioned ? 2 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
 			Assert.That(p.Contracts.Count, Is.EqualTo(1));
 			c = p.Contracts.First();
 			Assert.That(c.CustomerName, Is.EqualTo("gail"));
-			if (isPlanContractsBidirectional) {
+			if (isPlanContractsBidirectional)
+			{
 				Assert.That(c.Plans.First(), Is.SameAs(p));
 			}
 			await (s.DeleteAsync(p));
@@ -348,16 +349,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Plan>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task CreateWithNonEmptyManyToManyCollectionUpdateWithNewElementAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			Contract c = new Contract(null, "gail", "phone");
 			p.AddContract(c);
@@ -366,24 +367,24 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			Contract newC = new Contract(null, "sherman", "telepathy");
 			p.AddContract(newC);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.UpdateAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -412,42 +413,42 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Plan>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task CreateWithEmptyManyToManyCollectionMergeWithExistingElementAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			Contract c = new Contract(null, "gail", "phone");
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(p));
 			await (s.PersistAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			p.AddContract(c);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
-			p = (Plan)await (s.MergeAsync(p));
+			p = (Plan) await (s.MergeAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(isContractVersioned && isPlanVersioned ? 2 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -463,16 +464,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task CreateWithNonEmptyManyToManyCollectionMergeWithNewElementAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			Contract c = new Contract(null, "gail", "phone");
 			p.AddContract(c);
@@ -481,24 +482,24 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			Contract newC = new Contract(null, "yogi", "mail");
 			p.AddContract(newC);
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
-			p = (Plan)await (s.MergeAsync(p));
+			p = (Plan) await (s.MergeAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(isContractVersioned && isPlanVersioned ? 1 : 0); // NH-specific: Hibernate issues a separate UPDATE for the version number
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -523,30 +524,30 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task RemoveManyToManyElementUsingUpdateAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			Contract c = new Contract(null, "gail", "phone");
 			p.AddContract(c);
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			p.RemoveContract(c);
 			Assert.That(p.Contracts.Count, Is.EqualTo(0));
 			if (isPlanContractsBidirectional)
@@ -558,11 +559,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.UpdateAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			AssertDeleteCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -588,30 +589,30 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task RemoveManyToManyElementUsingUpdateBothSidesAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			Contract c = new Contract(null, "gail", "phone");
 			p.AddContract(c);
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			p.RemoveContract(c);
 			Assert.That(p.Contracts.Count, Is.EqualTo(0));
 			if (isPlanContractsBidirectional)
@@ -624,17 +625,18 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.UpdateAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(isContractVersioned && isPlanVersioned ? 2 : 0);
 			AssertDeleteCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
 			Assert.That(p.Contracts.Count, Is.EqualTo(0));
 			c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
-			if (isPlanContractsBidirectional) {
+			if (isPlanContractsBidirectional)
+			{
 				Assert.That(c.Plans.Count, Is.EqualTo(0));
 			}
 			await (s.DeleteAsync(c));
@@ -643,58 +645,62 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task RemoveManyToManyElementUsingMergeAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			Contract c = new Contract(null, "gail", "phone");
 			p.AddContract(c);
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			p.RemoveContract(c);
 			Assert.That(p.Contracts.Count, Is.EqualTo(0));
-			if (isPlanContractsBidirectional) {
+			if (isPlanContractsBidirectional)
+			{
 				Assert.That(c.Plans.Count, Is.EqualTo(0));
 			}
 			s = OpenSession();
 			t = s.BeginTransaction();
-			p = (Plan)await (s.MergeAsync(p));
+			p = (Plan) await (s.MergeAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			AssertDeleteCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
-			if (isPlanContractsInverse) {
+			if (isPlanContractsInverse)
+			{
 				Assert.That(p.Contracts.Count, Is.EqualTo(1));
 				c = p.Contracts.First();
 				Assert.That(c.CustomerName, Is.EqualTo("gail"));
 				Assert.That(c.Plans.First(), Is.SameAs(p));
 			}
-			else {
+			else
+			{
 				Assert.That(p.Contracts.Count, Is.EqualTo(0));
 				c = await (s.CreateCriteria<Contract>().UniqueResultAsync<Contract>());
-				if (isPlanContractsBidirectional) {
+				if (isPlanContractsBidirectional)
+				{
 					Assert.That(c.Plans.Count, Is.EqualTo(0));
 				}
 				await (s.DeleteAsync(c));
@@ -704,48 +710,48 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task RemoveManyToManyElementUsingMergeBothSidesAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			Contract c = new Contract(null, "gail", "phone");
 			p.AddContract(c);
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			p.RemoveContract(c);
 			Assert.That(p.Contracts.Count, Is.EqualTo(0));
 			if (isPlanContractsBidirectional)
 			{
 				Assert.That(c.Plans.Count, Is.EqualTo(0));
 			}
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
-			p = (Plan)await (s.MergeAsync(p));
-			c = (Contract)await (s.MergeAsync(c));
+			p = (Plan) await (s.MergeAsync(p));
+			c = (Contract) await (s.MergeAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
-			AssertUpdateCount(isContractVersioned  && isPlanVersioned ? 2 : 0);
+
+			AssertUpdateCount(isContractVersioned && isPlanVersioned ? 2 : 0);
 			AssertDeleteCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -761,30 +767,30 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task DeleteManyToManyElementAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			Contract c = new Contract(null, "gail", "phone");
 			p.AddContract(c);
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.UpdateAsync(p));
@@ -792,11 +798,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.DeleteAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			AssertDeleteCount(1);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -808,48 +814,48 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		public async Task RemoveManyToManyElementByDeleteAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			Contract c = new Contract(null, "gail", "phone");
 			p.AddContract(c);
-	
+
 			ISession s = OpenSession();
 			ITransaction t = s.BeginTransaction();
 			await (s.PersistAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			p.RemoveContract(c);
 			Assert.That(p.Contracts.Count, Is.EqualTo(0));
 			if (isPlanContractsBidirectional)
 			{
 				Assert.That(c.Plans.Count, Is.EqualTo(0));
 			}
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.UpdateAsync(p));
 			await (s.DeleteAsync(c));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(isPlanVersioned ? 1 : 0);
 			AssertDeleteCount(1);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -859,16 +865,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		public async Task ManyToManyCollectionOptimisticLockingWithMergeAsync()
 		{
 			ClearCounts();
-	
+
 			Plan pOrig = new Plan("plan");
 			Contract cOrig = new Contract(null, "gail", "phone");
 			pOrig.AddContract(cOrig);
@@ -877,11 +883,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(pOrig));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			Plan p = await (s.GetAsync<Plan>(pOrig.Id));
@@ -889,11 +895,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			p.AddContract(newC);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			pOrig.RemoveContract(cOrig);
@@ -911,7 +917,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 				await (t.RollbackAsync());
 			}
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -920,16 +926,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync<long>()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task ManyToManyCollectionOptimisticLockingWithUpdateAsync()
 		{
 			ClearCounts();
-	
+
 			Plan pOrig = new Plan("plan");
 			Contract cOrig = new Contract(null, "gail", "phone");
 			pOrig.AddContract(cOrig);
@@ -938,11 +944,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(pOrig));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			Plan p = await (s.GetAsync<Plan>(pOrig.Id));
@@ -950,11 +956,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			p.AddContract(newC);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(isContractVersioned ? 1 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			pOrig.RemoveContract(cOrig);
@@ -970,7 +976,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 				await (t.RollbackAsync());
 			}
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -981,12 +987,12 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task MoveManyToManyElementToNewEntityCollectionAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			p.AddContract(new Contract(null, "gail", "phone"));
 			ISession s = OpenSession();
@@ -994,11 +1000,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(p));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(2);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().UniqueResultAsync<Plan>());
@@ -1015,11 +1021,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.SaveAsync(p2));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(1);
 			AssertUpdateCount(isPlanVersioned && isContractVersioned ? 2 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().Add(Restrictions.IdEq(p.Id)).UniqueResultAsync<Plan>());
@@ -1036,14 +1042,14 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			}
 			else {
 			*/
-				Assert.That(p.Contracts.Count, Is.EqualTo(0));
-				Assert.That(p2.Contracts.Count, Is.EqualTo(1));
-				c = p2.Contracts.First();
-				Assert.That(c.CustomerName, Is.EqualTo("gail"));
-				if (isPlanContractsBidirectional)
-				{
-					Assert.That(c.Plans.First(), Is.SameAs(p2));
-				}
+			Assert.That(p.Contracts.Count, Is.EqualTo(0));
+			Assert.That(p2.Contracts.Count, Is.EqualTo(1));
+			c = p2.Contracts.First();
+			Assert.That(c.CustomerName, Is.EqualTo("gail"));
+			if (isPlanContractsBidirectional)
+			{
+				Assert.That(c.Plans.First(), Is.SameAs(p2));
+			}
 			//}
 			await (s.DeleteAsync(p));
 			await (s.DeleteAsync(p2));
@@ -1051,16 +1057,16 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		[Test]
 		public async Task MoveManyToManyElementToExistingEntityCollectionAsync()
 		{
 			ClearCounts();
-	
+
 			Plan p = new Plan("plan");
 			p.AddContract(new Contract(null, "gail", "phone"));
 			Plan p2 = new Plan("plan2");
@@ -1070,11 +1076,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			await (s.PersistAsync(p2));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(3);
 			AssertUpdateCount(0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().Add(Restrictions.IdEq(p.Id)).UniqueResultAsync<Plan>());
@@ -1088,11 +1094,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			p.RemoveContract(c);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(isPlanVersioned && isContractVersioned ? 2 : 0);
 			ClearCounts();
-			
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p2 = await (s.CreateCriteria<Plan>().Add(Restrictions.IdEq(p2.Id)).UniqueResultAsync<Plan>());
@@ -1100,11 +1106,11 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			p2.AddContract(c);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertInsertCount(0);
 			AssertUpdateCount(isPlanVersioned && isContractVersioned ? 2 : 0);
 			ClearCounts();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			p = await (s.CreateCriteria<Plan>().Add(Restrictions.IdEq(p.Id)).UniqueResultAsync<Plan>());
@@ -1121,14 +1127,14 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			}
 			else {
 			*/
-				Assert.That(p.Contracts.Count, Is.EqualTo(0));
-				Assert.That(p2.Contracts.Count, Is.EqualTo(1));
-				c = p2.Contracts.First();
-				Assert.That(c.CustomerName, Is.EqualTo("gail"));
-				if (isPlanContractsBidirectional)
-				{
-					Assert.That(c.Plans.First(), Is.SameAs(p2));
-				}
+			Assert.That(p.Contracts.Count, Is.EqualTo(0));
+			Assert.That(p2.Contracts.Count, Is.EqualTo(1));
+			c = p2.Contracts.First();
+			Assert.That(c.CustomerName, Is.EqualTo("gail"));
+			if (isPlanContractsBidirectional)
+			{
+				Assert.That(c.Plans.First(), Is.SameAs(p2));
+			}
 			//}
 			await (s.DeleteAsync(p));
 			await (s.DeleteAsync(p2));
@@ -1136,21 +1142,21 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 			Assert.That(await (s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResultAsync()), Is.EqualTo(0L));
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			AssertUpdateCount(0);
 			AssertDeleteCount(3);
 		}
-	
+
 		protected void ClearCounts()
 		{
 			Sfi.Statistics.Clear();
 		}
-		
+
 		protected void AssertUpdateCount(int count)
 		{
 			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(count), "unexpected update counts");
 		}
-		
+
 		protected void AssertInsertCount(int count)
 		{
 			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(count), "unexpected insert count");

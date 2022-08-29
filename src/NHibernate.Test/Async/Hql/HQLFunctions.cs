@@ -78,7 +78,7 @@ namespace NHibernate.Test.Hql
 				if (TestDialect.SupportsHavingWithoutGroupBy)
 				{
 					result = await (s.CreateQuery("select count(a.id) from Animal a having count(a.id)>1").UniqueResultAsync());
-					Assert.AreEqual(typeof (long), result.GetType());
+					Assert.AreEqual(typeof(long), result.GetType());
 					Assert.AreEqual(2, result);
 				}
 			}
@@ -213,9 +213,9 @@ namespace NHibernate.Test.Hql
 			using (ISession s = OpenSession())
 			{
 				Assert.DoesNotThrowAsync(() => s.CreateQuery("select a.Id, sum(BodyWeight)/avg(BodyWeight) from Animal a group by a.Id having sum(BodyWeight)>0").ListAsync());
-			}			
+			}
 		}
-		
+
 		[Test]
 		public async Task SubStringTwoParametersAsync()
 		{
@@ -250,13 +250,13 @@ namespace NHibernate.Test.Hql
 				// With parameters and nested function calls.
 				hql = "from Animal a where substring(concat(a.Description, ?), :start) = 'deffoo'";
 				result = (Animal) await (s.CreateQuery(hql)
-				                   .SetParameter(0, "foo")
-				                   .SetParameter("start", 4)
-				                   .UniqueResultAsync());
+								   .SetParameter(0, "foo")
+								   .SetParameter("start", 4)
+								   .UniqueResultAsync());
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
-		
+
 		[Test]
 		public async Task SubStringAsync()
 		{
@@ -276,7 +276,7 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual("abcdef", result.Description);
 
 				hql = "from Animal a where substring(a.Description, 2, 3) = ?";
-				result = (Animal)await (s.CreateQuery(hql)
+				result = (Animal) await (s.CreateQuery(hql)
 					.SetParameter(0, "bcd")
 					.UniqueResultAsync());
 				Assert.AreEqual("abcdef", result.Description);
@@ -284,13 +284,13 @@ namespace NHibernate.Test.Hql
 				// Following tests verify that parameters can be used.
 
 				hql = "from Animal a where substring(a.Description, 2, ?) = 'bcd'";
-				result = (Animal)await (s.CreateQuery(hql)
+				result = (Animal) await (s.CreateQuery(hql)
 					.SetParameter(0, 3)
 					.UniqueResultAsync());
 				Assert.AreEqual("abcdef", result.Description);
 
 				hql = "from Animal a where substring(a.Description, ?, ?) = ?";
-				result = (Animal)await (s.CreateQuery(hql)
+				result = (Animal) await (s.CreateQuery(hql)
 					.SetParameter(0, 2)
 					.SetParameter(1, 3)
 					.SetParameter(2, "bcd")
@@ -323,7 +323,7 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual(2, lresult[0]);
 
 				hql = "from Animal a where locate('bc', a.Description) = 2";
-				Animal result = (Animal)await (s.CreateQuery(hql).UniqueResultAsync());
+				Animal result = (Animal) await (s.CreateQuery(hql).UniqueResultAsync());
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
@@ -447,7 +447,7 @@ namespace NHibernate.Test.Hql
 		{
 			AssumeFunctionSupported("nullif");
 			string hql1, hql2;
-			if(!(Dialect is Oracle8iDialect))
+			if (!(Dialect is Oracle8iDialect))
 			{
 				hql1 = "select nullif(h.NickName, '1e1') from Human h";
 				hql2 = "from Human h where not(nullif(h.NickName, '1e1') is null)";
@@ -456,7 +456,7 @@ namespace NHibernate.Test.Hql
 			{
 				// Oracle need same specific types
 				hql1 = "select nullif(str(h.NickName), '1e1') from Human h";
-				hql2 = "from Human h where not (nullif(str(h.NickName), '1e1') is null)";				
+				hql2 = "from Human h where not (nullif(str(h.NickName), '1e1') is null)";
 			}
 			// test only the parser and render
 			using (ISession s = OpenSession())
@@ -542,7 +542,7 @@ namespace NHibernate.Test.Hql
 						.SetInt32("c", 2)
 						.UniqueResultAsync<long>());
 				Assert.That(countF, Is.EqualTo(1), "Filtering round(double) failed.");
-				
+
 				roundF = await (s.CreateQuery("select round(a.BodyWeight, 1) from Animal a").UniqueResultAsync<float>());
 				Assert.That(roundF, Is.EqualTo(1.9f).Within(0.01f), "Selecting round(double, 1) failed.");
 				countF =
@@ -601,7 +601,7 @@ namespace NHibernate.Test.Hql
 						.SetInt32("c", 1)
 						.UniqueResultAsync<long>());
 				Assert.That(countF, Is.EqualTo(1), "Filtering truncate(double) failed.");
-				
+
 				roundF = await (s.CreateQuery("select truncate(a.BodyWeight, 1) from Animal a").UniqueResultAsync<float>());
 				Assert.That(roundF, Is.EqualTo(1.8f).Within(0.01f), "Selecting truncate(double, 1) failed.");
 				countF =
@@ -658,7 +658,7 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual("abcdef", result.Description);
 
 				hql = "from Animal a where mod(cast(a.BodyWeight as int), 4)=0";
-				result = (Animal)await (s.CreateQuery(hql).UniqueResultAsync());
+				result = (Animal) await (s.CreateQuery(hql).UniqueResultAsync());
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
@@ -704,7 +704,7 @@ namespace NHibernate.Test.Hql
 				hql = "from Animal an where upper(an.Description)='ABCDEF'";
 				Animal result = (Animal) await (s.CreateQuery(hql).UniqueResultAsync());
 				Assert.AreEqual("abcdef", result.Description);
-				
+
 				if (Dialect.SupportsHavingOnGroupedByComputation)
 				{
 					//test only parser
@@ -731,7 +731,7 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual("abcdef", lresult[0]);
 
 				hql = "from Animal an where lower(an.Description)='abcdef'";
-				Animal result = (Animal)await (s.CreateQuery(hql).UniqueResultAsync());
+				Animal result = (Animal) await (s.CreateQuery(hql).UniqueResultAsync());
 				Assert.AreEqual("ABCDEF", result.Description);
 
 				if (Dialect.SupportsHavingOnGroupedByComputation)
@@ -774,7 +774,7 @@ namespace NHibernate.Test.Hql
 
 			using (var s = OpenSession())
 			{
-				var m = new MaterialResource("Blah", "000", (MaterialResource.MaterialState)32);
+				var m = new MaterialResource("Blah", "000", (MaterialResource.MaterialState) 32);
 				await (s.SaveAsync(m));
 				await (s.FlushAsync());
 			}
@@ -794,7 +794,7 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task CastAsync()
 		{
-			const double magicResult = 7 + 123 - 5*1.3d;
+			const double magicResult = 7 + 123 - 5 * 1.3d;
 
 			AssumeFunctionSupported("cast");
 			// The cast is used to test various cases of a function render
@@ -818,13 +818,13 @@ namespace NHibernate.Test.Hql
 				hql = "select cast(a.BodyWeight as Double) from Animal a";
 				l = await (s.CreateQuery(hql).ListAsync());
 				Assert.AreEqual(1, l.Count);
-				Assert.That(l[0], Is.TypeOf(typeof (double)));
+				Assert.That(l[0], Is.TypeOf(typeof(double)));
 
 				// Rendered in SELECT using a property in an operation with constants
 				hql = "select cast(7+123-5*a.BodyWeight as Double) from Animal a";
 				l = await (s.CreateQuery(hql).ListAsync());
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(magicResult, (double)l[0], 0.00001);
+				Assert.AreEqual(magicResult, (double) l[0], 0.00001);
 
 				// Rendered in SELECT using a property and nested functions
 				if (!(Dialect is Oracle8iDialect))
@@ -847,12 +847,12 @@ namespace NHibernate.Test.Hql
 
 				// Rendered in WHERE using a property in an operation with constants
 				hql = "from Animal a where cast(7+123-2*a.BodyWeight as Double)>0";
-				result = (Animal)await (s.CreateQuery(hql).UniqueResultAsync());
+				result = (Animal) await (s.CreateQuery(hql).UniqueResultAsync());
 				Assert.AreEqual("abcdef", result.Description);
 
 				// Rendered in WHERE using a property and named param
 				hql = "from Animal a where cast(:aParam+a.BodyWeight as Double)>0";
-				result = (Animal)await (s.CreateQuery(hql)
+				result = (Animal) await (s.CreateQuery(hql)
 					.SetDouble("aParam", 2D)
 					.UniqueResultAsync());
 				Assert.AreEqual("abcdef", result.Description);
@@ -875,7 +875,7 @@ namespace NHibernate.Test.Hql
 				hql = "select cast(7+123-5*a.BodyWeight as Double) from Animal a group by cast(7+123-5*a.BodyWeight as Double)";
 				l = await (s.CreateQuery(hql).ListAsync());
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(magicResult, (double)l[0], 0.00001);
+				Assert.AreEqual(magicResult, (double) l[0], 0.00001);
 
 				// Rendered in GROUP BY using a property and nested functions
 				if (!(Dialect is Oracle8iDialect))
@@ -901,7 +901,7 @@ namespace NHibernate.Test.Hql
 						"select cast(7+123.3-1*a.BodyWeight as int) from Animal a group by cast(7+123.3-1*a.BodyWeight as int) having cast(7+123.3-1*a.BodyWeight as int)>0";
 					l = await (s.CreateQuery(hql).ListAsync());
 					Assert.AreEqual(1, l.Count);
-					Assert.AreEqual((int)(7 + 123.3 - 1 * 1.3d), l[0]);
+					Assert.AreEqual((int) (7 + 123.3 - 1 * 1.3d), l[0]);
 
 					// Rendered in HAVING using a property and named param (NOT SUPPORTED)
 					try
@@ -994,7 +994,7 @@ namespace NHibernate.Test.Hql
 				string hql = "select cast(a.BodyWeight As Double) from Animal a";
 				IList l = await (s.CreateQuery(hql).ListAsync());
 				Assert.AreEqual(1, l.Count);
-				Assert.AreEqual(1.3f, (double)l[0], 0.00001);
+				Assert.AreEqual(1.3f, (double) l[0], 0.00001);
 			}
 		}
 
@@ -1114,7 +1114,7 @@ namespace NHibernate.Test.Hql
 
 				hql = "from Animal where extract(day from cast(current_timestamp() as Date))>0";
 				result = await (s.CreateQuery(hql).ListAsync());
-			}	
+			}
 		}
 
 		[Test]
@@ -1155,7 +1155,7 @@ namespace NHibernate.Test.Hql
 			{
 				string hql = "select second(current_timestamp()), minute(current_timestamp()), hour(current_timestamp()) from Animal";
 				IList result = await (s.CreateQuery(hql).ListAsync());
-			}	
+			}
 		}
 
 		[Test]
@@ -1212,7 +1212,7 @@ namespace NHibernate.Test.Hql
 			// Statistic
 			using (ISession s = OpenSession())
 			{
-				string hql = 
+				string hql =
 @"select mr.Description, 
 sum(iif(mr.State= 0,1,0)), 
 sum(iif(mr.State= 1,1,0)), 
@@ -1221,13 +1221,13 @@ from MaterialResource mr
 group by mr.Description";
 
 				IList lresult = await (s.CreateQuery(hql).ListAsync());
-				Assert.AreEqual("Flash card 512MB", ((IList)lresult[0])[0]);
-				Assert.AreEqual(2, ((IList)lresult[0])[1]);
-				Assert.AreEqual(2, ((IList)lresult[0])[2]);
-				Assert.AreEqual(1, ((IList)lresult[0])[3]);
+				Assert.AreEqual("Flash card 512MB", ((IList) lresult[0])[0]);
+				Assert.AreEqual(2, ((IList) lresult[0])[1]);
+				Assert.AreEqual(2, ((IList) lresult[0])[2]);
+				Assert.AreEqual(1, ((IList) lresult[0])[3]);
 
 				hql = "from MaterialResource mr where iif(mr.State=2,true,false)=true";
-				MaterialResource result = (MaterialResource)await (s.CreateQuery(hql).UniqueResultAsync());
+				MaterialResource result = (MaterialResource) await (s.CreateQuery(hql).UniqueResultAsync());
 				Assert.AreEqual("A005/07", result.SerialNumber);
 			}
 			// clean up

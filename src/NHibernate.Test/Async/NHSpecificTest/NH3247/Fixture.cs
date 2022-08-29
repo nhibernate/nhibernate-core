@@ -23,10 +23,10 @@ namespace NHibernate.Test.NHSpecificTest.NH3247
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity {Name = "Bob", Initial = 'B' };
+				var e1 = new Entity { Name = "Bob", Initial = 'B' };
 				session.Save(e1);
 
-				var e2 = new Entity {Name = "Sally", Initial = 'S' };
+				var e2 = new Entity { Name = "Sally", Initial = 'S' };
 				session.Save(e2);
 
 				session.Flush();

@@ -14,14 +14,13 @@ using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Threading;
-
+using NHibernate.AdoNet.Util;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
-using NHibernate.AdoNet.Util;
 
 namespace NHibernate.AdoNet
 {
@@ -158,7 +157,7 @@ namespace NHibernate.AdoNet
 			var reader = await (DoExecuteReaderAsync(cmd, cancellationToken)).ConfigureAwait(false);
 
 			_readersToClose.Add(reader);
-			LogOpenReader(duration , reader);
+			LogOpenReader(duration, reader);
 			return reader;
 		}
 

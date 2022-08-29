@@ -78,7 +78,7 @@ namespace NHibernate.Engine
 					{
 						log.Debug("cascading to delete: {0}", entityName);
 					}
-					return session.DeleteAsync(entityName, child, isCascadeDeleteEnabled, (ISet<object>)anything, cancellationToken);
+					return session.DeleteAsync(entityName, child, isCascadeDeleteEnabled, (ISet<object>) anything, cancellationToken);
 				}
 				catch (Exception ex)
 				{
@@ -124,7 +124,7 @@ namespace NHibernate.Engine
 					{
 						log.Debug("cascading to refresh: {0}", entityName);
 					}
-					return session.RefreshAsync(child, (IDictionary)anything, cancellationToken);
+					return session.RefreshAsync(child, (IDictionary) anything, cancellationToken);
 				}
 				catch (Exception ex)
 				{
@@ -193,7 +193,7 @@ namespace NHibernate.Engine
 					{
 						log.Debug("cascading to merge: {0}", entityName);
 					}
-					return session.MergeAsync(entityName, child, (IDictionary)anything, cancellationToken);
+					return session.MergeAsync(entityName, child, (IDictionary) anything, cancellationToken);
 				}
 				catch (Exception ex)
 				{
@@ -201,7 +201,7 @@ namespace NHibernate.Engine
 				}
 			}
 		}
-        
+
 		private partial class PersistCascadingAction : CascadingAction
 		{
 			public override Task CascadeAsync(IEventSource session, object child, string entityName, object anything, bool isCascadeDeleteEnabled, CancellationToken cancellationToken)
@@ -216,7 +216,7 @@ namespace NHibernate.Engine
 					{
 						log.Debug("cascading to persist: {0}", entityName);
 					}
-					return session.PersistAsync(entityName, child, (IDictionary)anything, cancellationToken);
+					return session.PersistAsync(entityName, child, (IDictionary) anything, cancellationToken);
 				}
 				catch (Exception ex)
 				{
@@ -239,7 +239,7 @@ namespace NHibernate.Engine
 					{
 						log.Debug("cascading to persistOnFlush: {0}", entityName);
 					}
-					return session.PersistOnFlushAsync(entityName, child, (IDictionary)anything, cancellationToken);
+					return session.PersistOnFlushAsync(entityName, child, (IDictionary) anything, cancellationToken);
 				}
 				catch (Exception ex)
 				{
@@ -257,7 +257,7 @@ namespace NHibernate.Engine
 				IType type = persister.PropertyTypes[propertyIndex];
 				if (type.IsEntityType)
 				{
-					string childEntityName = ((EntityType)type).GetAssociatedEntityName(session.Factory);
+					string childEntityName = ((EntityType) type).GetAssociatedEntityName(session.Factory);
 
 					if (!IsInManagedState(child, session) && !child.IsProxy() && await (ForeignKeys.IsTransientSlowAsync(childEntityName, child, session, cancellationToken)).ConfigureAwait(false))
 					{
@@ -286,7 +286,7 @@ namespace NHibernate.Engine
 					{
 						log.Debug("cascading to replicate: {0}", entityName);
 					}
-					return session.ReplicateAsync(entityName, child, (ReplicationMode)anything, cancellationToken);
+					return session.ReplicateAsync(entityName, child, (ReplicationMode) anything, cancellationToken);
 				}
 				catch (Exception ex)
 				{

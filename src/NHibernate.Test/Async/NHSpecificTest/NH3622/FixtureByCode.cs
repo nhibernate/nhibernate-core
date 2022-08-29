@@ -12,9 +12,9 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
-using NHibernate.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.NH3622
 {
@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3622
 		public async Task MissingJoinsInSubqueryAsync()
 		{
 			var id = Guid.NewGuid();
-			using( var logSpy = new SqlLogSpy())
+			using (var logSpy = new SqlLogSpy())
 			using (var s = OpenSession())
 			{
 				var x = s.Query<Tag>()

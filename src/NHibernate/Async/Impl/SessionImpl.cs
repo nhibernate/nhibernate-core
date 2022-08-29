@@ -516,7 +516,7 @@ namespace NHibernate.Impl
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("flushing to force deletion of re-saved object: {0}",
-					          MessageHelper.InfoString(entityEntry.Persister, entityEntry.Id, Factory));
+							  MessageHelper.InfoString(entityEntry.Persister, entityEntry.Id, Factory));
 				}
 
 				if (persistenceContext.CascadeLevel > 0)
@@ -595,13 +595,13 @@ namespace NHibernate.Impl
 		public async Task<T> MergeAsync<T>(T entity, CancellationToken cancellationToken = default(CancellationToken)) where T : class
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			return (T)await (MergeAsync((object)entity, cancellationToken)).ConfigureAwait(false);
+			return (T) await (MergeAsync((object) entity, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public async Task<T> MergeAsync<T>(string entityName, T entity, CancellationToken cancellationToken = default(CancellationToken)) where T : class
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			return (T)await (MergeAsync(entityName, (object)entity, cancellationToken)).ConfigureAwait(false);
+			return (T) await (MergeAsync(entityName, (object) entity, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public Task<object> MergeAsync(object obj, CancellationToken cancellationToken = default(CancellationToken))
@@ -718,7 +718,7 @@ namespace NHibernate.Impl
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
-				return (T)await (LoadAsync(typeof(T), id, cancellationToken)).ConfigureAwait(false);
+				return (T) await (LoadAsync(typeof(T), id, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -727,7 +727,7 @@ namespace NHibernate.Impl
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
-				return (T)await (LoadAsync(typeof(T), id, lockMode, cancellationToken)).ConfigureAwait(false);
+				return (T) await (LoadAsync(typeof(T), id, lockMode, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -1154,7 +1154,7 @@ namespace NHibernate.Impl
 				{
 					try
 					{
-						var results = await (loaders.LoadAllToListAsync<T>(this, cancellationToken)).ConfigureAwait(false); 
+						var results = await (loaders.LoadAllToListAsync<T>(this, cancellationToken)).ConfigureAwait(false);
 						success = true;
 						return results;
 					}

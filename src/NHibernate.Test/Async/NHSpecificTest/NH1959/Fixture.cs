@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1959
 		protected override void OnTearDown()
 		{
 			using (ISession s = OpenSession())
-			using(ITransaction tx = s.BeginTransaction())
+			using (ITransaction tx = s.BeginTransaction())
 			{
 				s.Delete("from ClassB");
 				s.Delete("from ClassA");

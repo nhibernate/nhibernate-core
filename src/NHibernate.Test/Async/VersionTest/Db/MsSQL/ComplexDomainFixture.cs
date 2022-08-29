@@ -30,15 +30,15 @@ namespace NHibernate.Test.VersionTest.Db.MsSQL
 		{
 			return dialect is MsSql2000Dialect;
 		}
-		
+
 		[Test]
 		public async System.Threading.Tasks.Task NH1685Async()
 		{
 			using (ISession session = OpenSession())
 			{
-				var bar = new Bar {AField = 24};
+				var bar = new Bar { AField = 24 };
 
-				var foo = new Foo {AField = 42};
+				var foo = new Foo { AField = 42 };
 				foo.AddBar(bar);
 
 				await (session.SaveAsync(foo));

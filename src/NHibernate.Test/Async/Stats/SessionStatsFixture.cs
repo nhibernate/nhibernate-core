@@ -35,10 +35,10 @@ namespace NHibernate.Test.Stats
 		private static async Task<Continent> FillDbAsync(ISession s, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			Continent europe = new Continent();
-			europe.Name="Europe";
+			europe.Name = "Europe";
 			Country france = new Country();
-			france.Name="France";
-			europe.Countries= new HashSet<Country>();
+			france.Name = "France";
+			europe.Countries = new HashSet<Country>();
 			europe.Countries.Add(france);
 			await (s.SaveAsync(france, cancellationToken));
 			await (s.SaveAsync(europe, cancellationToken));
@@ -56,9 +56,9 @@ namespace NHibernate.Test.Stats
 		{
 			Assert.IsTrue(Sfi.Settings.IsQueryCacheEnabled);
 
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
-				IList list = await (s.CreateCriteria(typeof (Country))
+				IList list = await (s.CreateCriteria(typeof(Country))
 					.Add(Restrictions.Eq("Name", "Narnia"))
 					.SetCacheable(true)
 					.ListAsync());

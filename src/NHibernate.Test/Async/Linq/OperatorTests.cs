@@ -19,15 +19,15 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
-    using System.Threading.Tasks;
-    [TestFixture]
-    public class OperatorTestsAsync : LinqTestCase
-    {
-        [Test]
-        public async Task ModAsync()
-        {
-            Assert.AreEqual(2, await (session.Query<TimesheetEntry>().Where(a => a.NumberOfHours % 7 == 0).CountAsync()));
-        }
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class OperatorTestsAsync : LinqTestCase
+	{
+		[Test]
+		public async Task ModAsync()
+		{
+			Assert.AreEqual(2, await (session.Query<TimesheetEntry>().Where(a => a.NumberOfHours % 7 == 0).CountAsync()));
+		}
 
 		[Test]
 		public async Task UnaryMinusAsync()

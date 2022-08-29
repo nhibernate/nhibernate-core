@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2812
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var entity = new EntityWithAByteValue {ByteValue = 1};
+				var entity = new EntityWithAByteValue { ByteValue = 1 };
 				session.Save(entity);
 				tx.Commit();
 			}

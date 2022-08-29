@@ -53,7 +53,7 @@ namespace NHibernate.Impl
 
 				if (needTransformer)
 					AddResultTransformer(
-						multiApproach, 
+						multiApproach,
 						new FutureResultsTransformer(queries));
 
 				results = await (GetResultsFromAsync(multiApproach, cancellationToken)).ConfigureAwait(false);

@@ -23,13 +23,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1621
 		{
 			using (session = OpenSession())
 			{
-				Nums nums1 = new Nums {ID = 1, NumA = 1, NumB = 2};
+				Nums nums1 = new Nums { ID = 1, NumA = 1, NumB = 2 };
 				await (session.SaveAsync(nums1));
 
-				Nums nums2 = new Nums {ID = 2, NumA = 2, NumB = 2 };
+				Nums nums2 = new Nums { ID = 2, NumA = 2, NumB = 2 };
 				await (session.SaveAsync(nums2));
 
-				Nums nums3 = new Nums {ID = 3, NumA = 5, NumB = 2 };
+				Nums nums3 = new Nums { ID = 3, NumA = 5, NumB = 2 };
 				await (session.SaveAsync(nums3));
 
 				await (session.FlushAsync());

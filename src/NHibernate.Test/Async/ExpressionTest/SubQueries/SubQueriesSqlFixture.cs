@@ -29,7 +29,7 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"ExpressionTest.SubQueries.Mappings.hbm.xml"}; }
+			get { return new string[] { "ExpressionTest.SubQueries.Mappings.hbm.xml" }; }
 		}
 
 		protected override void OnSetUp()

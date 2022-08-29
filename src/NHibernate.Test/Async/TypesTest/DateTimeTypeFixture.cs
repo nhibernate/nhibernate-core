@@ -35,7 +35,7 @@ namespace NHibernate.Test.TypesTest
 	public class DateTimeTypeWithScaleFixtureAsync : AbstractDateTimeTypeFixtureAsync
 	{
 		protected override string TypeName => "DateTimeWithScale";
-		protected override AbstractDateTimeType Type => (AbstractDateTimeType)TypeFactory.GetDateTimeType(3);
+		protected override AbstractDateTimeType Type => (AbstractDateTimeType) TypeFactory.GetDateTimeType(3);
 		protected override long DateAccuracyInTicks => Math.Max(TimeSpan.TicksPerMillisecond, base.DateAccuracyInTicks);
 		// The timestamp rounding in seeding does not account scale.
 		protected override bool RevisionCheck => false;

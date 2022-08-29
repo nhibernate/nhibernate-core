@@ -22,7 +22,7 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"MultipleCollectionFetchTest.PersonBag.hbm.xml"}; }
+			get { return new string[] { "MultipleCollectionFetchTest.PersonBag.hbm.xml" }; }
 		}
 
 		protected override void AddToCollection(ICollection<Person> collection, Person person)

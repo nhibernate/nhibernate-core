@@ -21,80 +21,80 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2500
 {
-    using System.Threading.Tasks;
+	using System.Threading.Tasks;
 
-    [TestFixture]
-    public class FixtureAsync : TestCaseMappingByCode
-    {
-        protected override HbmMapping GetMappings()
-        {
-            var mapper = new ConventionModelMapper();
-            mapper.BeforeMapClass += (mi, t, x) => x.Id(map => map.Generator(Generators.Guid));
-            return mapper.CompileMappingFor(new[] { typeof(Foo) });
-        }
+	[TestFixture]
+	public class FixtureAsync : TestCaseMappingByCode
+	{
+		protected override HbmMapping GetMappings()
+		{
+			var mapper = new ConventionModelMapper();
+			mapper.BeforeMapClass += (mi, t, x) => x.Id(map => map.Generator(Generators.Guid));
+			return mapper.CompileMappingFor(new[] { typeof(Foo) });
+		}
 
-        protected override void OnSetUp()
-        {
-            base.OnSetUp();
+		protected override void OnSetUp()
+		{
+			base.OnSetUp();
 
-            using (ISession session = Sfi.OpenSession())
-            using (ITransaction transaction = session.BeginTransaction())
-            {
-                session.Persist(new Foo { Name = "Banana" });
-                session.Persist(new Foo { Name = "Egg" });
-                transaction.Commit();
-            }
-        }
+			using (ISession session = Sfi.OpenSession())
+			using (ITransaction transaction = session.BeginTransaction())
+			{
+				session.Persist(new Foo { Name = "Banana" });
+				session.Persist(new Foo { Name = "Egg" });
+				transaction.Commit();
+			}
+		}
 
-        protected override void OnTearDown()
-        {
-            using (ISession session = Sfi.OpenSession())
-            using (ITransaction transaction = session.BeginTransaction())
-            {
-                session.CreateQuery("delete from Foo").ExecuteUpdate();
-                transaction.Commit();
-            }
+		protected override void OnTearDown()
+		{
+			using (ISession session = Sfi.OpenSession())
+			using (ITransaction transaction = session.BeginTransaction())
+			{
+				session.CreateQuery("delete from Foo").ExecuteUpdate();
+				transaction.Commit();
+			}
 
-            base.OnTearDown();
-        }
+			base.OnTearDown();
+		}
 
 		private int count;
-		
+
 		[Test]
-        public async Task TestLinqProjectionExpressionDoesntCacheParametersAsync()
-        {
-            using (ISession session = Sfi.OpenSession())
-            using (ITransaction transaction = session.BeginTransaction())
-            {
-            	this.count = 1;
+		public async Task TestLinqProjectionExpressionDoesntCacheParametersAsync()
+		{
+			using (ISession session = Sfi.OpenSession())
+			using (ITransaction transaction = session.BeginTransaction())
+			{
+				this.count = 1;
 
-            	var foos1 = await (session.Query<Foo>()
-            		.Where(x => x.Name == "Banana")
-            		.Select(x => new
-            		{
-            			x.Name,
-            			count,
-            			User = "abc"
-            		}).FirstAsync());
+				var foos1 = await (session.Query<Foo>()
+					.Where(x => x.Name == "Banana")
+					.Select(x => new
+					{
+						x.Name,
+						count,
+						User = "abc"
+					}).FirstAsync());
 
-            	this.count = 2;
+				this.count = 2;
 
-            	var foos2 = await (session.Query<Foo>()
-            		.Where(x => x.Name == "Egg")
-            		.Select(x => new
-            		{
-            			x.Name,
-            			count,
-            			User = "def"
-            		}).FirstAsync());
+				var foos2 = await (session.Query<Foo>()
+					.Where(x => x.Name == "Egg")
+					.Select(x => new
+					{
+						x.Name,
+						count,
+						User = "def"
+					}).FirstAsync());
 
 				Assert.AreEqual(1, foos1.count);
 				Assert.AreEqual(2, foos2.count);
 				Assert.AreEqual("abc", foos1.User);
 				Assert.AreEqual("def", foos2.User);
 
-                await (transaction.CommitAsync());
-            }
-        }
-    }
+				await (transaction.CommitAsync());
+			}
+		}
+	}
 }

@@ -39,12 +39,12 @@ namespace NHibernate.Persister.Collection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public abstract partial class AbstractCollectionPersister : 
-		ICollectionMetadata, 
+	public abstract partial class AbstractCollectionPersister :
+		ICollectionMetadata,
 		ISqlLoadableCollection,
-		IPostInsertIdentityPersister, 
-		ISupportSelectModeJoinable, 
-		ICompositeKeyPostInsertIdentityPersister, 
+		IPostInsertIdentityPersister,
+		ISupportSelectModeJoinable,
+		ICompositeKeyPostInsertIdentityPersister,
 		ISupportLazyPropsJoinable,
 		IPersister
 	{
@@ -297,7 +297,7 @@ namespace NHibernate.Persister.Collection
 							//bool callable = InsertCallable;
 							useBatch = expectation.CanBeBatched;
 						}
-						
+
 						if (collection.EntryExists(entry, i))
 						{
 							object entryId;

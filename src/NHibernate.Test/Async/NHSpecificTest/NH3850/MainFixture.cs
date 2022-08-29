@@ -34,8 +34,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				// This case should work because the aggregate is insensitive to ordering.
 				var query = session.Query<DomainClassGExtendedByH>()
-				                   .OrderBy(dc => dc.Id)
-				                   .Select(dc => dc.Id);
+								   .OrderBy(dc => dc.Id)
+								   .Select(dc => dc.Id);
 				var result = query.Aggregate((p, n) => p + n);
 				Assert.That(result, Is.EqualTo(10));
 				var futureQuery = query.ToFutureValue(qdc => qdc.Aggregate((p, n) => p + n));
@@ -52,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				// This case works because the ordering accidentally matches with classes ordering.
 				// (And moreover, with current dataset, selected values are same whatever the classes.)
 				var query = session.Query<DomainClassGExtendedByH>()
-				                    .OrderBy(dc => dc.Id);
+									.OrderBy(dc => dc.Id);
 				var seed = new StringBuilder();
 				var result = query.Aggregate(seed, (s, dc) => s.Append(dc.Name).Append(","));
 				var expectedResult = SearchName1 + "," + SearchName2 + "," + SearchName1 + "," + SearchName2 + ",";
@@ -73,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			{
 				// This case should work because the aggregate is insensitive to ordering.
 				var query = session.Query<DomainClassGExtendedByH>()
-				                   .OrderBy(dc => dc.Id);
+								   .OrderBy(dc => dc.Id);
 				var result = query.Aggregate(5, (s, dc) => s + dc.Id);
 				Assert.That(result, Is.EqualTo(15));
 				var futureQuery = query.ToFutureValue(qdc => qdc.Aggregate(5, (s, dc) => s + dc.Id));
@@ -153,7 +153,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			using (var session = OpenSession())
 			{
 				var query = session.Query<DomainClassGExtendedByH>()
-				                   .Where(dc => dc.Name == SearchName1);
+								   .Where(dc => dc.Name == SearchName1);
 				var result = await (query.AllAsync(dc => dc.Name == SearchName1));
 				Assert.That(result, Is.True);
 				var futureQuery = query.ToFutureValue(qdc => qdc.All(dc => dc.Name == SearchName1));
@@ -383,11 +383,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(await (futureDec.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future decimal average has failed");
 
 				var dbl = await (dcQuery.AverageAsync(dc => dc.Double, cancellationToken));
-				Assert.That(dbl.HasValue, Is.EqualTo(expectedResult.HasValue),"Double average has failed");
+				Assert.That(dbl.HasValue, Is.EqualTo(expectedResult.HasValue), "Double average has failed");
 				if (expectedResult.HasValue)
 					Assert.That(dbl.Value, Is.EqualTo(expectedResult).Within(0.001d), "Double average has failed");
 				var futureDbl = dcQuery.ToFutureValue(qdc => qdc.Average(dc => dc.Double));
-				Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).HasValue, Is.EqualTo(expectedResult.HasValue),"Future double average has failed");
+				Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).HasValue, Is.EqualTo(expectedResult.HasValue), "Future double average has failed");
 				if (expectedResult.HasValue)
 					Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).Value, Is.EqualTo(expectedResult).Within(0.001d), "Future double average has failed");
 
@@ -403,17 +403,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				else
 				{
 					Assert.That(() => dcQuery.AverageAsync(dc => dc.NonNullableDecimal, cancellationToken),
-					            // After fix
-					            Throws.InstanceOf<InvalidOperationException>()
-					                  // Before fix
-					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
-					            "Non nullable decimal average has failed");
+								// After fix
+								Throws.InstanceOf<InvalidOperationException>()
+									  // Before fix
+									  .Or.InnerException.InstanceOf<ArgumentNullException>(),
+								"Non nullable decimal average has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Average(dc => dc.NonNullableDecimal));
 					Assert.That(() => futureNonNullableDec.GetValueAsync(cancellationToken),
-					            Throws.InstanceOf<ArgumentNullException>()
-					                  // When multi-queries are not supported, we have a discrepancy here.
-					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
-					            "Future non nullable decimal average has failed");
+								Throws.InstanceOf<ArgumentNullException>()
+									  // When multi-queries are not supported, we have a discrepancy here.
+									  .Or.InnerException.InstanceOf<ArgumentNullException>(),
+								"Future non nullable decimal average has failed");
 				}
 			}
 		}
@@ -934,11 +934,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(await (futureDec.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future decimal max has failed");
 
 				var dbl = await (dcQuery.MaxAsync(dc => dc.Double, cancellationToken));
-				Assert.That(dbl.HasValue, Is.EqualTo(expectedResult.HasValue),"Double max has failed");
+				Assert.That(dbl.HasValue, Is.EqualTo(expectedResult.HasValue), "Double max has failed");
 				if (expectedResult.HasValue)
 					Assert.That(dbl.Value, Is.EqualTo(expectedResult).Within(0.001d), "Double max has failed");
 				var futureDbl = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.Double));
-				Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).HasValue, Is.EqualTo(expectedResult.HasValue),"Future double max has failed");
+				Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).HasValue, Is.EqualTo(expectedResult.HasValue), "Future double max has failed");
 				if (expectedResult.HasValue)
 					Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).Value, Is.EqualTo(expectedResult).Within(0.001d), "Future double max has failed");
 
@@ -967,15 +967,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				else
 				{
 					Assert.That(() => dcQuery.MaxAsync(dc => dc.NonNullableDecimal, cancellationToken),
-					            // After fix
-					            Throws.InstanceOf<InvalidOperationException>()
-					                  // Before fix
-					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
-					            "Non nullable decimal max has failed");
+								// After fix
+								Throws.InstanceOf<InvalidOperationException>()
+									  // Before fix
+									  .Or.InnerException.InstanceOf<ArgumentNullException>(),
+								"Non nullable decimal max has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Max(dc => dc.NonNullableDecimal));
 					Assert.That(() => futureNonNullableDec.GetValueAsync(cancellationToken),
-					            Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
-					            "Future non nullable decimal max has failed");
+								Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
+								"Future non nullable decimal max has failed");
 				}
 			}
 		}
@@ -1006,11 +1006,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(await (futureDec.GetValueAsync(cancellationToken)), Is.EqualTo(expectedResult), "Future decimal min has failed");
 
 				var dbl = await (dcQuery.MinAsync(dc => dc.Double, cancellationToken));
-				Assert.That(dbl.HasValue, Is.EqualTo(expectedResult.HasValue),"Double min has failed");
+				Assert.That(dbl.HasValue, Is.EqualTo(expectedResult.HasValue), "Double min has failed");
 				if (expectedResult.HasValue)
 					Assert.That(dbl.Value, Is.EqualTo(expectedResult).Within(0.001d), "Double min has failed");
 				var futureDbl = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.Double));
-				Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).HasValue, Is.EqualTo(expectedResult.HasValue),"Future double min has failed");
+				Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).HasValue, Is.EqualTo(expectedResult.HasValue), "Future double min has failed");
 				if (expectedResult.HasValue)
 					Assert.That((await (futureDbl.GetValueAsync(cancellationToken))).Value, Is.EqualTo(expectedResult).Within(0.001d), "Future double min has failed");
 
@@ -1039,15 +1039,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				else
 				{
 					Assert.That(() => dcQuery.MinAsync(dc => dc.NonNullableDecimal, cancellationToken),
-					            // After fix
-					            Throws.InstanceOf<InvalidOperationException>()
-					                  // Before fix
-					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
-					            "Non nullable decimal min has failed");
+								// After fix
+								Throws.InstanceOf<InvalidOperationException>()
+									  // Before fix
+									  .Or.InnerException.InstanceOf<ArgumentNullException>(),
+								"Non nullable decimal min has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Min(dc => dc.NonNullableDecimal));
 					Assert.That(() => futureNonNullableDec.GetValueAsync(cancellationToken),
-					            Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
-					            "Future non nullable decimal min has failed");
+								Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
+								"Future non nullable decimal min has failed");
 				}
 			}
 		}
@@ -1267,7 +1267,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 
 			using (var session = OpenSession())
 			{
-				var result = await (session.Query<object>().SumAsync(o => (int?)2));
+				var result = await (session.Query<object>().SumAsync(o => (int?) 2));
 				Assert.That(result, Is.EqualTo(TotalEntityCount * 2));
 			}
 		}
@@ -1313,15 +1313,15 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				else
 				{
 					Assert.That(() => dcQuery.SumAsync(dc => dc.NonNullableDecimal, cancellationToken),
-					            // After fix
-					            Throws.InstanceOf<InvalidOperationException>()
-					                  // Before fix
-					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
-					            "Non nullable decimal sum has failed");
+								// After fix
+								Throws.InstanceOf<InvalidOperationException>()
+									  // Before fix
+									  .Or.InnerException.InstanceOf<ArgumentNullException>(),
+								"Non nullable decimal sum has failed");
 					var futureNonNullableDec = dcQuery.ToFutureValue(qdc => qdc.Sum(dc => dc.NonNullableDecimal));
 					Assert.That(() => futureNonNullableDec.GetValueAsync(cancellationToken),
-					            Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
-					            "Future non nullable decimal sum has failed");
+								Throws.TargetInvocationException.And.InnerException.InstanceOf<InvalidOperationException>(),
+								"Future non nullable decimal sum has failed");
 				}
 			}
 		}

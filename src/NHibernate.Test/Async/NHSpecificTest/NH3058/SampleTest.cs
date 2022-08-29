@@ -69,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3058
 			using (var tx = s.BeginTransaction())
 			{
 				var book = await (s.LoadAsync<DomainClass>(1));
-				
+
 				Assert.False(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"));
 
 				string value = book.LoadLazyProperty();

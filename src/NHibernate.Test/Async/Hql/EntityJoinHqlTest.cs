@@ -37,7 +37,7 @@ namespace NHibernate.Test.Hql
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				EntityComplex entityComplex = 
+				EntityComplex entityComplex =
 				await (session
 					.CreateQuery("select ex " +
 						"from EntityWithNoAssociation root " +
@@ -57,7 +57,7 @@ namespace NHibernate.Test.Hql
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				EntityComplex entityComplex = 
+				EntityComplex entityComplex =
 				await (session
 					.CreateQuery("select ex " +
 						"from EntityWithNoAssociation root " +
@@ -77,7 +77,7 @@ namespace NHibernate.Test.Hql
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				EntityComplex entityComplex = 
+				EntityComplex entityComplex =
 				await (session
 					.CreateQuery("select ex " +
 						"from EntityWithNoAssociation root " +
@@ -97,7 +97,7 @@ namespace NHibernate.Test.Hql
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				EntityComplex entityComplex = 
+				EntityComplex entityComplex =
 				await (session
 					.CreateQuery("select ex " +
 						"from EntityWithNoAssociation root " +
@@ -138,12 +138,12 @@ namespace NHibernate.Test.Hql
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				var objs =await (session.CreateQuery(
+				var objs = await (session.CreateQuery(
 					"select ejLeftNull, root " +
 					"from EntityWithNoAssociation root " +
 					"left join EntityComplex ejLeftNull with ejLeftNull.Id is null")
 					.SetMaxResults(1).UniqueResultAsync<object[]>());
-				EntityComplex ejLeftNull = (EntityComplex)objs[0];
+				EntityComplex ejLeftNull = (EntityComplex) objs[0];
 				EntityWithNoAssociation root = (EntityWithNoAssociation) objs[1];
 
 				Assert.That(root, Is.Not.Null, "root should not be null (looks like left join didn't work)");
@@ -187,7 +187,7 @@ namespace NHibernate.Test.Hql
 					$"where exists ({subquery})")
 					.UniqueResultAsync<object[]>());
 				root = (EntityWithNoAssociation) objs[0];
-				ej = (EntityComplex)objs[1];
+				ej = (EntityComplex) objs[1];
 
 				Assert.That(NHibernateUtil.IsInitialized(root), Is.True);
 				Assert.That(ej, Is.Not.Null);
@@ -309,7 +309,7 @@ namespace NHibernate.Test.Hql
 				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
 			}
 		}
-		
+
 		[Test]
 		public async Task NullableOneToOneFetchQueryIsNotAffected2Async()
 		{
@@ -335,29 +335,29 @@ namespace NHibernate.Test.Hql
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var nullableOwner1 = new NullableOwner {Name = "1", ManyToOne = await (session.LoadAsync<OneToOneEntity>(Guid.NewGuid()))};
-				var nullableOwner2 = new NullableOwner {Name = "2"};
+				var nullableOwner1 = new NullableOwner { Name = "1", ManyToOne = await (session.LoadAsync<OneToOneEntity>(Guid.NewGuid())) };
+				var nullableOwner2 = new NullableOwner { Name = "2" };
 				await (session.SaveAsync(nullableOwner1));
 				await (session.SaveAsync(nullableOwner2));
 
-				var fullList = await (session.Query<NullableOwner>().Select(x => new {x.Name, ManyToOneId = (Guid?) x.ManyToOne.Id}).ToListAsync());
-				var withValidManyToOneList = await (session.Query<NullableOwner>().Where(x => x.ManyToOne != null).Select(x => new {x.Name, ManyToOneId = (Guid?) x.ManyToOne.Id}).ToListAsync());
+				var fullList = await (session.Query<NullableOwner>().Select(x => new { x.Name, ManyToOneId = (Guid?) x.ManyToOne.Id }).ToListAsync());
+				var withValidManyToOneList = await (session.Query<NullableOwner>().Where(x => x.ManyToOne != null).Select(x => new { x.Name, ManyToOneId = (Guid?) x.ManyToOne.Id }).ToListAsync());
 				var withValidManyToOneList2 = await (session.CreateQuery("from NullableOwner ex where not ex.ManyToOne is null").ListAsync<NullableOwner>());
 				var withNullManyToOneList = await (session.Query<NullableOwner>().Where(x => x.ManyToOne == null).ToListAsync());
 				var withNullManyToOneJoinedList =
 					await ((from x in session.Query<NullableOwner>()
-					from x2 in session.Query<NullableOwner>()
-					where x == x2 && x.ManyToOne == null && x.OneToOne.Name == null
-					select x2).ToListAsync());
+					 from x2 in session.Query<NullableOwner>()
+					 where x == x2 && x.ManyToOne == null && x.OneToOne.Name == null
+					 select x2).ToListAsync());
 
-				var validManyToOne = new OneToOneEntity{Name = "valid"};
+				var validManyToOne = new OneToOneEntity { Name = "valid" };
 				await (session.SaveAsync(validManyToOne));
 				nullableOwner2.ManyToOne = validManyToOne;
 				await (session.FlushAsync());
 
 				//GH-2988
 				var withNullOrValidList = await (session.Query<NullableOwner>().Where(x => x.ManyToOne.Id == validManyToOne.Id || x.ManyToOne == null).ToListAsync());
-				var withNullOrValidList2 = await (session.Query<NullableOwner>().Where(x =>  x.ManyToOne == null || x.ManyToOne.Id == validManyToOne.Id).ToListAsync());
+				var withNullOrValidList2 = await (session.Query<NullableOwner>().Where(x => x.ManyToOne == null || x.ManyToOne.Id == validManyToOne.Id).ToListAsync());
 
 				Assert.That(fullList.Count, Is.EqualTo(2));
 				Assert.That(withValidManyToOneList.Count, Is.EqualTo(0));
@@ -435,7 +435,7 @@ namespace NHibernate.Test.Hql
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				EntityComplex entityComplex = 
+				EntityComplex entityComplex =
 				await (session
 					.CreateQuery("select ex " +
 						"from EntityComplex ex join fetch ex.SameTypeChild stc " +
@@ -454,7 +454,7 @@ namespace NHibernate.Test.Hql
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				EntityComplex entityComplex = 
+				EntityComplex entityComplex =
 				await (session
 					.CreateQuery("select ex " +
 						"from EntityWithNoAssociation root " +
@@ -473,7 +473,7 @@ namespace NHibernate.Test.Hql
 			using (var sqlLog = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
-				EntityComplex entityComplex = 
+				EntityComplex entityComplex =
 				await (session
 					.CreateQuery("select ex " +
 						"from EntityWithNoAssociation root " +
@@ -501,7 +501,7 @@ namespace NHibernate.Test.Hql
 				).ListAsync());
 			}
 		}
-		
+
 		[Test]
 		public async Task WithImpliedEntityJoinAsync()
 		{

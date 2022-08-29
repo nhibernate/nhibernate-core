@@ -46,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3221
 			Todo myTodo;
 			using (ISession session = OpenSession())
 			{
-				var person = new Person("myName2");                
+				var person = new Person("myName2");
 				myTodo = person.AddTodo(new Todo(person) { Name = "I need to get it" });
 				await (session.SaveAsync(person));
 				nicePersonId = person.Id;

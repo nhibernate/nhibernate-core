@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			await (TestInsertAsync());
 
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				ICriteria chiefsCriteria = s.CreateCriteria(typeof(Team));
@@ -85,8 +85,8 @@ namespace NHibernate.Test.NHSpecificTest
 		{
 			await (TestInsertAsync());
 
-			using(ISession s = OpenSession())
-			using(ITransaction t = s.BeginTransaction())
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				Parent bobJones = (Parent) await (s.LoadAsync(typeof(Parent), 1));
 				ISet<Parent> friends = bobJones.AdultFriends;
@@ -109,7 +109,7 @@ namespace NHibernate.Test.NHSpecificTest
 		[Test]
 		public async Task TestInsertAsync()
 		{
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				SexType male = new SexType();
@@ -160,7 +160,7 @@ namespace NHibernate.Test.NHSpecificTest
 				johnnyJones.Dad = bobJones;
 				johnnyJones.Mom = maryJones;
 				johnnyJones.Sex = male;
-				johnnyJones.Friends = new Child[] {brianSmith, sarahSmith};
+				johnnyJones.Friends = new Child[] { brianSmith, sarahSmith };
 				johnnyJones.FavoriteDate = DateTime.Parse("2003-08-16");
 
 				amyJones.Id = 2;
@@ -169,21 +169,21 @@ namespace NHibernate.Test.NHSpecificTest
 				amyJones.Mom = maryJones;
 				amyJones.Sex = female;
 				amyJones.FirstSibling = johnnyJones;
-				amyJones.Friends = new Child[] {johnnyJones, sarahSmith};
+				amyJones.Friends = new Child[] { johnnyJones, sarahSmith };
 
 				brianSmith.Id = 11;
 				brianSmith.FullName = "Brian Smith";
 				brianSmith.Dad = charlieSmith;
 				brianSmith.Mom = cindySmith;
 				brianSmith.Sex = male;
-				brianSmith.Friends = new Child[] {johnnyJones, amyJones, sarahSmith};
+				brianSmith.Friends = new Child[] { johnnyJones, amyJones, sarahSmith };
 
 				sarahSmith.Id = 12;
 				sarahSmith.FullName = "Sarah Smith";
 				sarahSmith.Dad = charlieSmith;
 				sarahSmith.Mom = cindySmith;
 				sarahSmith.Sex = female;
-				sarahSmith.Friends = new Child[] {brianSmith};
+				sarahSmith.Friends = new Child[] { brianSmith };
 
 				Team royals = new Team();
 				royals.Name = "Royals";

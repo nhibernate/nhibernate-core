@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2465
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var applicant = new Entity {IdentityNames = {"name1", "name2"}};
+				var applicant = new Entity { IdentityNames = { "name1", "name2" } };
 				session.Save(applicant);
 
 				transaction.Commit();
@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2465
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var identityNames = new[] {"name1", "x"};
+				var identityNames = new[] { "name1", "x" };
 				await (session
 					.Query<Entity>()
 					.Where(a => a.IdentityNames.Any(n => identityNames.Contains(n)))

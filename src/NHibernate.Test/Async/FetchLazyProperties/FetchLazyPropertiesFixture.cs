@@ -56,7 +56,7 @@ namespace NHibernate.Test.FetchLazyProperties
 				Person lastPerson = null;
 				for (var i = 2; i > 0; i--)
 				{
-					var person = lastPerson =  GeneratePerson(i, lastPerson);
+					var person = lastPerson = GeneratePerson(i, lastPerson);
 					person.Pets.Add(GenerateCat(currAnimalId++, person));
 					person.Pets.Add(GenerateDog(currAnimalId++, person));
 					s.Save(person);
@@ -327,7 +327,7 @@ namespace NHibernate.Test.FetchLazyProperties
 			using (var s = OpenSession())
 			{
 				person = await (s.CreateQuery("from Person p fetch p.Formula left join fetch p.BestFriend bf fetch bf.Address where p.Id = 1")
-				          .UniqueResultAsync<Person>());
+						  .UniqueResultAsync<Person>());
 			}
 
 			AssertFetchFormulaAndManyToOneComponent(person);
@@ -340,9 +340,9 @@ namespace NHibernate.Test.FetchLazyProperties
 			using (var s = OpenSession())
 			{
 				person = await (s.Query<Person>()
-				          .Fetch(o => o.Formula)
-				          .Fetch(o => o.BestFriend).ThenFetch(o => o.Address)
-				          .FirstOrDefaultAsync(o => o.Id == 1));
+						  .Fetch(o => o.Formula)
+						  .Fetch(o => o.BestFriend).ThenFetch(o => o.Address)
+						  .FirstOrDefaultAsync(o => o.Id == 1));
 			}
 
 			AssertFetchFormulaAndManyToOneComponent(person);
@@ -984,8 +984,8 @@ namespace NHibernate.Test.FetchLazyProperties
 		public async Task TestFetchAllPropertiesAfterEntityIsInitializedAsync(bool readOnly)
 		{
 			Person person;
-			using(var s = OpenSession())
-			using(var tx = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
 			{
 				person = await (s.CreateQuery("from Person where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>());
 				var image = person.Image;

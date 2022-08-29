@@ -14,7 +14,7 @@ namespace NHibernate.Test.Generatedkeys.Select
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class SelectGeneratorTestAsync: TestCase
+	public class SelectGeneratorTestAsync : TestCase
 	{
 		protected override string[] Mappings
 		{

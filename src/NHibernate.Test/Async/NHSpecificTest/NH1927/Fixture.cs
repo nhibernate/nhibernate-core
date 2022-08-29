@@ -20,97 +20,97 @@ namespace NHibernate.Test.NHSpecificTest.NH1927
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-        private static readonly DateTime MAX_DATE = new DateTime(3000, 1, 1);
-        private static readonly DateTime VALID_DATE = new DateTime(2000, 1, 1);
+		private static readonly DateTime MAX_DATE = new DateTime(3000, 1, 1);
+		private static readonly DateTime VALID_DATE = new DateTime(2000, 1, 1);
 
-        protected override void OnSetUp()
-        {
-            base.OnSetUp();
-            using (ISession session = OpenSession())
-            {
-                using (ITransaction tx = session.BeginTransaction())
-                {
-                    var joe = new Customer() {ValidUntil = MAX_DATE};
-                    session.Save(joe);
+		protected override void OnSetUp()
+		{
+			base.OnSetUp();
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					var joe = new Customer() { ValidUntil = MAX_DATE };
+					session.Save(joe);
 
-                    tx.Commit();
-                }
-            }
-        }
-
-        protected override void OnTearDown()
-        {
-            using (ISession session = OpenSession())
-            {
-                using (ITransaction tx = session.BeginTransaction())
-                {
-                    session.Delete("from Invoice");
-                    session.Delete("from Customer");
-                    tx.Commit();
-                }
-            }
-            base.OnTearDown();
-        }
-
-	    private delegate Customer QueryFactoryFunc(ISession session);
-
-        private async Task TestQueryAsync(QueryFactoryFunc queryFactoryFunc, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            // test without filter
-            using (ISession session = OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
-            {
-                Assert.That(queryFactoryFunc(session), Is.Not.Null, "failed with filter off");
-                await (tx.CommitAsync(cancellationToken));
-            }
-
-            // test with the validity filter
-            using (ISession session = OpenSession())
-            using (ITransaction tx = session.BeginTransaction())
-            {
-                session.EnableFilter("validity").SetParameter("date", VALID_DATE);
-                Assert.That(queryFactoryFunc(session), Is.Not.Null, "failed with filter on");
-                await (tx.CommitAsync(cancellationToken));
-            }
+					tx.Commit();
+				}
+			}
 		}
 
-        [Test]
-        public async Task CriteriaWithEagerFetchAsync()
-        {
-            await (TestQueryAsync(s => s.CreateCriteria(typeof (Customer))
+		protected override void OnTearDown()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					session.Delete("from Invoice");
+					session.Delete("from Customer");
+					tx.Commit();
+				}
+			}
+			base.OnTearDown();
+		}
+
+		private delegate Customer QueryFactoryFunc(ISession session);
+
+		private async Task TestQueryAsync(QueryFactoryFunc queryFactoryFunc, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			// test without filter
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
+			{
+				Assert.That(queryFactoryFunc(session), Is.Not.Null, "failed with filter off");
+				await (tx.CommitAsync(cancellationToken));
+			}
+
+			// test with the validity filter
+			using (ISession session = OpenSession())
+			using (ITransaction tx = session.BeginTransaction())
+			{
+				session.EnableFilter("validity").SetParameter("date", VALID_DATE);
+				Assert.That(queryFactoryFunc(session), Is.Not.Null, "failed with filter on");
+				await (tx.CommitAsync(cancellationToken));
+			}
+		}
+
+		[Test]
+		public async Task CriteriaWithEagerFetchAsync()
+		{
+			await (TestQueryAsync(s => s.CreateCriteria(typeof(Customer))
 				.Fetch("Invoices")
 				.UniqueResult<Customer>()
 				));
-        }
+		}
 
-        [Test]
-        public async Task CriteriaWithoutEagerFetchAsync()
-        {
-            await (TestQueryAsync(s => s
+		[Test]
+		public async Task CriteriaWithoutEagerFetchAsync()
+		{
+			await (TestQueryAsync(s => s
 				.CreateCriteria(typeof(Customer))
 				.UniqueResult<Customer>()
 				));
-        }
+		}
 
-        [Test]
-        public async Task HqlWithEagerFetchAsync()
-        {
-            await (TestQueryAsync(s => s.CreateQuery(@"
+		[Test]
+		public async Task HqlWithEagerFetchAsync()
+		{
+			await (TestQueryAsync(s => s.CreateQuery(@"
                     select c
                     from Customer c
                         left join fetch c.Invoices"
-                    )
-                    .UniqueResult<Customer>()));
-        }
-        
-        [Test]
-        public async Task HqlWithoutEagerFetchAsync()
-        {
-            await (TestQueryAsync(s => s.CreateQuery(@"
+					)
+					.UniqueResult<Customer>()));
+		}
+
+		[Test]
+		public async Task HqlWithoutEagerFetchAsync()
+		{
+			await (TestQueryAsync(s => s.CreateQuery(@"
                     select c
                     from Customer c"
-                    )
-                    .UniqueResult<Customer>()));
-        }
-    }
+					)
+					.UniqueResult<Customer>()));
+		}
+	}
 }

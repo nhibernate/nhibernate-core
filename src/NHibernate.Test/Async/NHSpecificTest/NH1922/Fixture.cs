@@ -18,47 +18,48 @@ namespace NHibernate.Test.NHSpecificTest.NH1922
 	using System.Threading.Tasks;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
-	{    protected override void OnSetUp()
-        {
-            base.OnSetUp();
-            using (ISession session = OpenSession())
-            {
-                using (ITransaction tx = session.BeginTransaction())
-                {
-                    var joe = new Customer() {ValidUntil = new DateTime(2000,1,1)};
-                    session.Save(joe);
+	{
+		protected override void OnSetUp()
+		{
+			base.OnSetUp();
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					var joe = new Customer() { ValidUntil = new DateTime(2000, 1, 1) };
+					session.Save(joe);
 
-                    tx.Commit();
-                }
-            }
-        }
+					tx.Commit();
+				}
+			}
+		}
 
-        protected override void OnTearDown()
-        {
-            using (ISession session = OpenSession())
-            {
-                using (ITransaction tx = session.BeginTransaction())
-                {
-                    session.Delete("from Customer");
-                    tx.Commit();
-                }
-            }
-            base.OnTearDown();
-        }
+		protected override void OnTearDown()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					session.Delete("from Customer");
+					tx.Commit();
+				}
+			}
+			base.OnTearDown();
+		}
 
-        [Test]
-        public async Task CanExecuteQueryOnStatelessSessionUsingDetachedCriteriaAsync()
-        {
-            using(var stateless = Sfi.OpenStatelessSession())
-            {
-            	var dc = DetachedCriteria.For<Customer>()
-            		.Add(Restrictions.Eq("ValidUntil", new DateTime(2000,1,1)));
+		[Test]
+		public async Task CanExecuteQueryOnStatelessSessionUsingDetachedCriteriaAsync()
+		{
+			using (var stateless = Sfi.OpenStatelessSession())
+			{
+				var dc = DetachedCriteria.For<Customer>()
+					.Add(Restrictions.Eq("ValidUntil", new DateTime(2000, 1, 1)));
 
-            	var cust = await (dc.GetExecutableCriteria(stateless)
+				var cust = await (dc.GetExecutableCriteria(stateless)
 					.UniqueResultAsync());
 
 				Assert.IsNotNull(cust);
-            }
-        }
+			}
+		}
 	}
 }

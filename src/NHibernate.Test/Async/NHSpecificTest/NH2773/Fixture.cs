@@ -14,78 +14,89 @@ using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Util;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.NH2773 {
-   using System.Threading.Tasks;
-   [TestFixture]
-   public class FixtureAsync : BugTestCase {
-      private Guid _entityGuid;
+namespace NHibernate.Test.NHSpecificTest.NH2773
+{
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class FixtureAsync : BugTestCase
+	{
+		private Guid _entityGuid;
 
-      protected override void OnSetUp() {
-         using (ISession session = OpenSession()) {
-            using (ITransaction tx = session.BeginTransaction()) {
-               var entity = new MyEntity();
-               var entity2 = new MyEntity();
-               entity.OtherEntity = entity2;
+		protected override void OnSetUp()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					var entity = new MyEntity();
+					var entity2 = new MyEntity();
+					entity.OtherEntity = entity2;
 
-               session.Save(entity);
-               session.Save(entity2);
+					session.Save(entity);
+					session.Save(entity2);
 
-               _entityGuid = entity.Id;
+					_entityGuid = entity.Id;
 
-               tx.Commit();
-            }
-         }
-      }
+					tx.Commit();
+				}
+			}
+		}
 
-      protected override void OnTearDown() {
-         base.OnTearDown();
+		protected override void OnTearDown()
+		{
+			base.OnTearDown();
 
-         using (ISession session = OpenSession()) {
-            using (ITransaction tx = session.BeginTransaction()) {
-               session.Delete("from MyEntity");
-               tx.Commit();
-            }
-         }
-      }
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					session.Delete("from MyEntity");
+					tx.Commit();
+				}
+			}
+		}
 
-      [Test]
-      public async Task DeserializedSession_ProxyType_ShouldBeEqualToOriginalProxyTypeAsync()
-      {
-	      System.Type originalProxyType = null;
-         System.Type deserializedProxyType = null;
-         ISession deserializedSession = null;
+		[Test]
+		public async Task DeserializedSession_ProxyType_ShouldBeEqualToOriginalProxyTypeAsync()
+		{
+			System.Type originalProxyType = null;
+			System.Type deserializedProxyType = null;
+			ISession deserializedSession = null;
 
-         using (ISession session = OpenSession()) {
-            using (ITransaction tx = session.BeginTransaction()) {
-               var entity = await (session.GetAsync<MyEntity>(_entityGuid));
-               originalProxyType = entity.OtherEntity.GetType();
-               await (tx.CommitAsync());
-            }
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction tx = session.BeginTransaction())
+				{
+					var entity = await (session.GetAsync<MyEntity>(_entityGuid));
+					originalProxyType = entity.OtherEntity.GetType();
+					await (tx.CommitAsync());
+				}
 
-            using (MemoryStream sessionMemoryStream = new MemoryStream())
-            {
-               var formatter = new BinaryFormatter
-               {
+				using (MemoryStream sessionMemoryStream = new MemoryStream())
+				{
+					var formatter = new BinaryFormatter
+					{
 #if !NETFX
 	               SurrogateSelector = new SerializationHelper.SurrogateSelector()	
 #endif
-               };
-               formatter.Serialize(sessionMemoryStream, session);
+					};
+					formatter.Serialize(sessionMemoryStream, session);
 
-               sessionMemoryStream.Seek(0, SeekOrigin.Begin);
-               deserializedSession = (ISession)formatter.Deserialize(sessionMemoryStream);
-            }
-         }
+					sessionMemoryStream.Seek(0, SeekOrigin.Begin);
+					deserializedSession = (ISession) formatter.Deserialize(sessionMemoryStream);
+				}
+			}
 
-         using (ITransaction tx = deserializedSession.BeginTransaction()) {
-            var entity = await (deserializedSession.GetAsync<MyEntity>(_entityGuid));
-            deserializedProxyType = entity.OtherEntity.GetType();
-            await (tx.CommitAsync());
-         }
+			using (ITransaction tx = deserializedSession.BeginTransaction())
+			{
+				var entity = await (deserializedSession.GetAsync<MyEntity>(_entityGuid));
+				deserializedProxyType = entity.OtherEntity.GetType();
+				await (tx.CommitAsync());
+			}
 
-         deserializedSession.Dispose();
+			deserializedSession.Dispose();
 
-         Assert.AreEqual(originalProxyType, deserializedProxyType);
-      }
-   }
+			Assert.AreEqual(originalProxyType, deserializedProxyType);
+		}
+	}
 }

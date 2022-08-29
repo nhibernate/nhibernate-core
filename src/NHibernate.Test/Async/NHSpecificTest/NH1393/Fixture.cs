@@ -60,9 +60,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1393
 			{
 				ISQLFunction arithmaticAddition = new VarArgsSQLFunction("(", "+", ")");
 				ICriteria c =
-					s.CreateCriteria(typeof (Person)).SetProjection(
-						Projections.Sum(Projections.SqlFunction(arithmaticAddition, NHibernateUtil.GuessType(typeof (double)),
-						                                        Projections.Property("IQ"), Projections.Property("ShoeSize"))));
+					s.CreateCriteria(typeof(Person)).SetProjection(
+						Projections.Sum(Projections.SqlFunction(arithmaticAddition, NHibernateUtil.GuessType(typeof(double)),
+																Projections.Property("IQ"), Projections.Property("ShoeSize"))));
 				IList list = await (c.ListAsync());
 				Assert.AreEqual(334, list[0]);
 			}
@@ -75,9 +75,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1393
 			{
 				ISQLFunction arithmaticAddition = new VarArgsSQLFunction("(", "+", ")");
 				ICriteria c =
-					s.CreateCriteria(typeof (Person)).SetProjection(
-						Projections.Avg(Projections.SqlFunction(arithmaticAddition, NHibernateUtil.GuessType(typeof (double)),
-						                                        Projections.Property("IQ"), Projections.Property("ShoeSize"))));
+					s.CreateCriteria(typeof(Person)).SetProjection(
+						Projections.Avg(Projections.SqlFunction(arithmaticAddition, NHibernateUtil.GuessType(typeof(double)),
+																Projections.Property("IQ"), Projections.Property("ShoeSize"))));
 				IList list = await (c.ListAsync());
 				Assert.AreEqual(((double) 334) / 5, list[0]);
 			}
@@ -90,9 +90,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1393
 			{
 				ISQLFunction arithmaticAddition = new VarArgsSQLFunction("(", "+", ")");
 				ICriteria c =
-					s.CreateCriteria(typeof (Person)).SetProjection(
-						Projections.Min(Projections.SqlFunction(arithmaticAddition, NHibernateUtil.GuessType(typeof (double)),
-						                                        Projections.Property("IQ"), Projections.Property("ShoeSize"))));
+					s.CreateCriteria(typeof(Person)).SetProjection(
+						Projections.Min(Projections.SqlFunction(arithmaticAddition, NHibernateUtil.GuessType(typeof(double)),
+																Projections.Property("IQ"), Projections.Property("ShoeSize"))));
 				IList list = await (c.ListAsync());
 				Assert.AreEqual(19, list[0]);
 			}
@@ -105,9 +105,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1393
 			{
 				ISQLFunction arithmaticAddition = new VarArgsSQLFunction("(", "+", ")");
 				ICriteria c =
-					s.CreateCriteria(typeof (Person)).SetProjection(
-						Projections.Max(Projections.SqlFunction(arithmaticAddition, NHibernateUtil.GuessType(typeof (double)),
-						                                        Projections.Property("IQ"), Projections.Property("ShoeSize"))));
+					s.CreateCriteria(typeof(Person)).SetProjection(
+						Projections.Max(Projections.SqlFunction(arithmaticAddition, NHibernateUtil.GuessType(typeof(double)),
+																Projections.Property("IQ"), Projections.Property("ShoeSize"))));
 				IList list = await (c.ListAsync());
 				Assert.AreEqual(108, list[0]);
 			}

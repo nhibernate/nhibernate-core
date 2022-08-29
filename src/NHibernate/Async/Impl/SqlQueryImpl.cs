@@ -95,7 +95,7 @@ namespace NHibernate.Impl
 		public override async Task<int> ExecuteUpdateAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			IDictionary<string,TypedValue> namedParams = NamedParams;
+			IDictionary<string, TypedValue> namedParams = NamedParams;
 			Before();
 			try
 			{

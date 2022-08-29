@@ -296,14 +296,14 @@ namespace NHibernate.Test.Linq
 			using (var t = s.BeginTransaction())
 			{
 				order = (await (s.Query<Order>()
-				         .WithOptions(o => o.SetCacheable(true))
-				         .Fetch(x => x.Customer)
-				         .FetchMany(x => x.OrderLines)
-				         .ThenFetch(x => x.Product)
-				         .ThenFetchMany(x => x.OrderLines)
-				         .Where(x => x.OrderId == 10248)
-				         .ToListAsync()))
-				         .First();
+						 .WithOptions(o => o.SetCacheable(true))
+						 .Fetch(x => x.Customer)
+						 .FetchMany(x => x.OrderLines)
+						 .ThenFetch(x => x.Product)
+						 .ThenFetchMany(x => x.OrderLines)
+						 .Where(x => x.OrderId == 10248)
+						 .ToListAsync()))
+						 .First();
 
 				await (t.CommitAsync());
 			}
@@ -320,14 +320,14 @@ namespace NHibernate.Test.Linq
 			using (var t = s.BeginTransaction())
 			{
 				order = (await (s.Query<Order>()
-				         .WithOptions(o => o.SetCacheable(true))
-				         .Fetch(x => x.Customer)
-				         .FetchMany(x => x.OrderLines)
-				         .ThenFetch(x => x.Product)
-				         .ThenFetchMany(x => x.OrderLines)
-				         .Where(x => x.OrderId == 10248)
-				         .ToListAsync()))
-				         .First();
+						 .WithOptions(o => o.SetCacheable(true))
+						 .Fetch(x => x.Customer)
+						 .FetchMany(x => x.OrderLines)
+						 .ThenFetch(x => x.Product)
+						 .ThenFetchMany(x => x.OrderLines)
+						 .Where(x => x.OrderId == 10248)
+						 .ToListAsync()))
+						 .First();
 				await (t.CommitAsync());
 			}
 
@@ -358,14 +358,14 @@ namespace NHibernate.Test.Linq
 				 .ToFuture();
 
 				order = s.Query<Order>()
-				         .WithOptions(o => o.SetCacheable(true))
-				         .FetchMany(x => x.OrderLines)
-				         .ThenFetch(x => x.Product)
-				         .ThenFetchMany(x => x.OrderLines)
-				         .Where(x => x.OrderId == 10248)
-				         .ToFuture()
-				         .ToList()
-				         .First();
+						 .WithOptions(o => o.SetCacheable(true))
+						 .FetchMany(x => x.OrderLines)
+						 .ThenFetch(x => x.Product)
+						 .ThenFetchMany(x => x.OrderLines)
+						 .Where(x => x.OrderId == 10248)
+						 .ToFuture()
+						 .ToList()
+						 .First();
 
 				await (t.CommitAsync());
 			}
@@ -388,14 +388,14 @@ namespace NHibernate.Test.Linq
 				 .ToFuture();
 
 				order = s.Query<Order>()
-				         .WithOptions(o => o.SetCacheable(true))
-				         .FetchMany(x => x.OrderLines)
-				         .ThenFetch(x => x.Product)
-				         .ThenFetchMany(x => x.OrderLines)
-				         .Where(x => x.OrderId == 10248)
-				         .ToFuture()
-				         .ToList()
-				         .First();
+						 .WithOptions(o => o.SetCacheable(true))
+						 .FetchMany(x => x.OrderLines)
+						 .ThenFetch(x => x.Product)
+						 .ThenFetchMany(x => x.OrderLines)
+						 .Where(x => x.OrderId == 10248)
+						 .ToFuture()
+						 .ToList()
+						 .First();
 
 				await (t.CommitAsync());
 			}
@@ -407,14 +407,14 @@ namespace NHibernate.Test.Linq
 			Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(0), "Unexpected cache miss count");
 			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(2), "Unexpected cache hit count");
 		}
-		
+
 		[Explicit("Not working. dto.Customer retrieved from cache as uninitialized proxy")]
 		[Test]
 		public async Task ProjectedEntitiesAreCachableAsync()
 		{
 			Sfi.Statistics.Clear();
 			await (Sfi.EvictQueriesAsync());
-			var	dto = await (session.Query<Order>()
+			var dto = await (session.Query<Order>()
 						.WithOptions(o => o.SetCacheable(true))
 						.Where(x => x.OrderId == 10248)
 						.Select(x => new { x.Customer, Order = x })

@@ -9,8 +9,8 @@
 
 
 using NHibernate.Cfg;
-using NUnit.Framework;
 using NHibernate.Stat;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.Evicting
 {
@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 			{
 				session.Save(new Employee
 				{
-                    Id = 1,
+					Id = 1,
 					FirstName = "a",
 					LastName = "b"
 				});
@@ -101,7 +101,7 @@ namespace NHibernate.Test.NHSpecificTest.Evicting
 
 					await (tx2.CommitAsync());
 				}
-				
+
 				await (tx1.CommitAsync());
 			}
 		}

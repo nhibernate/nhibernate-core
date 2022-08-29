@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
@@ -20,10 +21,9 @@ using NHibernate.Impl;
 using NHibernate.Loader.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Collections.Generic;
-using NHibernate.SqlTypes;
 
 namespace NHibernate.Persister.Collection
 {

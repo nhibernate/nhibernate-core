@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2626
 		[Test]
 		public async Task SubqueryWithSelectOnSubclassPropertyAsync()
 		{
-			using(var logSpy = new SqlLogSpy())
+			using (var logSpy = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
 				var capabilitiesQuery = session
@@ -59,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2626
 		[Test]
 		public async Task SubqueryWithOfTypeAndSelectOnSubclassPropertyAsync()
 		{
-			using(var logSpy = new SqlLogSpy())
+			using (var logSpy = new SqlLogSpy())
 			using (var session = OpenSession())
 			{
 				var capabilitiesQuery = session

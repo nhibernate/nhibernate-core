@@ -135,17 +135,17 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 			{
 				EnableFilters(s);
 				resCriteria = await (s.CreateCriteria(typeof(Parent), "p")
-				               .CreateCriteria("Child", "c")
-				               .Fetch("Child")
-				               .Add(Restrictions.Eq("p.ParentString", "a"))
-				               .Add(Restrictions.Eq("c.ChildString", "b"))
-				               .ListAsync<Parent>());
+							   .CreateCriteria("Child", "c")
+							   .Fetch("Child")
+							   .Add(Restrictions.Eq("p.ParentString", "a"))
+							   .Add(Restrictions.Eq("c.ChildString", "b"))
+							   .ListAsync<Parent>());
 
 				resHql = await (s.CreateQuery(
-					          @"select p from Parent p
+							  @"select p from Parent p
 				                join fetch p.Child c
 				                where p.ParentString='a' and c.ChildString='b'")
-				          .ListAsync<Parent>());
+						  .ListAsync<Parent>());
 			}
 			Assert.That(resCriteria.Count, Is.EqualTo(1));
 			Assert.That(resCriteria[0].Child, Is.Not.Null);
@@ -254,11 +254,11 @@ namespace NHibernate.Test.NHSpecificTest.ManyToOneFilters20Behaviour
 				 .SetParameter("active", true);
 
 				var resCriteria = await (s.CreateCriteria(typeof(Parent))
-				                   .Fetch("Address")
-				                   .ListAsync<Parent>());
+								   .Fetch("Address")
+								   .ListAsync<Parent>());
 
 				var resHql = await (s.CreateQuery("select p from Parent p join p.Address")
-				              .ListAsync<Parent>());
+							  .ListAsync<Parent>());
 
 				Assert.That(resCriteria.Count, Is.EqualTo(1));
 				Assert.That(resCriteria[0].Address, Is.Not.Null);

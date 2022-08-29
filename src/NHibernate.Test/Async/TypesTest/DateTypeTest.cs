@@ -8,11 +8,11 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections.Generic;
 using NHibernate.Dialect;
 using NHibernate.Type;
 using NUnit.Framework;
-using System;
 
 namespace NHibernate.Test.TypesTest
 {
@@ -69,7 +69,7 @@ namespace NHibernate.Test.TypesTest
 			var basic = new DateTimeClass { Id = AdditionalDateId, Value = expected.AddHours(1) };
 			using (var s = OpenSession())
 			{
-				await (s.SaveAsync(basic, cancellationToken)); 
+				await (s.SaveAsync(basic, cancellationToken));
 				await (s.FlushAsync(cancellationToken));
 			}
 			using (var s = OpenSession())

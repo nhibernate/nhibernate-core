@@ -20,15 +20,15 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine.Query
 {
-    using System.Threading.Tasks;
-    using System.Threading;
-    public partial interface IQueryPlan
-    {
-        Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results, CancellationToken cancellationToken);
-        Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, CancellationToken cancellationToken);
-        Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
-        Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
-    }
+	using System.Threading.Tasks;
+	using System.Threading;
+	public partial interface IQueryPlan
+	{
+		Task PerformListAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results, CancellationToken cancellationToken);
+		Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, CancellationToken cancellationToken);
+		Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
+		Task<IEnumerable> PerformIterateAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken);
+	}
 	public partial class HQLQueryPlan : IQueryPlan
 	{
 
@@ -131,24 +131,24 @@ namespace NHibernate.Engine.Query
 			return (await (PerformIterateAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false)).CastOrDefault<T>();
 		}
 
-        public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
-        {
-               cancellationToken.ThrowIfCancellationRequested();
-            if (Log.IsDebugEnabled())
-            {
-                Log.Debug("executeUpdate: {0}", _sourceQuery);
-                queryParameters.LogParameters(session.Factory);
-            }
-            if (Translators.Length != 1)
-            {
-                Log.Warn("manipulation query [{0}] resulted in [{1}] split queries", _sourceQuery, Translators.Length);
-            }
-            int result = 0;
-            for (int i = 0; i < Translators.Length; i++)
-            {
-                result += await (Translators[i].ExecuteUpdateAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false);
-            }
-            return result;
-        }
-    }
+		public async Task<int> PerformExecuteUpdateAsync(QueryParameters queryParameters, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (Log.IsDebugEnabled())
+			{
+				Log.Debug("executeUpdate: {0}", _sourceQuery);
+				queryParameters.LogParameters(session.Factory);
+			}
+			if (Translators.Length != 1)
+			{
+				Log.Warn("manipulation query [{0}] resulted in [{1}] split queries", _sourceQuery, Translators.Length);
+			}
+			int result = 0;
+			for (int i = 0; i < Translators.Length; i++)
+			{
+				result += await (Translators[i].ExecuteUpdateAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false);
+			}
+			return result;
+		}
+	}
 }

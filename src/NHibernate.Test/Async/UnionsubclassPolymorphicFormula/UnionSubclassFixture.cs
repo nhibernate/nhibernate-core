@@ -8,8 +8,8 @@
 //------------------------------------------------------------------------------
 
 
-using NUnit.Framework;
 using System.Collections;
+using NUnit.Framework;
 
 namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 {
@@ -43,7 +43,7 @@ namespace NHibernate.Test.UnionsubclassPolymorphicFormula
 					await (s.SaveAsync(person));
 
 					var result = await (s.QueryOver<Party>().Where(p => p.Name == "Mark Mannson").SingleOrDefaultAsync());
-					
+
 					Assert.NotNull(result);
 					await (s.DeleteAsync(result));
 					await (t.CommitAsync());

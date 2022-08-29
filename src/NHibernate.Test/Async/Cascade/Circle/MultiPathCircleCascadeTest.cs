@@ -51,7 +51,7 @@ namespace NHibernate.Test.Cascade.Circle
 		{
 			get { return new[] { "Cascade.Circle.MultiPathCircleCascade.hbm.xml" }; }
 		}
-		
+
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
 			base.Configure(configuration);
@@ -63,20 +63,20 @@ namespace NHibernate.Test.Cascade.Circle
 		{
 			return !(dialect is Dialect.FirebirdDialect); // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
 		}
-		
+
 		[Test]
 		public async Task MergeEntityWithNonNullableTransientEntityAsync()
 		{
 			Route route = await (this.GetUpdatedDetachedEntityAsync());
-	
+
 			Node node = route.Nodes.First();
 			route.Nodes.Remove(node);
-	
+
 			Route routeNew = new Route();
 			routeNew.Name = "new route";
 			routeNew.Nodes.Add(node);
 			node.Route = routeNew;
-	
+
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
@@ -88,13 +88,13 @@ namespace NHibernate.Test.Cascade.Circle
 				catch (Exception ex)
 				{
 					Assert.That(ex, Is.TypeOf(typeof(TransientObjectException)));
-					
-//					if (((SessionImplementor)session).Factory.Settings.isCheckNullability() ) {
-//						assertTrue( ex instanceof TransientObjectException );
-//					}
-//					else {
-//						assertTrue( ex instanceof JDBCException );
-//					}
+
+					//					if (((SessionImplementor)session).Factory.Settings.isCheckNullability() ) {
+					//						assertTrue( ex instanceof TransientObjectException );
+					//					}
+					//					else {
+					//						assertTrue( ex instanceof JDBCException );
+					//					}
 				}
 			}
 		}
@@ -106,7 +106,7 @@ namespace NHibernate.Test.Cascade.Circle
 			Node node = route.Nodes.First();
 			route.Nodes.Remove(node);
 			node.Route = null;
-	
+
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
@@ -118,23 +118,23 @@ namespace NHibernate.Test.Cascade.Circle
 				catch (Exception ex)
 				{
 					Assert.That(ex, Is.TypeOf(typeof(PropertyValueException)));
-					
-//					if ( ( ( SessionImplementor ) s ).getFactory().getSettings().isCheckNullability() ) {
-//						assertTrue( ex instanceof PropertyValueException );
-//					}
-//					else {
-//						assertTrue( ex instanceof JDBCException );
-//					}
+
+					//					if ( ( ( SessionImplementor ) s ).getFactory().getSettings().isCheckNullability() ) {
+					//						assertTrue( ex instanceof PropertyValueException );
+					//					}
+					//					else {
+					//						assertTrue( ex instanceof JDBCException );
+					//					}
 				}
 			}
 		}
-		
+
 		public async Task MergeEntityWithNonNullablePropSetToNullAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			Route route = await (GetUpdatedDetachedEntityAsync(cancellationToken));
 			Node node = route.Nodes.First();
 			node.Name = null;
-	
+
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
@@ -147,13 +147,13 @@ namespace NHibernate.Test.Cascade.Circle
 				catch (Exception ex)
 				{
 					Assert.That(ex, Is.TypeOf(typeof(PropertyValueException)));
-					
-//					if ( ( ( SessionImplementor ) s ).getFactory().getSettings().isCheckNullability() ) {
-//						assertTrue( ex instanceof PropertyValueException );
-//					}
-//					else {
-//						assertTrue( ex instanceof JDBCException );
-//					}
+
+					//					if ( ( ( SessionImplementor ) s ).getFactory().getSettings().isCheckNullability() ) {
+					//						assertTrue( ex instanceof PropertyValueException );
+					//					}
+					//					else {
+					//						assertTrue( ex instanceof JDBCException );
+					//					}
 				}
 			}
 		}
@@ -264,12 +264,12 @@ namespace NHibernate.Test.Cascade.Circle
 				await (t.CommitAsync());
 			}
 		}
-		
+
 		[Test]
 		public async Task MergeTransportAsync()
 		{
 			Route route = await (GetUpdatedDetachedEntityAsync());
-	
+
 			ClearCounts();
 
 			using (ISession s = OpenSession())
@@ -287,7 +287,7 @@ namespace NHibernate.Test.Cascade.Circle
 
 				await (t.CommitAsync());
 			}
-	
+
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 
@@ -313,42 +313,42 @@ namespace NHibernate.Test.Cascade.Circle
 			}
 			route.Name = "new routeA";
 			route.TransientField = "sfnaouisrbn";
-	
+
 			Tour tour = new Tour();
 			tour.Name = "tourB";
-	
+
 			Transport transport = new Transport();
 			transport.Name = "transportB";
-	
+
 			Node pickupNode = new Node();
 			pickupNode.Name = "pickupNodeB";
-	
+
 			Node deliveryNode = new Node();
 			deliveryNode.Name = "deliveryNodeB";
-	
+
 			pickupNode.Route = route;
 			pickupNode.Tour = tour;
 			pickupNode.PickupTransports.Add(transport);
 			pickupNode.TransientField = "pickup node aaaaaaaaaaa";
-	
+
 			deliveryNode.Route = route;
 			deliveryNode.Tour = tour;
 			deliveryNode.DeliveryTransports.Add(transport);
 			deliveryNode.TransientField = "delivery node aaaaaaaaa";
-	
+
 			tour.Nodes.Add(pickupNode);
 			tour.Nodes.Add(deliveryNode);
-	
+
 			route.Nodes.Add(pickupNode);
 			route.Nodes.Add(deliveryNode);
-	
+
 			transport.PickupNode = pickupNode;
 			transport.DeliveryNode = deliveryNode;
 			transport.TransientField = "aaaaaaaaaaaaaa";
-	
+
 			return route;
 		}
-		
+
 		private void CheckResults(Route route, bool isRouteUpdated)
 		{
 			// since merge is not cascaded to route, this method needs to
@@ -357,12 +357,12 @@ namespace NHibernate.Test.Cascade.Circle
 			{
 				Assert.That(route.Name, Is.EqualTo("new routeA"));
 			}
-			
+
 			Assert.That(route.Nodes.Count, Is.EqualTo(2));
 			Node deliveryNode = null;
 			Node pickupNode = null;
-			
-			foreach(Node node in route.Nodes)
+
+			foreach (Node node in route.Nodes)
 			{
 				if ("deliveryNodeB".Equals(node.Name))
 				{
@@ -384,32 +384,32 @@ namespace NHibernate.Test.Cascade.Circle
 			Assert.That(deliveryNode.PickupTransports.Count, Is.EqualTo(0));
 			Assert.That(deliveryNode.Tour, Is.Not.Null);
 			Assert.That(deliveryNode.TransientField, Is.EqualTo("node original value"));
-	
+
 			Assert.That(pickupNode, Is.Not.Null);
 			Assert.That(pickupNode.Route, Is.SameAs(route));
 			Assert.That(pickupNode.DeliveryTransports.Count, Is.EqualTo(0));
 			Assert.That(pickupNode.PickupTransports.Count, Is.EqualTo(1));
 			Assert.That(pickupNode.Tour, Is.Not.Null);
 			Assert.That(pickupNode.TransientField, Is.EqualTo("node original value"));
-	
+
 			Assert.That(deliveryNode.NodeId.Equals(pickupNode.NodeId), Is.False);
 			Assert.That(deliveryNode.Tour, Is.SameAs(pickupNode.Tour));
 			Assert.That(deliveryNode.DeliveryTransports.First(), Is.SameAs(pickupNode.PickupTransports.First()));
-	
+
 			Tour tour = deliveryNode.Tour;
 			Transport transport = deliveryNode.DeliveryTransports.First();
-	
+
 			Assert.That(tour.Name, Is.EqualTo("tourB"));
 			Assert.That(tour.Nodes.Count, Is.EqualTo(2));
 			Assert.That(tour.Nodes.Contains(deliveryNode), Is.True);
 			Assert.That(tour.Nodes.Contains(pickupNode), Is.True);
-	
+
 			Assert.That(transport.Name, Is.EqualTo("transportB"));
 			Assert.That(transport.DeliveryNode, Is.SameAs(deliveryNode));
 			Assert.That(transport.PickupNode, Is.SameAs(pickupNode));
 			Assert.That(transport.TransientField, Is.EqualTo("transport original value"));
 		}
-		
+
 		protected override void OnTearDown()
 		{
 			using (ISession session = OpenSession())
@@ -423,22 +423,22 @@ namespace NHibernate.Test.Cascade.Circle
 			}
 			base.OnTearDown();
 		}
-		
+
 		protected void ClearCounts()
 		{
 			Sfi.Statistics.Clear();
 		}
-		
+
 		protected void AssertInsertCount(long expected)
 		{
 			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(expected), "unexpected insert count");
 		}
-		
+
 		protected void AssertUpdateCount(long expected)
 		{
 			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(expected), "unexpected update count");
 		}
-		
+
 		protected void AssertDeleteCount(long expected)
 		{
 			Assert.That(Sfi.Statistics.EntityDeleteCount, Is.EqualTo(expected), "unexpected delete count");

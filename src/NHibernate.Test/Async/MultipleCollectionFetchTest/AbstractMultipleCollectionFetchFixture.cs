@@ -66,7 +66,7 @@ namespace NHibernate.Test.MultipleCollectionFetchTest
 		protected virtual async Task RunLinearJoinFetchTestAsync(Person parent, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (ISession s = OpenSession())
-			using(ITransaction tx = s.BeginTransaction())
+			using (ITransaction tx = s.BeginTransaction())
 			{
 				await (s.SaveAsync(parent, cancellationToken));
 				await (tx.CommitAsync(cancellationToken));

@@ -17,7 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2166
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync: TestCase
+	public class FixtureAsync : TestCase
 	{
 		protected override string[] Mappings
 		{

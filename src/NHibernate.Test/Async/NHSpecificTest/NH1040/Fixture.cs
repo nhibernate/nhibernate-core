@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1040
 			using (session.BeginTransaction())
 			{
 				var result = await ((from e in session.Query<Consumer>()
-							select e).FirstAsync());
+							  select e).FirstAsync());
 
 				Assert.That(result.Child, Is.Not.Null);
 				Assert.DoesNotThrowAsync(() => NHibernateUtil.InitializeAsync(result.Child));
@@ -67,7 +67,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1040
 			using (session.BeginTransaction())
 			{
 				var result = await ((from e in session.Query<Consumer>().Fetch(x => x.Child)
-							select e).FirstAsync());
+							  select e).FirstAsync());
 
 				Assert.That(result.Child, Is.Not.Null);
 				Assert.That(NHibernateUtil.IsInitialized(result.Child), Is.True);
@@ -81,7 +81,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1040
 			using (session.BeginTransaction())
 			{
 				var result = await ((from e in session.Query<Consumer>().Fetch(x => x.Child)
-							select e).FirstAsync());
+							  select e).FirstAsync());
 
 				Assert.That(result.Child, Is.Not.Null);
 				Assert.That(NHibernateUtil.IsInitialized(result.Child), Is.True);

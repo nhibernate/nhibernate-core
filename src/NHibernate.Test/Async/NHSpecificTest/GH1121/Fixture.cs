@@ -63,7 +63,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1121
 				Assert.That(result[0].MyColor, Is.EqualTo(2));
 			}
 		}
-		
+
 		[Test]
 		public async Task CanCastEnumWithDifferentUnderlyingTypeAsync()
 		{

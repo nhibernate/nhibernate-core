@@ -71,7 +71,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH2825
 				session.Delete("from Child");
 				session.Delete("from Parent");
 				transaction.Commit();
-			}	
+			}
 		}
 
 		[Test]

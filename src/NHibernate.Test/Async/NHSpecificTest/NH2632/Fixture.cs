@@ -19,7 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2632
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync: TestCaseMappingByCode
+	public class FixtureAsync : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
@@ -45,9 +45,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2632
 			});
 			mapper.Class<Order>(cm =>
 								{
-														cm.Id(x => x.Id, m => { });
-														cm.Property(x => x.Date);
-														cm.ManyToOne(x => x.Customer, map => map.Column("CUSTOMERID"));
+									cm.Id(x => x.Id, m => { });
+									cm.Property(x => x.Date);
+									cm.ManyToOne(x => x.Customer, map => map.Column("CUSTOMERID"));
 								});
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
@@ -69,7 +69,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2632
 				{
 					using (ITransaction t = s.BeginTransaction())
 					{
-						var customer = new Customer { Name="Zombi", Address = "Bah?!??"};
+						var customer = new Customer { Name = "Zombi", Address = "Bah?!??" };
 						var order = new Order { Date = DateTime.Today, Customer = customer };
 						customerId = s.Save(customer);
 						s.Save(order);

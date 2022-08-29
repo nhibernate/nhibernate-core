@@ -73,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2880
 				SurrogateSelector = new SerializationHelper.SurrogateSelector()
 #endif
 			};
-			ISession restoredSession = (ISession)reader.Deserialize(sessionMemoryStream);
+			ISession restoredSession = (ISession) reader.Deserialize(sessionMemoryStream);
 
 			Entity1 e1 = await (restoredSession.GetAsync<Entity1>(_id));
 			Entity2 e2 = e1.Entity2;

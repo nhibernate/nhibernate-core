@@ -10,16 +10,15 @@
 
 using System;
 using System.Collections;
-
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
 
 namespace NHibernate.Id
 {

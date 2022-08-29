@@ -85,15 +85,15 @@ namespace NHibernate.Test.QueryTest
 			await (DoMutiQueryAndAssertAsync());
 
 			var cacheHashtable = GetHashTableUsedAsQueryCache(Sfi);
-			var cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
-			var cachedQuery = (IList)cachedListEntry[1];
+			var cachedListEntry = (IList) new ArrayList(cacheHashtable.Values)[0];
+			var cachedQuery = (IList) cachedListEntry[1];
 
-			var firstQueryResults = (IList)cachedQuery[0];
+			var firstQueryResults = (IList) cachedQuery[0];
 			firstQueryResults.Clear();
 			firstQueryResults.Add(3);
 			firstQueryResults.Add(4);
 
-			var secondQueryResults = (IList)cachedQuery[1];
+			var secondQueryResults = (IList) cachedQuery[1];
 			secondQueryResults[0] = 2L;
 
 			using (var s = Sfi.OpenSession())
@@ -106,9 +106,9 @@ namespace NHibernate.Test.QueryTest
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
 				var results = await (multiQuery.ListAsync());
-				var items = (IList)results[0];
+				var items = (IList) results[0];
 				Assert.AreEqual(2, items.Count);
-				var count = (long)((IList)results[1])[0];
+				var count = (long) ((IList) results[1])[0];
 				Assert.AreEqual(2L, count);
 			}
 		}
@@ -155,9 +155,9 @@ namespace NHibernate.Test.QueryTest
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
 				var results = await (multiQuery.ListAsync());
-				var items = (IList)results[0];
+				var items = (IList) results[0];
 				Assert.AreEqual(89, items.Count);
-				var count = (long)((IList)results[1])[0];
+				var count = (long) ((IList) results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
 
@@ -171,10 +171,10 @@ namespace NHibernate.Test.QueryTest
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
 				var results = await (multiQuery.ListAsync());
-				var items = (IList)results[0];
+				var items = (IList) results[0];
 				Assert.AreEqual(79, items.Count,
 								"Should have gotten different result here, because the paging is different");
-				var count = (long)((IList)results[1])[0];
+				var count = (long) ((IList) results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
 		}
@@ -204,9 +204,9 @@ namespace NHibernate.Test.QueryTest
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
 				var results = await (multiQuery.ListAsync(cancellationToken));
-				var items = (IList)results[0];
+				var items = (IList) results[0];
 				Assert.AreEqual(89, items.Count);
-				var count = (long)((IList)results[1])[0];
+				var count = (long) ((IList) results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
 		}
@@ -233,10 +233,10 @@ namespace NHibernate.Test.QueryTest
 		public static Hashtable GetHashTableUsedAsQueryCache(ISessionFactoryImplementor factory)
 		{
 			Hashtable hashTable = null;
-			var cache = (HashtableCache)factory.GetQueryCache(null).Cache;
+			var cache = (HashtableCache) factory.GetQueryCache(null).Cache;
 			var fieldInfo = typeof(HashtableCache).GetField("hashtable", BindingFlags.Instance | BindingFlags.NonPublic);
 			if (fieldInfo != null)
-				hashTable = (Hashtable)fieldInfo.GetValue(cache);
+				hashTable = (Hashtable) fieldInfo.GetValue(cache);
 			return hashTable;
 		}
 
@@ -256,9 +256,9 @@ namespace NHibernate.Test.QueryTest
 					.Add(countItems)
 					.SetInt32("id", 50)
 					.ListAsync());
-				var items = (IList)results[0];
+				var items = (IList) results[0];
 				Assert.AreEqual(89, items.Count);
-				var count = (long)((IList)results[1])[0];
+				var count = (long) ((IList) results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
 		}
@@ -282,12 +282,12 @@ namespace NHibernate.Test.QueryTest
 					.SetParameterList("items", new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 })
 					.ListAsync());
 
-				var items = (IList)results[0];
-				var fromDb = (Item)items[0];
+				var items = (IList) results[0];
+				var fromDb = (Item) items[0];
 				Assert.AreEqual(1, fromDb.Id);
 
-				var counts = (IList)results[1];
-				var count = (long)counts[0];
+				var counts = (IList) results[1];
+				var count = (long) counts[0];
 				Assert.AreEqual(1L, count);
 			}
 		}
@@ -312,12 +312,12 @@ namespace NHibernate.Test.QueryTest
 					.Add(getItems)
 					.Add(countItems)
 					.ListAsync());
-				var items = (IList)results[0];
-				var fromDb = (Item)items[0];
+				var items = (IList) results[0];
+				var fromDb = (Item) items[0];
 				Assert.AreEqual(1, fromDb.Id);
 
-				var counts = (IList)results[1];
-				var count = (long)counts[0];
+				var counts = (IList) results[1];
+				var count = (long) counts[0];
 				Assert.AreEqual(1L, count);
 			}
 		}
@@ -338,8 +338,8 @@ namespace NHibernate.Test.QueryTest
 
 				multiQuery.Add("first", firstQuery).Add("second", secondQuery);
 
-				var secondResult = (IList)await (multiQuery.GetResultAsync("second"));
-				var firstResult = (IList)await (multiQuery.GetResultAsync("first"));
+				var secondResult = (IList) await (multiQuery.GetResultAsync("second"));
+				var firstResult = (IList) await (multiQuery.GetResultAsync("first"));
 
 				Assert.Greater(secondResult.Count, firstResult.Count);
 			}
@@ -356,7 +356,7 @@ namespace NHibernate.Test.QueryTest
 
 				try
 				{
-					var firstResult = (IList)await (multiQuery.GetResultAsync("unknownKey"));
+					var firstResult = (IList) await (multiQuery.GetResultAsync("unknownKey"));
 					Assert.Fail("This should've thrown an InvalidOperationException");
 				}
 				catch (InvalidOperationException)
@@ -422,7 +422,7 @@ namespace NHibernate.Test.QueryTest
 				await (multiCriteria.ListAsync());
 
 				Assert.IsTrue(transformer.WasTransformTupleCalled, "Transform Tuple was not called");
-				Assert.IsTrue(transformer.WasTransformListCalled,"Transform List was not called");
+				Assert.IsTrue(transformer.WasTransformListCalled, "Transform List was not called");
 			}
 		}
 
@@ -450,8 +450,8 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var item1 = new Item { Id = 1,  Name = "test item"};
-				var item2 = new Item { Id = 2,  Name = "test child", Parent = item1 };
+				var item1 = new Item { Id = 1, Name = "test item" };
+				var item2 = new Item { Id = 2, Name = "test child", Parent = item1 };
 				await (s.SaveAsync(item1));
 				await (s.SaveAsync(item2));
 

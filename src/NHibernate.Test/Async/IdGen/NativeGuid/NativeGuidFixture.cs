@@ -24,7 +24,7 @@ namespace NHibernate.Test.IdGen.NativeGuid
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"IdGen.NativeGuid.NativeGuidPoid.hbm.xml"}; }
+			get { return new[] { "IdGen.NativeGuid.NativeGuidPoid.hbm.xml" }; }
 		}
 
 		[Test]

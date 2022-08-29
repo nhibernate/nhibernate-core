@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1408
 		[Test]
 		public async Task TestAsync()
 		{
-			DetachedCriteria criteria = DetachedCriteria.For(typeof (DbResource));
+			DetachedCriteria criteria = DetachedCriteria.For(typeof(DbResource));
 			DetachedCriteria keyCriteria = criteria.CreateCriteria("keys");
 			keyCriteria.Add(Restrictions.Eq("Key0", "2"));
 			keyCriteria.Add(Restrictions.Eq("Key1", "en"));

@@ -23,7 +23,7 @@ namespace NHibernate.Test.Any
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"Any.Person.hbm.xml"}; }
+			get { return new string[] { "Any.Person.hbm.xml" }; }
 		}
 
 		protected override string CacheConcurrencyStrategy

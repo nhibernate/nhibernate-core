@@ -216,6 +216,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3932
 			configuration.SetProperty(Cfg.Environment.GenerateStatistics, "true");
 		}
 
-		protected override string[] Mappings => new[] {"Model.Mappings.hbm.xml"};
+		protected override string[] Mappings => new[] { "Model.Mappings.hbm.xml" };
 	}
 }

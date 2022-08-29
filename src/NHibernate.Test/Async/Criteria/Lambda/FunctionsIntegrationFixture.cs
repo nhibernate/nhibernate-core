@@ -102,7 +102,7 @@ namespace NHibernate.Test.Criteria.Lambda
 			{
 				var roundedValue = await (s.QueryOver<Person>()
 									.Where(p => p.Name == "p1")
-									.Select(p => Math.Round(p.Age.Sqrt() , 3))
+									.Select(p => Math.Round(p.Age.Sqrt(), 3))
 									.SingleOrDefaultAsync<object>());
 
 				Assert.That(roundedValue, Is.InstanceOf<double>());

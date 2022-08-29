@@ -13,10 +13,10 @@ using System.Collections;
 using System.Data;
 using System.Linq;
 using NHibernate.Driver;
+using NHibernate.Linq;
 using NHibernate.Type;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
-using NHibernate.Linq;
 
 namespace NHibernate.Test.NHSpecificTest.Dates
 {

@@ -100,7 +100,7 @@ namespace NHibernate.Action
 			IPostDeleteEventListener[] postListeners = Session.Listeners.PostDeleteEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostDeleteEvent postEvent = new PostDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				PostDeleteEvent postEvent = new PostDeleteEvent(Instance, Id, state, Persister, (IEventSource) Session);
 				foreach (IPostDeleteEventListener listener in postListeners)
 				{
 					await (listener.OnPostDeleteAsync(postEvent, cancellationToken)).ConfigureAwait(false);
@@ -115,7 +115,7 @@ namespace NHibernate.Action
 			bool veto = false;
 			if (preListeners.Length > 0)
 			{
-				var preEvent = new PreDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				var preEvent = new PreDeleteEvent(Instance, Id, state, Persister, (IEventSource) Session);
 				foreach (IPreDeleteEventListener listener in preListeners)
 				{
 					veto |= await (listener.OnPreDeleteAsync(preEvent, cancellationToken)).ConfigureAwait(false);
@@ -123,7 +123,7 @@ namespace NHibernate.Action
 			}
 			return veto;
 		}
-		
+
 		protected override async Task AfterTransactionCompletionProcessImplAsync(bool success, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -144,7 +144,7 @@ namespace NHibernate.Action
 			IPostDeleteEventListener[] postListeners = Session.Listeners.PostCommitDeleteEventListeners;
 			if (postListeners.Length > 0)
 			{
-				PostDeleteEvent postEvent = new PostDeleteEvent(Instance, Id, state, Persister, (IEventSource)Session);
+				PostDeleteEvent postEvent = new PostDeleteEvent(Instance, Id, state, Persister, (IEventSource) Session);
 				foreach (IPostDeleteEventListener listener in postListeners)
 				{
 					await (listener.OnPostDeleteAsync(postEvent, cancellationToken)).ConfigureAwait(false);

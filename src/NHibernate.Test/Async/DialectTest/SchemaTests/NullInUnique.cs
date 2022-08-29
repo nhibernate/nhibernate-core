@@ -17,7 +17,7 @@ namespace NHibernate.Test.DialectTest.SchemaTests
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class NullInUniqueFixtureAsync: TestCaseMappingByCode
+	public class NullInUniqueFixtureAsync : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
@@ -57,9 +57,9 @@ namespace NHibernate.Test.DialectTest.SchemaTests
 			using (var transaction = session.BeginTransaction())
 			{
 				await (session.SaveAsync(new Entity { Name1 = "1" }));
-				await (session.SaveAsync(new Entity { Name = "N", Name1 = "1", Name2 = "2"}));
-				await (session.SaveAsync(new Entity { Name = "Na", Name1 = "2", Name2 = "1"}));
-				await (session.SaveAsync(new Entity { Name = "Nam", Name1 = "2"}));
+				await (session.SaveAsync(new Entity { Name = "N", Name1 = "1", Name2 = "2" }));
+				await (session.SaveAsync(new Entity { Name = "Na", Name1 = "2", Name2 = "1" }));
+				await (session.SaveAsync(new Entity { Name = "Nam", Name1 = "2" }));
 				await (transaction.CommitAsync());
 			}
 		}

@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest
 	public class UserTypeFixtureAsync : TestCase
 	{
 		protected override string[] Mappings
-			=> new [] {"NHSpecific.ClassWithNullColumns.hbm.xml"};
+			=> new[] { "NHSpecific.ClassWithNullColumns.hbm.xml" };
 
 		protected override void OnTearDown()
 		{

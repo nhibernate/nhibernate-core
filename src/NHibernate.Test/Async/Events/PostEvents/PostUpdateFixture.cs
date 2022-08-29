@@ -29,20 +29,20 @@ namespace NHibernate.Test.Events.PostEvents
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"Events.PostEvents.SimpleEntity.hbm.xml"}; }
+			get { return new[] { "Events.PostEvents.SimpleEntity.hbm.xml" }; }
 		}
 
 		[Test]
 		public async Task ImplicitFlushAsync()
 		{
 			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
-			                                                                          	{
-			                                                                          		new AssertOldStatePostListener(
-			                                                                          			eArgs =>
-			                                                                          			Assert.That(eArgs.OldState, Is.Not.Null))
-			                                                                          	};
+																						  {
+																							  new AssertOldStatePostListener(
+																								  eArgs =>
+																								  Assert.That(eArgs.OldState, Is.Not.Null))
+																						  };
 			await (FillDbAsync());
-			using (var ls = new LogSpy(typeof (AssertOldStatePostListener)))
+			using (var ls = new LogSpy(typeof(AssertOldStatePostListener)))
 			{
 				using (ISession s = OpenSession())
 				{
@@ -64,13 +64,13 @@ namespace NHibernate.Test.Events.PostEvents
 		public async Task ExplicitUpdateAsync()
 		{
 			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
-			                                                                          	{
-			                                                                          		new AssertOldStatePostListener(
-			                                                                          			eArgs =>
-			                                                                          			Assert.That(eArgs.OldState, Is.Not.Null))
-			                                                                          	};
+																						  {
+																							  new AssertOldStatePostListener(
+																								  eArgs =>
+																								  Assert.That(eArgs.OldState, Is.Not.Null))
+																						  };
 			await (FillDbAsync());
-			using (var ls = new LogSpy(typeof (AssertOldStatePostListener)))
+			using (var ls = new LogSpy(typeof(AssertOldStatePostListener)))
 			{
 				using (ISession s = OpenSession())
 				{
@@ -93,11 +93,11 @@ namespace NHibernate.Test.Events.PostEvents
 		public async Task WithDetachedObjectAsync()
 		{
 			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
-			                                                                          	{
-			                                                                          		new AssertOldStatePostListener(
-			                                                                          			eArgs =>
-			                                                                          			Assert.That(eArgs.OldState, Is.Not.Null))
-			                                                                          	};
+																						  {
+																							  new AssertOldStatePostListener(
+																								  eArgs =>
+																								  Assert.That(eArgs.OldState, Is.Not.Null))
+																						  };
 			await (FillDbAsync());
 			SimpleEntity toModify;
 			using (ISession s = OpenSession())
@@ -110,7 +110,7 @@ namespace NHibernate.Test.Events.PostEvents
 				}
 			}
 			toModify.Description = "Modified";
-			using (var ls = new LogSpy(typeof (AssertOldStatePostListener)))
+			using (var ls = new LogSpy(typeof(AssertOldStatePostListener)))
 			{
 				using (ISession s = OpenSession())
 				{
@@ -133,11 +133,11 @@ namespace NHibernate.Test.Events.PostEvents
 			// When the update is used directly as method to reattach a entity the OldState is null
 			// that mean that NH should not retrieve info from DB
 			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
-			                                                                          	{
-			                                                                          		new AssertOldStatePostListener(
-			                                                                          			eArgs =>
-			                                                                          			Assert.That(eArgs.OldState, Is.Null))
-			                                                                          	};
+																						  {
+																							  new AssertOldStatePostListener(
+																								  eArgs =>
+																								  Assert.That(eArgs.OldState, Is.Null))
+																						  };
 			await (FillDbAsync());
 			SimpleEntity toModify;
 			using (ISession s = OpenSession())
@@ -150,7 +150,7 @@ namespace NHibernate.Test.Events.PostEvents
 				}
 			}
 			toModify.Description = "Modified";
-			using (var ls = new LogSpy(typeof (AssertOldStatePostListener)))
+			using (var ls = new LogSpy(typeof(AssertOldStatePostListener)))
 			{
 				using (ISession s = OpenSession())
 				{
@@ -170,12 +170,12 @@ namespace NHibernate.Test.Events.PostEvents
 		[Test]
 		public async Task UpdateDetachedObjectWithLockAsync()
 		{
-			((DebugSessionFactory)Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
-			                                                                          	{
-			                                                                          		new AssertOldStatePostListener(
-			                                                                          			eArgs =>
-			                                                                          			Assert.That(eArgs.OldState, Is.Not.Null))
-			                                                                          	};
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[]
+																						  {
+																							  new AssertOldStatePostListener(
+																								  eArgs =>
+																								  Assert.That(eArgs.OldState, Is.Not.Null))
+																						  };
 			await (FillDbAsync());
 			SimpleEntity toModify;
 			using (ISession s = OpenSession())
@@ -203,7 +203,7 @@ namespace NHibernate.Test.Events.PostEvents
 			}
 
 			await (DbCleanupAsync());
-			((DebugSessionFactory)Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
+			((DebugSessionFactory) Sfi).EventListeners.PostUpdateEventListeners = Array.Empty<IPostUpdateEventListener>();
 		}
 		private async Task DbCleanupAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -223,7 +223,7 @@ namespace NHibernate.Test.Events.PostEvents
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					await (s.SaveAsync(new SimpleEntity {Description = "Something"}, cancellationToken));
+					await (s.SaveAsync(new SimpleEntity { Description = "Something" }, cancellationToken));
 					await (tx.CommitAsync(cancellationToken));
 				}
 			}

@@ -17,7 +17,7 @@ using NHibernate.Impl;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
-using Status=NHibernate.Engine.Status;
+using Status = NHibernate.Engine.Status;
 
 namespace NHibernate.Event.Default
 {
@@ -85,14 +85,14 @@ namespace NHibernate.Event.Default
 				version = persister.GetVersion(entity);
 
 				entityEntry = persistenceContext.AddEntity(
-					entity, 
+					entity,
 					persister.IsMutable ? Status.Loaded : Status.ReadOnly,
-					persister.GetPropertyValues(entity), 
+					persister.GetPropertyValues(entity),
 					key,
-					version, 
-					LockMode.None, 
-					true, 
-					persister, 
+					version,
+					LockMode.None,
+					true,
+					persister,
 					false);
 			}
 			else
@@ -143,7 +143,7 @@ namespace NHibernate.Event.Default
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Info("handling transient entity in delete processing");
 			// NH different impl : NH-1895
-			if(transientEntities == null)
+			if (transientEntities == null)
 			{
 				transientEntities = new HashSet<object>(ReferenceComparer<object>.Instance);
 			}

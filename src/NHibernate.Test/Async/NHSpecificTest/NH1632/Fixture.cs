@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1632
 				{
 					// Force connection acquisition for having it enlisted.
 					Assert.That(session.Connection.State, Is.EqualTo(ConnectionState.Open));
-					await (generator.GenerateAsync((ISessionImplementor)session, new Person(), CancellationToken.None));
+					await (generator.GenerateAsync((ISessionImplementor) session, new Person(), CancellationToken.None));
 				}
 
 				// intentionally dispose without committing

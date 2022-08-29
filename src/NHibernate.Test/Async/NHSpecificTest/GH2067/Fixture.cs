@@ -48,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 			{
 				catId = session.Save(new Cat { Name = "Bob" });
 
-				domesticCatId = session.Save(new DomesticCat {Name = "Tom", OwnerName = "Jerry"});
+				domesticCatId = session.Save(new DomesticCat { Name = "Tom", OwnerName = "Jerry" });
 
 				transaction.Commit();
 			}
@@ -168,7 +168,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2067
 				Assert.That(proxy.HibernateLazyInitializer.PersistentClass, Is.EqualTo(typeof(Cat)));
 			}
 		}
-		
+
 		[Test]
 		public async Task CanLoadCatUsingInterfaceAsync()
 		{

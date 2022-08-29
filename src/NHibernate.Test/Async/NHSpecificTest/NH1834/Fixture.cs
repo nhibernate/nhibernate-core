@@ -26,9 +26,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1834
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			var a = new A {Id = 1};
-			var a2 = new A {Id = 2};
-			var b = new B {Id = 1};
+			var a = new A { Id = 1 };
+			var a2 = new A { Id = 2 };
+			var b = new B { Id = 1 };
 
 			using (ISession session = base.OpenSession())
 			{

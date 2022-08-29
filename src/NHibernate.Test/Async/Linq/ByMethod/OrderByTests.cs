@@ -78,10 +78,10 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-2781
 			var result = await (db.Orders
 				.Select(o => new
-								 {
-									 o.OrderId,
-									 TotalQuantity = o.OrderLines.Sum(c => c.Quantity)
-								 })
+				{
+					o.OrderId,
+					TotalQuantity = o.OrderLines.Sum(c => c.Quantity)
+				})
 				.OrderBy(s => s.TotalQuantity)
 				.ToListAsync());
 
@@ -242,13 +242,13 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			await (db.Orders.Select(o => o.ShippedTo).Distinct().OrderBy(o => o).Take(1000).ToListAsync());
 		}
-		
+
 		[Test]
 		public async Task BooleanOrderByDescendingClauseAsync()
 		{
 			var query = from c in db.Customers
-			            orderby c.Address.Country == "Belgium" descending, c.Address.Country
-			            select c;
+						orderby c.Address.Country == "Belgium" descending, c.Address.Country
+						select c;
 
 			var customers = await (query.ToListAsync());
 			if (customers.Count > 1)

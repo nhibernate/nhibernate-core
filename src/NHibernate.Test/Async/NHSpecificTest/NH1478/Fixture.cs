@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1478
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					Person e1 = new Person("Tuna Toksoz","Born in Istanbul :Turkey");
+					Person e1 = new Person("Tuna Toksoz", "Born in Istanbul :Turkey");
 					Person e2 = new Person("Tuna Toksoz", "Born in Istanbul :Turkiye");
 					s.Save(e1);
 					s.Save(e2);
@@ -51,11 +51,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1478
 		[Test]
 		public async Task TestIfColonInStringIsNotInterpretedAsParameterInSQLAsync()
 		{
-			using (ISession session=OpenSession())
+			using (ISession session = OpenSession())
 			{
 				IList lst = await (session.CreateSQLQuery("select Biography from Person where Biography='Born in Istanbul :Turkey'")
 					.AddScalar("Biography", NHibernateUtil.String).ListAsync());
-				Assert.AreEqual(1,lst.Count);
+				Assert.AreEqual(1, lst.Count);
 			}
 		}
 

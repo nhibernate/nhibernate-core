@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 	{
 		#region Scenarios
 
-		private class FetchSelectScenario: IDisposable
+		private class FetchSelectScenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 
@@ -32,10 +32,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 					using (ITransaction t = s.BeginTransaction())
 					{
 						var entity = new Derived1
-									 {
-										ShortContent = "Short",
-										LongContent = "LongLongLongLongLong",
-									 };
+						{
+							ShortContent = "Short",
+							LongContent = "LongLongLongLongLong",
+						};
 						s.Save(entity);
 						t.Commit();
 					}
@@ -66,10 +66,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 					using (ITransaction t = s.BeginTransaction())
 					{
 						var entity = new Derived2
-									 {
-										ShortContent = "Short",
-										LongContent = "LongLongLongLongLong",
-									 };
+						{
+							ShortContent = "Short",
+							LongContent = "LongLongLongLongLong",
+						};
 						s.Save(entity);
 						t.Commit();
 					}
@@ -160,7 +160,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 					using (ITransaction t = s.BeginTransaction())
 					{
 						IList<Base1> items;
-						using(var ls = new SqlLogSpy())
+						using (var ls = new SqlLogSpy())
 						{
 							items = await (s.CreateQuery("from Base1").ListAsync<Base1>());
 							Assert.That(ls.GetWholeLog(), Does.Not.Contain("LongContent"));
@@ -190,7 +190,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2488
 							items = await (s.CreateQuery("from Base3").ListAsync<Base3>());
 							Assert.That(ls.GetWholeLog(), Does.Not.Contain("LongContent"));
 						}
-						var item = (Derived3)items[0];
+						var item = (Derived3) items[0];
 						Assert.That(NHibernateUtil.IsPropertyInitialized(item, "LongContent"), Is.False);
 						string lc = item.LongContent;
 						Assert.That(lc, Is.Not.Null.And.Not.Empty);

@@ -54,7 +54,7 @@ namespace NHibernate.Collection.Generic
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IType elementType = persister.ElementType;
-			var xmap = (IDictionary<TKey, TValue>)GetSnapshot();
+			var xmap = (IDictionary<TKey, TValue>) GetSnapshot();
 			if (xmap.Count != WrappedMap.Count)
 			{
 				return false;
@@ -91,13 +91,13 @@ namespace NHibernate.Collection.Generic
 		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			object[] array = (object[])disassembled;
+			object[] array = (object[]) disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i += 2)
 			{
-				WrappedMap[(TKey)await (persister.IndexType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false)] =
-					(TValue)await (persister.ElementType.AssembleAsync(array[i + 1], Session, owner, cancellationToken)).ConfigureAwait(false);
+				WrappedMap[(TKey) await (persister.IndexType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false)] =
+					(TValue) await (persister.ElementType.AssembleAsync(array[i + 1], Session, owner, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -149,8 +149,8 @@ namespace NHibernate.Collection.Generic
 		public override async Task<bool> NeedsUpdatingAsync(object entry, int i, IType elemType, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var sn = (IDictionary)GetSnapshot();
-			var e = (KeyValuePair<TKey, TValue>)entry;
+			var sn = (IDictionary) GetSnapshot();
+			var e = (KeyValuePair<TKey, TValue>) entry;
 			var snValue = sn[e.Key];
 			var isNew = !sn.Contains(e.Key);
 			return e.Value != null && snValue != null && await (elemType.IsDirtyAsync(snValue, e.Value, Session, cancellationToken)).ConfigureAwait(false)

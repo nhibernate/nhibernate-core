@@ -50,7 +50,7 @@ namespace NHibernate.Test.ReadOnly
 	 *
 	 * @author Gail Badner
 	 */
-	
+
 	[TestFixture]
 	public class ReadOnlySessionLazyNonLazyTestAsync : AbstractReadOnlyTest
 	{
@@ -63,7 +63,7 @@ namespace NHibernate.Test.ReadOnly
 		{
 			get { return new string[] { "ReadOnly.DataPoint.hbm.xml" }; }
 		}
-		
+
 		[Test]
 		public async Task ExistingModifiableAfterSetSessionReadOnlyAsync()
 		{
@@ -86,7 +86,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			ISet<object> expectedReadOnlyObjects = new HashSet<object>();
-	
+
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
@@ -96,7 +96,7 @@ namespace NHibernate.Test.ReadOnly
 			Assert.That(s.DefaultReadOnly, Is.True);
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
-	
+
 			t = s.BeginTransaction();
 			Assert.That(s.DefaultReadOnly, Is.True);
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
@@ -109,7 +109,7 @@ namespace NHibernate.Test.ReadOnly
 			await (s.RefreshAsync(cOrig));
 			Assert.That(cOrig, Is.SameAs(c));
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
-			
+
 			// NH-specific: The following line is required to evict DataPoint(Id=1) from the Container.LazyDataPoint collection.
 			// This behaviour would seem to be necessary 'by design', as a comment in EvictCascadingAction states, "evicts don't
 			// cascade to uninitialized collections".
@@ -117,12 +117,12 @@ namespace NHibernate.Test.ReadOnly
 			// down.
 			// Another way to get this test to pass is s.Clear().
 			await (NHibernateUtil.InitializeAsync(cOrig.LazyDataPoints));
-			
+
 			await (s.EvictAsync(cOrig));
 
 			c = await (s.GetAsync<Container>(cOrig.Id));
 			Assert.That(cOrig, Is.Not.SameAs(c));
-		
+
 			expectedInitializedObjects =
 					new HashSet<object>(
 						new object[]
@@ -135,7 +135,7 @@ namespace NHibernate.Test.ReadOnly
 							c.NonLazyJoinDataPoints.First(),
 							c.NonLazySelectDataPoints.First()
 						});
-			
+
 			expectedReadOnlyObjects =
 					new HashSet<object>(
 						new object[]
@@ -153,27 +153,27 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
-//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
-//			NHibernateUtil.Initialize(c.NoProxyInfo);
-//			expectedInitializedObjects.Add(c.NoProxyInfo);
-//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
+			//			NHibernateUtil.Initialize(c.NoProxyInfo);
+			//			expectedInitializedObjects.Add(c.NoProxyInfo);
+			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
 			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
-			
+
 			Assert.That(NHibernateUtil.IsInitialized(c.LazyDataPoints), Is.False);
 			await (NHibernateUtil.InitializeAsync(c.LazyDataPoints));
 			expectedInitializedObjects.Add(c.LazyDataPoints.First());
 			expectedReadOnlyObjects.Add(c.LazyDataPoints.First());
-			
+
 			// The following check fails if the NH-specific change (above) is not made. More specifically it fails
 			// when asserting that the c.LazyDataPoints.First() is ReadOnly
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
-			
+
 			await (t.CommitAsync());
 			s.Close();
-			
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
@@ -183,7 +183,7 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task ExistingReadOnlyAfterSetSessionModifiableAsync()
 		{
@@ -206,7 +206,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			ISet<object> expectedReadOnlyObjects = new HashSet<object>();
-			
+
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
@@ -217,13 +217,13 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.DefaultReadOnly = true;
 			Container c = await (s.GetAsync<Container>(cOrig.Id));
 			Assert.That(cOrig, Is.Not.SameAs(c));
-			
+
 			expectedInitializedObjects =
 					new HashSet<object>(
 						new object[]
@@ -256,10 +256,10 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			s.DefaultReadOnly = false;
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
-//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
-//			NHibernateUtil.Initialize(c.NoProxyInfo);
-//			expectedInitializedObjects.Add(c.NoProxyInfo);
-//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
+			//			NHibernateUtil.Initialize(c.NoProxyInfo);
+			//			expectedInitializedObjects.Add(c.NoProxyInfo);
+			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
 			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
@@ -280,7 +280,7 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task ExistingReadOnlyAfterSetSessionModifiableExistingAsync()
 		{
@@ -313,13 +313,13 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.DefaultReadOnly = true;
 			Container c = await (s.GetAsync<Container>(cOrig.Id));
 			Assert.That(cOrig, Is.Not.SameAs(c));
-			
+
 			expectedInitializedObjects =
 					new HashSet<object>(
 						new object[]
@@ -351,10 +351,10 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			s.DefaultReadOnly = false;
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
-//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
-//			NHibernateUtil.Initialize(c.NoProxyInfo);
-//			expectedInitializedObjects.Add(c.NoProxyInfo);
-//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
+			//			NHibernateUtil.Initialize(c.NoProxyInfo);
+			//			expectedInitializedObjects.Add(c.NoProxyInfo);
+			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
 			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
@@ -376,7 +376,7 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task ExistingReadOnlyAfterSetSessionModifiableExistingEntityReadOnlyAsync()
 		{
@@ -409,7 +409,7 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.DefaultReadOnly = true;
@@ -448,10 +448,10 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			s.DefaultReadOnly = false;
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
-//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
-//			NHibernateUtil.Initialize(c.NoProxyInfo);
-//			expectedInitializedObjects.Add(c.NoProxyInfo);
-//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
+			//			NHibernateUtil.Initialize(c.NoProxyInfo);
+			//			expectedInitializedObjects.Add(c.NoProxyInfo);
+			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
 			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
@@ -476,7 +476,7 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task ExistingReadOnlyAfterSetSessionModifiableProxyExistingAsync()
 		{
@@ -509,13 +509,13 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.DefaultReadOnly = true;
 			Container c = await (s.GetAsync<Container>(cOrig.Id));
 			Assert.That(cOrig, Is.Not.SameAs(c));
-			
+
 			expectedInitializedObjects =
 					new HashSet<object>(
 						new object[]
@@ -548,10 +548,10 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			s.DefaultReadOnly = false;
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
-//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
-//			NHibernateUtil.Initialize(c.NoProxyInfo);
-//			expectedInitializedObjects.Add(c.NoProxyInfo);
-//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
+			//			NHibernateUtil.Initialize(c.NoProxyInfo);
+			//			expectedInitializedObjects.Add(c.NoProxyInfo);
+			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
 			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
@@ -573,7 +573,7 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task ExistingReadOnlyAfterSetSessionModifiableExistingProxyReadOnlyAsync()
 		{
@@ -606,13 +606,13 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.DefaultReadOnly = true;
 			Container c = await (s.GetAsync<Container>(cOrig.Id));
 			Assert.That(cOrig, Is.Not.SameAs(c));
-			
+
 			expectedInitializedObjects =
 					new HashSet<object>(
 						new object[]
@@ -645,10 +645,10 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			s.DefaultReadOnly = false;
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
-//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
-//			NHibernateUtil.Initialize(c.NoProxyInfo);
-//			expectedInitializedObjects.Add(c.NoProxyInfo);
-//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
+			//			NHibernateUtil.Initialize(c.NoProxyInfo);
+			//			expectedInitializedObjects.Add(c.NoProxyInfo);
+			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
 			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
@@ -673,7 +673,7 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task DefaultModifiableWithReadOnlyQueryForEntityAsync()
 		{
@@ -695,7 +695,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			ISet<object> expectedReadOnlyObjects = new HashSet<object>();
-	
+
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
@@ -706,12 +706,12 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			Assert.That(s.DefaultReadOnly, Is.False);
 			Container c = await (s.CreateQuery("from Container where id=" + cOrig.Id).SetReadOnly(true).UniqueResultAsync<Container>());
-			
+
 			expectedInitializedObjects =
 					new HashSet<object>(
 						new object[]
@@ -742,10 +742,10 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
-//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
-//			NHibernateUtil.Initialize(c.NoProxyInfo);
-//			expectedInitializedObjects.Add(c.NoProxyInfo);
-//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
+			//			NHibernateUtil.Initialize(c.NoProxyInfo);
+			//			expectedInitializedObjects.Add(c.NoProxyInfo);
+			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
 			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
@@ -766,7 +766,7 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task DefaultReadOnlyWithModifiableQueryForEntityAsync()
 		{
@@ -788,7 +788,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			ISet<object> expectedReadOnlyObjects = new HashSet<object>();
-	
+
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
@@ -799,7 +799,7 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.DefaultReadOnly = true;
@@ -820,10 +820,10 @@ namespace NHibernate.Test.ReadOnly
 
 			expectedReadOnlyObjects = new HashSet<object>();
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
-//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
-//			NHibernateUtil.Initialize(c.NoProxyInfo);
-//			expectedInitializedObjects.Add(c.NoProxyInfo);
-//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
+			//			NHibernateUtil.Initialize(c.NoProxyInfo);
+			//			expectedInitializedObjects.Add(c.NoProxyInfo);
+			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
 			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
@@ -844,7 +844,7 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task DefaultReadOnlyWithQueryForEntityAsync()
 		{
@@ -866,7 +866,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			ISet<object> expectedReadOnlyObjects = new HashSet<object>();
-	
+
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
@@ -877,7 +877,7 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.DefaultReadOnly = true;
@@ -914,10 +914,10 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
-//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
-//			NHibernateUtil.Initialize(c.NoProxyInfo);
-//			expectedInitializedObjects.Add(c.NoProxyInfo);
-//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
+			//			NHibernateUtil.Initialize(c.NoProxyInfo);
+			//			expectedInitializedObjects.Add(c.NoProxyInfo);
+			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
 			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
@@ -938,7 +938,7 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task DefaultModifiableWithQueryForEntityAsync()
 		{
@@ -960,7 +960,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			ISet<object> expectedReadOnlyObjects = new HashSet<object>();
-	
+
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
@@ -971,7 +971,7 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -991,10 +991,10 @@ namespace NHibernate.Test.ReadOnly
 
 			expectedReadOnlyObjects = new HashSet<object>();
 			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
-//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
-//			NHibernateUtil.Initialize(c.NoProxyInfo);
-//			expectedInitializedObjects.Add(c.NoProxyInfo);
-//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			//			Assert.That(NHibernateUtil.IsInitialized(c.NoProxyInfo), Is.False);
+			//			NHibernateUtil.Initialize(c.NoProxyInfo);
+			//			expectedInitializedObjects.Add(c.NoProxyInfo);
+			//			CheckContainer(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			Assert.That(NHibernateUtil.IsInitialized(c.ProxyInfo), Is.False);
 			await (NHibernateUtil.InitializeAsync(c.ProxyInfo));
 			expectedInitializedObjects.Add(c.ProxyInfo);
@@ -1015,7 +1015,7 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task DefaultModifiableWithReadOnlyQueryForCollectionEntitiesAsync()
 		{
@@ -1037,7 +1037,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			ISet<object> expectedReadOnlyObjects = new HashSet<object>();
-	
+
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
@@ -1048,7 +1048,7 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -1067,7 +1067,7 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task DefaultReadOnlyWithModifiableFilterCollectionEntitiesAsync()
 		{
@@ -1089,7 +1089,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			ISet<object> expectedReadOnlyObjects = new HashSet<object>();
-	
+
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
@@ -1100,7 +1100,7 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.DefaultReadOnly = true;
@@ -1157,7 +1157,7 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task DefaultModifiableWithReadOnlyFilterCollectionEntitiesAsync()
 		{
@@ -1179,7 +1179,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			ISet<object> expectedReadOnlyObjects = new HashSet<object>();
-	
+
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
@@ -1190,7 +1190,7 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -1230,7 +1230,7 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task DefaultReadOnlyWithFilterCollectionEntitiesAsync()
 		{
@@ -1252,7 +1252,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			ISet<object> expectedReadOnlyObjects = new HashSet<object>();
-	
+
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
@@ -1263,7 +1263,7 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			s.DefaultReadOnly = true;
@@ -1300,7 +1300,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			IList list = await ((await (s.CreateFilterAsync(c.LazyDataPoints, ""))).SetMaxResults(1).ListAsync());
-			
+
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.True);
 			list = await ((await (s.CreateFilterAsync(c.NonLazyJoinDataPoints, ""))).SetMaxResults(1).ListAsync());
@@ -1320,12 +1320,12 @@ namespace NHibernate.Test.ReadOnly
 			await (t.CommitAsync());
 			s.Close();
 		}
-	
+
 		[Test]
 		public async Task DefaultModifiableWithFilterCollectionEntitiesAsync()
 		{
 			Container cOrig = CreateContainer();
-			
+
 			ISet<object> expectedInitializedObjects =
 					new HashSet<object>(
 						new object[]
@@ -1343,7 +1343,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			ISet<object> expectedReadOnlyObjects = new HashSet<object>();
-	
+
 			ISession s = OpenSession();
 			Assert.That(s.DefaultReadOnly, Is.False);
 			ITransaction t = s.BeginTransaction();
@@ -1354,7 +1354,7 @@ namespace NHibernate.Test.ReadOnly
 			CheckContainer(cOrig, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			await (t.CommitAsync());
 			s.Close();
-	
+
 			s = OpenSession();
 			t = s.BeginTransaction();
 			Assert.That(s.DefaultReadOnly, Is.False);
@@ -1373,7 +1373,7 @@ namespace NHibernate.Test.ReadOnly
 						});
 
 			expectedReadOnlyObjects = new HashSet<object>();
-			IList list = await ((await (s.CreateFilterAsync(c.LazyDataPoints, "" ))).SetMaxResults(1).ListAsync());
+			IList list = await ((await (s.CreateFilterAsync(c.LazyDataPoints, ""))).SetMaxResults(1).ListAsync());
 			Assert.That(list.Count, Is.EqualTo(1));
 			Assert.That(s.IsReadOnly(list[0]), Is.False);
 			list = await ((await (s.CreateFilterAsync(c.NonLazyJoinDataPoints, ""))).SetMaxResults(1).ListAsync());
@@ -1397,62 +1397,62 @@ namespace NHibernate.Test.ReadOnly
 		private Container CreateContainer()
 		{
 			Container c = new Container("container");
-			
+
 			//c.NoProxyInfo = new Info("no-proxy info");
 			c.ProxyInfo = new Info("proxy info");
 			c.NonLazyInfo = new Info("non-lazy info");
 			//c.NoProxyOwner = new Owner("no-proxy owner");
 			c.ProxyOwner = new Owner("proxy owner");
 			c.NonLazyOwner = new Owner("non-lazy owner");
-			
+
 			c.LazyDataPoints.Add(new DataPoint(1M, 1M, "lazy data point"));
 			c.NonLazyJoinDataPoints.Add(new DataPoint(2M, 2M, "non-lazy join data point"));
 			c.NonLazySelectDataPoints.Add(new DataPoint(3M, 3M, "non-lazy select data point"));
-			
+
 			return c;
 		}
-	
+
 		private void CheckContainer(Container c, ISet<object> expectedInitializedObjects, ISet<object> expectedReadOnlyObjects, ISession s)
 		{
 			CheckObject(c, expectedInitializedObjects, expectedReadOnlyObjects, s);
-			
+
 			if (!expectedInitializedObjects.Contains(c))
 			{
 				return;
 			}
-			
+
 			//CheckObject(c.NoProxyInfo, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			CheckObject(c.ProxyInfo, expectedInitializedObjects, expectedReadOnlyObjects, s);
-			CheckObject(c.NonLazyInfo, expectedInitializedObjects, expectedReadOnlyObjects, s );
+			CheckObject(c.NonLazyInfo, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			//CheckObject(c.NoProxyOwner, expectedInitializedObjects, expectedReadOnlyObjects, s );
-			CheckObject(c.ProxyOwner, expectedInitializedObjects, expectedReadOnlyObjects, s );
-			CheckObject(c.NonLazyOwner, expectedInitializedObjects, expectedReadOnlyObjects, s );
-			
+			CheckObject(c.ProxyOwner, expectedInitializedObjects, expectedReadOnlyObjects, s);
+			CheckObject(c.NonLazyOwner, expectedInitializedObjects, expectedReadOnlyObjects, s);
+
 			if (NHibernateUtil.IsInitialized(c.LazyDataPoints))
 			{
-				foreach(DataPoint dp in c.LazyDataPoints)
+				foreach (DataPoint dp in c.LazyDataPoints)
 					CheckObject(dp, expectedInitializedObjects, expectedReadOnlyObjects, s);
 
-				foreach(DataPoint dp in c.NonLazyJoinDataPoints)
+				foreach (DataPoint dp in c.NonLazyJoinDataPoints)
 					CheckObject(dp, expectedInitializedObjects, expectedReadOnlyObjects, s);
-				
-				foreach(DataPoint dp in c.NonLazySelectDataPoints)
+
+				foreach (DataPoint dp in c.NonLazySelectDataPoints)
 					CheckObject(dp, expectedInitializedObjects, expectedReadOnlyObjects, s);
 			}
 		}
-	
+
 		private void CheckObject(object entityOrProxy, ISet<object> expectedInitializedObjects, ISet<object> expectedReadOnlyObjects, ISession s)
 		{
 			bool isExpectedToBeInitialized = expectedInitializedObjects.Contains(entityOrProxy);
 			bool isExpectedToBeReadOnly = expectedReadOnlyObjects.Contains(entityOrProxy);
-			ISessionImplementor si = (ISessionImplementor)s;
+			ISessionImplementor si = (ISessionImplementor) s;
 			Assert.That(NHibernateUtil.IsInitialized(entityOrProxy), Is.EqualTo(isExpectedToBeInitialized));
 			Assert.That(s.IsReadOnly(entityOrProxy), Is.EqualTo(isExpectedToBeReadOnly));
 			if (NHibernateUtil.IsInitialized(entityOrProxy))
 			{
 				object entity = entityOrProxy is INHibernateProxy
-				                 ?((INHibernateProxy)entityOrProxy).HibernateLazyInitializer.GetImplementation(si)
-				                 : entityOrProxy;
+								 ? ((INHibernateProxy) entityOrProxy).HibernateLazyInitializer.GetImplementation(si)
+								 : entityOrProxy;
 				Assert.That(entity, Is.Not.Null);
 				Assert.That(s.IsReadOnly(entity), Is.EqualTo(isExpectedToBeReadOnly));
 			}

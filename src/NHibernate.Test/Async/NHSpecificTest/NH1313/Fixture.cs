@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1313
 			using (ITransaction tx = s.BeginTransaction())
 			{
 				DateTime result =
-					await (s.CreateCriteria(typeof (A)).SetProjection(new SqlFunctionProjection("MyCurrentTime", NHibernateUtil.DateTime)).
+					await (s.CreateCriteria(typeof(A)).SetProjection(new SqlFunctionProjection("MyCurrentTime", NHibernateUtil.DateTime)).
 						UniqueResultAsync<DateTime>());
 				// we are simply checking that the function is parsed and executed
 				await (s.DeleteAsync(a));

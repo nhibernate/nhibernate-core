@@ -25,7 +25,7 @@ namespace NHibernate.Test.Subclass.EnumDiscriminator
 
 		protected override string[] Mappings
 		{
-			get { return new String[] {"Subclass.EnumDiscriminator.EnumDiscriminator.hbm.xml"}; }
+			get { return new String[] { "Subclass.EnumDiscriminator.EnumDiscriminator.hbm.xml" }; }
 		}
 
 		[Test]

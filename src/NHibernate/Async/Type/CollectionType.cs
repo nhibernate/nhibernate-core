@@ -10,17 +10,17 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
-using System.Collections.Generic;
-using System.Linq;
-using NHibernate.Impl;
 
 namespace NHibernate.Type
 {
@@ -266,7 +266,7 @@ namespace NHibernate.Type
 			var elemType = GetElementType(session.Factory);
 			var targetPc = target as IPersistentCollection;
 			var originalPc = original as IPersistentCollection;
-			var iterOriginal = (IEnumerable)original;
+			var iterOriginal = (IEnumerable) original;
 			var clearTargetsDirtyFlag = ShouldTargetsDirtyFlagBeCleared(targetPc, originalPc, iterOriginal);
 
 			// copy elements into newly empty target collection
@@ -276,7 +276,7 @@ namespace NHibernate.Type
 				Add(target, await (elemType.ReplaceAsync(obj, null, session, owner, copyCache, cancellationToken)).ConfigureAwait(false));
 			}
 
-			if(clearTargetsDirtyFlag)
+			if (clearTargetsDirtyFlag)
 			{
 				targetPc.ClearDirty();
 			}

@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 			using (ISession session = this.OpenSession())
 			{
 				ICriteria criteriaWithPagination = session.CreateCriteria<DomainClass>();
-				criteriaWithPagination.Add(Expression.Le("IntData",2));
+				criteriaWithPagination.Add(Expression.Le("IntData", 2));
 				ICriteria criteriaWithRowCount = CriteriaTransformer.Clone(criteriaWithPagination);
 				criteriaWithPagination.SetFirstResult(0).SetMaxResults(1);
 				criteriaWithRowCount.SetProjection(Projections.RowCountInt64());
@@ -118,8 +118,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 				multiCriteria.Add(criteriaWithRowCount);
 
 				IList results = await (multiCriteria.ListAsync());
-				long numResults = (long)((IList)results[1])[0];
-				IList list = (IList)results[0];
+				long numResults = (long) ((IList) results[1])[0];
+				IList list = (IList) results[0];
 
 				Assert.AreEqual(2, await (criteriaWithRowCount.UniqueResultAsync<long>()));
 				Assert.AreEqual(1, list.Count);
@@ -148,8 +148,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 
 				IList results = await (multiCriteria.ListAsync());
 
-				long numResults = (long)((IList)results[1])[0];
-				IList list = (IList)results[0];
+				long numResults = (long) ((IList) results[1])[0];
+				IList list = (IList) results[0];
 
 				Assert.AreEqual(2, await (criteriaWithRowCount.UniqueResultAsync<long>()));
 				Assert.AreEqual(1, list.Count);

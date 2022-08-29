@@ -87,7 +87,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 			{
 				s.Connection.Close();
 				Assert.ThrowsAsync<UnitTestException>(() =>
-												 s.CreateCriteria(typeof (ClassA)).ListAsync());
+												 s.CreateCriteria(typeof(ClassA)).ListAsync());
 			}
 		}
 
@@ -102,7 +102,7 @@ namespace NHibernate.Test.NHSpecificTest.SqlConverterAndMultiQuery
 			using (s.BeginTransaction())
 			{
 				var multi = s.CreateMultiCriteria();
-				multi.Add(s.CreateCriteria(typeof (ClassA)));
+				multi.Add(s.CreateCriteria(typeof(ClassA)));
 				s.Connection.Close();
 				Assert.ThrowsAsync<UnitTestException>(() => multi.ListAsync());
 			}

@@ -19,17 +19,17 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2280
 {
-    using System.Threading.Tasks;
-    [TestFixture]
-    public class InvalidSqlTestAsync : BugTestCase
-    {
-        [Test]
-        public async Task CompositeKeyTestAsync()
-        {
-            using (ISession session = OpenSession())
-            {
-                await (session.Query<Organisation>().Where(o => o.Codes.Any(c => c.Key.Code == "1476")).ToListAsync());
-            }
-        }
-    }
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class InvalidSqlTestAsync : BugTestCase
+	{
+		[Test]
+		public async Task CompositeKeyTestAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				await (session.Query<Organisation>().Where(o => o.Codes.Any(c => c.Key.Code == "1476")).ToListAsync());
+			}
+		}
+	}
 }

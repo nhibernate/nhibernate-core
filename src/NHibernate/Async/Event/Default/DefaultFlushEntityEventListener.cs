@@ -126,7 +126,7 @@ namespace NHibernate.Event.Default
 						if (!types[prop].IsEqual(current[prop], loadedVal))
 						{
 							throw new HibernateException("immutable natural identifier of an instance of " + persister.EntityName
-							                             + " was altered");
+														 + " was altered");
 						}
 					}
 				}
@@ -252,15 +252,15 @@ namespace NHibernate.Event.Default
 			// note that we intentionally do _not_ pass in currentPersistentState!
 			session.ActionQueue.AddAction(
 				new EntityUpdateAction(
-					entry.Id, 
-					values, 
+					entry.Id,
+					values,
 					dirtyProperties,
-					@event.HasDirtyCollection, 
+					@event.HasDirtyCollection,
 					status == Status.Deleted && !entry.IsModifiableEntity() ? persister.GetPropertyValues(entity) : entry.LoadedState,
 					entry.Version,
-					nextVersion, 
-					entity, 
-					persister, 
+					nextVersion,
+					entity,
+					persister,
 					session));
 
 			return intercepted;
@@ -415,7 +415,7 @@ namespace NHibernate.Event.Default
 					// A non-modifiable (e.g., read-only or immutable) entity needs to be have
 					// references to transient entities set to null before being deleted. No other
 					// fields should be updated.
-					if (values != entry.DeletedState ) 
+					if (values != entry.DeletedState)
 					{
 						throw new InvalidOperationException("Entity has status Status.Deleted but values != entry.DeletedState");
 					}

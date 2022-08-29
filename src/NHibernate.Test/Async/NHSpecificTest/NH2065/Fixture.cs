@@ -17,33 +17,33 @@ namespace NHibernate.Test.NHSpecificTest.NH2065
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-        protected override void OnSetUp()
-        {
-            using (var s = OpenSession())
-            using (var t = s.BeginTransaction())
-            {
-                var person = new Person
-                {
-                    Children = new HashSet<Person>()
-                };
-                s.Save(person);
-                var child = new Person();
-                s.Save(child);
-                person.Children.Add(child);
+		protected override void OnSetUp()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var person = new Person
+				{
+					Children = new HashSet<Person>()
+				};
+				s.Save(person);
+				var child = new Person();
+				s.Save(child);
+				person.Children.Add(child);
 
-                t.Commit();
-            }
-        }
+				t.Commit();
+			}
+		}
 
-        protected override void OnTearDown()
-        {
-            using (var s = OpenSession())
-            using (var t = s.BeginTransaction())
-            {
-                s.Delete("from Person");
-                t.Commit();
-            }
-        }
+		protected override void OnTearDown()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Delete("from Person");
+				t.Commit();
+			}
+		}
 
 		[Test]
 		public async Task GetGoodErrorForDirtyReassociatedCollectionAsync()
@@ -68,8 +68,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2065
 						return s.LockAsync(person, LockMode.None);
 					},
 					Throws.TypeOf<HibernateException>()
-					      .And.Message.EqualTo(
-						      "reassociated object has dirty collection: NHibernate.Test.NHSpecificTest.NH2065.Person.Children"));
+						  .And.Message.EqualTo(
+							  "reassociated object has dirty collection: NHibernate.Test.NHSpecificTest.NH2065.Person.Children"));
 			}
 		}
 	}

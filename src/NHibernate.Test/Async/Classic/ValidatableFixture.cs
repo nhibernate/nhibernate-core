@@ -40,7 +40,7 @@ namespace NHibernate.Test.Classic
 				}
 				Assert.Fail("Saved an invalid entity");
 			}
-			catch(ValidationFailure)
+			catch (ValidationFailure)
 			{
 				// Ok
 			}
@@ -83,7 +83,7 @@ namespace NHibernate.Test.Classic
 			// update in the same session
 			using (ISession s = OpenSession())
 			{
-				Video vu = (Video)await (s.GetAsync(typeof(Video), savedId));
+				Video vu = (Video) await (s.GetAsync(typeof(Video), savedId));
 				vu.Width = 0;
 				try
 				{

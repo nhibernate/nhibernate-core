@@ -42,15 +42,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1908
 			}
 		}
 
-        [Test]
-        public async Task QueryPropertyInBothFilterAndQueryUsingWithAsync()
-        {
-            using (ISession s = OpenSession())
-            {
-                s.EnableFilter("validity")
-                    .SetParameter("date", DateTime.Now);
+		[Test]
+		public async Task QueryPropertyInBothFilterAndQueryUsingWithAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				s.EnableFilter("validity")
+					.SetParameter("date", DateTime.Now);
 
-                await (s.CreateQuery(@"
+				await (s.CreateQuery(@"
 				select 
 					inv.ID
 				from 
@@ -61,11 +61,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1908
 					inv.ID = :invId
 					and inv.Issued < :now
 				")
-                    .SetDateTime("now", DateTime.Now)
-                    .SetInt32("invId", -999)
-                    .SetInt32("myInt", -888)
-                    .ListAsync());
-            }
-        }
+					.SetDateTime("now", DateTime.Now)
+					.SetInt32("invId", -999)
+					.SetInt32("myInt", -888)
+					.ListAsync());
+			}
+		}
 	}
 }

@@ -15,82 +15,82 @@ using NHibernate.Linq;
 
 namespace NHibernate.Test.Linq
 {
-    using System.Threading.Tasks;
-    [TestFixture]
-    public class PatientTestsAsync : LinqTestCase
-    {
-        [Test]
-        public async Task CanQueryOnPropertyOfComponentAsync()
-        {
-            var query = await ((from pr in db.PatientRecords
-                         where pr.Name.LastName == "Doe"
-                         select pr).ToListAsync());
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class PatientTestsAsync : LinqTestCase
+	{
+		[Test]
+		public async Task CanQueryOnPropertyOfComponentAsync()
+		{
+			var query = await ((from pr in db.PatientRecords
+						 where pr.Name.LastName == "Doe"
+						 select pr).ToListAsync());
 
-            Assert.AreEqual(2, query.Count);
-        }
+			Assert.AreEqual(2, query.Count);
+		}
 
-        [Test]
-        public async Task CanQueryOnManyToOneOfComponentAsync()
-        {
-            var florida = await (db.States.FirstOrDefaultAsync(x => x.Abbreviation == "FL"));
+		[Test]
+		public async Task CanQueryOnManyToOneOfComponentAsync()
+		{
+			var florida = await (db.States.FirstOrDefaultAsync(x => x.Abbreviation == "FL"));
 
-            var query = await ((from pr in db.PatientRecords
-                         where pr.Address.State == florida
-                         select pr).ToListAsync());
+			var query = await ((from pr in db.PatientRecords
+						 where pr.Address.State == florida
+						 select pr).ToListAsync());
 
-            Assert.AreEqual(2, query.Count);
-        }
+			Assert.AreEqual(2, query.Count);
+		}
 
-        [Test]
-        public async Task CanQueryOnPropertyOfManyToOneOfComponentAsync()
-        {
-            var query = await ((from pr in db.PatientRecords
-                         where pr.Address.State.Abbreviation == "FL"
-                         select pr).ToListAsync());
+		[Test]
+		public async Task CanQueryOnPropertyOfManyToOneOfComponentAsync()
+		{
+			var query = await ((from pr in db.PatientRecords
+						 where pr.Address.State.Abbreviation == "FL"
+						 select pr).ToListAsync());
 
-            Assert.AreEqual(2, query.Count);
-        }
+			Assert.AreEqual(2, query.Count);
+		}
 
-        [Test]
-        public async Task CanQueryOnPropertyOfOneToManyAsync()
-        {
-            var query = await ((from p in db.Patients
-                         where p.PatientRecords.Any(x => x.Gender == Gender.Unknown)
-                         select p).ToListAsync());
+		[Test]
+		public async Task CanQueryOnPropertyOfOneToManyAsync()
+		{
+			var query = await ((from p in db.Patients
+						 where p.PatientRecords.Any(x => x.Gender == Gender.Unknown)
+						 select p).ToListAsync());
 
-            Assert.AreEqual(1, query.Count);
-        }
+			Assert.AreEqual(1, query.Count);
+		}
 
-        [Test]
-        public async Task CanQueryOnPropertyOfManyToOneAsync()
-        {
-            var query = await ((from pr in db.PatientRecords
-                         where pr.Patient.Active == true
-                         select pr).ToListAsync());
+		[Test]
+		public async Task CanQueryOnPropertyOfManyToOneAsync()
+		{
+			var query = await ((from pr in db.PatientRecords
+						 where pr.Patient.Active == true
+						 select pr).ToListAsync());
 
-            Assert.AreEqual(2, query.Count);
-        }
+			Assert.AreEqual(2, query.Count);
+		}
 
-        [Test]
-        public async Task CanQueryOnManyToOneOfManyToOneAsync()
-        {
-            var drWatson = await (db.Physicians.FirstOrDefaultAsync(x => x.Name == "Dr Watson"));
+		[Test]
+		public async Task CanQueryOnManyToOneOfManyToOneAsync()
+		{
+			var drWatson = await (db.Physicians.FirstOrDefaultAsync(x => x.Name == "Dr Watson"));
 
-            var query = await ((from pr in db.PatientRecords
-                         where pr.Patient.Physician == drWatson
-                         select pr).ToListAsync());
+			var query = await ((from pr in db.PatientRecords
+						 where pr.Patient.Physician == drWatson
+						 select pr).ToListAsync());
 
-            Assert.AreEqual(2, query.Count);
-        }
+			Assert.AreEqual(2, query.Count);
+		}
 
-        [Test]
-        public async Task CanQueryOnPropertyOfManyToOneOfManyToOneAsync()
-        {
-            var query = await ((from pr in db.PatientRecords
-                         where pr.Patient.Physician.Name == "Dr Watson"
-                         select pr).ToListAsync());
+		[Test]
+		public async Task CanQueryOnPropertyOfManyToOneOfManyToOneAsync()
+		{
+			var query = await ((from pr in db.PatientRecords
+						 where pr.Patient.Physician.Name == "Dr Watson"
+						 select pr).ToListAsync());
 
-            Assert.AreEqual(2, query.Count);
-        }
-    }
+			Assert.AreEqual(2, query.Count);
+		}
+	}
 }

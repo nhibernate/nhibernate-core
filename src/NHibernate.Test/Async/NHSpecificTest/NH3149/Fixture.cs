@@ -10,9 +10,9 @@
 
 using System.Diagnostics;
 using System.Threading;
+using NHibernate.Criterion;
 using NHibernate.Dialect;
 using NUnit.Framework;
-using NHibernate.Criterion;
 
 namespace NHibernate.Test.NHSpecificTest.NH3149
 {

@@ -59,9 +59,9 @@ namespace NHibernate.Loader.Hql
 			Object[] resultRow = await (GetResultRowAsync(row, rs, session, cancellationToken)).ConfigureAwait(false);
 			bool hasTransform = HasSelectNew || resultTransformer != null;
 			return (!hasTransform && resultRow.Length == 1
-				        ? resultRow[0]
-				        : resultRow
-			       );
+						? resultRow[0]
+						: resultRow
+				   );
 		}
 
 		protected override async Task<object[]> GetResultRowAsync(object[] row, DbDataReader rs, ISessionImplementor session, CancellationToken cancellationToken)
@@ -105,7 +105,7 @@ namespace NHibernate.Loader.Hql
 			var rs = await (GetResultSetAsync(cmd, queryParameters, session, null, cancellationToken)).ConfigureAwait(false);
 
 			var resultTransformer = _selectNewTransformer ?? queryParameters.ResultTransformer;
-			IEnumerable result = 
+			IEnumerable result =
 				new EnumerableImpl(rs, cmd, session, queryParameters.IsReadOnly(session), _queryTranslator.ReturnTypes, _queryTranslator.GetColumnNames(), queryParameters.RowSelection, resultTransformer, _queryReturnAliases);
 
 			if (stopWatch != null)

@@ -33,7 +33,7 @@ namespace NHibernate.Test.Pagination
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"Pagination.DataPoint.hbm.xml"}; }
+			get { return new[] { "Pagination.DataPoint.hbm.xml" }; }
 		}
 
 		protected override void Configure(Configuration configuration)
@@ -51,12 +51,12 @@ namespace NHibernate.Test.Pagination
 
 		private CustomMsSqlDialect CustomDialect
 		{
-			get { return (CustomMsSqlDialect)Sfi.Dialect; }
+			get { return (CustomMsSqlDialect) Sfi.Dialect; }
 		}
 
 		private CustomMsSqlDriver CustomDriver
 		{
-			get { return (CustomMsSqlDriver)Sfi.ConnectionProvider.Driver; }
+			get { return (CustomMsSqlDriver) Sfi.ConnectionProvider.Driver; }
 		}
 
 		protected override void OnSetUp()
@@ -127,7 +127,7 @@ namespace NHibernate.Test.Pagination
 								.SetFirstResult(1)
 								.SetMaxResults(2));
 
-				var points = (IList<DataPoint>)(await (criteria.ListAsync()))[0];
+				var points = (IList<DataPoint>) (await (criteria.ListAsync()))[0];
 
 				Assert.That(points.Count, Is.EqualTo(2));
 				Assert.That(points[0].X, Is.EqualTo(7d));

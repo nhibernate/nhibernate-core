@@ -97,7 +97,7 @@ namespace NHibernate.Test.CfgTest
 				Assert.That(p, Is.Null);
 			}
 
-			TestCase.DropSchema(true, export, (ISessionFactoryImplementor)sf);
+			TestCase.DropSchema(true, export, (ISessionFactoryImplementor) sf);
 		}
 	}
 }

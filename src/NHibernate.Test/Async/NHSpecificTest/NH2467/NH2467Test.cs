@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 			base.OnSetUp();
 			using (var session = OpenSession())
 			{
-				var entity = new DomainClass {Id = 1, Data = "Test"};
+				var entity = new DomainClass { Id = 1, Data = "Test" };
 				session.Save(entity);
 				session.Flush();
 			}
@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				session.Flush();
 			}
 		}
-		
+
 		[Test]
 		public async Task ShouldNotThrowOnFuturePagingAsync()
 		{
@@ -55,7 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				contentQuery.SetMaxResults(2);
 				contentQuery.SetFirstResult(0);
 				var content = contentQuery.Future<DomainClass>();
-					
+
 				var countQuery = session
 					.CreateCriteria<DomainClass>()
 					.Add(Restrictions.Eq("Data", "Test"));
@@ -65,8 +65,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				// triggers batch operation, should not throw
 				var result = (await (content.GetEnumerableAsync())).ToList();
 			}
-		}		
-		
+		}
+
 		[Test]
 		public async Task ShouldNotThrowOnReversedFuturePagingAsync()
 		{
@@ -88,8 +88,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				// triggers batch operation, should not throw
 				var result = (await (content.GetEnumerableAsync())).ToList();
 			}
-		}		
-		
+		}
+
 		[Test]
 		public async Task ShouldNotThrowOnFuturePagingUsingHqlAsync()
 		{
@@ -104,7 +104,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				var countQuery = session.CreateQuery("select count(d) from DomainClass as d where d.Data = ?");
 				countQuery.SetString(0, "Test");
 				var count = countQuery.FutureValue<long>();
-				
+
 				Assert.AreEqual(1, (await (content.GetEnumerableAsync())).ToList().Count);
 				Assert.AreEqual(1, await (count.GetValueAsync()));
 			}
@@ -124,7 +124,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2467
 				var countQuery = session.CreateQuery("select count(d) from DomainClass as d where d.Data = ?");
 				countQuery.SetString(0, "Test");
 				var count = countQuery.FutureValue<long>();
-				
+
 				Assert.AreEqual(1, (await (content.GetEnumerableAsync())).ToList().Count);
 				Assert.AreEqual(1, await (count.GetValueAsync()));
 			}

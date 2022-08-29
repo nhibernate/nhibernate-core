@@ -29,7 +29,7 @@ namespace NHibernate.Test.Stateless
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"Stateless.Document.hbm.xml"}; }
+			get { return new[] { "Stateless.Document.hbm.xml" }; }
 		}
 
 		protected override void OnTearDown()
@@ -82,7 +82,7 @@ namespace NHibernate.Test.Stateless
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 
-				doc2 = (Document) await (ss.CreateSQLQuery("select * from Document").AddEntity(typeof (Document)).UniqueResultAsync());
+				doc2 = (Document) await (ss.CreateSQLQuery("select * from Document").AddEntity(typeof(Document)).UniqueResultAsync());
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 
@@ -90,7 +90,7 @@ namespace NHibernate.Test.Stateless
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 
-				doc2 = (Document) await (ss.CreateCriteria(typeof (Document)).UniqueResultAsync());
+				doc2 = (Document) await (ss.CreateCriteria(typeof(Document)).UniqueResultAsync());
 				Assert.AreEqual("Blahs", doc2.Name);
 				Assert.AreEqual(doc.Text, doc2.Text);
 
@@ -109,7 +109,7 @@ namespace NHibernate.Test.Stateless
 			ITransaction tx = ss.BeginTransaction();
 			var doc = new Document("blah blah blah", "Blahs");
 			await (ss.InsertAsync(doc));
-			var paper = new Paper {Color = "White"};
+			var paper = new Paper { Color = "White" };
 			await (ss.InsertAsync(paper));
 			await (tx.CommitAsync());
 
@@ -141,7 +141,7 @@ namespace NHibernate.Test.Stateless
 				ITransaction tx;
 				using (tx = ss.BeginTransaction())
 				{
-					paper = new Paper {Color = "White"};
+					paper = new Paper { Color = "White" };
 					await (ss.InsertAsync(paper));
 					Assert.IsTrue(paper.Id != 0);
 					await (tx.CommitAsync());
@@ -163,7 +163,7 @@ namespace NHibernate.Test.Stateless
 			{
 				using (ITransaction tx = ss.BeginTransaction())
 				{
-					paper = new Paper {Color = "whtie"};
+					paper = new Paper { Color = "whtie" };
 					await (ss.InsertAsync(paper));
 					await (tx.CommitAsync());
 				}

@@ -45,12 +45,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 				rc.ManyToOne(x => x.Client, m => m.Column("ClientId"));
 				rc.ManyToOne(x => x.BillingClient, m => m.Column("BillingClientId"));
 				rc.ManyToOne(x => x.CorporateClient, m => m.Column("CorporateClientId"));
-				rc.Set(x => x.Issues, 
-				       m => 
-				       { 
-					       m.Key(k => k.Column(c => c.Name("ProjectId")) );
-				       }, 
-				       rel => rel.OneToMany());
+				rc.Set(x => x.Issues,
+					   m =>
+					   {
+						   m.Key(k => k.Column(c => c.Name("ProjectId")));
+					   },
+					   rel => rel.OneToMany());
 			});
 			mapper.Class<Issue>(rc =>
 			{
@@ -74,30 +74,30 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
 				rc.Property(x => x.ReviewAsPrimary);
-				rc.Set(x => x.Projects, 
-				       m => 
-				       { 
-					       m.Table("EmployeesToProjects"); 
-					       m.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
-					       m.Key(k => k.Column(c => c.Name("EmployeeId")) );
-				       }, 
-				       rel => rel.ManyToMany(m => m.Column("ProjectId")));
-				rc.Set(x => x.WorkIssues, 
-				         m => 
-				         { 
-					         m.Table("EmployeesToWorkIssues"); 
-					         m.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
-					         m.Key(k => k.Column(c => c.Name("EmployeeId")) );
-				         }, 
-				         rel => rel.ManyToMany(m => m.Column("IssueId")));
-				rc.Set(x => x.ReviewIssues, 
-				         m => 
-				         { 
-					         m.Table("EmployeesToReviewIssues");
-					         m.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
-					         m.Key(k => k.Column(c => c.Name("EmployeeId")) );
-				         }, 
-				         rel => rel.ManyToMany(m => m.Column("IssueId")));
+				rc.Set(x => x.Projects,
+					   m =>
+					   {
+						   m.Table("EmployeesToProjects");
+						   m.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+						   m.Key(k => k.Column(c => c.Name("EmployeeId")));
+					   },
+					   rel => rel.ManyToMany(m => m.Column("ProjectId")));
+				rc.Set(x => x.WorkIssues,
+						 m =>
+						 {
+							 m.Table("EmployeesToWorkIssues");
+							 m.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+							 m.Key(k => k.Column(c => c.Name("EmployeeId")));
+						 },
+						 rel => rel.ManyToMany(m => m.Column("IssueId")));
+				rc.Set(x => x.ReviewIssues,
+						 m =>
+						 {
+							 m.Table("EmployeesToReviewIssues");
+							 m.Cascade(Mapping.ByCode.Cascade.All | Mapping.ByCode.Cascade.DeleteOrphans);
+							 m.Key(k => k.Column(c => c.Name("EmployeeId")));
+						 },
+						 rel => rel.ManyToMany(m => m.Column("IssueId")));
 			});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
@@ -115,8 +115,8 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 		}
 
 		protected async Task AreEqualAsync<TResult>(
-		    Func<IQueryable<T>, IQueryable<TResult>> actualQuery, 
-		    Func<IQueryable<T>, IQueryable<TResult>> expectedQuery, CancellationToken cancellationToken = default(CancellationToken))
+			Func<IQueryable<T>, IQueryable<TResult>> actualQuery,
+			Func<IQueryable<T>, IQueryable<TResult>> expectedQuery, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (var session = OpenSession())
 			{
@@ -129,7 +129,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 				{
 					Assert.Ignore($"Not currently supported query: {e}");
 				}
-				
+
 				var testResult = await (actualQuery(session.Query<T>()).ToListAsync(cancellationToken));
 				Assert.That(testResult, Is.EqualTo(expectedResult));
 			}

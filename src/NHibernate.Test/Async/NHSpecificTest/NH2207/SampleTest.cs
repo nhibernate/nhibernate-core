@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2207
 			var createTable = "CREATE TABLE TryDate([Id] [int] IDENTITY(1,1) NOT NULL,[MyDate] [date] NOT NULL)";
 			var dropTable = "DROP TABLE TryDate";
 			var insertTable = "INSERT INTO TryDate([MyDate]) VALUES(@p0)";
-			using(var sqlConnection = new System.Data.SqlClient.SqlConnection(cfg.Properties[Cfg.Environment.ConnectionString]))
+			using (var sqlConnection = new System.Data.SqlClient.SqlConnection(cfg.Properties[Cfg.Environment.ConnectionString]))
 			{
 				await (sqlConnection.OpenAsync(CancellationToken.None));
 				using (var tx = sqlConnection.BeginTransaction())
@@ -89,7 +89,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2207
 			using (ISession session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var concrete = new DomainClass{Date = expectedStoredValue.AddMinutes(90)};
+				var concrete = new DomainClass { Date = expectedStoredValue.AddMinutes(90) };
 				savedId = await (session.SaveAsync(concrete));
 				await (tx.CommitAsync());
 			}

@@ -117,7 +117,7 @@ namespace NHibernate.Test.Legacy
 			using (s = OpenSession())
 			using (t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync(await (s.GetAsync(typeof (Parent), id))));
+				await (s.DeleteAsync(await (s.GetAsync(typeof(Parent), id))));
 				await (t.CommitAsync());
 				s.Close();
 			}
@@ -210,7 +210,7 @@ namespace NHibernate.Test.Legacy
 			g2.Name = "g2";
 			await (s.SaveAsync(g2));
 
-			g1.ProxyArray = new GlarchProxy[] {g2};
+			g1.ProxyArray = new GlarchProxy[] { g2 };
 			topGlarchez['1'] = g1;
 			topGlarchez['2'] = g2;
 			Foo foo1 = new Foo();
@@ -219,7 +219,7 @@ namespace NHibernate.Test.Legacy
 			await (s.SaveAsync(foo2));
 			baz.FooSet.Add(foo1);
 			baz.FooSet.Add(foo2);
-			baz.FooArray = new FooProxy[] {foo1};
+			baz.FooArray = new FooProxy[] { foo1 };
 
 			LockMode lockMode = (Dialect is DB2Dialect) ? LockMode.Read : LockMode.Upgrade;
 
@@ -338,9 +338,9 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(1, (await (s.CreateCriteria(typeof(Part)).ListAsync())).Count);
 			//there is a where condition on Part mapping
 			Assert.AreEqual(1,
-			                (await (s.CreateCriteria(typeof(Part))
-			                	.Add(Expression.Eq("Id", p1.Id))
-			                	.ListAsync())).Count);
+							(await (s.CreateCriteria(typeof(Part))
+								.Add(Expression.Eq("Id", p1.Id))
+								.ListAsync())).Count);
 			Assert.AreEqual(1, (await (s.CreateQuery("from Part").ListAsync())).Count);
 			Assert.AreEqual(2, (await (s.CreateQuery("from Baz baz join baz.Parts").ListAsync())).Count);
 
@@ -383,51 +383,51 @@ namespace NHibernate.Test.Legacy
 			l.Add(null);
 			l.Add(s2);
 			c.ManyToMany = l;
-			c.ManyToOne = new Simple { Name = "x", Count = 4};
+			c.ManyToOne = new Simple { Name = "x", Count = 4 };
 			await (s.SaveAsync(c.ManyToOne, c.ManyToOne.Count));
 			await (s.SaveAsync(c));
 
 			Assert.AreEqual(1,
-			                (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s").ListAsync
-			                	())).Count);			
+							(await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s").ListAsync
+								())).Count);
 			Assert.AreEqual(1,
-			                (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s and c.ManyToOne.Name = 'x'").ListAsync
-			                	())).Count);
+							(await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.OneToMany[2] = s and c.ManyToOne.Name = 'x'").ListAsync
+								())).Count);
 			Assert.AreEqual(1,
-			                (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.ManyToMany[2] = s").
-			                	ListAsync())).Count);
+							(await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where c.ManyToMany[2] = s").
+								ListAsync())).Count);
 			Assert.AreEqual(1,
-			                (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where s = c.OneToMany[2]").ListAsync
-			                	())).Count);
+							(await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where s = c.OneToMany[2]").ListAsync
+								())).Count);
 			Assert.AreEqual(1,
-			                (await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where s = c.ManyToMany[2]").
-			                	ListAsync())).Count);
+							(await (s.CreateQuery("select c from c in class ContainerX, s in class Simple where s = c.ManyToMany[2]").
+								ListAsync())).Count);
 			Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX where c.OneToMany[0].Name = 's'").ListAsync())).Count);
 			Assert.AreEqual(1, (await (s.CreateQuery("select c from c in class ContainerX where c.ManyToMany[0].Name = 's'").ListAsync())).Count);
 			Assert.AreEqual(1,
-			                (await (s.CreateQuery("select c from c in class ContainerX where 's' = c.OneToMany[2 - 2].Name").ListAsync())).Count);
+							(await (s.CreateQuery("select c from c in class ContainerX where 's' = c.OneToMany[2 - 2].Name").ListAsync())).Count);
 			Assert.AreEqual(1,
-			                (await (s.CreateQuery("select c from c in class ContainerX where 's' = c.ManyToMany[(3+1)/4-1].Name").ListAsync())).
-			                	Count);
+							(await (s.CreateQuery("select c from c in class ContainerX where 's' = c.ManyToMany[(3+1)/4-1].Name").ListAsync())).
+								Count);
 			if (Dialect.SupportsScalarSubSelects)
 			{
 				Assert.AreEqual(1,
-				                (await (s.CreateQuery(
-				                	"select c from c in class ContainerX where c.ManyToMany[ c.ManyToMany.maxIndex ].Count = 2").ListAsync()))
-				                	.Count);
+								(await (s.CreateQuery(
+									"select c from c in class ContainerX where c.ManyToMany[ c.ManyToMany.maxIndex ].Count = 2").ListAsync()))
+									.Count);
 				Assert.AreEqual(1,
-				                (await (s.CreateQuery(
-				                	"select c from c in class ContainerX where c.ManyToMany[ maxindex(c.ManyToMany) ].Count = 2").ListAsync()))
-				                	.Count);
+								(await (s.CreateQuery(
+									"select c from c in class ContainerX where c.ManyToMany[ maxindex(c.ManyToMany) ].Count = 2").ListAsync()))
+									.Count);
 			}
 			Assert.AreEqual(1,
-			                (await (s.CreateQuery(
-			                	"select c from c in class ContainerX where c.OneToMany[ c.ManyToMany[0].Count ].Name = 's'").ListAsync())).
-			                	Count);
+							(await (s.CreateQuery(
+								"select c from c in class ContainerX where c.OneToMany[ c.ManyToMany[0].Count ].Name = 's'").ListAsync())).
+								Count);
 			Assert.AreEqual(1,
-			                (await (s.CreateQuery(
-			                	"select c from c in class ContainerX where c.ManyToMany[ c.OneToMany[0].Count ].Name = 's'").ListAsync())).
-			                	Count);
+							(await (s.CreateQuery(
+								"select c from c in class ContainerX where c.ManyToMany[ c.OneToMany[0].Count ].Name = 's'").ListAsync())).
+								Count);
 
 			await (s.DeleteAsync(c.ManyToOne));
 			await (s.DeleteAsync(c));
@@ -470,9 +470,9 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(66, p.Count, "1-1 update");
 			Assert.AreEqual(32, c.Count, "1-1 update");
 			Assert.AreEqual(1, (await (s.CreateQuery("from c in class NHibernate.DomainModel.Child where c.Parent.Count=66").ListAsync())).Count,
-			                "1-1 query");
+							"1-1 query");
 			Assert.AreEqual(2, ((object[]) (await (s.CreateQuery("from Parent p join p.Child c where p.Count=66").ListAsync()))[0]).Length,
-			                "1-1 query");
+							"1-1 query");
 
 			await (s.CreateQuery("select c, c.Parent from c in class NHibernate.DomainModel.Child order by c.Parent.Count").ListAsync());
 			await (s.CreateQuery(
@@ -482,8 +482,8 @@ namespace NHibernate.Test.Legacy
 				"select c, c.Parent, c.Parent.Count from c in class NHibernate.DomainModel.Child order by c.Parent.Count").
 				EnumerableAsync());
 			Assert.AreEqual(1,
-			                (await (s.CreateQuery("FROM p in CLASS NHibernate.DomainModel.Parent WHERE p.Count=?").SetInt32(0, 66).ListAsync()))
-			                	.Count, "1-1 query");
+							(await (s.CreateQuery("FROM p in CLASS NHibernate.DomainModel.Parent WHERE p.Count=?").SetInt32(0, 66).ListAsync()))
+								.Count, "1-1 query");
 			await (s.DeleteAsync(c));
 			await (s.DeleteAsync(p));
 			await (t.CommitAsync());
@@ -619,7 +619,7 @@ namespace NHibernate.Test.Legacy
 			c.Components = comps;
 			One one = new One();
 			Many many = new Many();
-			one.Manies = new HashSet<Many> {many};
+			one.Manies = new HashSet<Many> { many };
 			many.One = one;
 			ccic.Many = many;
 			ccic.One = one;
@@ -720,7 +720,7 @@ namespace NHibernate.Test.Legacy
 				Assert.Ignore("Support of empty inserts is required");
 
 			Container c = new Container();
-			
+
 			c.Cascades = new List<Container.ContainerInnerClass>();
 			Container.ContainerInnerClass cic = new Container.ContainerInnerClass();
 			cic.Many = new Many();
@@ -829,7 +829,7 @@ namespace NHibernate.Test.Legacy
 			c.LazyBag.Add(c4);
 			c4.LazyBag.Add(c);
 			Assert.AreEqual(3, c.LazyBag.Count); //forces initialization
-			// s.Save(c4); commented in h2.0.3 also
+												 // s.Save(c4); commented in h2.0.3 also
 			await (t.CommitAsync());
 			s.Close();
 

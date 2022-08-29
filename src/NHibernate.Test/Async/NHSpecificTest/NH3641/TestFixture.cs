@@ -23,8 +23,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3641
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var child = new Entity {Id = 1, Flag = true};
-				var parent = new Entity {Id = 2, ChildInterface = child, ChildConcrete = child};
+				var child = new Entity { Id = 1, Flag = true };
+				var parent = new Entity { Id = 2, ChildInterface = child, ChildConcrete = child };
 
 				session.Save(child);
 				session.Save(parent);

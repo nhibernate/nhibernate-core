@@ -36,7 +36,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2317
 		public async Task QueryShouldWorkAsync()
 		{
 			using (var session = Sfi.OpenSession())
-			using(session.BeginTransaction())
+			using (session.BeginTransaction())
 			{
 				// The HQL : "select a.id from Artist a where a in (from Artist take 3)"
 				// shows how should look the HQL tree in the case where Skip/Take are not the last sentences.
@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2317
 
 		protected override void OnTearDown()
 		{
-			using(var session = Sfi.OpenStatelessSession())
+			using (var session = Sfi.OpenStatelessSession())
 			using (var tx = session.BeginTransaction())
 			{
 				session.CreateQuery("delete Artist").ExecuteUpdate();

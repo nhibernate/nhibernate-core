@@ -36,12 +36,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 
 		private OffsetStartsAtOneTestDialect OffsetStartsAtOneTestDialect
 		{
-			get { return (OffsetStartsAtOneTestDialect)Sfi.Dialect; }
+			get { return (OffsetStartsAtOneTestDialect) Sfi.Dialect; }
 		}
 
 		private OffsetTestDriver CustomDriver
 		{
-			get { return (OffsetTestDriver)Sfi.ConnectionProvider.Driver; }
+			get { return (OffsetTestDriver) Sfi.ConnectionProvider.Driver; }
 		}
 
 		protected override void OnSetUp()

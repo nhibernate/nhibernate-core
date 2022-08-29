@@ -109,10 +109,10 @@ namespace NHibernate.Test.Futures
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.Save(new Person {Name = "Test1", Age = 20});
-				session.Save(new Person {Name = "Test2", Age = 30});
-				session.Save(new Person {Name = "Test3"});
-				session.Save(new Person {Name = "Test4"});
+				session.Save(new Person { Name = "Test1", Age = 20 });
+				session.Save(new Person { Name = "Test2", Age = 30 });
+				session.Save(new Person { Name = "Test3" });
+				session.Save(new Person { Name = "Test4" });
 				transaction.Commit();
 			}
 		}

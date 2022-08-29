@@ -75,7 +75,7 @@ namespace NHibernate.Test.TypesTest
 
 		[Test]
 		[Description("Values longer than the maximum possible string length " +
-		             "should raise an exception if they would otherwise be truncated.")]
+					 "should raise an exception if they would otherwise be truncated.")]
 		public async Task ShouldPreventInsertionOfVeryLongStringThatWouldBeTruncatedAsync()
 		{
 			// This test case is for when the current driver will use a parameter size
@@ -94,7 +94,7 @@ namespace NHibernate.Test.TypesTest
 				{
 					using (ISession s = OpenSession())
 					{
-						StringClass b = new StringClass {LongStringValue = new string('x', maxStringLength + 1)};
+						StringClass b = new StringClass { LongStringValue = new string('x', maxStringLength + 1) };
 						await (s.SaveAsync(b));
 						await (s.FlushAsync());
 					}
@@ -119,8 +119,8 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			{
 				var q = s.CreateQuery("from StringClass s where s.LongStringValue != :shortString")
-				         // Do not replace with SetString, otherwise length will be unspecified.
-				         .SetParameter("shortString", "aaa");
+						 // Do not replace with SetString, otherwise length will be unspecified.
+						 .SetParameter("shortString", "aaa");
 				var sc = await (q.UniqueResultAsync<StringClass>());
 				Assert.That(sc, Is.Not.Null);
 				Assert.That(sc.LongStringValue, Is.EqualTo(longString));
@@ -146,8 +146,8 @@ namespace NHibernate.Test.TypesTest
 			using (var s = OpenSession())
 			{
 				var q = s.CreateQuery("from StringClass s where s.LongStringValue = :longString")
-				         // Do not replace with SetString, otherwise length will be unspecified.
-				         .SetParameter("longString", longString);
+						 // Do not replace with SetString, otherwise length will be unspecified.
+						 .SetParameter("longString", longString);
 				var sc = await (q.UniqueResultAsync<StringClass>());
 				Assert.That(sc, Is.Not.Null);
 				Assert.That(sc.LongStringValue, Is.EqualTo(longString));
@@ -156,7 +156,7 @@ namespace NHibernate.Test.TypesTest
 
 		[Test]
 		[Description("Values longer than the mapped string length " +
-		             "should raise an exception if they would otherwise be truncated.")]
+					 "should raise an exception if they would otherwise be truncated.")]
 		public async Task ShouldPreventInsertionOfTooLongStringThatWouldBeTruncatedAsync()
 		{
 			// Note: This test could possible be written as
@@ -170,7 +170,7 @@ namespace NHibernate.Test.TypesTest
 				{
 					using (ISession s = OpenSession())
 					{
-						StringClass b = new StringClass {StringValue = "0123456789a"};
+						StringClass b = new StringClass { StringValue = "0123456789a" };
 						await (s.SaveAsync(b));
 						await (s.FlushAsync());
 					}
@@ -223,8 +223,8 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.SaveAsync(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"}));
-				await (s.SaveAsync(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"}));
+				await (s.SaveAsync(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" }));
+				await (s.SaveAsync(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" }));
 
 				var aaItems =
 					await (s.CreateCriteria<StringClass>()
@@ -241,8 +241,8 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.SaveAsync(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"}));
-				await (s.SaveAsync(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"}));
+				await (s.SaveAsync(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" }));
+				await (s.SaveAsync(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" }));
 
 				var aaItems =
 					await (s.CreateQuery("from StringClass s where s.StringValue like :likeValue")
@@ -267,8 +267,8 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.SaveAsync(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"}));
-				await (s.SaveAsync(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"}));
+				await (s.SaveAsync(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" }));
+				await (s.SaveAsync(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" }));
 
 				var aaItems =
 					await (s.CreateCriteria<StringClass>()
@@ -293,8 +293,8 @@ namespace NHibernate.Test.TypesTest
 			using (ISession s = OpenSession())
 			using (s.BeginTransaction())
 			{
-				await (s.SaveAsync(new StringClass {Id = 1, StringValue = "AAAAAAAAAB"}));
-				await (s.SaveAsync(new StringClass {Id = 2, StringValue = "BAAAAAAAAA"}));
+				await (s.SaveAsync(new StringClass { Id = 1, StringValue = "AAAAAAAAAB" }));
+				await (s.SaveAsync(new StringClass { Id = 2, StringValue = "BAAAAAAAAA" }));
 
 				var aaItems =
 					await (s.CreateQuery("from StringClass s where s.StringValue = :likeValue")

@@ -24,11 +24,11 @@ namespace NHibernate.Action
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public abstract partial class CollectionAction : 
-		IAsyncExecutable, 
-		IComparable<CollectionAction>, 
-		IDeserializationCallback, 
-		IAfterTransactionCompletionProcess, 
+	public abstract partial class CollectionAction :
+		IAsyncExecutable,
+		IComparable<CollectionAction>,
+		IDeserializationCallback,
+		IAfterTransactionCompletionProcess,
 		ICacheableExecutable
 	{
 

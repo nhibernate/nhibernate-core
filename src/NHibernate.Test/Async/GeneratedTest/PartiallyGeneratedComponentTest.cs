@@ -24,7 +24,7 @@ namespace NHibernate.Test.GeneratedTest
 
 		protected override string[] Mappings
 		{
-			get { return new [] { "GeneratedTest.ComponentOwner.hbm.xml" }; }
+			get { return new[] { "GeneratedTest.ComponentOwner.hbm.xml" }; }
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)

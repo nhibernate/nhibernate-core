@@ -73,11 +73,11 @@ namespace NHibernate.Test.QueryTest
 			{
 				var getItems = s.CreateCriteria(typeof(Item));
 				var countItems = s.CreateCriteria(typeof(Item))
-				                  .SetProjection(Projections.RowCount());
+								  .SetProjection(Projections.RowCount());
 
 				var queries = s.CreateQueryBatch()
-				               .Add<Item>(getItems)
-				               .Add<int>(countItems);
+							   .Add<Item>(getItems)
+							   .Add<int>(countItems);
 				var items = await (queries.GetResultAsync<Item>(0));
 				var fromDb = items.First();
 				Assert.That(fromDb.Id, Is.EqualTo(1));
@@ -104,11 +104,11 @@ namespace NHibernate.Test.QueryTest
 			{
 				var getItems = s.CreateCriteria(typeof(Item));
 				var countItems = s.CreateCriteria(typeof(Item))
-				                  .SetProjection(Projections.RowCount());
+								  .SetProjection(Projections.RowCount());
 
 				var queries = s.CreateQueryBatch()
-				               .Add<Item>(getItems)
-				               .Add<int>(countItems);
+							   .Add<Item>(getItems)
+							   .Add<int>(countItems);
 				var items = await (queries.GetResultAsync<Item>(0));
 				var fromDb = items.First();
 				Assert.That(fromDb.Id, Is.EqualTo(1));
@@ -170,12 +170,12 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var criteria = s.CreateCriteria(typeof(Item))
-				                .Add(Restrictions.Gt("id", 50));
+								.Add(Restrictions.Gt("id", 50));
 				var queries = s.CreateQueryBatch()
-				               .Add<Item>(CriteriaTransformer.Clone(criteria).SetFirstResult(10).SetCacheable(true))
-				               .Add<int>(
-					               CriteriaTransformer
-						               .Clone(criteria).SetProjection(Projections.RowCount()).SetCacheable(true));
+							   .Add<Item>(CriteriaTransformer.Clone(criteria).SetFirstResult(10).SetCacheable(true))
+							   .Add<int>(
+								   CriteriaTransformer
+									   .Clone(criteria).SetProjection(Projections.RowCount()).SetCacheable(true));
 				var items = await (queries.GetResultAsync<Item>(0));
 				Assert.That(items.Count, Is.EqualTo(89));
 				var count = (await (queries.GetResultAsync<int>(1))).Single();
@@ -185,12 +185,12 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var criteria = s.CreateCriteria(typeof(Item))
-				                .Add(Restrictions.Gt("id", 50));
+								.Add(Restrictions.Gt("id", 50));
 				var queries = s.CreateQueryBatch()
-				               .Add<Item>(CriteriaTransformer.Clone(criteria).SetFirstResult(20).SetCacheable(true))
-				               .Add<int>(
-					               CriteriaTransformer
-						               .Clone(criteria).SetProjection(Projections.RowCount()).SetCacheable(true));
+							   .Add<Item>(CriteriaTransformer.Clone(criteria).SetFirstResult(20).SetCacheable(true))
+							   .Add<int>(
+								   CriteriaTransformer
+									   .Clone(criteria).SetProjection(Projections.RowCount()).SetCacheable(true));
 				var items = await (queries.GetResultAsync<Item>(0));
 				Assert.That(
 					items.Count,
@@ -209,15 +209,15 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var criteria = s.CreateCriteria(typeof(Item))
-				                .Add(Restrictions.Gt("id", 50));
+								.Add(Restrictions.Gt("id", 50));
 
 				var queries = s.CreateQueryBatch()
-				               .Add<Item>(
-					               CriteriaTransformer.Clone(criteria)
-					                                  .SetFirstResult(10))
-				               .Add<int>(
-					               CriteriaTransformer.Clone(criteria)
-					                                  .SetProjection(Projections.RowCount()));
+							   .Add<Item>(
+								   CriteriaTransformer.Clone(criteria)
+													  .SetFirstResult(10))
+							   .Add<int>(
+								   CriteriaTransformer.Clone(criteria)
+													  .SetProjection(Projections.RowCount()));
 				var items = await (queries.GetResultAsync<Item>(0));
 				Assert.That(items.Count, Is.EqualTo(89));
 				var count = (await (queries.GetResultAsync<int>(1))).Single();
@@ -238,15 +238,15 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var criteria = s.CreateCriteria(typeof(Item))
-				                .Add(
-					                Restrictions.In(
-						                "id",
-						                new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }));
+								.Add(
+									Restrictions.In(
+										"id",
+										new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }));
 				var queries = s.CreateQueryBatch()
-				               .Add<Item>(CriteriaTransformer.Clone(criteria))
-				               .Add<int>(
-					               CriteriaTransformer.Clone(criteria)
-					                                  .SetProjection(Projections.RowCount()));
+							   .Add<Item>(CriteriaTransformer.Clone(criteria))
+							   .Add<int>(
+								   CriteriaTransformer.Clone(criteria)
+													  .SetProjection(Projections.RowCount()));
 
 				var items = await (queries.GetResultAsync<Item>(0));
 				var fromDb = items.First();
@@ -267,7 +267,7 @@ namespace NHibernate.Test.QueryTest
 				var multiCriteria = session.CreateQueryBatch();
 
 				var firstCriteria = session.CreateCriteria(typeof(Item))
-				                           .Add(Restrictions.Lt("id", 50));
+										   .Add(Restrictions.Lt("id", 50));
 
 				var secondCriteria = session.CreateCriteria(typeof(Item));
 
@@ -291,7 +291,7 @@ namespace NHibernate.Test.QueryTest
 				var multiCriteria = session.CreateQueryBatch();
 
 				var firstCriteria = DetachedCriteria.For(typeof(Item))
-				                                    .Add(Restrictions.Lt("id", 50));
+													.Add(Restrictions.Lt("id", 50));
 
 				var secondCriteria = DetachedCriteria.For(typeof(Item));
 
@@ -314,9 +314,9 @@ namespace NHibernate.Test.QueryTest
 			{
 				var transformer = new ResultTransformerStub();
 				var criteria = session.CreateCriteria(typeof(Item))
-				                      .SetResultTransformer(transformer);
+									  .SetResultTransformer(transformer);
 				var multiCriteria = session.CreateQueryBatch()
-				                           .Add<object[]>(criteria);
+										   .Add<object[]>(criteria);
 				await (multiCriteria.GetResultAsync<object[]>(0));
 
 				Assert.That(transformer.WasTransformTupleCalled, Is.True, "Transform Tuple was not called");
@@ -392,12 +392,12 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var criteria = s.CreateCriteria(typeof(Item))
-				                .Add(Restrictions.Gt("id", 50));
+								.Add(Restrictions.Gt("id", 50));
 				var queries = s.CreateQueryBatch()
-				               .Add<Item>(CriteriaTransformer.Clone(criteria).SetFirstResult(10).SetCacheable(true))
-				               .Add<int>(
-					               CriteriaTransformer
-						               .Clone(criteria).SetProjection(Projections.RowCount()).SetCacheable(true));
+							   .Add<Item>(CriteriaTransformer.Clone(criteria).SetFirstResult(10).SetCacheable(true))
+							   .Add<int>(
+								   CriteriaTransformer
+									   .Clone(criteria).SetProjection(Projections.RowCount()).SetCacheable(true));
 				var items = await (queries.GetResultAsync<Item>(0, cancellationToken));
 				Assert.That(items.Count, Is.EqualTo(89));
 				var count = (await (queries.GetResultAsync<int>(1, cancellationToken))).Single();
@@ -432,15 +432,15 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var multiQuery = s.CreateQueryBatch()
-				                  .Add<Item>(
-					                  s.CreateQuery("from Item i where i.Id > ?")
-					                   .SetInt32(0, 50)
-					                   .SetFirstResult(10)
-					                   .SetCacheable(true))
-				                  .Add<long>(
-					                  s.CreateQuery("select count(*) from Item i where i.Id > ?")
-					                   .SetInt32(0, 50)
-					                   .SetCacheable(true));
+								  .Add<Item>(
+									  s.CreateQuery("from Item i where i.Id > ?")
+									   .SetInt32(0, 50)
+									   .SetFirstResult(10)
+									   .SetCacheable(true))
+								  .Add<long>(
+									  s.CreateQuery("select count(*) from Item i where i.Id > ?")
+									   .SetInt32(0, 50)
+									   .SetCacheable(true));
 				var items = await (multiQuery.GetResultAsync<Item>(0));
 				Assert.That(items.Count, Is.EqualTo(89));
 				var count = (await (multiQuery.GetResultAsync<long>(1))).Single();
@@ -450,15 +450,15 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var multiQuery = s.CreateQueryBatch()
-				                  .Add<Item>(
-					                  s.CreateQuery("from Item i where i.Id > ?")
-					                   .SetInt32(0, 50)
-					                   .SetFirstResult(20)
-					                   .SetCacheable(true))
-				                  .Add<long>(
-					                  s.CreateQuery("select count(*) from Item i where i.Id > ?")
-					                   .SetInt32(0, 50)
-					                   .SetCacheable(true));
+								  .Add<Item>(
+									  s.CreateQuery("from Item i where i.Id > ?")
+									   .SetInt32(0, 50)
+									   .SetFirstResult(20)
+									   .SetCacheable(true))
+								  .Add<long>(
+									  s.CreateQuery("select count(*) from Item i where i.Id > ?")
+									   .SetInt32(0, 50)
+									   .SetCacheable(true));
 				var items = await (multiQuery.GetResultAsync<Item>(0));
 				Assert.That(
 					items.Count,
@@ -491,14 +491,14 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var getItems = s.CreateQuery("from Item i where i.Id > :id")
-				                .SetInt32("id", 50)
-				                .SetFirstResult(10);
+								.SetInt32("id", 50)
+								.SetFirstResult(10);
 				var countItems = s.CreateQuery("select count(*) from Item i where i.Id > :id")
-				                  .SetInt32("id", 50);
+								  .SetInt32("id", 50);
 
 				var queries = s.CreateQueryBatch()
-				               .Add<Item>(getItems)
-				               .Add<long>(countItems);
+							   .Add<Item>(getItems)
+							   .Add<long>(countItems);
 				var items = await (queries.GetResultAsync<Item>(0));
 				Assert.That(items.Count, Is.EqualTo(89));
 				var count = (await (queries.GetResultAsync<long>(1))).Single();
@@ -519,16 +519,16 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var queries = s.CreateQueryBatch()
-				               .Add<Item>(
-					               s.CreateQuery("from Item i where i.id in (:items)")
-					                .SetParameterList(
-						                "items",
-						                new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }))
-				               .Add<long>(
-					               s.CreateQuery("select count(*) from Item i where i.id in (:items)")
-					                .SetParameterList(
-						                "items",
-						                new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }));
+							   .Add<Item>(
+								   s.CreateQuery("from Item i where i.id in (:items)")
+									.SetParameterList(
+										"items",
+										new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }))
+							   .Add<long>(
+								   s.CreateQuery("select count(*) from Item i where i.id in (:items)")
+									.SetParameterList(
+										"items",
+										new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }));
 
 				var items = await (queries.GetResultAsync<Item>(0));
 				Assert.That(items.First().Id, Is.EqualTo(1));
@@ -554,8 +554,8 @@ namespace NHibernate.Test.QueryTest
 				var countItems = s.CreateQuery("select count(*) from Item");
 
 				var queries = s.CreateQueryBatch()
-				               .Add<Item>(getItems)
-				               .Add<long>(countItems);
+							   .Add<Item>(getItems)
+							   .Add<long>(countItems);
 				var items = await (queries.GetResultAsync<Item>(0));
 				var fromDb = items.First();
 				Assert.That(fromDb.Id, Is.EqualTo(1));
@@ -575,7 +575,7 @@ namespace NHibernate.Test.QueryTest
 				var multiQuery = session.CreateQueryBatch();
 
 				var firstQuery = session.CreateQuery("from Item i where i.Id < :id")
-				                        .SetInt32("id", 50);
+										.SetInt32("id", 50);
 
 				var secondQuery = session.CreateQuery("from Item");
 
@@ -597,10 +597,10 @@ namespace NHibernate.Test.QueryTest
 			{
 				var transformer = new ResultTransformerStub();
 				var criteria = session.CreateQuery("from Item")
-				                      .SetResultTransformer(transformer);
+									  .SetResultTransformer(transformer);
 				await (session.CreateQueryBatch()
-				       .Add<object[]>(criteria)
-				       .GetResultAsync<object[]>(0));
+					   .Add<object[]>(criteria)
+					   .GetResultAsync<object[]>(0));
 
 				Assert.That(transformer.WasTransformTupleCalled, Is.True, "Transform Tuple was not called");
 				Assert.That(transformer.WasTransformListCalled, Is.True, "Transform List was not called");
@@ -612,15 +612,15 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var multiQuery = s.CreateQueryBatch()
-				                  .Add<Item>(
-					                  s.CreateQuery("from Item i where i.Id > ?")
-					                   .SetInt32(0, 50)
-					                   .SetFirstResult(10)
-					                   .SetCacheable(true))
-				                  .Add<long>(
-					                  s.CreateQuery("select count(*) from Item i where i.Id > ?")
-					                   .SetInt32(0, 50)
-					                   .SetCacheable(true));
+								  .Add<Item>(
+									  s.CreateQuery("from Item i where i.Id > ?")
+									   .SetInt32(0, 50)
+									   .SetFirstResult(10)
+									   .SetCacheable(true))
+								  .Add<long>(
+									  s.CreateQuery("select count(*) from Item i where i.Id > ?")
+									   .SetInt32(0, 50)
+									   .SetCacheable(true));
 				var items = await (multiQuery.GetResultAsync<Item>(0, cancellationToken));
 				Assert.That(items.Count, Is.EqualTo(89));
 				var count = (await (multiQuery.GetResultAsync<long>(1, cancellationToken))).Single();
@@ -638,10 +638,10 @@ namespace NHibernate.Test.QueryTest
 			using (var s = Sfi.OpenSession())
 			{
 				var multiQuery = s.CreateQueryBatch()
-				                  .Add<Item>(
-					                  s.CreateSQLQuery("select * from ITEM where Id in (:ids)")
-					                   .AddEntity(typeof(Item)))
-				                  .Add<Item>(s.CreateQuery("from Item i where i.Id in (:ids2)"));
+								  .Add<Item>(
+									  s.CreateSQLQuery("select * from ITEM where Id in (:ids)")
+									   .AddEntity(typeof(Item)))
+								  .Add<Item>(s.CreateQuery("from Item i where i.Id in (:ids2)"));
 				var e = Assert.ThrowsAsync<QueryException>(() => multiQuery.ExecuteAsync());
 				Assert.That(
 					e.Message,
@@ -692,16 +692,16 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var multiQuery = s.CreateQueryBatch()
-				                  .Add<Item>(
-					                  s.CreateQuery("from Item i where i.Id > ?")
-					                   .SetInt32(0, 50)
-					                   .SetFirstResult(10)
-					                   .SetCacheable(true))
-				                  .Add<long>(
-					                  s.CreateSQLQuery("select count(*) as itemCount from ITEM where Id > ?")
-					                   .AddScalar("itemCount", NHibernateUtil.Int64)
-					                   .SetInt32(0, 50)
-					                   .SetCacheable(true));
+								  .Add<Item>(
+									  s.CreateQuery("from Item i where i.Id > ?")
+									   .SetInt32(0, 50)
+									   .SetFirstResult(10)
+									   .SetCacheable(true))
+								  .Add<long>(
+									  s.CreateSQLQuery("select count(*) as itemCount from ITEM where Id > ?")
+									   .AddScalar("itemCount", NHibernateUtil.Int64)
+									   .SetInt32(0, 50)
+									   .SetCacheable(true));
 
 				var items = await (multiQuery.GetResultAsync<Item>(0));
 				Assert.That(items.Count, Is.EqualTo(89));
@@ -712,16 +712,16 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var multiQuery = s.CreateQueryBatch()
-				                  .Add<Item>(
-					                  s.CreateQuery("from Item i where i.Id > ?")
-					                   .SetInt32(0, 50)
-					                   .SetFirstResult(20)
-					                   .SetCacheable(true))
-				                  .Add<long>(
-					                  s.CreateSQLQuery("select count(*) as itemCount from ITEM where Id > ?")
-					                   .AddScalar("itemCount", NHibernateUtil.Int64)
-					                   .SetInt32(0, 50)
-					                   .SetCacheable(true));
+								  .Add<Item>(
+									  s.CreateQuery("from Item i where i.Id > ?")
+									   .SetInt32(0, 50)
+									   .SetFirstResult(20)
+									   .SetCacheable(true))
+								  .Add<long>(
+									  s.CreateSQLQuery("select count(*) as itemCount from ITEM where Id > ?")
+									   .AddScalar("itemCount", NHibernateUtil.Int64)
+									   .SetInt32(0, 50)
+									   .SetCacheable(true));
 				var items = await (multiQuery.GetResultAsync<Item>(0));
 				Assert.That(
 					items.Count,
@@ -754,15 +754,15 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var getItems = s.CreateSQLQuery("select * from ITEM where Id > :id")
-				                .AddEntity(typeof(Item))
-				                .SetFirstResult(10)
-				                .SetInt32("id", 50);
+								.AddEntity(typeof(Item))
+								.SetFirstResult(10)
+								.SetInt32("id", 50);
 				var countItems = s.CreateQuery("select count(*) from Item i where i.Id > :id")
-				                  .SetInt32("id", 50);
+								  .SetInt32("id", 50);
 
 				var queries = s.CreateQueryBatch()
-				               .Add<Item>(getItems)
-				               .Add<long>(countItems);
+							   .Add<Item>(getItems)
+							   .Add<long>(countItems);
 				var items = await (queries.GetResultAsync<Item>(0));
 				Assert.That(items.Count, Is.EqualTo(89));
 				var count = (await (queries.GetResultAsync<long>(1))).Single();
@@ -783,16 +783,16 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var queries = s.CreateQueryBatch()
-				               .Add<Item>(
-					               s.CreateSQLQuery("select * from ITEM where Id in (:items)")
-					                .AddEntity(typeof(Item))
-					                .SetParameterList(
-						                "items",
-						                new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }))
-				               .Add<long>(s.CreateQuery("select count(*) from Item i where i.id in (:items)")
-				                     .SetParameterList(
-					                     "items",
-					                     new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }));
+							   .Add<Item>(
+								   s.CreateSQLQuery("select * from ITEM where Id in (:items)")
+									.AddEntity(typeof(Item))
+									.SetParameterList(
+										"items",
+										new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }))
+							   .Add<long>(s.CreateQuery("select count(*) from Item i where i.id in (:items)")
+									 .SetParameterList(
+										 "items",
+										 new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 }));
 
 				var items = await (queries.GetResultAsync<Item>(0));
 				var fromDb = items.First();
@@ -819,8 +819,8 @@ namespace NHibernate.Test.QueryTest
 				var countItems = s.CreateQuery("select count(*) from Item");
 
 				var queries = s.CreateQueryBatch()
-				               .Add<Item>(getItems)
-				               .Add<long>(countItems);
+							   .Add<Item>(getItems)
+							   .Add<long>(countItems);
 				var items = await (queries.GetResultAsync<Item>(0));
 				var fromDb = items.First();
 				Assert.That(fromDb.Id, Is.EqualTo(1));
@@ -840,8 +840,8 @@ namespace NHibernate.Test.QueryTest
 				var multiQuery = session.CreateQueryBatch();
 
 				var firstQuery = session.CreateSQLQuery("select * from ITEM where Id < :id")
-				                        .AddEntity(typeof(Item))
-				                        .SetInt32("id", 50);
+										.AddEntity(typeof(Item))
+										.SetInt32("id", 50);
 
 				var secondQuery = session.CreateQuery("from Item");
 
@@ -863,11 +863,11 @@ namespace NHibernate.Test.QueryTest
 			{
 				var transformer = new ResultTransformerStub();
 				var query = session.CreateSQLQuery("select * from ITEM")
-				                   .AddEntity(typeof(Item))
-				                   .SetResultTransformer(transformer);
+								   .AddEntity(typeof(Item))
+								   .SetResultTransformer(transformer);
 				await (session.CreateQueryBatch()
-				       .Add<object[]>(query)
-				       .GetResultAsync<object[]>(0));
+					   .Add<object[]>(query)
+					   .GetResultAsync<object[]>(0));
 
 				Assert.That(transformer.WasTransformTupleCalled, Is.True, "Transform Tuple was not called");
 				Assert.That(transformer.WasTransformListCalled, Is.True, "Transform List was not called");
@@ -884,7 +884,7 @@ namespace NHibernate.Test.QueryTest
 				var multiCriteria = session.CreateQueryBatch();
 
 				var firstCriteria = session.CreateCriteria(typeof(Item))
-				                           .Add(Restrictions.Lt("id", 50));
+										   .Add(Restrictions.Lt("id", 50));
 
 				multiCriteria.Add<Item>("firstCriteria", firstCriteria);
 
@@ -899,16 +899,16 @@ namespace NHibernate.Test.QueryTest
 			using (var s = OpenSession())
 			{
 				var multiQuery = s.CreateQueryBatch()
-				                  .Add<Item>(
-					                  s.CreateSQLQuery("select * from ITEM where Id > ?")
-					                   .AddEntity(typeof(Item))
-					                   .SetInt32(0, 50)
-					                   .SetFirstResult(10)
-					                   .SetCacheable(true))
-				                  .Add<long>(
-					                  s.CreateQuery("select count(*) from Item i where i.Id > ?")
-					                   .SetInt32(0, 50)
-					                   .SetCacheable(true));
+								  .Add<Item>(
+									  s.CreateSQLQuery("select * from ITEM where Id > ?")
+									   .AddEntity(typeof(Item))
+									   .SetInt32(0, 50)
+									   .SetFirstResult(10)
+									   .SetCacheable(true))
+								  .Add<long>(
+									  s.CreateQuery("select count(*) from Item i where i.Id > ?")
+									   .SetInt32(0, 50)
+									   .SetCacheable(true));
 				var items = await (multiQuery.GetResultAsync<Item>(0, cancellationToken));
 				Assert.That(items.Count, Is.EqualTo(89));
 				var count = (await (multiQuery.GetResultAsync<long>(1, cancellationToken))).Single();

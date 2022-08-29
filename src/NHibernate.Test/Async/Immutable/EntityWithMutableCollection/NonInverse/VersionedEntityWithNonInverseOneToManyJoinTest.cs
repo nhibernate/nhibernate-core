@@ -9,8 +9,8 @@
 
 
 using System;
-using NUnit.Framework;
 using NHibernate.Test.Immutable.EntityWithMutableCollection;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Immutable.EntityWithMutableCollection.NonInverse
 {
@@ -25,14 +25,14 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.NonInverse
 				return new string[] { "Immutable.EntityWithMutableCollection.NonInverse.ContractVariationVersionedOneToManyJoin.hbm.xml" };
 			}
 		}
-		
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override Task AddExistingOneToManyElementToPersistentEntityAsync()
 		{
 			return Task.CompletedTask;
 		}
-		
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override Task CreateWithEmptyOneToManyCollectionUpdateWithExistingElementAsync()
@@ -46,14 +46,14 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.NonInverse
 		{
 			return Task.CompletedTask;
 		}
-		
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override Task CreateWithNonEmptyOneToManyCollectionOfExistingAsync()
 		{
 			return Task.CompletedTask;
 		}
-			
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override Task DeleteOneToManyElementAsync()
@@ -67,14 +67,14 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection.NonInverse
 		{
 			return Task.CompletedTask;
 		}
-		
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override Task RemoveOneToManyElementUsingMergeAsync()
 		{
 			return Task.CompletedTask;
 		}
-		
+
 		[Test]
 		[Ignore("Fails. Passes in Hibernate because nullability check on Contract.Party (with JOIN mapping) is skipped due to 'check_nullability' setting not implemented by NH.")]
 		public override Task RemoveOneToManyElementUsingUpdateAsync()

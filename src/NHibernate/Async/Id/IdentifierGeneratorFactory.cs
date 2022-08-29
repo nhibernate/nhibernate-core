@@ -12,11 +12,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
-
 using NHibernate.Engine;
+using NHibernate.Id.Enhanced;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.Id.Enhanced;
 
 namespace NHibernate.Id
 {

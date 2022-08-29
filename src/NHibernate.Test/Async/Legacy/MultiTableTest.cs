@@ -28,7 +28,7 @@ namespace NHibernate.Test.Legacy
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"Multi.hbm.xml", "MultiExtends.hbm.xml"}; }
+			get { return new string[] { "Multi.hbm.xml", "MultiExtends.hbm.xml" }; }
 		}
 
 		[Test]
@@ -68,8 +68,8 @@ namespace NHibernate.Test.Legacy
 			SubMulti sm = new SubMulti();
 			SubMulti sm1 = new SubMulti();
 			SubMulti sm2 = new SubMulti();
-			sm.Children = new List<SubMulti> {sm1, sm2};
-			sm.MoreChildren = new List<SubMulti> {sm1, sm2};
+			sm.Children = new List<SubMulti> { sm1, sm2 };
+			sm.MoreChildren = new List<SubMulti> { sm1, sm2 };
 			sm.ExtraProp = "foo";
 			sm1.Parent = sm;
 			sm2.Parent = sm;
@@ -323,7 +323,7 @@ namespace NHibernate.Test.Legacy
 			s = OpenSession();
 			t = s.BeginTransaction();
 			if (TestDialect.SupportsSelectForUpdateOnOuterJoin)
-				multi = (MultiEntity)await (s.LoadAsync(typeof(Top), mid, LockMode.Upgrade));
+				multi = (MultiEntity) await (s.LoadAsync(typeof(Top), mid, LockMode.Upgrade));
 			simp = (Top) await (s.LoadAsync(typeof(Top), sid));
 			await (s.LockAsync(simp, LockMode.UpgradeNoWait));
 			await (t.CommitAsync());
@@ -422,7 +422,7 @@ namespace NHibernate.Test.Legacy
 
 			await (s.CreateQuery("from ls in class Lower, s in elements(ls.Bag) where s.id is not null").ListAsync());
 			await (s.CreateQuery("from sm in class SubMulti where exists elements(sm.Children)").ListAsync());
-			
+
 			await (t.CommitAsync());
 			s.Close();
 
@@ -613,8 +613,8 @@ namespace NHibernate.Test.Legacy
 			Po po = new Po();
 			multi1.Po = po;
 			multi2.Po = po;
-			po.Set = new HashSet<MultiEntity> {multi1, multi2};
-			po.List = new List<SubMulti> {new SubMulti()};
+			po.Set = new HashSet<MultiEntity> { multi1, multi2 };
+			po.List = new List<SubMulti> { new SubMulti() };
 			object id = await (s.SaveAsync(po));
 			Assert.IsNotNull(id);
 			await (t.CommitAsync());

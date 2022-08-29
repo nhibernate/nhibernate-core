@@ -8,21 +8,21 @@
 //------------------------------------------------------------------------------
 
 
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Hql;
 using NHibernate.Param;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
-using NHibernate.Persister;
 
 namespace NHibernate.Loader.Custom
 {
@@ -43,7 +43,7 @@ namespace NHibernate.Loader.Custom
 		// Not ported: scroll
 
 		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer resultTransformer, DbDataReader rs,
-		                                               ISessionImplementor session, CancellationToken cancellationToken)
+													   ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

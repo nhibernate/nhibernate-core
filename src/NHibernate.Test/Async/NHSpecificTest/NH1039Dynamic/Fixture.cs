@@ -46,7 +46,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1039Dynamic
 				await (s.SaveAsync(person));
 				await (tx.CommitAsync());
 			}
-			
+
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
 			{

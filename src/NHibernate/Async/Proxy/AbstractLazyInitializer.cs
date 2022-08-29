@@ -17,7 +17,7 @@ namespace NHibernate.Proxy
 	using System.Threading;
 	public abstract partial class AbstractLazyInitializer : ILazyInitializer
 	{
-		
+
 		/// <summary>
 		/// Perform an ImmediateLoad of the actual object for the Proxy.
 		/// </summary>

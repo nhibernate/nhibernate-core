@@ -87,8 +87,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 			var expectedException = Sfi.Settings.IsBatchVersionedDataEnabled
 				? (IResolveConstraint) Throws.InstanceOf<StaleStateException>()
 				: Throws.InstanceOf<StaleObjectStateException>()
-				        .And.Property("EntityName").EqualTo(typeof(Person).FullName)
-				        .And.Property("Identifier").EqualTo(p2.Id);
+						.And.Property("EntityName").EqualTo(typeof(Person).FullName)
+						.And.Property("Identifier").EqualTo(p2.Id);
 
 			Assert.That(() => SavePersonAsync(p2), expectedException);
 		}
@@ -124,8 +124,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 					var expectedException = Sfi.Settings.IsBatchVersionedDataEnabled
 						? (IConstraint) Throws.InstanceOf<StaleStateException>()
 						: Throws.InstanceOf<StaleObjectStateException>()
-						        .And.Property("EntityName").EqualTo(typeof(Person).FullName)
-						        .And.Property("Identifier").EqualTo(p2.Id);
+								.And.Property("EntityName").EqualTo(typeof(Person).FullName)
+								.And.Property("Identifier").EqualTo(p2.Id);
 
 					Assert.That(
 						async () =>
@@ -207,7 +207,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 		{
 			base.Configure(configuration);
 			configuration.SetProperty(Environment.SqlExceptionConverter,
-			                          typeof (SQLUpdateConflictToStaleStateExceptionConverter).AssemblyQualifiedName);
+									  typeof(SQLUpdateConflictToStaleStateExceptionConverter).AssemblyQualifiedName);
 		}
 	}
 }

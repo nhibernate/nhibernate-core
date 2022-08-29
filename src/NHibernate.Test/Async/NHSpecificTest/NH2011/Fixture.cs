@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2011
 			{
 				using (ITransaction tx = session.BeginTransaction())
 				{
-					await (session.SaveAsync(new Country {CountryCode = "SE"}));
+					await (session.SaveAsync(new Country { CountryCode = "SE" }));
 					await (tx.CommitAsync());
 				}
 			}
@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2011
 			var newOrder = new Order();
 			newOrder.GroupComponent = new GroupComponent();
 			newOrder.GroupComponent.Countries = new List<Country>();
-			newOrder.GroupComponent.Countries.Add(new Country {CountryCode = "SE"});
+			newOrder.GroupComponent.Countries.Add(new Country { CountryCode = "SE" });
 
 			Order mergedCopy;
 			using (ISession session = OpenSession())

@@ -21,19 +21,19 @@ namespace NHibernate.Test.Criteria
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override string[] Mappings => new [] {"Criteria.Enrolment.hbm.xml"};
+		protected override string[] Mappings => new[] { "Criteria.Enrolment.hbm.xml" };
 
 		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.Save(new Student {StudentNumber = 6L, Name = "testa"});
-				session.Save(new Student {StudentNumber = 5L, Name = "testz"});
-				session.Save(new Student {StudentNumber = 4L, Name = "test1"});
-				session.Save(new Student {StudentNumber = 3L, Name = "test2"});
-				session.Save(new Student {StudentNumber = 2L, Name = "test998"});
-				session.Save(new Student {StudentNumber = 1L, Name = "test999"});
+				session.Save(new Student { StudentNumber = 6L, Name = "testa" });
+				session.Save(new Student { StudentNumber = 5L, Name = "testz" });
+				session.Save(new Student { StudentNumber = 4L, Name = "test1" });
+				session.Save(new Student { StudentNumber = 3L, Name = "test2" });
+				session.Save(new Student { StudentNumber = 2L, Name = "test998" });
+				session.Save(new Student { StudentNumber = 1L, Name = "test999" });
 				transaction.Commit();
 			}
 		}

@@ -42,30 +42,30 @@ namespace NHibernate.Hql.Ast.ANTLR
 			cancellationToken.ThrowIfCancellationRequested();
 			// Delegate to the QueryLoader...
 			ErrorIfDML();
-			var query = ( QueryNode ) _sqlAst;
+			var query = (QueryNode) _sqlAst;
 			bool hasLimit = queryParameters.RowSelection != null && queryParameters.RowSelection.DefinesLimits;
-			bool needsDistincting = ( query.GetSelectClause().IsDistinct || hasLimit ) && ContainsCollectionFetches;
+			bool needsDistincting = (query.GetSelectClause().IsDistinct || hasLimit) && ContainsCollectionFetches;
 
 			QueryParameters queryParametersToUse;
 
-			if ( hasLimit && ContainsCollectionFetches ) 
+			if (hasLimit && ContainsCollectionFetches)
 			{
-				log.Warn( "firstResult/maxResults specified with collection fetch; applying in memory!" );
+				log.Warn("firstResult/maxResults specified with collection fetch; applying in memory!");
 				var selection = new RowSelection
-											{
-												FetchSize = queryParameters.RowSelection.FetchSize,
-												Timeout = queryParameters.RowSelection.Timeout
-											};
-				queryParametersToUse = queryParameters.CreateCopyUsing( selection );
+				{
+					FetchSize = queryParameters.RowSelection.FetchSize,
+					Timeout = queryParameters.RowSelection.Timeout
+				};
+				queryParametersToUse = queryParameters.CreateCopyUsing(selection);
 			}
-			else 
+			else
 			{
 				queryParametersToUse = queryParameters;
 			}
 
 			IList results = await (_queryLoader.ListAsync(session, queryParametersToUse, cancellationToken)).ConfigureAwait(false);
 
-			if ( needsDistincting ) 
+			if (needsDistincting)
 			{
 				int includedCount = -1;
 				// NOTE : firstRow is zero-based
@@ -80,21 +80,21 @@ namespace NHibernate.Hql.Ast.ANTLR
 				var tmp = new List<object>();
 				var distinction = new HashSet<object>(ReferenceComparer<object>.Instance);
 
-				for ( int i = 0; i < size; i++ ) 
+				for (int i = 0; i < size; i++)
 				{
 					object result = results[i];
-					if ( !distinction.Add(result ) ) 
+					if (!distinction.Add(result))
 					{
 						continue;
 					}
 					includedCount++;
-					if ( includedCount < first ) 
+					if (includedCount < first)
 					{
 						continue;
 					}
-					tmp.Add( result );
+					tmp.Add(result);
 					// NOTE : ( max - 1 ) because first is zero-based while max is not...
-					if ( max >= 0 && ( includedCount - first ) >= ( max - 1 ) ) 
+					if (max >= 0 && (includedCount - first) >= (max - 1))
 					{
 						break;
 					}

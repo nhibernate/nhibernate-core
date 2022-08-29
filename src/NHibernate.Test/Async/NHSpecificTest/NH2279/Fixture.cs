@@ -8,10 +8,9 @@
 //------------------------------------------------------------------------------
 
 
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Collections;
-
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2279
@@ -22,9 +21,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2279
 	{
 		protected override void OnTearDown()
 		{
-			using( ISession s = Sfi.OpenSession() )
+			using (ISession s = Sfi.OpenSession())
 			{
-				s.Delete( "from A" );
+				s.Delete("from A");
 				s.Flush();
 			}
 		}
@@ -44,8 +43,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2279
 			s.Close();
 
 			s = OpenSession();
-			a = (A)await (s.LoadAsync(typeof(A), a.Id));
-			CollectionAssert.AreEquivalent(new[] {"a", "b", "c"}, a.Items);
+			a = (A) await (s.LoadAsync(typeof(A), a.Id));
+			CollectionAssert.AreEquivalent(new[] { "a", "b", "c" }, a.Items);
 
 			// Add and remove a "transient" item.
 			a.Items.Add("d");
@@ -67,8 +66,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2279
 			s.Close();
 
 			s = OpenSession();
-			a = (A)await (s.LoadAsync(typeof(A), a.Id));
-			CollectionAssert.AreEquivalent(new [] {"c", "e", "f", "g", "h"}, a.Items);
+			a = (A) await (s.LoadAsync(typeof(A), a.Id));
+			CollectionAssert.AreEquivalent(new[] { "c", "e", "f", "g", "h" }, a.Items);
 
 			// Test changing a value by index directly.
 			a.Items[2] = "i";
@@ -80,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2279
 			s.Close();
 
 			s = OpenSession();
-			a = (A)await (s.LoadAsync(typeof(A), a.Id));
+			a = (A) await (s.LoadAsync(typeof(A), a.Id));
 			CollectionAssert.AreEquivalent(expected, a.Items);
 
 			await (s.FlushAsync());

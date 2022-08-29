@@ -9,8 +9,8 @@
 
 
 using System.Collections;
-using NHibernate.DomainModel;
 using NHibernate.Criterion;
+using NHibernate.DomainModel;
 using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest
@@ -21,7 +21,7 @@ namespace NHibernate.Test.ExpressionTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"Componentizable.hbm.xml"}; }
+			get { return new string[] { "Componentizable.hbm.xml" }; }
 		}
 
 		[Test]

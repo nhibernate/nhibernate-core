@@ -52,7 +52,7 @@ namespace NHibernate.Type
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Array org = (Array) original;
-			Array result = (Array)target;
+			Array result = (Array) target;
 
 			int length = org.Length;
 			if (length != result.Length)

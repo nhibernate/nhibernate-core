@@ -24,8 +24,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1549
 		public async Task CanLoadForEntitiesWithInheritedIdsAsync()
 		{
 			//create some related products
-			var category = new CategoryWithInheritedId {Name = "Fruit"};
-			var product = new ProductWithInheritedId {CategoryWithInheritedId = category};
+			var category = new CategoryWithInheritedId { Name = "Fruit" };
+			var product = new ProductWithInheritedId { CategoryWithInheritedId = category };
 
 			using (ISession session = OpenSession())
 			{
@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1549
 			{
 				restoredProductWithInheritedId = await (session.GetAsync<ProductWithInheritedId>(product.Id));
 			}
-			
+
 			//verify that the category is a proxy
 			Assert.IsFalse(NHibernateUtil.IsInitialized(restoredProductWithInheritedId.CategoryWithInheritedId));
 
@@ -85,11 +85,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1549
 			//we should be able to access the id of the category outside of the session
 			Assert.AreEqual(category.Id, restoredProductWithInheritedId.CategoryWithId.Id);
 		}
-		
+
 		protected override void OnTearDown()
 		{
-			using (ISession session = OpenSession()) {
-				using (ITransaction trans = session.BeginTransaction()) 
+			using (ISession session = OpenSession())
+			{
+				using (ITransaction trans = session.BeginTransaction())
 				{
 					session.Delete("from ProductWithId");
 					session.Delete("from CategoryWithId");
@@ -97,7 +98,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1549
 					session.Delete("from CategoryWithInheritedId");
 					trans.Commit();
 				}
-			}	
+			}
 		}
 	}
 }

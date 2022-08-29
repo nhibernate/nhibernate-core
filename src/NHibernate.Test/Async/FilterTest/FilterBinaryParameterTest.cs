@@ -20,7 +20,7 @@ namespace NHibernate.Test.FilterTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"FilterTest.BinaryFiltered.hbm.xml"}; }
+			get { return new string[] { "FilterTest.BinaryFiltered.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly
@@ -33,7 +33,7 @@ namespace NHibernate.Test.FilterTest
 		{
 			using (ISession session = OpenSession())
 			{
-				byte[] binValue = {0xFF, 0xFF, 0xFF};
+				byte[] binValue = { 0xFF, 0xFF, 0xFF };
 				session.EnableFilter("BinaryFilter").SetParameter("BinaryValue", binValue);
 				IQuery query = session.CreateQuery("from BinaryFiltered");
 				await (query.ListAsync());

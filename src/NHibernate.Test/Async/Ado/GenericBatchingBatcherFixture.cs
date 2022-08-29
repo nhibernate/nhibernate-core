@@ -28,7 +28,7 @@ namespace NHibernate.Test.Ado
 	{
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override string[] Mappings => new[] {"Ado.VerySimple.hbm.xml"};
+		protected override string[] Mappings => new[] { "Ado.VerySimple.hbm.xml" };
 
 		protected override void Configure(Configuration configuration)
 		{
@@ -40,13 +40,13 @@ namespace NHibernate.Test.Ado
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
 			return !(dialect is FirebirdDialect) &&
-			       !(dialect is Oracle8iDialect) &&
-			       !(dialect is MsSqlCeDialect) &&
-			       !(dialect is HanaDialectBase) &&
-			       // A workaround exists for SQL Anywhere, see https://stackoverflow.com/a/32860293/1178314
-			       // It would imply some tweaking in the generic batcher. The same workaround could
-			       // be used for enabling future support.
-			       !(dialect is SybaseSQLAnywhere10Dialect);
+				   !(dialect is Oracle8iDialect) &&
+				   !(dialect is MsSqlCeDialect) &&
+				   !(dialect is HanaDialectBase) &&
+				   // A workaround exists for SQL Anywhere, see https://stackoverflow.com/a/32860293/1178314
+				   // It would imply some tweaking in the generic batcher. The same workaround could
+				   // be used for enabling future support.
+				   !(dialect is SybaseSQLAnywhere10Dialect);
 		}
 
 		[Test]
@@ -179,7 +179,7 @@ namespace NHibernate.Test.Ado
 			{
 				for (var i = 0; i < totalRecords; i++)
 				{
-					await (s.SaveAsync(new VerySimple {Id = 1 + i, Name = $"Fabio{i}", Weight = 1.45 + i}, cancellationToken));
+					await (s.SaveAsync(new VerySimple { Id = 1 + i, Name = $"Fabio{i}", Weight = 1.45 + i }, cancellationToken));
 				}
 				await (tx.CommitAsync(cancellationToken));
 			}

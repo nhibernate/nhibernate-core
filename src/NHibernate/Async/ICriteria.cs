@@ -39,7 +39,7 @@ namespace NHibernate
 		/// If there is more than one matching result
 		/// </exception>
 		Task<object> UniqueResultAsync(CancellationToken cancellationToken = default(CancellationToken));
-	
+
 		#region NHibernate specific
 
 		/// <summary>

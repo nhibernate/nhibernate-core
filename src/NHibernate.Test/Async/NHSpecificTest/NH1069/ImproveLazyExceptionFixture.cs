@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class ImproveLazyExceptionFixtureAsync: BugTestCase
+	public class ImproveLazyExceptionFixtureAsync : BugTestCase
 	{
 		[Test]
 		public async Task LazyEntityAsync()
@@ -34,8 +34,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 				le = await (s.LoadAsync<LazyE>(savedId));
 			}
 			string n;
-			var ex = Assert.Throws<LazyInitializationException>(() => n= le.Name);
-			Assert.That(ex.EntityName, Is.EqualTo(typeof (LazyE).FullName));
+			var ex = Assert.Throws<LazyInitializationException>(() => n = le.Name);
+			Assert.That(ex.EntityName, Is.EqualTo(typeof(LazyE).FullName));
 			Assert.That(ex.EntityId, Is.EqualTo(1));
 			Assert.That(ex.Message, Does.Contain(typeof(LazyE).FullName));
 			Assert.That(ex.Message, Does.Contain("#1"));
@@ -52,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1069
 		[Test]
 		public async Task LazyCollectionAsync()
 		{
-			object savedId=1;
+			object savedId = 1;
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{

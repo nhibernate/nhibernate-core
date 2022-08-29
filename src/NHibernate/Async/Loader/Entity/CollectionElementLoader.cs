@@ -55,7 +55,7 @@ namespace NHibernate.Loader.Entity
 		}
 
 		protected override Task<object> GetResultColumnOrRowAsync(object[] row, IResultTransformer transformer, DbDataReader rs,
-		                                               ISessionImplementor session, CancellationToken cancellationToken)
+													   ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{

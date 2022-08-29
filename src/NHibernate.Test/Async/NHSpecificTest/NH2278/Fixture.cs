@@ -10,9 +10,8 @@
 
 using System;
 using System.Collections;
-
-using NUnit.Framework;
 using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2278
 {
@@ -22,9 +21,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2278
 	{
 		protected override void OnTearDown()
 		{
-			using( ISession s = Sfi.OpenSession() )
+			using (ISession s = Sfi.OpenSession())
 			{
-				s.Delete( "from CustomA" );
+				s.Delete("from CustomA");
 				s.Flush();
 			}
 		}
@@ -35,8 +34,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2278
 			CustomA a = new CustomA();
 			a.Name = "first generic type";
 			a.Items = new CustomList<string>();
-			a.Items.Add( "first string" );
-			a.Items.Add( "second string" );
+			a.Items.Add("first string");
+			a.Items.Add("second string");
 
 			ISession s = OpenSession();
 			await (s.SaveOrUpdateAsync(a));

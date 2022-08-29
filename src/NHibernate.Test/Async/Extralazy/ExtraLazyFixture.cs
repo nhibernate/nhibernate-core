@@ -29,7 +29,7 @@ namespace NHibernate.Test.Extralazy
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"Extralazy.UserGroup.hbm.xml"}; }
+			get { return new[] { "Extralazy.UserGroup.hbm.xml" }; }
 		}
 
 		protected override string CacheConcurrencyStrategy
@@ -71,7 +71,7 @@ namespace NHibernate.Test.Extralazy
 					addedItems.Add(item);
 					gavin.Companies.Add(item);
 				}
-				
+
 				await (t.CommitAsync());
 			}
 
@@ -470,7 +470,7 @@ namespace NHibernate.Test.Extralazy
 		{
 			User gavin;
 			var addedItems = new List<Company>();
-			var finalIndexOrder = new List<int> {0, 1, 2, 6, 8, 9};
+			var finalIndexOrder = new List<int> { 0, 1, 2, 6, 8, 9 };
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
@@ -538,7 +538,7 @@ namespace NHibernate.Test.Extralazy
 
 				// Check existence of companies
 				Sfi.Statistics.Clear();
-				var removedIndexes = new HashSet<int> {3, 4, 5, 7};
+				var removedIndexes = new HashSet<int> { 3, 4, 5, 7 };
 				for (var i = 0; i < addedItems.Count; i++)
 				{
 					Assert.That(
@@ -595,7 +595,7 @@ namespace NHibernate.Test.Extralazy
 		{
 			User gavin;
 			var addedItems = new List<Company>();
-			var finalIndexOrder = new List<int> {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+			var finalIndexOrder = new List<int> { 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
@@ -1068,7 +1068,7 @@ namespace NHibernate.Test.Extralazy
 		public async Task ListIndexOperationsAsync(bool initialize)
 		{
 			User gavin;
-			var finalIndexOrder = new List<int> {6, 0, 4};
+			var finalIndexOrder = new List<int> { 6, 0, 4 };
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
@@ -1662,7 +1662,7 @@ namespace NHibernate.Test.Extralazy
 				{
 					var document = new Document($"document2{i}", $"content{i}", gavin);
 					addedDocuments.Add(document);
-					((ICollection<Document>)gavin.Documents).Add(document);
+					((ICollection<Document>) gavin.Documents).Add(document);
 				}
 
 				Assert.That(gavin.Documents.Count, Is.EqualTo(10), "Gavin's documents count after adding 5");
@@ -2324,8 +2324,8 @@ namespace NHibernate.Test.Extralazy
 
 				await (t.CommitAsync());
 			}
-			await (Sfi.EvictAsync(typeof (User)));
-			await (Sfi.EvictAsync(typeof (Photo)));
+			await (Sfi.EvictAsync(typeof(User)));
+			await (Sfi.EvictAsync(typeof(Photo)));
 		}
 
 		[Test]

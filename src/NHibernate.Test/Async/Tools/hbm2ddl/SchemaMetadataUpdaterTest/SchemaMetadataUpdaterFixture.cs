@@ -100,7 +100,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 				connectionHelper.Release();
 			}
 
-			var sf = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
+			var sf = (ISessionFactoryImplementor) configuration.BuildSessionFactory();
 
 			// use the dialect as configured, with no update
 			var match = reservedDb.Intersect(sf.Dialect.Keywords).ToList();
@@ -145,7 +145,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 				connectionHelper.Release();
 			}
 
-			var sf = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
+			var sf = (ISessionFactoryImplementor) configuration.BuildSessionFactory();
 
 			// use the dialect as configured, with no update
 			// tests that nothing in Dialect.Keyword is not in metaData.GetReservedWords()
@@ -210,7 +210,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			configuration.SetProperty(Environment.Hbm2ddlKeyWords, "auto-quote");
 			configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml",
 																GetType().Assembly);
-			var sf = (ISessionFactoryImplementor)configuration.BuildSessionFactory();
+			var sf = (ISessionFactoryImplementor) configuration.BuildSessionFactory();
 			var match = reservedDb.Intersect(sf.Dialect.Keywords, StringComparer.OrdinalIgnoreCase);
 			Assert.That(match, Is.EquivalentTo(reservedDb).IgnoreCase);
 		}
@@ -232,7 +232,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			using (ISession s = sf.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new Order {From = "from", Column = "column", And = "order"}));
+				await (s.SaveAsync(new Order { From = "from", Column = "column", And = "order" }));
 				await (t.CommitAsync());
 			}
 
@@ -243,7 +243,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 				await (t.CommitAsync());
 			}
 
-			TestCase.DropSchema(false, new SchemaExport(configuration), (ISessionFactoryImplementor)sf);
+			TestCase.DropSchema(false, new SchemaExport(configuration), (ISessionFactoryImplementor) sf);
 		}
 
 		[Test]
@@ -255,7 +255,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			if (typeof(OdbcDriver).IsAssignableFrom(driverClass) || typeof(OleDbDriver).IsAssignableFrom(driverClass))
 				Assert.Ignore("Test is not compatible with OleDb or ODBC driver connection strings");
 			var configuredDialect = Dialect.Dialect.GetDialect(configuration.Properties);
-			if(!configuredDialect.DefaultProperties.ContainsKey(Environment.ConnectionDriver))
+			if (!configuredDialect.DefaultProperties.ContainsKey(Environment.ConnectionDriver))
 			{
 				Assert.Ignore(GetType() + " does not apply to " + configuredDialect);
 			}

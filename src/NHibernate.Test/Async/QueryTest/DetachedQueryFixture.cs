@@ -38,7 +38,7 @@ namespace NHibernate.Test.QueryTest
 		protected override void OnSetUp()
 		{
 			using (var s = OpenSession())
-			using(var tx = s.BeginTransaction())
+			using (var tx = s.BeginTransaction())
 			{
 				for (int i = 0; i < totalFoo; i++)
 				{
@@ -52,7 +52,7 @@ namespace NHibernate.Test.QueryTest
 		protected override void OnTearDown()
 		{
 			using (var s = OpenSession())
-			using(var tx = s.BeginTransaction())
+			using (var tx = s.BeginTransaction())
 			{
 				s.Delete("from Foo");
 				tx.Commit();
@@ -173,7 +173,7 @@ namespace NHibernate.Test.QueryTest
 			dq.SetString("pn", "N2").SetString("pd", "D2");
 			byte[] bytes = SerializationHelper.Serialize(dq);
 
-			DetachedQuery dqs = (DetachedQuery)SerializationHelper.Deserialize(bytes);
+			DetachedQuery dqs = (DetachedQuery) SerializationHelper.Deserialize(bytes);
 
 			using (ISession s = OpenSession())
 			{

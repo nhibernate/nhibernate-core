@@ -162,7 +162,7 @@ namespace NHibernate.Type
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return NullSafeGetAsync(rs, new string[] {name}, session, owner, cancellationToken);
+			return NullSafeGetAsync(rs, new string[] { name }, session, owner, cancellationToken);
 		}
 
 		public Task<object> GetPropertyValueAsync(object component, int i, ISessionImplementor session, CancellationToken cancellationToken)
@@ -303,7 +303,7 @@ namespace NHibernate.Type
 			if (value != null)
 			{
 				object result = Instantiate(owner, session);
-				object[] values = (object[])value;
+				object[] values = (object[]) value;
 				object[] resolvedValues = new object[values.Length]; //only really need new array during semiresolve!
 				for (int i = 0; i < values.Length; i++)
 				{

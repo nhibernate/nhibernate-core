@@ -8,9 +8,9 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using System;
 
 namespace NHibernate.Test.NHSpecificTest.NH2985
 {
@@ -50,8 +50,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2985
 			}
 
 			// Clear the cache
-			await (Sfi.EvictAsync(typeof (ClassA)));
-			await (Sfi.EvictAsync(typeof (WebImage)));
+			await (Sfi.EvictAsync(typeof(ClassA)));
+			await (Sfi.EvictAsync(typeof(WebImage)));
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())

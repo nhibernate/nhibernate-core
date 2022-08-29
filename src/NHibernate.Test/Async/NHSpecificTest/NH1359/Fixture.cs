@@ -30,9 +30,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();
-			using(ISession session = OpenSession())
+			using (ISession session = OpenSession())
 			{
-				using(ITransaction tx = session.BeginTransaction())
+				using (ITransaction tx = session.BeginTransaction())
 				{
 					session.Delete("from Person");
 					tx.Commit();
@@ -42,9 +42,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 
 		protected override void OnSetUp()
 		{
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
-				using(ITransaction tx = s.BeginTransaction())
+				using (ITransaction tx = s.BeginTransaction())
 				{
 					Person e1 = new Person("Joe", 10, 9);
 					Person e2 = new Person("Sally", 20, 8);
@@ -80,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 
 				IList list = await (c.ListAsync());
 				Assert.AreEqual(2, list.Count);
-				foreach(object item in list)
+				foreach (object item in list)
 				{
 					Assert.AreEqual(5, item);
 				}
@@ -109,7 +109,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 
 				IList<HeaviestPet> list = await (c.ListAsync<HeaviestPet>());
 				Assert.AreEqual(1, list.Count);
-				foreach(HeaviestPet pet in list)
+				foreach (HeaviestPet pet in list)
 				{
 					Assert.AreEqual("Joe", pet.Name);
 					Assert.AreEqual(25, pet.Weight);
@@ -131,7 +131,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 				c.SetResultTransformer(Transformers.AliasToBean(typeof(HeaviestPet)));
 				IList<HeaviestPet> list = await (c.ListAsync<HeaviestPet>());
 				Assert.AreEqual(1, list.Count);
-				foreach(HeaviestPet pet in list)
+				foreach (HeaviestPet pet in list)
 				{
 					Assert.AreEqual("Joe", pet.Name);
 				}
@@ -158,7 +158,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 				c.AddOrder(new Order("Id", true));
 				IList<HeaviestPet> list = await (c.ListAsync<HeaviestPet>());
 				Assert.AreEqual(1, list.Count);
-				foreach(HeaviestPet pet in list)
+				foreach (HeaviestPet pet in list)
 				{
 					Assert.AreEqual("Joe", pet.Name);
 					Assert.AreEqual(10.0, pet.Weight);
@@ -169,10 +169,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1359
 		[Test]
 		public async Task CanPageAndSortWithMultipleColumnsOfSameNameAsync()
 		{
-			using(ISession s = OpenSession())
+			using (ISession s = OpenSession())
 			{
-				ICriteria c = s.CreateCriteria(typeof(Person),"root")
-					.CreateCriteria("root.Pets","pets")
+				ICriteria c = s.CreateCriteria(typeof(Person), "root")
+					.CreateCriteria("root.Pets", "pets")
 					.SetProjection(Projections.ProjectionList()
 									.Add(Projections.Property("root.Id"), "Id")
 									.Add(Projections.Property("root.Name"), "Name"))

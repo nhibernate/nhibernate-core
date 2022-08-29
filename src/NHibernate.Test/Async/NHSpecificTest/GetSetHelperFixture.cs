@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecific.GetSetHelper.hbm.xml"}; }
+			get { return new string[] { "NHSpecific.GetSetHelper.hbm.xml" }; }
 		}
 
 		[Test]

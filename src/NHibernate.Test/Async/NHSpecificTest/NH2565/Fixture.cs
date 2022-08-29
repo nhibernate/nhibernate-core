@@ -14,9 +14,9 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.NH2565
 {
 	[TestFixture]
-	public class FixtureAsync: BugTestCase
+	public class FixtureAsync : BugTestCase
 	{
-		private class TaskSavedScenario: IDisposable
+		private class TaskSavedScenario : IDisposable
 		{
 			private readonly ISessionFactory factory;
 			private readonly Guid taskId;
@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2565
 			public TaskSavedScenario(ISessionFactory factory)
 			{
 				this.factory = factory;
-				var activity = new TaskActivity{Name="Say Hello!"};
+				var activity = new TaskActivity { Name = "Say Hello!" };
 				var task = new Task { Description = "Nice to do", Activity = activity };
 				using (var s = factory.OpenSession())
 				using (var tx = s.BeginTransaction())

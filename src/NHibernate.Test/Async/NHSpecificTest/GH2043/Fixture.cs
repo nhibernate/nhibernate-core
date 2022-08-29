@@ -54,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 			{
 				rc.Id(x => x.Id);
 				rc.Property(x => x.Name);
-				rc.ManyToOne(x => x.EntityLookup, x  => x.Class(typeof(EntityWithClassProxyDefinition)));
+				rc.ManyToOne(x => x.EntityLookup, x => x.Class(typeof(EntityWithClassProxyDefinition)));
 			});
 
 			mapper.Class<EntityWithInterfaceLookup>(rc =>
@@ -91,33 +91,33 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 
 		protected override void OnSetUp()
 		{
-			using(var session = OpenSession())
+			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
 				var entityCP1 = new EntityWithClassProxyDefinition
-								{
-									Id = Guid.NewGuid(),
-									Name = "Name 1"
-								};
+				{
+					Id = Guid.NewGuid(),
+					Name = "Name 1"
+				};
 
 				var entityCP2 = new EntityWithClassProxyDefinition
-								{
-									Id = Guid.NewGuid(),
-									Name = "Name 2"
-								};
+				{
+					Id = Guid.NewGuid(),
+					Name = "Name 2"
+				};
 				_entityWithClassProxy2Id = entityCP2.Id;
 
 				var entityIP1 = new EntityWithInterfaceProxyDefinition
-								{
-									Id = Guid.NewGuid(),
-									Name = "Name 1"
-								};
+				{
+					Id = Guid.NewGuid(),
+					Name = "Name 1"
+				};
 
 				var entityIP2 = new EntityWithInterfaceProxyDefinition
-								{
-									Id = Guid.NewGuid(),
-									Name = "Name 2"
-								};
+				{
+					Id = Guid.NewGuid(),
+					Name = "Name 2"
+				};
 				_entityWithInterfaceProxy2Id = entityIP2.Id;
 
 				session.Save(entityCP1);
@@ -126,19 +126,19 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 				session.Save(entityIP2);
 
 				var entityCL = new EntityWithClassLookup
-								{
-									Id = Guid.NewGuid(),
-									Name = "Name 1",
-									EntityLookup = (EntityWithClassProxyDefinition)session.Load(typeof(EntityWithClassProxyDefinition), entityCP1.Id)
-								};
+				{
+					Id = Guid.NewGuid(),
+					Name = "Name 1",
+					EntityLookup = (EntityWithClassProxyDefinition) session.Load(typeof(EntityWithClassProxyDefinition), entityCP1.Id)
+				};
 				_entityWithClassLookupId = entityCL.Id;
 
 				var entityIL = new EntityWithInterfaceLookup
-								{
-									Id = Guid.NewGuid(),
-									Name = "Name 1",
-									EntityLookup = (IEntityProxy)session.Load(typeof(EntityWithInterfaceProxyDefinition), entityIP1.Id)
-								};
+				{
+					Id = Guid.NewGuid(),
+					Name = "Name 1",
+					EntityLookup = (IEntityProxy) session.Load(typeof(EntityWithInterfaceProxyDefinition), entityIP1.Id)
+				};
 				_entityWithInterfaceLookupId = entityIL.Id;
 
 				session.Save(entityCL);
@@ -201,9 +201,9 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 			var id = 10;
 
 			using (var session = OpenSession())
-			using(var t = session.BeginTransaction())
+			using (var t = session.BeginTransaction())
 			{
-				var e = new EntityAssigned() {Id = id, Name = "a"};
+				var e = new EntityAssigned() { Id = id, Name = "a" };
 
 				await (session.SaveAsync(e));
 				await (session.FlushAsync());
@@ -211,12 +211,12 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 			}
 
 			using (var session = OpenSession())
-			using(var t = session.BeginTransaction())
+			using (var t = session.BeginTransaction())
 			{
 				var e = await (GetTransientProxyAsync(session, id));
 				await (session.SaveAsync(e));
 				await (session.FlushAsync());
-				
+
 				await (t.CommitAsync());
 			}
 
@@ -233,21 +233,23 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 			var id = 10;
 
 			using (var session = OpenSession())
-			using(var t = session.BeginTransaction())
+			using (var t = session.BeginTransaction())
 			{
-				var e = new EntityAssigned() {Id = id, Name = "a"};
+				var e = new EntityAssigned() { Id = id, Name = "a" };
 				await (session.SaveAsync(e));
 				await (session.FlushAsync());
 				await (t.CommitAsync());
 			}
 
 			using (var session = OpenSession())
-			using(var t = session.BeginTransaction())
+			using (var t = session.BeginTransaction())
 			{
 				var child = await (GetTransientProxyAsync(session, id));
 				var parent = new EntityWithAssignedBag()
 				{
-					Id = 1, Name = "p", Children =
+					Id = 1,
+					Name = "p",
+					Children =
 					{
 						child
 					}
@@ -256,7 +258,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 
 				await (session.SaveAsync(parent));
 				await (session.FlushAsync());
-				
+
 				await (t.CommitAsync());
 			}
 
@@ -275,7 +277,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2043
 			using (var session = OpenSession())
 			using (var t = session.BeginTransaction())
 			{
-				var e = new EntityAssigned() {Id = id, Name = "a"};
+				var e = new EntityAssigned() { Id = id, Name = "a" };
 				await (session.SaveAsync(e));
 				await (session.FlushAsync());
 				await (t.CommitAsync());

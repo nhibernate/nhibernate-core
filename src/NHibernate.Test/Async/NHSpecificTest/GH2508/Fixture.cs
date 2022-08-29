@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2508
 		{
 			var listeners = configuration.EventListeners;
 			listeners.PreCollectionUpdateEventListeners =
-				new[] {new AuditEventListener()}
+				new[] { new AuditEventListener() }
 					.Concat(listeners.PreCollectionUpdateEventListeners)
 					.ToArray();
 		}
@@ -33,10 +33,10 @@ namespace NHibernate.Test.NHSpecificTest.GH2508
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new LoggerCase {Name = "Bob"};
+				var e1 = new LoggerCase { Name = "Bob" };
 				session.Save(e1);
 
-				var e2 = new LoggerCase {Name = "Sally"};
+				var e2 = new LoggerCase { Name = "Sally" };
 				session.Save(e2);
 
 				transaction.Commit();

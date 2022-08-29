@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH317
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecificTest.NH317.Node.hbm.xml"}; }
+			get { return new string[] { "NHSpecificTest.NH317.Node.hbm.xml" }; }
 		}
 
 		[Test]

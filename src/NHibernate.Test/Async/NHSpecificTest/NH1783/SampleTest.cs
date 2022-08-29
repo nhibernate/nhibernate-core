@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1783
 			using (ISession session = OpenSession())
 			using (ITransaction tx = session.BeginTransaction())
 			{
-				var entity = new DomainClass {Id = 1, BirthDate = new DateTime(1950, 2, 13, 3, 12, 10)};
+				var entity = new DomainClass { Id = 1, BirthDate = new DateTime(1950, 2, 13, 3, 12, 10) };
 				await (session.SaveAsync(entity));
 				await (tx.CommitAsync());
 			}
@@ -32,7 +32,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1783
 			{
 				// upload the result using DateTime type to verify it does not have the time-part.
 				var l = await (session.CreateSQLQuery("SELECT BirthDate AS bd FROM DomainClass")
-					.AddScalar("bd",NHibernateUtil.DateTime).ListAsync());
+					.AddScalar("bd", NHibernateUtil.DateTime).ListAsync());
 				var actual = (DateTime) l[0];
 				var expected = new DateTime(1950, 2, 13);
 				Assert.That(actual, Is.EqualTo(expected));

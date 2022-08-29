@@ -23,14 +23,14 @@ namespace NHibernate.Test.NHSpecificTest.NH941
 		{
 			var mapper = new ModelMapper();
 			mapper.Class<MyClass>(rc =>
-			                      {
-			                      	rc.Id(x => x.Id, map => map.Generator(Generators.HighLow));
-			                      	rc.Bag(x => x.Relateds, map =>
-			                      	                        {
-																												map.Key(km => km.NotNullable(true));
-			                      	                        	map.Cascade(Mapping.ByCode.Cascade.All);
-			                      	                        }, rel => rel.OneToMany());
-			                      });
+								  {
+									  rc.Id(x => x.Id, map => map.Generator(Generators.HighLow));
+									  rc.Bag(x => x.Relateds, map =>
+															  {
+																  map.Key(km => km.NotNullable(true));
+																  map.Cascade(Mapping.ByCode.Cascade.All);
+															  }, rel => rel.OneToMany());
+								  });
 			mapper.Class<Related>(rc => rc.Id(x => x.Id, map => map.Generator(Generators.HighLow)));
 			HbmMapping mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			return mappings;
@@ -44,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.NH941
 				using (ITransaction tx = session.BeginTransaction())
 				{
 					var one = new MyClass();
-					one.Relateds = new List<Related> {new Related(), new Related()};
+					one.Relateds = new List<Related> { new Related(), new Related() };
 					await (session.PersistAsync(one));
 					await (tx.CommitAsync());
 				}

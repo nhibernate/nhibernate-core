@@ -36,10 +36,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1347
 				await (tx.CommitAsync());
 			}
 
-			using(SqlLogSpy spy = new SqlLogSpy())
+			using (SqlLogSpy spy = new SqlLogSpy())
 			using (ISession s = OpenSession())
 			{
-				A a = await (s.CreateCriteria(typeof (A))
+				A a = await (s.CreateCriteria(typeof(A))
 					.AddOrder(Order.Asc("Name"))
 					.SetMaxResults(1)
 					.UniqueResultAsync<A>());

@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 			object savedId;
 			A a = new A();
 			using (ISession s = OpenSession())
-			using(ITransaction t = s.BeginTransaction())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				savedId = await (s.SaveAsync(a));
 				await (t.CommitAsync());

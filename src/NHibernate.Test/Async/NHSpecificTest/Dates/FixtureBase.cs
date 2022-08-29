@@ -31,13 +31,13 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			var typeNames = (TypeNames)typeof(Dialect.Dialect).GetField("_typeNames", ReflectHelper.AnyVisibilityInstance).GetValue(Dialect);
+			var typeNames = (TypeNames) typeof(Dialect.Dialect).GetField("_typeNames", ReflectHelper.AnyVisibilityInstance).GetValue(Dialect);
 			try
 			{
 				var value = AppliesTo();
 
 				if (value == null) return true;
-				
+
 				typeNames.Get(value.Value);
 			}
 			catch (ArgumentException)
@@ -76,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 			}
 		}
 
-		protected virtual DbType? AppliesTo() 
+		protected virtual DbType? AppliesTo()
 		{
 			return null;
 		}

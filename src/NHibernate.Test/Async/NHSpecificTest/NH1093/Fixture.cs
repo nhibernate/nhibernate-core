@@ -9,9 +9,9 @@
 
 
 using log4net;
+using log4net.Core;
 using NHibernate.Cfg;
 using NUnit.Framework;
-using log4net.Core;
 
 namespace NHibernate.Test.NHSpecificTest.NH1093
 {
@@ -48,8 +48,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1093
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					await (s.SaveAsync(new SimpleCached {Description = "Simple 1"}, cancellationToken));
-					await (s.SaveAsync(new SimpleCached {Description = "Simple 2"}, cancellationToken));
+					await (s.SaveAsync(new SimpleCached { Description = "Simple 1" }, cancellationToken));
+					await (s.SaveAsync(new SimpleCached { Description = "Simple 2" }, cancellationToken));
 					await (tx.CommitAsync(cancellationToken));
 				}
 			}

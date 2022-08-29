@@ -15,11 +15,11 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1080
 {
-    using System.Threading.Tasks;
-    [TestFixture]
-    public class FixtureAsync : BugTestCase
-    {
-	    /* Bug occurs when an HQL query joins a OneToOne association (A.C), followed by a ManyToOne (A.B2) that 
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class FixtureAsync : BugTestCase
+	{
+		/* Bug occurs when an HQL query joins a OneToOne association (A.C), followed by a ManyToOne (A.B2) that 
            * returns null in the resultset.
            * 
            * This results in both associations being (incorrectly) marked as one-to-one's, due to an instance variable in
@@ -35,58 +35,58 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
            * In this test case, the exception is triggered by having an un-initialised proxy to the registered entity returned
            * in the resultset (A.B1).
            */
-        [Test]
-        public async Task TestBugAsync()
-        {
-            // A.C is a one-to-one constrained mapping to class C
-            // A.B1 and A.B2 are many-to-one mappings to class B
+		[Test]
+		public async Task TestBugAsync()
+		{
+			// A.C is a one-to-one constrained mapping to class C
+			// A.B1 and A.B2 are many-to-one mappings to class B
 
-            C c = new C();
-            c.ID = 1;
-            c.Value = "OneToOne";
+			C c = new C();
+			c.ID = 1;
+			c.Value = "OneToOne";
 
-            A a = new A();
-            a.ID = 1;
-            a.Value = "Parent";
+			A a = new A();
+			a.ID = 1;
+			a.Value = "Parent";
 
-            B b1 = new B();
-            b1.ID = 1;
-            b1.Value = "Child";
+			B b1 = new B();
+			b1.ID = 1;
+			b1.Value = "Child";
 
-            a.B1 = b1;
-            a.B2 = null;
-            a.C = c;
+			a.B1 = b1;
+			a.B2 = null;
+			a.C = c;
 
-            try
-            {
-                using (ISession s = Sfi.OpenSession())
-                {
-                    await (s.SaveAsync(c));
-                    await (s.SaveAsync(b1));
-                    await (s.SaveAsync(a));
-                    await (s.FlushAsync());
-                    s.Clear();
-                    s.Close();
-                }
+			try
+			{
+				using (ISession s = Sfi.OpenSession())
+				{
+					await (s.SaveAsync(c));
+					await (s.SaveAsync(b1));
+					await (s.SaveAsync(a));
+					await (s.FlushAsync());
+					s.Clear();
+					s.Close();
+				}
 
-                using (ISession s = Sfi.OpenSession())
-                {
-                    /* If bug is present, throws:
+				using (ISession s = Sfi.OpenSession())
+				{
+					/* If bug is present, throws:
                     NHibernate.Test.NHSpecificTest.NH1080.Fixture.TestBug : NHibernate.UnresolvableObjectException : No row with the given identifier exists: 1, of class: NHibernate.Test.NHSpecificTest.NH1080.B
                      */
-                    A loadedA = (A) await (s.CreateQuery("from A a join fetch a.C left join fetch a.B2").UniqueResultAsync());
-                }
-            }
-            finally
-            {
-                using (ISession s = Sfi.OpenSession())
-                {
-                    await (s.DeleteAsync(a));
-                    await (s.DeleteAsync(b1));
-                    await (s.DeleteAsync(c));
-                    await (s.FlushAsync());
-                }
-            }
-        }
-    }
+					A loadedA = (A) await (s.CreateQuery("from A a join fetch a.C left join fetch a.B2").UniqueResultAsync());
+				}
+			}
+			finally
+			{
+				using (ISession s = Sfi.OpenSession())
+				{
+					await (s.DeleteAsync(a));
+					await (s.DeleteAsync(b1));
+					await (s.DeleteAsync(c));
+					await (s.FlushAsync());
+				}
+			}
+		}
+	}
 }

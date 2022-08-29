@@ -76,7 +76,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 		{
 			using (var session = OpenSession())
 			{
-				Assert.That(await (session.Query<Invoice>().CountAsync(e => ((object)(e.Amount + e.SpecialAmount)).Equals(110))), Is.EqualTo(2));
+				Assert.That(await (session.Query<Invoice>().CountAsync(e => ((object) (e.Amount + e.SpecialAmount)).Equals(110))), Is.EqualTo(2));
 			}
 		}
 
@@ -85,7 +85,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 		{
 			using (var session = OpenSession())
 			{
-				Assert.That(await (session.Query<Invoice>().CountAsync(e => ((object)(e.Paid ? e.Amount : e.SpecialAmount)).Equals(10))), Is.EqualTo(2));
+				Assert.That(await (session.Query<Invoice>().CountAsync(e => ((object) (e.Paid ? e.Amount : e.SpecialAmount)).Equals(10))), Is.EqualTo(2));
 			}
 		}
 
@@ -94,7 +94,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 		{
 			using (var session = OpenSession())
 			{
-				Assert.That(await (session.Query<Invoice>().CountAsync(e => ((object)(e.SpecialAmount ?? e.Amount)).Equals(100))), Is.EqualTo(2));
+				Assert.That(await (session.Query<Invoice>().CountAsync(e => ((object) (e.SpecialAmount ?? e.Amount)).Equals(100))), Is.EqualTo(2));
 			}
 		}
 	}

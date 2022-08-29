@@ -37,34 +37,34 @@ namespace NHibernate.Test.ReadOnly
 				return mappings.ToArray();
 			}
 		}
-		
+
 		[Test]
 		public async Task ReadOnlyOnProxiesAsync()
 		{
 			DataPoint dp = null;
 			long dpId = -1;
-			
+
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				s.CacheMode = CacheMode.Ignore;
-			
+
 				dp = new DataPoint();
 				dp.X = 0.1M;
-				dp.Y = (decimal)System.Math.Cos((double)dp.X);
+				dp.Y = (decimal) System.Math.Cos((double) dp.X);
 				dp.Description = "original";
 				await (s.SaveAsync(dp));
 				dpId = dp.Id;
 				await (t.CommitAsync());
 			}
-		
+
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				s.CacheMode = CacheMode.Ignore;
 				s.DefaultReadOnly = true;
 				Assert.That(s.DefaultReadOnly, Is.True);
-				dp = (DataPoint)await (s.LoadAsync<DataPoint>(dpId));
+				dp = (DataPoint) await (s.LoadAsync<DataPoint>(dpId));
 				s.DefaultReadOnly = false;
 				Assert.That(NHibernateUtil.IsInitialized(dp), Is.False, "was initialized");
 				Assert.That(s.IsReadOnly(dp), Is.True);
@@ -85,7 +85,7 @@ namespace NHibernate.Test.ReadOnly
 				await (t.CommitAsync());
 			}
 		}
-		
+
 		[Test]
 		public async Task ReadOnlySessionDefaultQueryIterateAsync()
 		{
@@ -98,23 +98,23 @@ namespace NHibernate.Test.ReadOnly
 					{
 						DataPoint dp = new DataPoint();
 						dp.X = 0.1M * i;
-						dp.Y = (decimal)System.Math.Cos((double)dp.X);
+						dp.Y = (decimal) System.Math.Cos((double) dp.X);
 						await (s.SaveAsync(dp));
 					}
 					await (t.CommitAsync());
 				}
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = true;
 					IEnumerable enumerable = await (s.CreateQuery("from DataPoint dp order by dp.X asc").EnumerableAsync());
 					s.DefaultReadOnly = false;
-					
+
 					int i = 0;
 					foreach (DataPoint dp in enumerable)
 					{
@@ -126,9 +126,9 @@ namespace NHibernate.Test.ReadOnly
 					}
 					await (t.CommitAsync());
 				}
-				
+
 				s.Clear();
-			
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					try
@@ -141,12 +141,12 @@ namespace NHibernate.Test.ReadOnly
 						// cleanup
 						await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 					}
-					
+
 					await (t.CommitAsync());
 				}
 			}
 		}
-		
+
 		[Test]
 		public async Task ReadOnlySessionModifiableQueryIterateAsync()
 		{
@@ -159,24 +159,24 @@ namespace NHibernate.Test.ReadOnly
 					{
 						DataPoint dp = new DataPoint();
 						dp.X = 0.1M * i;
-						dp.Y = (decimal)System.Math.Cos((double)dp.X);
+						dp.Y = (decimal) System.Math.Cos((double) dp.X);
 						await (s.SaveAsync(dp));
 					}
 					await (t.CommitAsync());
 				}
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = true;
 					IEnumerable enumerable = await (s.CreateQuery("from DataPoint dp order by dp.X asc")
 						.SetReadOnly(false)
 						.EnumerableAsync());
-					
+
 					int i = 0;
 					foreach (DataPoint dp in enumerable)
 					{
@@ -188,9 +188,9 @@ namespace NHibernate.Test.ReadOnly
 					}
 					await (t.CommitAsync());
 				}
-				
+
 				s.Clear();
-			
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					try
@@ -203,12 +203,12 @@ namespace NHibernate.Test.ReadOnly
 						// cleanup
 						await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 					}
-					
+
 					await (t.CommitAsync());
 				}
 			}
 		}
-		
+
 		[Test]
 		public async Task ModifiableSessionReadOnlyQueryIterateAsync()
 		{
@@ -221,25 +221,25 @@ namespace NHibernate.Test.ReadOnly
 					{
 						DataPoint dp = new DataPoint();
 						dp.X = 0.1M * i;
-						dp.Y = (decimal)System.Math.Cos((double)dp.X);
+						dp.Y = (decimal) System.Math.Cos((double) dp.X);
 						await (s.SaveAsync(dp));
 					}
 					await (t.CommitAsync());
 				}
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					Assert.That(s.DefaultReadOnly, Is.False);
-					
+
 					IEnumerable enumerable = await (s.CreateQuery("from DataPoint dp order by dp.X asc")
 						.SetReadOnly(true)
 						.EnumerableAsync());
-					
+
 					int i = 0;
 					foreach (DataPoint dp in enumerable)
 					{
@@ -251,9 +251,9 @@ namespace NHibernate.Test.ReadOnly
 					}
 					await (t.CommitAsync());
 				}
-				
+
 				s.Clear();
-			
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					try
@@ -266,12 +266,12 @@ namespace NHibernate.Test.ReadOnly
 						// cleanup
 						await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 					}
-					
+
 					await (t.CommitAsync());
 				}
 			}
 		}
-		
+
 		[Test]
 		public async Task ModifiableSessionDefaultQueryReadOnlySessionIterateAsync()
 		{
@@ -284,27 +284,27 @@ namespace NHibernate.Test.ReadOnly
 					{
 						DataPoint dp = new DataPoint();
 						dp.X = 0.1M * i;
-						dp.Y = (decimal)System.Math.Cos((double)dp.X);
+						dp.Y = (decimal) System.Math.Cos((double) dp.X);
 						await (s.SaveAsync(dp));
 					}
 					await (t.CommitAsync());
 				}
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = false;
-					
+
 					IQuery query = s.CreateQuery("from DataPoint dp order by dp.X asc");
-					
+
 					s.DefaultReadOnly = true;
 					IEnumerable enumerable = await (query.EnumerableAsync());
 					s.DefaultReadOnly = false;
-					
+
 					int i = 0;
 					foreach (DataPoint dp in enumerable)
 					{
@@ -316,9 +316,9 @@ namespace NHibernate.Test.ReadOnly
 					}
 					await (t.CommitAsync());
 				}
-				
+
 				s.Clear();
-			
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					try
@@ -331,49 +331,49 @@ namespace NHibernate.Test.ReadOnly
 						// cleanup
 						await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 					}
-					
+
 					await (t.CommitAsync());
 				}
 			}
 		}
-		
+
 		[Test]
 		public async Task QueryReadOnlyIterateAsync()
 		{
 			long lastDataPointId = 0;
 			int nExpectedChanges = 0;
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					DataPoint dp = null;
-					
+
 					for (int i = 0; i < 100; i++)
 					{
 						dp = new DataPoint();
 						dp.X = 0.1M * i;
-						dp.Y = (decimal)System.Math.Cos((double)dp.X);
+						dp.Y = (decimal) System.Math.Cos((double) dp.X);
 						await (s.SaveAsync(dp));
 					}
 					await (t.CommitAsync());
-					
+
 					lastDataPointId = dp.Id;
 				}
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = false;
 
 					IQuery query = s.CreateQuery("from DataPoint dp order by dp.X asc");
-					
+
 					Assert.That(query.IsReadOnly, Is.False);
 					s.DefaultReadOnly = true;
 					Assert.That(query.IsReadOnly, Is.True);
@@ -400,15 +400,15 @@ namespace NHibernate.Test.ReadOnly
 					query.SetReadOnly(false);
 					Assert.That(query.IsReadOnly, Is.False);
 					Assert.That(s.DefaultReadOnly, Is.False);
-		
+
 					int i = 0;
-					
+
 					while (it.MoveNext())
 					{
 						Assert.That(s.DefaultReadOnly, Is.False);
 						DataPoint dp = it.Current;
 						Assert.That(s.DefaultReadOnly, Is.False);
-						
+
 						if (dp.Id == dpLast.Id)
 						{
 							//dpLast existed in the session before executing the read-only query
@@ -418,23 +418,23 @@ namespace NHibernate.Test.ReadOnly
 						{
 							Assert.That(s.IsReadOnly(dp), Is.True);
 						}
-						
+
 						if (++i == 50)
 						{
 							s.SetReadOnly(dp, false);
-							nExpectedChanges = (dp == dpLast ? 1 : 2 );
+							nExpectedChanges = (dp == dpLast ? 1 : 2);
 						}
-						
+
 						dp.Description = "done!";
 					}
-					
+
 					Assert.That(s.DefaultReadOnly, Is.False);
-							
+
 					await (t.CommitAsync());
 				}
-				
+
 				s.Clear();
-			
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					try
@@ -447,49 +447,49 @@ namespace NHibernate.Test.ReadOnly
 						// cleanup
 						await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 					}
-					
+
 					await (t.CommitAsync());
 				}
 			}
 		}
-		
+
 		[Test]
 		public async Task QueryModifiableIterateAsync()
 		{
 			long lastDataPointId = 0;
 			int nExpectedChanges = 0;
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					DataPoint dp = null;
-					
+
 					for (int i = 0; i < 100; i++)
 					{
 						dp = new DataPoint();
 						dp.X = 0.1M * i;
-						dp.Y = (decimal)System.Math.Cos((double)dp.X);
+						dp.Y = (decimal) System.Math.Cos((double) dp.X);
 						await (s.SaveAsync(dp));
 					}
 					await (t.CommitAsync());
-					
+
 					lastDataPointId = dp.Id;
 				}
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = true;
 
 					IQuery query = s.CreateQuery("from DataPoint dp order by dp.X asc");
-					
+
 					Assert.That(query.IsReadOnly, Is.True);
 					s.DefaultReadOnly = false;
 					Assert.That(query.IsReadOnly, Is.False);
@@ -505,12 +505,12 @@ namespace NHibernate.Test.ReadOnly
 					Assert.That(query.IsReadOnly, Is.True);
 					s.DefaultReadOnly = false;
 					Assert.That(query.IsReadOnly, Is.True);
-					
+
 					query.SetReadOnly(false);
 					Assert.That(query.IsReadOnly, Is.False);
 					s.DefaultReadOnly = true;
 					Assert.That(s.DefaultReadOnly, Is.True);
-					
+
 					IEnumerator<DataPoint> it = (await (query.EnumerableAsync<DataPoint>())).GetEnumerator();
 					Assert.That(query.IsReadOnly, Is.False);
 					DataPoint dpLast = await (s.GetAsync<DataPoint>(lastDataPointId));
@@ -518,15 +518,15 @@ namespace NHibernate.Test.ReadOnly
 					query.SetReadOnly(true);
 					Assert.That(query.IsReadOnly, Is.True);
 					Assert.That(s.DefaultReadOnly, Is.True);
-		
+
 					int i = 0;
-					
+
 					while (it.MoveNext())
 					{
 						Assert.That(s.DefaultReadOnly, Is.True);
 						DataPoint dp = it.Current;
 						Assert.That(s.DefaultReadOnly, Is.True);
-						
+
 						if (dp.Id == dpLast.Id)
 						{
 							//dpLast existed in the session before executing the read-only query
@@ -536,23 +536,23 @@ namespace NHibernate.Test.ReadOnly
 						{
 							Assert.That(s.IsReadOnly(dp), Is.False);
 						}
-						
+
 						if (++i == 50)
 						{
 							s.SetReadOnly(dp, true);
 							nExpectedChanges = (dp == dpLast ? 99 : 98);
 						}
-						
+
 						dp.Description = "done!";
 					}
-					
+
 					Assert.That(s.DefaultReadOnly, Is.True);
-							
+
 					await (t.CommitAsync());
 				}
-				
+
 				s.Clear();
-			
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					try
@@ -565,37 +565,37 @@ namespace NHibernate.Test.ReadOnly
 						// cleanup
 						await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync());
 					}
-					
+
 					await (t.CommitAsync());
 				}
 			}
 		}
-		
+
 		[Test]
 		public async Task ReadOnlyRefreshAsync()
 		{
 			DataPoint dp = null;
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = new DataPoint();
 					dp.Description = "original";
 					dp.X = 0.1M;
-					dp.Y = (decimal)System.Math.Cos((double)dp.X);
+					dp.Y = (decimal) System.Math.Cos((double) dp.X);
 					await (s.SaveAsync(dp));
 					await (t.CommitAsync());
 				}
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
 				s.DefaultReadOnly = true;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = await (s.GetAsync<DataPoint>(dp.Id));
@@ -614,12 +614,12 @@ namespace NHibernate.Test.ReadOnly
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
-					
+
 					await (t.CommitAsync());
 				}
-				
+
 				s.Clear();
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = await (s.GetAsync<DataPoint>(dp.Id));
@@ -629,48 +629,48 @@ namespace NHibernate.Test.ReadOnly
 				}
 			}
 		}
-		
+
 		[Test]
 		public async Task ReadOnlyRefreshDetachedAsync()
 		{
 			DataPoint dp = null;
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = new DataPoint();
 					dp.Description = "original";
 					dp.X = 0.1M;
-					dp.Y = (decimal)System.Math.Cos((double)dp.X);
+					dp.Y = (decimal) System.Math.Cos((double) dp.X);
 					await (s.SaveAsync(dp));
 					await (t.CommitAsync());
 				}
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-			
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = false;
-					
+
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
 					await (s.RefreshAsync(dp));
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					Assert.That(s.IsReadOnly(dp), Is.False);
-					
+
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
 					await (s.EvictAsync(dp));
 					await (s.RefreshAsync(dp));
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					Assert.That(s.IsReadOnly(dp), Is.False);
-					
+
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
 					s.DefaultReadOnly = true;
@@ -678,62 +678,62 @@ namespace NHibernate.Test.ReadOnly
 					await (s.RefreshAsync(dp));
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					Assert.That(s.IsReadOnly(dp), Is.True);
-					
+
 					dp.Description = "changed";
-					
+
 					await (t.CommitAsync());
 				}
-				
+
 				s.Clear();
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = await (s.GetAsync<DataPoint>(dp.Id));
 					Assert.That(dp.Description, Is.EqualTo("original"));
-					
+
 					await (s.DeleteAsync(dp));
 					await (t.CommitAsync());
 				}
 			}
 		}
-		
+
 		[Test]
 		public async Task ReadOnlyProxyRefreshAsync()
 		{
 			DataPoint dp = null;
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = new DataPoint();
 					dp.Description = "original";
 					dp.X = 0.1M;
-					dp.Y = (decimal)System.Math.Cos((double)dp.X);
+					dp.Y = (decimal) System.Math.Cos((double) dp.X);
 					await (s.SaveAsync(dp));
 					await (t.CommitAsync());
 				}
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-			
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = true;
-					
+
 					dp = await (s.LoadAsync<DataPoint>(dp.Id));
 					Assert.That(s.IsReadOnly(dp), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
-					
+
 					await (s.RefreshAsync(dp));
 					Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 					Assert.That(s.IsReadOnly(dp), Is.True);
 					s.DefaultReadOnly = false;
-					
+
 					await (s.RefreshAsync(dp));
 					Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 					Assert.That(s.IsReadOnly(dp), Is.True);
@@ -742,27 +742,27 @@ namespace NHibernate.Test.ReadOnly
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
 					Assert.That(s.IsReadOnly(dp), Is.True);
-					Assert.That(s.IsReadOnly(await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync(CancellationToken.None))), Is.True);
-					
+					Assert.That(s.IsReadOnly(await (((INHibernateProxy) dp).HibernateLazyInitializer.GetImplementationAsync(CancellationToken.None))), Is.True);
+
 					await (s.RefreshAsync(dp));
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					Assert.That(s.IsReadOnly(dp), Is.True);
-					Assert.That(s.IsReadOnly(await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync(CancellationToken.None))), Is.True);
+					Assert.That(s.IsReadOnly(await (((INHibernateProxy) dp).HibernateLazyInitializer.GetImplementationAsync(CancellationToken.None))), Is.True);
 					s.DefaultReadOnly = true;
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
-					
+
 					await (s.RefreshAsync(dp));
 					Assert.That(s.IsReadOnly(dp), Is.True);
-					Assert.That(s.IsReadOnly(await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync(CancellationToken.None))), Is.True);
+					Assert.That(s.IsReadOnly(await (((INHibernateProxy) dp).HibernateLazyInitializer.GetImplementationAsync(CancellationToken.None))), Is.True);
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					dp.Description = "changed";
-					
+
 					await (t.CommitAsync());
 				}
-				
+
 				s.Clear();
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = await (s.GetAsync<DataPoint>(dp.Id));
@@ -772,35 +772,35 @@ namespace NHibernate.Test.ReadOnly
 				}
 			}
 		}
-		
+
 		[Test]
 		public async Task ReadOnlyProxyRefreshDetachedAsync()
 		{
 			DataPoint dp = null;
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = new DataPoint();
 					dp.Description = "original";
 					dp.X = 0.1M;
-					dp.Y = (decimal)System.Math.Cos((double)dp.X);
+					dp.Y = (decimal) System.Math.Cos((double) dp.X);
 					await (s.SaveAsync(dp));
 					await (t.CommitAsync());
 				}
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = true;
-					
+
 					dp = await (s.LoadAsync<DataPoint>(dp.Id));
 					Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 					Assert.That(s.IsReadOnly(dp), Is.True);
@@ -811,11 +811,11 @@ namespace NHibernate.Test.ReadOnly
 					s.DefaultReadOnly = false;
 					Assert.That(s.IsReadOnly(dp), Is.True);
 					await (s.EvictAsync(dp));
-	
+
 					await (s.RefreshAsync(dp));
 					Assert.That(NHibernateUtil.IsInitialized(dp), Is.False);
 					Assert.That(s.IsReadOnly(dp), Is.False);
-					Assert.That(s.IsReadOnly(await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync(CancellationToken.None))), Is.False);
+					Assert.That(s.IsReadOnly(await (((INHibernateProxy) dp).HibernateLazyInitializer.GetImplementationAsync(CancellationToken.None))), Is.False);
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
 					Assert.That(NHibernateUtil.IsInitialized(dp), Is.True);
@@ -824,7 +824,7 @@ namespace NHibernate.Test.ReadOnly
 					await (s.RefreshAsync(dp));
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					Assert.That(s.IsReadOnly(dp), Is.False);
-					Assert.That(s.IsReadOnly(await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync(CancellationToken.None))), Is.False);
+					Assert.That(s.IsReadOnly(await (((INHibernateProxy) dp).HibernateLazyInitializer.GetImplementationAsync(CancellationToken.None))), Is.False);
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
 					s.DefaultReadOnly = true;
@@ -833,7 +833,7 @@ namespace NHibernate.Test.ReadOnly
 					await (s.RefreshAsync(dp));
 					Assert.That(dp.Description, Is.EqualTo("original"));
 					Assert.That(s.IsReadOnly(dp), Is.True);
-					Assert.That(s.IsReadOnly(await (((INHibernateProxy)dp).HibernateLazyInitializer.GetImplementationAsync(CancellationToken.None))), Is.True);
+					Assert.That(s.IsReadOnly(await (((INHibernateProxy) dp).HibernateLazyInitializer.GetImplementationAsync(CancellationToken.None))), Is.True);
 					dp.Description = "changed";
 					Assert.That(dp.Description, Is.EqualTo("changed"));
 
@@ -841,7 +841,7 @@ namespace NHibernate.Test.ReadOnly
 				}
 
 				s.Clear();
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = await (s.GetAsync<DataPoint>(dp.Id));
@@ -856,26 +856,26 @@ namespace NHibernate.Test.ReadOnly
 		public async Task ReadOnlyDeleteAsync()
 		{
 			DataPoint dp = null;
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = new DataPoint();
 					dp.X = 0.1M;
-					dp.Y = (decimal)System.Math.Cos((double)dp.X);
+					dp.Y = (decimal) System.Math.Cos((double) dp.X);
 					await (s.SaveAsync(dp));
 					await (t.CommitAsync());
 				}
 			}
-	
+
 			using (ISession s = OpenSession())
 			{
 				s.DefaultReadOnly = true;
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = await (s.GetAsync<DataPoint>(dp.Id));
@@ -885,42 +885,42 @@ namespace NHibernate.Test.ReadOnly
 					await (t.CommitAsync());
 				}
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					IList list = await (s.CreateQuery("from DataPoint where id=" + dp.Id ).ListAsync());
+					IList list = await (s.CreateQuery("from DataPoint where id=" + dp.Id).ListAsync());
 					Assert.That(list.Count, Is.EqualTo(0));
 					await (t.CommitAsync());
 				}
 			}
 		}
-	
+
 		[Test]
 		public async Task ReadOnlyGetModifyAndDeleteAsync()
 		{
 			DataPoint dp = null;
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = new DataPoint();
 					dp.X = 0.1M;
-					dp.Y = (decimal)System.Math.Cos((double)dp.X);
+					dp.Y = (decimal) System.Math.Cos((double) dp.X);
 					await (s.SaveAsync(dp));
 					await (t.CommitAsync());
 				}
 			}
-	
+
 			using (ISession s = OpenSession())
 			{
 				s.DefaultReadOnly = true;
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = await (s.GetAsync<DataPoint>(dp.Id));
@@ -930,18 +930,18 @@ namespace NHibernate.Test.ReadOnly
 					await (t.CommitAsync());
 				}
 			}
-	
+
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					IList list = await (s.CreateQuery("from DataPoint where id=" + dp.Id ).ListAsync());
+					IList list = await (s.CreateQuery("from DataPoint where id=" + dp.Id).ListAsync());
 					Assert.That(list.Count, Is.EqualTo(0));
 					await (t.CommitAsync());
 				}
 			}
 		}
-	
+
 		[Test]
 		public async Task ReadOnlyOnTextTypeAsync()
 		{
@@ -951,7 +951,7 @@ namespace NHibernate.Test.ReadOnly
 			string origText = "some huge text string";
 			string newText = "some even bigger text string";
 			long id = 0;
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
@@ -963,7 +963,7 @@ namespace NHibernate.Test.ReadOnly
 					await (t.CommitAsync());
 				}
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction t = s.BeginTransaction())
@@ -989,42 +989,42 @@ namespace NHibernate.Test.ReadOnly
 				}
 			}
 		}
-	
+
 		[Test]
 		public async Task MergeWithReadOnlyEntityAsync()
 		{
 			DataPoint dp = null;
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = new DataPoint();
 					dp.X = 0.1M;
-					dp.Y = (decimal)System.Math.Cos((double)dp.X);
+					dp.Y = (decimal) System.Math.Cos((double) dp.X);
 					await (s.SaveAsync(dp));
 					await (t.CommitAsync());
 				}
 			}
-	
+
 			dp.Description = "description";
-	
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = true;
 					DataPoint dpManaged = await (s.GetAsync<DataPoint>(dp.Id));
-					DataPoint dpMerged = (DataPoint)await (s.MergeAsync(dp));
+					DataPoint dpMerged = (DataPoint) await (s.MergeAsync(dp));
 					Assert.That(dpManaged, Is.SameAs(dpMerged));
 					await (t.CommitAsync());
 				}
 			}
-	
+
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction t = s.BeginTransaction())
@@ -1036,32 +1036,32 @@ namespace NHibernate.Test.ReadOnly
 				}
 			}
 		}
-	
+
 		[Test]
 		public async Task MergeWithReadOnlyProxyAsync()
 		{
 			DataPoint dp = null;
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					dp = new DataPoint();
 					dp.X = 0.1M;
-					dp.Y = (decimal)System.Math.Cos((double)dp.X);
+					dp.Y = (decimal) System.Math.Cos((double) dp.X);
 					await (s.SaveAsync(dp));
 					await (t.CommitAsync());
 				}
 			}
-	
+
 			dp.Description = "description";
-			
+
 			using (ISession s = OpenSession())
 			{
 				s.CacheMode = CacheMode.Ignore;
-				
+
 				using (ITransaction t = s.BeginTransaction())
 				{
 					s.DefaultReadOnly = true;
@@ -1069,27 +1069,27 @@ namespace NHibernate.Test.ReadOnly
 					Assert.That(s.IsReadOnly(dpProxy), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.False);
 					await (s.EvictAsync(dpProxy));
-					dpProxy = (DataPoint)await (s.MergeAsync(dpProxy));
+					dpProxy = (DataPoint) await (s.MergeAsync(dpProxy));
 					Assert.That(s.IsReadOnly(dpProxy), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.False);
-					dpProxy = (DataPoint)await (s.MergeAsync(dp));
+					dpProxy = (DataPoint) await (s.MergeAsync(dp));
 					Assert.That(s.IsReadOnly(dpProxy), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.True);
 					Assert.That(dpProxy.Description, Is.EqualTo("description"));
 					await (s.EvictAsync(dpProxy));
-					dpProxy = (DataPoint)await (s.MergeAsync(dpProxy));
+					dpProxy = (DataPoint) await (s.MergeAsync(dpProxy));
 					Assert.That(s.IsReadOnly(dpProxy), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.True);
 					Assert.That(dpProxy.Description, Is.EqualTo("description"));
 					dpProxy.Description = null;
-					dpProxy = (DataPoint)await (s.MergeAsync(dp));
+					dpProxy = (DataPoint) await (s.MergeAsync(dp));
 					Assert.That(s.IsReadOnly(dpProxy), Is.True);
 					Assert.That(NHibernateUtil.IsInitialized(dpProxy), Is.True);
 					Assert.That(dpProxy.Description, Is.EqualTo("description"));
 					await (t.CommitAsync());
 				}
 			}
-	
+
 			using (ISession s = OpenSession())
 			{
 				using (ITransaction t = s.BeginTransaction())

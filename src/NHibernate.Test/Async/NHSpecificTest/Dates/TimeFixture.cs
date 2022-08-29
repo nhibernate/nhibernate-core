@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 	{
 		protected override string[] Mappings
 		{
-			get { return new[] {"NHSpecificTest.Dates.Mappings.Time.hbm.xml"}; }
+			get { return new[] { "NHSpecificTest.Dates.Mappings.Time.hbm.xml" }; }
 		}
 
 		[Test]
@@ -28,13 +28,13 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 		{
 			DateTime now = DateTime.Parse("23:59:59");
 
-			await (SavingAndRetrievingActionAsync(new AllDates {Sql_time = now},
-			                          entity =>
-			                          	{
-			                          		Assert.AreEqual(entity.Sql_time.Hour, now.Hour);
-			                          		Assert.AreEqual(entity.Sql_time.Minute, now.Minute);
-			                          		Assert.AreEqual(entity.Sql_time.Second, now.Second);
-			                          	}));
+			await (SavingAndRetrievingActionAsync(new AllDates { Sql_time = now },
+									  entity =>
+										  {
+											  Assert.AreEqual(entity.Sql_time.Hour, now.Hour);
+											  Assert.AreEqual(entity.Sql_time.Minute, now.Minute);
+											  Assert.AreEqual(entity.Sql_time.Second, now.Second);
+										  }));
 		}
 	}
 }

@@ -21,9 +21,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2111
 	{
 		protected override void OnTearDown()
 		{
-			using( ISession s = Sfi.OpenSession() )
+			using (ISession s = Sfi.OpenSession())
 			{
-				s.Delete( "from A" );
+				s.Delete("from A");
 				s.Flush();
 			}
 		}
@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2111
 			Assert.AreEqual("first string", a.LazyItems[0]);
 
 			s = OpenSession();
-			a = (A)await (s.LoadAsync(typeof(A), a.Id));
+			a = (A) await (s.LoadAsync(typeof(A), a.Id));
 
 			Assert.IsNotNull(((ICollection) a.LazyItems).SyncRoot);
 			Assert.AreEqual("first string", a.LazyItems[0]);

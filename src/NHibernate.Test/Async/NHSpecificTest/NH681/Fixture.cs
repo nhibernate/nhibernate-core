@@ -40,7 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.NH681
 				parentReloaded.Children.RemoveAt(0);
 				await (s.FlushAsync());
 			}
-			
+
 			using (ISession s = OpenSession())
 			{
 				await (s.DeleteAsync(await (s.GetAsync<Foo>(parent.Id))));

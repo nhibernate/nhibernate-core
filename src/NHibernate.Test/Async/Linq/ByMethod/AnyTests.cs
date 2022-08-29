@@ -9,8 +9,8 @@
 
 
 using System.Linq;
-using NUnit.Framework;
 using NHibernate.Linq;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Linq.ByMethod
 {
@@ -67,7 +67,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-3241
 			Assert.DoesNotThrowAsync(async () =>
 				{
-				var result = await (db.Orders.Fetch(x => x.Customer).FetchMany(x => x.OrderLines).AnyAsync());
+					var result = await (db.Orders.Fetch(x => x.Customer).FetchMany(x => x.OrderLines).AnyAsync());
 				}
 			);
 		}
@@ -78,11 +78,11 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.DoesNotThrowAsync(async () =>
 				{
 					var result = await (db.Orders
-					               .Where(x => x.Customer.CustomerId == "Test")
-					               .Fetch(x => x.Customer)
-					               .FetchMany(x => x.OrderLines)
-					               .Where(x => x.Freight > 1)
-					               .CountAsync());
+								   .Where(x => x.Customer.CustomerId == "Test")
+								   .Fetch(x => x.Customer)
+								   .FetchMany(x => x.OrderLines)
+								   .Where(x => x.Freight > 1)
+								   .CountAsync());
 				}
 			);
 		}

@@ -71,7 +71,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				var orders = await ((from o in db.Orders
 							  group o by o.OrderDate
 								  into g
-								  select g.Key).ToListAsync());
+							  select g.Key).ToListAsync());
 
 				Assert.That(orders.Count, Is.EqualTo(481));
 				Assert.That(Regex.Replace(spy.GetWholeLog(), @"\s+", " "), Does.Contain("group by order0_.OrderDate"));
@@ -86,10 +86,10 @@ namespace NHibernate.Test.Linq.ByMethod
 				.GroupBy(i => i.UnitPrice)
 				.OrderBy(g => g.Key)
 				.Select(g => new
-								 {
-									 UnitPrice = g.Max(i => i.UnitPrice),
-									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
-								 })
+				{
+					UnitPrice = g.Max(i => i.UnitPrice),
+					TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
+				})
 				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(62));
@@ -106,10 +106,10 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = await (db.Products
 				.GroupBy(i => i.UnitPrice)
 				.Select(g => new
-								 {
-									 UnitPrice = g.Max(i => i.UnitPrice),
-									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
-								 })
+				{
+					UnitPrice = g.Max(i => i.UnitPrice),
+					TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
+				})
 				.OrderBy(x => x.UnitPrice)
 				.ToListAsync());
 
@@ -212,7 +212,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			{
 				var orderCounts = await (db.Orders
 					.GroupBy(o => o.Customer)
-					.Select(g => new {Customer = g.Key, OrderCount = g.Count()})
+					.Select(g => new { Customer = g.Key, OrderCount = g.Count() })
 					.OrderByDescending(t => t.OrderCount)
 					.ToListAsync());
 
@@ -241,10 +241,10 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = await (db.Products
 				.GroupBy(p => p.UnitPrice)
 				.Select(g => new
-								 {
-									 UnitPrice = g.Max(i => i.UnitPrice),
-									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
-								 })
+				{
+					UnitPrice = g.Max(i => i.UnitPrice),
+					TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
+				})
 				.OrderBy(x => x.TotalUnitsInStock)
 				.ToListAsync());
 
@@ -259,10 +259,10 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = await (db.Products
 				.GroupBy(i => i.UnitPrice)
 				.Select(g => new
-								 {
-									 UnitPrice = g.Key,
-									 TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
-								 })
+				{
+					UnitPrice = g.Key,
+					TotalUnitsInStock = g.Sum(i => i.UnitsInStock)
+				})
 				.OrderBy(x => x.UnitPrice)
 				.ToListAsync());
 
@@ -307,19 +307,19 @@ namespace NHibernate.Test.Linq.ByMethod
 						group o by o.OrderDate
 						into g
 						select new
-									{
-										g.Key,
-										Count = g.SelectMany(x => x.OrderLines).Count()
-									}).ToList();
+						{
+							g.Key,
+							Count = g.SelectMany(x => x.OrderLines).Count()
+						}).ToList();
 
 			var query = await ((from o in db.Orders
-						group o by o.OrderDate
+						 group o by o.OrderDate
 						into g
-						select new
-									{
-										g.Key,
-										Count = g.SelectMany(x => x.OrderLines).Count()
-									}).ToListAsync());
+						 select new
+						 {
+							 g.Key,
+							 Count = g.SelectMany(x => x.OrderLines).Count()
+						 }).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(481));
 			Assert.That(query, Is.EquivalentTo(list));
@@ -330,14 +330,14 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			var query = await ((from ol in db.OrderLines
 						 let superior = ol.Order.Employee.Superior
-						 group ol by new { ol.Order.OrderId, SuperiorId = (int?)superior.EmployeeId }
+						 group ol by new { ol.Order.OrderId, SuperiorId = (int?) superior.EmployeeId }
 						 into temp
 						 select new
-									{
-										OrderId = (int?) temp.Key.OrderId,
-										SuperiorId = temp.Key.SuperiorId,
-										Count = temp.Count(),
-									}).ToListAsync());
+						 {
+							 OrderId = (int?) temp.Key.OrderId,
+							 SuperiorId = temp.Key.SuperiorId,
+							 Count = temp.Count(),
+						 }).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(830));
 		}
@@ -355,14 +355,14 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			//NH-2566
 			var results = await ((from o in db.Orders
-								group o by o.Customer
+						   group o by o.Customer
 								into g
-								select g.Key.CustomerId)
+						   select g.Key.CustomerId)
 				.OrderBy(customerId => customerId)
 				.Skip(10)
 				.Take(10)
 				.ToListAsync());
-			
+
 			Assert.That(results.Count, Is.EqualTo(10));
 		}
 
@@ -390,23 +390,23 @@ namespace NHibernate.Test.Linq.ByMethod
 			  .Select(g => g.Key == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
 			  .ToListAsync());
 			await (db.Users
-			  .GroupBy(p => new StringEnumGroup {Enum = p.Enum1})
+			  .GroupBy(p => new StringEnumGroup { Enum = p.Enum1 })
 			  .Select(g => g.Key.Enum == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
 			  .ToListAsync());
 			await (db.Users
-			  .GroupBy(p => new[] {p.Enum1})
+			  .GroupBy(p => new[] { p.Enum1 })
 			  .Select(g => g.Key[0] == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
 			  .ToListAsync());
 			await (db.Users
-			  .GroupBy(p => new {p.Enum1})
+			  .GroupBy(p => new { p.Enum1 })
 			  .Select(g => g.Key.Enum1 == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
 			  .ToListAsync());
 			await (db.Users
-			  .GroupBy(p => new {Test = new {Test2 = p.Enum1}})
+			  .GroupBy(p => new { Test = new { Test2 = p.Enum1 } })
 			  .Select(g => g.Key.Test.Test2 == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
 			  .ToListAsync());
 			await (db.Users
-			  .GroupBy(p => new {Test = new[] {p.Enum1}})
+			  .GroupBy(p => new { Test = new[] { p.Enum1 } })
 			  .Select(g => g.Key.Test[0] == EnumStoredAsString.Large ? g.Sum(o => o.Id) : 0)
 			  .ToListAsync());
 		}
@@ -422,7 +422,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-3180
 			var result = await (db.Products
 				.GroupBy(x => x.UnitPrice)
-				.Select(x => new {x.Key, Count = x.Count()})
+				.Select(x => new { x.Key, Count = x.Count() })
 				.OrderByDescending(x => x.Key)
 				.FirstAsync());
 
@@ -436,7 +436,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-3180
 			var result = await (db.Products
 				.GroupBy(x => x.UnitPrice)
-				.Select(x => new {x.Key, Count = x.Count()})
+				.Select(x => new { x.Key, Count = x.Count() })
 				.OrderByDescending(x => x.Key)
 				.FirstOrDefaultAsync());
 
@@ -450,7 +450,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-3180
 			var result = await (db.Products
 				.GroupBy(x => x.UnitPrice)
-				.Select(x => new {x.Key, Count = x.Count()})
+				.Select(x => new { x.Key, Count = x.Count() })
 				.Where(x => x.Key == 263.5M)
 				.OrderByDescending(x => x.Key)
 				.SingleAsync());
@@ -465,7 +465,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-3180
 			var result = await (db.Products
 				.GroupBy(x => x.UnitPrice)
-				.Select(x => new {x.Key, Count = x.Count()})
+				.Select(x => new { x.Key, Count = x.Count() })
 				.Where(x => x.Key == 263.5M)
 				.OrderByDescending(x => x.Key)
 				.SingleOrDefaultAsync());
@@ -509,7 +509,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			//Not really an aggregate filter, but included to ensure that this kind of query still works
 			var result = await (db.Products
 				.GroupBy(x => x.Supplier.CompanyName)
-				.Where(x => db.Products.Count(y => y.Supplier.CompanyName==x.Key && y.UnitPrice == 12.75M) == 1)
+				.Where(x => db.Products.Count(y => y.Supplier.CompanyName == x.Key && y.UnitPrice == 12.75M) == 1)
 				.Select(x => new { x.Key, Count = x.Count() })
 				.FirstAsync());
 
@@ -536,7 +536,9 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = await (db.Products
 				.GroupBy(x => x.Supplier.CompanyName)
 				.Where(x => x.Key == "Zaanse Snoepfabriek")
-				.Select(x => new { x.Key, 
+				.Select(x => new
+				{
+					x.Key,
 					Sum = x.Sum(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M),
 					Avg = x.Average(y => y.UnitPrice == 12.75M ? y.UnitPrice : 0M),
 					Count = x.Count(y => y.UnitPrice == 12.75M),
@@ -548,7 +550,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(result.Key, Is.EqualTo("Zaanse Snoepfabriek"));
 			Assert.That(result.Sum, Is.EqualTo(12.75M));
 			Assert.That(result.Count, Is.EqualTo(1));
-			Assert.That(result.Avg, Is.EqualTo(12.75M/2));
+			Assert.That(result.Avg, Is.EqualTo(12.75M / 2));
 			Assert.That(result.Max, Is.EqualTo(12.75M));
 			Assert.That(result.Min, Is.EqualTo(0M));
 		}
@@ -559,12 +561,12 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (!Dialect.SupportsScalarSubSelects)
 				Assert.Ignore("Dialect does not support scalar sub-selects");
 
-			var result=await (db.Products.GroupBy(x => x.Supplier.Address.Country)
-			 .OrderBy(x=>x.Key)
+			var result = await (db.Products.GroupBy(x => x.Supplier.Address.Country)
+			 .OrderBy(x => x.Key)
 			 .Select(x => new { x.Key, MaxFreight = db.Orders.Where(y => y.ShippingAddress.Country == x.Key).Max(y => y.Freight), FirstOrder = db.Orders.Where(o => o.Employee.FirstName.StartsWith("A")).OrderBy(o => o.OrderId).Select(y => y.OrderId).First() })
 			 .ToListAsync());
 
-			Assert.That(result.Count,Is.EqualTo(16));
+			Assert.That(result.Count, Is.EqualTo(16));
 			Assert.That(result[15].MaxFreight, Is.EqualTo(830.75M));
 			Assert.That(result[15].FirstOrder, Is.EqualTo(10255));
 		}
@@ -576,15 +578,15 @@ namespace NHibernate.Test.Linq.ByMethod
 						  from ol in o.OrderLines
 						  group ol by ol.Product.ProductId
 							  into grp
-							  select new
-							  {
-								  ProductId = grp.Key,
-								  Sum = grp.Sum(x => x.UnitPrice),
-								  Count = grp.Count(),
-								  Avg = grp.Average(x => x.UnitPrice),
-								  Min = grp.Min(x => x.UnitPrice),
-								  Max = grp.Max(x => x.UnitPrice),
-							  }
+						  select new
+						  {
+							  ProductId = grp.Key,
+							  Sum = grp.Sum(x => x.UnitPrice),
+							  Count = grp.Count(),
+							  Avg = grp.Average(x => x.UnitPrice),
+							  Min = grp.Min(x => x.UnitPrice),
+							  Max = grp.Max(x => x.UnitPrice),
+						  }
 				).ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(77));
@@ -671,14 +673,14 @@ namespace NHibernate.Test.Linq.ByMethod
 		public async Task GroupByKeyWithConstantFromVariableAsync()
 		{
 			constKey = 1;
-			var q1 = db.Orders.GroupBy(o => constKey).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
-			var q1a = db.Orders.GroupBy(o => "").Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
-			var q2 = db.Orders.GroupBy(o => new {A = constKey}).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
-			var q3 = db.Orders.GroupBy(o => new object[] {constKey}).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
-			var q3a = db.Orders.GroupBy(o => (IEnumerable<object>) new object[] {constKey}).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
-			var q4 = db.Orders.GroupBy(o => new {A = constKey, B = o.Shipper.ShipperId}).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
-			var q5 = db.Orders.GroupBy(o => new[] {constKey, o.Shipper.ShipperId}).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
-			var q5a = db.Orders.GroupBy(o => (IEnumerable<int>) new[] {constKey, o.Shipper.ShipperId}).Select(g => new {Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight)});
+			var q1 = db.Orders.GroupBy(o => constKey).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) });
+			var q1a = db.Orders.GroupBy(o => "").Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) });
+			var q2 = db.Orders.GroupBy(o => new { A = constKey }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) });
+			var q3 = db.Orders.GroupBy(o => new object[] { constKey }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) });
+			var q3a = db.Orders.GroupBy(o => (IEnumerable<object>) new object[] { constKey }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) });
+			var q4 = db.Orders.GroupBy(o => new { A = constKey, B = o.Shipper.ShipperId }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) });
+			var q5 = db.Orders.GroupBy(o => new[] { constKey, o.Shipper.ShipperId }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) });
+			var q5a = db.Orders.GroupBy(o => (IEnumerable<int>) new[] { constKey, o.Shipper.ShipperId }).Select(g => new { Key = g.Key, Count = g.Count(), Sum = g.Sum(x => x.Freight) });
 
 			var r1_1 = await (q1.ToListAsync());
 			Assert.That(r1_1.Count, Is.EqualTo(1));
@@ -835,7 +837,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
 
-			var orderGroups = await (db.OrderLines.Select(o => new object[] { o }).GroupBy(x => new object[] { ((OrderLine)x[0]).Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
+			var orderGroups = await (db.OrderLines.Select(o => new object[] { o }).GroupBy(x => new object[] { ((OrderLine) x[0]).Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
@@ -847,11 +849,11 @@ namespace NHibernate.Test.Linq.ByMethod
 			if (Sfi.ConnectionProvider.Driver is OdbcDriver)
 				Assert.Ignore("SQL Server seems unable to match complex group by and select list arguments when running over ODBC.");
 
-			var orderGroups = await (db.OrderLines.Select(o => new { OrderLine = (object)o }).GroupBy(x => new object[] { ((OrderLine)x.OrderLine).Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
+			var orderGroups = await (db.OrderLines.Select(o => new { OrderLine = (object) o }).GroupBy(x => new object[] { ((OrderLine) x.OrderLine).Order.Customer == null ? 0 : 1 }).Select(g => new { Key = g.Key, Count = g.Count() }).ToListAsync());
 			Assert.AreEqual(2155, orderGroups.Sum(g => g.Count));
 		}
 
-		[Test(Description="GH-3076")]
+		[Test(Description = "GH-3076")]
 		public async Task NestedNonAggregateGroupByAsync()
 		{
 			var list = await (db.OrderLines
@@ -862,7 +864,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			Assert.That(list, Has.Count.EqualTo(77));
 		}
 
-		[Test(Description="GH-3076")]
+		[Test(Description = "GH-3076")]
 		public async Task NestedNonAggregateGroupBySelectAsync()
 		{
 			var list = await (db.OrderLines
@@ -947,7 +949,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				if (obj.GetType() != GetType())
 					return false;
 
-				var other = (Tup<T1, T2>)obj;
+				var other = (Tup<T1, T2>) obj;
 
 				return Equals(Item1, other.Item1) && Equals(Item2, other.Item2);
 			}
@@ -963,7 +965,7 @@ namespace NHibernate.Test.Linq.ByMethod
 		{
 			await (db.Products.GroupBy(x => x.Supplier.CompanyName)
 				.OrderBy(x => x.Key)
-				.Select(x => new GroupInfo {Key = x.Key, ItemCount = x.Count(), HasSubgroups = false, Items = x})
+				.Select(x => new GroupInfo { Key = x.Key, ItemCount = x.Count(), HasSubgroups = false, Items = x })
 				.ToListAsync());
 		}
 
@@ -971,9 +973,9 @@ namespace NHibernate.Test.Linq.ByMethod
 		public async Task SelectArrayIndexBeforeGroupByAsync()
 		{
 			var result = db.Orders
-							.SelectMany(o => o.OrderLines.Select(c => c.Id).DefaultIfEmpty().Select(c => new object[] {c, o}))
+							.SelectMany(o => o.OrderLines.Select(c => c.Id).DefaultIfEmpty().Select(c => new object[] { c, o }))
 							.GroupBy(g => g[0], g => (Order) g[1])
-							.Select(g => new[] {g.Key, g.Count(), g.Max(x => x.OrderDate)});
+							.Select(g => new[] { g.Key, g.Count(), g.Max(x => x.OrderDate) });
 
 			Assert.True(await (result.AnyAsync()));
 		}
@@ -982,9 +984,9 @@ namespace NHibernate.Test.Linq.ByMethod
 		public async Task SelectMemberInitBeforeGroupByAsync()
 		{
 			var result = await (db.Orders
-							.Select(o => new OrderGroup {OrderId = o.OrderId, OrderDate = o.OrderDate})
+							.Select(o => new OrderGroup { OrderId = o.OrderId, OrderDate = o.OrderDate })
 							.GroupBy(o => o.OrderId)
-							.Select(g => new OrderGroup {OrderId = g.Key, OrderDate = g.Max(o => o.OrderDate)})
+							.Select(g => new OrderGroup { OrderId = g.Key, OrderDate = g.Max(o => o.OrderDate) })
 							.ToListAsync());
 
 			Assert.True(result.Any());
@@ -994,9 +996,9 @@ namespace NHibernate.Test.Linq.ByMethod
 		public async Task SelectNewBeforeGroupByAsync()
 		{
 			var result = await (db.Orders
-							.Select(o => new {o.OrderId, o.OrderDate})
+							.Select(o => new { o.OrderId, o.OrderDate })
 							.GroupBy(o => o.OrderId)
-							.Select(g => new {OrderId = g.Key, OrderDate = g.Max(o => o.OrderDate)})
+							.Select(g => new { OrderId = g.Key, OrderDate = g.Max(o => o.OrderDate) })
 							.ToListAsync());
 
 			Assert.True(result.Any());

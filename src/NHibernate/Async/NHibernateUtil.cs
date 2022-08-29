@@ -45,7 +45,7 @@ namespace NHibernate
 				}
 				if (proxy.IsProxy())
 				{
-					return ((INHibernateProxy)proxy).HibernateLazyInitializer.InitializeAsync(cancellationToken);
+					return ((INHibernateProxy) proxy).HibernateLazyInitializer.InitializeAsync(cancellationToken);
 				}
 				else if (proxy is ILazyInitializedCollection coll)
 				{
@@ -76,7 +76,7 @@ namespace NHibernate
 			cancellationToken.ThrowIfCancellationRequested();
 			if (proxy.IsProxy())
 			{
-				return (await (((INHibernateProxy)proxy).HibernateLazyInitializer.GetImplementationAsync(cancellationToken)).ConfigureAwait(false)).GetType();
+				return (await (((INHibernateProxy) proxy).HibernateLazyInitializer.GetImplementationAsync(cancellationToken)).ConfigureAwait(false)).GetType();
 			}
 			else
 			{

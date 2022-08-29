@@ -9,14 +9,14 @@
 
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Collection;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Util;
-using System.Collections.Generic;
-using System.Linq;
-using Iesi.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -53,7 +53,7 @@ namespace NHibernate.Engine
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An array of collection keys, of length <paramref name="batchSize"/> (padded with nulls)</returns>
 		internal async Task<object[]> GetCollectionBatchAsync(ICollectionPersister collectionPersister, object key, int batchSize, bool checkCache,
-		                                     CollectionEntry[] collectionEntries, CancellationToken cancellationToken)
+											 CollectionEntry[] collectionEntries, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var keys = new object[batchSize];
@@ -62,8 +62,8 @@ namespace NHibernate.Engine
 			int? keyIndex = null; // The index of the demanding key in the linked hash set
 			var checkForEnd = false; // Stores whether we found the demanded collection and reached the batchSize
 			var index = 0; // The current index of the linked hash set iteration
-			// List of collection entries that haven't been checked for their existance in the cache. Besides the collection entry,
-			// the index where the entry was found is also stored in order to correctly order the returning keys.
+						   // List of collection entries that haven't been checked for their existance in the cache. Besides the collection entry,
+						   // the index where the entry was found is also stored in order to correctly order the returning keys.
 			var collectionKeys = new List<KeyValuePair<KeyValuePair<CollectionEntry, IPersistentCollection>, int>>(batchSize);
 			var batchableCache = collectionPersister.Cache?.GetCacheBase();
 
@@ -253,8 +253,8 @@ namespace NHibernate.Engine
 			int? idIndex = null; // The index of the demanding id in the linked hash set
 			var checkForEnd = false; // Stores whether we found the demanded id and reached the batchSize
 			var index = 0; // The current index of the linked hash set iteration
-			// List of entity keys that haven't been checked for their existance in the cache. Besides the entity key,
-			// the index where the key was found is also stored in order to correctly order the returning keys.
+						   // List of entity keys that haven't been checked for their existance in the cache. Besides the entity key,
+						   // the index where the key was found is also stored in order to correctly order the returning keys.
 			var entityKeys = new List<KeyValuePair<EntityKey, int>>(batchSize);
 			// If there is a cache, obsolete or not, batchableCache will not be null.
 			var batchableCache = persister.Cache?.GetCacheBase();
@@ -388,7 +388,7 @@ namespace NHibernate.Engine
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An array of booleans that contains the result for each key.</returns>
 		private async Task<bool[]> AreCachedAsync(List<KeyValuePair<EntityKey, int>> entityKeys, int[] keyIndexes, IEntityPersister persister,
-		                         CacheBase batchableCache, bool checkCache, CancellationToken cancellationToken)
+								 CacheBase batchableCache, bool checkCache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var result = new bool[keyIndexes.Length];
@@ -433,8 +433,8 @@ namespace NHibernate.Engine
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An array of booleans that contains the result for each key.</returns>
 		private async Task<bool[]> AreCachedAsync(List<KeyValuePair<KeyValuePair<CollectionEntry, IPersistentCollection>, int>> collectionKeys,
-		                         int[] keyIndexes, ICollectionPersister persister, CacheBase batchableCache,
-		                         bool checkCache, CancellationToken cancellationToken)
+								 int[] keyIndexes, ICollectionPersister persister, CacheBase batchableCache,
+								 bool checkCache, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var result = new bool[keyIndexes.Length];

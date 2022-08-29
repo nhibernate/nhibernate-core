@@ -26,7 +26,7 @@ namespace NHibernate.Test.DynamicEntity.Interceptor
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"DynamicEntity.Interceptor.Customer.hbm.xml"}; }
+			get { return new string[] { "DynamicEntity.Interceptor.Customer.hbm.xml" }; }
 		}
 
 		protected override void Configure(Configuration configuration)

@@ -19,7 +19,7 @@ using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.MultiTenancy;
 using NHibernate.Util;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Tool.hbm2ddl
 {
@@ -31,7 +31,7 @@ namespace NHibernate.Tool.hbm2ddl
 		private async Task InitializeAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if(wasInitialized)
+			if (wasInitialized)
 			{
 				return;
 			}

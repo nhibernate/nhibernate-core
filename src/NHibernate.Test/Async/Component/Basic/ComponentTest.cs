@@ -23,18 +23,18 @@ namespace NHibernate.Test.Component.Basic
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class ComponentTestAsync : TestCase 
-	{			
+	public class ComponentTestAsync : TestCase
+	{
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
-		}		
+		}
 
 		protected override string[] Mappings
 		{
 			get { return Array.Empty<string>(); }
 		}
-		
+
 		protected override void Configure(Configuration configuration)
 		{
 			if (Dialect.Functions.ContainsKey("year"))
@@ -57,7 +57,7 @@ namespace NHibernate.Test.Component.Basic
 				}
 			}
 		}
-	
+
 		protected override void OnTearDown()
 		{
 			using (ISession s = Sfi.OpenSession())
@@ -67,17 +67,17 @@ namespace NHibernate.Test.Component.Basic
 				s.Delete("from Employee");
 				t.Commit();
 			}
-			
+
 			base.OnTearDown();
 		}
 
 		[Test]
-		public async Task TestUpdateFalseAsync() 
+		public async Task TestUpdateFalseAsync()
 		{
 			User u;
-			
+
 			Sfi.Statistics.Clear();
-				
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -88,28 +88,28 @@ namespace NHibernate.Test.Component.Basic
 				await (t.CommitAsync());
 				s.Close();
 			}
-			
+
 			Assert.That(Sfi.Statistics.EntityInsertCount, Is.EqualTo(1));
 			Assert.That(Sfi.Statistics.EntityUpdateCount, Is.EqualTo(0));
 
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				u = (User)await (s.GetAsync(typeof(User), "gavin"));
+				u = (User) await (s.GetAsync(typeof(User), "gavin"));
 				Assert.That(u.Person.Name, Is.EqualTo("Gavin King"));
 				await (s.DeleteAsync(u));
 				await (t.CommitAsync());
 				s.Close();
 			}
-			
+
 			Assert.That(Sfi.Statistics.EntityDeleteCount, Is.EqualTo(1));
 		}
-		
+
 		[Test]
-		public async Task TestComponentAsync() 
+		public async Task TestComponentAsync()
 		{
 			User u;
-			
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -119,22 +119,22 @@ namespace NHibernate.Test.Component.Basic
 				u.Person.ChangeAddress("Phipps Place");
 				await (t.CommitAsync());
 			}
-			
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
-			{			
-				u = (User)await (s.GetAsync(typeof(User), "gavin"));
+			{
+				u = (User) await (s.GetAsync(typeof(User), "gavin"));
 				Assert.That(u.Person.Address, Is.EqualTo("Phipps Place"));
 				Assert.That(u.Person.PreviousAddress, Is.EqualTo("Karbarook Ave"));
 				Assert.That(u.Person.Yob, Is.EqualTo(u.Person.Dob.Year));
 				u.Password = "$ecret";
 				await (t.CommitAsync());
 			}
-			
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				u = (User)await (s.GetAsync(typeof(User), "gavin"));
+				u = (User) await (s.GetAsync(typeof(User), "gavin"));
 				Assert.That(u.Person.Address, Is.EqualTo("Phipps Place"));
 				Assert.That(u.Person.PreviousAddress, Is.EqualTo("Karbarook Ave"));
 				Assert.That(u.Password, Is.EqualTo("$ecret"));
@@ -142,15 +142,15 @@ namespace NHibernate.Test.Component.Basic
 				await (t.CommitAsync());
 			}
 		}
-		
+
 		[Test]
-		public async Task TestComponentStateChangeAndDirtinessAsync() 
+		public async Task TestComponentStateChangeAndDirtinessAsync()
 		{
 			// test for HHH-2366
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				User u = new User("steve", "hibernater", new Person( "Steve Ebersole", new DateTime(1999, 12, 31), "Main St"));
+				User u = new User("steve", "hibernater", new Person("Steve Ebersole", new DateTime(1999, 12, 31), "Main St"));
 				await (s.PersistAsync(u));
 				await (s.FlushAsync());
 				long intialUpdateCount = Sfi.Statistics.EntityUpdateCount;
@@ -166,19 +166,19 @@ namespace NHibernate.Test.Component.Basic
 				s.Close();
 			}
 		}
-		
+
 		[Test]
-		public async Task TestComponentFormulaQueryAsync() 
+		public async Task TestComponentFormulaQueryAsync()
 		{
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
-			{			
+			{
 				await (s.CreateQuery("from User u where u.Person.Yob = 1999").ListAsync());
 				await (s.CreateCriteria(typeof(User))
 					.Add(Property.ForName("Person.Yob").Between(1999, 2002))
 					.ListAsync());
-				
-				if (Dialect.SupportsRowValueConstructorSyntax) 
+
+				if (Dialect.SupportsRowValueConstructorSyntax)
 				{
 					await (s.CreateQuery("from User u where u.Person = ('gavin', :dob, 'Peachtree Rd', 'Karbarook Ave', 1974, 'Peachtree Rd')")
 						.SetDateTime("dob", new DateTime(1974, 3, 25)).ListAsync());
@@ -189,27 +189,27 @@ namespace NHibernate.Test.Component.Basic
 				s.Close();
 			}
 		}
-	
+
 		[Test]
-		public async Task TestNamedQueryAsync() 
+		public async Task TestNamedQueryAsync()
 		{
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
 				await (s.GetNamedQuery("userNameIn")
-					.SetParameterList( "nameList", new object[] {"1ovthafew", "turin", "xam"} )
+					.SetParameterList("nameList", new object[] { "1ovthafew", "turin", "xam" })
 					.ListAsync());
 				await (t.CommitAsync());
 				s.Close();
 			}
 		}
-	
+
 		[Test]
-		public async Task TestMergeComponentAsync() 
+		public async Task TestMergeComponentAsync()
 		{
 			Employee emp = null;
 			IEnumerator<Employee> enumerator = null;
-				
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
@@ -222,153 +222,153 @@ namespace NHibernate.Test.Component.Basic
 				await (t.CommitAsync());
 				s.Close();
 			}
-			
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id));
+				emp = (Employee) await (s.GetAsync(typeof(Employee), emp.Id));
 				await (t.CommitAsync());
 				s.Close();
 			}
-			
+
 			Assert.That(emp.OptionalComponent, Is.Null);
-			
+
 			emp.OptionalComponent = new OptionalComponent();
 			emp.OptionalComponent.Value1 = "emp-value1";
 			emp.OptionalComponent.Value2 = "emp-value2";
-	
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.MergeAsync(emp));
+				emp = (Employee) await (s.MergeAsync(emp));
 				await (t.CommitAsync());
 				s.Close();
 			}
-			
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id));
+				emp = (Employee) await (s.GetAsync(typeof(Employee), emp.Id));
 				await (t.CommitAsync());
 				s.Close();
 			}
-			
+
 			Assert.That(emp.OptionalComponent.Value1, Is.EqualTo("emp-value1"));
 			Assert.That(emp.OptionalComponent.Value2, Is.EqualTo("emp-value2"));
 
 			emp.OptionalComponent.Value1 = null;
 			emp.OptionalComponent.Value2 = null;
-	
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.MergeAsync(emp));
+				emp = (Employee) await (s.MergeAsync(emp));
 				await (t.CommitAsync());
 				s.Close();
 			}
-			
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id));
+				emp = (Employee) await (s.GetAsync(typeof(Employee), emp.Id));
 				await (NHibernateUtil.InitializeAsync(emp.DirectReports));
 				await (t.CommitAsync());
 				s.Close();
 			}
-			
+
 			Assert.That(emp.OptionalComponent, Is.Null);
-	
+
 			Employee emp1 = new Employee();
 			emp1.HireDate = new DateTime(1999, 12, 31);
 			emp1.Person = new Person();
 			emp1.Person.Name = "bozo";
 			emp1.Person.Dob = new DateTime(1999, 12, 31);
 			emp.DirectReports.Add(emp1);
-	
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.MergeAsync(emp));
+				emp = (Employee) await (s.MergeAsync(emp));
 				await (t.CommitAsync());
 				s.Close();
 			}
-			
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id));
+				emp = (Employee) await (s.GetAsync(typeof(Employee), emp.Id));
 				await (NHibernateUtil.InitializeAsync(emp.DirectReports));
 				await (t.CommitAsync());
 				s.Close();
 			}
-			
+
 			Assert.That(emp.DirectReports.Count, Is.EqualTo(1));
-			
+
 			enumerator = emp.DirectReports.GetEnumerator();
 			enumerator.MoveNext();
-			emp1 = (Employee)enumerator.Current;
+			emp1 = (Employee) enumerator.Current;
 			Assert.That(emp1.OptionalComponent, Is.Null);
-			
+
 			emp1.OptionalComponent = new OptionalComponent();
 			emp1.OptionalComponent.Value1 = "emp1-value1";
 			emp1.OptionalComponent.Value2 = "emp1-value2";
-	
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.MergeAsync(emp));
+				emp = (Employee) await (s.MergeAsync(emp));
 				await (t.CommitAsync());
 				s.Close();
 			}
-			
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id));
+				emp = (Employee) await (s.GetAsync(typeof(Employee), emp.Id));
 				await (NHibernateUtil.InitializeAsync(emp.DirectReports));
 				await (t.CommitAsync());
 				s.Close();
 			}
-			
+
 			Assert.That(emp.DirectReports.Count, Is.EqualTo(1));
-			
+
 			enumerator = emp.DirectReports.GetEnumerator();
 			enumerator.MoveNext();
-			emp1 = (Employee)enumerator.Current;
+			emp1 = (Employee) enumerator.Current;
 			Assert.That(emp1.OptionalComponent.Value1, Is.EqualTo("emp1-value1"));
 			Assert.That(emp1.OptionalComponent.Value2, Is.EqualTo("emp1-value2"));
-			
+
 			emp1.OptionalComponent.Value1 = null;
 			emp1.OptionalComponent.Value2 = null;
-	
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.MergeAsync(emp));
+				emp = (Employee) await (s.MergeAsync(emp));
 				await (t.CommitAsync());
 				s.Close();
 			}
-			
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				emp = (Employee)await (s.GetAsync(typeof(Employee), emp.Id));
+				emp = (Employee) await (s.GetAsync(typeof(Employee), emp.Id));
 				await (NHibernateUtil.InitializeAsync(emp.DirectReports));
 				await (t.CommitAsync());
 				s.Close();
 			}
-	
+
 			Assert.That(emp.DirectReports.Count, Is.EqualTo(1));
-			
+
 			enumerator = emp.DirectReports.GetEnumerator();
 			enumerator.MoveNext();
-			emp1 = (Employee)enumerator.Current;
+			emp1 = (Employee) enumerator.Current;
 			Assert.That(emp1.OptionalComponent, Is.Null);
-	
+
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.DeleteAsync( emp ));
+				await (s.DeleteAsync(emp));
 				await (t.CommitAsync());
 				s.Close();
 			}

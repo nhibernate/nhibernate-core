@@ -10,52 +10,52 @@
 
 using System;
 using System.Collections;
-using NUnit.Framework;
 using NHibernate.Criterion;
 using NHibernate.Type;
+using NUnit.Framework;
 
 namespace NHibernate.Test.ExpressionTest.Projection
 {
-    using System.Threading.Tasks;
-    [TestFixture]
-    public class ProjectionSqlFixtureAsync : TestCase
-    {
-        protected override string MappingsAssembly
-        {
-            get { return "NHibernate.Test"; }
-        }
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class ProjectionSqlFixtureAsync : TestCase
+	{
+		protected override string MappingsAssembly
+		{
+			get { return "NHibernate.Test"; }
+		}
 
-        protected override string[] Mappings
-        {
-            get
-            {
-                return new string[] { "ExpressionTest.Projection.ProjectionClass.hbm.xml" };
-            }
-        }
+		protected override string[] Mappings
+		{
+			get
+			{
+				return new string[] { "ExpressionTest.Projection.ProjectionClass.hbm.xml" };
+			}
+		}
 
-        protected override void OnSetUp()
-        {
-            base.OnSetUp();
+		protected override void OnSetUp()
+		{
+			base.OnSetUp();
 
-            // Create some objects
-            using (ISession session = OpenSession())
-            {
-                session.Save(new ProjectionTestClass(1));
-                session.Save(new ProjectionTestClass(2));
-                session.Save(new ProjectionTestClass(3));
-                session.Save(new ProjectionTestClass(4));
-                session.Flush();
-            }
-        }
+			// Create some objects
+			using (ISession session = OpenSession())
+			{
+				session.Save(new ProjectionTestClass(1));
+				session.Save(new ProjectionTestClass(2));
+				session.Save(new ProjectionTestClass(3));
+				session.Save(new ProjectionTestClass(4));
+				session.Flush();
+			}
+		}
 
-        protected override void OnTearDown()
-        {
-            using (ISession s = Sfi.OpenSession())
-            {
-                s.Delete("from ProjectionTestClass");
-                s.Flush();
-            }
-        }
+		protected override void OnTearDown()
+		{
+			using (ISession s = Sfi.OpenSession())
+			{
+				s.Delete("from ProjectionTestClass");
+				s.Flush();
+			}
+		}
 
 		[Test]
 		public async Task QueryTestWithStrongTypeReturnValueAsync()
@@ -67,11 +67,11 @@ namespace NHibernate.Test.ExpressionTest.Projection
 				NHibernate.Transform.IResultTransformer trans = new NHibernate.Transform.AliasToBeanConstructorResultTransformer(
 					typeof(ProjectionReport).GetConstructors()[0]
 					);
-				
+
 				c.SetProjection(Projections.ProjectionList()
-		                			.Add(Projections.Avg("Pay"))
-		                			.Add(Projections.Max("Pay"))
-		                			.Add(Projections.Min("Pay")));
+									.Add(Projections.Avg("Pay"))
+									.Add(Projections.Max("Pay"))
+									.Add(Projections.Min("Pay")));
 				c.SetResultTransformer(trans);
 				ProjectionReport report = await (c.UniqueResultAsync<ProjectionReport>());
 				Assert.AreEqual(report.AvgPay, 2.5);
@@ -80,47 +80,47 @@ namespace NHibernate.Test.ExpressionTest.Projection
 			}
 		}
 
-        [Test]
-        public async Task QueryTest1Async()
-        {
-            using (ISession session = OpenSession())
-            {
-                ICriteria c = session.CreateCriteria(typeof(ProjectionTestClass));
+		[Test]
+		public async Task QueryTest1Async()
+		{
+			using (ISession session = OpenSession())
+			{
+				ICriteria c = session.CreateCriteria(typeof(ProjectionTestClass));
 
-                c.SetProjection(Projections.ProjectionList()
-                    .Add(Projections.Avg("Pay"))
-                    .Add(Projections.Max("Pay"))
-                    .Add(Projections.Min("Pay")))
-                    ;
+				c.SetProjection(Projections.ProjectionList()
+					.Add(Projections.Avg("Pay"))
+					.Add(Projections.Max("Pay"))
+					.Add(Projections.Min("Pay")))
+					;
 				IList result = await (c.ListAsync()); // c.UniqueResult();
-                Assert.IsTrue(result.Count == 1, "More than one record was found, while just one was expected");
-                Assert.IsTrue(result[0] is object[], 
-                    "expected object[] as result, but found " + result[0].GetType().Name);
-                object[] results = (object[])result[0];
-                Assert.AreEqual(results.Length, 3);
-                Assert.AreEqual(results[0], 2.5);
-                Assert.AreEqual(results[1], 4);
-                Assert.AreEqual(results[2], 1);
-            }
-        }
+				Assert.IsTrue(result.Count == 1, "More than one record was found, while just one was expected");
+				Assert.IsTrue(result[0] is object[],
+					"expected object[] as result, but found " + result[0].GetType().Name);
+				object[] results = (object[]) result[0];
+				Assert.AreEqual(results.Length, 3);
+				Assert.AreEqual(results[0], 2.5);
+				Assert.AreEqual(results[1], 4);
+				Assert.AreEqual(results[2], 1);
+			}
+		}
 
-        [Test]
-        public async Task SelectSqlProjectionTestAsync()
-        {
-            using (ISession session = OpenSession())
-            {
-                ICriteria c = session.CreateCriteria(typeof(ProjectionTestClass));
+		[Test]
+		public async Task SelectSqlProjectionTestAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				ICriteria c = session.CreateCriteria(typeof(ProjectionTestClass));
 
-                c.SetProjection(Projections.ProjectionList()
-                    .Add(Projections.SqlProjection("Avg({alias}.Pay) as MyPay",
-                    new string[] { "MyPay" },
-                    new IType[] { NHibernateUtil.Double })));
+				c.SetProjection(Projections.ProjectionList()
+					.Add(Projections.SqlProjection("Avg({alias}.Pay) as MyPay",
+					new string[] { "MyPay" },
+					new IType[] { NHibernateUtil.Double })));
 
-                IList result = await (c.ListAsync()); // c.UniqueResult();
-                Assert.IsTrue(result.Count == 1);
-                object results = result[0];
-                Assert.AreEqual(results, 2.5);
-            }
-        }
-    }
+				IList result = await (c.ListAsync()); // c.UniqueResult();
+				Assert.IsTrue(result.Count == 1);
+				object results = result[0];
+				Assert.AreEqual(results, 2.5);
+			}
+		}
+	}
 }

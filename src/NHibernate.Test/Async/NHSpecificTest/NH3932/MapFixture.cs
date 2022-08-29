@@ -22,7 +22,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3932
 			var parent = new MapParent();
 			for (var i = 0; i < numberOfChildren; i++)
 			{
-				parent.Children.Add(i, new Child{Name="child" + i});
+				parent.Children.Add(i, new Child { Name = "child" + i });
 			}
 			return parent;
 		}

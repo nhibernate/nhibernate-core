@@ -156,7 +156,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1300
 				Assert.That(Driver.LastCommandParameters.First().SqlDbType, Is.EqualTo(SqlDbType.VarChar));
 			}
 		}
-		
+
 		[TestCase("Name", SqlDbType.NVarChar)]
 		[TestCase("AnsiName", SqlDbType.VarChar)]
 		public async Task HqlLikeShouldUseLargerSizeAsync(string property, SqlDbType expectedDbType)

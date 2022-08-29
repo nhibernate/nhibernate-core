@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2296
 			using (var s = OpenSession())
 			using (var tx = s.BeginTransaction())
 			{
-				var orders = await (s.CreateQuery("select o from Order o") 
+				var orders = await (s.CreateQuery("select o from Order o")
 					.SetMaxResults(2)
 					.ListAsync<Order>());
 

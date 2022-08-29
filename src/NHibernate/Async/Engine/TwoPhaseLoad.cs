@@ -8,19 +8,18 @@
 //------------------------------------------------------------------------------
 
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Event;
 using NHibernate.Impl;
 using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
+using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Type;
-using NHibernate.Properties;
-using System;
-using System.Collections.Generic;
 
 namespace NHibernate.Engine
 {
@@ -43,7 +42,7 @@ namespace NHibernate.Engine
 			}
 			return InitializeEntityAsync(entity, readOnly, session, preLoadEvent, postLoadEvent, null, cancellationToken);
 		}
-		
+
 		/// <summary>
 		/// Perform the second step of 2-phase load. Fully initialize the entity instance.
 		/// After processing a JDBC result set, we "resolve" all the associations
@@ -51,7 +50,7 @@ namespace NHibernate.Engine
 		/// "hydrated" into an array
 		/// </summary>
 		internal static async Task InitializeEntityAsync(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent,
-		                                      Action<IEntityPersister, CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
+											  Action<IEntityPersister, CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			//TODO: Should this be an InitializeEntityEventListener??? (watch out for performance!)
@@ -104,7 +103,7 @@ namespace NHibernate.Engine
 				preLoadEvent.Entity = entity;
 				preLoadEvent.State = hydratedState;
 				preLoadEvent.Id = id;
-				preLoadEvent.Persister=persister;
+				preLoadEvent.Persister = persister;
 				IPreLoadEventListener[] listeners = session.Listeners.PreLoadEventListeners;
 				for (int i = 0; i < listeners.Length; i++)
 				{
@@ -113,7 +112,7 @@ namespace NHibernate.Engine
 			}
 
 			persister.SetPropertyValues(entity, hydratedState);
-			
+
 			ISessionFactoryImplementor factory = session.Factory;
 
 			if (persister.HasCache && session.CacheMode.HasFlag(CacheMode.Put))
@@ -141,8 +140,8 @@ namespace NHibernate.Engine
 				{
 					bool put =
 						await (persister.Cache.PutAsync(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
-						                    persister.IsVersioned ? persister.VersionType.Comparator : null,
-						                    UseMinimalPuts(session, entityEntry), cancellationToken)).ConfigureAwait(false);
+											persister.IsVersioned ? persister.VersionType.Comparator : null,
+											UseMinimalPuts(session, entityEntry), cancellationToken)).ConfigureAwait(false);
 
 					if (put && factory.Statistics.IsStatisticsEnabled)
 					{
@@ -150,9 +149,9 @@ namespace NHibernate.Engine
 					}
 				}
 			}
-			
+
 			bool isReallyReadOnly = readOnly;
-			
+
 			if (!persister.IsMutable)
 			{
 				isReallyReadOnly = true;
@@ -164,7 +163,7 @@ namespace NHibernate.Engine
 				{
 					// there is already a proxy for this impl
 					// only set the status to read-only if the proxy is read-only
-					isReallyReadOnly = ((INHibernateProxy)proxy).HibernateLazyInitializer.ReadOnly;
+					isReallyReadOnly = ((INHibernateProxy) proxy).HibernateLazyInitializer.ReadOnly;
 				}
 			}
 

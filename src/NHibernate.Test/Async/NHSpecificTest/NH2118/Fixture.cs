@@ -23,10 +23,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2118
 		{
 			base.OnSetUp();
 
-			using(var s = Sfi.OpenStatelessSession())
-			using(var tx = s.BeginTransaction())
+			using (var s = Sfi.OpenStatelessSession())
+			using (var tx = s.BeginTransaction())
 			{
-				s.Insert(new Person {FirstName = "Bart", LastName = "Simpson"});
+				s.Insert(new Person { FirstName = "Bart", LastName = "Simpson" });
 				s.Insert(new Person { FirstName = "Homer", LastName = "Simpson" });
 				s.Insert(new Person { FirstName = "Apu", LastName = "Nahasapeemapetilon" });
 				s.Insert(new Person { FirstName = "Montgomery ", LastName = "Burns" });
@@ -37,11 +37,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2118
 		[Test]
 		public async Task CanGroupByWithoutSelectAsync()
 		{
-			using(var s = Sfi.OpenSession())
+			using (var s = Sfi.OpenSession())
 			using (s.BeginTransaction())
 			{
 				var groups = await (s.Query<Person>().GroupBy(p => p.LastName).ToListAsync());
-                
+
 				Assert.AreEqual(3, groups.Count);
 			}
 		}
@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2118
 		protected override void OnTearDown()
 		{
 			base.OnTearDown();
-			using(var s = Sfi.OpenStatelessSession())
+			using (var s = Sfi.OpenStatelessSession())
 			using (var tx = s.BeginTransaction())
 			{
 				s.CreateQuery("delete from Person").ExecuteUpdate();

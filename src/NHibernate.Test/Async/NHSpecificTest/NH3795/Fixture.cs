@@ -26,7 +26,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3795
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"ParentChild.hbm.xml", "ABC.hbm.xml"}; }
+			get { return new[] { "ParentChild.hbm.xml", "ABC.hbm.xml" }; }
 		}
 
 		[Test]

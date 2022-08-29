@@ -15,7 +15,7 @@ namespace NHibernate.Test.Events.PostEvents
 {
 	using System.Threading.Tasks;
 	using System.Threading;
- 
+
 	public partial class AssertOldStatePostListener : IPostUpdateEventListener
 	{
 

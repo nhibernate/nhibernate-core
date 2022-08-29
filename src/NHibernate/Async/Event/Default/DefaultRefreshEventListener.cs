@@ -77,7 +77,7 @@ namespace NHibernate.Event.Default
 				EntityKey key = source.GenerateEntityKey(id, persister);
 				if (source.PersistenceContext.GetEntry(key) != null)
 				{
-					throw new PersistentObjectException("attempted to refresh transient instance when persistent instance was already associated with the Session: " + 
+					throw new PersistentObjectException("attempted to refresh transient instance when persistent instance was already associated with the Session: " +
 						MessageHelper.InfoString(persister, id, source.Factory));
 				}
 			}
@@ -125,7 +125,7 @@ namespace NHibernate.Event.Default
 			string previousFetchProfile = source.FetchProfile;
 			source.FetchProfile = "refresh";
 			object result = await (persister.LoadAsync(id, obj, @event.LockMode, source, cancellationToken)).ConfigureAwait(false);
-			
+
 			if (result != null)
 				if (!persister.IsMutable)
 					source.SetReadOnly(result, true);
@@ -156,11 +156,11 @@ namespace NHibernate.Event.Default
 			{
 				if (types[i].IsCollectionType)
 				{
-					await (factory.EvictCollectionAsync(((CollectionType)types[i]).Role, id, cancellationToken)).ConfigureAwait(false);
+					await (factory.EvictCollectionAsync(((CollectionType) types[i]).Role, id, cancellationToken)).ConfigureAwait(false);
 				}
 				else if (types[i].IsComponentType)
 				{
-					IAbstractComponentType actype = (IAbstractComponentType)types[i];
+					IAbstractComponentType actype = (IAbstractComponentType) types[i];
 					await (EvictCachedCollectionsAsync(actype.Subtypes, id, factory, cancellationToken)).ConfigureAwait(false);
 				}
 			}

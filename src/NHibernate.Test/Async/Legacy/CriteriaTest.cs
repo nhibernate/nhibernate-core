@@ -10,8 +10,8 @@
 
 using System;
 using System.Collections;
-using NHibernate.DomainModel;
 using NHibernate.Criterion;
+using NHibernate.DomainModel;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
 
@@ -132,7 +132,7 @@ namespace NHibernate.Test.Legacy
 		{
 			using (ISession s = OpenSession())
 			{
-				Assert.ThrowsAsync<QueryException>(() =>s.CreateCriteria(typeof(Master))
+				Assert.ThrowsAsync<QueryException>(() => s.CreateCriteria(typeof(Master))
 					.Add(Expression.Like("Details", "SomeString"))
 					.ListAsync());
 			}
@@ -158,7 +158,7 @@ namespace NHibernate.Test.Legacy
 		{
 			using (ISession s = OpenSession())
 			{
-				Assert.ThrowsAsync<QueryException>(() =>s.CreateCriteria(typeof(Master))
+				Assert.ThrowsAsync<QueryException>(() => s.CreateCriteria(typeof(Master))
 					.Add(Expression.Eq("Details.I", 10))
 					.ListAsync());
 			}
@@ -172,9 +172,9 @@ namespace NHibernate.Test.Legacy
 				await (s.SaveAsync(new Master()));
 				await (s.FlushAsync());
 				Assert.AreEqual(1, (await (s.CreateCriteria(typeof(Master))
-				                   	.CreateAlias("Details", "detail", JoinType.LeftOuterJoin)
-				                   	.Fetch("Details")
-				                   	.ListAsync())).Count);
+									   .CreateAlias("Details", "detail", JoinType.LeftOuterJoin)
+									   .Fetch("Details")
+									   .ListAsync())).Count);
 				await (s.DeleteAsync("from Master"));
 				await (s.FlushAsync());
 			}

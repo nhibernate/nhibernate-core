@@ -43,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2009
 				await (session.FlushAsync());
 				session.Clear();
 			}
-			
+
 			using (ISession session = OpenSession())
 			{
 				var user = await (session.GetAsync<BlogPost>(savedBlogPost.ID));

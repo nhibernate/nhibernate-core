@@ -36,10 +36,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1275
 		public async Task RetrievingAsync()
 		{
 			object savedId;
-			using(ISession s = OpenSession())
-			using(ITransaction t = s.BeginTransaction())
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
-				A a  = new A("hunabKu");
+				A a = new A("hunabKu");
 				savedId = await (s.SaveAsync(a));
 				await (t.CommitAsync());
 			}

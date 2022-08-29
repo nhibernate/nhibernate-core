@@ -25,14 +25,14 @@ namespace NHibernate.Test.NHSpecificTest.NH637
 			holder.Point = new Point(20, 10);
 
 			using (ISession s = OpenSession())
-			using(ITransaction t = s.BeginTransaction())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				await (s.SaveAsync(holder));
 
 				PointHolder result = (PointHolder) await (s
-				                                   	.CreateCriteria(typeof(PointHolder))
-				                                   	.Add(Expression.Between("Point", new Point(19, 9), new Point(21, 11)))
-				                                   	.UniqueResultAsync());
+													   .CreateCriteria(typeof(PointHolder))
+													   .Add(Expression.Between("Point", new Point(19, 9), new Point(21, 11)))
+													   .UniqueResultAsync());
 
 				Assert.AreSame(holder, result);
 

@@ -12,7 +12,7 @@ using System.Reflection;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NUnit.Framework;
-using Environment=NHibernate.Cfg.Environment;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.Naturalid.Mutable
 {
@@ -27,7 +27,7 @@ namespace NHibernate.Test.Naturalid.Mutable
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"Naturalid.Mutable.User.hbm.xml"}; }
+			get { return new string[] { "Naturalid.Mutable.User.hbm.xml" }; }
 		}
 
 		protected override void Configure(Configuration configuration)
@@ -51,7 +51,7 @@ namespace NHibernate.Test.Naturalid.Mutable
 			}
 
 			FieldInfo name = u.GetType().GetField("name",
-			                                      BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+												  BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 			name.SetValue(u, "Gavin");
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
@@ -78,7 +78,7 @@ namespace NHibernate.Test.Naturalid.Mutable
 			ITransaction t = s.BeginTransaction();
 
 			object nullUser =
-				await (s.CreateCriteria(typeof (User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
+				await (s.CreateCriteria(typeof(User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
 					true).UniqueResultAsync());
 
 			Assert.That(nullUser, Is.Null);
@@ -106,7 +106,7 @@ namespace NHibernate.Test.Naturalid.Mutable
 
 			u =
 				(User)
-				await (s.CreateCriteria(typeof (User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
+				await (s.CreateCriteria(typeof(User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
 					true).UniqueResultAsync());
 
 			Assert.That(u, Is.Not.Null);
@@ -125,7 +125,7 @@ namespace NHibernate.Test.Naturalid.Mutable
 
 			u =
 				(User)
-				await (s.CreateCriteria(typeof (User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
+				await (s.CreateCriteria(typeof(User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
 					true).UniqueResultAsync());
 
 			await (s.DeleteAsync(u));
@@ -142,7 +142,7 @@ namespace NHibernate.Test.Naturalid.Mutable
 			t = s.BeginTransaction();
 
 			nullUser =
-				await (s.CreateCriteria(typeof (User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
+				await (s.CreateCriteria(typeof(User)).Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb")).SetCacheable(
 					true).UniqueResultAsync());
 
 			Assert.That(nullUser, Is.Null);
@@ -172,7 +172,7 @@ namespace NHibernate.Test.Naturalid.Mutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			u = (User) await (s.CreateCriteria(typeof (User))
+			u = (User) await (s.CreateCriteria(typeof(User))
 				.Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb"))
 				.SetCacheable(true).UniqueResultAsync());
 
@@ -199,7 +199,7 @@ namespace NHibernate.Test.Naturalid.Mutable
 			s = OpenSession();
 			t = s.BeginTransaction();
 
-			u = (User) await (s.CreateCriteria(typeof (User))
+			u = (User) await (s.CreateCriteria(typeof(User))
 				.Add(Restrictions.NaturalId().Set("name", "xam").Set("org", "hb"))
 				.SetCacheable(true).UniqueResultAsync());
 
@@ -207,7 +207,7 @@ namespace NHibernate.Test.Naturalid.Mutable
 			Assert.AreEqual(1, Sfi.Statistics.QueryExecutionCount);
 			Assert.AreEqual(0, Sfi.Statistics.QueryCacheHitCount);
 
-			u = (User)await (s.CreateCriteria(typeof(User))
+			u = (User) await (s.CreateCriteria(typeof(User))
 				.Add(Restrictions.NaturalId().Set("name", "gavin").Set("org", "hb"))
 				.SetCacheable(true).UniqueResultAsync());
 			Assert.That(u, Is.Not.Null);

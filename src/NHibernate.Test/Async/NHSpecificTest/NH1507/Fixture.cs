@@ -38,34 +38,34 @@ namespace NHibernate.Test.NHSpecificTest.NH1507
 		{
 			//Employee
 			var emp = new Employee
-						{
-							Address = "Zombie street",
-							City = "Bitonto",
-							PostalCode = "66666",
-							FirstName = "tomb",
-							LastName = "mutilated"
-						};
+			{
+				Address = "Zombie street",
+				City = "Bitonto",
+				PostalCode = "66666",
+				FirstName = "tomb",
+				LastName = "mutilated"
+			};
 
 			//and his related orders
 			var order = new Order
-							{OrderDate = DateTime.Now, Employee = emp, ShipAddress = "dead zone 1", ShipCountry = "Deadville"};
+			{ OrderDate = DateTime.Now, Employee = emp, ShipAddress = "dead zone 1", ShipCountry = "Deadville" };
 
 			var order2 = new Order
-							{OrderDate = DateTime.Now, Employee = emp, ShipAddress = "dead zone 2", ShipCountry = "Deadville"};
+			{ OrderDate = DateTime.Now, Employee = emp, ShipAddress = "dead zone 2", ShipCountry = "Deadville" };
 
 			//Employee with no related orders but with same PostalCode
 			var emp2 = new Employee
-						{
-							Address = "Gut street",
-							City = "Mariotto",
-							Country = "Arised",
-							PostalCode = "66666",
-							FirstName = "carcass",
-							LastName = "purulent"
-						};
+			{
+				Address = "Gut street",
+				City = "Mariotto",
+				Country = "Arised",
+				PostalCode = "66666",
+				FirstName = "carcass",
+				LastName = "purulent"
+			};
 
 			//Order with no related employee but with same ShipCountry
-			var order3 = new Order {OrderDate = DateTime.Now, ShipAddress = "dead zone 2", ShipCountry = "Deadville"};
+			var order3 = new Order { OrderDate = DateTime.Now, ShipAddress = "dead zone 2", ShipCountry = "Deadville" };
 
 			using (ISession session = OpenSession())
 			{

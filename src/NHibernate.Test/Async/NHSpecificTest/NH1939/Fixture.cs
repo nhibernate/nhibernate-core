@@ -10,10 +10,10 @@
 
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-using NHibernate.Tool.hbm2ddl;
 using System.Text;
 using NHibernate.Cfg;
+using NHibernate.Tool.hbm2ddl;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1939
 {
@@ -33,8 +33,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1939
 			return (dialect is Dialect.MsSql2000Dialect);
 		}
 
-		[Test] 
-		public async Task Can_Parameterise_Auxiliary_Database_ObjectsAsync() 
+		[Test]
+		public async Task Can_Parameterise_Auxiliary_Database_ObjectsAsync()
 		{
 			schemaBuilder = new StringBuilder();
 
@@ -48,6 +48,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1939
 
 			Assert.That(schema.Contains("select 'create script'"), Is.True,
 				"parameterised schema create script not exported");
-		} 
+		}
 	}
 }

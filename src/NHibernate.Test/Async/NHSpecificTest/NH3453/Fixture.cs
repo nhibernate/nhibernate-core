@@ -17,38 +17,38 @@ namespace NHibernate.Test.NHSpecificTest.NH3453
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-        [Test]
-        public async Task PropertyRefWithCompositeIdUpdateTestAsync()
-        {
-            using (var spy = new SqlLogSpy())
-            using (var session = OpenSession())
-            using (session.BeginTransaction())
-            {
-                var direction1 = new Direction { Id1 = 1, Id2 = 1, GUID = Guid.NewGuid() };
-                await (session.SaveAsync(direction1));
-                
-                var direction2 = new Direction { Id1 = 2, Id2 = 2, GUID = Guid.NewGuid() };
-                await (session.SaveAsync(direction2));
-                
-                await (session.FlushAsync());
+		[Test]
+		public async Task PropertyRefWithCompositeIdUpdateTestAsync()
+		{
+			using (var spy = new SqlLogSpy())
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var direction1 = new Direction { Id1 = 1, Id2 = 1, GUID = Guid.NewGuid() };
+				await (session.SaveAsync(direction1));
 
-                var directionReferrer = new DirectionReferrer
-                                             {
-                                                 GUID = Guid.NewGuid(),
-                                                 Direction = direction1, 
-                                             };
+				var direction2 = new Direction { Id1 = 2, Id2 = 2, GUID = Guid.NewGuid() };
+				await (session.SaveAsync(direction2));
 
-                await (session.SaveAsync(directionReferrer));
+				await (session.FlushAsync());
 
-                directionReferrer.Direction = direction2;
+				var directionReferrer = new DirectionReferrer
+				{
+					GUID = Guid.NewGuid(),
+					Direction = direction1,
+				};
 
-                await (session.UpdateAsync(directionReferrer));
+				await (session.SaveAsync(directionReferrer));
 
-                await (session.FlushAsync());
+				directionReferrer.Direction = direction2;
 
-                Console.WriteLine(spy.ToString());
-                Assert.That(true);
-            }
-        }
+				await (session.UpdateAsync(directionReferrer));
+
+				await (session.FlushAsync());
+
+				Console.WriteLine(spy.ToString());
+				Assert.That(true);
+			}
+		}
 	}
 }

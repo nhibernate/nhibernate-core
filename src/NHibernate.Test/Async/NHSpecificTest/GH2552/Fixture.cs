@@ -126,7 +126,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 			Assert.AreEqual(0, statistics.SecondLevelCacheHitCount, "Second level cache hit count");
 		}
 
-		private async Task<int> DeleteDetailsFromFirstPersonAsync<TPerson>(CancellationToken cancellationToken = default(CancellationToken)) where TPerson:Person
+		private async Task<int> DeleteDetailsFromFirstPersonAsync<TPerson>(CancellationToken cancellationToken = default(CancellationToken)) where TPerson : Person
 		{
 			using (ISession s = Sfi.OpenSession())
 			using (ITransaction tx = s.BeginTransaction())

@@ -149,7 +149,7 @@ namespace NHibernate.Test.LazyGroup
 				Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Image"), Is.False);
 				Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Age"), Is.False);
 				Assert.That(nickName, Is.EqualTo("NickName1"));
-				
+
 				await (tx.CommitAsync());
 			}
 
@@ -218,7 +218,7 @@ namespace NHibernate.Test.LazyGroup
 				Address = new Address
 				{
 					City = $"City{i}",
-					PostCode = 1000+i,
+					PostCode = 1000 + i,
 					Street = $"Street{i}"
 				},
 				Image = new byte[i],

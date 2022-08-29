@@ -18,16 +18,16 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync:BugTestCase
+	public class FixtureAsync : BugTestCase
 	{
 		protected override void OnSetUp()
 		{
 			Sfi.Statistics.IsStatisticsEnabled = true;
-			using(ISession session=this.OpenSession())
-			using(ITransaction tran=session.BeginTransaction())
+			using (ISession session = this.OpenSession())
+			using (ITransaction tran = session.BeginTransaction())
 			{
-				var customer = new Customer {Name = "Fabio Maulo"};
-				var order = new Order {Date = DateTime.Now, Customer = customer};
+				var customer = new Customer { Name = "Fabio Maulo" };
+				var order = new Order { Date = DateTime.Now, Customer = customer };
 				customer.Orders.Add(order);
 				session.Save(customer);
 				session.Save(order);
@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 			Sfi.Statistics.Clear();
 			using (ISession session = this.OpenSession())
 			{
-				var criteria = session.CreateCriteria(typeof(Order),"o");
+				var criteria = session.CreateCriteria(typeof(Order), "o");
 				await (criteria.CreateCriteria("o.Customer", "c")
 					.Add(Restrictions.Eq("c.Id", 1))
 					.SetProjection(Projections.RowCount())
@@ -65,7 +65,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 			Sfi.Statistics.Clear();
 			using (ISession session = this.OpenSession())
 			{
-				await (session.CreateCriteria(typeof (Order), "o")
+				await (session.CreateCriteria(typeof(Order), "o")
 					.CreateCriteria("o.Customer", "c")
 					.Add(Restrictions.Eq("c.Id", 1))
 					.SetProjection(Projections.RowCount())
@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 			Sfi.Statistics.Clear();
 			using (ISession session = this.OpenSession())
 			{
-				await (session.CreateCriteria(typeof (Order), "o")
+				await (session.CreateCriteria(typeof(Order), "o")
 					.SetProjection(Projections.RowCount())
 					.UniqueResultAsync());
 				Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1));
@@ -92,7 +92,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1837
 			Sfi.Statistics.Clear();
 			using (ISession session = this.OpenSession())
 			{
-				await (session.CreateCriteria(typeof (Order), "o")
+				await (session.CreateCriteria(typeof(Order), "o")
 					.SetProjection(Projections.RowCount())
 					.UniqueResultAsync<int>());
 				Assert.That(Sfi.Statistics.QueryExecutionCount, Is.EqualTo(1));

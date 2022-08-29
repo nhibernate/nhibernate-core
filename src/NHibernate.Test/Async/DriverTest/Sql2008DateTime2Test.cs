@@ -51,10 +51,10 @@ namespace NHibernate.Test.DriverTest
 			using (ITransaction t = s.BeginTransaction())
 			{
 				savedId = await (s.SaveAsync(new EntityForMs2008
-									{
-										DateTimeProp = expectedMoment,
-														TimeSpanProp = expectedLapse,
-													}));
+				{
+					DateTimeProp = expectedMoment,
+					TimeSpanProp = expectedLapse,
+				}));
 				await (t.CommitAsync());
 			}
 

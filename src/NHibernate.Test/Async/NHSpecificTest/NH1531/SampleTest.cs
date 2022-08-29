@@ -23,11 +23,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1531
 		{
 			using (ISession session = OpenSession())
 			{
-				var entity = new Parent {Id = 1};
+				var entity = new Parent { Id = 1 };
 				entity.AddNewChild();
 				await (session.SaveAsync(entity, cancellationToken));
 
-				var entity2 = new Parent {Id = 2};
+				var entity2 = new Parent { Id = 2 };
 				await (session.SaveAsync(entity2, cancellationToken));
 
 				await (session.FlushAsync(cancellationToken));

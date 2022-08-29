@@ -23,9 +23,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1349
 	{
 		protected override void OnSetUp()
 		{
-			using(var session=this.OpenSession())
+			using (var session = this.OpenSession())
 			{
-				using(var tran=session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					string name = "fabio";
 					string accNum = DateTime.Now.Ticks.ToString(); ;
@@ -63,10 +63,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1349
 		{
 			using (var session = this.OpenSession())
 			{
-				using(var tran=session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					IList ret = await (session.CreateCriteria(typeof(Services)).SetMaxResults(5).ListAsync()); //this breaks
-					Assert.That(ret.Count,Is.EqualTo(1));
+					Assert.That(ret.Count, Is.EqualTo(1));
 				}
 			}
 		}

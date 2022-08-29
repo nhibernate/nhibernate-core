@@ -47,14 +47,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1028
 					.Add(Expression.IsNull("c.Id"));
 
 				IList<Item> results = await (criteria.ListAsync<Item>());
-				Assert.AreEqual (1, results.Count);
+				Assert.AreEqual(1, results.Count);
 
 				Item loadedItem = results[0];
-				Assert.AreEqual (itemName, loadedItem.Name);
+				Assert.AreEqual(itemName, loadedItem.Name);
 
-				Assert.AreEqual (1, loadedItem.Ships.Count);
-				foreach (Ship loadedShip in item.Ships) {
-					Assert.AreEqual (shipName, loadedShip.Name);	
+				Assert.AreEqual(1, loadedItem.Ships.Count);
+				foreach (Ship loadedShip in item.Ships)
+				{
+					Assert.AreEqual(shipName, loadedShip.Name);
 				}
 
 				Assert.That(loadedItem.Containers, Is.Empty);

@@ -51,8 +51,8 @@ namespace NHibernate.Test.GenericTest.BagGeneric
 			B secondB = new B();
 			secondB.Name = "second b";
 
-			a.Items.Add( firstB );
-			a.Items.Add( secondB );
+			a.Items.Add(firstB);
+			a.Items.Add(secondB);
 
 			ISession s = OpenSession();
 			await (s.SaveOrUpdateAsync(a));
@@ -66,12 +66,12 @@ namespace NHibernate.Test.GenericTest.BagGeneric
 			Assert.IsNotNull(secondB.Id);
 
 			s = OpenSession();
-			a = await (s.LoadAsync<A>(a.Id ));
+			a = await (s.LoadAsync<A>(a.Id));
 			B thirdB = new B();
 			thirdB.Name = "third B";
 			// ensuring the correct generic type was constructed
-			a.Items.Add( thirdB );
-			Assert.AreEqual( 3, a.Items.Count, "3 items in the bag now" );
+			a.Items.Add(thirdB);
+			Assert.AreEqual(3, a.Items.Count, "3 items in the bag now");
 			await (s.FlushAsync());
 			s.Close();
 		}
@@ -79,9 +79,9 @@ namespace NHibernate.Test.GenericTest.BagGeneric
 		[Test]
 		public async Task EqualsSnapshotAsync()
 		{
-			var a = new A {Name = "first generic type"};
-			var i0 = new B {Name = "1"};
-			var i4 = new B {Name = "4"};
+			var a = new A { Name = "first generic type" };
+			var i0 = new B { Name = "1" };
+			var i4 = new B { Name = "4" };
 			a.Items = new List<B>
 			{
 				i0,
@@ -130,26 +130,26 @@ namespace NHibernate.Test.GenericTest.BagGeneric
 
 			B b1 = new B();
 			b1.Name = "b1";
-			a.Items.Add( b1 );
+			a.Items.Add(b1);
 
 			B b2 = new B();
 			b2.Name = "b2";
-			a.Items.Add( b2 );
+			a.Items.Add(b2);
 
 			A copiedA;
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				copiedA = await (s.MergeAsync(a));
 				await (t.CommitAsync());
 			}
 
-			using( ISession s = OpenSession() )
-			using( ITransaction t = s.BeginTransaction() )
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
 			{
 				A loadedA = await (s.GetAsync<A>(copiedA.Id));
-				Assert.IsNotNull( loadedA );
-				await (s.DeleteAsync( loadedA ));
+				Assert.IsNotNull(loadedA);
+				await (s.DeleteAsync(loadedA));
 				await (t.CommitAsync());
 			}
 		}

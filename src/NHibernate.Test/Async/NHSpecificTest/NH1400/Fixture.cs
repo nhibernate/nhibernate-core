@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1400
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync: BugTestCase
+	public class FixtureAsync : BugTestCase
 	{
 		[Test]
 		public void DotInStringLiteralsConstantAsync()

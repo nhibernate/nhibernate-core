@@ -21,12 +21,12 @@ namespace NHibernate.Test.ReadOnly
 		{
 			get { return "NHibernate.Test"; }
 		}
-		
+
 		protected override string[] Mappings
 		{
 			get { return new string[] { "ReadOnly.VersionedNode.hbm.xml" }; }
 		}
-	
+
 		[Test]
 		public async Task SetReadOnlyTrueAndFalseAsync()
 		{
@@ -104,7 +104,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		public async Task UpdateSetReadOnlyTwiceAsync()
 		{
@@ -143,7 +143,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		public async Task UpdateSetModifiableAsync()
 		{
@@ -182,7 +182,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		public async Task AddNewChildToReadOnlyParentAsync()
 		{
@@ -227,7 +227,7 @@ namespace NHibernate.Test.ReadOnly
 				await (t.CommitAsync());
 			}
 		}
-	
+
 		[Test]
 		public async Task UpdateParentWithNewChildCommitWithReadOnlyParentAsync()
 		{
@@ -240,7 +240,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 
 			ClearCounts();
-	
+
 			parent.Name = "new parent name";
 			VersionedNode child = new VersionedNode("child", "child");
 			parent.AddChild(child);
@@ -276,7 +276,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task MergeDetachedParentWithNewChildCommitWithReadOnlyParentAsync()
 		{
@@ -289,7 +289,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 
 			ClearCounts();
-	
+
 			parent.Name = "new parent name";
 			VersionedNode child = new VersionedNode("child", "child");
 			parent.AddChild(child);
@@ -338,7 +338,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 
 			ClearCounts();
-	
+
 			parent.Name = "new parent name";
 			VersionedNode child = new VersionedNode("child", "child");
 			parent.AddChild(child);
@@ -374,7 +374,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task MergeUnchangedDetachedParentChildrenAsync()
 		{
@@ -440,7 +440,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task AddNewParentToReadOnlyChildAsync()
 		{
@@ -484,7 +484,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(1);
 		}
-	
+
 		[Test]
 		public async Task UpdateChildWithNewParentCommitWithReadOnlyChildAsync()
 		{
@@ -497,7 +497,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 
 			ClearCounts();
-	
+
 			child.Name = "new child name";
 			VersionedNode parent = new VersionedNode("parent", "parent");
 			parent.AddChild(child);
@@ -533,7 +533,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task MergeDetachedChildWithNewParentCommitWithReadOnlyChildAsync()
 		{
@@ -546,7 +546,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 
 			ClearCounts();
-	
+
 			child.Name = "new child name";
 			VersionedNode parent = new VersionedNode("parent", "parent");
 			parent.AddChild(child);
@@ -582,7 +582,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		[Test]
 		public async Task GetChildMakeReadOnlyThenMergeDetachedChildWithNewParentAsync()
 		{
@@ -595,7 +595,7 @@ namespace NHibernate.Test.ReadOnly
 			}
 
 			ClearCounts();
-	
+
 			child.Name = "new child name";
 			VersionedNode parent = new VersionedNode("parent", "parent");
 			parent.AddChild(child);
@@ -623,7 +623,7 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(parent, Is.Not.Null);
 				Assert.That(parent.Children.Count, Is.EqualTo(0));
 				Assert.That(parent.Version, Is.EqualTo(1));
-					// NH-specific: Hibernate incorrectly increments version number, NH does not
+				// NH-specific: Hibernate incorrectly increments version number, NH does not
 				s.SetReadOnly(parent, true);
 				s.SetReadOnly(child, true);
 				await (s.DeleteAsync(parent));
@@ -634,7 +634,7 @@ namespace NHibernate.Test.ReadOnly
 			AssertUpdateCount(0);
 			AssertDeleteCount(2);
 		}
-	
+
 		protected override void OnTearDown()
 		{
 			using (var s = OpenSession())

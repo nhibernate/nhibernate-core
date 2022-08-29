@@ -36,7 +36,7 @@ namespace NHibernate.Event.Default
 				//reassociating the proxy
 				if (obj.IsProxy())
 				{
-					((INHibernateProxy)obj).HibernateLazyInitializer.Identifier = requestedId;
+					((INHibernateProxy) obj).HibernateLazyInitializer.Identifier = requestedId;
 				}
 			}
 
@@ -215,13 +215,13 @@ namespace NHibernate.Event.Default
 			}*/
 
 			source.PersistenceContext.AddEntity(
-				entity, 
+				entity,
 				persister.IsMutable ? Status.Loaded : Status.ReadOnly,
-				null, 
+				null,
 				key,
-				persister.GetVersion(entity), 
-				LockMode.None, 
-				true, 
+				persister.GetVersion(entity),
+				LockMode.None,
+				true,
 				persister,
 				false);
 

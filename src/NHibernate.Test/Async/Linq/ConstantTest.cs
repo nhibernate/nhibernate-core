@@ -32,12 +32,12 @@ namespace NHibernate.Test.Linq
 		public async Task ConstantNonCachedInAnonymousNewExpressionAsync()
 		{
 			var c1 = await ((from c in db.Customers
-			          where c.CustomerId == "ALFKI"
-			          select new { c.CustomerId, c.ContactName, Constant = 1 }).FirstAsync());
+					  where c.CustomerId == "ALFKI"
+					  select new { c.CustomerId, c.ContactName, Constant = 1 }).FirstAsync());
 
 			var c2 = await ((from c in db.Customers
-			          where c.CustomerId == "ANATR"
-			          select new { c.CustomerId, c.ContactName, Constant = 2 }).FirstAsync());
+					  where c.CustomerId == "ANATR"
+					  select new { c.CustomerId, c.ContactName, Constant = 2 }).FirstAsync());
 
 			Assert.That(c1.Constant, Is.EqualTo(1), "c1.Constant");
 			Assert.That(c2.Constant, Is.EqualTo(2), "c2.Constant");
@@ -49,20 +49,20 @@ namespace NHibernate.Test.Linq
 		public async Task ConstantNonCachedInNestedAnonymousNewExpressionsAsync()
 		{
 			var c1 = await ((from c in db.Customers
-			          select new
-			          {
-				          c.ContactName,
-				          Number = 1,
-				          Customer = new { c.CustomerId, Label = "customer1" }
-			          }).FirstAsync());
+					  select new
+					  {
+						  c.ContactName,
+						  Number = 1,
+						  Customer = new { c.CustomerId, Label = "customer1" }
+					  }).FirstAsync());
 
 			var c2 = await ((from c in db.Customers
-			          select new
-			          {
-				          c.ContactName,
-				          Number = 2,
-				          Customer = new { c.CustomerId, Label = "customer2" }
-			          }).FirstAsync());
+					  select new
+					  {
+						  c.ContactName,
+						  Number = 2,
+						  Customer = new { c.CustomerId, Label = "customer2" }
+					  }).FirstAsync());
 
 			Assert.That(c1.Number, Is.EqualTo(1), "c1.Number");
 			Assert.That(c1.Customer.Label, Is.EqualTo("customer1"), "c1.Customer.Label");
@@ -74,12 +74,12 @@ namespace NHibernate.Test.Linq
 		public async Task ConstantNonCachedInNewExpressionAsync()
 		{
 			var c1 = await ((from c in db.Customers
-			          where c.CustomerId == "ALFKI"
-			          select new KeyValuePair<string, string>(c.ContactName, "one")).FirstAsync());
+					  where c.CustomerId == "ALFKI"
+					  select new KeyValuePair<string, string>(c.ContactName, "one")).FirstAsync());
 
 			var c2 = await ((from c in db.Customers
-			          where c.CustomerId == "ANATR"
-			          select new KeyValuePair<string, string>(c.ContactName, "two")).FirstAsync());
+					  where c.CustomerId == "ANATR"
+					  select new KeyValuePair<string, string>(c.ContactName, "two")).FirstAsync());
 
 			Assert.That(c1.Value, Is.EqualTo("one"), "c1.Value");
 			Assert.That(c2.Value, Is.EqualTo("two"), "c2.Value");
@@ -96,20 +96,20 @@ namespace NHibernate.Test.Linq
 		public async Task ConstantNonCachedInMemberInitExpressionAsync()
 		{
 			var s1 = await ((from s in db.Shippers
-			          select new ShipperDto
-			          {
-				          Number = 1,
-				          CompanyName = s.CompanyName,
-				          Name = "shipper1"
-			          }).ToListAsync());
+					  select new ShipperDto
+					  {
+						  Number = 1,
+						  CompanyName = s.CompanyName,
+						  Name = "shipper1"
+					  }).ToListAsync());
 
 			var s2 = await ((from s in db.Shippers
-			          select new ShipperDto
-			          {
-				          Number = 2,
-				          CompanyName = s.CompanyName,
-				          Name = "shipper2"
-			          }).ToListAsync());
+					  select new ShipperDto
+					  {
+						  Number = 2,
+						  CompanyName = s.CompanyName,
+						  Name = "shipper2"
+					  }).ToListAsync());
 
 			Assert.That(s1, Has.Count.GreaterThan(0), "s1 Count");
 			Assert.That(s2, Has.Count.GreaterThan(0), "s2 Count");
@@ -134,7 +134,7 @@ namespace NHibernate.Test.Linq
 			try
 			{
 				return db.Shippers.Where(o => o.ShipperId == id)
-				         .Select(o => new ShipperDto {Number = id, CompanyName = o.CompanyName}).SingleAsync(cancellationToken);
+						 .Select(o => new ShipperDto { Number = id, CompanyName = o.CompanyName }).SingleAsync(cancellationToken);
 			}
 			catch (System.Exception ex)
 			{
@@ -146,10 +146,10 @@ namespace NHibernate.Test.Linq
 		public async Task ConstantInNewArrayExpressionAsync()
 		{
 			var c1 = await ((from c in db.Categories
-			          select new[] { c.Name, "category1" }).ToListAsync());
+					  select new[] { c.Name, "category1" }).ToListAsync());
 
 			var c2 = await ((from c in db.Categories
-			          select new[] { c.Name, "category2" }).ToListAsync());
+					  select new[] { c.Name, "category2" }).ToListAsync());
 
 			Assert.That(c1, Has.Count.GreaterThan(0), "c1 Count");
 			Assert.That(c2, Has.Count.GreaterThan(0), "c2 Count");
@@ -161,18 +161,18 @@ namespace NHibernate.Test.Linq
 		public async Task ConstantsInNewArrayExpressionAsync()
 		{
 			var p1 = await ((from p in db.Products
-			          select new Dictionary<string, int>()
-			          {
-				          { p.Name, 1 },
-				          { "product1", p.ProductId }
-			          }).FirstAsync());
+					  select new Dictionary<string, int>()
+					  {
+						  { p.Name, 1 },
+						  { "product1", p.ProductId }
+					  }).FirstAsync());
 
 			var p2 = await ((from p in db.Products
-			          select new Dictionary<string, int>()
-			          {
-				          { p.Name, 2 },
-				          { "product2", p.ProductId }
-			          }).FirstAsync());
+					  select new Dictionary<string, int>()
+					  {
+						  { p.Name, 2 },
+						  { "product2", p.ProductId }
+					  }).FirstAsync());
 
 			Assert.That(p1.ElementAt(0).Value == 1 && p1.ElementAt(1).Key == "product1", Is.True, "p1");
 			Assert.That(p2.ElementAt(0).Value == 2 && p2.ElementAt(1).Key == "product2", Is.True, "p2");
@@ -199,10 +199,10 @@ namespace NHibernate.Test.Linq
 		{
 			var builder = new InfoBuilder(1);
 			var v1 = await ((from p in db.Products
-			          select builder.GetItemValue(p)).FirstAsync());
+					  select builder.GetItemValue(p)).FirstAsync());
 			builder = new InfoBuilder(2);
 			var v2 = await ((from p in db.Products
-			          select builder.GetItemValue(p)).FirstAsync());
+					  select builder.GetItemValue(p)).FirstAsync());
 
 			Assert.That(v1, Is.EqualTo(1), "v1");
 			Assert.That(v2, Is.EqualTo(2), "v2");
@@ -219,10 +219,10 @@ namespace NHibernate.Test.Linq
 		{
 			var closureVariable = 1;
 			var v1 = await ((from p in db.Products
-			          select TestFunc(p, closureVariable)).FirstAsync());
+					  select TestFunc(p, closureVariable)).FirstAsync());
 			closureVariable = 2;
 			var v2 = await ((from p in db.Products
-			          select TestFunc(p, closureVariable)).FirstAsync());
+					  select TestFunc(p, closureVariable)).FirstAsync());
 
 			Assert.That(v1, Is.EqualTo(1), "v1");
 			Assert.That(v2, Is.EqualTo(2), "v2");
@@ -275,9 +275,9 @@ namespace NHibernate.Test.Linq
 
 			using (session.BeginTransaction())
 			{
-				await (db.Customers.Where(c => c.CustomerId == "UNKNOWN").UpdateAsync(x => new Customer {CompanyName = "Constant1"}));
-				await (db.Customers.Where(c => c.CustomerId == "ALFKI").UpdateAsync(x => new Customer {CompanyName = x.CompanyName}));
-				await (db.Customers.Where(c => c.CustomerId == "UNKNOWN").UpdateAsync(x => new Customer {ContactName = "Constant1"}));
+				await (db.Customers.Where(c => c.CustomerId == "UNKNOWN").UpdateAsync(x => new Customer { CompanyName = "Constant1" }));
+				await (db.Customers.Where(c => c.CustomerId == "ALFKI").UpdateAsync(x => new Customer { CompanyName = x.CompanyName }));
+				await (db.Customers.Where(c => c.CustomerId == "UNKNOWN").UpdateAsync(x => new Customer { ContactName = "Constant1" }));
 				Assert.That(
 					cache,
 					Has.Count.EqualTo(3),
@@ -288,9 +288,9 @@ namespace NHibernate.Test.Linq
 					//Queries below should hit plan cache.
 					using (var sqlSpy = new SqlLogSpy())
 					{
-						await (db.Customers.Where(c => c.CustomerId == "ANATR").UpdateAsync(x => new Customer {CompanyName = x.CompanyName}));
-						await (db.Customers.Where(c => c.CustomerId == "UNKNOWN").UpdateAsync(x => new Customer {CompanyName = "Constant2"}));
-						await (db.Customers.Where(c => c.CustomerId == "UNKNOWN").UpdateAsync(x => new Customer {ContactName = "Constant2"}));
+						await (db.Customers.Where(c => c.CustomerId == "ANATR").UpdateAsync(x => new Customer { CompanyName = x.CompanyName }));
+						await (db.Customers.Where(c => c.CustomerId == "UNKNOWN").UpdateAsync(x => new Customer { CompanyName = "Constant2" }));
+						await (db.Customers.Where(c => c.CustomerId == "UNKNOWN").UpdateAsync(x => new Customer { ContactName = "Constant2" }));
 
 						var sqlEvents = sqlSpy.Appender.GetEvents();
 						Assert.That(
@@ -316,7 +316,7 @@ namespace NHibernate.Test.Linq
 							.Contain("located HQL query plan in cache")
 							.And.Not.Contain("unable to locate HQL query plan in cache"));
 
-					await (db.Customers.Where(c => c.CustomerId == "ANATR").UpdateAsync(x => new Customer {ContactName = x.ContactName}));
+					await (db.Customers.Where(c => c.CustomerId == "ANATR").UpdateAsync(x => new Customer { ContactName = x.ContactName }));
 					Assert.That(cache, Has.Count.EqualTo(4), "Query should be cached");
 				}
 			}
@@ -353,9 +353,9 @@ namespace NHibernate.Test.Linq
 					.GetValue(Sfi.QueryPlanCache);
 			cache.Clear();
 
-			var ids = new[] {"ANATR", "UNKNOWN"}.ToList();
+			var ids = new[] { "ANATR", "UNKNOWN" }.ToList();
 			await (db.Customers.Where(x => ids.Contains(x.CustomerId)).Select(
-				c => new {c.CustomerId, c.ContactName, Constant = 1}).FirstAsync());
+				c => new { c.CustomerId, c.ContactName, Constant = 1 }).FirstAsync());
 
 			Assert.That(
 				cache,
@@ -377,7 +377,7 @@ namespace NHibernate.Test.Linq
 
 			using (session.BeginTransaction())
 			{
-				var list = new[] {"UNKNOWN", "UNKNOWN2"}.ToList();
+				var list = new[] { "UNKNOWN", "UNKNOWN2" }.ToList();
 				await (db.Customers.Where(x => list.Contains(x.CustomerId)).UpdateAsync(
 					x => new Customer
 					{

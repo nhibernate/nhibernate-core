@@ -262,10 +262,10 @@ namespace NHibernate.Test.MultiTenancy
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity {Name = "Bob"};
+				var e1 = new Entity { Name = "Bob" };
 				session.Save(e1);
 
-				var e2 = new Entity {Name = "Sally"};
+				var e2 = new Entity { Name = "Sally" };
 				session.Save(e2);
 
 				session.Flush();

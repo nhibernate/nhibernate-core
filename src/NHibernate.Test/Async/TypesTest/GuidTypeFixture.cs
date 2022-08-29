@@ -44,7 +44,7 @@ namespace NHibernate.Test.TypesTest
 			s.Close();
 
 			s = OpenSession();
-			basic = (GuidClass)await (s.LoadAsync(typeof(GuidClass), 1));
+			basic = (GuidClass) await (s.LoadAsync(typeof(GuidClass), 1));
 
 			Assert.AreEqual(val, basic.GuidValue);
 
@@ -70,7 +70,7 @@ namespace NHibernate.Test.TypesTest
 
 			using (ISession s = OpenSession())
 			{
-				basic = (GuidClass)await (s.CreateCriteria(typeof(GuidClass))
+				basic = (GuidClass) await (s.CreateCriteria(typeof(GuidClass))
 														.Add(Expression.Eq("GuidValue", val))
 														.UniqueResultAsync());
 

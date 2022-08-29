@@ -58,8 +58,8 @@ namespace NHibernate.Test.NHSpecificTest.NH2201
 						.Add<Parent>(s.CreateCriteria<Parent>())
 						.ListAsync());
 
-				var result1 = (IList<Parent>)results[0];
-				var result2 = (IList<Parent>)results[1];
+				var result1 = (IList<Parent>) results[0];
+				var result2 = (IList<Parent>) results[1];
 
 				Assert.That(result1.Count, Is.EqualTo(2));
 				Assert.That(result2.Count, Is.EqualTo(2));

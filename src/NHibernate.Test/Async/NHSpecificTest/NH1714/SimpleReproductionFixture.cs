@@ -14,41 +14,41 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1714
 {
-    using System.Threading.Tasks;
-    [TestFixture]
-    public class SimpleReproductionFixtureAsync : BugTestCase
-    {
-        protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
-        {
-            return dialect as MsSql2005Dialect != null;
-        }
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class SimpleReproductionFixtureAsync : BugTestCase
+	{
+		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)
+		{
+			return dialect as MsSql2005Dialect != null;
+		}
 
-        [Test]
-        public async Task DbCommandsFromEventListenerShouldBeEnlistedInRunningTransactionAsync()
-        {
-            using (ISession session = OpenSession())
-            {
-                using (var tx = session.BeginTransaction())
-                {
-                    var entity = new DomainClass();
-                    await (session.SaveAsync(entity));
+		[Test]
+		public async Task DbCommandsFromEventListenerShouldBeEnlistedInRunningTransactionAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				using (var tx = session.BeginTransaction())
+				{
+					var entity = new DomainClass();
+					await (session.SaveAsync(entity));
 
-                    using (var otherSession = session.SessionWithOptions().Connection().OpenSession())
-                    {
-                        await (otherSession.SaveAsync(new DomainClass()));
-                        await (otherSession.FlushAsync());
-                    }
+					using (var otherSession = session.SessionWithOptions().Connection().OpenSession())
+					{
+						await (otherSession.SaveAsync(new DomainClass()));
+						await (otherSession.FlushAsync());
+					}
 
-                    await (tx.CommitAsync());
-                }
-            }
+					await (tx.CommitAsync());
+				}
+			}
 
-			using(var session = OpenSession())
+			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
 				await (session.DeleteAsync("from DomainClass"));
 				await (tx.CommitAsync());
 			}
-        }
-    }
+		}
+	}
 }

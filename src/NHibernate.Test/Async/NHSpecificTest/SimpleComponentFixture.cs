@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecific.SimpleComponent.hbm.xml"}; }
+			get { return new string[] { "NHSpecific.SimpleComponent.hbm.xml" }; }
 		}
 
 		protected override void OnSetUp()

@@ -22,7 +22,7 @@ namespace NHibernate.Test.ExpressionTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"Componentizable.hbm.xml"}; }
+			get { return new string[] { "Componentizable.hbm.xml" }; }
 		}
 
 		protected override void OnSetUp()
@@ -56,7 +56,8 @@ namespace NHibernate.Test.ExpressionTest
 		public async Task TestEnableLikeWithMatchmodeStartAsync()
 		{
 			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction()) {
+			using (ITransaction t = s.BeginTransaction())
+			{
 				Componentizable master = GetMaster("hib", null, "open source1");
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
 				Example ex = Example.Create(master).EnableLike(MatchMode.Start);
@@ -72,7 +73,8 @@ namespace NHibernate.Test.ExpressionTest
 		public async Task TestEnableLikeWithMatchmodeEndAsync()
 		{
 			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction()) {
+			using (ITransaction t = s.BeginTransaction())
+			{
 				Componentizable master = GetMaster("nate", null, "ORM tool1");
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
 				Example ex = Example.Create(master).EnableLike(MatchMode.End);
@@ -88,7 +90,8 @@ namespace NHibernate.Test.ExpressionTest
 		public async Task TestEnableLikeWithMatchmodeAnywhereAsync()
 		{
 			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction()) {
+			using (ITransaction t = s.BeginTransaction())
+			{
 				Componentizable master = GetMaster("bern", null, null);
 				ICriteria crit = s.CreateCriteria(typeof(Componentizable));
 				Example ex = Example.Create(master).EnableLike(MatchMode.Anywhere);

@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
-				rc.Property(x => x.IsActive, pm=>pm.Type<MyBooleanType>());
+				rc.Property(x => x.IsActive, pm => pm.Type<MyBooleanType>());
 			});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
@@ -44,10 +44,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2839
 			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity { Name = "Bob", IsActive = true};
+				var e1 = new Entity { Name = "Bob", IsActive = true };
 				session.Save(e1);
 
-				var e2 = new Entity { Name = "Sally",IsActive = false};
+				var e2 = new Entity { Name = "Sally", IsActive = false };
 				session.Save(e2);
 
 				session.Flush();

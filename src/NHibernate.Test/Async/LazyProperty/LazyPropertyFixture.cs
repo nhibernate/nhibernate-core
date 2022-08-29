@@ -325,8 +325,8 @@ namespace NHibernate.Test.LazyProperty
 			using (var tx = s.BeginTransaction())
 			{
 				book = await (s.CreateQuery("from Book b fetch all properties where b.Id = :id")
-				        .SetParameter("id", 1)
-				        .UniqueResultAsync<Book>());
+						.SetParameter("id", 1)
+						.UniqueResultAsync<Book>());
 				await (tx.CommitAsync());
 			}
 
@@ -378,7 +378,7 @@ namespace NHibernate.Test.LazyProperty
 				{
 					Id = 2,
 					Parent = book,
-					Content = new byte[1] {0}
+					Content = new byte[1] { 0 }
 				};
 
 				book.Words.Add(word);

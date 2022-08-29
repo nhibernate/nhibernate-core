@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1447
 			{
 				using (ITransaction tx = s.BeginTransaction())
 				{
-					var e1 = new Person("Tuna Toksoz",false);
+					var e1 = new Person("Tuna Toksoz", false);
 					var e2 = new Person("Oguz Kurumlu", true);
 					s.Save(e1);
 					tx.Commit();
@@ -51,8 +51,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1447
 		{
 			using (ISession s = OpenSession())
 			{
-				ICriteria c = s.CreateCriteria(typeof (Person))
-					.Add(Restrictions.EqProperty("WantsNewsletter", Projections.Constant(false,NHibernateUtil.Boolean)));
+				ICriteria c = s.CreateCriteria(typeof(Person))
+					.Add(Restrictions.EqProperty("WantsNewsletter", Projections.Constant(false, NHibernateUtil.Boolean)));
 				IList<Person> list = await (c.ListAsync<Person>());
 				Assert.AreEqual(1, list.Count);
 			}

@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3132
 					Product product = new Product();
 					product.Name = "First";
 					product.Lazy = "Lazy";
-					
+
 					session.Save(product);
 
 					tran.Commit();
@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3132
 		{
 			using (var session = OpenSession())
 			{
-				Product product = await (session.CreateCriteria(typeof (Product))
+				Product product = await (session.CreateCriteria(typeof(Product))
 					.Add(Restrictions.Eq("Name", "First"))
 					.UniqueResultAsync<Product>());
 
@@ -80,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3132
 				product.Name = "Changed";
 
 				await (session.FlushAsync());
-				
+
 				session.Clear();
 
 				var product1 = await (session.CreateCriteria(typeof(Product))
@@ -106,7 +106,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3132
 				product.Lazy = "LazyChanged";
 
 				await (session.FlushAsync());
-				
+
 				session.Clear();
 
 				var product1 = await (session.CreateCriteria(typeof(Product))

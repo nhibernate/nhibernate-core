@@ -9,14 +9,14 @@
 
 
 using System;
-using NUnit.Framework;
 using System.CodeDom.Compiler;
 using System.Linq;
-using Microsoft.CSharp;
 using System.Reflection;
+using Microsoft.CSharp;
 using NHibernate.Engine;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Tool.hbm2ddl;
+using NUnit.Framework;
 
 namespace NHibernate.Test.CfgTest
 {
@@ -49,7 +49,7 @@ namespace NHibernate.Test.CfgTest
 					using (var tx = s.BeginTransaction())
 					{
 						foreach (var entityClass in assembly.GetExportedTypes()
-						                                    .Where(t => !typeof(IConformistHoldersProvider).IsAssignableFrom(t)))
+															.Where(t => !typeof(IConformistHoldersProvider).IsAssignableFrom(t)))
 						{
 							var ctor = entityClass.GetConstructor(Array.Empty<System.Type>());
 							Assert.That(ctor, Is.Not.Null, $"Default constructor for {entityClass} not found");
@@ -137,7 +137,7 @@ public class Entity$$INDEX$$Map : ClassMapping<Entity$$INDEX$$>
 					if (compile.Errors.HasErrors)
 					{
 						var text = "Compile error: " +
-						           string.Join(System.Environment.NewLine, compile.Errors.Cast<CompilerError>());
+								   string.Join(System.Environment.NewLine, compile.Errors.Cast<CompilerError>());
 
 						Assert.Fail(text);
 					}

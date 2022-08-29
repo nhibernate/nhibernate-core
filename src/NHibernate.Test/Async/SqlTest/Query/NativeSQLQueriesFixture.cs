@@ -10,9 +10,9 @@
 
 using System.Collections;
 using System.Linq;
+using NHibernate.Criterion;
 using NHibernate.Transform;
 using NUnit.Framework;
-using NHibernate.Criterion;
 
 namespace NHibernate.Test.SqlTest.Query
 {
@@ -54,7 +54,7 @@ namespace NHibernate.Test.SqlTest.Query
 
 		protected override string[] Mappings
 		{
-			get { return new[] {"SqlTest.Query.NativeSQLQueries.hbm.xml"}; }
+			get { return new[] { "SqlTest.Query.NativeSQLQueries.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly
@@ -73,7 +73,7 @@ namespace NHibernate.Test.SqlTest.Query
 			try
 			{
 				string sql = "select {org.*} " +
-				             "from organization org";
+							 "from organization org";
 				await (s.CreateSQLQuery(sql).ListAsync());
 				Assert.Fail("Should throw an exception since no AddEntity nor AddScalar has been performed.");
 			}
@@ -298,13 +298,13 @@ namespace NHibernate.Test.SqlTest.Query
 			await (s.SaveAsync(emp));
 
 			IList l = await (s.CreateSQLQuery(OrgEmpRegionSQL)
-			           .SetResultSetMapping("org-emp-regionCode")
-			           .ListAsync());
+					   .SetResultSetMapping("org-emp-regionCode")
+					   .ListAsync());
 			Assert.AreEqual(l.Count, 2);
 
 			l = await (s.CreateSQLQuery(OrgEmpPersonSQL)
-			     .SetResultSetMapping("org-emp-person")
-			     .ListAsync());
+				 .SetResultSetMapping("org-emp-person")
+				 .ListAsync());
 			Assert.AreEqual(l.Count, 1);
 
 			await (s.DeleteAsync(emp));
@@ -495,8 +495,8 @@ namespace NHibernate.Test.SqlTest.Query
 			s = OpenSession();
 			t = s.BeginTransaction();
 			IList list = await (s.CreateSQLQuery(EmploymentSQL)
-			              .AddEntity(typeof(Employment).FullName)
-			              .ListAsync());
+						  .AddEntity(typeof(Employment).FullName)
+						  .ListAsync());
 			Assert.AreEqual(1, list.Count);
 
 			Employment emp2 = (Employment) list[0];
@@ -507,9 +507,9 @@ namespace NHibernate.Test.SqlTest.Query
 			s.Clear();
 
 			list = await (s.CreateSQLQuery(EmploymentSQL)
-			        .AddEntity(typeof(Employment).FullName)
-			        .SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
-			        .ListAsync());
+					.AddEntity(typeof(Employment).FullName)
+					.SetResultTransformer(CriteriaSpecification.AliasToEntityMap)
+					.ListAsync());
 			Assert.AreEqual(1, list.Count);
 			IDictionary m = (IDictionary) list[0];
 			Assert.IsTrue(m.Contains("Employment"));
@@ -547,17 +547,17 @@ namespace NHibernate.Test.SqlTest.Query
 			s.Clear();
 
 			list = await (s.CreateSQLQuery(OrganizationJoinEmploymentSQL)
-			        .AddEntity("org", typeof(Organization))
-			        .AddJoin("emp", "org.employments")
-			        .ListAsync());
+					.AddEntity("org", typeof(Organization))
+					.AddJoin("emp", "org.employments")
+					.ListAsync());
 			Assert.AreEqual(2, list.Count);
 
 			s.Clear();
 
 			list = await (s.CreateSQLQuery(OrganizationFetchJoinEmploymentSQL)
-			        .AddEntity("org", typeof(Organization))
-			        .AddJoin("emp", "org.employments")
-			        .ListAsync());
+					.AddEntity("org", typeof(Organization))
+					.AddJoin("emp", "org.employments")
+					.ListAsync());
 			Assert.AreEqual(2, list.Count);
 
 			s.Clear();
@@ -631,8 +631,8 @@ namespace NHibernate.Test.SqlTest.Query
 			s.Clear();
 
 			IList l = await (s.CreateSQLQuery("select name, id, flength, name as scalarName from Speech")
-			           .SetResultSetMapping("speech")
-			           .ListAsync());
+					   .SetResultSetMapping("speech")
+					   .ListAsync());
 			Assert.AreEqual(l.Count, 1);
 
 			await (t.RollbackAsync());
@@ -645,9 +645,9 @@ namespace NHibernate.Test.SqlTest.Query
 			using (ISession s = OpenSession())
 			{
 				IList l = await (s.CreateSQLQuery("select id from Speech where id in (:idList)")
-				           .AddScalar("id", NHibernateUtil.Int32)
-				           .SetParameterList("idList", new int[] {0, 1, 2, 3}, NHibernateUtil.Int32)
-				           .ListAsync());
+						   .AddScalar("id", NHibernateUtil.Int32)
+						   .SetParameterList("idList", new int[] { 0, 1, 2, 3 }, NHibernateUtil.Int32)
+						   .ListAsync());
 			}
 		}
 

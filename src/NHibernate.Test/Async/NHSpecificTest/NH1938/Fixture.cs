@@ -10,8 +10,8 @@
 
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 using NHibernate.Criterion;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH1938
 {
@@ -57,6 +57,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1938
 
 				await (t.RollbackAsync());
 			}
-		} 
+		}
 	}
 }

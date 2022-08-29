@@ -23,11 +23,11 @@ namespace NHibernate.Test.NHSpecificTest.NH2441
 		{
 			return ((dialect is Dialect.SQLiteDialect) || (dialect is Dialect.MsSql2008Dialect));
 		}
-		
+
 		protected override void OnSetUp()
 		{
 			base.OnSetUp();
-			
+
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())
 			{
@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2441
 				tx.Commit();
 			}
 		}
-		
+
 		protected override void OnTearDown()
 		{
 			using (ISession session = OpenSession())
@@ -47,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2441
 				session.Delete("from Person");
 				tx.Commit();
 			}
-			
+
 			base.OnTearDown();
 		}
 
@@ -62,7 +62,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2441
 				var query2 = session.Query<Person>().Where(p => p.Id != null);
 #pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
 				var query3 = session.Query<Person>();
-				
+
 				Assert.That(await (query1.CountAsync()), Is.EqualTo(await (query2.CountAsync())));
 				Assert.That(await (query3.CountAsync()), Is.EqualTo(await (query1.CountAsync())));
 			}

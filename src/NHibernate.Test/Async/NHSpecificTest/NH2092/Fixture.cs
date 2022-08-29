@@ -25,7 +25,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2092
 				{
 					var person = new Person { Id = 1, Name = "Person1" };
 					var employee = new Employee { Id = 1, Name = "Emp1", Person = person };
-					
+
 					await (s.SaveAsync(person));
 					await (s.SaveAsync(employee));
 

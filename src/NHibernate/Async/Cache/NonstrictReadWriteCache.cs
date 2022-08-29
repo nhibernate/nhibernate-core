@@ -126,7 +126,7 @@ namespace NHibernate.Cache
 		/// Add an item to the cache
 		/// </summary>
 		public async Task<bool> PutAsync(CacheKey key, object value, long txTimestamp, object version, IComparer versionComparator,
-		                bool minimalPut, CancellationToken cancellationToken)
+						bool minimalPut, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (txTimestamp == long.MinValue)

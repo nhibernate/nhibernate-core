@@ -31,7 +31,7 @@ namespace NHibernate.Transaction
 			await (NotifyLocalSynchsAfterTransactionCompletionAsync(successful, cancellationToken)).ConfigureAwait(false);
 			foreach (var dependentSession in session.ConnectionManager.DependentSessions)
 				await (dependentSession.AfterTransactionCompletionAsync(successful, this, cancellationToken)).ConfigureAwait(false);
-	
+
 			session = null;
 			begun = false;
 		}

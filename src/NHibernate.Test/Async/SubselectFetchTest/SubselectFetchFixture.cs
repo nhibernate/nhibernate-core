@@ -379,7 +379,7 @@ namespace NHibernate.Test.SubselectFetchTest
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"SubselectFetchTest.ParentChild.hbm.xml"}; }
+			get { return new string[] { "SubselectFetchTest.ParentChild.hbm.xml" }; }
 		}
 
 		protected override string MappingsAssembly

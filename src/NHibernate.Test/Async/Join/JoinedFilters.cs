@@ -24,13 +24,13 @@ namespace NHibernate.Test.Join
 	{
 		protected override string[] Mappings
 		{
-			get 
-			{ 
-				return new []
+			get
+			{
+				return new[]
 				{
 					"Join.TennisPlayer.hbm.xml",
 					"Join.Person.hbm.xml"
-				}; 
+				};
 			}
 		}
 
@@ -114,7 +114,7 @@ namespace NHibernate.Test.Join
 		{
 			try
 			{
-				var s = new TennisPlayer() {Name = name, RacquetMake = make, RacquetModel = model};
+				var s = new TennisPlayer() { Name = name, RacquetMake = make, RacquetModel = model };
 				return session.SaveAsync(s, cancellationToken);
 			}
 			catch (Exception ex)

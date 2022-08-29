@@ -169,7 +169,7 @@ namespace NHibernate.Cache
 		/// <returns><see langword="true" /> if the objects were successfully cached.</returns>
 		/// <exception cref="CacheException"></exception>
 		public static async Task<bool[]> PutManyAsync(this ICacheConcurrencyStrategy cache, CacheKey[] keys, object[] values, long timestamp,
-		                          object[] versions, IComparer[] versionComparers, bool[] minimalPuts, CancellationToken cancellationToken)
+								  object[] versions, IComparer[] versionComparers, bool[] minimalPuts, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (cache is IBatchableCacheConcurrencyStrategy batchableCache)

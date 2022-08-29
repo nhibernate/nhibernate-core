@@ -77,8 +77,8 @@ namespace NHibernate.Id
 					rs = await (qps.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false);
 					if (!await (rs.ReadAsync(cancellationToken)).ConfigureAwait(false))
 					{
-						var errFormat = string.IsNullOrEmpty(whereClause) 
-							? "could not read a hi value - you need to populate the table: {0}" 
+						var errFormat = string.IsNullOrEmpty(whereClause)
+							? "could not read a hi value - you need to populate the table: {0}"
 							: "could not read a hi value from table '{0}' using the where clause ({1})- you need to populate the table.";
 						log.Error(errFormat, tableName, whereClause);
 						throw new IdentifierGenerationException(string.Format(errFormat, tableName, whereClause));

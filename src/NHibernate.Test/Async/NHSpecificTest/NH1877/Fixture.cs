@@ -22,10 +22,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1877
 	{
 		protected override void OnSetUp()
 		{
-			using(var session=OpenSession())
-			using(var tran=session.BeginTransaction())
+			using (var session = OpenSession())
+			using (var tran = session.BeginTransaction())
 			{
-				session.Save(new Person {BirthDate = new DateTime(1988, 7, 21)});
+				session.Save(new Person { BirthDate = new DateTime(1988, 7, 21) });
 				session.Save(new Person { BirthDate = new DateTime(1987, 7, 22) });
 				session.Save(new Person { BirthDate = new DateTime(1986, 7, 23) });
 				session.Save(new Person { BirthDate = new DateTime(1987, 7, 24) });
@@ -47,13 +47,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1877
 		[Test]
 		public async Task CanGroupByWithPropertyNameAsync()
 		{
-			using(var session=OpenSession())
+			using (var session = OpenSession())
 			{
-				var crit = session.CreateCriteria(typeof (Person))
+				var crit = session.CreateCriteria(typeof(Person))
 					.SetProjection(Projections.GroupProperty("BirthDate"),
-					               Projections.Count("Id"));
+								   Projections.Count("Id"));
 				var result = await (crit.ListAsync());
-				Assert.That(result,Has.Count.EqualTo(5));
+				Assert.That(result, Has.Count.EqualTo(5));
 			}
 		}
 
@@ -62,12 +62,12 @@ namespace NHibernate.Test.NHSpecificTest.NH1877
 		{
 			using (var session = OpenSession())
 			{
-				var crit = session.CreateCriteria(typeof (Person))
+				var crit = session.CreateCriteria(typeof(Person))
 					.SetProjection(
 					Projections.GroupProperty(Projections.SqlFunction("month", NHibernateUtil.Int32, Projections.Property("BirthDate"))));
 
 				var result = await (crit.UniqueResultAsync());
-				Assert.That(result,Is.EqualTo(7));
+				Assert.That(result, Is.EqualTo(7));
 			}
 		}
 	}

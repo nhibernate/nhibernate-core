@@ -33,15 +33,15 @@ namespace NHibernate.Test.NHSpecificTest.NH1694
 				using (ITransaction tran = session.BeginTransaction())
 				{
 					var newUser = new User();
-					var newOrder1 = new Orders {User = newUser, Status = true};
-					var newOrder2 = new Orders {User = newUser, Status = true};
+					var newOrder1 = new Orders { User = newUser, Status = true };
+					var newOrder2 = new Orders { User = newUser, Status = true };
 
 					await (session.SaveAsync(newUser, cancellationToken));
 					await (session.SaveAsync(newOrder1, cancellationToken));
 					await (session.SaveAsync(newOrder2, cancellationToken));
 
 					newUser = new User();
-					newOrder1 = new Orders {User = newUser, Status = false};
+					newOrder1 = new Orders { User = newUser, Status = false };
 
 					await (session.SaveAsync(newUser, cancellationToken));
 					await (session.SaveAsync(newOrder1, cancellationToken));
@@ -73,7 +73,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1694
 			{
 				using (ITransaction tran = session.BeginTransaction())
 				{
-					ICriteria crit = session.CreateCriteria(typeof (User));
+					ICriteria crit = session.CreateCriteria(typeof(User));
 					crit.AddOrder(Order.Desc("OrderStatus"));
 					crit.AddOrder(Order.Asc("Id"));
 					crit.SetMaxResults(10);

@@ -8,13 +8,13 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Type;
-using System.Collections.Generic;
-using System.Linq;
-using System;
 using NHibernate.Util;
 
 namespace NHibernate.Impl

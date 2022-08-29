@@ -29,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.NH276.JoinedSubclass
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecificTest.NH276.JoinedSubclass.Mappings.hbm.xml"}; }
+			get { return new string[] { "NHSpecificTest.NH276.JoinedSubclass.Mappings.hbm.xml" }; }
 		}
 
 		[Test]

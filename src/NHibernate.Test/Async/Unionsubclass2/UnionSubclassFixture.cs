@@ -125,16 +125,16 @@ namespace NHibernate.Test.Unionsubclass2
 				result = await (s.CreateQuery("from Person p where p.salary > 100 or p.name like 'E%'").ListAsync());
 				Assert.AreEqual(2, result.Count);
 
-                if (!TestDialect.HasBrokenDecimalType)
-                {
-                    result = await (s.CreateCriteria(typeof (Person)).Add(Property.ForName("salary").Gt(100m)).ListAsync());
-                    Assert.AreEqual(1, result.Count);
-                    Assert.AreSame(q, result[0]);
-                }
+				if (!TestDialect.HasBrokenDecimalType)
+				{
+					result = await (s.CreateCriteria(typeof(Person)).Add(Property.ForName("salary").Gt(100m)).ListAsync());
+					Assert.AreEqual(1, result.Count);
+					Assert.AreSame(q, result[0]);
+				}
 
-			    result = await (s.CreateQuery("select p.salary from Person p where p.salary > 100").ListAsync());
+				result = await (s.CreateQuery("select p.salary from Person p where p.salary > 100").ListAsync());
 				Assert.AreEqual(1, result.Count);
-				Assert.AreEqual(1000m, (decimal)result[0]);
+				Assert.AreEqual(1000m, (decimal) result[0]);
 
 				await (s.DeleteAsync(p));
 				await (s.DeleteAsync(q));

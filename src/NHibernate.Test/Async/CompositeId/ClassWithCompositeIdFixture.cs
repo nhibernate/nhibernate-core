@@ -35,7 +35,7 @@ namespace NHibernate.Test.CompositeId
 
 		protected override string[] Mappings
 		{
-			get { return new string[] {"CompositeId.ClassWithCompositeId.hbm.xml"}; }
+			get { return new string[] { "CompositeId.ClassWithCompositeId.hbm.xml" }; }
 		}
 
 		protected override void OnSetUp()
@@ -91,16 +91,16 @@ namespace NHibernate.Test.CompositeId
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-			    theClass = new ClassWithCompositeId(id);
-			    theClass.OneProperty = 5;
+				theClass = new ClassWithCompositeId(id);
+				theClass.OneProperty = 5;
 
-			    theSecondClass = new ClassWithCompositeId(secondId);
-			    theSecondClass.OneProperty = 10;
+				theSecondClass = new ClassWithCompositeId(secondId);
+				theSecondClass.OneProperty = 10;
 
-			    await (s.SaveAsync(theClass));
-			    await (s.SaveAsync(theSecondClass));
+				await (s.SaveAsync(theClass));
+				await (s.SaveAsync(theSecondClass));
 
-			    await (t.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			// verify they were inserted and test the SELECT
@@ -113,8 +113,8 @@ namespace NHibernate.Test.CompositeId
 				Assert.AreEqual(id, theClass2.Id);
 
 				IList results2 = await (s2.CreateCriteria(typeof(ClassWithCompositeId))
-				                   .Add(Expression.Eq("Id", secondId))
-				                   .ListAsync());
+								   .Add(Expression.Eq("Id", secondId))
+								   .ListAsync());
 
 				Assert.AreEqual(1, results2.Count);
 				theSecondClass2 = (ClassWithCompositeId) results2[0];
@@ -172,8 +172,8 @@ namespace NHibernate.Test.CompositeId
 				}
 
 				IList results = await (s4.CreateCriteria(typeof(ClassWithCompositeId))
-				                  .Add(Expression.Eq("Id", secondId))
-				                  .ListAsync());
+								  .Add(Expression.Eq("Id", secondId))
+								  .ListAsync());
 
 				Assert.AreEqual(0, results.Count);
 			}
@@ -248,8 +248,8 @@ namespace NHibernate.Test.CompositeId
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new ClassWithCompositeId(id1) {OneProperty = 5}));
-				await (s.SaveAsync(new ClassWithCompositeId(id2) {OneProperty = 10}));
+				await (s.SaveAsync(new ClassWithCompositeId(id1) { OneProperty = 5 }));
+				await (s.SaveAsync(new ClassWithCompositeId(id2) { OneProperty = 10 }));
 				await (s.SaveAsync(new ClassWithCompositeId(id3)));
 
 				await (t.CommitAsync());
@@ -276,11 +276,11 @@ namespace NHibernate.Test.CompositeId
 					() =>
 					{
 						Assert.That(results1.Count, Is.EqualTo(2), "in multiple ids");
-						Assert.That(results1.Select(x => x.Id), Is.EquivalentTo(new[] {id1, id2}), "in multiple ids");
+						Assert.That(results1.Select(x => x.Id), Is.EquivalentTo(new[] { id1, id2 }), "in multiple ids");
 						Assert.That(results2.Count, Is.EqualTo(1), "in single id");
 						Assert.That(results2.Single().Id, Is.EqualTo(id1), "in single id");
 						Assert.That(results3.Count, Is.EqualTo(2), "not in single id");
-						Assert.That(results3.Select(x => x.Id), Is.EquivalentTo(new[] {id2, id3}), "not in single id");
+						Assert.That(results3.Select(x => x.Id), Is.EquivalentTo(new[] { id2, id3 }), "not in single id");
 						Assert.That(results4.Count, Is.EqualTo(1), "not in multiple ids");
 						Assert.That(results4.Single().Id, Is.EqualTo(id3), "not in multiple ids");
 					});
@@ -292,15 +292,15 @@ namespace NHibernate.Test.CompositeId
 		{
 			if (!TestDialect.SupportsRowValueConstructorSyntax)
 			{
-					Assert.Ignore();
+				Assert.Ignore();
 			}
 
 			// insert the new objects
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new ClassWithCompositeId(id) {OneProperty = 5}));
-				await (s.SaveAsync(new ClassWithCompositeId(secondId) {OneProperty = 10}));
+				await (s.SaveAsync(new ClassWithCompositeId(id) { OneProperty = 5 }));
+				await (s.SaveAsync(new ClassWithCompositeId(secondId) { OneProperty = 10 }));
 				await (s.SaveAsync(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime))));
 
 				await (t.CommitAsync());
@@ -323,8 +323,8 @@ namespace NHibernate.Test.CompositeId
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new ClassWithCompositeId(id) {OneProperty = 5}));
-				await (s.SaveAsync(new ClassWithCompositeId(secondId) {OneProperty = 10}));
+				await (s.SaveAsync(new ClassWithCompositeId(id) { OneProperty = 5 }));
+				await (s.SaveAsync(new ClassWithCompositeId(secondId) { OneProperty = 10 }));
 				await (s.SaveAsync(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime))));
 
 				await (t.CommitAsync());
@@ -349,8 +349,8 @@ namespace NHibernate.Test.CompositeId
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new ClassWithCompositeId(id) {OneProperty = 5}));
-				await (s.SaveAsync(new ClassWithCompositeId(secondId) {OneProperty = 10}));
+				await (s.SaveAsync(new ClassWithCompositeId(id) { OneProperty = 5 }));
+				await (s.SaveAsync(new ClassWithCompositeId(secondId) { OneProperty = 10 }));
 				await (s.SaveAsync(new ClassWithCompositeId(new Id(id.KeyString, id.GetKeyShort(), secondId.KeyDateTime))));
 
 				await (t.CommitAsync());
@@ -417,8 +417,8 @@ namespace NHibernate.Test.CompositeId
 			using (ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
 			{
-				await (s.SaveAsync(new ClassWithCompositeId(id1) {OneProperty = 5}));
-				await (s.SaveAsync(new ClassWithCompositeId(id2) {OneProperty = 10}));
+				await (s.SaveAsync(new ClassWithCompositeId(id1) { OneProperty = 5 }));
+				await (s.SaveAsync(new ClassWithCompositeId(id2) { OneProperty = 10 }));
 				await (s.SaveAsync(new ClassWithCompositeId(id3)));
 
 				await (t.CommitAsync());
@@ -426,22 +426,22 @@ namespace NHibernate.Test.CompositeId
 
 			using (var s = OpenSession())
 			{
-				var results1 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] {id1, id2}).ListAsync());
-				var results2 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] {id1}).ListAsync());
-				var results3 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).Not.IsIn(new[] {id1, id2}).ListAsync());
-				var results4 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).Not.IsIn(new[] {id1}).ListAsync());
+				var results1 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] { id1, id2 }).ListAsync());
+				var results2 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] { id1 }).ListAsync());
+				var results3 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).Not.IsIn(new[] { id1, id2 }).ListAsync());
+				var results4 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).Not.IsIn(new[] { id1 }).ListAsync());
 
 				Assert.Multiple(
 					() =>
 					{
 						Assert.That(results1.Count, Is.EqualTo(2), "in multiple ids");
-						Assert.That(results1.Select(r => r.Id), Is.EquivalentTo(new[] {id1, id2}), "in multiple ids");
+						Assert.That(results1.Select(r => r.Id), Is.EquivalentTo(new[] { id1, id2 }), "in multiple ids");
 						Assert.That(results2.Count, Is.EqualTo(1), "in single id");
-						Assert.That(results2.Select(r => r.Id), Is.EquivalentTo(new[] {id1}), "in single id");
+						Assert.That(results2.Select(r => r.Id), Is.EquivalentTo(new[] { id1 }), "in single id");
 						Assert.That(results3.Count, Is.EqualTo(1), "not in multiple ids");
-						Assert.That(results3.Select(r => r.Id), Is.EquivalentTo(new[] {id3}), "not in multiple ids");
+						Assert.That(results3.Select(r => r.Id), Is.EquivalentTo(new[] { id3 }), "not in multiple ids");
 						Assert.That(results4.Count, Is.EqualTo(2), "not in single id");
-						Assert.That(results4.Select(r => r.Id), Is.EquivalentTo(new[] {id2, id3}), "not in single id");
+						Assert.That(results4.Select(r => r.Id), Is.EquivalentTo(new[] { id2, id3 }), "not in single id");
 					});
 			}
 		}

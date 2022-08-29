@@ -22,7 +22,7 @@ namespace NHibernate.Test.Legacy
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"ABCProxy.hbm.xml"}; }
+			get { return new string[] { "ABCProxy.hbm.xml" }; }
 		}
 
 		[Test]

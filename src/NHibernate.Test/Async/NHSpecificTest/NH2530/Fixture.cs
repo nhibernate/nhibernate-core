@@ -18,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2530
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync: BugTestCase
+	public class FixtureAsync : BugTestCase
 	{
 		protected override void Configure(Cfg.Configuration configuration)
 		{

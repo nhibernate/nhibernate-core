@@ -41,7 +41,7 @@ namespace NHibernate.Collection.Generic
 		public override async Task InitializeFromCacheAsync(ICollectionPersister persister, object disassembled, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			object[] array = (object[])disassembled;
+			object[] array = (object[]) disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
 			for (int i = 0; i < size; i += 2)
@@ -71,7 +71,7 @@ namespace NHibernate.Collection.Generic
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			IType elementType = persister.ElementType;
-			var snap = (ISet<SnapshotElement>)GetSnapshot();
+			var snap = (ISet<SnapshotElement>) GetSnapshot();
 			if (snap.Count != _values.Count)
 			{
 				return false;
@@ -129,7 +129,7 @@ namespace NHibernate.Collection.Generic
 			{
 				return false;
 			}
-			var snap = (ISet<SnapshotElement>)GetSnapshot();
+			var snap = (ISet<SnapshotElement>) GetSnapshot();
 
 			object id = GetIdentifier(i);
 			if (id == null)

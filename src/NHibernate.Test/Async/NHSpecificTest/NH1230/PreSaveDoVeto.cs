@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1230
 			try
 			{
 				log.Debug("OnPreInsert: The entity will be vetoed.");
-				
+
 				return Task.FromResult<bool>(true);
 			}
 			catch (System.Exception ex)

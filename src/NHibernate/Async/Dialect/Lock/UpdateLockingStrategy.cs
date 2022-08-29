@@ -78,13 +78,13 @@ namespace NHibernate.Dialect.Lock
 				catch (Exception sqle)
 				{
 					var exceptionContext = new AdoExceptionContextInfo
-					                       	{
-					                       		SqlException = sqle,
-					                       		Message = "could not lock: " + MessageHelper.InfoString(lockable, id, factory),
-					                       		Sql = sql.ToString(),
-					                       		EntityName = lockable.EntityName,
-					                       		EntityId = id
-					                       	};
+					{
+						SqlException = sqle,
+						Message = "could not lock: " + MessageHelper.InfoString(lockable, id, factory),
+						Sql = sql.ToString(),
+						EntityName = lockable.EntityName,
+						EntityId = id
+					};
 					throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, exceptionContext);
 				}
 			}

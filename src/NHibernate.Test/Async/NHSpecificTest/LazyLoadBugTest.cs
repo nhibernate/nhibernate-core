@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest
 	{
 		protected override string[] Mappings
 		{
-			get { return new string[] {"NHSpecific.LazyLoadBug.hbm.xml"}; }
+			get { return new string[] { "NHSpecific.LazyLoadBug.hbm.xml" }; }
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)

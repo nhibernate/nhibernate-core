@@ -30,9 +30,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2374
 					{
 						var parent = new Hashtable();
 						var child = new Hashtable
-						            	{
-						            		{"Parent", parent}
-						            	};
+										{
+											{"Parent", parent}
+										};
 
 						parent["Child"] = child;
 
@@ -70,9 +70,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2374
 				{
 					var parent = new Hashtable();
 					var child = new Hashtable
-					            	{
-					            		{"Parent", parent}
-					            	};
+									{
+										{"Parent", parent}
+									};
 
 					parent["Child"] = child;
 

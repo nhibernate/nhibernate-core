@@ -44,7 +44,7 @@ namespace NHibernate.Cache.Entry
 		}
 
 		public static async Task<CacheEntry> CreateAsync(object[] state, IEntityPersister persister, object version,
-		                                ISessionImplementor session, object owner, CancellationToken cancellationToken)
+										ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return new CacheEntry
@@ -62,7 +62,7 @@ namespace NHibernate.Cache.Entry
 		}
 
 		public Task<object[]> AssembleAsync(object instance, object id, IEntityPersister persister, IInterceptor interceptor,
-		                         ISessionImplementor session, CancellationToken cancellationToken)
+								 ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (!persister.EntityName.Equals(Subclass))
 			{
@@ -77,18 +77,18 @@ namespace NHibernate.Cache.Entry
 		}
 
 		private static async Task<object[]> AssembleAsync(object[] values, object result, object id, IEntityPersister persister,
-		                                 IInterceptor interceptor, ISessionImplementor session, CancellationToken cancellationToken)
+										 IInterceptor interceptor, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			//assembled state gets put in a new array (we read from cache by value!)
 			object[] assembledProps = await (TypeHelper.AssembleAsync(values, persister.PropertyTypes, session, result, cancellationToken)).ConfigureAwait(false);
-	
+
 			//from h3.2 TODO: reuse the PreLoadEvent
 			PreLoadEvent preLoadEvent = new PreLoadEvent((IEventSource) session);
 			preLoadEvent.Entity = result;
-			preLoadEvent.State=assembledProps;
+			preLoadEvent.State = assembledProps;
 			preLoadEvent.Id = id;
-			preLoadEvent.Persister=persister;
+			preLoadEvent.Persister = persister;
 
 			IPreLoadEventListener[] listeners = session.Listeners.PreLoadEventListeners;
 			for (int i = 0; i < listeners.Length; i++)

@@ -12,8 +12,8 @@ using System;
 using System.Collections;
 using System.Threading;
 using NHibernate.Stat;
-using NUnit.Framework;
 using NHibernate.Transform;
+using NUnit.Framework;
 
 namespace NHibernate.Test.SecondLevelCacheTests
 {
@@ -174,7 +174,7 @@ namespace NHibernate.Test.SecondLevelCacheTests
 				result = await (s.CreateQuery(queryString).SetCacheable(true).ListAsync());
 				Assert.That(result.Count, Is.EqualTo(1));
 				Assert.That(NHibernateUtil.IsInitialized(result[0]));
-				var i = (Item)result[0];
+				var i = (Item) result[0];
 				i.Name = "Widget";
 				await (tx.CommitAsync());
 			}

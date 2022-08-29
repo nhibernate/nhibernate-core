@@ -22,8 +22,8 @@ namespace NHibernate.Test.Linq
 		public async Task CanSetReadOnlyOnLinqQueriesAsync()
 		{
 			var result = await ((from e in db.Customers
-			              where e.CompanyName == "Bon app'"
-			              select e).WithOptions(o => o.SetReadOnly(true)).ToListAsync());
+						  where e.CompanyName == "Bon app'"
+						  select e).WithOptions(o => o.SetReadOnly(true)).ToListAsync());
 
 			Assert.That(result.All(x => session.IsReadOnly(x)), Is.True);
 		}
@@ -32,7 +32,7 @@ namespace NHibernate.Test.Linq
 		public async Task CanSetReadOnlyOnLinqPagingQueryAsync()
 		{
 			var result = await ((from e in db.Customers
-			              select e).Skip(1).Take(1).WithOptions(o => o.SetReadOnly(true)).ToListAsync());
+						  select e).Skip(1).Take(1).WithOptions(o => o.SetReadOnly(true)).ToListAsync());
 
 			Assert.That(result.All(x => session.IsReadOnly(x)), Is.True);
 		}
@@ -41,8 +41,8 @@ namespace NHibernate.Test.Linq
 		public async Task CanSetReadOnlyBeforeSkipOnLinqOrderedPageQueryAsync()
 		{
 			var result = await ((from e in db.Customers
-			              orderby e.CompanyName
-			              select e).WithOptions(o => o.SetReadOnly(true)).Skip(5).Take(5).ToListAsync());
+						  orderby e.CompanyName
+						  select e).WithOptions(o => o.SetReadOnly(true)).Skip(5).Take(5).ToListAsync());
 
 			Assert.That(result.All(x => session.IsReadOnly(x)), Is.True);
 		}

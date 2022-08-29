@@ -30,7 +30,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task PropertyValueDoesntSwapsAsync()
 		{
-            var query = await ((from user in db.Users
+			var query = await ((from user in db.Users
 						 where (user.Name == "ayende")
 						 select user).ToListAsync());
 			Assert.AreEqual(1, query.Count);
@@ -39,16 +39,16 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task PropertyPropertyDoesntSwapAsync()
 		{
-            var query = await ((from user in db.Users
+			var query = await ((from user in db.Users
 						 where (user.Name == user.Name)
 						 select user).ToListAsync());
 			Assert.AreEqual(3, query.Count);
 		}
 
-        [Test]
+		[Test]
 		public async Task EqualsSwapsToEqualsAsync()
 		{
-            var query = await ((from user in db.Users
+			var query = await ((from user in db.Users
 						 where ("ayende" == user.Name)
 						 select user).ToListAsync());
 			Assert.AreEqual(1, query.Count);
@@ -57,7 +57,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task NotEqualsSwapsToNotEqualsAsync()
 		{
-            var query = await ((from user in db.Users
+			var query = await ((from user in db.Users
 						 where ("ayende" != user.Name)
 						 select user).ToListAsync());
 			Assert.AreEqual(2, query.Count);
@@ -66,7 +66,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task GreaterThanSwapsToLessThanAsync()
 		{
-            var query = await ((from user in db.Users
+			var query = await ((from user in db.Users
 						 where (3 > user.Id)
 						 select user).ToListAsync());
 			Assert.AreEqual(2, query.Count);
@@ -75,7 +75,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task GreaterThanOrEqualToSwapsToLessThanOrEqualToAsync()
 		{
-            var query = await ((from user in db.Users
+			var query = await ((from user in db.Users
 						 where (2 >= user.Id)
 						 select user).ToListAsync());
 			Assert.AreEqual(2, query.Count);
@@ -84,7 +84,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task LessThanSwapsToGreaterThanAsync()
 		{
-            var query = await ((from user in db.Users
+			var query = await ((from user in db.Users
 						 where (1 < user.Id)
 						 select user).ToListAsync());
 			Assert.AreEqual(2, query.Count);
@@ -93,7 +93,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task LessThanOrEqualToSwapsToGreaterThanOrEqualToAsync()
 		{
-            var query = await ((from user in db.Users
+			var query = await ((from user in db.Users
 						 where (2 <= user.Id)
 						 select user).ToListAsync());
 			Assert.AreEqual(2, query.Count);
@@ -104,8 +104,8 @@ namespace NHibernate.Test.Linq
 		{
 			// check NH-2440
 			var query = await ((from user in db.Users
-									 where ("ayende".Equals(user.Name))
-									 select user).ToListAsync());
+						 where ("ayende".Equals(user.Name))
+						 select user).ToListAsync());
 			Assert.AreEqual(1, query.Count);
 		}
 
@@ -114,8 +114,8 @@ namespace NHibernate.Test.Linq
 		{
 			// check NH-2440
 			var query = await ((from user in db.Users
-									 where (user.Name.Equals("ayende"))
-									 select user).ToListAsync());
+						 where (user.Name.Equals("ayende"))
+						 select user).ToListAsync());
 			Assert.AreEqual(1, query.Count);
 		}
 	}

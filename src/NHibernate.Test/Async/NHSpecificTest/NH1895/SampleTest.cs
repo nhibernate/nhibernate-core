@@ -20,10 +20,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1895
 		[Test]
 		public async Task SaveTestAsync()
 		{
-			var o = new Order {Id = Guid.NewGuid(), Name = "Test Order"};
+			var o = new Order { Id = Guid.NewGuid(), Name = "Test Order" };
 			for (int i = 0; i < 5; i++)
 			{
-				var d = new Detail {Id = Guid.NewGuid(), Name = "Test Detail " + i, Parent = o};
+				var d = new Detail { Id = Guid.NewGuid(), Name = "Test Detail " + i, Parent = o };
 				o.Details.Add(d);
 			}
 			using (ISession session = OpenSession())

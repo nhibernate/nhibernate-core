@@ -76,7 +76,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				catch (DbException e)
 				{
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not insert/select ids for bulk update",
-					                                 idInsertSelect);
+													 idInsertSelect);
 				}
 
 				// Start performing the updates

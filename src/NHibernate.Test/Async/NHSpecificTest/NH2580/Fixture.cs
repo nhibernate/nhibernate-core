@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2580
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class FixtureAsync: BugTestCase
+	public class FixtureAsync : BugTestCase
 	{
 		private class MyClass
 		{

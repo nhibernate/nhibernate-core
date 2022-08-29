@@ -19,7 +19,7 @@ using NHibernate.Impl;
 using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
-using Status=NHibernate.Engine.Status;
+using Status = NHibernate.Engine.Status;
 
 namespace NHibernate.Event.Default
 {
@@ -93,8 +93,8 @@ namespace NHibernate.Event.Default
 			{
 				if (log.IsDebugEnabled())
 				{
-					log.Debug("generated identifier: {0}, using strategy: {1}", 
-						persister.IdentifierType.ToLoggableString(generatedId, source.Factory), 
+					log.Debug("generated identifier: {0}, using strategy: {1}",
+						persister.IdentifierType.ToLoggableString(generatedId, source.Factory),
 						persister.IdentifierGenerator.GetType().FullName);
 				}
 				return await (PerformSaveAsync(entity, generatedId, persister, false, anything, source, true, cancellationToken)).ConfigureAwait(false);
@@ -247,13 +247,13 @@ namespace NHibernate.Event.Default
 
 			object version = Versioning.GetVersion(values, persister);
 			source.PersistenceContext.AddEntity(
-				entity, 
+				entity,
 				persister.IsMutable ? Status.Loaded : Status.ReadOnly,
-				values, key, 
-				version, 
-				LockMode.Write, 
-				useIdentityColumn, 
-				persister, 
+				values, key,
+				version,
+				LockMode.Write,
+				useIdentityColumn,
+				persister,
 				VersionIncrementDisabled);
 			//source.getPersistenceContext().removeNonExist( new EntityKey( id, persister, source.getEntityMode() ) );
 

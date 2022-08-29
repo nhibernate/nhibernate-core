@@ -34,7 +34,7 @@ namespace NHibernate.Test.GhostProperty
 
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			configuration.DataBaseIntegration(x=> x.LogFormattedSql = false);
+			configuration.DataBaseIntegration(x => x.LogFormattedSql = false);
 		}
 
 		protected override void OnSetUp()
