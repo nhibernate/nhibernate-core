@@ -16,6 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3127
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name, x => x.Type<StringType>());
+				rc.Property(x => x.NameAnsi, x => x.Type<AnsiStringType>());
 				rc.Property(x => x.Amount, x => x.Type<CurrencyType>());
 			});
 
@@ -27,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3127
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity { Name = "Bob", Amount = 10.0M };
+				var e1 = new Entity { Name = "Bob", NameAnsi = "Bob", Amount = 10.0M };
 				session.Save(e1);
 
 				transaction.Commit();
@@ -51,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3127
 			using (var session = OpenSession())
 			{
 				var result = from e in session.Query<Entity>()
-							 where e.Name == "Bob" && e.Amount == 10.0M
+							 where e.Name == "Bob" && e.NameAnsi == "Bob" && e.Amount == 10.0M
 							 select e;
 
 				Assert.That(result.ToList(), Has.Count.EqualTo(1));
