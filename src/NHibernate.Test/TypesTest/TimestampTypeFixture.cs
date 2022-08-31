@@ -24,7 +24,7 @@ namespace NHibernate.Test.TypesTest
 					var log = spy.GetWholeLog();
 					Assert.That(
 						log,
-						Does.Contain($"NHibernate.Type.TimestampType ({NHibernateUtil.Timestamp.Name}) is obsolete. Please use DateTimeType instead.").IgnoreCase);
+						Does.Contain($"NHibernate.Type.TimestampType is obsolete. Please use DateTimeType instead.").IgnoreCase);
 				}
 			}
 		}
