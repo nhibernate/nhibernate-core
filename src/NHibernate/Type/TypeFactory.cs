@@ -108,10 +108,7 @@ namespace NHibernate.Type
 		/// <param name="aliases">The additional aliases to map to the type. Use <see cref="EmptyAliases"/> if none.</param>
 		public static void RegisterType(System.Type systemType, IType nhibernateType, IEnumerable<string> aliases)
 		{
-			var typeAliases = new List<string>(aliases);
-			typeAliases.AddRange(GetClrTypeAliases(systemType));
-
-			RegisterType(nhibernateType, typeAliases);
+			RegisterType(nhibernateType, GetClrTypeAliases(systemType, aliases));
 		}
 
 		/// <summary>
@@ -139,10 +136,7 @@ namespace NHibernate.Type
 			GetNullableTypeWithLengthOrScale ctorLengthOrScale,
 			bool @override)
 		{
-			var typeAliases = new List<string>(aliases);
-			typeAliases.AddRange(GetClrTypeAliases(systemType));
-
-			RegisterType(nhibernateType, typeAliases, ctorLengthOrScale, @override);
+			RegisterType(nhibernateType, GetClrTypeAliases(systemType, aliases), ctorLengthOrScale, @override);
 		}
 
 		/// <summary>
@@ -170,20 +164,16 @@ namespace NHibernate.Type
 			GetNullableTypeWithPrecision ctorPrecision,
 			bool @override)
 		{
-			var typeAliases = new List<string>(aliases);
-			typeAliases.AddRange(GetClrTypeAliases(systemType));
-
-			RegisterType(nhibernateType, typeAliases, ctorPrecision, @override);
+			RegisterType(nhibernateType, GetClrTypeAliases(systemType, aliases), ctorPrecision, @override);
 		}
 
-		private static List<string> GetClrTypeAliases(System.Type systemType)
+		private static List<string> GetClrTypeAliases(System.Type systemType, IEnumerable<string> aliases)
 		{
-			var typeAliases =
-				new List<string>
-				{
-					systemType.FullName,
-					systemType.AssemblyQualifiedName
-				};
+			var typeAliases = new List<string>();
+			typeAliases.AddRange(aliases);
+			typeAliases.Add(systemType.FullName);
+			typeAliases.Add(systemType.AssemblyQualifiedName);
+
 			if (systemType.IsValueType)
 			{
 				// Also register Nullable<systemType> for ValueTypes
@@ -238,9 +228,7 @@ namespace NHibernate.Type
 
 		private static IEnumerable<string> GetTypeAliases(IType nhibernateType, IEnumerable<string> aliases)
 		{
-			var typeAliases = GetClrTypeAliases(nhibernateType.GetType());
-			typeAliases.Add(nhibernateType.Name);
-			return aliases.Concat(typeAliases);
+			return GetClrTypeAliases(nhibernateType.GetType(), aliases.Append(nhibernateType.Name));
 		}
 
 		private static void RegisterTypeAlias(IType nhibernateType, string alias)
