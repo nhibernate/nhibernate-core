@@ -126,7 +126,7 @@
       containingTypeName: IBatcher
     - conversion: ToAsync
       name: BeginTransaction
-      containingTypeName: AbstractSessionImpl
+      containingTypeName: ConnectionManager
     - conversion: ToAsync
       rule: EventListener
     - conversion: ToAsync
