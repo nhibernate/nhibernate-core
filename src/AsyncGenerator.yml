@@ -125,6 +125,9 @@
       name: ExecuteNonQuery
       containingTypeName: IBatcher
     - conversion: ToAsync
+      name: BeginTransaction
+      containingTypeName: AbstractSessionImpl
+    - conversion: ToAsync
       rule: EventListener
     - conversion: ToAsync
       rule: Cache
