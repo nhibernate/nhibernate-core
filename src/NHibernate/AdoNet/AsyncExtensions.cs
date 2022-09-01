@@ -1,5 +1,7 @@
 #if NETFX || NETSTANDARD2_0 || NETCOREAPP2_0
 using System;
+using System.Data;
+using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 
