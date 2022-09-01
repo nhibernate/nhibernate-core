@@ -212,6 +212,39 @@ namespace NHibernate.Impl
 			}
 		}
 
+		/// <summary>
+		/// Begin a NHibernate transaction
+		/// </summary>
+		/// <returns>A NHibernate transaction</returns>
+		public Task<ITransaction> BeginTransactionAsync()
+		{
+			try
+			{
+				return Task.FromResult<ITransaction>(BeginTransaction());
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<ITransaction>(ex);
+			}
+		}
+
+		/// <summary>
+		/// Begin a NHibernate transaction with the specified isolation level
+		/// </summary>
+		/// <param name="isolationLevel">The isolation level</param>
+		/// <returns>A NHibernate transaction</returns>
+		public Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel)
+		{
+			try
+			{
+				return Task.FromResult<ITransaction>(BeginTransaction(isolationLevel));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<ITransaction>(ex);
+			}
+		}
+
 		public abstract Task<IQuery> CreateFilterAsync(object collection, IQueryExpression queryExpression, CancellationToken cancellationToken);
 
 		public abstract Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken);
