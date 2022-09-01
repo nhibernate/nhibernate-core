@@ -3,7 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace System.Data.Common
+namespace NHibernate
 {
 	internal static class AsyncExtensions
 	{
