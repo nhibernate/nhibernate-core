@@ -50,11 +50,11 @@ jobs:
     - name: Set up Oracle
       if: matrix.DB == 'Oracle'
       run: |
-        docker run -d -p 1521:1521 -e APP_USER=nhibernate -e APP_USER_PASSWORD=nhibernate -e ORACLE_PASSWORD=nhibernate gvenzl/oracle-xe:18-slim
+        docker run -d -p 1521:1521 -e APP_USER=nhibernate -e APP_USER_PASSWORD=nhibernate -e ORACLE_PASSWORD=nhibernate gvenzl/oracle-xe:21-slim
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
 

@@ -30,6 +30,8 @@ namespace NHibernate.Loader.Collection
 			get { return HasSubselectLoadableCollections(); }
 		}
 
+		protected IQueryableCollection CollectionPersister => collectionPersister;
+
 		protected IType KeyType
 		{
 			get { return collectionPersister.KeyType; }

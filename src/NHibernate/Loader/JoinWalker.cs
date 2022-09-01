@@ -984,7 +984,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Render the where condition for a (batch) load by identifier / collection key
 		/// </summary>
-		protected SqlStringBuilder WhereString(string alias, string[] columnNames, int batchSize)
+		protected virtual SqlStringBuilder WhereString(string alias, string[] columnNames, int batchSize)
 		{
 			if (columnNames.Length == 1)
 			{

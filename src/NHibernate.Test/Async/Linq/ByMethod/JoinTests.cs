@@ -111,6 +111,23 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 		}
 
+		[Test(Description = "GH-3104")]
+		public async Task LeftJoinExtensionMethodWithInnerJoinAfterAsync()
+		{
+			var animals = await (db.Animals
+						   .LeftJoin(db.Mammals, o => o.Id, i => i.Id, (o, i) => new { animal = o, mammalLeft1 = i })
+						   .LeftJoin(db.Mammals, x => x.mammalLeft1.Id, y => y.Id, (o, i) => new { o.animal, o.mammalLeft1, mammalLeft2 = i })
+						   .Join(db.Mammals, o => o.mammalLeft2.Id, y => y.Id, (o, i) => new { o.animal, o.mammalLeft1, o.mammalLeft2, mammalInner = i })
+						   .Where(x => x.mammalLeft1.SerialNumber.StartsWith("9"))
+						   .Where(x => x.mammalLeft2.SerialNumber.StartsWith("9"))
+						   .Where(x => x.animal.SerialNumber.StartsWith("9"))
+						   .Where(x => x.mammalInner.SerialNumber.StartsWith("9"))
+						   .Select(x => new { SerialNumber = x.animal.SerialNumber })
+						   .ToListAsync());
+
+			Assert.That(animals.Count, Is.EqualTo(1));
+		}
+
 		[Test]
 		public async Task LeftJoinExtensionMethodWithOuterReferenceInWhereClauseOnlyAsync()
 		{
@@ -297,6 +314,19 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = await ((from o in db.Animals
 						from o2 in db.Animals.Where(x => x.BodyWeight > 50)
 						select new {o, o2}).Take(1).ToListAsync());
+		}
+
+		[Test]
+		public async Task CanInnerJoinOnEntityWithSubclassesAsync()
+		{
+			//inner joined animal is not used in output (no need to join subclasses)
+			var resultsFromOuter1 = await (db.Animals.Join(db.Animals, o => o.Id, i => i.Id, (o, i) => o).Take(1).ToListAsync());
+
+			//inner joined mammal is not used in output (but subclass join is needed for mammal)
+			var resultsFromOuter2 = await (db.Animals.Join(db.Mammals, o => o.Id, i => i.Id, (o, i) => o).Take(1).ToListAsync());
+
+			//inner joined animal is used in output (all subclass joins are required)
+			var resultsFromInner1 = await (db.Animals.Join(db.Animals, o => o.Id, i => i.Id, (o, i) => i).Take(1).ToListAsync());
 		}
 
 		[Test(Description = "GH-2580")]
