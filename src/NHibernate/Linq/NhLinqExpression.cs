@@ -61,7 +61,7 @@ namespace NHibernate.Linq
 			_constantToParameterMap = ExpressionParameterVisitor.Visit(preTransformResult);
 
 			ParameterValuesByName = _constantToParameterMap.Values.Distinct().ToDictionary(p => p.Name,
-			                                                                               p => System.Tuple.Create(p.Value, p.Type));
+																						   p => System.Tuple.Create(p.Value, p.Type));
 			NamedParameters = _constantToParameterMap.Values.Distinct().ToDictionary(p => p.Name);
 			Key = ExpressionKeyVisitor.Visit(_expression, _constantToParameterMap, sessionFactory);
 

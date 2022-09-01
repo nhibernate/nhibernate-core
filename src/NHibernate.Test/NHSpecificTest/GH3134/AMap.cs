@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3134
 				collectionMapping =>
 				{
 					collectionMapping.Table("AB");
-					collectionMapping.Key(k => { k.Column("A"); k.ForeignKey("none");});
+					collectionMapping.Key(k => { k.Column("A"); k.ForeignKey("none"); });
 					collectionMapping.Cascade(Mapping.ByCode.Cascade.All);
 				},
 				map => map.ManyToMany(m => { m.Column("B"); }));

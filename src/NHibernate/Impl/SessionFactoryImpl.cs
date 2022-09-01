@@ -191,12 +191,12 @@ namespace NHibernate.Impl
 			this.settings = settings;
 
 			Init();
-			
+
 			log.Info("building session factory");
 
 			properties = new Dictionary<string, string>(cfg.Properties);
 			interceptor = cfg.Interceptor;
-			
+
 			sqlFunctionRegistry = new SQLFunctionRegistry(settings.Dialect, cfg.SqlFunctions);
 			eventListeners = listeners;
 			filters = new Dictionary<string, FilterDefinition>(cfg.FilterDefinitions);
@@ -232,7 +232,7 @@ namespace NHibernate.Impl
 			name = settings.SessionFactoryName;
 			try
 			{
-				uuid = (string)UuidGenerator.Generate(null, null);
+				uuid = (string) UuidGenerator.Generate(null, null);
 			}
 			catch (Exception ex)
 			{
@@ -255,7 +255,7 @@ namespace NHibernate.Impl
 				{
 					IIdentifierGenerator generator =
 						model.Identifier.CreateIdentifierGenerator(settings.Dialect, settings.DefaultCatalogName,
-																   settings.DefaultSchemaName, (RootClass)model);
+																   settings.DefaultSchemaName, (RootClass) model);
 
 					identifierGenerators[model.EntityName] = generator;
 				}
@@ -308,7 +308,7 @@ namespace NHibernate.Impl
 				IType indexType = persister.IndexType;
 				if (indexType != null && indexType.IsAssociationType && !indexType.IsAnyType)
 				{
-					string entityName = ((IAssociationType)indexType).GetAssociatedEntityName(this);
+					string entityName = ((IAssociationType) indexType).GetAssociatedEntityName(this);
 					ISet<string> roles;
 					if (!tmpEntityToCollectionRoleMap.TryGetValue(entityName, out roles))
 					{
@@ -320,7 +320,7 @@ namespace NHibernate.Impl
 				IType elementType = persister.ElementType;
 				if (elementType.IsAssociationType && !elementType.IsAnyType)
 				{
-					string entityName = ((IAssociationType)elementType).GetAssociatedEntityName(this);
+					string entityName = ((IAssociationType) elementType).GetAssociatedEntityName(this);
 					ISet<string> roles;
 					if (!tmpEntityToCollectionRoleMap.TryGetValue(entityName, out roles))
 					{
@@ -384,12 +384,12 @@ namespace NHibernate.Impl
 					}
 				}
 			}
-			
+
 			if (settings.IsAutoValidateSchema)
 			{
 				new SchemaValidator(cfg, settings).Validate();
 			}
-			
+
 			if (settings.IsAutoDropSchema)
 			{
 				schemaExport = new SchemaExport(cfg);
@@ -473,7 +473,7 @@ namespace NHibernate.Impl
 				return null;
 
 			var cacheKey = new Tuple<string, string>(cacheRegion, strategy);
-			if (caches.TryGetValue(cacheKey, out var cache)) 
+			if (caches.TryGetValue(cacheKey, out var cache))
 				return cache;
 
 			cache = CacheFactory.CreateCache(strategy, GetCache(cacheRegion), settings);
@@ -1058,7 +1058,7 @@ namespace NHibernate.Impl
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("evicting second-level cache for: {0}",
-					          string.Join(", ", cacheGroup.Select(p => p.EntityName)));
+							  string.Join(", ", cacheGroup.Select(p => p.EntityName)));
 				}
 				cacheGroup.Key.Clear();
 			}
@@ -1145,7 +1145,7 @@ namespace NHibernate.Impl
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("evicting second-level cache for: {0}",
-					          string.Join(", ", cacheGroup.Select(p => p.Role)));
+							  string.Join(", ", cacheGroup.Select(p => p.Role)));
 				}
 				cacheGroup.Key.Clear();
 			}
@@ -1478,7 +1478,7 @@ namespace NHibernate.Impl
 			try
 			{
 				var implClass = ReflectHelper.ClassForName(impl);
-				var constructor = implClass.GetConstructor(new [] { typeof(ISessionFactoryImplementor) });
+				var constructor = implClass.GetConstructor(new[] { typeof(ISessionFactoryImplementor) });
 				ICurrentSessionContext context;
 				if (constructor != null)
 				{

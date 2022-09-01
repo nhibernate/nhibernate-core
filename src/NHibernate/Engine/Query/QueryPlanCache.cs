@@ -27,7 +27,7 @@ namespace NHibernate.Engine.Query
 
 		// the cache of the actual plans...
 		private readonly SoftLimitMRUCache planCache;
-		
+
 		internal const int DefaultParameterMetadataMaxCount = 128;
 		internal const int DefaultQueryPlanMaxCount = 128;
 
@@ -41,7 +41,7 @@ namespace NHibernate.Engine.Query
 
 		public ParameterMetadata GetSQLParameterMetadata(string query)
 		{
-			var metadata = (ParameterMetadata)sqlParamMetadataCache[query];
+			var metadata = (ParameterMetadata) sqlParamMetadataCache[query];
 			if (metadata == null)
 			{
 				// for native-sql queries, the param metadata is determined outside
@@ -58,7 +58,7 @@ namespace NHibernate.Engine.Query
 		public IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
 			var key = new HQLQueryPlanKey(queryExpression, shallow, enabledFilters);
-			var plan = (QueryExpressionPlan)planCache[key];
+			var plan = (QueryExpressionPlan) planCache[key];
 
 			if (plan == null)
 			{
@@ -147,7 +147,7 @@ namespace NHibernate.Engine.Query
 
 		public NativeSQLQueryPlan GetNativeSQLQueryPlan(NativeSQLQuerySpecification spec)
 		{
-			var plan = (NativeSQLQueryPlan)planCache[spec];
+			var plan = (NativeSQLQueryPlan) planCache[spec];
 
 			if (plan == null)
 			{
@@ -187,7 +187,7 @@ namespace NHibernate.Engine.Query
 				string name = entry.Key;
 				ParamLocationRecognizer.NamedParameterDescription description = entry.Value;
 				namedParamDescriptorMap[name] =
-					new NamedParameterDescriptor(name, null, description.JpaStyle);				
+					new NamedParameterDescriptor(name, null, description.JpaStyle);
 			}
 
 			return new ParameterMetadata(ordinalDescriptors, namedParamDescriptorMap);

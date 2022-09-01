@@ -174,7 +174,7 @@ namespace NHibernate.Loader
 			string manyToManyFilter = collection.GetManyToManyFilterFragment(rhsAlias, enabledFilters);
 			SqlString condition = string.Empty.Equals(manyToManyFilter)
 								? on
-								: SqlStringHelper.IsEmpty(on) ? new SqlString(manyToManyFilter) : 
+								: SqlStringHelper.IsEmpty(on) ? new SqlString(manyToManyFilter) :
 									on.Append(" and ", manyToManyFilter);
 
 			outerjoin.AddJoin(joinable.TableName, rhsAlias, lhsColumns, rhsColumns, joinType, condition);
@@ -223,35 +223,35 @@ namespace NHibernate.Loader
 				case SelectMode.FetchLazyProperties:
 #pragma warning disable 618
 					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(Joinable, "fetch lazy properties")
-					                    .SelectFragment(
-						                    next?.Joinable,
-						                    next?.RHSAlias,
-						                    RHSAlias,
-						                    entitySuffix,
-						                    collectionSuffix,
-						                    ShouldFetchCollectionPersister(),
-						                    true);
+										.SelectFragment(
+											next?.Joinable,
+											next?.RHSAlias,
+											RHSAlias,
+											entitySuffix,
+											collectionSuffix,
+											ShouldFetchCollectionPersister(),
+											true);
 #pragma warning restore 618
 
 				case SelectMode.FetchLazyPropertyGroup:
 					return ReflectHelper.CastOrThrow<ISupportLazyPropsJoinable>(Joinable, "fetch lazy property")
-					                    .SelectFragment(
-						                    next?.Joinable,
-						                    next?.RHSAlias,
-						                    RHSAlias,
-						                    collectionSuffix,
-						                    ShouldFetchCollectionPersister(),
-						                    new EntityLoadInfo(entitySuffix)
-						                    {
-							                    LazyProperties = EntityFetchLazyProperties,
-							                    IncludeLazyProps = SelectMode == SelectMode.FetchLazyProperties,
-						                    });
+										.SelectFragment(
+											next?.Joinable,
+											next?.RHSAlias,
+											RHSAlias,
+											collectionSuffix,
+											ShouldFetchCollectionPersister(),
+											new EntityLoadInfo(entitySuffix)
+											{
+												LazyProperties = EntityFetchLazyProperties,
+												IncludeLazyProps = SelectMode == SelectMode.FetchLazyProperties,
+											});
 				case SelectMode.ChildFetch:
 					// Skip ChildFetch for many-to-many as element id is added by element persister.
 					if (Joinable.IsCollection && ((IQueryableCollection) Joinable).IsManyToMany)
 						return string.Empty;
 					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(Joinable, "child fetch select mode")
-					                    .IdentifierSelectFragment(RHSAlias, entitySuffix);
+										.IdentifierSelectFragment(RHSAlias, entitySuffix);
 
 				case SelectMode.JoinOnly:
 					return string.Empty;

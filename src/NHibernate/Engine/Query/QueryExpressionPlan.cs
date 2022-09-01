@@ -26,7 +26,7 @@ namespace NHibernate.Engine.Query
 		{
 		}
 
-		protected QueryExpressionPlan(HQLQueryPlan source, IQueryExpression expression) 
+		protected QueryExpressionPlan(HQLQueryPlan source, IQueryExpression expression)
 			: base(source)
 		{
 			QueryExpression = expression;
