@@ -39,6 +39,7 @@ namespace NHibernate.Dialect
 
 		private static readonly string[] DialectKeywords =
 		{
+			"datetimex"
 			"executing",
 			"executing_user",
 			"extract",
