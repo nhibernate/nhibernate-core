@@ -1,4 +1,27 @@
-﻿Build 5.3.12
+﻿Build 5.3.13
+=============================
+
+Release notes - NHibernate - Version 5.3.13
+
+6 issues were resolved in this release.
+
+** Bug
+
+    #3134 ManyToMany - Tries to select not existing column in Mapping Table
+    #3113 Join fails on Oracle9Dialect
+    #3030 Memory leak named parameter holds entity references
+
+** Improvement
+
+    #3120 Guards against use of a disposed session factory
+    #2994 Npgsql 6 is not compatible
+
+** Task
+
+   * #3145 Release 5.3.13
+
+
+Build 5.3.12
 =============================
 
 Release notes - NHibernate - Version 5.3.12
