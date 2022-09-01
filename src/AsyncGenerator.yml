@@ -126,7 +126,7 @@
       containingTypeName: IBatcher
     - conversion: ToAsync
       name: BeginTransaction
-      containingTypeName: ConnectionManager
+      containingTypeName: DriverBase
     - conversion: ToAsync
       rule: EventListener
     - conversion: ToAsync
