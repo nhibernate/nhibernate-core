@@ -18,7 +18,7 @@ namespace System.Data.Common
 			}
 			catch (Exception ex)
 			{
-				return Task.FromException<object>(ex);
+				return Task.FromException<DbTransaction>(ex);
 			}
 		}
 
@@ -33,7 +33,7 @@ namespace System.Data.Common
 			}
 			catch (Exception ex)
 			{
-				return Task.FromException<object>(ex);
+				return Task.FromException<DbTransaction>(ex);
 			}
 		}
 	}
