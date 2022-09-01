@@ -106,28 +106,18 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		public Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel)
+		public async Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel)
 		{
-			try
-			{
-				return Task.FromResult<ITransaction>(BeginTransaction(isolationLevel));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<ITransaction>(ex);
-			}
+			EnsureTransactionIsCreated();
+			await (_transaction.BeginAsync(isolationLevel)).ConfigureAwait(false);
+			return _transaction;
 		}
 
-		public Task<ITransaction> BeginTransactionAsync()
+		public async Task<ITransaction> BeginTransactionAsync()
 		{
-			try
-			{
-				return Task.FromResult<ITransaction>(BeginTransaction());
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<ITransaction>(ex);
-			}
+			EnsureTransactionIsCreated();
+			await (_transaction.BeginAsync()).ConfigureAwait(false);
+			return _transaction;
 		}
 
 		public async Task<DbCommand> CreateCommandAsync(CancellationToken cancellationToken)

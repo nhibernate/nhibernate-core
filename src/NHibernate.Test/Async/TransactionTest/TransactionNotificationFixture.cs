@@ -138,6 +138,16 @@ namespace NHibernate.Test.TransactionTest
 	public partial class CustomTransaction : ITransaction
 	{
 
+		public Task BeginAsync()
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task BeginAsync(IsolationLevel isolationLevel)
+		{
+			throw new NotImplementedException();
+		}
+
 		public Task CommitAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			throw new NotImplementedException();
