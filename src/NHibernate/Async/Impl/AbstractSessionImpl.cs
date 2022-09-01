@@ -216,15 +216,18 @@ namespace NHibernate.Impl
 		/// Begin a NHibernate transaction
 		/// </summary>
 		/// <returns>A NHibernate transaction</returns>
-		public Task<ITransaction> BeginTransactionAsync()
+		public async Task<ITransaction> BeginTransactionAsync()
 		{
-			try
+			using (BeginProcess())
 			{
-				return Task.FromResult<ITransaction>(BeginTransaction());
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<ITransaction>(ex);
+				if (IsTransactionCoordinatorShared)
+				{
+					// Todo : should seriously consider not allowing a txn to begin from a child session
+					//      can always route the request to the root session...
+					Log.Warn("Transaction started on non-root session");
+				}
+
+				return await (ConnectionManager.BeginTransactionAsync()).ConfigureAwait(false);
 			}
 		}
 
@@ -233,15 +236,18 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="isolationLevel">The isolation level</param>
 		/// <returns>A NHibernate transaction</returns>
-		public Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel)
+		public async Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel)
 		{
-			try
+			using (BeginProcess())
 			{
-				return Task.FromResult<ITransaction>(BeginTransaction(isolationLevel));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<ITransaction>(ex);
+				if (IsTransactionCoordinatorShared)
+				{
+					// Todo : should seriously consider not allowing a txn to begin from a child session
+					//      can always route the request to the root session...
+					Log.Warn("Transaction started on non-root session");
+				}
+
+				return await (ConnectionManager.BeginTransactionAsync(isolationLevel)).ConfigureAwait(false);
 			}
 		}
 
