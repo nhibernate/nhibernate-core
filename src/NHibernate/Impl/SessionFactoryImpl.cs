@@ -486,7 +486,11 @@ namespace NHibernate.Impl
 
 		public EventListeners EventListeners
 		{
-			get { return eventListeners; }
+			get
+			{
+				CheckNotClosed();
+				return eventListeners;
+			}
 		}
 
 		#region IObjectReference Members
@@ -530,6 +534,7 @@ namespace NHibernate.Impl
 
 		public ISessionBuilder WithOptions()
 		{
+			CheckNotClosed();
 			return new SessionBuilderImpl(this);
 		}
 
@@ -580,6 +585,7 @@ namespace NHibernate.Impl
 
 		public IStatelessSessionBuilder WithStatelessOptions()
 		{
+			CheckNotClosed();
 			return new StatelessSessionBuilderImpl(this);
 		}
 
@@ -597,6 +603,7 @@ namespace NHibernate.Impl
 
 		public IEntityPersister GetEntityPersister(string entityName)
 		{
+			CheckNotClosed();
 			IEntityPersister value;
 			if (entityPersisters.TryGetValue(entityName, out value) == false)
 				throw new MappingException("No persister for: " + entityName);
@@ -605,6 +612,7 @@ namespace NHibernate.Impl
 
 		public IEntityPersister TryGetEntityPersister(string entityName)
 		{
+			CheckNotClosed();
 			IEntityPersister result;
 			entityPersisters.TryGetValue(entityName, out result);
 			return result;
@@ -612,6 +620,7 @@ namespace NHibernate.Impl
 
 		public ICollectionPersister GetCollectionPersister(string role)
 		{
+			CheckNotClosed();
 			ICollectionPersister value;
 			if (collectionPersisters.TryGetValue(role, out value) == false)
 				throw new MappingException("Unknown collection role: " + role);
@@ -922,6 +931,14 @@ namespace NHibernate.Impl
 			Close();
 		}
 
+		private void CheckNotClosed()
+		{
+			if (isClosed)
+			{
+				throw new ObjectDisposedException($"Session factory {Name} with id {Uuid}");
+			}
+		}
+
 		/// <summary>
 		/// Closes the session factory, releasing all held resources.
 		/// <list>
@@ -1164,6 +1181,7 @@ namespace NHibernate.Impl
 		public IDictionary<string, ICache> GetAllSecondLevelCacheRegions()
 #pragma warning restore 618
 		{
+			CheckNotClosed();
 			return
 				_allCacheRegions
 					// ToArray creates a moment in time snapshot
@@ -1178,6 +1196,7 @@ namespace NHibernate.Impl
 		public ICache GetSecondLevelCacheRegion(string regionName)
 #pragma warning restore 618
 		{
+			CheckNotClosed();
 			_allCacheRegions.TryGetValue(regionName, out var result);
 			return result;
 		}
@@ -1204,7 +1223,12 @@ namespace NHibernate.Impl
 
 		public IQueryCache QueryCache
 		{
-			get { return queryCache; }
+			get
+			{
+				if (queryCache != null)
+					CheckNotClosed();
+				return queryCache;
+			}
 		}
 
 		public IQueryCache GetQueryCache(string cacheRegion)
@@ -1218,6 +1242,7 @@ namespace NHibernate.Impl
 				return null;
 			}
 
+			CheckNotClosed();
 			// The factory may be run concurrently by threads trying to get the same region.
 			// But the GetOrAdd will yield the same lazy for all threads, so only one will
 			// initialize. https://stackoverflow.com/a/31637510/1178314
@@ -1234,6 +1259,7 @@ namespace NHibernate.Impl
 			// NH Different implementation
 			if (queryCache != null)
 			{
+				CheckNotClosed();
 				queryCache.Clear();
 				if (queryCaches.Count == 0)
 				{
@@ -1252,6 +1278,7 @@ namespace NHibernate.Impl
 			{
 				if (settings.IsQueryCacheEnabled)
 				{
+					CheckNotClosed();
 					if (queryCaches.TryGetValue(cacheRegion, out var currentQueryCache))
 					{
 						currentQueryCache.Value.Clear();
