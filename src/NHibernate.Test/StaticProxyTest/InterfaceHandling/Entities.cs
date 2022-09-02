@@ -79,4 +79,19 @@ namespace NHibernate.Test.StaticProxyTest.InterfaceHandling
 
 		public virtual IEntity EntityLookup { get; set; }
 	}
+
+	public class EntityWithExplicitGenericInterface : IGeneric
+	{
+		public virtual Guid Id { get; set; }
+
+		T[] IGeneric.GetTypes<T>()
+		{
+			return null;
+		}
+	}
+
+	public interface IGeneric
+	{
+		T[] GetTypes<T>();
+	}
 }

@@ -248,32 +248,55 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Invoke the expression to extract its runtime value
+		/// Walk or Invoke expression to extract its runtime value
 		/// </summary>
 		public static object FindValue(Expression expression)
 		{
-			if (expression.NodeType == ExpressionType.Constant)
-				return ((ConstantExpression) expression).Value;
+			object findValue(Expression e) => e != null ? FindValue(e) : null;
 
-			if (expression.NodeType == ExpressionType.MemberAccess)
+			switch (expression.NodeType)
 			{
-				var memberAccess = (MemberExpression) expression;
-				if (memberAccess.Expression == null || memberAccess.Expression.NodeType == ExpressionType.Constant)
-				{
-					var constantValue = ((ConstantExpression) memberAccess.Expression)?.Value;
-					var member = memberAccess.Member;
-					switch (member.MemberType)
+				case ExpressionType.Constant:
+					var constantExpression = (ConstantExpression) expression;
+					return constantExpression.Value;
+				case ExpressionType.MemberAccess:
+					var memberExpression = (MemberExpression) expression;
+					switch (memberExpression.Member.MemberType)
 					{
 						case MemberTypes.Field:
-							return ((FieldInfo) member).GetValue(constantValue);
+							return ((FieldInfo) memberExpression.Member).GetValue(findValue(memberExpression.Expression));
 						case MemberTypes.Property:
-							return ((PropertyInfo) member).GetValue(constantValue);
+							return ((PropertyInfo) memberExpression.Member).GetValue(findValue(memberExpression.Expression));
 					}
-				}
+					break;
+				case ExpressionType.Call:
+					var methodCallExpression = (MethodCallExpression) expression;
+					var args = methodCallExpression.Arguments.ToArray(arg => FindValue(arg));
+					var callingObject = findValue(methodCallExpression.Object);
+					return methodCallExpression.Method.Invoke(callingObject, args);
+				case ExpressionType.Convert:
+					var unaryExpression = (UnaryExpression) expression;
+
+					if (unaryExpression.Method != null)
+						return unaryExpression.Method.Invoke(null, new[] { FindValue(unaryExpression.Operand) });
+
+					var toType = unaryExpression.Type;
+					var fromType = unaryExpression.Operand.Type;
+					if (toType == typeof(object) || toType == fromType || Nullable.GetUnderlyingType(toType) == fromType)
+						return FindValue(unaryExpression.Operand);
+
+					if (toType == Nullable.GetUnderlyingType(fromType))
+					{
+						var val = FindValue(unaryExpression.Operand);
+						if (val != null)
+							return val;
+					}
+
+					break;
 			}
 
-			var valueExpression = Expression.Lambda(expression).Compile();
-			object value = valueExpression.DynamicInvoke();
+			var lambdaExpression = Expression.Lambda(expression).Compile(true);
+			var value = lambdaExpression.DynamicInvoke();
 			return value;
 		}
 

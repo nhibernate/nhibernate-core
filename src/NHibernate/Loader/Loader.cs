@@ -18,6 +18,7 @@ using NHibernate.Exceptions;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Param;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -1672,20 +1673,30 @@ namespace NHibernate.Loader
 												 object optionalObject, string optionalEntityName, object optionalId,
 												 IEntityPersister persister)
 		{
+			IType[] types = new IType[ids.Length];
+			ArrayHelper.Fill(types, idType);
+			var queryParameters = new QueryParameters(
+				types,
+				ids,
+				optionalObject,
+				optionalEntityName,
+				optionalId);
+			return LoadEntityBatch(session, persister, queryParameters);
+		}
+
+		protected internal IList LoadEntityBatch(ISessionImplementor session,  IEntityPersister persister, QueryParameters queryParameters)
+		{
+			var ids = queryParameters.PositionalParameterValues;
 			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("batch loading entity: {0}", MessageHelper.InfoString(persister, ids, Factory));
 			}
 
-			IType[] types = new IType[ids.Length];
-			ArrayHelper.Fill(types, idType);
-			IList result;
 			try
 			{
-				result =
-					DoQueryAndInitializeNonLazyCollections(session,
-														   new QueryParameters(types, ids, optionalObject, optionalEntityName,
-																			   optionalId), false);
+				var results = DoQueryAndInitializeNonLazyCollections(session, queryParameters, false);
+				Log.Debug("done entity batch load");
+				return results;
 			}
 			catch (HibernateException)
 			{
@@ -1698,9 +1709,6 @@ namespace NHibernate.Loader
 												 + MessageHelper.InfoString(persister, ids, Factory), SqlString);
 				// NH: Hibernate3 passes EntityPersisters[0] instead of persister, I think it's wrong.
 			}
-
-			Log.Debug("done entity batch load");
-			return result;
 		}
 
 		/// <summary>
@@ -1827,9 +1835,32 @@ namespace NHibernate.Loader
 			return ListIgnoreQueryCache(session, queryParameters);
 		}
 
-		internal bool IsCacheable(QueryParameters queryParameters)
+		internal virtual bool IsCacheable(QueryParameters queryParameters)
 		{
-			return _factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
+			return IsCacheable(queryParameters, true, Enumerable.Empty<IPersister>());
+		}
+
+		internal bool IsCacheable(QueryParameters queryParameters, bool supportsQueryCache, IEnumerable<IPersister> persisters)
+		{
+			bool isCacheable = Factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
+			if (isCacheable && !supportsQueryCache)
+			{
+				if (Factory.Settings.QueryThrowNeverCached)
+				{
+					throw new QueryException(
+						"Never cached entities/collections cannot be used in a cacheable query: " +
+						string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(o => o.Name)));
+				}
+				else if (Log.IsWarnEnabled())
+				{
+					Log.Warn(
+						"Never cached entities/collections ({0}) are included in a cacheable query: the query '{1}' will not be cached.",
+						string.Join(", ", persisters.Where(o => !o.SupportsQueryCache).Select(p => p.Name)),
+						ToString());
+				}
+			}
+
+			return isCacheable && supportsQueryCache;
 		}
 
 		private IList ListIgnoreQueryCache(ISessionImplementor session, QueryParameters queryParameters)
@@ -2017,6 +2048,7 @@ namespace NHibernate.Loader
 			var parameterSpecs = new HashSet<IParameterSpecification>(GetParameterSpecifications());
 			SqlString sqlString = SqlString.Copy();
 
+			sqlString = TransformSql(sqlString, queryParameters, parameterSpecs);
 			// dynamic-filter parameters: during the createion of the SqlString of allLoader implementation, filters can be added as SQL_TOKEN/string for this reason we have to re-parse the SQL.
 			sqlString = ExpandDynamicFilterParameters(sqlString, parameterSpecs, session);
 			AdjustQueryParametersForSubSelectFetching(sqlString, parameterSpecs, queryParameters);
@@ -2031,6 +2063,11 @@ namespace NHibernate.Loader
 			ResetEffectiveExpectedType(parameterSpecs, queryParameters);
 
 			return new SqlCommandImpl(sqlString, parameterSpecs, queryParameters, session.Factory);
+		}
+
+		private virtual protected SqlString TransformSql(SqlString sqlString, QueryParameters queryParameters, HashSet<IParameterSpecification> parameterSpecifications)
+		{
+			return sqlString;
 		}
 
 		protected virtual void ResetEffectiveExpectedType(IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)

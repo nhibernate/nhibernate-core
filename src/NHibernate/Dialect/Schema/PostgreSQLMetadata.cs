@@ -138,7 +138,43 @@ namespace NHibernate.Dialect.Schema
 			this.SetNumericalPrecision(rs["NUMERIC_PRECISION"]);
 
 			Nullable = Convert.ToString(rs["IS_NULLABLE"]);
-			TypeName = Convert.ToString(rs["DATA_TYPE"]);
+			TypeName = NormalizeTypeNames(Convert.ToString(rs["DATA_TYPE"]));
+		}
+
+		private static string NormalizeTypeNames(string typeName)
+		{
+			switch (typeName)
+			{
+				case "double precision":
+					return "float8";
+				case "real":
+					return "float4";
+				case "smallint":
+					return "int2";
+				case "integer":
+					return "int4";
+				case "bigint":
+					return "int8";
+			}
+
+			if (typeName.StartsWith("character", StringComparison.Ordinal))
+			{
+				return typeName.Replace("character varying", "varchar").Replace("character", "char");
+			}
+
+			if (typeName.EndsWith(" with time zone", StringComparison.Ordinal))
+			{
+				return typeName.StartsWith("timestamp", StringComparison.Ordinal)
+					? typeName.Replace(" with time zone", string.Empty).Replace("timestamp", "timestamptz")
+					: typeName.Replace(" with time zone", string.Empty).Replace("time", "timetz");
+			}
+
+			if (typeName.EndsWith(" without time zone", StringComparison.Ordinal))
+			{
+				return typeName.Replace(" without time zone", string.Empty);
+			}
+
+			return typeName;
 		}
 	}
 

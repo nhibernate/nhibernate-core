@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH2549
 {
+	// Test GH3046 too, when useManyToOne is <c>true</c>.
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
@@ -29,8 +30,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2549
 			}
 		}
 
-		[Test]
-		public void EntityJoinFilterLinq()
+		[Theory]
+		public void EntityJoinFilterLinq(bool useManyToOne)
 		{
 			using (var s = OpenSession())
 			{
@@ -38,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2549
 							join c in s.Query<Customer>() on p.Name equals c.Name
 							select p).ToList();
 
-				s.EnableFilter("DeletedCustomer").SetParameter("deleted", false);
+				s.EnableFilter(useManyToOne ? "DeletedCustomer" : "DeletedCustomerNoManyToOne").SetParameter("deleted", false);
 
 				var filteredList = (from p in s.Query<Person>()
 									join c in s.Query<Customer>() on p.Name equals c.Name
@@ -49,8 +50,8 @@ namespace NHibernate.Test.NHSpecificTest.GH2549
 			}
 		}
 
-		[Test]
-		public void EntityJoinFilterQueryOver()
+		[Theory]
+		public void EntityJoinFilterQueryOver(bool useManyToOne)
 		{
 			using (var s = OpenSession())
 			{
@@ -58,7 +59,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2549
 				Person p = null;
 				var list = s.QueryOver(() => p).JoinEntityAlias(() => c, () => c.Name == p.Name).List();
 
-				s.EnableFilter("DeletedCustomer").SetParameter("deleted", false);
+				s.EnableFilter(useManyToOne ? "DeletedCustomer" : "DeletedCustomerNoManyToOne").SetParameter("deleted", false);
 
 				var filteredList = s.QueryOver(() => p).JoinEntityAlias(() => c, () => c.Name == p.Name).List();
 

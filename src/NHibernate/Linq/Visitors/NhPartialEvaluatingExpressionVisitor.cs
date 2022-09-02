@@ -18,8 +18,10 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.Linq.Functions;
 using NHibernate.Util;
 using Remotion.Linq.Parsing;
@@ -143,13 +145,14 @@ namespace NHibernate.Linq.Visitors
 
 				return constantExpression;
 			}
-			else
-			{
-				Expression<Func<object>> lambdaWithoutParameters = Expression.Lambda<Func<object>>(Expression.Convert(subtree, typeof(object)));
-				var compiledLambda = lambdaWithoutParameters.Compile();
 
-				object value = compiledLambda();
-				return Expression.Constant(value, subtree.Type);
+			try
+			{
+				return Expression.Constant(ExpressionProcessor.FindValue(subtree), subtree.Type);
+			}
+			catch (TargetInvocationException ex)
+			{
+				throw ReflectHelper.UnwrapTargetInvocationException(ex);
 			}
 		}
 

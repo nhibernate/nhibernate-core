@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 using System.Runtime.Serialization;
 using System.Threading;
 #endif
@@ -33,7 +33,7 @@ namespace NHibernate.Collection.Generic.SetHelpers
 				}
 				else
 				{
-					_values.Add(item, item);
+					_values[item] = item;
 				}
 			}
 		}
@@ -70,7 +70,7 @@ namespace NHibernate.Collection.Generic.SetHelpers
 				return;
 			}
 
-			_values.Add(item, item);
+			_values[item] = item;
 		}
 
 		public void Clear()
@@ -132,7 +132,7 @@ namespace NHibernate.Collection.Generic.SetHelpers
 	}
 #endif
 
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 	[Serializable]
 	internal class SetSnapShot<T> : HashSet<T>, ICollection
 	{

@@ -111,6 +111,8 @@ namespace NHibernate.Impl
 		private readonly IDictionary<string, ICollectionMetadata> collectionMetadata;
 		[NonSerialized]
 		private readonly Dictionary<string, ICollectionPersister> collectionPersisters;
+		[NonSerialized]
+		private readonly ILookup<string, ICollectionPersister> collectionPersistersSpaces;
 
 		[NonSerialized]
 		private readonly IDictionary<string, ISet<string>> collectionRolesByEntityParticipant;
@@ -120,6 +122,8 @@ namespace NHibernate.Impl
 		private readonly IEntityNotFoundDelegate entityNotFoundDelegate;
 		[NonSerialized]
 		private readonly IDictionary<string, IEntityPersister> entityPersisters;
+		[NonSerialized]
+		private readonly ILookup<string, IEntityPersister> entityPersistersSpaces;
 
 		/// <summary>
 		/// NH specific : to avoid the use of entityName for generic implementation
@@ -170,11 +174,14 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly ConcurrentDictionary<string, string[]> entityNameImplementorsMap = new ConcurrentDictionary<string, string[]>(4 * System.Environment.ProcessorCount, 100);
 		private readonly string uuid;
+
+		[NonSerialized]
 		private bool disposed;
 
 		[NonSerialized]
 		private bool isClosed = false;
 
+		[NonSerialized]
 		private QueryPlanCache queryPlanCache;
 		[NonSerialized]
 		private StatisticsImpl statistics;
@@ -280,6 +287,11 @@ namespace NHibernate.Impl
 					implementorToEntityName[model.MappedClass] = model.EntityName;
 				}
 			}
+
+			entityPersistersSpaces = entityPersisters
+				.SelectMany(x => x.Value.QuerySpaces.Select(y => new { QuerySpace = y, Persister = x.Value }))
+				.ToLookup(x => x.QuerySpace, x => x.Persister);
+
 			classMetadata = new ReadOnlyDictionary<string, IClassMetadata>(classMeta);
 
 			Dictionary<string, ISet<string>> tmpEntityToCollectionRoleMap = new Dictionary<string, ISet<string>>();
@@ -318,6 +330,11 @@ namespace NHibernate.Impl
 					roles.Add(persister.Role);
 				}
 			}
+
+			collectionPersistersSpaces = collectionPersisters
+				.SelectMany(x => x.Value.CollectionSpaces.Select(y => new { QuerySpace = y, Persister = x.Value }))
+				.ToLookup(x => x.QuerySpace, x => x.Persister);
+
 			Dictionary<string, ICollectionMetadata> tmpcollectionMetadata = new Dictionary<string, ICollectionMetadata>(collectionPersisters.Count);
 			foreach (KeyValuePair<string, ICollectionPersister> collectionPersister in collectionPersisters)
 			{
@@ -387,7 +404,7 @@ namespace NHibernate.Impl
 
 			if (settings.IsQueryCacheEnabled)
 			{
-				var updateTimestampsCacheName = typeof(UpdateTimestampsCache).Name;
+				var updateTimestampsCacheName = nameof(Cache.UpdateTimestampsCache);
 				updateTimestampsCache = new UpdateTimestampsCache(GetCache(updateTimestampsCacheName));
 				var queryCacheName = typeof(StandardQueryCache).FullName;
 				queryCache = BuildQueryCache(queryCacheName);
@@ -452,14 +469,14 @@ namespace NHibernate.Impl
 			bool isMutable,
 			Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy> caches)
 		{
-			if (strategy == null || !settings.IsSecondLevelCacheEnabled)
+			if (strategy == null || strategy == CacheFactory.Never || !settings.IsSecondLevelCacheEnabled)
 				return null;
 
 			var cacheKey = new Tuple<string, string>(cacheRegion, strategy);
 			if (caches.TryGetValue(cacheKey, out var cache)) 
 				return cache;
 
-			cache = CacheFactory.CreateCache(strategy, GetCache(cacheRegion));
+			cache = CacheFactory.CreateCache(strategy, GetCache(cacheRegion), settings);
 			caches.Add(cacheKey, cache);
 			if (isMutable && strategy == CacheFactory.ReadOnly)
 				log.Warn("read-only cache configured for mutable: {0}", name);
@@ -469,7 +486,11 @@ namespace NHibernate.Impl
 
 		public EventListeners EventListeners
 		{
-			get { return eventListeners; }
+			get
+			{
+				CheckNotClosed();
+				return eventListeners;
+			}
 		}
 
 		#region IObjectReference Members
@@ -513,6 +534,7 @@ namespace NHibernate.Impl
 
 		public ISessionBuilder WithOptions()
 		{
+			CheckNotClosed();
 			return new SessionBuilderImpl(this);
 		}
 
@@ -563,6 +585,7 @@ namespace NHibernate.Impl
 
 		public IStatelessSessionBuilder WithStatelessOptions()
 		{
+			CheckNotClosed();
 			return new StatelessSessionBuilderImpl(this);
 		}
 
@@ -580,6 +603,7 @@ namespace NHibernate.Impl
 
 		public IEntityPersister GetEntityPersister(string entityName)
 		{
+			CheckNotClosed();
 			IEntityPersister value;
 			if (entityPersisters.TryGetValue(entityName, out value) == false)
 				throw new MappingException("No persister for: " + entityName);
@@ -588,6 +612,7 @@ namespace NHibernate.Impl
 
 		public IEntityPersister TryGetEntityPersister(string entityName)
 		{
+			CheckNotClosed();
 			IEntityPersister result;
 			entityPersisters.TryGetValue(entityName, out result);
 			return result;
@@ -595,6 +620,7 @@ namespace NHibernate.Impl
 
 		public ICollectionPersister GetCollectionPersister(string role)
 		{
+			CheckNotClosed();
 			ICollectionPersister value;
 			if (collectionPersisters.TryGetValue(role, out value) == false)
 				throw new MappingException("Unknown collection role: " + role);
@@ -606,6 +632,48 @@ namespace NHibernate.Impl
 			ISet<string> result;
 			collectionRolesByEntityParticipant.TryGetValue(entityName, out result);
 			return result;
+		}
+
+		/// <summary>
+		/// Get entity persisters filtered by the given query spaces.
+		/// </summary>
+		/// <param name="spaces">The query spaces, or <c>null</c> or an empty set for getting all persisters.</param>
+		/// <returns>A set of entity persisters.</returns>
+		public ISet<IEntityPersister> GetEntityPersisters(ISet<string> spaces)
+		{
+			if (spaces == null || spaces.Count == 0)
+			{
+				return new HashSet<IEntityPersister>(entityPersisters.Values);
+			}
+
+			var persisters = new HashSet<IEntityPersister>();
+			foreach (var space in spaces)
+			{
+				persisters.UnionWith(entityPersistersSpaces[space]);
+			}
+
+			return persisters;
+		}
+
+		/// <summary>
+		/// Get collection persisters filtered by the given query spaces.
+		/// </summary>
+		/// <param name="spaces">The query spaces, or <c>null</c> or an empty set for getting all persisters.</param>
+		/// <returns>A set of collection persisters.</returns>
+		public ISet<ICollectionPersister> GetCollectionPersisters(ISet<string> spaces)
+		{
+			if (spaces == null || spaces.Count == 0)
+			{
+				return new HashSet<ICollectionPersister>(collectionPersisters.Values);
+			}
+
+			var persisters = new HashSet<ICollectionPersister>();
+			foreach (var space in spaces)
+			{
+				persisters.UnionWith(collectionPersistersSpaces[space]);
+			}
+
+			return persisters;
 		}
 
 		/// <summary></summary>
@@ -748,7 +816,7 @@ namespace NHibernate.Impl
 			{
 				// try to get the class from imported names
 				string importedName = GetImportedClassName(entityOrClassName);
-				if (importedName != null)
+				if (importedName != entityOrClassName)
 				{
 					clazz = System.Type.GetType(importedName, false);
 				}
@@ -861,6 +929,14 @@ namespace NHibernate.Impl
 
 			disposed = true;
 			Close();
+		}
+
+		private void CheckNotClosed()
+		{
+			if (isClosed)
+			{
+				throw new ObjectDisposedException($"Session factory {Name} with id {Uuid}");
+			}
 		}
 
 		/// <summary>
@@ -1105,6 +1181,7 @@ namespace NHibernate.Impl
 		public IDictionary<string, ICache> GetAllSecondLevelCacheRegions()
 #pragma warning restore 618
 		{
+			CheckNotClosed();
 			return
 				_allCacheRegions
 					// ToArray creates a moment in time snapshot
@@ -1119,6 +1196,7 @@ namespace NHibernate.Impl
 		public ICache GetSecondLevelCacheRegion(string regionName)
 #pragma warning restore 618
 		{
+			CheckNotClosed();
 			_allCacheRegions.TryGetValue(regionName, out var result);
 			return result;
 		}
@@ -1145,7 +1223,12 @@ namespace NHibernate.Impl
 
 		public IQueryCache QueryCache
 		{
-			get { return queryCache; }
+			get
+			{
+				if (queryCache != null)
+					CheckNotClosed();
+				return queryCache;
+			}
 		}
 
 		public IQueryCache GetQueryCache(string cacheRegion)
@@ -1159,6 +1242,7 @@ namespace NHibernate.Impl
 				return null;
 			}
 
+			CheckNotClosed();
 			// The factory may be run concurrently by threads trying to get the same region.
 			// But the GetOrAdd will yield the same lazy for all threads, so only one will
 			// initialize. https://stackoverflow.com/a/31637510/1178314
@@ -1175,6 +1259,7 @@ namespace NHibernate.Impl
 			// NH Different implementation
 			if (queryCache != null)
 			{
+				CheckNotClosed();
 				queryCache.Clear();
 				if (queryCaches.Count == 0)
 				{
@@ -1193,6 +1278,7 @@ namespace NHibernate.Impl
 			{
 				if (settings.IsQueryCacheEnabled)
 				{
+					CheckNotClosed();
 					if (queryCaches.TryGetValue(cacheRegion, out var currentQueryCache))
 					{
 						currentQueryCache.Value.Clear();

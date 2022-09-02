@@ -8,6 +8,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Id;
 using NHibernate.Param;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
@@ -42,6 +43,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private SelectClause _selectClause;
 		private readonly AliasGenerator _aliasGenerator = new AliasGenerator();
 		private readonly ASTPrinter _printer = new ASTPrinter();
+		private bool _isNullComparison;
 
 		//
 		//Maps each top-level result variable to its SelectExpression;
@@ -50,11 +52,13 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly Dictionary<String, ISelectExpression> selectExpressionsByResultVariable = new Dictionary<string, ISelectExpression>();
 
 		private readonly HashSet<string> _querySpaces = new HashSet<string>();
+		private bool _supportsQueryCache = true;
+		private HashSet<IPersister> _persisters;
 
 		private readonly LiteralProcessor _literalProcessor;
 
 		private readonly IDictionary<string, string> _tokenReplacements;
-		private readonly IDictionary<string, NamedParameter> _namedParameters;
+		private readonly IDictionary<IParameterSpecification, IType> _guessedParameterTypes = new Dictionary<IParameterSpecification, IType>();
 
 		private JoinType _impliedJoinType;
 
@@ -63,7 +67,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private IASTFactory _nodeFactory;
 		private readonly List<AssignmentSpecification> assignmentSpecifications = new List<AssignmentSpecification>();
 		private int numberOfParametersInSetClause;
-		private Stack<int> clauseStack=new Stack<int>();
+		private Stack<int> clauseStack = new Stack<int>();
 
 		public HqlSqlWalker(
 			QueryTranslatorImpl qti,
@@ -71,30 +75,33 @@ namespace NHibernate.Hql.Ast.ANTLR
 			ITreeNodeStream input,
 			IDictionary<string, string> tokenReplacements,
 			string collectionRole)
-			: this(qti, sfi, input, tokenReplacements, null, collectionRole)
-		{
-		}
-
-		internal HqlSqlWalker(
-			QueryTranslatorImpl qti,
-			ISessionFactoryImplementor sfi,
-			ITreeNodeStream input,
-			IDictionary<string, string> tokenReplacements,
-			IDictionary<string, NamedParameter> namedParameters,
-			string collectionRole)
 			: this(input)
 		{
 			_sessionFactoryHelper = new SessionFactoryHelperExtensions(sfi);
 			_qti = qti;
 			_literalProcessor = new LiteralProcessor(this);
 			_tokenReplacements = tokenReplacements;
-			_namedParameters = namedParameters;
 			_collectionFilterRole = collectionRole;
 		}
 
 		public override void ReportError(RecognitionException e)
 		{
 			_parseErrorHandler.ReportError(e);
+		}
+
+		internal IStatement Transform()
+		{
+			var tree = (IStatement) statement().Tree;
+			// Use the guessed type in case we weren't been able to detect the type
+			foreach (var parameter in _parameters)
+			{
+				if (parameter.ExpectedType == null && _guessedParameterTypes.TryGetValue(parameter, out var guessedType))
+				{
+					parameter.ExpectedType = guessedType;
+				}
+			}
+
+			return tree;
 		}
 
 		/*
@@ -133,6 +140,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			get { return _querySpaces; }
 		}
+
+		public bool SupportsQueryCache => _supportsQueryCache;
+
+		internal ISet<IPersister> Persisters => _persisters ?? CollectionHelper.EmptySet<IPersister>();
 
 		public IDictionary<string, object> NamedParameters
 		{
@@ -296,8 +307,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				IASTNode idSelectExprNode = null;
 
-				var seqGenerator = generator as SequenceGenerator;
-				if (seqGenerator != null)
+				if (generator is SequenceGenerator seqGenerator)
 				{
 					string seqName = seqGenerator.GeneratorKey();
 					string nextval = SessionFactoryHelper.Factory.Dialect.GetSelectSequenceNextValString(seqName);
@@ -456,7 +466,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			intoClause.SetFirstChild(propertySpec);
 			intoClause.Initialize(persister);
 
-			AddQuerySpaces(persister.QuerySpaces);
+			AddQuerySpaces(persister);
 
 			return intoClause;
 		}
@@ -706,12 +716,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// 		2) an entity-join (join com.acme.User)
 			//
 			// so make the proper interpretation here...
-			var entityJoinReferencedPersister = ResolveEntityJoinReferencedPersister(path);
-			if (entityJoinReferencedPersister != null)
+			// DOT node processing was moved to prefer implicit join path before probing for entity join
+			if (path.Type == IDENT)
 			{
-				var entityJoin = CreateEntityJoin(entityJoinReferencedPersister, alias, joinType, with);
-				((FromReferenceNode) path).FromElement = entityJoin;
-				SetPropertyFetch(entityJoin, propertyFetch, alias);
+				ProcessAsEntityJoin();
 				return;
 			}
 			// The path AST should be a DotNode, and it should have been evaluated already.
@@ -729,6 +737,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			// Generate an explicit join for the root dot node.   The implied joins will be collected and passed up
 			// to the root dot node.
+			dot.SkipSemiResolve = true;
 			dot.Resolve( true, false, alias == null ? null : alias.Text );
 
 			FromElement fromElement;
@@ -742,7 +751,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 				fromElement = dot.GetImpliedJoin();
 				if (fromElement == null)
 				{
-					throw new InvalidPathException("Invalid join: " + dot.Path);
+					ProcessAsEntityJoin();
+					return;
 				}
 				SetPropertyFetch(fromElement, propertyFetch, alias);
 
@@ -758,13 +768,27 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				if (fromElement.Parent == null)
 				{
+					// Most likely means association join is used in invalid context
+					// I.e. in subquery: from EntityA a where exists (from EntityB join a.Assocation)  
+					// Maybe we should throw exception instead
 					fromElement.FromClause.AddChild(fromElement);
+					if (fromElement.IsImplied)
+						fromElement.JoinSequence.SetUseThetaStyle(true);
 				}
 			}
 
 			if ( log.IsDebugEnabled() )
 			{
 				log.Debug("createFromJoinElement() : {0}", _printer.ShowAsString( fromElement, "-- join tree --" ));
+			}
+
+			void ProcessAsEntityJoin()
+			{
+				var node = (FromReferenceNode) path;
+				var entityJoinReferencedPersister = ResolveEntityJoinReferencedPersister(node);
+				var entityJoin = CreateEntityJoin(entityJoinReferencedPersister, alias, joinType, with);
+				node.FromElement = entityJoin;
+				SetPropertyFetch(entityJoin, propertyFetch, alias);
 			}
 		}
 
@@ -794,20 +818,29 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return join;
 		}
 
-		private IQueryable ResolveEntityJoinReferencedPersister(IASTNode path)
+		private IQueryable ResolveEntityJoinReferencedPersister(FromReferenceNode path)
 		{
+			string entityName = path.Path;
+
+			var persister = SessionFactoryHelper.FindQueryableUsingImports(entityName);
+			if (persister == null && entityName != null)
+			{
+				var implementors = SessionFactoryHelper.Factory.GetImplementors(entityName);
+				//Possible case - join on interface
+				if (implementors.Length == 1)
+					persister = (IQueryable) SessionFactoryHelper.Factory.TryGetEntityPersister(implementors[0]);
+			}
+
+			if (persister != null)
+				return persister;
+
 			if (path.Type == IDENT)
 			{
-				var pathIdentNode = (IdentNode) path;
-				// Since IDENT node is not expected for implicit join path, we can throw on not found persister
-				return (IQueryable) SessionFactoryHelper.RequireClassPersister(pathIdentNode.Path);
+				throw new QuerySyntaxException(entityName + " is not mapped");
 			}
-			else if (path.Type == DOT)
-			{
-				var pathText = ASTUtil.GetPathText(path);
-				return SessionFactoryHelper.FindQueryableUsingImports(pathText);
-			}
-			return null;
+
+			//Keep old exception for DOT node
+			throw new InvalidPathException("Invalid join: " + entityName);
 		}
 
 		private static string GetPropertyPath(DotNode dotNode, IASTNode alias)
@@ -1052,11 +1085,17 @@ namespace NHibernate.Hql.Ast.ANTLR
 			);
 
 			parameter.HqlParameterSpecification = paramSpec;
-			if (_namedParameters != null && _namedParameters.TryGetValue(name, out var namedParameter))
+			if (_qti.TryGetNamedParameterType(name, out var type, out var isGuessedType))
 			{
 				// Add the parameter type information so that we are able to calculate functions return types
 				// when the parameter is used as an argument.
-				parameter.ExpectedType = namedParameter.Type;
+				if (isGuessedType)
+				{
+					_guessedParameterTypes[paramSpec] = type;
+					parameter.GuessedType = type;
+				}
+				else
+					parameter.ExpectedType = type;
 			}
 
 			_parameters.Add(paramSpec);
@@ -1192,6 +1231,32 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
+		internal bool IsNullComparison => _isNullComparison;
+
+		public void AddQuerySpaces(IEntityPersister persister)
+		{
+			AddPersister(persister);
+			AddQuerySpaces(persister.QuerySpaces);
+		}
+
+		public void AddQuerySpaces(ICollectionPersister collectionPersister)
+		{
+			AddPersister(collectionPersister);
+			AddQuerySpaces(collectionPersister.CollectionSpaces);
+		}
+
+		private void AddPersister(object persister)
+		{
+			if (!(persister is IPersister cacheablePersister))
+			{
+				return;
+			}
+
+			_supportsQueryCache &= cacheablePersister.SupportsQueryCache;
+			(_persisters = _persisters ?? new HashSet<IPersister>()).Add(cacheablePersister);
+		}
+
+		//TODO NH 6.0 make this method private
 		public void AddQuerySpaces(string[] spaces)
 		{
 			for (int i = 0; i < spaces.Length; i++)

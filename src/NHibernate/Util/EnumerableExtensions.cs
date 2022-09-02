@@ -117,5 +117,14 @@ namespace NHibernate.Util
 					: (T) obj;
 			}
 		}
+
+#if NETFX && !NET471_OR_GREATER
+		internal static IEnumerable<TSource> Append<TSource>(this IEnumerable<TSource> source, TSource element)
+		{
+			foreach (var item in source)
+				yield return item;
+			yield return element;
+		}
+#endif
 	}
 }

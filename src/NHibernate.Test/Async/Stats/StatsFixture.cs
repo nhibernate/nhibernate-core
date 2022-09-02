@@ -214,6 +214,14 @@ namespace NHibernate.Test.Stats
 			maxTime = sqlStats.ExecutionMaxTime;
 			Assert.AreEqual(maxTime, stats.QueryExecutionMaxTime);
 			Assert.AreEqual( sql, stats.QueryExecutionMaxTimeQueryString);
+
+			// check that 2nd query correctly updates query statistics
+			results = (await (s.CreateSQLQuery(sql).AddEntity(typeof(Country)).ListAsync())).Count;
+			var queryTime1 = maxTime;
+			var queryTime2 = sqlStats.ExecutionMaxTime == maxTime ? sqlStats.ExecutionMinTime : sqlStats.ExecutionMaxTime;
+			Assert.AreEqual(2, sqlStats.ExecutionCount, "unexpected execution count");
+			Assert.AreEqual((queryTime1 + queryTime2).Ticks / 2, sqlStats.ExecutionAvgTime.Ticks, 2, "unexpected average time");
+
 			await (tx.CommitAsync());
 			s.Close();
 

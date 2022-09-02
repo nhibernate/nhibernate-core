@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.AdoNet;
 using NHibernate.Engine.Query;
 using NHibernate.SqlTypes;
@@ -17,14 +19,33 @@ namespace NHibernate.Driver
 	/// on the NHibernate forums in this 
 	/// <a href="http://sourceforge.net/forum/message.php?msg_id=2952662">post</a>.
 	/// </remarks>
-	public abstract class OracleDataClientDriverBase : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
+	public abstract partial class OracleDataClientDriverBase : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
 	{
+		private partial class OracleDbCommandWrapper : DbCommandWrapper
+		{
+			private readonly Action<object, bool> _suppressDecimalInvalidCastExceptionSetter;
+
+			public OracleDbCommandWrapper(DbCommand command, Action<object, bool> suppressDecimalInvalidCastExceptionSetter) : base(command)
+			{
+				_suppressDecimalInvalidCastExceptionSetter = suppressDecimalInvalidCastExceptionSetter;
+			}
+
+			protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
+			{
+				var reader = Command.ExecuteReader(behavior);
+				_suppressDecimalInvalidCastExceptionSetter(reader, true);
+
+				return reader;
+			}
+		}
+
 		private const string _commandClassName = "OracleCommand";
 
 		private static readonly SqlType _guidSqlType = new SqlType(DbType.Binary, 16);
 
 		private readonly Action<object, bool> _commandBindByNameSetter;
 		private readonly Action<object, object> _parameterOracleDbTypeSetter;
+		private readonly Action<object, bool> _suppressDecimalInvalidCastExceptionSetter;
 		private readonly object _oracleDbTypeRefCursor;
 		private readonly object _oracleDbTypeXmlType;
 		private readonly object _oracleDbTypeBlob;
@@ -62,6 +83,12 @@ namespace NHibernate.Driver
 			_oracleDbTypeNChar = Enum.Parse(oracleDbTypeEnum, "NChar");
 			_oracleDbTypeBinaryDouble = Enum.Parse(oracleDbTypeEnum, "BinaryDouble");
 			_oracleDbTypeBinaryFloat = Enum.Parse(oracleDbTypeEnum, "BinaryFloat");
+
+			var oracleDataReader = ReflectHelper.TypeFromAssembly(clientNamespace + ".OracleDataReader", driverAssemblyName, true);
+			if (oracleDataReader.GetProperty("SuppressGetDecimalInvalidCastException") != null)
+			{
+				_suppressDecimalInvalidCastExceptionSetter = DelegateHelper.BuildPropertySetter<bool>(oracleDataReader, "SuppressGetDecimalInvalidCastException");
+			}
 		}
 
 		/// <inheritdoc/>
@@ -72,6 +99,7 @@ namespace NHibernate.Driver
 			// If changing the default value, keep it in sync with Oracle8iDialect.Configure.
 			UseNPrefixedTypesForUnicode = PropertiesHelper.GetBoolean(Cfg.Environment.OracleUseNPrefixedTypesForUnicode, settings, false);
 			UseBinaryFloatingPointTypes = PropertiesHelper.GetBoolean(Cfg.Environment.OracleUseBinaryFloatingPointTypes, settings, false);
+			SuppressDecimalInvalidCastException = PropertiesHelper.GetBoolean(Cfg.Environment.OracleSuppressDecimalInvalidCastException, settings, false);
 		}
 
 		/// <summary>
@@ -93,6 +121,8 @@ namespace NHibernate.Driver
 		/// Whether binary_double and binary_float are used for <see cref="double"/> and <see cref="float"/> types.
 		/// </summary>
 		public bool UseBinaryFloatingPointTypes { get; private set; }
+
+		public bool SuppressDecimalInvalidCastException { get; private set; }
 
 		/// <inheritdoc/>
 		public override bool UseNamedPrefixInSql => true;
@@ -168,6 +198,7 @@ namespace NHibernate.Driver
 		protected override void OnBeforePrepare(DbCommand command)
 		{
 			base.OnBeforePrepare(command);
+			command = UnwrapDbCommand(command);
 
 			// need to explicitly turn on named parameter binding
 			// http://tgaw.wordpress.com/2006/03/03/ora-01722-with-odp-and-command-parameters/
@@ -188,6 +219,27 @@ namespace NHibernate.Driver
 			outCursor.Direction = detail.HasReturn ? ParameterDirection.ReturnValue : ParameterDirection.Output;
 
 			command.Parameters.Insert(0, outCursor);
+		}
+
+		public override DbCommand CreateCommand()
+		{
+			var command = base.CreateCommand();
+			if (!SuppressDecimalInvalidCastException)
+			{
+				return command;
+			}
+
+			if (_suppressDecimalInvalidCastExceptionSetter == null)
+			{
+				throw new NotSupportedException("OracleDataReader.SuppressGetDecimalInvalidCastException property is supported only in ODP.NET version 19.10 or newer");
+			}
+
+			return new OracleDbCommandWrapper(command, _suppressDecimalInvalidCastExceptionSetter);
+		}
+
+		public override DbCommand UnwrapDbCommand(DbCommand command)
+		{
+			return command is OracleDbCommandWrapper wrapper ? wrapper.Command : command;
 		}
 
 		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass => typeof(OracleDataClientBatchingBatcherFactory);

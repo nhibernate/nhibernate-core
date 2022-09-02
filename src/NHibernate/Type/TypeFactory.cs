@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
@@ -107,10 +108,7 @@ namespace NHibernate.Type
 		/// <param name="aliases">The additional aliases to map to the type. Use <see cref="EmptyAliases"/> if none.</param>
 		public static void RegisterType(System.Type systemType, IType nhibernateType, IEnumerable<string> aliases)
 		{
-			var typeAliases = new List<string>(aliases);
-			typeAliases.AddRange(GetClrTypeAliases(systemType));
-
-			RegisterType(nhibernateType, typeAliases);
+			RegisterType(nhibernateType, GetClrTypeAliases(systemType, aliases));
 		}
 
 		/// <summary>
@@ -138,10 +136,7 @@ namespace NHibernate.Type
 			GetNullableTypeWithLengthOrScale ctorLengthOrScale,
 			bool @override)
 		{
-			var typeAliases = new List<string>(aliases);
-			typeAliases.AddRange(GetClrTypeAliases(systemType));
-
-			RegisterType(nhibernateType, typeAliases, ctorLengthOrScale, @override);
+			RegisterType(nhibernateType, GetClrTypeAliases(systemType, aliases), ctorLengthOrScale, @override);
 		}
 
 		/// <summary>
@@ -169,20 +164,16 @@ namespace NHibernate.Type
 			GetNullableTypeWithPrecision ctorPrecision,
 			bool @override)
 		{
-			var typeAliases = new List<string>(aliases);
-			typeAliases.AddRange(GetClrTypeAliases(systemType));
-
-			RegisterType(nhibernateType, typeAliases, ctorPrecision, @override);
+			RegisterType(nhibernateType, GetClrTypeAliases(systemType, aliases), ctorPrecision, @override);
 		}
 
-		private static IEnumerable<string> GetClrTypeAliases(System.Type systemType)
+		private static List<string> GetClrTypeAliases(System.Type systemType, IEnumerable<string> aliases)
 		{
-			var typeAliases =
-				new List<string>
-				{
-					systemType.FullName,
-					systemType.AssemblyQualifiedName
-				};
+			var typeAliases = new List<string>();
+			typeAliases.AddRange(aliases);
+			typeAliases.Add(systemType.FullName);
+			typeAliases.Add(systemType.AssemblyQualifiedName);
+
 			if (systemType.IsValueType)
 			{
 				// Also register Nullable<systemType> for ValueTypes
@@ -195,8 +186,7 @@ namespace NHibernate.Type
 
 		private static void RegisterType(IType nhibernateType, IEnumerable<string> aliases)
 		{
-			var typeAliases = new List<string>(aliases) { nhibernateType.Name };
-			foreach (var alias in typeAliases)
+			foreach (var alias in GetTypeAliases(nhibernateType, aliases))
 			{
 				RegisterTypeAlias(nhibernateType, alias);
 			}
@@ -204,8 +194,7 @@ namespace NHibernate.Type
 
 		private static void RegisterType(IType nhibernateType, IEnumerable<string> aliases, GetNullableTypeWithLengthOrScale ctorLengthOrScale, bool @override = false)
 		{
-			var typeAliases = new List<string>(aliases) { nhibernateType.Name };
-			foreach (var alias in typeAliases)
+			foreach (var alias in GetTypeAliases(nhibernateType, aliases))
 			{
 				RegisterTypeAlias(nhibernateType, alias);
 				if (@override)
@@ -222,8 +211,7 @@ namespace NHibernate.Type
 
 		private static void RegisterType(IType nhibernateType, IEnumerable<string> aliases, GetNullableTypeWithPrecision ctorPrecision, bool @override = false)
 		{
-			var typeAliases = new List<string>(aliases) { nhibernateType.Name };
-			foreach (var alias in typeAliases)
+			foreach (var alias in GetTypeAliases(nhibernateType, aliases))
 			{
 				RegisterTypeAlias(nhibernateType, alias);
 				if (@override)
@@ -236,6 +224,11 @@ namespace NHibernate.Type
 						"An item with the same key has already been added to getTypeDelegatesWithPrecision.");
 				}
 			}
+		}
+
+		private static IEnumerable<string> GetTypeAliases(IType nhibernateType, IEnumerable<string> aliases)
+		{
+			return GetClrTypeAliases(nhibernateType.GetType(), aliases.Append(nhibernateType.Name));
 		}
 
 		private static void RegisterTypeAlias(IType nhibernateType, string alias)

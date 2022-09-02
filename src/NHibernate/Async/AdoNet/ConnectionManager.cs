@@ -25,6 +25,25 @@ namespace NHibernate.AdoNet
 	public partial class ConnectionManager : ISerializable, IDeserializationCallback
 	{
 
+		/// <summary>
+		/// Get a new opened connection. The caller is responsible for closing it.
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>An opened connection.</returns>
+		public Task<DbConnection> GetNewConnectionAsync(CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<DbConnection>(cancellationToken);
+			}
+			return _connectionAccess.GetConnectionAsync(cancellationToken);
+		}
+
+		/// <summary>
+		/// Get the managed connection.
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>An opened connection.</returns>
 		public Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
 		{
 			if (!_allowConnectionUsage)
@@ -62,7 +81,7 @@ namespace NHibernate.AdoNet
 				{
 					if (_ownConnection)
 					{
-						_connection = await (_connectionAccess.GetConnectionAsync(cancellationToken)).ConfigureAwait(false);
+						_connection = await (GetNewConnectionAsync(cancellationToken)).ConfigureAwait(false);
 						// Will fail if the connection is already enlisted in another transaction.
 						// Probable case: nested transaction scope with connection auto-enlistment enabled.
 						// That is an user error.

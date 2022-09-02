@@ -42,15 +42,7 @@
 		</zip>
 	</target>
 
-	<target name="apidocbuilder-project" depends="init">
-		<copy file="NHibernate.shfbproj.template" tofile="NHibernate.shfbproj" overwrite="true">
-			<filterchain>
-				<expandproperties />
-			</filterchain>
-		</copy>
-	</target>
-
-	<target name="api" depends="init apidocbuilder-project" description="Generates the API documentation (in MSDN style if available)">
+	<target name="api" depends="init" description="Generates the API documentation (in MSDN style if available)">
 		<uptodate property="api.uptodate">
 			<sourcefiles>
 				<include name="${root.dir}/src/NHibernate/bin/${build.config}/net461/*.dll" />
@@ -65,8 +57,12 @@
 		<echo if="${api.uptodate}">API documentation is up to date, skipping generation step.</echo>
 
 		<if test="${not api.uptodate}">
-			<exec program="${path::combine(tools.dir, 'actual_msbuild.cmd')}">
-				<arg line="NHibernate.shfbproj" />
+			<exec program="dotnet">
+				<arg value="build" />
+				<arg value="/p:HelpFileVersion=&quot;${project.version}&quot;" />
+				<arg value="/p:OutputPath=&quot;${doc.out.dir}&quot;" />
+				<arg value="/p:Configuration=&quot;${build.config}&quot;" />
+				<arg value="NHibernate.shfbproj" />
 			</exec>
 		</if>
 	</target>

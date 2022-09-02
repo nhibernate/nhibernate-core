@@ -57,15 +57,15 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void Type(IType persistentType)
 		{
-			if (persistentType != null)
-			{
-				discriminatorMapping.type = persistentType.Name;
-			}
+			if (persistentType is not IDiscriminatorType discriminatorType)
+				throw new ArgumentOutOfRangeException(nameof(persistentType), "Expected type implementing " + nameof(IDiscriminatorType));
+
+			Type(discriminatorType);
 		}
 
 		public void Type(IDiscriminatorType persistentType)
 		{
-			Type(persistentType.GetType());
+			discriminatorMapping.type = persistentType.Name;
 		}
 
 		public void Type<TPersistentType>() where TPersistentType : IDiscriminatorType

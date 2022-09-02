@@ -98,6 +98,16 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void SubClassAsUnamppedInterfaceStringEnumTest()
+		{
+			AssertResults(
+				new Dictionary<string, Predicate<IType>> {{"0", o => o is EnumStoredAsStringType}},
+				db.Animals.Where(o => o.Children.OfType<IReptile>().Any(r => r.Enum1 == EnumStoredAsString.Unspecified)),
+				db.Animals.Where(o => o.Children.OfType<IReptile>().Any(r => EnumStoredAsString.Unspecified == r.Enum1))
+				);
+		}
+
+		[Test]
 		public void EqualsMethodStringTest()
 		{
 			AssertResults(
