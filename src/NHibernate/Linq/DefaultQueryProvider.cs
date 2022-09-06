@@ -265,7 +265,7 @@ namespace NHibernate.Linq
 				}
 				else
 				{
-					query.SetParameter(parameter.Name, parameter.Value);
+					query.SetParameter(parameter.Name, parameter.Value, parameter.Type, parameter.IsGuessedType);
 				}
 			}
 		}

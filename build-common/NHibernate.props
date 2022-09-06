@@ -15,7 +15,7 @@
     <FileVersion Condition="'$(FileVersion)' == ''">$(VersionPrefix).0</FileVersion>
 
     <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net48;net6.0</NhAppTargetFrameworks>
-    <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;netcoreapp2.0;netstandard2.0</NhLibTargetFrameworks>
+    <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;netcoreapp2.0;netstandard2.0;netstandard2.1</NhLibTargetFrameworks>
     <NhNetFx>false</NhNetFx>
     <NhNetFx Condition="$(TargetFramework.StartsWith('net4'))">true</NhNetFx>
     <!-- Visual Basic requires to use coma (,) as a separator, other project types - semicolon (;) -->
