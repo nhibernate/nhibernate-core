@@ -15,7 +15,7 @@ namespace NHibernate.Linq.Visitors
 		public static bool IsDynamicComponentDictionaryGetter(MethodInfo method, Expression targetObject, IEnumerable<Expression> arguments, ISessionFactory sessionFactory, out string memberName)
 		{
 			return TryGetPotentialDynamicComponentDictionaryMember(method, targetObject, arguments, out memberName)
-				&& ExpressionsHelper.TryGetMappedType((ISessionFactoryImplementor) sessionFactory, targetObject, out var mappedType, out var _, out var _, out var _)
+				&& ExpressionsHelper.TryGetMappedType((ISessionFactoryImplementor) sessionFactory, targetObject, out var mappedType, out _, out _, out _)
 				// IDictionary can be mapped as collection or component - is it mapped as a component?
 				&& mappedType.IsComponentType;
 		}
