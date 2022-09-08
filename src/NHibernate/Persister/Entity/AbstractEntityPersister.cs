@@ -2516,7 +2516,13 @@ namespace NHibernate.Persister.Entity
 			return CreateEntityLoader(lockMode, CollectionHelper.EmptyDictionary<string, IFilter>());
 		}
 
+		//TODO 6.0: Remove (replaced by overload with optional parameter) 
 		protected bool Check(int rows, object id, int tableNumber, IExpectation expectation, DbCommand statement)
+		{
+			return Check(rows, id, tableNumber, expectation, statement, false);
+		}
+
+		protected bool Check(int rows, object id, int tableNumber, IExpectation expectation, DbCommand statement, bool forceThrowStaleException = false)
 		{
 			try
 			{
@@ -2524,13 +2530,15 @@ namespace NHibernate.Persister.Entity
 			}
 			catch (StaleStateException sse)
 			{
-				if (!IsNullableTable(tableNumber))
+				if (forceThrowStaleException || !IsNullableTable(tableNumber))
 				{
 					if (Factory.Statistics.IsStatisticsEnabled)
 						Factory.StatisticsImplementor.OptimisticFailure(EntityName);
 
 					throw new StaleObjectStateException(EntityName, id, sse);
 				}
+
+				return false;
 			}
 			catch (TooManyRowsAffectedException ex)
 			{
@@ -2592,7 +2600,7 @@ namespace NHibernate.Persister.Entity
 					hasColumns = true;
 				}
 			}
-			else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && oldFields != null)
+			else if (IsPropertyBasedOptimisticLocking(oldFields))
 			{
 				// we are using "all" or "dirty" property-based optimistic locking
 				bool[] includeInWhere =
@@ -2634,6 +2642,11 @@ namespace NHibernate.Persister.Entity
 			}
 
 			return hasColumns ? updateBuilder.ToSqlCommandInfo() : null;
+		}
+
+		private bool IsPropertyBasedOptimisticLocking(object[] oldFields)
+		{
+			return entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && oldFields != null;
 		}
 
 		private bool CheckVersion(bool[] includeProperty)
@@ -3219,7 +3232,7 @@ namespace NHibernate.Persister.Entity
 						if (CheckVersion(includeProperty))
 							VersionType.NullSafeSet(statement, oldVersion, index, session);
 					}
-					else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && oldFields != null)
+					else if (IsPropertyBasedOptimisticLocking(oldFields))
 					{
 						bool[] versionability = PropertyVersionability;
 						bool[] includeOldField = OptimisticLockMode == Versioning.OptimisticLock.All
@@ -3248,7 +3261,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						return Check(session.Batcher.ExecuteNonQuery(statement), id, j, expectation, statement);
+						return Check(session.Batcher.ExecuteNonQuery(statement), id, j, expectation, statement, IsPropertyBasedOptimisticLocking(oldFields));
 					}
 				}
 				catch (StaleStateException e)
@@ -3352,7 +3365,7 @@ namespace NHibernate.Persister.Entity
 					{
 						VersionType.NullSafeSet(statement, version, index, session);
 					}
-					else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && loadedState != null)
+					else if (IsPropertyBasedOptimisticLocking(loadedState))
 					{
 						bool[] versionability = PropertyVersionability;
 						IType[] types = PropertyTypes;
@@ -3376,7 +3389,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						Check(session.Batcher.ExecuteNonQuery(statement), tableId, j, expectation, statement);
+						Check(session.Batcher.ExecuteNonQuery(statement), tableId, j, expectation, statement, IsPropertyBasedOptimisticLocking(loadedState));
 					}
 				}
 				catch (Exception e)
