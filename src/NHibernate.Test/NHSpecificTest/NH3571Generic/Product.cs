@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH3571Generic
 {
-	public class Product
+	public class Product : IProduct
 	{
 		public Product()
 		{
