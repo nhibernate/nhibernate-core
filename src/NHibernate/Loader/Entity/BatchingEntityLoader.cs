@@ -13,41 +13,23 @@ namespace NHibernate.Loader.Entity
 	/// SQL <c>where</c> clause.
 	/// </summary>
 	/// <seealso cref="EntityLoader"/>
-	public partial class BatchingEntityLoader : IUniqueEntityLoader
+	public partial class BatchingEntityLoader : AbstractBatchingEntityLoader
 	{
 		private readonly Loader[] loaders;
 		private readonly int[] batchSizes;
-		private readonly IEntityPersister persister;
 		private readonly IType idType;
 
-		public BatchingEntityLoader(IEntityPersister persister, int[] batchSizes, Loader[] loaders)
+		public BatchingEntityLoader(IEntityPersister persister, int[] batchSizes, Loader[] loaders) : base(persister)
 		{
 			this.batchSizes = batchSizes;
 			this.loaders = loaders;
-			this.persister = persister;
 			idType = persister.IdentifierType;
 		}
 
-		private object GetObjectFromList(IList results, object id, ISessionImplementor session)
-		{
-			// get the right object from the list ... would it be easier to just call getEntity() ??
-			foreach (object obj in results)
-			{
-				bool equal = idType.IsEqual(id, session.GetContextEntityIdentifier(obj), session.Factory);
-
-				if (equal)
-				{
-					return obj;
-				}
-			}
-
-			return null;
-		}
-
-		public object Load(object id, object optionalObject, ISessionImplementor session)
+		public override object Load(object id, object optionalObject, ISessionImplementor session)
 		{
 			object[] batch =
-				session.PersistenceContext.BatchFetchQueue.GetEntityBatch(persister, id, batchSizes[0]);
+				session.PersistenceContext.BatchFetchQueue.GetEntityBatch(Persister, id, batchSizes[0]);
 
 			for (int i = 0; i < batchSizes.Length - 1; i++)
 			{
@@ -58,7 +40,7 @@ namespace NHibernate.Loader.Entity
 					Array.Copy(batch, 0, smallBatch, 0, smallBatchSize);
 
 					IList results =
-						loaders[i].LoadEntityBatch(session, smallBatch, idType, optionalObject, persister.EntityName, id, persister);
+						loaders[i].LoadEntityBatch(session, smallBatch, idType, optionalObject, Persister.EntityName, id, Persister);
 
 					return GetObjectFromList(results, id, session); //EARLY EXIT
 				}

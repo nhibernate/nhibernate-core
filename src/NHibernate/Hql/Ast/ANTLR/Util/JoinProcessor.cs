@@ -150,14 +150,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			SqlString frag = joinFragment.ToFromFragmentString;
 			SqlString whereFrag = joinFragment.ToWhereFragmentString;
 
-			// If the from element represents a JOIN_FRAGMENT and it is
-			// a theta-style join, convert its type from JOIN_FRAGMENT
-			// to FROM_FRAGMENT
-			if ( fromElement.Type == HqlSqlWalker.JOIN_FRAGMENT &&
-					( join.IsThetaStyle || SqlStringHelper.IsNotEmpty( whereFrag ) ) ) 
+			// If the from element represents a JOIN_FRAGMENT or ENTITY_JOIN and it is
+			// a theta-style join, convert its type to FROM_FRAGMENT.
+			if ((fromElement.Type == HqlSqlWalker.JOIN_FRAGMENT || fromElement.Type == HqlSqlWalker.ENTITY_JOIN) &&
+					(join.IsThetaStyle || SqlStringHelper.IsNotEmpty(whereFrag))) 
 			{
 				fromElement.Type = HqlSqlWalker.FROM_FRAGMENT;
-				fromElement.JoinSequence.SetUseThetaStyle( true ); // this is used during SqlGenerator processing
+				// This is used during SqlGenerator processing.
+				fromElement.JoinSequence.SetUseThetaStyle(true);
 			}
 
 			// If there is a FROM fragment and the FROM element is an explicit, then add the from part.

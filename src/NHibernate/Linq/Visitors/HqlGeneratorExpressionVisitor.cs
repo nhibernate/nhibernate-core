@@ -228,7 +228,7 @@ possible solutions:
 
 		private HqlTreeNode VisitInvocationExpression(InvocationExpression expression)
 		{
-#if NETCOREAPP2_0_OR_GREATER
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 			if (ExpressionsHelper.TryGetDynamicMemberBinder(expression, out var binder))
 			{
 				return _hqlTreeBuilder.Dot(

@@ -33,7 +33,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			var translators = polymorphicParsers
 				.ToArray(hql => queryExpression is NhLinqExpression linqExpression
-							? new QueryTranslatorImpl(queryIdentifier, hql, filters, factory, linqExpression.NamedParameters)
+							? new QueryTranslatorImpl(queryIdentifier, hql, filters, factory, linqExpression.GetNamedParameterTypes())
 							: new QueryTranslatorImpl(queryIdentifier, hql, filters, factory));
 
 			foreach (var translator in translators)

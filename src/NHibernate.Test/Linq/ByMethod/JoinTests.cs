@@ -99,6 +99,23 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 		}
 
+		[Test(Description = "GH-3104")]
+		public void LeftJoinExtensionMethodWithInnerJoinAfter()
+		{
+			var animals = db.Animals
+						   .LeftJoin(db.Mammals, o => o.Id, i => i.Id, (o, i) => new { animal = o, mammalLeft1 = i })
+						   .LeftJoin(db.Mammals, x => x.mammalLeft1.Id, y => y.Id, (o, i) => new { o.animal, o.mammalLeft1, mammalLeft2 = i })
+						   .Join(db.Mammals, o => o.mammalLeft2.Id, y => y.Id, (o, i) => new { o.animal, o.mammalLeft1, o.mammalLeft2, mammalInner = i })
+						   .Where(x => x.mammalLeft1.SerialNumber.StartsWith("9"))
+						   .Where(x => x.mammalLeft2.SerialNumber.StartsWith("9"))
+						   .Where(x => x.animal.SerialNumber.StartsWith("9"))
+						   .Where(x => x.mammalInner.SerialNumber.StartsWith("9"))
+						   .Select(x => new { SerialNumber = x.animal.SerialNumber })
+						   .ToList();
+
+			Assert.That(animals.Count, Is.EqualTo(1));
+		}
+
 		[Test]
 		public void LeftJoinExtensionMethodWithOuterReferenceInWhereClauseOnly()
 		{
@@ -285,6 +302,19 @@ namespace NHibernate.Test.Linq.ByMethod
 			var result = (from o in db.Animals
 						from o2 in db.Animals.Where(x => x.BodyWeight > 50)
 						select new {o, o2}).Take(1).ToList();
+		}
+
+		[Test]
+		public void CanInnerJoinOnEntityWithSubclasses()
+		{
+			//inner joined animal is not used in output (no need to join subclasses)
+			var resultsFromOuter1 = db.Animals.Join(db.Animals, o => o.Id, i => i.Id, (o, i) => o).Take(1).ToList();
+
+			//inner joined mammal is not used in output (but subclass join is needed for mammal)
+			var resultsFromOuter2 = db.Animals.Join(db.Mammals, o => o.Id, i => i.Id, (o, i) => o).Take(1).ToList();
+
+			//inner joined animal is used in output (all subclass joins are required)
+			var resultsFromInner1 = db.Animals.Join(db.Animals, o => o.Id, i => i.Id, (o, i) => i).Take(1).ToList();
 		}
 
 		[Test(Description = "GH-2580")]

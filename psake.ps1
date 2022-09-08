@@ -103,6 +103,7 @@ Task Build {
     Exec { 
         dotnet `
             build ./src/NHibernate.sln `
+            -m:1 `
             -c Release
     }
 }

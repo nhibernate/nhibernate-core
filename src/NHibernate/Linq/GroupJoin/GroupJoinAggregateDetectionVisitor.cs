@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Visitors;
-using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 
@@ -63,13 +61,13 @@ namespace NHibernate.Linq.GroupJoin
 
 		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
-			var fromClause = (FromClauseBase) expression.ReferencedQuerySource;
-
-			var querySourceReference = fromClause.FromExpression as QuerySourceReferenceExpression;
-			if (querySourceReference != null)
+			if (!(expression.ReferencedQuerySource is FromClauseBase fromClause))
 			{
-				var groupJoinClause = querySourceReference.ReferencedQuerySource as GroupJoinClause;
-				if (groupJoinClause != null && _groupJoinClauses.Contains(groupJoinClause))
+			}
+			else if (fromClause.FromExpression is QuerySourceReferenceExpression querySourceReference)
+			{
+				if (querySourceReference.ReferencedQuerySource is GroupJoinClause groupJoinClause &&
+				    _groupJoinClauses.Contains(groupJoinClause))
 				{
 					if (_inAggregate.FlagIsFalse)
 					{

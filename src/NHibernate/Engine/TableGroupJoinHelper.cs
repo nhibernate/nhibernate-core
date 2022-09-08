@@ -18,7 +18,7 @@ namespace NHibernate.Engine
 	{
 		internal static bool ProcessAsTableGroupJoin(IReadOnlyList<IJoin> tableGroupJoinables, SqlString[] withClauseFragments, bool includeAllSubclassJoins, JoinFragment joinFragment, Func<string, bool> isSubclassIncluded, ISessionFactoryImplementor sessionFactoryImplementor)
 		{
-			if (!NeedsTableGroupJoin(tableGroupJoinables, withClauseFragments, includeAllSubclassJoins))
+			if (!NeedsTableGroupJoin(tableGroupJoinables, withClauseFragments, includeAllSubclassJoins, isSubclassIncluded))
 				return false;
 
 			var first = tableGroupJoinables[0];
@@ -58,7 +58,7 @@ namespace NHibernate.Engine
 		}
 
 		// detect cases when withClause is used on multiple tables or when join keys depend on subclass columns
-		private static bool NeedsTableGroupJoin(IReadOnlyList<IJoin> joins, SqlString[] withClauseFragments, bool includeSubclasses)
+		private static bool NeedsTableGroupJoin(IReadOnlyList<IJoin> joins, SqlString[] withClauseFragments, bool includeSubclasses, Func<string, bool> isSubclassIncluded)
 		{
 			bool hasWithClause = withClauseFragments.Any(x => SqlStringHelper.IsNotEmpty(x));
 
@@ -69,7 +69,7 @@ namespace NHibernate.Engine
 			foreach (var join in joins)
 			{
 				var entityPersister = GetEntityPersister(join.Joinable);
-				if (entityPersister?.HasSubclassJoins(includeSubclasses) != true)
+				if (entityPersister?.HasSubclassJoins(includeSubclasses && isSubclassIncluded(join.Alias)) != true)
 					continue;
 
 				if (hasWithClause)
