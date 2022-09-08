@@ -110,7 +110,7 @@ namespace NHibernate.Linq.Visitors
 				_collectionParameters.Add(collectionParameter);
 			}
 
-			if (VisitorUtil.TryGetPotentialDynamicComponentDictionaryMember(expression, out var _))
+			if (VisitorUtil.TryGetPotentialDynamicComponentDictionaryMember(expression, out _))
 			{
 				return expression;
 			}
