@@ -4,8 +4,9 @@ using System.Linq.Expressions;
 using System.Collections;
 using System.Reflection;
 using NHibernate.Util;
-using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing.ExpressionVisitors;
+using NHibernate.Engine;
+using System;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -13,55 +14,21 @@ namespace NHibernate.Linq.Visitors
 	{
 		public static bool IsDynamicComponentDictionaryGetter(MethodInfo method, Expression targetObject, IEnumerable<Expression> arguments, ISessionFactory sessionFactory, out string memberName)
 		{
-			if (!TryGetPotentialDynamicComponentDictionaryMember(method, targetObject, arguments, out memberName))
-			{
-				return false;
-			}
-
-			var member = (MemberExpression) targetObject;
-			var memberPath = member.Member.Name;
-			var metaData = sessionFactory.GetClassMetadata(member.Expression.Type);
-
-			//Walk backwards if the owning member is not a mapped class (i.e a possible Component)
-			targetObject = member.Expression;
-			while (metaData == null && targetObject != null &&
-			       (targetObject.NodeType == ExpressionType.MemberAccess || targetObject.NodeType == ExpressionType.Parameter ||
-			        targetObject is QuerySourceReferenceExpression))
-			{
-				System.Type memberType;
-				if (targetObject is QuerySourceReferenceExpression)
-				{
-					var querySourceExpression = (QuerySourceReferenceExpression) targetObject;
-					memberType = querySourceExpression.Type;
-				}
-				else if (targetObject.NodeType == ExpressionType.Parameter)
-				{
-					var parameterExpression = (ParameterExpression) targetObject;
-					memberType = parameterExpression.Type;
-				}
-				else //targetObject.NodeType == ExpressionType.MemberAccess
-				{
-					var memberExpression = ((MemberExpression) targetObject);
-					memberPath = memberExpression.Member.Name + "." + memberPath;
-					memberType = memberExpression.Type;
-					targetObject = memberExpression.Expression;
-				}
-				metaData = sessionFactory.GetClassMetadata(memberType);
-			}
-
-			if (metaData == null)
-				return false;
-
-			// IDictionary can be mapped as collection or component - is it mapped as a component?
-			var propertyType = metaData.GetPropertyType(memberPath);
-			return (propertyType != null && propertyType.IsComponentType);
+			return TryGetPotentialDynamicComponentDictionaryMember(method, targetObject, arguments, out memberName)
+				&& ExpressionsHelper.TryGetMappedType((ISessionFactoryImplementor) sessionFactory, targetObject, out var mappedType, out var _, out var _, out var _)
+				// IDictionary can be mapped as collection or component - is it mapped as a component?
+				&& mappedType.IsComponentType;
 		}
 
+		// Since 5.4
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public static bool IsDynamicComponentDictionaryGetter(MethodCallExpression expression, ISessionFactory sessionFactory, out string memberName)
 		{
 			return IsDynamicComponentDictionaryGetter(expression.Method, expression.Object, expression.Arguments, sessionFactory, out memberName);
 		}
 
+		// Since 5.4
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public static bool IsDynamicComponentDictionaryGetter(MethodCallExpression expression, ISessionFactory sessionFactory)
 		{
 			string memberName;
