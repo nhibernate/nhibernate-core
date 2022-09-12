@@ -69,8 +69,8 @@ namespace NHibernate.Test.Criteria.Lambda
 			int? v = null;
 			Expression<Func<int>> expression = () => v.Value;
 
-			Assert.Throws<InvalidCastException>(() => GetValue(expression));
-			Assert.Throws<InvalidCastException>(() => expression.Compile().Invoke());
+			Assert.Throws<InvalidOperationException>(() => GetValue(expression));
+			Assert.Throws<InvalidOperationException>(() => expression.Compile().Invoke());
 		}
 
 		[Test]
