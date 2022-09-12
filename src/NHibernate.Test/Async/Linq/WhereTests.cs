@@ -737,6 +737,28 @@ namespace NHibernate.Test.Linq
 			Assert.That(query.Count, Is.EqualTo(3));
 		}
 
+		[Test(Description = "GH-3156")]
+		public void CanUseNullableWithoutAValueAsync()
+		{
+			bool? isActive = null;
+
+			Assert.DoesNotThrowAsync(
+				async () => _ = await (session.Query<Role>()
+				             .Where(r => !isActive.HasValue || r.IsActive == isActive.Value)
+				             .ToListAsync()));
+		}
+
+		[Test(Description = "GH-3156")]
+		public void CanUseNullableWithoutAValue2Async()
+		{
+			bool? isActive = null;
+
+			Assert.DoesNotThrowAsync(
+				async () => _ = await (session.Query<Role>()
+				                 .Where(r => isActive == null || r.IsActive == isActive.Value)
+				                 .ToListAsync()));
+		}
+
 		[Test(Description = "NH-2375")]
 		public async Task OfTypeWithWhereAndProjectionAsync()
 		{
