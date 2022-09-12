@@ -42,6 +42,36 @@ namespace NHibernate.Test.Criteria.Lambda
 
 			Assert.AreEqual(expected, actual);
 		}
+		
+		[Test]
+		public void NullableNullHasValue()
+		{
+			int? v = null;
+			var actual = GetValue(() => v.HasValue);
+			var expected = v.HasValue;
+
+			Assert.AreEqual(expected, actual);
+		}		
+		
+		[Test]
+		public void NullableNullGetValueOrDefault()
+		{
+			int? v = null;
+			var actual = GetValue(() => v.GetValueOrDefault());
+			var expected = v.GetValueOrDefault();
+
+			Assert.AreEqual(expected, actual);
+		}
+		
+		[Test]
+		public void NullableNullValue()
+		{			
+			int? v = null;
+			Expression<Func<int>> expression = () => v.Value;
+
+			Assert.Throws<InvalidCastException>(() => GetValue(expression));
+			Assert.Throws<InvalidCastException>(() => expression.Compile().Invoke());
+		}
 
 		[Test]
 		public void StaticPropertyInstanceMultipleMethodCall()
