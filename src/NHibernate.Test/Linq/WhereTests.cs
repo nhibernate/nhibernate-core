@@ -738,6 +738,28 @@ namespace NHibernate.Test.Linq
 			Assert.That(query.Count, Is.EqualTo(3));
 		}
 
+		[Test(Description = "GH-3156")]
+		public void CanUseNullableWithoutAValue()
+		{
+			bool? isActive = null;
+
+			Assert.DoesNotThrow(
+				() => _ = session.Query<Role>()
+				             .Where(r => !isActive.HasValue || r.IsActive == isActive.Value)
+				             .ToList());
+		}
+
+		[Test(Description = "GH-3156")]
+		public void CanUseNullableWithoutAValue2()
+		{
+			bool? isActive = null;
+
+			Assert.DoesNotThrow(
+				() => _ = session.Query<Role>()
+				                 .Where(r => isActive == null || r.IsActive == isActive.Value)
+				                 .ToList());
+		}
+
 		[Test(Description = "NH-2375")]
 		public void OfTypeWithWhereAndProjection()
 		{
