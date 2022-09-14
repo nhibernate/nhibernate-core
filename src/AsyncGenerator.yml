@@ -215,6 +215,8 @@
       projectFiles:
       - fileName: LinqExtensionMethods.cs
         projectName: NHibernate
+      - fileName: AsyncExtensions.cs
+        projectName: NHibernate
     typeConversion:
     - conversion: Ignore
       name: ObjectAssert
