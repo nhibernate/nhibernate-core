@@ -142,6 +142,10 @@
     - conversion: Ignore
       name: DependentContext
       containingTypeName: AdoNetWithSystemTransactionFactory
+    asyncExtensionMethods:
+      projectFiles:
+      - fileName: AsyncExtensions.cs
+        projectName: NHibernate
     ignoreSearchForAsyncCounterparts:
     - name: GetFieldValue
     - name: IsDBNull
