@@ -227,5 +227,22 @@ namespace NHibernate.Test.SessionBuilder
 				Assert.AreEqual(sb, fsb, $"{sbType}: Unexpected fluent return after call with {value}");
 			}
 		}
+
+		[Test]
+		public void ThrowWhenUsingSessionFromDisposedFactoryAsync()
+		{
+			using (var session = Sfi.OpenSession())
+			{
+				try
+				{
+					Sfi.Dispose();
+					Assert.That(() => session.GetAsync<Entity>(Guid.Empty), Throws.InstanceOf(typeof(ObjectDisposedException)));
+				}
+				finally
+				{
+					RebuildSessionFactory();
+				}
+			}
+		}
 	}
 }

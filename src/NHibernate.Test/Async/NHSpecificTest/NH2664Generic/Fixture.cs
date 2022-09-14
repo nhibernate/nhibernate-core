@@ -96,6 +96,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2664Generic
 				Assert.That(product.Properties["Name"], Is.EqualTo("First Product"));
 			}
 		}
+		
+		[Test(Description = "GH-3150")]
+		public async Task Query_DynamicComponentByInterfaceAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var product = await ((
+					from p in session.Query<IProduct>()
+					where (string) p.Properties["Name"] == "First Product"
+					select p
+				).SingleAsync());
+
+				Assert.That(product, Is.Not.Null);
+				Assert.That(product.Properties["Name"], Is.EqualTo("First Product"));
+			}
+		}
 
 		[Test]
 		public async Task Multiple_Query_Does_Not_CacheAsync()
