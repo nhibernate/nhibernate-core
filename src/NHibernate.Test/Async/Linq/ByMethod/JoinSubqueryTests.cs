@@ -233,7 +233,7 @@ namespace NHibernate.Test.Linq.ByMethod
 				query = query.Replace(":s", "2").Replace(":t", "2");
 				result = await (session.CreateQuery(query).ListAsync(cancellationToken));
 			}
-			
+
 			Assert.That(result, Has.Count.EqualTo(2));
 			var item = result[0];
 			Assert.That(item, Is.TypeOf<T>());
@@ -938,7 +938,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 			else
 			{
-				Assert.That(GetTotalOccurrences(selectSql, ","), Is.EqualTo(27));
+				Assert.That(GetTotalOccurrences(selectSql, ","), Is.EqualTo(29));
 				Assert.That(array[0], Is.TypeOf<Order>().And.Property("OrderId").EqualTo(10249));
 				Assert.That(array[1], Is.TypeOf<Order>().And.Property("OrderId").EqualTo(10248));
 				Assert.That(array[1], Is.TypeOf<Order>().And.Property("OrderId").EqualTo(10248));
