@@ -320,7 +320,6 @@ methodRules:
   name: Obsolete
 - filters:
   - containingTypeName: AsyncExtensions
-    name: BeginTransactionAsync
   name: BeginTransactionAsync
 typeRules:
 - filters:
