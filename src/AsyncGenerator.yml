@@ -1,6 +1,6 @@
 projects:
 - filePath: NHibernate/NHibernate.csproj
-  targetFramework: netcoreapp2.0
+  targetFramework: netcoreapp2.1
   concurrentRun: true
   applyChanges: true
   suppressDiagnosticFailures:
