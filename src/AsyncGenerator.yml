@@ -142,6 +142,9 @@
     - conversion: Ignore
       name: DependentContext
       containingTypeName: AdoNetWithSystemTransactionFactory
+    alwaysAwait:
+    - name BeginTransactionAsync
+      containingTypeName: AsyncExtensions
     asyncExtensionMethods:
       projectFiles:
       - fileName: AsyncExtensions.cs
