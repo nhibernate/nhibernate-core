@@ -1,6 +1,6 @@
 projects:
 - filePath: NHibernate/NHibernate.csproj
-  targetFramework: netcoreapp2.1
+  targetFramework: netcoreapp2.0
   concurrentRun: true
   applyChanges: true
   suppressDiagnosticFailures:
@@ -134,7 +134,7 @@ projects:
     - conversion: ToAsync
       rule: TransactionCompletion
     alwaysAwait:
-    - rule: BeginTransactionAsync
+    - name: BeginTransaction
     typeConversion:
     - conversion: Ignore
       name: EnumerableImpl
