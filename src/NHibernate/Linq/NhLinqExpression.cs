@@ -113,12 +113,18 @@ namespace NHibernate.Linq
 			return DuplicateTree(ExpressionToHqlTranslationResults.Statement.AstNode);
 		}
 
-		internal void CopyExpressionTranslation(NhLinqExpression other)
+		internal void CopyExpressionTranslation(NhLinqExpressionCache cache)
 		{
-			ExpressionToHqlTranslationResults = other.ExpressionToHqlTranslationResults;
-			ParameterDescriptors = other.ParameterDescriptors;
+			ExpressionToHqlTranslationResults = cache.ExpressionToHqlTranslationResults;
+			ParameterDescriptors = cache.ParameterDescriptors;
 			// Type could have been overridden by translation.
-			Type = other.Type;
+			Type = cache.Type;
+		}
+
+		internal IDictionary<string, Tuple<IType, bool>> GetNamedParameterTypes()
+		{
+			return _constantToParameterMap.Values.Distinct()
+				.ToDictionary(p => p.Name, p => System.Tuple.Create(p.Type, p.IsGuessedType));
 		}
 
 		private static IASTNode DuplicateTree(IASTNode ast)

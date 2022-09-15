@@ -110,7 +110,7 @@ namespace NHibernate.Linq.Visitors
 				_collectionParameters.Add(collectionParameter);
 			}
 
-			if (VisitorUtil.IsDynamicComponentDictionaryGetter(expression, _sessionFactory))
+			if (VisitorUtil.TryGetPotentialDynamicComponentDictionaryMember(expression, out _))
 			{
 				return expression;
 			}
@@ -118,7 +118,7 @@ namespace NHibernate.Linq.Visitors
 			return base.VisitMethodCall(expression);
 		}
 
-#if NETCOREAPP2_0_OR_GREATER
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 		protected override Expression VisitInvocation(InvocationExpression expression)
 		{
 			if (ExpressionsHelper.TryGetDynamicMemberBinder(expression, out _))

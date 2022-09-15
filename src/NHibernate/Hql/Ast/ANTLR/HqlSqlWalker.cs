@@ -58,7 +58,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly LiteralProcessor _literalProcessor;
 
 		private readonly IDictionary<string, string> _tokenReplacements;
-		private readonly IDictionary<string, NamedParameter> _namedParameters;
 		private readonly IDictionary<IParameterSpecification, IType> _guessedParameterTypes = new Dictionary<IParameterSpecification, IType>();
 
 		private JoinType _impliedJoinType;
@@ -68,7 +67,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private IASTFactory _nodeFactory;
 		private readonly List<AssignmentSpecification> assignmentSpecifications = new List<AssignmentSpecification>();
 		private int numberOfParametersInSetClause;
-		private Stack<int> clauseStack=new Stack<int>();
+		private Stack<int> clauseStack = new Stack<int>();
 		private readonly Dictionary<FromElement, string> _suffixes = new Dictionary<FromElement, string>();
 		private readonly Dictionary<FromElement, string> _collectionSuffixes = new Dictionary<FromElement, string>();
 
@@ -80,24 +79,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 			ITreeNodeStream input,
 			IDictionary<string, string> tokenReplacements,
 			string collectionRole)
-			: this(qti, sfi, input, tokenReplacements, null, collectionRole)
-		{
-		}
-
-		internal HqlSqlWalker(
-			QueryTranslatorImpl qti,
-			ISessionFactoryImplementor sfi,
-			ITreeNodeStream input,
-			IDictionary<string, string> tokenReplacements,
-			IDictionary<string, NamedParameter> namedParameters,
-			string collectionRole)
 			: this(input)
 		{
 			_sessionFactoryHelper = new SessionFactoryHelperExtensions(sfi);
 			_qti = qti;
 			_literalProcessor = new LiteralProcessor(this);
 			_tokenReplacements = tokenReplacements;
-			_namedParameters = namedParameters;
 			_collectionFilterRole = collectionRole;
 		}
 
@@ -324,8 +311,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				IASTNode idSelectExprNode = null;
 
-				var seqGenerator = generator as SequenceGenerator;
-				if (seqGenerator != null)
+				if (generator is SequenceGenerator seqGenerator)
 				{
 					string seqName = seqGenerator.GeneratorKey();
 					string nextval = SessionFactoryHelper.Factory.Dialect.GetSelectSequenceNextValString(seqName);
@@ -1184,17 +1170,17 @@ namespace NHibernate.Hql.Ast.ANTLR
 			);
 
 			parameter.HqlParameterSpecification = paramSpec;
-			if (_namedParameters != null && _namedParameters.TryGetValue(name, out var namedParameter))
+			if (_qti.TryGetNamedParameterType(name, out var type, out var isGuessedType))
 			{
 				// Add the parameter type information so that we are able to calculate functions return types
 				// when the parameter is used as an argument.
-				if (namedParameter.IsGuessedType)
+				if (isGuessedType)
 				{
-					_guessedParameterTypes[paramSpec] = namedParameter.Type;
-					parameter.GuessedType = namedParameter.Type;
+					_guessedParameterTypes[paramSpec] = type;
+					parameter.GuessedType = type;
 				}
 				else
-					parameter.ExpectedType = namedParameter.Type;
+					parameter.ExpectedType = type;
 			}
 
 			_parameters.Add(paramSpec);

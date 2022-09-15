@@ -39,6 +39,7 @@ namespace NHibernate.Cfg
 		public SqlStatementLogger SqlStatementLogger { get; internal set; }
 
 		public int MaximumFetchDepth { get; internal set; }
+		public bool DetectFetchLoops { get; internal set; }
 
 		public IDictionary<string, string> QuerySubstitutions { get; internal set; }
 
