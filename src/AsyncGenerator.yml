@@ -7,7 +7,7 @@
   - pattern: ^.*(Hql\.g).*$
   analyzation:
     methodConversion:
-#TODO 6.0: Remove ignore rule for IQueryBatchItem.ProcessResults
+      #TODO 6.0: Remove ignore rule for IQueryBatchItem.ProcessResults
     - conversion: Ignore
       name: ProcessResults
       containingTypeName: IQueryBatchItem
@@ -62,7 +62,7 @@
     - conversion: Ignore
       name: CloseSessionFromSystemTransaction
       containingTypeName: ISessionImplementor
-# TODO 6.0: Remove ignore rule for IStatelessSession.Close
+      # TODO 6.0: Remove ignore rule for IStatelessSession.Close
     - conversion: Ignore
       name: Close
       containingTypeName: IStatelessSession
@@ -114,7 +114,7 @@
     - conversion: Ignore
       name: GetEnumerator
       containingTypeName: IFutureEnumerable
-# TODO 6.0: Consider if ComputeFlattenedParameters should remain ignored or not
+    # TODO 6.0: Consider if ComputeFlattenedParameters should remain ignored or not
     - conversion: Ignore
       name: ComputeFlattenedParameters
       containingTypeName: SqlQueryImpl
@@ -134,8 +134,7 @@
     - conversion: ToAsync
       rule: TransactionCompletion
     alwaysAwait:
-    - name: BeginTransactionAsync
-      containingTypeName: AsyncExtensions
+    - filter: BeginTransactionAsync
     typeConversion:
     - conversion: Ignore
       name: EnumerableImpl
@@ -319,6 +318,10 @@ methodRules:
 - filters:
   - hasAttributeName: ObsoleteAttribute
   name: Obsolete
+- filters:
+  - containingTypeName: AsyncExtensions
+    name: BeginTransactionAsync
+  name: BeginTransactionAsync
 typeRules:
 - filters:
   - containingAssemblyName: NHibernate
