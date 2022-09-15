@@ -23,9 +23,13 @@ namespace NHibernate.Transaction
 	public partial class AdoTransaction : ITransaction
 	{
 
-		public Task BeginAsync()
+		public Task BeginAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return BeginAsync(IsolationLevel.Unspecified);
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return BeginAsync(IsolationLevel.Unspecified, cancellationToken);
 		}
 
 		/// <summary>
@@ -36,8 +40,9 @@ namespace NHibernate.Transaction
 		/// Thrown if there is any problems encountered while trying to create
 		/// the <see cref="DbTransaction"/>.
 		/// </exception>
-		public async Task BeginAsync(IsolationLevel isolationLevel)
+		public async Task BeginAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (session.BeginProcess())
 			{
 				if (begun)
@@ -59,8 +64,9 @@ namespace NHibernate.Transaction
 
 				try
 				{
-					trans = await (session.Factory.ConnectionProvider.Driver.BeginTransactionAsync(isolationLevel, session.Connection)).ConfigureAwait(false);
+					trans = await (session.Factory.ConnectionProvider.Driver.BeginTransactionAsync(isolationLevel, session.Connection, cancellationToken)).ConfigureAwait(false);
 				}
+				catch (OperationCanceledException) { throw; }
 				catch (HibernateException)
 				{
 					// Don't wrap HibernateExceptions

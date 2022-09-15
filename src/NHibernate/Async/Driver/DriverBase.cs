@@ -22,6 +22,7 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Driver
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	public abstract partial class DriverBase : IDriver, ISqlParameterFormatter
 	{
 
@@ -30,12 +31,21 @@ namespace NHibernate.Driver
 		/// </summary>
 		/// <param name="isolationLevel">The isolation level requested for the transaction.</param>
 		/// <param name="connection">The connection on which to start the transaction.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The started <see cref="DbTransaction" />.</returns>
-		public virtual Task<DbTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, DbConnection connection)
+		public virtual Task<DbTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, DbConnection connection, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<DbTransaction>(cancellationToken);
+			}
 			try
 			{
-				return Task.FromResult<DbTransaction>(BeginTransaction(isolationLevel, connection));
+				if (isolationLevel == IsolationLevel.Unspecified)
+				{
+					return connection.BeginTransactionAsync(cancellationToken);
+				}
+				return connection.BeginTransactionAsync(isolationLevel, cancellationToken);
 			}
 			catch (Exception ex)
 			{

@@ -215,9 +215,11 @@ namespace NHibernate.Impl
 		/// <summary>
 		/// Begin a NHibernate transaction
 		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>A NHibernate transaction</returns>
-		public async Task<ITransaction> BeginTransactionAsync()
+		public async Task<ITransaction> BeginTransactionAsync(CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
 				if (IsTransactionCoordinatorShared)
@@ -227,7 +229,7 @@ namespace NHibernate.Impl
 					Log.Warn("Transaction started on non-root session");
 				}
 
-				return await (ConnectionManager.BeginTransactionAsync()).ConfigureAwait(false);
+				return await (ConnectionManager.BeginTransactionAsync(cancellationToken)).ConfigureAwait(false);
 			}
 		}
 
@@ -235,9 +237,11 @@ namespace NHibernate.Impl
 		/// Begin a NHibernate transaction with the specified isolation level
 		/// </summary>
 		/// <param name="isolationLevel">The isolation level</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>A NHibernate transaction</returns>
-		public async Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel)
+		public async Task<ITransaction> BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
 				if (IsTransactionCoordinatorShared)
@@ -247,7 +251,7 @@ namespace NHibernate.Impl
 					Log.Warn("Transaction started on non-root session");
 				}
 
-				return await (ConnectionManager.BeginTransactionAsync(isolationLevel)).ConfigureAwait(false);
+				return await (ConnectionManager.BeginTransactionAsync(isolationLevel, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 

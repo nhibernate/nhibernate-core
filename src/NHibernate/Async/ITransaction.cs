@@ -22,13 +22,15 @@ namespace NHibernate
 		/// <summary>
 		/// Begin the transaction with the default isolation level.
 		/// </summary>
-		Task BeginAsync();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task BeginAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Begin the transaction with the specified isolation level.
 		/// </summary>
 		/// <param name="isolationLevel">Isolation level of the transaction</param>
-		Task BeginAsync(IsolationLevel isolationLevel);
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task BeginAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Flush the associated <c>ISession</c> and end the unit of work.
