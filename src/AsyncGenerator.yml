@@ -133,6 +133,9 @@
       rule: Cache
     - conversion: ToAsync
       rule: TransactionCompletion
+    alwaysAwait:
+    - name: BeginTransactionAsync
+      containingTypeName: AsyncExtensions
     typeConversion:
     - conversion: Ignore
       name: EnumerableImpl
@@ -142,9 +145,6 @@
     - conversion: Ignore
       name: DependentContext
       containingTypeName: AdoNetWithSystemTransactionFactory
-    alwaysAwait:
-    - name BeginTransactionAsync
-      containingTypeName: AsyncExtensions
     asyncExtensionMethods:
       projectFiles:
       - fileName: AsyncExtensions.cs
