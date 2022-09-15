@@ -33,24 +33,14 @@ namespace NHibernate.Driver
 		/// <param name="connection">The connection on which to start the transaction.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The started <see cref="DbTransaction" />.</returns>
-		public virtual Task<DbTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, DbConnection connection, CancellationToken cancellationToken)
+		public virtual async Task<DbTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, DbConnection connection, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			if (isolationLevel == IsolationLevel.Unspecified)
 			{
-				return Task.FromCanceled<DbTransaction>(cancellationToken);
+				return await (connection.BeginTransactionAsync(cancellationToken)).ConfigureAwait(false);
 			}
-			try
-			{
-				if (isolationLevel == IsolationLevel.Unspecified)
-				{
-					return connection.BeginTransactionAsync(cancellationToken);
-				}
-				return connection.BeginTransactionAsync(isolationLevel, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<DbTransaction>(ex);
-			}
+			return await (connection.BeginTransactionAsync(isolationLevel, cancellationToken)).ConfigureAwait(false);
 		}
 
 		#if NETFX

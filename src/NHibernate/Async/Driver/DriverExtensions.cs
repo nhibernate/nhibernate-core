@@ -30,31 +30,21 @@ namespace NHibernate.Driver
 		/// <param name="connection">The connection on which to start the transaction.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The started <see cref="DbTransaction" />.</returns>
-		public static Task<DbTransaction> BeginTransactionAsync(this IDriver driver, IsolationLevel isolationLevel, DbConnection connection, CancellationToken cancellationToken)
+		public static async Task<DbTransaction> BeginTransactionAsync(this IDriver driver, IsolationLevel isolationLevel, DbConnection connection, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			if (driver is DriverBase driverBase)
 			{
-				return Task.FromCanceled<DbTransaction>(cancellationToken);
+				return await (driverBase.BeginTransactionAsync(isolationLevel, connection, cancellationToken)).ConfigureAwait(false);
 			}
-			try
-			{
-				if (driver is DriverBase driverBase)
-				{
-					return driverBase.BeginTransactionAsync(isolationLevel, connection, cancellationToken);
-				}
 
-				// So long for custom drivers not deriving from DriverBase, they will have to wait for 6.0 if they
-				// need the feature.
-				if (isolationLevel == IsolationLevel.Unspecified)
-				{
-					return connection.BeginTransactionAsync(cancellationToken);
-				}
-				return connection.BeginTransactionAsync(isolationLevel, cancellationToken);
-			}
-			catch (System.Exception ex)
+			// So long for custom drivers not deriving from DriverBase, they will have to wait for 6.0 if they
+			// need the feature.
+			if (isolationLevel == IsolationLevel.Unspecified)
 			{
-				return Task.FromException<DbTransaction>(ex);
+				return await (connection.BeginTransactionAsync(cancellationToken)).ConfigureAwait(false);
 			}
+			return await (connection.BeginTransactionAsync(isolationLevel, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }
