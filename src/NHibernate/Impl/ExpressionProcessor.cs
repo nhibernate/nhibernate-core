@@ -261,18 +261,25 @@ namespace NHibernate.Impl
 					return constantExpression.Value;
 				case ExpressionType.MemberAccess:
 					var memberExpression = (MemberExpression) expression;
+					var instance = findValue(memberExpression.Expression);
+					if (instance == null && memberExpression.Expression != null)
+						break;
+
 					switch (memberExpression.Member.MemberType)
 					{
 						case MemberTypes.Field:
-							return ((FieldInfo) memberExpression.Member).GetValue(findValue(memberExpression.Expression));
+							return ((FieldInfo) memberExpression.Member).GetValue(instance);
 						case MemberTypes.Property:
-							return ((PropertyInfo) memberExpression.Member).GetValue(findValue(memberExpression.Expression));
+							return ((PropertyInfo) memberExpression.Member).GetValue(instance);
 					}
 					break;
 				case ExpressionType.Call:
 					var methodCallExpression = (MethodCallExpression) expression;
 					var args = methodCallExpression.Arguments.ToArray(arg => FindValue(arg));
 					var callingObject = findValue(methodCallExpression.Object);
+					if (callingObject == null && methodCallExpression.Object != null)
+						break;
+
 					return methodCallExpression.Method.Invoke(callingObject, args);
 				case ExpressionType.Convert:
 					var unaryExpression = (UnaryExpression) expression;
