@@ -183,8 +183,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				return;
 			}
 
-			var left = (FromElement)a;
-			var right = (FromElement)next;
+			var right = (FromElement) next;
 
 			///////////////////////////////////////////////////////////////////////
 			// HACK ALERT !!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -210,26 +209,13 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				return;
 			}
-			if (right.Type == ENTITY_JOIN)
+
+			if (right.JoinSequence?.IsThetaStyle == false && right.JoinSequence.JoinCount != 0)
 			{
 				Out(" ");
 			}
-			else if (right.RealOrigin == left || (right.RealOrigin != null && right.RealOrigin == left.RealOrigin))
-			{
-				// right represents a joins originating from left; or
-				// both right and left reprersent joins originating from the same FromElement
-				if (right.JoinSequence != null && right.JoinSequence.IsThetaStyle)
-				{
-					Out(", ");
-				}
-				else
-				{
-					Out(" ");
-				}
-			}
 			else
 			{
-				// these are just two unrelated table references
 				Out(", ");
 			}
 		}

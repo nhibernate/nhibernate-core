@@ -10,6 +10,9 @@ using NHibernate.Exceptions;
 using NHibernate.Hql;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
+using NHibernate.Loader;
+using NHibernate.Loader.Collection;
+using NHibernate.Loader.Entity;
 using NHibernate.MultiTenancy;
 using NHibernate.Transaction;
 
@@ -36,6 +39,7 @@ namespace NHibernate.Cfg
 		public SqlStatementLogger SqlStatementLogger { get; internal set; }
 
 		public int MaximumFetchDepth { get; internal set; }
+		public bool DetectFetchLoops { get; internal set; }
 
 		public IDictionary<string, string> QuerySubstitutions { get; internal set; }
 
@@ -102,6 +106,8 @@ namespace NHibernate.Cfg
 
 		public ICacheProvider CacheProvider { get; internal set; }
 
+		public ICacheReadWriteLockFactory CacheReadWriteLockFactory { get; internal set; }
+
 		public IQueryCacheFactory QueryCacheFactory { get; internal set; }
 
 		public IConnectionProvider ConnectionProvider { get; internal set; }
@@ -138,6 +144,11 @@ namespace NHibernate.Cfg
 		/// <see langword="false" /> to ignore failures.
 		/// </summary>
 		public bool ThrowOnSchemaUpdate { get; internal set; }
+
+		/// <summary>
+		/// Should using a never cached entity/collection in a cacheable query throw an exception.
+		/// </summary>
+		public bool QueryThrowNeverCached { get; internal set; }
 
 		#region NH specific
 
@@ -212,5 +223,10 @@ namespace NHibernate.Cfg
 		public MultiTenancyStrategy MultiTenancyStrategy { get; internal set; }
 
 		public IMultiTenancyConnectionProvider MultiTenancyConnectionProvider { get; internal set; }
+		public int QueryPlanCacheParameterMetadataMaxSize { get; internal set; }
+		public int QueryPlanCacheMaxSize { get; internal set; }
+		public BatchFetchStyle BatchFetchStyle { get; internal set; }
+		public BatchingEntityLoaderBuilder  BatchingEntityLoaderBuilder { get; internal set; }
+		public BatchingCollectionInitializerBuilder BatchingCollectionInitializationBuilder { get; internal set; }
 	}
 }

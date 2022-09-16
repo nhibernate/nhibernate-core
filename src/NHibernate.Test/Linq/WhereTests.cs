@@ -432,7 +432,7 @@ namespace NHibernate.Test.Linq
 					AssertStringComparisonWarning(x => x.CustomerId.EndsWith("ANATR", StringComparison.Ordinal), 1);
 					AssertStringComparisonWarning(x => x.CustomerId.IndexOf("ANATR", StringComparison.Ordinal) == 0, 1);
 					AssertStringComparisonWarning(x => x.CustomerId.IndexOf("ANATR", 0, StringComparison.Ordinal) == 0, 1);
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER
 					AssertStringComparisonWarning(x => x.CustomerId.Replace("AN", "XX", StringComparison.Ordinal) == "XXATR", 1);
 #endif
 				});
@@ -847,6 +847,27 @@ namespace NHibernate.Test.Linq
 			                    .FirstOrDefault();
 			Assert.That(result, Is.Not.Null);
 			Assert.That(result.SerialNumber, Is.EqualTo("1121"));
+		}
+
+		[Test]
+		public void CanCompareAggregateResult()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+			{
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+			}
+
+			session.Query<Customer>()
+			       .Select(o => new AggregateDate { Id = o.CustomerId, MaxDate = o.Orders.Max(l => l.RequiredOrderDate)})
+			       .Where(o => o.MaxDate <= DateTime.Today && o.MaxDate >= DateTime.Today)
+			       .ToList();
+		}
+
+		private class AggregateDate
+		{
+			public string Id { get; set; }
+
+			public DateTime? MaxDate { get; set; }
 		}
 
 		private static List<object[]> CanUseCompareInQueryDataSource()

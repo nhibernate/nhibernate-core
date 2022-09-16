@@ -40,7 +40,8 @@ namespace NHibernate.Persister.Entity
 	/// </remarks>
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
-		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable,
+		IPersister
 	{
 		#region InclusionChecker
 
@@ -247,6 +248,8 @@ namespace NHibernate.Persister.Entity
 		private bool[] tableHasColumns;
 
 		private readonly string loaderName;
+
+		private readonly bool supportsQueryCache;
 
 		private IUniqueEntityLoader queryLoader;
 
@@ -548,6 +551,8 @@ namespace NHibernate.Persister.Entity
 					}
 					return uniqueKeyPropertyNames;
 				});
+
+			supportsQueryCache = persistentClass.CacheConcurrencyStrategy != CacheFactory.Never;
 		}
 
 		protected abstract int[] SubclassColumnTableNumberClosure { get; }
@@ -2138,14 +2143,20 @@ namespace NHibernate.Persister.Entity
 
 		public virtual string GenerateTableAliasForColumn(string rootAlias, string column)
 		{
-			int propertyIndex = Array.IndexOf(SubclassColumnClosure, column);
+			return GenerateTableAlias(rootAlias, GetColumnTableNumber(column));
+		}
+
+		private int GetColumnTableNumber(string column)
+		{
+			if (SubclassTableSpan == 1)
+				return 0;
+
+			int i = Array.IndexOf(SubclassColumnClosure, column);
 
 			// The check for KeyColumnNames was added to fix NH-2491
-			if (propertyIndex < 0 || Array.IndexOf(KeyColumnNames, column) >= 0)
-			{
-				return rootAlias;
-			}
-			return GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[propertyIndex]);
+			return i < 0 || Array.IndexOf(KeyColumnNames, column) >= 0 
+				? 0
+				: SubclassColumnTableNumberClosure[i];
 		}
 
 		public string GenerateTableAlias(string rootAlias, int tableNumber)
@@ -2497,7 +2508,7 @@ namespace NHibernate.Persister.Entity
 		protected IUniqueEntityLoader CreateEntityLoader(LockMode lockMode, IDictionary<string, IFilter> enabledFilters)
 		{
 			//TODO: disable batch loading if lockMode > READ?
-			return BatchingEntityLoader.CreateBatchingEntityLoader(this, batchSize, lockMode, Factory, enabledFilters);
+			return Factory.Settings.BatchingEntityLoaderBuilder.BuildLoader(this, batchSize, lockMode, Factory, enabledFilters);
 		}
 
 		protected IUniqueEntityLoader CreateEntityLoader(LockMode lockMode)
@@ -2505,7 +2516,13 @@ namespace NHibernate.Persister.Entity
 			return CreateEntityLoader(lockMode, CollectionHelper.EmptyDictionary<string, IFilter>());
 		}
 
+		//TODO 6.0: Remove (replaced by overload with optional parameter) 
 		protected bool Check(int rows, object id, int tableNumber, IExpectation expectation, DbCommand statement)
+		{
+			return Check(rows, id, tableNumber, expectation, statement, false);
+		}
+
+		protected bool Check(int rows, object id, int tableNumber, IExpectation expectation, DbCommand statement, bool forceThrowStaleException = false)
 		{
 			try
 			{
@@ -2513,13 +2530,15 @@ namespace NHibernate.Persister.Entity
 			}
 			catch (StaleStateException sse)
 			{
-				if (!IsNullableTable(tableNumber))
+				if (forceThrowStaleException || !IsNullableTable(tableNumber))
 				{
 					if (Factory.Statistics.IsStatisticsEnabled)
 						Factory.StatisticsImplementor.OptimisticFailure(EntityName);
 
 					throw new StaleObjectStateException(EntityName, id, sse);
 				}
+
+				return false;
 			}
 			catch (TooManyRowsAffectedException ex)
 			{
@@ -2581,7 +2600,7 @@ namespace NHibernate.Persister.Entity
 					hasColumns = true;
 				}
 			}
-			else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && oldFields != null)
+			else if (IsPropertyBasedOptimisticLocking(oldFields))
 			{
 				// we are using "all" or "dirty" property-based optimistic locking
 				bool[] includeInWhere =
@@ -2623,6 +2642,11 @@ namespace NHibernate.Persister.Entity
 			}
 
 			return hasColumns ? updateBuilder.ToSqlCommandInfo() : null;
+		}
+
+		private bool IsPropertyBasedOptimisticLocking(object[] oldFields)
+		{
+			return entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && oldFields != null;
 		}
 
 		private bool CheckVersion(bool[] includeProperty)
@@ -3208,7 +3232,7 @@ namespace NHibernate.Persister.Entity
 						if (CheckVersion(includeProperty))
 							VersionType.NullSafeSet(statement, oldVersion, index, session);
 					}
-					else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && oldFields != null)
+					else if (IsPropertyBasedOptimisticLocking(oldFields))
 					{
 						bool[] versionability = PropertyVersionability;
 						bool[] includeOldField = OptimisticLockMode == Versioning.OptimisticLock.All
@@ -3237,7 +3261,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						return Check(session.Batcher.ExecuteNonQuery(statement), id, j, expectation, statement);
+						return Check(session.Batcher.ExecuteNonQuery(statement), id, j, expectation, statement, IsPropertyBasedOptimisticLocking(oldFields));
 					}
 				}
 				catch (StaleStateException e)
@@ -3341,13 +3365,13 @@ namespace NHibernate.Persister.Entity
 					{
 						VersionType.NullSafeSet(statement, version, index, session);
 					}
-					else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && loadedState != null)
+					else if (IsPropertyBasedOptimisticLocking(loadedState))
 					{
 						bool[] versionability = PropertyVersionability;
 						IType[] types = PropertyTypes;
 						for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 						{
-							if (IsPropertyOfTable(i, j) && versionability[i])
+							if (IsPropertyOfTable(i, j) && versionability[i] && types[i].GetOwnerColumnSpan(Factory) > 0)
 							{
 								// this property belongs to the table and it is not specifically
 								// excluded from optimistic locking by optimistic-lock="false"
@@ -3365,7 +3389,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						Check(session.Batcher.ExecuteNonQuery(statement), tableId, j, expectation, statement);
+						Check(session.Batcher.ExecuteNonQuery(statement), tableId, j, expectation, statement, IsPropertyBasedOptimisticLocking(loadedState));
 					}
 				}
 				catch (Exception e)
@@ -3488,7 +3512,7 @@ namespace NHibernate.Persister.Entity
 			{
 				// For the case of dynamic-insert="true", we need to generate the INSERT SQL
 				bool[] notNull = GetPropertiesToInsert(fields);
-				id = Insert(fields, notNull, GenerateInsertString(true, notNull), obj, session);
+				id = Insert(fields, notNull, GenerateIdentityInsertString(notNull), obj, session);
 				for (int j = 1; j < span; j++)
 				{
 					Insert(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session);
@@ -3583,13 +3607,13 @@ namespace NHibernate.Persister.Entity
 				{
 					delete.SetComment("delete " + EntityName + " [" + j + "]");
 				}
-
 				bool[] versionability = PropertyVersionability;
 				IType[] types = PropertyTypes;
 				for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 				{
 					bool include = versionability[i] &&
-												 IsPropertyOfTable(i, j);
+												 IsPropertyOfTable(i, j) 
+												&& types[i].GetOwnerColumnSpan(Factory) > 0;
 
 					if (include)
 					{
@@ -3794,6 +3818,16 @@ namespace NHibernate.Persister.Entity
 				}
 			}
 			return join;
+		}
+
+		internal bool ColumnsDependOnSubclassJoins(string[] columns)
+		{
+			foreach (var column in columns)
+			{
+				if (GetColumnTableNumber(column) > 0)
+					return true;
+			}
+			return false;
 		}
 
 		internal bool HasSubclassJoins(bool includeSubclasses)
@@ -4178,6 +4212,11 @@ namespace NHibernate.Persister.Entity
 		public virtual bool HasCache
 		{
 			get { return cache != null; }
+		}
+
+		public bool SupportsQueryCache
+		{
+			get { return supportsQueryCache; }
 		}
 
 		private string GetSubclassEntityName(System.Type clazz)

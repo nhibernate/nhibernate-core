@@ -44,9 +44,10 @@ namespace NHibernate.Engine
 		{
 			private readonly IAssociationType associationType;
 			private readonly IJoinable joinable;
-			private readonly JoinType joinType;
+			private JoinType joinType;
 			private readonly string alias;
 			private readonly string[] lhsColumns;
+			private readonly string[] rhsColumns;
 
 			public Join(ISessionFactoryImplementor factory, IAssociationType associationType, string alias, JoinType joinType,
 						string[] lhsColumns)
@@ -56,6 +57,9 @@ namespace NHibernate.Engine
 				this.alias = alias;
 				this.joinType = joinType;
 				this.lhsColumns = lhsColumns;
+				this.rhsColumns = lhsColumns.Length > 0
+					? JoinHelper.GetRHSColumnNames(joinable, associationType)
+					: Array.Empty<string>();
 			}
 
 			public string Alias
@@ -76,11 +80,17 @@ namespace NHibernate.Engine
 			public JoinType JoinType
 			{
 				get { return joinType; }
+				internal set { joinType = value; }
 			}
 
 			public string[] LHSColumns
 			{
 				get { return lhsColumns; }
+			}
+
+			public string[] RHSColumns
+			{
+				get { return rhsColumns; }
 			}
 
 			public override string ToString()
@@ -181,7 +191,7 @@ namespace NHibernate.Engine
 				last = join.Joinable;
 			}
 
-			if (rootJoinable == null && TableGroupJoinHelper.ProcessAsTableGroupJoin(joins, withClauses, includeAllSubclassJoins, joinFragment, alias => IsIncluded(alias), factory))
+			if (rootJoinable == null && !IsThetaStyle && TableGroupJoinHelper.ProcessAsTableGroupJoin(joins, withClauses, includeAllSubclassJoins, joinFragment, alias => IsIncluded(alias), factory))
 			{
 				return joinFragment;
 			}
@@ -195,7 +205,7 @@ namespace NHibernate.Engine
 					join.Joinable.TableName,
 					join.Alias,
 					join.LHSColumns,
-					JoinHelper.GetRHSColumnNames(join.AssociationType, factory),
+					join.RHSColumns,
 					join.JoinType,
 					withClauses[i]
 				);
@@ -238,9 +248,9 @@ namespace NHibernate.Engine
 			{
 				// NH Different behavior : NH1179 and NH1293
 				// Apply filters for entity joins and Many-To-One association
-				var enabledForManyToOne = FilterHelper.GetEnabledForManyToOne(enabledFilters);
-				if (ForceFilter || enabledForManyToOne.Count > 0)
-					withConditions.Add(join.Joinable.FilterFragment(join.Alias, enabledForManyToOne));
+				var enabledFiltersForJoin = ForceFilter ? enabledFilters : FilterHelper.GetEnabledForManyToOne(enabledFilters);
+				if (ForceFilter || enabledFiltersForJoin.Count > 0)
+					withConditions.Add(join.Joinable.FilterFragment(join.Alias, enabledFiltersForJoin));
 			}
 
 			if (withClauseFragment != null && !IsManyToManyRoot(join.Joinable))
@@ -352,6 +362,12 @@ namespace NHibernate.Engine
 		{
 			joins.AddRange(fromElement.JoinSequence.joins);
 			return this;
+		}
+
+		internal void SetJoinType(JoinType joinType)
+		{
+			joins[0].JoinType = joinType;
+			SetUseThetaStyle(false);
 		}
 	}
 }

@@ -207,7 +207,7 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 		protected override Expression VisitInvocation(InvocationExpression expression)
 		{
 			if (ExpressionsHelper.TryGetDynamicMemberBinder(expression, out var memberBinder))

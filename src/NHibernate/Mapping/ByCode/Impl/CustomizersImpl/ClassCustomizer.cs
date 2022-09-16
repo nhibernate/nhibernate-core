@@ -6,7 +6,7 @@ using NHibernate.Persister.Entity;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class ClassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IClassMapper<TEntity>, IConformistHoldersProvider where TEntity : class
+	public class ClassCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IClassMapper<TEntity>, IConformistHoldersProvider, IEntitySqlsWithCheckMapper where TEntity : class
 	{
 		private Dictionary<string, IJoinMapper<TEntity>> joinCustomizers;
 
@@ -264,14 +264,29 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.SqlInsert(sql));
 		}
 
+		public void SqlInsert(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.SqlInsert(sql, sqlCheck));
+		}
+
 		public void SqlUpdate(string sql)
 		{
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.SqlUpdate(sql));
 		}
 
+		public void SqlUpdate(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.SqlUpdate(sql, sqlCheck));
+		}
+
 		public void SqlDelete(string sql)
 		{
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.SqlDelete(sql));
+		}
+
+		public void SqlDelete(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.SqlDelete(sql, sqlCheck));
 		}
 
 		public void Subselect(string sql)

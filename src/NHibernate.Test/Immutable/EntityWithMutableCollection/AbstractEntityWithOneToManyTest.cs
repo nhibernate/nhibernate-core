@@ -1223,7 +1223,6 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 	
 			s = OpenSession();
 			t = s.BeginTransaction();
-			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
 			// If the entity uses a join mapping, DML queries require temp tables.
 			if (Dialect.SupportsTemporaryTables)
 				s.CreateQuery("delete from Party").ExecuteUpdate();
@@ -1240,7 +1239,7 @@ namespace NHibernate.Test.Immutable.EntityWithMutableCollection
 				s.Delete(partyOrig);
 				s.Delete(newParty);
 			}
-
+			c = s.CreateCriteria<Contract>().UniqueResult<Contract>();
 			s.Delete(c);
 			Assert.That(s.CreateCriteria<Contract>().SetProjection(Projections.RowCountInt64()).UniqueResult<long>(), Is.EqualTo(0L));
 			Assert.That(s.CreateCriteria<Party>().SetProjection(Projections.RowCountInt64()).UniqueResult<long>(), Is.EqualTo(0L));

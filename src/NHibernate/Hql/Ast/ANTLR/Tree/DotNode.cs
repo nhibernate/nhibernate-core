@@ -124,6 +124,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { _propertyPath = value; }
 		}
 
+		internal bool SkipSemiResolve { get; set; }
+
 		public override void SetScalarColumnText(int i)
 		{
 			string[] sqlColumns = GetColumns();
@@ -200,7 +202,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// this might be a Java constant.
 			if ( propertyType == null ) 
 			{
-				if ( parent == null ) 
+				if (parent == null && !SkipSemiResolve)
 				{
 					Walker.LiteralProcessor.LookupConstant( this );
 				}
@@ -351,10 +353,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				IEntityPersister entityPersister = elem.EntityPersister;
 				if ( entityPersister != null ) 
 				{
-					Walker.AddQuerySpaces( entityPersister.QuerySpaces );
+					Walker.AddQuerySpaces(entityPersister);
 				}
 			}
-			Walker.AddQuerySpaces( queryableCollection.CollectionSpaces );	// Always add the collection's query spaces.
+			// Always add the collection's query spaces.
+			Walker.AddQuerySpaces(queryableCollection);
 		}
 
 		private void DereferenceEntity(EntityType entityType, bool implicitJoin, string classAlias, bool generateJoin, IASTNode parent) 
@@ -386,8 +389,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string property = _propertyName;
 			bool joinIsNeeded;
 
-			//For nullable entity comparisons we always need to add join (like not constrained one-to-one or not-found ignore associations) 
-			bool comparisonWithNullableEntity = false;
+			//For nullable entity comparisons we always need to add join (like not constrained one-to-one or not-found ignore associations)
+			bool comparisonWithNullableEntity = entityType.IsNullable && Walker.IsComparativeExpressionClause;
 
 			if ( IsDotNode( parent ) ) 
 			{
@@ -396,7 +399,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// entity's PK (because 'our' table would know the FK).
 				parentAsDotNode = ( DotNode ) parent;
 				property = parentAsDotNode._propertyName;
-				joinIsNeeded = generateJoin && (entityType.IsNullable || !IsReferenceToPrimaryKey( parentAsDotNode._propertyName, entityType ));
+				joinIsNeeded = generateJoin && ((Walker.IsSelectStatement && comparisonWithNullableEntity) || !IsReferenceToPrimaryKey( parentAsDotNode._propertyName, entityType ));
 			}
 			else if ( ! Walker.IsSelectStatement ) 
 			{
@@ -409,14 +412,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else
 			{
-				comparisonWithNullableEntity = (Walker.IsComparativeExpressionClause && entityType.IsNullable);
 				joinIsNeeded = generateJoin || (Walker.IsInSelect && !Walker.IsInCase) || (Walker.IsInFrom && !Walker.IsComparativeExpressionClause)
 				               || comparisonWithNullableEntity;
 			}
 
-			if ( joinIsNeeded ) 
+			if ( joinIsNeeded )
 			{
-				DereferenceEntityJoin( classAlias, entityType, implicitJoin, parent );
+				var forceLeftJoin = comparisonWithNullableEntity && Walker.IsNullComparison;
+				DereferenceEntityJoin(classAlias, entityType, implicitJoin, parent, forceLeftJoin);
 				if (comparisonWithNullableEntity)
 				{
 					_columns = FromElement.GetIdentityColumns();
@@ -450,7 +453,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-		private void DereferenceEntityJoin(string classAlias, EntityType propertyType, bool impliedJoin, IASTNode parent)
+		private void DereferenceEntityJoin(string classAlias, EntityType propertyType, bool impliedJoin, IASTNode parent, bool forceLeftJoin)
 		{
 			_dereferenceType = DerefEntity;
 			if ( Log.IsDebugEnabled() ) 
@@ -469,7 +472,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string[] joinColumns = GetColumns();
 			string joinPath = Path;
 
-			if ( impliedJoin && Walker.IsInFrom ) 
+			if (forceLeftJoin)
+			{
+				_joinType = JoinType.LeftOuterJoin;
+			}
+			else if (impliedJoin && Walker.IsInFrom)
 			{
 				_joinType = Walker.ImpliedJoinType;
 			}
@@ -509,10 +516,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if ( ! useFoundFromElement )
 			{
-				// If this is an implied join in a from element, then use the impled join type which is part of the
-				// tree parser's state (set by the gramamar actions).
 				JoinSequence joinSequence = SessionFactoryHelper
-					.CreateJoinSequence( impliedJoin, propertyType, tableAlias, _joinType, joinColumns );
+					.CreateJoinSequence(false, propertyType, tableAlias, _joinType, joinColumns);
 
 				var factory = new FromElementFactory(
 						currentFromClause,
@@ -533,11 +538,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else 
 			{
+				if (forceLeftJoin)
+				{
+					elem.JoinSequence.SetJoinType(_joinType);
+				}
 				currentFromClause.AddDuplicateAlias(classAlias, elem);
 			}
 
 			SetImpliedJoin( elem );
-			Walker.AddQuerySpaces( elem.EntityPersister.QuerySpaces );
+			Walker.AddQuerySpaces(elem.EntityPersister);
 			FromElement = elem;	// This 'dot' expression now refers to the resulting from element.
 		}
 

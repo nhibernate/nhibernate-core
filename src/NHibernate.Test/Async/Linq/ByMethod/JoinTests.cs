@@ -8,11 +8,7 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Linq;
-using System.Reflection;
-using NHibernate.Cfg;
-using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.Util;
 using NSubstitute;
@@ -21,6 +17,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq.ByMethod
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class JoinTestsAsync : LinqTestCase
 	{
@@ -114,6 +111,176 @@ namespace NHibernate.Test.Linq.ByMethod
 			}
 		}
 
+		[Test(Description = "GH-3104")]
+		public async Task LeftJoinExtensionMethodWithInnerJoinAfterAsync()
+		{
+			var animals = await (db.Animals
+						   .LeftJoin(db.Mammals, o => o.Id, i => i.Id, (o, i) => new { animal = o, mammalLeft1 = i })
+						   .LeftJoin(db.Mammals, x => x.mammalLeft1.Id, y => y.Id, (o, i) => new { o.animal, o.mammalLeft1, mammalLeft2 = i })
+						   .Join(db.Mammals, o => o.mammalLeft2.Id, y => y.Id, (o, i) => new { o.animal, o.mammalLeft1, o.mammalLeft2, mammalInner = i })
+						   .Where(x => x.mammalLeft1.SerialNumber.StartsWith("9"))
+						   .Where(x => x.mammalLeft2.SerialNumber.StartsWith("9"))
+						   .Where(x => x.animal.SerialNumber.StartsWith("9"))
+						   .Where(x => x.mammalInner.SerialNumber.StartsWith("9"))
+						   .Select(x => new { SerialNumber = x.animal.SerialNumber })
+						   .ToListAsync());
+
+			Assert.That(animals.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public async Task LeftJoinExtensionMethodWithOuterReferenceInWhereClauseOnlyAsync()
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var animals = await (db.Animals
+							   .LeftJoin(
+								   db.Mammals,
+								   x => x.Id,
+								   x => x.Id,
+								   (animal, mammal) => new { animal, mammal })
+							   .Where(x => x.mammal.SerialNumber.StartsWith("9"))
+							   .Select(x => new { SerialNumber = x.animal.SerialNumber })
+							   .ToListAsync());
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(animals.Count, Is.EqualTo(1));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public async Task LeftJoinExtensionMethodWithOuterReferenceInWhereClauseOnlyCountAsync()
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var total = await (db.Orders
+				                .LeftJoin(
+					                db.OrderLines,
+					                x => x,
+					                x => x.Order,
+					                (order, line) => new { order, line })
+				                
+				                .Select(x => new { x.order.OrderId, x.line.Discount })
+				                .CountAsync());
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(total, Is.EqualTo(2155));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
+		}
+
+		[KnownBug("GH-2739")]
+		public async Task NestedLeftJoinExtensionMethodWithOuterReferenceInWhereClauseOnlyAsync(CancellationToken cancellationToken = default(CancellationToken))
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var innerAnimals = db.Animals
+							   .LeftJoin(
+								   db.Mammals,
+								   x => x.Id,
+								   x => x.Id,
+								   (animal, mammal) => new { animal, mammal })
+							   .Where(x => x.mammal.SerialNumber.StartsWith("9"))
+							   .Select(x=>x.animal);
+				
+				var animals = await (db.Animals
+							   .LeftJoin(
+								   innerAnimals,
+								   x => x.Id,
+								   x => x.Id,
+								   (animal, animal2) => new { animal, animal2 })
+							   .Select(x => new { SerialNumber = x.animal2.SerialNumber })
+							   .ToListAsync(cancellationToken));
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(animals.Count, Is.EqualTo(1));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public async Task LeftJoinExtensionMethodWithNoUseOfOuterReferenceAsync()
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var animals = await (db.Animals
+							   .LeftJoin(
+								   db.Mammals,
+								   x => x.Id,
+								   x => x.Id,
+								   (animal, mammal) => new { animal, mammal })
+							   .Select(x => x.animal)
+							   .ToListAsync());
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(animals.Count, Is.EqualTo(6));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(6));
+			}
+		}
+
+		[Test]
+		public async Task LeftJoinExtensionMethodWithNoUseOfOuterReferenceCountAsync()
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var total = await (db.Animals
+				              .LeftJoin(
+					              db.Mammals,
+					              x => x.Id,
+					              x => x.Id,
+					              (animal, mammal) => new {animal, mammal})
+				              .Select(x => x.animal)
+				              .CountAsync());
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(total, Is.EqualTo(6));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public async Task LeftJoinExtensionMethodWithOuterReferenceInOrderByClauseOnlyAsync()
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var animals = await (db.Animals
+							   .LeftJoin(
+								   db.Mammals,
+								   x => x.Id,
+								   x => x.Id,
+								   (animal, mammal) => new { animal, mammal })
+							   .OrderBy(x => x.mammal.SerialNumber ?? "z")
+							   .Select(x => new { SerialNumber = x.animal.SerialNumber })
+							   .ToListAsync());
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(animals.Count, Is.EqualTo(6));
+				Assert.That(animals[0].SerialNumber, Is.EqualTo("1121"));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public async Task LeftJoinExtensionMethodWithOuterReferenceInOrderByClauseOnlyCountAsync()
+		{
+			using (var sqlSpy = new SqlLogSpy())
+			{
+				var total = await (db.Animals
+				              .LeftJoin(
+					              db.Mammals,
+					              x => x.Id,
+					              x => x.Id,
+					              (animal, mammal) => new {animal, mammal})
+				              .OrderBy(x => x.mammal.SerialNumber ?? "z")
+				              .Select(x => new {SerialNumber = x.animal.SerialNumber})
+				              .CountAsync());
+
+				var sql = sqlSpy.GetWholeLog();
+				Assert.That(total, Is.EqualTo(6));
+				Assert.That(GetTotalOccurrences(sql, "left outer join"), Is.EqualTo(1));
+			}
+		}
+
 		[TestCase(false)]
 		[TestCase(true)]
 		public async Task CrossJoinWithPredicateInWhereStatementAsync(bool useCrossJoin)
@@ -149,12 +316,34 @@ namespace NHibernate.Test.Linq.ByMethod
 						select new {o, o2}).Take(1).ToListAsync());
 		}
 
+		[Test]
+		public async Task CanInnerJoinOnEntityWithSubclassesAsync()
+		{
+			//inner joined animal is not used in output (no need to join subclasses)
+			var resultsFromOuter1 = await (db.Animals.Join(db.Animals, o => o.Id, i => i.Id, (o, i) => o).Take(1).ToListAsync());
+
+			//inner joined mammal is not used in output (but subclass join is needed for mammal)
+			var resultsFromOuter2 = await (db.Animals.Join(db.Mammals, o => o.Id, i => i.Id, (o, i) => o).Take(1).ToListAsync());
+
+			//inner joined animal is used in output (all subclass joins are required)
+			var resultsFromInner1 = await (db.Animals.Join(db.Animals, o => o.Id, i => i.Id, (o, i) => i).Take(1).ToListAsync());
+		}
+
 		[Test(Description = "GH-2580")]
 		public async Task CanInnerJoinOnSubclassWithBaseTableReferenceInOnClauseAsync()
 		{
 			var result = await ((from o in db.Animals
 			              join o2 in db.Mammals on o.BodyWeight equals o2.BodyWeight
 			              select new { o, o2 }).Take(1).ToListAsync());
+		}
+
+		[Test(Description = "GH-2805")]
+		public async Task CanJoinOnInterfaceAsync()
+		{
+			var result = await (db.IUsers.Join(db.IUsers,
+									u => u.Id,
+									iu => iu.Id,
+									(u, iu) => iu.Name).Take(1).ToListAsync());
 		}
 	}
 }

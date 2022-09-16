@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 
@@ -17,7 +18,7 @@ namespace NHibernate.Engine
 	{
 		internal static bool ProcessAsTableGroupJoin(IReadOnlyList<IJoin> tableGroupJoinables, SqlString[] withClauseFragments, bool includeAllSubclassJoins, JoinFragment joinFragment, Func<string, bool> isSubclassIncluded, ISessionFactoryImplementor sessionFactoryImplementor)
 		{
-			if (!NeedsTableGroupJoin(tableGroupJoinables, withClauseFragments, includeAllSubclassJoins))
+			if (!NeedsTableGroupJoin(tableGroupJoinables, withClauseFragments, includeAllSubclassJoins, isSubclassIncluded))
 				return false;
 
 			var first = tableGroupJoinables[0];
@@ -38,7 +39,7 @@ namespace NHibernate.Engine
 						join.Joinable.TableName,
 						join.Alias,
 						join.LHSColumns,
-						JoinHelper.GetRHSColumnNames(join.AssociationType, sessionFactoryImplementor),
+						join.RHSColumns,
 						join.JoinType,
 						SqlString.Empty);
 
@@ -51,32 +52,37 @@ namespace NHibernate.Engine
 					join.Joinable.WhereJoinFragment(join.Alias, innerJoin, include));
 			}
 
-			var withClause = GetTableGroupJoinWithClause(withClauseFragments, first, sessionFactoryImplementor);
+			var withClause = GetTableGroupJoinWithClause(withClauseFragments, first);
 			joinFragment.AddFromFragmentString(withClause);
 			return true;
 		}
 
-		private static bool NeedsTableGroupJoin(IReadOnlyList<IJoin> joins, SqlString[] withClauseFragments, bool includeSubclasses)
+		// detect cases when withClause is used on multiple tables or when join keys depend on subclass columns
+		private static bool NeedsTableGroupJoin(IReadOnlyList<IJoin> joins, SqlString[] withClauseFragments, bool includeSubclasses, Func<string, bool> isSubclassIncluded)
 		{
-			// If we don't have a with clause, we don't need a table group join
-			if (withClauseFragments.All(x => SqlStringHelper.IsEmpty(x)))
-			{
-				return false;
-			}
-
-			// If we only have one join, a table group join is only necessary if subclass columns are used in the with clause
-			if (joins.Count == 1)
-			{
-				return joins[0].Joinable is AbstractEntityPersister persister && persister.HasSubclassJoins(includeSubclasses);
-				//NH Specific: No alias processing
-				//return isSubclassAliasDereferenced( joins[ 0], withClauseFragment );
-			}
+			bool hasWithClause = withClauseFragments.Any(x => SqlStringHelper.IsNotEmpty(x));
 
 			//NH Specific: No alias processing (see hibernate JoinSequence.NeedsTableGroupJoin)
-			return true;
+			if (joins.Count > 1 && hasWithClause)
+				return true;
+
+			foreach (var join in joins)
+			{
+				var entityPersister = GetEntityPersister(join.Joinable);
+				if (entityPersister?.HasSubclassJoins(includeSubclasses && isSubclassIncluded(join.Alias)) != true)
+					continue;
+
+				if (hasWithClause)
+					return true;
+
+				if (entityPersister.ColumnsDependOnSubclassJoins(join.RHSColumns))
+					return true;
+			}
+
+			return false;
 		}
 
-		private static SqlString GetTableGroupJoinWithClause(SqlString[] withClauseFragments, IJoin first, ISessionFactoryImplementor factory)
+		private static SqlString GetTableGroupJoinWithClause(SqlString[] withClauseFragments, IJoin first)
 		{
 			SqlStringBuilder fromFragment = new SqlStringBuilder();
 			fromFragment.Add(")").Add(" on ");
@@ -85,18 +91,33 @@ namespace NHibernate.Engine
 			var isAssociationJoin = lhsColumns.Length > 0;
 			if (isAssociationJoin)
 			{
+				var entityPersister = GetEntityPersister(first.Joinable);
 				string rhsAlias = first.Alias;
-				string[] rhsColumns = JoinHelper.GetRHSColumnNames(first.AssociationType, factory);
-				fromFragment.Add(lhsColumns[0]).Add("=").Add(rhsAlias).Add(".").Add(rhsColumns[0]);
-				for (int j = 1; j < lhsColumns.Length; j++)
+				string[] rhsColumns = first.RHSColumns;
+				for (int j = 0; j < lhsColumns.Length; j++)
 				{
-					fromFragment.Add(" and ").Add(lhsColumns[j]).Add("=").Add(rhsAlias).Add(".").Add(rhsColumns[j]);
+					fromFragment.Add(lhsColumns[j])
+								.Add("=")
+								.Add(entityPersister?.GenerateTableAliasForColumn(rhsAlias, rhsColumns[j]) ?? rhsAlias)
+								.Add(".")
+								.Add(rhsColumns[j]);
+					if (j != lhsColumns.Length - 1)
+						fromFragment.Add(" and ");
 				}
 			}
 
 			AppendWithClause(fromFragment, isAssociationJoin, withClauseFragments);
 
 			return fromFragment.ToSqlString();
+		}
+
+		private static AbstractEntityPersister GetEntityPersister(IJoinable joinable)
+		{
+			if (!joinable.IsCollection)
+				return joinable as AbstractEntityPersister;
+
+			var collection = (IQueryableCollection) joinable;
+			return collection.ElementType.IsEntityType ? collection.ElementPersister as AbstractEntityPersister : null;
 		}
 
 		private static void AppendWithClause(SqlStringBuilder fromFragment, bool hasConditions, SqlString[] withClauseFragments)

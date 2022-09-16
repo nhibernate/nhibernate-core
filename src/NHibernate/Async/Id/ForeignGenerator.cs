@@ -11,6 +11,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Persister.Entity;
 using NHibernate.Type;
 
 namespace NHibernate.Id
@@ -36,8 +37,6 @@ namespace NHibernate.Id
 		public async Task<object> GenerateAsync(ISessionImplementor sessionImplementor, object obj, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			ISession session = (ISession) sessionImplementor;
-
 			var persister = sessionImplementor.Factory.GetEntityPersister(entityName);
 			object associatedObject = persister.GetPropertyValue(obj, propertyName);
 
@@ -46,17 +45,7 @@ namespace NHibernate.Id
 				throw new IdentifierGenerationException("attempted to assign id from null one-to-one property: " + propertyName);
 			}
 
-			EntityType foreignValueSourceType;
-			IType propertyType = persister.GetPropertyType(propertyName);
-			if (propertyType.IsEntityType)
-			{
-				foreignValueSourceType = (EntityType) propertyType;
-			}
-			else
-			{
-				// try identifier mapper
-				foreignValueSourceType = (EntityType) persister.GetPropertyType("_identifierMapper." + propertyName);
-			}
+			var foreignValueSourceType = GetForeignValueSourceType(persister);
 
 			object id;
 			try
@@ -68,10 +57,21 @@ namespace NHibernate.Id
 			}
 			catch (TransientObjectException)
 			{
-				id = await (session.SaveAsync(foreignValueSourceType.GetAssociatedEntityName(), associatedObject, cancellationToken)).ConfigureAwait(false);
+				if (sessionImplementor is ISession session)
+				{
+					id = await (session.SaveAsync(foreignValueSourceType.GetAssociatedEntityName(), associatedObject, cancellationToken)).ConfigureAwait(false);
+				}
+				else if (sessionImplementor is IStatelessSession statelessSession)
+				{
+					id = await (statelessSession.InsertAsync(foreignValueSourceType.GetAssociatedEntityName(), associatedObject, cancellationToken)).ConfigureAwait(false);
+				}
+				else
+				{
+					throw new IdentifierGenerationException("sessionImplementor is neither Session nor StatelessSession");
+				}
 			}
 
-			if (session.Contains(obj))
+			if (Contains(sessionImplementor, obj))
 			{
 				//abort the save (the object is already saved by a circular cascade)
 				return IdentifierGeneratorFactory.ShortCircuitIndicator;

@@ -1,0 +1,63 @@
+name: .NET Core
+
+on: [push, pull_request]
+
+jobs:
+  db:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - DB: SqlServer2008
+            CONNECTION_STRING: "Server=localhost;initial catalog=nhibernate;User Id=sa;Password=P@ssw0rd;packet size=4096;"
+          - DB: PostgreSQL
+            CONNECTION_STRING: "Host=localhost;Username=nhibernate;Password=nhibernate;Database=nhibernate;Enlist=true;"
+          - DB: Firebird
+            CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
+          - DB: MySQL
+            CONNECTION_STRING: "Server=localhost;Uid=root;Password=nhibernate;Database=nhibernate;Old Guids=True;SslMode=none;"
+          - DB: Oracle
+            CONNECTION_STRING: "User ID=nhibernate;Password=nhibernate;Metadata Pooling=false;Self Tuning=false;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XEPDB1)))"
+          - DB: SQLite
+    runs-on: ubuntu-latest
+    continue-on-error: ${{matrix.ALLOW_FAILURE == true}}
+    env:
+      LANG: en-US.UTF-8 #default POSIX locale doesn't support ignore case comparisons
+    name: ${{matrix.DB}}
+
+    steps:
+    - name: Set up SqlServer
+      if: matrix.DB == 'SqlServer2008'
+      run: |
+        docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=P@ssw0rd" -e "MSSQL_PID=Express" -p 1433:1433 -d --name sqlexpress mcr.microsoft.com/mssql/server:2019-latest;
+
+    - name: Set up MySQL
+      if: matrix.DB == 'MySQL'
+      run: |
+        sudo service mysql stop
+        docker run --name mysql -e MYSQL_ROOT_PASSWORD=nhibernate -e MYSQL_USER=nhibernate -e MYSQL_PASSWORD=nhibernate -e MYSQL_DATABASE=nhibernate -p 3306:3306 --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 -d mysql:5.7 mysqld --lower_case_table_names=1 --character-set-server=utf8 --collation-server=utf8_general_ci
+
+    - name: Set up PostgreSQL
+      if: matrix.DB == 'PostgreSQL'
+      run: |
+       docker run -d -e POSTGRES_USER=nhibernate  -e POSTGRES_PASSWORD=nhibernate -e POSTGRES_DB=nhibernate -p 5432:5432 postgres:13
+
+    - name: Set up Firebird
+      if: matrix.DB == 'Firebird'
+      run: |
+        docker run --name firebird -e EnableWireCrypt=true -e FIREBIRD_USER=nhibernate -e FIREBIRD_PASSWORD=nhibernate -e ISC_PASSWORD=nhibernate -e FIREBIRD_DATABASE=nhibernate -p 3050:3050 -d jacobalberty/firebird:v3.0
+
+    - name: Set up Oracle
+      if: matrix.DB == 'Oracle'
+      run: |
+        docker run -d -p 1521:1521 -e APP_USER=nhibernate -e APP_USER_PASSWORD=nhibernate -e ORACLE_PASSWORD=nhibernate gvenzl/oracle-xe:21-slim
+
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Build and Test
+      run: |
+        pwsh -noprofile -command "& ./build.ps1 -TaskList Set-Configuration,Test -properties @{'Database' = '${{matrix.DB}}';'ConnectionString'='${{matrix.CONNECTION_STRING}}'}"

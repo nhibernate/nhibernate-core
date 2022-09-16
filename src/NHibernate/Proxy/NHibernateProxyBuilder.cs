@@ -76,7 +76,6 @@ namespace NHibernate.Proxy
 				interfaces.Add(baseType);
 			}
 
-#if NETFX || NETCOREAPP2_0
 			var assemblyNamesToIgnoreAccessCheck =
 				new[] {baseType}
 					.Concat(interfaces).Where(i => !i.IsVisible)
@@ -84,9 +83,6 @@ namespace NHibernate.Proxy
 					.Distinct();
 			foreach (var a in assemblyNamesToIgnoreAccessCheck)
 				ProxyBuilderHelper.GenerateInstanceOfIgnoresAccessChecksToAttribute(assemblyBuilder, a);
-#else
-			interfaces.RemoveWhere(i => !i.IsVisible);
-#endif
 			
 			var typeBuilder = moduleBuilder.DefineType(typeName, typeAttributes, parentType, interfaces.ToArray());
 

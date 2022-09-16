@@ -13,6 +13,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Loader.Hql;
 using NHibernate.Param;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -29,7 +30,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly string _queryIdentifier;
 		private readonly IASTNode _stageOneAst;
 		private readonly ISessionFactoryImplementor _factory;
-		private readonly IDictionary<string, NamedParameter> _namedParameters;
+		private readonly IDictionary<string, Tuple<IType, bool>> _namedParameters;
 
 		private bool _shallowQuery;
 		private bool _compiled;
@@ -69,7 +70,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			IASTNode parsedQuery,
 			IDictionary<string, IFilter> enabledFilters,
 			ISessionFactoryImplementor factory,
-			IDictionary<string, NamedParameter> namedParameters)
+			IDictionary<string, Tuple<IType, bool>> namedParameters)
 		{
 			_queryIdentifier = queryIdentifier;
 			_stageOneAst = parsedQuery;
@@ -223,6 +224,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			get { return _sqlAst.Walker.QuerySpaces; }
 		}
+
+		internal ISet<IPersister> Persisters => _sqlAst.Walker.Persisters;
+
+		public bool SupportsQueryCache => _sqlAst.Walker.SupportsQueryCache;
 
 		public string SQLString
 		{
@@ -454,7 +459,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		private HqlSqlTranslator Analyze(string collectionRole)
 		{
-			var translator = new HqlSqlTranslator(_stageOneAst, this, _factory, _tokenReplacements, _namedParameters, collectionRole);
+			var translator = new HqlSqlTranslator(_stageOneAst, this, _factory, _tokenReplacements, collectionRole);
 
 			translator.Translate();
 
@@ -467,6 +472,20 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				throw new QueryExecutionRequestException("Not supported for DML operations", _queryIdentifier);
 			}
+		}
+
+		public bool TryGetNamedParameterType(string name, out IType type, out bool isGuessedType)
+		{
+			if (_namedParameters == null || !_namedParameters.TryGetValue(name, out var p))
+			{
+				type = null;
+				isGuessedType = false;
+				return false;
+			}
+
+			type = p.Item1;
+			isGuessedType = p.Item2;
+			return true;
 		}
 	}
 
@@ -568,23 +587,20 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly QueryTranslatorImpl _qti;
 		private readonly ISessionFactoryImplementor _sfi;
 		private readonly IDictionary<string, string> _tokenReplacements;
-		private readonly IDictionary<string, NamedParameter> _namedParameters;
 		private readonly string _collectionRole;
 		private IStatement _resultAst;
 
-		public HqlSqlTranslator(
+		internal HqlSqlTranslator(
 			IASTNode ast,
 			QueryTranslatorImpl qti,
 			ISessionFactoryImplementor sfi,
 			IDictionary<string, string> tokenReplacements,
-			IDictionary<string, NamedParameter> namedParameters,
 			string collectionRole)
 		{
 			_inputAst = ast;
 			_qti = qti;
 			_sfi = sfi;
 			_tokenReplacements = tokenReplacements;
-			_namedParameters = namedParameters;
 			_collectionRole = collectionRole;
 		}
 
@@ -604,13 +620,13 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				var nodes = new BufferedTreeNodeStream(_inputAst);
 
-				var hqlSqlWalker = new HqlSqlWalker(_qti, _sfi, nodes, _tokenReplacements, _namedParameters, _collectionRole);
+				var hqlSqlWalker = new HqlSqlWalker(_qti, _sfi, nodes, _tokenReplacements, _collectionRole);
 				hqlSqlWalker.TreeAdaptor = new HqlSqlWalkerTreeAdaptor(hqlSqlWalker);
 
 				try
 				{
 					// Transform the tree.
-					_resultAst = (IStatement) hqlSqlWalker.statement().Tree;
+					_resultAst = hqlSqlWalker.Transform();
 				}
 				finally
 				{

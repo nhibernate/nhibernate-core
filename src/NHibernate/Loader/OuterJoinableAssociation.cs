@@ -46,7 +46,7 @@ namespace NHibernate.Loader
 			this.rhsAlias = rhsAlias;
 			this.joinType = joinType;
 			joinable = joinableType.GetAssociatedJoinable(factory);
-			rhsColumns = JoinHelper.GetRHSColumnNames(joinableType, factory);
+			rhsColumns = JoinHelper.GetRHSColumnNames(joinable, joinableType);
 			on = new SqlString(joinableType.GetOnCondition(rhsAlias, factory, enabledFilters));
 			if (SqlStringHelper.IsNotEmpty(withClause))
 				on = on.Append(" and ( ", withClause, " )");
@@ -105,6 +105,7 @@ namespace NHibernate.Loader
 		string[] IJoin.LHSColumns => lhsColumns;
 		string IJoin.Alias => RHSAlias;
 		IAssociationType IJoin.AssociationType => JoinableType;
+		string[] IJoin.RHSColumns => rhsColumns;
 
 		public int GetOwner(IList<OuterJoinableAssociation> associations)
 		{
@@ -246,6 +247,9 @@ namespace NHibernate.Loader
 							                    IncludeLazyProps = SelectMode == SelectMode.FetchLazyProperties,
 						                    });
 				case SelectMode.ChildFetch:
+					// Skip ChildFetch for many-to-many as element id is added by element persister.
+					if (Joinable.IsCollection && ((IQueryableCollection) Joinable).IsManyToMany)
+						return string.Empty;
 					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(Joinable, "child fetch select mode")
 					                    .IdentifierSelectFragment(RHSAlias, entitySuffix);
 

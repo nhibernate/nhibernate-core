@@ -308,7 +308,7 @@ namespace NHibernate.Test.Linq
 					totalParameters,
 					sql =>
 					{
-						Assert.That(sql, Does.Not.Contain("cast"));
+						Assert.That(sql, pair.Value == "Decimal" && Dialect.IsDecimalStoredAsFloatingPointNumber ? Does.Contain("cast") : Does.Not.Contain("cast"));
 						Assert.That(GetTotalOccurrences(sql, $"Type: {pair.Value}"), Is.EqualTo(totalParameters));
 					});
 			}
@@ -593,7 +593,9 @@ namespace NHibernate.Test.Linq
 			var value = "test";
 			db.Orders.Where(o => string.Format("{0}", value) != o.ShippedTo).ToList();
 			db.Orders.Where(o => $"{value}_" != o.ShippedTo).ToList();
+#pragma warning disable CS0618
 			db.Orders.Where(o => string.Copy(value) != o.ShippedTo).ToList();
+#pragma warning restore CS0618
 
 			var guid = Guid.Parse("2D7E6EB3-BD08-4A40-A4E7-5150F7895821");
 			db.Orders.Where(o => o.ShippedTo.Contains($"VALUE {guid}")).ToList();
@@ -602,6 +604,64 @@ namespace NHibernate.Test.Linq
 			db.Users.Where(x => names.Length == 0 || names.Contains(x.Name)).ToList();
 			names = new string[] { };
 			db.Users.Where(x => names.Length == 0 || names.Contains(x.Name)).ToList();
+		}
+
+		[Test]
+		public void UsingParameterWithImplicitOperator()
+		{
+			var id = new GuidImplicitWrapper(new Guid("{356E4A7E-B027-4321-BA40-E2677E6502CF}"));
+			Assert.That(db.Shippers.Where(o => o.Reference == id).ToList(), Has.Count.EqualTo(1));
+
+			id = new GuidImplicitWrapper(new Guid("{356E4A7E-B027-4321-BA40-E2677E6502FF}"));
+			Assert.That(db.Shippers.Where(o => o.Reference == id).ToList(), Is.Empty);
+
+			AssertTotalParameters(
+				db.Shippers.Where(o => o.Reference == id && id == o.Reference),
+				1);
+		}
+
+		private struct GuidImplicitWrapper
+		{
+			public readonly Guid Id;
+
+			public GuidImplicitWrapper(Guid id)
+			{
+				Id = id;
+			}
+
+			public static implicit operator Guid(GuidImplicitWrapper idWrapper)
+			{
+				return idWrapper.Id;
+			}
+		}
+
+		[Test]
+		public void UsingParameterWithExplicitOperator()
+		{
+			var id = new GuidExplicitWrapper(new Guid("{356E4A7E-B027-4321-BA40-E2677E6502CF}"));
+			Assert.That(db.Shippers.Where(o => o.Reference == (Guid) id).ToList(), Has.Count.EqualTo(1));
+
+			id = new GuidExplicitWrapper(new Guid("{356E4A7E-B027-4321-BA40-E2677E6502FF}"));
+			Assert.That(db.Shippers.Where(o => o.Reference == (Guid) id).ToList(), Is.Empty);
+
+			AssertTotalParameters(
+				db.Shippers.Where(o => o.Reference == (Guid) id && (Guid) id == o.Reference),
+				1);
+		}
+
+		private struct GuidExplicitWrapper
+		{
+			public readonly Guid Id;
+
+			public GuidExplicitWrapper(Guid id)
+			{
+				Id = id;
+			}
+
+			public static explicit operator Guid(GuidExplicitWrapper idWrapper)
+			{
+				return idWrapper.Id;
+			}
 		}
 
 		[Test]
@@ -762,7 +822,9 @@ namespace NHibernate.Test.Linq
 		{
 			var value = new Product {Name = "test"};
 			AssertTotalParameters(
+#pragma warning disable CS0618
 				db.Products.Where(o => o.Name == string.Copy(value.Name) && o.Name != string.Copy(value.Name)),
+#pragma warning restore CS0618
 				2);
 		}
 

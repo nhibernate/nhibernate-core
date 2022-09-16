@@ -124,7 +124,7 @@ namespace NHibernate.Test.Linq
 				false,
 				typeof(A).FullName,
 				null,
-				o => o is SerializableType serializableType && serializableType.ReturnedClass == typeof(object));
+				o => o is EntityType entityType && entityType.ReturnedClass == typeof(A));
 		}
 
 		[Test]
@@ -270,6 +270,19 @@ namespace NHibernate.Test.Linq
 				"Component.OtherComponent.OtherProperty1",
 				o => o is SerializableType serializableType && serializableType.ReturnedClass == typeof(object),
 				o => o?.Name == "component[OtherProperty1]");
+		}
+
+		[Test(Description = "GH-2937")]
+		public void CompositeUserTypePropertyTest()
+		{
+			var query = session.Query<Glarch>().Select(o => o.Multiple.count);
+			AssertSupported(
+				query,
+				typeof(Glarch).FullName,
+				"Multiple.count",
+				o => o is Int32Type,
+				o => o?.Name == typeof(MultiplicityType).FullName,
+				null);
 		}
 
 		[Test]
@@ -723,9 +736,10 @@ namespace NHibernate.Test.Linq
 			string expectedEntityName,
 			string expectedMemberPath,
 			Predicate<IType> expectedMemberType,
-			Predicate<IAbstractComponentType> expectedComponentType = null)
+			Predicate<IAbstractComponentType> expectedComponentType = null,
+			bool? nullability = true)
 		{
-			AssertResult(query, true, true, expectedEntityName, expectedMemberPath, expectedMemberType, expectedComponentType);
+			AssertResult(query, true, true, expectedEntityName, expectedMemberPath, expectedMemberType, expectedComponentType, nullability);
 		}
 
 		private void AssertSupported(
@@ -768,7 +782,7 @@ namespace NHibernate.Test.Linq
 			string expectedMemberPath,
 			Predicate<IType> expectedMemberType,
 			Predicate<IAbstractComponentType> expectedComponentType = null,
-			bool nullability = true)
+			bool? nullability = true)
 		{
 			expectedComponentType = expectedComponentType ?? (o => o == null);
 
@@ -809,8 +823,12 @@ namespace NHibernate.Test.Linq
 
 			if (found)
 			{
-				Assert.That(_tryGetMappedNullability(Sfi, queryModel.SelectClause.Selector, out var isNullable), Is.True, "Expression should be supported");
-				Assert.That(nullability, Is.EqualTo(isNullable), "Nullability is not correct");
+				Assert.That(
+					_tryGetMappedNullability(Sfi, queryModel.SelectClause.Selector, out var isNullable),
+					Is.EqualTo(nullability.HasValue),
+					$"Expression should be {(nullability.HasValue ? "supported" : "unsupported")}");
+				if (nullability.HasValue)
+					Assert.That(nullability, Is.EqualTo(isNullable), "Nullability is not correct");
 			}
 		}
 	}

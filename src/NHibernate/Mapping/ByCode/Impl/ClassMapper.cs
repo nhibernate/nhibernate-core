@@ -8,7 +8,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Mapping.ByCode.Impl
 {
-	public class ClassMapper : AbstractPropertyContainerMapper, IClassMapper
+	public class ClassMapper : AbstractPropertyContainerMapper, IClassMapper, IEntitySqlsWithCheckMapper
 	{
 		private readonly HbmClass classMapping;
 		private readonly IIdMapper idMapper;
@@ -369,6 +369,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.sqlinsert.Text = new[] {sql};
 		}
 
+		public void SqlInsert(string sql, SqlCheck sqlCheck)
+		{
+			if (classMapping.SqlInsert == null)
+			{
+				classMapping.sqlinsert = new HbmCustomSQL();
+			}
+			classMapping.sqlinsert.Text = new[] { sql };
+			classMapping.sqlinsert.checkSpecified = true;
+			classMapping.sqlinsert.check = sqlCheck.ToHbmSqlCheck();
+		}
+
 		public void SqlUpdate(string sql)
 		{
 			if (classMapping.SqlUpdate == null)
@@ -378,6 +389,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 			classMapping.sqlupdate.Text = new[] {sql};
 		}
 
+		public void SqlUpdate(string sql, SqlCheck sqlCheck)
+		{
+			if (classMapping.SqlUpdate == null)
+			{
+				classMapping.sqlupdate = new HbmCustomSQL();
+			}
+			classMapping.sqlupdate.Text = new[] { sql };
+			classMapping.sqlupdate.checkSpecified = true;
+			classMapping.sqlupdate.check = sqlCheck.ToHbmSqlCheck();
+		}
+
 		public void SqlDelete(string sql)
 		{
 			if (classMapping.SqlDelete == null)
@@ -385,6 +407,17 @@ namespace NHibernate.Mapping.ByCode.Impl
 				classMapping.sqldelete = new HbmCustomSQL();
 			}
 			classMapping.sqldelete.Text = new[] {sql};
+		}
+
+		public void SqlDelete(string sql, SqlCheck sqlCheck)
+		{
+			if (classMapping.SqlDelete == null)
+			{
+				classMapping.sqldelete = new HbmCustomSQL();
+			}
+			classMapping.sqldelete.Text = new[] { sql };
+			classMapping.sqldelete.checkSpecified = true;
+			classMapping.sqldelete.check = sqlCheck.ToHbmSqlCheck();
 		}
 
 		public void Subselect(string sql)

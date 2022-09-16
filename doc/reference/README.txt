@@ -22,8 +22,8 @@ the documentation. You don't need to download and install Saxon, its jars are
 present in the repository.
 
 You need HTML Help Workshop to build the CHM help file, and Sandcastle Help File
-Builder (SHFB - https://github.com/EWSoftware/SHFB) to build the HtmlHelp2 help
-file.
+Builder v2021.11.7.0 or later (SHFB - https://github.com/EWSoftware/SHFB) to
+build the HtmlHelp2 help file.
 
 ================================================================================
 DocBook Quick Start

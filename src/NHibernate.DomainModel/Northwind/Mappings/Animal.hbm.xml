@@ -19,6 +19,9 @@
     <joined-subclass name="Reptile">
       <key column="Animal"/>
       <property name="BodyTemperature"/>
+      <property name="Enum1" type="NHibernate.DomainModel.Northwind.Entities.EnumStoredAsStringType, NHibernate.DomainModel"
+                formula="('Unspecified')" insert="false" update="false">
+      </property>
 
       <joined-subclass name="Lizard">
         <key column="Reptile"/>
