@@ -68,8 +68,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3972
 		{
 			using (var session = OpenSession())
 			{
-				var result = session.Query<DataRecord>().ToArray();
-				Assert.That(result.Length, Is.EqualTo(4));
+				var result = session.Query<DataRecord>().ToList();
+				Assert.That(result.Count, Is.EqualTo(4));
 			}
 		}
 
@@ -83,8 +83,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3972
 					x.Subject,
 					((Incident) x).ReportedBy,
 					((Change) x).ExecutedBy
-				}).ToArray();
-				Assert.That(result.Length, Is.EqualTo(4));
+				}).ToList();
+				Assert.That(result.Count, Is.EqualTo(4));
 				Assert.That(result.Count(x => x.ReportedBy == "Someone") == 1, Is.True); // there is one entity with a set ReportedBy column, i.e. the entity of type "Incident"
 				Assert.That(result.Count(x => x.ExecutedBy == "Me") == 1, Is.True); // there is one entity with a set ExecutedBy column, i.e. the entity of type "Change"
 			}
@@ -99,8 +99,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3972
 				{
 					x.Subject,
 					IncidentState = ((Incident) x).State.Description
-				}).ToArray();
-				Assert.That(result.Length, Is.EqualTo(4));
+				}).ToList();
+				Assert.That(result.Count, Is.EqualTo(4));
 				Assert.That(result.Count(x => x.IncidentState == incidentState.Description) == 1, Is.True);
 			}
 		}
@@ -115,8 +115,8 @@ namespace NHibernate.Test.NHSpecificTest.NH3972
 					x.Subject,
 					IncidentState = ((Incident) x).State.Description,
 					ChangeState = ((Change) x).State.Description
-				}).ToArray();
-				Assert.That(result.Length, Is.EqualTo(4));
+				}).ToList();
+				Assert.That(result.Count, Is.EqualTo(4));
 				Assert.That(result.Count(x => x.IncidentState == incidentState.Description) == 1, Is.True); // there is only one "Incident" entity
 				Assert.That(result.Count(x => x.ChangeState == changeState.Description) == 1, Is.True); // there is only one "Change" entity
 			}
