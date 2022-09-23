@@ -306,6 +306,9 @@ joinType returns [int j]
 	| INNER {
 		$j = INNER;
 	}
+	| CROSS {
+		$j = CROSS;
+	}
 	;
 
 // Matches a path and returns the normalized string for the path (usually
@@ -377,7 +380,7 @@ comparisonExpr
 	| ^(NOT_BETWEEN exprOrSubquery exprOrSubquery exprOrSubquery)
 	| ^(IN exprOrSubquery inRhs )
 	| ^(NOT_IN exprOrSubquery inRhs )
-	| ^(IS_NULL exprOrSubquery)
+	| ^(IS_NULL { _isNullComparison = true; } exprOrSubquery { _isNullComparison = false; })
 	| ^(IS_NOT_NULL exprOrSubquery)
 //	| ^(IS_TRUE expr)
 //	| ^(IS_FALSE expr)

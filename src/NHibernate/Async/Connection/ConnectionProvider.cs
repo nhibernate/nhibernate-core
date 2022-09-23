@@ -29,6 +29,23 @@ namespace NHibernate.Connection
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An open <see cref="DbConnection"/>.</returns>
-		public abstract Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken);
+		public virtual Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<DbConnection>(cancellationToken);
+			}
+			return GetConnectionAsync(ConnectionString, cancellationToken);
+		}
+
+		//TODO 6.0: Make abstract
+		/// <summary>
+		/// Gets an open <see cref="DbConnection"/> for given connectionString
+		/// </summary>
+		/// <returns>An open <see cref="DbConnection"/>.</returns>
+		public virtual Task<DbConnection> GetConnectionAsync(string connectionString, CancellationToken cancellationToken)
+		{
+			throw new NotImplementedException("This method must be overriden.");
+		}
 	}
 }

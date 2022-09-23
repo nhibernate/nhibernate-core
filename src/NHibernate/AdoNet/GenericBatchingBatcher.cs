@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
@@ -140,6 +139,11 @@ namespace NHibernate.AdoNet
 			_currentBatch.Clear();
 		}
 
+		internal override void OnPreparedBatchStatement(SqlString sqlString)
+		{
+			_currentBatch.CurrentStatement = sqlString;
+		}
+
 		private partial class BatchingCommandSet
 		{
 			private readonly string _statementTerminator;
@@ -172,6 +176,8 @@ namespace NHibernate.AdoNet
 
 			public int CountOfParameters { get; private set; }
 
+			public SqlString CurrentStatement { get; set; }
+
 			public void Append(DbParameterCollection parameters)
 			{
 				if (CountOfCommands > 0)
@@ -183,7 +189,7 @@ namespace NHibernate.AdoNet
 					_commandType = _batcher.CurrentCommand.CommandType;
 				}
 				
-				_sql.Add(_batcher.CurrentCommandSql.Copy());
+				_sql.Add(CurrentStatement);
 				_sqlTypes.AddRange(_batcher.CurrentCommandParameterTypes);
 
 				foreach (DbParameter parameter in parameters)
@@ -207,23 +213,25 @@ namespace NHibernate.AdoNet
 				{
 					return 0;
 				}
-				var batcherCommand = _batcher.Driver.GenerateCommand(
+
+				using (var batcherCommand = _batcher.Driver.GenerateCommand(
 					_commandType,
 					_sql.ToSqlString(),
-					_sqlTypes.ToArray()
-				);
-				for (var i = 0; i < _parameters.Count; i++)
+					_sqlTypes.ToArray()))
 				{
-					var parameter = _parameters[i];
-					var cmdParam = batcherCommand.Parameters[i];
-					cmdParam.Value = parameter.Value;
-					cmdParam.Direction = parameter.Direction;
-					cmdParam.Precision = parameter.Precision;
-					cmdParam.Scale = parameter.Scale;
-					cmdParam.Size = parameter.Size;
+					for (var i = 0; i < _parameters.Count; i++)
+					{
+						var parameter = _parameters[i];
+						var cmdParam = batcherCommand.Parameters[i];
+						cmdParam.Value = parameter.Value;
+						cmdParam.Direction = parameter.Direction;
+						cmdParam.Precision = parameter.Precision;
+						cmdParam.Scale = parameter.Scale;
+						cmdParam.Size = parameter.Size;
+					}
+					_batcher.Prepare(batcherCommand);
+					return batcherCommand.ExecuteNonQuery();
 				}
-				_batcher.Prepare(batcherCommand);
-				return batcherCommand.ExecuteNonQuery();
 			}
 
 			public void Clear()

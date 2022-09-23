@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -7,6 +8,8 @@ namespace NHibernate.Test.UtilityTest
 	/// <summary>
 	/// Test cases for the <see cref="SafetyEnumerable{T}"/> class.
 	/// </summary>
+	// Since v5.3 
+	[Obsolete("This class has no more usages and will be removed in a future version")]
 	[TestFixture]
 	public class SafetyEnumerableFixture
 	{

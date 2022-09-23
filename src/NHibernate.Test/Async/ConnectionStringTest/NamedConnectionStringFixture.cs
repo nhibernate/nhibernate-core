@@ -26,9 +26,8 @@ namespace NHibernate.Test.ConnectionStringTest
 		/// <summary>
 		/// Get an open <see cref="DbConnection"/>.
 		/// </summary>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An open <see cref="DbConnection"/>.</returns>
-		public override Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken)
+		public override Task<DbConnection> GetConnectionAsync(string connectionString, CancellationToken cancellationToken)
 		{
 			throw new NotImplementedException();
 		}

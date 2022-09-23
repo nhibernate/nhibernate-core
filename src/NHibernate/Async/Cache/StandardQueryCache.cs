@@ -470,6 +470,9 @@ namespace NHibernate.Cache
 			{
 				return Task.FromCanceled<bool>(cancellationToken);
 			}
+			if (spaces.Count == 0)
+				return Task.FromResult<bool>(true);
+
 			return _updateTimestampsCache.IsUpToDateAsync(spaces, timestamp, cancellationToken);
 		}
 	}

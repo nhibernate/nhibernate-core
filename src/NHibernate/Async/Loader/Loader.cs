@@ -27,8 +27,8 @@ using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
-using NHibernate.Intercept;
 using NHibernate.Param;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -428,7 +428,7 @@ namespace NHibernate.Loader
 			{
 				//this is a query and we are loading multiple instances of the same collection role
 				return session.PersistenceContext.LoadContexts.GetCollectionLoadContext(reader).EndLoadingCollectionsAsync(
-				collectionPersister, !IsCollectionPersisterCacheable(collectionPersister), cacheBatcher, cancellationToken);
+					collectionPersister, !IsCollectionPersisterCacheable(collectionPersister), cacheBatcher, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -1149,25 +1149,46 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Called by subclasses that batch load entities
 		/// </summary>
-		protected internal async Task<IList> LoadEntityBatchAsync(ISessionImplementor session, object[] ids, IType idType,
+		protected internal Task<IList> LoadEntityBatchAsync(ISessionImplementor session, object[] ids, IType idType,
 												 object optionalObject, string optionalEntityName, object optionalId,
 												 IEntityPersister persister, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<IList>(cancellationToken);
+			}
+			try
+			{
+				IType[] types = new IType[ids.Length];
+				ArrayHelper.Fill(types, idType);
+				var queryParameters = new QueryParameters(
+					types,
+					ids,
+					optionalObject,
+					optionalEntityName,
+					optionalId);
+				return LoadEntityBatchAsync(session, persister, queryParameters, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<IList>(ex);
+			}
+		}
+
+		protected internal async Task<IList> LoadEntityBatchAsync(ISessionImplementor session,  IEntityPersister persister, QueryParameters queryParameters, CancellationToken cancellationToken)
+		{
 			cancellationToken.ThrowIfCancellationRequested();
+			var ids = queryParameters.PositionalParameterValues;
 			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("batch loading entity: {0}", MessageHelper.InfoString(persister, ids, Factory));
 			}
 
-			IType[] types = new IType[ids.Length];
-			ArrayHelper.Fill(types, idType);
-			IList result;
 			try
 			{
-				result =
-					await (DoQueryAndInitializeNonLazyCollectionsAsync(session,
-														   new QueryParameters(types, ids, optionalObject, optionalEntityName,
-																			   optionalId), false, cancellationToken)).ConfigureAwait(false);
+				var results = await (DoQueryAndInitializeNonLazyCollectionsAsync(session, queryParameters, false, cancellationToken)).ConfigureAwait(false);
+				Log.Debug("done entity batch load");
+				return results;
 			}
 			catch (OperationCanceledException) { throw; }
 			catch (HibernateException)
@@ -1181,9 +1202,6 @@ namespace NHibernate.Loader
 												 + MessageHelper.InfoString(persister, ids, Factory), SqlString);
 				// NH: Hibernate3 passes EntityPersisters[0] instead of persister, I think it's wrong.
 			}
-
-			Log.Debug("done entity batch load");
-			return result;
 		}
 
 		/// <summary>

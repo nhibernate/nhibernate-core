@@ -216,6 +216,72 @@ namespace NHibernate.Test.SqlTest.Query
 			}
 		}
 
+		[Test(Description = "GH-2904")]
+		public async Task CacheableScalarSQLQueryAsync()
+		{
+			Organization ifa = new Organization("IFA");
+			Organization jboss = new Organization("JBoss");
+			Person gavin = new Person("Gavin");
+			Employment emp = new Employment(gavin, jboss, "AU");
+
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(ifa));
+				await (s.SaveAsync(jboss));
+				await (s.SaveAsync(gavin));
+				await (s.SaveAsync(emp));
+				await (t.CommitAsync());
+			}
+
+			using (ISession s = OpenSession())
+			{
+				Task<IList> GetCacheableSqlQueryResultsAsync()
+				{
+				try
+				{
+						return s.CreateSQLQuery(
+									"select emp.REGIONCODE " +
+									"from ORGANIZATION org " +
+									"left outer join EMPLOYMENT emp on org.ORGID = emp.EMPLOYER ")
+								.AddScalar("regionCode", NHibernateUtil.String)
+								.SetCacheable(true)
+								.ListAsync();
+					}
+				catch (System.Exception ex)
+				{
+					return Task.FromException<IList>(ex);
+				}
+			}
+
+				using (EnableStatisticsScope())
+				{
+					IList l = await (GetCacheableSqlQueryResultsAsync());
+					Assert.AreEqual(2, l.Count);
+					Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(1), "results are expected from DB");
+					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0), "results are expected from DB");
+				}
+
+				using (EnableStatisticsScope())
+				{
+					IList l2 = await (GetCacheableSqlQueryResultsAsync());
+					Assert.AreEqual(2, l2.Count);
+					Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(0), "results are expected from cache");
+					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1), "results are expected from cache");
+				}
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.DeleteAsync(emp));
+				await (s.DeleteAsync(gavin));
+				await (s.DeleteAsync(ifa));
+				await (s.DeleteAsync(jboss));
+				await (t.CommitAsync());
+			}
+		}
+
 		[Test]
 		public async Task ResultSetMappingDefinitionAsync()
 		{
@@ -720,7 +786,7 @@ namespace NHibernate.Test.SqlTest.Query
 		public async Task HandlesManualSynchronizationAsync()
 		{
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.SessionFactory.Statistics.IsStatisticsEnabled = true;
 				s.SessionFactory.Statistics.Clear();
@@ -739,7 +805,7 @@ namespace NHibernate.Test.SqlTest.Query
 
 				// clean up
 				await (s.DeleteAsync(jboss));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 				s.Close();
 			}
 		}

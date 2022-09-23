@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
 using Remotion.Linq.Clauses.ResultOperators;
 
@@ -37,7 +40,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 					tree.AddWhereClause(tree.TreeBuilder.Equality(
 						tree.TreeBuilder.Ident(GetFromAlias(tree.Root).AstNode.Text),
 						itemExpression));
-					tree.SetRoot(tree.TreeBuilder.Exists((HqlQuery)tree.Root));
+					ProcessAny.Process(tree);
 				}
 				else
 				{
@@ -59,7 +62,8 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 		private static bool IsEmptyList(HqlParameter source, VisitorParameters parameters)
 		{
 			var parameterName = source.NodesPreOrder.Single(n => n is HqlIdent).AstNode.Text;
-			var parameterValue = parameters.ConstantToParameterMap.Single(p => p.Value.Name == parameterName).Key.Value;
+			// Multiple constants may be linked to the same parameter, take the first matching parameter
+			var parameterValue = parameters.ConstantToParameterMap.First(p => p.Value.Name == parameterName).Key.Value;
 			return !((IEnumerable)parameterValue).Cast<object>().Any();
 		}
 	}

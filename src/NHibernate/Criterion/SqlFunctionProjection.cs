@@ -82,14 +82,14 @@ namespace NHibernate.Criterion
 			var arguments = new List<object>();
 			for (int i = 0; i < args.Length; i++)
 			{
-				SqlString projectArg = GetProjectionArgument(criteriaQuery, criteria, args[i], 0); // The loc parameter is unused.
-				arguments.Add(projectArg);
+				var projectArg = GetProjectionArguments(criteriaQuery, criteria, args[i]);
+				arguments.AddRange(projectArg);
 			}
 
 			return new SqlString(
 				sqlFunction.Render(arguments, criteriaQuery.Factory),
 				" as ",
-				GetColumnAliases(position, criteria, criteriaQuery)[0]);
+				GetColumnAlias(position));
 		}
 
 		private ISQLFunction GetFunction(ICriteriaQuery criteriaQuery)
@@ -107,10 +107,9 @@ namespace NHibernate.Criterion
 			return dialectFunction;
 		}
 
-		private static SqlString GetProjectionArgument(ICriteriaQuery criteriaQuery, ICriteria criteria, IProjection projection, int loc)
+		private static object[] GetProjectionArguments(ICriteriaQuery criteriaQuery, ICriteria criteria, IProjection projection)
 		{
-			SqlString sql = projection.ToSqlString(criteria, loc, criteriaQuery);
-			return SqlStringHelper.RemoveAsAliasesFromSql(sql);
+			return CriterionUtil.GetColumnNamesAsSqlStringParts(projection, criteriaQuery, criteria);
 		}
 
 		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
@@ -125,7 +124,7 @@ namespace NHibernate.Criterion
 
 			var resultType = returnType ?? returnTypeProjection?.GetTypes(criteria, criteriaQuery).FirstOrDefault();
 
-			return sqlFunction.ReturnType(resultType, criteriaQuery.Factory);
+			return sqlFunction.GetReturnType(new[] {resultType}, criteriaQuery.Factory, true);
 		}
 
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)

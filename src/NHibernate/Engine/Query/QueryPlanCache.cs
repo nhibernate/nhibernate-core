@@ -23,14 +23,20 @@ namespace NHibernate.Engine.Query
 		// unnecessary cache entries.
 		// Used solely for caching param metadata for native-sql queries, see
 		// getSQLParameterMetadata() for a discussion as to why...
-		private readonly SimpleMRUCache sqlParamMetadataCache = new SimpleMRUCache();
+		private readonly SimpleMRUCache sqlParamMetadataCache;
 
 		// the cache of the actual plans...
-		private readonly SoftLimitMRUCache planCache = new SoftLimitMRUCache(128);
+		private readonly SoftLimitMRUCache planCache;
+		
+		internal const int DefaultParameterMetadataMaxCount = 128;
+		internal const int DefaultQueryPlanMaxCount = 128;
 
 		public QueryPlanCache(ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
+
+			sqlParamMetadataCache = new SimpleMRUCache(factory.Settings.QueryPlanCacheParameterMetadataMaxSize);
+			planCache = new SoftLimitMRUCache(factory.Settings.QueryPlanCacheMaxSize);
 		}
 
 		public ParameterMetadata GetSQLParameterMetadata(string query)
@@ -60,10 +66,11 @@ namespace NHibernate.Engine.Query
 				{
 					log.Debug("unable to locate HQL query plan in cache; generating ({0})", queryExpression.Key);
 				}
+
 				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
 				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
-				if (!(queryExpression is NhLinqExpression linqExpression) || linqExpression.CanCachePlan)
-					planCache.Put(key, plan);
+				if (!(queryExpression is ICacheableQueryExpression linqExpression) || linqExpression.CanCachePlan)
+					planCache.Put(key, PreparePlanToCache(plan));
 				else
 					log.Debug("Query plan not cacheable");
 			}
@@ -79,23 +86,30 @@ namespace NHibernate.Engine.Query
 			return plan;
 		}
 
+		private QueryExpressionPlan PreparePlanToCache(QueryExpressionPlan plan)
+		{
+			if (plan.QueryExpression is NhLinqExpression planExpression)
+			{
+				return plan.Copy(new NhLinqExpressionCache(planExpression));
+			}
+
+			return plan;
+		}
+
 		private static QueryExpressionPlan CopyIfRequired(QueryExpressionPlan plan, IQueryExpression queryExpression)
 		{
-			var planExpression = plan.QueryExpression as NhLinqExpression;
-			var expression = queryExpression as NhLinqExpression;
-			if (planExpression != null && expression != null)
+			if (plan.QueryExpression is NhLinqExpressionCache cache && queryExpression is NhLinqExpression expression)
 			{
 				//NH-3413
 				//Here we have to use original expression.
 				//In most cases NH do not translate expression in second time, but 
 				// for cases when we have list parameters in query, like @p1.Contains(...),
 				// it does, and then it uses parameters from first try. 
-				//TODO: cache only required parts of QueryExpression
 
 				//NH-3436
 				// We have to return new instance plan with it's own query expression
-				// because other treads can override queryexpression of current plan during execution of query if we will use cached instance of plan 
-				expression.CopyExpressionTranslation(planExpression);
+				// because other treads can override query expression of current plan during execution of query if we will use cached instance of plan 
+				expression.CopyExpressionTranslation(cache);
 				plan = plan.Copy(expression);
 			}
 
@@ -117,8 +131,8 @@ namespace NHibernate.Engine.Query
 				log.Debug("unable to locate collection-filter query plan in cache; generating ({0} : {1})", collectionRole, queryExpression.Key);
 				plan = new FilterQueryPlan(queryExpression, collectionRole, shallow, enabledFilters, factory);
 				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
-				if (!(queryExpression is NhLinqExpression linqExpression) || linqExpression.CanCachePlan)
-					planCache.Put(key, plan);
+				if (!(queryExpression is ICacheableQueryExpression linqExpression) || linqExpression.CanCachePlan)
+					planCache.Put(key, PreparePlanToCache(plan));
 				else
 					log.Debug("Query plan not cacheable");
 			}

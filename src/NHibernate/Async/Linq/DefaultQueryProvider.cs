@@ -21,6 +21,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using System.Threading.Tasks;
 using NHibernate.Multi;
+using NHibernate.Param;
 
 namespace NHibernate.Linq
 {
@@ -31,6 +32,23 @@ namespace NHibernate.Linq
 
 	public partial class DefaultQueryProvider : INhQueryProvider, IQueryProviderWithOptions, ISupportFutureBatchNhQueryProvider
 	{
+
+		//TODO 6.0: Add to INhQueryProvider interface 
+		public virtual async Task<IList<TResult>> ExecuteListAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var linqExpression = PrepareQuery(expression, out var query);
+			var resultTransformer = linqExpression.ExpressionToHqlTranslationResults?.PostExecuteTransformer;
+			if (resultTransformer == null)
+			{
+				return await (query.ListAsync<TResult>(cancellationToken)).ConfigureAwait(false);
+			}
+
+			return new List<TResult>
+			{
+				(TResult) resultTransformer.DynamicInvoke((await (query.ListAsync(cancellationToken)).ConfigureAwait(false)).AsQueryable())
+			};
+		}
 
 		// Since v5.1
 		[Obsolete("Use ExecuteQuery(NhLinqExpression nhLinqExpression, IQuery query) instead")]
@@ -86,7 +104,7 @@ namespace NHibernate.Linq
 
 				var query = Session.CreateQuery(nhLinqExpression);
 
-				SetParameters(query, nhLinqExpression.ParameterValuesByName);
+				SetParameters(query, nhLinqExpression.NamedParameters);
 				_options?.Apply(query);
 				return query.ExecuteUpdateAsync(cancellationToken);
 			}

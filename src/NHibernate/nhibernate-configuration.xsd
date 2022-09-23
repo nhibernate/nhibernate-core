@@ -91,6 +91,7 @@
 										<xs:enumeration value="default_schema" />
 										<xs:enumeration value="show_sql" />
 										<xs:enumeration value="max_fetch_depth" />
+										<xs:enumeration value="detect_fetch_loops" />
 										<xs:enumeration value="current_session_context_class" />
 										<xs:enumeration value="transaction.factory_class">
 											<xs:annotation>
@@ -103,6 +104,15 @@
 										<xs:enumeration value="cache.provider_class" />
 										<xs:enumeration value="cache.use_query_cache" />
 										<xs:enumeration value="cache.query_cache_factory" />
+										<xs:enumeration value="cache.read_write_lock_factory">
+											<xs:annotation>
+												<xs:documentation>
+													Specify the cache lock factory to use for read-write cache regions.
+													Defaults to the built-in async cache lock factory.
+													Use async, or sync, or classname.of.CacheLockFactory, assembly.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="cache.use_second_level_cache" />
 										<xs:enumeration value="cache.region_prefix" />
 										<xs:enumeration value="cache.use_minimal_puts" />
@@ -122,8 +132,18 @@
 										<xs:enumeration value="query.factory_class" />
 										<xs:enumeration value="query.linq_provider_class" />
 										<xs:enumeration value="query.imports" />
+										<xs:enumeration value="query.plan_parameter_metadata_max_size" />
+										<xs:enumeration value="query.plan_cache_max_size" />
 										<xs:enumeration value="hbm2ddl.auto" />
 										<xs:enumeration value="hbm2ddl.keywords" />
+										<xs:enumeration value="hbm2ddl.throw_on_update">
+											<xs:annotation>
+												<!-- 6.0 TODO: should become true -->
+												<xs:documentation>
+													Whether to throw or not on schema auto-update failures. false by default.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="sql_exception_converter" />
 										<xs:enumeration value="adonet.wrap_result_sets" />
 										<xs:enumeration value="prepare_sql" />
@@ -139,10 +159,19 @@
 										<xs:enumeration value="xml.output_stylesheet" />
 										<xs:enumeration value="generate_statistics" />
 										<xs:enumeration value="query.startup_check" />
+										<xs:enumeration value="query.throw_never_cached">
+											<xs:annotation>
+												<xs:documentation>
+													Should queries set as cacheable raise an error if they reference an entity using the cache
+													strategy "never" (the default is enabled).
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="default_catalog" />
 										<xs:enumeration value="proxyfactory.factory_class" />
 										<xs:enumeration value="adonet.factory_class" />
 										<xs:enumeration value="default_batch_fetch_size" />
+										<xs:enumeration value="batch_fetch_style" />
 										<xs:enumeration value="default_entity_mode" />
 										<xs:enumeration value="default_flush_mode" />
 										<xs:enumeration value="use_sql_comments" />
@@ -151,7 +180,48 @@
 										<xs:enumeration value="order_inserts" />
 										<xs:enumeration value="order_updates" />
 										<xs:enumeration value="query.query_model_rewriter_factory" />
+										<xs:enumeration value="query.pre_transformer_registrar">
+											<xs:annotation>
+												<xs:documentation>
+													The pre-transformer registrar used to register custom expression transformers.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="linqtohql.generatorsregistry" />
+										<xs:enumeration value="linqtohql.legacy_preevaluation">
+											<xs:annotation>
+												<xs:documentation>
+													Whether to use the legacy pre-evaluation or not in Linq queries. true by default.
+
+													Legacy pre-evaluation is causing special properties or functions like DateTime.Now or Guid.NewGuid()
+													to be always evaluated with the .Net runtime and replaced in the query by parameter values.
+
+													The new pre-evaluation allows them to be converted to HQL function calls which will be run on the db
+													side. This allows for example to retrieve the server time instead of the client time, or to generate
+													UUIDs for each row instead of an unique one for all rows.
+
+													The new pre-evaluation will likely be enabled by default in the next major version (6.0).
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="linqtohql.fallback_on_preevaluation">
+											<xs:annotation>
+												<xs:documentation>
+													When the new pre-evaluation is enabled, should methods which translation is not supported by the current
+													dialect fallback to pre-evaluation? false by default.
+
+													When this fallback option is enabled while legacy pre-evaluation is disabled, properties or functions
+													like DateTime.Now or Guid.NewGuid() used in Linq expressions will not fail when the dialect does not
+													support them, but will instead be pre-evaluated.
+
+													When this fallback option is disabled while legacy pre-evaluation is disabled, properties or functions
+													like DateTime.Now or Guid.NewGuid() used in Linq expressions will fail when the dialect does not
+													support them.
+
+													This option has no effect if the legacy pre-evaluation is enabled.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="odbc.explicit_datetime_scale" />
 										<xs:enumeration value="adonet.batch_versioned_data" />
 										<xs:enumeration value="transaction.system_completion_lock_timeout">
@@ -203,6 +273,29 @@
 													See https://docs.oracle.com/cd/B19306_01/server.102/b14225/ch6unicode.htm#CACHCAHF
 													https://docs.oracle.com/database/121/ODPNT/featOraCommand.htm#i1007557
 													This setting applies only to Oracle dialects and ODP.Net managed or unmanaged driver.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="oracle.use_binary_floating_point_types">
+											<xs:annotation>
+												<xs:documentation>
+													Oracle 10g introduced BINARY_DOUBLE and BINARY_FLOAT types which are compatible with .NET
+													double and float types, where FLOAT and DOUBLE are not. Oracle FLOAT and DOUBLE types do
+													not conform to the IEEE standard as they are internally implemented as NUMBER type, which
+													makes them an exact numeric type.
+													False by default.
+													See https://docs.oracle.com/database/121/TTSQL/types.htm#TTSQL126
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="oracle.suppress_decimal_invalid_cast_exception">
+											<xs:annotation>
+												<xs:documentation>
+													This setting specifies whether to suppress the InvalidCastException and return a rounded-off
+													28 precision value if the Oracle NUMBER value has more than 28 precision.
+													False by default.
+													See https://docs.oracle.com/en/database/oracle/oracle-data-access-components/19.3/odpnt/DataReaderSuppressGetDecimalInvalidCastException.html
+													This setting works only with ODP.NET 19.10 or newer.
 												</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>
@@ -275,6 +368,20 @@
 												</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>
+										<xs:enumeration value="multi_tenancy.strategy">
+											<xs:annotation>
+												<xs:documentation>
+													Strategy for multi-tenancy. Supported Values: Database, None. Corresponds to MultiTenancyStrategy enum.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="multi_tenancy.connection_provider">
+											<xs:annotation>
+												<xs:documentation>
+													Connection provider for given multi-tenancy strategy. Class name implementing IMultiTenancyConnectionProvider.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 									</xs:restriction>
 								</xs:simpleType>
 								<xs:simpleType>
@@ -313,6 +420,7 @@
 					<xs:enumeration value="read-write" />
 					<xs:enumeration value="nonstrict-read-write" />
 					<xs:enumeration value="transactional" />
+					<xs:enumeration value="never" />
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>

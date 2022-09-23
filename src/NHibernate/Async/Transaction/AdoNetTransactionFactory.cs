@@ -16,7 +16,6 @@ using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Engine.Transaction;
 using NHibernate.Exceptions;
-using NHibernate.Impl;
 
 namespace NHibernate.Transaction
 {
@@ -42,25 +41,17 @@ namespace NHibernate.Transaction
 
 				DbConnection connection = null;
 				DbTransaction trans = null;
-				// bool wasAutoCommit = false;
 				try
 				{
 					// We make an exception for SQLite and use the session's connection,
 					// since SQLite only allows one connection to the database.
-					if (session.Factory.Dialect is SQLiteDialect)
-						connection = session.Connection;
-					else
-						connection = await (session.Factory.ConnectionProvider.GetConnectionAsync(cancellationToken)).ConfigureAwait(false);
+					connection = session.Factory.Dialect is SQLiteDialect
+						? session.Connection
+						: await (session.ConnectionManager.GetNewConnectionAsync(cancellationToken)).ConfigureAwait(false);
 
 					if (transacted)
 					{
 						trans = connection.BeginTransaction();
-						// TODO NH: a way to read the autocommit state is needed
-						//if (TransactionManager.GetAutoCommit(connection))
-						//{
-						//  wasAutoCommit = true;
-						//  TransactionManager.SetAutoCommit(connection, false);
-						//}
 					}
 
 					await (work.DoWorkAsync(connection, trans, cancellationToken)).ConfigureAwait(false);
@@ -68,7 +59,6 @@ namespace NHibernate.Transaction
 					if (transacted)
 					{
 						trans.Commit();
-						//TransactionManager.Commit(connection);
 					}
 				}
 				catch (Exception t)
@@ -84,49 +74,33 @@ namespace NHibernate.Transaction
 						}
 						catch (Exception ignore)
 						{
-							isolaterLog.Debug(ignore, "Unable to rollback transaction");
+							_isolatorLog.Debug(ignore, "Unable to rollback transaction");
 						}
 
-						if (t is HibernateException)
+						switch (t)
 						{
-							throw;
-						}
-						else if (t is DbException)
-						{
-							throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, t,
-						                                 "error performing isolated work");
-						}
-						else
-						{
-							throw new HibernateException("error performing isolated work", t);
+							case HibernateException _:
+								throw;
+							case DbException _:
+								throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, t,
+								                                 "error performing isolated work");
+							default:
+								throw new HibernateException("error performing isolated work", t);
 						}
 					}
 				}
 				finally
 				{
-					//if (transacted && wasAutoCommit)
-					//{
-					//  try
-					//  {
-					//    // TODO NH: reset autocommit
-					//    // TransactionManager.SetAutoCommit(connection, true);
-					//  }
-					//  catch (Exception)
-					//  {
-					//    log.Debug("was unable to reset connection back to auto-commit");
-					//  }
-					//}
-
 					try
 					{
 						trans?.Dispose();
 					}
 					catch (Exception ignore)
 					{
-						isolaterLog.Warn(ignore, "Unable to dispose transaction");
+						_isolatorLog.Warn(ignore, "Unable to dispose transaction");
 					}
 
-					if (session.Factory.Dialect is SQLiteDialect == false)
+					if (connection != null && session.Factory.Dialect is SQLiteDialect == false)
 						session.Factory.ConnectionProvider.CloseConnection(connection);
 				}
 			}

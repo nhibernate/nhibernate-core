@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Collection.Trackers;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Linq;
@@ -23,7 +24,7 @@ namespace NHibernate.Collection.Generic
 	/// <typeparam name="TValue">The type of the elements in the IDictionary.</typeparam>
 	[Serializable]
 	[DebuggerTypeProxy(typeof(DictionaryProxy<,>))]
-	public partial class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, ICollection
+	public partial class PersistentGenericMap<TKey, TValue> : AbstractPersistentCollection, IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue>, ICollection
 	{
 		protected IDictionary<TKey, TValue> WrappedMap;
 		private readonly ICollection<TValue> _wrappedValues;
@@ -54,6 +55,12 @@ namespace NHibernate.Collection.Generic
 			_wrappedValues = new ValuesWrapper(this);
 			SetInitialized();
 			IsDirectlyAccessible = true;
+		}
+
+		internal override AbstractQueueOperationTracker CreateQueueOperationTracker()
+		{
+			var entry = Session.PersistenceContext.GetCollectionEntry(this);
+			return new MapQueueOperationTracker<TKey, TValue>(entry.LoadedPersister);
 		}
 
 		public override object GetSnapshot(ICollectionPersister persister)
@@ -106,6 +113,13 @@ namespace NHibernate.Collection.Generic
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
 			WrappedMap = (IDictionary<TKey, TValue>)persister.CollectionType.Instantiate(anticipatedSize);
+		}
+
+		public override void ApplyQueuedOperations()
+		{
+			var queueOperation = (AbstractMapQueueOperationTracker<TKey, TValue>) QueueOperationTracker;
+			queueOperation?.ApplyChanges(WrappedMap);
+			QueueOperationTracker = null;
 		}
 
 		public override bool Empty
@@ -216,23 +230,6 @@ namespace NHibernate.Collection.Generic
 			return sn[((KeyValuePair<TKey, TValue>)entry).Key];
 		}
 
-		public override bool Equals(object other)
-		{
-			var that = other as IDictionary<TKey, TValue>;
-			if (that == null)
-			{
-				return false;
-			}
-			Read();
-			return CollectionHelper.DictionaryEquals(WrappedMap, that);
-		}
-
-		public override int GetHashCode()
-		{
-			Read();
-			return WrappedMap.GetHashCode();
-		}
-
 		public override bool EntryExists(object entry, int i)
 		{
 			return WrappedMap.ContainsKey(((KeyValuePair<TKey, TValue>)entry).Key);
@@ -242,8 +239,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool ContainsKey(TKey key)
 		{
-			bool? exists = ReadIndexExistence(key);
-			return !exists.HasValue ? WrappedMap.ContainsKey(key) : exists.Value;
+			return ReadKeyExistence<TKey, TValue>(key) ?? WrappedMap.ContainsKey(key);
 		}
 
 		public void Add(TKey key, TValue value)
@@ -254,13 +250,20 @@ namespace NHibernate.Collection.Generic
 			}
 			if (PutQueueEnabled)
 			{
-				object old = ReadElementByIndex(key);
-				if (old != Unknown)
+				var found = TryReadElementByKey<TKey, TValue>(key, out _, out _);
+				if (found.HasValue)
 				{
-					QueueOperation(new PutDelayedOperation(this, key, value, old == NotFound ? null : old));
+					if (found.Value)
+					{
+						throw new ArgumentException("An item with the same key has already been added."); // Mimic dictionary behavior
+					}
+
+					QueueAddElementByKey(key, value);
+
 					return;
 				}
 			}
+
 			Initialize(true);
 			WrappedMap.Add(key, value);
 			Dirty();
@@ -268,8 +271,10 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(TKey key)
 		{
-			object old = PutQueueEnabled ? ReadElementByIndex(key) : Unknown;
-			if (old == Unknown) // queue is not enabled for 'puts', or element not found
+			var oldValue = default(TValue);
+			var existsInDb = default(bool?);
+			var found = PutQueueEnabled ? TryReadElementByKey(key, out oldValue, out existsInDb) : null;
+			if (!found.HasValue) // queue is not enabled for 'puts' or collection was initialized
 			{
 				Initialize(true);
 				bool contained = WrappedMap.Remove(key);
@@ -280,65 +285,70 @@ namespace NHibernate.Collection.Generic
 				return contained;
 			}
 
-			QueueOperation(new RemoveDelayedOperation(this, key, old == NotFound ? null : old));
-			return true;
+			return QueueRemoveElementByKey(key, oldValue, existsInDb);
 		}
 
 		public bool TryGetValue(TKey key, out TValue value)
 		{
-			object result = ReadElementByIndex(key);
-			if (result == Unknown)
+			var found = TryReadElementByKey(key, out value, out _);
+			if (!found.HasValue) // collection was initialized
 			{
 				return WrappedMap.TryGetValue(key, out value);
 			}
-			if(result == NotFound)
+
+			if (found.Value)
 			{
-				value = default(TValue);
-				return false;
+				return true;
 			}
-			value = (TValue)result;
-			return true;
+
+			value = default(TValue);
+			return false;
 		}
 
 		public TValue this[TKey key]
 		{
 			get
 			{
-				object result = ReadElementByIndex(key);
-				if (result == Unknown)
+				var found = TryReadElementByKey<TKey, TValue>(key, out var value, out _);
+				if (!found.HasValue) // collection was initialized
 				{
 					return WrappedMap[key];
 				}
-				if (result == NotFound)
+
+				if (!found.Value)
 				{
 					throw new KeyNotFoundException();
 				}
-				return (TValue) result;
+
+				return value;
 			}
 			set
 			{
 				// NH Note: the assignment in NET work like the put method in JAVA (mean assign or add)
 				if (PutQueueEnabled)
 				{
-					object old = ReadElementByIndex(key);
-					if (old != Unknown)
+					var found = TryReadElementByKey<TKey, TValue>(key, out var oldValue, out var existsInDb);
+					if (found.HasValue)
 					{
-						QueueOperation(new PutDelayedOperation(this, key, value, old == NotFound ? null : old));
+						QueueSetElementByKey(key, value, oldValue, existsInDb);
+
 						return;
 					}
 				}
+
 				Initialize(true);
-				TValue tempObject;
-				WrappedMap.TryGetValue(key, out tempObject);
-				WrappedMap[key] = value;
-				TValue old2 = tempObject;
-				// would be better to use the element-type to determine
-				// whether the old and the new are equal here; the problem being
-				// we do not necessarily have access to the element type in all
-				// cases
-				if (!ReferenceEquals(value, old2))
+				if (!WrappedMap.TryGetValue(key, out var old))
 				{
+					WrappedMap.Add(key, value);
 					Dirty();
+				}
+				else
+				{
+					WrappedMap[key] = value;
+					if (!EqualityComparer<TValue>.Default.Equals(value, old))
+					{
+						Dirty();
+					}
 				}
 			}
 		}
@@ -360,6 +370,16 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
+		{
+			get { return Keys; }
+		}
+
+		IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
+		{
+			get { return Values; }
+		}
+
 		#endregion
 
 		#region ICollection<KeyValuePair<TKey,TValue>> Members
@@ -373,7 +393,7 @@ namespace NHibernate.Collection.Generic
 		{
 			if (ClearQueueEnabled)
 			{
-				QueueOperation(new ClearDelayedOperation(this));
+				QueueClearCollection();
 			}
 			else
 			{
@@ -388,7 +408,7 @@ namespace NHibernate.Collection.Generic
 
 		public bool Contains(KeyValuePair<TKey, TValue> item)
 		{
-			bool? exists = ReadIndexExistence(item.Key);
+			bool? exists = ReadKeyExistence<TKey, TValue>(item.Key);
 			if (!exists.HasValue)
 			{
 				return WrappedMap.Contains(item);
@@ -483,6 +503,8 @@ namespace NHibernate.Collection.Generic
 
 		#region DelayedOperations
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class ClearDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericMap<TKey, TValue> _enclosingInstance;
@@ -508,6 +530,8 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class PutDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericMap<TKey, TValue> _enclosingInstance;
@@ -539,6 +563,8 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class RemoveDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericMap<TKey, TValue> _enclosingInstance;

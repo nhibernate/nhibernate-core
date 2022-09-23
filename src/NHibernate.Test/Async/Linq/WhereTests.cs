@@ -14,14 +14,17 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using log4net.Core;
 using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq.Functions;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class WhereTestsAsync : LinqTestCase
 	{
@@ -431,6 +434,34 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void StringComparisonParamEmitsWarningAsync()
+		{
+			Assert.Multiple(
+				async () =>
+				{
+					await (AssertStringComparisonWarningAsync(x => string.Compare(x.CustomerId, "ANATR", StringComparison.Ordinal) <= 0, 2));
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.StartsWith("ANATR", StringComparison.Ordinal), 1));
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.EndsWith("ANATR", StringComparison.Ordinal), 1));
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.IndexOf("ANATR", StringComparison.Ordinal) == 0, 1));
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.IndexOf("ANATR", 0, StringComparison.Ordinal) == 0, 1));
+#if NETCOREAPP2_0_OR_GREATER
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.Replace("AN", "XX", StringComparison.Ordinal) == "XXATR", 1));
+#endif
+				});
+		}
+
+		private async Task AssertStringComparisonWarningAsync(Expression<Func<Customer, bool>> whereParam, int expected, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			using (var log = new LogSpy(typeof(BaseHqlGeneratorForMethod)))
+			{
+				var customers = await (session.Query<Customer>().Where(whereParam).ToListAsync(cancellationToken));
+
+				Assert.That(customers, Has.Count.EqualTo(expected), whereParam.ToString);
+				Assert.That(log.GetWholeLog(), Does.Contain($"parameter of type '{nameof(StringComparison)}' is ignored"), whereParam.ToString);
+			}
+		}
+
+		[Test]
 		public async Task UsersWithArrayContainsAsync()
 		{
 			var names = new[] { "ayende", "rahien" };
@@ -815,6 +846,27 @@ namespace NHibernate.Test.Linq
 			                    .FirstOrDefaultAsync());
 			Assert.That(result, Is.Not.Null);
 			Assert.That(result.SerialNumber, Is.EqualTo("1121"));
+		}
+
+		[Test]
+		public async Task CanCompareAggregateResultAsync()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+			{
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+			}
+
+			await (session.Query<Customer>()
+			       .Select(o => new AggregateDate { Id = o.CustomerId, MaxDate = o.Orders.Max(l => l.RequiredOrderDate)})
+			       .Where(o => o.MaxDate <= DateTime.Today && o.MaxDate >= DateTime.Today)
+			       .ToListAsync());
+		}
+
+		private class AggregateDate
+		{
+			public string Id { get; set; }
+
+			public DateTime? MaxDate { get; set; }
 		}
 
 		private static List<object[]> CanUseCompareInQueryDataSource()

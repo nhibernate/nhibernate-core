@@ -75,6 +75,12 @@ namespace NHibernate.Driver
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlType sqlType)
 		{
 			base.InitializeParameter(dbParam, name, AdjustSqlType(sqlType));
+			// For types that are using one character (CharType, AnsiCharType, TrueFalseType, YesNoType and EnumCharType),
+			// we have to specify the length otherwise sql function like charindex won't work as expected.
+			if (sqlType.LengthDefined && sqlType.Length == 1)
+			{
+				dbParam.Size = sqlType.Length;
+			}
 
 			AdjustDbParamTypeForLargeObjects(dbParam, sqlType);
 		}

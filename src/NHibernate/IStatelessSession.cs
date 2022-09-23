@@ -10,8 +10,8 @@ using NHibernate.Util;
 
 namespace NHibernate
 {
-	// 6.0 TODO: Convert to interface methods
-	public static class StatelessSessionExtensions
+	// 6.0 TODO: Convert most of these extensions to interface methods
+	public static partial class StatelessSessionExtensions
 	{
 		/// <summary>
 		/// Creates a <see cref="IQueryBatch"/> for the session.
@@ -21,6 +21,58 @@ namespace NHibernate
 		public static IQueryBatch CreateQueryBatch(this IStatelessSession session)
 		{
 			return ReflectHelper.CastOrThrow<AbstractSessionImpl>(session, "query batch").CreateQueryBatch();
+		}
+
+		// 6.0 TODO: consider if it should be added as a property on IStatelessSession then obsolete this, or if it should stay here as an extension method.
+		/// <summary>
+		/// Get the current transaction if any is ongoing, else <see langword="null" />.
+		/// </summary>
+		/// <param name="session">The session.</param>
+		/// <returns>The current transaction or <see langword="null" />..</returns>
+		public static ITransaction GetCurrentTransaction(this IStatelessSession session)
+			=> session.GetSessionImplementation().ConnectionManager.CurrentTransaction;
+
+		//NOTE: Keep it as extension
+		/// <summary>
+		/// Return the persistent instance of the given entity name with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <typeparam name="T">The entity class.</typeparam>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <param name="lockMode">The lock mode to use for getting the entity.</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
+		public static T Get<T>(this IStatelessSession session, string entityName, object id, LockMode lockMode)
+		{
+			return (T) session.Get(entityName, id, lockMode);
+		}
+
+		//NOTE: Keep it as extension
+		/// <summary>
+		/// Return the persistent instance of the given entity name with the given identifier, or null
+		/// if there is no such persistent instance. (If the instance, or a proxy for the instance, is
+		/// already associated with the session, return that instance or proxy.)
+		/// </summary>
+		/// <typeparam name="T">The entity class.</typeparam>
+		/// <param name="session">The session.</param>
+		/// <param name="entityName">The entity name.</param>
+		/// <param name="id">The entity identifier.</param>
+		/// <returns>A persistent instance, or <see langword="null" />.</returns>
+		public static T Get<T>(this IStatelessSession session, string entityName, object id)
+		{
+			return (T) session.Get(entityName, id);
+		}
+
+		/// <summary>
+		/// Flush the batcher. When batching is enabled, a stateless session is no more fully stateless. It may retain
+		/// in its batcher some state waiting to be flushed to the database.
+		/// </summary>
+		/// <param name="session">The session.</param>
+		public static void FlushBatcher(this IStatelessSession session)
+		{
+			session.GetSessionImplementation().Flush();
 		}
 	}
 
@@ -54,6 +106,8 @@ namespace NHibernate
 		DbConnection Connection { get; }
 		
 		/// <summary>Get the current NHibernate transaction.</summary>
+		// Since v5.3
+		[Obsolete("Use GetCurrentTransaction extension method instead, and check for null.")]
 		ITransaction Transaction { get; }
 		
 		/// <summary>

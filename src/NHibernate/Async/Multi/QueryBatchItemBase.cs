@@ -34,6 +34,7 @@ namespace NHibernate.Multi
 
 			var dialect = Session.Factory.Dialect;
 			var hydratedObjects = new List<object>[_queryInfos.Count];
+			var isDebugLog = Log.IsDebugEnabled();
 
 			using (Session.SwitchCacheMode(_cacheMode))
 			{
@@ -75,14 +76,21 @@ namespace NHibernate.Multi
 					var lockModeArray = loader.GetLockModes(queryParameters.LockModes);
 					var optionalObjectKey = Loader.Loader.GetOptionalObjectKey(queryParameters, Session);
 					var tmpResults = new List<object>();
-					var queryCacheBuilder = new QueryCacheResultBuilder(loader);
+					var queryCacheBuilder = queryInfo.IsCacheable ? new QueryCacheResultBuilder(loader) : null;
 					var cacheBatcher = queryInfo.CacheBatcher;
 					var ownCacheBatcher = cacheBatcher == null;
 					if (ownCacheBatcher)
 						cacheBatcher = new CacheBatcher(Session);
 
-					for (var count = 0; count < maxRows && await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false); count++)
+					if (isDebugLog)
+						Log.Debug("processing result set");
+
+					int count;
+					for (count = 0; count < maxRows && await (reader.ReadAsync(cancellationToken)).ConfigureAwait(false); count++)
 					{
+						if (isDebugLog)
+							Log.Debug("result set row: {0}", count);
+
 						rowCount++;
 
 						var o =
@@ -107,6 +115,9 @@ namespace NHibernate.Multi
 
 						tmpResults.Add(o);
 					}
+
+					if (isDebugLog)
+						Log.Debug("done processing result set ({0} rows)", count);
 
 					queryInfo.Result = tmpResults;
 					if (queryInfo.CanPutToCache)

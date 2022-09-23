@@ -47,7 +47,17 @@ namespace NHibernate.Test.Criteria
 
 					rc.Property(x => x.Name);
 
-					rc.Property(ep => ep.LazyProp, m => m.Lazy(true));
+					rc.Property(ep => ep.LazyProp, m =>
+					{
+						m.Lazy(true);
+						m.FetchGroup("LazyProp1");
+					});
+
+					rc.Property(ep => ep.LazyProp2, m =>
+					{
+						m.Lazy(true);
+						m.FetchGroup("LazyProp2");
+					});
 
 					rc.ManyToOne(ep => ep.Child1, m => m.Column("Child1Id"));
 					rc.ManyToOne(ep => ep.Child2, m => m.Column("Child2Id"));
@@ -340,12 +350,33 @@ namespace NHibernate.Test.Criteria
 				Assert.That(entityRoot, Is.Not.Null);
 				Assert.That(NHibernateUtil.IsInitialized(entityRoot), Is.True, "Object must be initialized");
 				Assert.That(NHibernateUtil.IsPropertyInitialized(entityRoot, nameof(entityRoot.LazyProp)), Is.True, "Lazy property must be initialized");
+				Assert.That(NHibernateUtil.IsPropertyInitialized(entityRoot, nameof(entityRoot.LazyProp2)), Is.True, "Lazy property must be initialized");
+			}
+		}
+		
+		[Test]
+		public async Task EntityProjectionWithLazyPropertiesSinglePropertyFetchAsync()
+		{
+			using (var session = OpenSession())
+			{
+				EntityComplex entityRoot;
+				entityRoot = await (session
+							.QueryOver<EntityComplex>()
+							.Where(ec => ec.LazyProp != null)
+							.Select(Projections.RootEntity().SetFetchLazyPropertyGroups(nameof(entityRoot.LazyProp)))
+							.Take(1).SingleOrDefaultAsync());
+
+				Assert.That(entityRoot, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(entityRoot), Is.True, "Object must be initialized");
+				Assert.That(NHibernateUtil.IsPropertyInitialized(entityRoot, nameof(entityRoot.LazyProp)), Is.True, "Lazy property must be initialized");
+				Assert.That(NHibernateUtil.IsPropertyInitialized(entityRoot, nameof(entityRoot.LazyProp2)), Is.False, "Property must be lazy");
 			}
 		}
 
 		[Test]
 		public async Task NullEntityProjectionAsync()
 		{
+#pragma warning disable CS8073 //The result of the expression is always 'false'
 			using (var session = OpenSession())
 			{
 				EntitySimpleChild child1 = null;
@@ -358,6 +389,7 @@ namespace NHibernate.Test.Criteria
 
 				Assert.That(child1, Is.Null);
 			}
+#pragma warning restore CS8073 //The result of the expression is always 'false'
 		}
 
 		[Test]

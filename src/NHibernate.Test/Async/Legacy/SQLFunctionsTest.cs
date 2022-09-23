@@ -11,6 +11,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using log4net;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
@@ -115,6 +116,34 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
+		//NH-3893 (GH-1349) left and right functions are broken
+		[Test]
+		public async Task LeftAndRightAsync()
+		{
+			//left or right functions are supported by most dialects but not registered.
+			AssumeFunctionSupported("left");
+			AssumeFunctionSupported("right");
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				Simple simple = new Simple();
+				simple.Name = "Simple Dialect Function Test";
+				simple.Address = "Simple Address";
+				simple.Pay = 45.8f;
+				simple.Count = 2;
+				await (s.SaveAsync(simple, 10L));
+
+				var rset = await (s.CreateQuery("select left('abc', 2), right('abc', 2) from s in class Simple").ListAsync<object[]>());
+				var row = rset[0];
+				Assert.AreEqual("ab", row[0], "Left function is broken.");
+				Assert.AreEqual("bc", row[1], "Right function is broken.");
+
+				await (s.DeleteAsync(simple));
+				await (t.CommitAsync());
+			}
+		}
+
 		[Test]
 		public async Task SetPropertiesAsync()
 		{
@@ -129,6 +158,113 @@ namespace NHibernate.Test.Legacy
 			await (s.DeleteAsync(simple));
 			await (t.CommitAsync());
 			s.Close();
+		}
+
+		[Test]
+		public async Task SetParametersWithDictionaryAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				await (s.SaveAsync(simple, 10L));
+				var q = s.CreateQuery("from s in class Simple where s.Name = :Name and s.Count = :Count");
+				var parameters = new Dictionary<string, object>
+				{
+					{ nameof(simple.Name), simple.Name },
+					{ nameof(simple.Count), simple.Count },
+				};
+				q.SetProperties(parameters);
+				var results = await (q.ListAsync());
+				Assert.That(results, Has.One.EqualTo(simple));
+				await (s.DeleteAsync(simple));
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task SetParametersWithHashtableAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				await (s.SaveAsync(simple, 10L));
+				var q = s.CreateQuery("from s in class Simple where s.Name = :Name and (s.Address = :Address or :Address is null and s.Address is null)");
+				var parameters = new Hashtable
+				{
+					{ nameof(simple.Name), simple.Name },
+					{ nameof(simple.Address), simple.Address },
+				};
+				q.SetProperties(parameters);
+				var results = await (q.ListAsync());
+				Assert.That(results, Has.One.EqualTo(simple));
+				await (s.DeleteAsync(simple));
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task SetParametersWithDynamicAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				await (s.SaveAsync(simple, 10L));
+				var q = s.CreateQuery("from s in class Simple where s.Name = :Name and s.Count = :Count");
+				dynamic parameters = new ExpandoObject();
+				parameters.Name = simple.Name;
+				parameters.Count = simple.Count;
+				q.SetProperties(parameters);
+				var results = await (q.ListAsync());
+				Assert.That(results, Has.One.EqualTo(simple));
+				await (s.DeleteAsync(simple));
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task SetNullParameterWithDictionaryAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				await (s.SaveAsync(simple, 10L));
+				var q = s.CreateQuery("from s in class Simple where s.Name = :Name and (s.Address = :Address or :Address is null and s.Address is null)");
+				var parameters = new Dictionary<string, object>
+				{
+					{ nameof(simple.Name), simple.Name },
+					{ nameof(simple.Address), null },
+				};
+				q.SetProperties(parameters);
+				var results = await (q.ListAsync());
+				Assert.That(results, Has.One.EqualTo(simple));
+				await (s.DeleteAsync(simple));
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task SetParameterListWithDictionaryAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var simple = new Simple { Name = "Simple 1" };
+				await (s.SaveAsync(simple, 10L));
+				var q = s.CreateQuery("from s in class Simple where s.Name in (:Name)");
+				var parameters = new Dictionary<string, object>
+				{
+					{ nameof(simple.Name), new [] {simple.Name} }
+				};
+				q.SetProperties(parameters);
+				var results = await (q.ListAsync());
+				Assert.That(results, Has.One.EqualTo(simple));
+				await (s.DeleteAsync(simple));
+				await (t.CommitAsync());
+			}
 		}
 
 		[Test]

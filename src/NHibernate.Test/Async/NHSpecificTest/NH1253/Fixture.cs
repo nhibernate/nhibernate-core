@@ -15,7 +15,6 @@ using NHibernate.Multi;
 namespace NHibernate.Test.NHSpecificTest.NH1253
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -119,7 +118,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1253
 				await (s.CreateQueryBatch()
 				 .Add<Car>(q1)
 				 .Add<Car>(q2)
-				 .ExecuteAsync(CancellationToken.None));
+				 .ExecuteAsync());
 
 				await (tx.CommitAsync());
 			}

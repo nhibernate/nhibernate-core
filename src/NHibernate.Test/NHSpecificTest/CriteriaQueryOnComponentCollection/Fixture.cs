@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
@@ -19,7 +18,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 		protected override void OnSetUp()
 		{
 			using (var s = Sfi.OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				var parent = new Employee
 				{
@@ -45,18 +44,18 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 				s.Save(parent);
 				s.Save(emp);
 
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 
 		protected override void OnTearDown()
 		{
 			using (var s = Sfi.OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.Delete("from System.Object");
 
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 

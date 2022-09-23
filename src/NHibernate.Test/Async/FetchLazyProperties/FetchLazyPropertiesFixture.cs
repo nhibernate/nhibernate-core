@@ -9,12 +9,14 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.FetchLazyProperties
@@ -664,6 +666,40 @@ namespace NHibernate.Test.FetchLazyProperties
 
 		#endregion
 
+		#region TestHqlFetchManyToOneAndComponentManyToOne
+
+		[Test]
+		public async Task TestHqlFetchManyToOneAndComponentManyToOneAsync()
+		{
+			Person person;
+			using (var s = OpenSession())
+			{
+				person = await (s.CreateQuery("from Person p fetch p.Address left join fetch p.Address.Continent left join fetch p.BestFriend where p.Id = 1").UniqueResultAsync<Person>());
+			}
+
+			AssertFetchManyToOneAndComponentManyToOne(person);
+		}
+
+		[Test]
+		public async Task TestLinqFetchManyToOneAndComponentManyToOneAsync()
+		{
+			Person person;
+			using (var s = OpenSession())
+			{
+				person = await (s.Query<Person>().Fetch(o => o.BestFriend).Fetch(o => o.Address).ThenFetch(o => o.Continent).FirstOrDefaultAsync(o => o.Id == 1));
+			}
+
+			AssertFetchManyToOneAndComponentManyToOne(person);
+		}
+
+		private static void AssertFetchManyToOneAndComponentManyToOne(Person person)
+		{
+			AssertFetchComponentManyToOne(person);
+			Assert.That(NHibernateUtil.IsInitialized(person.BestFriend), Is.True);
+		}
+
+		#endregion
+
 		#region FetchSubClassFormula
 
 		[Test]
@@ -941,6 +977,62 @@ namespace NHibernate.Test.FetchLazyProperties
 			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Image"), Is.True);
 			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Address"), Is.True);
 			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Formula"), Is.True);
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task TestFetchAllPropertiesAfterEntityIsInitializedAsync(bool readOnly)
+		{
+			Person person;
+			using(var s = OpenSession())
+			using(var tx = s.BeginTransaction())
+			{
+				person = await (s.CreateQuery("from Person where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>());
+				var image = person.Image;
+				person = await (s.CreateQuery("from Person fetch all properties where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>());
+
+				await (tx.CommitAsync());
+			}
+
+			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Image"), Is.True);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Address"), Is.True);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Formula"), Is.True);
+		}
+
+		[Test]
+		public async Task TestHqlCrossJoinFetchFormulaAsync()
+		{
+			if (!Dialect.SupportsCrossJoin)
+			{
+				Assert.Ignore("Dialect does not support cross join.");
+			}
+
+			var persons = new List<Person>();
+			var bestFriends = new List<Person>();
+			using (var sqlSpy = new SqlLogSpy())
+			using (var s = OpenSession())
+			{
+				var list = await (s.CreateQuery("select p, bf from Person p cross join Person bf fetch bf.Formula where bf.Id = p.BestFriend.Id").ListAsync<object[]>());
+				foreach (var arr in list)
+				{
+					persons.Add((Person) arr[0]);
+					bestFriends.Add((Person) arr[1]);
+				}
+			}
+
+			AssertPersons(persons, false);
+			AssertPersons(bestFriends, true);
+
+			void AssertPersons(List<Person> results, bool fetched)
+			{
+				foreach (var person in results)
+				{
+					Assert.That(person, Is.Not.Null);
+					Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Image"), Is.False);
+					Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Address"), Is.False);
+					Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Formula"), fetched ? Is.True : (IResolveConstraint) Is.False);
+				}
+			}
 		}
 
 		private static Person GeneratePerson(int i, Person bestFriend)

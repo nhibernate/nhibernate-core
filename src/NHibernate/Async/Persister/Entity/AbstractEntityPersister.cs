@@ -45,7 +45,8 @@ namespace NHibernate.Persister.Entity
 	using System.Threading;
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
-		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable,
+		IPersister
 	{
 
 		private partial class GeneratedIdentifierBinder : IBinder
@@ -87,7 +88,12 @@ namespace NHibernate.Persister.Entity
 				int[] lazyIndexes;
 				if (allLazyProperties)
 				{
-					lazyIndexes = indexes = lazyPropertyNumbers;
+					indexes = lazyPropertyNumbers;
+					lazyIndexes = new int[lazyPropertyNumbers.Length];
+					for(var i = 0; i < lazyIndexes.Length; i++)
+					{
+						lazyIndexes[i] = i;
+					}
 				}
 				else
 				{
@@ -201,9 +207,9 @@ namespace NHibernate.Persister.Entity
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("Forcing version increment [{0}; {1} -> {2}]",
-				          MessageHelper.InfoString(this, id, Factory),
-				          VersionType.ToLoggableString(currentVersion, Factory),
-				          VersionType.ToLoggableString(nextVersion, Factory));
+					          MessageHelper.InfoString(this, id, Factory),
+					          VersionType.ToLoggableString(currentVersion, Factory),
+					          VersionType.ToLoggableString(nextVersion, Factory));
 				}
 
 				IExpectation expectation = Expectations.AppropriateExpectation(updateResultCheckStyles[0]);
@@ -227,13 +233,13 @@ namespace NHibernate.Persister.Entity
 				catch (DbException sqle)
 				{
 					var exceptionContext = new AdoExceptionContextInfo
-										{
-											SqlException = sqle,
-											Message = "could not retrieve version: " + MessageHelper.InfoString(this, id, Factory),
-											Sql = VersionSelectString.ToString(),
-											EntityName = EntityName,
-											EntityId = id
-										};
+											{
+												SqlException = sqle,
+												Message = "could not retrieve version: " + MessageHelper.InfoString(this, id, Factory),
+												Sql = VersionSelectString.ToString(),
+												EntityName = EntityName,
+												EntityId = id
+											};
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 				}
 				return nextVersion;
@@ -750,7 +756,7 @@ namespace NHibernate.Persister.Entity
 						if (CheckVersion(includeProperty))
 							await (VersionType.NullSafeSetAsync(statement, oldVersion, index, session, cancellationToken)).ConfigureAwait(false);
 					}
-					else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && oldFields != null)
+					else if (IsPropertyBasedOptimisticLocking(oldFields))
 					{
 						bool[] versionability = PropertyVersionability;
 						bool[] includeOldField = OptimisticLockMode == Versioning.OptimisticLock.All
@@ -779,7 +785,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						return Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), id, j, expectation, statement);
+						return Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), id, j, expectation, statement, IsPropertyBasedOptimisticLocking(oldFields));
 					}
 				}
 				catch (OperationCanceledException) { throw; }
@@ -885,13 +891,13 @@ namespace NHibernate.Persister.Entity
 					{
 						await (VersionType.NullSafeSetAsync(statement, version, index, session, cancellationToken)).ConfigureAwait(false);
 					}
-					else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && loadedState != null)
+					else if (IsPropertyBasedOptimisticLocking(loadedState))
 					{
 						bool[] versionability = PropertyVersionability;
 						IType[] types = PropertyTypes;
 						for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 						{
-							if (IsPropertyOfTable(i, j) && versionability[i])
+							if (IsPropertyOfTable(i, j) && versionability[i] && types[i].GetOwnerColumnSpan(Factory) > 0)
 							{
 								// this property belongs to the table and it is not specifically
 								// excluded from optimistic locking by optimistic-lock="false"
@@ -909,7 +915,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), tableId, j, expectation, statement);
+						Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), tableId, j, expectation, statement, IsPropertyBasedOptimisticLocking(loadedState));
 					}
 				}
 				catch (OperationCanceledException) { throw; }
@@ -1020,7 +1026,7 @@ namespace NHibernate.Persister.Entity
 			{
 				// For the case of dynamic-insert="true", we need to generate the INSERT SQL
 				bool[] notNull = GetPropertiesToInsert(fields);
-				id = await (InsertAsync(fields, notNull, GenerateInsertString(true, notNull), obj, session, cancellationToken)).ConfigureAwait(false);
+				id = await (InsertAsync(fields, notNull, GenerateIdentityInsertString(notNull), obj, session, cancellationToken)).ConfigureAwait(false);
 				for (int j = 1; j < span; j++)
 				{
 					await (InsertAsync(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session, cancellationToken)).ConfigureAwait(false);
@@ -1388,9 +1394,9 @@ namespace NHibernate.Persister.Entity
 
 				string[] aliasedIdColumns = StringHelper.Qualify(RootAlias, IdentifierColumnNames);
 				SqlString whereClause = new SqlString(
-				SqlStringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns),
-				"=", Parameter.Placeholder,
-				WhereJoinFragment(RootAlias, true, false));
+					SqlStringHelper.Join(new SqlString("=", Parameter.Placeholder, " and "), aliasedIdColumns),
+					"=", Parameter.Placeholder,
+					WhereJoinFragment(RootAlias, true, false));
 
 				SqlString sql = select.SetOuterJoins(SqlString.Empty, SqlString.Empty).SetWhereClause(whereClause).ToStatementString();
 				///////////////////////////////////////////////////////////////////////
@@ -1414,7 +1420,7 @@ namespace NHibernate.Persister.Entity
 						for (int i = 0; i < naturalIdPropertyCount; i++)
 						{
 							snapshot[i] =
-							await (extractionTypes[i].HydrateAsync(rs, GetPropertyAliases(string.Empty, naturalIdPropertyIndexes[i]), session, null, cancellationToken)).ConfigureAwait(false);
+								await (extractionTypes[i].HydrateAsync(rs, GetPropertyAliases(string.Empty, naturalIdPropertyIndexes[i]), session, null, cancellationToken)).ConfigureAwait(false);
 							if (extractionTypes[i].IsEntityType)
 							{
 								snapshot[i] = await (extractionTypes[i].ResolveIdentifierAsync(snapshot[i], session, null, cancellationToken)).ConfigureAwait(false);
@@ -1430,13 +1436,13 @@ namespace NHibernate.Persister.Entity
 				catch (DbException sqle)
 				{
 					var exceptionContext = new AdoExceptionContextInfo
-										{
-											SqlException = sqle,
-											Message = "could not retrieve snapshot: " + MessageHelper.InfoString(this, id, Factory),
-											Sql = sql.ToString(),
-											EntityName = EntityName,
-											EntityId = id
-										};
+											{
+												SqlException = sqle,
+												Message = "could not retrieve snapshot: " + MessageHelper.InfoString(this, id, Factory),
+												Sql = sql.ToString(),
+												EntityName = EntityName,
+												EntityId = id
+											};
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 				}
 			}

@@ -82,10 +82,10 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			// NH-322
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.SaveAsync(new Animal {BodyWeight = 12, Description = "Polliwog"}));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		
 			using (ISession s = OpenSession())
@@ -101,10 +101,10 @@ namespace NHibernate.Test.Hql.Ast
 			}
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -112,10 +112,10 @@ namespace NHibernate.Test.Hql.Ast
 		public async Task MultipleParametersInCaseStatementAsync()
 		{
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.SaveAsync(new Animal { BodyWeight = 12, Description = "Polliwog" }));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			try
@@ -133,10 +133,10 @@ namespace NHibernate.Test.Hql.Ast
 			finally
 			{
 				using (ISession s = OpenSession())
-				using (s.BeginTransaction())
+				using (var t = s.BeginTransaction())
 				{
 					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
-					await (s.Transaction.CommitAsync());
+					await (t.CommitAsync());
 				}
 			}
 		}
@@ -145,10 +145,10 @@ namespace NHibernate.Test.Hql.Ast
 		public async Task ParameterInCaseThenClauseAsync()
 		{
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.SaveAsync(new Animal { BodyWeight = 12, Description = "Polliwog" }));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			try
@@ -164,10 +164,10 @@ namespace NHibernate.Test.Hql.Ast
 			finally
 			{
 				using (ISession s = OpenSession())
-				using (s.BeginTransaction())
+				using (var t = s.BeginTransaction())
 				{
 					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
-					await (s.Transaction.CommitAsync());
+					await (t.CommitAsync());
 				}
 			}
 		}
@@ -176,10 +176,10 @@ namespace NHibernate.Test.Hql.Ast
 		public async Task ParameterInCaseThenAndElseClausesWithCastAsync()
 		{
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.SaveAsync(new Animal { BodyWeight = 12, Description = "Polliwog" }));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			try
@@ -196,10 +196,10 @@ namespace NHibernate.Test.Hql.Ast
 			finally
 			{
 				using (ISession s = OpenSession())
-				using (s.BeginTransaction())
+				using (var t = s.BeginTransaction())
 				{
 					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
-					await (s.Transaction.CommitAsync());
+					await (t.CommitAsync());
 				}
 			}
 		}
@@ -208,10 +208,10 @@ namespace NHibernate.Test.Hql.Ast
 		public async Task SubselectAdditionAsync()
 		{
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.SaveAsync(new Animal { BodyWeight = 12, Description = "Polliwog" }));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			try
@@ -226,10 +226,10 @@ namespace NHibernate.Test.Hql.Ast
 			finally
 			{
 				using (ISession s = OpenSession())
-				using (s.BeginTransaction())
+				using (var t = s.BeginTransaction())
 				{
 					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
-					await (s.Transaction.CommitAsync());
+					await (t.CommitAsync());
 				}
 			}
 		}
@@ -267,25 +267,23 @@ namespace NHibernate.Test.Hql.Ast
 		public async Task InsertIntoFromSelect_WithSelectClauseParametersAsync()
 		{
 			using (ISession s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				using (s.BeginTransaction())
-				{
-					// arrange
-					await (s.SaveAsync(new Animal() {Description = "cat1", BodyWeight = 2.1f}));
-					await (s.SaveAsync(new Animal() {Description = "cat2", BodyWeight = 2.5f}));
-					await (s.SaveAsync(new Animal() {Description = "cat3", BodyWeight = 2.7f}));
+				// arrange
+				await (s.SaveAsync(new Animal() {Description = "cat1", BodyWeight = 2.1f}));
+				await (s.SaveAsync(new Animal() {Description = "cat2", BodyWeight = 2.5f}));
+				await (s.SaveAsync(new Animal() {Description = "cat3", BodyWeight = 2.7f}));
 
-					// act
-					await (s.CreateQuery("insert into Animal (description, bodyWeight) select a.description, :weight from Animal a where a.bodyWeight < :weight")
-						.SetParameter<float>("weight", 5.7f).ExecuteUpdateAsync());
+				// act
+				await (s.CreateQuery("insert into Animal (description, bodyWeight) select a.description, :weight from Animal a where a.bodyWeight < :weight")
+					.SetParameter<float>("weight", 5.7f).ExecuteUpdateAsync());
 
-					// assert
-					Assert.AreEqual(3, await (s.CreateCriteria<Animal>().SetProjection(Projections.RowCount())
-					                    .Add(Restrictions.Gt("bodyWeight", 5.5f)).UniqueResultAsync<int>()));
+				// assert
+				Assert.AreEqual(3, await (s.CreateCriteria<Animal>().SetProjection(Projections.RowCount())
+				                    .Add(Restrictions.Gt("bodyWeight", 5.5f)).UniqueResultAsync<int>()));
 
-					await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
-					await (s.Transaction.CommitAsync());
-				}
+				await (s.CreateQuery("delete from Animal").ExecuteUpdateAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -307,6 +305,15 @@ namespace NHibernate.Test.Hql.Ast
 					.ListAsync<int>())).Single();
 				Assert.That(actualWorkaround, Is.EqualTo(-2));
 			}
+		}
+
+		//NH-3249 (GH-1285)
+		[Test]
+		public async Task CountDistinctOnFunctionAsync()
+		{
+			var hql = @"SELECT COUNT(DISTINCT DATE(m.birthdate)) FROM Mammal m";
+			using(var s = OpenSession())
+				await (s.CreateQuery(hql).ListAsync());
 		}
 	}
 }

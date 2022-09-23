@@ -63,25 +63,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private static void Check(IASTNode check, IASTNode first, IASTNode second)
 		{
-			var expectedTypeAwareNode = check as IExpectedTypeAwareNode;
-			if (expectedTypeAwareNode != null)
+			if (!(check is IExpectedTypeAwareNode expectedTypeAwareNode) ||
+			    expectedTypeAwareNode.ExpectedType != null)
 			{
-				IType expectedType = null;
-				var firstNode = first as SqlNode;
-				if (firstNode != null)
-				{
-					expectedType = firstNode.DataType;
-				}
-				if (expectedType == null)
-				{
-					var secondNode = second as SqlNode;
-					if (secondNode != null)
-					{
-						expectedType = secondNode.DataType;
-					}
-				}
-				expectedTypeAwareNode.ExpectedType = expectedType;
+				return;
 			}
+
+			expectedTypeAwareNode.ExpectedType = (first as SqlNode)?.DataType ?? (second as SqlNode)?.DataType;
 		}
 	}
 }

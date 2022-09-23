@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using NHibernate.Collection.Trackers;
 using NHibernate.DebugHelpers;
 using NHibernate.Engine;
 using NHibernate.Linq;
@@ -22,7 +23,7 @@ namespace NHibernate.Collection.Generic
 	/// <remarks>The underlying collection used is a <see cref="List{T}"/></remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof (CollectionProxy<>))]
-	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IList, IQueryable<T>
+	public partial class PersistentGenericList<T> : AbstractPersistentCollection, IList<T>, IReadOnlyList<T>, IList, IQueryable<T>
 	{
 		protected IList<T> WrappedList;
 
@@ -51,6 +52,12 @@ namespace NHibernate.Collection.Generic
 			WrappedList = list;
 			SetInitialized();
 			IsDirectlyAccessible = true;
+		}
+
+		internal override AbstractQueueOperationTracker CreateQueueOperationTracker()
+		{
+			var entry = Session.PersistenceContext.GetCollectionEntry(this);
+			return new ListQueueOperationTracker<T>(entry.LoadedPersister);
 		}
 
 		public override object GetSnapshot(ICollectionPersister persister)
@@ -97,6 +104,13 @@ namespace NHibernate.Collection.Generic
 		public override void BeforeInitialize(ICollectionPersister persister, int anticipatedSize)
 		{
 			WrappedList = (IList<T>) persister.CollectionType.Instantiate(anticipatedSize);
+		}
+
+		public override void ApplyQueuedOperations()
+		{
+			var queueOperation = (ListQueueOperationTracker<T>) QueueOperationTracker;
+			queueOperation?.ApplyChanges(WrappedList);
+			QueueOperationTracker = null;
 		}
 
 		public override bool IsWrapper(object collection)
@@ -224,23 +238,6 @@ namespace NHibernate.Collection.Generic
 			return entry != null;
 		}
 
-		public override bool Equals(object obj)
-		{
-			var that = obj as ICollection<T>;
-			if (that == null)
-			{
-				return false;
-			}
-			Read();
-			return CollectionHelper.SequenceEquals(WrappedList, that);
-		}
-
-		public override int GetHashCode()
-		{
-			Read();
-			return WrappedList.GetHashCode();
-		}
-
 		#region IList Members
 
 		int IList.Add(object value)
@@ -251,7 +248,9 @@ namespace NHibernate.Collection.Generic
 				return ((IList)WrappedList).Add(value);
 			}
 
-			QueueOperation(new SimpleAddDelayedOperation(this, (T) value));
+			var val = (T) value;
+			QueueAddElement(val);
+
 			//TODO: take a look at this - I don't like it because it changes the 
 			// meaning of Add - instead of returning the index it was added at 
 			// returns a "fake" index - not consistent with IList interface...
@@ -267,7 +266,7 @@ namespace NHibernate.Collection.Generic
 		{
 			if (ClearQueueEnabled)
 			{
-				QueueOperation(new ClearDelayedOperation(this));
+				QueueClearCollection();
 			}
 			else
 			{
@@ -299,17 +298,20 @@ namespace NHibernate.Collection.Generic
 		{
 			if (index < 0)
 			{
-				throw new IndexOutOfRangeException("negative index");
+				throw new ArgumentOutOfRangeException(
+					nameof(index),
+					"Index was out of range. Must be non-negative and less than the size of the collection.");
 			}
-			object old = PutQueueEnabled ? ReadElementByIndex(index) : Unknown;
-			if (old == Unknown)
+
+			var found = TryReadElementAtIndex<T>(index, out var element);
+			if (!found.HasValue)
 			{
 				Write();
 				WrappedList.RemoveAt(index);
 			}
 			else
 			{
-				QueueOperation(new RemoveDelayedOperation(this, index, old == NotFound ? null : old));
+				QueueRemoveElementAtIndex<T>(index, element);
 			}
 		}
 
@@ -343,7 +345,7 @@ namespace NHibernate.Collection.Generic
 		{
 			if (index < 0)
 			{
-				throw new IndexOutOfRangeException("negative index");
+				throw new ArgumentOutOfRangeException(nameof(index), "Index must be within the bounds of the List.");
 			}
 			if (!IsOperationQueueEnabled)
 			{
@@ -352,7 +354,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				QueueOperation(new AddDelayedOperation(this, index, item));
+				QueueAddElementAtIndex(index, item);
 			}
 		}
 
@@ -362,39 +364,53 @@ namespace NHibernate.Collection.Generic
 			{
 				if (index < 0)
 				{
-					throw new IndexOutOfRangeException("negative index");
+					throw new ArgumentOutOfRangeException(
+						nameof(index),
+						"Index was out of range. Must be non-negative and less than the size of the collection.");
 				}
-				object result = ReadElementByIndex(index);
-				if (result == Unknown)
+
+				var found = TryReadElementAtIndex<T>(index, out var element);
+				if (!found.HasValue)
 				{
 					return WrappedList[index];
 				}
-				if (result == NotFound)
+				if (!found.Value)
 				{
 					// check if the index is valid
 					if (index >= Count)
 					{
-						throw new ArgumentOutOfRangeException("index");
+						throw new ArgumentOutOfRangeException(
+							nameof(index),
+							"Index was out of range. Must be non-negative and less than the size of the collection.");
 					}
 					return default(T);
 				}
-				return (T) result;
+				return element;
 			}
 			set
 			{
 				if (index < 0)
 				{
-					throw new IndexOutOfRangeException("negative index");
+					throw new ArgumentOutOfRangeException(
+						nameof(index),
+						"Index was out of range. Must be non-negative and less than the size of the collection.");
 				}
-				object old = PutQueueEnabled ? ReadElementByIndex(index) : Unknown;
-				if (old == Unknown)
+
+				var old = default(T);
+				var found = PutQueueEnabled ? TryReadElementAtIndex(index, out old) : null;
+				if (!found.HasValue)
 				{
 					Write();
 					WrappedList[index] = value;
 				}
 				else
 				{
-					QueueOperation(new SetDelayedOperation(this, index, value, old == NotFound ? null : old));
+					if (EqualityComparer<T>.Default.Equals(value, old))
+					{
+						return;
+					}
+
+					QueueSetElementAtIndex(index, value, old);
 				}
 			}
 		}
@@ -445,13 +461,13 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				QueueOperation(new SimpleAddDelayedOperation(this, item));
+				QueueAddElement(item);
 			}
 		}
 
 		public bool Contains(T item)
 		{
-			return ReadElementExistence(item) ?? WrappedList.Contains(item);
+			return ReadElementExistence(item, out _) ?? WrappedList.Contains(item);
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
@@ -466,7 +482,8 @@ namespace NHibernate.Collection.Generic
 
 		public bool Remove(T item)
 		{
-			bool? exists = PutQueueEnabled ? ReadElementExistence(item) : null;
+			bool? existsInDb = null;
+			bool? exists = PutQueueEnabled ? ReadElementExistence(item, out existsInDb) : null;
 			if (!exists.HasValue)
 			{
 				Initialize(true);
@@ -479,9 +496,11 @@ namespace NHibernate.Collection.Generic
 			}
 			else if (exists.Value)
 			{
-				QueueOperation(new SimpleRemoveDelayedOperation(this, item));
+				QueueRemoveExistingElement(item, existsInDb);
+
 				return true;
 			}
+
 			return false;
 		}
 
@@ -524,6 +543,8 @@ namespace NHibernate.Collection.Generic
 
 		#region DelayedOperations
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class ClearDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericList<T> _enclosingInstance;
@@ -549,6 +570,8 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class SimpleAddDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericList<T> _enclosingInstance;
@@ -576,6 +599,8 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class AddDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericList<T> _enclosingInstance;
@@ -605,6 +630,8 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class SetDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericList<T> _enclosingInstance;
@@ -636,6 +663,8 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class RemoveDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericList<T> _enclosingInstance;
@@ -665,6 +694,8 @@ namespace NHibernate.Collection.Generic
 			}
 		}
 
+		// Since v5.3
+		[Obsolete("This class has no more usages in NHibernate and will be removed in a future version.")]
 		protected sealed class SimpleRemoveDelayedOperation : IDelayedOperation
 		{
 			private readonly PersistentGenericList<T> _enclosingInstance;

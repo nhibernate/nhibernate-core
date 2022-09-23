@@ -97,5 +97,34 @@ namespace NHibernate.Util
 		{
 			return input.ConvertAll(converter);
 		}
+
+		internal static IList ToIList<T>(this IEnumerable<T> list)
+		{
+			return list as IList ?? list.ToList();
+		}
+		
+		internal static IReadOnlyList<T> EmptyIfNull<T>(this IReadOnlyList<T> list)
+		{
+			return list ?? Array.Empty<T>();
+		}
+
+		internal static IEnumerable<T> CastOrDefault<T>(this IEnumerable list)
+		{
+			foreach (var obj in list)
+			{
+				yield return obj == null
+					? default(T)
+					: (T) obj;
+			}
+		}
+
+#if NETFX && !NET471_OR_GREATER
+		internal static IEnumerable<TSource> Append<TSource>(this IEnumerable<TSource> source, TSource element)
+		{
+			foreach (var item in source)
+				yield return item;
+			yield return element;
+		}
+#endif
 	}
 }

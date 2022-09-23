@@ -2,7 +2,6 @@
 <chapter id="caches">
 	<title>NHibernate.Caches</title>
 
-
 	<abstract id="NHibernate.Caches-abstract">
 		<title>What is NHibernate.Caches?</title>
 		<formalpara>
@@ -108,7 +107,17 @@
 					<listitem>
 						<para>
 							Uses <classname>System.Runtime.Caching.MemoryCache.Default</classname> as the cache provider. This provider
-							is available for the .Net Framework only. See <xref linkend="NHibernate.Caches.RtMemoryCache" />.
+							is available as a .Net Standard NuGet package. See <xref linkend="NHibernate.Caches.RtMemoryCache" />.
+						</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><classname>NHibernate.Caches.StackExchangeRedis</classname></term>
+					<listitem>
+						<para>
+							Uses <classname>StackExchange.Redis</classname>. This provider is available as a .Net Standard
+							NuGet package. It can batch together puts and reads, reducing incurred IOs.
+							See <xref linkend="NHibernate.Caches.StackExchangeRedis" />.
 						</para>
 					</listitem>
 				</varlistentry>
@@ -233,6 +242,43 @@
 		</para>
 	</section>
 
+	<section id="NHibernate.Caches.ConfigurationProvider">
+		<title>Using a custom configuration provider</title>
+
+		<para>
+			Most caches have their own configuration section. By default, the cache attempts to read its configuration section
+			through the .Net <literal>ConfigurationManager</literal>. Some environments do not support it, especially when
+			running under .Net Core. The .Net Core compatible caches provide a way to set a custom configuration provider, through
+			their <literal>NHibernate.Caches. cache specific namespace .ConfigurationProvider</literal> class.
+		</para>
+
+		<para>
+			To disable the configuration provider, in case you configure the cache entirely programmatically,
+			set its <literal>ConfigurationProvider.Current</literal> property to <literal>null</literal>.
+		</para>
+
+		<programlisting><![CDATA[ConfigurationProvider.Current = null;]]></programlisting>
+
+		<para>
+			To provide directly the <literal>System.Configuration.Configuration</literal> instance to use, call
+			the cache <literal>ConfigurationProvider.SetConfiguration</literal> method.
+		</para>
+
+		<programlisting><![CDATA[ConfigurationProvider.SetConfiguration(yourConfig);]]></programlisting>
+
+		<para>
+			You may also derive a custom provider from the <literal>ConfigurationProvider</literal> of the cache,
+			implements its abstract method <literal>GetConfiguration</literal>, and assign an instance of your
+			custom provider to the cache <literal>ConfigurationProvider.Current</literal> property.
+		</para>
+
+		<para>
+			Changes of the <literal>ConfigurationProvider.Current</literal> property value are to be done very
+			early in the application lifecycle, before building any session factory using the cache provider or
+			before any other call on the cache API. Otherwise they will not be taken into account.
+		</para>
+	</section>
+
 	<section id="NHibernate.Caches.Prevalence">
 		<title>Prevalence Cache Configuration</title>
 		<para>
@@ -241,7 +287,7 @@
 			full path. If the directory doesn't exist, it will be created.
 		</para>
 		<para>
-			The <literal>prevalenceBase</literal> setting can only be set programmatically through on the NHibernate
+			The <literal>prevalenceBase</literal> setting can only be set programmatically through the NHibernate
 			configuration object, by example with <literal>Configuration.SetProperty</literal>.
 		</para>
 	</section>
@@ -250,6 +296,11 @@
 		<title>SysCache Configuration</title>
 		<para>
 			SysCache relies on <classname>System.Web.Caching.Cache</classname> for the underlying implementation.
+			This is a .Net Framework only library, since <literal>System.Web.Caching</literal> is available neither
+			in the .Net Standard nor in .Net Core.
+		</para>
+
+		<para>
 			The following NHibernate configuration settings are available:
 		</para>
 
@@ -306,10 +357,16 @@
 		<title>SysCache2 Configuration</title>
 
 		<para>
-			SysCache2 can use SqlCacheDependencies to invalidate cache regions when data in an underlying SQL Server
+			SysCache2 uses <literal>System.Web.Caching</literal> like SysCache, but can use <literal>SqlCacheDependencies</literal>
+			to invalidate cache regions when data in an underlying SQL Server
 			table or query changes. Query dependencies are only available for SQL Server 2005 or higher. To use the cache
 			provider, the application must be setup and configured to support SQL notifications as described in the
 			MSDN documentation.
+		</para>
+
+		<para>
+			This is a .Net Framework only library, since <literal>System.Web.Caching</literal> is available neither
+			in the .Net Standard nor in .Net Core.
 		</para>
 
 		<para>
@@ -615,6 +672,7 @@
 			Its configuration relies on the EnyimMemcached library own configuration, through its
 			<literal>enyim.com/memcached</literal> configuration section. See
 			<ulink url="https://github.com/enyim/EnyimMemcached">project site</ulink>.
+			This is a .Net Framework only library.
 		</para>
 	</section>
 
@@ -623,6 +681,9 @@
 		<para>
 			RtMemoryCache relies on <classname>System.Runtime.Caching.MemoryCache</classname> for the
 			underlying implementation.
+		</para>
+
+		<para>
 			The following NHibernate configuration settings are available:
 		</para>
 
@@ -664,6 +725,327 @@
   </rtmemorycache>
 </configuration>]]></programlisting>
 		</example>
+
+		<para>
+			The loading of this section can be customized with the
+			<literal>NHibernate.Caches.RtMemoryCache.ConfigurationProvider</literal> class. See
+			<xref linkend="NHibernate.Caches.ConfigurationProvider" />.
+		</para>
+	</section>
+
+	<section id="NHibernate.Caches.StackExchangeRedis">
+		<title>NHibernate.Caches.StackExchangeRedis Configuration</title>
+		<para>
+			NHibernate.Caches.StackExchangeRedis relies on <classname>StackExchange.Redis</classname> for the
+			underlying implementation.
+		</para>
+
+		<para>
+			The following NHibernate configuration settings are available (also defined in
+			<literal>NHibernate.Caches.StackExchangeRedis.RedisEnvironment</literal>):
+		</para>
+
+		<variablelist>
+			<varlistentry>
+				<term><literal>cache.default_expiration</literal></term>
+				<listitem>
+					Number of seconds to wait before expiring each item.
+					Defaults to <literal>300</literal>. It can also be set programmatically on the NHibernate
+					configuration object under the name <literal>expiration</literal>, which then takes precedence
+					over <literal>cache.default_expiration</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.use_sliding_expiration</literal></term>
+				<listitem>
+					Should the expiration be sliding? A sliding expiration is reinitialized at each get. Can be overriden for each region by using
+					<literal>sliding</literal> attribute.
+					Defaults to <literal>false</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.database</literal></term>
+				<listitem>
+					The default Redis database index, that can be overriden for each region by using <literal>database</literal> attribute.
+					Defaults to <literal>-1</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.strategy</literal></term>
+				<listitem>
+					The assembly qualified name of the region strategy, that can be overriden for each region by using <literal>strategy</literal> attribute.
+					<literal>NHibernate.Caches.StackExchangeRedis</literal> provides the following strategies:
+				<itemizedlist>
+					<listitem>
+						<literal>NHibernate.Caches.StackExchangeRedis.DefaultRegionStrategy</literal>
+						<para>
+						Uses a special key that contains the region current version number which is appended after the region prefix.
+						Each time a clear operation is performed the version number is increased and an event is send to all clients
+						so that they can update their local versions. Even if the event was not sent to all clients, each operation has a
+						version check in order to prevent working with stale data. This strategy has additional settings:
+						<varlistentry>
+							<term><literal>cache.region_strategy.default.max_allowed_version</literal></term>
+							<listitem>
+							The max allowed version number. When the max value is reached, the next value will be reset to zero.
+							Defaults to <literal>10000</literal>.
+							</listitem>
+						</varlistentry>
+						<varlistentry>
+							<term><literal>cache.region_strategy.default.use_pubsub</literal></term>
+							<listitem>
+							Whether to use Redis pub/sub mechanism in order to notify other cache instances when the clear operation was performed.
+							Defaults to <literal>true</literal>.
+							</listitem>
+						</varlistentry>
+						<varlistentry>
+							<term><literal>cache.region_strategy.default.retry_times</literal></term>
+							<listitem>
+							Total retry times for read and lock operations, when concurrent clear operations are performed.
+							Defaults to <literal>1</literal>.
+							</listitem>
+						</varlistentry>
+						</para>
+					</listitem>
+					<listitem>
+						<literal>NHibernate.Caches.StackExchangeRedis.FastRegionStrategy</literal>
+						<para>
+						Uses very simple read/write operations but does not support <literal>ICache.Clear</literal> operation.
+						</para>
+					</listitem>
+					<listitem>
+						<literal>NHibernate.Caches.StackExchangeRedis.TwoLayerCacheRegionStrategy</literal>
+						<para>
+						Extends <literal>NHibernate.Caches.StackExchangeRedis.DefaultRegionStrategy</literal> and uses
+						an additional local memory cache for faster readings. The local caches are invalidated by using Redis pub/sub mechanism.
+						This strategy should be used only for regions that have few write operations and a high expiration time.
+						This strategy inherits additional settings from <literal>DefaultRegionStrategy</literal> and also has its own settings:
+						<varlistentry>
+							<term><literal>cache.region_strategy.two_layer_cache.use_pipelining</literal></term>
+							<listitem>
+							Whether to use <literal>StackExchange.Redis</literal> pipelining feature.
+							Defaults to <literal>false</literal>.
+							</listitem>
+						</varlistentry>
+						<varlistentry>
+							<term><literal>cache.region_strategy.two_layer_cache.client_id</literal></term>
+							<listitem>
+							The client id used for cache invalidation.
+							Defaults to a random number.
+							</listitem>
+						</varlistentry>
+						<varlistentry>
+							<term><literal>cache.region_strategy.two_layer_cache.max_synchronization_time</literal></term>
+							<listitem>
+							The max synchronization time between caches in seconds.
+							Defaults to <literal>10</literal>.
+							</listitem>
+						</varlistentry>
+						</para>
+					</listitem>
+					<listitem>
+						<literal>NHibernate.Caches.StackExchangeRedis.FastTwoLayerCacheRegionStrategy</literal>
+						<para>
+						Extends <literal>NHibernate.Caches.StackExchangeRedis.FastRegionStrategy</literal> and uses
+						an additional local memory cache for faster readings. The local caches are invalidated by using Redis pub/sub mechanism.
+						This strategy does not support <literal>ICache.Clear</literal> operation and should be used only for regions that have
+						few write operations and a high expiration time. This strategy has additional settings:
+						<varlistentry>
+							<term><literal>cache.region_strategy.fast_two_layer_cache.use_pipelining</literal></term>
+							<listitem>
+							Whether to use <literal>StackExchange.Redis</literal> pipelining feature.
+							Defaults to <literal>false</literal>.
+							</listitem>
+						</varlistentry>
+						<varlistentry>
+							<term><literal>cache.region_strategy.fast_two_layer_cache.client_id</literal></term>
+							<listitem>
+							The client id used for cache invalidation.
+							Defaults to a random number.
+							</listitem>
+						</varlistentry>
+						<varlistentry>
+							<term><literal>cache.region_strategy.fast_two_layer_cache.max_synchronization_time</literal></term>
+							<listitem>
+							The max synchronization time between caches in seconds.
+							Defaults to <literal>10</literal>.
+							</listitem>
+						</varlistentry>
+						</para>
+					</listitem>
+					<listitem>
+						<literal>NHibernate.Caches.StackExchangeRedis.DistributedLocalCacheRegionStrategy</literal>
+						<para>
+						Uses only a memory cache to store the values and uses Redis pub/sub mechanism to synchronize data between other local caches.
+						The synchronization between caches is done by comparing the UTC <literal>DateTime.Ticks</literal>, which represent when the
+						operation was performed. When two operations have the same <literal>DateTime.Ticks</literal>, then the client with the highest
+						id wins. This strategy should be used only for regions that have few write operations and a high expiration time. It is recommended
+						to use <literal>NHibernate.Caches.StackExchangeRedis.TwoLayerCacheRegionStrategy</literal>, when the instances where the strategy
+						would run are often restarted/recycled. In order to use this strategy a custom <literal>ICacheRegionStrategyFactory</literal>
+						has to be provided (see <literal>cache.region_strategy_factory</literal> setting), where the strategy is created with a custom
+						<literal>RegionMemoryCacheBase</literal> implementation. This strategy has additional settings:
+						<varlistentry>
+							<term><literal>cache.region_strategy.distributed_local_cache.use_pipelining</literal></term>
+							<listitem>
+							Whether to use <literal>StackExchange.Redis</literal> pipelining feature.
+							Defaults to <literal>false</literal>.
+							</listitem>
+						</varlistentry>
+						<varlistentry>
+							<term><literal>cache.region_strategy.distributed_local_cache.client_id</literal></term>
+							<listitem>
+							The client id used for cache invalidation.
+							Defaults to a random number.
+							</listitem>
+						</varlistentry>
+						<varlistentry>
+							<term><literal>cache.region_strategy.distributed_local_cache.max_synchronization_time</literal></term>
+							<listitem>
+							The max synchronization time between caches in seconds.
+							Defaults to <literal>10</literal>.
+							</listitem>
+						</varlistentry>
+						</para>
+					</listitem>
+				</itemizedlist>
+					Defaults to <literal>NHibernate.Caches.StackExchangeRedis.DefaultRegionStrategy</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.append_hashcode</literal></term>
+				<listitem>
+					Whether the hash code of the key should be added to the cache key. Can be overriden for each region by using <literal>append-hashcode</literal> attribute.
+					Defaults to <literal>false</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.key_prefix</literal></term>
+				<listitem>
+					The prefix that will be prepended before each cache key in order to avoid having collisions when multiple clients uses the same Redis database.
+					Defaults to <literal>NHibernate-Cache:</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.environment_name</literal></term>
+				<listitem>
+					The name of the environment that will be prepended before each cache key in order to allow having multiple environments on the same Redis database.
+					Defaults to <literal>null</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.serializer</literal></term>
+				<listitem>
+					The assembly qualified name of the serializer that is used to serialize/deserialize the key values. Optionally, a faster json serializer can be
+					used by installing <literal>NHibernate.Caches.Util.JsonSerializer</literal> package and setting
+					<literal>NHibernate.Caches.Util.JsonSerializer.JsonCacheSerializer, NHibernate.Caches.Util.JsonSerializer</literal> value instead.
+					Defaults to <literal>NHibernate.Caches.Common.BinaryCacheSerializer, NHibernate.Caches.Common</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.region_strategy_factory</literal></term>
+				<listitem>
+					The assembly qualified name of the region strategy factory.
+					Defaults to <literal>NHibernate.Caches.StackExchangeRedis.DefaultCacheRegionStrategyFactory</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.connection_multiplexer_provider</literal></term>
+				<listitem>
+					The assembly qualified name of the connection multiplexer provider.
+					Defaults to <literal>NHibernate.Caches.StackExchangeRedis.DefaultConnectionMultiplexerProvider</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.database_provider</literal></term>
+				<listitem>
+					The assembly qualified name of the database provider.
+					Defaults to <literal>NHibernate.Caches.StackExchangeRedis.DefaultDatabaseProvider</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.lock.key_timeout</literal></term>
+				<listitem>
+					The timeout for a lock key to expire in seconds.
+					Defaults to <literal>5</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.lock.acquire_timeout</literal></term>
+				<listitem>
+					The time limit to acquire the lock in seconds.
+					Defaults to <literal>5</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.lock.retry_times</literal></term>
+				<listitem>
+					The number of retries for acquiring the lock.
+					Defaults to <literal>3</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.lock.max_retry_delay</literal></term>
+				<listitem>
+					The maximum delay before retrying to acquire the lock in milliseconds.
+					Defaults to <literal>400</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.lock.min_retry_delay</literal></term>
+				<listitem>
+					The minimum delay before retrying to acquire the lock in milliseconds.
+					Defaults to <literal>10</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.lock.value_provider</literal></term>
+				<listitem>
+					The assembly qualified name of the lock value provider.
+					Defaults to <literal>NHibernate.Caches.StackExchangeRedis.DefaultCacheLockValueProvider</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.lock.retry_delay_provider</literal></term>
+				<listitem>
+					The assembly qualified name of the lock retry delay provider.
+					Defaults to <literal>NHibernate.Caches.StackExchangeRedis.DefaultCacheLockRetryDelayProvider</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.lock.key_suffix</literal></term>
+				<listitem>
+					The suffix for the lock key.
+					Defaults to <literal>:lock</literal>.
+				</listitem>
+			</varlistentry>
+		</variablelist>
+
+		<para>
+			NHibernate.Caches.StackExchangeRedis has a config file section handler to allow configuring different expirations for
+			different regions. Here is an example:
+		</para>
+
+		<example>
+			<programlisting><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <configSections>
+    <section name="redis"
+      type="NHibernate.Caches.StackExchangeRedis.RedisSectionHandler, NHibernate.Caches.StackExchangeRedis" />
+  </configSections>
+
+  <redis>
+    <cache region="foo" expiration="500" database="1" />
+    <cache region="bar" sliding="true" append-hashcode="true" />
+    <cache region="baz"
+      strategy="NHibernate.Caches.StackExchangeRedis.FastRegionStrategy, NHibernate.Caches" />
+  </redis>
+</configuration>]]></programlisting>
+		</example>
+
+		<para>
+			The loading of this section can be customized with the
+			<literal>NHibernate.Caches.StackExchangeRedis.ConfigurationProvider</literal> class. See
+			<xref linkend="NHibernate.Caches.ConfigurationProvider" />.
+		</para>
 	</section>
 
 	<section id="NHibernate.Caches.CoreMemoryCache">
@@ -671,6 +1053,9 @@
 		<para>
 			CoreMemoryCache relies on <classname>Microsoft.Extensions.Caching.Memory.MemoryCache</classname> for the
 			underlying implementation.
+		</para>
+
+		<para>
 			The following NHibernate configuration settings are available:
 		</para>
 
@@ -714,6 +1099,12 @@
   </corememorycache>
 </configuration>]]></programlisting>
 		</example>
+
+		<para>
+			The loading of this section can be customized with the
+			<literal>NHibernate.Caches.CoreMemoryCache.ConfigurationProvider</literal> class. See
+			<xref linkend="NHibernate.Caches.ConfigurationProvider" />.
+		</para>
 	</section>
 
 	<section id="NHibernate.Caches.CoreDistributedCache">
@@ -723,6 +1114,9 @@
 			implementations. The implementation has to be provided through an <literal>IDistributedCacheFactory</literal>, either
 			supplied through configuration or programmatically by affecting
 			<literal>CoreDistributedCacheProvider.CacheFactory</literal> before building a session factory.
+		</para>
+
+		<para>
 			The following NHibernate configuration settings are available:
 		</para>
 
@@ -741,6 +1135,16 @@
 				<listitem>
 					Should the expiration be sliding? A sliding expiration is reinitialized at each get.
 					Defaults to <literal>false</literal>.
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><literal>cache.serializer</literal></term>
+				<listitem>
+					The assembly qualified name of the serializer that is used to serialize/deserialize the key values. Optionally, a faster json serializer can be
+					used by installing <literal>NHibernate.Caches.Util.JsonSerializer</literal> package and setting
+					<literal>NHibernate.Caches.Util.JsonSerializer.JsonCacheSerializer, NHibernate.Caches.Util.JsonSerializer</literal> value instead.
+					Defaults to <literal>NHibernate.Caches.Common.BinaryCacheSerializer, NHibernate.Caches.Common</literal>.
+					This setting is available since the 5.7 version of CoreDistributedCache.
 				</listitem>
 			</varlistentry>
 		</variablelist>
@@ -767,12 +1171,22 @@
     <properties>
       <property name="expiration-scan-frequency">00:10:00</property>
       <property name="size-limit">1048576</property>
+      <property name="cache.serializer"
+        >NHibernate.Caches.Util.JsonSerializer.JsonCacheSerializer, NHibernate.Caches.Util.JsonSerializer</property>
     </properties>
     <cache region="foo" expiration="500" sliding="true" />
     <cache region="noExplicitExpiration" sliding="true" />
+    <cache region="specificSerializer"
+      serializer="NHibernate.Caches.Common.BinaryCacheSerializer, NHibernate.Caches.Common" />
   </coredistributedcache>
 </configuration>]]></programlisting>
 		</example>
+
+		<para>
+			The loading of this section can be customized with the
+			<literal>NHibernate.Caches.CoreDistributedCache.ConfigurationProvider</literal> class. See
+			<xref linkend="NHibernate.Caches.ConfigurationProvider" />.
+		</para>
 
 		<para>
 			CoreDistributedCache does not support <literal>NHibernate.Cache.ICache.Clear</literal>. Clearing the NHibernate

@@ -20,7 +20,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2065
         protected override void OnSetUp()
         {
             using (var s = OpenSession())
-            using (s.BeginTransaction())
+            using (var t = s.BeginTransaction())
             {
                 var person = new Person
                 {
@@ -31,17 +31,17 @@ namespace NHibernate.Test.NHSpecificTest.NH2065
                 s.Save(child);
                 person.Children.Add(child);
 
-                s.Transaction.Commit();
+                t.Commit();
             }
         }
 
         protected override void OnTearDown()
         {
             using (var s = OpenSession())
-            using (s.BeginTransaction())
+            using (var t = s.BeginTransaction())
             {
                 s.Delete("from Person");
-                s.Transaction.Commit();
+                t.Commit();
             }
         }
 
@@ -50,17 +50,17 @@ namespace NHibernate.Test.NHSpecificTest.NH2065
 		{
 			Person person;
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				person = await (s.GetAsync<Person>(1));
 				await (NHibernateUtil.InitializeAsync(person.Children));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			person.Children.Clear();
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				Assert.That(
 					() =>

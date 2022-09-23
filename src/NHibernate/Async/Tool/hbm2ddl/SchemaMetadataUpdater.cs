@@ -41,8 +41,8 @@ namespace NHibernate.Tool.hbm2ddl
 			try
 			{
 				return UpdateDialectKeywordsAsync(
-				dialect,
-				new ManagedProviderConnectionHelper(configuration.GetDerivedProperties()), cancellationToken);
+					dialect,
+					new ManagedProviderConnectionHelper(configuration.GetDerivedProperties()), cancellationToken);
 			}
 			catch (Exception ex)
 			{

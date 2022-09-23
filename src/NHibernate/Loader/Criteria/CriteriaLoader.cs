@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Param;
@@ -12,6 +13,28 @@ using NHibernate.Util;
 
 namespace NHibernate.Loader.Criteria
 {
+	internal static partial class CriteriaLoaderExtensions
+	{
+		/// <summary>
+		/// Loads all loaders results to single typed list
+		/// </summary>
+		internal static List<T> LoadAllToList<T>(this IList<CriteriaLoader> loaders, ISessionImplementor session)
+		{
+			var subresults = new List<IList>(loaders.Count);
+			foreach(var l in loaders)
+			{
+				subresults.Add(l.List(session));
+			}
+
+			var results = new List<T>(subresults.Sum(r => r.Count));
+			foreach(var list in subresults)
+			{
+				ArrayHelper.AddAll(results, list);
+			}
+			return results;
+		}
+	}
+
 	/// <summary>
 	/// A <c>Loader</c> for <see cref="ICriteria"/> queries. 
 	/// </summary>
@@ -52,8 +75,9 @@ namespace NHibernate.Loader.Criteria
 			userAliases = walker.UserAliases;
 			ResultTypes = walker.ResultTypes;
 			includeInResultRow = walker.IncludeInResultRow;
-			resultRowLength = ArrayHelper.CountTrue(IncludeInResultRow);
+			resultRowLength = ArrayHelper.CountTrue(includeInResultRow);
 			childFetchEntities = walker.ChildFetchEntities;
+			EntityFetchLazyProperties = walker.EntityFetchLazyProperties;
 			// fill caching objects only if there is a projection
 			if (translator.HasProjection)
 			{
@@ -61,6 +85,10 @@ namespace NHibernate.Loader.Criteria
 			}
 
 			PostInstantiate();
+			if (!translator.HasProjection)
+			{
+				CachePersistersWithCollections(ArrayHelper.IndexesOf(includeInResultRow, true));
+			}
 		}
 
 		// Not ported: scroll (not supported)
@@ -68,6 +96,11 @@ namespace NHibernate.Loader.Criteria
 		public ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
+		}
+
+		internal override bool IsCacheable(QueryParameters queryParameters)
+		{
+			return IsCacheable(queryParameters, translator.SupportsQueryCache, translator.GetPersisters());
 		}
 
 		public override bool IsSubselectLoadingEnabled
@@ -94,6 +127,8 @@ namespace NHibernate.Loader.Criteria
 		{
 			return childFetchEntities?[i] == true;
 		}
+
+		protected override ISet<string>[] EntityFetchLazyProperties { get; }
 
 		public IList List(ISessionImplementor session)
 		{

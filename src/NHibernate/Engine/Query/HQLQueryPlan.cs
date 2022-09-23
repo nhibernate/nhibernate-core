@@ -108,7 +108,7 @@ namespace NHibernate.Engine.Query
 			}
 
 			IList combinedResults = results ?? new List<object>();
-			IdentitySet distinction = new IdentitySet();
+			var distinction = new HashSet<object>(ReferenceComparer<object>.Instance);
 			int includedCount = -1;
 			for (int i = 0; i < Translators.Length; i++)
 			{
@@ -128,7 +128,7 @@ namespace NHibernate.Engine.Query
 					for (int x = 0; x < size; x++)
 					{
 						object result = tmp[x];
-						if (distinction.Add(result))
+						if (!distinction.Add(result))
 						{
 							continue;
 						}
@@ -176,7 +176,7 @@ namespace NHibernate.Engine.Query
 
 		public IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session)
 		{
-			return new SafetyEnumerable<T>(PerformIterate(queryParameters, session));
+			return PerformIterate(queryParameters, session).CastOrDefault<T>();
 		}
 
         public int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)

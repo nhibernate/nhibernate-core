@@ -58,7 +58,7 @@ namespace NHibernate.Test.ConnectionStringTest
 		/// Get an open <see cref="DbConnection"/>.
 		/// </summary>
 		/// <returns>An open <see cref="DbConnection"/>.</returns>
-		public override DbConnection GetConnection()
+		public override DbConnection GetConnection(string connectionString)
 		{
 			throw new NotImplementedException();
 		}

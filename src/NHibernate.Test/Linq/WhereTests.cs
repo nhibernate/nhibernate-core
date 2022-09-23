@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using log4net.Core;
 using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq.Functions;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -420,6 +422,34 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void StringComparisonParamEmitsWarning()
+		{
+			Assert.Multiple(
+				() =>
+				{
+					AssertStringComparisonWarning(x => string.Compare(x.CustomerId, "ANATR", StringComparison.Ordinal) <= 0, 2);
+					AssertStringComparisonWarning(x => x.CustomerId.StartsWith("ANATR", StringComparison.Ordinal), 1);
+					AssertStringComparisonWarning(x => x.CustomerId.EndsWith("ANATR", StringComparison.Ordinal), 1);
+					AssertStringComparisonWarning(x => x.CustomerId.IndexOf("ANATR", StringComparison.Ordinal) == 0, 1);
+					AssertStringComparisonWarning(x => x.CustomerId.IndexOf("ANATR", 0, StringComparison.Ordinal) == 0, 1);
+#if NETCOREAPP2_0_OR_GREATER
+					AssertStringComparisonWarning(x => x.CustomerId.Replace("AN", "XX", StringComparison.Ordinal) == "XXATR", 1);
+#endif
+				});
+		}
+
+		private void AssertStringComparisonWarning(Expression<Func<Customer, bool>> whereParam, int expected)
+		{
+			using (var log = new LogSpy(typeof(BaseHqlGeneratorForMethod)))
+			{
+				var customers = session.Query<Customer>().Where(whereParam).ToList();
+
+				Assert.That(customers, Has.Count.EqualTo(expected), whereParam.ToString);
+				Assert.That(log.GetWholeLog(), Does.Contain($"parameter of type '{nameof(StringComparison)}' is ignored"), whereParam.ToString);
+			}
+		}
+
+		[Test]
 		public void UsersWithArrayContains()
 		{
 			var names = new[] { "ayende", "rahien" };
@@ -817,6 +847,27 @@ namespace NHibernate.Test.Linq
 			                    .FirstOrDefault();
 			Assert.That(result, Is.Not.Null);
 			Assert.That(result.SerialNumber, Is.EqualTo("1121"));
+		}
+
+		[Test]
+		public void CanCompareAggregateResult()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+			{
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+			}
+
+			session.Query<Customer>()
+			       .Select(o => new AggregateDate { Id = o.CustomerId, MaxDate = o.Orders.Max(l => l.RequiredOrderDate)})
+			       .Where(o => o.MaxDate <= DateTime.Today && o.MaxDate >= DateTime.Today)
+			       .ToList();
+		}
+
+		private class AggregateDate
+		{
+			public string Id { get; set; }
+
+			public DateTime? MaxDate { get; set; }
 		}
 
 		private static List<object[]> CanUseCompareInQueryDataSource()

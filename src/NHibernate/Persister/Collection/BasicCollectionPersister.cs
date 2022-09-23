@@ -262,7 +262,7 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix, bool includeCollectionColumns, bool includeLazyProperties)
+		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
 		{
 			// we need to determine the best way to know that two joinables
 			// represent a single many-to-many...
@@ -312,7 +312,7 @@ namespace NHibernate.Persister.Collection
 		/// </summary>
 		protected override ICollectionInitializer CreateCollectionInitializer(IDictionary<string, IFilter> enabledFilters)
 		{
-			return BatchingCollectionInitializer.CreateBatchingCollectionInitializer(this, batchSize, Factory, enabledFilters);
+			return Factory.Settings.BatchingCollectionInitializationBuilder.CreateBatchingCollectionInitializer(this, batchSize, Factory, enabledFilters);
 		}
 
 		public override SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)

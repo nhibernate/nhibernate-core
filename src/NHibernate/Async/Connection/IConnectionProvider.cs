@@ -12,11 +12,31 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using NHibernate.Driver;
+using NHibernate.Util;
 
 namespace NHibernate.Connection
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+	public static partial class ConnectionProviderExtensions
+	{
+		internal static Task<DbConnection> GetConnectionAsync(this IConnectionProvider connectionProvider, string connectionString, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<DbConnection>(cancellationToken);
+			}
+			try
+			{
+				return ReflectHelper.CastOrThrow<ConnectionProvider>(connectionProvider, "open connection by connectionString").GetConnectionAsync(connectionString, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<DbConnection>(ex);
+			}
+		}
+	}
+
 	public partial interface IConnectionProvider : IDisposable
 	{
 

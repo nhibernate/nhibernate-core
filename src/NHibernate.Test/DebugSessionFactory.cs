@@ -16,6 +16,7 @@ using NHibernate.Exceptions;
 using NHibernate.Id;
 using NHibernate.Impl;
 using NHibernate.Metadata;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -315,6 +316,16 @@ namespace NHibernate.Test
 			return ActualFactory.GetCollectionPersister(role);
 		}
 
+		public ISet<IEntityPersister> GetEntityPersisters(ISet<string> spaces)
+		{
+			return ActualFactory.GetEntityPersisters(spaces);
+		}
+
+		public ISet<ICollectionPersister> GetCollectionPersisters(ISet<string> spaces)
+		{
+			return ActualFactory.GetCollectionPersisters(spaces);
+		}
+
 		IType[] ISessionFactoryImplementor.GetReturnTypes(string queryString)
 		{
 			return ActualFactory.GetReturnTypes(queryString);
@@ -400,7 +411,9 @@ namespace NHibernate.Test
 				(ISessionCreationOptions)sessionBuilder;
 		}
 
-		internal class SessionBuilder : ISessionBuilder
+		internal class SessionBuilder : ISessionBuilder,
+			//TODO 6.0: Remove interface with implementation (will be replaced TenantConfiguration ISessionBuilder method)
+			ISessionCreationOptionsWithMultiTenancy
 		{
 			private readonly ISessionBuilder _actualBuilder;
 			private readonly DebugSessionFactory _debugFactory;
@@ -465,9 +478,17 @@ namespace NHibernate.Test
 			}
 
 			#endregion
+
+			TenantConfiguration ISessionCreationOptionsWithMultiTenancy.TenantConfiguration
+			{
+				get => (_actualBuilder as ISessionCreationOptionsWithMultiTenancy)?.TenantConfiguration;
+				set => _actualBuilder.Tenant(value);
+			}
 		}
 
-		internal class StatelessSessionBuilder : IStatelessSessionBuilder
+		internal class StatelessSessionBuilder : IStatelessSessionBuilder,
+			//TODO 6.0: Remove interface with implementation (will be replaced TenantConfiguration IStatelessSessionBuilder method)
+			ISessionCreationOptionsWithMultiTenancy
 		{
 			private readonly IStatelessSessionBuilder _actualBuilder;
 			private readonly DebugSessionFactory _debugFactory;
@@ -499,6 +520,12 @@ namespace NHibernate.Test
 			{
 				_actualBuilder.AutoJoinTransaction(autoJoinTransaction);
 				return this;
+			}
+
+			TenantConfiguration ISessionCreationOptionsWithMultiTenancy.TenantConfiguration
+			{
+				get => (_actualBuilder as ISessionCreationOptionsWithMultiTenancy)?.TenantConfiguration;
+				set => _actualBuilder.Tenant(value);
 			}
 
 			#endregion

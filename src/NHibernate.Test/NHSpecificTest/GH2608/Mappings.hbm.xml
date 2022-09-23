@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH2608">
+
+  <class name="Person">
+    <id name="Id">
+      <generator class="native"/>
+    </id>
+    <property name="Name"/>
+    <one-to-one name="Details" class="PersonalDetails" cascade="all"/>
+  </class>
+
+  <class name="PersonalDetails">
+    <id name="Id">
+      <generator class="foreign">
+        <param name="property">Person</param>
+      </generator>
+    </id>
+    <property name="SomePersonalDetail"/>
+    <one-to-one name="Person" class="Person" constrained="true"/>
+  </class>
+
+</hibernate-mapping>

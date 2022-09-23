@@ -75,7 +75,7 @@ namespace NHibernate.Criterion
 			var propName = propertyName ?? (projection as IPropertyProjection)?.PropertyName;
 			return propName != null
 				? criteriaQuery.GetColumnAliasesUsingProjection(criteria, propName)
-				: (object[]) CriterionUtil.GetColumnNamesUsingProjection(projection, criteriaQuery, criteria);
+				: CriterionUtil.GetColumnNamesAsSqlStringParts(projection, criteriaQuery, criteria);
 		}
 
 		private SqlType[] SqlTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)

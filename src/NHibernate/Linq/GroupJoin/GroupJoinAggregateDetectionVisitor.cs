@@ -18,7 +18,7 @@ namespace NHibernate.Linq.GroupJoin
 		private readonly List<GroupJoinClause> _nonAggregatingGroupJoins = new List<GroupJoinClause>();
 		private readonly List<GroupJoinClause> _aggregatingGroupJoins = new List<GroupJoinClause>();
 
-		private GroupJoinAggregateDetectionVisitor(IEnumerable<GroupJoinClause> groupJoinClause)
+		internal GroupJoinAggregateDetectionVisitor(IEnumerable<GroupJoinClause> groupJoinClause)
 		{
 			_groupJoinClauses = new HashSet<GroupJoinClause>(groupJoinClause);
 		}
@@ -29,7 +29,7 @@ namespace NHibernate.Linq.GroupJoin
 
 			visitor.Visit(selectExpression);
 
-			return new IsAggregatingResults { NonAggregatingClauses = visitor._nonAggregatingGroupJoins, AggregatingClauses = visitor._aggregatingGroupJoins, NonAggregatingExpressions = visitor._nonAggregatingExpressions };
+			return GetResults(visitor);
 		}
 
 		protected override Expression VisitSubQuery(SubQueryExpression expression)
@@ -61,13 +61,13 @@ namespace NHibernate.Linq.GroupJoin
 
 		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
-			var fromClause = (FromClauseBase) expression.ReferencedQuerySource;
-
-			var querySourceReference = fromClause.FromExpression as QuerySourceReferenceExpression;
-			if (querySourceReference != null)
+			if (!(expression.ReferencedQuerySource is FromClauseBase fromClause))
 			{
-				var groupJoinClause = querySourceReference.ReferencedQuerySource as GroupJoinClause;
-				if (groupJoinClause != null && _groupJoinClauses.Contains(groupJoinClause))
+			}
+			else if (fromClause.FromExpression is QuerySourceReferenceExpression querySourceReference)
+			{
+				if (querySourceReference.ReferencedQuerySource is GroupJoinClause groupJoinClause &&
+				    _groupJoinClauses.Contains(groupJoinClause))
 				{
 					if (_inAggregate.FlagIsFalse)
 					{
@@ -79,8 +79,29 @@ namespace NHibernate.Linq.GroupJoin
 					}
 				}
 			}
+			// In order to detect a left join (e.g. from a in A join b in B on a.Id equals b.Id into c from b in c.DefaultIfEmpty())
+			// we have to visit the subquery in order to find the group join
+			else if (fromClause.FromExpression is SubQueryExpression subQuery)
+			{
+				VisitSubQuery(subQuery);
+			}
 
 			return base.VisitQuerySourceReference(expression);
+		}
+
+		internal IsAggregatingResults GetResults()
+		{
+			return GetResults(this);
+		}
+
+		private static IsAggregatingResults GetResults(GroupJoinAggregateDetectionVisitor visitor)
+		{
+			return new IsAggregatingResults
+			{
+				NonAggregatingClauses = visitor._nonAggregatingGroupJoins,
+				AggregatingClauses = visitor._aggregatingGroupJoins,
+				NonAggregatingExpressions = visitor._nonAggregatingExpressions
+			};
 		}
 
 		internal class StackFlag

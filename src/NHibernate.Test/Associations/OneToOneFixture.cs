@@ -3,6 +3,7 @@ using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Test.Associations.OneToOneFixtureEntities;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Associations
@@ -127,19 +128,22 @@ namespace NHibernate.Test.Associations
 				Assert.That(loadedEntity, Is.Not.Null);
 			}
 		}
-		
+
 		//GH-2064
 		[Test]
 		public void OneToOneCompositeQuerySelectProjection()
 		{
+			using(var logSpy = new LogSpy(typeof(ReflectHelper)))
 			using (var session = OpenSession())
 			{
 				var loadedProjection = session.Query<Parent>().Select(x => new {x.OneToOneComp, x.Key}).FirstOrDefault();
 
 				Assert.That(loadedProjection.OneToOneComp, Is.Not.Null);
+				// GH-2855 Error is logged
+				Assert.That(logSpy.GetWholeLog(), Is.Empty);
 			}
 		}
-		
+
 		//NH-3178 (GH-1125)
 		[Test]
 		public void OneToOneQueryOverSelectProjection()

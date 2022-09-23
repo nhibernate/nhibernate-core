@@ -95,6 +95,10 @@ namespace NHibernate.Impl
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
+				// We need to flush the batcher. Otherwise it may have pending operations which will not already have reached the database,
+				// and the query may yield stale data.
+				await (FlushAsync(cancellationToken)).ConfigureAwait(false);
+
 				queryParameters.ValidateParameters();
 				var plan = GetHQLQueryPlan(queryExpression, false);
 
@@ -122,29 +126,31 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken)
+		public override async Task<IList<T>> ListAsync<T>(CriteriaImpl criteria, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
+				// We need to flush the batcher. Otherwise it may have pending operations which will not already have reached the database,
+				// and the query may yield stale data.
+				await (FlushAsync(cancellationToken)).ConfigureAwait(false);
+
 				string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
 				int size = implementors.Length;
 
 				CriteriaLoader[] loaders = new CriteriaLoader[size];
 				for (int i = 0; i < size; i++)
 				{
-					loaders[i] = new CriteriaLoader(GetOuterJoinLoadable(implementors[i]), Factory,
+					loaders[size - 1 - i] = new CriteriaLoader(GetOuterJoinLoadable(implementors[i]), Factory,
 													criteria, implementors[i], EnabledFilters);
 				}
 
 				bool success = false;
 				try
 				{
-					for (int i = size - 1; i >= 0; i--)
-					{
-						ArrayHelper.AddAll(results, await (loaders[i].ListAsync(this, cancellationToken)).ConfigureAwait(false));
-					}
+					var results = await (loaders.LoadAllToListAsync<T>(this, cancellationToken)).ConfigureAwait(false);
 					success = true;
+					return results;
 				}
 				catch (OperationCanceledException) { throw; }
 				catch (HibernateException)
@@ -159,9 +165,16 @@ namespace NHibernate.Impl
 				finally
 				{
 					await (AfterOperationAsync(success, cancellationToken)).ConfigureAwait(false);
+					temporaryPersistenceContext.Clear();
 				}
-				temporaryPersistenceContext.Clear();
 			}
+		}
+
+		//TODO 6.0: Remove (use base class implementation)
+		public override async Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			ArrayHelper.AddAll(results, await (ListAsync(criteria, cancellationToken)).ConfigureAwait(false));
 		}
 
 		public override Task<IEnumerable> EnumerableAsync(IQueryExpression queryExpression, QueryParameters queryParameters, CancellationToken cancellationToken)
@@ -247,6 +260,10 @@ namespace NHibernate.Impl
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
+				// We need to flush the batcher. Otherwise it may have pending operations which will not already have reached the database,
+				// and the query may yield stale data.
+				await (FlushAsync(cancellationToken)).ConfigureAwait(false);
+
 				var loader = new CustomLoader(customQuery, Factory);
 
 				var success = false;
@@ -316,6 +333,24 @@ namespace NHibernate.Impl
 		}
 
 		#region IStatelessSession Members
+
+		public async Task ManagedCloseAsync(CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			using (BeginContext())
+			{
+				if (IsClosed)
+				{
+					throw new SessionException("Session was already closed!");
+				}
+				// We need to flush the batcher. Otherwise it may have pending operations which will never reach the database,
+				// although a stateless session is not supposed to retain anything in memory and so should not need any explicit
+				// flush from users.
+				await (FlushAsync(cancellationToken)).ConfigureAwait(false);
+				CloseConnectionManager();
+				SetClosed();
+			}
+		}
 
 		/// <summary> Insert a entity.</summary>
 		/// <param name="entity">A new transient instance </param>
@@ -434,7 +469,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		/// <summary> Retrieve a entity. </summary>
+		/// <summary> Retrieve an entity. </summary>
 		/// <returns> a detached entity instance </returns>
 		public Task<object> GetAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -445,31 +480,19 @@ namespace NHibernate.Impl
 			return GetAsync(entityName, id, LockMode.None, cancellationToken);
 		}
 
-		/// <summary> Retrieve a entity.
-		///
+		/// <summary>
+		/// Retrieve an entity.
 		/// </summary>
 		/// <returns> a detached entity instance
 		/// </returns>
 		public async Task<T> GetAsync<T>(object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (BeginProcess())
-			{
-				return (T)await (GetAsync(typeof(T), id, cancellationToken)).ConfigureAwait(false);
-			}
-		}
-
-		private Task<object> GetAsync(System.Type persistentClass, object id, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			return GetAsync(persistentClass.FullName, id, cancellationToken);
+			return (T) await (GetAsync(typeof(T).FullName, id, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary>
-		/// Retrieve a entity, obtaining the specified lock mode.
+		/// Retrieve an entity, obtaining the specified lock mode.
 		/// </summary>
 		/// <returns> a detached entity instance </returns>
 		public async Task<object> GetAsync(string entityName, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
@@ -477,7 +500,11 @@ namespace NHibernate.Impl
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
-				object result = await (Factory.GetEntityPersister(entityName).LoadAsync(id, null, lockMode, this, cancellationToken)).ConfigureAwait(false);
+				// We need to flush the batcher. Otherwise it may have pending operations which will not already have reached the database,
+				// and the get may miss an entity which should be there.
+				await (FlushAsync(cancellationToken)).ConfigureAwait(false);
+
+				object result = await (Factory.GetEntityPersister(entityName).LoadAsync(id, null, lockMode ?? LockMode.None, this, cancellationToken)).ConfigureAwait(false);
 				if (temporaryPersistenceContext.IsLoadFinished)
 				{
 					temporaryPersistenceContext.Clear();
@@ -487,16 +514,13 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Retrieve a entity, obtaining the specified lock mode.
+		/// Retrieve an entity, obtaining the specified lock mode.
 		/// </summary>
 		/// <returns> a detached entity instance </returns>
 		public async Task<T> GetAsync<T>(object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (BeginProcess())
-			{
-				return (T)await (GetAsync(typeof(T).FullName, id, lockMode, cancellationToken)).ConfigureAwait(false);
-			}
+			return (T) await (GetAsync(typeof(T).FullName, id, lockMode, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -555,6 +579,10 @@ namespace NHibernate.Impl
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
+				// We need to flush the batcher. Otherwise it may have pending operations which will not already have reached the database,
+				// and the query may yield stale data.
+				await (FlushAsync(cancellationToken)).ConfigureAwait(false);
+
 				IEntityPersister persister = GetEntityPersister(entityName, entity);
 				object id = persister.GetIdentifier(entity);
 				if (log.IsDebugEnabled())

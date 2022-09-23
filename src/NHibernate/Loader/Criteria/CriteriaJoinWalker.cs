@@ -86,40 +86,49 @@ namespace NHibernate.Loader.Criteria
 				AddExplicitEntityJoinAssociation(persister, tableAlias, translator.GetJoinType(criteriaPath, criteriaPathAlias), criteriaPath, criteriaPathAlias);
 				IncludeInResultIfNeeded(persister, entityJoinInfo.Criteria, tableAlias, criteriaPath);
 				//collect mapped associations for entity join
-				WalkEntityTree(persister, tableAlias, criteriaPath, 1);
+				WalkEntityTree(persister, tableAlias, criteriaPath);
+				ProcessJoins();
 			}
 		}
 
-		protected override void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
+		protected override void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path)
 		{
 			// NH different behavior (NH-1476, NH-1760, NH-1785)
-			base.WalkEntityTree(persister, alias, path, currentDepth);
+			base.WalkEntityTree(persister, alias, path);
 			WalkCompositeComponentIdTree(persister, alias, path);
 		}
 
 		protected override OuterJoinableAssociation CreateRootAssociation()
 		{
-			var selectMode = GetSelectMode(string.Empty);
+			var path = string.Empty;
+			var selectMode = GetSelectMode(path);
 			if (selectMode == SelectMode.JoinOnly || selectMode == SelectMode.Skip)
 			{
 				throw new NotSupportedException($"SelectMode {selectMode} for root entity is not supported. Use {nameof(SelectMode)}.{nameof(SelectMode.ChildFetch)} instead.");
 			}
 
-			return new OuterJoinableAssociation(
-				Persister.EntityType,
-				null,
-				null,
-				Alias,
-				JoinType.LeftOuterJoin,
-				null,
-				Factory,
-				CollectionHelper.EmptyDictionary<string, IFilter>(),
-				selectMode);
+			return InitAssociation(
+				new OuterJoinableAssociation(
+					Persister.EntityType,
+					null,
+					null,
+					Alias,
+					JoinType.LeftOuterJoin,
+					null,
+					Factory,
+					CollectionHelper.EmptyDictionary<string, IFilter>(),
+					selectMode),
+				path);
 		}
 
 		protected override SelectMode GetSelectMode(string path)
 		{
 			return translator.RootCriteria.GetSelectMode(path);
+		}
+
+		protected override ISet<string> GetEntityFetchLazyProperties(string path)
+		{
+			return translator.RootCriteria.GetEntityFetchLazyProperties(path);
 		}
 
 		private void WalkCompositeComponentIdTree(IOuterJoinLoadable persister, string alias, string path)
@@ -129,7 +138,7 @@ namespace NHibernate.Loader.Criteria
 			if (type != null && type.IsComponentType)
 			{
 				ILhsAssociationTypeSqlInfo associationTypeSQLInfo = JoinHelper.GetIdLhsSqlInfo(alias, persister, Factory);
-				WalkComponentTree((IAbstractComponentType) type, 0, alias, SubPath(path, propertyName), 0, associationTypeSQLInfo);
+				WalkComponentTree((IAbstractComponentType) type, 0, alias, SubPath(path, propertyName), associationTypeSQLInfo);
 			}
 		}
 
@@ -197,6 +206,7 @@ namespace NHibernate.Loader.Criteria
 
 				case SelectMode.Fetch:
 				case SelectMode.FetchLazyProperties:
+				case SelectMode.FetchLazyPropertyGroup:
 				case SelectMode.ChildFetch:
 				case SelectMode.JoinOnly:
 					IsDuplicateAssociation(lhsTable, lhsColumns, type); //deliberately ignore return value!

@@ -36,6 +36,18 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task CanExecuteContainsAsync()
+		{
+			var user = await (db.Users.FirstOrDefaultAsync());
+			var result = db.Users.Contains(user);
+			Assert.That(result, Is.True);
+
+			user = new User("test", DateTime.Now);
+			result = db.Users.Contains(user);
+			Assert.That(result, Is.False);
+		}
+
+		[Test]
 		public async Task CanExecuteCountWithOrderByArgumentsAsync()
 		{
 			var query = db.Users.OrderBy(u => u.Name);

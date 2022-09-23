@@ -38,11 +38,6 @@ namespace NHibernate.Test.CompositeId
 			get { return new string[] {"CompositeId.ClassWithCompositeId.hbm.xml"}; }
 		}
 
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			return !(dialect is Dialect.FirebirdDialect); // Firebird has no CommandTimeout, and locks up during the tear-down of this fixture
-		}
-
 		protected override void OnSetUp()
 		{
 			id = new Id("stringKey", 3, firstDateTime);
@@ -52,9 +47,11 @@ namespace NHibernate.Test.CompositeId
 		protected override void OnTearDown()
 		{
 			using (ISession s = Sfi.OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				s.Delete("from ClassWithCompositeId");
 				s.Flush();
+				t.Commit();
 			}
 		}
 
@@ -394,6 +391,58 @@ namespace NHibernate.Test.CompositeId
 								.Where(Restrictions.Eq(Projections.Id(), id))
 								.OrderBy(Projections.Id()).Desc.ListAsync<Id>());
 				Assert.That(results.Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public async Task CriteriaGroupProjectionAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				await (s.CreateCriteria<ClassWithCompositeId>()
+				.SetProjection(Projections.GroupProperty(Projections.Id()))
+				.Add(Restrictions.Eq(Projections.Id(), id))
+				.ListAsync<Id>());
+			}
+		}
+
+		[Test]
+		public async Task QueryOverInClauseAsync()
+		{
+			// insert the new objects
+			var id1 = id;
+			var id2 = secondId;
+			var id3 = new Id(id1.KeyString, id1.GetKeyShort(), id2.KeyDateTime);
+
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(new ClassWithCompositeId(id1) {OneProperty = 5}));
+				await (s.SaveAsync(new ClassWithCompositeId(id2) {OneProperty = 10}));
+				await (s.SaveAsync(new ClassWithCompositeId(id3)));
+
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			{
+				var results1 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] {id1, id2}).ListAsync());
+				var results2 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).IsIn(new[] {id1}).ListAsync());
+				var results3 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).Not.IsIn(new[] {id1, id2}).ListAsync());
+				var results4 = await (s.QueryOver<ClassWithCompositeId>().WhereRestrictionOn(p => p.Id).Not.IsIn(new[] {id1}).ListAsync());
+
+				Assert.Multiple(
+					() =>
+					{
+						Assert.That(results1.Count, Is.EqualTo(2), "in multiple ids");
+						Assert.That(results1.Select(r => r.Id), Is.EquivalentTo(new[] {id1, id2}), "in multiple ids");
+						Assert.That(results2.Count, Is.EqualTo(1), "in single id");
+						Assert.That(results2.Select(r => r.Id), Is.EquivalentTo(new[] {id1}), "in single id");
+						Assert.That(results3.Count, Is.EqualTo(1), "not in multiple ids");
+						Assert.That(results3.Select(r => r.Id), Is.EquivalentTo(new[] {id3}), "not in multiple ids");
+						Assert.That(results4.Count, Is.EqualTo(2), "not in single id");
+						Assert.That(results4.Select(r => r.Id), Is.EquivalentTo(new[] {id2, id3}), "not in single id");
+					});
 			}
 		}
 	}

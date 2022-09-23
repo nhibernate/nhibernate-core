@@ -19,6 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3634
 					m.Property(c => c.ConnectionType, mapper => mapper.NotNullable(true)); 
 					m.Property(c => c.Address, mapper => mapper.NotNullable(false));
 					m.Property(c => c.PortName, mapper => mapper.NotNullable(false));
+					m.Property(c => c.PortName2, mapper => mapper.NotNullable(false));
 				});
 		}
 	}

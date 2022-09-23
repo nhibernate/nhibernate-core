@@ -166,21 +166,21 @@ namespace NHibernate.Test.Cascade.Circle
 			ClearCounts();
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.MergeAsync(route));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			AssertInsertCount(4);
 			AssertUpdateCount(1);
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				route = await (s.GetAsync<Route>(route.RouteId));
 				CheckResults(route, true);
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -192,23 +192,23 @@ namespace NHibernate.Test.Cascade.Circle
 			ClearCounts();
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				Node pickupNode = route.Nodes.First(n => n.Name == "pickupNodeB");
 				pickupNode = (Node) await (s.MergeAsync(pickupNode));
 
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 
 			using (var s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				route = await (s.GetAsync<Route>(route.RouteId));
 				CheckResults(route, false);
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -220,22 +220,22 @@ namespace NHibernate.Test.Cascade.Circle
 			ClearCounts();
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				Node deliveryNode = route.Nodes.First(n => n.Name == "deliveryNodeB");
 				deliveryNode = (Node) await (s.MergeAsync(deliveryNode));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				route = await (s.GetAsync<Route>(route.RouteId));
 				CheckResults(route, false);
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -247,21 +247,21 @@ namespace NHibernate.Test.Cascade.Circle
 			ClearCounts();
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				Tour tour = await (s.MergeAsync(route.Nodes.First().Tour));
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				route = await (s.GetAsync<Route>(route.RouteId));
 				CheckResults(route, false);
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		}
 		
@@ -273,7 +273,7 @@ namespace NHibernate.Test.Cascade.Circle
 			ClearCounts();
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				Node node = route.Nodes.First();
 				Transport transport = null;
@@ -285,18 +285,18 @@ namespace NHibernate.Test.Cascade.Circle
 
 				transport = (Transport) await (s.MergeAsync(transport));
 
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 	
 			AssertInsertCount(4);
 			AssertUpdateCount(0);
 
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				route = await (s.GetAsync<Route>(route.RouteId));
 				CheckResults(route, false);
-				await (s.Transaction.CommitAsync());
+				await (t.CommitAsync());
 			}
 		}
 
@@ -304,12 +304,12 @@ namespace NHibernate.Test.Cascade.Circle
 		{
 			Route route = new Route();
 			using (ISession s = OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				route.Name = "routeA";
 
 				await (s.SaveAsync(route, cancellationToken));
-				await (s.Transaction.CommitAsync(cancellationToken));
+				await (t.CommitAsync(cancellationToken));
 			}
 			route.Name = "new routeA";
 			route.TransientField = "sfnaouisrbn";

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH1845"
+                   default-cascade="all" >
+  <class name="Category" table="Categories" lazy="true"
+         dynamic-update="true" select-before-update="true">
+
+    <id name="Id" column="Id" type="Int32" unsaved-value="0">
+      <generator class="identity" />
+    </id>
+
+    <property name="Name" />
+    <property name="SortIndex" />
+
+    <many-to-one name="Parent" column="ParentCategoryId" class="Category" not-null="false"/>
+
+    <list name="Subcategories" cascade="all" generic="true" access="nosetter.camelcase"
+          inverse="true" lazy="true">
+      <key column="ParentCategoryId"/>
+      <index column="SortIndex"/>
+      <one-to-many class="Category"/>
+    </list>
+  </class>
+</hibernate-mapping>

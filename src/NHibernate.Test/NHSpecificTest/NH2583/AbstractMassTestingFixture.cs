@@ -1,5 +1,4 @@
 using NHibernate.Cfg;
-using NHibernate.Linq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -235,9 +234,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 							}
 							if ((i%BatchSize) == 0)
 							{
-								if (session.Transaction.IsActive)
+								if (session.GetCurrentTransaction()?.IsActive == true)
 								{
-									session.Transaction.Commit();
+									session.GetCurrentTransaction().Commit();
 									session.Clear();
 								}
 								session.BeginTransaction();
@@ -251,9 +250,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 							// emulating the outer-join logic for exceptional cases in Lin2Objects is IMO very hard.
 						}
 					}
-					if (session.Transaction.IsActive)
+					if (session.GetCurrentTransaction()?.IsActive == true)
 					{
-						session.Transaction.Commit();
+						session.GetCurrentTransaction().Commit();
 						session.Clear();
 					}
 

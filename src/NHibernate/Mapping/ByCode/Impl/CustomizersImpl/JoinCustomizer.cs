@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 {
-	public class JoinCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IJoinMapper<TEntity>
+	public class JoinCustomizer<TEntity> : PropertyContainerCustomizer<TEntity>, IJoinMapper<TEntity>, IEntitySqlsWithCheckMapper
 		where TEntity : class
 	{
 		private readonly string splitGroupId;
@@ -32,14 +32,29 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinAttributesMapper m) => m.SqlInsert(sql));
 		}
 
+		public void SqlInsert(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinAttributesMapper m) => m.SqlInsert(sql, sqlCheck));
+		}
+
 		public void SqlUpdate(string sql)
 		{
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinAttributesMapper m) => m.SqlUpdate(sql));
 		}
 
+		public void SqlUpdate(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinAttributesMapper m) => m.SqlUpdate(sql, sqlCheck));
+		}
+
 		public void SqlDelete(string sql)
 		{
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinAttributesMapper m) => m.SqlDelete(sql));
+		}
+
+		public void SqlDelete(string sql, SqlCheck sqlCheck)
+		{
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IJoinAttributesMapper m) => m.SqlDelete(sql, sqlCheck));
 		}
 
 		public void Subselect(string sql)

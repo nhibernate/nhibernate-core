@@ -31,6 +31,8 @@ namespace NHibernate.Loader
 		private string[] aliases;
 		private LockMode[] lockModeArray;
 		private SqlString sql;
+		private readonly Queue<IJoinQueueEntry> _joinQueue = new();
+		private int _depth;
 
 		public string[] CollectionSuffixes
 		{
@@ -58,6 +60,7 @@ namespace NHibernate.Loader
 
 		public bool[] EagerPropertyFetches { get; set; }
 		public bool[] ChildFetchEntities { get; set; }
+		public ISet<string>[] EntityFetchLazyProperties { get; set; }
 
 		public int[] CollectionOwners
 		{
@@ -135,11 +138,11 @@ namespace NHibernate.Loader
 		/// of associations to be fetched by outerjoin (if necessary)
 		/// </summary>
 		private void AddAssociationToJoinTreeIfNecessary(IAssociationType type, string[] aliasedLhsColumns,
-			string alias, string path, string pathAlias, int currentDepth, JoinType joinType)
+			string alias, string path, string pathAlias, JoinType joinType)
 		{
 			if (joinType >= JoinType.InnerJoin)
 			{
-				AddAssociationToJoinTree(type, aliasedLhsColumns, alias, path, pathAlias, currentDepth, joinType);
+				AddAssociationToJoinTree(type, aliasedLhsColumns, alias, path, pathAlias, joinType);
 			}
 		}
 
@@ -163,7 +166,7 @@ namespace NHibernate.Loader
 		/// of associations to be fetched by outerjoin
 		/// </summary>
 		private void AddAssociationToJoinTree(IAssociationType type, string[] aliasedLhsColumns, string alias,
-			string path, string pathAlias, int currentDepth, JoinType joinType)
+			string path, string pathAlias, JoinType joinType)
 		{
 			IJoinable joinable = type.GetAssociatedJoinable(Factory);
 
@@ -171,31 +174,29 @@ namespace NHibernate.Loader
 			var qc = joinable.IsCollection ? (IQueryableCollection) joinable : null;
 
 			var assoc =
-				new OuterJoinableAssociation(
-					type,
-					alias,
-					aliasedLhsColumns,
-					subalias,
-					joinType,
-					//for many-to-many with clause is applied with OuterJoinableAssociation created for entity persister so simply skip it here
-					qc?.IsManyToMany == true ? null : GetWithClause(path, pathAlias),
-					Factory,
-					enabledFilters,
-					GetSelectMode(path));
+				InitAssociation(
+					new OuterJoinableAssociation(
+						type,
+						alias,
+						aliasedLhsColumns,
+						subalias,
+						joinType,
+						//for many-to-many with clause is applied with OuterJoinableAssociation created for entity persister so simply skip it here
+						qc?.IsManyToMany == true ? null :GetWithClause(path, pathAlias),
+						Factory,
+						enabledFilters,
+						GetSelectMode(path)),
+					path);
 			assoc.ValidateJoin(path);
 			AddAssociation(assoc);
 
-			int nextDepth = currentDepth + 1;
-
-			if (qc == null)
+			if (qc != null)
 			{
-				IOuterJoinLoadable pjl = joinable as IOuterJoinLoadable;
-				if (pjl != null)
-					WalkEntityTree(pjl, subalias, path, nextDepth);
+				_joinQueue.Enqueue(new CollectionJoinQueueEntry(qc, subalias, path, pathAlias));
 			}
-			else
+			else if (joinable is IOuterJoinLoadable jl)
 			{
-				WalkCollectionTree(qc, subalias, path, pathAlias, nextDepth);
+				_joinQueue.Enqueue(new EntityJoinQueueEntry(jl, subalias, path));
 			}
 		}
 
@@ -204,6 +205,11 @@ namespace NHibernate.Loader
 			return SelectMode.Undefined;
 		}
 
+		protected virtual ISet<string> GetEntityFetchLazyProperties(string path)
+		{
+			return null;
+		}
+		
 		private struct DependentAlias2
 		{
 			public DependentAlias2(string alias, ICollection<string> dependsOn)
@@ -291,7 +297,8 @@ namespace NHibernate.Loader
 		/// </summary>
 		protected void WalkEntityTree(IOuterJoinLoadable persister, string alias)
 		{
-			WalkEntityTree(persister, alias, string.Empty, 0);
+			WalkEntityTree(persister, alias, String.Empty);
+			ProcessJoins();
 		}
 
 		/// <summary>
@@ -299,18 +306,27 @@ namespace NHibernate.Loader
 		/// </summary>
 		protected void WalkCollectionTree(IQueryableCollection persister, string alias)
 		{
-			WalkCollectionTree(persister, alias, string.Empty, string.Empty, 0);
-			//TODO: when this is the entry point, we should use an INNER_JOIN for fetching the many-to-many elements!
+			WalkCollectionTree(persister, alias, String.Empty, String.Empty);
+			ProcessJoins();
+		}
+
+		protected void ProcessJoins()
+		{
+			while (_joinQueue.Count > 0)
+			{
+				var entry = _joinQueue.Dequeue();
+				entry.Walk(this);
+			}
 		}
 
 		/// <summary>
 		/// For a collection role, return a list of associations to be fetched by outerjoin
 		/// </summary>
-		private void WalkCollectionTree(IQueryableCollection persister, string alias, string path, string pathAlias, int currentDepth)
+		private void WalkCollectionTree(IQueryableCollection persister, string alias, string path, string pathAlias)
 		{
 			if (persister.IsOneToMany)
 			{
-				WalkEntityTree((IOuterJoinLoadable)persister.ElementPersister, alias, path, currentDepth);
+				WalkEntityTree((IOuterJoinLoadable) persister.ElementPersister, alias, path);
 			}
 			else
 			{
@@ -327,7 +343,7 @@ namespace NHibernate.Loader
 					// if the current depth is 0, the root thing being loaded is the
 					// many-to-many collection itself.  Here, it is alright to use
 					// an inner join...
-					bool useInnerJoin = currentDepth == 0;
+					bool useInnerJoin = _depth == 0;
 
 					var joinType =
 						GetJoinType(
@@ -338,7 +354,7 @@ namespace NHibernate.Loader
 							persister.TableName,
 							lhsColumns,
 							!useInnerJoin,
-							currentDepth - 1,
+							_depth - 1,
 							null);
 
 					AddAssociationToJoinTreeIfNecessary(
@@ -347,7 +363,6 @@ namespace NHibernate.Loader
 						alias,
 						path,
 						pathAlias,
-						currentDepth - 1,
 						joinType);
 				}
 				else if (type.IsComponentType)
@@ -357,8 +372,7 @@ namespace NHibernate.Loader
 						persister.ElementColumnNames,
 						persister,
 						alias,
-						path,
-						currentDepth);
+						path);
 				}
 			}
 		}
@@ -370,8 +384,10 @@ namespace NHibernate.Loader
 			string path,
 			string pathAlias)
 		{
+			_depth = 0;
+			visitedAssociationKeys.Clear();
 			OuterJoinableAssociation assoc =
-				new OuterJoinableAssociation(
+				InitAssociation(new OuterJoinableAssociation(
 					persister.EntityType,
 					string.Empty,
 					Array.Empty<string>(),
@@ -380,12 +396,19 @@ namespace NHibernate.Loader
 					GetWithClause(path, pathAlias),
 					Factory,
 					enabledFilters,
-					GetSelectMode(path));
+					GetSelectMode(path)) {ForceFilter = true},
+				path);
 			AddAssociation(assoc);
 		}
 
+		internal OuterJoinableAssociation InitAssociation(OuterJoinableAssociation association, string path)
+		{
+			association.EntityFetchLazyProperties = GetEntityFetchLazyProperties(path);
+			return association;
+		}
+
 		private void WalkEntityAssociationTree(IAssociationType associationType, IOuterJoinLoadable persister,
-											   int propertyNumber, string alias, string path, bool nullable, int currentDepth,
+											   int propertyNumber, string alias, string path, bool nullable,
 											   ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
 		{
 			string[] aliasedLhsColumns = associationTypeSQLInfo.GetAliasedColumnNames(associationType, 0);
@@ -406,7 +429,7 @@ namespace NHibernate.Loader
 					lhsTable,
 					lhsColumns,
 					nullable,
-					currentDepth,
+					_depth,
 					persister.GetCascadeStyle(propertyNumber));
 
 				AddAssociationToJoinTreeIfNecessary(
@@ -415,7 +438,6 @@ namespace NHibernate.Loader
 					alias,
 					subpath,
 					subPathAlias,
-					currentDepth,
 					joinType);
 			}
 		}
@@ -424,31 +446,45 @@ namespace NHibernate.Loader
 		/// For an entity class, add to a list of associations to be fetched
 		/// by outerjoin
 		/// </summary>
-		protected virtual void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
+		protected virtual void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path)
 		{
 			int n = persister.CountSubclassProperties();
+
+			_joinQueue.Enqueue(NextLevelJoinQueueEntry.Instance);
 			for (int i = 0; i < n; i++)
 			{
 				IType type = persister.GetSubclassPropertyType(i);
 				ILhsAssociationTypeSqlInfo associationTypeSQLInfo = JoinHelper.GetLhsSqlInfo(alias, i, persister, Factory);
+
 				if (type.IsAssociationType)
 				{
 					WalkEntityAssociationTree((IAssociationType) type, persister, i, alias, path,
-											  persister.IsSubclassPropertyNullable(i), currentDepth, associationTypeSQLInfo);
+											  persister.IsSubclassPropertyNullable(i), associationTypeSQLInfo);
 				}
 				else if (type.IsComponentType)
 				{
 					WalkComponentTree((IAbstractComponentType) type, 0, alias, SubPath(path, persister.GetSubclassPropertyName(i)),
-									  currentDepth, associationTypeSQLInfo);
+									  associationTypeSQLInfo);
 				}
 			}
+		}
+
+		/// <summary>
+		/// For an entity class, add to a list of associations to be fetched
+		/// by outerjoin
+		/// </summary>
+		// Since 5.4
+		[Obsolete("Use or override the overload without the currentDepth parameter")]
+		protected virtual void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
+		{
+			WalkEntityTree(persister, alias, path);
 		}
 
 		/// <summary>
 		/// For a component, add to a list of associations to be fetched by outerjoin
 		/// </summary>
 		protected void WalkComponentTree(IAbstractComponentType componentType, int begin, string alias, string path,
-										 int currentDepth, ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
+										 ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
 		{
 			IType[] types = componentType.Subtypes;
 			string[] propertyNames = componentType.PropertyNames;
@@ -477,7 +513,7 @@ namespace NHibernate.Loader
 							lhsTable,
 							lhsColumns,
 							propertyNullability == null || propertyNullability[i],
-							currentDepth,
+							_depth,
 							componentType.GetCascadeStyle(i));
 
 						AddAssociationToJoinTreeIfNecessary(
@@ -486,7 +522,6 @@ namespace NHibernate.Loader
 							alias,
 							subpath,
 							subPathAlias,
-							currentDepth,
 							joinType);
 					}
 				}
@@ -494,17 +529,28 @@ namespace NHibernate.Loader
 				{
 					string subpath = SubPath(path, propertyNames[i]);
 
-					WalkComponentTree((IAbstractComponentType) types[i], begin, alias, subpath, currentDepth, associationTypeSQLInfo);
+					WalkComponentTree((IAbstractComponentType) types[i], begin, alias, subpath, associationTypeSQLInfo);
 				}
 				begin += types[i].GetColumnSpan(Factory);
 			}
 		}
 
 		/// <summary>
+		/// For a component, add to a list of associations to be fetched by outerjoin
+		/// </summary>
+		// Since 5.4
+		[Obsolete("Use or override the overload without the currentDepth parameter")]
+		protected void WalkComponentTree(IAbstractComponentType componentType, int begin, string alias, string path,
+										 int currentDepth, ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
+		{
+			WalkComponentTree(componentType, begin, alias, path, associationTypeSQLInfo);
+		}
+
+		/// <summary>
 		/// For a composite element, add to a list of associations to be fetched by outerjoin
 		/// </summary>
 		private void WalkCompositeElementTree(IAbstractComponentType compositeType, string[] cols,
-			IQueryableCollection persister, string alias, string path, int currentDepth)
+			IQueryableCollection persister, string alias, string path)
 		{
 			IType[] types = compositeType.Subtypes;
 			string[] propertyNames = compositeType.PropertyNames;
@@ -536,7 +582,7 @@ namespace NHibernate.Loader
 								persister.TableName,
 								lhsColumns,
 								propertyNullability == null || propertyNullability[i],
-								currentDepth,
+								_depth,
 								compositeType.GetCascadeStyle(i));
 
 						AddAssociationToJoinTreeIfNecessary(
@@ -545,7 +591,6 @@ namespace NHibernate.Loader
 							alias,
 							subpath,
 							subPathAlias,
-							currentDepth,
 							joinType);
 					}
 				}
@@ -557,8 +602,7 @@ namespace NHibernate.Loader
 						lhsColumns,
 						persister,
 						alias,
-						subpath,
-						currentDepth);
+						subpath);
 				}
 				begin += length;
 			}
@@ -716,6 +760,11 @@ namespace NHibernate.Loader
 		/// </summary>
 		protected virtual bool IsDuplicateAssociation(string foreignKeyTable, string[] foreignKeyColumns)
 		{
+			if (!Factory.Settings.DetectFetchLoops)
+			{
+				return false;
+			}
+
 			AssociationKey associationKey = new AssociationKey(foreignKeyColumns, foreignKeyTable);
 			return !visitedAssociationKeys.Add(associationKey);
 		}
@@ -736,8 +785,9 @@ namespace NHibernate.Loader
 			}
 			else
 			{
-				foreignKeyTable = type.GetAssociatedJoinable(Factory).TableName;
-				foreignKeyColumns = JoinHelper.GetRHSColumnNames(type, Factory);
+				var joinable = type.GetAssociatedJoinable(Factory);
+				foreignKeyTable = joinable.TableName;
+				foreignKeyColumns = JoinHelper.GetRHSColumnNames(joinable, type);
 			}
 
 			return IsDuplicateAssociation(foreignKeyTable, foreignKeyColumns);
@@ -804,10 +854,9 @@ namespace NHibernate.Loader
 		{
 			if (ass.Length == 0)
 				return orderBy;
-			else if (orderBy.Length == 0)
+			if (orderBy.Length == 0)
 				return ass;
-			else
-				return ass.Append(StringHelper.CommaSpace, orderBy);
+			return orderBy.Append(StringHelper.CommaSpace, ass);
 		}
 
 		protected SqlString MergeOrderings(string ass, SqlString orderBy) {
@@ -835,21 +884,30 @@ namespace NHibernate.Loader
 				}
 				else
 				{
-					oj.AddJoins(outerjoin);
 					// NH Different behavior : NH1179 and NH1293
-					// Apply filters in Many-To-One association
-					if (enabledFiltersForManyToOne.Count > 0)
+					// Apply filters for entity joins and Many-To-One associations
+					SqlString filter = null;
+					var enabledFiltersForJoin = oj.ForceFilter ? enabledFilters : enabledFiltersForManyToOne;
+					if (oj.ForceFilter || enabledFiltersForJoin.Count > 0)
 					{
-						string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForManyToOne);
+						string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForJoin);
 						bool joinClauseDoesNotContainsFilterAlready =
-							outerjoin.ToFromFragmentString.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
+							oj.On?.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
 						if (joinClauseDoesNotContainsFilterAlready)
 						{
-							// Ensure that the join condition is added to the join, not the where clause.
-							// Adding the condition to the where clause causes left joins to become inner joins.
-							outerjoin.AddFromFragmentString(new SqlString(manyToOneFilterFragment));
+							filter = new SqlString(manyToOneFilterFragment);
 						}
 					}
+
+					if (TableGroupJoinHelper.ProcessAsTableGroupJoin(new[] {oj}, new[] {oj.On, filter}, true, outerjoin, alias => true, factory))
+						continue;
+
+					oj.AddJoins(outerjoin);
+
+					// Ensure that the join condition is added to the join, not the where clause.
+					// Adding the condition to the where clause causes left joins to become inner joins.
+					if (SqlStringHelper.IsNotEmpty(filter))
+						outerjoin.AddFromFragmentString(filter);
 				}
 				last = oj;
 			}
@@ -960,48 +1018,100 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Render the where condition for a (batch) load by identifier / collection key
 		/// </summary>
-		protected SqlStringBuilder WhereString(string alias, string[] columnNames, int batchSize)
+		protected virtual SqlStringBuilder WhereString(string alias, string[] columnNames, int batchSize)
 		{
 			if (columnNames.Length == 1)
 			{
 				// if not a composite key, use "foo in (?, ?, ?)" for batching
 				// if no batch, and not a composite key, use "foo = ?"
-				string tableAlias = GenerateAliasForColumn(alias, columnNames[0]);
-				InFragment inf = new InFragment().SetColumn(tableAlias, columnNames[0]);
+				var columnName = columnNames[0];
 
-				for (int i = 0; i < batchSize; i++)
-					inf.AddValue(Parameter.Placeholder);
-
-				return new SqlStringBuilder(inf.ToFragmentString());
-			}
-			else
-			{
-				var fragments = new ConditionalFragment[batchSize];
-				for (int i = 0; i < batchSize; i++)
+				var tableAlias = GenerateAliasForColumn(alias, columnName);
+				var qualifiedName = !string.IsNullOrEmpty(tableAlias)
+					? tableAlias + StringHelper.Dot + columnName
+					: columnName;
+				
+				var whereString = new SqlStringBuilder(batchSize * 5);
+				whereString.Add(qualifiedName);
+				if (batchSize == 1)
 				{
-					fragments[i] = new ConditionalFragment()
-						.SetTableAlias(alias)
-						.SetCondition(columnNames, Parameter.GenerateParameters(columnNames.Length));
-				}
-
-				var whereString = new SqlStringBuilder();
-
-				if (fragments.Length == 1)
-				{
-					// if no batch, use "foo = ? and bar = ?"
-					whereString.Add(fragments[0].ToSqlStringFragment());
+					whereString.Add("=").Add(Parameter.Placeholder);
 				}
 				else
 				{
-					// if batching, use "( (foo = ? and bar = ?) or (foo = ? and bar = ?) )"
-					var df = new DisjunctionFragment(fragments);
+					bool added = false;
 
-					whereString.Add(StringHelper.OpenParen);
-					whereString.Add(df.ToFragmentString());
+					whereString.Add(" in (");
+					for (var i = 0; i < batchSize; i++)
+					{
+						var value = Parameter.Placeholder;
+						if (added)
+						{
+							whereString.Add(StringHelper.CommaSpace);
+						}
+
+						whereString.Add(value);
+
+						added = true;
+					}
+
 					whereString.Add(StringHelper.ClosedParen);
 				}
 
 				return whereString;
+			}
+			else
+			{
+				if (batchSize == 1)
+				{
+					// if no batch, use "foo = ? and bar = ?"
+					var whereString = new SqlStringBuilder(columnNames.Length * 4);
+					ColumnFragment(whereString, alias, columnNames);
+					return whereString;
+				}
+				else
+				{
+					// if batching, use "( (foo = ? and bar = ?) or (foo = ? and bar = ?) )"
+
+					var whereString = new SqlStringBuilder();
+					whereString.Add(StringHelper.OpenParen);
+
+					var added = false;
+					for (var i = 0; i < batchSize; i++)
+					{
+						if (added)
+						{
+							whereString.Add(" or ");
+						}
+
+						whereString.Add("(");
+						ColumnFragment(whereString, alias, columnNames);
+						whereString.Add(")");
+						added = true;
+					}
+					whereString.Add(StringHelper.ClosedParen);
+					return whereString;
+				}
+			}
+		}
+
+		private void ColumnFragment(SqlStringBuilder builder, string alias, string[] columnNames)
+		{
+			//foo = ? and bar = ?
+			var added = false;
+			foreach (var columnName in columnNames)
+			{
+				if (added)
+				{
+					builder.Add(" and ");
+				}
+
+				builder
+					.Add(StringHelper.Qualify(GenerateAliasForColumn(alias, columnName), columnName))
+					.Add("=")
+					.Add(Parameter.Placeholder);
+
+				added = true;
 			}
 		}
 
@@ -1021,6 +1131,7 @@ namespace NHibernate.Loader
 			owners = new int[joins];
 			ownerAssociationTypes = new EntityType[joins];
 			lockModeArray = ArrayHelper.Fill(lockMode, joins);
+			EntityFetchLazyProperties = new ISet<string>[joins];
 
 			int i = 0;
 			int j = 0;
@@ -1070,6 +1181,7 @@ namespace NHibernate.Loader
 			aliases[i] = oj.RHSAlias;
 			EagerPropertyFetches[i] = oj.SelectMode == SelectMode.FetchLazyProperties;
 			ChildFetchEntities[i] = oj.SelectMode == SelectMode.ChildFetch;
+			EntityFetchLazyProperties[i] = oj.EntityFetchLazyProperties;
 		}
 
 		/// <summary>
@@ -1100,8 +1212,7 @@ namespace NHibernate.Loader
 																			? null
 																			: collectionSuffixes[collectionAliasCount];
 
-					string selectFragment = 
-						GetSelectFragment(join, entitySuffix, collectionSuffix, next);
+					string selectFragment = join.GetSelectFragment(entitySuffix, collectionSuffix, next);
 
 					if (!string.IsNullOrWhiteSpace(selectFragment))
 					{
@@ -1119,40 +1230,69 @@ namespace NHibernate.Loader
 			}
 		}
 
+		//Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		protected static string GetSelectFragment(OuterJoinableAssociation join, string entitySuffix, string collectionSuffix, OuterJoinableAssociation next = null)
 		{
-			switch (join.SelectMode)
+			return join.GetSelectFragment(entitySuffix, collectionSuffix, next);
+		}
+
+		protected interface IJoinQueueEntry
+		{
+			void Walk(JoinWalker walker);
+		}
+
+		protected class EntityJoinQueueEntry : IJoinQueueEntry
+		{
+			private readonly IOuterJoinLoadable _persister;
+			private readonly string _alias;
+			private readonly string _path;
+
+			public EntityJoinQueueEntry(IOuterJoinLoadable persister, string alias, string path)
 			{
-				case SelectMode.Undefined:
-				case SelectMode.Fetch:
-#pragma warning disable 618
-					return join.Joinable.SelectFragment(
-						next?.Joinable,
-						next?.RHSAlias,
-						join.RHSAlias,
-						entitySuffix,
-						collectionSuffix,
-						join.ShouldFetchCollectionPersister());
-#pragma warning restore 618
+				_persister = persister;
+				_alias = alias;
+				_path = path;
+			}
 
-				case SelectMode.FetchLazyProperties:
-					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "fetch lazy propertie")
-						.SelectFragment(
-							next?.Joinable,
-							next?.RHSAlias,
-							join.RHSAlias,
-							entitySuffix,
-							collectionSuffix,
-							join.ShouldFetchCollectionPersister(),
-							true);
-				
-				case SelectMode.ChildFetch:
-					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "child fetch select mode").IdentifierSelectFragment(join.RHSAlias, entitySuffix);
+			public void Walk(JoinWalker walker)
+			{
+				walker.WalkEntityTree(_persister, _alias, _path);
+			}
+		}
 
-				case SelectMode.JoinOnly:
-					return string.Empty;
-				default:
-					throw new ArgumentOutOfRangeException(nameof(join.SelectMode), $"{join.SelectMode} is unexpected.");
+		protected class CollectionJoinQueueEntry : IJoinQueueEntry
+		{
+			private readonly IQueryableCollection _persister;
+			private readonly string _alias;
+			private readonly string _path;
+			private readonly string _pathAlias;
+
+			public CollectionJoinQueueEntry(IQueryableCollection persister, string alias, string path, string pathAlias)
+			{
+				_persister = persister;
+				_alias = alias;
+				_path = path;
+				_pathAlias = pathAlias;
+			}
+
+			public void Walk(JoinWalker walker)
+			{
+				walker.WalkCollectionTree(_persister, _alias, _path, _pathAlias);
+			}
+		}
+
+		protected class NextLevelJoinQueueEntry : IJoinQueueEntry
+		{
+			public static readonly NextLevelJoinQueueEntry Instance = new();
+
+			private NextLevelJoinQueueEntry()
+			{
+			}
+
+			public void Walk(JoinWalker walker)
+			{
+				walker._depth++;
 			}
 		}
 	}

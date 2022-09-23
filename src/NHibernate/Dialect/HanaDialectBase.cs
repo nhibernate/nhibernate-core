@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
@@ -17,7 +19,7 @@ namespace NHibernate.Dialect
 	public abstract class HanaDialectBase : Dialect
 	{
 		[Serializable]
-		private class TypeConvertingVarArgsSQLFunction : ISQLFunction
+		private class TypeConvertingVarArgsSQLFunction : ISQLFunction, ISQLFunctionExtended
 		{
 			private readonly string _begin;
 			private readonly string _sep;
@@ -33,11 +35,30 @@ namespace NHibernate.Dialect
 
 			#region ISQLFunction Members
 
+			// Since v5.3
+			[Obsolete("Use GetReturnType method instead.")]
 			public IType ReturnType(IType columnType, IMapping mapping)
 			{
 				_type = columnType.SqlTypes(mapping)[0];
 				return columnType;
 			}
+
+			/// <inheritdoc />
+			public IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+#pragma warning disable 618
+				return ReturnType(argumentTypes.FirstOrDefault(), mapping);
+#pragma warning restore 618
+			}
+
+			/// <inheritdoc />
+			public IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+				return GetReturnType(argumentTypes, mapping, throwOnError);
+			}
+
+			/// <inheritdoc />
+			public virtual string Name => "cast";
 
 			public bool HasArguments => true;
 
@@ -392,9 +413,11 @@ namespace NHibernate.Dialect
 			RegisterFunction("ceiling", new StandardSQLFunction("ceil"));
 			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.AnsiChar));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "to_date(?1)"));
-			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+			RegisterFunction("iif", new IifSQLFunction());
 			RegisterFunction("sysdate", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, false));
 			RegisterFunction("truncate", new SQLFunctionTemplateWithRequiredParameters(null, "floor(?1 * power(10, ?2)) / power(10, ?2)", new object[] { null, "0" }));
+			RegisterFunction("new_uuid", new NoArgSQLFunction("sysuuid", NHibernateUtil.Guid, false));
+			RegisterFunction("random", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 		}
 
 		protected virtual void RegisterHANAFunctions()
@@ -439,20 +462,20 @@ namespace NHibernate.Dialect
 			RegisterFunction("cosh", new StandardSQLFunction("cosh", NHibernateUtil.Double));
 			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double));
 			RegisterFunction("current_connection", new NoArgSQLFunction("current_connection", NHibernateUtil.Int32));
-			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.DateTime, false));
+			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
 			RegisterFunction("current_identity_value", new NoArgSQLFunction("current_identity_value", NHibernateUtil.Int64));
 			RegisterFunction("current_mvcc_snapshot_timestamp", new NoArgSQLFunction("current_mvcc_snapshot_timestamp", NHibernateUtil.Int32));
 			RegisterFunction("current_object_schema", new NoArgSQLFunction("current_object_schema", NHibernateUtil.String));
 			RegisterFunction("current_schema", new NoArgSQLFunction("current_schema", NHibernateUtil.String, false));
 			RegisterFunction("current_time", new NoArgSQLFunction("current_time", NHibernateUtil.DateTime, false));
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.DateTime, false));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime, false));
 			RegisterFunction("current_transaction_isolation_level", new NoArgSQLFunction("current_transaction_isolation_level", NHibernateUtil.String, false));
 			RegisterFunction("current_update_statement_sequence", new NoArgSQLFunction("current_update_statement_sequence", NHibernateUtil.Int64));
 			RegisterFunction("current_update_transaction", new NoArgSQLFunction("current_update_transaction", NHibernateUtil.Int64));
 			RegisterFunction("current_user", new NoArgSQLFunction("current_user", NHibernateUtil.String, false));
 			RegisterFunction("current_utcdate", new NoArgSQLFunction("current_utcdate", NHibernateUtil.DateTime, false));
 			RegisterFunction("current_utctime", new NoArgSQLFunction("current_utctime", NHibernateUtil.DateTime, false));
-			RegisterFunction("current_utctimestamp", new NoArgSQLFunction("current_utctimestamp", NHibernateUtil.DateTime, false));
+			RegisterFunction("current_utctimestamp", new NoArgSQLFunction("current_utctimestamp", NHibernateUtil.UtcDateTime, false));
 			RegisterFunction("dayname", new StandardSQLFunction("dayname", NHibernateUtil.String));
 			RegisterFunction("dayofmonth", new StandardSQLFunction("dayofmonth", NHibernateUtil.Int32));
 			RegisterFunction("dayofyear", new StandardSQLFunction("dayofyear", NHibernateUtil.Int32));
@@ -496,7 +519,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("map", new VarArgsSQLFunction("map(", ",", ")"));
 			RegisterFunction("mimetype", new StandardSQLFunction("mimetype", NHibernateUtil.String));
 			RegisterFunction("minute", new StandardSQLFunction("minute", NHibernateUtil.Int32));
-			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
+			RegisterFunction("mod", new ModulusFunction(false, false));
 			RegisterFunction("month", new StandardSQLFunction("month", NHibernateUtil.Int32));
 			RegisterFunction("monthname", new StandardSQLFunction("monthname", NHibernateUtil.String));
 			RegisterFunction("months_between", new StandardSQLFunction("months_between", NHibernateUtil.Int32));
