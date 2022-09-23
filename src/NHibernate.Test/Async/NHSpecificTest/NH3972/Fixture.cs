@@ -16,6 +16,7 @@ using NHibernate.Linq;
 namespace NHibernate.Test.NHSpecificTest.NH3972
 {
 	using System.Threading.Tasks;
+	[KnownBug("NH-3972(GH-1189)")]
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
