@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH3972
 {
+	[KnownBug("NH-3972(GH-1189)")]
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
