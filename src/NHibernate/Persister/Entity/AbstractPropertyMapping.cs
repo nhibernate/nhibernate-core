@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using NHibernate.Cfg.XmlHbmBinding;
 using NHibernate.Engine;
-using NHibernate.Mapping;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -15,7 +12,6 @@ namespace NHibernate.Persister.Entity
 	/// </summary>
 	public abstract class AbstractPropertyMapping : IPropertyMapping
 	{
-		private readonly HashSet<string> duplicateIncompatiblePaths = new HashSet<string>();
 		private readonly Dictionary<string, IType> typesByPropertyPath = new Dictionary<string, IType>();
 		private readonly Dictionary<string, string[]> columnsByPropertyPath = new Dictionary<string, string[]>();
 		private readonly Dictionary<string, string[]> formulaTemplatesByPropertyPath = new Dictionary<string, string[]>();
@@ -95,131 +91,18 @@ namespace NHibernate.Persister.Entity
 
 		#endregion
 
-		[Obsolete] 
 		protected void AddPropertyPath(string path, IType type, string[] columns, string[] formulaTemplates)
 		{
-			AddPropertyPath(path, type, columns, formulaTemplates, null);
-		}
-
-		protected void AddPropertyPath(
-			string path,
-			IType type,
-			string[] columns,
-			string[] formulaTemplates,
-			IMapping factory)
-		{
-			if (typesByPropertyPath.TryGetValue(path, out var existingType) || duplicateIncompatiblePaths.Contains(path))
-			{
-				// If types match or the new type is not an association type, there is nothing for us to do
-				if (type == existingType || existingType == null || !(type is IAssociationType))
-				{
-					//TODO: Log duplicated
-				}
-				else if (!(existingType is IAssociationType))
-				{
-					// Workaround for org.hibernate.cfg.annotations.PropertyBinder.bind() adding a component for *ToOne ids
-					//TODO: Log duplicated
-				}
-				else
-				{
-					if (type is AnyType && existingType is AnyType)
-					{
-						// TODO: not sure how to handle any types. For now we just return and let the first type dictate what type the property has...
-					}
-					else
-					{
-						IType commonType = null;
-						if (type is CollectionType typeCollection && existingType is CollectionType existingCollection)
-						{
-							var metadata = (IMetadata) factory;
-							var thisCollection = metadata.GetCollection(existingCollection.Role);
-							var otherCollection = metadata.GetCollection(typeCollection.Role);
-
-							if (thisCollection.Equals(otherCollection))
-							{
-								//TODO: Log duplicated
-							}
-							else
-							{
-								//TODO: log Incompatible Registration
-							}
-						}
-						else if (type is EntityType entityType1 && existingType is EntityType entityType2)
-						{
-							if (entityType1.GetAssociatedEntityName() == entityType2.GetAssociatedEntityName())
-							{
-								//TODO: Log duplicated
-								return;
-							}
-							
-							commonType = GetCommonType((IMetadata)factory, entityType1, entityType2);
-						}
-						else
-						{
-							//TODO: log Incompatible Registration
-						}
-
-						if (commonType == null)
-						{
-							duplicateIncompatiblePaths.Add(path);
-							typesByPropertyPath.Remove(path);
-							columnsByPropertyPath[path] = columns;
-							
-							if ( formulaTemplates != null )
-							{
-								formulaTemplatesByPropertyPath[path] = formulaTemplates;
-							}
-						}
-						else
-						{
-							typesByPropertyPath[path] = commonType;
-						}
-					}
-				}
-			}
-			else
+			if (!typesByPropertyPath.ContainsKey(path))
 			{
 				typesByPropertyPath[path] = type;
 				columnsByPropertyPath[path] = columns;
-				
+
 				if (formulaTemplates != null)
 				{
 					formulaTemplatesByPropertyPath[path] = formulaTemplates;
 				}
 			}
-		}
-
-		private static IType GetCommonType(IMetadata metadata, EntityType entityType1, EntityType entityType2)
-		{
-			var thisClass = metadata.GetPersistentClass(entityType1.GetAssociatedEntityName());
-			var otherClass = metadata.GetPersistentClass(entityType2.GetAssociatedEntityName());
-			var commonClass = GetCommonPersistent(thisClass, otherClass);
-
-			if (commonClass == null)
-			{
-				return null;
-			}
-
-			switch (entityType1)
-			{
-				case ManyToOneType many:
-					return new ManyToOneType(many, commonClass.EntityName);
-				case SpecialOneToOneType special:
-						return new SpecialOneToOneType(special, commonClass.EntityName);
-				default:
-					throw new Exception("Unexpected entity type: " + entityType1);
-					
-			}
-		}
-
-		private static PersistentClass GetCommonPersistent(PersistentClass class1, PersistentClass class2)
-		{
-			while (class2 != null && class2.MappedClass != null && !class2.MappedClass.IsAssignableFrom(class1.MappedClass))
-			{
-				class2 = class2.Superclass;
-			}
-
-			return class2;
 		}
 
 		protected internal void InitPropertyPaths( string path, IType type, string[] columns, string[] formulaTemplates, IMapping factory )
@@ -253,7 +136,7 @@ namespace NHibernate.Persister.Entity
 
 			if (path != null)
 			{
-				AddPropertyPath(path, type, columns, formulaTemplates, factory);
+				AddPropertyPath(path, type, columns, formulaTemplates);
 			}
 
 			if (type.IsComponentType)
@@ -282,7 +165,7 @@ namespace NHibernate.Persister.Entity
 				if (!hasNonIdentifierPropertyNamedId)
 				{
 					string idpath1 = ExtendPath(path, EntityPersister.EntityID);
-					AddPropertyPath(idpath1, idtype, columns, null, factory);
+					AddPropertyPath(idpath1, idtype, columns, null);
 					InitPropertyPaths(idpath1, idtype, columns, null, factory);
 				}
 			}
@@ -290,7 +173,7 @@ namespace NHibernate.Persister.Entity
 			if (idPropName != null)
 			{
 				string idpath2 = ExtendPath(path, idPropName);
-				AddPropertyPath(idpath2, idtype, columns, null, factory);
+				AddPropertyPath(idpath2, idtype, columns, null);
 				InitPropertyPaths(idpath2, idtype, columns, null, factory);
 			}
 		}

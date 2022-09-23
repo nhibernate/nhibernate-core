@@ -14,12 +14,6 @@ namespace NHibernate.Type
 			: base(referencedEntityName, foreignKeyType, uniqueKeyPropertyName, lazy, unwrapProxy, entityName, propertyName)
 		{
 		}
-		
-		public SpecialOneToOneType(SpecialOneToOneType original, string superTypeEntityName)
-			: base(original, superTypeEntityName)
-		{
-			
-		}
 
 		public override int GetColumnSpan(Engine.IMapping mapping)
 		{

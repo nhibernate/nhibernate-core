@@ -28,12 +28,6 @@ namespace NHibernate.Type
 			isLogicalOneToOne = false;
 			PropertyName = null;
 		}
-
-		public ManyToOneType(ManyToOneType original, string superTypeEntityName)
-			: base(original, superTypeEntityName)
-		{
-			
-		}
 		
 		//Since 5.3
 		[Obsolete("Use Constructor with property name")]

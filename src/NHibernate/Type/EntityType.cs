@@ -43,12 +43,6 @@ namespace NHibernate.Type
 			this.unwrapProxy = unwrapProxy;
 		}
 
-		protected EntityType(EntityType original, string superTypeEntityName)
-			: this(superTypeEntityName, original.uniqueKeyPropertyName, original.eager, original.unwrapProxy)
-		{
-			
-		}
-
 		/// <summary> Explicitly, an entity type is an entity type </summary>
 		/// <value> True. </value>
 		public override sealed bool IsEntityType
