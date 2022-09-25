@@ -74,7 +74,8 @@ namespace NHibernate.Test.Stateless
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return TestDialect.SupportsSelectForUpdate;
+			return TestDialect.SupportsCancelQuery &&
+				TestDialect.SupportsSelectForUpdate;
 		}
 
 		private async Task CancelQueryTestAsync(Action<IStatelessSession> queryAction, CancellationToken cancellationToken = default(CancellationToken))
