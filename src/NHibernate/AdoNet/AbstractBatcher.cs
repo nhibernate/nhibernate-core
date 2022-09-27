@@ -253,6 +253,11 @@ namespace NHibernate.AdoNet
 			try
 			{
 				var reader = cmd.ExecuteReader();
+				if (reader == null)
+				{
+					// MySql may return null instead of an exception, by example when the query is canceled by another thread.
+					throw new InvalidOperationException("The query execution has yielded a null reader. (Has it been canceled?)");
+				}
 				return _factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders
 					? reader
 					: NHybridDataReader.Create(reader);
