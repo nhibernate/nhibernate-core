@@ -343,67 +343,10 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public async Task PlansWithNonParameterizedConstantsAreNotCachedForExpandedQueryAsync()
-		{
-			var queryPlanCacheType = typeof(QueryPlanCache);
-
-			var cache = (SoftLimitMRUCache)
-				queryPlanCacheType
-					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
-					.GetValue(Sfi.QueryPlanCache);
-			cache.Clear();
-
-			var ids = new[] {"ANATR", "UNKNOWN"}.ToList();
-			await (db.Customers.Where(x => ids.Contains(x.CustomerId)).Select(
-				c => new {c.CustomerId, c.ContactName, Constant = 1}).FirstAsync());
-
-			Assert.That(
-				cache,
-				Has.Count.EqualTo(0),
-				"Query plan should not be cached.");
-		}
-
-		//GH-2298 - Different Update queries - same query cache plan
-		[Test]
-		public async Task DmlPlansForExpandedQueryAsync()
-		{
-			var queryPlanCacheType = typeof(QueryPlanCache);
-
-			var cache = (SoftLimitMRUCache)
-				queryPlanCacheType
-					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
-					.GetValue(Sfi.QueryPlanCache);
-			cache.Clear();
-
-			using (session.BeginTransaction())
-			{
-				var list = new[] {"UNKNOWN", "UNKNOWN2"}.ToList();
-				await (db.Customers.Where(x => list.Contains(x.CustomerId)).UpdateAsync(
-					x => new Customer
-					{
-						CompanyName = "Constant1"
-					}));
-
-				await (db.Customers.Where(x => list.Contains(x.CustomerId))
-				.UpdateAsync(
-					x => new Customer
-					{
-						ContactName = "Constant1"
-					}));
-
-				Assert.That(
-					cache.Count,
-					//2 original queries + 2 expanded queries are expected in cache
-					Is.EqualTo(0).Or.EqualTo(4),
-					"Query plans should either be cached separately or not cached at all.");
-			}
-		}
-
-		[Test]
 		public async Task PlansWithConstantExpressionsAreNotCachedAsync()
 		{
 			var queryPlanCacheType = typeof(QueryPlanCache);
-			var cache = (SoftLimitMRUCache)queryPlanCacheType.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Sfi.QueryPlanCache);
+			var cache = (SoftLimitMRUCache) queryPlanCacheType.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Sfi.QueryPlanCache);
 			cache.Clear();
 
 			await ((from c in db.Customers
@@ -478,6 +421,63 @@ namespace NHibernate.Test.Linq
 					select new { c.CustomerId, c.ContactName, DummyColumn = c.CustomerId ?? "TEST" }).FirstAsync());
 
 			Assert.That(cache, Has.Count.EqualTo(14), "Query should be cached");
+		}
+
+		[Test]
+		public async Task PlansWithNonParameterizedConstantsAreNotCachedForExpandedQueryAsync()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache)
+				queryPlanCacheType
+					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+					.GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			var ids = new[] {"ANATR", "UNKNOWN"}.ToList();
+			await (db.Customers.Where(x => ids.Contains(x.CustomerId)).Select(
+				c => new {c.CustomerId, c.ContactName, Constant = 1}).FirstAsync());
+
+			Assert.That(
+				cache,
+				Has.Count.EqualTo(0),
+				"Query plan should not be cached.");
+		}
+
+		//GH-2298 - Different Update queries - same query cache plan
+		[Test]
+		public async Task DmlPlansForExpandedQueryAsync()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+
+			var cache = (SoftLimitMRUCache)
+				queryPlanCacheType
+					.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic)
+					.GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			using (session.BeginTransaction())
+			{
+				var list = new[] {"UNKNOWN", "UNKNOWN2"}.ToList();
+				await (db.Customers.Where(x => list.Contains(x.CustomerId)).UpdateAsync(
+					x => new Customer
+					{
+						CompanyName = "Constant1"
+					}));
+
+				await (db.Customers.Where(x => list.Contains(x.CustomerId))
+				.UpdateAsync(
+					x => new Customer
+					{
+						ContactName = "Constant1"
+					}));
+
+				Assert.That(
+					cache.Count,
+					//2 original queries + 2 expanded queries are expected in cache
+					Is.EqualTo(0).Or.EqualTo(4),
+					"Query plans should either be cached separately or not cached at all.");
+			}
 		}
 	}
 }
