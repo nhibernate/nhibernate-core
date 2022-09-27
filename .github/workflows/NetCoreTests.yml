@@ -14,6 +14,8 @@ jobs:
             CONNECTION_STRING: "Host=localhost;Username=nhibernate;Password=nhibernate;Database=nhibernate;Enlist=true;"
           - DB: Firebird
             CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
+          - DB: Firebird4
+            CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
           - DB: MySQL
             CONNECTION_STRING: "Server=localhost;Uid=root;Password=nhibernate;Database=nhibernate;Old Guids=True;SslMode=none;"
           - DB: Oracle
@@ -44,6 +46,11 @@ jobs:
 
     - name: Set up Firebird
       if: matrix.DB == 'Firebird'
+      run: |
+        docker run --name firebird -e EnableWireCrypt=true -e FIREBIRD_USER=nhibernate -e FIREBIRD_PASSWORD=nhibernate -e ISC_PASSWORD=nhibernate -e FIREBIRD_DATABASE=nhibernate -p 3050:3050 -d jacobalberty/firebird:v3.0
+
+    - name: Set up Firebird4
+      if: matrix.DB == 'Firebird4'
       run: |
         docker run --name firebird -e EnableWireCrypt=true -e FIREBIRD_USER=nhibernate -e FIREBIRD_PASSWORD=nhibernate -e ISC_PASSWORD=nhibernate -e FIREBIRD_DATABASE=nhibernate -p 3050:3050 -d jacobalberty/firebird:v4.0
 

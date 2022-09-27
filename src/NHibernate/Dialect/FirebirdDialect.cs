@@ -611,4 +611,8 @@ namespace NHibernate.Dialect
 
 		#endregion
 	}
+
+	public class Firebird4Dialect: Dialect
+	{
+	}
 }
