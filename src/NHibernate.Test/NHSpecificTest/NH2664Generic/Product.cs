@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH2664Generic
 {
-	public class Product
+	public class Product : IProduct
 	{
 		public virtual string ProductId { get; set; }
 
