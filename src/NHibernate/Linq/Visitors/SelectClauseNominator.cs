@@ -67,7 +67,8 @@ namespace NHibernate.Linq.Visitors
 				return innerExpression;
 			}
 
-			var projectConstantsInHql = _stateStack.Peek() || expression.NodeType == ExpressionType.Equal || IsRegisteredFunction(expression);
+			//var projectConstantsInHql = _stateStack.Peek() || expression.NodeType == ExpressionType.Equal || IsRegisteredFunction(expression);
+			var projectConstantsInHql = _stateStack.Peek() || IsConstantExpression(expression) || IsRegisteredFunction(expression);
 
 			// Set some flags, unless we already have proper values for them:
 			//    projectConstantsInHql if they are inside a method call executed server side.
@@ -113,6 +114,34 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			return expression;
+		}
+
+		private bool IsConstantExpression(Expression expression)
+		{
+			switch (expression.NodeType)
+			{
+				case ExpressionType.Equal:
+				case ExpressionType.NotEqual:
+				case ExpressionType.LessThan:
+				case ExpressionType.LessThanOrEqual:
+				case ExpressionType.GreaterThan:
+				case ExpressionType.GreaterThanOrEqual:
+				case ExpressionType.Not:
+				case ExpressionType.And:
+				case ExpressionType.AndAlso:
+				case ExpressionType.Or:
+				case ExpressionType.OrElse:
+				case ExpressionType.Add:
+				case ExpressionType.Subtract:
+				case ExpressionType.Multiply:
+				case ExpressionType.Divide:
+				case ExpressionType.Modulo:
+				case ExpressionType.Coalesce:
+				case ExpressionType.Conditional:
+					return true;
+				default:
+					return false;
+			}
 		}
 
 		private bool IsRegisteredFunction(Expression expression)

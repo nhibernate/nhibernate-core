@@ -398,5 +398,86 @@ namespace NHibernate.Test.Linq
 					"Query plans should either be cached separately or not cached at all.");
 			}
 		}
+
+		[Test]
+		public async Task PlansWithConstantExpressionsAreNotCachedAsync()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+			var cache = (SoftLimitMRUCache)queryPlanCacheType.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			await ((from c in db.Customers
+					where c.CustomerId == "ALFKI"
+					select new { c.CustomerId, c.ContactName, DummyBooleanColumn = c.CustomerId == "ALFKI" }).FirstAsync());
+
+			Assert.That(cache, Has.Count.EqualTo(1), "Query should be cached");
+
+			await ((from c in db.Customers
+					where c.CustomerId == "ALFKI"
+					select new { c.CustomerId, c.ContactName, DummyBooleanColumn = c.CustomerId != "ALFKI" }).FirstAsync());
+
+			Assert.That(cache, Has.Count.EqualTo(2), "Query should be cached");
+
+			await ((from p in db.Products
+					select new { p.Name, DummyBooleanColumn = p.Discontinued && true }).FirstAsync());
+
+			Assert.That(cache, Has.Count.EqualTo(3), "Query should be cached");
+
+			await ((from p in db.Products
+					select new { p.Name, DummyBooleanColumn = p.Discontinued || true }).FirstAsync());
+
+			Assert.That(cache, Has.Count.EqualTo(4), "Query should be cached");
+
+			await ((from p in db.Products
+					select new { p.Name, DummyBooleanColumn = p.ShippingWeight > 10 }).FirstAsync());
+
+			Assert.That(cache, Has.Count.EqualTo(5), "Query should be cached");
+
+			await ((from p in db.Products
+					select new { p.Name, DummyBooleanColumn = p.ShippingWeight < 10 }).FirstAsync());
+
+			Assert.That(cache, Has.Count.EqualTo(6), "Query should be cached");
+
+			await ((from p in db.Products
+					select new { p.Name, DummyBooleanColumn = p.ShippingWeight >= 10 }).FirstAsync());
+
+			Assert.That(cache, Has.Count.EqualTo(7), "Query should be cached");
+
+			await ((from p in db.Products
+					select new { p.Name, DummyBooleanColumn = p.ShippingWeight <= 10 }).FirstAsync());
+
+			Assert.That(cache, Has.Count.EqualTo(8), "Query should be cached");
+
+			await ((from p in db.Products
+					select new { p.Name, DummyColumn = p.ShippingWeight > 0 ? "Test" : null }).FirstAsync());
+
+			Assert.That(cache, Has.Count.EqualTo(9), "Query should be cached");
+
+			await ((from p in db.Products
+					select new { p.Name, DummyColumn = p.ShippingWeight + 10 }).FirstAsync());
+
+			Assert.That(cache, Has.Count.EqualTo(10), "Query should be cached");
+
+			await ((from p in db.Products
+					select new { p.Name, DummyColumn = p.ShippingWeight - 10 }).FirstAsync());
+
+			Assert.That(cache, Has.Count.EqualTo(11), "Query should be cached");
+
+			await ((from p in db.Products
+					select new { p.Name, DummyColumn = p.ShippingWeight * 10 }).FirstAsync());
+
+			Assert.That(cache, Has.Count.EqualTo(12), "Query should be cached");
+
+			await ((from p in db.Products
+					select new { p.Name, DummyColumn = p.ShippingWeight / 10 }).FirstAsync());
+
+			Assert.That(cache, Has.Count.EqualTo(13), "Query should be cached");
+
+			await ((from c in db.Customers
+					where c.CustomerId == "ALFKI"
+					select new { c.CustomerId, c.ContactName, DummyColumn = c.CustomerId ?? "TEST" }).FirstAsync());
+
+			Assert.That(cache, Has.Count.EqualTo(14), "Query should be cached");
+		}
 	}
 }
