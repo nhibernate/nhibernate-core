@@ -67,7 +67,6 @@ namespace NHibernate.Linq.Visitors
 				return innerExpression;
 			}
 
-			//var projectConstantsInHql = _stateStack.Peek() || expression.NodeType == ExpressionType.Equal || IsRegisteredFunction(expression);
 			var projectConstantsInHql = _stateStack.Peek() || IsConstantExpression(expression) || IsRegisteredFunction(expression);
 
 			// Set some flags, unless we already have proper values for them:
