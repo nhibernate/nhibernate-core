@@ -360,6 +360,87 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void PlansWithConstantExpressionsAreNotCached()
+		{
+			var queryPlanCacheType = typeof(QueryPlanCache);
+			var cache = (SoftLimitMRUCache) queryPlanCacheType.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Sfi.QueryPlanCache);
+			cache.Clear();
+
+			(from c in db.Customers
+					where c.CustomerId == "ALFKI"
+					select new { c.CustomerId, c.ContactName, DummyBooleanColumn = c.CustomerId == "ALFKI" }).First();
+
+			Assert.That(cache, Has.Count.EqualTo(1), "Query should be cached");
+
+			(from c in db.Customers
+					where c.CustomerId == "ALFKI"
+					select new { c.CustomerId, c.ContactName, DummyBooleanColumn = c.CustomerId != "ALFKI" }).First();
+
+			Assert.That(cache, Has.Count.EqualTo(2), "Query should be cached");
+
+			(from p in db.Products
+					select new { p.Name, DummyBooleanColumn = p.Discontinued && true }).First();
+
+			Assert.That(cache, Has.Count.EqualTo(3), "Query should be cached");
+
+			(from p in db.Products
+					select new { p.Name, DummyBooleanColumn = p.Discontinued || true }).First();
+
+			Assert.That(cache, Has.Count.EqualTo(4), "Query should be cached");
+
+			(from p in db.Products
+					select new { p.Name, DummyBooleanColumn = p.ShippingWeight > 10 }).First();
+
+			Assert.That(cache, Has.Count.EqualTo(5), "Query should be cached");
+
+			(from p in db.Products
+					select new { p.Name, DummyBooleanColumn = p.ShippingWeight < 10 }).First();
+
+			Assert.That(cache, Has.Count.EqualTo(6), "Query should be cached");
+
+			(from p in db.Products
+					select new { p.Name, DummyBooleanColumn = p.ShippingWeight >= 10 }).First();
+
+			Assert.That(cache, Has.Count.EqualTo(7), "Query should be cached");
+
+			(from p in db.Products
+					select new { p.Name, DummyBooleanColumn = p.ShippingWeight <= 10 }).First();
+
+			Assert.That(cache, Has.Count.EqualTo(8), "Query should be cached");
+
+			(from p in db.Products
+					select new { p.Name, DummyColumn = p.ShippingWeight > 0 ? "Test" : null }).First();
+
+			Assert.That(cache, Has.Count.EqualTo(9), "Query should be cached");
+
+			(from p in db.Products
+					select new { p.Name, DummyColumn = p.ShippingWeight + 10 }).First();
+
+			Assert.That(cache, Has.Count.EqualTo(10), "Query should be cached");
+
+			(from p in db.Products
+					select new { p.Name, DummyColumn = p.ShippingWeight - 10 }).First();
+
+			Assert.That(cache, Has.Count.EqualTo(11), "Query should be cached");
+
+			(from p in db.Products
+					select new { p.Name, DummyColumn = p.ShippingWeight * 10 }).First();
+
+			Assert.That(cache, Has.Count.EqualTo(12), "Query should be cached");
+
+			(from p in db.Products
+					select new { p.Name, DummyColumn = p.ShippingWeight / 10 }).First();
+
+			Assert.That(cache, Has.Count.EqualTo(13), "Query should be cached");
+
+			(from c in db.Customers
+					where c.CustomerId == "ALFKI"
+					select new { c.CustomerId, c.ContactName, DummyColumn = c.CustomerId ?? "TEST" }).First();
+
+			Assert.That(cache, Has.Count.EqualTo(14), "Query should be cached");
+		}
+
+		[Test]
 		public void PlansWithNonParameterizedConstantsAreNotCachedForExpandedQuery()
 		{
 			var queryPlanCacheType = typeof(QueryPlanCache);
