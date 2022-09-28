@@ -23,6 +23,8 @@ namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+	using System;
+
 	// Mainly adapted from tests contributed by Nicola Tuveri on NH-2500 (NH-2500.patch file)
 	[TestFixture]
 	public class ConstantTestAsync : LinqTestCase
@@ -349,9 +351,10 @@ namespace NHibernate.Test.Linq
 			var cache = (SoftLimitMRUCache) queryPlanCacheType.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Sfi.QueryPlanCache);
 			cache.Clear();
 
+			var input = new { Name = "ALFKI" };
 			await ((from c in db.Customers
 					where c.CustomerId == "ALFKI"
-					select new { c.CustomerId, c.ContactName, DummyBooleanColumn = c.CustomerId == "ALFKI" }).FirstAsync());
+					select new { c.CustomerId, c.ContactName, DummyBooleanColumn = c.CustomerId == input.Name }).FirstAsync());
 
 			Assert.That(cache, Has.Count.EqualTo(1), "Query should be cached");
 
@@ -392,12 +395,12 @@ namespace NHibernate.Test.Linq
 			Assert.That(cache, Has.Count.EqualTo(8), "Query should be cached");
 
 			await ((from p in db.Products
-					select new { p.Name, DummyColumn = p.ShippingWeight > 0 ? "Test" : null }).FirstAsync());
+					select new { p.Name, DummyColumn = p.ShippingWeight > 0 ? DateTime.Now : default(DateTime?) }).FirstAsync());
 
 			Assert.That(cache, Has.Count.EqualTo(9), "Query should be cached");
 
 			await ((from p in db.Products
-					select new { p.Name, DummyColumn = p.ShippingWeight + 10 }).FirstAsync());
+					select new { p.Name, DummyColumn = p.UnitPrice + 10 }).FirstAsync());
 
 			Assert.That(cache, Has.Count.EqualTo(10), "Query should be cached");
 

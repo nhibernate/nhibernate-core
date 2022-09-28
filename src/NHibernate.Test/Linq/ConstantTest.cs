@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NHibernate.Criterion;
@@ -366,9 +367,10 @@ namespace NHibernate.Test.Linq
 			var cache = (SoftLimitMRUCache) queryPlanCacheType.GetField("planCache", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Sfi.QueryPlanCache);
 			cache.Clear();
 
+			var input = new { Name = "ALFKI" };
 			(from c in db.Customers
 					where c.CustomerId == "ALFKI"
-					select new { c.CustomerId, c.ContactName, DummyBooleanColumn = c.CustomerId == "ALFKI" }).First();
+					select new { c.CustomerId, c.ContactName, DummyBooleanColumn = c.CustomerId == input.Name }).First();
 
 			Assert.That(cache, Has.Count.EqualTo(1), "Query should be cached");
 
@@ -409,12 +411,12 @@ namespace NHibernate.Test.Linq
 			Assert.That(cache, Has.Count.EqualTo(8), "Query should be cached");
 
 			(from p in db.Products
-					select new { p.Name, DummyColumn = p.ShippingWeight > 0 ? "Test" : null }).First();
+					select new { p.Name, DummyColumn = p.ShippingWeight > 0 ? DateTime.Now : default(DateTime?) }).First();
 
 			Assert.That(cache, Has.Count.EqualTo(9), "Query should be cached");
 
 			(from p in db.Products
-					select new { p.Name, DummyColumn = p.ShippingWeight + 10 }).First();
+					select new { p.Name, DummyColumn = p.UnitPrice + 10 }).First();
 
 			Assert.That(cache, Has.Count.EqualTo(10), "Query should be cached");
 

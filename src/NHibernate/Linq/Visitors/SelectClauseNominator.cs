@@ -67,15 +67,14 @@ namespace NHibernate.Linq.Visitors
 				return innerExpression;
 			}
 
-			var projectConstantsInHql = _stateStack.Peek() || IsConstantExpression(expression) || IsRegisteredFunction(expression);
+			bool isRegisteredFunction = IsRegisteredFunction(expression);
+			var projectConstantsInHql = _stateStack.Peek() || IsConstantExpression(expression) || isRegisteredFunction;
 
 			// Set some flags, unless we already have proper values for them:
 			//    projectConstantsInHql if they are inside a method call executed server side.
 			//    ContainsUntranslatedMethodCalls if a method call must be executed locally.
-			var isMethodCall = expression.NodeType == ExpressionType.Call;
-			if (isMethodCall && (!projectConstantsInHql || !ContainsUntranslatedMethodCalls))
+			if (expression.NodeType == ExpressionType.Call && (!projectConstantsInHql || !ContainsUntranslatedMethodCalls))
 			{
-				var isRegisteredFunction = IsRegisteredFunction(expression);
 				projectConstantsInHql = projectConstantsInHql || isRegisteredFunction;
 				ContainsUntranslatedMethodCalls = ContainsUntranslatedMethodCalls || !isRegisteredFunction;
 			}
@@ -115,10 +114,21 @@ namespace NHibernate.Linq.Visitors
 			return expression;
 		}
 
-		private bool IsConstantExpression(Expression expression)
+		private static bool IsAllowedToProjectInHql(System.Type type)
+		{
+			return (type.IsValueType || type == typeof(string)) && typeof(DateTime) != type && typeof(DateTime?) != type && typeof(TimeSpan) != type && typeof(TimeSpan?) != type;
+		}
+
+		private static bool IsConstantExpression(Expression expression)
 		{
 			switch (expression.NodeType)
 			{
+				case ExpressionType.Constant:
+				case ExpressionType.Extension:
+					return true;
+				case ExpressionType.MemberAccess:
+					var member = (MemberExpression)expression;
+					return IsConstantExpression(member.Expression);
 				case ExpressionType.Equal:
 				case ExpressionType.NotEqual:
 				case ExpressionType.LessThan:
@@ -130,14 +140,20 @@ namespace NHibernate.Linq.Visitors
 				case ExpressionType.AndAlso:
 				case ExpressionType.Or:
 				case ExpressionType.OrElse:
+					return true;
 				case ExpressionType.Add:
 				case ExpressionType.Subtract:
 				case ExpressionType.Multiply:
 				case ExpressionType.Divide:
 				case ExpressionType.Modulo:
+					var binary = (BinaryExpression) expression;
+					return IsAllowedToProjectInHql(binary.Left.Type) && IsConstantExpression(binary.Left) && IsAllowedToProjectInHql(binary.Right.Type) && IsConstantExpression(binary.Right);
 				case ExpressionType.Coalesce:
+					var coalesce = (BinaryExpression) expression;
+					return IsConstantExpression(coalesce.Left) && IsConstantExpression(coalesce.Right);
 				case ExpressionType.Conditional:
-					return true;
+					var conditional = (ConditionalExpression) expression;
+					return IsConstantExpression(conditional.IfTrue) && IsConstantExpression(conditional.IfFalse);
 				default:
 					return false;
 			}
@@ -207,10 +223,10 @@ namespace NHibernate.Linq.Visitors
 				return projectConstantsInHql;
 			}
 
-			return !(expression is MemberExpression memberExpression) || // Assume all is good
+			return projectConstantsInHql && (!(expression is MemberExpression memberExpression) || // Assume all is good
 			       // Nominate only expressions that represent a mapped property or a translatable method call
 			       ExpressionsHelper.TryGetMappedType(_sessionFactory, expression, out _, out _, out _, out _) ||
-			       _functionRegistry.TryGetGenerator(memberExpression.Member, out _);
+			       _functionRegistry.TryGetGenerator(memberExpression.Member, out _));
 		}
 
 		private static bool CanBeEvaluatedInHqlStatementShortcut(Expression expression)
