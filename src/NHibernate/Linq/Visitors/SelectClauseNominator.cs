@@ -67,15 +67,14 @@ namespace NHibernate.Linq.Visitors
 				return innerExpression;
 			}
 
-			bool isRegisteredFunction = IsRegisteredFunction(expression);
-			var projectConstantsInHql = _stateStack.Peek() || IsConstantExpression(expression) || isRegisteredFunction;
+			var isRegisteredFunction = IsRegisteredFunction(expression);
+			var projectConstantsInHql = _stateStack.Peek() || IsConstantExpression(expression) || IsRegisteredFunction(expression);
 
 			// Set some flags, unless we already have proper values for them:
 			//    projectConstantsInHql if they are inside a method call executed server side.
 			//    ContainsUntranslatedMethodCalls if a method call must be executed locally.
 			if (expression.NodeType == ExpressionType.Call && (!projectConstantsInHql || !ContainsUntranslatedMethodCalls))
 			{
-				projectConstantsInHql = projectConstantsInHql || isRegisteredFunction;
 				ContainsUntranslatedMethodCalls = ContainsUntranslatedMethodCalls || !isRegisteredFunction;
 			}
 
@@ -119,15 +118,26 @@ namespace NHibernate.Linq.Visitors
 			return (type.IsValueType || type == typeof(string)) && typeof(DateTime) != type && typeof(DateTime?) != type && typeof(TimeSpan) != type && typeof(TimeSpan?) != type;
 		}
 
+		private static bool IsValueType(System.Type type)
+		{
+			return type.IsValueType || type == typeof(string);
+		}
+
 		private static bool IsConstantExpression(Expression expression)
 		{
+			//if (expression.NodeType != ExpressionType.Equal) return false;
+
+			if(expression == null) return true;
+
 			switch (expression.NodeType)
 			{
-				case ExpressionType.Constant:
 				case ExpressionType.Extension:
+				case ExpressionType.Convert:
 					return true;
+				case ExpressionType.Constant:
+					return IsValueType(expression.Type);
 				case ExpressionType.MemberAccess:
-					var member = (MemberExpression)expression;
+					var member = (MemberExpression) expression;
 					return IsConstantExpression(member.Expression);
 				case ExpressionType.Equal:
 				case ExpressionType.NotEqual:
@@ -136,24 +146,25 @@ namespace NHibernate.Linq.Visitors
 				case ExpressionType.GreaterThan:
 				case ExpressionType.GreaterThanOrEqual:
 				case ExpressionType.Not:
+					return true;
 				case ExpressionType.And:
 				case ExpressionType.AndAlso:
 				case ExpressionType.Or:
 				case ExpressionType.OrElse:
-					return true;
 				case ExpressionType.Add:
 				case ExpressionType.Subtract:
 				case ExpressionType.Multiply:
 				case ExpressionType.Divide:
 				case ExpressionType.Modulo:
 					var binary = (BinaryExpression) expression;
-					return IsAllowedToProjectInHql(binary.Left.Type) && IsConstantExpression(binary.Left) && IsAllowedToProjectInHql(binary.Right.Type) && IsConstantExpression(binary.Right);
+					return IsAllowedToProjectInHql(binary.Left.Type) && IsConstantExpression(binary.Left) && 
+						   IsAllowedToProjectInHql(binary.Right.Type) && IsConstantExpression(binary.Right);
 				case ExpressionType.Coalesce:
 					var coalesce = (BinaryExpression) expression;
 					return IsConstantExpression(coalesce.Left) && IsConstantExpression(coalesce.Right);
 				case ExpressionType.Conditional:
 					var conditional = (ConditionalExpression) expression;
-					return IsConstantExpression(conditional.IfTrue) && IsConstantExpression(conditional.IfFalse);
+					return IsConstantExpression(conditional.Test) && IsConstantExpression(conditional.IfTrue) && IsConstantExpression(conditional.IfFalse);
 				default:
 					return false;
 			}
@@ -223,10 +234,10 @@ namespace NHibernate.Linq.Visitors
 				return projectConstantsInHql;
 			}
 
-			return projectConstantsInHql && (!(expression is MemberExpression memberExpression) || // Assume all is good
+			return !(expression is MemberExpression memberExpression) || // Assume all is good
 			       // Nominate only expressions that represent a mapped property or a translatable method call
 			       ExpressionsHelper.TryGetMappedType(_sessionFactory, expression, out _, out _, out _, out _) ||
-			       _functionRegistry.TryGetGenerator(memberExpression.Member, out _));
+			       _functionRegistry.TryGetGenerator(memberExpression.Member, out _);
 		}
 
 		private static bool CanBeEvaluatedInHqlStatementShortcut(Expression expression)

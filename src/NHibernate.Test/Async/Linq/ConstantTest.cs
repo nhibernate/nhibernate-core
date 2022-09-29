@@ -325,7 +325,7 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public async Task PlansWithNonParameterizedConstantsAreNotCachedAsync()
+		public async Task PlansWithNonParameterizedConstantsAreCachedAsync()
 		{
 			var queryPlanCacheType = typeof(QueryPlanCache);
 
@@ -340,8 +340,8 @@ namespace NHibernate.Test.Linq
 			 select new { c.CustomerId, c.ContactName, Constant = 1 }).FirstAsync());
 			Assert.That(
 				cache,
-				Has.Count.EqualTo(0),
-				"Query plan should not be cached.");
+				Has.Count.EqualTo(1),
+				"Query should be cached.");
 		}
 
 		[Test]

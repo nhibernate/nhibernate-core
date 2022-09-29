@@ -341,7 +341,7 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public void PlansWithNonParameterizedConstantsAreNotCached()
+		public void PlansWithNonParameterizedConstantsAreCached()
 		{
 			var queryPlanCacheType = typeof(QueryPlanCache);
 
@@ -356,8 +356,8 @@ namespace NHibernate.Test.Linq
 			 select new { c.CustomerId, c.ContactName, Constant = 1 }).First();
 			Assert.That(
 				cache,
-				Has.Count.EqualTo(0),
-				"Query plan should not be cached.");
+				Has.Count.EqualTo(1),
+				"Query should  be cached.");
 		}
 
 		[Test]
