@@ -1673,10 +1673,11 @@ namespace NHibernate.Persister.Entity
 					}
 					
 					var columnNames = SubclassPropertyColumnNameClosure[index];
+					var formulas = SubclassPropertyFormulaTemplateClosure[index];
 
 					for (var i = 0; i < columnNames.Length; i++)
 					{
-						var columnName = columnNames[i] ?? SubclassPropertyFormulaTemplateClosure[index][i];
+						var columnName = columnNames[i] ?? formulas[i];
 						fetchColumnsAndFormulas.Add(columnName);
 					}
 				}
