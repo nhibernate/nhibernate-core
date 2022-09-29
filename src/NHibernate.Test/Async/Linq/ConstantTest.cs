@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -23,8 +24,6 @@ namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	using System;
-
 	// Mainly adapted from tests contributed by Nicola Tuveri on NH-2500 (NH-2500.patch file)
 	[TestFixture]
 	public class ConstantTestAsync : LinqTestCase
@@ -138,7 +137,7 @@ namespace NHibernate.Test.Linq
 				return db.Shippers.Where(o => o.ShipperId == id)
 				         .Select(o => new ShipperDto {Number = id, CompanyName = o.CompanyName}).SingleAsync(cancellationToken);
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<ShipperDto>(ex);
 			}
@@ -341,7 +340,7 @@ namespace NHibernate.Test.Linq
 			Assert.That(
 				cache,
 				Has.Count.EqualTo(1),
-				"Query should be cached.");
+				"Query should  be cached.");
 		}
 
 		[Test]
