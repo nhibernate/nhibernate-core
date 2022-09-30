@@ -52,7 +52,7 @@ namespace NHibernate.Linq.Visitors
 			ContainsUntranslatedMethodCalls = false;
 			_canBeCandidate = true;
 			_stateStack = new Stack<bool>();
-			_stateStack.Push(false);
+			_stateStack.Push(true);
 
 			return Visit(expression);
 		}
@@ -71,7 +71,7 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			var isRegisteredFunction = IsRegisteredFunction(expression);
-			var projectConstantsInHql = _stateStack.Peek() || IsConstantExpression(expression) || isRegisteredFunction;
+			var projectConstantsInHql = (_stateStack.Peek() && IsConstantExpression(expression)) || isRegisteredFunction;
 
 			// Set some flags, unless we already have proper values for them:
 			//    projectConstantsInHql if they are inside a method call executed server side.
@@ -134,6 +134,14 @@ namespace NHibernate.Linq.Visitors
 
 			switch (expression.NodeType)
 			{
+				case ExpressionType.Equal:
+				case ExpressionType.NotEqual:
+				case ExpressionType.Not:
+				case ExpressionType.MemberInit:
+				case ExpressionType.New:
+				case ExpressionType.NewArrayInit:
+				case ExpressionType.ListInit:
+					return true;
 				case ExpressionType.Extension:
 					if( expression is QuerySourceReferenceExpression extension &&
 						(extension.ReferencedQuerySource is NhClauseBase || 
@@ -153,10 +161,6 @@ namespace NHibernate.Linq.Visitors
 				case ExpressionType.MemberAccess:
 					var member = (MemberExpression) expression;
 					return IsConstantExpression(member.Expression);
-				case ExpressionType.Equal:
-				case ExpressionType.NotEqual:
-				case ExpressionType.Not:
-					return true;
 				case ExpressionType.LessThan:
 				case ExpressionType.LessThanOrEqual:
 				case ExpressionType.GreaterThan:
@@ -179,8 +183,8 @@ namespace NHibernate.Linq.Visitors
 				case ExpressionType.Conditional:
 					var conditional = (ConditionalExpression) expression;
 					return IsConstantExpression(conditional.Test) &&
-						   IsAllowedToProjectInHql(conditional.IfTrue.Type) && IsConstantExpression(conditional.IfTrue) &&
-						   IsAllowedToProjectInHql(conditional.IfFalse.Type) && IsConstantExpression(conditional.IfFalse);
+						   IsValueType(conditional.IfTrue.Type) && IsConstantExpression(conditional.IfTrue) &&
+						   IsValueType(conditional.IfFalse.Type) && IsConstantExpression(conditional.IfFalse);
 				default:
 					return false;
 			}
