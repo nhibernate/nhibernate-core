@@ -23,6 +23,11 @@ namespace NHibernate.Transform
 
 		public bool AutoDiscoverTypes { get; }
 
+		/// <summary>
+		/// The auto-discovered aliaises.
+		/// </summary>
+		public string[] AutoDiscoveredAliases { get; private set; }
+
 		private readonly SqlString _autoDiscoveredQuery;
 		private readonly bool _skipTransformer;
 		private int _tupleLength;
@@ -201,6 +206,8 @@ namespace NHibernate.Transform
 			if (!AutoDiscoverTypes)
 				throw new InvalidOperationException(
 					"Cannot supply auto-discovered parameters when it is not enabled on the transformer.");
+
+			AutoDiscoveredAliases = aliases;
 
 			var includeInTuple = ArrayHelper.Fill(true, aliases?.Length ?? 0);
 			InitializeTransformer(includeInTuple, GetIncludeInTransform(transformer, aliases, includeInTuple));

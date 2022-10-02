@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
-using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -86,8 +85,15 @@ namespace NHibernate.Cache
 		{
 			// 6.0 TODO: inline the call.
 #pragma warning disable 612
-			return Put(key, returnTypes, result, queryParameters.NaturalKeyLookup, session);
+			var cached = Put(key, returnTypes, result, queryParameters.NaturalKeyLookup, session);
 #pragma warning restore 612
+
+			if (cached && key.ResultTransformer?.AutoDiscoverTypes == true && key.ResultTransformer.AutoDiscoveredAliases != null)
+			{
+				Cache.Put(new QueryAliasesKey(key), key.ResultTransformer.AutoDiscoveredAliases);
+			}
+
+			return cached;
 		}
 
 		// Since 5.2
@@ -126,8 +132,22 @@ namespace NHibernate.Cache
 			{
 				// 6.0 TODO: inline the call.
 #pragma warning disable 612
-				return Get(key, returnTypes, queryParameters.NaturalKeyLookup, spaces, session);
+				var result = Get(key, returnTypes, queryParameters.NaturalKeyLookup, spaces, session);
 #pragma warning restore 612
+
+				if (result != null && key.ResultTransformer?.AutoDiscoverTypes == true && result.Count > 0)
+				{
+					var aliasesKey = new QueryAliasesKey(key);
+					if (!(Cache.Get(aliasesKey) is string[] aliases))
+					{
+						// Cannot properly initialize the result transformer, treat it as a cache miss
+						Log.Debug("query aliases were not found in cache: {0}", aliasesKey);
+						return null;
+					}
+					key.ResultTransformer.SupplyAutoDiscoveredParameters(queryParameters.ResultTransformer, aliases);
+				}
+
+				return result;
 			}
 			finally
 			{
@@ -184,9 +204,16 @@ namespace NHibernate.Cache
 				if (queryParameters[i].NaturalKeyLookup && result.Count == 0)
 					continue;
 
+				var key = keys[i];
 				cached[i] = true;
-				cachedKeys.Add(keys[i]);
+				cachedKeys.Add(key);
 				cachedResults.Add(GetCacheableResult(returnTypes[i], session, result, ts));
+
+				if (key.ResultTransformer?.AutoDiscoverTypes == true && key.ResultTransformer.AutoDiscoveredAliases != null)
+				{
+					cachedKeys.Add(new QueryAliasesKey(key));
+					cachedResults.Add(key.ResultTransformer.AutoDiscoveredAliases);
+				}
 			}
 
 			_cache.PutMany(cachedKeys.ToArray(), cachedResults.ToArray());
@@ -244,6 +271,8 @@ namespace NHibernate.Cache
 			{
 				session.PersistenceContext.BatchFetchQueue.InitializeQueryCacheQueue();
 
+				var queryAliasesKeys = new QueryAliasesKey[keys.Length];
+				var hasAliasesToFetch = false;
 				for (var i = 0; i < keys.Length; i++)
 				{
 					var cacheable = (IList) cacheables[i];
@@ -267,6 +296,37 @@ namespace NHibernate.Cache
 
 					finalReturnTypes[i] = GetReturnTypes(key, returnTypes[i], cacheable);
 					PerformBeforeAssemble(finalReturnTypes[i], session, cacheable);
+
+					if (key.ResultTransformer?.AutoDiscoverTypes == true && cacheable.Count > 0)
+					{
+						queryAliasesKeys[i] = new QueryAliasesKey(key);
+						hasAliasesToFetch = true;
+					}
+				}
+
+				if (hasAliasesToFetch)
+				{
+					var allAliases = _cache.GetMany(queryAliasesKeys.Where(k => k != null).ToArray());
+
+					var aliasesIndex = 0;
+					for (var i = 0; i < keys.Length; i++)
+					{
+						var queryAliasesKey = queryAliasesKeys[i];
+						if (queryAliasesKey == null)
+							continue;
+
+						if (allAliases[aliasesIndex] is string[] aliases)
+						{
+							keys[i].ResultTransformer.SupplyAutoDiscoveredParameters(queryParameters[i].ResultTransformer, aliases);
+						}
+						else
+						{
+							// Cannot properly initialize the result transformer, treat it as a cache miss
+							Log.Debug("query aliases were not found in cache: {0}", queryAliasesKey);
+							finalReturnTypes[i] = null;
+						}
+						aliasesIndex++;
+					}
 				}
 
 				for (var i = 0; i < keys.Length; i++)
