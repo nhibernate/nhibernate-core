@@ -320,7 +320,6 @@ namespace NHibernate.Test.SqlTest.Query
 				}
 			}
 
-
 			await (AssertQueryAsync(false));
 			await (AssertQueryAsync(true));
 

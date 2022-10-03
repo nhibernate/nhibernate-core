@@ -302,7 +302,6 @@ namespace NHibernate.Test.SqlTest.Query
 				}
 			}
 
-
 			AssertQuery(false);
 			AssertQuery(true);
 
