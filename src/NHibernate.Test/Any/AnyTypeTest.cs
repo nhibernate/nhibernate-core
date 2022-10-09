@@ -15,11 +15,6 @@ namespace NHibernate.Test.Any
 			get { return new string[] {"Any.Person.hbm.xml"}; }
 		}
 
-		protected override string CacheConcurrencyStrategy
-		{
-			get { return null; }
-		}
-
 		[Test]
 		public void FlushProcessing()
 		{

@@ -17,6 +17,8 @@ namespace NHibernate.Test.Futures
 		private Guid _parentId;
 		private Guid _eagerId;
 
+		protected override string CacheConcurrencyStrategy => "nonstrict-read-write";
+
 		[Test]
 		public void CanCombineCriteriaAndHqlInFuture()
 		{

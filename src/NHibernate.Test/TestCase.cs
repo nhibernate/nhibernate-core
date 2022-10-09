@@ -458,10 +458,7 @@ namespace NHibernate.Test
 		{
 		}
 
-		protected virtual string CacheConcurrencyStrategy
-		{
-			get { return null; }
-		}
+		protected virtual string CacheConcurrencyStrategy => null;
 
 		#endregion
 
