@@ -10,8 +10,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		protected override string CacheConcurrencyStrategy => null;
-
 		protected override void Configure(NHCfg.Configuration configuration)
 		{
 			configuration.SetProperty(NHCfg.Environment.UseSecondLevelCache, "true");
