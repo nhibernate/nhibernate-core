@@ -19,9 +19,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1756
 	[TestFixture]
 	public class UnsavedValueNoneFixtureAsync : BugTestCase
 	{
-		// disable second level cache enabled by default by the base class.
-		protected override string CacheConcurrencyStrategy => null;
-
 		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())
