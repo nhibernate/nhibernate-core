@@ -460,8 +460,7 @@ namespace NHibernate.Test
 
 		protected virtual string CacheConcurrencyStrategy
 		{
-			get { return "nonstrict-read-write"; }
-			//get { return null; }
+			get { return null; }
 		}
 
 		#endregion
