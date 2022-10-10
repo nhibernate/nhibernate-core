@@ -8,9 +8,20 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH3176
 {
-	[TestFixture]
+	[TestFixture(CacheFactory.ReadOnly)]
+	[TestFixture(CacheFactory.NonstrictReadWrite)]
+	[TestFixture(CacheFactory.ReadWrite)]
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
+		public ByCodeFixture(string cacheStrategy)
+		{
+			CacheConcurrencyStrategy = cacheStrategy;
+		}
+
+		protected override string CacheConcurrencyStrategy { get; }
+
+		private int _id;
+
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
@@ -26,7 +37,6 @@ namespace NHibernate.Test.NHSpecificTest.GH3176
 							m.Property(x => x.Field);
 							m.Lazy(true);
 						});
-					rc.Cache(x => x.Usage(CacheUsage.ReadWrite));
 				});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
@@ -47,6 +57,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3176
 			{
 				var e1 = new Entity { Name = "Bob", Component = new Component() { Field = "Jim" } };
 				session.Save(e1);
+				_id = e1.Id;
 
 				var e2 = new Entity { Name = "Sally" };
 				session.Save(e2);
@@ -93,6 +104,32 @@ namespace NHibernate.Test.NHSpecificTest.GH3176
 				var field = result.Component?.Field;
 
 				Assert.That(field, Is.EqualTo("Jim"));
+			}
+		}
+
+		[Test]
+		public void InitializedLazyPropertyShouldBeCached()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				var e = session.Get<Entity>(_id);
+				Assert.That(e.Component?.Field, Is.EqualTo("Jim"));
+
+				Assert.That(NHibernateUtil.IsPropertyInitialized(e, "Component"), Is.True);
+				transaction.Commit();
+			}
+
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				var e = session.Get<Entity>(_id);
+
+				Assert.That(NHibernateUtil.IsPropertyInitialized(e, "Component"), Is.True, "Lazy property is not cached");
+				var field = e.Component?.Field;
+
+				Assert.That(field, Is.EqualTo("Jim"));
+				transaction.Commit();
 			}
 		}
 
