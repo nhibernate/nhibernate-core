@@ -8,13 +8,17 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH3176
 {
-	[TestFixture(CacheFactory.ReadOnly)]
-	[TestFixture(CacheFactory.NonstrictReadWrite)]
-	[TestFixture(CacheFactory.ReadWrite)]
+	[TestFixture(CacheFactory.ReadOnly, false)]
+	[TestFixture(CacheFactory.NonstrictReadWrite, false)]
+	[TestFixture(CacheFactory.ReadWrite, false)]
+	[TestFixture(CacheFactory.ReadWrite, true)]
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
-		public ByCodeFixture(string cacheStrategy)
+		private readonly bool _versioned;
+
+		public ByCodeFixture(string cacheStrategy, bool versioned)
 		{
+			_versioned = versioned;
 			CacheConcurrencyStrategy = cacheStrategy;
 		}
 
@@ -37,6 +41,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3176
 							m.Property(x => x.Field);
 							m.Lazy(true);
 						});
+					if (_versioned)
+						rc.Version(x => x.Version, m => { });
 				});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
