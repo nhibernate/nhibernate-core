@@ -113,12 +113,12 @@ namespace NHibernate.Cache
 
 			return comparator.Compare(Version, newVersion) < (minimalPut ? 0 : 1);
 		}
-		
+
 		public bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator)
 		{
 			return IsPuttable(txTimestamp, newVersion, comparator, true);
 		}
-		
+
 		public override string ToString()
 		{
 			return "Item{version=" + Version +
