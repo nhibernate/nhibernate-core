@@ -156,7 +156,7 @@ namespace NHibernate.Cache
 						var version = versions[i];
 						var lockable = (ILockable) lockables[i];
 						bool puttable = lockable == null ||
-						                lockable.IsPuttable(timestamp, version, versionComparers[i]);
+						                lockable.IsPuttable(timestamp, version, versionComparers[i], minimalPuts[i]);
 						if (puttable)
 						{
 							putBatch.Add(key, CachedItem.Create(values[i], Cache.NextTimestamp(), version));
@@ -222,7 +222,7 @@ namespace NHibernate.Cache
 					ILockable lockable = (ILockable) await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 
 					bool puttable = lockable == null ||
-					                lockable.IsPuttable(txTimestamp, version, versionComparator);
+					                lockable.IsPuttable(txTimestamp, version, versionComparator, minimalPut);
 
 					if (puttable)
 					{

@@ -14,7 +14,7 @@ namespace NHibernate.Cache
 	/// </remarks>
 	[Serializable]
 	[DataContract]
-	public class CacheLock : ReadWriteCache.ILockable, ISoftLock
+	public class CacheLock : ReadWriteCache.ILockable, ISoftLock, ReadWriteCache.ILockableNextVer
 	{
 		private long unlockTimestamp = -1;
 		private int multiplicity = 1;
@@ -75,7 +75,7 @@ namespace NHibernate.Cache
 		/// Can the timestamped transaction re-cache this
 		/// locked item now?
 		/// </summary>
-		public bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator)
+		public bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator, bool minimalPut)
 		{
 			if (Timeout < txTimestamp)
 			{
@@ -85,10 +85,20 @@ namespace NHibernate.Cache
 			{
 				return false;
 			}
-			return Version == null ?
-			       UnlockTimestamp < txTimestamp :
-			       comparator.Compare(Version, newVersion) < 0;
-				//by requiring <, we rely on lock timeout in the case of an unsuccessful update!
+
+			return Version == null 
+				? UnlockTimestamp < txTimestamp 
+				: comparator.Compare(Version, newVersion) < (minimalPut ? 0 : 1);
+			//by requiring <, we rely on lock timeout in the case of an unsuccessful update!
+		}
+
+		/// <summary>
+		/// Can the timestamped transaction re-cache this
+		/// locked item now?
+		/// </summary>
+		public bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator)
+		{
+			return IsPuttable(txTimestamp, newVersion, comparator, true);
 		}
 
 		/// <summary>
