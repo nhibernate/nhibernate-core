@@ -22,7 +22,7 @@ namespace NHibernate.Test.CacheTest
 	public class CacheFixtureAsync: TestCase
 	{
 		[Test]
-		public async Task TestSimpleCacheAsync()
+		public async Task TestSimpleReadWriteCacheAsync()
 		{
 			await (DoTestCacheAsync(new HashtableCacheProvider()));
 		}
@@ -57,7 +57,8 @@ namespace NHibernate.Test.CacheTest
 
 			Assert.IsNull(await (ccs.GetAsync(fooKey, longBefore, cancellationToken)));
 			Assert.AreEqual("foo", await (ccs.GetAsync(fooKey, after, cancellationToken)));
-			Assert.IsFalse(await (ccs.PutAsync(fooKey, "foo", before, null, null, false, cancellationToken)));
+			Assert.IsFalse(await (ccs.PutAsync(fooKey, "foo", before, null, null, true, cancellationToken)));
+			Assert.IsTrue(await (ccs.PutAsync(fooKey, "foo", before, null, null, false, cancellationToken)));
 
 			// update it;
 

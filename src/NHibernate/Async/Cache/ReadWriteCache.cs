@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+
 	public partial class ReadWriteCache : IBatchableCacheConcurrencyStrategy
 	{
 
@@ -264,7 +266,7 @@ namespace NHibernate.Cache
 				@lock.Unlock(Cache.NextTimestamp());
 				return Cache.PutAsync(key, @lock, cancellationToken);
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -315,7 +317,7 @@ namespace NHibernate.Cache
 				@lock.Unlock(ts);
 				return Cache.PutAsync(key, @lock, cancellationToken);
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -436,7 +438,7 @@ namespace NHibernate.Cache
 				Evict(key);
 				return Task.CompletedTask;
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -452,7 +454,7 @@ namespace NHibernate.Cache
 			{
 				return Task.FromResult<bool>(Update(key, value, currentVersion, previousVersion));
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<bool>(ex);
 			}
