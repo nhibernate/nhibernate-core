@@ -12,7 +12,7 @@ namespace NHibernate.Cache
 		//TODO 6.0: Remove after ILockableNextVer merge
 		internal static bool IsPuttable(this ReadWriteCache.ILockable lockable, long txTimestamp, object newVersion, IComparer comparator, bool minimalPut)
 		{
-			if (lockable is ReadWriteCache.ILockableNextVer l)
+			if (lockable is ReadWriteCache.IMinimalPutAwareLockable l)
 			{
 				return l.IsPuttable(txTimestamp, newVersion, comparator, minimalPut);
 			}
@@ -42,7 +42,7 @@ namespace NHibernate.Cache
 	public partial class ReadWriteCache : IBatchableCacheConcurrencyStrategy
 	{
 		//TODO 6.0: Merge with ILockable
-		internal interface ILockableNextVer
+		internal interface IMinimalPutAwareLockable
 		{
 			bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator, bool minimalPut);
 		}

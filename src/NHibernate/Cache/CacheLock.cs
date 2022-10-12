@@ -14,7 +14,7 @@ namespace NHibernate.Cache
 	/// </remarks>
 	[Serializable]
 	[DataContract]
-	public class CacheLock : ReadWriteCache.ILockable, ISoftLock, ReadWriteCache.ILockableNextVer
+	public class CacheLock : ReadWriteCache.ILockable, ISoftLock, ReadWriteCache.IMinimalPutAwareLockable
 	{
 		private long unlockTimestamp = -1;
 		private int multiplicity = 1;
