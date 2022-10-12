@@ -15,16 +15,15 @@ namespace NHibernate.Test.NHSpecificTest.GH3176
 	public class ByCodeFixture : TestCaseMappingByCode
 	{
 		private readonly bool _versioned;
+		private int _id;
+
+		protected override string CacheConcurrencyStrategy { get; }
 
 		public ByCodeFixture(string cacheStrategy, bool versioned)
 		{
 			_versioned = versioned;
 			CacheConcurrencyStrategy = cacheStrategy;
 		}
-
-		protected override string CacheConcurrencyStrategy { get; }
-
-		private int _id;
 
 		protected override HbmMapping GetMappings()
 		{
