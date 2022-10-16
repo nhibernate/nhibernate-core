@@ -9,7 +9,7 @@ namespace NHibernate.Cache
 {
 	public static class LocableExtension
 	{
-		//TODO 6.0: Remove after ILockableNextVer merge
+		//TODO 6.0: Remove after IMinimalPutAwareLockable merge
 		internal static bool IsPuttable(this ReadWriteCache.ILockable lockable, long txTimestamp, object newVersion, IComparer comparator, bool minimalPut)
 		{
 			if (lockable is ReadWriteCache.IMinimalPutAwareLockable l)
