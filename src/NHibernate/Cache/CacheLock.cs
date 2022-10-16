@@ -89,7 +89,7 @@ namespace NHibernate.Cache
 			return Version == null 
 				? !minimalPut && UnlockTimestamp < txTimestamp 
 				: comparator.Compare(Version, newVersion) < (minimalPut ? 0 : 1);
-			//by requiring <, we rely on lock timeout in the case of an unsuccessful update!
+			//by requiring < 0, we rely on lock timeout in the case of an unsuccessful update!
 		}
 
 		/// <summary>
