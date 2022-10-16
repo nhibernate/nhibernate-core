@@ -24,7 +24,7 @@ namespace NHibernate.Transform
 		public bool AutoDiscoverTypes { get; }
 
 		/// <summary>
-		/// The auto-discovered aliaises.
+		/// The auto-discovered aliases.
 		/// </summary>
 		public string[] AutoDiscoveredAliases { get; private set; }
 
