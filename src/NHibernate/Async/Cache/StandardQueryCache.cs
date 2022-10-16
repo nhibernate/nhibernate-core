@@ -13,7 +13,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
-using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -38,21 +37,25 @@ namespace NHibernate.Cache
 		}
 
 		/// <inheritdoc />
-		public Task<bool> PutAsync(
+		public async Task<bool> PutAsync(
 			QueryKey key,
 			QueryParameters queryParameters,
 			ICacheAssembler[] returnTypes,
 			IList result,
 			ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<bool>(cancellationToken);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
 			// 6.0 TODO: inline the call.
 #pragma warning disable 612
-			return PutAsync(key, returnTypes, result, queryParameters.NaturalKeyLookup, session, cancellationToken);
+			var cached = await (PutAsync(key, returnTypes, result, queryParameters.NaturalKeyLookup, session, cancellationToken)).ConfigureAwait(false);
 #pragma warning restore 612
+
+			if (cached && key.ResultTransformer?.AutoDiscoverTypes == true && key.ResultTransformer.AutoDiscoveredAliases != null)
+			{
+				await (Cache.PutAsync(new QueryAliasesKey(key), key.ResultTransformer.AutoDiscoveredAliases, cancellationToken)).ConfigureAwait(false);
+			}
+
+			return cached;
 		}
 
 		// Since 5.2
@@ -93,8 +96,22 @@ namespace NHibernate.Cache
 			{
 				// 6.0 TODO: inline the call.
 #pragma warning disable 612
-				return await (GetAsync(key, returnTypes, queryParameters.NaturalKeyLookup, spaces, session, cancellationToken)).ConfigureAwait(false);
+				var result = await (GetAsync(key, returnTypes, queryParameters.NaturalKeyLookup, spaces, session, cancellationToken)).ConfigureAwait(false);
 #pragma warning restore 612
+
+				if (result != null && key.ResultTransformer?.AutoDiscoverTypes == true && result.Count > 0)
+				{
+					var aliasesKey = new QueryAliasesKey(key);
+					if (!(await (Cache.GetAsync(aliasesKey, cancellationToken)).ConfigureAwait(false) is string[] aliases))
+					{
+						// Cannot properly initialize the result transformer, treat it as a cache miss
+						Log.Debug("query aliases were not found in cache: {0}", aliasesKey);
+						return null;
+					}
+					key.ResultTransformer.SupplyAutoDiscoveredParameters(queryParameters.ResultTransformer, aliases);
+				}
+
+				return result;
 			}
 			finally
 			{
@@ -153,9 +170,16 @@ namespace NHibernate.Cache
 				if (queryParameters[i].NaturalKeyLookup && result.Count == 0)
 					continue;
 
+				var key = keys[i];
 				cached[i] = true;
-				cachedKeys.Add(keys[i]);
+				cachedKeys.Add(key);
 				cachedResults.Add(await (GetCacheableResultAsync(returnTypes[i], session, result, ts, cancellationToken)).ConfigureAwait(false));
+
+				if (key.ResultTransformer?.AutoDiscoverTypes == true && key.ResultTransformer.AutoDiscoveredAliases != null)
+				{
+					cachedKeys.Add(new QueryAliasesKey(key));
+					cachedResults.Add(key.ResultTransformer.AutoDiscoveredAliases);
+				}
 			}
 
 			await (_cache.PutManyAsync(cachedKeys.ToArray(), cachedResults.ToArray(), cancellationToken)).ConfigureAwait(false);
@@ -214,6 +238,8 @@ namespace NHibernate.Cache
 			{
 				session.PersistenceContext.BatchFetchQueue.InitializeQueryCacheQueue();
 
+				var queryAliasesKeys = new QueryAliasesKey[keys.Length];
+				var hasAliasesToFetch = false;
 				for (var i = 0; i < keys.Length; i++)
 				{
 					var cacheable = (IList) cacheables[i];
@@ -237,6 +263,37 @@ namespace NHibernate.Cache
 
 					finalReturnTypes[i] = GetReturnTypes(key, returnTypes[i], cacheable);
 					await (PerformBeforeAssembleAsync(finalReturnTypes[i], session, cacheable, cancellationToken)).ConfigureAwait(false);
+
+					if (key.ResultTransformer?.AutoDiscoverTypes == true && cacheable.Count > 0)
+					{
+						queryAliasesKeys[i] = new QueryAliasesKey(key);
+						hasAliasesToFetch = true;
+					}
+				}
+
+				if (hasAliasesToFetch)
+				{
+					var allAliases = await (_cache.GetManyAsync(queryAliasesKeys.Where(k => k != null).ToArray(), cancellationToken)).ConfigureAwait(false);
+
+					var aliasesIndex = 0;
+					for (var i = 0; i < keys.Length; i++)
+					{
+						var queryAliasesKey = queryAliasesKeys[i];
+						if (queryAliasesKey == null)
+							continue;
+
+						if (allAliases[aliasesIndex] is string[] aliases)
+						{
+							keys[i].ResultTransformer.SupplyAutoDiscoveredParameters(queryParameters[i].ResultTransformer, aliases);
+						}
+						else
+						{
+							// Cannot properly initialize the result transformer, treat it as a cache miss
+							Log.Debug("query aliases were not found in cache: {0}", queryAliasesKey);
+							finalReturnTypes[i] = null;
+						}
+						aliasesIndex++;
+					}
 				}
 
 				for (var i = 0; i < keys.Length; i++)
