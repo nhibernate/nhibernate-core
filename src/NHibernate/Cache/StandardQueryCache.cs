@@ -83,16 +83,10 @@ namespace NHibernate.Cache
 			IList result,
 			ISessionImplementor session)
 		{
-			if (queryParameters.NaturalKeyLookup && result.Count == 0)
-				return false;
-
-			var ts = session.Factory.Settings.CacheProvider.NextTimestamp();
-
-			Log.Debug("caching query results in region: '{0}'; {1}", _regionName, key);
-
-			Cache.Put(key, GetCacheableResult(returnTypes, session, result, ts, GetAutoDiscoveredAliases(key)));
-
-			return true;
+			// 6.0 TODO: inline the call.
+#pragma warning disable 612
+			return Put(key, returnTypes, result, queryParameters.NaturalKeyLookup, session);
+#pragma warning restore 612
 		}
 
 		// Since 5.2
@@ -106,7 +100,7 @@ namespace NHibernate.Cache
 
 			Log.Debug("caching query results in region: '{0}'; {1}", _regionName, key);
 
-			Cache.Put(key, GetCacheableResult(returnTypes, session, result, ts, null));
+			Cache.Put(key, GetCacheableResult(returnTypes, session, result, ts, GetAutoDiscoveredAliases(key)));
 
 			return true;
 		}
