@@ -37,24 +37,21 @@ namespace NHibernate.Cache
 		}
 
 		/// <inheritdoc />
-		public async Task<bool> PutAsync(
+		public Task<bool> PutAsync(
 			QueryKey key,
 			QueryParameters queryParameters,
 			ICacheAssembler[] returnTypes,
 			IList result,
 			ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
-			if (queryParameters.NaturalKeyLookup && result.Count == 0)
-				return false;
-
-			var ts = session.Factory.Settings.CacheProvider.NextTimestamp();
-
-			Log.Debug("caching query results in region: '{0}'; {1}", _regionName, key);
-
-			await (Cache.PutAsync(key, await (GetCacheableResultAsync(returnTypes, session, result, ts, GetAutoDiscoveredAliases(key), cancellationToken)).ConfigureAwait(false), cancellationToken)).ConfigureAwait(false);
-
-			return true;
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<bool>(cancellationToken);
+			}
+			// 6.0 TODO: inline the call.
+#pragma warning disable 612
+			return PutAsync(key, returnTypes, result, queryParameters.NaturalKeyLookup, session, cancellationToken);
+#pragma warning restore 612
 		}
 
 		// Since 5.2
@@ -69,7 +66,7 @@ namespace NHibernate.Cache
 
 			Log.Debug("caching query results in region: '{0}'; {1}", _regionName, key);
 
-			await (Cache.PutAsync(key, await (GetCacheableResultAsync(returnTypes, session, result, ts, null, cancellationToken)).ConfigureAwait(false), cancellationToken)).ConfigureAwait(false);
+			await (Cache.PutAsync(key, await (GetCacheableResultAsync(returnTypes, session, result, ts, GetAutoDiscoveredAliases(key), cancellationToken)).ConfigureAwait(false), cancellationToken)).ConfigureAwait(false);
 
 			return true;
 		}
