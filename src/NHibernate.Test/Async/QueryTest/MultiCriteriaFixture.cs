@@ -153,7 +153,8 @@ namespace NHibernate.Test.QueryTest
 
 			var cacheHashtable = MultipleQueriesFixtureAsync.GetHashTableUsedAsQueryCache(Sfi);
 			var cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
-			var cachedQuery = (IList)cachedListEntry[1];
+			// The first element is a timestamp, the second is aliases, then only we have the cached data.
+			var cachedQuery = (IList)cachedListEntry[2] ?? throw new InvalidOperationException("Cached data is null");
 
 			var firstQueryResults = (IList)cachedQuery[0];
 			firstQueryResults.Clear();
