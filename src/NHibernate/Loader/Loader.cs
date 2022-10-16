@@ -1843,7 +1843,7 @@ namespace NHibernate.Loader
 		internal bool IsCacheable(QueryParameters queryParameters, bool supportsQueryCache, IEnumerable<IPersister> persisters)
 		{
 			bool isCacheable = Factory.Settings.IsQueryCacheEnabled && queryParameters.Cacheable;
-            if (isCacheable && !supportsQueryCache)
+			if (isCacheable && !supportsQueryCache)
 			{
 				if (Factory.Settings.QueryThrowNeverCached)
 				{
