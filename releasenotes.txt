@@ -1,4 +1,21 @@
-﻿Build 5.3.13
+﻿Build 5.3.14
+=============================
+
+Release notes - NHibernate - Version 5.3.14
+
+3 issues were resolved in this release.
+
+** Bug
+
+    #3169 InvalidOperationException: This transformer is not initialized by Cached Query
+    #3164 Fetching a lazy loaded component regression
+
+** Task
+
+   * #3183 Release 5.3.14
+
+
+Build 5.3.13
 =============================
 
 Release notes - NHibernate - Version 5.3.13
