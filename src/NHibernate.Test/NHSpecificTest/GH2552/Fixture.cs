@@ -14,6 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 		{
 			configuration.SetProperty(NHCfg.Environment.UseSecondLevelCache, "true");
 			configuration.SetProperty(NHCfg.Environment.GenerateStatistics, "true");
+			configuration.SetProperty(NHCfg.Environment.UseMinimalPuts, "true");
 		}
 
 		protected override void OnTearDown()
