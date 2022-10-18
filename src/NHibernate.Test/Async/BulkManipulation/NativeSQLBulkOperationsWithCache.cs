@@ -25,6 +25,8 @@ namespace NHibernate.Test.BulkManipulation
 	[TestFixture]
 	public class NativeSQLBulkOperationsWithCacheAsync : TestCase
 	{
+		protected override string CacheConcurrencyStrategy => "nonstrict-read-write";
+
 		protected override string MappingsAssembly => "NHibernate.Test";
 
 		protected override string[] Mappings => new[] { "BulkManipulation.Vehicle.hbm.xml" };

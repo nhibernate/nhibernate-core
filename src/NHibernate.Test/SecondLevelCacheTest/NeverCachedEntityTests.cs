@@ -14,7 +14,6 @@ namespace NHibernate.Test.SecondLevelCacheTest
 	[TestFixture]
 	public class NeverCachedEntityTests : TestCase
 	{
-		protected override string CacheConcurrencyStrategy => null;
 		protected override string MappingsAssembly => "NHibernate.Test";
 
 		protected override string[] Mappings => new[] { "SecondLevelCacheTest.Item.hbm.xml" };

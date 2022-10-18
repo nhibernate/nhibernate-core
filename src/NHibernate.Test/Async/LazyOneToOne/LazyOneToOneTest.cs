@@ -41,11 +41,6 @@ namespace NHibernate.Test.LazyOneToOne
 			configuration.SetProperty(Environment.UseSecondLevelCache, "false");
 		}
 
-		protected override string CacheConcurrencyStrategy
-		{
-			get { return null; }
-		}
-
 		[Test]
 		public async Task LazyAsync()
 		{
