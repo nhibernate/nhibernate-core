@@ -222,7 +222,7 @@ namespace NHibernate.Cache
 
 		private static string[] GetAutoDiscoveredAliases(QueryKey key)
 		{
-			return key.ResultTransformer?.AutoDiscoverTypes == true ? key.ResultTransformer.AutoDiscoveredAliases : null;
+			return key.ResultTransformer?.AutoDiscoveredAliases;
 		}
 
 		/// <inheritdoc />
