@@ -590,13 +590,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 				else
 				{
-					if (!Walker.IsInFrom && !Walker.IsInSelect)
+					if (Walker.IsInFrom || Walker.IsInSelect || (this.IsImplied && !this.JoinSequence.IsThetaStyle))
 					{
-						FromClause.AddChild(this);
+						origin.AddChild(this);
 					}
 					else
 					{
-						origin.AddChild(this);
+						FromClause.AddChild(this);
 					}
 				}
 			}
