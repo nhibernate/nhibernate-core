@@ -173,7 +173,7 @@ namespace NHibernate.Cache
 				return null;
 			}
 
-			var timestamp = GetResultsMetadata(cacheable, out var _);
+			var timestamp = GetResultsMetadata(cacheable, out _);
 
 			if (Log.IsDebugEnabled())
 				Log.Debug("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(spaces));
