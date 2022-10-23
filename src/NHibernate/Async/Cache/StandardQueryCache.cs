@@ -11,7 +11,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -100,7 +99,7 @@ namespace NHibernate.Cache
 					return null;
 				}
 
-				var timestamp = (long) cacheable[0];
+				var timestamp = GetResultsMetadata(cacheable, out var aliases);
 
 				if (Log.IsDebugEnabled())
 					Log.Debug("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(spaces));
@@ -115,7 +114,6 @@ namespace NHibernate.Cache
 
 				if (result != null && key.ResultTransformer?.AutoDiscoverTypes == true && result.Count > 0)
 				{
-					var aliases = (string[]) cacheable[1];
 					key.ResultTransformer.SupplyAutoDiscoveredParameters(queryParameters.ResultTransformer, aliases);
 				}
 
@@ -142,7 +140,7 @@ namespace NHibernate.Cache
 				return null;
 			}
 
-			var timestamp = (long) cacheable[0];
+			var timestamp = GetResultsMetadata(cacheable, out var _);
 
 			if (Log.IsDebugEnabled())
 				Log.Debug("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(spaces));
@@ -221,10 +219,16 @@ namespace NHibernate.Cache
 
 				spacesToCheck.Add(querySpaces);
 				checkedSpacesIndexes.Add(i);
-				// The timestamp is the first element of the cache result.
-				checkedSpacesTimestamp.Add((long) cacheable[0]);
+				var timestamp = GetResultsMetadata(cacheable, out var aliases);
+				checkedSpacesTimestamp.Add(timestamp);
 				if (Log.IsDebugEnabled())
 					Log.Debug("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(querySpaces));
+
+				var key = keys[i];
+				if (key.ResultTransformer?.AutoDiscoverTypes == true && HasResults(cacheable))
+				{
+					key.ResultTransformer.SupplyAutoDiscoveredParameters(queryParameters[i].ResultTransformer, aliases);
+				}
 			}
 
 			var upToDates = spacesToCheck.Count > 0
@@ -263,12 +267,6 @@ namespace NHibernate.Cache
 
 					finalReturnTypes[i] = GetReturnTypes(key, returnTypes[i], cacheable);
 					await (PerformBeforeAssembleAsync(finalReturnTypes[i], session, cacheable, cancellationToken)).ConfigureAwait(false);
-
-					if (key.ResultTransformer?.AutoDiscoverTypes == true && cacheable.Count > 2)
-					{
-						var aliases = (string[]) cacheable[1];
-						key.ResultTransformer.SupplyAutoDiscoveredParameters(queryParams.ResultTransformer, aliases);
-					}
 				}
 
 				for (var i = 0; i < keys.Length; i++)
@@ -334,7 +332,12 @@ namespace NHibernate.Cache
 			long ts, string[] aliases, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var cacheable = new List<object>(result.Count + 2) { ts, aliases };
+			var cacheable =
+				new List<object>(result.Count + 1)
+				{
+					aliases == null ? ts : new object[] { ts, aliases }
+				};
+
 			foreach (var row in result)
 			{
 				if (returnTypes.Length == 1)
@@ -343,7 +346,7 @@ namespace NHibernate.Cache
 				}
 				else
 				{
-					cacheable.Add(await (TypeHelper.DisassembleAsync((object[])row, returnTypes, null, session, null, cancellationToken)).ConfigureAwait(false));
+					cacheable.Add(await (TypeHelper.DisassembleAsync((object[]) row, returnTypes, null, session, null, cancellationToken)).ConfigureAwait(false));
 				}
 			}
 
