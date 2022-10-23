@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -465,7 +466,7 @@ namespace NHibernate.Cache
 		{
 			try
 			{
-				var result = new List<object>(cacheable.Count - 2);
+				var result = new List<object>(cacheable.Count - 1);
 				if (returnTypes.Length == 1)
 				{
 					var returnType = returnTypes[0];
@@ -574,7 +575,7 @@ namespace NHibernate.Cache
 
 		private static ICacheAssembler[] GuessTypes(IList cacheable)
 		{
-			var colCount = (cacheable[2] as object[])?.Length ?? 1;
+			var colCount = (GetResultsEnumerable(cacheable).First() as object[])?.Length ?? 1;
 			var returnTypes = new ICacheAssembler[colCount];
 			if (colCount == 1)
 			{
