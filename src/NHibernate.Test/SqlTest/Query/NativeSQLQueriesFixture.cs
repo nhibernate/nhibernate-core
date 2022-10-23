@@ -197,7 +197,7 @@ namespace NHibernate.Test.SqlTest.Query
 		}
 
 		[Test(Description = "GH-2904")]
-		public void CacheableScalarSQLQuery()
+		public void CacheableScalarSqlQuery()
 		{
 			Organization ifa = new Organization("IFA");
 			Organization jboss = new Organization("JBoss");
@@ -252,7 +252,7 @@ namespace NHibernate.Test.SqlTest.Query
 		}
 
 		[Test(Description = "GH-3169")]
-		public void CacheableScalarSQLQueryWithTransformer()
+		public void CacheableScalarSqlQueryWithTransformer()
 		{
 			Organization ifa = new Organization("IFA");
 
@@ -288,7 +288,34 @@ namespace NHibernate.Test.SqlTest.Query
 		}
 
 		[Test(Description = "GH-3169")]
-		public void CacheableScalarSQLMultiQueryWithTransformer()
+		public void CacheableScalarSqlEmptyQueryWithTransformer()
+		{
+			void AssertQuery(bool fromCache)
+			{
+				using (var s = OpenSession())
+				using (var t = s.BeginTransaction())
+				using (EnableStatisticsScope())
+				{
+					var l = s.CreateSQLQuery("select org.NAME as regionCode from ORGANIZATION org")
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
+							.SetCacheable(true)
+							.List();
+					t.Commit();
+
+					Assert.That(l.Count, Is.EqualTo(0));
+					var msg = "Results are expected from " + (fromCache ? "cache" : "DB");
+					Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(fromCache ? 0 : 1), msg);
+					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(fromCache ? 1 : 0), msg);
+				}
+			}
+
+			AssertQuery(false);
+			AssertQuery(true);
+		}
+
+		[Test(Description = "GH-3169")]
+		public void CacheableScalarSqlMultiQueryWithTransformer()
 		{
 			Organization ifa = new Organization("IFA");
 
@@ -326,6 +353,46 @@ namespace NHibernate.Test.SqlTest.Query
 
 					Assert.That(l1.Count, Is.EqualTo(1), "Unexpected results count for the first query.");
 					Assert.That(l2.Count, Is.EqualTo(1), "Unexpected results count for the second query.");
+					var msg = "Results are expected from " + (fromCache ? "cache" : "DB");
+					Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(fromCache ? 0 : 2), msg);
+					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(fromCache ? 2 : 0), msg);
+				}
+			}
+
+			AssertQuery(false);
+			AssertQuery(true);
+		}
+
+		[Test(Description = "GH-3169")]
+		public void CacheableScalarSqlEmptyMultiQueryWithTransformer()
+		{
+			void AssertQuery(bool fromCache)
+			{
+				using (var s = OpenSession())
+				using (var t = s.BeginTransaction())
+				using (EnableStatisticsScope())
+				{
+					var q1 = s.CreateSQLQuery("select org.NAME as regionCode from ORGANIZATION org")
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
+							.SetCacheable(true);
+					var q2 = s.CreateSQLQuery("select org.ORGID as orgId from ORGANIZATION org")
+							.AddScalar("orgId", NHibernateUtil.Int64)
+							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
+							.SetCacheable(true);
+
+					var batch = s.CreateQueryBatch();
+					batch.Add<ResultDto>(q1);
+					batch.Add<ResultDto>(q2);
+					batch.Execute();
+
+					var l1 = batch.GetResult<ResultDto>(0);
+					var l2 = batch.GetResult<ResultDto>(1);
+
+					t.Commit();
+
+					Assert.That(l1.Count, Is.EqualTo(0), "Unexpected results count for the first query.");
+					Assert.That(l2.Count, Is.EqualTo(0), "Unexpected results count for the second query.");
 					var msg = "Results are expected from " + (fromCache ? "cache" : "DB");
 					Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(fromCache ? 0 : 2), msg);
 					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(fromCache ? 2 : 0), msg);

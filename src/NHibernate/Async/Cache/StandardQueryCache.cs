@@ -214,22 +214,21 @@ namespace NHibernate.Cache
 					continue;
 				}
 
+				var timestamp = GetResultsMetadata(cacheable, out var aliases); var key = keys[i];
+				if (key.ResultTransformer?.AutoDiscoverTypes == true && HasResults(cacheable))
+				{
+					key.ResultTransformer.SupplyAutoDiscoveredParameters(queryParameters[i].ResultTransformer, aliases);
+				}
+
 				var querySpaces = spaces[i];
 				if (queryParameters[i].NaturalKeyLookup || querySpaces.Count == 0)
 					continue;
 
 				spacesToCheck.Add(querySpaces);
 				checkedSpacesIndexes.Add(i);
-				var timestamp = GetResultsMetadata(cacheable, out var aliases);
 				checkedSpacesTimestamp.Add(timestamp);
 				if (Log.IsDebugEnabled())
 					Log.Debug("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(querySpaces));
-
-				var key = keys[i];
-				if (key.ResultTransformer?.AutoDiscoverTypes == true && HasResults(cacheable))
-				{
-					key.ResultTransformer.SupplyAutoDiscoveredParameters(queryParameters[i].ResultTransformer, aliases);
-				}
 			}
 
 			var upToDates = spacesToCheck.Count > 0
@@ -255,6 +254,7 @@ namespace NHibernate.Cache
 					if (checkedSpacesIndexes.Contains(i) && !upToDates[upToDatesIndex++])
 					{
 						Log.Debug("cached query results were not up to date for: {0}", key);
+						cacheables[i] = null;
 						continue;
 					}
 
@@ -272,7 +272,7 @@ namespace NHibernate.Cache
 
 				for (var i = 0; i < keys.Length; i++)
 				{
-					if (finalReturnTypes[i] == null)
+					if (cacheables[i] == null)
 					{
 						continue;
 					}
@@ -295,7 +295,7 @@ namespace NHibernate.Cache
 
 				for (var i = 0; i < keys.Length; i++)
 				{
-					if (finalReturnTypes[i] == null)
+					if (cacheables[i] == null)
 					{
 						continue;
 					}
@@ -360,6 +360,9 @@ namespace NHibernate.Cache
 			IList cacheable, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			if (!HasResults(cacheable))
+				return;
+
 			if (returnTypes.Length == 1)
 			{
 				var returnType = returnTypes[0];
@@ -389,6 +392,9 @@ namespace NHibernate.Cache
 			try
 			{
 				var result = new List<object>(cacheable.Count - 1);
+				if (!HasResults(cacheable))
+					return result;
+
 				if (returnTypes.Length == 1)
 				{
 					var returnType = returnTypes[0];
@@ -443,6 +449,9 @@ namespace NHibernate.Cache
 			IList cacheResult, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			if (!HasResults(cacheResult))
+				return;
+
 			var collectionIndexes = new Dictionary<int, ICollectionPersister>();
 			for (var i = 0; i < returnTypes.Length; i++)
 			{
@@ -481,6 +490,10 @@ namespace NHibernate.Cache
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Log.Debug("returning cached query results for: {0}", key);
+
+			if (!HasResults(cacheable))
+				return new List<object>();
+
 			returnTypes = GetReturnTypes(key, returnTypes, cacheable);
 			try
 			{

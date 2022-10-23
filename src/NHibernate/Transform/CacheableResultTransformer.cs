@@ -232,12 +232,14 @@ namespace NHibernate.Transform
 		/// <param name="aliases">The aliases that correspond to the untransformed tuple.</param>
 		/// <param name="transformer">The transformer for the re-transformation.</param>
 		/// <param name="includeInTuple"></param>
-		/// <returns>transformedResults, with each element re-transformed (if necessary).</returns>
+		/// <returns><paramref name="transformedResults"/>, with each element re-transformed (if necessary).</returns>
 		public IList RetransformResults(IList transformedResults,
 		                                string[] aliases,
 		                                IResultTransformer transformer,
 		                                bool[] includeInTuple)
 		{
+			if (transformedResults.Count == 0)
+				return transformedResults;
 			if (transformer == null)
 				throw new ArgumentNullException(nameof(transformer));
 			if (_includeInTuple == null)
@@ -287,8 +289,7 @@ namespace NHibernate.Transform
 		/// elements are replaced with untransformed values) and the original
 		/// List is returned.
 		/// <para>
-		/// If not unnecessary, the original List is returned
-		/// unchanged.
+		/// If not necessary, the original List is returned unchanged.
 		/// </para>
 		/// </summary>
 		/// <remarks>
@@ -297,9 +298,12 @@ namespace NHibernate.Transform
 		/// excluded tuple elements will be null.
 		/// </remarks>
 		/// <param name="results">Results that were previously transformed.</param>
-		/// <returns>results, with each element untransformed (if necessary).</returns>
+		/// <returns><paramref name="results"/>, with each element untransformed (if necessary).</returns>
 		public IList UntransformToTuples(IList results)
 		{
+			if (results.Count == 0)
+				return results;
+
 			if (_includeInTuple == null)
 				throw new InvalidOperationException("This transformer is not initialized");
 			if (_includeInTransformIndex == null)

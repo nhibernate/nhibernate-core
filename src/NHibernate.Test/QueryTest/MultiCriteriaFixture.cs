@@ -127,7 +127,7 @@ namespace NHibernate.Test.QueryTest
 
 			CreateItems();
 
-			DoMutiQueryAndAssert();
+			DoMultiQueryAndAssert();
 
 			Assert.AreEqual(1, cacheHashtable.Count);
 		}
@@ -136,20 +136,20 @@ namespace NHibernate.Test.QueryTest
 		public void CanGetMultiQueryFromSecondLevelCache()
 		{
 			CreateItems();
-			//set the query in the cache
-			DoMutiQueryAndAssert();
+			// Set the query in the cache.
+			DoMultiQueryAndAssert();
 
 			var cacheHashtable = MultipleQueriesFixture.GetHashTableUsedAsQueryCache(Sfi);
-			var cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
+			var cachedListEntry = (IList) new ArrayList(cacheHashtable.Values)[0];
 			// The first element is a timestamp, then only we have the cached data.
-			var cachedQuery = (IList)cachedListEntry[1] ?? throw new InvalidOperationException("Cached data is null");
+			var cachedQuery = (IList) cachedListEntry[1] ?? throw new InvalidOperationException("Cached data is null");
 
-			var firstQueryResults = (IList)cachedQuery[0];
+			var firstQueryResults = (IList) cachedQuery[0];
 			firstQueryResults.Clear();
 			firstQueryResults.Add(3);
 			firstQueryResults.Add(4);
 
-			var secondQueryResults = (IList)cachedQuery[1];
+			var secondQueryResults = (IList) cachedQuery[1];
 			secondQueryResults[0] = 2;
 
 			using (var s = Sfi.OpenSession())
@@ -161,9 +161,9 @@ namespace NHibernate.Test.QueryTest
 					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
 				multiCriteria.SetCacheable(true);
 				var results = multiCriteria.List();
-				var items = (IList)results[0];
+				var items = (IList) results[0];
 				Assert.AreEqual(2, items.Count);
-				var count = (int)((IList)results[1])[0];
+				var count = (int) ((IList) results[1])[0];
 				Assert.AreEqual(2L, count);
 			}
 		}
@@ -173,12 +173,12 @@ namespace NHibernate.Test.QueryTest
 		{
 			CreateItems();
 
-			DoMutiQueryAndAssert();
+			DoMultiQueryAndAssert();
 			Assert.AreEqual(0, Sfi.Statistics.QueryCacheHitCount);
 			Assert.AreEqual(1, Sfi.Statistics.QueryCacheMissCount);
 			Assert.AreEqual(1, Sfi.Statistics.QueryCachePutCount);
 
-			DoMutiQueryAndAssert();
+			DoMultiQueryAndAssert();
 			Assert.AreEqual(1, Sfi.Statistics.QueryCacheHitCount);
 			Assert.AreEqual(1, Sfi.Statistics.QueryCacheMissCount);
 			Assert.AreEqual(1, Sfi.Statistics.QueryCachePutCount);
@@ -437,7 +437,7 @@ namespace NHibernate.Test.QueryTest
 			}
 		}
 
-		private void DoMutiQueryAndAssert()
+		private void DoMultiQueryAndAssert()
 		{
 			using (var s = OpenSession())
 			{
@@ -448,9 +448,9 @@ namespace NHibernate.Test.QueryTest
 					.Add(CriteriaTransformer.Clone(criteria).SetProjection(Projections.RowCount()));
 				multiCriteria.SetCacheable(true);
 				var results = multiCriteria.List();
-				var items = (IList)results[0];
+				var items = (IList) results[0];
 				Assert.AreEqual(89, items.Count);
-				var count = (int)((IList)results[1])[0];
+				var count = (int) ((IList) results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
 		}
