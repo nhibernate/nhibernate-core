@@ -354,8 +354,9 @@ namespace NHibernate.Test.SqlTest.Query
 							.AddScalar("regionCode", NHibernateUtil.String)
 							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
 							.SetCacheable(true);
-					var q2 = s.CreateSQLQuery("select org.ORGID as orgId from ORGANIZATION org")
+					var q2 = s.CreateSQLQuery("select org.ORGID as orgId, org.NAME as regionCode from ORGANIZATION org")
 							.AddScalar("orgId", NHibernateUtil.Int64)
+							.AddScalar("regionCode", NHibernateUtil.String)
 							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
 							.SetCacheable(true);
 
@@ -394,8 +395,9 @@ namespace NHibernate.Test.SqlTest.Query
 							.AddScalar("regionCode", NHibernateUtil.String)
 							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
 							.SetCacheable(true);
-					var q2 = s.CreateSQLQuery("select org.ORGID as orgId from ORGANIZATION org")
+					var q2 = s.CreateSQLQuery("select org.ORGID as orgId, org.NAME as regionCode from ORGANIZATION org")
 							.AddScalar("orgId", NHibernateUtil.Int64)
+							.AddScalar("regionCode", NHibernateUtil.String)
 							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
 							.SetCacheable(true);
 
@@ -414,6 +416,43 @@ namespace NHibernate.Test.SqlTest.Query
 					var msg = "Results are expected from " + (fromCache ? "cache" : "DB");
 					Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(fromCache ? 0 : 2), msg);
 					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(fromCache ? 2 : 0), msg);
+				}
+			}
+
+			await (AssertQueryAsync(false));
+			await (AssertQueryAsync(true));
+		}
+
+		[Test(Description = "GH-3169")]
+		public async Task CacheableMultiScalarSqlQueryWithTransformerAsync()
+		{
+			Organization ifa = new Organization("IFA");
+
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(ifa));
+				await (t.CommitAsync());
+			}
+
+			async Task AssertQueryAsync(bool fromCache)
+			{
+				using (var s = OpenSession())
+				using (var t = s.BeginTransaction())
+				using (EnableStatisticsScope())
+				{
+					var l = await (s.CreateSQLQuery("select org.ORGID as orgId, org.NAME as regionCode from ORGANIZATION org")
+							.AddScalar("orgId", NHibernateUtil.Int64)
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
+							.SetCacheable(true)
+							.ListAsync());
+					await (t.CommitAsync());
+
+					Assert.That(l.Count, Is.EqualTo(1));
+					var msg = "Results are expected from " + (fromCache ? "cache" : "DB");
+					Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(fromCache ? 0 : 1), msg);
+					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(fromCache ? 1 : 0), msg);
 				}
 			}
 
