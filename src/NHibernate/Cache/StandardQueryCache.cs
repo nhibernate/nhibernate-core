@@ -376,7 +376,7 @@ namespace NHibernate.Cache
 			var cacheable =
 				new List<object>(result.Count + 1)
 				{
-					aliases == null ? ts : new object[] { ts, aliases }
+					aliases == null ? ts : new object[] { ts, aliases.ToArray<object>() }
 				};
 
 			foreach (var row in result)
@@ -404,7 +404,7 @@ namespace NHibernate.Cache
 				return timestamp.Value;
 
 			var metadataArray = (object[]) metadata;
-			aliases = (string[]) metadataArray[1];
+			aliases = ((object[]) metadataArray[1]).Cast<string>().ToArray();
 			return (long) metadataArray[0];
 		}
 
