@@ -11,6 +11,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
@@ -387,7 +388,7 @@ namespace NHibernate.Cache
 			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
-				var result = new List<object>(cacheable.Count - 2);
+				var result = new List<object>(cacheable.Count - 1);
 				if (returnTypes.Length == 1)
 				{
 					var returnType = returnTypes[0];
