@@ -399,9 +399,8 @@ namespace NHibernate.Cache
 			aliases = null;
 
 			var metadata = cacheable[0];
-			var timestamp = metadata as long?;
-			if (timestamp.HasValue)
-				return timestamp.Value;
+			if (metadata is long timestamp)
+				return timestamp;
 
 			var metadataArray = (object[]) metadata;
 			aliases = ((object[]) metadataArray[1]).Cast<string>().ToArray();
