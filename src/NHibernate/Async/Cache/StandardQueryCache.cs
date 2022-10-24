@@ -214,8 +214,9 @@ namespace NHibernate.Cache
 					continue;
 				}
 
-				var timestamp = GetResultsMetadata(cacheable, out var aliases); var key = keys[i];
-				if (key.ResultTransformer?.AutoDiscoverTypes == true && HasResults(cacheable))
+				var timestamp = GetResultsMetadata(cacheable, out var aliases);
+				var key = keys[i];
+				if (key.ResultTransformer?.AutoDiscoverTypes == true && !IsEmpty(cacheable))
 				{
 					key.ResultTransformer.SupplyAutoDiscoveredParameters(queryParameters[i].ResultTransformer, aliases);
 				}
@@ -330,7 +331,8 @@ namespace NHibernate.Cache
 			ICacheAssembler[] returnTypes,
 			ISessionImplementor session,
 			IList result,
-			long ts, string[] aliases, CancellationToken cancellationToken)
+			long ts,
+			string[] aliases, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			var cacheable =
@@ -360,7 +362,7 @@ namespace NHibernate.Cache
 			IList cacheable, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (!HasResults(cacheable))
+			if (IsEmpty(cacheable))
 				return;
 
 			if (returnTypes.Length == 1)
@@ -392,7 +394,7 @@ namespace NHibernate.Cache
 			try
 			{
 				var result = new List<object>(cacheable.Count - 1);
-				if (!HasResults(cacheable))
+				if (IsEmpty(cacheable))
 					return result;
 
 				if (returnTypes.Length == 1)
@@ -449,7 +451,7 @@ namespace NHibernate.Cache
 			IList cacheResult, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (!HasResults(cacheResult))
+			if (IsEmpty(cacheResult))
 				return;
 
 			var collectionIndexes = new Dictionary<int, ICollectionPersister>();
@@ -491,7 +493,7 @@ namespace NHibernate.Cache
 			cancellationToken.ThrowIfCancellationRequested();
 			Log.Debug("returning cached query results for: {0}", key);
 
-			if (!HasResults(cacheable))
+			if (IsEmpty(cacheable))
 				return new List<object>();
 
 			returnTypes = GetReturnTypes(key, returnTypes, cacheable);

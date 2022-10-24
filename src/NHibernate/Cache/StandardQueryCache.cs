@@ -249,8 +249,9 @@ namespace NHibernate.Cache
 					continue;
 				}
 
-				var timestamp = GetResultsMetadata(cacheable, out var aliases); var key = keys[i];
-				if (key.ResultTransformer?.AutoDiscoverTypes == true && HasResults(cacheable))
+				var timestamp = GetResultsMetadata(cacheable, out var aliases);
+				var key = keys[i];
+				if (key.ResultTransformer?.AutoDiscoverTypes == true && !IsEmpty(cacheable))
 				{
 					key.ResultTransformer.SupplyAutoDiscoveredParameters(queryParameters[i].ResultTransformer, aliases);
 				}
@@ -371,7 +372,8 @@ namespace NHibernate.Cache
 			ICacheAssembler[] returnTypes,
 			ISessionImplementor session,
 			IList result,
-			long ts, string[] aliases)
+			long ts,
+			string[] aliases)
 		{
 			var cacheable =
 				new List<object>(result.Count + 1)
@@ -407,9 +409,9 @@ namespace NHibernate.Cache
 			return (long) metadataArray[0];
 		}
 
-		private static bool HasResults(IList cacheable)
+		private static bool IsEmpty(IList cacheable)
 			// First element is the timestamp.
-			=> cacheable.Count > 1;
+			=> cacheable.Count <= 1;
 
 		private static IEnumerable<object> GetResultsEnumerable(IList cacheable)
 		{
@@ -425,7 +427,7 @@ namespace NHibernate.Cache
 			ICacheAssembler[] returnTypes,
 			IList cacheable)
 		{
-			var hasResults = HasResults(cacheable);
+			var hasResults = !IsEmpty(cacheable);
 			if (key.ResultTransformer?.AutoDiscoverTypes == true && hasResults)
 			{
 				returnTypes = GuessTypes(cacheable);
@@ -444,7 +446,7 @@ namespace NHibernate.Cache
 			ISessionImplementor session,
 			IList cacheable)
 		{
-			if (!HasResults(cacheable))
+			if (IsEmpty(cacheable))
 				return;
 
 			if (returnTypes.Length == 1)
@@ -475,7 +477,7 @@ namespace NHibernate.Cache
 			try
 			{
 				var result = new List<object>(cacheable.Count - 1);
-				if (!HasResults(cacheable))
+				if (IsEmpty(cacheable))
 					return result;
 
 				if (returnTypes.Length == 1)
@@ -531,7 +533,7 @@ namespace NHibernate.Cache
 			IList assembleResult,
 			IList cacheResult)
 		{
-			if (!HasResults(cacheResult))
+			if (IsEmpty(cacheResult))
 				return;
 
 			var collectionIndexes = new Dictionary<int, ICollectionPersister>();
@@ -572,7 +574,7 @@ namespace NHibernate.Cache
 		{
 			Log.Debug("returning cached query results for: {0}", key);
 
-			if (!HasResults(cacheable))
+			if (IsEmpty(cacheable))
 				return new List<object>();
 
 			returnTypes = GetReturnTypes(key, returnTypes, cacheable);
