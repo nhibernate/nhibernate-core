@@ -10,7 +10,7 @@ namespace NHibernate.Cache
 	/// </summary>
 	[Serializable]
 	[DataContract]
-	public class CachedItem : ReadWriteCache.ILockable
+	public class CachedItem : ReadWriteCache.ILockable, ReadWriteCache.IMinimalPutAwareLockable
 	{
 		private long freshTimestamp;
 		private object value;
@@ -101,16 +101,17 @@ namespace NHibernate.Cache
 		/// <summary>
 		/// Don't overwrite already cached items
 		/// </summary>
-		/// <param name="txTimestamp"></param>
-		/// <param name="newVersion"></param>
-		/// <param name="comparator"></param>
-		/// <returns></returns>
+		public bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator, bool minimalPut)
+		{
+			if (Version == null)
+				return !minimalPut;
+
+			return comparator.Compare(Version, newVersion) < (minimalPut ? 0 : 1);
+		}
+
 		public bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator)
 		{
-			// we really could refresh the item if it  
-			// is not a lock, but it might be slower
-			//return freshTimestamp < txTimestamp
-			return Version != null && comparator.Compare(Version, newVersion) < 0;
+			return IsPuttable(txTimestamp, newVersion, comparator, true);
 		}
 
 		public override string ToString()
