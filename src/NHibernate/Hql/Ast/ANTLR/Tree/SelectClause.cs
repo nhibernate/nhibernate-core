@@ -102,45 +102,35 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// NOTE: This must be done *before* invoking setScalarColumnText() because setScalarColumnText()
 			// changes the AST!!!
 			var inheritedExpressions = new Dictionary<ISelectExpression, SelectClause>();
-			SelectExpressions = GetSelectExpressions();
-			OriginalSelectExpressions = SelectExpressions.ToList();
+			var selExprs = GetSelectExpressions();
+			OriginalSelectExpressions = selExprs;
+			SelectExpressions = new List<ISelectExpression>(selExprs.Count);
 			NonScalarExpressions = new List<ISelectExpression>();
-			var length = SelectExpressions.Count;
-			for (var i = 0; i < length; i++)
+			foreach (var expr in selExprs)
 			{
-				var expr = SelectExpressions[i];
 				if (expr.IsConstructor)
 				{
 					_constructorNode = (ConstructorNode) expr;
 					_scalarSelect = true;
-					SelectExpressions.RemoveAt(i);
 					NonScalarExpressions.AddRange(_constructorNode.GetSelectExpressions(true, o => !o.IsScalar));
 					foreach (var argumentExpression in _constructorNode.GetSelectExpressions())
 					{
-						SelectExpressions.Insert(i, argumentExpression);
-						i++;
+						SelectExpressions.Add(argumentExpression);
 						AddExpression(argumentExpression, queryReturnTypeList);
 					}
-
-					i--;
-					length = SelectExpressions.Count;
 				}
 				else if (expr.FromElement is JoinSubqueryFromElement joinSubquery &&
 				         TryProcessSubqueryExpressions(expr, joinSubquery, out var selectClause, out var subqueryExpressions))
 				{
-					SelectExpressions.RemoveAt(i);
 					var indexes = new List<int>(subqueryExpressions.Count);
 					foreach (var expression in subqueryExpressions)
 					{
 						inheritedExpressions[expression] = selectClause;
-						indexes.Add(i);
-						SelectExpressions.Insert(i, expression);
-						i++;
+						indexes.Add(SelectExpressions.Count);
+						SelectExpressions.Add(expression);
 						AddExpression(expression, queryReturnTypeList);
 					}
 
-					i--;
-					length = SelectExpressions.Count;
 					_replacedExpressions.Add(expr, indexes);
 				}
 				else
@@ -150,6 +140,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 						NonScalarExpressions.Add(expr);
 					}
 
+					SelectExpressions.Add(expr);
 					AddExpression(expr, queryReturnTypeList);
 				}
 			}
