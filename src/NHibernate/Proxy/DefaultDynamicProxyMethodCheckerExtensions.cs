@@ -17,25 +17,17 @@ namespace NHibernate.Proxy
 				((method.IsPublic || method.IsFamily) && (method.IsVirtual || method.IsAbstract)) // public or protected (virtual)
 				||
 				(method.IsFamilyOrAssembly && (method.IsVirtual || method.IsAbstract)) // internal protected virtual
-				)
-				&& !method.IsPropertyInit();
-		}
-
-		public static bool IsPropertyInit(this MethodInfo method)
-		{
-			return method.IsSpecialName &&
-				method.IsHideBySig &&
-				method.ReturnParameter.GetRequiredCustomModifiers().Any(n => n.FullName == "System.Runtime.CompilerServices.IsExternalInit");
+				);
 		}
 
 		public static bool ShouldBeProxiable(this MethodInfo method)
 		{
 			// to use only for real methods (no getter/setter)
 			return (method.DeclaringType != typeof (MarshalByRefObject)) &&
-				   (method.DeclaringType != typeof (object) || !"finalize".Equals(method.Name, StringComparison.OrdinalIgnoreCase)) &&
-				   (!(method.DeclaringType == typeof (object) && "GetType".Equals(method.Name))) &&
-				   (!(method.DeclaringType == typeof (object) && "obj_address".Equals(method.Name))) && // Mono-specific method
-				   !IsDisposeMethod(method) &&
+			       (method.DeclaringType != typeof (object) || !"finalize".Equals(method.Name, StringComparison.OrdinalIgnoreCase)) &&
+			       (!(method.DeclaringType == typeof (object) && "GetType".Equals(method.Name))) &&
+			       (!(method.DeclaringType == typeof (object) && "obj_address".Equals(method.Name))) && // Mono-specific method
+			       !IsDisposeMethod(method) &&
 						 (method.IsPublic || method.IsAssembly || method.IsFamilyOrAssembly);
 		}
 
