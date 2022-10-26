@@ -10,11 +10,11 @@
 
 using NUnit.Framework;
 using System.Collections.Generic;
-using NHibernate.Dialect;
 
 namespace NHibernate.Test.NHSpecificTest.NH1773
 {
 	using System.Threading.Tasks;
+	//Also tests GH-2551 (Fails with MS SQL Ce & SQL Anywhere due to the query generating a duplicated column alias name, which these databases do not support.)
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -30,12 +30,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1773
 				Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].Person.Country));
 				await (tx.CommitAsync());
 			}
-		}
-
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			// Fails with MS SQL Ce & SQL Anywhere due to the query generating a duplicated column alias name, which these databases do not support.
-			return TestDialect.SupportsDuplicatedColumnAliases;
 		}
 
 		protected override void OnSetUp()
