@@ -130,21 +130,20 @@ namespace NHibernate.Persister.Entity
 
 		public bool ContainsEntityAlias(string alias, IType type)
 		{
-			var aliases = alias.Split(StringHelper.Dot);
-			var rootAlias = aliases[0];
+			bool isRoot = !StringHelper.IsNotRoot(alias, out var rootAlias);
 			if (!_propertyAliasMappings.TryGetValue(rootAlias, out var mapping))
 			{
 				return false;
 			}
 
-			if (aliases.Length == 1)
+			if (isRoot)
 			{
 				return mapping.Type.Equals(type);
 			}
 
 			if (mapping is SubqueryPropertyMapping joinSubQueryMapping)
 			{
-				return joinSubQueryMapping.ContainsEntityAlias(JoinPaths(aliases.Skip(1)), type);
+				return joinSubQueryMapping.ContainsEntityAlias(alias.Substring(rootAlias.Length + 1), type);
 			}
 
 			return false;
