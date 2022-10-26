@@ -33,7 +33,7 @@ namespace NHibernate.Persister.Entity
 					var key = scalarExpression.Alias;
 					if (string.IsNullOrEmpty(key) && scalarExpression is DotNode dotNode)
 					{
-						key = dotNode.PropertyPath.Split(StringHelper.Dot).Last();
+						StringHelper.ParsePathAndPropertyName(dotNode.PropertyPath, out _, out key);
 					}
 
 					if (key == null)
