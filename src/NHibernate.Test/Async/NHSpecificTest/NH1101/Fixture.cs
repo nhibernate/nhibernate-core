@@ -18,6 +18,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1101
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
+		protected override string CacheConcurrencyStrategy => "nonstrict-read-write";
+
 		protected override void Configure(Cfg.Configuration configuration)
 		{
 			base.Configure(configuration);

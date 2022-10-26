@@ -14,6 +14,8 @@ namespace NHibernate.Test.FetchLazyProperties
 	[TestFixture]
 	public class FetchLazyPropertiesFixture : TestCase
 	{
+		protected override string CacheConcurrencyStrategy => "nonstrict-read-write";
+
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }

@@ -28,6 +28,8 @@ namespace NHibernate.Test.FilterTest
 		private static readonly ILog log = LogManager.GetLogger(typeof(DynamicFilterTestAsync));
 		private TestData testData;
 
+		protected override string CacheConcurrencyStrategy => "nonstrict-read-write";
+
 		protected override void OnSetUp()
 		{
 			testData = new TestData(this);

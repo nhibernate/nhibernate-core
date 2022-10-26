@@ -282,6 +282,55 @@ namespace NHibernate.Test.SqlTest.Query
 			}
 		}
 
+		class ResultDto
+		{
+			public string regionCode { get; set; }
+		}
+
+		[Test(Description = "GH-3169")]
+		public async Task CacheableScalarSQLQueryWithTransformerAsync()
+		{
+			Organization ifa = new Organization("IFA");
+
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				await (s.SaveAsync(ifa));
+				await (t.CommitAsync());
+			}
+
+			async Task AssertQueryAsync(bool fromCache)
+			{
+				using (var s = OpenSession())
+				using (var t = s.BeginTransaction())
+				using (EnableStatisticsScope())
+				{
+					var l = await (s.CreateSQLQuery("select org.NAME as regionCode from ORGANIZATION org")
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
+							.SetCacheable(true)
+							.ListAsync());
+					await (t.CommitAsync());
+
+					Assert.AreEqual(1, l.Count);
+					//TODO: Uncomment if we properly fix caching auto discovery type queries with transformers
+					// var msg = "results are expected from " + (fromCache ? "cache" : "DB");
+					// Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(fromCache ? 0 : 1), msg);
+					// Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(fromCache ? 1 : 0), msg);
+				}
+			}
+
+			await (AssertQueryAsync(false));
+			await (AssertQueryAsync(true));
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.DeleteAsync(ifa));
+				await (t.CommitAsync());
+			}
+		}
+
 		[Test]
 		public async Task ResultSetMappingDefinitionAsync()
 		{

@@ -7,9 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3079
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		// Disable second level cache
-		protected override string CacheConcurrencyStrategy => null;
-
 		protected override void OnTearDown()
 		{
 			using (var s = OpenSession())

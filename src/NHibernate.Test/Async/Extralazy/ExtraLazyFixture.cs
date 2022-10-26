@@ -32,11 +32,6 @@ namespace NHibernate.Test.Extralazy
 			get { return new[] {"Extralazy.UserGroup.hbm.xml"}; }
 		}
 
-		protected override string CacheConcurrencyStrategy
-		{
-			get { return null; }
-		}
-
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Cfg.Environment.GenerateStatistics, "true");

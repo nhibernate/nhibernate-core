@@ -28,8 +28,6 @@ namespace NHibernate.Test.CacheTest
 
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override string CacheConcurrencyStrategy => null;
-
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Environment.UseSecondLevelCache, "true");
