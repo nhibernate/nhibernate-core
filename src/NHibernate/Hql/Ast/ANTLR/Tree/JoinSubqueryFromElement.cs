@@ -21,10 +21,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			QueryNode = queryNode;
 			DataType = dataType;
 			foreach (var fromElement in querySelectClause.SelectExpressions.Select(o => o.FromElement)
-				.Concat(querySelectClause.NonScalarExpressions?.Select(o => o.FromElement) ?? Enumerable.Empty<FromElement>())
-				.Concat(querySelectClause.CollectionFromElements ?? Enumerable.Empty<FromElement>())
+				.Concat(querySelectClause.NonScalarExpressions?.Select(o => o.FromElement) ?? Array.Empty<FromElement>())
+				.Concat(querySelectClause.CollectionFromElements ?? Array.Empty<FromElement>())
 				.Where(o => o != null)
-				.Distinct())
+				)
 			{
 				fromElement.ParentFromElement = this;
 			}
