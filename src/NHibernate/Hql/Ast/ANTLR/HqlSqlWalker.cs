@@ -502,7 +502,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				return suffix;
 			}
 
-			suffix = _suffixes.Count == 0 ? "" : _suffixes.Count.ToString() + '_';
+			suffix = _suffixes.Count == 0 ? string.Empty : _suffixes.Count.ToString() + '_';
 			_suffixes.Add(fromElement, suffix);
 
 			return suffix;
