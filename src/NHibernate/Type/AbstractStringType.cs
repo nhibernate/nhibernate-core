@@ -58,8 +58,8 @@ namespace NHibernate.Type
 		{
 			var parameter = cmd.Parameters[index];
 
-			if (value is Enum e)
-				value = e.ToString(CultureInfo.InvariantCulture);
+			if (value is Enum)
+				value = value.ToString();
 
 			//Allow the driver to adjust the parameter for the value
 			session.Factory.ConnectionProvider.Driver.AdjustParameterForValue(parameter, SqlType, value);
