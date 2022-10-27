@@ -19,9 +19,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		// Disable second level cache
-		protected override string CacheConcurrencyStrategy => null;
-
 		protected override void OnSetUp()
 		{
 			Sfi.Statistics.IsStatisticsEnabled = true;
