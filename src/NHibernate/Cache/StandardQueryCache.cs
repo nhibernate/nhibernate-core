@@ -410,7 +410,7 @@ namespace NHibernate.Cache
 		}
 
 		private static bool IsEmpty(IList cacheable)
-			// First element is the timestamp.
+			// First element is metadata.
 			=> cacheable.Count <= 1;
 
 		private static IEnumerable<object> GetResultsEnumerable(IList cacheable)
@@ -427,18 +427,13 @@ namespace NHibernate.Cache
 			ICacheAssembler[] returnTypes,
 			IList cacheable)
 		{
-			var hasResults = !IsEmpty(cacheable);
-			if (key.ResultTransformer?.AutoDiscoverTypes == true && hasResults)
-			{
+			if (IsEmpty(cacheable))
+				return returnTypes;
+
+			if (key.ResultTransformer?.AutoDiscoverTypes == true)
 				returnTypes = GuessTypes(cacheable);
-			}
 
-			if (hasResults && returnTypes == null)
-			{
-				throw new HibernateException("Return types for non empty query results are null, cannot assemble the results");
-			}
-
-			return returnTypes;
+			return returnTypes ?? throw new HibernateException("Return types for non empty query results are null, cannot assemble the results");
 		}
 
 		private static void PerformBeforeAssemble(
@@ -621,10 +616,12 @@ namespace NHibernate.Cache
 							foundTypes++;
 						}
 					}
+
 					if (foundTypes == colCount)
 						break;
 				}
 			}
+
 			// If a column value was null for all rows, its type is still null: put a type which will just yield null
 			// on null value.
 			for (var i = 0; i < colCount; i++)
@@ -632,6 +629,7 @@ namespace NHibernate.Cache
 				if (returnTypes[i] == null)
 					returnTypes[i] = NHibernateUtil.String;
 			}
+
 			return returnTypes;
 		}
 
