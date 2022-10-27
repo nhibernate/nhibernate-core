@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.NH1773
 {
-	//Also tests GH-2551 (Fails with MS SQL Ce & SQL Anywhere due to the query generating a duplicated column alias name, which these databases do not support.)
+	//Also tests GH-2092 (Fails with MS SQL Ce & SQL Anywhere due to the query generating a duplicated column alias name, which these databases do not support.)
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
