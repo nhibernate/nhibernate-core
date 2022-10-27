@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Linq;
+using NHibernate.Criterion;
+using NHibernate.Multi;
 using NHibernate.Transform;
 using NUnit.Framework;
-using NHibernate.Criterion;
 
 namespace NHibernate.Test.SqlTest.Query
 {
@@ -49,6 +50,20 @@ namespace NHibernate.Test.SqlTest.Query
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
+		}
+
+		protected override void OnTearDown()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				session.CreateQuery("delete from Employment").ExecuteUpdate();
+				session.CreateQuery("delete from System.Object").ExecuteUpdate();
+
+				transaction.Commit();
+			}
+
+			Sfi.QueryCache.Clear();
 		}
 
 		[Test]
@@ -125,18 +140,6 @@ namespace NHibernate.Test.SqlTest.Query
 				t.Commit();
 				s.Close();
 			}
-
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				s.Delete(emp);
-				s.Delete(gavin);
-				s.Delete(ifa);
-				s.Delete(jboss);
-
-				t.Commit();
-				s.Close();
-			}
 		}
 
 		[Test]
@@ -191,22 +194,10 @@ namespace NHibernate.Test.SqlTest.Query
 				t.Commit();
 				s.Close();
 			}
-
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				s.Delete(emp);
-				s.Delete(gavin);
-				s.Delete(ifa);
-				s.Delete(jboss);
-
-				t.Commit();
-				s.Close();
-			}
 		}
 
 		[Test(Description = "GH-2904")]
-		public void CacheableScalarSQLQuery()
+		public void CacheableScalarSqlQuery()
 		{
 			Organization ifa = new Organization("IFA");
 			Organization jboss = new Organization("JBoss");
@@ -252,25 +243,16 @@ namespace NHibernate.Test.SqlTest.Query
 					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1), "results are expected from cache");
 				}
 			}
-
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				s.Delete(emp);
-				s.Delete(gavin);
-				s.Delete(ifa);
-				s.Delete(jboss);
-				t.Commit();
-			}
 		}
 
 		class ResultDto
 		{
+			public long orgId { get; set; }
 			public string regionCode { get; set; }
 		}
 
 		[Test(Description = "GH-3169")]
-		public void CacheableScalarSQLQueryWithTransformer()
+		public void CacheableScalarSqlQueryWithTransformer()
 		{
 			Organization ifa = new Organization("IFA");
 
@@ -294,23 +276,170 @@ namespace NHibernate.Test.SqlTest.Query
 							.List();
 					t.Commit();
 
-					Assert.AreEqual(1, l.Count);
-					//TODO: Uncomment if we properly fix caching auto discovery type queries with transformers
-					// var msg = "results are expected from " + (fromCache ? "cache" : "DB");
-					// Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(fromCache ? 0 : 1), msg);
-					// Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(fromCache ? 1 : 0), msg);
+					Assert.That(l.Count, Is.EqualTo(1));
+					var msg = "Results are expected from " + (fromCache ? "cache" : "DB");
+					Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(fromCache ? 0 : 1), msg);
+					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(fromCache ? 1 : 0), msg);
 				}
 			}
 
 			AssertQuery(false);
 			AssertQuery(true);
+		}
 
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
+		[Test(Description = "GH-3169")]
+		public void CacheableScalarSqlEmptyQueryWithTransformer()
+		{
+			void AssertQuery(bool fromCache)
 			{
-				s.Delete(ifa);
+				using (var s = OpenSession())
+				using (var t = s.BeginTransaction())
+				using (EnableStatisticsScope())
+				{
+					var l = s.CreateSQLQuery("select org.NAME as regionCode from ORGANIZATION org")
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
+							.SetCacheable(true)
+							.List();
+					t.Commit();
+
+					Assert.That(l.Count, Is.EqualTo(0));
+					var msg = "Results are expected from " + (fromCache ? "cache" : "DB");
+					Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(fromCache ? 0 : 1), msg);
+					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(fromCache ? 1 : 0), msg);
+				}
+			}
+
+			AssertQuery(false);
+			AssertQuery(true);
+		}
+
+		[Test(Description = "GH-3169")]
+		public void CacheableScalarSqlMultiQueryWithTransformer()
+		{
+			Organization ifa = new Organization("IFA");
+
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(ifa);
 				t.Commit();
 			}
+
+			void AssertQuery(bool fromCache)
+			{
+				using (var s = OpenSession())
+				using (var t = s.BeginTransaction())
+				using (EnableStatisticsScope())
+				{
+					var q1 = s.CreateSQLQuery("select org.NAME as regionCode from ORGANIZATION org")
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
+							.SetCacheable(true);
+					var q2 = s.CreateSQLQuery("select org.ORGID as orgId, org.NAME as regionCode from ORGANIZATION org")
+							.AddScalar("orgId", NHibernateUtil.Int64)
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
+							.SetCacheable(true);
+
+					var batch = s.CreateQueryBatch();
+					batch.Add<ResultDto>(q1);
+					batch.Add<ResultDto>(q2);
+					batch.Execute();
+
+					var l1 = batch.GetResult<ResultDto>(0);
+					var l2 = batch.GetResult<ResultDto>(1);
+
+					t.Commit();
+
+					Assert.That(l1.Count, Is.EqualTo(1), "Unexpected results count for the first query.");
+					Assert.That(l2.Count, Is.EqualTo(1), "Unexpected results count for the second query.");
+					var msg = "Results are expected from " + (fromCache ? "cache" : "DB");
+					Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(fromCache ? 0 : 2), msg);
+					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(fromCache ? 2 : 0), msg);
+				}
+			}
+
+			AssertQuery(false);
+			AssertQuery(true);
+		}
+
+		[Test(Description = "GH-3169")]
+		public void CacheableScalarSqlEmptyMultiQueryWithTransformer()
+		{
+			void AssertQuery(bool fromCache)
+			{
+				using (var s = OpenSession())
+				using (var t = s.BeginTransaction())
+				using (EnableStatisticsScope())
+				{
+					var q1 = s.CreateSQLQuery("select org.NAME as regionCode from ORGANIZATION org")
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
+							.SetCacheable(true);
+					var q2 = s.CreateSQLQuery("select org.ORGID as orgId, org.NAME as regionCode from ORGANIZATION org")
+							.AddScalar("orgId", NHibernateUtil.Int64)
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
+							.SetCacheable(true);
+
+					var batch = s.CreateQueryBatch();
+					batch.Add<ResultDto>(q1);
+					batch.Add<ResultDto>(q2);
+					batch.Execute();
+
+					var l1 = batch.GetResult<ResultDto>(0);
+					var l2 = batch.GetResult<ResultDto>(1);
+
+					t.Commit();
+
+					Assert.That(l1.Count, Is.EqualTo(0), "Unexpected results count for the first query.");
+					Assert.That(l2.Count, Is.EqualTo(0), "Unexpected results count for the second query.");
+					var msg = "Results are expected from " + (fromCache ? "cache" : "DB");
+					Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(fromCache ? 0 : 2), msg);
+					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(fromCache ? 2 : 0), msg);
+				}
+			}
+
+			AssertQuery(false);
+			AssertQuery(true);
+		}
+
+		[Test(Description = "GH-3169")]
+		public void CacheableMultiScalarSqlQueryWithTransformer()
+		{
+			Organization ifa = new Organization("IFA");
+
+			using (ISession s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Save(ifa);
+				t.Commit();
+			}
+
+			void AssertQuery(bool fromCache)
+			{
+				using (var s = OpenSession())
+				using (var t = s.BeginTransaction())
+				using (EnableStatisticsScope())
+				{
+					var l = s.CreateSQLQuery("select org.ORGID as orgId, org.NAME as regionCode from ORGANIZATION org")
+							.AddScalar("orgId", NHibernateUtil.Int64)
+							.AddScalar("regionCode", NHibernateUtil.String)
+							.SetResultTransformer(Transformers.AliasToBean<ResultDto>())
+							.SetCacheable(true)
+							.List();
+					t.Commit();
+
+					Assert.That(l.Count, Is.EqualTo(1));
+					var msg = "Results are expected from " + (fromCache ? "cache" : "DB");
+					Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(fromCache ? 0 : 1), msg);
+					Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(fromCache ? 1 : 0), msg);
+				}
+			}
+
+			AssertQuery(false);
+			AssertQuery(true);
 		}
 
 		[Test]
@@ -337,11 +466,6 @@ namespace NHibernate.Test.SqlTest.Query
 			     .SetResultSetMapping("org-emp-person")
 			     .List();
 			Assert.AreEqual(l.Count, 1);
-
-			s.Delete(emp);
-			s.Delete(gavin);
-			s.Delete(ifa);
-			s.Delete(jboss);
 
 			t.Commit();
 			s.Close();
@@ -425,8 +549,6 @@ namespace NHibernate.Test.SqlTest.Query
 			Assert.AreEqual(o[1], "JBoss");
 			Assert.AreEqual(o[0], idJBoss);
 
-			s.Delete(ifa);
-			s.Delete(jboss);
 			t.Commit();
 			s.Close();
 		}
