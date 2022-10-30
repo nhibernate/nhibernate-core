@@ -2,6 +2,10 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
+#if NET6_0_OR_GREATER
+#pragma warning disable CS0618 //Serialization is obsolete
+#endif
+
 namespace NHibernate.Util
 {
 	public static partial class SerializationHelper
