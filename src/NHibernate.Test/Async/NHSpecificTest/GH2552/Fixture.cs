@@ -23,12 +23,11 @@ namespace NHibernate.Test.NHSpecificTest.GH2552
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		protected override string CacheConcurrencyStrategy => null;
-
 		protected override void Configure(NHCfg.Configuration configuration)
 		{
 			configuration.SetProperty(NHCfg.Environment.UseSecondLevelCache, "true");
 			configuration.SetProperty(NHCfg.Environment.GenerateStatistics, "true");
+			configuration.SetProperty(NHCfg.Environment.UseMinimalPuts, "true");
 		}
 
 		protected override void OnTearDown()

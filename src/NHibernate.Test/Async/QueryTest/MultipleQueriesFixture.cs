@@ -81,19 +81,20 @@ namespace NHibernate.Test.QueryTest
 		public async Task CanGetMultiQueryFromSecondLevelCacheAsync()
 		{
 			await (CreateItemsAsync());
-			//set the query in the cache
-			await (DoMutiQueryAndAssertAsync());
+			// Set the query in the cache.
+			await (DoMultiQueryAndAssertAsync());
 
 			var cacheHashtable = GetHashTableUsedAsQueryCache(Sfi);
-			var cachedListEntry = (IList)new ArrayList(cacheHashtable.Values)[0];
-			var cachedQuery = (IList)cachedListEntry[1];
+			var cachedListEntry = (IList) new ArrayList(cacheHashtable.Values)[0];
+			// The first element is a timestamp, then only we have the cached data.
+			var cachedQuery = (IList) cachedListEntry[1] ?? throw new InvalidOperationException("Cached data is null");
 
-			var firstQueryResults = (IList)cachedQuery[0];
+			var firstQueryResults = (IList) cachedQuery[0];
 			firstQueryResults.Clear();
 			firstQueryResults.Add(3);
 			firstQueryResults.Add(4);
 
-			var secondQueryResults = (IList)cachedQuery[1];
+			var secondQueryResults = (IList) cachedQuery[1];
 			secondQueryResults[0] = 2L;
 
 			using (var s = Sfi.OpenSession())
@@ -106,9 +107,9 @@ namespace NHibernate.Test.QueryTest
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
 				var results = await (multiQuery.ListAsync());
-				var items = (IList)results[0];
+				var items = (IList) results[0];
 				Assert.AreEqual(2, items.Count);
-				var count = (long)((IList)results[1])[0];
+				var count = (long) ((IList) results[1])[0];
 				Assert.AreEqual(2L, count);
 			}
 		}
@@ -187,12 +188,12 @@ namespace NHibernate.Test.QueryTest
 
 			await (CreateItemsAsync());
 
-			await (DoMutiQueryAndAssertAsync());
+			await (DoMultiQueryAndAssertAsync());
 
 			Assert.AreEqual(1, cacheHashtable.Count);
 		}
 
-		private async Task DoMutiQueryAndAssertAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task DoMultiQueryAndAssertAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (var s = OpenSession())
 			{
@@ -204,9 +205,9 @@ namespace NHibernate.Test.QueryTest
 							 .SetInt32(0, 50));
 				multiQuery.SetCacheable(true);
 				var results = await (multiQuery.ListAsync(cancellationToken));
-				var items = (IList)results[0];
+				var items = (IList) results[0];
 				Assert.AreEqual(89, items.Count);
-				var count = (long)((IList)results[1])[0];
+				var count = (long) ((IList) results[1])[0];
 				Assert.AreEqual(99L, count);
 			}
 		}

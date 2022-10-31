@@ -225,6 +225,13 @@ namespace NHibernate.Test.StaticProxyTest
 			T CopyTo<T>() where T : class, IWithGenericMethod;
 		}
 
+		[Serializable]
+		public class ClassWithInitProperties
+		{
+			public virtual int Id { get; init; }
+			public virtual string Name { get; init; }
+		}
+
 		[Test]
 		public void VerifyProxyForClassWithInternalInterface()
 		{
@@ -591,6 +598,32 @@ namespace NHibernate.Test.StaticProxyTest
 					Assert.That(proxy, Is.InstanceOf<ClassWithGenericNonVirtualMethod>());
 
 					Assert.That(factory.GetFieldInterceptionProxy(), Is.InstanceOf<ClassWithGenericNonVirtualMethod>());
+
+#if NETFX
+				});
+#endif
+		}
+
+		[Test]
+		public void VerifyProxyForClassWithInitProperties()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(
+				typeof(ClassWithInitProperties).FullName,
+				typeof(ClassWithInitProperties),
+				new HashSet<System.Type> { typeof(INHibernateProxy) },
+				null, null, null, true);
+
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var proxy = factory.GetProxy(1, null);
+					Assert.That(proxy, Is.Not.Null);
+					Assert.That(proxy, Is.InstanceOf<ClassWithInitProperties>());
+
+					Assert.That(factory.GetFieldInterceptionProxy(), Is.InstanceOf<ClassWithInitProperties>());
 
 #if NETFX
 				});

@@ -126,10 +126,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		internal bool SkipSemiResolve { get; set; }
 
+		// Since v5.4
+		[Obsolete("Use overload with aliasCreator parameter instead.")]
 		public override void SetScalarColumnText(int i)
 		{
 			string[] sqlColumns = GetColumns();
 			ColumnHelper.GenerateScalarColumns(Walker.ASTFactory, this, sqlColumns, i);
+		}
+
+		/// <inheritdoc />
+		public override string[] SetScalarColumnText(int i, Func<int, int, string> aliasCreator)
+		{
+			return ColumnHelper.GenerateScalarColumns(ASTFactory, this, GetColumns(), i, aliasCreator);
 		}
 
 		public override void ResolveIndex(IASTNode parent) 
@@ -465,9 +473,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				           ASTUtil.GetDebugstring( parent ));
 			}
 
-			// Create a new FROM node for the referenced class.
-			string associatedEntityName = propertyType.GetAssociatedEntityName();
-			string tableAlias = AliasGenerator.CreateName( associatedEntityName );
+			if (FromElement is JoinSubqueryFromElement joinSubquery &&
+			    joinSubquery.PropertyMapping.ContainsEntityAlias(PropertyPath, propertyType))
+			{
+				// No need to create a join 
+				SetPropertyNameAndPath(parent);
+				return;
+			}
 
 			string[] joinColumns = GetColumns();
 			string joinPath = Path;
@@ -516,6 +528,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if ( ! useFoundFromElement )
 			{
+				// Create a new FROM node for the referenced class.
+				var associatedEntityName = propertyType.GetAssociatedEntityName();
+				var tableAlias = AliasGenerator.CreateName(associatedEntityName);
+
 				JoinSequence joinSequence = SessionFactoryHelper
 					.CreateJoinSequence(false, propertyType, tableAlias, _joinType, joinColumns);
 
@@ -565,7 +581,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 
 			// otherwise (subquery case) don't reuse the fromElement if we are processing the from-clause of the subquery
-			return Walker.CurrentClauseType != HqlSqlWalker.FROM;
+			return Walker.CurrentClauseType != HqlSqlWalker.FROM && Walker.CurrentClauseType != HqlSqlWalker.JOIN;
 		}
 
 		private void SetImpliedJoin(FromElement elem)

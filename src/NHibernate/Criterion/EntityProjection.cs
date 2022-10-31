@@ -128,20 +128,21 @@ namespace NHibernate.Criterion
 		{
 			SetFields(criteriaQuery);
 
-			string identifierSelectFragment = Persister.IdentifierSelectFragment(TableAlias, ColumnAliasSuffix);
+			var identifierSelectFragment = Persister.GetIdentifierSelectFragment(TableAlias, ColumnAliasSuffix)
+				.ToSqlStringFragment(false);
 			return new SqlString(
 				Lazy
 					? identifierSelectFragment
 					: string.Concat(
 						identifierSelectFragment,
-						GetPropertySelectFragment()));
+						GetPropertySelectFragment().ToSqlStringFragment()));
 		}
 
-		private string GetPropertySelectFragment()
+		private SelectFragment GetPropertySelectFragment()
 		{
 			return FetchLazyProperties
-				? Persister.PropertySelectFragment(TableAlias, ColumnAliasSuffix, FetchLazyProperties)
-				: Persister.PropertySelectFragment(TableAlias, ColumnAliasSuffix, FetchLazyPropertyGroups);
+				? Persister.GetPropertiesSelectFragment(TableAlias, ColumnAliasSuffix, FetchLazyProperties)
+				: Persister.GetPropertiesSelectFragment(TableAlias, ColumnAliasSuffix, FetchLazyPropertyGroups);
 		}
 
 		SqlString IProjection.ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)

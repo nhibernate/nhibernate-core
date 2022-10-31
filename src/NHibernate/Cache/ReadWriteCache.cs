@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,22 @@ using NHibernate.Util;
 
 namespace NHibernate.Cache
 {
+	public static class LocableExtension
+	{
+		//TODO 6.0: Remove after IMinimalPutAwareLockable merge
+		internal static bool IsPuttable(this ReadWriteCache.ILockable lockable, long txTimestamp, object newVersion, IComparer comparator, bool minimalPut)
+		{
+			if (lockable is ReadWriteCache.IMinimalPutAwareLockable l)
+			{
+				return l.IsPuttable(txTimestamp, newVersion, comparator, minimalPut);
+			}
+
+#pragma warning disable CS0618
+			return lockable.IsPuttable(txTimestamp, newVersion, comparator);
+#pragma warning restore CS0618
+		}
+	}
+
 	/// <summary>
 	/// Caches data that is sometimes updated while maintaining the semantics of
 	/// "read committed" isolation level. If the database is set to "repeatable
@@ -24,11 +41,20 @@ namespace NHibernate.Cache
 	/// </remarks>
 	public partial class ReadWriteCache : IBatchableCacheConcurrencyStrategy
 	{
+		//TODO 6.0: Merge with ILockable
+		internal interface IMinimalPutAwareLockable
+		{
+			bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator, bool minimalPut);
+		}
+
 		public interface ILockable
 		{
 			CacheLock Lock(long timeout, int id);
 			bool IsLock { get; }
 			bool IsGettable(long txTimestamp);
+
+			// Since 5.4
+			[Obsolete("Use overload with minimalPuts parameter")]
 			bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator);
 		}
 
@@ -237,7 +263,7 @@ namespace NHibernate.Cache
 						var version = versions[i];
 						var lockable = (ILockable) lockables[i];
 						bool puttable = lockable == null ||
-						                lockable.IsPuttable(timestamp, version, versionComparers[i]);
+						                lockable.IsPuttable(timestamp, version, versionComparers[i], minimalPuts[i]);
 						if (puttable)
 						{
 							putBatch.Add(key, CachedItem.Create(values[i], Cache.NextTimestamp(), version));
@@ -301,7 +327,7 @@ namespace NHibernate.Cache
 					ILockable lockable = (ILockable) Cache.Get(key);
 
 					bool puttable = lockable == null ||
-					                lockable.IsPuttable(txTimestamp, version, versionComparator);
+					                lockable.IsPuttable(txTimestamp, version, versionComparator, minimalPut);
 
 					if (puttable)
 					{

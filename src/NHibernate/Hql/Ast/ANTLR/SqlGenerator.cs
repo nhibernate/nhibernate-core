@@ -29,7 +29,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		 * This is because sql function templates need arguments as separate string chunks
 		 * that will be assembled into the target dialect-specific function call.
 		 */
-		private readonly List<ISqlWriter> outputStack = new List<ISqlWriter>();
+		private readonly Stack<ISqlWriter> outputStack = new Stack<ISqlWriter>();
 
 		/// <summary>
 		/// Handles parser errors.
@@ -199,18 +199,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 				right = (FromElement)right.NextSibling;
 			}
 
-			if (right == null)
-			{
-				return;
-			}
-			///////////////////////////////////////////////////////////////////////
-
-			if (!HasText(right))
+			if (right == null || !HasText(right))
 			{
 				return;
 			}
 
-			if (right.JoinSequence?.IsThetaStyle == false && right.JoinSequence.JoinCount != 0)
+			if (right.Type == JOIN_SUBQUERY || (right.JoinSequence?.IsThetaStyle == false && right.JoinSequence.JoinCount != 0))
 			{
 				Out(" ");
 			}
@@ -273,7 +267,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			else
 			{
 				// this function has a template -> redirect output and catch the arguments
-				outputStack.Insert(0, writer);
+				outputStack.Push(writer);
 				writer = new FunctionArguments();
 			}
 		}
@@ -290,8 +284,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				// this function has a template -> restore output, apply the template and write the result out
 				var functionArguments = (FunctionArguments)writer; // TODO: Downcast to avoid using an interface?  Yuck.
-				writer = outputStack[0];
-				outputStack.RemoveAt(0);
+				writer = outputStack.Pop();
 				Out(template.Render(functionArguments.Args, sessionFactory));
 			}
 		}
@@ -307,9 +300,23 @@ namespace NHibernate.Hql.Ast.ANTLR
 			writer.CommaBetweenParameters(comma);
 		}
 
+		private void StartJoinSubquery()
+		{
+			outputStack.Push(writer);
+			writer = new QueryWriter();
+		}
+
+		private void EndJoinSubquery(IASTNode node)
+		{
+			var joinSubquery = (JoinSubqueryFromElement) node;
+			var sqlString = ((QueryWriter) writer).ToSqlString();
+			writer = outputStack.Pop();
+			Out(joinSubquery.RenderText(sqlString, sessionFactory));
+		}
+
 		private void StartQuery()
 		{
-			outputStack.Insert(0, writer);
+			outputStack.Push(writer);
 			writer = new QueryWriter();
 		}
 
@@ -317,8 +324,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			SqlString sqlString = GetSqlStringWithLimitsIfNeeded((QueryWriter)writer);
 
-			writer = outputStack[0];
-			outputStack.RemoveAt(0);
+			writer = outputStack.Pop();
 			Out(sqlString);
 		}
 
@@ -387,7 +393,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if (function == null)
 				return;
 
-			outputStack.Insert(0, writer);
+			outputStack.Push(writer);
 			writer = new BitwiseOpWriter();
 		}
 
@@ -398,8 +404,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				return;
 
 			var functionArguments = (BitwiseOpWriter)writer;
-			writer = outputStack[0];
-			outputStack.RemoveAt(0);
+			writer = outputStack.Pop();
 
 			Out(function.Render(functionArguments.Args, sessionFactory));
 		}
