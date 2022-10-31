@@ -68,6 +68,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly List<AssignmentSpecification> assignmentSpecifications = new List<AssignmentSpecification>();
 		private int numberOfParametersInSetClause;
 		private Stack<int> clauseStack = new Stack<int>();
+		private readonly Dictionary<FromElement, string> _suffixes = new Dictionary<FromElement, string>();
+		private readonly Dictionary<FromElement, string> _collectionSuffixes = new Dictionary<FromElement, string>();
+
+		internal int CurrentScalarIndex;
 
 		public HqlSqlWalker(
 			QueryTranslatorImpl qti,
@@ -491,6 +495,63 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return node;
 		}
 
+		internal string GetSuffix(FromElement fromElement)
+		{
+			if (_suffixes.TryGetValue(fromElement, out var suffix))
+			{
+				return suffix;
+			}
+
+			suffix = _suffixes.Count == 0 ? string.Empty : _suffixes.Count.ToString() + '_';
+			_suffixes.Add(fromElement, suffix);
+
+			return suffix;
+		}
+
+		internal string GetEntitySuffix(FromElement fromElement)
+		{
+			if (!fromElement.IsEntity)
+			{
+				return null;
+			}
+
+			// In case the subquery returns an entity, extract the suffix from the returned entity
+			if (fromElement is JoinSubqueryFromElement joinSubquery)
+			{
+				return GetSuffix(joinSubquery.QueryNode.GetSelectClause().NonScalarExpressions[0].FromElement);
+			}
+			else
+			{
+				return GetSuffix(fromElement);
+			}
+		}
+
+		internal string GetCollectionSuffix(FromElement fromElement)
+		{
+			if (!fromElement.CollectionJoin && fromElement.QueryableCollection == null)
+			{
+				return null;
+			}
+
+			if (_collectionSuffixes.TryGetValue(fromElement, out var suffix))
+			{
+				return suffix;
+			}
+
+			if (_collectionSuffixes.Count == 0)
+			{
+				suffix = SelectClause.VERSION2_SQL ? "__" : "0__";
+			}
+			else
+			{
+				suffix = _collectionSuffixes.Count + "__";
+			}
+
+			_collectionSuffixes.Add(fromElement, suffix);
+
+			return suffix;
+		}
+
 		void ProcessQuery(IASTNode select, IASTNode query)
 		{
 			if ( log.IsDebugEnabled() ) {
@@ -697,6 +758,29 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
+		void CreateJoinSubquery(
+			IASTNode query,
+			IASTNode alias,
+			int joinType,
+			IASTNode with)
+		{
+			log.Debug("Creating subquery-join FromElement [{0}]", alias?.Text);
+
+			var join = new JoinSubqueryFromElement(
+				CurrentFromClause,
+				(QueryNode) query,
+				JoinProcessor.ToHibernateJoinType(joinType),
+				alias?.Text
+			);
+			join.AddChild(query);
+			if (with != null)
+			{
+				HandleWithFragment(join, with);
+			}
+
+			CurrentFromClause.AppendFromElement(join);
+		}
+
 		void CreateFromJoinElement(
 				IASTNode path,
 				IASTNode alias,
@@ -706,7 +790,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				IASTNode with)
 		{
 			bool fetch = fetchNode != null;
-			if ( fetch && IsSubQuery ) 
+			if (fetch && IsScalarSubQuery) 
 			{
 				throw new QueryException( "fetch not allowed in subquery from-elements" );
 			}
@@ -969,6 +1053,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		void PushFromClause(IASTNode fromNode)
 		{
 			FromClause newFromClause = (FromClause)fromNode;
+			newFromClause.IsJoinSubQuery = _currentClauseType == JOIN;
 			newFromClause.SetParentFromClause(_currentFromClause);
 			_currentFromClause = newFromClause;
 		}
@@ -1156,6 +1241,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			get { return _level > 1; }
 		}
 
+		public bool IsScalarSubQuery => IsSubQuery && !_currentFromClause.IsJoinSubQuery;
+
 		public bool IsSelectStatement
 		{
 			get { return _statementType == SELECT; }
@@ -1197,7 +1284,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			get 
 			{
 				// select clauses for insert statements should alwasy be treated as shallow
-				return StatementType == INSERT ||  _qti.IsShallowQuery;
+				return StatementType == INSERT || (_qti.IsShallowQuery && !_currentFromClause.IsJoinSubQuery);
 			}
 		}
 
@@ -1306,6 +1393,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				sql.whereExpr();
 
 				fromElement.WithClauseFragment = new SqlString("(", sql.GetSQL(), ")");
+				fromElement.WithClauseFromElements = visitor.FromElements;
 			}
 			catch (SemanticException)
 			{
@@ -1331,6 +1419,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_joinFragment = fromElement;
 		}
 
+		internal HashSet<FromElement> FromElements { get; } = new HashSet<FromElement>();
+
 		public void Visit(IASTNode node)
 		{
 			if (node is ParameterNode paramNode)
@@ -1340,6 +1430,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			else if (node is IParameterContainer paramContainer)
 			{
 				ApplyParameterSpecifications(paramContainer);
+			}
+			else if (node is ISelectExpression selectExpression && selectExpression.FromElement != null)
+			{
+				FromElements.Add(selectExpression.FromElement);
 			}
 		}
 
