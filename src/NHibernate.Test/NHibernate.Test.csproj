@@ -81,7 +81,7 @@
   <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.1" />
     <PackageReference Include="System.CodeDom" Version="4.7.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
     <PackageReference Include="System.Data.OracleClient" Version="1.0.8" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.61" />
     <PackageReference Include="System.Data.Odbc" Version="4.7.0" />
