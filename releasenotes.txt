@@ -9,7 +9,7 @@ Release notes - NHibernate - Version 5.4.0
       some NHibernate optimizations for applications using them. The same limitations apply for .Net 6 and .Net Standard 2.1 than for
       .Net Core 2.0 and .Net Standard 2.0, see NHibernate 5.1.0 release notes.
     * A new batching strategy is available, minimizing the batching memory footprint. See #2959. Using it may increase CPU usage.
-    * 199 issues were resolved in this release.
+    * 200 issues were resolved in this release.
 
     ##### Possible Breaking Changes #####
         * Linq and criteria queries on unmapped entities will throw instead of returning an empty result list. See #1106, #1095.
@@ -126,6 +126,7 @@ Release notes - NHibernate - Version 5.4.0
 
 ** Task
 
+   * #3197 Update dependency System.Data.SqlClient to v4.8.5
    * #3195 Release NHibernate 5.4
    * #3161 Tell NuGet about the readme file
    * #3147 Add `datetimex` keyword to SapSQLAnywhere17Dialect
