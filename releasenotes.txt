@@ -6,15 +6,15 @@ Release notes - NHibernate - Version 5.4.0
 ** Highlights
     * NHibernate has gained three new target frameworks: .Net 6, .Net Framework 4.8 and .Net Standard 2.1. NHibernate NuGet package
       provides them, along with the older targets, .Net Core 2.0, .Net Framework 4.6.1 and .Net Standard 2.0. These new targets allow
-      some NHibernate optimizations for applications using them. The same limitations apply for .Net 6 and .Net Standard 2.1 than for
+      some NHibernate optimizations for applications using them. The same limitations apply for .Net 6 and .Net Standard 2.1 as for
       .Net Core 2.0 and .Net Standard 2.0, see NHibernate 5.1.0 release notes.
     * A new batching strategy is available, minimizing the batching memory footprint. See #2959. Using it may increase CPU usage.
     * 200 issues were resolved in this release.
 
     ##### Possible Breaking Changes #####
         * Linq and criteria queries on unmapped entities will throw instead of returning an empty result list. See #1106, #1095.
-        * The second level cache update timestamps cache do no more use locks. This may slightly increases the cases where stale
-          data may by returned by the query cache. See #2742.
+        * The second level cache UpdateTimestampsCache does not use locks anymore. This may slightly increase the number of cases
+          where stale data is returned by the query cache. See #2742.
         * Equality and hashcode access on uninitialized persistent collections will no more trigger their loading. See #2461.
         * DB2CoreDriver now uses named parameters instead of positional ones. See #2546.
 
