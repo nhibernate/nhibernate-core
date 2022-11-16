@@ -36,8 +36,6 @@ namespace NHibernate.Test.LazyProperty
 			get { return new[] { "LazyProperty.Mappings.hbm.xml" }; }
 		}
 
-		protected override string CacheConcurrencyStrategy => null;
-
 		protected override DebugSessionFactory BuildSessionFactory()
 		{
 			using (var logSpy = new LogSpy(typeof(EntityMetamodel)))

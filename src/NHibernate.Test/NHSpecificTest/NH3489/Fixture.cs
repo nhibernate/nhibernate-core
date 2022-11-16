@@ -100,11 +100,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3489
 			}
 		}
 
-		protected override string CacheConcurrencyStrategy
-		{
-			get { return null; }
-		}
-
 		[Test]
 		public void PerformanceTest()
 		{

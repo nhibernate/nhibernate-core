@@ -90,6 +90,8 @@ namespace NHibernate.DomainModel.Northwind.Entities
             get { return _orderLines; }
         }
 
+        public virtual ISet<int> ProductIds { get; set; }
+
         public virtual void AddOrderLine(OrderLine orderLine)
         {
             if (!_orderLines.Contains(orderLine))

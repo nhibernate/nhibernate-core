@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
-using NHibernate.Dialect;
 
 namespace NHibernate.Test.NHSpecificTest.NH1773
 {
+	//Also tests GH-2092 (Fails with MS SQL Ce & SQL Anywhere due to the query generating a duplicated column alias name, which these databases do not support.)
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
@@ -19,12 +19,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1773
 				Assert.IsTrue(NHibernateUtil.IsInitialized(result[0].Person.Country));
 				tx.Commit();
 			}
-		}
-
-		protected override bool AppliesTo(Dialect.Dialect dialect)
-		{
-			// Fails with MS SQL Ce & SQL Anywhere due to the query generating a duplicated column alias name, which these databases do not support.
-			return TestDialect.SupportsDuplicatedColumnAliases;
 		}
 
 		protected override void OnSetUp()

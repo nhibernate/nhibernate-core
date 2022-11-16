@@ -49,10 +49,5 @@ namespace NHibernate.Test.NHSpecificTest.NH3046
 				}
 			}
 		}
-
-		protected override string CacheConcurrencyStrategy
-		{
-			get { return null; }
-		}
 	}
 }
