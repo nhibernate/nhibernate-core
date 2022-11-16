@@ -9,7 +9,7 @@ Release notes - NHibernate - Version 5.4.0
       some NHibernate optimizations for applications using them. The same limitations apply for .Net 6 and .Net Standard 2.1 as for
       .Net Core 2.0 and .Net Standard 2.0, see NHibernate 5.1.0 release notes.
     * A new batching strategy is available, minimizing the batching memory footprint. See #2959. Using it may increase CPU usage.
-    * 200 issues were resolved in this release.
+    * 201 issues were resolved in this release.
 
     ##### Possible Breaking Changes #####
         * Linq and criteria queries on unmapped entities will throw instead of returning an empty result list. See #1106, #1095.
@@ -20,6 +20,7 @@ Release notes - NHibernate - Version 5.4.0
 
 ** Bug
 
+   * #3198 EntityUpdateAction increments version despite veto on update
    * #3189 Support proxies of classes with init properties
    * #3188 No way of detecting if AutoFlush performed in added AutoFlushEventListener
    * #3176 Cached entity always fetches lazy properties with read-write concurrency strategy
