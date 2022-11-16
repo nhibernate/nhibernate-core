@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using NHibernate.Cfg;
@@ -10,37 +10,29 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH3198
 {
-	/// <summary>
-	/// Fixture using 'by code' mappings
-	/// </summary>
-	/// <remarks>
-	/// This fixture is identical to <see cref="Fixture" /> except the <see cref="Entity" /> mapping is performed 
-	/// by code in the GetMappings method, and does not require the <c>Mappings.hbm.xml</c> file. Use this approach
-	/// if you prefer.
-	/// </remarks>
 	[TestFixture]
 	public partial class ByCodeFixture : TestCaseMappingByCode
 	{
-		private static readonly int EXAMPLE_ID_VALUE = 1;
-		private readonly testEventListener listener = new testEventListener();
+		private const int EXAMPLE_ID_VALUE = 1;
 
 		protected override void Configure(Configuration configuration)
 		{
 			// A listener always returning true
 			configuration.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[]
 			{
-				listener
+				new TestEventListener()
 			};
 			base.Configure(configuration);
 		}
+
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
 			mapper.Class<Entity>(rc =>
 			{
 				rc.Table("Entity");
-				rc.Id(x => x.id, m => m.Generator(Generators.Assigned));
-				rc.Property(x => x.name, x=>x.Type<StringType>());
+				rc.Id(x => x.Id, m => m.Generator(Generators.Assigned));
+				rc.Property(x => x.Name, x => x.Type<StringType>());
 				rc.Version(x => x.Version, vm => { });
 			});
 
@@ -52,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3198
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var e1 = new Entity { id = EXAMPLE_ID_VALUE, name = "old_name"  };
+				var e1 = new Entity { Id = EXAMPLE_ID_VALUE, Name = "old_name"  };
 				session.Save(e1);
 				transaction.Commit();
 			}
@@ -70,13 +62,13 @@ namespace NHibernate.Test.NHSpecificTest.GH3198
 		}
 
 		[Test]
-		public void testVersionNotChangedWhenPreUpdateEventVetod()
+		public void TestVersionNotChangedWhenPreUpdateEventVetod()
 		{
 			using (var session = OpenSession())
 			{
 				var entity = session.Load<Entity>(EXAMPLE_ID_VALUE);
 
-				entity.name = "new_name";
+				entity.Name = "new_name";
 				session.Update(entity);
 				
 				var versionBeforeFlush = entity.Version;
@@ -90,23 +82,21 @@ namespace NHibernate.Test.NHSpecificTest.GH3198
 		}
 		
 		// A listener always returning true
-		public partial class testEventListener : IPreUpdateEventListener
+		public partial class TestEventListener : IPreUpdateEventListener
 		{
-			public static testEventListener Instance = new testEventListener();
-
 			public bool Executed { get; set; }
-
 			public bool FoundAny { get; set; }
+
 			public bool OnPreUpdate(PreUpdateEvent @event)
 			{
 				return true;
 			}
-			
 		}
+
 		public partial class Entity
 		{
-			public virtual int id { get; set; }
-			public virtual string name { get; set; }
+			public virtual int Id { get; set; }
+			public virtual string Name { get; set; }
 			public virtual int Version { get; set; }
 		}
 	}
