@@ -22,7 +22,6 @@ namespace NHibernate.Test.SubclassFilterTest
 			ITransaction t = s.BeginTransaction();
 
 			PrepareTestData(s);
-			s.Clear();
 
 			IList results;
 
@@ -39,7 +38,7 @@ namespace NHibernate.Test.SubclassFilterTest
 				if (p.Name.Equals("John Doe"))
 				{
 					Employee john = (Employee) p;
-					Assert.AreEqual(2, john.Minions.Count, "Incorrect fecthed minions count");
+					Assert.AreEqual(1, john.Minions.Count, "Incorrect fecthed minions count");
 					break;
 				}
 			}
@@ -60,7 +59,7 @@ namespace NHibernate.Test.SubclassFilterTest
 				if (p.Name.Equals("John Doe"))
 				{
 					Employee john = (Employee) p;
-					Assert.AreEqual(2, john.Minions.Count, "Incorrect fecthed minions count");
+					Assert.AreEqual(1, john.Minions.Count, "Incorrect fecthed minions count");
 					break;
 				}
 			}
@@ -74,7 +73,7 @@ namespace NHibernate.Test.SubclassFilterTest
 				if (p.Name.Equals("John Doe"))
 				{
 					Employee john = (Employee) p;
-					Assert.AreEqual(2, john.Minions.Count, "Incorrect fecthed minions count");
+					Assert.AreEqual(1, john.Minions.Count, "Incorrect fecthed minions count");
 					break;
 				}
 			}
@@ -116,16 +115,17 @@ namespace NHibernate.Test.SubclassFilterTest
 			using var t = s.BeginTransaction();
 			PrepareTestData(s);
 
-			s.EnableFilter("minionsRegion").SetParameter("userRegion", "US");
+			s.EnableFilter("region").SetParameter("userRegion", "US");
 
-			var employees = s.Query<Employee>().Where(x => x.Minions.Any()).ToList();
+			var employees = s.Query<Employee>()
+			                 .Where(x => x.Minions.Any())
+			                 .ToList();
 			Assert.That(employees.Count, Is.EqualTo(1));
 			Assert.That(employees[0].Minions.Count, Is.EqualTo(1));
 			
 			t.Rollback();
 			s.Close();
-		}
-		
+		}		
 		
 		[Test(Description = "Tests the joined subclass collection filter of a single table with a collection mapping " +
 		                    "on the parent class.")]
@@ -146,7 +146,7 @@ namespace NHibernate.Test.SubclassFilterTest
 
 			t.Rollback();
 			session.Close();
-		}
+		}		
 		
 		private static void PrepareTestData(ISession session)
 		{
@@ -204,6 +204,7 @@ namespace NHibernate.Test.SubclassFilterTest
 			session.Save(ups);
 
 			session.Flush();
+			session.Clear();
 		}
 	}
 }

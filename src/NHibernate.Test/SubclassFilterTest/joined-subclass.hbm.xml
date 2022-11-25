@@ -22,7 +22,7 @@
 				<key column="mgr_id"/>
 				<one-to-many class="Employee"/>
 				<filter name="minionsWithManager" condition="mgr_id is not null"/>
-				<filter name="minionsRegion" condition="Region = :userRegion"/>
+				<filter name="region" condition="Region = :userRegion"/>
 			</set>
 		</joined-subclass>
 

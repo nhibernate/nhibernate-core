@@ -35,7 +35,6 @@ namespace NHibernate.Test.SubclassFilterTest
 			ITransaction t = s.BeginTransaction();
 
 			await (PrepareTestDataAsync(s));
-			s.Clear();
 
 			IList results;
 
@@ -52,7 +51,7 @@ namespace NHibernate.Test.SubclassFilterTest
 				if (p.Name.Equals("John Doe"))
 				{
 					Employee john = (Employee) p;
-					Assert.AreEqual(2, john.Minions.Count, "Incorrect fecthed minions count");
+					Assert.AreEqual(1, john.Minions.Count, "Incorrect fecthed minions count");
 					break;
 				}
 			}
@@ -73,7 +72,7 @@ namespace NHibernate.Test.SubclassFilterTest
 				if (p.Name.Equals("John Doe"))
 				{
 					Employee john = (Employee) p;
-					Assert.AreEqual(2, john.Minions.Count, "Incorrect fecthed minions count");
+					Assert.AreEqual(1, john.Minions.Count, "Incorrect fecthed minions count");
 					break;
 				}
 			}
@@ -87,7 +86,7 @@ namespace NHibernate.Test.SubclassFilterTest
 				if (p.Name.Equals("John Doe"))
 				{
 					Employee john = (Employee) p;
-					Assert.AreEqual(2, john.Minions.Count, "Incorrect fecthed minions count");
+					Assert.AreEqual(1, john.Minions.Count, "Incorrect fecthed minions count");
 					break;
 				}
 			}
@@ -129,16 +128,17 @@ namespace NHibernate.Test.SubclassFilterTest
 			using var t = s.BeginTransaction();
 			await (PrepareTestDataAsync(s));
 
-			s.EnableFilter("minionsRegion").SetParameter("userRegion", "US");
+			s.EnableFilter("region").SetParameter("userRegion", "US");
 
-			var employees = await (s.Query<Employee>().Where(x => x.Minions.Any()).ToListAsync());
+			var employees = await (s.Query<Employee>()
+			                 .Where(x => x.Minions.Any())
+			                 .ToListAsync());
 			Assert.That(employees.Count, Is.EqualTo(1));
 			Assert.That(employees[0].Minions.Count, Is.EqualTo(1));
 			
 			await (t.RollbackAsync());
 			s.Close();
-		}
-		
+		}		
 		
 		[Test(Description = "Tests the joined subclass collection filter of a single table with a collection mapping " +
 		                    "on the parent class.")]
@@ -159,7 +159,7 @@ namespace NHibernate.Test.SubclassFilterTest
 
 			await (t.RollbackAsync());
 			session.Close();
-		}
+		}		
 		
 		private static async Task PrepareTestDataAsync(ISession session, CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -217,6 +217,7 @@ namespace NHibernate.Test.SubclassFilterTest
 			await (session.SaveAsync(ups, cancellationToken));
 
 			await (session.FlushAsync(cancellationToken));
+			session.Clear();
 		}
 	}
 }
