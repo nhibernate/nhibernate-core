@@ -109,7 +109,6 @@ namespace NHibernate.Test.SubclassFilterTest
 			s.Close();
 		}
 
-		[KnownBug("GH-3079: Collection filter on subclass columns")]
 		[Test]
 		public void FilterCollectionWithSubclass2()
 		{
