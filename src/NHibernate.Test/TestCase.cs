@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Reflection;
 using log4net;
 using NHibernate.Cfg;
@@ -32,6 +33,8 @@ namespace NHibernate.Test
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
 		private static readonly FieldInfo PlanCacheField;
+		private Dialect.Dialect _dialect;
+		private TestDialect _testDialect;
 
 		static TestCase()
 		{
@@ -43,12 +46,12 @@ namespace NHibernate.Test
 
 		protected Dialect.Dialect Dialect
 		{
-			get { return NHibernate.Dialect.Dialect.GetDialect(cfg.Properties); }
+			get { return _dialect ?? (_dialect = NHibernate.Dialect.Dialect.GetDialect(cfg.Properties)); }
 		}
 
 		protected TestDialect TestDialect
 		{
-			get { return TestDialect.GetTestDialect(Dialect); }
+			get { return _testDialect ?? (_testDialect = TestDialect.GetTestDialect(Dialect)); }
 		}
 
 		/// <summary>
@@ -231,12 +234,19 @@ namespace NHibernate.Test
 
 		protected virtual bool CheckDatabaseWasCleaned()
 		{
-			if (Sfi.GetAllClassMetadata().Count == 0)
+			var allClassMetadata = Sfi.GetAllClassMetadata();
+			if (allClassMetadata.Count == 0)
 			{
 				// Return early in the case of no mappings, also avoiding
 				// a warning when executing the HQL below.
 				return true;
 			}
+
+			var explicitPolymorphismEntities = allClassMetadata.Values.Where(x => x is NHibernate.Persister.Entity.IQueryable queryable && queryable.IsExplicitPolymorphism).ToArray();
+
+			//TODO: Maybe add explicit load query checks 
+			if (explicitPolymorphismEntities.Length == allClassMetadata.Count)
+				return true;
 
 			bool empty;
 			using (ISession s = OpenSession())
@@ -448,11 +458,7 @@ namespace NHibernate.Test
 		{
 		}
 
-		protected virtual string CacheConcurrencyStrategy
-		{
-			get { return "nonstrict-read-write"; }
-			//get { return null; }
-		}
+		protected virtual string CacheConcurrencyStrategy => null;
 
 		#endregion
 

@@ -91,6 +91,7 @@
 										<xs:enumeration value="default_schema" />
 										<xs:enumeration value="show_sql" />
 										<xs:enumeration value="max_fetch_depth" />
+										<xs:enumeration value="detect_fetch_loops" />
 										<xs:enumeration value="current_session_context_class" />
 										<xs:enumeration value="transaction.factory_class">
 											<xs:annotation>
@@ -131,6 +132,8 @@
 										<xs:enumeration value="query.factory_class" />
 										<xs:enumeration value="query.linq_provider_class" />
 										<xs:enumeration value="query.imports" />
+										<xs:enumeration value="query.plan_parameter_metadata_max_size" />
+										<xs:enumeration value="query.plan_cache_max_size" />
 										<xs:enumeration value="hbm2ddl.auto" />
 										<xs:enumeration value="hbm2ddl.keywords" />
 										<xs:enumeration value="hbm2ddl.throw_on_update">
@@ -156,10 +159,19 @@
 										<xs:enumeration value="xml.output_stylesheet" />
 										<xs:enumeration value="generate_statistics" />
 										<xs:enumeration value="query.startup_check" />
+										<xs:enumeration value="query.throw_never_cached">
+											<xs:annotation>
+												<xs:documentation>
+													Should queries set as cacheable raise an error if they reference an entity using the cache
+													strategy "never" (the default is enabled).
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="default_catalog" />
 										<xs:enumeration value="proxyfactory.factory_class" />
 										<xs:enumeration value="adonet.factory_class" />
 										<xs:enumeration value="default_batch_fetch_size" />
+										<xs:enumeration value="batch_fetch_style" />
 										<xs:enumeration value="default_entity_mode" />
 										<xs:enumeration value="default_flush_mode" />
 										<xs:enumeration value="use_sql_comments" />
@@ -273,6 +285,17 @@
 													makes them an exact numeric type.
 													False by default.
 													See https://docs.oracle.com/database/121/TTSQL/types.htm#TTSQL126
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
+										<xs:enumeration value="oracle.suppress_decimal_invalid_cast_exception">
+											<xs:annotation>
+												<xs:documentation>
+													This setting specifies whether to suppress the InvalidCastException and return a rounded-off
+													28 precision value if the Oracle NUMBER value has more than 28 precision.
+													False by default.
+													See https://docs.oracle.com/en/database/oracle/oracle-data-access-components/19.3/odpnt/DataReaderSuppressGetDecimalInvalidCastException.html
+													This setting works only with ODP.NET 19.10 or newer.
 												</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>
@@ -397,6 +420,7 @@
 					<xs:enumeration value="read-write" />
 					<xs:enumeration value="nonstrict-read-write" />
 					<xs:enumeration value="transactional" />
+					<xs:enumeration value="never" />
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>

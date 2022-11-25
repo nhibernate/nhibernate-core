@@ -6,6 +6,8 @@ namespace NHibernate.Util
 {
 	public static class TypeExtensions
 	{
+		//Since 5.4
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public static bool IsEnumerableOfT(this System.Type type)
 		{
 			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>);

@@ -31,6 +31,7 @@ namespace NHibernate.Loader
 		protected virtual void InitAll(SqlString whereString, SqlString orderByString, LockMode lockMode)
 		{
 			AddAssociations();
+			ProcessJoins();
 			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
 			var rootAssociation = CreateRootAssociation();
 			allAssociations.Add(rootAssociation);

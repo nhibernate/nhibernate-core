@@ -277,23 +277,6 @@ namespace NHibernate.Collection.Generic
 			throw new NotSupportedException("Sets don't support updating by element");
 		}
 
-		public override bool Equals(object other)
-		{
-			var that = other as ISet<T>;
-			if (that == null)
-			{
-				return false;
-			}
-			Read();
-			return WrappedSet.SequenceEqual(that);
-		}
-
-		public override int GetHashCode()
-		{
-			Read();
-			return WrappedSet.GetHashCode();
-		}
-
 		public override bool EntryExists(object entry, int i)
 		{
 			return true;

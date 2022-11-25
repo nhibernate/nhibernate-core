@@ -45,7 +45,8 @@ namespace NHibernate.Persister.Entity
 	using System.Threading;
 	public abstract partial class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
 		IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer, IPostInsertIdentityPersister, ILockable,
-		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable
+		ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable,
+		IPersister
 	{
 
 		private partial class GeneratedIdentifierBinder : IBinder
@@ -755,7 +756,7 @@ namespace NHibernate.Persister.Entity
 						if (CheckVersion(includeProperty))
 							await (VersionType.NullSafeSetAsync(statement, oldVersion, index, session, cancellationToken)).ConfigureAwait(false);
 					}
-					else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && oldFields != null)
+					else if (IsPropertyBasedOptimisticLocking(oldFields))
 					{
 						bool[] versionability = PropertyVersionability;
 						bool[] includeOldField = OptimisticLockMode == Versioning.OptimisticLock.All
@@ -784,7 +785,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						return Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), id, j, expectation, statement);
+						return Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), id, j, expectation, statement, IsPropertyBasedOptimisticLocking(oldFields));
 					}
 				}
 				catch (OperationCanceledException) { throw; }
@@ -890,7 +891,7 @@ namespace NHibernate.Persister.Entity
 					{
 						await (VersionType.NullSafeSetAsync(statement, version, index, session, cancellationToken)).ConfigureAwait(false);
 					}
-					else if (entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version && loadedState != null)
+					else if (IsPropertyBasedOptimisticLocking(loadedState))
 					{
 						bool[] versionability = PropertyVersionability;
 						IType[] types = PropertyTypes;
@@ -914,7 +915,7 @@ namespace NHibernate.Persister.Entity
 					}
 					else
 					{
-						Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), tableId, j, expectation, statement);
+						Check(await (session.Batcher.ExecuteNonQueryAsync(statement, cancellationToken)).ConfigureAwait(false), tableId, j, expectation, statement, IsPropertyBasedOptimisticLocking(loadedState));
 					}
 				}
 				catch (OperationCanceledException) { throw; }
@@ -1025,7 +1026,7 @@ namespace NHibernate.Persister.Entity
 			{
 				// For the case of dynamic-insert="true", we need to generate the INSERT SQL
 				bool[] notNull = GetPropertiesToInsert(fields);
-				id = await (InsertAsync(fields, notNull, GenerateInsertString(true, notNull), obj, session, cancellationToken)).ConfigureAwait(false);
+				id = await (InsertAsync(fields, notNull, GenerateIdentityInsertString(notNull), obj, session, cancellationToken)).ConfigureAwait(false);
 				for (int j = 1; j < span; j++)
 				{
 					await (InsertAsync(id, fields, notNull, j, GenerateInsertString(notNull, j), obj, session, cancellationToken)).ConfigureAwait(false);

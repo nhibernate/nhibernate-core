@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Globalization;
@@ -57,6 +57,9 @@ namespace NHibernate.Type
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			var parameter = cmd.Parameters[index];
+
+			if (value is Enum)
+				value = value.ToString();
 
 			//Allow the driver to adjust the parameter for the value
 			session.Factory.ConnectionProvider.Driver.AdjustParameterForValue(parameter, SqlType, value);

@@ -428,8 +428,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					 .Add("page", query)
 					 .Add<int>("count", query.ToRowCountQuery());
 
-				var pageResults = await (multiQuery.GetResultAsync<Person>("page", CancellationToken.None));
-				var countResults = await (multiQuery.GetResultAsync<int>("count", CancellationToken.None));
+				var pageResults = await (multiQuery.GetResultAsync<Person>("page"));
+				var countResults = await (multiQuery.GetResultAsync<int>("count"));
 
 				Assert.That(pageResults.Count, Is.EqualTo(1));
 				Assert.That(pageResults[0].Name, Is.EqualTo("Name 3"));
@@ -451,8 +451,8 @@ namespace NHibernate.Test.Criteria.Lambda
 					 .Add("page", query)
 					 .Add<int>("count", query.ToRowCountQuery());
 
-				var pageResults = await (multiCriteria.GetResultAsync<Person>("page", CancellationToken.None));
-				var countResults = await (multiCriteria.GetResultAsync<int>("count", CancellationToken.None));
+				var pageResults = await (multiCriteria.GetResultAsync<Person>("page"));
+				var countResults = await (multiCriteria.GetResultAsync<int>("count"));
 
 				Assert.That(pageResults.Count, Is.EqualTo(1));
 				Assert.That(pageResults[0].Name, Is.EqualTo("Name 3"));

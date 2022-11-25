@@ -193,5 +193,15 @@ namespace NHibernate.Test
 		/// This flag is added to be able to test this feature selectively
 		/// </summary>
 		public virtual bool SupportsRowValueConstructorSyntax => _dialect.SupportsRowValueConstructorSyntax;
+
+		/// <summary>
+		/// Returns true if you can modify the same table which you use in the SELECT part.
+		/// </summary>
+		public virtual bool SupportsModifyAndSelectSameTable => true;
+
+		/// <summary>
+		/// Returns true if you can cancel a query.
+		/// </summary>
+		public virtual bool SupportsCancelQuery => true;
 	}
 }

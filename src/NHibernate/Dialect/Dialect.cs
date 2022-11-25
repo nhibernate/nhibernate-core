@@ -101,7 +101,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("cast", new CastFunction());
 			RegisterFunction("transparentcast", new TransparentCastFunction());
 			RegisterFunction("extract", new AnsiExtractFunction());
-			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "||", ")"));
+			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", " || ", ")"));
 
 			// the syntax of current_timestamp is extracted from H3.2 tests 
 			// - test\hql\ASTParserLoadingTest.java

@@ -64,6 +64,32 @@ namespace NHibernate
 		{
 			return (T) session.Get(entityName, id);
 		}
+
+		/// <summary>
+		/// Flush the batcher. When batching is enabled, a stateless session is no more fully stateless. It may retain
+		/// in its batcher some state waiting to be flushed to the database.
+		/// </summary>
+		/// <param name="session">The session.</param>
+		public static void FlushBatcher(this IStatelessSession session)
+		{
+			session.GetSessionImplementation().Flush();
+		}
+
+		/// <summary>
+		/// Cancel execution of the current query.
+		/// </summary>
+		/// <remarks>
+		/// May be called from one thread to stop execution of a query in another thread.
+		/// Use with care!
+		/// </remarks>
+		public static void CancelQuery(this IStatelessSession session)
+		{
+			var implementation = session.GetSessionImplementation();
+			using (implementation.BeginProcess())
+			{
+				implementation.Batcher.CancelLastQuery();
+			}
+		}
 	}
 
 	/// <summary>

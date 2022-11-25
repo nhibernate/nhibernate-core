@@ -105,31 +105,63 @@ namespace NHibernate.Test.SubclassFilterTest
 			s.Close();
 		}
 		
+		[Test]
+		public async Task FilterCollectionWithSubclass1Async()
+		{
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			await (PrepareTestDataAsync(s));
+
+			s.EnableFilter("minionsWithManager");
+
+			var employees = await (s.Query<Employee>().Where(x => x.Minions.Any()).ToListAsync());
+			Assert.That(employees.Count, Is.EqualTo(1));
+			Assert.That(employees[0].Minions.Count, Is.EqualTo(2));
+			
+			await (t.RollbackAsync());
+			s.Close();
+		}
+
+		[KnownBug("GH-3079: Collection filter on subclass columns")]
+		[Test]
+		public async Task FilterCollectionWithSubclass2Async()
+		{
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			await (PrepareTestDataAsync(s));
+
+			s.EnableFilter("minionsRegion").SetParameter("userRegion", "US");
+
+			var employees = await (s.Query<Employee>().Where(x => x.Minions.Any()).ToListAsync());
+			Assert.That(employees.Count, Is.EqualTo(1));
+			Assert.That(employees[0].Minions.Count, Is.EqualTo(1));
+			
+			await (t.RollbackAsync());
+			s.Close();
+		}
+		
 		
 		[Test(Description = "Tests the joined subclass collection filter of a single table with a collection mapping " +
 		                    "on the parent class.")]
-		public async Task FilterCollectionJoinedSubclassAsync()
+		public async Task FilterCollectionWithSubclass3Async()
 		{
-			using(ISession session = OpenSession())
-				using(ITransaction t = session.BeginTransaction())
-				{
-					await (PrepareTestDataAsync(session));
+			using ISession session = OpenSession();
+			using ITransaction t = session.BeginTransaction();
+			await (PrepareTestDataAsync(session));
 
-					// sets the filter
-					session.EnableFilter("region").SetParameter("userRegion", "US");
+			// sets the filter
+			session.EnableFilter("region").SetParameter("userRegion", "US");
 
-					var result = await (session.Query<Car>()
-					                    .Where(c => c.Drivers.Any())
-					                    .ToListAsync());
+			var result = await (session.Query<Car>()
+			                    .Where(c => c.Drivers.Any())
+			                    .ToListAsync());
 					
-					Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(1, result.Count);
 
-					await (t.RollbackAsync());
-					session.Close();
-				}
+			await (t.RollbackAsync());
+			session.Close();
 		}
 		
-
 		private static async Task PrepareTestDataAsync(ISession session, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			Car sharedCar1 = new Car { LicensePlate = "1234" };

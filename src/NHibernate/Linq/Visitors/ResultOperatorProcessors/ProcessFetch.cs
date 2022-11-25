@@ -45,6 +45,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			HqlTreeNode currentNode,
 			IType propType)
 		{
+			string alias = null;
 			if (resultOperator is FetchOneRequest)
 			{
 				if (propType == null)
@@ -88,11 +89,21 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 					return;
 				}
+
+				var relatedJoin = queryModelVisitor.RelatedJoinFetchRequests.FirstOrDefault(o => o.Value == resultOperator).Key;
+				if (relatedJoin != null)
+				{
+					alias = queryModelVisitor.VisitorParameters.QuerySourceNamer.GetName(relatedJoin);
+				}
 			}
 
-			var alias = queryModelVisitor.Model.GetNewName("_");
-			currentNode = tree.TreeBuilder.LeftFetchJoin(memberPath, tree.TreeBuilder.Alias(alias));
-			tree.AddFromClause(currentNode);
+			if (alias == null)
+			{
+				alias = queryModelVisitor.Model.GetNewName("_");
+				currentNode = tree.TreeBuilder.LeftFetchJoin(memberPath, tree.TreeBuilder.Alias(alias));
+				tree.AddFromClause(currentNode);
+			}
+
 			tree.AddDistinctRootOperator();
 
 			foreach (var innerFetch in resultOperator.InnerFetchRequests)

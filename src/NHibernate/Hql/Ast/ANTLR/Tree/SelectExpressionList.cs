@@ -20,6 +20,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <summary>
 		/// Returns an array of SelectExpressions gathered from the children of the given parent AST node.
 		/// </summary>
+		// Since v5.4
+		[Obsolete("Use GetSelectExpressions method instead.")]
 		public ISelectExpression[] CollectSelectExpressions()
 		{
 			return CollectSelectExpressions(false);
@@ -28,61 +30,61 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <summary>
 		/// Returns an array of SelectExpressions gathered from the children of the given parent AST node.
 		/// </summary>
-		public ISelectExpression[] CollectSelectExpressions(bool recurse) 
+		// Since v5.4
+		[Obsolete("Use GetSelectExpressions method instead.")]
+		public ISelectExpression[] CollectSelectExpressions(bool recurse)
+		{
+			return GetSelectExpressions(recurse, null).ToArray();
+		}
+
+		/// <summary>
+		/// Gets a list of <see cref="ISelectExpression"/> gathered from the children of the given parent AST node.
+		/// </summary>
+		public List<ISelectExpression> GetSelectExpressions()
+		{
+			return GetSelectExpressions(false, null);
+		}
+
+		/// <summary>
+		/// Gets a list of <see cref="ISelectExpression"/> gathered from the children of the given parent AST node.
+		/// </summary>
+		public List<ISelectExpression> GetSelectExpressions(
+			bool recurse,
+			Predicate<ISelectExpression> predicate)
 		{
 			// Get the first child to be considered.  Sub-classes may do this differently in order to skip nodes that
 			// are not select expressions (e.g. DISTINCT).
 			IASTNode firstChild = GetFirstSelectExpression();
 			IASTNode parent = this;
 			var list = new List<ISelectExpression>(parent.ChildCount);
-
 			for (IASTNode n = firstChild; n != null; n = n.NextSibling)
 			{
-				if (recurse)
+				if (recurse && n is ConstructorNode ctor)
 				{
-					var ctor = n as ConstructorNode;
+					for (IASTNode cn = ctor.GetChild(1); cn != null; cn = cn.NextSibling)
+					{
+						AddExpression(cn);
+					}
+				}
 
-					if (ctor != null)
-					{
-						for (IASTNode cn = ctor.GetChild(1); cn != null; cn = cn.NextSibling)
-						{
-							var se = cn as ISelectExpression;
-							if (se != null)
-							{
-								list.Add(se);
-							}
-						}
-					}
-					else
-					{
-						var se = n as ISelectExpression;
-						if (se != null)
-						{
-							list.Add(se);
-						}
-						else
-						{
-							throw new InvalidOperationException("Unexpected AST: " + n.GetType().FullName + " " +
-																new ASTPrinter().ShowAsString(n, ""));
-						}
-					}
-				}
-				else
-				{
-					var se = n as ISelectExpression;
-					if (se != null)
-					{
-						list.Add(se);
-					}
-					else
-					{
-						throw new InvalidOperationException("Unexpected AST: " + n.GetType().FullName + " " +
-															new ASTPrinter().ShowAsString(n, ""));
-					}					
-				}
+				AddExpression(n);
 			}
 
-			return list.ToArray();
+			return list;
+
+			void AddExpression(IASTNode n)
+			{
+				if (!(n is ISelectExpression se))
+				{
+					throw new InvalidOperationException(
+						"Unexpected AST: " + n.GetType().FullName + " " + new ASTPrinter().ShowAsString(n, ""));
+				}
+
+				if (predicate?.Invoke(se) != false)
+				{
+					list.Add(se);
+				}
+			}
 		}
 
 		/// <summary>

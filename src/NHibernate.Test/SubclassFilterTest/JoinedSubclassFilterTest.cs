@@ -92,27 +92,61 @@ namespace NHibernate.Test.SubclassFilterTest
 			s.Close();
 		}
 		
+		[Test]
+		public void FilterCollectionWithSubclass1()
+		{
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			PrepareTestData(s);
+
+			s.EnableFilter("minionsWithManager");
+
+			var employees = s.Query<Employee>().Where(x => x.Minions.Any()).ToList();
+			Assert.That(employees.Count, Is.EqualTo(1));
+			Assert.That(employees[0].Minions.Count, Is.EqualTo(2));
+			
+			t.Rollback();
+			s.Close();
+		}
+
+		[KnownBug("GH-3079: Collection filter on subclass columns")]
+		[Test]
+		public void FilterCollectionWithSubclass2()
+		{
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			PrepareTestData(s);
+
+			s.EnableFilter("minionsRegion").SetParameter("userRegion", "US");
+
+			var employees = s.Query<Employee>().Where(x => x.Minions.Any()).ToList();
+			Assert.That(employees.Count, Is.EqualTo(1));
+			Assert.That(employees[0].Minions.Count, Is.EqualTo(1));
+			
+			t.Rollback();
+			s.Close();
+		}
+		
+		
 		[Test(Description = "Tests the joined subclass collection filter of a single table with a collection mapping " +
 		                    "on the parent class.")]
-		public void FilterCollectionJoinedSubclass()
+		public void FilterCollectionWithSubclass3()
 		{
-			using(ISession session = OpenSession())
-				using(ITransaction t = session.BeginTransaction())
-				{
-					PrepareTestData(session);
+			using ISession session = OpenSession();
+			using ITransaction t = session.BeginTransaction();
+			PrepareTestData(session);
 
-					// sets the filter
-					session.EnableFilter("region").SetParameter("userRegion", "US");
+			// sets the filter
+			session.EnableFilter("region").SetParameter("userRegion", "US");
 
-					var result = session.Query<Car>()
-					                    .Where(c => c.Drivers.Any())
-					                    .ToList();
+			var result = session.Query<Car>()
+			                    .Where(c => c.Drivers.Any())
+			                    .ToList();
 					
-					Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(1, result.Count);
 
-					t.Rollback();
-					session.Close();
-				}
+			t.Rollback();
+			session.Close();
 		}
 		
 		private static void PrepareTestData(ISession session)

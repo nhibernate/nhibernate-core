@@ -68,6 +68,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("iif", new IifSQLFunction());
 			RegisterFunction("replace", new StandardSQLFunction("replace", NHibernateUtil.String));
 			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
+			RegisterFunction("right", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1, length(?1) + 1 -?2)"));
 			RegisterFunction("mod", new ModulusFunctionTemplate(true));
 
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));

@@ -491,6 +491,30 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public async Task WithImpliedJoinOnAssociationAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = await (session.CreateQuery(
+					"SELECT s " +
+					"FROM EntityComplex s left join s.SameTypeChild q on q.SameTypeChild.SameTypeChild.Name = s.Name"
+				).ListAsync());
+			}
+		}
+		
+		[Test]
+		public async Task WithImpliedEntityJoinAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = await (session.CreateQuery(
+					"SELECT s " +
+					"FROM EntityComplex s left join EntityComplex q on q.SameTypeChild.SameTypeChild.Name = s.Name"
+				).ListAsync());
+			}
+		}
+
+		[Test]
 		public async Task CrossJoinAndWhereClauseAsync()
 		{
 			using (var sqlLog = new SqlLogSpy())

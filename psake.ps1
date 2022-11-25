@@ -15,7 +15,7 @@ Task Set-Configuration {
             'dialect' = 'NHibernate.Dialect.FirebirdDialect'
         };
         'MySQL' = @{
-            'connection.connection_string' = 'Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;';
+            'connection.connection_string' = 'Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;SslMode=none;';
             'connection.driver_class' = 'NHibernate.Driver.MySqlDataDriver';
             'dialect' = 'NHibernate.Dialect.MySQL5Dialect'
         };
@@ -62,6 +62,11 @@ Task Set-Configuration {
         'SqlServer2012' = @{
             'connection.connection_string' = 'Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;';
             'dialect' = 'NHibernate.Dialect.MsSql2012Dialect'
+        };
+        'Oracle' = @{
+            'connection.connection_string' = 'User ID=nhibernate;Password=nhibernate;Metadata Pooling=false;Self Tuning=false;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XEPDB1)))';
+            'connection.driver_class' = 'NHibernate.Driver.OracleManagedDataClientDriver';
+            'dialect' = 'NHibernate.Dialect.Oracle10gDialect'
         }
     }
     #Settings for current build
@@ -96,9 +101,8 @@ Task Set-Configuration {
 
 Task Build {
     Exec { 
-        dotnet `
-            build ./src/NHibernate.sln `
-            -c Release
+        dotnet build ./src/NHibernate/NHibernate.csproj -m:1 -c Release
+        dotnet build ./src/NHibernate.sln -c Release
     }
 }
 
@@ -108,7 +112,7 @@ Task Test -depends Build {
         'NHibernate.Test',
         'NHibernate.Test.VisualBasic'
     ) | ForEach-Object { 
-        $assembly = [IO.Path]::Combine("src", $_, "bin", "Release", "netcoreapp2.1", "$_.dll")
+        $assembly = [IO.Path]::Combine("src", $_, "bin", "Release", "net6.0", "$_.dll")
         Exec {
             dotnet $assembly --labels=before --nocolor "--result=$_-TestResult.xml"
         }

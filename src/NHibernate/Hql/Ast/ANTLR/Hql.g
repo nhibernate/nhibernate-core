@@ -255,6 +255,7 @@ fromClause
 
 fromJoin
 	: ( ( ( LEFT | RIGHT ) (OUTER)? ) | FULL | INNER )? JOIN^ (FETCH)? path (asAlias)? (propertyFetch)? (withClause)?
+	| ( ( ( LEFT | RIGHT ) (OUTER)? ) | FULL | INNER )? JOIN^ OPEN! selectStatement CLOSE! (asAlias)? (withClause)?
 	| ( ( ( LEFT | RIGHT ) (OUTER)? ) | FULL | INNER )? JOIN^ (FETCH)? ELEMENTS! OPEN! path CLOSE! (asAlias)? (propertyFetch)? (withClause)?
 	| CROSS JOIN^ { WeakKeywords(); } path (asAlias)? (propertyFetch)?
 	;
@@ -627,9 +628,14 @@ aggregateArgument
 	;
 
 aggregateDistinctAll
-	: ( ( DISTINCT | ALL )? ( path | collectionExpr ) )
+	: ( distinctAll aggregateArgument ) => (distinctAll aggregateArgument)
+	| aggregateArgument
 	;
-	
+
+distinctAll
+	: ( DISTINCT | ALL ) 
+	;
+
 //## collection: ( OPEN query CLOSE ) | ( 'elements'|'indices' OPEN path CLOSE );
 
 collectionExpr

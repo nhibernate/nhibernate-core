@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using NHibernate.Exceptions;
 using NHibernate.Hql.Ast.ANTLR;
 using NUnit.Framework;
 
@@ -42,40 +40,21 @@ namespace NHibernate.Test.Hql.Ast
 		}
 
 		[Test]
-		public void ValidWithSemantics()
+		public void WithClauseOnSubclasses()
 		{
 			using (var s = OpenSession())
 			{
 				s.CreateQuery(
 					"from Animal a inner join a.offspring o inner join o.mother as m inner join m.father as f with o.bodyWeight > 1").List();
-			}
-		}
 
-		[Test]
-		public void InvalidWithSemantics()
-		{
-			using (ISession s = OpenSession())
-			{
-				// PROBLEM : f.bodyWeight is a reference to a column on the Animal table; however, the 'f'
-				// alias relates to the Human.friends collection which the aonther Human entity.  The issue
-				// here is the way JoinSequence and Joinable (the persister) interact to generate the
-				// joins relating to the sublcass/superclass tables
-				Assert.Throws<InvalidWithClauseException>(
-					() =>
-						s.CreateQuery("from Human h inner join h.friends as f with f.bodyWeight < :someLimit").SetDouble("someLimit", 1).List());
+				// f.bodyWeight is a reference to a column on the Animal table; however, the 'f'
+				// alias relates to the Human.friends collection which the aonther Human entity.
+				// Group join allows us to use such constructs
+				s.CreateQuery("from Human h inner join h.friends as f with f.bodyWeight < :someLimit").SetDouble("someLimit", 1).List();
 
-				//The query below is no longer throw InvalidWithClauseException but generates "invalid" SQL to better support complex with join clauses.
-				//Invalid SQL means that additional joins for "o.mother.father" are currently added after "offspring" join. Some DBs can process such query and some can't.
-				try
-				{
-					s.CreateQuery("from Human h inner join h.offspring o with o.mother.father = :cousin")
-					.SetInt32("cousin", 123)
-					.List();
-				}
-				catch (GenericADOException)
-				{
-					//Apparently SQLite can process queries with wrong join orders
-				}
+				s.CreateQuery("from Human h inner join h.offspring o with o.mother.father = :cousin")
+				.SetInt32("cousin", 123)
+				.List();
 			}
 		}
 

@@ -47,6 +47,16 @@ namespace NHibernate.Driver
 		public abstract DbCommand CreateCommand();
 
 		/// <summary>
+		/// Unwraps the <see cref="DbCommand"/> in case it is wrapped, otherwise the same instance is returned.
+		/// </summary>
+		/// <param name="command">The command to unwrap.</param>
+		/// <returns>The unwrapped command.</returns>
+		public virtual DbCommand UnwrapDbCommand(DbCommand command)
+		{
+			return command;
+		}
+
+		/// <summary>
 		/// Begin an ADO <see cref="DbTransaction" />.
 		/// </summary>
 		/// <param name="isolationLevel">The isolation level requested for the transaction.</param>
@@ -328,14 +338,14 @@ namespace NHibernate.Driver
 
 		public virtual bool RequiresTimeSpanForTime => false;
 
-#if NETCOREAPP2_0
-		public virtual bool SupportsSystemTransactions => false;
-
-		public virtual bool SupportsNullEnlistment => false;
-#else
+#if NETFX
 		public virtual bool SupportsSystemTransactions => true;
 
 		public virtual bool SupportsNullEnlistment => true;
+#else
+		public virtual bool SupportsSystemTransactions => false;
+
+		public virtual bool SupportsNullEnlistment => false;
 #endif
 
 		/// <inheritdoc />

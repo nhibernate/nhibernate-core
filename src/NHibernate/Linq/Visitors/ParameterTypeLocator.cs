@@ -390,7 +390,7 @@ namespace NHibernate.Linq.Visitors
 			{
 				switch (expression)
 				{
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 					case InvocationExpression invocationExpression:
 						// session.Query<Product>().Where("Properties.Name == @0", "First Product")
 						return ExpressionsHelper.TryGetDynamicMemberBinder(invocationExpression, out _);

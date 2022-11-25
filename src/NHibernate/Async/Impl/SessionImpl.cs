@@ -1127,6 +1127,8 @@ namespace NHibernate.Impl
 			{
 				string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
 				int size = implementors.Length;
+				if (size == 0)
+					throw new QueryException(criteria.EntityOrClassName + " is not mapped");
 
 				CriteriaLoader[] loaders = new CriteriaLoader[size];
 				ISet<string> spaces = new HashSet<string>();

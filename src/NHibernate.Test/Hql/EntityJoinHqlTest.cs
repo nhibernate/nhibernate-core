@@ -479,7 +479,7 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test, Ignore("Failing for unrelated reasons")]
-		public void ImplicitJoinAndWithClause()
+		public void CrossJoinAndWithClause()
 		{
 			//This is about complex theta style join fix that was implemented in hibernate along with entity join functionality
 			//https://hibernate.atlassian.net/browse/HHH-7321
@@ -488,8 +488,32 @@ namespace NHibernate.Test.Hql
 			{
 				session.CreateQuery(
 				"SELECT s " +
-				"FROM EntityComplex s, EntityComplex q " +
+				"FROM EntityComplex s CROSS JOIN EntityComplex q " +
 				"LEFT JOIN s.SameTypeChild AS sa WITH sa.SameTypeChild.Id = q.SameTypeChild.Id"
+				).List();
+			}
+		}
+
+		[Test]
+		public void WithImpliedJoinOnAssociation()
+		{
+			using (var session = OpenSession())
+			{
+				var result = session.CreateQuery(
+					"SELECT s " +
+					"FROM EntityComplex s left join s.SameTypeChild q on q.SameTypeChild.SameTypeChild.Name = s.Name"
+				).List();
+			}
+		}
+		
+		[Test]
+		public void WithImpliedEntityJoin()
+		{
+			using (var session = OpenSession())
+			{
+				var result = session.CreateQuery(
+					"SELECT s " +
+					"FROM EntityComplex s left join EntityComplex q on q.SameTypeChild.SameTypeChild.Name = s.Name"
 				).List();
 			}
 		}

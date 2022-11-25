@@ -5,6 +5,7 @@ using System.Reflection;
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Engine;
+using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.Linq.Visitors;
 using NHibernate.MultiTenancy;
@@ -109,6 +110,12 @@ namespace NHibernate.Cfg
 		public const string CurrentSessionContextClass = "current_session_context_class";
 		public const string UseSqlComments = "use_sql_comments";
 
+		/// <summary>
+		/// Enable or disable the ability to detect loops in query fetches.
+		/// The default is to detect and elimate potential fetch loops.
+		/// </summary>
+		public const string DetectFetchLoops = "detect_fetch_loops";
+
 		/// <summary> Enable formatting of SQL logged to the console</summary>
 		public const string FormatSql = "format_sql";
 
@@ -175,6 +182,8 @@ namespace NHibernate.Cfg
 		/// <summary> Should named queries be checked during startup (the default is enabled). </summary>
 		/// <remarks>Mainly intended for test environments.</remarks>
 		public const string QueryStartupChecking = "query.startup_check";
+		/// <summary>Should using a never cached entity/collection in a cacheable query throw an exception? The default is true. /// </summary>
+		public const string QueryThrowNeverCached = "query.throw_never_cached";
 
 		/// <summary> Enable statistics collection</summary>
 		public const string GenerateStatistics = "generate_statistics";
@@ -230,6 +239,11 @@ namespace NHibernate.Cfg
 		public const string ProxyFactoryFactoryClass = "proxyfactory.factory_class";
 
 		public const string DefaultBatchFetchSize = "default_batch_fetch_size";
+
+		/// <summary>
+		/// <see cref="NHibernate.Loader.BatchFetchStyle"/> to use.
+		/// </summary> 
+		public const string BatchFetchStyle = "batch_fetch_style";
 
 		public const string CollectionTypeFactoryClass = "collectiontype.factory_class";
 
@@ -348,6 +362,19 @@ namespace NHibernate.Cfg
 		public const string OracleUseBinaryFloatingPointTypes = "oracle.use_binary_floating_point_types";
 
 		/// <summary>
+		/// This setting specifies whether to suppress the InvalidCastException and return a rounded-off 28 precision value
+		/// if the Oracle NUMBER value has more than 28 precision.
+		/// <para>
+		/// <see langword="false"/> by default.
+		/// </para>
+		/// </summary>
+		/// <remarks>
+		/// See https://docs.oracle.com/en/database/oracle/oracle-data-access-components/19.3/odpnt/DataReaderSuppressGetDecimalInvalidCastException.html
+		/// This setting works only with ODP.NET 19.10 or newer.
+		/// </remarks>
+		public const string OracleSuppressDecimalInvalidCastException = "oracle.suppress_decimal_invalid_cast_exception";
+
+		/// <summary>
 		/// <para>
 		/// Firebird with FirebirdSql.Data.FirebirdClient may be unable to determine the type
 		/// of parameters in many circumstances, unless they are explicitly casted in the SQL
@@ -396,6 +423,30 @@ namespace NHibernate.Cfg
 		/// Connection provider for given multi-tenancy strategy. Class name implementing IMultiTenancyConnectionProvider.
 		/// </summary>
 		public const string MultiTenancyConnectionProvider = "multi_tenancy.connection_provider";
+
+		/// <summary>
+		/// The maximum number of entries including:
+		/// <list>
+		/// <item>
+		///	<see cref="HQLQueryPlan"/>
+		/// </item>
+		/// <item>
+		/// <see cref="NativeSQLQueryPlan"/>
+		/// </item>
+		/// <item>
+		/// <see cref="FilterQueryPlan"/>
+		/// </item>
+		/// </list>
+		/// 
+		/// maintained by <see cref="QueryPlanCache"/>. Default is 128.
+		/// </summary>
+		public const string QueryPlanCacheMaxSize = "query.plan_cache_max_size";
+
+		/// <summary>
+		/// The maximum number of <see cref="ParameterMetadata"/> maintained
+		/// by <see cref="QueryPlanCache"/>. Default is 128.
+		/// </summary>
+		public const string QueryPlanCacheParameterMetadataMaxSize = "query.plan_parameter_metadata_max_size";
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;

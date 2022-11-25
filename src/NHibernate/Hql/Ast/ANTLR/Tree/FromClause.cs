@@ -36,7 +36,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private readonly Dictionary<string, FromElement> _fromElementByTableAlias = new Dictionary<string, FromElement>();
 		private readonly NullableDictionary<string, FromElement> _fromElementsByPath = new NullableDictionary<string, FromElement>();
 		private readonly List<FromElement> _fromElements = new List<FromElement>();
-		private readonly List<EntityJoinFromElement> _entityJoinFromElements = new List<EntityJoinFromElement>();
+		private readonly List<FromElement> _appendFromElements = new List<FromElement>(); // Used for entity and subquery joins
 
 		/// <summary>
 		/// All of the implicit FROM xxx JOIN yyy elements that are the destination of a collection.  These are created from
@@ -216,12 +216,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <returns>The list of from elements (instances of FromElement).</returns>
 		public IList<IASTNode> GetFromElements()
 		{
-			return ASTUtil.CollectChildren<IASTNode>(this, FromElementPredicate);
+			return ASTUtil.CollectChildren<IASTNode>(this, node => FromElementPredicate(node, this));
 		}
 
 		internal IList<FromElement> GetFromElementsTyped()
 		{
-			return ASTUtil.CollectChildren<FromElement>(this, FromElementPredicate);
+			return ASTUtil.CollectChildren<FromElement>(this, node => FromElementPredicate(node, this));
 		}
 
 		//6.0 TODO: Replace with Typed version below
@@ -231,12 +231,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <returns>the list of from elements that will be part of the result set.</returns>
 		public IList<IASTNode> GetProjectionList()
 		{
-			return ASTUtil.CollectChildren<IASTNode>(this, ProjectionListPredicate);
+			return ASTUtil.CollectChildren<IASTNode>(this, node => ProjectionListPredicate(node, this));
 		}
 
 		internal IList<FromElement> GetProjectionListTyped()
 		{
-			return ASTUtil.CollectChildren<FromElement>(this, ProjectionListPredicate);
+			return ASTUtil.CollectChildren<FromElement>(this, node => ProjectionListPredicate(node, this));
+		}
+
+		internal IList<FromElement> GetAllProjectionListTyped()
+		{
+			return ASTUtil.CollectChildren<FromElement>(this, node => AllProjectionListPredicate(node));
 		}
 
 		public FromElement GetFromElement()
@@ -279,6 +284,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
+		internal bool IsScalarSubQuery => IsSubQuery && !IsJoinSubQuery;
+
+		internal bool IsJoinSubQuery { get; set; }
+
 		public string GetDisplayText()
 		{
 			return "FromClause{" +
@@ -300,25 +309,28 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-		private static bool ProjectionListPredicate(IASTNode node)
+		private static bool ProjectionListPredicate(IASTNode node, FromClause fromClause)
 		{
-			var fromElement = node as FromElement;
-
-			if (fromElement != null)
-			{
-				return fromElement.InProjectionList;
-			}
-
-			return false;
+			return node is FromElement fromElement &&
+			       fromElement.InProjectionList &&
+			       // Skip in case node is within a join subquery
+			       fromElement.FromClause == fromClause;
 		}
 
-		private static bool FromElementPredicate(IASTNode node) 
+		private static bool AllProjectionListPredicate(IASTNode node)
+		{
+			return node is FromElement fromElement && fromElement.InProjectionList;
+		}
+
+		private static bool FromElementPredicate(IASTNode node, FromClause fromClause) 
 		{
 			var fromElement = node as FromElement;
 
 			if (fromElement != null)
 			{
-				return fromElement.IsFromOrJoinFragment;
+				return fromElement.IsFromOrJoinFragment &&
+					// Skip in case node is within a join subquery
+					fromElement.FromClause == fromClause;
 			}
 
 			return false;
@@ -379,8 +391,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if (element.IsEntityJoin())
 			{
-				_entityJoinFromElements.Add((EntityJoinFromElement) element);
+				_appendFromElements.Add((EntityJoinFromElement) element);
 			}
+		}
+
+		internal void AppendFromElement(FromElement element)
+		{
+			_appendFromElements.Add(element);
 		}
 
 		private FromElement FindJoinByPathLocal(string path)
@@ -417,11 +434,38 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		internal void FinishInit()
 		{
-			foreach (var item in _entityJoinFromElements)
+			foreach (var item in _appendFromElements)
 			{
-				AddChild(item);
+				var dependentElement = GetFirstDependentFromElement(item);
+				if (dependentElement == null)
+				{
+					AddChild(item);
+				}
+				else
+				{
+					var index = dependentElement.ChildIndex;
+					dependentElement.Parent.InsertChild(index, item);
+				}
 			}
-			_entityJoinFromElements.Clear();
+			_appendFromElements.Clear();
+		}
+
+		private FromElement GetFirstDependentFromElement(FromElement element)
+		{
+			foreach (var fromElement in _fromElements)
+			{
+				if (fromElement == element ||
+					fromElement.WithClauseFromElements?.Contains(element) != true ||
+				    // Parent will be null for entity and subquery joins
+				    fromElement.Parent == null)
+				{
+					continue;
+				}
+
+				return fromElement;
+			}
+
+			return null;
 		}
 	}
 }

@@ -172,40 +172,19 @@ testSetupMenu() {
 }
 
 testRun(){
-	dotnet test ./src/NHibernate.Test/NHibernate.Test.csproj -f netcoreapp2.0
-	dotnet test ./src/NHibernate.Test.VisualBasic/NHibernate.Test.VisualBasic.vbproj -f netcoreapp2.0
+	dotnet test ./src/NHibernate.Test/NHibernate.Test.csproj -f net6.0
+	dotnet test ./src/NHibernate.Test.VisualBasic/NHibernate.Test.VisualBasic.vbproj -f net6.0
 	mainMenu
 }
 
 generateAsync(){
-	dotnet restore ./src/NHibernate.sln
-
-	getAsyncGeneratorPath
 	cd src
-	dotnet ../"$async_generator_path"
+	dotnet tool restore
+	dotnet restore ./NHibernate.sln
+	dotnet async-generator
 	cd ..
 
 	mainMenu
-}
-
-getAsyncGeneratorPath(){
-	if [ "$async_generator_path" ]
-	then
-		return
-	fi
-
-	cd Tools
-
-	async_generator_version="$(cat packages.csproj | grep Include=\"CSharpAsyncGenerator.CommandLine | cut -d\" -f4)"
-	async_generator_path="csharpasyncgenerator.commandline/$async_generator_version/tools"
-
-	if [ ! -d $async_generator_path ]
-	then
-		dotnet restore "./packages.csproj" --packages .
-	fi
-
-	async_generator_path="Tools/$async_generator_path/netcoreapp2.1/AsyncGenerator.CommandLine.dll"
-	cd ..
 }
 
 mainMenu() {

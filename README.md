@@ -103,7 +103,7 @@ of NHibernate (in no particular order):
 [Apache Software Foundation]: http://www.apache.org
 [JetBrains]: http://www.jetbrains.com
 [ReSharper]: http://www.jetbrains.com/resharper
-[LinFu]: http://code.google.com/p/linfu
+[LinFu]: https://github.com/philiplaureano/LinFu
 [article]: http://www.codeproject.com/KB/recipes/sets.aspx
-[Relinq]: http://relinq.codeplex.com/
+[Relinq]: https://github.com/re-motion/Relinq
 [AsyncGenerator]: http://github.com/maca88/AsyncGenerator

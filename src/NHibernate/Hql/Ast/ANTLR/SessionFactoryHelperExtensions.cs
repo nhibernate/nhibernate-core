@@ -319,7 +319,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			JoinSequence joinSequence = CreateJoinSequence();
 			joinSequence.SetRoot(collPersister, collectionName);
-			joinSequence.SetUseThetaStyle(true);		// TODO: figure out how this should be set.
 
 			///////////////////////////////////////////////////////////////////////////////
 			// This was the reason for failures regarding INDEX_OP and subclass joins on
@@ -354,6 +353,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return joinSequence;
 		}
 
+		// Since v5.4
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public String[][] GenerateColumnNames(IType[] sqlResultTypes)
 		{
 			return NameGenerator.GenerateColumnNames(sqlResultTypes, _sfi);

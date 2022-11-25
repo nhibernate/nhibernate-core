@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using NHibernate.Engine;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.Expressions;
@@ -13,10 +12,10 @@ using NHibernate.Linq.NestedSelects;
 using NHibernate.Linq.ResultOperators;
 using NHibernate.Linq.ReWriters;
 using NHibernate.Linq.Visitors.ResultOperatorProcessors;
-using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
+using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.EagerFetching;
@@ -66,6 +65,9 @@ namespace NHibernate.Linq.Visitors
 
 			// Rewrite paging
 			PagingRewriter.ReWrite(queryModel);
+
+			//Remove unnecessary order-by clauses
+			RemoveUnnecessaryBodyOperators.RemoveUnnecessaryOrderByClauses(queryModel);
 
 			// Flatten pointless subqueries
 			QueryReferenceExpressionFlattener.ReWrite(queryModel);
@@ -122,6 +124,9 @@ namespace NHibernate.Linq.Visitors
 		public QueryModel Model { get; }
 
 		public ResultOperatorRewriterResult RewrittenOperatorResult { get; private set; }
+
+		internal Dictionary<NhJoinClause, FetchOneRequest> RelatedJoinFetchRequests { get; } =
+			new Dictionary<NhJoinClause, FetchOneRequest>();
 
 		static QueryModelVisitor()
 		{
@@ -338,6 +343,11 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitNhJoinClause(NhJoinClause joinClause, QueryModel queryModel, int index)
 		{
 			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(joinClause);
+			var fetchRequest = GetRelatedFetchRequest(queryModel, joinClause);
+			if (fetchRequest != null)
+			{
+				RelatedJoinFetchRequests.Add(joinClause, fetchRequest);
+			}
 
 			var expression = HqlGeneratorExpressionVisitor.Visit(joinClause.FromExpression, VisitorParameters).AsExpression();
 			var alias = _hqlTree.TreeBuilder.Alias(querySourceName);
@@ -345,11 +355,15 @@ namespace NHibernate.Linq.Visitors
 			HqlTreeNode hqlJoin;
 			if (joinClause.IsInner)
 			{
-				hqlJoin = _hqlTree.TreeBuilder.Join(expression, alias);
+				hqlJoin = fetchRequest != null
+					? _hqlTree.TreeBuilder.FetchJoin(expression, alias)
+					: (HqlTreeNode) _hqlTree.TreeBuilder.Join(expression, alias);
 			}
 			else
 			{
-				hqlJoin = _hqlTree.TreeBuilder.LeftJoin(expression, alias);
+				hqlJoin = fetchRequest != null
+					? _hqlTree.TreeBuilder.LeftFetchJoin(expression, alias)
+					: (HqlTreeNode) _hqlTree.TreeBuilder.LeftJoin(expression, alias);
 			}
 
 			foreach (var withClause in joinClause.Restrictions)
@@ -379,6 +393,39 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			ResultOperatorMap.Process(resultOperator, this, _hqlTree);
+		}
+
+		private FetchOneRequest GetRelatedFetchRequest(QueryModel queryModel, NhJoinClause joinClause)
+		{
+			if (joinClause.Restrictions.Count > 0 ||
+			    !(joinClause.FromExpression is MemberExpression memberExpression) ||
+			    !(memberExpression.Expression is QuerySourceReferenceExpression querySource) ||
+			    !IsFetchSupported(queryModel))
+			{
+				return null;
+			}
+
+			if (querySource.ReferencedQuerySource is MainFromClause)
+			{
+				return queryModel.ResultOperators.OfType<FetchOneRequest>().FirstOrDefault(o => o.RelationMember == memberExpression.Member);
+			}
+
+			if (querySource.ReferencedQuerySource is NhJoinClause parentJoinClause &&
+			    RelatedJoinFetchRequests.TryGetValue(parentJoinClause, out var parentFetchRequest))
+			{
+				return parentFetchRequest.InnerFetchRequests.OfType<FetchOneRequest>().FirstOrDefault(o => o.RelationMember == memberExpression.Member);
+			}
+
+			return null;
+		}
+
+		private static bool IsFetchSupported(QueryModel queryModel)
+		{
+			// Hql does not support fetch with group by and select
+			return
+				!queryModel.ResultOperators.Any(o => o is GroupResultOperator) &&
+				queryModel.SelectClause.Selector is QuerySourceReferenceExpression selectSource &&
+				selectSource.ReferencedQuerySource == queryModel.MainFromClause;
 		}
 
 		private static IStreamedDataInfo GetOutputDataInfo(ResultOperatorBase resultOperator, IStreamedDataInfo evaluationType)
@@ -529,80 +576,11 @@ namespace NHibernate.Linq.Visitors
 			var withClause = equalityVisitor.Visit(joinClause.InnerKeySelector, joinClause.OuterKeySelector);
 			var alias = _hqlTree.TreeBuilder.Alias(VisitorParameters.QuerySourceNamer.GetName(joinClause));
 			var joinExpression = HqlGeneratorExpressionVisitor.Visit(joinClause.InnerSequence, VisitorParameters);
-			var baseMemberCheker = new BaseMemberChecker(VisitorParameters.SessionFactory);
-
-			HqlTreeNode join;
-			// When associations or members from another table are located inside the inner key selector we have to use a cross join
-			// instead of an inner join and add the condition in the where statement.
-			if (queryModel.BodyClauses.OfType<NhJoinClause>().Any(o => o.ParentJoinClause == joinClause) ||
-			    queryModel.BodyClauses.OfType<JoinClause>().Any(baseMemberCheker.ContainsBaseMember))
-			{
-				if (!innerJoin)
-				{
-					throw new NotSupportedException("Left joins that have association properties in the inner key selector are not supported.");
-				}
-
-				_hqlTree.AddWhereClause(withClause);
-				join = CreateCrossJoin(joinExpression, alias);
-			}
-			else
-			{
-				join = innerJoin
-					? _hqlTree.TreeBuilder.InnerJoin(joinExpression.AsExpression(), alias)
-					: (HqlTreeNode) _hqlTree.TreeBuilder.LeftJoin(joinExpression.AsExpression(), alias);
-				join.AddChild(_hqlTree.TreeBuilder.With(withClause));
-			}
-
+			var join = innerJoin
+				? _hqlTree.TreeBuilder.InnerJoin(joinExpression.AsExpression(), alias)
+				: (HqlTreeNode) _hqlTree.TreeBuilder.LeftJoin(joinExpression.AsExpression(), alias);
+			join.AddChild(_hqlTree.TreeBuilder.With(withClause));
 			_hqlTree.AddFromClause(join);
-		}
-
-		private class BaseMemberChecker : NhExpressionVisitor
-		{
-			private readonly ISessionFactoryImplementor _sessionFactory;
-			private bool _result;
-
-			public BaseMemberChecker(ISessionFactoryImplementor sessionFactory)
-			{
-				_sessionFactory = sessionFactory;
-			}
-
-			public bool ContainsBaseMember(JoinClause joinClause)
-			{
-				// Visit the join inner key only for entities that have subclasses
-				if (joinClause.InnerSequence is ConstantExpression constantNode &&
-				    constantNode.Value is IEntityNameProvider &&
-					ExpressionsHelper.TryGetMappedType(_sessionFactory, constantNode, out _, out var _persister, out _, out _) &&
-					_persister?.EntityMetamodel.HasSubclasses == true)
-				{
-					_result = false;
-					Visit(joinClause.InnerKeySelector);
-
-					return _result;
-				}
-
-				return false;
-			}
-
-			protected override Expression VisitMember(MemberExpression node)
-			{
-				if (ExpressionsHelper.TryGetMappedType(
-						_sessionFactory,
-						node,
-						out _,
-						out var persister,
-						out _,
-						out var propertyPath) &&
-					persister is IOuterJoinLoadable joinLoadable &&
-					joinLoadable.EntityMetamodel.GetIdentifierPropertyType(propertyPath) == null &&
-					joinLoadable.GetPropertyTableName(propertyPath) != joinLoadable.TableName
-				)
-				{
-					_result = true;
-					return node;
-				}
-
-				return base.VisitMember(node);
-			}
 		}
 
 		public override void VisitGroupJoinClause(GroupJoinClause groupJoinClause, QueryModel queryModel, int index)

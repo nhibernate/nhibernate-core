@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Engine;
+using NHibernate.Impl;
 using NHibernate.Linq.Functions;
 using NHibernate.Param;
 using NHibernate.Type;
@@ -109,7 +110,7 @@ namespace NHibernate.Linq.Visitors
 				_collectionParameters.Add(collectionParameter);
 			}
 
-			if (VisitorUtil.IsDynamicComponentDictionaryGetter(expression, _sessionFactory))
+			if (VisitorUtil.TryGetPotentialDynamicComponentDictionaryMember(expression, out _))
 			{
 				return expression;
 			}
@@ -117,7 +118,7 @@ namespace NHibernate.Linq.Visitors
 			return base.VisitMethodCall(expression);
 		}
 
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 		protected override Expression VisitInvocation(InvocationExpression expression)
 		{
 			if (ExpressionsHelper.TryGetDynamicMemberBinder(expression, out _))
@@ -150,12 +151,10 @@ namespace NHibernate.Linq.Visitors
 			    node.Method != null && // The implicit/explicit operator method
 			    node.Operand is ConstantExpression constantExpression)
 			{
-				// Instead of getting constantExpression.Value, we override the value by compiling and executing this subtree,
-				// performing the cast.
-				var lambda = Expression.Lambda<Func<object>>(Expression.Convert(node, typeof(object)));
-				var compiledLambda = lambda.Compile();
+				// Instead of getting constantExpression.Value, invoke method
+				var value = node.Method.Invoke(null, new[] { constantExpression.Value });
 
-				AddConstantExpressionParameter(constantExpression, compiledLambda());
+				AddConstantExpressionParameter(constantExpression, value);
 			}
 
 			return base.VisitUnary(node);

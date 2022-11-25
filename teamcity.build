@@ -207,7 +207,7 @@
 		<property name="db-service" value="MySQL57" />
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.MySqlDataDriver" />
 		<property name="nhibernate.dialect"	value="NHibernate.Dialect.MySQL5Dialect" />
-		<property name="nhibernate.connection.connection_string" value="Data Source=localhost;Database=nhibernate;User ID=nhibernate;Password=nhibernate;Protocol=memory;Old Guids=True;SslMode=none;" />
+		<property name="nhibernate.connection.connection_string" value="Data Source=localhost;Database=nhibernate;User ID=nhibernate;Password=nhibernate;Old Guids=True;" />
 	</target>
 
 	<target name="setup-teamcity-sqlanywhere">
