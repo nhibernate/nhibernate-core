@@ -19,6 +19,7 @@ namespace NHibernate.Test.SubclassFilterTest
 		{
 			ISession s = OpenSession();
 			s.EnableFilter("region").SetParameter("userRegion", "US");
+			s.EnableFilter("minionsRegion").SetParameter("userRegion", "US");
 			ITransaction t = s.BeginTransaction();
 
 			PrepareTestData(s);
@@ -43,15 +44,7 @@ namespace NHibernate.Test.SubclassFilterTest
 				}
 			}
 			s.Clear();
-
-			// TODO : currently impossible to define a collection-level filter w/
-			// joined-subclass elements that will filter based on a superclass
-			// column and function correctly in (theta only?) outer joins;
-			// this is consistent with the behaviour of a collection-level where.
-			// this might be one argument for "pulling" the attached class-level
-			// filters into collection assocations,
-			// although we'd need some way to apply the appropriate alias in that
-			// scenario.
+			
 			results = s.CreateQuery("from Person as p left join fetch p.Minions").List<Person>().Distinct().ToList();
 			Assert.AreEqual(4, results.Count, "Incorrect qry result count");
 			foreach (Person p in results)
@@ -115,7 +108,7 @@ namespace NHibernate.Test.SubclassFilterTest
 			using var t = s.BeginTransaction();
 			PrepareTestData(s);
 
-			s.EnableFilter("region").SetParameter("userRegion", "US");
+			s.EnableFilter("minionsRegion").SetParameter("userRegion", "US");
 
 			var employees = s.Query<Employee>()
 			                 .Where(x => x.Minions.Any())

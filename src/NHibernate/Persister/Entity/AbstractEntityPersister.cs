@@ -264,7 +264,7 @@ namespace NHibernate.Persister.Entity
 		// This must be a Lazy<T>, because instances of this class must be thread safe.
 		private readonly Lazy<string[]> defaultUniqueKeyPropertyNamesForSelectId;
 		private readonly Dictionary<string, int> propertyTableNumbersByNameAndSubclass = new Dictionary<string, int>();
-
+		
 		protected AbstractEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
 																			ISessionFactoryImplementor factory)
 		{
@@ -3723,21 +3723,34 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public virtual string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
+		public virtual string FilterFragment(string alias, 
+		                                     IDictionary<string, IFilter> enabledFilters)
 		{
 			var filterFragment = FilterFragment(alias);
-			if (!FilterHelper.IsAffectedBy(enabledFilters))
+			if(!FilterHelper.IsAffectedBy(enabledFilters))
+			{
 				return filterFragment;
+			}
 
 			var sessionFilterFragment = new StringBuilder();
-			FilterHelper.Render(sessionFilterFragment, GenerateFilterConditionAlias(alias), GetColumnsToTableAliasMap(alias), enabledFilters);
+			FilterHelper.Render(sessionFilterFragment, 
+			                    GenerateFilterConditionAlias(alias), 
+			                    GetColumnsToTableAliasMap(alias),
+			                    enabledFilters);
 			return sessionFilterFragment.Append(filterFragment).ToString();
 		}
 
-		private IDictionary<string, string> GetColumnsToTableAliasMap(string rootAlias)
-		{
-			if (SubclassTableSpan < 2)
+		/// <summary>
+		/// Returns a column to table alias mapping.
+		/// </summary>
+		/// <param name="rootAlias"></param>
+		/// <returns></returns>
+		public IDictionary<string, string> GetColumnsToTableAliasMap(string rootAlias)
+		{		
+			if(SubclassTableSpan < 2)
+			{
 				return CollectionHelper.EmptyDictionary<string, string>();
+			}
 
 			var propDictionary = new Dictionary<PropertyKey, string>();
 			for (int i =0; i < SubclassPropertyNameClosure.Length; i++)

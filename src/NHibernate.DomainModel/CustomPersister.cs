@@ -519,6 +519,10 @@ namespace NHibernate.DomainModel
 		}
 
 		public IEntityTuplizer EntityTuplizer => null;
+		public IDictionary<string, string> GetColumnsToTableAliasMap(string rootAlias)
+		{
+			return CollectionHelper.EmptyDictionary<string, string>();
+		}
 
 		public FilterHelper FilterHelper => throw new NotSupportedException();
 		

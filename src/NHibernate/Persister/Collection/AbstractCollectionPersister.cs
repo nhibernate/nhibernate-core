@@ -1525,17 +1525,19 @@ namespace NHibernate.Persister.Collection
 				// but a potential where condition needs to be handled properly
 				return FilterFragment(alias);
 			}
-			
-			if(ElementPersister != null && 
-			   ElementPersister.FilterHelper.IsAffectedBy(enabledFilters))
+
+			var propertyMapping = CollectionHelper.EmptyDictionary<string, string>();
+			if(ElementPersister != null)
 			{
-				// forward filter generation to persister when it is affected by the filter
-				return ElementPersister.FilterFragment(alias, enabledFilters);
+				// get the column to table alias mapping from the element persister
+				propertyMapping = ElementPersister.GetColumnsToTableAliasMap(alias);
 			}
 			
-			// default handling
 			StringBuilder sessionFilterFragment = new StringBuilder();
-			FilterHelper.Render(sessionFilterFragment, alias, enabledFilters);
+			FilterHelper.Render(sessionFilterFragment, 
+			                    alias, 
+			                    propertyMapping,
+			                    enabledFilters);
 
 			return sessionFilterFragment.Append(FilterFragment(alias)).ToString();
 		}

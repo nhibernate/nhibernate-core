@@ -604,6 +604,13 @@ namespace NHibernate.Persister.Entity
 		EntityMode EntityMode { get; }
 
 		IEntityTuplizer EntityTuplizer { get; }
+
+		/// <summary>
+		/// Returns a column to table alias mapping.
+		/// </summary>
+		/// <param name="rootAlias"></param>
+		/// <returns></returns>
+		public IDictionary<string, string> GetColumnsToTableAliasMap(string rootAlias);
 	}
 
 	internal static class EntityPersisterExtensions

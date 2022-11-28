@@ -58,7 +58,10 @@ namespace NHibernate.Util
 			Render(buffer, alias, CollectionHelper.EmptyDictionary<string, string>(), enabledFilters);
 		}
 
-		public void Render(StringBuilder buffer, string defaultAlias, IDictionary<string, string> propMap, IDictionary<string, IFilter> enabledFilters)
+		public void Render(StringBuilder buffer, 
+		                   string defaultAlias, 
+		                   IDictionary<string, string> propMap, 
+		                   IDictionary<string, IFilter> enabledFilters)
 		{
 			for (int i = 0; i < filterNames.Length; i++)
 			{
