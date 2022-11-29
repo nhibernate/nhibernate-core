@@ -14,7 +14,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class CaseNode : AbstractSelectExpression, ISelectExpression, IExpectedTypeAwareNode
+	public class CaseNode : AbstractSelectExpression, IExpectedTypeAwareNode
 	{
 		private IType _expectedType;
 
@@ -62,9 +62,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
+		// Since v5.4
+		[Obsolete("Use overload with aliasCreator parameter instead.")]
 		public override void SetScalarColumnText(int i)
 		{
 			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i );
+		}
+
+		/// <inheritdoc />
+		public override string[] SetScalarColumnText(int i, Func<int, int, string> aliasCreator)
+		{
+			return new[] {ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i, aliasCreator)};
 		}
 
 		public IType ExpectedType

@@ -17,11 +17,6 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			}
 		}
 
-		protected override string CacheConcurrencyStrategy
-		{
-			get { return null; }
-		}
-
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Cfg.Environment.UseSecondLevelCache, "false");

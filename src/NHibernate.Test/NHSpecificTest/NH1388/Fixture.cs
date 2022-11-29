@@ -128,10 +128,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1388
 				tran.Commit();
 			}
 		}
-
-		protected override string CacheConcurrencyStrategy
-		{
-			get { return null; }
-		}
 	}
 }

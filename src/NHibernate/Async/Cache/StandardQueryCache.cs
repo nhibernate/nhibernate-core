@@ -13,7 +13,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
-using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.Type;
@@ -67,7 +66,7 @@ namespace NHibernate.Cache
 
 			Log.Debug("caching query results in region: '{0}'; {1}", _regionName, key);
 
-			await (Cache.PutAsync(key, await (GetCacheableResultAsync(returnTypes, session, result, ts, cancellationToken)).ConfigureAwait(false), cancellationToken)).ConfigureAwait(false);
+			await (Cache.PutAsync(key, await (GetCacheableResultAsync(returnTypes, session, result, ts, GetAutoDiscoveredAliases(key), cancellationToken)).ConfigureAwait(false), cancellationToken)).ConfigureAwait(false);
 
 			return true;
 		}
@@ -91,10 +90,35 @@ namespace NHibernate.Cache
 
 			try
 			{
-				// 6.0 TODO: inline the call.
-#pragma warning disable 612
-				return await (GetAsync(key, returnTypes, queryParameters.NaturalKeyLookup, spaces, session, cancellationToken)).ConfigureAwait(false);
-#pragma warning restore 612
+				if (Log.IsDebugEnabled())
+					Log.Debug("checking cached query results in region: '{0}'; {1}", _regionName, key);
+
+				var cacheable = (IList) await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
+				if (cacheable == null)
+				{
+					Log.Debug("query results were not found in cache: {0}", key);
+					return null;
+				}
+
+				var timestamp = GetResultsMetadata(cacheable, out var aliases);
+
+				if (Log.IsDebugEnabled())
+					Log.Debug("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(spaces));
+
+				if (!queryParameters.NaturalKeyLookup && !await (IsUpToDateAsync(spaces, timestamp, cancellationToken)).ConfigureAwait(false))
+				{
+					Log.Debug("cached query results were not up to date for: {0}", key);
+					return null;
+				}
+
+				var result = await (GetResultFromCacheableAsync(key, returnTypes, queryParameters.NaturalKeyLookup, session, cacheable, cancellationToken)).ConfigureAwait(false);
+
+				if (result != null && key.ResultTransformer?.AutoDiscoverTypes == true && result.Count > 0)
+				{
+					key.ResultTransformer.SupplyAutoDiscoveredParameters(queryParameters.ResultTransformer, aliases);
+				}
+
+				return result;
 			}
 			finally
 			{
@@ -117,7 +141,7 @@ namespace NHibernate.Cache
 				return null;
 			}
 
-			var timestamp = (long) cacheable[0];
+			var timestamp = GetResultsMetadata(cacheable, out _);
 
 			if (Log.IsDebugEnabled())
 				Log.Debug("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(spaces));
@@ -153,9 +177,10 @@ namespace NHibernate.Cache
 				if (queryParameters[i].NaturalKeyLookup && result.Count == 0)
 					continue;
 
+				var key = keys[i];
 				cached[i] = true;
-				cachedKeys.Add(keys[i]);
-				cachedResults.Add(await (GetCacheableResultAsync(returnTypes[i], session, result, ts, cancellationToken)).ConfigureAwait(false));
+				cachedKeys.Add(key);
+				cachedResults.Add(await (GetCacheableResultAsync(returnTypes[i], session, result, ts, GetAutoDiscoveredAliases(key), cancellationToken)).ConfigureAwait(false));
 			}
 
 			await (_cache.PutManyAsync(cachedKeys.ToArray(), cachedResults.ToArray(), cancellationToken)).ConfigureAwait(false);
@@ -189,14 +214,20 @@ namespace NHibernate.Cache
 					continue;
 				}
 
+				var timestamp = GetResultsMetadata(cacheable, out var aliases);
+				var key = keys[i];
+				if (key.ResultTransformer?.AutoDiscoverTypes == true && !IsEmpty(cacheable))
+				{
+					key.ResultTransformer.SupplyAutoDiscoveredParameters(queryParameters[i].ResultTransformer, aliases);
+				}
+
 				var querySpaces = spaces[i];
 				if (queryParameters[i].NaturalKeyLookup || querySpaces.Count == 0)
 					continue;
 
 				spacesToCheck.Add(querySpaces);
 				checkedSpacesIndexes.Add(i);
-				// The timestamp is the first element of the cache result.
-				checkedSpacesTimestamp.Add((long) cacheable[0]);
+				checkedSpacesTimestamp.Add(timestamp);
 				if (Log.IsDebugEnabled())
 					Log.Debug("Checking query spaces for up-to-dateness [{0}]", StringHelper.CollectionToString(querySpaces));
 			}
@@ -224,6 +255,7 @@ namespace NHibernate.Cache
 					if (checkedSpacesIndexes.Contains(i) && !upToDates[upToDatesIndex++])
 					{
 						Log.Debug("cached query results were not up to date for: {0}", key);
+						cacheables[i] = null;
 						continue;
 					}
 
@@ -241,7 +273,7 @@ namespace NHibernate.Cache
 
 				for (var i = 0; i < keys.Length; i++)
 				{
-					if (finalReturnTypes[i] == null)
+					if (cacheables[i] == null)
 					{
 						continue;
 					}
@@ -264,7 +296,7 @@ namespace NHibernate.Cache
 
 				for (var i = 0; i < keys.Length; i++)
 				{
-					if (finalReturnTypes[i] == null)
+					if (cacheables[i] == null)
 					{
 						continue;
 					}
@@ -299,10 +331,16 @@ namespace NHibernate.Cache
 			ICacheAssembler[] returnTypes,
 			ISessionImplementor session,
 			IList result,
-			long ts, CancellationToken cancellationToken)
+			long ts,
+			string[] aliases, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var cacheable = new List<object>(result.Count + 1) { ts };
+			var cacheable =
+				new List<object>(result.Count + 1)
+				{
+					aliases == null ? ts : new object[] { ts, aliases.ToArray<object>() }
+				};
+
 			foreach (var row in result)
 			{
 				if (returnTypes.Length == 1)
@@ -311,7 +349,7 @@ namespace NHibernate.Cache
 				}
 				else
 				{
-					cacheable.Add(await (TypeHelper.DisassembleAsync((object[])row, returnTypes, null, session, null, cancellationToken)).ConfigureAwait(false));
+					cacheable.Add(await (TypeHelper.DisassembleAsync((object[]) row, returnTypes, null, session, null, cancellationToken)).ConfigureAwait(false));
 				}
 			}
 
@@ -324,22 +362,23 @@ namespace NHibernate.Cache
 			IList cacheable, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			if (IsEmpty(cacheable))
+				return;
+
 			if (returnTypes.Length == 1)
 			{
 				var returnType = returnTypes[0];
 
-				// Skip first element, it is the timestamp
-				for (var i = 1; i < cacheable.Count; i++)
+				foreach (var cached in GetResultsEnumerable(cacheable))
 				{
-					await (returnType.BeforeAssembleAsync(cacheable[i], session, cancellationToken)).ConfigureAwait(false);
+					await (returnType.BeforeAssembleAsync(cached, session, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			else
 			{
-				// Skip first element, it is the timestamp
-				for (var i = 1; i < cacheable.Count; i++)
+				foreach (var cached in GetResultsEnumerable(cacheable))
 				{
-					await (TypeHelper.BeforeAssembleAsync((object[]) cacheable[i], returnTypes, session, cancellationToken)).ConfigureAwait(false);
+					await (TypeHelper.BeforeAssembleAsync((object[]) cached, returnTypes, session, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 		}
@@ -355,14 +394,16 @@ namespace NHibernate.Cache
 			try
 			{
 				var result = new List<object>(cacheable.Count - 1);
+				if (IsEmpty(cacheable))
+					return result;
+
 				if (returnTypes.Length == 1)
 				{
 					var returnType = returnTypes[0];
 
-					// Skip first element, it is the timestamp
-					for (var i = 1; i < cacheable.Count; i++)
+					foreach (var cached in GetResultsEnumerable(cacheable))
 					{
-						result.Add(await (returnType.AssembleAsync(cacheable[i], session, null, cancellationToken)).ConfigureAwait(false));
+						result.Add(await (returnType.AssembleAsync(cached, session, null, cancellationToken)).ConfigureAwait(false));
 					}
 				}
 				else
@@ -376,10 +417,9 @@ namespace NHibernate.Cache
 						}
 					}
 
-					// Skip first element, it is the timestamp
-					for (var i = 1; i < cacheable.Count; i++)
+					foreach (var cached in GetResultsEnumerable(cacheable))
 					{
-						result.Add(await (TypeHelper.AssembleAsync((object[]) cacheable[i], returnTypes, nonCollectionTypeIndexes, session, cancellationToken)).ConfigureAwait(false));
+						result.Add(await (TypeHelper.AssembleAsync((object[]) cached, returnTypes, nonCollectionTypeIndexes, session, cancellationToken)).ConfigureAwait(false));
 					}
 				}
 
@@ -411,6 +451,9 @@ namespace NHibernate.Cache
 			IList cacheResult, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			if (IsEmpty(cacheResult))
+				return;
+
 			var collectionIndexes = new Dictionary<int, ICollectionPersister>();
 			for (var i = 0; i < returnTypes.Length; i++)
 			{
@@ -425,17 +468,18 @@ namespace NHibernate.Cache
 				return;
 			}
 
-			// Skip first element, it is the timestamp
-			for (var i = 1; i < cacheResult.Count; i++)
+			var j = 0;
+			foreach (var cached in GetResultsEnumerable(cacheResult))
 			{
 				// Initialization of the fetched collection must be done at the end in order to be able to batch fetch them
 				// from the cache or database. The collections were already created when their owners were assembled so we only
 				// have to initialize them.
 				await (TypeHelper.InitializeCollectionsAsync(
-					(object[]) cacheResult[i],
-					(object[]) assembleResult[i - 1],
+					(object[]) cached,
+					(object[]) assembleResult[j],
 					collectionIndexes,
 					session, cancellationToken)).ConfigureAwait(false);
+				j++;
 			}
 		}
 
@@ -448,6 +492,10 @@ namespace NHibernate.Cache
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Log.Debug("returning cached query results for: {0}", key);
+
+			if (IsEmpty(cacheable))
+				return new List<object>();
+
 			returnTypes = GetReturnTypes(key, returnTypes, cacheable);
 			try
 			{

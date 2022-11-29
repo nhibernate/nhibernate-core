@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-
 using NHibernate.Engine;
 using NHibernate.Param;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
@@ -23,7 +23,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private readonly FromElement _fromElement;
 		private readonly IEntityPersister _persister;
-		private readonly EntityType _entityType;
+		private readonly IPropertyMapping _propertyMapping;
+		private readonly IType _type;
 		private IQueryableCollection _queryableCollection;
 		private CollectionPropertyMapping _collectionPropertyMapping;
 		private JoinSequence _joinSequence;
@@ -31,10 +32,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private string _collectionSuffix;
 
 		public FromElementType(FromElement fromElement, IEntityPersister persister, EntityType entityType)
+			: this(fromElement, persister, null, entityType)
+		{
+		}
+
+		internal FromElementType(FromElement fromElement, IEntityPersister persister, IPropertyMapping propertyMapping, IType type)
 		{
 			_fromElement = fromElement;
 			_persister = persister;
-			_entityType = entityType;
+			_type = type;
+			_propertyMapping = propertyMapping ?? _persister as IPropertyMapping;
 
 			var queryable = persister as IQueryable;
 			if (queryable != null)
@@ -65,18 +72,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get
 			{
-				if (_persister == null)
+				if (_persister == null && _queryableCollection != null)
 				{
-					if (_queryableCollection == null)
-					{
-						return null;
-					}
 					return _queryableCollection.Type;
 				}
-				else
-				{
-					return _entityType;
-				}
+
+				return _type;
 			}
 		}
 
@@ -84,13 +85,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get
 			{
-				if (_entityType == null)
+				if (!(_type is EntityType entityType))
 				{
 					return null;
 				}
 
 				bool shallow = _fromElement.FromClause.Walker.IsShallowQuery;
-				return TypeFactory.ManyToOne(_entityType.GetAssociatedEntityName(), shallow);
+				return TypeFactory.ManyToOne(entityType.GetAssociatedEntityName(), shallow);
 			}
 		}
 
@@ -99,6 +100,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			get { return _collectionSuffix; }
 			set { _collectionSuffix = value; }
 		}
+
+		public string EntitySuffix { get; set; }
 
 		public IParameterSpecification IndexCollectionSelectorParamSpec
 		{
@@ -138,36 +141,52 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <param name="size">The total number of returned types.</param>
 		/// <param name="k">The sequence of the current returned type.</param>
 		/// <returns>the identifier select SQL fragment.</returns>
+		// Since v5.4
+		[Obsolete("Use GetIdentifierSelectFragment method instead.")]
 		public string RenderIdentifierSelect(int size, int k)
+		{
+			return GetIdentifierSelectFragment(GetSuffix(size, k))?.ToSqlStringFragment(false) ?? string.Empty;
+		}
+
+		/// <summary>
+		/// Gets the identifier select fragment.
+		/// </summary>
+		/// <param name="suffix">The column suffix.</param>
+		/// <returns>The identifier select fragment.</returns>
+		public SelectFragment GetIdentifierSelectFragment(string suffix)
+		{
+			return GetIdentifierSelectFragment(suffix, _fromElement.ParentFromElement?.TableAlias ?? TableAlias);
+		}
+
+		internal SelectFragment GetIdentifierSelectFragment(string suffix, string alias)
 		{
 			CheckInitialized();
 
 			// Render the identifier select fragment using the table alias.
-			if (_fromElement.FromClause.IsSubQuery)
+			if (_fromElement.FromClause.IsScalarSubQuery)
 			{
 				var queryable = Queryable;
 				if (queryable == null)
-					return string.Empty;
+					return null;
 
-				// TODO: Replace this with a more elegant solution.
-				string[] idColumnNames = queryable.IdentifierColumnNames;
-
-				var buf = new StringBuilder();
-				for (int i = 0; i < idColumnNames.Length; i++)
-				{
-					buf.Append(_fromElement.TableAlias).Append('.').Append(idColumnNames[i]);
-					if (i != idColumnNames.Length - 1) buf.Append(", ");
-				}
-				return buf.ToString();
+				return new SelectFragment(queryable.Factory.Dialect)
+				       .AddColumns(alias, queryable.IdentifierColumnNames);
+			}
+			else if (_fromElement is JoinSubqueryFromElement joinSubquery)
+			{
+				var columns = joinSubquery.PropertyMapping.GetIdentifiersColumns(alias);
+				return columns.Count > 0 
+					? new SelectFragment(_fromElement.Walker.SessionFactoryHelper.Factory.Dialect).AddColumns(columns)
+					: null;
 			}
 			else
 			{
 				var queryable = Queryable;
 				if (queryable == null)
 					throw new QueryException("not an entity");
-				
-				string fragment = queryable.IdentifierSelectFragment(TableAlias, GetSuffix(size, k));
-				return TrimLeadingCommaAndSpaces(fragment);
+
+				return queryable.GetIdentifierSelectFragment(alias, suffix)
+				                .UseAliasesAsColumns(_fromElement.ParentFromElement != null);
 			}
 		}
 
@@ -176,22 +195,32 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// </summary>
 		/// <param name="i">the sequence of the returned type</param>
 		/// <returns>the identifier select with the column alias.</returns>
+		// Since v5.4
+		[Obsolete("Use GetScalarIdentifierSelectFragment method instead.")]
 		public virtual string RenderScalarIdentifierSelect(int i)
 		{
+			return GetScalarIdentifierSelectFragment(i, NameGenerator.ScalarName).ToSqlStringFragment(false);
+		}
+
+		/// <summary>
+		/// Gets the identifier select fragment, but in a 'scalar' context (i.e. generate the column alias).
+		/// </summary>
+		/// <param name="i">The sequence of the returned type</param>
+		/// <param name="aliasCreator">A function to generate aliases.</param>
+		/// <returns>The identifier select fragment.</returns>
+		public virtual SelectFragment GetScalarIdentifierSelectFragment(int i, Func<int,int, string> aliasCreator)
+		{
 			CheckInitialized();
-			string[] cols = GetPropertyMapping(Persister.Entity.EntityPersister.EntityID).ToColumns(TableAlias, Persister.Entity.EntityPersister.EntityID);
-			StringBuilder buf = new StringBuilder();
+			var cols = GetPropertyMapping(Persister.Entity.EntityPersister.EntityID).ToColumns(TableAlias, Persister.Entity.EntityPersister.EntityID);
+			var factory = Queryable?.Factory ?? QueryableCollection?.Factory ?? throw new QueryException("not an entity or collection");
+			var fragment = new SelectFragment(factory.Dialect);
 			// For property references generate <tablealias>.<columnname> as <projectionalias>
-			for (int j = 0; j < cols.Length; j++)
+			for (var j = 0; j < cols.Length; j++)
 			{
-				string column = cols[j];
-				if (j > 0)
-				{
-					buf.Append(", ");
-				}
-				buf.Append(column).Append(" as ").Append(NameGenerator.ScalarName(i, j));
+				fragment.AddColumn(null, cols[j], aliasCreator(i, j));
 			}
-			return buf.ToString();
+
+			return fragment;
 		}
 
 		/// <summary>
@@ -201,55 +230,117 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <param name="k">The sequence of the current returned type.</param>
 		/// <param name="allProperties"></param>
 		/// <returns>the property select SQL fragment.</returns>
+		// Since v5.4
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public string RenderPropertySelect(int size, int k, bool allProperties)
 		{
-			return RenderPropertySelect(size, k, null, allProperties);
+			return GetPropertiesSelectFragment(GetSuffix(size, k), null, allProperties, TableAlias).ToSqlStringFragment();
 		}
 
+		/// <summary>
+		/// Gets the properties select fragment.
+		/// </summary>
+		/// <param name="suffix">The column suffix.</param>
+		/// <param name="allProperties">Whether to include all lazy properties.</param>
+		/// <param name="alias">The alias for the columns.</param>
+		/// <returns>The properties select fragment.</returns>
+		internal SelectFragment GetPropertiesSelectFragment(string suffix, bool allProperties, string alias)
+		{
+			return GetPropertiesSelectFragment(suffix, null, allProperties, alias);
+		}
+
+		// Since v5.4
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public string RenderPropertySelect(int size, int k, string[] fetchLazyProperties)
 		{
-			return RenderPropertySelect(size, k, fetchLazyProperties, false);
+			return GetPropertiesSelectFragment(GetSuffix(size, k), fetchLazyProperties, false, TableAlias).ToSqlStringFragment();
 		}
 
-		private string RenderPropertySelect(int size, int k, string[] fetchLazyProperties, bool allProperties)
+		/// <summary>
+		/// Gets the properties select fragment.
+		/// </summary>
+		/// <param name="suffix">The column suffix.</param>
+		/// <param name="fetchLazyProperties">Lazy properties to be included.</param>
+		/// <param name="alias">The alias for the columns.</param>
+		/// <returns>The properties select fragment.</returns>
+		internal SelectFragment GetPropertiesSelectFragment(string suffix, string[] fetchLazyProperties, string alias)
+		{
+			return GetPropertiesSelectFragment(suffix, fetchLazyProperties, false, alias);
+		}
+
+		/// <summary>
+		/// Gets the properties select fragment.
+		/// </summary>
+		/// <param name="suffix">The column suffix.</param>
+		/// <param name="fetchLazyProperties">Lazy properties to be included.</param>
+		/// <param name="allProperties">Whether to include all lazy properties.</param>
+		/// <param name="alias">The alias for the columns.</param>
+		/// <returns>The properties select fragment.</returns>
+		private SelectFragment GetPropertiesSelectFragment(string suffix, string[] fetchLazyProperties, bool allProperties, string alias)
 		{
 			CheckInitialized();
 
-			var queryable = Queryable;
-			if (queryable == null)
-				return "";
+			if (_fromElement is JoinSubqueryFromElement joinSubquery)
+			{
+				return new SelectFragment(_fromElement.Walker.SessionFactoryHelper.Factory.Dialect)
+					.AddColumns(joinSubquery.PropertyMapping.GetPropertiesColumns(alias));
+			}
 
 			// Use the old method when fetchProperties is null to prevent any breaking changes
 			// 6.0 TODO: simplify condition by removing the fetchProperties part
-			string fragment = fetchLazyProperties == null || allProperties
-				? queryable.PropertySelectFragment(TableAlias, GetSuffix(size, k), allProperties)
-				: queryable.PropertySelectFragment(TableAlias, GetSuffix(size, k), fetchLazyProperties);
+			var fragment = fetchLazyProperties == null || allProperties
+				? Queryable?.GetPropertiesSelectFragment(alias, suffix, allProperties)
+				: Queryable?.GetPropertiesSelectFragment(alias, suffix, fetchLazyProperties);
 
-			return TrimLeadingCommaAndSpaces(fragment);
+			return fragment?.UseAliasesAsColumns(_fromElement.ParentFromElement != null);
 		}
 
+		// Since v5.4
+		[Obsolete("Use GetCollectionSelectFragment method instead.")]
 		public string RenderCollectionSelectFragment(int size, int k)
 		{
-			if (_queryableCollection == null)
-				return "";
-
-			if (_collectionSuffix == null)
-				_collectionSuffix = GenerateSuffix(size, k);
-
-			string fragment = _queryableCollection.SelectFragment(CollectionTableAlias, _collectionSuffix);
-			return TrimLeadingCommaAndSpaces(fragment);
+			return GetCollectionSelectFragment(GenerateSuffix(size, k))?.ToSqlStringFragment(false) ?? string.Empty;
 		}
 
-		public string RenderValueCollectionSelectFragment(int size, int k)
+		/// <summary>
+		/// Gets the collection select fragment.
+		/// </summary>
+		/// <param name="suffix">The column suffix.</param>
+		/// <returns>The collection select fragment</returns>
+		public SelectFragment GetCollectionSelectFragment(string suffix)
 		{
 			if (_queryableCollection == null)
-				return "";
+				return null;
 
 			if (_collectionSuffix == null)
-				_collectionSuffix = GenerateSuffix(size, k);
+				_collectionSuffix = suffix;
 
-			string fragment = _queryableCollection.SelectFragment(TableAlias, _collectionSuffix);
-			return TrimLeadingCommaAndSpaces(fragment);
+			return _queryableCollection.GetSelectFragment(_fromElement.ParentFromElement?.TableAlias ?? CollectionTableAlias, _collectionSuffix)
+			                           .UseAliasesAsColumns(_fromElement.ParentFromElement != null);
+		}
+
+		// Since v5.4
+		[Obsolete("Use GetValueCollectionSelectFragment method instead.")]
+		public string RenderValueCollectionSelectFragment(int size, int k)
+		{
+			return GetValueCollectionSelectFragment(GenerateSuffix(size, k))?.ToSqlStringFragment(false) ?? string.Empty;
+		}
+
+		/// <summary>
+		/// Gets the value collection select fragment.
+		/// </summary>
+		/// <param name="suffix">The column suffix.</param>
+		/// <returns>The value collection select fragment</returns>
+		public SelectFragment GetValueCollectionSelectFragment(string suffix)
+		{
+			if (_queryableCollection == null)
+				return null;
+
+			if (_collectionSuffix == null)
+				_collectionSuffix = suffix;
+
+			return _queryableCollection.GetSelectFragment(_fromElement.ParentFromElement?.TableAlias ?? TableAlias, _collectionSuffix)
+			                           .UseAliasesAsColumns(_fromElement.ParentFromElement != null);
 		}
 
 		public bool IsEntity
@@ -276,9 +367,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			CheckInitialized();
 
 			if (_queryableCollection == null)
-			{		
+			{
 				// Not a collection?
-				return (IPropertyMapping)_persister;	// Return the entity property mapping.
+				return _propertyMapping;
 			}
 
 			// If the property is a special collection property name, return a CollectionPropertyMapping.
@@ -474,22 +565,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			// should be safe to only ever expect EntityPersister references here
 			return _fromElement.Queryable.TableName;
-		}
-
-		/// <summary>
-		/// This accounts for a quirk in Queryable, where it sometimes generates ',  ' in front of the
-		/// SQL fragment.  :-P
-		/// </summary>
-		/// <param name="fragment">A SQL fragment.</param>
-		/// <returns>The fragment, without the leading comma and spaces.</returns>
-		private static string TrimLeadingCommaAndSpaces(String fragment)
-		{
-			if (fragment.Length > 0 && fragment[0] == ',')
-			{
-				fragment = fragment.Substring(1);
-			}
-			fragment = fragment.Trim();
-			return fragment.Trim();
 		}
 	}
 }

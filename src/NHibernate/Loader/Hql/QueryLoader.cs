@@ -265,11 +265,10 @@ namespace NHibernate.Loader.Hql
 				_entityFetchLazyProperties[i] = element.FetchLazyProperties != null
 					? new HashSet<string>(element.FetchLazyProperties)
 					: null;
-				_sqlAliases[i] = element.TableAlias;
+				_sqlAliases[i] = element.ParentFromElement?.TableAlias ?? element.TableAlias;
 				_entityAliases[i] = element.ClassAlias;
 				_sqlAliasByEntityAlias.Add(_entityAliases[i], _sqlAliases[i]);
-				// TODO should we just collect these like with the collections above?
-				_sqlAliasSuffixes[i] = (size == 1) ? "" : i + "_";
+				_sqlAliasSuffixes[i] = element.EntitySuffix;
 				//			sqlAliasSuffixes[i] = element.getColumnAliasSuffix();
 				_includeInSelect[i] = !element.IsFetch;
 				if (_includeInSelect[i])
