@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Event;
+using NHibernate.Loader;
 using NHibernate.Type;
 
 namespace NHibernate.Hql
@@ -113,7 +114,7 @@ namespace NHibernate.Hql
 
 		bool IsManipulationStatement { get; }
 
-		Loader.Loader Loader { get; }
+		ILoader Loader { get; }
 
 		IType[] ActualReturnTypes { get; }
 

@@ -69,10 +69,14 @@ namespace NHibernate.Engine.Query
 
 				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
 				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
-				if (!(queryExpression is ICacheableQueryExpression linqExpression) || linqExpression.CanCachePlan)
+				if(queryExpression is ICacheableQueryExpression linqExpression && linqExpression.CanCachePlan)
+				{
 					planCache.Put(key, PreparePlanToCache(plan));
+				}
 				else
+				{
 					log.Debug("Query plan not cacheable");
+				}
 			}
 			else
 			{
@@ -88,7 +92,7 @@ namespace NHibernate.Engine.Query
 
 		private QueryExpressionPlan PreparePlanToCache(QueryExpressionPlan plan)
 		{
-			if (plan.QueryExpression is NhLinqExpression planExpression)
+			if (plan.QueryExpression is ILinqQueryExpression planExpression)
 			{
 				return plan.Copy(new NhLinqExpressionCache(planExpression));
 			}
@@ -98,7 +102,8 @@ namespace NHibernate.Engine.Query
 
 		private static QueryExpressionPlan CopyIfRequired(QueryExpressionPlan plan, IQueryExpression queryExpression)
 		{
-			if (plan.QueryExpression is NhLinqExpressionCache cache && queryExpression is NhLinqExpression expression)
+			if (plan.QueryExpression is NhLinqExpressionCache cache && 
+			    queryExpression is ILinqQueryExpression linqExpression)
 			{
 				//NH-3413
 				//Here we have to use original expression.
@@ -109,8 +114,8 @@ namespace NHibernate.Engine.Query
 				//NH-3436
 				// We have to return new instance plan with it's own query expression
 				// because other treads can override query expression of current plan during execution of query if we will use cached instance of plan 
-				expression.CopyExpressionTranslation(cache);
-				plan = plan.Copy(expression);
+				linqExpression.CopyExpressionTranslation(cache);
+				plan = plan.Copy(linqExpression);
 			}
 
 			return plan;

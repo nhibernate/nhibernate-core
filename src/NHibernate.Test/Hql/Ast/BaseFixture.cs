@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR;
+using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Loader.Hql;
 using NHibernate.Util;
 
 namespace NHibernate.Test.Hql.Ast
@@ -39,9 +42,22 @@ namespace NHibernate.Test.Hql.Ast
 
 		public string GetSql(string query, IDictionary<string, string> replacements)
 		{
-			var qt = new QueryTranslatorImpl(null, new HqlParseEngine(query, false, Sfi).Parse(), emptyfilters, Sfi);
+			var qt = new QueryTranslatorImpl(null, 
+			                                 new HqlParseEngine(query, false, Sfi).Parse(),
+			                                 emptyfilters, 
+			                                 Sfi,
+			                                 CreateQueryLoader);
 			qt.Compile(replacements, false);
 			return qt.SQLString;
+		}
+		
+		private static IQueryLoader CreateQueryLoader(QueryTranslatorImpl queryTranslatorImpl, 
+		                                              ISessionFactoryImplementor sessionFactoryImplementor,
+		                                              SelectClause selectClause)
+		{
+			return new QueryLoader(queryTranslatorImpl,
+			                       sessionFactoryImplementor,
+			                       selectClause);
 		}
 	}
 }

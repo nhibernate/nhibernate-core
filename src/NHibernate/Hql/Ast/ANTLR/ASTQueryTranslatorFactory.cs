@@ -2,6 +2,7 @@
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Linq;
+using NHibernate.Loader.Hql;
 using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR
@@ -33,8 +34,17 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 			var translators = polymorphicParsers
 				.ToArray(hql => queryExpression is NhLinqExpression linqExpression
-							? new QueryTranslatorImpl(queryIdentifier, hql, filters, factory, linqExpression.GetNamedParameterTypes())
-							: new QueryTranslatorImpl(queryIdentifier, hql, filters, factory));
+							? new QueryTranslatorImpl(queryIdentifier, 
+							                          hql, 
+							                          filters,
+							                          factory, 
+							                          CreateQueryLoader,
+							                          linqExpression.GetNamedParameterTypes())
+							: new QueryTranslatorImpl(queryIdentifier, 
+							                          hql, 
+							                          filters, 
+							                          factory, 
+							                          CreateQueryLoader));
 
 			foreach (var translator in translators)
 			{
@@ -49,6 +59,22 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 
 			return translators;
+		}
+
+		/// <summary>
+		/// Creates a query loader.
+		/// </summary>
+		/// <param name="queryTranslatorImpl"></param>
+		/// <param name="sessionFactoryImplementor"></param>
+		/// <param name="selectClause"></param>
+		/// <returns></returns>
+		private static IQueryLoader CreateQueryLoader(QueryTranslatorImpl queryTranslatorImpl, 
+		                                              ISessionFactoryImplementor sessionFactoryImplementor,
+		                                              SelectClause selectClause)
+		{
+			return new QueryLoader(queryTranslatorImpl,
+			                       sessionFactoryImplementor,
+			                       selectClause);
 		}
 	}
 }

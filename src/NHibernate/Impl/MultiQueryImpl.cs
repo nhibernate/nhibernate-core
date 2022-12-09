@@ -9,6 +9,7 @@ using NHibernate.Engine;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
+using NHibernate.Loader;
 using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
 using NHibernate.SqlCommand;
@@ -802,7 +803,7 @@ namespace NHibernate.Impl
 
 	public interface ITranslator
 	{
-		Loader.Loader Loader { get; }
+		ILoader Loader { get; }
 		IType[] ReturnTypes { get; }
 		string[] ReturnAliases { get; }
 		ICollection<string> QuerySpaces { get; }
@@ -817,7 +818,7 @@ namespace NHibernate.Impl
 			innerTranslator = translator;
 		}
 
-		public Loader.Loader Loader
+		public ILoader Loader
 		{
 			get { return innerTranslator.Loader; }
 		}
@@ -855,7 +856,7 @@ namespace NHibernate.Impl
 			get { return loader.ResultTypes; }
 		}
 
-		public Loader.Loader Loader
+		public ILoader Loader
 		{
 			get { return loader; }
 		}

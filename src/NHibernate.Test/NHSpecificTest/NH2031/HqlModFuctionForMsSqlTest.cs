@@ -1,5 +1,8 @@
 using NHibernate.Dialect;
+using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR;
+using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Loader.Hql;
 using NHibernate.Util;
 using NUnit.Framework;
 
@@ -27,9 +30,22 @@ namespace NHibernate.Test.NHSpecificTest.NH2031
 
 		public string GetSql(string query)
 		{
-			var qt = new QueryTranslatorImpl(null, new HqlParseEngine(query, false, Sfi).Parse(), CollectionHelper.EmptyDictionary<string, IFilter>(), Sfi);
+			var qt = new QueryTranslatorImpl(null,
+			                                 new HqlParseEngine(query, false, Sfi).Parse(), 
+			                                 CollectionHelper.EmptyDictionary<string, IFilter>(),
+			                                 Sfi,
+			                                 CreateQueryLoader);
 			qt.Compile(null, false);
 			return qt.SQLString;
+		}
+		
+		private static IQueryLoader CreateQueryLoader(QueryTranslatorImpl queryTranslatorImpl, 
+		                                              ISessionFactoryImplementor sessionFactoryImplementor,
+		                                              SelectClause selectClause)
+		{
+			return new QueryLoader(queryTranslatorImpl,
+			                       sessionFactoryImplementor,
+			                       selectClause);
 		}
 	}
 }

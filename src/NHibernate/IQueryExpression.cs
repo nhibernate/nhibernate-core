@@ -6,7 +6,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 namespace NHibernate
 {
 	//TODO 6.0: Merge into IQueryExpression
-	internal interface ICacheableQueryExpression
+	public interface ICacheableQueryExpression
 	{
 		bool CanCachePlan { get; }
 	}

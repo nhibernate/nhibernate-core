@@ -5,7 +5,7 @@ using System.Text;
 namespace NHibernate.Persister
 {
 	// TODO 6.0: Make this public and make IEntityPersister and ICollectionPersister derive it.
-	internal interface IPersister
+	public interface IPersister
 	{
 		/// <summary>
 		/// The unique name of the persister.

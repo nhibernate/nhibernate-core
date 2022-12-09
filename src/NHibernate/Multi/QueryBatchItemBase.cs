@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Engine;
+using NHibernate.Loader;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -31,7 +32,7 @@ namespace NHibernate.Multi
 			/// <summary>
 			/// The query loader.
 			/// </summary>
-			public Loader.Loader Loader { get; set; }
+			public ILoader Loader { get; set; }
 
 			/// <summary>
 			/// The query result.
@@ -91,9 +92,8 @@ namespace NHibernate.Multi
 			/// <param name="loader">The loader.</param>
 			/// <param name="querySpaces">The query spaces.</param>
 			/// <param name="session">The session of the query.</param>
-			public QueryInfo(
-				QueryParameters parameters, Loader.Loader loader, ISet<string> querySpaces,
-				ISessionImplementor session)
+			public QueryInfo(QueryParameters parameters, ILoader loader, ISet<string> querySpaces,
+			                 ISessionImplementor session)
 			{
 				Parameters = parameters;
 				Loader = loader;

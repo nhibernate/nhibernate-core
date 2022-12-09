@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Event;
+using NHibernate.Loader;
 using NHibernate.Type;
 
 namespace NHibernate.Hql
