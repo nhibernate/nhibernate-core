@@ -70,13 +70,9 @@ namespace NHibernate.Engine.Query
 				plan = new QueryExpressionPlan(queryExpression, shallow, enabledFilters, factory);
 				// 6.0 TODO: add "CanCachePlan { get; }" to IQueryExpression interface
 				if(queryExpression is ICacheableQueryExpression linqExpression && linqExpression.CanCachePlan)
-				{
 					planCache.Put(key, PreparePlanToCache(plan));
-				}
 				else
-				{
 					log.Debug("Query plan not cacheable");
-				}
 			}
 			else
 			{

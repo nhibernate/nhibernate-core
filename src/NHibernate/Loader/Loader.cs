@@ -379,12 +379,13 @@ namespace NHibernate.Loader
 			}
 		}
 
-		public object GetRowFromResultSet(DbDataReader resultSet, ISessionImplementor session,
-		                                  QueryParameters queryParameters, LockMode[] lockModeArray,
-		                                  EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys,
-		                                  bool returnProxies, IResultTransformer forcedResultTransformer,
-		                                  QueryCacheResultBuilder queryCacheResultBuilder,
-		                                  Action<IEntityPersister, CachePutData> cacheBatchingHandler)
+		public object GetRowFromResultSet(
+			DbDataReader resultSet, ISessionImplementor session,
+			QueryParameters queryParameters, LockMode[] lockModeArray,
+			EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys,
+			bool returnProxies, IResultTransformer forcedResultTransformer,
+			QueryCacheResultBuilder queryCacheResultBuilder,
+			Action<IEntityPersister, CachePutData> cacheBatchingHandler)
 		{
 			ILoadable[] persisters = EntityPersisters;
 			int entitySpan = persisters.Length;
@@ -646,11 +647,12 @@ namespace NHibernate.Loader
 			}
 		}
 
-		public void InitializeEntitiesAndCollections(IList hydratedObjects, 
-		                                             DbDataReader reader, 
-		                                             ISessionImplementor session, 
-		                                             bool readOnly,
-		                                             CacheBatcher cacheBatcher)
+		public void InitializeEntitiesAndCollections(
+			IList hydratedObjects, 
+			DbDataReader reader, 
+			ISessionImplementor session, 
+			bool readOnly,
+			CacheBatcher cacheBatcher)
 		{
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
 			var ownCacheBatcher = cacheBatcher == null;
@@ -1565,9 +1567,8 @@ namespace NHibernate.Loader
 			AutoDiscoverTypes(rs, new QueryParameters(), null);
 		}
 
-		public virtual void AutoDiscoverTypes(DbDataReader rs, 
-		                                      QueryParameters queryParameters,
-		                                      IResultTransformer forcedResultTransformer)
+		public virtual void AutoDiscoverTypes(
+			DbDataReader rs, QueryParameters queryParameters, IResultTransformer forcedResultTransformer)
 		{
 			throw new AssertionFailure("Auto discover types not supported in this loader");
 		}

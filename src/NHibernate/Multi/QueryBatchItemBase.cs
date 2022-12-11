@@ -92,8 +92,9 @@ namespace NHibernate.Multi
 			/// <param name="loader">The loader.</param>
 			/// <param name="querySpaces">The query spaces.</param>
 			/// <param name="session">The session of the query.</param>
-			public QueryInfo(QueryParameters parameters, ILoader loader, ISet<string> querySpaces,
-			                 ISessionImplementor session)
+			public QueryInfo(
+				QueryParameters parameters, ILoader loader, ISet<string> querySpaces,
+				ISessionImplementor session)
 			{
 				Parameters = parameters;
 				Loader = loader;
