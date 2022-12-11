@@ -141,12 +141,13 @@ namespace NHibernate.Loader
 			return result;
 		}
 
-		public async Task<object> GetRowFromResultSetAsync(DbDataReader resultSet, ISessionImplementor session,
-		                                  QueryParameters queryParameters, LockMode[] lockModeArray,
-		                                  EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys,
-		                                  bool returnProxies, IResultTransformer forcedResultTransformer,
-		                                  QueryCacheResultBuilder queryCacheResultBuilder,
-		                                  Action<IEntityPersister, CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
+		public async Task<object> GetRowFromResultSetAsync(
+			DbDataReader resultSet, ISessionImplementor session,
+			QueryParameters queryParameters, LockMode[] lockModeArray,
+			EntityKey optionalObjectKey, IList hydratedObjects, EntityKey[] keys,
+			bool returnProxies, IResultTransformer forcedResultTransformer,
+			QueryCacheResultBuilder queryCacheResultBuilder,
+			Action<IEntityPersister, CachePutData> cacheBatchingHandler, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ILoadable[] persisters = EntityPersisters;
@@ -341,11 +342,12 @@ namespace NHibernate.Loader
 			}
 		}
 
-		public async Task InitializeEntitiesAndCollectionsAsync(IList hydratedObjects, 
-		                                             DbDataReader reader, 
-		                                             ISessionImplementor session, 
-		                                             bool readOnly,
-		                                             CacheBatcher cacheBatcher, CancellationToken cancellationToken)
+		public async Task InitializeEntitiesAndCollectionsAsync(
+			IList hydratedObjects, 
+			DbDataReader reader, 
+			ISessionImplementor session, 
+			bool readOnly,
+			CacheBatcher cacheBatcher, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			ICollectionPersister[] collectionPersisters = CollectionPersisters;
