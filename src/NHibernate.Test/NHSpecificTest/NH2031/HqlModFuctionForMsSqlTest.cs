@@ -33,19 +33,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2031
 			var qt = new QueryTranslatorImpl(null,
 			                                 new HqlParseEngine(query, false, Sfi).Parse(), 
 			                                 CollectionHelper.EmptyDictionary<string, IFilter>(),
-			                                 Sfi,
-			                                 CreateQueryLoader);
+			                                 Sfi, 
+			                                 new QueryLoaderFactory());
 			qt.Compile(null, false);
 			return qt.SQLString;
-		}
-		
-		private static IQueryLoader CreateQueryLoader(QueryTranslatorImpl queryTranslatorImpl, 
-		                                              ISessionFactoryImplementor sessionFactoryImplementor,
-		                                              SelectClause selectClause)
-		{
-			return new QueryLoader(queryTranslatorImpl,
-			                       sessionFactoryImplementor,
-			                       selectClause);
 		}
 	}
 }

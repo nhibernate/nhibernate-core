@@ -41,18 +41,9 @@ namespace NHibernate.Test.BulkManipulation
 			                                 new HqlParseEngine(query, false, Sfi).Parse(), 
 			                                 emptyfilters, 
 			                                 Sfi, 
-			                                 CreateQueryLoader);
+			                                 new QueryLoaderFactory());
 			qt.Compile(null, false);
 			return qt.SQLString;
-		}
-		
-		private static IQueryLoader CreateQueryLoader(QueryTranslatorImpl queryTranslatorImpl, 
-		                                              ISessionFactoryImplementor sessionFactoryImplementor,
-		                                              SelectClause selectClause)
-		{
-			return new QueryLoader(queryTranslatorImpl,
-			                       sessionFactoryImplementor,
-			                       selectClause);
 		}
 	}
 }

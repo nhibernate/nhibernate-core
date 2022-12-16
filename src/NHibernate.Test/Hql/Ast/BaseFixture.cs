@@ -45,19 +45,10 @@ namespace NHibernate.Test.Hql.Ast
 			var qt = new QueryTranslatorImpl(null, 
 			                                 new HqlParseEngine(query, false, Sfi).Parse(),
 			                                 emptyfilters, 
-			                                 Sfi,
-			                                 CreateQueryLoader);
+			                                 Sfi, 
+			                                 new QueryLoaderFactory());
 			qt.Compile(replacements, false);
 			return qt.SQLString;
-		}
-		
-		private static IQueryLoader CreateQueryLoader(QueryTranslatorImpl queryTranslatorImpl, 
-		                                              ISessionFactoryImplementor sessionFactoryImplementor,
-		                                              SelectClause selectClause)
-		{
-			return new QueryLoader(queryTranslatorImpl,
-			                       sessionFactoryImplementor,
-			                       selectClause);
 		}
 	}
 }
