@@ -33,18 +33,18 @@ namespace NHibernate.Hql.Ast.ANTLR
 			var polymorphicParsers = AstPolymorphicProcessor.Process(ast, factory);
 
 			var translators = polymorphicParsers
-				.ToArray(hql => queryExpression is NhLinqExpression linqExpression
+				.ToArray(hql => queryExpression is ILinqQueryExpression linqExpression
 							? new QueryTranslatorImpl(queryIdentifier, 
 							                          hql, 
 							                          filters,
 							                          factory, 
-							                          CreateQueryLoader,
+							                          new QueryLoaderFactory(),
 							                          linqExpression.GetNamedParameterTypes())
 							: new QueryTranslatorImpl(queryIdentifier, 
 							                          hql, 
 							                          filters, 
 							                          factory, 
-							                          CreateQueryLoader));
+							                          new QueryLoaderFactory()));
 
 			foreach (var translator in translators)
 			{
@@ -59,22 +59,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 
 			return translators;
-		}
-
-		/// <summary>
-		/// Creates a query loader.
-		/// </summary>
-		/// <param name="queryTranslatorImpl"></param>
-		/// <param name="sessionFactoryImplementor"></param>
-		/// <param name="selectClause"></param>
-		/// <returns></returns>
-		private static IQueryLoader CreateQueryLoader(QueryTranslatorImpl queryTranslatorImpl, 
-		                                              ISessionFactoryImplementor sessionFactoryImplementor,
-		                                              SelectClause selectClause)
-		{
-			return new QueryLoader(queryTranslatorImpl,
-			                       sessionFactoryImplementor,
-			                       selectClause);
 		}
 	}
 }

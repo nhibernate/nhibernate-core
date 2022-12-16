@@ -15,6 +15,10 @@ namespace NHibernate.Cache
 		private readonly IType[] _resultTypes;
 		private readonly Loader.Loader.QueryCacheInfo _cacheInfo;
 
+		// 6.0 TODO : remove
+		public static bool IsCacheWithFetches(Loader.Loader loader)
+			=> IsCacheWithFetches((ILoader)loader);
+		
 		public static bool IsCacheWithFetches(ILoader loader)
 		{
 			return loader.CacheTypes.Length > loader.ResultTypes.Length;

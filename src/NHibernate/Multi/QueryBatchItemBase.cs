@@ -85,6 +85,23 @@ namespace NHibernate.Multi
 			/// </summary>
 			public CacheBatcher CacheBatcher { get; private set; }
 
+			// 6.0 TODO : remove
+			
+			/// <summary>
+			/// Create a new <c>QueryInfo</c>.
+			/// </summary>
+			/// <param name="parameters">The query parameters.</param>
+			/// <param name="loader">The loader.</param>
+			/// <param name="querySpaces">The query spaces.</param>
+			/// <param name="session">The session of the query.</param>
+			public QueryInfo(
+				QueryParameters parameters, Loader.Loader loader, ISet<string> querySpaces,
+				ISessionImplementor session)
+				:this(parameters, (ILoader)loader, querySpaces, session)
+			{
+				
+			}
+
 			/// <summary>
 			/// Create a new <c>QueryInfo</c>.
 			/// </summary>

@@ -803,7 +803,7 @@ namespace NHibernate.Impl
 
 	public interface ITranslator
 	{
-		ILoader Loader { get; }
+		Loader.Loader Loader { get; }
 		IType[] ReturnTypes { get; }
 		string[] ReturnAliases { get; }
 		ICollection<string> QuerySpaces { get; }
@@ -818,7 +818,7 @@ namespace NHibernate.Impl
 			innerTranslator = translator;
 		}
 
-		public ILoader Loader
+		public Loader.Loader Loader
 		{
 			get { return innerTranslator.Loader; }
 		}
@@ -856,7 +856,7 @@ namespace NHibernate.Impl
 			get { return loader.ResultTypes; }
 		}
 
-		public ILoader Loader
+		public Loader.Loader Loader
 		{
 			get { return loader; }
 		}

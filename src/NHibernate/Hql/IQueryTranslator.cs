@@ -114,7 +114,8 @@ namespace NHibernate.Hql
 
 		bool IsManipulationStatement { get; }
 
-		ILoader Loader { get; }
+		// 6.0 TODO : change type to ILoader
+		Loader.Loader Loader { get; }
 
 		IType[] ActualReturnTypes { get; }
 

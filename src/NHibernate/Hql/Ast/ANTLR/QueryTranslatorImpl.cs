@@ -30,7 +30,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly string _queryIdentifier;
 		private readonly IASTNode _stageOneAst;
 		private readonly ISessionFactoryImplementor _factory;
-		private readonly Func<QueryTranslatorImpl, ISessionFactoryImplementor, SelectClause, IQueryLoader> _queryLoaderFactory;
+		private readonly IQueryLoaderFactory _queryLoaderFactory;
 		private readonly IDictionary<string, Tuple<IType, bool>> _namedParameters;
 
 		private bool _shallowQuery;
@@ -49,13 +49,29 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <param name="parsedQuery">The hql query to translate</param>
 		/// <param name="enabledFilters">Currently enabled filters</param>
 		/// <param name="factory">The session factory constructing this translator instance.</param>
-		/// <param name="queryLoaderFactory">A query loader factory method.</param>
+		public QueryTranslatorImpl(
+			string queryIdentifier,
+			IASTNode parsedQuery,
+			IDictionary<string, IFilter> enabledFilters,
+			ISessionFactoryImplementor factory)
+			: this(queryIdentifier, parsedQuery, enabledFilters, factory, new QueryLoaderFactory(), null)
+		{
+		}
+
+		/// <summary>
+		/// Creates a new AST-based query translator.
+		/// </summary>
+		/// <param name="queryIdentifier">The query-identifier (used in stats collection)</param>
+		/// <param name="parsedQuery">The hql query to translate</param>
+		/// <param name="enabledFilters">Currently enabled filters</param>
+		/// <param name="factory">The session factory constructing this translator instance.</param>
+		/// <param name="queryLoaderFactory">The query loader factory.</param>
 		public QueryTranslatorImpl(
 			string queryIdentifier,
 			IASTNode parsedQuery,
 			IDictionary<string, IFilter> enabledFilters,
 			ISessionFactoryImplementor factory,
-			Func<QueryTranslatorImpl, ISessionFactoryImplementor, SelectClause, IQueryLoader> queryLoaderFactory)
+			IQueryLoaderFactory queryLoaderFactory)
 			: this(queryIdentifier, parsedQuery, enabledFilters, factory, queryLoaderFactory, null)
 		{
 		}
@@ -67,14 +83,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <param name="parsedQuery">The hql query to translate</param>
 		/// <param name="enabledFilters">Currently enabled filters</param>
 		/// <param name="factory">The session factory constructing this translator instance.</param>
-		/// <param name="queryLoaderFactory">A query loader factory method.</param>
+		/// <param name="queryLoaderFactory">The query loader factory.</param>
 		/// <param name="namedParameters">The named parameters information.</param>
 		public QueryTranslatorImpl(
 			string queryIdentifier,
 			IASTNode parsedQuery,
 			IDictionary<string, IFilter> enabledFilters,
 			ISessionFactoryImplementor factory,
-			Func<QueryTranslatorImpl, ISessionFactoryImplementor, SelectClause, IQueryLoader> queryLoaderFactory,
+			IQueryLoaderFactory queryLoaderFactory,
 			IDictionary<string, Tuple<IType, bool>> namedParameters)
 		{
 			_queryIdentifier = queryIdentifier;
@@ -197,11 +213,9 @@ namespace NHibernate.Hql.Ast.ANTLR
 				throw new QueryExecutionRequestException("Not supported for select queries:", _queryIdentifier);
 			}
 		}
-
-		public ILoader Loader
-		{
-			get { return _queryLoader; }
-		}
+		
+		// 6.0 TODO : change type to ILoader
+		public Loader.Loader Loader => _queryLoader as Loader.Loader ?? throw new NotSupportedException("Loader is not of supported type.");
 
 		public virtual IType[] ActualReturnTypes
 		{
@@ -399,7 +413,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 					_generator = new HqlSqlGenerator(_sqlAst, _factory);
 					_generator.Generate();
 
-					_queryLoader = _queryLoaderFactory(this, _factory, _sqlAst.Walker.SelectClause);
+					_queryLoader = _queryLoaderFactory.Create(this, _factory, _sqlAst.Walker.SelectClause);
 				}
 
 				_compiled = true;
