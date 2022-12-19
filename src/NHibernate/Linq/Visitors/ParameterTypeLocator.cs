@@ -302,6 +302,7 @@ namespace NHibernate.Linq.Visitors
 				// ContainsResultOperator where the constant expression is dislocated from the related expression,
 				// we have to manually link the related expressions.
 				if (queryModel.ResultOperators.Count != 1 ||
+					queryModel.BodyClauses.Count > 0 ||
 					!(queryModel.ResultOperators[0] is ContainsResultOperator containsOperator) ||
 					!(queryModel.SelectClause.Selector is QuerySourceReferenceExpression querySourceReference) ||
 					!(querySourceReference.ReferencedQuerySource is MainFromClause mainFromClause))

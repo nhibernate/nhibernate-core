@@ -212,6 +212,16 @@ namespace NHibernate.Test.Linq
 				db.Users.Where(o => values.Contains(o.Name == o.Name ? o.Enum1 : o.NullableEnum1.Value)),
 				db.Timesheets.Where(o => o.Users.Any(u => values.Contains(u.Enum1)))
 			);
+
+			AssertResults(
+				new Dictionary<string, Predicate<IType>>
+				{
+					{"0", o => o is Int32Type},
+					{"value(NHibernate.DomainModel.Northwind.Entities.EnumStoredAsString[])", o => o is EnumStoredAsStringType}
+				},
+				db.Timesheets.Where(o => o.Users.Where(u => u.Id > 0).Any(u => values.Contains(u.Enum1))),
+				db.Timesheets.Where(o => o.Users.Any(u => u.Id > 0 && values.Contains(u.Enum1)))
+			);
 		}
 
 		[Test]
