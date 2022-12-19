@@ -28,6 +28,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			await (db.Orders.Where(o => o.Freight == (-num).MappedAs(NHibernateUtil.Decimal)).ToListAsync());
 			await (db.Orders.Where(o => o.Freight == ((decimal) num).MappedAs(NHibernateUtil.Decimal)).ToListAsync());
 			await (db.Orders.Where(o => o.Freight == ((decimal?) (decimal) num).MappedAs(NHibernateUtil.Decimal)).ToListAsync());
+			await (db.Orders.Where(o => db.Orders.Where(o2 => o2.Freight == (-num).MappedAs(NHibernateUtil.Decimal)).Contains(o)).ToListAsync());
 		}
 
 		[Test]
