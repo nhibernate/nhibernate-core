@@ -5,7 +5,6 @@ using System.Data.Common;
 using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Engine;
-using NHibernate.Loader;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -29,10 +28,11 @@ namespace NHibernate.Multi
 
 		protected class QueryInfo : ICachingInformation, ICachingInformationWithFetches
 		{
+			// 6.0 TODO : change type to ILoader
 			/// <summary>
 			/// The query loader.
 			/// </summary>
-			public ILoader Loader { get; set; }
+			public Loader.Loader Loader { get; set; }
 
 			/// <summary>
 			/// The query result.
@@ -96,21 +96,6 @@ namespace NHibernate.Multi
 			/// <param name="session">The session of the query.</param>
 			public QueryInfo(
 				QueryParameters parameters, Loader.Loader loader, ISet<string> querySpaces,
-				ISessionImplementor session)
-				:this(parameters, (ILoader)loader, querySpaces, session)
-			{
-				
-			}
-
-			/// <summary>
-			/// Create a new <c>QueryInfo</c>.
-			/// </summary>
-			/// <param name="parameters">The query parameters.</param>
-			/// <param name="loader">The loader.</param>
-			/// <param name="querySpaces">The query spaces.</param>
-			/// <param name="session">The session of the query.</param>
-			public QueryInfo(
-				QueryParameters parameters, ILoader loader, ISet<string> querySpaces,
 				ISessionImplementor session)
 			{
 				Parameters = parameters;
