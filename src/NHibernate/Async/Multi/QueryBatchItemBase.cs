@@ -42,7 +42,7 @@ namespace NHibernate.Multi
 				for (var i = 0; i < _queryInfos.Count; i++)
 				{
 					var queryInfo = _queryInfos[i];
-					var loader = queryInfo.Loader;
+					var loader = queryInfo.QueryLoader;
 					var queryParameters = queryInfo.Parameters;
 
 					//Skip processing for items already loaded from cache
@@ -150,20 +150,20 @@ namespace NHibernate.Multi
 				var queryInfo = _queryInfos[i];
 				if (_subselectResultKeys[i] != null)
 				{
-					queryInfo.Loader.CreateSubselects(_subselectResultKeys[i], queryInfo.Parameters, Session);
+					queryInfo.QueryLoader.CreateSubselects(_subselectResultKeys[i], queryInfo.Parameters, Session);
 				}
 
 				if (queryInfo.IsCacheable)
 				{
 					if (queryInfo.IsResultFromCache)
 					{
-						var queryCacheBuilder = new QueryCacheResultBuilder(queryInfo.Loader);
+						var queryCacheBuilder = new QueryCacheResultBuilder(queryInfo.QueryLoader);
 						queryInfo.Result = queryCacheBuilder.GetResultList(queryInfo.Result);
 					}
 
 					// This transformation must not be applied to ResultToCache.
 					queryInfo.Result =
-						queryInfo.Loader.TransformCacheableResults(
+						queryInfo.QueryLoader.TransformCacheableResults(
 							queryInfo.Parameters, queryInfo.CacheKey.ResultTransformer, queryInfo.Result);
 				}
 			}
@@ -188,7 +188,7 @@ namespace NHibernate.Multi
 				var queryInfo = _queryInfos[i];
 				if (queryInfo.IsResultFromCache)
 					continue;
-				await (queryInfo.Loader.InitializeEntitiesAndCollectionsAsync(
+				await (queryInfo.QueryLoader.InitializeEntitiesAndCollectionsAsync(
 					hydratedObjects[i], reader, Session, queryInfo.Parameters.IsReadOnly(Session),
 					queryInfo.CacheBatcher, cancellationToken)).ConfigureAwait(false);
 			}

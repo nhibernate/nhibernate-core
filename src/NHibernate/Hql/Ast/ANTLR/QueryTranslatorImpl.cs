@@ -23,7 +23,7 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Hql.Ast.ANTLR
 {
 	[CLSCompliant(false)]
-	public partial class QueryTranslatorImpl : IFilterTranslator
+	public partial class QueryTranslatorImpl : IFilterTranslator, IQueryTranslatorWithCustomizableLoader
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(QueryTranslatorImpl));
 
@@ -49,6 +49,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <param name="parsedQuery">The hql query to translate</param>
 		/// <param name="enabledFilters">Currently enabled filters</param>
 		/// <param name="factory">The session factory constructing this translator instance.</param>
+		// Since 5.5.
+		[Obsolete("Use overload taking an IQueryLoaderFactory.")]
 		public QueryTranslatorImpl(
 			string queryIdentifier,
 			IASTNode parsedQuery,
@@ -213,9 +215,13 @@ namespace NHibernate.Hql.Ast.ANTLR
 				throw new QueryExecutionRequestException("Not supported for select queries:", _queryIdentifier);
 			}
 		}
-		
-		// 6.0 TODO : change type to ILoader
-		public Loader.Loader Loader => _queryLoader as Loader.Loader ?? throw new NotSupportedException("Loader is not of supported type.");
+
+		// Since 5.5
+		[Obsolete("Use QueryLoader property instead")]
+		public Loader.Loader Loader => _queryLoader as Loader.Loader ?? throw new NotSupportedException("Custom loader is not supported.");
+
+		/// <inheritdoc />
+		public ILoader QueryLoader => _queryLoader;
 
 		public virtual IType[] ActualReturnTypes
 		{

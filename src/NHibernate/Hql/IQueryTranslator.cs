@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Engine;
@@ -114,11 +115,58 @@ namespace NHibernate.Hql
 
 		bool IsManipulationStatement { get; }
 
-		// 6.0 TODO : change type to ILoader
+		// 6.0 TODO : replace by ILoader QueryLoader.
+		// Since 5.5.
+		[Obsolete("Use GetQueryLoader extension method instead.")]
 		Loader.Loader Loader { get; }
 
 		IType[] ActualReturnTypes { get; }
 
-        ParameterMetadata BuildParameterMetadata();
+		ParameterMetadata BuildParameterMetadata();
+	}
+
+	// 6.0 Todo : remove.
+	/// <summary>
+	/// Transitional interface for <see cref="IQueryTranslator" />.
+	/// </summary>
+	public interface IQueryTranslatorWithCustomizableLoader
+	{
+		// 6.0 : move into IQueryTranslator.
+		/// <summary>
+		/// The query loader.
+		/// </summary>
+		ILoader QueryLoader { get; }
+	}
+
+	// 6.0 TODO: drop.
+	public static class QueryTranslatorExtensions
+	{
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(QueryTranslatorExtensions));
+
+		// Non thread safe: not an issue, at worst it will cause a few more logs than one.
+		// Does not handle the possibility of using multiple different obsoleted query translator implementations:
+		// only the first encountered will be logged.
+		private static bool _hasWarnedForObsoleteQueryTranslator;
+
+		/// <summary>
+		/// Get the query loader.
+		/// </summary>
+		/// <param name="queryTranslator">The query translator.</param>
+		/// <returns>The query loader.</returns>
+		public static ILoader GetQueryLoader(this IQueryTranslator queryTranslator)
+		{
+			if (queryTranslator is IQueryTranslatorWithCustomizableLoader qtwcl)
+				return qtwcl.QueryLoader;
+
+			if (!_hasWarnedForObsoleteQueryTranslator)
+			{
+				_hasWarnedForObsoleteQueryTranslator = true;
+				Log.Warn("{0} is obsolete, it should implement {1} to support customizable loaders", queryTranslator, nameof(IQueryTranslatorWithCustomizableLoader));
+			}
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			return queryTranslator.Loader;
+#pragma warning restore CS0618 // Type or member is obsolete
+		}
 	}
 }

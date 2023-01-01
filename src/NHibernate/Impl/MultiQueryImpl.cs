@@ -803,10 +803,58 @@ namespace NHibernate.Impl
 
 	public interface ITranslator
 	{
+		// 6.0 TODO : replace by ILoader QueryLoader.
+		// Since 5.5.
+		[Obsolete("Use GetQueryLoader extension method instead.")]
 		Loader.Loader Loader { get; }
 		IType[] ReturnTypes { get; }
 		string[] ReturnAliases { get; }
 		ICollection<string> QuerySpaces { get; }
+	}
+
+	// 6.0 Todo : remove.
+	/// <summary>
+	/// Transitional interface for <see cref="ITranslator" />.
+	/// </summary>
+	public interface ITranslatorWithCustomizableLoader : ITranslator
+	{
+		// 6.0 : move into ITranslator.
+		/// <summary>
+		/// The query loader.
+		/// </summary>
+		ILoader QueryLoader { get; }
+	}
+
+	// 6.0 TODO: drop.
+	public static class TranslatorExtensions
+	{
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(TranslatorExtensions));
+
+		// Non thread safe: not an issue, at worst it will cause a few more logs than one.
+		// Does not handle the possibility of using multiple different obsoleted translator implementations:
+		// only the first encountered will be logged.
+		private static bool _hasWarnedForObsoleteTranslator;
+
+		/// <summary>
+		/// Get the query loader.
+		/// </summary>
+		/// <param name="translator">The query translator.</param>
+		/// <returns>The query loader.</returns>
+		public static ILoader GetQueryLoader(this ITranslator translator)
+		{
+			if (translator is ITranslatorWithCustomizableLoader twcl)
+				return twcl.QueryLoader;
+
+			if (!_hasWarnedForObsoleteTranslator)
+			{
+				_hasWarnedForObsoleteTranslator = true;
+				Log.Warn("{0} is obsolete, it should implement {1} to support customizable loaders", translator, nameof(ITranslatorWithCustomizableLoader));
+			}
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			return translator.Loader;
+#pragma warning restore CS0618 // Type or member is obsolete
+		}
 	}
 
 	internal class HqlTranslatorWrapper : ITranslator
@@ -818,10 +866,14 @@ namespace NHibernate.Impl
 			innerTranslator = translator;
 		}
 
+		[Obsolete("Use QueryLoader instead.")]
 		public Loader.Loader Loader
 		{
 			get { return innerTranslator.Loader; }
 		}
+
+		/// <inheritdoc />
+		public ILoader QueryLoader => innerTranslator.GetQueryLoader();
 
 		public IType[] ReturnTypes
 		{

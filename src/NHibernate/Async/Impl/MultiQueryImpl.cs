@@ -103,28 +103,29 @@ namespace NHibernate.Impl
 					{
 						ITranslator translator = Translators[i];
 						QueryParameters parameter = Parameters[i];
+						var loader = translator.GetQueryLoader();
 
-						int entitySpan = translator.Loader.EntityPersisters.Length;
+						int entitySpan = loader.EntityPersisters.Length;
 						hydratedObjects[i] = entitySpan > 0 ? new List<object>() : null;
 						RowSelection selection = parameter.RowSelection;
 						int maxRows = Loader.Loader.HasMaxRows(selection) ? selection.MaxRows : int.MaxValue;
-						if (!dialect.SupportsLimitOffset || !translator.Loader.UseLimit(selection, dialect))
+						if (!dialect.SupportsLimitOffset || !loader.UseLimit(selection, dialect))
 						{
 							await (Loader.Loader.AdvanceAsync(reader, selection, cancellationToken)).ConfigureAwait(false);
 						}
 
 						if (parameter.HasAutoDiscoverScalarTypes)
 						{
-							translator.Loader.AutoDiscoverTypes(reader, parameter, null);
+							loader.AutoDiscoverTypes(reader, parameter, null);
 						}
 
-						LockMode[] lockModeArray = translator.Loader.GetLockModes(parameter.LockModes);
+						LockMode[] lockModeArray = loader.GetLockModes(parameter.LockModes);
 						EntityKey optionalObjectKey = Loader.Loader.GetOptionalObjectKey(parameter, session);
 
-						createSubselects[i] = translator.Loader.IsSubselectLoadingEnabled;
+						createSubselects[i] = loader.IsSubselectLoadingEnabled;
 						subselectResultKeys[i] = createSubselects[i] ? new List<EntityKey[]>() : null;
 
-						translator.Loader.HandleEmptyCollections(parameter.CollectionKeys, reader, session);
+						loader.HandleEmptyCollections(parameter.CollectionKeys, reader, session);
 						EntityKey[] keys = new EntityKey[entitySpan]; // we can reuse it each time
 
 						if (log.IsDebugEnabled())
@@ -142,7 +143,7 @@ namespace NHibernate.Impl
 							}
 
 							rowCount++;
-							object result = await (translator.Loader.GetRowFromResultSetAsync(
+							object result = await (loader.GetRowFromResultSetAsync(
 								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true, null, null,
 								(persister, data) => cacheBatcher.AddToBatch(persister, data), cancellationToken)).ConfigureAwait(false);
 							tempResults.Add(result);
@@ -173,12 +174,13 @@ namespace NHibernate.Impl
 					{
 						ITranslator translator = translators[i];
 						QueryParameters parameter = parameters[i];
+						var loader = translator.GetQueryLoader();
 
-						await (translator.Loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false, cacheBatcher, cancellationToken)).ConfigureAwait(false);
+						await (loader.InitializeEntitiesAndCollectionsAsync(hydratedObjects[i], reader, session, false, cacheBatcher, cancellationToken)).ConfigureAwait(false);
 
 						if (createSubselects[i])
 						{
-							translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, session);
+							loader.CreateSubselects(subselectResultKeys[i], parameter, session);
 						}
 					}
 
