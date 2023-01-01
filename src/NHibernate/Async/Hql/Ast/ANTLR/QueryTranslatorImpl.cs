@@ -34,7 +34,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class QueryTranslatorImpl : IFilterTranslator
+	public partial class QueryTranslatorImpl : IFilterTranslator, IQueryTranslatorWithCustomizableLoader
 	{
 
 		public async Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken)

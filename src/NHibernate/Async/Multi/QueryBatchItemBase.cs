@@ -15,6 +15,7 @@ using System.Data.Common;
 using System.Linq;
 using NHibernate.Cache;
 using NHibernate.Engine;
+using NHibernate.Loader;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
