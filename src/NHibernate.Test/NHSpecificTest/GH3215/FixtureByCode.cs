@@ -1,4 +1,5 @@
-﻿using NHibernate.Cfg.MappingSchema;
+﻿using NHibernate.Cfg;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
@@ -24,6 +25,12 @@ namespace NHibernate.Test.NHSpecificTest.GH3215
 				rc.ManyToOne(x => x.Member);
 			});
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
+		}
+		
+		protected override void Configure(Configuration configuration)
+		{
+			base.Configure(configuration);
+			configuration.SetProperty(Environment.Hbm2ddlKeyWords, "auto-quote");
 		}
 
 		[Test]
