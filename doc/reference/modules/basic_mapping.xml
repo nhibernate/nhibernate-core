@@ -2385,6 +2385,7 @@
                     <area id="onetoone9" coords="10 60"/>
                     <area id="onetoone10" coords="11 60"/>
                     <area id="onetoone11" coords="12 60"/>
+                    <area id="onetoone12" coords="12 60"/>                    
                 </areaspec>
                 <programlisting><![CDATA[<one-to-one
     name="propertyName"
@@ -2398,6 +2399,7 @@
     formula="any SQL expression"
     entity-name="entityName"
     foreign-key="foreignKeyName"
+    optimistic-lock="true|false"
 />]]></programlisting>
                 <calloutlist>
                     <callout arearefs="onetoone1">
@@ -2471,12 +2473,20 @@
                             <literal>entity-name</literal> (optional): The entity name of the associated class.
                         </para>
                     </callout>
-                    <callout arearefs="manytoone11">
+                    <callout arearefs="onetoone11">
                         <para>
                             <literal>foreign-key</literal> (optional): Specifies the name of the foreign key
                             constraint for DDL generation.
                         </para>
                     </callout>
+                    <callout arearefs="onetoone12">
+                        <para>
+                            <literal>optimistic-lock</literal> (optional - defaults to <literal>false</literal>):
+                            Specifies that updates to this property do or do not require acquisition of the
+                            optimistic lock. In other words, determines if a version increment should occur when
+                            this property is dirty.
+                        </para>
+                    </callout>                    
                 </calloutlist>
             </programlistingco>
         

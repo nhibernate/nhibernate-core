@@ -1040,6 +1040,7 @@
 			</xs:attribute>
 			<xs:attribute name="constrained" default="false" type="xs:boolean">
 			</xs:attribute>
+			<xs:attribute name="optimistic-lock" default="false" type="xs:boolean" />
 			<xs:attribute name="foreign-key" type="xs:string" />
 			<xs:attribute name="property-ref" type="xs:string" />
 			<xs:attribute name="lazy" type="laziness">

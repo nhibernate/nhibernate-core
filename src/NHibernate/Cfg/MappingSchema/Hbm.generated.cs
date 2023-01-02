@@ -2923,6 +2923,11 @@ namespace NHibernate.Cfg.MappingSchema {
         public bool constrained;
         
         /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute("optimistic-lock")]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool optimisticlock;
+        
+        /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("foreign-key")]
         public string foreignkey;
         
@@ -2944,6 +2949,7 @@ namespace NHibernate.Cfg.MappingSchema {
         
         public HbmOneToOne() {
             this.constrained = false;
+            this.optimisticlock = false;
         }
     }
     
