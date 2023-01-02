@@ -26,7 +26,12 @@ namespace NHibernate.Test.NHSpecificTest.GH3215
 			});
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
-		
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsCountDistinct;
+		}
+
 		protected override void Configure(Configuration configuration)
 		{
 			base.Configure(configuration);
