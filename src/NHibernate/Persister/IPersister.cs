@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NHibernate.Persister
 {
-	// TODO 6.0: Make this public and make IEntityPersister and ICollectionPersister derive it.
+	// TODO 6.0: Make IEntityPersister and ICollectionPersister derive it.
 	public interface IPersister
 	{
 		/// <summary>
