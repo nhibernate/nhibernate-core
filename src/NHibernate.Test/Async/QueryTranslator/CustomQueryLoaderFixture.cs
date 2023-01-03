@@ -17,7 +17,7 @@ using NHibernate.Linq;
 namespace NHibernate.Test.QueryTranslator
 {
 	using System.Threading.Tasks;
-	[TestFixture]
+	[TestFixture(Description = "Tests a custom query translator factory for all query interfaces.")]
 	internal sealed class CustomQueryLoaderFixtureAsync : TestCase
 	{
 		private ISession _session;
@@ -78,7 +78,7 @@ namespace NHibernate.Test.QueryTranslator
 			_session.Dispose();
 		}
 
-		[Test]
+		[Test(Description = "Tests criteria queries.")]
 		public async Task CriteriaQueryTestAsync()
 		{
 			var customers = await (_session.CreateCriteria(typeof(Customer))
@@ -87,7 +87,7 @@ namespace NHibernate.Test.QueryTranslator
 			Assert.AreEqual(1, customers.Count);
 		}
 		
-		[Test]
+		[Test(Description = "Tests HQL queries.")]
 		public async Task HqlQueryTestAsync()
 		{
 			var customers = await (_session.CreateQuery("select c from Customer c")
@@ -96,7 +96,7 @@ namespace NHibernate.Test.QueryTranslator
 			Assert.AreEqual(1, customers.Count);
 		}
 
-		[Test]
+		[Test(Description = "Tests LINQ queries.")]
 		public async Task LinqQueryTestAsync()
 		{
 			var customers = await (_session.Query<Customer>()
@@ -105,7 +105,7 @@ namespace NHibernate.Test.QueryTranslator
 			Assert.AreEqual(1, customers.Count);
 		}
 
-		[Test]
+		[Test(Description = "Tests query over queries.")]
 		public async Task QueryOverQueryTestAsync()
 		{
 			var customers = await (_session.QueryOver<Customer>()
