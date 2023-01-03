@@ -16,6 +16,10 @@ using NHibernate.Type;
 
 namespace NHibernate.Test.QueryTranslator
 {
+	/// <summary>
+	/// Custom query loader to test the functionality of custom query translator factory
+	/// with a custom query loader factory.
+	/// </summary>
 	internal sealed class CustomQueryLoader: IQueryLoader
 	{
 		private readonly IQueryLoader _queryLoader;

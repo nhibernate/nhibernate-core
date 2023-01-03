@@ -4,7 +4,6 @@ using NHibernate.Hql;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Linq;
-using NHibernate.Loader.Hql;
 using NHibernate.Type;
 
 namespace NHibernate.Test.QueryTranslator

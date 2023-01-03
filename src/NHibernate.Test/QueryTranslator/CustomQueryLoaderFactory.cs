@@ -5,6 +5,9 @@ using NHibernate.Loader.Hql;
 
 namespace NHibernate.Test.QueryTranslator
 {
+	/// <summary>
+	/// Custom query loader factory to test the functionality of custom query translator factory.
+	/// </summary>
 	internal sealed class CustomQueryLoaderFactory: IQueryLoaderFactory
 	{
 		public IQueryLoader Create(

@@ -857,7 +857,7 @@ namespace NHibernate.Impl
 		}
 	}
 
-	internal class HqlTranslatorWrapper : ITranslator
+	internal class HqlTranslatorWrapper : ITranslatorWithCustomizableLoader
 	{
 		private readonly IQueryTranslator innerTranslator;
 

@@ -1,4 +1,3 @@
-```
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Hql.Ast.ANTLR.Tree;

@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.QueryTranslator
 {
-	[TestFixture]
+	[TestFixture(Description = "Tests a custom query translator factory for all query interfaces.")]
 	internal sealed class CustomQueryLoaderFixture : TestCase
 	{
 		private ISession _session;
@@ -66,7 +66,7 @@ namespace NHibernate.Test.QueryTranslator
 			_session.Dispose();
 		}
 
-		[Test]
+		[Test(Description = "Tests criteria queries.")]
 		public void CriteriaQueryTest()
 		{
 			var customers = _session.CreateCriteria(typeof(Customer))
@@ -75,7 +75,17 @@ namespace NHibernate.Test.QueryTranslator
 			Assert.AreEqual(1, customers.Count);
 		}
 		
-		[Test]
+		[Test(Description = "Tests future queries.")]
+		public void FutureQueryTest()
+		{
+			var customers = _session.CreateQuery("select c from Customer c")
+			                        .Future<Customer>()
+			                        .ToList();
+			
+			Assert.AreEqual(1, customers.Count);
+		}
+		
+		[Test(Description = "Tests HQL queries.")]
 		public void HqlQueryTest()
 		{
 			var customers = _session.CreateQuery("select c from Customer c")
@@ -84,7 +94,7 @@ namespace NHibernate.Test.QueryTranslator
 			Assert.AreEqual(1, customers.Count);
 		}
 
-		[Test]
+		[Test(Description = "Tests LINQ queries.")]
 		public void LinqQueryTest()
 		{
 			var customers = _session.Query<Customer>()
@@ -93,7 +103,7 @@ namespace NHibernate.Test.QueryTranslator
 			Assert.AreEqual(1, customers.Count);
 		}
 
-		[Test]
+		[Test(Description = "Tests query over queries.")]
 		public void QueryOverQueryTest()
 		{
 			var customers = _session.QueryOver<Customer>()
