@@ -2481,7 +2481,7 @@
                     </callout>
                     <callout arearefs="onetoone12">
                         <para>
-                            <literal>optimistic-lock</literal> (optional - defaults to <literal>false</literal>):
+                            <literal>optimistic-lock</literal> (optional - defaults to <literal>true</literal>):
                             Specifies that updates to this property do or do not require acquisition of the
                             optimistic lock. In other words, determines if a version increment should occur when
                             this property is dirty.

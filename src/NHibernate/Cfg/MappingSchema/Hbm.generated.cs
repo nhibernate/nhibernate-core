@@ -2924,7 +2924,7 @@ namespace NHibernate.Cfg.MappingSchema {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute("optimistic-lock")]
-        [System.ComponentModel.DefaultValueAttribute(false)]
+        [System.ComponentModel.DefaultValueAttribute(true)]
         public bool optimisticlock;
         
         /// <remarks/>

@@ -95,7 +95,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3204
 
 				Assert.That(
 					session.Get<Entity>(_id).Version,
-					Is.EqualTo(_optimisticLock.GetValueOrDefault(false) ? oldVersion + 1 : oldVersion));
+					Is.EqualTo(_optimisticLock.GetValueOrDefault(true) ? oldVersion + 1 : oldVersion));
 			}
 		}
 	}
