@@ -2949,7 +2949,7 @@ namespace NHibernate.Cfg.MappingSchema {
         
         public HbmOneToOne() {
             this.constrained = false;
-            this.optimisticlock = false;
+            this.optimisticlock = true;
         }
     }
     
