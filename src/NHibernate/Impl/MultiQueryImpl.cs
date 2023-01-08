@@ -866,6 +866,7 @@ namespace NHibernate.Impl
 			innerTranslator = translator;
 		}
 
+		// Since 5.5.
 		[Obsolete("Use QueryLoader instead.")]
 		public Loader.Loader Loader
 		{
@@ -891,7 +892,7 @@ namespace NHibernate.Impl
 		}
 	}
 
-	internal class SqlTranslator : ITranslator
+	internal class SqlTranslator : ITranslatorWithCustomizableLoader
 	{
 		private readonly CustomLoader loader;
 
@@ -908,10 +909,15 @@ namespace NHibernate.Impl
 			get { return loader.ResultTypes; }
 		}
 
+		// Since 5.5.
+		[Obsolete("Use QueryLoader instead.")]
 		public Loader.Loader Loader
 		{
 			get { return loader; }
 		}
+
+		/// <inheritdoc />
+		public ILoader QueryLoader => loader;
 
 		public ICollection<string> QuerySpaces
 		{
