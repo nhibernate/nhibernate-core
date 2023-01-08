@@ -2385,7 +2385,7 @@
                     <area id="onetoone9" coords="10 60"/>
                     <area id="onetoone10" coords="11 60"/>
                     <area id="onetoone11" coords="12 60"/>
-                    <area id="onetoone12" coords="12 60"/>                    
+                    <area id="onetoone12" coords="13 60"/>
                 </areaspec>
                 <programlisting><![CDATA[<one-to-one
     name="propertyName"
@@ -2486,7 +2486,7 @@
                             optimistic lock. In other words, determines if a version increment should occur when
                             this property is dirty.
                         </para>
-                    </callout>                    
+                    </callout>
                 </calloutlist>
             </programlistingco>
         
