@@ -19,16 +19,16 @@ jobs:
         token: ${{ secrets.NHIBERNATE_BOT_TOKEN }}
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 2.2.x
 
     - name: Generate Async code
       run: |
+        dotnet restore "./Tools/packages.csproj" --packages ./Tools
         pushd src
-        dotnet tool restore
         dotnet restore ./NHibernate.sln
-        dotnet async-generator
+        dotnet $(find ./../Tools/csharpasyncgenerator.commandline -name AsyncGenerator.CommandLine.dll) 
         popd
 
     - name: Push changes
