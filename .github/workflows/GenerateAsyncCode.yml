@@ -1,0 +1,44 @@
+name: Generate Async code
+
+on: 
+  pull_request_target:
+    paths:
+      - '**.cs'
+
+permissions: {}
+
+jobs:
+  generate-async:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+        repository: ${{ github.event.pull_request.head.repo.full_name }}
+        token: ${{ secrets.NHIBERNATE_BOT_TOKEN }}
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 2.2.x
+
+    - name: Generate Async code
+      run: |
+        dotnet restore "./Tools/packages.csproj" --packages ./Tools
+        pushd src
+        dotnet restore ./NHibernate.sln
+        dotnet $(find ./../Tools/csharpasyncgenerator.commandline -name AsyncGenerator.CommandLine.dll) 
+        popd
+
+    - name: Push changes
+      run: |
+        git config user.name github-actions[bot]
+        git config user.email github-actions[bot]@users.noreply.github.com
+        if [[ -z "$(git status --porcelain)" ]]; then
+            echo "No changes to commit"
+            exit 0
+        fi
+        git add -A
+        git commit -am "Generate async files"
+        git push
