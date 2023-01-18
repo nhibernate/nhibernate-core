@@ -28,6 +28,13 @@ namespace NHibernate.Test.NHSpecificTest.GH3218
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
+				rc.Component(
+					x => x.Component,
+					ekm =>
+					{
+						ekm.Property(ek => ek.Id1);
+						ekm.Property(ek => ek.Id2);
+					});
 			});
 			mapper.Class<Entity>(rc =>
 			{
@@ -38,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3218
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
-		
+
 		[Test]
 		public async Task ContainsOnIdAsync()
 		{
@@ -78,6 +85,16 @@ namespace NHibernate.Test.NHSpecificTest.GH3218
 			{
 				var client = "aaa";
 				await (session.Query<Entity>().Where(x => x.List.Select(l => l.Name).Contains(client)).ToListAsync());
+			}
+		}
+
+		[Test]
+		public async Task ContainsOnComponentAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var client = new CompositeKey() { Id1 = 1, Id2 = 2 };
+				await (session.Query<Entity>().Where(x => x.List.Select(l => l.Component).Contains(client)).ToListAsync());
 			}
 		}
 	}
