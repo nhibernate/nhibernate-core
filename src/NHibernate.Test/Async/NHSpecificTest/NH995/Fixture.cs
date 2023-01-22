@@ -17,6 +17,8 @@ namespace NHibernate.Test.NHSpecificTest.NH995
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
+		protected override string CacheConcurrencyStrategy => "nonstrict-read-write";
+
 		protected override void OnTearDown()
 		{
 			using (ISession s = OpenSession())

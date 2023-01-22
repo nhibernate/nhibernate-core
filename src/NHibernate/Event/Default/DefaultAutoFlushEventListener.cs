@@ -31,7 +31,8 @@ namespace NHibernate.Event.Default
 
 					FlushEverythingToExecutions(@event);
 
-					if (FlushIsReallyNeeded(@event, source))
+					var flushIsReallyNeeded = FlushIsReallyNeeded(@event, source);
+					if (flushIsReallyNeeded)
 					{
 						if (log.IsDebugEnabled())
 							log.Debug("Need to execute flush");
@@ -53,7 +54,7 @@ namespace NHibernate.Event.Default
 						source.ActionQueue.ClearFromFlushNeededCheck(oldSize);
 					}
 
-					@event.FlushRequired = FlushIsReallyNeeded(@event, source);
+					@event.FlushRequired = flushIsReallyNeeded;
 				}
 			}
 		}

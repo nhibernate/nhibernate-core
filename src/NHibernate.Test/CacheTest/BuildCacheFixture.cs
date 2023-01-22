@@ -18,9 +18,6 @@ namespace NHibernate.Test.CacheTest
 
 		protected override string[] Mappings => new[] { "CacheTest.EntitiesInSameRegion.hbm.xml" };
 
-		// Disable the TestCase cache overrides.
-		protected override string CacheConcurrencyStrategy => null;
-
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Environment.UseQueryCache, "true");

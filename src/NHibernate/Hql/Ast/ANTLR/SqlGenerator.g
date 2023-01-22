@@ -189,11 +189,14 @@ fromTable
 	: ^( a=FROM_FRAGMENT  { Out(a); } (tableJoin [ a ])* )
 	| ^( a=JOIN_FRAGMENT  { Out(a); } (tableJoin [ a ])* )
 	| ^( a=ENTITY_JOIN    { Out(a); } (tableJoin [ a ])* )
+	| ^( a=JOIN_SUBQUERY  { StartJoinSubquery(); } selectStatement { EndJoinSubquery(a); } (tableJoin [ a ])* )
 	;
 
 tableJoin [ IASTNode parent ]
 	: ^( c=JOIN_FRAGMENT { Out(" "); Out($c); } (tableJoin [ c ] )* )
 	| ^( d=FROM_FRAGMENT { NestedFromFragment($d,parent); } (tableJoin [ d ] )* )
+	| ^( e=ENTITY_JOIN   { Out(" "); Out(e); } (tableJoin [ e ])* )
+	| ^( f=JOIN_SUBQUERY { Out(" "); StartJoinSubquery(); } selectStatement { EndJoinSubquery(f); } (tableJoin [ f ])* )
 	;
 
 booleanOp[ bool parens ]

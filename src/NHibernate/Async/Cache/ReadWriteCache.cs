@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace NHibernate.Cache
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+
 	public partial class ReadWriteCache : IBatchableCacheConcurrencyStrategy
 	{
 
@@ -156,7 +158,7 @@ namespace NHibernate.Cache
 						var version = versions[i];
 						var lockable = (ILockable) lockables[i];
 						bool puttable = lockable == null ||
-						                lockable.IsPuttable(timestamp, version, versionComparers[i]);
+						                lockable.IsPuttable(timestamp, version, versionComparers[i], minimalPuts[i]);
 						if (puttable)
 						{
 							putBatch.Add(key, CachedItem.Create(values[i], Cache.NextTimestamp(), version));
@@ -222,7 +224,7 @@ namespace NHibernate.Cache
 					ILockable lockable = (ILockable) await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 
 					bool puttable = lockable == null ||
-					                lockable.IsPuttable(txTimestamp, version, versionComparator);
+					                lockable.IsPuttable(txTimestamp, version, versionComparator, minimalPut);
 
 					if (puttable)
 					{
@@ -264,7 +266,7 @@ namespace NHibernate.Cache
 				@lock.Unlock(Cache.NextTimestamp());
 				return Cache.PutAsync(key, @lock, cancellationToken);
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -315,7 +317,7 @@ namespace NHibernate.Cache
 				@lock.Unlock(ts);
 				return Cache.PutAsync(key, @lock, cancellationToken);
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -436,7 +438,7 @@ namespace NHibernate.Cache
 				Evict(key);
 				return Task.CompletedTask;
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -452,7 +454,7 @@ namespace NHibernate.Cache
 			{
 				return Task.FromResult<bool>(Update(key, value, currentVersion, previousVersion));
 			}
-			catch (System.Exception ex)
+			catch (Exception ex)
 			{
 				return Task.FromException<bool>(ex);
 			}

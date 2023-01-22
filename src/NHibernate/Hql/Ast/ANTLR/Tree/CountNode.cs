@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Antlr.Runtime;
-using NHibernate.Dialect.Function;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Type;
 
@@ -11,7 +11,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Author: josh
 	/// Ported by: Steve Strong
 	/// </summary>
-	class CountNode : AggregateNode, ISelectExpression
+	class CountNode : AggregateNode
 	{
 		public CountNode(IToken token) : base(token)
 		{
@@ -27,6 +27,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				base.DataType = value;
 			}
+		}
+
+		// Since v5.4
+		[Obsolete("Use overload with aliasCreator parameter instead.")]
+		public override void SetScalarColumnText(int i)
+		{
+			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i);
+		}
+
+		/// <inheritdoc />
+		public override string[] SetScalarColumnText(int i, Func<int, int, string> aliasCreator)
+		{
+			return new[] {ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i, aliasCreator)};
 		}
 	}
 }

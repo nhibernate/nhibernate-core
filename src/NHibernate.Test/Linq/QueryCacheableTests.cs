@@ -443,9 +443,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void CacheHqlQueryWithFetchAndTransformerThatChangeTuple()
 		{
-			if (!TestDialect.SupportsDuplicatedColumnAliases)
-				Assert.Ignore("Ignored due to GH-2092");
-
 			Sfi.Statistics.Clear();
 			Sfi.EvictQueries();
 

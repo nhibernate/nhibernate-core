@@ -15,11 +15,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1093
 			configuration.SetProperty(Environment.UseSecondLevelCache, "true");
 		}
 
-		protected override string CacheConcurrencyStrategy
-		{
-			get { return null; }
-		}
-
 		private void Cleanup()
 		{
 			using (var s = OpenSession())
