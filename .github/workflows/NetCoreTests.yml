@@ -20,6 +20,10 @@ jobs:
             CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
             DB_INIT: |
               docker run --name firebird -e EnableWireCrypt=true -e FIREBIRD_USER=nhibernate -e FIREBIRD_PASSWORD=nhibernate -e ISC_PASSWORD=nhibernate -e FIREBIRD_DATABASE=nhibernate -p 3050:3050 -d jacobalberty/firebird:v3.0
+          - DB: Firebird4
+            CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
+            DB_INIT: |
+              docker run --name firebird -e EnableWireCrypt=true -e FIREBIRD_USER=nhibernate -e FIREBIRD_PASSWORD=nhibernate -e ISC_PASSWORD=nhibernate -e FIREBIRD_DATABASE=nhibernate -p 3050:3050 -d jacobalberty/firebird:v4.0
           - DB: MySQL
             CONNECTION_STRING: "Server=localhost;Uid=root;Password=nhibernate;Database=nhibernate;Old Guids=True;SslMode=none;"
             DB_INIT: |

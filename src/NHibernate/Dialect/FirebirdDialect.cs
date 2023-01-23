@@ -152,19 +152,6 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		[Serializable]
-		private class CurrentTimeStamp : NoArgSQLFunction
-		{
-			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.LocalDateTime, true)
-			{
-			}
-
-			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
-			{
-				return new SqlString(Name);
-			}
-		}
-
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new FirebirdDataBaseSchema(connection);
@@ -474,7 +461,7 @@ namespace NHibernate.Dialect
 
 		private void OverrideStandardHQLFunctions()
 		{
-			RegisterFunction("current_timestamp", new CurrentTimeStamp());
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime, false));
 			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
 			RegisterFunction("length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int64, 1));
 			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));
