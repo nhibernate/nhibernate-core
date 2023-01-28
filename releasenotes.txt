@@ -1,4 +1,22 @@
-﻿Build 5.3.14
+﻿Build 5.3.15
+=============================
+
+Release notes - NHibernate - Version 5.3.15
+
+4 issues were resolved in this release.
+
+** Bug
+
+   * #3218 Failure of contains subquery with parameter
+   * #3187 Fix mixing implied implicit and left joins in HQL for v5.3
+
+** Task
+
+   * #3225 Release 5.3.15
+   * #3222 Automatically generate async code on pull requests for 5.3
+
+
+Build 5.3.14
 =============================
 
 Release notes - NHibernate - Version 5.3.14
@@ -7,8 +25,8 @@ Release notes - NHibernate - Version 5.3.14
 
 ** Bug
 
-    #3169 InvalidOperationException: This transformer is not initialized by Cached Query
-    #3164 Fetching a lazy loaded component regression
+   * #3169 InvalidOperationException: This transformer is not initialized by Cached Query
+   * #3164 Fetching a lazy loaded component regression
 
 ** Task
 
@@ -24,14 +42,14 @@ Release notes - NHibernate - Version 5.3.13
 
 ** Bug
 
-    #3134 ManyToMany - Tries to select not existing column in Mapping Table
-    #3113 Join fails on Oracle9Dialect
-    #3030 Memory leak named parameter holds entity references
+   * #3134 ManyToMany - Tries to select not existing column in Mapping Table
+   * #3113 Join fails on Oracle9Dialect
+   * #3030 Memory leak named parameter holds entity references
 
 ** Improvement
 
-    #3120 Guards against use of a disposed session factory
-    #2994 Npgsql 6 is not compatible
+   * #3120 Guards against use of a disposed session factory
+   * #2994 Npgsql 6 is not compatible
 
 ** Task
 
