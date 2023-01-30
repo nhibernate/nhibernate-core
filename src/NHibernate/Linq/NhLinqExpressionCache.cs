@@ -6,9 +6,9 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 
 namespace NHibernate.Linq
 {
-	internal class NhLinqExpressionCache : IQueryExpression
+	public class NhLinqExpressionCache : IQueryExpression
 	{
-		internal NhLinqExpressionCache(NhLinqExpression expression)
+		internal NhLinqExpressionCache(ILinqQueryExpression expression)
 		{
 			ExpressionToHqlTranslationResults = expression.ExpressionToHqlTranslationResults ?? throw new ArgumentException("NhLinqExpression is not translated");
 			Key = expression.Key;

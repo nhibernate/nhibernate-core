@@ -5,6 +5,7 @@ using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using System.Collections.Generic;
 using System.Data;
+using System.Numerics;
 
 namespace NHibernate.Type
 {
@@ -27,11 +28,16 @@ namespace NHibernate.Type
 		}
 
 		private static readonly Int32 ZERO = 0;
+
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
-				return Convert.ToInt32(rs[index]);
+				return rs[index] switch
+				{
+					BigInteger bi => (int) bi,
+					var c => Convert.ToInt32(c)
+				};
 			}
 			catch (Exception ex)
 			{
@@ -43,7 +49,11 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Convert.ToInt32(rs[name]);
+				return rs[name] switch
+				{
+					BigInteger bi => (int) bi,
+					var c => Convert.ToInt32(c)
+				};
 			}
 			catch (Exception ex)
 			{

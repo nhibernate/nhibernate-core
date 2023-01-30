@@ -24,7 +24,7 @@ namespace NHibernate.Multi
 			return
 				Query
 					.GetTranslators(Session, queryParameters)
-					.Select(t => new QueryInfo(queryParameters, t.Loader, new HashSet<string>(t.QuerySpaces), session))
+					.Select(t => new QueryInfo(queryParameters, t.GetQueryLoader(), new HashSet<string>(t.QuerySpaces), session))
 					.ToList();
 		}
 

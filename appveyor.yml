@@ -7,6 +7,7 @@ environment:
   - DB: PostgreSQL
     CONNECTION_STRING: Host=localhost;Port=5432;Username=postgres;Password=Password12!;Database=nhibernate;Enlist=true;
   - DB: Firebird
+  - DB: Firebird4
   - DB: MySQL
     CONNECTION_STRING: Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;SslMode=none;CharSet=utf8;
   - DB: SQLite
@@ -23,6 +24,27 @@ before_test:
         New-Item -ItemType Directory -Force $FireBirdPath > $null
         Push-Location $FireBirdPath
         Invoke-WebRequest 'https://github.com/FirebirdSQL/firebird/releases/download/R3_0_5/Firebird-3.0.5.33220-0_x64.zip' -OutFile firebird.zip
+        Unblock-File firebird.zip
+        7z x firebird.zip
+        New-Item -ItemType Directory -Force Data
+        # Declare nhibernate db
+        Add-Content -Path '.\databases.conf' -Value "`r`nnhibernate = $FireBirdPath\Data\nhibernate.fdb"
+        # Minimal db settings
+        Add-Content -Path '.\firebird.conf' -Value "`r`nAuthServer = Srp`r`nAuthClient = Srp`r`nUserManager = Srp`r`nWireCrypt = Enabled"
+        # Create SYSDBA account
+        New-Item SYSDBA.sql -Type File
+        Add-Content -Path '.\SYSDBA.sql' -Value "CREATE USER SYSDBA PASSWORD 'masterkey';`r`nCOMMIT;`r`nQUIT;"
+        .\isql -user sysdba employee -input SYSDBA.sql
+        # Start Firebird
+        .\firebird.exe -a
+        Pop-Location
+      }
+      'Firebird4' {
+        $FireBirdPath = 'C:\firebird'
+        # Install Firebird
+        New-Item -ItemType Directory -Force $FireBirdPath > $null
+        Push-Location $FireBirdPath
+        Invoke-WebRequest 'https://github.com/FirebirdSQL/firebird/releases/download/v4.0.2/Firebird-4.0.2.2816-0-x64.zip' -OutFile firebird.zip
         Unblock-File firebird.zip
         7z x firebird.zip
         New-Item -ItemType Directory -Force Data
