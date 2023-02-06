@@ -12,10 +12,7 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class BooleanTypeFixture : TypeFixtureBase
 	{
-		protected override string TypeName
-		{
-			get { return "Boolean"; }
-		}
+		protected override string TypeName => "Boolean";
 
 		/// <summary>
 		/// Verify Equals will correctly determine when the property
