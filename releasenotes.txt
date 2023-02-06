@@ -1,4 +1,23 @@
-﻿Build 5.4.0
+﻿Build 5.4.1
+=============================
+
+Release notes - NHibernate - Version 5.4.1
+
+5 issues were resolved in this release.
+
+** Bug
+
+   * #3216 Enable one-to-one optimistic lock handling in mapping
+   * #3215 Count(Distinct ...) does not work
+   * #3203 Fix a wrong example in configuration documentation
+
+** Task
+
+   * #3232 Release 5.4.1
+   * #3206 Update actions/setup-dotnet action to v3
+
+
+Build 5.4.0
 =============================
 
 Release notes - NHibernate - Version 5.4.0
