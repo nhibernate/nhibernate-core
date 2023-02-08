@@ -34,7 +34,7 @@ Release notes - NHibernate - Version 5.4.0
 
     ##### Possible Breaking Changes #####
         * One-to-one changes does now trigger a version increment, consistently with the default behavior of other kinds of
-          associations.
+          associations. See #3204.
         * Linq and criteria queries on unmapped entities will throw instead of returning an empty result list. See #1106, #1095.
         * The second level cache UpdateTimestampsCache does not use locks anymore. This may slightly increase the number of cases
           where stale data is returned by the query cache. See #2742.
