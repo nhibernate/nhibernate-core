@@ -1,4 +1,25 @@
-﻿Build 5.4.0
+﻿Build 5.4.1
+=============================
+
+Release notes - NHibernate - Version 5.4.1
+
+4 issues were resolved in this release.
+
+** Bug
+
+   * #3216 Enable one-to-one optimistic lock handling in mapping
+   * #3215 Count(Distinct ...) does not work
+   * #3203 Fix a wrong example in configuration documentation
+
+** Task
+
+   * #3232 Release 5.4.1
+
+As part of releasing 5.4.1, a missing 5.4.0 possible breaking change has been added, about
+one-to-one associations and optimistic locking. See 5.4.0 possible breaking changes.
+
+
+Build 5.4.0
 =============================
 
 Release notes - NHibernate - Version 5.4.0
@@ -12,6 +33,8 @@ Release notes - NHibernate - Version 5.4.0
     * 201 issues were resolved in this release.
 
     ##### Possible Breaking Changes #####
+        * One-to-one changes does now trigger a version increment, consistently with the default behavior of other kinds of
+          associations. See #3204.
         * Linq and criteria queries on unmapped entities will throw instead of returning an empty result list. See #1106, #1095.
         * The second level cache UpdateTimestampsCache does not use locks anymore. This may slightly increase the number of cases
           where stale data is returned by the query cache. See #2742.
