@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NHibernate.Test.NHSpecificTest.GH3365
+namespace NHibernate.Test.NHSpecificTest.GH0829
 {
 	[Flags]
 	public enum TestEnum

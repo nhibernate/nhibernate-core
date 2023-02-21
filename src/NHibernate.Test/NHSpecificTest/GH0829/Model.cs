@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NHibernate.Test.NHSpecificTest.GH3365
+namespace NHibernate.Test.NHSpecificTest.GH0829
 {
 	public class Parent
 	{
