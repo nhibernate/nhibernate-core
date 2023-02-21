@@ -1,3 +1,4 @@
+using System;
 using System.Linq.Expressions;
 using NHibernate.Util;
 using Remotion.Linq.Parsing.ExpressionVisitors.Transformation;
@@ -5,8 +6,8 @@ using Remotion.Linq.Parsing.ExpressionVisitors.Transformation;
 namespace NHibernate.Linq.ExpressionTransformers
 {
 	/// <summary>
-	/// Remove redundant casts to the same type or to superclass (upcast) in <see cref="ExpressionType.Convert"/>, <see cref=" ExpressionType.ConvertChecked"/> 
-	/// and <see cref="ExpressionType.TypeAs"/> <see cref="UnaryExpression"/>s  
+	/// Remove redundant casts to the same type or to superclass (upcast) in <see cref="ExpressionType.Convert"/>, <see cref=" ExpressionType.ConvertChecked"/>
+	/// and <see cref="ExpressionType.TypeAs"/> <see cref="UnaryExpression"/>s
 	/// </summary>
 	public class RemoveRedundantCast : IExpressionTransformer<UnaryExpression>
 	{
@@ -20,6 +21,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 		public Expression Transform(UnaryExpression expression)
 		{
 			if (expression.Type != typeof(object) &&
+				expression.Type != typeof(Enum) &&
 				expression.Type.IsAssignableFrom(expression.Operand.Type) &&
 				expression.Method == null &&
 				!expression.IsLiftedToNull)
@@ -29,7 +31,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 
 			// Reduce double casting (e.g. (long?)(long)3 => (long?)3)
 			if (expression.Operand.NodeType == ExpressionType.Convert &&
-			    expression.Type.UnwrapIfNullable() == expression.Operand.Type)
+				expression.Type.UnwrapIfNullable() == expression.Operand.Type)
 			{
 				return Expression.Convert(((UnaryExpression) expression.Operand).Operand, expression.Type);
 			}
