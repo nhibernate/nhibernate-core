@@ -492,6 +492,16 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void WhereEnumEqual()
+		{
+			var query = from item in db.PatientRecords
+						where item.Gender.Equals(Gender.Female)
+						select item;
+
+			ObjectDumper.Write(query);
+		}
+
+		[Test]
 		public void WhereEquatableEqual()
 		{
 			var query = from item in db.Shippers
