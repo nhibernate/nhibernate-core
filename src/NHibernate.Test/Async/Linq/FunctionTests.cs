@@ -460,6 +460,16 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task WhereEnumEqualAsync()
+		{
+			var query = from item in db.PatientRecords
+						where item.Gender.Equals(Gender.Female)
+						select item;
+
+			await (ObjectDumper.WriteAsync(query));
+		}
+
+		[Test]
 		public async Task WhereEquatableEqualAsync()
 		{
 			var query = from item in db.Shippers
