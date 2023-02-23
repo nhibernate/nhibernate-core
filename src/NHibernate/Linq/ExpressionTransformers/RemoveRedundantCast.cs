@@ -39,9 +39,6 @@ namespace NHibernate.Linq.ExpressionTransformers
 			return expression;
 		}
 
-		public ExpressionType[] SupportedExpressionTypes
-		{
-			get { return _supportedExpressionTypes; }
-		}
+		public ExpressionType[] SupportedExpressionTypes => _supportedExpressionTypes;
 	}
 }
