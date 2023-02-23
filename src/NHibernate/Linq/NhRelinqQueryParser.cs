@@ -4,10 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using NHibernate.Engine;
 using NHibernate.Linq.ExpressionTransformers;
 using NHibernate.Linq.Visitors;
-using NHibernate.Param;
 using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.EagerFetching.Parsing;
@@ -27,6 +25,7 @@ namespace NHibernate.Linq
 			var transformerRegistry = ExpressionTransformerRegistry.CreateDefault();
 			transformerRegistry.Register(new RemoveRedundantCast());
 			transformerRegistry.Register(new SimplifyCompareTransformer());
+			transformerRegistry.Register(new EnumEqualsTransformer());
 
 			// If needing a compound processor for adding other processing, do not use
 			// ExpressionTreeParser.CreateDefaultProcessor(transformerRegistry), it would
@@ -114,14 +113,14 @@ namespace NHibernate.Linq
 				new[] { ReflectHelper.FastGetMethodDefinition(EagerFetchingExtensionMethods.ThenFetch, default(INhFetchRequest<object, object>), default(Expression<Func<object, object>>)) },
 				typeof(ThenFetchOneExpressionNode));
 			methodInfoRegistry.Register(
-				new[] { ReflectHelper.FastGetMethodDefinition( EagerFetchingExtensionMethods.ThenFetchMany, default(INhFetchRequest<object, object>), default(Expression<Func<object, IEnumerable<object>>>)) },
+				new[] { ReflectHelper.FastGetMethodDefinition(EagerFetchingExtensionMethods.ThenFetchMany, default(INhFetchRequest<object, object>), default(Expression<Func<object, IEnumerable<object>>>)) },
 				typeof(ThenFetchManyExpressionNode));
 			methodInfoRegistry.Register(
 				new[]
 				{
 					ReflectHelper.FastGetMethodDefinition(LinqExtensionMethods.WithLock, default(IQueryable<object>), default(LockMode)),
 					ReflectHelper.FastGetMethodDefinition(LinqExtensionMethods.WithLock, default(IEnumerable<object>), default(LockMode))
-				}, 
+				},
 				typeof(LockExpressionNode));
 
 			var nodeTypeProvider = ExpressionTreeParser.CreateDefaultNodeTypeProvider();

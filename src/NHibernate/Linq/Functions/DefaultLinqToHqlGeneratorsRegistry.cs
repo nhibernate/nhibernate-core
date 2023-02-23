@@ -39,7 +39,6 @@ namespace NHibernate.Linq.Functions
 			this.Merge(new EndsWithGenerator());
 			this.Merge(new ContainsGenerator());
 			this.Merge(new EqualsGenerator());
-			this.Merge(new EnumEqualsGenerator());
 			this.Merge(new ToUpperGenerator());
 			this.Merge(new ToLowerGenerator());
 			this.Merge(new SubStringGenerator());
