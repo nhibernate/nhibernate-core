@@ -13,10 +13,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 	{
 		public ExpressionType[] SupportedExpressionTypes => _supportedExpressionTypes;
 
-		private static readonly ExpressionType[] _supportedExpressionTypes = new[]
-		{
-			ExpressionType.Call
-		};
+		private static readonly ExpressionType[] _supportedExpressionTypes = { ExpressionType.Call };
 
 		public Expression Transform(MethodCallExpression expression)
 		{
