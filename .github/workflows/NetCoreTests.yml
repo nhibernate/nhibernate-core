@@ -41,7 +41,7 @@ jobs:
           - DB: DB2
             CONNECTION_STRING: "Server=localhost:50000;Database=nhib;UID=nhib;PWD=nhib;"
             DB_INIT: |
-              docker run --name DB2 --privileged=true -e DB2INSTANCE=nhib -e DB2INST1_PASSWORD=nhib -e DBNAME=nhib -e LICENSE=accept -e AUTOCONFIG=false -e ARCHIVE_LOGS=false -p 50000:50000 -d ibmcom/db2:11.5.7.0
+              docker run --name DB2 --privileged=true -e DB2INSTANCE=nhib -e DB2INST1_PASSWORD=nhib -e DBNAME=nhib -e LICENSE=accept -e AUTOCONFIG=false -e ARCHIVE_LOGS=false -p 50000:50000 -d icr.io/db2_community/db2:11.5.8.0
               docker logs -f DB2 | sed '/(*) Setup has completed./ q'
 
               DB2_CLI_DRIVER_INSTALL_PATH="$(pwd)/src/NHibernate.Test/bin/Release/net6.0/clidriver"
