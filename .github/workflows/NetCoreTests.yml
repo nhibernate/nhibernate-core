@@ -43,6 +43,13 @@ jobs:
             DB_INIT: |
               docker run --name DB2 --privileged=true -e DB2INSTANCE=nhib -e DB2INST1_PASSWORD=nhib -e DBNAME=nhib -e LICENSE=accept -e AUTOCONFIG=false -e ARCHIVE_LOGS=false -p 50000:50000 -d ibmcom/db2:11.5.7.0
               docker logs -f DB2 | sed '/(*) Setup has completed./ q'
+
+              DB2_CLI_DRIVER_INSTALL_PATH="$(pwd)/src/NHibernate.Test/bin/Release/net6.0/clidriver"
+              echo "DB2_CLI_DRIVER_INSTALL_PATH=$DB2_CLI_DRIVER_INSTALL_PATH" >> $GITHUB_ENV
+              echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2_CLI_DRIVER_INSTALL_PATH/lib" >> $GITHUB_ENV
+              echo "LIBPATH=$LIBPATH:$DB2_CLI_DRIVER_INSTALL_PATH/lib" >> $GITHUB_ENV
+              echo "PATH=$DB2_CLI_DRIVER_INSTALL_PATH/bin:$DB2_CLI_DRIVER_INSTALL_PATH/adm:$PATH" >> $GITHUB_ENV
+
     runs-on: ubuntu-latest
     continue-on-error: ${{matrix.ALLOW_FAILURE == true}}
     env:
@@ -60,8 +67,4 @@ jobs:
 
     - name: Build and Test
       run: |
-        export DB2_CLI_DRIVER_INSTALL_PATH="$(pwd)/src/NHibernate.Test/bin/Release/net6.0/clidriver"
-        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2_CLI_DRIVER_INSTALL_PATH/lib
-        export LIBPATH=$LIBPATH:$DB2_CLI_DRIVER_INSTALL_PATH/lib
-        export PATH=$DB2_CLI_DRIVER_INSTALL_PATH/bin:$DB2_CLI_DRIVER_INSTALL_PATH/adm:$PATH
         pwsh -noprofile -command "& ./build.ps1 -TaskList Set-Configuration,Test -properties @{'Database' = '${{matrix.DB}}';'ConnectionString'='${{matrix.CONNECTION_STRING}}'}"
