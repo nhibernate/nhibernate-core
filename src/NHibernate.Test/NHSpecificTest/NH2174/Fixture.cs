@@ -47,13 +47,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 		[Test(Description = "GH-3239")]
 		public void LinqFetchManyToMany()
 		{
-			using (var session = OpenSession())
-			{
-				var result = (from e in session.Query<Document>().Fetch(x => x.RefferedDetailsManyToMany)
-							select e).FirstOrDefault();
-
-				Assert.That(result.RefferedDetailsManyToMany, Has.Count.EqualTo(1));
-			}
+			using var session = OpenSession();
+			var result = session.Query<Document>().Fetch(x => x.RefferedDetailsManyToMany).First();
+			Assert.That(result.RefferedDetailsManyToMany, Has.Count.EqualTo(1));
 		}
 
 		[Test]
@@ -69,11 +65,9 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 		[Test(Description = "GH-3239")]
 		public void QueryOverFetchManyToMany()
 		{
-			using (var session = OpenSession())
-			{
-				var result = session.QueryOver<Document>().Fetch(SelectMode.Fetch, x => x.RefferedDetailsManyToMany).SingleOrDefault();
-				Assert.That(result.RefferedDetailsManyToMany, Has.Count.EqualTo(1));
-			}
+			using var session = OpenSession();
+			var result = session.QueryOver<Document>().Fetch(SelectMode.Fetch, x => x.RefferedDetailsManyToMany).SingleOrDefault();
+			Assert.That(result.RefferedDetailsManyToMany, Has.Count.EqualTo(1));
 		}
 
 		[Test]
@@ -85,6 +79,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 							select e).First();
 				Assert.That(result.RefferedDetails.Count, Is.EqualTo(1));
 			}
+		}
+
+		[Test]
+		public void LazyLoadManyToMany()
+		{
+			using var session = OpenSession();
+			var result = session.Query<Document>().First();
+			Assert.That(result.RefferedDetailsManyToMany.Count, Is.EqualTo(1));
 		}
 	}
 }
