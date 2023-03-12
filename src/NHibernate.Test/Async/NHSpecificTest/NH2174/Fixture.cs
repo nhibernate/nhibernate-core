@@ -25,8 +25,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 			{
 				var doc = new Document {Id_Base = 1, Id_Doc = 2};
 				session.Save(doc);
-				session.Save(new DocumentDetailDocument {Id_Base = 1, Id_Doc = 2, Id_Item = 1, ReferencedDocument = doc});
+				var detail = new DocumentDetailDocument {Id_Base = 1, Id_Doc = 2, Id_Item = 1, ReferencedDocument = doc};
+				session.Save(detail);
 
+				doc.RefferedDetailsManyToMany.Add(detail);
 				transaction.Commit();
 			}
 		}
@@ -53,6 +55,18 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 			}
 		}
 
+		[Test(Description = "GH-3239")]
+		public async Task LinqFetchManyToManyAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = await ((from e in session.Query<Document>().Fetch(x => x.RefferedDetailsManyToMany)
+							select e).FirstOrDefaultAsync());
+
+				Assert.That(result.RefferedDetailsManyToMany, Has.Count.EqualTo(1));
+			}
+		}
+
 		[Test]
 		public async Task QueryOverFetchAsync()
 		{
@@ -60,6 +74,16 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 			{
 				var result = await (session.QueryOver<Document>().Fetch(SelectMode.Fetch, x => x.RefferedDetails).SingleOrDefaultAsync());
 				Assert.That(result.RefferedDetails, Has.Count.EqualTo(1));
+			}
+		}
+
+		[Test(Description = "GH-3239")]
+		public async Task QueryOverFetchManyToManyAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var result = await (session.QueryOver<Document>().Fetch(SelectMode.Fetch, x => x.RefferedDetailsManyToMany).SingleOrDefaultAsync());
+				Assert.That(result.RefferedDetailsManyToMany, Has.Count.EqualTo(1));
 			}
 		}
 
