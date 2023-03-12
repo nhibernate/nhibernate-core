@@ -68,14 +68,15 @@ namespace NHibernate.Engine
 
 			foreach (var join in joins)
 			{
-				var entityPersister = GetEntityPersister(join.Joinable);
+				var entityPersister = GetEntityPersister(join.Joinable, out var collection);
 				if (entityPersister?.HasSubclassJoins(includeSubclasses && isSubclassIncluded(join.Alias)) != true)
 					continue;
 
 				if (hasWithClause)
 					return true;
 
-				if (entityPersister.ColumnsDependOnSubclassJoins(join.RHSColumns))
+				if (collection?.IsManyToMany != true // many-to-many keys are stored in separate table
+				    && entityPersister.ColumnsDependOnSubclassJoins(join.RHSColumns))
 					return true;
 			}
 
@@ -91,14 +92,16 @@ namespace NHibernate.Engine
 			var isAssociationJoin = lhsColumns.Length > 0;
 			if (isAssociationJoin)
 			{
-				var entityPersister = GetEntityPersister(first.Joinable);
+				var entityPersister = GetEntityPersister(first.Joinable, out var collection);
 				string rhsAlias = first.Alias;
 				string[] rhsColumns = first.RHSColumns;
 				for (int j = 0; j < lhsColumns.Length; j++)
 				{
 					fromFragment.Add(lhsColumns[j])
 								.Add("=")
-								.Add(entityPersister?.GenerateTableAliasForColumn(rhsAlias, rhsColumns[j]) ?? rhsAlias)
+								.Add(entityPersister == null || collection?.IsManyToMany == true // many-to-many keys are stored in separate table
+									     ? rhsAlias
+									     : entityPersister.GenerateTableAliasForColumn(rhsAlias, rhsColumns[j]))
 								.Add(".")
 								.Add(rhsColumns[j]);
 					if (j != lhsColumns.Length - 1)
@@ -111,12 +114,13 @@ namespace NHibernate.Engine
 			return fromFragment.ToSqlString();
 		}
 
-		private static AbstractEntityPersister GetEntityPersister(IJoinable joinable)
+		private static AbstractEntityPersister GetEntityPersister(IJoinable joinable, out IQueryableCollection collection)
 		{
+			collection = null;
 			if (!joinable.IsCollection)
 				return joinable as AbstractEntityPersister;
 
-			var collection = (IQueryableCollection) joinable;
+			collection = (IQueryableCollection) joinable;
 			return collection.ElementType.IsEntityType ? collection.ElementPersister as AbstractEntityPersister : null;
 		}
 
