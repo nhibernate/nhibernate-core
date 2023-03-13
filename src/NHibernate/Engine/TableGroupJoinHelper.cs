@@ -77,7 +77,9 @@ namespace NHibernate.Engine
 
 				if (!isManyToMany // many-to-many keys are stored in separate table
 				    && entityPersister.ColumnsDependOnSubclassJoins(join.RHSColumns))
+				{
 					return true;
+				}
 			}
 
 			return false;
