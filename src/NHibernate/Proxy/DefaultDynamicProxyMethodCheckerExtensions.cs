@@ -48,8 +48,7 @@ namespace NHibernate.Proxy
 
 		private static bool IsFinalizeMethod(MethodInfo method)
 		{
-			return "finalize".Equals(method.Name, StringComparison.OrdinalIgnoreCase) &&
-			       method.GetBaseDefinition() == ReflectionCache.ObjectMethods.Finalize;
+			return method.GetBaseDefinition() == ReflectionCache.ObjectMethods.Finalize;
 		}
 	}
 }
