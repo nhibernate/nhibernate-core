@@ -86,6 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 		private int _id_Doc;
 		private int _id_base;
 		public virtual IList<DocumentDetailDocument> RefferedDetails { get; set; } = new List<DocumentDetailDocument>();
+		public virtual IList<DocumentDetailDocument> RefferedDetailsManyToMany { get; set; } = new List<DocumentDetailDocument>();
 
 		public int Id_Doc
 		{
