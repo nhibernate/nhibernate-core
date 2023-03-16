@@ -62,12 +62,6 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			}
 		}
 
-		protected override void Configure(Configuration configuration)
-		{
-			configuration.SetProperty(Cfg.Environment.UseSecondLevelCache, "false");
-			base.Configure(configuration);
-		}
-
 		[Test]
 		public async Task DeviceOfDriveAsync()
 		{
