@@ -176,9 +176,8 @@ namespace NHibernate.Test.Linq
 
 		[TestCase(null)]
 		[TestCase(TestEnum.Unspecified)]
-		public async Task CanQueryComplexExpressionOnTestEnumAsync(TestEnum? value)
+		public async Task CanQueryComplexExpressionOnTestEnumAsync(TestEnum? type)
 		{
-			TestEnum? type = value;
 			using (var session = OpenSession())
 			{
 				var entities = session.Query<EnumEntity>();
