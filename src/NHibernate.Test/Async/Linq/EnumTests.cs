@@ -174,13 +174,12 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		[Test]
-		public async Task CanQueryComplexExpressionOnTestEnumAsync()
+		[TestCase(null)]
+		[TestCase(TestEnum.Unspecified)]
+		public async Task CanQueryComplexExpressionOnTestEnumAsync(TestEnum? value)
 		{
-			//TODO: Fix issue on SQLite with type set to  TestEnum.Unspecified
-			TestEnum? type = null;
+			TestEnum? type = value;
 			using (var session = OpenSession())
-			using (var trans = session.BeginTransaction())
 			{
 				var entities = session.Query<EnumEntity>();
 
@@ -197,7 +196,7 @@ namespace NHibernate.Test.Linq
 								 coalesce = user.NullableEnum1 ?? TestEnum.Medium
 							 }).ToListAsync());
 
-				Assert.That(query.Count, Is.EqualTo(0));
+				Assert.That(query.Count, Is.EqualTo(type == TestEnum.Unspecified ? 1 : 0));
 			}
 		}
 
