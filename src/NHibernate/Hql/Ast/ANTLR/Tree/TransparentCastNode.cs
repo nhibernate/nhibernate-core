@@ -28,8 +28,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				_expectedType = value;
 				var node = GetChild(0).NextSibling.GetChild(0);
-				//transparentcast on parameters is a special use case - skip it.
-				if (node.Type != HqlSqlWalker.NAMED_PARAM && node is IExpectedTypeAwareNode  typeNode && typeNode.ExpectedType == null)
+				// A transparent cast on parameters is a special use case - skip it.
+				if (node.Type != HqlSqlWalker.NAMED_PARAM && node is IExpectedTypeAwareNode typeNode && typeNode.ExpectedType == null)
 					typeNode.ExpectedType = value;
 			}
 		}
@@ -37,7 +37,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public override SqlString Render(IList args)
 		{
 			return ExpectedType != null
-				// Provide expected type in case transparent cast is transformed to real
+				// Provide the expected type in case the transparent cast is transformed to an actual cast.
 				? ((CastFunction) SQLFunction).Render(args, ExpectedType, SessionFactoryHelper.Factory)
 				: base.Render(args);
 		}
