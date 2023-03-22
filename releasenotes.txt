@@ -1,4 +1,25 @@
-﻿Build 5.4.0
+﻿Build 5.4.1
+=============================
+
+Release notes - NHibernate - Version 5.4.1
+
+4 issues were resolved in this release.
+
+** Bug
+
+   * #3216 Enable one-to-one optimistic lock handling in mapping
+   * #3215 Count(Distinct ...) does not work
+   * #3203 Fix a wrong example in configuration documentation
+
+** Task
+
+   * #3232 Release 5.4.1
+
+As part of releasing 5.4.1, a missing 5.4.0 possible breaking change has been added, about
+one-to-one associations and optimistic locking. See 5.4.0 possible breaking changes.
+
+
+Build 5.4.0
 =============================
 
 Release notes - NHibernate - Version 5.4.0
@@ -12,6 +33,8 @@ Release notes - NHibernate - Version 5.4.0
     * 201 issues were resolved in this release.
 
     ##### Possible Breaking Changes #####
+        * One-to-one changes does now trigger a version increment, consistently with the default behavior of other kinds of
+          associations. See #3204.
         * Linq and criteria queries on unmapped entities will throw instead of returning an empty result list. See #1106, #1095.
         * The second level cache UpdateTimestampsCache does not use locks anymore. This may slightly increase the number of cases
           where stale data is returned by the query cache. See #2742.
@@ -186,6 +209,24 @@ Release notes - NHibernate - Version 5.4.0
    * #2242 Test case for NH-3972 - SQL error when selecting a column of a subclass when sibling classes have a column of the same name
 
 
+Build 5.3.15
+=============================
+
+Release notes - NHibernate - Version 5.3.15
+
+4 issues were resolved in this release.
+
+** Bug
+
+   * #3218 Failure of contains subquery with parameter
+   * #3187 Fix mixing implied implicit and left joins in HQL for v5.3
+
+** Task
+
+   * #3225 Release 5.3.15
+   * #3222 Automatically generate async code on pull requests for 5.3
+
+
 Build 5.3.14
 =============================
 
@@ -195,8 +236,8 @@ Release notes - NHibernate - Version 5.3.14
 
 ** Bug
 
-    #3169 InvalidOperationException: This transformer is not initialized by Cached Query
-    #3164 Fetching a lazy loaded component regression
+   * #3169 InvalidOperationException: This transformer is not initialized by Cached Query
+   * #3164 Fetching a lazy loaded component regression
 
 ** Task
 
@@ -212,14 +253,14 @@ Release notes - NHibernate - Version 5.3.13
 
 ** Bug
 
-    #3134 ManyToMany - Tries to select not existing column in Mapping Table
-    #3113 Join fails on Oracle9Dialect
-    #3030 Memory leak named parameter holds entity references
+   * #3134 ManyToMany - Tries to select not existing column in Mapping Table
+   * #3113 Join fails on Oracle9Dialect
+   * #3030 Memory leak named parameter holds entity references
 
 ** Improvement
 
-    #3120 Guards against use of a disposed session factory
-    #2994 Npgsql 6 is not compatible
+   * #3120 Guards against use of a disposed session factory
+   * #2994 Npgsql 6 is not compatible
 
 ** Task
 
