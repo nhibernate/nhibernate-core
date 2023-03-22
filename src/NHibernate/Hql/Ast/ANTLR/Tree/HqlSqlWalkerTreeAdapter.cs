@@ -69,7 +69,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					ret = new SqlFragment(payload);
 					break;
 				case HqlSqlWalker.METHOD_CALL:
-					ret = new MethodNode(payload);
+					ret = payload.Text == TransparentCastNode.Name
+						? new TransparentCastNode(payload)
+						: new MethodNode(payload);
 					break;
 				case HqlSqlWalker.ELEMENTS:
 				case HqlSqlWalker.INDICES:

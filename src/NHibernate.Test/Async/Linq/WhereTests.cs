@@ -67,6 +67,32 @@ namespace NHibernate.Test.Linq
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
+		[Test(Description = "GH-3256")]
+		public async Task CanUseStringEnumInConditionalAsync()
+		{
+			var query = db.Users
+			              .Where(
+				              user => (user.Enum1 == EnumStoredAsString.Small
+					              ? EnumStoredAsString.Small
+					              : EnumStoredAsString.Large) == user.Enum1)
+			              .Select(x => x.Enum1);
+
+			Assert.That(await (query.CountAsync()), Is.GreaterThan(0));
+		}
+
+		[Test(Description = "GH-3256")]
+		public async Task CanUseStringEnumInConditional2Async()
+		{
+			var query = db.Users
+			              .Where(
+				              user => (user.Enum1 == EnumStoredAsString.Small
+					              ? user.Enum1
+					              : EnumStoredAsString.Large) == user.Enum1)
+			              .Select(x => x.Enum1);
+
+			Assert.That(await (query.CountAsync()), Is.GreaterThan(0));
+		}
+
 		[Test]
 		public async Task FirstElementWithWhereAsync()
 		{
