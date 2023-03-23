@@ -8,7 +8,7 @@
     <property name="Name" >
       <column name="Name" not-null="true" />
     </property>
-    <one-to-one cascade="save-update" name="OptionalInfo" />
+    <one-to-one cascade="save-update" name="OptionalInfo" foreign-key="none"/>
   </class>
   <class name="OptionalInfo" table="OptionalInfo">
     <id name="EmployeeId" >
@@ -20,6 +20,6 @@
     <property name="Age">
       <column name="Age" not-null="true" />
     </property>
-    <one-to-one cascade="none" name="Employee" />
+    <one-to-one cascade="none" name="Employee" foreign-key="none" />
   </class>
 </hibernate-mapping>
