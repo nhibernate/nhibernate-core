@@ -18,6 +18,24 @@ namespace NHibernate.Test.NHSpecificTest.GH3263
 	[TestFixture]
 	public class ReuseFetchJoinFixtureAsync : BugTestCase
 	{
+		protected override void OnSetUp()
+		{
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			var em = new Employee() { Name = "x", OptionalInfo = new OptionalInfo() };
+			em.OptionalInfo.Employee = em;
+			s.Save(em);
+			t.Commit();
+		}
+		protected override void OnTearDown()
+		{
+			using var session = OpenSession();
+			using var transaction = session.BeginTransaction();
+			session.CreateQuery("delete from System.Object").ExecuteUpdate();
+
+			transaction.Commit();
+		}
+
 		[Test]
 		public async Task ReuseJoinScalarSelectAsync()
 		{
@@ -66,11 +84,16 @@ namespace NHibernate.Test.NHSpecificTest.GH3263
 		public async Task ReuseJoinEntityAndScalarSelectAsync()
 		{
 			using var session = OpenSession();
-			await (session.Query<Employee>()
+			using var sqlLog = new SqlLogSpy();
+
+			var x = await (session.Query<Employee>()
 				.Fetch(x => x.OptionalInfo)
 				.Where(x => x.OptionalInfo != null)
 				.Select(x => new { x, x.OptionalInfo.Age })
-				.ToListAsync());
+				.FirstAsync());
+
+			Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1));
+			Assert.That(NHibernateUtil.IsInitialized(x.x.OptionalInfo), Is.True);
 		}
 	}
 }
