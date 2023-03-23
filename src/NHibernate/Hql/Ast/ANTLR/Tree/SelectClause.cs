@@ -228,7 +228,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// add the fetched entities
 			foreach (FromElement fromElement in fromClause.GetAllProjectionListTyped())
 			{
-				if (!fromElement.IsFetch)
+				if (!fromElement.IsFetch || fromElement.ReusedJoin)
 				{
 					continue;
 				}
