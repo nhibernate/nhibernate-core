@@ -228,7 +228,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// add the fetched entities
 			foreach (FromElement fromElement in fromClause.GetAllProjectionListTyped())
 			{
-				if (!fromElement.IsFetch || fromElement.ReusedJoin)
+				if (!fromElement.IsFetch)
 				{
 					continue;
 				}
@@ -245,7 +245,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					// throw new QueryException(string.Format(JoinFetchWithoutOwnerExceptionMsg, fromElement.GetDisplayText()));
 
 					//throw away the fromElement. It's clearly redundant.
-					if (fromElement.FromClause == fromClause)
+					if (fromElement.FromClause == fromClause && !fromElement.ReusedJoin)
 					{
 						fromElement.Parent.RemoveChild(fromElement);
 					}
