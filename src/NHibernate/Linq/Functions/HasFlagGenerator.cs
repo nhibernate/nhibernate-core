@@ -4,21 +4,17 @@ using System.Linq.Expressions;
 using System.Reflection;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Visitors;
+using NHibernate.Util;
 
 namespace NHibernate.Linq.Functions
 {
-	internal class HasFlagGenerator : BaseHqlGeneratorForMethod, IRuntimeMethodHqlGenerator
+	internal class HasFlagGenerator : BaseHqlGeneratorForMethod
 	{
 		private const string _bitAndFunctionName = "band";
 
-		public bool SupportsMethod(MethodInfo method)
+		public HasFlagGenerator()
 		{
-			return method.Name == nameof(Enum.HasFlag) && method.DeclaringType == typeof(Enum);
-		}
-
-		public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)
-		{
-			return this;
+			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition<Enum>(x => x.HasFlag(default)) };
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)

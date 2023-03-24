@@ -25,7 +25,7 @@ namespace NHibernate.Linq.Functions
 			RegisterGenerator(new ToStringRuntimeMethodHqlGenerator());
 			RegisterGenerator(new LikeGenerator());
 			RegisterGenerator(new GetValueOrDefaultGenerator());
-			RegisterGenerator(new HasFlagGenerator());
+
 
 			RegisterGenerator(new CompareGenerator());
 			this.Merge(new CompareGenerator());
@@ -70,6 +70,7 @@ namespace NHibernate.Linq.Functions
 			this.Merge(new DecimalNegateGenerator());
 			this.Merge(new RoundGenerator());
 			this.Merge(new TruncateGenerator());
+			this.Merge(new HasFlagGenerator());
 
 			var indexerGenerator = new ListIndexerGenerator();
 			RegisterGenerator(indexerGenerator);
