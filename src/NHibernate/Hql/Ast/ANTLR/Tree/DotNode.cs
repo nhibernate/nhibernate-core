@@ -558,6 +558,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				{
 					elem.JoinSequence.SetJoinType(_joinType);
 				}
+
+				elem.ReusedJoin = true;
 				currentFromClause.AddDuplicateAlias(classAlias, elem);
 			}
 
