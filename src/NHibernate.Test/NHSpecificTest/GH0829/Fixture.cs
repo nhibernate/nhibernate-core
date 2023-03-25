@@ -20,7 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.GH0829
 			var e3 = new Child { Type = TestEnum.C, Parent = e1 };
 			session.Save(e3);
 
-			session.Flush();
 			transaction.Commit();
 		}
 
@@ -28,7 +27,6 @@ namespace NHibernate.Test.NHSpecificTest.GH0829
 		public void SelectClass()
 		{
 			using var session = OpenSession();
-			using var transaction = session.BeginTransaction();
 
 			var resultFound = session.Query<Parent>().Where(x => x.Type.HasFlag(TestEnum.A)).FirstOrDefault();
 
@@ -42,7 +40,6 @@ namespace NHibernate.Test.NHSpecificTest.GH0829
 		public void SelectChildClassContainedInParent()
 		{
 			using var session = OpenSession();
-			using var transaction = session.BeginTransaction();
 
 			var result = session.Query<Child>().Where(x => x.Parent.Type.HasFlag(x.Type)).FirstOrDefault();
 
@@ -51,13 +48,14 @@ namespace NHibernate.Test.NHSpecificTest.GH0829
 
 		protected override void OnTearDown()
 		{
-			base.OnTearDown();
 			using var session = OpenSession();
+			using var transaction = session.BeginTransaction();
 			foreach (var entity in new[] { nameof(Child), nameof(Parent) })
 			{
-				session.Delete($"from {entity}");
-				session.Flush();
+				session.CreateQuery($"delete from {entity}").ExecuteUpdate();
 			}
+
+			transaction.Commit();
 		}
 	}
 }
