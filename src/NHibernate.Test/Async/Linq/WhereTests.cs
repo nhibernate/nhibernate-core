@@ -645,6 +645,17 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task TimesheetsWithEnumerableContainsOnSelectAsync()
+		{
+			var value = (EnumStoredAsInt32) 1000;
+			var query = await ((from sheet in db.Timesheets
+			             where sheet.Users.Select(x => x.NullableEnum2 ?? value).Contains(value)
+			             select sheet).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(1));
+		}
+
+		[Test]
 		public async Task SearchOnObjectTypeWithExtensionMethodAsync()
 		{
 			var query = await ((from o in session.Query<Animal>()
