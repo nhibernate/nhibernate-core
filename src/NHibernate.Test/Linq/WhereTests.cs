@@ -648,7 +648,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void TimesheetsWithEnumerableContainsOnSelect()
 		{
-			using var log = new SqlLogSpy();
 			var value = (EnumStoredAsInt32) 1000;
 			var query = (from sheet in db.Timesheets
 			             where sheet.Users.Select(x => x.NullableEnum2 ?? value).Contains(value)
