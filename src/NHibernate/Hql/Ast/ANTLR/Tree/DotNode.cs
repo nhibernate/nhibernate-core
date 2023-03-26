@@ -417,8 +417,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if ( joinIsNeeded )
 			{
-				var forceLeftJoin = comparisonWithNullableEntity && Walker.IsNullComparison;
-				DereferenceEntityJoin(classAlias, entityType, implicitJoin, parent, forceLeftJoin);
+				DereferenceEntityJoin(classAlias, entityType, implicitJoin, parent, comparisonWithNullableEntity);
 				if (comparisonWithNullableEntity)
 				{
 					_columns = FromElement.GetIdentityColumns();
