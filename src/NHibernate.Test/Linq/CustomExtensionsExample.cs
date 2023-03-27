@@ -31,7 +31,7 @@ namespace NHibernate.Test.Linq
 
 	public class MyLinqToHqlGeneratorsRegistry : DefaultLinqToHqlGeneratorsRegistry
 	{
-		public MyLinqToHqlGeneratorsRegistry() : base()
+		public MyLinqToHqlGeneratorsRegistry()
 		{
 			RegisterGenerator(ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null)),
 							  new IsLikeGenerator());
