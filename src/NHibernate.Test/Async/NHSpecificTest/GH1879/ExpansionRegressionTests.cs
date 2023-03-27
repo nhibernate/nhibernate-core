@@ -8,16 +8,7 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using NHibernate.Cfg;
-using NHibernate.Hql.Ast;
-using NHibernate.Linq.Functions;
-using NHibernate.Linq.Visitors;
-using NHibernate.Util;
 using NUnit.Framework;
 using NHibernate.Linq;
 
@@ -40,14 +31,14 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 				session.Flush();
 				transaction.Commit();
 			}
-		}		
+		}
 
 		[Test]
 		public async Task MethodShouldNotExpandForNonConditionalOrCoalesceAsync()
 		{
 			using (var session = OpenSession())
 			{
-				Assert.That(await (session.Query<Invoice>().CountAsync(e => ((object)(e.Amount + e.SpecialAmount)).Equals(110))), Is.EqualTo(2));
+				Assert.That(await (session.Query<Invoice>().CountAsync(e => ((object) (e.Amount + e.SpecialAmount)).Equals(110))), Is.EqualTo(2));
 			}
 		}
 
@@ -56,7 +47,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 		{
 			using (var session = OpenSession())
 			{
-				Assert.That(await (session.Query<Invoice>().CountAsync(e => ((object)(e.Paid ? e.Amount : e.SpecialAmount)).Equals(10))), Is.EqualTo(2));
+				Assert.That(await (session.Query<Invoice>().CountAsync(e => ((object) (e.Paid ? e.Amount : e.SpecialAmount)).Equals(10))), Is.EqualTo(2));
 			}
 		}
 
@@ -65,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 		{
 			using (var session = OpenSession())
 			{
-				Assert.That(await (session.Query<Invoice>().CountAsync(e => ((object)(e.SpecialAmount ?? e.Amount)).Equals(100))), Is.EqualTo(2));
+				Assert.That(await (session.Query<Invoice>().CountAsync(e => ((object) (e.SpecialAmount ?? e.Amount)).Equals(100))), Is.EqualTo(2));
 			}
 		}
 	}
