@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
@@ -19,7 +18,7 @@ namespace NHibernate.Test.Linq
 		{
 			pattern = Regex.Escape(pattern);
 			pattern = pattern.Replace("%", ".*?").Replace("_", ".");
-			pattern = pattern.Replace(@"\[", "[").Replace(@"\]","]").Replace(@"\^", "^");
+			pattern = pattern.Replace(@"\[", "[").Replace(@"\]", "]").Replace(@"\^", "^");
 
 			return Regex.IsMatch(source, pattern);
 		}
@@ -30,13 +29,12 @@ namespace NHibernate.Test.Linq
 		}
 	}
 
-	public class MyLinqToHqlGeneratorsRegistry: DefaultLinqToHqlGeneratorsRegistry
+	public class MyLinqToHqlGeneratorsRegistry : DefaultLinqToHqlGeneratorsRegistry
 	{
-		public MyLinqToHqlGeneratorsRegistry():base()
+		public MyLinqToHqlGeneratorsRegistry() : base()
 		{
 			RegisterGenerator(ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null)),
 							  new IsLikeGenerator());
-			RegisterGenerator(ReflectHelper.GetMethodDefinition(() => new object().Equals(null)), new ObjectEqualsGenerator());
 			RegisterGenerator(ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.GetTime(default(DateTime))), new GetTimeGenerator());
 		}
 	}
@@ -58,29 +56,14 @@ namespace NHibernate.Test.Linq
 	{
 		public IsLikeGenerator()
 		{
-			SupportedMethods = new[] {ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null))};
+			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null)) };
 		}
 
-		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, 
+		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject,
 			ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			return treeBuilder.Like(visitor.Visit(arguments[0]).AsExpression(),
 									visitor.Visit(arguments[1]).AsExpression());
-		}
-	}
-
-	public class ObjectEqualsGenerator : BaseHqlGeneratorForMethod
-	{
-		public ObjectEqualsGenerator()
-		{
-			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition(() => new object().Equals(null)) };
-		}
-
-		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject,
-		                                     ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
-		{
-			return treeBuilder.Equality(visitor.Visit(targetObject).AsExpression(),
-			                        visitor.Visit(arguments[0]).AsExpression());
 		}
 	}
 
@@ -90,14 +73,6 @@ namespace NHibernate.Test.Linq
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
 			configuration.LinqToHqlGeneratorsRegistry<MyLinqToHqlGeneratorsRegistry>();
-		}
-
-		[Test]
-		public void CanUseObjectEquals()
-		{
-			var users = db.Users.Where(o => ((object) EnumStoredAsString.Medium).Equals(o.NullableEnum1)).ToList();
-			Assert.That(users.Count, Is.EqualTo(2));
-			Assert.That(users.All(c => c.NullableEnum1 == EnumStoredAsString.Medium), Is.True);
 		}
 
 		[Test(Description = "GH-2963")]

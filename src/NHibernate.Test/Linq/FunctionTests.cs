@@ -507,6 +507,17 @@ namespace NHibernate.Test.Linq
 			ObjectDumper.Write(query);
 		}
 
+
+		[Test]
+		public void WhereObjectEqual()
+		{
+			var query = from item in db.PatientRecords
+						where ((object) item.Gender).Equals(Gender.Female)
+						select item;
+
+			ObjectDumper.Write(query);
+		}
+
 		[Test]
 		public void WhereEquatableEqual()
 		{

@@ -32,15 +32,7 @@ namespace NHibernate.Test.Linq
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
 			configuration.LinqToHqlGeneratorsRegistry<MyLinqToHqlGeneratorsRegistry>();
-		}
-
-		[Test]
-		public async Task CanUseObjectEqualsAsync()
-		{
-			var users = await (db.Users.Where(o => ((object) EnumStoredAsString.Medium).Equals(o.NullableEnum1)).ToListAsync());
-			Assert.That(users.Count, Is.EqualTo(2));
-			Assert.That(users.All(c => c.NullableEnum1 == EnumStoredAsString.Medium), Is.True);
-		}
+		}		
 
 		[Test(Description = "GH-2963")]
 		public async Task CanUseComparisonWithExtensionOnMappedPropertyAsync()
