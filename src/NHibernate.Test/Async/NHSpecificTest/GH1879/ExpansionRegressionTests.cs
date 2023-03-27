@@ -40,36 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 				session.Flush();
 				transaction.Commit();
 			}
-		}
-
-		protected override void Configure(Configuration configuration)
-		{
-			configuration.LinqToHqlGeneratorsRegistry<TestLinqToHqlGeneratorsRegistry>();
-		}
-
-		private class TestLinqToHqlGeneratorsRegistry : DefaultLinqToHqlGeneratorsRegistry
-		{
-			public TestLinqToHqlGeneratorsRegistry()
-			{
-				this.Merge(new ObjectEquality());
-			}
-		}
-
-		private class ObjectEquality : IHqlGeneratorForMethod
-		{
-			public HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
-			{
-				return treeBuilder.Equality(visitor.Visit(targetObject).AsExpression(), visitor.Visit(arguments[0]).AsExpression());
-			}
-
-			public IEnumerable<MethodInfo> SupportedMethods
-			{
-				get
-				{
-					yield return ReflectHelper.GetMethodDefinition<object>(x => x.Equals(x));
-				}
-			}
-		}
+		}		
 
 		[Test]
 		public async Task MethodShouldNotExpandForNonConditionalOrCoalesceAsync()

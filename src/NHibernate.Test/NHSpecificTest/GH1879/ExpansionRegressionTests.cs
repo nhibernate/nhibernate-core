@@ -1,13 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using NHibernate.Cfg;
-using NHibernate.Hql.Ast;
-using NHibernate.Linq.Functions;
-using NHibernate.Linq.Visitors;
-using NHibernate.Util;
+﻿using System.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH1879
@@ -30,41 +21,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 			}
 		}
 
-		protected override void Configure(Configuration configuration)
-		{
-			configuration.LinqToHqlGeneratorsRegistry<TestLinqToHqlGeneratorsRegistry>();
-		}
-
-		private class TestLinqToHqlGeneratorsRegistry : DefaultLinqToHqlGeneratorsRegistry
-		{
-			public TestLinqToHqlGeneratorsRegistry()
-			{
-				this.Merge(new ObjectEquality());
-			}
-		}
-
-		private class ObjectEquality : IHqlGeneratorForMethod
-		{
-			public HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
-			{
-				return treeBuilder.Equality(visitor.Visit(targetObject).AsExpression(), visitor.Visit(arguments[0]).AsExpression());
-			}
-
-			public IEnumerable<MethodInfo> SupportedMethods
-			{
-				get
-				{
-					yield return ReflectHelper.GetMethodDefinition<object>(x => x.Equals(x));
-				}
-			}
-		}
-
 		[Test]
 		public void MethodShouldNotExpandForNonConditionalOrCoalesce()
 		{
 			using (var session = OpenSession())
 			{
-				Assert.That(session.Query<Invoice>().Count(e => ((object)(e.Amount + e.SpecialAmount)).Equals(110)), Is.EqualTo(2));
+				Assert.That(session.Query<Invoice>().Count(e => ((object) (e.Amount + e.SpecialAmount)).Equals(110)), Is.EqualTo(2));
 			}
 		}
 
@@ -73,7 +35,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 		{
 			using (var session = OpenSession())
 			{
-				Assert.That(session.Query<Invoice>().Count(e => ((object)(e.Paid ? e.Amount : e.SpecialAmount)).Equals(10)), Is.EqualTo(2));
+				Assert.That(session.Query<Invoice>().Count(e => ((object) (e.Paid ? e.Amount : e.SpecialAmount)).Equals(10)), Is.EqualTo(2));
 			}
 		}
 
@@ -82,7 +44,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1879
 		{
 			using (var session = OpenSession())
 			{
-				Assert.That(session.Query<Invoice>().Count(e => ((object)(e.SpecialAmount ?? e.Amount)).Equals(100)), Is.EqualTo(2));
+				Assert.That(session.Query<Invoice>().Count(e => ((object) (e.SpecialAmount ?? e.Amount)).Equals(100)), Is.EqualTo(2));
 			}
 		}
 	}
