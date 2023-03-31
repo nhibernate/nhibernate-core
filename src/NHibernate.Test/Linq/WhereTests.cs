@@ -663,7 +663,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public void ContainsSubqueryWithCoalesceStringEnumSelect()
 		{
-			if (Dialect is MsSqlCeDialect)
+			if (Dialect is MsSqlCeDialect || Dialect is SQLiteDialect)
 				Assert.Ignore("Dialect is not supported");
 
 			var results =
