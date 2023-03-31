@@ -288,42 +288,30 @@ namespace NHibernate.Linq.Visitors
 
 			protected override Expression VisitSubQuery(SubQueryExpression node)
 			{
-				if (!TryLinkContainsMethod(node.QueryModel))
-				{
-					node.QueryModel.TransformExpressions(Visit);
-				}
+				TryLinkContainsMethod(node.QueryModel);
+				node.QueryModel.TransformExpressions(Visit);
 
 				return node;
 			}
 
-			private bool TryLinkContainsMethod(QueryModel queryModel)
+			private void TryLinkContainsMethod(QueryModel queryModel)
 			{
 				// ReLinq wraps all ResultOperatorExpressionNodeBase into a SubQueryExpression. In case of
 				// ContainsResultOperator where the constant expression is dislocated from the related expression,
 				// we have to manually link the related expressions.
 				if (queryModel.ResultOperators.Count != 1 ||
-					!(queryModel.ResultOperators[0] is ContainsResultOperator containsOperator) ||
-					!(queryModel.SelectClause.Selector is QuerySourceReferenceExpression querySourceReference) ||
-					!(querySourceReference.ReferencedQuerySource is MainFromClause mainFromClause))
+					!(queryModel.ResultOperators[0] is ContainsResultOperator containsOperator))
 				{
-					return false;
+					return;
 				}
 
-				var left = UnwrapUnary(Visit(mainFromClause.FromExpression));
+				var left = UnwrapUnary(Visit(queryModel.SelectClause.Selector));
 				var right = UnwrapUnary(Visit(containsOperator.Item));
-				// The constant is on the left side (e.g. db.Users.Where(o => users.Contains(o)))
-				// The constant is on the right side (e.g. db.Customers.Where(o => o.Orders.Contains(item)))
-				if (left.NodeType != ExpressionType.Constant && right.NodeType != ExpressionType.Constant)
-				{
-					return false;
-				}
 
 				// Copy all found MemberExpressions to the constant expression
 				// (e.g. values.Contains(o.Name != o.Name2 ? o.Enum1 : o.Enum2) -> copy o.Enum1 and o.Enum2)
 				AddRelatedExpression(null, left, right);
 				AddRelatedExpression(null, right, left);
-
-				return true;
 			}
 
 			private void VisitAssign(Expression leftNode, Expression rightNode)
