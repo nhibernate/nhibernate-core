@@ -305,7 +305,12 @@ namespace NHibernate.Linq.Visitors
 					return;
 				}
 
-				var left = UnwrapUnary(Visit(queryModel.SelectClause.Selector));
+				Expression selector =
+					queryModel.SelectClause.Selector is QuerySourceReferenceExpression { ReferencedQuerySource: MainFromClause mainFromClause }
+						? mainFromClause.FromExpression
+						: queryModel.SelectClause.Selector;
+
+				var left = UnwrapUnary(Visit(selector));
 				var right = UnwrapUnary(Visit(containsOperator.Item));
 
 				// Copy all found MemberExpressions to the constant expression
