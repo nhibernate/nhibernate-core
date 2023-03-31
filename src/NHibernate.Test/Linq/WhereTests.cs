@@ -646,6 +646,17 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void TimesheetsWithEnumerableContainsOnSelect()
+		{
+			var value = (EnumStoredAsInt32) 1000;
+			var query = (from sheet in db.Timesheets
+			             where sheet.Users.Select(x => x.NullableEnum2 ?? value).Contains(value)
+			             select sheet).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(1));
+		}
+
+		[Test]
 		public void SearchOnObjectTypeWithExtensionMethod()
 		{
 			var query = (from o in session.Query<Animal>()
