@@ -24,9 +24,10 @@ later version. The release notes will generally document any breaking changes.
 
 Nightly Development Builds
 --------------------------
+[![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=flat-square)](https://cloudsmith.com)
 
 The quickest way to get the latest development build of NHibernate is to add it to your project using 
-NuGet from MyGet feed (<https://www.myget.org/gallery/nhibernate>).
+NuGet from Cloudsmith feed (<https://cloudsmith.io/~nhibernate/repos/nhibernate-core/packages/>).
 
 In order to make life a little bit easier you can register the package source in the NuGet.Config
 file in the top folder of your project, similar to the following.
@@ -35,7 +36,7 @@ file in the top folder of your project, similar to the following.
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <packageSources>
-    <add key="NHibernateDevBuilds" value="https://www.myget.org/F/nhibernate/api/v3/index.json" />
+    <add key="NHibernateDevBuilds" value="https://nuget.cloudsmith.io/nhibernate/nhibernate-core/v3/index.json" />
   </packageSources>
 </configuration>
 ```
