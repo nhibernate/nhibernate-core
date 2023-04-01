@@ -36,8 +36,8 @@ namespace NHibernate.Test.Linq
 				session.Flush();
 
 				var query = (from e in db.Employees
-							 where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, escapeChar)
-							 select e).ToList();
+				             where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, escapeChar)
+				             select e).ToList();
 
 				Assert.That(query.Count, Is.EqualTo(1));
 				Assert.That(query[0].FirstName, Is.EqualTo(employeeName));
@@ -81,8 +81,8 @@ namespace NHibernate.Test.Linq
 		public void SubstringFunction2()
 		{
 			var query = (from e in db.Employees
-						 where e.FirstName.Substring(0, 2) == "An"
-						 select e).ToList();
+				where e.FirstName.Substring(0, 2) == "An"
+				select e).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -91,8 +91,8 @@ namespace NHibernate.Test.Linq
 		public void SubstringFunction1()
 		{
 			var query = (from e in db.Employees
-						 where e.FirstName.Substring(3) == "rew"
-						 select e).ToList();
+				where e.FirstName.Substring(3) == "rew"
+				select e).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(1));
 			Assert.That(query[0].FirstName, Is.EqualTo("Andrew"));
@@ -130,21 +130,21 @@ namespace NHibernate.Test.Linq
 			var query = from e in db.Employees
 						where e.FirstName.StartsWith("An")
 						select new
-						{
-							Before = e.FirstName,
-							// This one call the standard string.Replace, not the extension. The linq registry handles it.
-							AfterMethod = e.FirstName.Replace("An", "Zan"),
-							AfterExtension = ExtensionMethods.Replace(e.FirstName, "An", "Zan"),
-							AfterNamedExtension = e.FirstName.ReplaceExtension("An", "Zan"),
-							AfterEvaluableExtension = e.FirstName.ReplaceWithEvaluation("An", "Zan"),
-							AfterEvaluable2Extension = e.FirstName.ReplaceWithEvaluation2("An", "Zan"),
+							{
+								Before = e.FirstName,
+								// This one call the standard string.Replace, not the extension. The linq registry handles it.
+								AfterMethod = e.FirstName.Replace("An", "Zan"),
+								AfterExtension = ExtensionMethods.Replace(e.FirstName, "An", "Zan"),
+								AfterNamedExtension = e.FirstName.ReplaceExtension("An", "Zan"),
+								AfterEvaluableExtension = e.FirstName.ReplaceWithEvaluation("An", "Zan"),
+								AfterEvaluable2Extension = e.FirstName.ReplaceWithEvaluation2("An", "Zan"),
 							BeforeConst = suppliedName,
-							// This one call the standard string.Replace, not the extension. The linq registry handles it.
-							AfterMethodConst = suppliedName.Replace("An", "Zan"),
-							AfterExtensionConst = ExtensionMethods.Replace(suppliedName, "An", "Zan"),
-							AfterNamedExtensionConst = suppliedName.ReplaceExtension("An", "Zan"),
-							AfterEvaluableExtensionConst = suppliedName.ReplaceWithEvaluation("An", "Zan"),
-							AfterEvaluable2ExtensionConst = suppliedName.ReplaceWithEvaluation2("An", "Zan")
+								// This one call the standard string.Replace, not the extension. The linq registry handles it.
+								AfterMethodConst = suppliedName.Replace("An", "Zan"),
+								AfterExtensionConst = ExtensionMethods.Replace(suppliedName, "An", "Zan"),
+								AfterNamedExtensionConst = suppliedName.ReplaceExtension("An", "Zan"),
+								AfterEvaluableExtensionConst = suppliedName.ReplaceWithEvaluation("An", "Zan"),
+								AfterEvaluable2ExtensionConst = suppliedName.ReplaceWithEvaluation2("An", "Zan")
 						};
 			var results = query.ToList();
 			var s = ObjectDumper.Write(results);
@@ -171,12 +171,12 @@ namespace NHibernate.Test.Linq
 			// Should cause ReplaceWithEvaluation to fail
 			suppliedName = null;
 			var failingQuery = from e in db.Employees
-							   where e.FirstName.StartsWith("An")
-							   select new
-							   {
-								   Before = e.FirstName,
-								   AfterEvaluableExtensionConst = suppliedName.ReplaceWithEvaluation("An", "Zan")
-							   };
+						where e.FirstName.StartsWith("An")
+						select new
+						{
+							Before = e.FirstName,
+							AfterEvaluableExtensionConst = suppliedName.ReplaceWithEvaluation("An", "Zan")
+						};
 			Assert.That(() => failingQuery.ToList(), Throws.InstanceOf<HibernateException>().And.InnerException.InstanceOf<ArgumentNullException>());
 		}
 
@@ -248,7 +248,7 @@ namespace NHibernate.Test.Linq
 		public void TwoFunctionExpression()
 		{
 			var query = from e in db.Employees
-						where e.FirstName.IndexOf("A") == e.BirthDate.Value.Month
+						where e.FirstName.IndexOf("A") == e.BirthDate.Value.Month 
 						select e.FirstName;
 
 			ObjectDumper.Write(query);
@@ -285,9 +285,9 @@ namespace NHibernate.Test.Linq
 		{
 			using (session.BeginTransaction())
 			{
-				AnotherEntity ae1 = new AnotherEntity { Input = " hi " };
-				AnotherEntity ae2 = new AnotherEntity { Input = "hi" };
-				AnotherEntity ae3 = new AnotherEntity { Input = "heh" };
+				AnotherEntity ae1 = new AnotherEntity {Input = " hi "};
+				AnotherEntity ae2 = new AnotherEntity {Input = "hi"};
+				AnotherEntity ae3 = new AnotherEntity {Input = "heh"};
 				session.Save(ae1);
 				session.Save(ae2);
 				session.Save(ae3);
@@ -303,7 +303,7 @@ namespace NHibernate.Test.Linq
 
 				// Check when passed as array
 				// (the single character parameter is a new overload in .netcoreapp2.0, but not net461 or .netstandard2.0).
-				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.Trim(new[] { 'h' }) == "e"));
+				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.Trim(new [] { 'h' }) == "e"));
 				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimStart(new[] { 'h' }) == "eh"));
 				Assert.AreEqual(1, session.Query<AnotherEntity>().Count(e => e.Input.TrimEnd(new[] { 'h' }) == "he"));
 
@@ -316,9 +316,9 @@ namespace NHibernate.Test.Linq
 		{
 			using (session.BeginTransaction())
 			{
-				session.Save(new AnotherEntity { Input = " hi" });
-				session.Save(new AnotherEntity { Input = "hi" });
-				session.Save(new AnotherEntity { Input = "heh" });
+				session.Save(new AnotherEntity {Input = " hi"});
+				session.Save(new AnotherEntity {Input = "hi"});
+				session.Save(new AnotherEntity {Input = "heh"});
 				session.Flush();
 
 				Assert.That(session.Query<AnotherEntity>().Count(e => e.Input.TrimStart() == "hi"), Is.EqualTo(2));
@@ -372,7 +372,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Role
 						where item.IsActive.Equals(true)
 						select item;
-
+			
 			ObjectDumper.Write(query);
 		}
 
@@ -382,7 +382,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Role
 						where item.IsActive.Equals(item.Name != null)
 						select item;
-
+			
 			ObjectDumper.Write(query);
 		}
 
@@ -392,7 +392,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Role
 						where item.IsActive.Equals(1 == 1)
 						select item;
-
+			
 			ObjectDumper.Write(query);
 		}
 
@@ -412,8 +412,8 @@ namespace NHibernate.Test.Linq
 		public void WhereLongEqual()
 		{
 			var query = from item in db.PatientRecords
-						where item.Id.Equals(-1)
-						select item;
+						 where item.Id.Equals(-1)
+						 select item;
 
 			ObjectDumper.Write(query);
 		}
@@ -427,7 +427,7 @@ namespace NHibernate.Test.Linq
 
 			ObjectDumper.Write(query);
 		}
-
+		
 		[Test]
 		public void WhereGuidEqual()
 		{
@@ -436,7 +436,7 @@ namespace NHibernate.Test.Linq
 						select item;
 
 			ObjectDumper.Write(query);
-		}
+		}		
 
 		[Test]
 		public void WhereDoubleEqual()
@@ -446,8 +446,8 @@ namespace NHibernate.Test.Linq
 						select item;
 
 			ObjectDumper.Write(query);
-		}
-
+		}	
+	
 		[Test]
 		[Ignore("Not mapped entity")]
 		public void WhereFloatEqual()
@@ -457,7 +457,7 @@ namespace NHibernate.Test.Linq
 						select item;
 
 			ObjectDumper.Write(query);
-		}
+		}	
 
 		[Test]
 		[Ignore("Not mapped entity")]
@@ -522,8 +522,8 @@ namespace NHibernate.Test.Linq
 		public void WhereEquatableEqual()
 		{
 			var query = from item in db.Shippers
-						where ((IEquatable<Guid>) item.Reference).Equals(Guid.Empty)
-						select item;
+			            where ((IEquatable<Guid>) item.Reference).Equals(Guid.Empty)
+			            select item;
 
 			ObjectDumper.Write(query);
 		}

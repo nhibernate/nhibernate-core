@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
@@ -18,7 +19,7 @@ namespace NHibernate.Test.Linq
 		{
 			pattern = Regex.Escape(pattern);
 			pattern = pattern.Replace("%", ".*?").Replace("_", ".");
-			pattern = pattern.Replace(@"\[", "[").Replace(@"\]", "]").Replace(@"\^", "^");
+			pattern = pattern.Replace(@"\[", "[").Replace(@"\]","]").Replace(@"\^", "^");
 
 			return Regex.IsMatch(source, pattern);
 		}
@@ -56,10 +57,10 @@ namespace NHibernate.Test.Linq
 	{
 		public IsLikeGenerator()
 		{
-			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null)) };
+			SupportedMethods = new[] {ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null))};
 		}
 
-		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject,
+		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject, 
 			ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			return treeBuilder.Like(visitor.Visit(arguments[0]).AsExpression(),
