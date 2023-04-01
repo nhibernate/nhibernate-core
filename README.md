@@ -24,7 +24,6 @@ later version. The release notes will generally document any breaking changes.
 
 Nightly Development Builds
 --------------------------
-[![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=flat-square)](https://cloudsmith.com)
 
 The quickest way to get the latest development build of NHibernate is to add it to your project using 
 NuGet from Cloudsmith feed (<https://cloudsmith.io/~nhibernate/repos/nhibernate-core/packages/>).
@@ -40,6 +39,13 @@ file in the top folder of your project, similar to the following.
   </packageSources>
 </configuration>
 ```
+
+Package repository hosting is graciously provided by  [Cloudsmith](https://cloudsmith.com).
+Cloudsmith is the only fully hosted, cloud-native, universal package management solution, that
+enables your organization to create, store and share packages in any format, to any place, with total
+confidence.
+
+[![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=flat-square)](https://cloudsmith.com)
 
 Community Forums
 ----------------
