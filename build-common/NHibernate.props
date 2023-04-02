@@ -3,9 +3,9 @@
 
   <PropertyGroup>
     <NhVersion     Condition="'$(NhVersion)' == ''"    >5.3</NhVersion>
-    <VersionPatch  Condition="'$(VersionPatch)'  == ''">15</VersionPatch>
+    <VersionPatch  Condition="'$(VersionPatch)'  == ''">16</VersionPatch>
     <!-- Clear VersionSuffix for making release and set it to dev for making development builds -->
-    <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
+    <VersionSuffix Condition="'$(VersionSuffix)' == ''">dev</VersionSuffix>
 
     <VersionPrefix Condition="'$(VersionPrefix)' == ''">$(NhVersion).$(VersionPatch)</VersionPrefix>
     <VersionSuffix Condition="'$(VersionSuffix)' != '' AND '$(BuildNumber)' != ''">$(VersionSuffix).$(BuildNumber)</VersionSuffix>
