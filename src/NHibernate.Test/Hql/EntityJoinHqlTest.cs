@@ -346,6 +346,15 @@ namespace NHibernate.Test.Hql
 				//GH-2988
 				var withNullOrValidList = session.Query<NullableOwner>().Where(x => x.ManyToOne.Id == validManyToOne.Id || x.ManyToOne == null).ToList();
 				var withNullOrValidList2 = session.Query<NullableOwner>().Where(x =>  x.ManyToOne == null || x.ManyToOne.Id == validManyToOne.Id).ToList();
+				//GH-3269
+				var invalidId = Guid.NewGuid();
+				var withInvalidOrValid = session.Query<NullableOwner>().Where(x => x.OneToOne.Id == invalidId || x.ManyToOne.Id == validManyToOne.Id).ToList();
+				var withInvalidOrNull = session.Query<NullableOwner>().Where(x => x.ManyToOne.Id == invalidId || x.OneToOne == null).ToList();
+				var withInvalidOrNotNull = session.Query<NullableOwner>().Where(x => x.ManyToOne.Id == invalidId || x.OneToOne != null).ToList();
+
+				Assert.That(withInvalidOrValid.Count, Is.EqualTo(1));
+				Assert.That(withInvalidOrNull.Count, Is.EqualTo(2));
+				Assert.That(withInvalidOrNotNull.Count, Is.EqualTo(0));
 
 				//GH-3185
 				var mixImplicitAndLeftJoinList = session.Query<NullableOwner>().Where(x => x.ManyToOne.Id == validManyToOne.Id && x.OneToOne == null).ToList();
