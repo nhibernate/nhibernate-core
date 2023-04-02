@@ -1,4 +1,21 @@
-﻿Build 5.3.15
+﻿Build 5.3.16
+=============================
+
+Release notes - NHibernate - Version 5.3.16
+
+3 issues were resolved in this release.
+
+** Bug
+
+   * #3269 "Or" clause in a "where" condition returns a wrong result with not-found-ignore
+   * #3210 Wrong name value for L2 read-only cache warning on mutable
+
+** Task
+
+   * #3276 Release 5.3.16
+
+
+Build 5.3.15
 =============================
 
 Release notes - NHibernate - Version 5.3.15
