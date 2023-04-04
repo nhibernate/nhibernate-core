@@ -18,6 +18,7 @@ Release notes - NHibernate - Version 5.4.2
 
 ** Task
 
+   * #3281 Merge 5.3.16 in 5.4.x
    * #3277 Release 5.4.2
 
 
