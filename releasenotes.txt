@@ -27,7 +27,7 @@ Build 5.4.1
 
 Release notes - NHibernate - Version 5.4.1
 
-4 issues were resolved in this release.
+5 issues were resolved in this release.
 
 ** Bug
 
@@ -38,6 +38,7 @@ Release notes - NHibernate - Version 5.4.1
 ** Task
 
    * #3232 Release 5.4.1
+   * #3227 Merge 5.3.15 in 5.4.x
 
 As part of releasing 5.4.1, a missing 5.4.0 possible breaking change has been added, about
 one-to-one associations and optimistic locking. See 5.4.0 possible breaking changes.
