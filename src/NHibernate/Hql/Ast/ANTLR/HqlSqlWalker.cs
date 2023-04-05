@@ -43,7 +43,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private SelectClause _selectClause;
 		private readonly AliasGenerator _aliasGenerator = new AliasGenerator();
 		private readonly ASTPrinter _printer = new ASTPrinter();
-		private bool _isNullComparison;
 
 		//
 		//Maps each top-level result variable to its SelectExpression;
@@ -1300,8 +1299,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 				return _nodeFactory;
 			}
 		}
-
-		internal bool IsNullComparison => _isNullComparison;
 
 		public void AddQuerySpaces(IEntityPersister persister)
 		{
