@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
@@ -39,6 +40,8 @@ namespace NHibernate.Id
 			cancellationToken.ThrowIfCancellationRequested();
 			using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
 			{
+				var generationState = _stateStore.LocateGenerationState(session.GetTenantIdentifier());
+
 				if (maxLo < 1)
 				{
 					//keep the behavior consistent even for boundary usages
@@ -48,15 +51,15 @@ namespace NHibernate.Id
 					return IdentifierGeneratorFactory.CreateNumber(val, returnClass);
 				}
 
-				if (lo > maxLo)
+				if (generationState.Lo > maxLo)
 				{
 					long hival = Convert.ToInt64(await (base.GenerateAsync(session, obj, cancellationToken)).ConfigureAwait(false));
-					lo = (hival == 0) ? 1 : 0;
-					hi = hival * (maxLo + 1);
+					generationState.Lo = (hival == 0) ? 1 : 0;
+					generationState.Hi = hival * (maxLo + 1);
 					if (log.IsDebugEnabled())
 						log.Debug("new hi value: {0}", hival);
 				}
-				return IdentifierGeneratorFactory.CreateNumber(hi + lo++, returnClass);
+				return IdentifierGeneratorFactory.CreateNumber(generationState.Hi + generationState.Lo++, returnClass);
 			}
 		}
 

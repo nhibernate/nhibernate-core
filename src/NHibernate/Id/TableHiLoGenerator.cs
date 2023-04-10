@@ -6,6 +6,7 @@ using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace NHibernate.Id
 {
@@ -48,11 +49,16 @@ namespace NHibernate.Id
 		/// </summary>
 		public const string MaxLo = "max_lo";
 
-		private long hi;
-		private long lo;
 		private long maxLo;
 		private System.Type returnClass;
+		private TenantStateStore<GenerationState> _stateStore;
 		private readonly AsyncLock _asyncLock = new AsyncLock();
+
+		private class GenerationState
+		{
+			public long Lo { get; internal set; }
+			public long Hi { get; internal set; }
+		}
 
 		#region IConfigurable Members
 
@@ -67,8 +73,8 @@ namespace NHibernate.Id
 		{
 			base.Configure(type, parms, dialect);
 			maxLo = PropertiesHelper.GetInt64(MaxLo, parms, Int16.MaxValue);
-			lo = maxLo + 1; // so we "clock over" on the first invocation
 			returnClass = type.ReturnedClass;
+			_stateStore = new TenantStateStore<GenerationState>(state => state.Lo = maxLo + 1);// so we "clock over" on the first invocation
 		}
 
 		#endregion
@@ -85,6 +91,8 @@ namespace NHibernate.Id
 		{
 			using (_asyncLock.Lock())
 			{
+				var generationState = _stateStore.LocateGenerationState(session.GetTenantIdentifier());
+
 				if (maxLo < 1)
 				{
 					//keep the behavior consistent even for boundary usages
@@ -93,18 +101,61 @@ namespace NHibernate.Id
 						val = Convert.ToInt64(base.Generate(session, obj));
 					return IdentifierGeneratorFactory.CreateNumber(val, returnClass);
 				}
-				if (lo > maxLo)
+				if (generationState.Lo > maxLo)
 				{
 					long hival = Convert.ToInt64(base.Generate(session, obj));
-					lo = (hival == 0) ? 1 : 0;
-					hi = hival * (maxLo + 1);
+					generationState.Lo = (hival == 0) ? 1 : 0;
+					generationState.Hi = hival * (maxLo + 1);
 					log.Debug("New high value: {0}", hival);
 				}
 
-				return IdentifierGeneratorFactory.CreateNumber(hi + lo++, returnClass);
+				return IdentifierGeneratorFactory.CreateNumber(generationState.Hi + generationState.Lo++, returnClass);
 			}
 		}
 
 		#endregion
+	}
+
+	internal class TenantStateStore<TState> where TState : new()
+	{
+		private TState _noTenantState;
+		private Action<TState> _initializer;
+		private readonly Lazy<ConcurrentDictionary<string, TState>> _tenantSpecificState = new Lazy<ConcurrentDictionary<string, TState>>(() => new ConcurrentDictionary<string, TState>());
+
+		public TenantStateStore(Action<TState> initializer)
+		{
+			_initializer = initializer;
+		}
+
+		public TenantStateStore()
+		{
+		}
+
+		internal TState LocateGenerationState(string tenantIdentifier)
+		{
+			if (tenantIdentifier == null)
+			{
+				if (_noTenantState == null)
+				{
+					_noTenantState = CreateNewState();
+				}
+				return _noTenantState;
+			}
+			else
+			{
+				return _tenantSpecificState.Value.GetOrAdd(tenantIdentifier, _ => CreateNewState());
+			}
+		}
+
+		internal TState NoTenantGenerationState => _noTenantState ??
+			throw new HibernateException("Could not locate previous generation state for no-tenant");
+
+
+		private TState CreateNewState()
+		{
+			var state = new TState();
+			_initializer?.Invoke(state);
+			return state;
+		}
 	}
 }

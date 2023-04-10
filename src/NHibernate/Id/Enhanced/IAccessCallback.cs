@@ -10,5 +10,10 @@ namespace NHibernate.Id.Enhanced
 		/// Retrieve the next value from the underlying source.
 		/// </summary>
 		long GetNextValue();
+
+		/// <summary>
+		/// Obtain the tenant identifier (multi-tenancy), if one, associated with this callback.
+		/// </summary>
+		string GetTenantIdentifier();
 	}
 }

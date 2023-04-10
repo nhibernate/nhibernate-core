@@ -181,6 +181,8 @@ namespace NHibernate.Id.Enhanced
 				return Convert.ToInt64(_owner.DoWorkInNewTransaction(_session));
 			}
 
+			public string GetTenantIdentifier() => _session.GetTenantIdentifier();
+
 			#endregion
 		}
 
