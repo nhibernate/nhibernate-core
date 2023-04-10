@@ -136,6 +136,8 @@ namespace NHibernate.Id.Enhanced
 				}
 			}
 
+			public string GetTenantIdentifier() => _session.GetTenantIdentifier();
+
 			#endregion
 		}
 
