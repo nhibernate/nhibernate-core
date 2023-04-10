@@ -21,6 +21,8 @@ using NHibernate.Engine.Query;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 using NSubstitute;
+using NHibernate.MultiTenancy;
+using NHibernate.Test.MultiTenancy;
 
 namespace NHibernate.Test
 {

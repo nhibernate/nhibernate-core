@@ -1,12 +1,17 @@
 using System.Collections;
 using NHibernate.Id.Enhanced;
+using NHibernate.Test.MultiTenancy;
 using NUnit.Framework;
 
 namespace NHibernate.Test.IdGen.Enhanced.Table
 {
-	[TestFixture]
-	public class PooledLoTableTest : TestCase
+	[TestFixture(null)]
+	[TestFixture("test")]
+	public class PooledLoTableTest : TestCaseWithMultiTenancy
 	{
+		public PooledLoTableTest(string tenantIdentifier) : base(tenantIdentifier)
+		{
+		}
 		protected override string[] Mappings
 		{
 			get { return new[] { "IdGen.Enhanced.Table.PooledLo.hbm.xml" }; }
@@ -39,16 +44,16 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 						entities[i] = new Entity("" + (i + 1));
 						s.Save(entities[i]);
 						Assert.That(generator.TableAccessCount, Is.EqualTo(1)); // initialization
-						Assert.That(optimizer.LastSourceValue, Is.EqualTo(1)); // initialization
-						Assert.That(optimizer.LastValue, Is.EqualTo(i + 1));
+						Assert.That(optimizer.GetLastSourceValue(TenantIdentifier), Is.EqualTo(1)); // initialization
+						Assert.That(optimizer.GetLastValue(TenantIdentifier), Is.EqualTo(i + 1));
 					}
 
 					// now force a "clock over"
 					entities[increment] = new Entity("" + increment);
 					s.Save(entities[increment]);
 					Assert.That(generator.TableAccessCount, Is.EqualTo(2));
-					Assert.That(optimizer.LastSourceValue, Is.EqualTo(increment + 1));
-					Assert.That(optimizer.LastValue, Is.EqualTo(increment + 1));
+					Assert.That(optimizer.GetLastSourceValue(TenantIdentifier), Is.EqualTo(increment + 1));
+					Assert.That(optimizer.GetLastValue(TenantIdentifier), Is.EqualTo(increment + 1));
 
 					transaction.Commit();
 				}

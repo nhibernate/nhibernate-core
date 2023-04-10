@@ -6,15 +6,20 @@ namespace NHibernate.Test.IdGen.Enhanced
 	{
 		private long _val;
 		private readonly long _initialValue;
+		private readonly string _tenantId;
 		private readonly int _increment;
 		private int _timesCalled;
 
 		public SourceMock(long initialValue) : this(initialValue, 1) { }
 
-		public SourceMock(long initialValue, int increment) : this(initialValue, increment, 0) { }
+		public SourceMock(long initialValue, int increment) : this(null, initialValue, increment, 0) { }
 
-		public SourceMock(long initialValue, int increment, int timesCalled)
+		public SourceMock(long initialValue, int increment, int timesCalled): this(null, initialValue, increment, timesCalled)
 		{
+		}
+		public SourceMock(string tenantId, long initialValue, int increment, int timesCalled)
+		{
+			_tenantId = tenantId;
 			_increment = increment;
 			_timesCalled = timesCalled;
 
@@ -56,6 +61,8 @@ namespace NHibernate.Test.IdGen.Enhanced
 		{
 			_val = _initialValue;
 		}
+
+		public string GetTenantIdentifier() => _tenantId;
 
 		public int TimesCalled
 		{

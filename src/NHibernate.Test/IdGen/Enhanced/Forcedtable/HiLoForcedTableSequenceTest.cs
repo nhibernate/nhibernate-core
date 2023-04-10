@@ -1,12 +1,16 @@
-using NUnit.Framework;
 using NHibernate.Id.Enhanced;
-using System.Collections;
+using NHibernate.Test.MultiTenancy;
+using NUnit.Framework;
 
 namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 {
-	[TestFixture]
-	public class HiLoForcedTableSequenceTest : TestCase
+	[TestFixture(null)]
+	[TestFixture("test")]
+	public class HiLoForcedTableSequenceTest : TestCaseWithMultiTenancy
 	{
+		public HiLoForcedTableSequenceTest(string tenantIdentifier) : base(tenantIdentifier)
+		{
+		}
 		protected override string[] Mappings
 		{
 			get { return new[] { "IdGen.Enhanced.Forcedtable.HiLo.hbm.xml" }; }
@@ -43,9 +47,9 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 						long expectedId = i + 1;
 						Assert.That(entities[i].Id, Is.EqualTo(expectedId));
 						Assert.That(generator.DatabaseStructure.TimesAccessed, Is.EqualTo(1)); // initialization
-						Assert.That(optimizer.LastSourceValue, Is.EqualTo(1)); // initialization
-						Assert.That(optimizer.LastValue, Is.EqualTo(i + 1));
-						Assert.That(optimizer.HiValue, Is.EqualTo(increment + 1));
+						Assert.That(optimizer.GetLastSourceValue(TenantIdentifier), Is.EqualTo(1)); // initialization
+						Assert.That(optimizer.GetLastValue(TenantIdentifier), Is.EqualTo(i + 1));
+						Assert.That(optimizer.GetHiValue(TenantIdentifier), Is.EqualTo(increment + 1));
 					}
 
 					// now force a "clock over"
@@ -53,9 +57,9 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 					session.Save(entities[increment]);
 					Assert.That(entities[optimizer.IncrementSize].Id, Is.EqualTo(optimizer.IncrementSize + 1));
 					Assert.That(generator.DatabaseStructure.TimesAccessed, Is.EqualTo(2)); // initialization + clock-over
-					Assert.That(optimizer.LastSourceValue, Is.EqualTo(2)); // initialization + clock-over
-					Assert.That(optimizer.LastValue, Is.EqualTo(increment + 1));
-					Assert.That(optimizer.HiValue, Is.EqualTo(increment * 2 + 1));
+					Assert.That(optimizer.GetLastSourceValue(TenantIdentifier), Is.EqualTo(2)); // initialization + clock-over
+					Assert.That(optimizer.GetLastValue(TenantIdentifier), Is.EqualTo(increment + 1));
+					Assert.That(optimizer.GetHiValue(TenantIdentifier), Is.EqualTo(increment * 2 + 1));
 
 					transaction.Commit();
 				}
