@@ -412,8 +412,10 @@ namespace NHibernate.Id.Enhanced
 						generationState.LastSourceValue = callback.GetNextValue();
 						generationState.Value = generationState.LastSourceValue;
 						// handle cases where initial-value is less than one (hsqldb for instance).
-						while (generationState.Value < 1)
-							generationState.Value++;
+						if (generationState.Value < 1)
+						{
+							generationState.Value = 1;
+						}
 					}
 
 					return Make(generationState.Value++);
