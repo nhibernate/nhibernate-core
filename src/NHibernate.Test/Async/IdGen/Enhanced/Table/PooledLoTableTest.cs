@@ -55,6 +55,11 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 						entities[i] = new Entity("" + (i + 1));
 						await (s.SaveAsync(entities[i]));
 						Assert.That(generator.TableAccessCount, Is.EqualTo(1)); // initialization
+						if (TenantIdentifier == null)
+						{
+							Assert.That(optimizer.LastSourceValue, Is.EqualTo(1)); // initialization
+							Assert.That(optimizer.LastValue, Is.EqualTo(i + 1));
+						}
 						Assert.That(optimizer.GetLastSourceValue(TenantIdentifier), Is.EqualTo(1)); // initialization
 						Assert.That(optimizer.GetLastValue(TenantIdentifier), Is.EqualTo(i + 1));
 					}
@@ -63,6 +68,11 @@ namespace NHibernate.Test.IdGen.Enhanced.Table
 					entities[increment] = new Entity("" + increment);
 					await (s.SaveAsync(entities[increment]));
 					Assert.That(generator.TableAccessCount, Is.EqualTo(2));
+					if (TenantIdentifier == null)
+					{
+						Assert.That(optimizer.LastSourceValue, Is.EqualTo(increment + 1));
+						Assert.That(optimizer.LastValue, Is.EqualTo(increment + 1));
+					}
 					Assert.That(optimizer.GetLastSourceValue(TenantIdentifier), Is.EqualTo(increment + 1));
 					Assert.That(optimizer.GetLastValue(TenantIdentifier), Is.EqualTo(increment + 1));
 

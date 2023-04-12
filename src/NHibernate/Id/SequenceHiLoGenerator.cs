@@ -46,10 +46,10 @@ namespace NHibernate.Id
 		private int maxLo;
 		private System.Type returnClass;
 		private TenantStateStore<GenerationState> _stateStore;
-		private readonly AsyncLock _asyncLock = new AsyncLock();
-
+		
 		private class GenerationState
 		{
+			public AsyncLock AsyncLock { get; } = new AsyncLock();
 			public long Lo { get; internal set; }
 			public long Hi { get; internal set; }
 		}
@@ -84,10 +84,10 @@ namespace NHibernate.Id
 		/// <returns>The new identifier as a <see cref="Int16"/>, <see cref="Int32"/>, or <see cref="Int64"/>.</returns>
 		public override object Generate(ISessionImplementor session, object obj)
 		{
-			using (_asyncLock.Lock())
-			{
-				var generationState = _stateStore.LocateGenerationState(session.GetTenantIdentifier());
+			var generationState = _stateStore.LocateGenerationState(session.GetTenantIdentifier());
 
+			using (generationState.AsyncLock.Lock())
+			{
 				if (maxLo < 1)
 				{
 					//keep the behavior consistent even for boundary usages

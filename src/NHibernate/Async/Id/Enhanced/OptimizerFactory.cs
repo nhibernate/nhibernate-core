@@ -9,7 +9,6 @@
 
 
 using System;
-using System.Collections.Concurrent;
 using System.Reflection;
 using NHibernate.Util;
 
@@ -28,10 +27,11 @@ namespace NHibernate.Id.Enhanced
 			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
-				{
-					var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+				var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+				cancellationToken.ThrowIfCancellationRequested();
 
+				using (await (generationState.AsyncLock.LockAsync()).ConfigureAwait(false))
+				{
 					if (generationState.LastSourceValue < 0)
 					{
 						generationState.LastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
@@ -106,10 +106,11 @@ namespace NHibernate.Id.Enhanced
 			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
-				{
-					var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+				var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+				cancellationToken.ThrowIfCancellationRequested();
 
+				using (await (generationState.AsyncLock.LockAsync()).ConfigureAwait(false))
+				{
 					if (generationState.HiValue < 0)
 					{
 						generationState.Value = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
@@ -150,10 +151,11 @@ namespace NHibernate.Id.Enhanced
 			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
-				{
-					var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+				var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+				cancellationToken.ThrowIfCancellationRequested();
 
+				using (await (generationState.AsyncLock.LockAsync()).ConfigureAwait(false))
+				{
 					if (generationState.LastSourceValue < 0 || generationState.Value >= (generationState.LastSourceValue + IncrementSize))
 					{
 						generationState.LastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
