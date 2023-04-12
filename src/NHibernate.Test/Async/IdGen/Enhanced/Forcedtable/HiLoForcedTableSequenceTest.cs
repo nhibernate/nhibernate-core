@@ -58,6 +58,12 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 						long expectedId = i + 1;
 						Assert.That(entities[i].Id, Is.EqualTo(expectedId));
 						Assert.That(generator.DatabaseStructure.TimesAccessed, Is.EqualTo(1)); // initialization
+						if (TenantIdentifier == null)
+						{
+							Assert.That(optimizer.LastSourceValue, Is.EqualTo(1)); // initialization
+							Assert.That(optimizer.LastValue, Is.EqualTo(i + 1));
+							Assert.That(optimizer.HiValue, Is.EqualTo(increment + 1));
+						}
 						Assert.That(optimizer.GetLastSourceValue(TenantIdentifier), Is.EqualTo(1)); // initialization
 						Assert.That(optimizer.GetLastValue(TenantIdentifier), Is.EqualTo(i + 1));
 						Assert.That(optimizer.GetHiValue(TenantIdentifier), Is.EqualTo(increment + 1));
@@ -68,6 +74,12 @@ namespace NHibernate.Test.IdGen.Enhanced.Forcedtable
 					await (session.SaveAsync(entities[increment]));
 					Assert.That(entities[optimizer.IncrementSize].Id, Is.EqualTo(optimizer.IncrementSize + 1));
 					Assert.That(generator.DatabaseStructure.TimesAccessed, Is.EqualTo(2)); // initialization + clock-over
+					if (TenantIdentifier == null)
+					{
+						Assert.That(optimizer.LastSourceValue, Is.EqualTo(2)); // initialization + clock-over
+						Assert.That(optimizer.LastValue, Is.EqualTo(increment + 1));
+						Assert.That(optimizer.HiValue, Is.EqualTo(increment * 2 + 1));
+					}
 					Assert.That(optimizer.GetLastSourceValue(TenantIdentifier), Is.EqualTo(2)); // initialization + clock-over
 					Assert.That(optimizer.GetLastValue(TenantIdentifier), Is.EqualTo(increment + 1));
 					Assert.That(optimizer.GetHiValue(TenantIdentifier), Is.EqualTo(increment * 2 + 1));

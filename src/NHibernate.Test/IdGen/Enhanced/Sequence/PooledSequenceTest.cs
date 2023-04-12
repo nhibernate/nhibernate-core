@@ -44,6 +44,11 @@ namespace NHibernate.Test.IdGen.Enhanced.Sequence
 						entities[i] = new Entity("" + (i + 1));
 						session.Save(entities[i]);
 						Assert.That(generator.DatabaseStructure.TimesAccessed, Is.EqualTo(2)); // initialization calls seq twice
+						if (TenantIdentifier == null)
+						{
+							Assert.That(optimizer.LastSourceValue, Is.EqualTo(increment + 1)); // initialization calls seq twice
+							Assert.That(optimizer.LastValue, Is.EqualTo(i + 1));
+						}
 						Assert.That(optimizer.GetLastSourceValue(TenantIdentifier), Is.EqualTo(increment + 1)); // initialization calls seq twice
 						Assert.That(optimizer.GetLastValue(TenantIdentifier), Is.EqualTo(i + 1));
 					}
@@ -52,6 +57,11 @@ namespace NHibernate.Test.IdGen.Enhanced.Sequence
 					entities[increment] = new Entity("" + increment);
 					session.Save(entities[increment]);
 					Assert.That(generator.DatabaseStructure.TimesAccessed, Is.EqualTo(3)); // initialization (2) + clock over
+					if (TenantIdentifier == null)
+					{
+						Assert.That(optimizer.LastSourceValue, Is.EqualTo(increment * 2 + 1)); // initialization (2) + clock over
+						Assert.That(optimizer.LastValue, Is.EqualTo(increment + 1));
+					}
 					Assert.That(optimizer.GetLastSourceValue(TenantIdentifier), Is.EqualTo(increment * 2 + 1)); // initialization (2) + clock over
 					Assert.That(optimizer.GetLastValue(TenantIdentifier), Is.EqualTo(increment + 1));
 
