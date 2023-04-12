@@ -37,10 +37,11 @@ namespace NHibernate.Id
 		public override async Task<object> GenerateAsync(ISessionImplementor session, object obj, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
-			{
-				var generationState = _stateStore.LocateGenerationState(session.GetTenantIdentifier());
+			var generationState = _stateStore.LocateGenerationState(session.GetTenantIdentifier());
+			cancellationToken.ThrowIfCancellationRequested();
 
+			using (await (generationState.AsyncLock.LockAsync()).ConfigureAwait(false))
+			{
 				if (maxLo < 1)
 				{
 					//keep the behavior consistent even for boundary usages

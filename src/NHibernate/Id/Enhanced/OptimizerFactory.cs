@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Reflection;
 using NHibernate.Util;
 
@@ -98,7 +97,6 @@ namespace NHibernate.Id.Enhanced
 
 		public partial class HiLoOptimizer : OptimizerSupport
 		{
-			private readonly AsyncLock _asyncLock = new AsyncLock();
 			private readonly TenantStateStore<GenerationState> _stateStore = new TenantStateStore<GenerationState>();
 
 			public HiLoOptimizer(System.Type returnClass, int incrementSize) : base(returnClass, incrementSize)
@@ -115,6 +113,7 @@ namespace NHibernate.Id.Enhanced
 
 			public class GenerationState
 			{
+				public AsyncLock AsyncLock { get; } = new AsyncLock();
 				public long LastSourceValue { get; internal set; } = -1;
 				public long Value { get; internal set; }
 				public long UpperLimit { get; internal set; }
@@ -162,10 +161,10 @@ namespace NHibernate.Id.Enhanced
 
 			public override object Generate(IAccessCallback callback)
 			{
-				using (_asyncLock.Lock())
-				{
-					var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+				var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
 
+				using (generationState.AsyncLock.Lock())
+				{
 					if (generationState.LastSourceValue < 0)
 					{
 						generationState.LastSourceValue = callback.GetNextValue();
@@ -290,7 +289,6 @@ namespace NHibernate.Id.Enhanced
 		public partial class PooledOptimizer : OptimizerSupport, IInitialValueAwareOptimizer
 		{
 			private long _initialValue;
-			private readonly AsyncLock _asyncLock = new AsyncLock();
 			private readonly TenantStateStore<GenerationState> _stateStore = new TenantStateStore<GenerationState>();
 			public PooledOptimizer(System.Type returnClass, int incrementSize) : base(returnClass, incrementSize)
 			{
@@ -306,6 +304,7 @@ namespace NHibernate.Id.Enhanced
 
 			public class GenerationState
 			{
+				public AsyncLock AsyncLock { get; } = new AsyncLock();
 				public long Value { get; internal set; }
 				public long HiValue { get; internal set; } = -1;
 			}
@@ -319,6 +318,11 @@ namespace NHibernate.Id.Enhanced
 			/// Exposure intended for testing purposes.
 			/// </summary>
 			/// 
+
+			public long LastValue
+			{
+				get { return _stateStore.NoTenantGenerationState.Value - 1; }
+			}
 			public long GetLastSourceValue(string tenantIdentifier)
 			{
 				return _stateStore.LocateGenerationState(tenantIdentifier).HiValue;
@@ -340,10 +344,10 @@ namespace NHibernate.Id.Enhanced
 
 			public override object Generate(IAccessCallback callback)
 			{
-				using (_asyncLock.Lock())
-				{
-					var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+				var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
 
+				using (generationState.AsyncLock.Lock())
+				{
 					if (generationState.HiValue < 0)
 					{
 						generationState.Value = callback.GetNextValue();
@@ -380,7 +384,6 @@ namespace NHibernate.Id.Enhanced
 
 		public partial class PooledLoOptimizer : OptimizerSupport
 		{
-			private readonly AsyncLock _asyncLock = new AsyncLock();
 			private readonly TenantStateStore<GenerationState> _stateStore = new TenantStateStore<GenerationState>();
 
 			public PooledLoOptimizer(System.Type returnClass, int incrementSize) : base(returnClass, incrementSize)
@@ -397,16 +400,17 @@ namespace NHibernate.Id.Enhanced
 
 			public class GenerationState
 			{
+				public AsyncLock AsyncLock { get; } = new AsyncLock();
 				public long LastSourceValue { get; internal set; } = -1;
 				public long Value { get; internal set; }
 			}
 
 			public override object Generate(IAccessCallback callback)
 			{
-				using (_asyncLock.Lock())
-				{
-					var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+				var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
 
+				using (generationState.AsyncLock.Lock())
+				{
 					if (generationState.LastSourceValue < 0 || generationState.Value >= (generationState.LastSourceValue + IncrementSize))
 					{
 						generationState.LastSourceValue = callback.GetNextValue();

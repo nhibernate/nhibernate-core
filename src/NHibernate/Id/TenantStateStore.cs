@@ -5,36 +5,34 @@ namespace NHibernate.Id
 {
 	internal class TenantStateStore<TState> where TState : new()
 	{
-		private TState _noTenantState;
+		private Lazy<TState> _noTenantState;
 		private Action<TState> _initializer;
-		private readonly Lazy<ConcurrentDictionary<string, TState>> _tenantSpecificState = new Lazy<ConcurrentDictionary<string, TState>>(() => new ConcurrentDictionary<string, TState>());
+		private ConcurrentDictionary<string, TState> _tenantSpecificState = new ConcurrentDictionary<string, TState>();
 
-		public TenantStateStore(Action<TState> initializer)
+		public TenantStateStore(Action<TState> initializer) : this()
 		{
 			_initializer = initializer;
 		}
 
 		public TenantStateStore()
 		{
+			_noTenantState = new Lazy<TState>(() => CreateNewState());
 		}
 
 		internal TState LocateGenerationState(string tenantIdentifier)
 		{
 			if (tenantIdentifier == null)
 			{
-				if (_noTenantState == null)
-				{
-					_noTenantState = CreateNewState();
-				}
-				return _noTenantState;
+				return _noTenantState.Value;
 			}
 			else
 			{
-				return _tenantSpecificState.Value.GetOrAdd(tenantIdentifier, _ => CreateNewState());
+				return _tenantSpecificState.GetOrAdd(tenantIdentifier, _ => CreateNewState());
 			}
 		}
 
-		internal TState NoTenantGenerationState => _noTenantState ??
+		internal TState NoTenantGenerationState => _noTenantState.IsValueCreated ?
+			_noTenantState.Value :
 			throw new HibernateException("Could not locate previous generation state for no-tenant");
 
 
