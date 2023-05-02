@@ -826,8 +826,9 @@ namespace NHibernate.Test.StaticProxyTest
 
 #if NET7_0_OR_GREATER
 			// C# 11
-			// C# 11
 			static abstract void StaticAbstractMethod();
+
+			// C# 11
 			static virtual void StaticVirtualMethod()
 			{
 			}
