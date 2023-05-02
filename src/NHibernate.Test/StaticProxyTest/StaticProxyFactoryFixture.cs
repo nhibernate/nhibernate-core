@@ -816,17 +816,27 @@ namespace NHibernate.Test.StaticProxyTest
 #endif
 		}
 
-#if NET7_0_OR_GREATER
-		public interface IWithStaticAbstractMethod
+#if NETCOREAPP3_1_OR_GREATER
+		public interface IWithStaticMethods
 		{
-			static virtual void Method()
+			// C# 8
+			static void StaticMethod()
 			{
 			}
+
+#if NET7_0_OR_GREATER
+			// C# 11
+			// C# 11
+			static abstract void StaticAbstractMethod();
+			static virtual void StaticVirtualMethod()
+			{
+			}
+#endif
 		}
 
-		public class ClassWithStaticInterfaceMethod : IWithStaticAbstractMethod
+		public class ClassWithStaticInterfaceMethods : IWithStaticMethods
 		{
-			public static void Method()
+			public static void StaticAbstractMethod()
 			{
 			}
 		}
@@ -836,16 +846,16 @@ namespace NHibernate.Test.StaticProxyTest
 		{
 			var factory = new StaticProxyFactory();
 			factory.PostInstantiate(
-				typeof(ClassWithStaticInterfaceMethod).FullName,
-				typeof(ClassWithStaticInterfaceMethod),
+				typeof(ClassWithStaticInterfaceMethods).FullName,
+				typeof(ClassWithStaticInterfaceMethods),
 				new HashSet<System.Type> { typeof(INHibernateProxy) },
 				null, null, null, true);
 
 			var proxy = factory.GetProxy(1, null);
 			Assert.That(proxy, Is.Not.Null);
-			Assert.That(proxy, Is.InstanceOf<ClassWithStaticInterfaceMethod>());
+			Assert.That(proxy, Is.InstanceOf<ClassWithStaticInterfaceMethods>());
 
-			Assert.That(factory.GetFieldInterceptionProxy(), Is.InstanceOf<ClassWithStaticInterfaceMethod>());
+			Assert.That(factory.GetFieldInterceptionProxy(), Is.InstanceOf<ClassWithStaticInterfaceMethods>());
 		}
 #endif
 		
