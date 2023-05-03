@@ -48,8 +48,8 @@ namespace NHibernate.Test.Linq
 				await (session.FlushAsync());
 
 				var query = await ((from e in db.Employees
-							 where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, escapeChar)
-							 select e).ToListAsync());
+				             where NHibernate.Linq.SqlMethods.Like(e.FirstName, employeeNameEscaped, escapeChar)
+				             select e).ToListAsync());
 
 				Assert.That(query.Count, Is.EqualTo(1));
 				Assert.That(query[0].FirstName, Is.EqualTo(employeeName));
@@ -93,8 +93,8 @@ namespace NHibernate.Test.Linq
 		public async Task SubstringFunction2Async()
 		{
 			var query = await ((from e in db.Employees
-						 where e.FirstName.Substring(0, 2) == "An"
-						 select e).ToListAsync());
+				where e.FirstName.Substring(0, 2) == "An"
+				select e).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -103,8 +103,8 @@ namespace NHibernate.Test.Linq
 		public async Task SubstringFunction1Async()
 		{
 			var query = await ((from e in db.Employees
-						 where e.FirstName.Substring(3) == "rew"
-						 select e).ToListAsync());
+				where e.FirstName.Substring(3) == "rew"
+				select e).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
 			Assert.That(query[0].FirstName, Is.EqualTo("Andrew"));
@@ -142,21 +142,21 @@ namespace NHibernate.Test.Linq
 			var query = from e in db.Employees
 						where e.FirstName.StartsWith("An")
 						select new
-						{
-							Before = e.FirstName,
-							// This one call the standard string.Replace, not the extension. The linq registry handles it.
-							AfterMethod = e.FirstName.Replace("An", "Zan"),
-							AfterExtension = ExtensionMethods.Replace(e.FirstName, "An", "Zan"),
-							AfterNamedExtension = e.FirstName.ReplaceExtension("An", "Zan"),
-							AfterEvaluableExtension = e.FirstName.ReplaceWithEvaluation("An", "Zan"),
-							AfterEvaluable2Extension = e.FirstName.ReplaceWithEvaluation2("An", "Zan"),
+							{
+								Before = e.FirstName,
+								// This one call the standard string.Replace, not the extension. The linq registry handles it.
+								AfterMethod = e.FirstName.Replace("An", "Zan"),
+								AfterExtension = ExtensionMethods.Replace(e.FirstName, "An", "Zan"),
+								AfterNamedExtension = e.FirstName.ReplaceExtension("An", "Zan"),
+								AfterEvaluableExtension = e.FirstName.ReplaceWithEvaluation("An", "Zan"),
+								AfterEvaluable2Extension = e.FirstName.ReplaceWithEvaluation2("An", "Zan"),
 							BeforeConst = suppliedName,
-							// This one call the standard string.Replace, not the extension. The linq registry handles it.
-							AfterMethodConst = suppliedName.Replace("An", "Zan"),
-							AfterExtensionConst = ExtensionMethods.Replace(suppliedName, "An", "Zan"),
-							AfterNamedExtensionConst = suppliedName.ReplaceExtension("An", "Zan"),
-							AfterEvaluableExtensionConst = suppliedName.ReplaceWithEvaluation("An", "Zan"),
-							AfterEvaluable2ExtensionConst = suppliedName.ReplaceWithEvaluation2("An", "Zan")
+								// This one call the standard string.Replace, not the extension. The linq registry handles it.
+								AfterMethodConst = suppliedName.Replace("An", "Zan"),
+								AfterExtensionConst = ExtensionMethods.Replace(suppliedName, "An", "Zan"),
+								AfterNamedExtensionConst = suppliedName.ReplaceExtension("An", "Zan"),
+								AfterEvaluableExtensionConst = suppliedName.ReplaceWithEvaluation("An", "Zan"),
+								AfterEvaluable2ExtensionConst = suppliedName.ReplaceWithEvaluation2("An", "Zan")
 						};
 			var results = await (query.ToListAsync());
 			var s = await (ObjectDumper.WriteAsync(results));
@@ -183,12 +183,12 @@ namespace NHibernate.Test.Linq
 			// Should cause ReplaceWithEvaluation to fail
 			suppliedName = null;
 			var failingQuery = from e in db.Employees
-							   where e.FirstName.StartsWith("An")
-							   select new
-							   {
-								   Before = e.FirstName,
-								   AfterEvaluableExtensionConst = suppliedName.ReplaceWithEvaluation("An", "Zan")
-							   };
+						where e.FirstName.StartsWith("An")
+						select new
+						{
+							Before = e.FirstName,
+							AfterEvaluableExtensionConst = suppliedName.ReplaceWithEvaluation("An", "Zan")
+						};
 			Assert.That(() => failingQuery.ToListAsync(), Throws.InstanceOf<HibernateException>().And.InnerException.InstanceOf<ArgumentNullException>());
 		}
 
@@ -260,7 +260,7 @@ namespace NHibernate.Test.Linq
 		public async Task TwoFunctionExpressionAsync()
 		{
 			var query = from e in db.Employees
-						where e.FirstName.IndexOf("A") == e.BirthDate.Value.Month
+						where e.FirstName.IndexOf("A") == e.BirthDate.Value.Month 
 						select e.FirstName;
 
 			await (ObjectDumper.WriteAsync(query));
@@ -297,9 +297,9 @@ namespace NHibernate.Test.Linq
 		{
 			using (session.BeginTransaction())
 			{
-				AnotherEntity ae1 = new AnotherEntity { Input = " hi " };
-				AnotherEntity ae2 = new AnotherEntity { Input = "hi" };
-				AnotherEntity ae3 = new AnotherEntity { Input = "heh" };
+				AnotherEntity ae1 = new AnotherEntity {Input = " hi "};
+				AnotherEntity ae2 = new AnotherEntity {Input = "hi"};
+				AnotherEntity ae3 = new AnotherEntity {Input = "heh"};
 				await (session.SaveAsync(ae1));
 				await (session.SaveAsync(ae2));
 				await (session.SaveAsync(ae3));
@@ -315,7 +315,7 @@ namespace NHibernate.Test.Linq
 
 				// Check when passed as array
 				// (the single character parameter is a new overload in .netcoreapp2.0, but not net461 or .netstandard2.0).
-				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.Trim(new[] { 'h' }) == "e")));
+				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.Trim(new [] { 'h' }) == "e")));
 				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimStart(new[] { 'h' }) == "eh")));
 				Assert.AreEqual(1, await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimEnd(new[] { 'h' }) == "he")));
 
@@ -328,9 +328,9 @@ namespace NHibernate.Test.Linq
 		{
 			using (session.BeginTransaction())
 			{
-				await (session.SaveAsync(new AnotherEntity { Input = " hi" }));
-				await (session.SaveAsync(new AnotherEntity { Input = "hi" }));
-				await (session.SaveAsync(new AnotherEntity { Input = "heh" }));
+				await (session.SaveAsync(new AnotherEntity {Input = " hi"}));
+				await (session.SaveAsync(new AnotherEntity {Input = "hi"}));
+				await (session.SaveAsync(new AnotherEntity {Input = "heh"}));
 				await (session.FlushAsync());
 
 				Assert.That(await (session.Query<AnotherEntity>().CountAsync(e => e.Input.TrimStart() == "hi")), Is.EqualTo(2));
@@ -373,7 +373,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Role
 						where item.IsActive.Equals(true)
 						select item;
-
+			
 			await (ObjectDumper.WriteAsync(query));
 		}
 
@@ -383,7 +383,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Role
 						where item.IsActive.Equals(item.Name != null)
 						select item;
-
+			
 			await (ObjectDumper.WriteAsync(query));
 		}
 
@@ -393,7 +393,7 @@ namespace NHibernate.Test.Linq
 			var query = from item in db.Role
 						where item.IsActive.Equals(1 == 1)
 						select item;
-
+			
 			await (ObjectDumper.WriteAsync(query));
 		}
 
@@ -413,8 +413,8 @@ namespace NHibernate.Test.Linq
 		public async Task WhereLongEqualAsync()
 		{
 			var query = from item in db.PatientRecords
-						where item.Id.Equals(-1)
-						select item;
+						 where item.Id.Equals(-1)
+						 select item;
 
 			await (ObjectDumper.WriteAsync(query));
 		}
@@ -428,7 +428,7 @@ namespace NHibernate.Test.Linq
 
 			await (ObjectDumper.WriteAsync(query));
 		}
-
+		
 		[Test]
 		public async Task WhereGuidEqualAsync()
 		{
@@ -437,7 +437,7 @@ namespace NHibernate.Test.Linq
 						select item;
 
 			await (ObjectDumper.WriteAsync(query));
-		}
+		}		
 
 		[Test]
 		public async Task WhereDoubleEqualAsync()
@@ -447,7 +447,7 @@ namespace NHibernate.Test.Linq
 						select item;
 
 			await (ObjectDumper.WriteAsync(query));
-		}
+		}	
 
 		[Test]
 		public async Task WhereDecimalEqualAsync()
@@ -490,8 +490,8 @@ namespace NHibernate.Test.Linq
 		public async Task WhereEquatableEqualAsync()
 		{
 			var query = from item in db.Shippers
-						where ((IEquatable<Guid>) item.Reference).Equals(Guid.Empty)
-						select item;
+			            where ((IEquatable<Guid>) item.Reference).Equals(Guid.Empty)
+			            select item;
 
 			await (ObjectDumper.WriteAsync(query));
 		}
