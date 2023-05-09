@@ -88,10 +88,19 @@ namespace NHibernate.Driver
 				for (var i = 0; i < command.Parameters.Count; i++)
 				{
 					var parameter = command.Parameters[i];
-					if (parameter.Value is DateTime)
+					if (parameter.DbType == DbType.DateTime &&
+					    parameter.Value is DateTime dateTime &&
+					    dateTime.Kind != DateTimeKind.Utc)
 					{
-						// Let Npgsql 6 driver to decide parameter type
-						parameter.ResetDbType();
+						// There are breaking changes in Npgsql 6 as following:
+						// UTC DateTime is now strictly mapped to timestamptz,
+						// while Local/Unspecified DateTime is now strictly mapped to timestamp.
+						//
+						// DbType.DateTime now maps to timestamptz, not timestamp.
+						// DbType.DateTime2 continues to map to timestamp
+						//
+						// See more details here: https://www.npgsql.org/doc/release-notes/6.0.html#detailed-notes
+						parameter.DbType = DbType.DateTime2;
 					}
 				}
 			}
