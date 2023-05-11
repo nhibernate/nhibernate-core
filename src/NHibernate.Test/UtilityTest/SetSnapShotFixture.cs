@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Collection.Generic.SetHelpers;
@@ -66,6 +67,17 @@ namespace NHibernate.Test.UtilityTest
 			var sn = new SetSnapShot<string>(list);
 
 			var array = new string[3];
+			sn.CopyTo(array, 0);
+			Assert.That(list, Is.EquivalentTo(array));
+		}
+
+		[Test]
+		public void TestCopyToObjectArray()
+		{
+			var list = new List<string> { "test1", null, "test2" };
+			ICollection sn = new SetSnapShot<string>(list);
+
+			var array = new object[3];
 			sn.CopyTo(array, 0);
 			Assert.That(list, Is.EquivalentTo(array));
 		}
