@@ -30,12 +30,13 @@ namespace NHibernate.Test.Linq
 		}
 	}
 
-	public class MyLinqToHqlGeneratorsRegistry : DefaultLinqToHqlGeneratorsRegistry
+	public class MyLinqToHqlGeneratorsRegistry: DefaultLinqToHqlGeneratorsRegistry
 	{
-		public MyLinqToHqlGeneratorsRegistry()
+		public MyLinqToHqlGeneratorsRegistry():base()
 		{
 			RegisterGenerator(ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.IsLike(null, null)),
 							  new IsLikeGenerator());
+			RegisterGenerator(ReflectHelper.GetMethodDefinition(() => new object().Equals(null)), new ObjectEqualsGenerator());
 			RegisterGenerator(ReflectHelper.GetMethodDefinition(() => MyLinqExtensions.GetTime(default(DateTime))), new GetTimeGenerator());
 		}
 	}
@@ -68,12 +69,35 @@ namespace NHibernate.Test.Linq
 		}
 	}
 
+	public class ObjectEqualsGenerator : BaseHqlGeneratorForMethod
+	{
+		public ObjectEqualsGenerator()
+		{
+			SupportedMethods = new[] { ReflectHelper.GetMethodDefinition(() => new object().Equals(null)) };
+		}
+
+		public override HqlTreeNode BuildHql(MethodInfo method, Expression targetObject,
+		                                     ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
+		{
+			return treeBuilder.Equality(visitor.Visit(targetObject).AsExpression(),
+			                        visitor.Visit(arguments[0]).AsExpression());
+		}
+	}
+
 	[TestFixture]
 	public class CustomExtensionsExample : LinqTestCase
 	{
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
 			configuration.LinqToHqlGeneratorsRegistry<MyLinqToHqlGeneratorsRegistry>();
+		}
+
+		[Test]
+		public void CanUseObjectEquals()
+		{
+			var users = db.Users.Where(o => ((object) EnumStoredAsString.Medium).Equals(o.NullableEnum1)).ToList();
+			Assert.That(users.Count, Is.EqualTo(2));
+			Assert.That(users.All(c => c.NullableEnum1 == EnumStoredAsString.Medium), Is.True);
 		}
 
 		[Test(Description = "GH-2963")]
