@@ -120,16 +120,10 @@ namespace NHibernate.Collection.Generic.SetHelpers
 				return;
 			}
 
-			if (array.GetType().GetElementType().IsAssignableFrom(typeof(T)))
-			{
-				if (_hasNull)
-					array.SetValue(default(T), index);
-				ICollection keysCollection = _values.Keys;
-				keysCollection.CopyTo(array, index + (_hasNull ? 1 : 0));
-				return;
-			}
-
-			throw new ArgumentException($"Array must be of type {typeof(T[])}.", nameof(array));
+			if (_hasNull)
+				array.SetValue(default(T), index);
+			ICollection keysCollection = _values.Keys;
+			keysCollection.CopyTo(array, index + (_hasNull ? 1 : 0));
 		}
 
 		public int Count => _values.Count + (_hasNull ? 1 : 0);
