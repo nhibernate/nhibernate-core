@@ -15,9 +15,7 @@
   ],
   "packageRules": [
     {
-      "matchPackagePrefixes": [
-        "NUnit"
-      ],
+      "matchSourceUrls": ["https://github.com/nunit/nunit"],
       "groupName": "NUnit"
     }, 
     {
