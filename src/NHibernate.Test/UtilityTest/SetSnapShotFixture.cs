@@ -83,6 +83,18 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		[Test]
+		public void WhenCopyToIsCalledWithIncompatibleArrayTypeThenThrowArgumentException()
+		{
+			var list = new List<string> { "test1", null, "test2" };
+			ICollection sn = new SetSnapShot<string>(list);
+
+			var array = new int[3];
+			Assert.That(
+				() => sn.CopyTo(array, 0),
+				Throws.ArgumentException);
+		}
+
+		[Test]
 		public void TestSerialization()
 		{
 			var list = new List<string> {"test1", null, "test2"};
