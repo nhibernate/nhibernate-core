@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Collection.Generic.SetHelpers;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace NHibernate.Test.UtilityTest
@@ -83,7 +85,7 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		[Test]
-		public void WhenCopyToIsCalledWithIncompatibleArrayTypeThenThrowArgumentException()
+		public void WhenCopyToIsCalledWithIncompatibleArrayTypeThenThrowArgumentOrInvalidCastException()
 		{
 			var list = new List<string> { "test1", null, "test2" };
 			ICollection sn = new SetSnapShot<string>(list);
@@ -91,7 +93,7 @@ namespace NHibernate.Test.UtilityTest
 			var array = new int[3];
 			Assert.That(
 				() => sn.CopyTo(array, 0),
-				Throws.ArgumentException);
+				Throws.ArgumentException.Or.TypeOf<InvalidCastException>());
 		}
 
 		[Test]
