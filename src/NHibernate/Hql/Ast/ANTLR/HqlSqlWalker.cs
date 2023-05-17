@@ -43,7 +43,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private SelectClause _selectClause;
 		private readonly AliasGenerator _aliasGenerator = new AliasGenerator();
 		private readonly ASTPrinter _printer = new ASTPrinter();
-		private bool _isNullComparison;
 
 		//
 		//Maps each top-level result variable to its SelectExpression;
@@ -58,7 +57,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly LiteralProcessor _literalProcessor;
 
 		private readonly IDictionary<string, string> _tokenReplacements;
-		private readonly IDictionary<IParameterSpecification, IType> _guessedParameterTypes = new Dictionary<IParameterSpecification, IType>();
 
 		private JoinType _impliedJoinType;
 
@@ -91,21 +89,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		public override void ReportError(RecognitionException e)
 		{
 			_parseErrorHandler.ReportError(e);
-		}
-
-		internal IStatement Transform()
-		{
-			var tree = (IStatement) statement().Tree;
-			// Use the guessed type in case we weren't been able to detect the type
-			foreach (var parameter in _parameters)
-			{
-				if (parameter.ExpectedType == null && _guessedParameterTypes.TryGetValue(parameter, out var guessedType))
-				{
-					parameter.ExpectedType = guessedType;
-				}
-			}
-
-			return tree;
 		}
 
 		/*
@@ -1176,7 +1159,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 				// when the parameter is used as an argument.
 				if (isGuessedType)
 				{
-					_guessedParameterTypes[paramSpec] = type;
 					parameter.GuessedType = type;
 				}
 				else
@@ -1317,8 +1299,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 				return _nodeFactory;
 			}
 		}
-
-		internal bool IsNullComparison => _isNullComparison;
 
 		public void AddQuerySpaces(IEntityPersister persister)
 		{

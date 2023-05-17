@@ -69,6 +69,7 @@ namespace NHibernate.Linq.Functions
 			this.Merge(new DecimalNegateGenerator());
 			this.Merge(new RoundGenerator());
 			this.Merge(new TruncateGenerator());
+			this.Merge(new HasFlagGenerator());
 
 			var indexerGenerator = new ListIndexerGenerator();
 			RegisterGenerator(indexerGenerator);
