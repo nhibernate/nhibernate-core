@@ -111,12 +111,12 @@ namespace NHibernate.Linq.Functions
 
 		public virtual void RegisterGenerator(MethodInfo method, IHqlGeneratorForMethod generator)
 		{
-			registeredMethods.Add(method, generator);
+			registeredMethods[method] = generator;
 		}
 
 		public virtual void RegisterGenerator(MemberInfo property, IHqlGeneratorForProperty generator)
 		{
-			registeredProperties.Add(property, generator);
+			registeredProperties[property] = generator;
 		}
 
 		public void RegisterGenerator(IRuntimeMethodHqlGenerator generator)
