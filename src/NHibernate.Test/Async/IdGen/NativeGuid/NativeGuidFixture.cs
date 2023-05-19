@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections;
 using NUnit.Framework;
 
@@ -25,6 +26,19 @@ namespace NHibernate.Test.IdGen.NativeGuid
 		protected override string[] Mappings
 		{
 			get { return new[] {"IdGen.NativeGuid.NativeGuidPoid.hbm.xml"}; }
+		}
+
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			try
+			{
+				var _ = dialect.SelectGUIDString;
+				return true;
+			}
+			catch (NotSupportedException)
+			{
+				return false;
+			}
 		}
 
 		[Test]

@@ -107,7 +107,10 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 				for (var j = 0; j < 10; j++)
 				{
 					var sessionId = sessions[j].GetSessionImplementation().SessionId;
-					Assert.That(loggingEvent, Does.Contain($"p0 = {i * 10 + j} [Type: Int32 (0:0:0)] | SessionId: {sessionId}"));
+					Assert.That(
+						loggingEvent,
+						Does.Contain($"p0 = {i * 10 + j} [Type: Int32 (0:0:0)] | SessionId: {sessionId}")
+						    .Or.Contain($"p0 = {i * 10 + j} [Type: Int32 (4:0:0)] | SessionId: {sessionId}"));
 				}
 			}
 		}
@@ -127,7 +130,10 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 				for (var i = 0; i < interceptor.SessionIds.Count; i++)
 				{
 					var sessionId = interceptor.SessionIds[i];
-					Assert.That(loggingEvent, Does.Contain($"p0 = {i + 1} [Type: Int32 (0:0:0)] | SessionId: {sessionId}"));
+					Assert.That(
+						loggingEvent,
+						Does.Contain($"p0 = {i + 1} [Type: Int32 (0:0:0)] | SessionId: {sessionId}")
+						    .Or.Contain(($"p0 = {i + 1} [Type: Int32 (4:0:0)] | SessionId: {sessionId}")));
 				}
 				Assert.That(loggingEvent, Does.Contain($"Person person0_ | SessionId: {s.GetSessionImplementation().SessionId}"));
 			}
@@ -195,7 +201,10 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 				for (var j = 0; j < 10; j++)
 				{
 					var sessionId = sessionIds[i];
-					Assert.That(loggingEvent, Does.Contain($"p0 = {i * 10 + j} [Type: Int32 (0:0:0)] | SessionId: {sessionId}"));
+					Assert.That(
+						loggingEvent,
+						Does.Contain($"p0 = {i * 10 + j} [Type: Int32 (0:0:0)] | SessionId: {sessionId}")
+						    .Or.Contain($"p0 = {i * 10 + j} [Type: Int32 (4:0:0)] | SessionId: {sessionId}"));
 				}
 			}
 		}

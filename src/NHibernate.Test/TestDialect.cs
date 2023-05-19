@@ -124,9 +124,14 @@ namespace NHibernate.Test
 		public virtual bool SupportsModuloOnDecimal => true;
 
 		/// <summary>
+		/// Supports sub-selects in order by clause
+		/// </summary>
+		public virtual bool SupportsSubSelectsInOrderBy => _dialect.SupportsScalarSubSelects;
+
+		/// <summary>
 		/// Supports aggregating sub-selects in order by clause
 		/// </summary>
-		public virtual bool SupportsAggregatingScalarSubSelectsInOrderBy => _dialect.SupportsScalarSubSelects;
+		public virtual bool SupportsAggregatingScalarSubSelectsInOrderBy => SupportsSubSelectsInOrderBy;
 
 		/// <summary>
 		/// Supports order by and limits/top in correlated sub-queries

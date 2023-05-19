@@ -76,14 +76,14 @@ namespace NHibernate.Test.CacheTest
 			using (var s = OpenSession())
 			{
 				var result = s
-					.CreateSQLQuery("select cast(200012 as decimal) from Simple where id_ = 1")
+					.CreateSQLQuery("select cast(200012 as DECIMAL(18,5)) from Simple where id_ = 1")
 					.SetCacheable(true)
 					.UniqueResult<decimal>();
 
 				Assert.That(result, Is.EqualTo(200012), "Unexpected non-cached result");
 
 				result = s
-					.CreateSQLQuery("select cast(200012 as decimal) from Simple where id_ = 1")
+					.CreateSQLQuery("select cast(200012 as DECIMAL(18,5)) from Simple where id_ = 1")
 					.SetCacheable(true)
 					.UniqueResult<decimal>();
 

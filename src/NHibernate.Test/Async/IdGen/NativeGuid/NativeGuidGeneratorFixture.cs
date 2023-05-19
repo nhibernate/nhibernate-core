@@ -39,11 +39,11 @@ namespace NHibernate.Test.IdGen.NativeGuid
 		{
 			try
 			{
-				var str = Dialect.Dialect.GetDialect().SelectGUIDString;	
+				var _ = sessions.Dialect.SelectGUIDString;	
 			}
 			catch (NotSupportedException)
 			{
-				Assert.Ignore("This test does not apply to {0}", Dialect.Dialect.GetDialect());
+				Assert.Ignore("This test does not apply to {0}", sessions.Dialect);
 			}
 			 
 			var gen = new NativeGuidGenerator();

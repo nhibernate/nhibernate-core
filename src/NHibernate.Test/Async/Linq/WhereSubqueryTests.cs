@@ -526,8 +526,8 @@ where c.Order.Customer.CustomerId = 'VINET'
 		{
 			if (Dialect is MySQLDialect)
 				Assert.Ignore("MySQL does not support LIMIT in subqueries.");
-			if (Dialect is MsSqlCeDialect)
-				Assert.Ignore("MS SQL CE does not support sorting on a subquery.");
+			if (!TestDialect.SupportsSubSelectsInOrderBy)
+				Assert.Ignore("Dialect does not support order by sub-select");
 
 			var ordersQuery = db.Orders
 			                    .OrderByDescending(x => x.OrderLines.Count).ThenBy(x => x.OrderId)
