@@ -2,6 +2,7 @@
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Linq;
+using NHibernate.Loader.Hql;
 using NHibernate.Util;
 
 namespace NHibernate.Hql.Ast.ANTLR
@@ -32,9 +33,18 @@ namespace NHibernate.Hql.Ast.ANTLR
 			var polymorphicParsers = AstPolymorphicProcessor.Process(ast, factory);
 
 			var translators = polymorphicParsers
-				.ToArray(hql => queryExpression is NhLinqExpression linqExpression
-							? new QueryTranslatorImpl(queryIdentifier, hql, filters, factory, linqExpression.GetNamedParameterTypes())
-							: new QueryTranslatorImpl(queryIdentifier, hql, filters, factory));
+				.ToArray(hql => queryExpression is ILinqQueryExpression linqExpression
+							? new QueryTranslatorImpl(queryIdentifier, 
+							                          hql, 
+							                          filters,
+							                          factory, 
+							                          new QueryLoaderFactory(),
+							                          linqExpression.GetNamedParameterTypes())
+							: new QueryTranslatorImpl(queryIdentifier, 
+							                          hql, 
+							                          filters, 
+							                          factory, 
+							                          new QueryLoaderFactory()));
 
 			foreach (var translator in translators)
 			{

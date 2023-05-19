@@ -285,7 +285,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				// this function has a template -> restore output, apply the template and write the result out
 				var functionArguments = (FunctionArguments)writer; // TODO: Downcast to avoid using an interface?  Yuck.
 				writer = outputStack.Pop();
-				Out(template.Render(functionArguments.Args, sessionFactory));
+				Out(methodNode.Render(functionArguments.Args));
 			}
 		}
 

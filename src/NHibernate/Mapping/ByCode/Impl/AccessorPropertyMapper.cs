@@ -92,6 +92,9 @@ namespace NHibernate.Mapping.ByCode.Impl
 				case Accessor.None:
 					setAccessor("none");
 					break;
+				case Accessor.Backfield:
+					setAccessor("backfield");
+					break;
 				default:
 					throw new ArgumentOutOfRangeException("accessor");
 			}

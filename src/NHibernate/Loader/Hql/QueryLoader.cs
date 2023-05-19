@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
-using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR;
@@ -21,7 +20,7 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Loader.Hql
 {
 	[CLSCompliant(false)]
-	public partial class QueryLoader : BasicLoader
+	public partial class QueryLoader : BasicLoader, IQueryLoader
 	{
 		private readonly QueryTranslatorImpl _queryTranslator;
 
@@ -109,7 +108,7 @@ namespace NHibernate.Loader.Hql
 			get { return _sqlAliases; }
 		}
 
-		internal override bool IsCacheable(QueryParameters queryParameters)
+		public override bool IsCacheable(QueryParameters queryParameters)
 		{
 			return IsCacheable(queryParameters, _queryTranslator.SupportsQueryCache, _queryTranslator.Persisters);
 		}
@@ -430,7 +429,7 @@ namespace NHibernate.Loader.Hql
 		[Obsolete("Please use ResultTypes instead")]
 		public IType[] ReturnTypes => ResultTypes;
 
-		internal IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session)
+		public IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session)
 		{
 			CheckQuery(queryParameters);
 			Stopwatch stopWatch = null;

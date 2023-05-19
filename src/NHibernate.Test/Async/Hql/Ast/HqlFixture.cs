@@ -142,6 +142,17 @@ namespace NHibernate.Test.Hql.Ast
 		}
 
 		[Test]
+		public async Task ParametersInCaseThenClauseAsync()
+		{
+			using ISession s = OpenSession();
+			var result = await (s.CreateQuery("select a from Animal a where (case when 2=2 then ? else ? end) = 1")
+			              .SetParameter(0, 1)
+			              .SetParameter(1, 0)
+			              .UniqueResultAsync());
+			Assert.AreEqual(null, result);
+		}
+
+		[Test]
 		public async Task ParameterInCaseThenClauseAsync()
 		{
 			using (ISession s = OpenSession())

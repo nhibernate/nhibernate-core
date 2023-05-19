@@ -42,5 +42,18 @@
       </key>
       <one-to-many class="DocumentDetailDocument" />
     </bag>
+    
+    <bag name="RefferedDetailsManyToMany" lazy="true" generic="true" cascade="all">
+      <key>
+        <column name="id_Doc_detail" />
+        <column name="id_base_detail" />
+      </key>
+      <many-to-many class="DocumentDetailDocument" >
+        <column name="id_item" />
+        <column name="Version" />
+        <column name="id_Doc" />
+        <column name="id_base" />
+      </many-to-many>
+    </bag>
   </class>
 </hibernate-mapping>

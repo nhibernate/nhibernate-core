@@ -8,8 +8,10 @@
 //------------------------------------------------------------------------------
 
 
-using System;
+using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.Type;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
@@ -21,10 +23,7 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class BooleanTypeFixtureAsync : TypeFixtureBase
 	{
-		protected override string TypeName
-		{
-			get { return "Boolean"; }
-		}
+		protected override string TypeName => "Boolean";
 
 		[Test]
 		public async Task ReadWriteAsync()

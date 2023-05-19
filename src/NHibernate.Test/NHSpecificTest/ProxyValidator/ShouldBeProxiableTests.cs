@@ -8,12 +8,27 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 	[TestFixture]
 	public class ShouldBeProxiableTests
 	{
-		private class MyClass: IDisposable
+		private class MyClass : IDisposable
 		{
 			public void Dispose()
 			{
 			}
+
+			~MyClass()
+			{
+			}
+
+			// ReSharper disable once InconsistentNaming
+			// This is intentionally lower case
+			public virtual void finalize()
+			{
+			}
+
+			public virtual void Finalize(int a)
+			{
+			}
 		}
+
 		private class ProtectedNoVirtualProperty
 		{
 			protected int Aprop { get; set; }
@@ -42,6 +57,104 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		{
 			var method = typeof(MyClass).GetMethod("Dispose");
 			Assert.That(method.ShouldBeProxiable(), Is.False);
+		}
+
+		[Test]
+		public void ObjectDestructorShouldNotBeProxiable()
+		{
+			var method = typeof(object).GetMethod(
+				"Finalize",
+				BindingFlags.NonPublic | BindingFlags.Instance);
+
+			Assert.That(method.ShouldBeProxiable(), Is.False);
+		}
+
+		[Test]
+		public void ObjectDestructorIsNotProxiable()
+		{
+			var method = typeof(object).GetMethod(
+				"Finalize",
+				BindingFlags.NonPublic | BindingFlags.Instance);
+
+			Assert.That(method.IsProxiable(), Is.False);
+		}
+		
+		[Test]
+		public void MyClassDestructorShouldNotBeProxiable()
+		{
+			var method = typeof(MyClass).GetMethod(
+				"Finalize",
+				BindingFlags.NonPublic | BindingFlags.Instance,
+				null,
+				System.Type.EmptyTypes,
+				null);
+
+			Assert.That(method.ShouldBeProxiable(), Is.False);
+		}
+
+		[Test]
+		public void MyClassDestructorIsNotProxiable()
+		{
+			var method = typeof(MyClass).GetMethod(
+				"Finalize",
+				BindingFlags.NonPublic | BindingFlags.Instance,
+				null,
+				System.Type.EmptyTypes,
+				null);
+
+			Assert.That(method.IsProxiable(), Is.False);
+		}
+
+		[Test]
+		public void MyClassLowerCaseFinalizeShouldBeProxiable()
+		{
+			var method = typeof(MyClass).GetMethod(
+				"finalize",
+				BindingFlags.Public | BindingFlags.Instance,
+				null,
+				System.Type.EmptyTypes,
+				null);
+
+			Assert.That(method.ShouldBeProxiable(), Is.True);
+		}
+
+		[Test]
+		public void MyClassLowerCaseFinalizeIsProxiable()
+		{
+			var method = typeof(MyClass).GetMethod(
+				"finalize",
+				BindingFlags.Public | BindingFlags.Instance,
+				null,
+				System.Type.EmptyTypes,
+				null);
+
+			Assert.That(method.IsProxiable(), Is.True);
+		}
+		
+		[Test]
+		public void MyClassFinalizeWithParametersShouldBeProxiable()
+		{
+			var method = typeof(MyClass).GetMethod(
+				"Finalize",
+				BindingFlags.Public | BindingFlags.Instance,
+				null,
+				new[] { typeof(int) },
+				null);
+
+			Assert.That(method.ShouldBeProxiable(), Is.True);
+		}
+
+		[Test]
+		public void MyClassFinalizeWithParametersIsProxiable()
+		{
+			var method = typeof(MyClass).GetMethod(
+				"Finalize",
+				BindingFlags.Public | BindingFlags.Instance,
+				null,
+				new[] { typeof(int) },
+				null);
+
+			Assert.That(method.IsProxiable(), Is.True);
 		}
 
 		[Test]

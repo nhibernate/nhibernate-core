@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Linq;
-using System.Linq.Expressions;
 using NHibernate.Hql.Ast;
+using NHibernate.Hql.Ast.ANTLR;
 using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
@@ -38,7 +36,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 				if (itemExpression is HqlParameter)
 				{
 					tree.AddWhereClause(tree.TreeBuilder.Equality(
-						tree.TreeBuilder.Ident(GetFromAlias(tree.Root).AstNode.Text),
+						GetSelectExpression(tree.Root),
 						itemExpression));
 					ProcessAny.Process(tree);
 				}
@@ -54,9 +52,9 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			return node.NodesPreOrder.OfType<HqlRange>().First();
 		}
 
-		private static HqlAlias GetFromAlias(HqlTreeNode node)
+		private static HqlExpression GetSelectExpression(HqlTreeNode node)
 		{
-			return node.NodesPreOrder.Single(n => n is HqlRange).Children.Single(n => n is HqlAlias) as HqlAlias;
+			return node.NodesPreOrder.First(x => x.AstNode.Type == HqlSqlWalker.SELECT).Children.Single() as HqlExpression;
 		}
 
 		private static bool IsEmptyList(HqlParameter source, VisitorParameters parameters)

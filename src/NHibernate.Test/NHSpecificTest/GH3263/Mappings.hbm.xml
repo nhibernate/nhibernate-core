@@ -1,0 +1,25 @@
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"  assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH3263">
+  <class name="Employee" table="Employee">
+    <id name="EmployeeId">
+      <column name="EmployeeId" />
+      <generator class="identity" />
+    </id>
+    <property name="Name" >
+      <column name="Name" not-null="true" />
+    </property>
+    <one-to-one cascade="save-update" name="OptionalInfo" foreign-key="none"/>
+  </class>
+  <class name="OptionalInfo" table="OptionalInfo">
+    <id name="EmployeeId" >
+      <column name="EmployeeId" />
+      <generator class="foreign">
+        <param name="property">Employee</param>
+      </generator>
+    </id>
+    <property name="Age">
+      <column name="Age" not-null="true" />
+    </property>
+    <one-to-one cascade="none" name="Employee" foreign-key="none" />
+  </class>
+</hibernate-mapping>

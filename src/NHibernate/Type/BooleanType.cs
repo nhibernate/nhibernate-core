@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Runtime.CompilerServices;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -13,6 +14,9 @@ namespace NHibernate.Type
 	[Serializable]
 	public class BooleanType : PrimitiveType, IDiscriminatorType
 	{
+		protected static readonly object TrueObject = true;
+		protected static readonly object FalseObject = false;
+
 		/// <summary>
 		/// Initialize a new instance of the BooleanType
 		/// </summary>
@@ -36,38 +40,26 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			return Convert.ToBoolean(rs[index]);
+			return GetBooleanAsObject(Convert.ToBoolean(rs[index]));
 		}
 
 		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Convert.ToBoolean(rs[name]);
+			return GetBooleanAsObject(Convert.ToBoolean(rs[name]));
 		}
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof(bool); }
-		}
+		public override System.Type PrimitiveClass => typeof(bool);
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(bool); }
-		}
+		public override System.Type ReturnedClass => typeof(bool);
 
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			cmd.Parameters[index].Value = (bool) value;
 		}
 
-		public override string Name
-		{
-			get { return "Boolean"; }
-		}
+		public override string Name => "Boolean";
 
-		public override object DefaultValue
-		{
-			get { return false; }
-		}
+		public override object DefaultValue => FalseObject;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
@@ -89,7 +81,13 @@ namespace NHibernate.Type
 		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
-			return bool.Parse(xml);
+			return GetBooleanAsObject(bool.Parse(xml));
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static object GetBooleanAsObject(bool value)
+		{
+			return value ? TrueObject : FalseObject;
 		}
 	}
 }

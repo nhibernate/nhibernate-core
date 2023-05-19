@@ -98,7 +98,7 @@ namespace NHibernate.Loader.Criteria
 			get { return querySpaces; }
 		}
 
-		internal override bool IsCacheable(QueryParameters queryParameters)
+		public override bool IsCacheable(QueryParameters queryParameters)
 		{
 			return IsCacheable(queryParameters, translator.SupportsQueryCache, translator.GetPersisters());
 		}

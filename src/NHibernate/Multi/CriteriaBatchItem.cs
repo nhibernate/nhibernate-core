@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Impl;
+using NHibernate.Loader;
 using NHibernate.Loader.Criteria;
 using NHibernate.Persister.Entity;
 
@@ -36,7 +37,7 @@ namespace NHibernate.Multi
 					Session.EnabledFilters
 				);
 
-				list.Add(new QueryInfo(loader.Translator.GetQueryParameters(), loader, loader.QuerySpaces, session));
+				list.Add(new QueryInfo(loader.Translator.GetQueryParameters(), (ILoader)loader, loader.QuerySpaces, session));
 			}
 
 			return list;

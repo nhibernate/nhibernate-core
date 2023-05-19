@@ -1728,7 +1728,7 @@ in the parameter binding.</programlisting>
                                     Use the assembly qualified class name of a custom <literal>IObjectsFactory</literal>
                                     implementation.
                                 </para>
-                                <programlisting><![CDATA[<bytecode-provider
+                                <programlisting><![CDATA[<objects-factory
     type="className" />]]></programlisting>
                                 <para>
                                     You can also set this property by code by setting

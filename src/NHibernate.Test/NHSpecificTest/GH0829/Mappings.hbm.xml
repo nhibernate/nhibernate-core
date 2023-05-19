@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test" namespace="NHibernate.Test.NHSpecificTest.GH0829">
+  <class name="Parent" table="parent">
+    <id name="Id" generator="guid.comb" />
+    <property name="Type" type="NHibernate.Type.EnumType`1[[NHibernate.Test.NHSpecificTest.GH0829.TestEnum, NHibernate.Test]], NHibernate"/>
+    <bag name="Children" lazy="true">
+      <key column="ParentId" />
+      <one-to-many class="Child" />
+    </bag>
+  </class>
+
+  <class name="Child" table="Child">
+    <id name="Id" generator="guid.comb" />
+    <property name="Type" type="NHibernate.Type.EnumType`1[[NHibernate.Test.NHSpecificTest.GH0829.TestEnum, NHibernate.Test]], NHibernate"/>
+    <many-to-one name="Parent" column="ParentId" not-null="true" />
+  </class>
+</hibernate-mapping>

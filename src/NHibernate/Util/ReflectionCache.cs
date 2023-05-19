@@ -232,5 +232,11 @@ namespace NHibernate.Util
 			internal static readonly MethodInfo GetTypeFromHandle =
 				ReflectHelper.FastGetMethod(System.Type.GetTypeFromHandle, default(RuntimeTypeHandle));
 		}
+
+		internal static class ObjectMethods
+		{
+			internal static readonly MethodInfo Finalize =
+				typeof(object).GetMethod("Finalize", BindingFlags.NonPublic | BindingFlags.Instance);
+		}
 	}
 }

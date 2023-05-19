@@ -253,7 +253,7 @@ namespace NHibernate.Linq
 #pragma warning restore 618
 		}
 
-		private static void SetParameters(IQuery query, IDictionary<string, NamedParameter> parameters)
+		protected void SetParameters(IQuery query, IDictionary<string, NamedParameter> parameters)
 		{
 			foreach (var parameterName in query.NamedParameters)
 			{

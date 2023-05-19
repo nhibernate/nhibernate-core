@@ -15,6 +15,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using log4net.Core;
+using NHibernate.Dialect;
 using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
@@ -65,6 +66,32 @@ namespace NHibernate.Test.Linq
 						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
+		}
+
+		[Test(Description = "GH-3256")]
+		public async Task CanUseStringEnumInConditionalAsync()
+		{
+			var query = db.Users
+			              .Where(
+				              user => (user.Enum1 == EnumStoredAsString.Small
+					              ? EnumStoredAsString.Small
+					              : EnumStoredAsString.Large) == user.Enum1)
+			              .Select(x => x.Enum1);
+
+			Assert.That(await (query.CountAsync()), Is.GreaterThan(0));
+		}
+
+		[Test(Description = "GH-3256")]
+		public async Task CanUseStringEnumInConditional2Async()
+		{
+			var query = db.Users
+			              .Where(
+				              user => (user.Enum1 == EnumStoredAsString.Small
+					              ? user.Enum1
+					              : EnumStoredAsString.Large) == user.Enum1)
+			              .Select(x => x.Enum1);
+
+			Assert.That(await (query.CountAsync()), Is.GreaterThan(0));
 		}
 
 		[Test]
@@ -642,6 +669,38 @@ namespace NHibernate.Test.Linq
 						 select sheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public async Task TimesheetsWithEnumerableContainsOnSelectAsync()
+		{
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("Dialect is not supported");
+
+			var value = (EnumStoredAsInt32) 1000;
+			var query = await ((from sheet in db.Timesheets
+			             where sheet.Users.Select(x => x.NullableEnum2 ?? value).Contains(value)
+			             select sheet).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public async Task ContainsSubqueryWithCoalesceStringEnumSelectAsync()
+		{
+			if (Dialect is MsSqlCeDialect || Dialect is SQLiteDialect)
+				Assert.Ignore("Dialect is not supported");
+
+			var results =
+				await (db.Timesheets.Where(
+					  o =>
+						  o.Users
+						   .Where(u => u.Id != 0.MappedAs(NHibernateUtil.Int32))
+						   .Select(u => u.Name == u.Name ? u.Enum1 : u.NullableEnum1.Value)
+						   .Contains(EnumStoredAsString.Small))
+				  .ToListAsync());
+
+			Assert.That(results.Count, Is.EqualTo(1));
 		}
 
 		[Test]

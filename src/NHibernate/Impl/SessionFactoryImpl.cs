@@ -277,6 +277,7 @@ namespace NHibernate.Impl
 					model.RootClazz.CacheRegionName,
 					model.CacheConcurrencyStrategy,
 					model.IsMutable,
+					model.EntityName,
 					caches);
 				var cp = PersisterFactory.CreateClassPersister(model, cache, this, mapping);
 				entityPersisters[model.EntityName] = cp;
@@ -302,6 +303,7 @@ namespace NHibernate.Impl
 					model.CacheRegionName,
 					model.CacheConcurrencyStrategy,
 					model.Owner.IsMutable,
+					model.OwnerEntityName,
 					caches);
 				var persister = PersisterFactory.CreateCollectionPersister(model, cache, this);
 				collectionPersisters[model.Role] = persister;
@@ -463,10 +465,10 @@ namespace NHibernate.Impl
 					properties);
 		}
 
-		private ICacheConcurrencyStrategy GetCacheConcurrencyStrategy(
-			string cacheRegion,
+		private ICacheConcurrencyStrategy GetCacheConcurrencyStrategy(string cacheRegion,
 			string strategy,
 			bool isMutable,
+			string entityName,
 			Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy> caches)
 		{
 			if (strategy == null || strategy == CacheFactory.Never || !settings.IsSecondLevelCacheEnabled)
@@ -479,7 +481,7 @@ namespace NHibernate.Impl
 			cache = CacheFactory.CreateCache(strategy, GetCache(cacheRegion), settings);
 			caches.Add(cacheKey, cache);
 			if (isMutable && strategy == CacheFactory.ReadOnly)
-				log.Warn("read-only cache configured for mutable: {0}", name);
+				log.Warn("read-only cache configured for mutable: {0}", entityName);
 
 			return cache;
 		}

@@ -55,7 +55,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		public void OptimisticLock(bool takeInConsiderationForOptimisticLock)
 		{
-			// not supported by HbmOneToOne
+			_oneToOne.optimisticlock = takeInConsiderationForOptimisticLock;
 		}
 
 		#endregion

@@ -19,6 +19,7 @@ using NHibernate.Engine;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
+using NHibernate.Loader;
 using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
 using NHibernate.SqlCommand;

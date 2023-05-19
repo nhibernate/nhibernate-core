@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Impl;
+using NHibernate.Loader;
 using NHibernate.Loader.Criteria;
 using NHibernate.Persister.Entity;
 

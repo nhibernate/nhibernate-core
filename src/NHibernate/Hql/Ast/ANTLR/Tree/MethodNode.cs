@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Antlr.Runtime;
 
 using NHibernate.Dialect.Function;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Persister.Collection;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
@@ -211,6 +213,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			/*else {
 				methodName = (String) getWalker().getTokenReplacements().get( methodName );
 			}*/
+		}
+
+		public virtual SqlString Render(IList args)
+		{
+			return _function.Render(args, SessionFactoryHelper.Factory);
 		}
 	}
 }

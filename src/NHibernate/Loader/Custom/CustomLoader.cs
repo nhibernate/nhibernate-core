@@ -207,7 +207,7 @@ namespace NHibernate.Loader.Custom
 			get { return querySpaces; }
 		}
 
-		internal override bool IsCacheable(QueryParameters queryParameters)
+		public override bool IsCacheable(QueryParameters queryParameters)
 		{
 			return IsCacheable(
 				queryParameters,
@@ -359,7 +359,7 @@ namespace NHibernate.Loader.Custom
 			return results;
 		}
 
-		protected internal override void AutoDiscoverTypes(
+		public override void AutoDiscoverTypes(
 			DbDataReader rs, QueryParameters queryParameters, IResultTransformer forcedResultTransformer)
 		{
 			MetaData metadata = new MetaData(rs);

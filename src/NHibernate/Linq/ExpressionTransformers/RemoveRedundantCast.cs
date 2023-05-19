@@ -1,3 +1,4 @@
+using System;
 using System.Linq.Expressions;
 using NHibernate.Util;
 using Remotion.Linq.Parsing.ExpressionVisitors.Transformation;
@@ -20,6 +21,7 @@ namespace NHibernate.Linq.ExpressionTransformers
 		public Expression Transform(UnaryExpression expression)
 		{
 			if (expression.Type != typeof(object) &&
+				expression.Type != typeof(Enum) &&
 				expression.Type.IsAssignableFrom(expression.Operand.Type) &&
 				expression.Method == null &&
 				!expression.IsLiftedToNull)

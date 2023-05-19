@@ -724,9 +724,9 @@ namespace NHibernate.Hql.Ast
 	public class HqlTransparentCast : HqlExpression
 	{
 		public HqlTransparentCast(IASTFactory factory, HqlExpression expression, System.Type type)
-			: base(HqlSqlWalker.METHOD_CALL, "method", factory)
+			: base(HqlSqlWalker.METHOD_CALL, TransparentCastNode.Name, factory)
 		{
-			AddChild(new HqlIdent(factory, "transparentcast"));
+			AddChild(new HqlIdent(factory, TransparentCastNode.Name));
 			AddChild(new HqlExpressionList(factory, expression, new HqlIdent(factory, type)));
 		}
 	}

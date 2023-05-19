@@ -3729,6 +3729,12 @@ namespace NHibernate.Persister.Entity
 			if (!filterHelper.IsAffectedBy(enabledFilters))
 				return filterFragment;
 
+			return FilterFragment(filterHelper, alias, enabledFilters, filterFragment);
+		}
+
+		//TODO 6.0: Move to IEntityPersister and adjust usages accordingly
+		public virtual string FilterFragment(FilterHelper filterHelper, string alias, IDictionary<string, IFilter> enabledFilters, string filterFragment)
+		{
 			var sessionFilterFragment = new StringBuilder();
 			filterHelper.Render(sessionFilterFragment, GenerateFilterConditionAlias(alias), GetColumnsToTableAliasMap(alias), enabledFilters);
 			return sessionFilterFragment.Append(filterFragment).ToString();

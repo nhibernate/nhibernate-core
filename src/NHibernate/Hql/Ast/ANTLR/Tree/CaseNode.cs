@@ -35,7 +35,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 						return select.DataType;
 				}
 
-				throw new HibernateException("Unable to determine data type of CASE statement.");
+				return base.DataType;
 			}
 			set { base.DataType = value; }
 		}
