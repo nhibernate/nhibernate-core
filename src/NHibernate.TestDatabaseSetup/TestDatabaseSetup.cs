@@ -32,7 +32,9 @@ namespace NHibernate.TestDatabaseSetup
 				{"NHibernate.Driver.OracleManagedDataClientDriver", SetupOracle},
 				{"NHibernate.Driver.OdbcDriver", SetupSqlServerOdbc},
 				{"NHibernate.Driver.SQLite20Driver", SetupSQLite},
+				{"NHibernate.Driver.DB2Driver", SetupDB2},
 				{"NHibernate.Driver.DB2CoreDriver", SetupDB2},
+				{"NHibernate.Driver.DB2NetDriver", SetupDB2},
 #if NETFX
 				{"NHibernate.Driver.SqlServerCeDriver", SetupSqlServerCe},
 				{"NHibernate.Driver.SapSQLAnywhere17Driver", SetupSqlAnywhere}

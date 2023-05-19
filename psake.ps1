@@ -91,7 +91,7 @@ Task Set-Configuration {
         'DB2' = @{
             'connection.connection_string' = '';
             'dialect' = 'NHibernate.Dialect.DB2Dialect';
-            'connection.driver_class' = 'NHibernate.Driver.DB2CoreDriver'
+            'connection.driver_class' = 'NHibernate.Driver.DB2NetDriver'
         }
     }
     #Settings for current build
