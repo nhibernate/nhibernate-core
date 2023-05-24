@@ -192,6 +192,7 @@
   applyChanges: true
   suppressDiagnosticFailures:
   - pattern: ^.*(Hql\.g).*$
+  - pattern: IBM.Data.Db2.dll
   analyzation:
     methodConversion:
     - conversion: Ignore
