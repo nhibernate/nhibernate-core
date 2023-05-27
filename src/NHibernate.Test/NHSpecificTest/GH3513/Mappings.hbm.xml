@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH3513">
+
+  <class name="Customer">
+    <id name="Id" generator="assigned"/>
+    <property name="SerialNumber" unique="true" type="string" formula="(select Id from Customer where Customer.Id = Id)" />
+  </class>
+
+  <class name="Orders">
+    <id name="Id" generator="guid.comb"/>
+    <many-to-one name="Customer1" class="Customer" property-ref="SerialNumber" />
+  </class>
+
+</hibernate-mapping>
