@@ -2,14 +2,17 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
                    namespace="NHibernate.Test.NHSpecificTest.GH3513">
 
-  <class name="Customer">
-    <id name="Id" generator="assigned"/>
-    <property name="SerialNumber" unique="true" type="string" formula="(select Id from Customer where Customer.Id = Id)" />
+  <class name="HoldClose" >
+    <id name="Id" generator="native"/>
+    <many-to-one name="Account" class="Account" column="accountnumber" property-ref="OldAccountNumber"/>
+    <property name="CloseDate"  />
   </class>
-
-  <class name="Orders">
-    <id name="Id" generator="guid.comb"/>
-    <many-to-one name="Customer1" class="Customer" property-ref="SerialNumber" />
+  <class name="Account" >
+    <id name="Id" generator="assigned"/>
+    <property name="Name"/>
+    <property name="OldAccountNumber"  insert="false" update="false" generated="never" >
+      <formula>convert(int,substring([Oldaccountnumber],3,8))</formula>
+    </property>
   </class>
 
 </hibernate-mapping>

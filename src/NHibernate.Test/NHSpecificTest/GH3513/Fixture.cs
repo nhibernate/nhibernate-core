@@ -7,17 +7,20 @@ namespace NHibernate.Test.NHSpecificTest.GH3513
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		private static Guid SERIALNUMBER = Guid.NewGuid();
-
 		protected override void OnSetUp()
 		{
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				var order = new Orders
+				var account = new Account { Id = 1, Name = "Account_1", OldAccountNumber = 1 };
+
+				var order = new HoldClose
 				{
-					Customer1 = new Customer { Id = SERIALNUMBER }
+					Account = account,
+					CloseDate = new DateTime(2023, 1, 1)
 				};
+
+				session.Save(account);
 				session.Save(order);
 				transaction.Commit();
 			}
@@ -45,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3513
 			using (var session = OpenSession())
 			using (session.BeginTransaction())
 			{
-				var result = from e in session.Query<Orders>()
+				var result = from e in session.Query<HoldClose>()
 							 select e;
 
 				Assert.That(result.ToList(), Has.Count.EqualTo(1));
