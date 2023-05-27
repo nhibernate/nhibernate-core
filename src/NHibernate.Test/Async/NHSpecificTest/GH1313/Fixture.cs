@@ -13,7 +13,7 @@ using System.Linq;
 using NUnit.Framework;
 using NHibernate.Linq;
 
-namespace NHibernate.Test.NHSpecificTest.GH3513
+namespace NHibernate.Test.NHSpecificTest.GH1313
 {
 	using System.Threading.Tasks;
 	[TestFixture]
