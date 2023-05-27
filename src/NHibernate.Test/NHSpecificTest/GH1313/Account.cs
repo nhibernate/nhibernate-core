@@ -1,4 +1,4 @@
-namespace NHibernate.Test.NHSpecificTest.GH3513
+namespace NHibernate.Test.NHSpecificTest.GH1313
 {
 	public class Account
 	{
