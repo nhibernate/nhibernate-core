@@ -114,12 +114,16 @@ namespace NHibernate.Collection.Generic.SetHelpers
 
 		void ICollection.CopyTo(Array array, int index)
 		{
-			if (!(array is T[] typedArray))
+			if (array is T[] typedArray)
 			{
-				throw new ArgumentException($"Array must be of type {typeof(T[])}.", nameof(array));
+				CopyTo(typedArray, index);
+				return;
 			}
 
-			CopyTo(typedArray, index);
+			if (_hasNull)
+				array.SetValue(default(T), index);
+			ICollection keysCollection = _values.Keys;
+			keysCollection.CopyTo(array, index + (_hasNull ? 1 : 0));
 		}
 
 		public int Count => _values.Count + (_hasNull ? 1 : 0);
@@ -153,12 +157,26 @@ namespace NHibernate.Collection.Generic.SetHelpers
 
 		void ICollection.CopyTo(Array array, int index)
 		{
-			if (!(array is T[] typedArray))
+			if (array is T[] typedArray)
 			{
-				throw new ArgumentException($"Array must be of type {typeof(T[])}.", nameof(array));
+				CopyTo(typedArray, index);
+				return;
 			}
 
-			CopyTo(typedArray, index);
+			if (array == null)
+				throw new ArgumentNullException(nameof(array));
+
+			if (index < 0)
+				throw new ArgumentOutOfRangeException(nameof(index), index, "Array index cannot be negative");
+
+			if (index > array.Length || Count > array.Length - index)
+				throw new ArgumentException("Provided array is too small", nameof(array));
+
+			foreach (var value in this)
+			{
+				array.SetValue(value, index);
+				index++;
+			}
 		}
 
 		bool ICollection.IsSynchronized => false;
