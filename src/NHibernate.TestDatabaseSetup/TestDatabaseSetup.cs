@@ -182,11 +182,7 @@ namespace NHibernate.TestDatabaseSetup
 
 				using (var cmd = conn.CreateCommand())
 				{
-					cmd.CommandText =
-						@"CREATE OR REPLACE FUNCTION uuid_generate_v4()
-						RETURNS uuid
-						AS '$libdir/uuid-ossp', 'uuid_generate_v4'
-						VOLATILE STRICT LANGUAGE C;";
+					cmd.CommandText = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";";
 
 					cmd.ExecuteNonQuery();
 				}
