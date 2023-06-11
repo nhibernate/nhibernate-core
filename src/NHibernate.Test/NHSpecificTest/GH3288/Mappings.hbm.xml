@@ -1,0 +1,26 @@
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   namespace="NHibernate.Test.NHSpecificTest.GH3288"
+                   assembly="NHibernate.Test">
+  <class name="TopEntity" table="`TopEntity`">
+    <id name="Id" >
+      <generator class="identity" />
+    </id>
+    <many-to-one class="MiddleEntity" name="MiddleEntity">
+      <column name="MiddleEntity_id" />
+    </many-to-one>
+  </class>
+<class name="MiddleEntity" table="`MiddleEntity`">
+  <id name="Id" >
+    <generator class="identity" />
+  </id>
+  <set cascade="all" name="Components" table="BottomEntity">
+    <key not-null="true">
+      <column name="MiddleEntity_id" />
+    </key>
+    <composite-element class="Component">
+      <parent name="MiddleEntity" />
+      <property name="Value" />
+    </composite-element>
+  </set>
+</class>
+</hibernate-mapping>
