@@ -19,7 +19,7 @@
     </key>
     <composite-element class="Component">
       <parent name="MiddleEntity" />
-      <property name="Value" />
+      <property name="Value" column="`Value`" />
     </composite-element>
   </set>
 </class>
