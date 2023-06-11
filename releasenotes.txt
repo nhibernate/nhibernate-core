@@ -1,4 +1,23 @@
-﻿Build 5.3.16
+﻿Build 5.3.17
+=============================
+
+Release notes - NHibernate - Version 5.3.17
+
+5 issues were resolved in this release.
+
+** Bug
+
+   * #3306 Invalid SQL when referencing nullable entity in correlated subquery
+   * #3304 Fix SetSnapShot CopyTo variance failure
+   * #3294 Undefined join type failure with cross joins and Informix
+
+** Task
+
+   * #3315 Release 5.3.17
+   * #3300 Backport handling of null DateTime parameters in Npgsql 6+
+
+
+Build 5.3.16
 =============================
 
 Release notes - NHibernate - Version 5.3.16
