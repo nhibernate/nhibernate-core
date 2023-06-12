@@ -7,9 +7,17 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH3290
 {
-	[TestFixture]
+	[TestFixture(true)]
+	[TestFixture(false)]
 	public class Fixture : TestCaseMappingByCode
 	{
+		private readonly bool _detectFetchLoops;
+
+		public Fixture(bool detectFetchLoops)
+		{
+			_detectFetchLoops = detectFetchLoops;
+		}
+
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
@@ -63,11 +71,11 @@ namespace NHibernate.Test.NHSpecificTest.GH3290
 
 		protected override void Configure(Configuration configuration)
 		{
-			// Workaround fo the test case:
-			/*
+			if (_detectFetchLoops)
+				return;
+
 			configuration.SetProperty(Environment.DetectFetchLoops, "false");
 			configuration.SetProperty(Environment.MaxFetchDepth, "2");
-			*/
 		}
 
 		protected override void OnSetUp()
@@ -99,7 +107,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3290
 			using var session = OpenSession();
 			using var transaction = session.BeginTransaction();
 
-			session.CreateSQLQuery("delete EntityToEntity").ExecuteUpdate();
+			session.CreateSQLQuery("delete from EntityToEntity").ExecuteUpdate();
 			session.CreateQuery("delete from System.Object").ExecuteUpdate();
 
 			transaction.Commit();
