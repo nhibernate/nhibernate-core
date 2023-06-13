@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.GH3288
 {
@@ -10,6 +11,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3288
 	class MiddleEntity
 	{
 		public virtual int Id { get; set; }
+		public virtual string Name { get; set; }
 		public virtual ISet<Component> Components { get; set; } = new HashSet<Component>();
 	}
 

@@ -13,6 +13,7 @@
   <id name="Id" >
     <generator class="identity" />
   </id>
+  <property name="Name" />
   <set cascade="all" name="Components" table="BottomEntity">
     <key not-null="true">
       <column name="MiddleEntity_id" />
