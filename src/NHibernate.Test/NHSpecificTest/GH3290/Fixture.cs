@@ -71,11 +71,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3290
 
 		protected override void Configure(Configuration configuration)
 		{
-			if (_detectFetchLoops)
-				return;
-
-			configuration.SetProperty(Environment.DetectFetchLoops, "false");
-			configuration.SetProperty(Environment.MaxFetchDepth, "2");
+			configuration.SetProperty(Environment.DetectFetchLoops, _detectFetchLoops ? "true" : "false");
+			configuration.SetProperty(Environment.MaxFetchDepth, _detectFetchLoops ? "-1" : "2");
 		}
 
 		protected override void OnSetUp()
