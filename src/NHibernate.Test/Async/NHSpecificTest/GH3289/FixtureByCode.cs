@@ -58,7 +58,11 @@ namespace NHibernate.Test.NHSpecificTest.GH3289
 		{
 			using var session = OpenSession();
 			using var transaction = session.BeginTransaction();
-			session.CreateQuery("delete from System.Object").ExecuteUpdate();
+
+			if (Dialect.SupportsTemporaryTables)
+				session.CreateQuery("delete from System.Object").ExecuteUpdate();
+			else
+				session.Delete("from System.Object");
 
 			transaction.Commit();
 		}
