@@ -52,6 +52,16 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 				{
 					var metadata = queryModelVisitor.VisitorParameters.SessionFactory
 													.GetClassMetadata(resultOperator.RelationMember.ReflectedType);
+					if (metadata == null)
+					{
+						var entityName = queryModelVisitor.VisitorParameters.SessionFactory.GetImplementors(
+							resultOperator.RelationMember.ReflectedType.FullName).SingleOrDefault();
+						if (!string.IsNullOrEmpty(entityName))
+						{
+							metadata = queryModelVisitor.VisitorParameters.SessionFactory.GetClassMetadata(entityName);
+						}
+					}
+
 					propType = metadata?.GetPropertyType(resultOperator.RelationMember.Name);
 				}
 				
