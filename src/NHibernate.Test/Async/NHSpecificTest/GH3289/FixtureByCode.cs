@@ -29,9 +29,14 @@ namespace NHibernate.Test.NHSpecificTest.GH3289
 				rc.Property(x => x.Name);
 				rc.Component(x => x.Component);
 			});
+			mapper.Class<OtherEntity>(rc =>
+			{
+				rc.Id(x => x.Id, m => m.Generator(Generators.Identity));
+				rc.Property(x => x.Name);
+				rc.Component(x => x.Component);
+			});
 			mapper.JoinedSubclass<SubEntity>(rc =>
 			{
-				rc.EntityName(typeof(ISubEntity).FullName);
 				rc.Key(k => k.Column("Id"));
 				rc.Property(x => x.SomeProperty);
 			});
@@ -72,6 +77,19 @@ namespace NHibernate.Test.NHSpecificTest.GH3289
 		{
 			using var session = OpenSession();
 			var data = await (session.Query<ISubEntity>()
+				.Fetch(e => e.Component)
+				.ToListAsync());
+			var result = NHibernateUtil.IsPropertyInitialized(data[0], "Component");
+
+			Assert.That(result, Is.True);
+		}
+
+		[Test]
+		public async Task TestEntityInterfaceWithFetchIsPropertyInitializedAsync()
+		{
+			using var log = new SqlLogSpy();
+			using var session = OpenSession();
+			var data = await (session.Query<IEntity>()
 				.Fetch(e => e.Component)
 				.ToListAsync());
 			var result = NHibernateUtil.IsPropertyInitialized(data[0], "Component");
