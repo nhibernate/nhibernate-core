@@ -375,6 +375,7 @@ namespace NHibernate.Loader
 				}
 				else if (type.IsComponentType)
 				{
+					_joinQueue.Enqueue(NextLevelJoinQueueEntry.Instance);
 					WalkCompositeElementTree(
 						(IAbstractComponentType) type,
 						persister.ElementColumnNames,
