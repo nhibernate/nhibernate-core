@@ -87,7 +87,6 @@ namespace NHibernate.Test.NHSpecificTest.GH3289
 		[Test]
 		public async Task TestEntityInterfaceWithFetchIsPropertyInitializedAsync()
 		{
-			using var log = new SqlLogSpy();
 			using var session = OpenSession();
 			var data = await (session.Query<IEntity>()
 				.Fetch(e => e.Component)
