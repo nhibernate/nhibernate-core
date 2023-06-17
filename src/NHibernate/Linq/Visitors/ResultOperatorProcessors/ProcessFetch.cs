@@ -55,7 +55,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 					if (metadata == null)
 					{
 						var entityName = queryModelVisitor.VisitorParameters.SessionFactory.GetImplementors(
-							resultOperator.RelationMember.ReflectedType.FullName).SingleOrDefault();
+							resultOperator.RelationMember.ReflectedType.FullName).FirstOrDefault();
 						if (!string.IsNullOrEmpty(entityName))
 						{
 							metadata = queryModelVisitor.VisitorParameters.SessionFactory.GetClassMetadata(entityName);
