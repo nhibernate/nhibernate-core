@@ -1,4 +1,292 @@
-﻿Build 5.3.13
+﻿Build 5.4.2
+=============================
+
+Release notes - NHibernate - Version 5.4.2
+
+6 issues were resolved in this release.
+
+** Bug
+
+   * #3274 Improve LINQ Contains subquery parameter detection
+   * #3271 LINQ subqueries wrongly altered by SelectClauseVisitor
+   * #3263 Wrong alias in Where clause if using Fetch and scalar Select
+   * #3239 Incorrect SQL generated fetching many-to-many with subclasses
+
+** New Feature
+
+   * #3251 MappingByCode: Support backfield property access
+
+** Task
+
+   * #3281 Merge 5.3.16 in 5.4.x
+   * #3277 Release 5.4.2
+
+
+Build 5.4.1
+=============================
+
+Release notes - NHibernate - Version 5.4.1
+
+5 issues were resolved in this release.
+
+** Bug
+
+   * #3216 Enable one-to-one optimistic lock handling in mapping
+   * #3215 Count(Distinct ...) does not work
+   * #3203 Fix a wrong example in configuration documentation
+
+** Task
+
+   * #3232 Release 5.4.1
+   * #3227 Merge 5.3.15 in 5.4.x
+
+As part of releasing 5.4.1, a missing 5.4.0 possible breaking change has been added, about
+one-to-one associations and optimistic locking. See 5.4.0 possible breaking changes.
+
+
+Build 5.4.0
+=============================
+
+Release notes - NHibernate - Version 5.4.0
+
+** Highlights
+    * NHibernate has gained three new target frameworks: .Net 6, .Net Framework 4.8 and .Net Standard 2.1. NHibernate NuGet package
+      provides them, along with the older targets, .Net Core 2.0, .Net Framework 4.6.1 and .Net Standard 2.0. These new targets allow
+      some NHibernate optimizations for applications using them. The same limitations apply for .Net 6 and .Net Standard 2.1 as for
+      .Net Core 2.0 and .Net Standard 2.0, see NHibernate 5.1.0 release notes.
+    * A new batching strategy is available, minimizing the batching memory footprint. See #2959. Using it may increase CPU usage.
+    * 201 issues were resolved in this release.
+
+    ##### Possible Breaking Changes #####
+        * One-to-one changes does now trigger a version increment, consistently with the default behavior of other kinds of
+          associations. See #3204.
+        * Linq and criteria queries on unmapped entities will throw instead of returning an empty result list. See #1106, #1095.
+        * The second level cache UpdateTimestampsCache does not use locks anymore. This may slightly increase the number of cases
+          where stale data is returned by the query cache. See #2742.
+        * Equality and hashcode access on uninitialized persistent collections will no more trigger their loading. See #2461.
+        * DB2CoreDriver now uses named parameters instead of positional ones. See #2546.
+
+** Bug
+
+   * #3198 EntityUpdateAction increments version despite veto on update
+   * #3189 Support proxies of classes with init properties
+   * #3188 No way of detecting if AutoFlush performed in added AutoFlushEventListener
+   * #3176 Cached entity always fetches lazy properties with read-write concurrency strategy
+   * #3156 Evaluation failure when using `Nullable` without a value in LINQ
+   * #3150 LINQ query dynamic component by interface hangs the application
+   * #3109 Fix table group join issue with subclasses
+   * #3104 Inner Join fails with left Outer Join when referenced in Where clause
+   * #3076 Nested group by results in "A recognition error occured"
+   * #2968 Fix QueryStatistics.ExecutionAvgTime calculation
+   * #2827 Fix BadImageFormatException in dynamic proxies for abstract classes and interfaces
+   * #2822 "A recognition error ocurred" querying by a nullable component with more than N properties
+   * #2758 Fix AmbiguousMatchException in ClearPool with FirebirdClient 6.6.0 and above
+   * #2750 Using System.Transaction with IStatelessSession doesn't always flush batches to database
+   * #2738 Unused Left Join in LINQ throws exception
+   * #2717 MappingByCode discriminator column with string type throws exception
+   * #2675 Fix collection lazy loading with composite keys on subclass columns
+   * #2672 Linq query failure with left joins
+   * #2619 InvalidOperationException in ProxyGenerator for class with generic non-virtual method
+   * #2614 Obvious bug in two HQLQueryPlan classes with distinction Set
+   * #2594 Wrong SQL produced by DML LINQ when using a select clause for a property referencing the outer select
+   * #2555 Add spaces around concat operator
+   * #2552 One-to-one second level cache issue
+   * #2548 Mark DB2Dialect as not supporting null columns in unique constraint
+   * #2547 Fix paging in DB2Dialect
+   * #2540 Unable to use external predicate in subquery
+   * #2534 Fix asymmetrical SqlType.Equals
+   * #2454 ConditionalProjection containing the correlation to outer query fails to determine projection type
+   * #2330 join on multiple conditions
+   * #2201 Fetch Join generates incorrect SQL joins for the same entity type
+   * #2092 Projection and join fetch in hql leads to duplicated column aliases
+   * #1365 NH-3288 - Stale data checking does not work for one-to-one associations
+   * #1349 NH-3893 - HQL parse error of a query with 'left' or 'right' function
+   * #1326 NH-3622 - Fetching in query causes incorrect/missing joins in subquery
+   * #1316 NH-3530 - memory when using default_batch_fetch_size
+   * #1235 NH-2785 - StaleStateExceptions discarded on optional <join> table
+   * #1215 NH-2208 - Error with filters on joined-subclass as many-to-one
+   * #1209 NH-2049 - Error with filters on joined-subclass as one-to-one
+   * #1180 NH-3847 - ConditionalProjection throws "Both true and false projections must return the same types" when the types are the same
+   * #1106 NH-2978 - LINQ: Queries for unmapped entity types return empty result set
+   * #1075 NH-2239 - Wrong OrderBy in generated SQL when using ICriteria, Eager fetching and order by clauses in collection mappings
+   * #1072 NH-2174 - Invalid SQL is generated for OneToMany collections
+   * #1062 NH-1893 - Trigger-Identity with Dynamic Insert throws ORA-01036 (10g)
+
+** New Feature
+
+   * #2959 Support Dynamic BatchFetchStyle
+   * #2744 Set which entities classes should never be cached, even indirectly
+   * #2737 Add more left join support
+   * #2645 Allow specifying the size of the query plan cache
+   * #2641 Avoid InvalidCastException with Oracle number high precision values
+   * #2551 Add support for joining a subquery in hql
+   * #2545 Table group joins for subclasses in Criteria
+   * #2486 Add Projections.Select in Criteria
+   * #2361 Table group joins support in hql
+
+** Improvement
+
+   * #3184 Support caching queries with autodiscovered types
+   * #3177 Disable default caching in tests
+   * #3160 Allow internal entity classess/interfaces in .NET Standard 2.0
+   * #3133 Automatically generate async code on pull request
+   * #3127 Register IType CLR types as aliases
+   * #3116 Simplify SqlGenerator.FromFragmentSeparator
+   * #3114 Exclude generated async files from Deepsource analysis
+   * #3106 Skip table group join processing for implicit join
+   * #3091 Use GitReleaseManager dotnet tool
+   * #3083 Update SHFB in order to build documentation without MSBuild
+   * #3050 Add .NET Standard 2.1 target
+   * #3027 Avoid allocations on lock in SyncCacheLock
+   * #3000 Add .NET 6 and .NET Framework 4.8 targets
+   * #2990 Use inner join instead of implicit join for implied entity joins
+   * #2957 Avoid lambda compilation as much as possible
+   * #2948 Avoid lambda compilation for member access expressions in LINQ
+   * #2947 LINQ queries triggers JIT a bit too much
+   * #2920 Add parameter type to ADO exception
+   * #2804 Projections.Conditional for CASE expressions with multiple conditions
+   * #2752 Change cascade style for DefaultDirtyCheckEventListener to persist to avoid flushing the session
+   * #2742 Remove locks from UpdateTimestampsCache
+   * #2723 Avoid double param type guessing and better NULL parameter handling in LINQ
+   * #2706 Set the rolledBack flag when disposing active transactions
+   * #2700 Potential improvement to AliasToBeanResultTransformer
+   * #2621 Regression bug with enums used as parameter for string column
+   * #2571 Default value for CancellationToken in IQueryBatch.GetResultAsync
+   * #2568 Support internal entity classes by proxy factory
+   * #2556 Register right function for Firebird and PostgreSQL
+   * #2546 Enable named parameters on DB2CoreDriver
+   * #2539 Skip no longer needed moving ON condition to Where clause in LINQ
+   * #2538 Remove no longer needed alias substitution for filtered many-to-many collection in hql
+   * #2518 Support Aggregate subqueries with paging on MS SQL Server
+   * #2510 Remove OrderByClause from query models with Contains, All and Any result operators
+   * #2492 Replace casting with NodeType checks in Criteria ExpressionProcessor
+   * #2479 When using a paged sub-query in Linq, generates incorrect SQL
+   * #2461 Remove persistent collections Equals/GetHashCode overrides
+   * #2460 Simplify single alias retrieval for SimpleProjections
+   * #2448 Avoid lambda compilation for constant and member access expressions in Criteria
+   * #1285 NH-3249 - Cannot perform HQL with "COUNT(DISTINCT Date(s.Date))"
+   * #1244 NH-2868 - Generate method of ForeignGenerator fails with stateless sessions
+   * #1095 NH-2829 - QueryOver/Criteria should throw exception when querying against unmapped class
+   * #871 NH-3115 - Should de-duplicate joins when using fetching with where in LINQ query
+   * #869 NH-2952 - Setting the SqlCheck is not supported in the ByCode mapping
+   * #809 NH-2799 - Provide the CancelQuery() method in IStatelessSession
+   * #766 NH-3813 - Eager fetch on key-many-to-one relation adds inner joins to the query
+   * #715 NH-1040 - property-ref on joined-subclasses should work or error
+
+** Task
+
+   * #3197 Update dependency System.Data.SqlClient to v4.8.5
+   * #3195 Release NHibernate 5.4
+   * #3161 Tell NuGet about the readme file
+   * #3147 Add `datetimex` keyword to SapSQLAnywhere17Dialect
+   * #3146 Run tests against Oracle XE 21c
+   * #3123 Update dependency Npgsql to v6
+   * #3121 Update dependency Microsoft.NETFramework.ReferenceAssemblies to v1.0.3
+   * #3119 Update actions/setup-dotnet action to v2
+   * #3118 Update actions/checkout action to v3
+   * #3117 Update dependency NSubstitute to v4.4.0
+   * #3111 Update dependency log4net to v2.0.15
+   * #3080 Replace Dependabot with Renovate
+   * #3063 Bump Oracle.ManagedDataAccess from 19.12.0 to 21.6.1
+   * #3061 Bump Oracle.ManagedDataAccess.Core from 2.19.120 to 3.21.61
+   * #3059 Bump log4net from 2.0.12 to 2.0.14
+   * #3057 Run tests using .NET 4.8
+   * #3017 Add deepsource.io code analysis
+   * #3002 Bump NUnit3TestAdapter from 4.1.0 to 4.2.1
+   * #2987 Disable auto rebasing for depandabot PRs
+   * #2951 Run tests on .NET 6
+   * #2946 Bump Microsoft.SourceLink.GitHub from 1.0.0 to 1.1.1
+   * #2936 Bump System.Data.SQLite.Core from 1.0.114.3 to 1.0.115.5
+   * #2911 Bump System.Data.SqlClient from 4.8.2 to 4.8.3
+   * #2898 Bump FirebirdSql.Data.FirebirdClient from 6.6.0 to 8.5.2
+   * #2887 Bump Oracle.ManagedDataAccess from 19.11.0 to 19.12.0
+   * #2886 Bump Oracle.ManagedDataAccess.Core from 2.19.110 to 2.19.120
+   * #2878 Bump System.Linq.Dynamic.Core from 1.2.10 to 1.2.12
+   * #2870 Bump MySql.Data from 8.0.25 to 8.0.26
+   * #2851 Cache Dialect in tests
+   * #2818 Bump Microsoft.Data.SqlClient from 2.1.3 to 3.0.0
+   * #2800 Bump System.Data.SQLite.Core from 1.0.113.7 to 1.0.114.2
+   * #2799 Bump Npgsql from 4.0.3 to 4.1.9
+   * #2796 Bump System.Linq.Dynamic.Core from 1.2.9 to 1.2.10
+   * #2790 Bump Microsoft.NET.Test.Sdk from 16.9.4 to 16.10.0
+   * #2786 Bump Microsoft.Data.SqlClient from 2.1.2 to 2.1.3
+   * #2771 Bump MySql.Data from 8.0.22 to 8.0.25
+   * #2770 Bump System.Data.SQLite.Core from 1.0.109.2 to 1.0.113.7
+   * #2765 Bump Microsoft.NETFramework.ReferenceAssemblies from 1.0.0 to 1.0.2
+   * #2759 Enable dependabot
+   * #2756 Update dependencies
+   * #2607 Merge 5.3.5
+   * #2605 Upgrade AsyncGenerator to 0.19.1
+   * #2593 Merge 5.3.4
+   * #2582 Remove no longer used code in QueryModelVisitor
+   * #2570 Update Relinq and LinFu links
+   * #2516 Suppress Codefactor single class per file rule for test project
+   * #2501 Upgrade MySql client and remove allowed failures on CI builds
+
+** Tests
+
+   * #3024 Enable test accessing Component's Parent property in LINQ
+   * #2921 Fix test for SAP SQL Anywhere
+   * #2848 Add Oracle to GitHub Actions
+   * #2541 LINQ SELECT tests with WHERE subquery
+   * #2489 Improve CriteriaAssertFixture
+   * #2456 Test case for #1180 and improve NullableType.ToString 
+   * #2242 Test case for NH-3972 - SQL error when selecting a column of a subclass when sibling classes have a column of the same name
+
+
+Build 5.3.16
+=============================
+
+Release notes - NHibernate - Version 5.3.16
+
+3 issues were resolved in this release.
+
+** Bug
+
+   * #3269 "Or" clause in a "where" condition returns a wrong result with not-found-ignore
+   * #3210 Wrong name value for L2 read-only cache warning on mutable
+
+** Task
+
+   * #3276 Release 5.3.16
+
+
+Build 5.3.15
+=============================
+
+Release notes - NHibernate - Version 5.3.15
+
+4 issues were resolved in this release.
+
+** Bug
+
+   * #3218 Failure of contains subquery with parameter
+   * #3187 Fix mixing implied implicit and left joins in HQL for v5.3
+
+** Task
+
+   * #3225 Release 5.3.15
+   * #3222 Automatically generate async code on pull requests for 5.3
+
+
+Build 5.3.14
+=============================
+
+Release notes - NHibernate - Version 5.3.14
+
+3 issues were resolved in this release.
+
+** Bug
+
+   * #3169 InvalidOperationException: This transformer is not initialized by Cached Query
+   * #3164 Fetching a lazy loaded component regression
+
+** Task
+
+   * #3183 Release 5.3.14
+
+
+Build 5.3.13
 =============================
 
 Release notes - NHibernate - Version 5.3.13
@@ -7,14 +295,14 @@ Release notes - NHibernate - Version 5.3.13
 
 ** Bug
 
-    #3134 ManyToMany - Tries to select not existing column in Mapping Table
-    #3113 Join fails on Oracle9Dialect
-    #3030 Memory leak named parameter holds entity references
+   * #3134 ManyToMany - Tries to select not existing column in Mapping Table
+   * #3113 Join fails on Oracle9Dialect
+   * #3030 Memory leak named parameter holds entity references
 
 ** Improvement
 
-    #3120 Guards against use of a disposed session factory
-    #2994 Npgsql 6 is not compatible
+   * #3120 Guards against use of a disposed session factory
+   * #2994 Npgsql 6 is not compatible
 
 ** Task
 

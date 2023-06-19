@@ -6,7 +6,7 @@
 >
 
 	<property name="root.dir" value="." />
-	<property name="bin.target.dir" value="net461" />
+	<property name="bin.target.dir" value="net48" />
 	<property name="test.target.dir" value="net48" />
 
 	<include buildfile="${root.dir}/build-common/common.xml" />

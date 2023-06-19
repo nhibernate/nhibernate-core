@@ -255,6 +255,7 @@ fromClause
 
 fromJoin
 	: ( ( ( LEFT | RIGHT ) (OUTER)? ) | FULL | INNER )? JOIN^ (FETCH)? path (asAlias)? (propertyFetch)? (withClause)?
+	| ( ( ( LEFT | RIGHT ) (OUTER)? ) | FULL | INNER )? JOIN^ OPEN! selectStatement CLOSE! (asAlias)? (withClause)?
 	| ( ( ( LEFT | RIGHT ) (OUTER)? ) | FULL | INNER )? JOIN^ (FETCH)? ELEMENTS! OPEN! path CLOSE! (asAlias)? (propertyFetch)? (withClause)?
 	| CROSS JOIN^ { WeakKeywords(); } path (asAlias)? (propertyFetch)?
 	;
@@ -599,7 +600,7 @@ vectorExpr
 // NOTE: handleDotIdent() is called immediately after the first IDENT is recognized because
 // the method looks a head to find keywords after DOT and turns them into identifiers.
 identPrimary
-	: identifier { HandleDotIdent(); }
+	: identifier {{ HandleDotIdent(); }}
 			( options {greedy=true;} : DOT^ ( identifier | o=OBJECT { $o.Type = IDENT; } ) )*
 			( ( op=OPEN^ { $op.Type = METHOD_CALL;} exprList CLOSE! )
 			)?

@@ -17,6 +17,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
+#if NET6_0_OR_GREATER
+#pragma warning disable CS0618 //Serialization is obsolete
+#endif
+
 namespace NHibernate.Type
 {
 	using System.Threading.Tasks;

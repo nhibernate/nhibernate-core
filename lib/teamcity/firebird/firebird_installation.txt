@@ -1,7 +1,7 @@
 
 Installation steps for Firebird for NH TeamCity:
 
-1.  Download Firebird (Firebird-3.0.2.32703_0_x64):  https://www.firebirdsql.org/en/server-packages/;
+1.  Download Firebird (Firebird-4.0.2.2816-0-x64):  https://www.firebirdsql.org/en/server-packages/;
 2.  Run the installer AS ADMINISTRATOR... Use the default firebird password when prompted: masterkey.
 3.  Leave other settings with their defaults.
 4.  The setup should install Firebird on the machine;

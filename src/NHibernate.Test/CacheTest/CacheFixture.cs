@@ -11,7 +11,7 @@ namespace NHibernate.Test.CacheTest
 	public class CacheFixture: TestCase
 	{
 		[Test]
-		public void TestSimpleCache()
+		public void TestSimpleReadWriteCache()
 		{
 			DoTestCache(new HashtableCacheProvider());
 		}
@@ -46,7 +46,8 @@ namespace NHibernate.Test.CacheTest
 
 			Assert.IsNull(ccs.Get(fooKey, longBefore));
 			Assert.AreEqual("foo", ccs.Get(fooKey, after));
-			Assert.IsFalse(ccs.Put(fooKey, "foo", before, null, null, false));
+			Assert.IsFalse(ccs.Put(fooKey, "foo", before, null, null, true));
+			Assert.IsTrue(ccs.Put(fooKey, "foo", before, null, null, false));
 
 			// update it;
 

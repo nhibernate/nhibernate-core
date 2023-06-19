@@ -35,6 +35,12 @@
         "Oracle.ManagedDataAccess"
       ],
       "groupName": "Oracle.ManagedDataAccess"
+    },
+    {
+      "matchPackagePrefixes": [
+        "NHibernate.Caches"
+      ],
+      "groupName": "NHibernate.Caches"
     }
   ]
 }

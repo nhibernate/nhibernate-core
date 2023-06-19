@@ -21,6 +21,8 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 	{
 		private Guid _parentEntityComplexId;
 
+		protected override string CacheConcurrencyStrategy => "nonstrict-read-write";
+
 		[Test]
 		public void SelectModeJoinOnly()
 		{

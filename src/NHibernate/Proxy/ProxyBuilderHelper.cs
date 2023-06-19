@@ -171,13 +171,18 @@ namespace NHibernate.Proxy
 			var implementationName = explicitImplementation
 				? $"{method.DeclaringType.FullName}.{name}"
 				: name;
+
 			var methodBuilder =
 				typeBuilder.DefineMethod(
 					implementationName,
 					methodAttributes,
 					CallingConventions.HasThis,
 					method.ReturnType,
-					parameters.ToArray(param => param.ParameterType));
+					method.ReturnParameter?.GetRequiredCustomModifiers(),
+					method.ReturnParameter?.GetOptionalCustomModifiers(),
+					parameters.ToArray(p => p.ParameterType),
+					parameters.ToArray(p => p.GetRequiredCustomModifiers()),
+					parameters.ToArray(p => p.GetOptionalCustomModifiers()));
 
 			var typeArgs = method.GetGenericArguments();
 			if (typeArgs.Length > 0)

@@ -23,11 +23,6 @@ namespace NHibernate.Test.Operations
 			}
 		}
 
-		protected override string CacheConcurrencyStrategy
-		{
-			get { return null; }
-		}
-
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Environment.GenerateStatistics, "true");

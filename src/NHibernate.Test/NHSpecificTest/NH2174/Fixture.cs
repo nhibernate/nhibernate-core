@@ -14,8 +14,10 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 			{
 				var doc = new Document {Id_Base = 1, Id_Doc = 2};
 				session.Save(doc);
-				session.Save(new DocumentDetailDocument {Id_Base = 1, Id_Doc = 2, Id_Item = 1, ReferencedDocument = doc});
+				var detail = new DocumentDetailDocument {Id_Base = 1, Id_Doc = 2, Id_Item = 1, ReferencedDocument = doc};
+				session.Save(detail);
 
+				doc.RefferedDetailsManyToMany.Add(detail);
 				transaction.Commit();
 			}
 		}
@@ -42,6 +44,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 			}
 		}
 
+		[Test(Description = "GH-3239")]
+		public void LinqFetchManyToMany()
+		{
+			using var session = OpenSession();
+			var result = session.Query<Document>().Fetch(x => x.RefferedDetailsManyToMany).First();
+			Assert.That(result.RefferedDetailsManyToMany, Has.Count.EqualTo(1));
+		}
+
 		[Test]
 		public void QueryOverFetch()
 		{
@@ -50,6 +60,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 				var result = session.QueryOver<Document>().Fetch(SelectMode.Fetch, x => x.RefferedDetails).SingleOrDefault();
 				Assert.That(result.RefferedDetails, Has.Count.EqualTo(1));
 			}
+		}
+
+		[Test(Description = "GH-3239")]
+		public void QueryOverFetchManyToMany()
+		{
+			using var session = OpenSession();
+			var result = session.QueryOver<Document>().Fetch(SelectMode.Fetch, x => x.RefferedDetailsManyToMany).SingleOrDefault();
+			Assert.That(result.RefferedDetailsManyToMany, Has.Count.EqualTo(1));
 		}
 
 		[Test]
@@ -61,6 +79,14 @@ namespace NHibernate.Test.NHSpecificTest.NH2174
 							select e).First();
 				Assert.That(result.RefferedDetails.Count, Is.EqualTo(1));
 			}
+		}
+
+		[Test]
+		public void LazyLoadManyToMany()
+		{
+			using var session = OpenSession();
+			var result = session.Query<Document>().First();
+			Assert.That(result.RefferedDetailsManyToMany.Count, Is.EqualTo(1));
 		}
 	}
 }
