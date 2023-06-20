@@ -8,7 +8,7 @@ using NHibernate.Engine;
 using NHibernate.Persister.Collection;
 using NHibernate.UserTypes;
 
-namespace NHibernate.Test.NHSpecificTest.GHXYZ
+namespace NHibernate.Test.NHSpecificTest.GH3325
 {
 	public class PersistentSetType<T> : IUserCollectionType {
 		IPersistentCollection IUserCollectionType.Instantiate(ISessionImplementor session, ICollectionPersister persister) {

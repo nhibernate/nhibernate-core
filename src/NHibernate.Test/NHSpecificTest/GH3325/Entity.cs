@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NHibernate.Test.NHSpecificTest.GHXYZ
+namespace NHibernate.Test.NHSpecificTest.GH3325
 {
 	public class Entity
 	{

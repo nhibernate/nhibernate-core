@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.GHXYZ
+namespace NHibernate.Test.NHSpecificTest.GH3325
 {
 	[TestFixture]
 	public class Fixture : BugTestCase
