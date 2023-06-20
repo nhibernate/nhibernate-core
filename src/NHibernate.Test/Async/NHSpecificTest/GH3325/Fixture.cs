@@ -11,7 +11,7 @@
 using System;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.GHXYZ
+namespace NHibernate.Test.NHSpecificTest.GH3325
 {
 	using System.Threading.Tasks;
 	[TestFixture]
