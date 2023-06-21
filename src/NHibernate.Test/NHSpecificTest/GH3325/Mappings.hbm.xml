@@ -6,7 +6,7 @@
     <id name="Id" generator="guid.comb"/>
     <version name="Version" column="Version" type="Int32" unsaved-value="-1" />
     <property name="Name"/>
-    <set name="Children" cascade="persist,delete,save-update,evict,lock,replicate,delete-orphan" collection-type="PersistentSetType`1[ChildEntity]">
+    <set name="Children" cascade="persist,delete,save-update,evict,lock,replicate,delete-orphan">
       <key column="Parent" />
       <one-to-many class="ChildEntity"/>
     </set>
