@@ -10,6 +10,7 @@
 		<property name="Name" />
 		<property name="ALotOfText" lazy="true" />
 		<property name="FieldInterceptor" />
+		<property name="NoSetterImage" access="nosetter.pascalcase-underscore" lazy="true" />
 	</class>
 
 </hibernate-mapping>

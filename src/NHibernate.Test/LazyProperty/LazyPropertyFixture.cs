@@ -46,6 +46,7 @@ namespace NHibernate.Test.LazyProperty
 					Name = "some name",
 					Id = 1,
 					ALotOfText = "a lot of text ...",
+					NoSetterImage = new byte[10],
 					FieldInterceptor = "Why not that name?"
 				});
 				tx.Commit();
@@ -208,6 +209,31 @@ namespace NHibernate.Test.LazyProperty
 				Assert.That(book, Is.Not.Null);
 				Assert.That(book.Name, Is.EqualTo("some name two"));
 				Assert.That(book.ALotOfText, Is.EqualTo("a lot of text two..."));
+			}
+		}
+
+		[Test]
+		public void GetLazyPropertyWithNoSetterAccessor_PropertyShouldBeInitialized()
+		{
+			using (ISession s = OpenSession())
+			{
+				var book = s.Get<Book>(1);
+				var image = book.NoSetterImage;
+				// Fails. Property remains uninitialized after it has been accessed.
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "NoSetterImage"), Is.True);
+			}
+		}
+
+		[Test]
+		public void GetLazyPropertyWithNoSetterAccessorTwice_ResultsAreSameObject()
+		{
+			using (ISession s = OpenSession())
+			{
+				var book = s.Get<Book>(1);
+				var image = book.NoSetterImage;
+				var sameImage = book.NoSetterImage;
+				// Fails. Each call to a property getter returns a new object.
+				Assert.That(ReferenceEquals(image, sameImage), Is.True);
 			}
 		}
 	}

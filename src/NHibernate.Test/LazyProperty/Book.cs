@@ -14,5 +14,14 @@
 		}
 
 		public virtual string FieldInterceptor { get; set; }
+
+		private byte[] _NoSetterImage;
+
+		public virtual byte[] NoSetterImage
+		{
+			get { return _NoSetterImage; }
+			set { _NoSetterImage = value; }
+		}
+
 	}
 }
