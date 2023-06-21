@@ -546,6 +546,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 						associatedEntityName,
 						tableAlias,
 						joinSequence,
+						_joinType,
 						_fetch,
 						Walker.IsInFrom,
 						propertyType

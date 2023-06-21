@@ -283,13 +283,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return elem;
 		}
 
-		public FromElement CreateEntityJoin(
-				string entityClass,
-				string tableAlias,
-				JoinSequence joinSequence,
-				bool fetchFlag,
-				bool inFrom,
-				EntityType type)
+		public FromElement CreateEntityJoin(string entityClass,
+			string tableAlias,
+			JoinSequence joinSequence,
+			JoinType joinType,
+			bool fetchFlag,
+			bool inFrom,
+			EntityType type)
 		{
 			FromElement elem = CreateJoin(entityClass, tableAlias, joinSequence, type, false);
 			elem.Fetch = fetchFlag;
@@ -315,7 +315,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				elem.UseFromFragment = true;
 				elem.SetImpliedInFromClause(true);
 			}
-			if (elem.Walker.IsSubQuery)
+			if (elem.Walker.IsSubQuery && joinType != JoinType.LeftOuterJoin && joinType != JoinType.RightOuterJoin && joinType != JoinType.FullJoin)
 			{
 				// two conditions where we need to transform this to a theta-join syntax:
 				//      1) 'elem' is the "root from-element" in correlated subqueries

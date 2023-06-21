@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH3334">
+
+  <class name="Entity">
+    <id name="Id" generator="identity" />
+    <property name="Name"/>
+    <set name="Children" cascade="persist,delete,save-update,evict,lock,replicate,delete-orphan">
+      <key column="Parent" />
+      <one-to-many class="ChildEntity"/>
+    </set>
+    <many-to-one name="OtherEntity" class="OtherEntity"/>
+  </class>
+
+  <class name="ChildEntity">
+    <id name="Id" generator="identity" />
+    <property name="Name"/>
+    <many-to-one name="Child" class="GrandChildEntity" cascade="persist,delete,save-update,evict,lock,replicate,delete-orphan"/>
+  </class>
+
+  <class name="GrandChildEntity">
+    <id name="Id" generator="identity" />
+    <property name="Name"/>
+  </class>
+
+  <class name="OtherEntity">
+    <id name="Id" generator="identity" />
+    <property name="Name"/>
+    <set name="Entities" inverse="true" lazy="true">
+      <key column="OtherEntity" />
+      <one-to-many class="Entity" />
+    </set>
+  </class>
+
+</hibernate-mapping>
