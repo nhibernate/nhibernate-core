@@ -373,8 +373,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return null;
 		}
 
-		public void RegisterFromElement(FromElement element)
+		public void RegisterFromElement(FromElement element, out bool isFirst)
 		{
+			isFirst = !_fromElements.Any();
 			_fromElements.Add(element);
 			string classAlias = element.ClassAlias;
 			if (classAlias != null)

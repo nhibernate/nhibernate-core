@@ -10,7 +10,6 @@ using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
-using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
@@ -67,7 +66,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		protected void InitializeComponentJoin(FromElementType elementType)
 		{
 			_elementType = elementType;
-			_fromClause.RegisterFromElement(this);
+			_fromClause.RegisterFromElement(this, out _);
 			_initialized = true;
 		}
 
@@ -739,7 +738,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public void InitializeCollection(FromClause fromClause, string classAlias, string tableAlias)
 		{
-			DoInitialize(fromClause, tableAlias, null, classAlias, null, null, null);
+			DoInitialize(fromClause, tableAlias, null, classAlias, null, null, null, out _);
 			_initialized = true;
 		}
 
@@ -748,9 +747,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 									IEntityPersister persister,
 									EntityType type,
 									string classAlias,
-									string tableAlias)
+									string tableAlias, 
+									out bool isFirstElement)
 		{
-			DoInitialize(fromClause, tableAlias, className, classAlias, persister, type, null);
+			DoInitialize(fromClause, tableAlias, className, classAlias, persister, type, null, out isFirstElement);
 			_initialized = true;
 		}
 
@@ -762,7 +762,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string tableAlias,
 			IEntityPersister persister)
 		{
-			DoInitialize(fromClause, tableAlias, null, classAlias, persister, type, propertyMapping);
+			DoInitialize(fromClause, tableAlias, null, classAlias, persister, type, propertyMapping, out _);
 			_initialized = true;
 		}
 
@@ -810,7 +810,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		}
 
 		private void DoInitialize(FromClause fromClause, string tableAlias, string className, string classAlias,
-								  IEntityPersister persister, IType type, IPropertyMapping propertyMapping)
+								  IEntityPersister persister, IType type, IPropertyMapping propertyMapping, out bool isFirstElement)
 		{
 			if (_initialized)
 			{
@@ -827,7 +827,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 
 			// Register the FromElement with the FROM clause, now that we have the names and aliases.
-			fromClause.RegisterFromElement(this);
+			fromClause.RegisterFromElement(this, out isFirstElement);
 
 			if (Log.IsDebugEnabled())
 			{

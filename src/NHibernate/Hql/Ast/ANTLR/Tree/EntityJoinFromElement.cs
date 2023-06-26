@@ -15,7 +15,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string tableAlias = fromClause.AliasGenerator.CreateName(entityPersister.EntityName);
 
 			EntityType entityType = (EntityType) entityPersister.Type;
-			InitializeEntity(fromClause, entityPersister.EntityName, entityPersister, entityType, alias, tableAlias);
+			InitializeEntity(fromClause, entityPersister.EntityName, entityPersister, entityType, alias, tableAlias, out _);
 
 			//NH Specific: hibernate uses special class EntityJoinJoinSequenceImpl
 			JoinSequence = new JoinSequence(SessionFactoryHelper.Factory) {ForceFilter = true}
