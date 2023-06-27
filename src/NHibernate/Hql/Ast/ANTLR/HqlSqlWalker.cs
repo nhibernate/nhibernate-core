@@ -839,6 +839,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 					// or on an association join in subquery from a parent entity in parent from clause
 					// like in "from EntityA a where exists (from EntityB join a.Assocation)"
 					fromElement.FromClause.AppendFromElement(fromElement);
+					if (fromElement.IsImplied)
+						fromElement.JoinSequence.SetUseThetaStyle(true);
 				}
 			}
 
