@@ -375,12 +375,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return null;
 		}
 
-		public void RegisterFromElement(FromElement element, out bool isFirst)
-		{
-			isFirst = !HasRegisteredFromElements;
-			RegisterFromElement(element);
-		}
-
 		public void RegisterFromElement(FromElement element)
 		{
 			_fromElements.Add(element);
@@ -390,7 +384,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// The HQL class alias refers to the class name.
 				_fromElementByClassAlias.Add(classAlias, element);
 			}
-
 			// Associate the table alias with the element.
 			string tableAlias = element.TableAlias;
 			if (tableAlias != null)
@@ -400,7 +393,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if (element.IsEntityJoin())
 			{
-				_appendFromElements.Add((EntityJoinFromElement)element);
+				_appendFromElements.Add((EntityJoinFromElement) element);
 			}
 		}
 

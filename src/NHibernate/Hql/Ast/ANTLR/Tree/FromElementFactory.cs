@@ -254,7 +254,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				_classAlias,
 				targetEntityPersister,
 				(EntityType)queryableCollection.ElementType,
-				tableAlias);
+				tableAlias
+				);
 
 			// If the join is implied, then don't include sub-classes on the element.
 			if (_implied)
@@ -457,10 +458,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			//  origin, path, implied, columns, classAlias,
 			IEntityPersister entityPersister = _fromClause.SessionFactoryHelper.RequireClassPersister(entityClass);
 			FromElement destination = CreateAndAddFromElement(entityClass,
-			                                                  _classAlias,
-			                                                  entityPersister,
-			                                                  type,
-			                                                  tableAlias);
+							_classAlias,
+							entityPersister,
+							type,
+							tableAlias);
 			return InitializeJoin(_path, destination, joinSequence, Columns, _origin, manyToMany);
 		}
 
@@ -523,20 +524,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return ast;
 		}
 
-		private void InitializeAndAddFromElement(
-			FromElement element,
-			string className,
-			string classAlias,
-			IEntityPersister entityPersister,
-			EntityType type,
-			string tableAlias)
+		private void InitializeAndAddFromElement(FromElement element,
+																						string className,
+																						string classAlias,
+																						IEntityPersister entityPersister,
+																						EntityType type,
+																						string tableAlias)
 		{
 			if (tableAlias == null)
 			{
 				AliasGenerator aliasGenerator = _fromClause.AliasGenerator;
 				tableAlias = aliasGenerator.CreateName(entityPersister.EntityName);
 			}
-
 			element.InitializeEntity(_fromClause, className, entityPersister, type, classAlias, tableAlias);
 		}
 
