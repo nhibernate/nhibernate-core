@@ -66,7 +66,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		protected void InitializeComponentJoin(FromElementType elementType)
 		{
 			_elementType = elementType;
-			_fromClause.RegisterFromElement(this, out _);
+			_fromClause.RegisterFromElement(this);
 			_initialized = true;
 		}
 
@@ -738,7 +738,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public void InitializeCollection(FromClause fromClause, string classAlias, string tableAlias)
 		{
-			DoInitialize(fromClause, tableAlias, null, classAlias, null, null, null, out _);
+			DoInitialize(fromClause, tableAlias, null, classAlias, null, null, null);
 			_initialized = true;
 		}
 
@@ -747,10 +747,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 									IEntityPersister persister,
 									EntityType type,
 									string classAlias,
-									string tableAlias, 
-									out bool isFirstElement)
+									string tableAlias)
 		{
-			DoInitialize(fromClause, tableAlias, className, classAlias, persister, type, null, out isFirstElement);
+			DoInitialize(fromClause, tableAlias, className, classAlias, persister, type, null);
 			_initialized = true;
 		}
 
@@ -762,7 +761,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string tableAlias,
 			IEntityPersister persister)
 		{
-			DoInitialize(fromClause, tableAlias, null, classAlias, persister, type, propertyMapping, out _);
+			DoInitialize(fromClause, tableAlias, null, classAlias, persister, type, propertyMapping);
 			_initialized = true;
 		}
 
@@ -810,7 +809,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		}
 
 		private void DoInitialize(FromClause fromClause, string tableAlias, string className, string classAlias,
-								  IEntityPersister persister, IType type, IPropertyMapping propertyMapping, out bool isFirstElement)
+								  IEntityPersister persister, IType type, IPropertyMapping propertyMapping)
 		{
 			if (_initialized)
 			{
@@ -827,7 +826,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 
 			// Register the FromElement with the FROM clause, now that we have the names and aliases.
-			fromClause.RegisterFromElement(this, out isFirstElement);
+			fromClause.RegisterFromElement(this);
 
 			if (Log.IsDebugEnabled())
 			{

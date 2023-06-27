@@ -84,8 +84,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 							_classAlias,
 							entityPersister,
 							(EntityType)((IQueryable)entityPersister).Type,
-							null,
-							out _);
+							null);
 
 			// Add to the query spaces.
 			_fromClause.Walker.AddQuerySpaces(entityPersister);
@@ -142,8 +141,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 								classAlias,
 								entityPersister,
 								(EntityType)((IQueryable)entityPersister).Type,
-								tableAlias,
-								out _
+								tableAlias
 				);
 			}
 			if (Log.IsDebugEnabled())
@@ -256,8 +254,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				_classAlias,
 				targetEntityPersister,
 				(EntityType)queryableCollection.ElementType,
-				tableAlias,
-				out _);
+				tableAlias);
 
 			// If the join is implied, then don't include sub-classes on the element.
 			if (_implied)
@@ -293,7 +290,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				bool inFrom,
 				EntityType type)
 		{
-			FromElement elem = CreateJoin(entityClass, tableAlias, joinSequence, type, false, out bool isFirstElement);
+			var isFirstFromElement = !_fromClause.HasRegisteredFromElements;
+			FromElement elem = CreateJoin(entityClass, tableAlias, joinSequence, type, false);
 			elem.Fetch = fetchFlag;
 
 			//if (numberOfTables > 1 && _implied && !elem.UseFromFragment)
@@ -323,7 +321,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				//      1) 'elem' is the "root from-element" in correlated subqueries
 				//      2) The DotNode.useThetaStyleImplicitJoins has been set to true
 				//          and 'elem' represents an implicit join
-				if (isFirstElement && elem.FromClause != elem.Origin.FromClause || DotNode.UseThetaStyleImplicitJoins)
+				if (isFirstFromElement && elem.FromClause != elem.Origin.FromClause || DotNode.UseThetaStyleImplicitJoins)
 				{
 					// the "root from-element" in correlated subqueries do need this piece
 					elem.Type = HqlSqlWalker.FROM_FRAGMENT;
@@ -355,7 +353,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 				var joinSequence = CreateJoinSequence(roleAlias, joinType, implicitJoin);
 
-				elem = CreateJoin(associatedEntityName, roleAlias, joinSequence, (EntityType) _queryableCollection.ElementType, false, out _);
+				elem = CreateJoin(associatedEntityName, roleAlias, joinSequence, (EntityType) _queryableCollection.ElementType, false);
 				elem.UseFromFragment |= elem.IsImplied && elem.Walker.IsSubQuery;
 			}
 			else
@@ -418,7 +416,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				// For implied many-to-many, just add the end join.
 				JoinSequence joinSequence = CreateJoinSequence(roleAlias, joinType, implicitJoin);
-				elem = CreateJoin(associatedEntityName, roleAlias, joinSequence, type, true, out _);
+				elem = CreateJoin(associatedEntityName, roleAlias, joinSequence, type, true);
 			}
 			else
 			{
@@ -431,7 +429,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// Add the second join, the one that ends in the destination table.
 				JoinSequence joinSequence = CreateJoinSequence(roleAlias, joinType, implicitJoin);
 				joinSequence.AddJoin(sfh.GetElementAssociationType(_collectionType), tableAlias, joinType, secondJoinColumns);
-				elem = CreateJoin(associatedEntityName, tableAlias, joinSequence, type, false, out _);
+				elem = CreateJoin(associatedEntityName, tableAlias, joinSequence, type, false);
 				elem.UseFromFragment = true;
 			}
 			return elem;
@@ -454,17 +452,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 						string tableAlias,
 						JoinSequence joinSequence,
 						EntityType type,
-						bool manyToMany,
-						out bool isFirstElement)
+						bool manyToMany)
 		{
 			//  origin, path, implied, columns, classAlias,
 			IEntityPersister entityPersister = _fromClause.SessionFactoryHelper.RequireClassPersister(entityClass);
 			FromElement destination = CreateAndAddFromElement(entityClass,
-							_classAlias,
-							entityPersister,
-							type,
-							tableAlias,
-							out isFirstElement);
+			                                                  _classAlias,
+			                                                  entityPersister,
+			                                                  type,
+			                                                  tableAlias);
 			return InitializeJoin(_path, destination, joinSequence, Columns, _origin, manyToMany);
 		}
 
@@ -527,20 +523,21 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return ast;
 		}
 
-		private void InitializeAndAddFromElement(FromElement element,
-																						string className,
-																						string classAlias,
-																						IEntityPersister entityPersister,
-																						EntityType type,
-																						string tableAlias,
-																						out bool isFirstElement)
+		private void InitializeAndAddFromElement(
+			FromElement element,
+			string className,
+			string classAlias,
+			IEntityPersister entityPersister,
+			EntityType type,
+			string tableAlias)
 		{
 			if (tableAlias == null)
 			{
 				AliasGenerator aliasGenerator = _fromClause.AliasGenerator;
 				tableAlias = aliasGenerator.CreateName(entityPersister.EntityName);
 			}
-			element.InitializeEntity(_fromClause, className, entityPersister, type, classAlias, tableAlias, out isFirstElement);
+
+			element.InitializeEntity(_fromClause, className, entityPersister, type, classAlias, tableAlias);
 		}
 
 		private FromElement CreateAndAddFromElement(
@@ -548,8 +545,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				string classAlias,
 				IEntityPersister entityPersister,
 				EntityType type,
-				string tableAlias,
-				out bool isFirstElement)
+				string tableAlias)
 		{
 			if (!(entityPersister is IJoinable))
 			{
@@ -557,7 +553,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 
 			FromElement element = CreateFromElement(entityPersister);
-			InitializeAndAddFromElement(element, className, classAlias, entityPersister, type, tableAlias, out isFirstElement);
+			InitializeAndAddFromElement(element, className, classAlias, entityPersister, type, tableAlias);
 			return element;
 		}
 

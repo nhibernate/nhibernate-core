@@ -288,6 +288,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		internal bool IsJoinSubQuery { get; set; }
 
+		internal bool HasRegisteredFromElements => _fromElements.Any();
+
 		public string GetDisplayText()
 		{
 			return "FromClause{" +
@@ -375,7 +377,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public void RegisterFromElement(FromElement element, out bool isFirst)
 		{
-			isFirst = !_fromElements.Any();
+			isFirst = !HasRegisteredFromElements;
+			RegisterFromElement(element);
+		}
+
+		public void RegisterFromElement(FromElement element)
+		{
 			_fromElements.Add(element);
 			string classAlias = element.ClassAlias;
 			if (classAlias != null)
@@ -383,6 +390,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// The HQL class alias refers to the class name.
 				_fromElementByClassAlias.Add(classAlias, element);
 			}
+
 			// Associate the table alias with the element.
 			string tableAlias = element.TableAlias;
 			if (tableAlias != null)
@@ -392,7 +400,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if (element.IsEntityJoin())
 			{
-				_appendFromElements.Add((EntityJoinFromElement) element);
+				_appendFromElements.Add((EntityJoinFromElement)element);
 			}
 		}
 
