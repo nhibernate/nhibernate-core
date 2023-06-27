@@ -50,13 +50,13 @@ namespace NHibernate.Test.NHSpecificTest.GH3334
 			transaction.Commit();
 		}
 
-		public class TestCase
+		public class TestCaseItem
 		{
 			public string Name { get; }
 			public string Hql { get; }
 			public int LineNumber { get; }
 
-			public TestCase(string name, string hql, [CallerLineNumber] int lineNumber = 0)
+			public TestCaseItem(string name, string hql, [CallerLineNumber] int lineNumber = 0)
 			{
 				Name = name;
 				Hql = hql;
@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3334
 			public override string ToString() => $"{LineNumber:0000}: {Name}";
 		}
 
-		public static IEnumerable<TestCase> GetNoExceptionOnExecuteQueryTestCases()
+		public static IEnumerable<TestCaseItem> GetNoExceptionOnExecuteQueryTestCases()
 		{
 			/* does not work because of inner join or theta join created for many-to-one
 				@"
@@ -156,13 +156,13 @@ namespace NHibernate.Test.NHSpecificTest.GH3334
 		}
 
 		[Test, TestCaseSource(nameof(GetNoExceptionOnExecuteQueryTestCases))]
-		public void NoExceptionOnExecuteQuery(TestCase testCase)
+		public void NoExceptionOnExecuteQuery(TestCaseItem testCase)
 		{
 			using var session = OpenSession();
 			using var _ = session.BeginTransaction();
 			
 			var q = session.CreateQuery(testCase.Hql);
-			Assert.AreEqual(1, q.List().Count);
+			Assert.That(q.List(), Has.Count.EqualTo(1));
 		}
 
 		protected override bool CheckDatabaseWasCleaned()
