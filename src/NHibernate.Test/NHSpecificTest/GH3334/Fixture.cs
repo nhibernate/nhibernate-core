@@ -56,7 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3334
 			public string Hql { get; }
 			public int LineNumber { get; }
 
-			internal TestCase(string name, string hql, [CallerLineNumber] int lineNumber = 0)
+			public TestCase(string name, string hql, [CallerLineNumber] int lineNumber = 0)
 			{
 				Name = name;
 				Hql = hql;
