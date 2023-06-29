@@ -204,7 +204,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 			if (fromFragment)
 			{
-				sqlFragment = ProcessFromFragment(sqlFragment);
+				sqlFragment = ProcessFromFragment(sqlFragment).Trim();
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("Using FROM fragment [{0}]", sqlFragment);
