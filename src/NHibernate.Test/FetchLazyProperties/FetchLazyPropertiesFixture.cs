@@ -263,14 +263,16 @@ namespace NHibernate.Test.FetchLazyProperties
 			AssertFetchAllProperties(person);
 		}
 
-		[Test]
-		public void TestLinqFetchAllProperties_WhenLazyPropertyChanged()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void TestLinqFetchAllProperties_WhenLazyPropertyChanged(bool initLazyPropertyFetchGroup)
 		{
 			Person person;
 			using (var s = OpenSession())
 			{
 				person = s.Get<Person>(1);
-				CollectionAssert.AreEqual(new byte[] { 0 }, person.Image);
+				if (initLazyPropertyFetchGroup)
+					CollectionAssert.AreEqual(new byte[] { 0 }, person.Image);
 
 				person.Image = new byte[] { 1, 2, 3 };
 
@@ -278,7 +280,25 @@ namespace NHibernate.Test.FetchLazyProperties
 				// After execute FetchLazyProperties(), I expected to see that the person.Image would be { 1, 2, 3 }.
 				// Because I changed this person.Image manually, I didn't want to lose those changes.
 				// But test failed. Оld value returned { 0 }.
-				CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, person.Image); // test failed
+				CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, person.Image);
+			}
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void TestLinqFetchProperty_WhenLazyPropertyChanged(bool initLazyPropertyFetchGroup)
+		{
+			Person person;
+			using (var s = OpenSession())
+			{
+				person = s.Get<Person>(1);
+				if (initLazyPropertyFetchGroup)
+					CollectionAssert.AreEqual(new byte[] { 0 }, person.Image);
+
+				person.Image = new byte[] { 1, 2, 3 };
+
+				var allPersons = s.Query<Person>().Fetch(x => x.Image).ToList();
+				CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, person.Image);
 			}
 		}
 
