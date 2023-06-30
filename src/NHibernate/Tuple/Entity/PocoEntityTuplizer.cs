@@ -12,6 +12,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using System.Runtime.Serialization;
 using NHibernate.Bytecode.Lightweight;
+using NHibernate.Intercept;
 
 namespace NHibernate.Tuple.Entity
 {
@@ -306,6 +307,16 @@ namespace NHibernate.Tuple.Entity
 
 		public override void SetPropertyValue(object entity, int i, object value)
 		{
+			//If there is no property setter we need to manually intercept value for proper lazy property handling
+			if (IsInstrumented && setters[i].PropertyName == null)
+			{
+				IFieldInterceptor interceptor = _enhancementMetadata.ExtractInterceptor(entity);
+				if (interceptor != null)
+				{
+					value = interceptor.Intercept(entity, EntityMetamodel.PropertyNames[i], value, true);
+				}
+			}
+
 			if (isBytecodeProviderImpl && optimizer?.AccessOptimizer != null)
 			{
 				optimizer.AccessOptimizer.SetPropertyValue(entity, i, value);
