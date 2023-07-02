@@ -234,6 +234,23 @@ Release notes - NHibernate - Version 5.4.0
    * #2242 Test case for NH-3972 - SQL error when selecting a column of a subclass when sibling classes have a column of the same name
 
 
+Build 5.3.18
+=============================
+
+Release notes - NHibernate - Version 5.3.18
+
+3 issues were resolved in this release.
+
+** Bug
+
+   * #3333 Lazy property with nosetter accessor remains uninitialized
+   * #3330 Linq with FetchLazyProperties() resets lazy property changes
+
+** Task
+
+   * #3346 Release 5.3.18
+
+
 Build 5.3.17
 =============================
 
