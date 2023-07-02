@@ -1,4 +1,21 @@
-﻿Build 5.3.17
+﻿Build 5.3.18
+=============================
+
+Release notes - NHibernate - Version 5.3.18
+
+3 issues were resolved in this release.
+
+** Bug
+
+   * #3333 Lazy property with nosetter accessor remains uninitialized
+   * #3330 Linq with FetchLazyProperties() resets lazy property changes
+
+** Task
+
+   * #3346 Release 5.3.18
+
+
+Build 5.3.17
 =============================
 
 Release notes - NHibernate - Version 5.3.17
