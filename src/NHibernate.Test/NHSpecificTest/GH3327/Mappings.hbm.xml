@@ -9,7 +9,7 @@
 
   <class name="ChildEntity">
     <id name="Id" generator="identity" />
-    <one-to-one name="Parent" class="Entity" constrained="true" />
+    <many-to-one name="Parent" class="Entity" not-null="true" />
     <property name="Name"/>
   </class>
 
