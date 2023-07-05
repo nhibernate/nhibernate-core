@@ -260,5 +260,54 @@ namespace NHibernate.Test.GhostProperty
 
 			Assert.DoesNotThrow(() => { var x = order.Payment; });
 		}
+
+		[Test(Description = "GH-1267(NH-3047)")]
+		public void WillFetchJoinInAdditionalHqlQuery()
+		{
+			Order order = null;
+
+			// load the order...
+			ISession s = OpenSession();
+			order = s.CreateQuery("from Order o where o.Id = 1").List<Order>()[0];
+			s.Disconnect();
+
+			Assert.Throws(typeof(LazyInitializationException), () => { var y = order.Payment; });
+
+			s.Reconnect();
+			// ... then join-fetch the related payment
+			s.CreateQuery("from Order o left join fetch o.Payment where o.Id = 1").List<Order>();
+			s.Close();
+
+			Assert.DoesNotThrow(() => { var x = order.Payment; });
+			Assert.That(order.Payment.Type, Is.EqualTo("WT"));
+		}
+
+		[Test(Description = "GH-1267(NH-3047)")]
+		public void WillFetchJoinWithCriteria()
+		{
+			Order order = null;
+
+			// load the order...
+			ISession s = OpenSession();
+
+			var query = s.CreateCriteria<Order>();
+			query.Add(Criterion.Restrictions.Eq("Id", 1));
+			order = query.List<Order>()[0];
+			s.Disconnect();
+
+			Assert.Throws(typeof(LazyInitializationException), () => { var y = order.Payment; });
+
+			s.Reconnect();
+
+			// ... then join-fetch the related payment
+			var query2 = s.CreateCriteria<Order>();
+			query2.Add(Criterion.Restrictions.Eq("Id", 1));
+			query2.Fetch(SelectMode.Fetch, "Payment");
+			query2.List();
+			s.Close();
+
+			Assert.DoesNotThrow(() => { var x = order.Payment; });
+			Assert.That(order.Payment.Type, Is.EqualTo("WT"));
+		}
 	}
 }

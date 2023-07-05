@@ -14,13 +14,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
-
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR.Exec;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
+using NHibernate.Loader;
 using NHibernate.Loader.Hql;
 using NHibernate.Param;
 using NHibernate.Persister;
@@ -34,7 +34,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class QueryTranslatorImpl : IFilterTranslator
+	public partial class QueryTranslatorImpl : IFilterTranslator, IQueryTranslatorWithCustomizableLoader
 	{
 
 		public async Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken)

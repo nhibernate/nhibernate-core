@@ -1,9 +1,58 @@
-﻿Build 5.4.1
+﻿Build 5.4.3
+=============================
+
+Release notes - NHibernate - Version 5.4.3
+
+11 issues were resolved in this release.
+
+** Bug
+
+   * #3317 Issue with components list lazy loading with not lazy association
+   * #3307 IsDirty performance hit since 5.4.0
+   * #3295 C# 8/11 Static interface members support
+   * #3291 Npgsql 6+ issues with null DateTime parameter types
+   * #3290 Incorrect fetch of Many-to-Many relation
+   * #3289 Fetching lazy loaded component causes n + 1 query when querying a subclass abstraction
+   * #3288 NullReferenceException is thrown when using Fetch
+
+** Task
+
+   * #3349 Release 5.4.3
+   * #3348 Merge 5.3.18 in 5.4.x
+   * #3318 Merge 5.3.17 in 5.4.x
+   * #3302 Upgrade NUnit3TestAdapter to fix "Unknown framework version 7.0"
+
+
+Build 5.4.2
+=============================
+
+Release notes - NHibernate - Version 5.4.2
+
+6 issues were resolved in this release.
+
+** Bug
+
+   * #3274 Improve LINQ Contains subquery parameter detection
+   * #3271 LINQ subqueries wrongly altered by SelectClauseVisitor
+   * #3263 Wrong alias in Where clause if using Fetch and scalar Select
+   * #3239 Incorrect SQL generated fetching many-to-many with subclasses
+
+** New Feature
+
+   * #3251 MappingByCode: Support backfield property access
+
+** Task
+
+   * #3281 Merge 5.3.16 in 5.4.x
+   * #3277 Release 5.4.2
+
+
+Build 5.4.1
 =============================
 
 Release notes - NHibernate - Version 5.4.1
 
-4 issues were resolved in this release.
+5 issues were resolved in this release.
 
 ** Bug
 
@@ -14,6 +63,7 @@ Release notes - NHibernate - Version 5.4.1
 ** Task
 
    * #3232 Release 5.4.1
+   * #3227 Merge 5.3.15 in 5.4.x
 
 As part of releasing 5.4.1, a missing 5.4.0 possible breaking change has been added, about
 one-to-one associations and optimistic locking. See 5.4.0 possible breaking changes.
@@ -207,6 +257,59 @@ Release notes - NHibernate - Version 5.4.0
    * #2489 Improve CriteriaAssertFixture
    * #2456 Test case for #1180 and improve NullableType.ToString 
    * #2242 Test case for NH-3972 - SQL error when selecting a column of a subclass when sibling classes have a column of the same name
+
+
+Build 5.3.18
+=============================
+
+Release notes - NHibernate - Version 5.3.18
+
+3 issues were resolved in this release.
+
+** Bug
+
+   * #3333 Lazy property with nosetter accessor remains uninitialized
+   * #3330 Linq with FetchLazyProperties() resets lazy property changes
+
+** Task
+
+   * #3346 Release 5.3.18
+
+
+Build 5.3.17
+=============================
+
+Release notes - NHibernate - Version 5.3.17
+
+5 issues were resolved in this release.
+
+** Bug
+
+   * #3306 Invalid SQL when referencing nullable entity in correlated subquery
+   * #3304 Fix SetSnapShot CopyTo variance failure
+   * #3294 Undefined join type failure with cross joins and Informix
+
+** Task
+
+   * #3315 Release 5.3.17
+   * #3300 Backport handling of null DateTime parameters in Npgsql 6+
+
+
+Build 5.3.16
+=============================
+
+Release notes - NHibernate - Version 5.3.16
+
+3 issues were resolved in this release.
+
+** Bug
+
+   * #3269 "Or" clause in a "where" condition returns a wrong result with not-found-ignore
+   * #3210 Wrong name value for L2 read-only cache warning on mutable
+
+** Task
+
+   * #3276 Release 5.3.16
 
 
 Build 5.3.15

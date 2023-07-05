@@ -15,9 +15,7 @@
   ],
   "packageRules": [
     {
-      "matchPackagePrefixes": [
-        "NUnit"
-      ],
+      "matchSourceUrls": ["https://github.com/nunit/nunit"],
       "groupName": "NUnit"
     }, 
     {
@@ -35,6 +33,12 @@
         "Oracle.ManagedDataAccess"
       ],
       "groupName": "Oracle.ManagedDataAccess"
+    },
+    {
+      "matchPackagePrefixes": [
+        "NHibernate.Caches"
+      ],
+      "groupName": "NHibernate.Caches"
     }
   ]
 }

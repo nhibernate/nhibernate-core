@@ -333,6 +333,9 @@ namespace NHibernate.Dialect
 			return new InformixJoinFragment();
 		}
 
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false;
+
 		/// <summary> The SQL literal value to which this database maps boolean values. </summary>
 		/// <param name="value">The boolean value </param>
 		/// <returns> The appropriate SQL literal. </returns>

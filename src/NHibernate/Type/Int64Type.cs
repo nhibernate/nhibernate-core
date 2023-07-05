@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Numerics;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -31,7 +32,11 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Convert.ToInt64(rs[index]);
+				return rs[index] switch
+				{
+					BigInteger bi => (long) bi,
+					var c => Convert.ToInt64(c)
+				};
 			}
 			catch (Exception ex)
 			{
@@ -43,7 +48,11 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Convert.ToInt64(rs[name]);
+				return rs[name] switch
+				{
+					BigInteger bi => (long) bi,
+					var c => Convert.ToInt64(c)
+				};
 			}
 			catch (Exception ex)
 			{

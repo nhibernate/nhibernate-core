@@ -398,7 +398,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			bool joinIsNeeded;
 
 			//For nullable entity comparisons we always need to add join (like not constrained one-to-one or not-found ignore associations)
-			bool comparisonWithNullableEntity = entityType.IsNullable && Walker.IsComparativeExpressionClause;
+			bool comparisonWithNullableEntity = entityType.IsNullable && Walker.IsComparativeExpressionClause && !IsCorrelatedSubselect;
 
 			if ( IsDotNode( parent ) ) 
 			{
@@ -426,8 +426,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			if ( joinIsNeeded )
 			{
-				var forceLeftJoin = comparisonWithNullableEntity && Walker.IsNullComparison;
-				DereferenceEntityJoin(classAlias, entityType, implicitJoin, parent, forceLeftJoin);
+				DereferenceEntityJoin(classAlias, entityType, implicitJoin, parent, comparisonWithNullableEntity);
 				if (comparisonWithNullableEntity)
 				{
 					_columns = FromElement.GetIdentityColumns();
@@ -558,6 +557,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				{
 					elem.JoinSequence.SetJoinType(_joinType);
 				}
+
+				elem.ReusedJoin = true;
 				currentFromClause.AddDuplicateAlias(classAlias, elem);
 			}
 

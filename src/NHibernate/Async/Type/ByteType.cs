@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
+using System.Numerics;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 

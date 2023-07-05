@@ -21,6 +21,7 @@ CREATE GENERATOR MYGENERATOR;
 DROP GENERATOR MYGENERATOR;
 		</drop>
 		<dialect-scope name="NHibernate.Dialect.FirebirdDialect"/>
+		<dialect-scope name="NHibernate.Dialect.Firebird4Dialect"/>
 	</database-object>
 	
 	<database-object>
@@ -37,6 +38,7 @@ END
 DROP TRIGGER my_entity_BI;
 		</drop>
         <dialect-scope name="NHibernate.Dialect.FirebirdDialect"/>
+        <dialect-scope name="NHibernate.Dialect.Firebird4Dialect"/>
     </database-object>
 
 	<database-object>

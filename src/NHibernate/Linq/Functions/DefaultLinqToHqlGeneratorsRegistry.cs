@@ -69,6 +69,7 @@ namespace NHibernate.Linq.Functions
 			this.Merge(new DecimalNegateGenerator());
 			this.Merge(new RoundGenerator());
 			this.Merge(new TruncateGenerator());
+			this.Merge(new HasFlagGenerator());
 
 			var indexerGenerator = new ListIndexerGenerator();
 			RegisterGenerator(indexerGenerator);
@@ -110,12 +111,12 @@ namespace NHibernate.Linq.Functions
 
 		public virtual void RegisterGenerator(MethodInfo method, IHqlGeneratorForMethod generator)
 		{
-			registeredMethods.Add(method, generator);
+			registeredMethods[method] = generator;
 		}
 
 		public virtual void RegisterGenerator(MemberInfo property, IHqlGeneratorForProperty generator)
 		{
-			registeredProperties.Add(property, generator);
+			registeredProperties[property] = generator;
 		}
 
 		public void RegisterGenerator(IRuntimeMethodHqlGenerator generator)

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Numerics;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -31,7 +32,11 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Convert.ToUInt32(rs[index]);
+				return rs[index] switch
+				{
+					BigInteger bi => (uint) bi,
+					var c => Convert.ToUInt32(c)
+				};
 			}
 			catch (Exception ex)
 			{
@@ -43,7 +48,11 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Convert.ToUInt32(rs[name]);
+				return rs[name] switch
+				{
+					BigInteger bi => (uint) bi,
+					var c => Convert.ToUInt32(c)
+				};
 			}
 			catch (Exception ex)
 			{
