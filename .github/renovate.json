@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "configMigration": true,
   "pruneStaleBranches": false,
@@ -15,9 +15,11 @@
   ],
   "packageRules": [
     {
-      "matchSourceUrls": ["https://github.com/nunit/nunit"],
+      "matchSourceUrls": [
+        "https://github.com/nunit/nunit"
+      ],
       "groupName": "NUnit"
-    }, 
+    },
     {
       "matchPackageNames": [
         "Microsoft.AspNetCore",
