@@ -225,6 +225,9 @@ namespace NHibernate.Test.LazyProperty
 				Assert.That(book.Name, Is.EqualTo("some name"));
 				Assert.That(book.FieldInterceptor, Is.EqualTo("Why not that name?"));
 				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "ALotOfText"), Is.False);
+				//GH-3354 Exception accessing indexer property
+				Assert.That(book[0], Is.EqualTo(0));
+				Assert.DoesNotThrow(() => book[0] = 0);
 			}
 		}
 

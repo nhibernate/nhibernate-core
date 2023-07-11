@@ -28,5 +28,11 @@ namespace NHibernate.Test.LazyProperty
 		public virtual string FieldInterceptor { get; set; }
 
 		public virtual IList<Word> Words { get; set; }
+
+		public virtual int this[int i]
+		{
+			get { return i;}
+			set { }
+		}
 	}
 }
