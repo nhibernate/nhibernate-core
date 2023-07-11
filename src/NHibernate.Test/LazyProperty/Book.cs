@@ -17,6 +17,14 @@ namespace NHibernate.Test.LazyProperty
 
 		public virtual byte[] Image { get; set; }
 
+		private byte[] _NoSetterImage;
+
+		public virtual byte[] NoSetterImage
+		{
+			get { return _NoSetterImage; }
+			set { _NoSetterImage = value; }
+		}
+
 		public virtual string FieldInterceptor { get; set; }
 
 		public virtual IList<Word> Words { get; set; }

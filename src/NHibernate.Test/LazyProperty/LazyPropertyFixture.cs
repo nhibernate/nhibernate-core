@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Intercept;
+using NHibernate.Linq;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -55,6 +56,7 @@ namespace NHibernate.Test.LazyProperty
 					Id = 1,
 					ALotOfText = "a lot of text ...",
 					Image = new byte[10],
+					NoSetterImage = new byte[10],
 					FieldInterceptor = "Why not that name?"
 				});
 				tx.Commit();
@@ -383,6 +385,59 @@ namespace NHibernate.Test.LazyProperty
 				book = s.Get<Book>(3);
 				Assert.That(book.Words.Any(), Is.True);
 				Assert.That(book.Words.First().Content, Is.EqualTo(new byte[1] { 0 }));
+			}
+		}
+
+		[Test(Description = "GH-3333")]
+		public void GetLazyPropertyWithNoSetterAccessor_PropertyShouldBeInitialized()
+		{
+			using (ISession s = OpenSession())
+			{
+				var book = s.Get<Book>(1);
+				var image = book.NoSetterImage;
+				// Fails. Property remains uninitialized after it has been accessed.
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "NoSetterImage"), Is.True);
+			}
+		}
+
+		[Test(Description = "GH-3333")]
+		public void GetLazyPropertyWithNoSetterAccessorTwice_ResultsAreSameObject()
+		{
+			using (ISession s = OpenSession())
+			{
+				var book = s.Get<Book>(1);
+				var image = book.NoSetterImage;
+				var sameImage = book.NoSetterImage;
+				// Fails. Each call to a property getter returns a new object.
+				Assert.That(ReferenceEquals(image, sameImage), Is.True);
+			}
+		}
+
+		[Test]
+		public void CanSetValueForLazyPropertyNoSetter()
+		{
+			Book book;
+			using (ISession s = OpenSession())
+			{
+				book = s.Get<Book>(1);
+				book.NoSetterImage = new byte[]{10};
+			}
+
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, nameof(book.NoSetterImage)), Is.True);
+			CollectionAssert.AreEqual(book.NoSetterImage, new byte[] { 10 });
+		}
+
+		[Test]
+		public void CanFetchLazyPropertyNoSetter()
+		{
+			using (ISession s = OpenSession())
+			{
+				var book = s
+					.Query<Book>()
+					.Fetch(x => x.NoSetterImage)
+					.First(x => x.Id == 1);
+
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, nameof(book.NoSetterImage)), Is.True);
 			}
 		}
 	}
