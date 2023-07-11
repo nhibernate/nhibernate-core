@@ -67,8 +67,6 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 					{
 						propType = metadata.GetPropertyType(resultOperator.RelationMember.Name);
 					}
-
-					propType = metadata?.GetPropertyType(resultOperator.RelationMember.Name);
 				}
 				
 				if (propType != null && !propType.IsAssociationType)
