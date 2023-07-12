@@ -235,7 +235,7 @@ namespace NHibernate.Event.Default
 
 			if (persister.HasCollections)
 			{
-				substitute = substitute | VisitCollectionsBeforeSave(entity, id, values, types, source);
+				substitute = VisitCollectionsBeforeSave(entity, id, values, types, source) || substitute;
 			}
 
 			if (substitute)
