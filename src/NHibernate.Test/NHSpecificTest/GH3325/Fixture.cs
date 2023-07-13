@@ -6,14 +6,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3325
 	[TestFixture]
 	public class Fixture : BugTestCase
 	{
-		protected override void OnSetUp()
-		{
-			Sfi.Statistics.IsStatisticsEnabled = true;
-		}
-
 		protected override void OnTearDown()
 		{
-			Sfi.Statistics.IsStatisticsEnabled = false;
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
@@ -34,16 +28,16 @@ namespace NHibernate.Test.NHSpecificTest.GH3325
 			{
 				var parent = new Entity { Name = "Parent" };
 				var child = new ChildEntity { Name = "Child" };
-				parent.Children.Add(child);
+				var parentChildren = parent.Children;
+				parentChildren.Add(child);
 				session.Save(parent);
-				parent.Children.Remove(child);
+				parentChildren.Remove(child);
 				parentId = parent.Id;
 				childId = child.Id;
 				t.Commit();
 			}
 
 			using (var session = OpenSession())
-			using (var _ = session.BeginTransaction())
 			{
 				var parent = session.Get<Entity>(parentId);
 				Assert.That(parent, Is.Not.Null);
