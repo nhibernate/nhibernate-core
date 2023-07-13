@@ -17,14 +17,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3325
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		protected override void OnSetUp()
-		{
-			Sfi.Statistics.IsStatisticsEnabled = true;
-		}
-
 		protected override void OnTearDown()
 		{
-			Sfi.Statistics.IsStatisticsEnabled = false;
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
@@ -45,16 +39,16 @@ namespace NHibernate.Test.NHSpecificTest.GH3325
 			{
 				var parent = new Entity { Name = "Parent" };
 				var child = new ChildEntity { Name = "Child" };
-				parent.Children.Add(child);
+				var parentChildren = parent.Children;
+				parentChildren.Add(child);
 				await (session.SaveAsync(parent));
-				parent.Children.Remove(child);
+				parentChildren.Remove(child);
 				parentId = parent.Id;
 				childId = child.Id;
 				await (t.CommitAsync());
 			}
 
 			using (var session = OpenSession())
-			using (var _ = session.BeginTransaction())
 			{
 				var parent = await (session.GetAsync<Entity>(parentId));
 				Assert.That(parent, Is.Not.Null);
