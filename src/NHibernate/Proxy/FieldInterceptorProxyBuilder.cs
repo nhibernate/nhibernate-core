@@ -94,11 +94,11 @@ namespace NHibernate.Proxy
 
 		private static void CreateProxiedMethod(TypeBuilder typeBuilder, MethodInfo method, FieldInfo fieldInterceptorField)
 		{
-			if (ReflectHelper.IsPropertyGet(method))
+			if (ReflectHelper.IsPropertyGet(method) && method.GetParameters().Length == 0)
 			{
 				ImplementGet(typeBuilder, method, fieldInterceptorField);
 			}
-			else if (ReflectHelper.IsPropertySet(method))
+			else if (ReflectHelper.IsPropertySet(method) && method.GetParameters().Length == 1)
 			{
 				ImplementSet(typeBuilder, method, fieldInterceptorField);
 			}
