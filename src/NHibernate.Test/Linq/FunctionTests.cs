@@ -11,11 +11,6 @@ namespace NHibernate.Test.Linq
 	[TestFixture]
 	public class FunctionTests : LinqTestCase
 	{
-		protected override void Configure(Configuration configuration)
-		{
-			configuration.SetProperty(Cfg.Environment.ShowSql, "true");
-		}
-
 		[Test]
 		public void LikeFunction()
 		{
