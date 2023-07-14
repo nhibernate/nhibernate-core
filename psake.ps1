@@ -63,9 +63,22 @@ Task Set-Configuration {
         };
         'SqlServer2008' = @{
             'connection.connection_string' = 'Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;'
+            'connection.driver_class' = 'NHibernate.Driver.SqlClientDriver';
+            'dialect' = 'NHibernate.Dialect.MsSql2008Dialect'
         };
         'SqlServer2012' = @{
             'connection.connection_string' = 'Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;';
+            'connection.driver_class' = 'NHibernate.Driver.SqlClientDriver';
+            'dialect' = 'NHibernate.Dialect.MsSql2012Dialect'
+        };
+        'SqlServer2008-MicrosoftDataSqlClientDriver' = @{
+            'connection.connection_string' = 'Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;'
+            'connection.driver_class' = 'NHibernate.Driver.MicrosoftDataSqlClientDriver';
+            'dialect' = 'NHibernate.Dialect.MsSql2008Dialect'
+        };
+        'SqlServer2012-MicrosoftDataSqlClientDriver' = @{
+            'connection.connection_string' = 'Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;';
+            'connection.driver_class' = 'NHibernate.Driver.MicrosoftDataSqlClientDriver';
             'dialect' = 'NHibernate.Dialect.MsSql2012Dialect'
         };
         'Oracle' = @{
