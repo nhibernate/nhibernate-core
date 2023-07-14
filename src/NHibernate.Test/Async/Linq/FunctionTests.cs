@@ -11,7 +11,6 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using NHibernate.Cfg;
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.Northwind.Entities;
 using NUnit.Framework;
@@ -23,11 +22,6 @@ namespace NHibernate.Test.Linq
 	[TestFixture]
 	public class FunctionTestsAsync : LinqTestCase
 	{
-		protected override void Configure(Configuration configuration)
-		{
-			configuration.SetProperty(Cfg.Environment.ShowSql, "true");
-		}
-
 		[Test]
 		public async Task LikeFunctionAsync()
 		{
