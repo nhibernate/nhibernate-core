@@ -23,6 +23,7 @@ namespace NHibernate.TestDatabaseSetup
 			{
 				{"NHibernate.Driver.SqlClientDriver", SetupSqlServer},
 				{"NHibernate.Driver.Sql2008ClientDriver", SetupSqlServer},
+				{"NHibernate.Driver.MicrosoftDataSqlClientDriver", SetupSqlServer},
 				{"NHibernate.Driver.FirebirdClientDriver", SetupFirebird},
 				{"NHibernate.Driver.NpgsqlDriver", SetupNpgsql},
 				{"NHibernate.Driver.OracleDataClientDriver", SetupOracle},
