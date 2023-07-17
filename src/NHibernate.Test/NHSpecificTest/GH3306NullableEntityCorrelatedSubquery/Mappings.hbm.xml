@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+									 assembly="NHibernate.Test"
+									 namespace="NHibernate.Test.NHSpecificTest.GH3306NullableEntityCorrelatedSubquery">
+
+  <class name="Customer" >
+    <id name="ID" type="Int32">
+      <generator class="native" />
+    </id>
+    <property name="Name" type="String" />
+
+    <set name="Invoices" inverse="true" >
+      <key column="CustomerID"/>
+      <one-to-many class="Invoice"/>
+    </set>
+  </class>
+
+  <class name="Invoice">
+    <id name="ID" type="Int32">
+      <generator class="native" />
+    </id>
+
+    <property name="Number" type="Int32" column="`Number`" />
+    <many-to-one name="Customer" not-found="ignore" column="CustomerID" class="Customer" />
+  </class>
+
+</hibernate-mapping>

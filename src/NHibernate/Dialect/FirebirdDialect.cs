@@ -152,19 +152,6 @@ namespace NHibernate.Dialect
 			}
 		}
 
-		[Serializable]
-		private class CurrentTimeStamp : NoArgSQLFunction
-		{
-			public CurrentTimeStamp() : base("current_timestamp", NHibernateUtil.LocalDateTime, true)
-			{
-			}
-
-			public override SqlString Render(IList args, ISessionFactoryImplementor factory)
-			{
-				return new SqlString(Name);
-			}
-		}
-
 		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
 			return new FirebirdDataBaseSchema(connection);
@@ -276,21 +263,33 @@ namespace NHibernate.Dialect
 			"avg",
 			"base_name",
 			"before",
+			"bit_length",
 			"blob sub_type 1",
+			"boolean",
 			"break",
 			"cache",
 			"cascade",
+			"char_length",
+			"character_length",
 			"check_point_length",
 			"coalesce",
+			"comment",
 			"committed",
 			"computed",
 			"conditional",
 			"connection_id",
 			"containing",
+			"corr",
 			"count",
+			"covar_pop",
+			"covar_samp",
 			"cstring",
+			"current_connection",
+			"current_transaction",
 			"database",
 			"debug",
+			"decfloat",
+			"deleting",
 			"desc",
 			"descending",
 			"descriptor",
@@ -309,6 +308,8 @@ namespace NHibernate.Dialect
 			"inactive",
 			"index",
 			"input_type",
+			"inserting",
+			"int128",
 			"isolation",
 			"key",
 			"last",
@@ -318,6 +319,7 @@ namespace NHibernate.Dialect
 			"log_buffer_size",
 			"logfile",
 			"long",
+			"lower",
 			"manual",
 			"max",
 			"maximum_segment",
@@ -328,11 +330,13 @@ namespace NHibernate.Dialect
 			"nullif",
 			"nulls",
 			"num_log_buffers",
+			"octet_length",
+			"offset",
 			"option",
 			"output_type",
 			"overflow",
-			"page",
 			"page_size",
+			"page",
 			"pages",
 			"password",
 			"plan",
@@ -340,17 +344,36 @@ namespace NHibernate.Dialect
 			"post_event",
 			"privileges",
 			"protected",
+			"publication",
 			"raw_partitions",
 			"rdb$db_key",
+			"rdb$error",
+			"rdb$get_context",
+			"rdb$get_transaction_cn",
+			"rdb$record_version",
+			"rdb$role_in_use",
+			"rdb$set_context",
+			"rdb$system_privilege",
 			"read",
 			"record_version",
 			"recreate",
+			"regr_avgx",
+			"regr_avgy",
+			"regr_count",
+			"regr_intercept",
+			"regr_r2",
+			"regr_slope",
+			"regr_sxx",
+			"regr_sxy",
+			"regr_syy",
 			"reserv",
 			"reserving",
+			"resetting",
 			"restrict",
 			"retain",
 			"returning_values",
 			"role",
+			"row_count",
 			"rows_affected",
 			"schema",
 			"segment",
@@ -366,15 +389,23 @@ namespace NHibernate.Dialect
 			"starting",
 			"starts",
 			"statistics",
+			"stddev_pop",
+			"stddev_samp",
 			"sub_type",
 			"substring",
 			"sum",
 			"suspend",
-			"transaction",
 			"transaction_id",
+			"transaction",
+			"trim",
 			"type",
+			"unbounded",
 			"uncommitted",
+			"updating",
 			"upper",
+			"var_pop",
+			"var_samp",
+			"varbinary",
 			"variable",
 			"view",
 			"wait",
@@ -430,7 +461,7 @@ namespace NHibernate.Dialect
 
 		private void OverrideStandardHQLFunctions()
 		{
-			RegisterFunction("current_timestamp", new CurrentTimeStamp());
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime, false));
 			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
 			RegisterFunction("length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int64, 1));
 			RegisterFunction("nullif", new StandardSafeSQLFunction("nullif", 2));

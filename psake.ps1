@@ -14,6 +14,11 @@ Task Set-Configuration {
             'connection.driver_class' = 'NHibernate.Driver.FirebirdClientDriver';
             'dialect' = 'NHibernate.Dialect.FirebirdDialect'
         };
+        'Firebird4' = @{
+            'connection.connection_string' = 'DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;';
+            'connection.driver_class' = 'NHibernate.Driver.FirebirdClientDriver';
+            'dialect' = 'NHibernate.Dialect.Firebird4Dialect'
+        };
         'MySQL' = @{
             'connection.connection_string' = 'Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;SslMode=none;';
             'connection.driver_class' = 'NHibernate.Driver.MySqlDataDriver';
@@ -58,9 +63,22 @@ Task Set-Configuration {
         };
         'SqlServer2008' = @{
             'connection.connection_string' = 'Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;'
+            'connection.driver_class' = 'NHibernate.Driver.Sql2008ClientDriver';
+            'dialect' = 'NHibernate.Dialect.MsSql2008Dialect'
         };
         'SqlServer2012' = @{
             'connection.connection_string' = 'Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;';
+            'connection.driver_class' = 'NHibernate.Driver.Sql2008ClientDriver';
+            'dialect' = 'NHibernate.Dialect.MsSql2012Dialect'
+        };
+        'SqlServer2008-MicrosoftDataSqlClientDriver' = @{
+            'connection.connection_string' = 'Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;'
+            'connection.driver_class' = 'NHibernate.Driver.MicrosoftDataSqlClientDriver';
+            'dialect' = 'NHibernate.Dialect.MsSql2008Dialect'
+        };
+        'SqlServer2012-MicrosoftDataSqlClientDriver' = @{
+            'connection.connection_string' = 'Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;';
+            'connection.driver_class' = 'NHibernate.Driver.MicrosoftDataSqlClientDriver';
             'dialect' = 'NHibernate.Dialect.MsSql2012Dialect'
         };
         'Oracle' = @{

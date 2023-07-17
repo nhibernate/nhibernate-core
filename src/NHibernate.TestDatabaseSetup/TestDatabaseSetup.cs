@@ -23,6 +23,7 @@ namespace NHibernate.TestDatabaseSetup
 			{
 				{"NHibernate.Driver.SqlClientDriver", SetupSqlServer},
 				{"NHibernate.Driver.Sql2008ClientDriver", SetupSqlServer},
+				{"NHibernate.Driver.MicrosoftDataSqlClientDriver", SetupSqlServer},
 				{"NHibernate.Driver.FirebirdClientDriver", SetupFirebird},
 				{"NHibernate.Driver.NpgsqlDriver", SetupNpgsql},
 				{"NHibernate.Driver.OracleDataClientDriver", SetupOracle},
@@ -182,11 +183,7 @@ namespace NHibernate.TestDatabaseSetup
 
 				using (var cmd = conn.CreateCommand())
 				{
-					cmd.CommandText =
-						@"CREATE OR REPLACE FUNCTION uuid_generate_v4()
-						RETURNS uuid
-						AS '$libdir/uuid-ossp', 'uuid_generate_v4'
-						VOLATILE STRICT LANGUAGE C;";
+					cmd.CommandText = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";";
 
 					cmd.ExecuteNonQuery();
 				}

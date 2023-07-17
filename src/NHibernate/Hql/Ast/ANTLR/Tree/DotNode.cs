@@ -398,7 +398,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			bool joinIsNeeded;
 
 			//For nullable entity comparisons we always need to add join (like not constrained one-to-one or not-found ignore associations)
-			bool comparisonWithNullableEntity = entityType.IsNullable && Walker.IsComparativeExpressionClause;
+			bool comparisonWithNullableEntity = entityType.IsNullable && Walker.IsComparativeExpressionClause && !IsCorrelatedSubselect;
 
 			if ( IsDotNode( parent ) ) 
 			{

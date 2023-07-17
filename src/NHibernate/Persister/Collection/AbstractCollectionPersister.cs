@@ -1503,10 +1503,16 @@ namespace NHibernate.Persister.Collection
 
 		public virtual string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
+			var filterFragment = FilterFragment(alias);
+			if (!filterHelper.IsAffectedBy(enabledFilters))
+				return filterFragment;
+
+			if (ElementType.IsEntityType && elementPersister is AbstractEntityPersister ep)
+				return ep.FilterFragment(filterHelper, alias, enabledFilters, filterFragment);
+
 			StringBuilder sessionFilterFragment = new StringBuilder();
 			filterHelper.Render(sessionFilterFragment, alias, enabledFilters);
-
-			return sessionFilterFragment.Append(FilterFragment(alias)).ToString();
+			return sessionFilterFragment.Append(filterFragment).ToString();
 		}
 
 		public string OneToManyFilterFragment(string alias)

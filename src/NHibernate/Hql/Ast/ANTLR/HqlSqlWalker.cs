@@ -57,7 +57,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly LiteralProcessor _literalProcessor;
 
 		private readonly IDictionary<string, string> _tokenReplacements;
-		private readonly IDictionary<IParameterSpecification, IType> _guessedParameterTypes = new Dictionary<IParameterSpecification, IType>();
 
 		private JoinType _impliedJoinType;
 
@@ -90,21 +89,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 		public override void ReportError(RecognitionException e)
 		{
 			_parseErrorHandler.ReportError(e);
-		}
-
-		internal IStatement Transform()
-		{
-			var tree = (IStatement) statement().Tree;
-			// Use the guessed type in case we weren't been able to detect the type
-			foreach (var parameter in _parameters)
-			{
-				if (parameter.ExpectedType == null && _guessedParameterTypes.TryGetValue(parameter, out var guessedType))
-				{
-					parameter.ExpectedType = guessedType;
-				}
-			}
-
-			return tree;
 		}
 
 		/*
@@ -527,7 +511,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		internal string GetCollectionSuffix(FromElement fromElement)
 		{
-			if (!fromElement.CollectionJoin && fromElement.QueryableCollection == null)
+			if (fromElement.QueryableCollection == null)
 			{
 				return null;
 			}
@@ -1175,7 +1159,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 				// when the parameter is used as an argument.
 				if (isGuessedType)
 				{
-					_guessedParameterTypes[paramSpec] = type;
 					parameter.GuessedType = type;
 				}
 				else

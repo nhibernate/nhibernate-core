@@ -192,7 +192,15 @@ namespace NHibernate.Loader
 
 			if (qc != null)
 			{
-				_joinQueue.Enqueue(new CollectionJoinQueueEntry(qc, subalias, path, pathAlias));
+				var collection = new CollectionJoinQueueEntry(qc, subalias, path, pathAlias);
+				// Many-to-Many element entity join needs to be added right after collection bridge table
+				// (see IsManyToManyWith, ManyToManySelectFragment, IsManyToManyRoot usages)
+				if (qc.IsManyToMany)
+				{
+					collection.Walk(this);
+					return;
+				}
+				_joinQueue.Enqueue(collection);
 			}
 			else if (joinable is IOuterJoinLoadable jl)
 			{
@@ -367,6 +375,7 @@ namespace NHibernate.Loader
 				}
 				else if (type.IsComponentType)
 				{
+					_joinQueue.Enqueue(NextLevelJoinQueueEntry.Instance);
 					WalkCompositeElementTree(
 						(IAbstractComponentType) type,
 						persister.ElementColumnNames,
