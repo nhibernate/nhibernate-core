@@ -400,9 +400,16 @@ namespace NHibernate.Collection.Generic
 			var array = (object[]) disassembled;
 			var size = array.Length;
 			BeforeInitialize(persister, size);
+
+			var elementType = persister.ElementType;
+			for (int i = 0; i < size; i++)
+			{
+				elementType.BeforeAssemble(array[i], Session);
+			}
+
 			for (var i = 0; i < size; i++)
 			{
-				var element = persister.ElementType.Assemble(array[i], Session, owner);
+				var element = elementType.Assemble(array[i], Session, owner);
 				if (element != null)
 				{
 					_gbag.Add((T) element);
