@@ -266,10 +266,14 @@ fromElementList @init{
 
 fromElement! 
 @init {
-   IASTNode fromElement = null;
+   FromElement fromElement = null;
 }
 	// A simple class name, alias element.
-	: ^(RANGE p=path (a=ALIAS)? (pf=propertyFetch)? ) { fromElement = CreateFromElement($p.p, $p.tree, $a, $pf.tree); }
+	: ^(RANGE p=path (a=ALIAS)? (pf=propertyFetch)? ) 
+	{
+	 fromElement = CreateFromElement($p.p, $p.tree, $a, $pf.tree);
+	 fromElement.JoinSequence.SetUseThetaStyle(true);
+	}
 		-> {fromElement != null}? ^({fromElement})
 		->
 	| je=joinElement 

@@ -447,6 +447,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					dependentElement.Parent.InsertChild(index, item);
 				}
 			}
+
+			if (_appendFromElements.Count > 0)
+			{
+				_fromElements[0].JoinSequence.SetUseThetaStyle(true);
+			}
 			_appendFromElements.Clear();
 		}
 

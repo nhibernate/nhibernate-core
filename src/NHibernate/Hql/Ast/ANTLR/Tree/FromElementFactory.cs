@@ -321,7 +321,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				//      1) 'elem' is the "root from-element" in correlated subqueries
 				//      2) The DotNode.useThetaStyleImplicitJoins has been set to true
 				//          and 'elem' represents an implicit join
-				if (elem.FromClause != elem.Origin.FromClause || DotNode.UseThetaStyleImplicitJoins)
+				if (DotNode.UseThetaStyleImplicitJoins)
 				{
 					// the "root from-element" in correlated subqueries do need this piece
 					elem.Type = HqlSqlWalker.FROM_FRAGMENT;

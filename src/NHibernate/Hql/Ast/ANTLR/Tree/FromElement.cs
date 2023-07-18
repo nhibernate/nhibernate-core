@@ -711,8 +711,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else
 			{
-				// Otherwise, the destination node was implied by the FROM clause and the FROM clause processor
-				// will automatically add it in the right place.
+				FromClause.AppendFromElement(this);
 			}
 		}
 
