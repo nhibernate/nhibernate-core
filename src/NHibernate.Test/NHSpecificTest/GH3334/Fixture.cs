@@ -10,38 +10,32 @@ namespace NHibernate.Test.NHSpecificTest.GH3334
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			using (var session = OpenSession())
-			using (var t = session.BeginTransaction())
+			using var session = OpenSession();
+			using var t = session.BeginTransaction();
+			var parent = new Entity
 			{
-				var parent = new Entity
-				{
-					Name = "Parent1",
-					Children = { new ChildEntity { Name = "Child", Child = new GrandChildEntity { Name = "GrandChild" } } }
-				};
-				session.Save(parent);
-				parent = new Entity
-				{
-					Name = "Parent2",
-					Children = { new ChildEntity { Name = "Child", Child = new GrandChildEntity { Name = "XGrandChild" } } }
-				};
-				var other = new OtherEntity { Name = "ABC", Entities = {parent}};
-				parent.OtherEntity = other;
-				session.Save(parent);
-				session.Save(other);
-				t.Commit();
-			}
-
-			Sfi.Statistics.IsStatisticsEnabled = true;
+				Name = "Parent1",
+				Children = { new ChildEntity { Name = "Child", Child = new GrandChildEntity { Name = "GrandChild" } } }
+			};
+			session.Save(parent);
+			parent = new Entity
+			{
+				Name = "Parent2",
+				Children = { new ChildEntity { Name = "Child", Child = new GrandChildEntity { Name = "XGrandChild" } } }
+			};
+			var other = new OtherEntity { Name = "ABC", Entities = {parent}};
+			parent.OtherEntity = other;
+			session.Save(parent);
+			session.Save(other);
+			t.Commit();
 		}
 
 		[OneTimeTearDown]
 		public void OneTimeTearDown()
 		{
-			Sfi.Statistics.IsStatisticsEnabled = false;
-			
 			using var session = OpenSession();
 			using var transaction = session.BeginTransaction();
-			
+
 			session.CreateQuery("delete from ChildEntity").ExecuteUpdate();
 			session.CreateQuery("delete from GrandChildEntity").ExecuteUpdate();
 			session.CreateQuery("delete from Entity").ExecuteUpdate();
@@ -153,14 +147,34 @@ namespace NHibernate.Test.NHSpecificTest.GH3334
 								OR otherEntity.Name like 'A%'
 							)
 						)");
+			yield return new("FROM ROOT.Children FoundViaGrandChildG", @"
+				SELECT ROOT 
+				FROM Entity AS ROOT 
+				WHERE
+					EXISTS 
+						(FROM ROOT.Children AS child
+							LEFT JOIN child.Child AS grandChild
+						WHERE
+							grandChild.Name like 'G%'
+						)");
+			yield return new("FROM ROOT.OtherEntity FoundViaOtherEntityA", @"
+				SELECT ROOT 
+				FROM Entity AS ROOT 
+				WHERE
+					EXISTS 
+						(FROM ROOT.OtherEntity AS otherEntity 
+							LEFT JOIN ChildEntity AS child ON child.Parent = ROOT 
+							LEFT JOIN child.Child AS grandChild
+						WHERE
+								grandChild.Name like 'A%'
+								OR otherEntity.Name like 'A%'
+						)");
 		}
 
 		[Test, TestCaseSource(nameof(GetNoExceptionOnExecuteQueryTestCases))]
 		public void NoExceptionOnExecuteQuery(TestCaseItem testCase)
 		{
 			using var session = OpenSession();
-			using var _ = session.BeginTransaction();
-			
 			var q = session.CreateQuery(testCase.Hql);
 			Assert.That(q.List(), Has.Count.EqualTo(1));
 		}
