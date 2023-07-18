@@ -511,7 +511,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		internal string GetCollectionSuffix(FromElement fromElement)
 		{
-			if (!fromElement.CollectionJoin && fromElement.QueryableCollection == null)
+			if (fromElement.QueryableCollection == null)
 			{
 				return null;
 			}
