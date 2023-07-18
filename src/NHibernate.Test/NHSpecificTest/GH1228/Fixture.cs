@@ -35,6 +35,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1228
 		[Test]
 		public void TestWrongSql()
 		{
+			if (!TestDialect.SupportsCorrelatedColumnsInSubselectJoin)
+				Assert.Ignore("Dialect doesn't support this test case");
+
 			using var s = OpenSession();
 			{
 				var queryThatCreatesWrongSQL = s.CreateQuery(
