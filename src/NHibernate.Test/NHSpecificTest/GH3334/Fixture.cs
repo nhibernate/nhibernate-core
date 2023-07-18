@@ -44,6 +44,11 @@ namespace NHibernate.Test.NHSpecificTest.GH3334
 			transaction.Commit();
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			return TestDialect.SupportsCorrelatedColumnsInSubselectJoin;
+		}
+
 		public class TestCaseItem
 		{
 			public string Name { get; }
