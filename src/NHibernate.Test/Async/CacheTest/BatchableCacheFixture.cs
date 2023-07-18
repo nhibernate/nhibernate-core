@@ -1565,8 +1565,31 @@ namespace NHibernate.Test.CacheTest
 			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(future ? 2 : 1), "Unexpected cache hit count");
 		}
 
+		[Test]
+		public async Task CollectionLazyInitializationFromCacheIsBatchedAsync()
+		{
+			using (var s = OpenSession())
+			{
+				var readOnly = await (s.GetAsync<ReadOnly>(await (s.Query<ReadOnly>().Select(x => x.Id).FirstAsync())));
+				Assert.That(readOnly.Items.Count, Is.EqualTo(6));
+			}
+
+			var itemPersister = Sfi.GetEntityPersister(typeof(ReadOnlyItem).FullName);
+			var itemCache = (BatchableCache) itemPersister.Cache.Cache;
+			itemCache.ClearStatistics();
+
+			using (var s = OpenSession())
+			{
+				var readOnly = await (s.GetAsync<ReadOnly>(await (s.Query<ReadOnly>().Select(x => x.Id).FirstAsync())));
+				Assert.That(readOnly.Items.Count, Is.EqualTo(6));
+			}
+
+			// 6 items with batch-size = 4 so 2 GetMany calls are expected 1st call: 4 items + 2nd call: 2 items
+			Assert.That(itemCache.GetMultipleCalls.Count, Is.EqualTo(2));
+		}
+
 		private async Task AssertMultipleCacheCallsAsync<TEntity>(IEnumerable<int> loadIds,  IReadOnlyList<int> getIds, int idIndex, 
-														int[][] fetchedIdIndexes, int[] putIdIndexes, Func<int, bool> cacheBeforeLoadFn = null, CancellationToken cancellationToken = default(CancellationToken))
+		                                               int[][] fetchedIdIndexes, int[] putIdIndexes, Func<int, bool> cacheBeforeLoadFn = null, CancellationToken cancellationToken = default(CancellationToken))
 			where TEntity : CacheEntity
 		{
 			var persister = Sfi.GetEntityPersister(typeof(TEntity).FullName);

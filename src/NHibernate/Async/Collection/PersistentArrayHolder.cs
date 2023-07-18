@@ -94,9 +94,15 @@ namespace NHibernate.Collection
 
 			array = System.Array.CreateInstance(persister.ElementClass, cached.Length);
 
+			var elementType = persister.ElementType;
 			for (int i = 0; i < cached.Length; i++)
 			{
-				array.SetValue(await (persister.ElementType.AssembleAsync(cached[i], Session, owner, cancellationToken)).ConfigureAwait(false), i);
+				await (elementType.BeforeAssembleAsync(cached[i], Session, cancellationToken)).ConfigureAwait(false);
+			}
+
+			for (int i = 0; i < cached.Length; i++)
+			{
+				array.SetValue(await (elementType.AssembleAsync(cached[i], Session, owner, cancellationToken)).ConfigureAwait(false), i);
 			}
 		}
 

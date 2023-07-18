@@ -75,10 +75,19 @@ namespace NHibernate.Collection.Generic
 			object[] array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
+
+			var identifierType = persister.IdentifierType;
+			var elementType = persister.ElementType;
+			for (int i = 0; i < size; i++)
+			{
+				identifierType.BeforeAssemble(array[i], Session);
+				elementType.BeforeAssemble(array[i + 1], Session);
+			}
+
 			for (int i = 0; i < size; i += 2)
 			{
-				_identifiers[i / 2] = persister.IdentifierType.Assemble(array[i], Session, owner);
-				_values.Add((T) persister.ElementType.Assemble(array[i + 1], Session, owner));
+				_identifiers[i / 2] = identifierType.Assemble(array[i], Session, owner);
+				_values.Add((T) elementType.Assemble(array[i + 1], Session, owner));
 			}
 		}
 
