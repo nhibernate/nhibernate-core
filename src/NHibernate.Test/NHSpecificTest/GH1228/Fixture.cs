@@ -31,7 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1228
 		}
 
 		[Test]
-		public void TestThetaAnsiOnAssociationInSubQuery()
+		public void TestAnsiJoinOnAssociationInSubQuery()
 		{
 			if (!TestDialect.SupportsCorrelatedColumnsInSubselectJoin)
 				Assert.Ignore("Dialect doesn't support this test case");
