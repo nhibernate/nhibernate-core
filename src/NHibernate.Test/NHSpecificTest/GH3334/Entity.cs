@@ -6,8 +6,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3334
 	{
 		public virtual int Id { get; set; }
  		public virtual string Name { get; set; }
-        public virtual ISet<ChildEntity> Children { get; set; } = new HashSet<ChildEntity>();
-        public virtual OtherEntity OtherEntity { get; set; }
+		public virtual ISet<ChildEntity> Children { get; set; } = new HashSet<ChildEntity>();
+		public virtual OtherEntity OtherEntity { get; set; }
 	}
 
 	public class ChildEntity
