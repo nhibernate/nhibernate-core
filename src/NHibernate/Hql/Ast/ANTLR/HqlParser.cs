@@ -212,17 +212,17 @@ namespace NHibernate.Hql.Ast.ANTLR
 			switch (node.Type)
 			{
 				case OR:
-					IASTNode newNode = (IASTNode) TreeAdaptor.Create(AND, "{and}");
-					newNode.AddChildren(
-						NegateNode(node.GetChild(0)),
-						NegateNode(node.GetChild(1)));
-					return newNode;
+					node.Type = AND;
+					node.Text = "{and}";
+					node.SetChild(0, NegateNode(node.GetChild(0)));
+					node.SetChild(1, NegateNode(node.GetChild(1)));
+					return node;
 				case AND:
-					newNode = (IASTNode) TreeAdaptor.Create(OR, "{or}");
-					newNode.AddChildren(
-						NegateNode(node.GetChild(0)),
-						NegateNode(node.GetChild(1)));
-					return newNode;
+					node.Type = OR;
+					node.Text = "{or}";
+					node.SetChild(0, NegateNode(node.GetChild(0)));
+					node.SetChild(1, NegateNode(node.GetChild(1)));
+					return node;
 				case EQ:
 					node.Type = NE;
 					node.Text = "{not}" + node.Text;
