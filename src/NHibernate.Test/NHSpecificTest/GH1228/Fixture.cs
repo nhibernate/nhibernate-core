@@ -5,7 +5,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1228
 	public class Fixture : BugTestCase
 	{
 		[Test]
-		public void TestOk()
+		public void TestThetaJoinOnAssociationInSubQuery()
 		{
 			using var s = OpenSession();
 			var queryThatWorks = s.CreateQuery(
