@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "configMigration": true,
   "pruneStaleBranches": false,
@@ -15,11 +15,11 @@
   ],
   "packageRules": [
     {
-      "matchPackagePrefixes": [
-        "NUnit"
+      "matchSourceUrls": [
+        "https://github.com/nunit/nunit"
       ],
       "groupName": "NUnit"
-    }, 
+    },
     {
       "matchPackageNames": [
         "Microsoft.AspNetCore",
@@ -35,6 +35,12 @@
         "Oracle.ManagedDataAccess"
       ],
       "groupName": "Oracle.ManagedDataAccess"
+    },
+    {
+      "matchPackagePrefixes": [
+        "NHibernate.Caches"
+      ],
+      "groupName": "NHibernate.Caches"
     }
   ]
 }

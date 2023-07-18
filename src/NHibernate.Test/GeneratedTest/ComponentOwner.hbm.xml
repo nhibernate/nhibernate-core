@@ -72,6 +72,7 @@
 			<![CDATA[DROP TRIGGER t_iu_part_gen_comp]]>
 		</drop>
 		<dialect-scope name="NHibernate.Dialect.FirebirdDialect"/>
+		<dialect-scope name="NHibernate.Dialect.Firebird4Dialect"/>
 	</database-object>
 
 </hibernate-mapping>

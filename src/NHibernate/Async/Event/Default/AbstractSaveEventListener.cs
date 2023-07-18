@@ -210,7 +210,7 @@ namespace NHibernate.Event.Default
 
 			if (persister.HasCollections)
 			{
-				substitute = substitute || await (VisitCollectionsBeforeSaveAsync(entity, id, values, types, source, cancellationToken)).ConfigureAwait(false);
+				substitute = await (VisitCollectionsBeforeSaveAsync(entity, id, values, types, source, cancellationToken)).ConfigureAwait(false) || substitute;
 			}
 
 			if (substitute)
