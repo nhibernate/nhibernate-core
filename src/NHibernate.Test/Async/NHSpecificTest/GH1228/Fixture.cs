@@ -42,7 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1228
 		}
 
 		[Test]
-		public async Task TestThetaAnsiOnAssociationInSubQueryAsync()
+		public async Task TestAnsiJoinOnAssociationInSubQueryAsync()
 		{
 			if (!TestDialect.SupportsCorrelatedColumnsInSubselectJoin)
 				Assert.Ignore("Dialect doesn't support this test case");
