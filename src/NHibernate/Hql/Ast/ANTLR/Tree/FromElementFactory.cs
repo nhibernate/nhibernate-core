@@ -122,10 +122,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			
 			string tableAlias = correlatedSubselect ? fromElement.TableAlias : null;
 
-			//To properly generete subselect implicit join is required by SqlGenerator
-			if (fromElement.IsImplied)
-				fromElement.JoinSequence.SetUseThetaStyle(true);
-
 			// If the from element isn't in the same clause, create a new from element.
 			if (fromElement.FromClause != _fromClause)
 			{
