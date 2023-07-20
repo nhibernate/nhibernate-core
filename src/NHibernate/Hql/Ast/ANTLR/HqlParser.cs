@@ -214,14 +214,14 @@ namespace NHibernate.Hql.Ast.ANTLR
 				case OR:
 					node.Type = AND;
 					node.Text = "{and}";
-					NegateNode(node.GetChild(0));
-					NegateNode(node.GetChild(1));
+					node.SetChild(0, NegateNode(node.GetChild(0)));
+					node.SetChild(1, NegateNode(node.GetChild(1)));
 					return node;
 				case AND:
 					node.Type = OR;
 					node.Text = "{or}";
-					NegateNode(node.GetChild(0));
-					NegateNode(node.GetChild(1));
+					node.SetChild(0, NegateNode(node.GetChild(0)));
+					node.SetChild(1, NegateNode(node.GetChild(1)));
 					return node;
 				case EQ:
 					node.Type = NE;
