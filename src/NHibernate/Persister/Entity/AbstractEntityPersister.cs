@@ -263,7 +263,7 @@ namespace NHibernate.Persister.Entity
 
 		// This must be a Lazy<T>, because instances of this class must be thread safe.
 		private readonly Lazy<string[]> defaultUniqueKeyPropertyNamesForSelectId;
-		private readonly Dictionary<string, int> propertyTableNumbersByNameAndSubclass = new Dictionary<string, int>();
+		private readonly Dictionary<string, int> propertySubclassJoinTableNumbersByName;
 
 		protected AbstractEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
 																			ISessionFactoryImplementor factory)
@@ -441,6 +441,17 @@ namespace NHibernate.Persister.Entity
 			List<bool> columnSelectables = new List<bool>();
 			List<bool> propNullables = new List<bool>();
 
+			if (persistentClass.SubclassJoinClosureIterator.Any())
+			{
+				propertySubclassJoinTableNumbersByName = new Dictionary<string, int>();
+				foreach (Property prop in persistentClass.SubclassPropertyClosureIterator)
+				{
+					var joinNumber = persistentClass.GetJoinNumber(prop);
+					if (joinNumber != 0)
+						propertySubclassJoinTableNumbersByName[prop.PersistentClass.EntityName + '.' + prop.Name] = joinNumber;
+				}
+			}
+
 			foreach (Property prop in persistentClass.SubclassPropertyClosureIterator)
 			{
 				names.Add(prop.Name);
@@ -449,8 +460,6 @@ namespace NHibernate.Persister.Entity
 				definedBySubclass.Add(isDefinedBySubclass);
 				propNullables.Add(prop.IsOptional || isDefinedBySubclass); //TODO: is this completely correct?
 				types.Add(prop.Type);
-				propertyTableNumbersByNameAndSubclass[prop.PersistentClass.EntityName + '.' + prop.Name] =
-					persistentClass.GetJoinNumber(prop);
 
 				string[] cols = new string[prop.ColumnSpan];
 				string[] forms = new string[prop.ColumnSpan];
@@ -1125,12 +1134,15 @@ namespace NHibernate.Persister.Entity
 
 		protected abstract int GetSubclassPropertyTableNumber(int i);
 
-		internal int GetSubclassPropertyTableNumber(string propertyName, string entityName)
+		internal int GetSubclassJoinPropertyTableNumber(string propertyName, string entityName)
 		{
+			if (propertySubclassJoinTableNumbersByName == null)
+				return 0;
+
 			var type = propertyMapping.ToType(propertyName);
 			if (type.IsAssociationType && ((IAssociationType) type).UseLHSPrimaryKey)
 				return 0;
-			propertyTableNumbersByNameAndSubclass.TryGetValue(entityName + '.' + propertyName, out var tabnum);
+			propertySubclassJoinTableNumbersByName.TryGetValue(entityName + '.' + propertyName, out var tabnum);
 			return tabnum;
 		}
 
@@ -4878,7 +4890,7 @@ namespace NHibernate.Persister.Entity
 			var classes = subclassPersister.PropertySubclassNames;
 			for (var i = 0; i < props.Length; i++)
 			{
-				var propTableNumber = GetSubclassPropertyTableNumber(props[i], classes[i]);
+				var propTableNumber = GetSubclassJoinPropertyTableNumber(props[i], classes[i]);
 				if (IsSubclassTableSequentialSelect(propTableNumber) && !IsSubclassTableLazy(propTableNumber))
 				{
 					tableNumbers.Add(propTableNumber);
