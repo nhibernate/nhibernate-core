@@ -203,5 +203,10 @@ namespace NHibernate.Test
 		/// Returns true if you can cancel a query.
 		/// </summary>
 		public virtual bool SupportsCancelQuery => true;
+
+		/// <summary>
+		/// Some databases (MySql) don't support using main table aliases in subquery inside join ON clause
+		/// </summary>
+		public virtual bool SupportsCorrelatedColumnsInSubselectJoin => true;
 	}
 }
