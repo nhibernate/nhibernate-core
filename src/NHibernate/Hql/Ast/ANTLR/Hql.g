@@ -628,12 +628,11 @@ aggregateArgument
 	;
 
 aggregateDistinctAll
-	: ( distinctAll aggregateArgument ) => (distinctAll aggregateArgument)
-	| aggregateArgument
+	: ( distinctAll? aggregateArgument )
 	;
 
 distinctAll
-	: ( DISTINCT | ALL ) 
+	: {input.LA(1) == DISTINCT || input.LA(2) == ALL}? ( DISTINCT | ALL ) 
 	;
 
 //## collection: ( OPEN query CLOSE ) | ( 'elements'|'indices' OPEN path CLOSE );
