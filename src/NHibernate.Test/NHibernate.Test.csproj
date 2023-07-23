@@ -55,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.15" />
-    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="8.2.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.0" />
     <PackageReference Include="NHibernate.Caches.CoreDistributedCache.Memory" Version="5.9.0" />
     <PackageReference Include="NHibernate.Caches.Util.JsonSerializer" Version="5.9.0" />
