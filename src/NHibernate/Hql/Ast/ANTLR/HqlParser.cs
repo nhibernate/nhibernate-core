@@ -393,27 +393,25 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public IASTNode HandleIdentifierError(IToken token, RecognitionException ex)
 		{
-			// ... and the token could be an identifer and the error is
+			// ... and the token could be an identifier and the error is
 			// a mismatched token error ...
-			if (token.IsPossibleId() && (ex is MismatchedTokenException mte))
+			if (token.IsPossibleId() && (ex is MismatchedTokenException mte)
+			    // ... and the expected token type was an identifier, then:
+			    && mte.Expecting == IDENT)
 			{
-				// ... and the expected token type was an identifier, then:
-				if (mte.Expecting == IDENT)
-				{
-					// Use the token as an identifier.
-					_parseErrorHandler.ReportWarning("Keyword  '"
-                         + token.Text
-                         + "' is being interpreted as an identifier due to: " + mte.Message);
+				// Use the token as an identifier.
+				_parseErrorHandler.ReportWarning("Keyword  '"
+				     + token.Text
+				     + "' is being interpreted as an identifier due to: " + mte.Message);
 
-					// Add the token to the AST.
+				// Add the token to the AST.
 
-					token.Type = WEIRD_IDENT;
+				token.Type = WEIRD_IDENT;
 
-					input.Consume();
-					return (IASTNode) adaptor.Create(token);
-				}
+				input.Consume();
+				return (IASTNode) adaptor.Create(token);
 			}
-			
+
 			// Otherwise, handle the error normally.
 			ReflectHelper.PreserveStackTrace(ex);
 			throw ex;
