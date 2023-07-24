@@ -3,19 +3,6 @@ using Antlr.Runtime;
 
 namespace NHibernate.Hql.Ast.ANTLR
 {
-	public static class TokenExtensions
-	{
-		/// <summary>
-		/// Indicates if the token could be an identifier.
-		/// </summary>
-		/// <param name="token"></param>
-		public static bool IsPossibleId(this IToken token)
-		{
-			var type = token.Type;
-			return type >= 0 && type < HqlParser.possibleIds.Length && HqlParser.possibleIds[type];
-		}
-	}
-
     /// <summary>
     /// A custom token class for the HQL grammar.
     /// </summary>
@@ -53,8 +40,8 @@ namespace NHibernate.Hql.Ast.ANTLR
         /// Indicates if the token could be an identifier.
         /// </summary>
         // Since 5.5
-        [Obsolete("Use IsPossibleId extension method instead.")]
-        public bool PossibleId => this.IsPossibleId();
+        [Obsolete("Use HqlParser.IsPossibleId method instead.")]
+        public bool PossibleId => HqlParser.IsPossibleId(this);
 
         /// <summary>
         /// Returns the previous token type.
@@ -74,7 +61,7 @@ namespace NHibernate.Hql.Ast.ANTLR
                     + Text
                     + "\",<" + Type + "> previously: <" + PreviousType + ">,line="
                     + Line + ",col="
-                    + CharPositionInLine + ",possibleID=" + this.IsPossibleId() + "]";
+                    + CharPositionInLine + ",possibleID=" + HqlParser.IsPossibleId(this) + "]";
         }
     }
 }

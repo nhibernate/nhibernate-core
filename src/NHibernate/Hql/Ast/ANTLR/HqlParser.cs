@@ -148,7 +148,7 @@ namespace NHibernate.Hql.Ast.ANTLR
                     if (t != IDENT && input.LA(-1) == FROM && ((input.LA(2) == DOT) || (input.LA(2) == IDENT) || (input.LA(2) == -1)))
 					{
 						var hqlToken = input.LT(1);
-						if (hqlToken.IsPossibleId())
+						if (IsPossibleId(hqlToken))
 						{
 							hqlToken.Type = IDENT;
 							if (log.IsDebugEnabled())
@@ -193,7 +193,7 @@ namespace NHibernate.Hql.Ast.ANTLR
                     if (t != IDENT && input.LA(-1) == FROM && input.LA(2) == DOT)
                     {
                         var hqlToken = input.LT(1);
-                        if (hqlToken.IsPossibleId())
+                        if (IsPossibleId(hqlToken))
                         {
                             hqlToken.Type = IDENT;
                             if (log.IsDebugEnabled())
@@ -329,10 +329,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				// See if the second lookahed token can be an identifier.
 				var t = input.LT(2);
-				if (t.IsPossibleId())
+				if (IsPossibleId(t))
 				{
 					// Set it!
-					input.LT(2).Type = IDENT;
+					t.Type = IDENT;
 					if (log.IsDebugEnabled())
 					{
 						log.Debug("handleDotIdent() : new LT(2) token - {0}", input.LT(1));
@@ -395,7 +395,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			// ... and the token could be an identifier and the error is
 			// a mismatched token error ...
-			if (token.IsPossibleId() && (ex is MismatchedTokenException mte)
+			if (IsPossibleId(token) && (ex is MismatchedTokenException mte)
 			    // ... and the expected token type was an identifier, then:
 			    && mte.Expecting == IDENT)
 			{
@@ -415,6 +415,16 @@ namespace NHibernate.Hql.Ast.ANTLR
 			// Otherwise, handle the error normally.
 			ReflectHelper.PreserveStackTrace(ex);
 			throw ex;
+		}
+
+		/// <summary>
+		/// Indicates if the token could be an identifier.
+		/// </summary>
+		/// <param name="token"></param>
+		public static bool IsPossibleId(IToken token)
+		{
+			var type = token.Type;
+			return type >= 0 && type < possibleIds.Length && possibleIds[type];
 		}
 	}
 }
