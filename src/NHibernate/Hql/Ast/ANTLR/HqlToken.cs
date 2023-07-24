@@ -11,7 +11,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <param name="token"></param>
 		public static bool IsPossibleId(this IToken token)
 		{
-			return HqlParser.possibleIds[token.Type];
+			var type = token.Type;
+			return type >= 0 && type < HqlParser.possibleIds.Length && HqlParser.possibleIds[type];
 		}
 	}
 
