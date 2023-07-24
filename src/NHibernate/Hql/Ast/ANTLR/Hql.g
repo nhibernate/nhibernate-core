@@ -632,7 +632,7 @@ aggregateDistinctAll
 	;
 
 distinctAll
-	: {input.LA(1) == DISTINCT || input.LA(2) == ALL}? ( DISTINCT | ALL ) 
+	: {input.LA(1) == DISTINCT || input.LA(1) == ALL}? ( DISTINCT | ALL ) 
 	;
 
 //## collection: ( OPEN query CLOSE ) | ( 'elements'|'indices' OPEN path CLOSE );
