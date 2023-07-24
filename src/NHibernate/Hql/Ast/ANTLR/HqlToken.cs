@@ -50,6 +50,13 @@ namespace NHibernate.Hql.Ast.ANTLR
         }
 
         /// <summary>
+        /// Indicates if the token could be an identifier.
+        /// </summary>
+        // Since 5.5
+        [Obsolete("Use IsPossibleId extension method instead.")]
+        public bool PossibleId => this.IsPossibleId();
+
+        /// <summary>
         /// Returns the previous token type.
         /// </summary>
         private int PreviousType
