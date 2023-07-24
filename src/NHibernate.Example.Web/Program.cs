@@ -1,18 +1,18 @@
-﻿using Microsoft.AspNetCore;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
 namespace NHibernate.Example.Web
 {
 	public class Program
 	{
-		public static void Main(string[] args)
+		public static async Task Main(string[] args)
 		{
-			BuildWebHost(args).Run();
+			await CreateWebHostBuilder(args).Build().RunAsync();
 		}
 
-		public static IWebHost BuildWebHost(string[] args) =>
+		public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
-				.UseStartup<Startup>()
-				.Build();
+				.UseStartup<Startup>();
 	}
 }

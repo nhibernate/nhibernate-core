@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using System.Reflection
+@using System.Runtime.Versioning
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -31,9 +33,8 @@
 </head>
 <body>
     @RenderBody()
-
 <p>
-    @Microsoft.Extensions.PlatformAbstractions.PlatformServices.Default.Application.RuntimeFramework
+    @(Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>().FrameworkName)
 </p>
 
 @RenderSection("Scripts", required: false)
