@@ -148,7 +148,7 @@ namespace NHibernate.Hql.Ast.ANTLR
                     if (t != IDENT && input.LA(-1) == FROM && ((input.LA(2) == DOT) || (input.LA(2) == IDENT) || (input.LA(2) == -1)))
 					{
 						var hqlToken = input.LT(1);
-						if (hqlToken != null && hqlToken.IsPossibleId())
+						if (hqlToken.IsPossibleId())
 						{
 							hqlToken.Type = IDENT;
 							if (log.IsDebugEnabled())
@@ -292,12 +292,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public IASTNode ProcessEqualityExpression(IASTNode x)
 		{
-			if (x == null)
-			{
-				log.Warn("processEqualityExpression() : No expression to process!");
-				return null;
-			}
-
 			int type = x.Type;
 			if (type == EQ || type == NE)
 			{
