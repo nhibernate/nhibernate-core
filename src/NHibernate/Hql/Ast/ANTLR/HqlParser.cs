@@ -147,8 +147,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 					// Case 2: The current token is after FROM and before '.'.
                     if (t != IDENT && input.LA(-1) == FROM && ((input.LA(2) == DOT) || (input.LA(2) == IDENT) || (input.LA(2) == -1)))
 					{
-						HqlToken hqlToken = input.LT(1) as HqlToken;
-						if (hqlToken != null && hqlToken.PossibleId)
+						var hqlToken = input.LT(1);
+						if (hqlToken != null && hqlToken.IsPossibleId())
 						{
 							hqlToken.Type = IDENT;
 							if (log.IsDebugEnabled())
@@ -192,8 +192,8 @@ namespace NHibernate.Hql.Ast.ANTLR
                     // Case 2: The current token is after FROM and before '.'.
                     if (t != IDENT && input.LA(-1) == FROM && input.LA(2) == DOT)
                     {
-                        HqlToken hqlToken = (HqlToken)input.LT(1);
-                        if (hqlToken.PossibleId)
+                        var hqlToken = input.LT(1);
+                        if (hqlToken.IsPossibleId())
                         {
                             hqlToken.Type = IDENT;
                             if (log.IsDebugEnabled())
@@ -290,10 +290,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-		public IASTNode ProcessEqualityExpression(object o)
+		public IASTNode ProcessEqualityExpression(IASTNode x)
 		{
-			IASTNode x = o as IASTNode;
-
 			if (x == null)
 			{
 				log.Warn("processEqualityExpression() : No expression to process!");
@@ -336,8 +334,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			if (input.LA(1) == DOT && input.LA(2) != IDENT)
 			{
 				// See if the second lookahed token can be an identifier.
-				HqlToken t = input.LT(2) as HqlToken;
-				if (t != null && t.PossibleId)
+				var t = input.LT(2);
+				if (t.IsPossibleId())
 				{
 					// Set it!
 					input.LT(2).Type = IDENT;
@@ -401,32 +399,25 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		public IASTNode HandleIdentifierError(IToken token, RecognitionException ex)
 		{
-			if (token is HqlToken)
+			// ... and the token could be an identifer and the error is
+			// a mismatched token error ...
+			if (token.IsPossibleId() && (ex is MismatchedTokenException mte))
 			{
-				HqlToken hqlToken = (HqlToken)token;
-
-				// ... and the token could be an identifer and the error is
-				// a mismatched token error ...
-				if (hqlToken.PossibleId && (ex is MismatchedTokenException))
+				// ... and the expected token type was an identifier, then:
+				if (mte.Expecting == IDENT)
 				{
-					MismatchedTokenException mte = (MismatchedTokenException)ex;
+					// Use the token as an identifier.
+					_parseErrorHandler.ReportWarning("Keyword  '"
+                         + token.Text
+                         + "' is being interpreted as an identifier due to: " + mte.Message);
 
-					// ... and the expected token type was an identifier, then:
-					if (mte.Expecting == IDENT)
-					{
-						// Use the token as an identifier.
-						_parseErrorHandler.ReportWarning("Keyword  '"
-								+ token.Text
-								+ "' is being interpreted as an identifier due to: " + mte.Message);
+					// Add the token to the AST.
 
-						// Add the token to the AST.
+					token.Type = WEIRD_IDENT;
 
-						token.Type = WEIRD_IDENT;
-
-						input.Consume();
-						return (IASTNode) adaptor.Create(token);
-					}
-				} 
+					input.Consume();
+					return (IASTNode) adaptor.Create(token);
+				}
 			}
 			
 			// Otherwise, handle the error normally.
