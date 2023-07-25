@@ -21,16 +21,6 @@
       "groupName": "NUnit"
     },
     {
-      "matchPackageNames": [
-        "Microsoft.AspNetCore",
-        "Microsoft.AspNetCore.Mvc",
-        "Microsoft.AspNetCore.Mvc.Razor.ViewCompilation",
-        "Microsoft.AspNetCore.StaticFiles"
-      ],
-      "groupName": "Microsoft.AspNetCore 2.0",
-      "allowedVersions": "~2.1.0"
-    },
-    {
       "matchPackagePrefixes": [
         "Oracle.ManagedDataAccess"
       ],
