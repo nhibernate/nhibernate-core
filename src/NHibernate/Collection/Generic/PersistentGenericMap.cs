@@ -163,10 +163,10 @@ namespace NHibernate.Collection.Generic
 			object[] array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
-			
+
 			var indexType = persister.IndexType;
 			var elementType = persister.ElementType;
-			for (int i = 0; i < size; i++)
+			for (int i = 0; i < size; i += 2)
 			{
 				indexType.BeforeAssemble(array[i], Session);
 				elementType.BeforeAssemble(array[i + 1], Session);

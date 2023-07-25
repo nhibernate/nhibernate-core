@@ -78,7 +78,7 @@ namespace NHibernate.Collection.Generic
 
 			var identifierType = persister.IdentifierType;
 			var elementType = persister.ElementType;
-			for (int i = 0; i < size; i++)
+			for (int i = 0; i < size; i += 2)
 			{
 				identifierType.BeforeAssemble(array[i], Session);
 				elementType.BeforeAssemble(array[i + 1], Session);

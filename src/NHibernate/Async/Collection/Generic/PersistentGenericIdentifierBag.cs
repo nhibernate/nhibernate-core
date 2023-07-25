@@ -47,7 +47,7 @@ namespace NHibernate.Collection.Generic
 
 			var identifierType = persister.IdentifierType;
 			var elementType = persister.ElementType;
-			for (int i = 0; i < size; i++)
+			for (int i = 0; i < size; i += 2)
 			{
 				await (identifierType.BeforeAssembleAsync(array[i], Session, cancellationToken)).ConfigureAwait(false);
 				await (elementType.BeforeAssembleAsync(array[i + 1], Session, cancellationToken)).ConfigureAwait(false);
