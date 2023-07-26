@@ -61,31 +61,12 @@ namespace NHibernate.Dialect.Function
 				throw new QueryException("cast() requires two arguments");
 			}
 			string typeName = args[1].ToString();
-			string sqlType;
-			IType hqlType = TypeFactory.HeuristicType(typeName);
 
-			if (hqlType != null)
-			{
-				SqlType[] sqlTypeCodes = hqlType.SqlTypes(factory);
-				if (sqlTypeCodes.Length != 1)
-				{
-					throw new QueryException("invalid NHibernate type for cast(), was:" + typeName);
-				}
+			IType hqlType =
+				TypeFactory.HeuristicType(typeName)
+				?? throw new QueryException(string.Format("invalid Hibernate type for cast(): type {0} not found", typeName));
 
-				sqlType = factory.Dialect.GetCastTypeName(sqlTypeCodes[0]);
-				//{
-				//  //trim off the length/precision/scale
-				//  int loc = sqlType.IndexOf('(');
-				//  if (loc>-1) 
-				//  {
-				//    sqlType = sqlType.Substring(0, loc);
-				//  }
-				//}
-			}
-			else
-			{
-				throw new QueryException(string.Format("invalid Hibernate type for cast(): type {0} not found", typeName));
-			}
+			string sqlType = GetCastTypeName(factory, hqlType, typeName);
 
 			// TODO 6.0: Remove pragma block with its content
 #pragma warning disable 618
@@ -115,6 +96,20 @@ namespace NHibernate.Dialect.Function
 		protected virtual SqlString Render(object expression, string sqlType, ISessionFactoryImplementor factory)
 		{
 			return new SqlString("cast(", expression, " as ", sqlType, ")");
+		}
+
+		internal SqlString Render(IList args, IType expectedType, ISessionFactoryImplementor factory)
+		{
+			 return Render(args[0], GetCastTypeName(factory, expectedType, expectedType.Name), factory);
+		}
+
+		private static string GetCastTypeName(ISessionFactoryImplementor factory, IType hqlType, string typeName)
+		{
+			SqlType[] sqlTypeCodes = hqlType.SqlTypes(factory);
+			if (sqlTypeCodes.Length != 1)
+				throw new QueryException("invalid NHibernate type for cast(), was:" + typeName);
+
+			return factory.Dialect.GetCastTypeName(sqlTypeCodes[0]);
 		}
 
 		#region IFunctionGrammar Members

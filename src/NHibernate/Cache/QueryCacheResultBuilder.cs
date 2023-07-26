@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Collection;
+using NHibernate.Loader;
 using NHibernate.Type;
 
 namespace NHibernate.Cache
@@ -14,12 +15,17 @@ namespace NHibernate.Cache
 		private readonly IType[] _resultTypes;
 		private readonly Loader.Loader.QueryCacheInfo _cacheInfo;
 
+		// Since 5.5.
+		[Obsolete("Use overload taking an ILoader instead.")]
 		public static bool IsCacheWithFetches(Loader.Loader loader)
+			=> IsCacheWithFetches((ILoader)loader);
+
+		public static bool IsCacheWithFetches(ILoader loader)
 		{
 			return loader.CacheTypes.Length > loader.ResultTypes.Length;
 		}
 		
-		internal QueryCacheResultBuilder(Loader.Loader loader)
+		internal QueryCacheResultBuilder(ILoader loader)
 		{
 			_resultTypes = loader.ResultTypes;
 

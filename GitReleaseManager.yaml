@@ -13,6 +13,7 @@ issue-labels-exclude:
  - "r: Obsolete"
  - "r: Rejected"
  - "r: Replaced"
+ - "r: Reverted"
  - "t: Fix"
 issue-labels-alias:
  - name:   "t: Bug"

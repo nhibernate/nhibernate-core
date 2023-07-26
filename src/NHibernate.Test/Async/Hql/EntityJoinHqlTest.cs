@@ -358,6 +358,18 @@ namespace NHibernate.Test.Hql
 				//GH-2988
 				var withNullOrValidList = await (session.Query<NullableOwner>().Where(x => x.ManyToOne.Id == validManyToOne.Id || x.ManyToOne == null).ToListAsync());
 				var withNullOrValidList2 = await (session.Query<NullableOwner>().Where(x =>  x.ManyToOne == null || x.ManyToOne.Id == validManyToOne.Id).ToListAsync());
+				//GH-3269
+				var invalidId = Guid.NewGuid();
+				var withInvalidOrValid = await (session.Query<NullableOwner>().Where(x => x.OneToOne.Id == invalidId || x.ManyToOne.Id == validManyToOne.Id).ToListAsync());
+				var withInvalidOrNull = await (session.Query<NullableOwner>().Where(x => x.ManyToOne.Id == invalidId || x.OneToOne == null).ToListAsync());
+				var withInvalidOrNotNull = await (session.Query<NullableOwner>().Where(x => x.ManyToOne.Id == invalidId || x.OneToOne != null).ToListAsync());
+
+				Assert.That(withInvalidOrValid.Count, Is.EqualTo(1));
+				Assert.That(withInvalidOrNull.Count, Is.EqualTo(2));
+				Assert.That(withInvalidOrNotNull.Count, Is.EqualTo(0));
+
+				//GH-3185
+				var mixImplicitAndLeftJoinList = await (session.Query<NullableOwner>().Where(x => x.ManyToOne.Id == validManyToOne.Id && x.OneToOne == null).ToListAsync());
 
 				Assert.That(fullList.Count, Is.EqualTo(2));
 				Assert.That(withValidManyToOneList.Count, Is.EqualTo(0));
@@ -366,6 +378,7 @@ namespace NHibernate.Test.Hql
 				Assert.That(withNullManyToOneJoinedList.Count, Is.EqualTo(2));
 				Assert.That(withNullOrValidList.Count, Is.EqualTo(2));
 				Assert.That(withNullOrValidList2.Count, Is.EqualTo(2));
+				Assert.That(mixImplicitAndLeftJoinList.Count, Is.EqualTo(1));
 			}
 		}
 

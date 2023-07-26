@@ -558,7 +558,7 @@ namespace NHibernate.Test.ReadOnly
 				await (t.CommitAsync());
 			}
 
-			AssertUpdateCount(0); // NH-specific: Hibernate issues a separate UPDATE for the version number
+			AssertUpdateCount(1);
 			AssertInsertCount(1);
 			ClearCounts();
 			using (var s = OpenSession())
@@ -571,7 +571,7 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(child.Version, Is.EqualTo(1));
 				Assert.That(parent, Is.Not.Null);
 				Assert.That(parent.Children.Count, Is.EqualTo(0));
-				Assert.That(parent.Version, Is.EqualTo(1));
+				Assert.That(parent.Version, Is.EqualTo(2));
 				s.SetReadOnly(parent, true);
 				s.SetReadOnly(child, true);
 				await (s.DeleteAsync(parent));
@@ -609,7 +609,7 @@ namespace NHibernate.Test.ReadOnly
 				await (t.CommitAsync());
 			}
 
-			AssertUpdateCount(0); // NH-specific: Hibernate issues a separate UPDATE for the version number
+			AssertUpdateCount(1);
 			AssertInsertCount(1);
 			ClearCounts();
 			using (var s = OpenSession())
@@ -622,8 +622,7 @@ namespace NHibernate.Test.ReadOnly
 				Assert.That(child.Version, Is.EqualTo(1));
 				Assert.That(parent, Is.Not.Null);
 				Assert.That(parent.Children.Count, Is.EqualTo(0));
-				Assert.That(parent.Version, Is.EqualTo(1));
-					// NH-specific: Hibernate incorrectly increments version number, NH does not
+				Assert.That(parent.Version, Is.EqualTo(2));
 				s.SetReadOnly(parent, true);
 				s.SetReadOnly(child, true);
 				await (s.DeleteAsync(parent));

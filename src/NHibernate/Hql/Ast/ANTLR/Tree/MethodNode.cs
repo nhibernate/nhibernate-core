@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Antlr.Runtime;
 
 using NHibernate.Dialect.Function;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Persister.Collection;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
@@ -48,6 +50,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
+		// Since v5.4
+		[Obsolete("Use overload with aliasCreator parameter instead.")]
 		public override void SetScalarColumnText(int i)
 		{
 			if ( _selectColumns == null ) 
@@ -58,6 +62,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{	// Collection 'property function'
 				ColumnHelper.GenerateScalarColumns(Walker.ASTFactory, this, _selectColumns, i);
 			}
+		}
+
+		/// <inheritdoc />
+		public override string[] SetScalarColumnText(int i, Func<int, int, string> aliasCreator)
+		{
+			return _selectColumns == null
+				? new[] {ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i, aliasCreator)} // Dialect function
+				: ColumnHelper.GenerateScalarColumns(ASTFactory, this, _selectColumns, i, aliasCreator); // Collection 'property function'
 		}
 
 		public void InitializeMethodNode(IASTNode name, bool inSelect)
@@ -201,6 +213,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			/*else {
 				methodName = (String) getWalker().getTokenReplacements().get( methodName );
 			}*/
+		}
+
+		public virtual SqlString Render(IList args)
+		{
+			return _function.Render(args, SessionFactoryHelper.Factory);
 		}
 	}
 }

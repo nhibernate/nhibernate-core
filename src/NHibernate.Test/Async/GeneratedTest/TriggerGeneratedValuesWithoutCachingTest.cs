@@ -30,10 +30,5 @@ namespace NHibernate.Test.GeneratedTest
 		{
 			return dialect is MsSql2000Dialect || dialect is Oracle8iDialect;
 		}
-
-		protected override string CacheConcurrencyStrategy
-		{
-			get { return null; }
-		}
 	}
 }

@@ -148,6 +148,17 @@ namespace NHibernate.Test.Hql.Ast
 		}
 
 		[Test]
+		public void ParametersInCaseThenClause()
+		{
+			using ISession s = OpenSession();
+			var result = s.CreateQuery("select a from Animal a where (case when 2=2 then ? else ? end) = 1")
+			              .SetParameter(0, 1)
+			              .SetParameter(1, 0)
+			              .UniqueResult();
+			Assert.AreEqual(null, result);
+		}
+
+		[Test]
 		public void ParameterInCaseThenClause()
 		{
 			using (ISession s = OpenSession())

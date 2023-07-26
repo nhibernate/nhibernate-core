@@ -872,14 +872,27 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
+		// Since v5.4
+		[Obsolete("Use GetSelectFragment method instead.")]
 		public string SelectFragment(string alias, string columnSuffix)
 		{
-			SelectFragment frag = GenerateSelectFragment(alias, columnSuffix);
+			return GetSelectFragment(alias, columnSuffix).ToSqlStringFragment(false);
+		}
+
+		/// <summary>
+		/// Gets the select fragment containing collection element, index and indentifier columns.
+		/// </summary>
+		/// <param name="alias">The table alias.</param>
+		/// <param name="columnSuffix">The column suffix.</param>
+		/// <returns>The select fragment containing collection element, index and indentifier columns.</returns>
+		public SelectFragment GetSelectFragment(string alias, string columnSuffix)
+		{
+			var frag = GenerateSelectFragment(alias, columnSuffix);
 			AppendElementColumns(frag, alias);
 			AppendIndexColumns(frag, alias);
 			AppendIdentifierColumns(frag, alias);
 
-			return frag.ToSqlStringFragment(false);
+			return frag;
 		}
 
 		private void AddWhereFragment(SqlSimpleSelectBuilder sql)
@@ -1490,10 +1503,16 @@ namespace NHibernate.Persister.Collection
 
 		public virtual string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
+			var filterFragment = FilterFragment(alias);
+			if (!filterHelper.IsAffectedBy(enabledFilters))
+				return filterFragment;
+
+			if (ElementType.IsEntityType && elementPersister is AbstractEntityPersister ep)
+				return ep.FilterFragment(filterHelper, alias, enabledFilters, filterFragment);
+
 			StringBuilder sessionFilterFragment = new StringBuilder();
 			filterHelper.Render(sessionFilterFragment, alias, enabledFilters);
-
-			return sessionFilterFragment.Append(FilterFragment(alias)).ToString();
+			return sessionFilterFragment.Append(filterFragment).ToString();
 		}
 
 		public string OneToManyFilterFragment(string alias)

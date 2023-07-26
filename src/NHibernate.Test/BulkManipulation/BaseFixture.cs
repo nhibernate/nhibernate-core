@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using NHibernate.Hql.Ast.ANTLR;
 using System.Collections.Generic;
+using NHibernate.Engine;
+using NHibernate.Hql.Ast.ANTLR.Tree;
+using NHibernate.Loader.Hql;
 using NHibernate.Util;
 
 namespace NHibernate.Test.BulkManipulation
@@ -34,7 +37,11 @@ namespace NHibernate.Test.BulkManipulation
 
 		public string GetSql(string query)
 		{
-			var qt = new QueryTranslatorImpl(null, new HqlParseEngine(query, false, Sfi).Parse(), emptyfilters, Sfi);
+			var qt = new QueryTranslatorImpl(null, 
+			                                 new HqlParseEngine(query, false, Sfi).Parse(), 
+			                                 emptyfilters, 
+			                                 Sfi, 
+			                                 new QueryLoaderFactory());
 			qt.Compile(null, false);
 			return qt.SQLString;
 		}

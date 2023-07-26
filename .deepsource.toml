@@ -3,6 +3,7 @@ version = 1
 test_patterns = ["src/NHibernate.Test/**"]
 
 exclude_patterns = [
+  "src/NHibernate/**/*.generated.cs",
   "src/NHibernate/Async/**/*.cs",
   "src/NHibernate.DomainModel/Async/**/*.cs",
   "src/NHibernate.Test/Async/**/*.cs"
@@ -10,4 +11,3 @@ exclude_patterns = [
 
 [[analyzers]]
 name = "csharp"
-enabled = true

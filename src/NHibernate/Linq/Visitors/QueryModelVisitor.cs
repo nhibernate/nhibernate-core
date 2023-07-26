@@ -114,6 +114,7 @@ namespace NHibernate.Linq.Visitors
 		private readonly NhLinqExpressionReturnType? _rootReturnType;
 		private static readonly ResultOperatorMap ResultOperatorMap;
 		private bool _serverSide = true;
+		private readonly bool _root;
 
 		public VisitorParameters VisitorParameters { get; }
 
@@ -161,6 +162,7 @@ namespace NHibernate.Linq.Visitors
 			_queryMode = root ? visitorParameters.RootQueryMode : QueryMode.Select;
 			VisitorParameters = visitorParameters;
 			Model = queryModel;
+			_root = root;
 			_rootReturnType = root ? rootReturnType : null;
 			_hqlTree = new IntermediateHqlTree(root, _queryMode);
 		}
@@ -467,19 +469,27 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			//This is a standard select query
+			_hqlTree.AddSelectClause(GetSelectClause(selectClause.Selector));
+
+			base.VisitSelectClause(selectClause, queryModel);
+		}
+
+		private HqlSelect GetSelectClause(Expression selectClause)
+		{
+			if (!_root)
+				return _hqlTree.TreeBuilder.Select(
+					HqlGeneratorExpressionVisitor.Visit(selectClause, VisitorParameters).AsExpression());
 
 			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters);
 
-			visitor.VisitSelector(selectClause.Selector);
+			visitor.VisitSelector(selectClause);
 
 			if (visitor.ProjectionExpression != null)
 			{
 				_hqlTree.AddItemTransformer(visitor.ProjectionExpression);
 			}
 
-			_hqlTree.AddSelectClause(_hqlTree.TreeBuilder.Select(visitor.GetHqlNodes()));
-
-			base.VisitSelectClause(selectClause, queryModel);
+			return _hqlTree.TreeBuilder.Select(visitor.GetHqlNodes());
 		}
 
 		private void VisitInsertClause(Expression expression)
@@ -527,6 +537,9 @@ namespace NHibernate.Linq.Visitors
 
 		private void VisitDeleteClause(Expression expression)
 		{
+			if (!_root)
+				return;
+
 			// We only need to check there is no unexpected select, for avoiding silently ignoring them.
 			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters);
 			visitor.VisitSelector(expression);

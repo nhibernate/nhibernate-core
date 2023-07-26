@@ -163,13 +163,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			// If there is a FROM fragment and the FROM element is an explicit, then add the from part.
 			if ( fromElement.UseFromFragment /*&& StringHelper.isNotEmpty( frag )*/ ) 
 			{
-				SqlString fromFragment = ProcessFromFragment( frag, join ).Trim();
-				if ( log.IsDebugEnabled() ) 
-				{
-					log.Debug("Using FROM fragment [{0}]", fromFragment);
-				}
-
-				ProcessDynamicFilterParameters(fromFragment,fromElement,_walker);
+				ProcessDynamicFilterParameters(frag, fromElement, _walker, true);
 			}
 
 			_syntheticAndFactory.AddWhereFragment( 
@@ -181,7 +175,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			);
 		}
 
-		private static SqlString ProcessFromFragment(SqlString frag, JoinSequence join) 
+		private static SqlString ProcessFromFragment(SqlString frag) 
 		{
 			SqlString fromFragment = frag.Trim();
 			// The FROM fragment will probably begin with ', '.  Remove this if it is present.
@@ -194,7 +188,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 		public static void ProcessDynamicFilterParameters(
 				SqlString sqlFragment,
 				IParameterContainer container,
-				HqlSqlWalker walker) 
+				HqlSqlWalker walker)
+		{
+			ProcessDynamicFilterParameters(sqlFragment, container, walker, false);
+		}
+
+		private static void ProcessDynamicFilterParameters(SqlString sqlFragment, IParameterContainer container, HqlSqlWalker walker, bool fromFragment)
 		{
 			if ( walker.EnabledFilters.Count == 0
 					&& ( ! HasDynamicFilterParam( sqlFragment ) )
@@ -203,6 +202,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				return;
 			}
 
+			if (fromFragment)
+			{
+				sqlFragment = ProcessFromFragment(sqlFragment).Trim();
+				if (log.IsDebugEnabled())
+				{
+					log.Debug("Using FROM fragment [{0}]", sqlFragment);
+				}
+			}
 			container.Text = sqlFragment.ToString(); // dynamic-filters are processed altogether by Loader
 		}
 
@@ -245,7 +252,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				}
 				bool shallowQuery = _walker.IsShallowQuery;
 				bool includeSubclasses = _fromElement.IncludeSubclasses;
-				bool subQuery = _fromClause.IsSubQuery;
+				bool subQuery = _fromClause.IsScalarSubQuery;
 				return includeSubclasses && containsTableAlias && !subQuery && !shallowQuery;
 			}
 		}

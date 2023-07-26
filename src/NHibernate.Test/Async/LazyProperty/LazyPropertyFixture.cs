@@ -13,10 +13,10 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Intercept;
+using NHibernate.Linq;
 using NHibernate.Tuple.Entity;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
-using NHibernate.Linq;
 
 namespace NHibernate.Test.LazyProperty
 {
@@ -35,8 +35,6 @@ namespace NHibernate.Test.LazyProperty
 		{
 			get { return new[] { "LazyProperty.Mappings.hbm.xml" }; }
 		}
-
-		protected override string CacheConcurrencyStrategy => null;
 
 		protected override DebugSessionFactory BuildSessionFactory()
 		{
@@ -69,6 +67,7 @@ namespace NHibernate.Test.LazyProperty
 					Id = 1,
 					ALotOfText = "a lot of text ...",
 					Image = new byte[10],
+					NoSetterImage = new byte[10],
 					FieldInterceptor = "Why not that name?"
 				});
 				tx.Commit();
@@ -391,6 +390,59 @@ namespace NHibernate.Test.LazyProperty
 				book = await (s.GetAsync<Book>(3));
 				Assert.That(book.Words.Any(), Is.True);
 				Assert.That(book.Words.First().Content, Is.EqualTo(new byte[1] { 0 }));
+			}
+		}
+
+		[Test(Description = "GH-3333")]
+		public async Task GetLazyPropertyWithNoSetterAccessor_PropertyShouldBeInitializedAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				var book = await (s.GetAsync<Book>(1));
+				var image = book.NoSetterImage;
+				// Fails. Property remains uninitialized after it has been accessed.
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, "NoSetterImage"), Is.True);
+			}
+		}
+
+		[Test(Description = "GH-3333")]
+		public async Task GetLazyPropertyWithNoSetterAccessorTwice_ResultsAreSameObjectAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				var book = await (s.GetAsync<Book>(1));
+				var image = book.NoSetterImage;
+				var sameImage = book.NoSetterImage;
+				// Fails. Each call to a property getter returns a new object.
+				Assert.That(ReferenceEquals(image, sameImage), Is.True);
+			}
+		}
+
+		[Test]
+		public async Task CanSetValueForLazyPropertyNoSetterAsync()
+		{
+			Book book;
+			using (ISession s = OpenSession())
+			{
+				book = await (s.GetAsync<Book>(1));
+				book.NoSetterImage = new byte[]{10};
+			}
+
+			Assert.That(NHibernateUtil.IsPropertyInitialized(book, nameof(book.NoSetterImage)), Is.True);
+			CollectionAssert.AreEqual(book.NoSetterImage, new byte[] { 10 });
+		}
+
+		[Test]
+		public async Task CanFetchLazyPropertyNoSetterAsync()
+		{
+			using (ISession s = OpenSession())
+			{
+				var book = await (s
+					.Query<Book>()
+					.Fetch(x => x.NoSetterImage)
+					.FirstAsync(x => x.Id == 1));
+
+				Assert.That(NHibernateUtil.IsPropertyInitialized(book, nameof(book.NoSetterImage)), Is.True);
 			}
 		}
 	}

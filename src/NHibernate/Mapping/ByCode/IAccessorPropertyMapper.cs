@@ -6,7 +6,8 @@ namespace NHibernate.Mapping.ByCode
 		Field,
 		NoSetter,
 		ReadOnly,
-		None
+		None,
+		Backfield,
 	}
 
 	public interface IAccessorPropertyMapper

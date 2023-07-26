@@ -10,7 +10,7 @@ namespace NHibernate.Cache
 	/// <summary>
 	/// The data used to put a value to the 2nd level cache.
 	/// </summary>
-	internal class CachePutData
+	public class CachePutData
 	{
 		public CachePutData(CacheKey key, object value, object version, IComparer versionComparer, bool minimalPut)
 		{

@@ -74,6 +74,22 @@ namespace NHibernate
 		{
 			session.GetSessionImplementation().Flush();
 		}
+
+		/// <summary>
+		/// Cancel execution of the current query.
+		/// </summary>
+		/// <remarks>
+		/// May be called from one thread to stop execution of a query in another thread.
+		/// Use with care!
+		/// </remarks>
+		public static void CancelQuery(this IStatelessSession session)
+		{
+			var implementation = session.GetSessionImplementation();
+			using (implementation.BeginProcess())
+			{
+				implementation.Batcher.CancelLastQuery();
+			}
+		}
 	}
 
 	/// <summary>

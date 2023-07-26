@@ -58,7 +58,10 @@ namespace NHibernate.Linq.Functions
 			ReflectHelper.GetMethodDefinition<IEquatable<DateTime>>(x => x.Equals(default(DateTime))),
 			ReflectHelper.GetMethodDefinition<IEquatable<DateTimeOffset>>(x => x.Equals(default(DateTimeOffset))),
 			ReflectHelper.GetMethodDefinition<IEquatable<TimeSpan>>(x => x.Equals(default(TimeSpan))),
-			ReflectHelper.GetMethodDefinition<IEquatable<bool>>(x => x.Equals(default(bool)))
+			ReflectHelper.GetMethodDefinition<IEquatable<bool>>(x => x.Equals(default(bool))),
+			ReflectHelper.GetMethodDefinition<object>(x => x.Equals(default(object))), // this covers also Enum.Equals
+			ReflectHelper.GetMethodDefinition<IEquatable<object>>(x => x.Equals(default(object))),
+			ReflectHelper.GetMethodDefinition<IEquatable<Enum>>(x => x.Equals(default(Enum)))
 		};
 
 		public EqualsGenerator()
@@ -72,7 +75,10 @@ namespace NHibernate.Linq.Functions
 		{
 			Expression lhs = arguments.Count == 1 ? targetObject : arguments[0];
 			Expression rhs = arguments.Count == 1 ? arguments[0] : arguments[1];
-
+			if (lhs.Type.IsEnum)
+			{
+				return visitor.Visit(Expression.Equal(lhs, Expression.Convert(rhs, lhs.Type)));
+			}
 			return visitor.Visit(Expression.Equal(lhs, rhs));
 		}
 	}

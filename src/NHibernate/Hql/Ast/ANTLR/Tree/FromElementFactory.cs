@@ -122,10 +122,6 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			
 			string tableAlias = correlatedSubselect ? fromElement.TableAlias : null;
 
-			//To properly generete subselect implicit join is required by SqlGenerator
-			if (fromElement.IsImplied)
-				fromElement.JoinSequence.SetUseThetaStyle(true);
-
 			// If the from element isn't in the same clause, create a new from element.
 			if (fromElement.FromClause != _fromClause)
 			{
@@ -171,7 +167,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			// Correlated subqueries create 'special' implied from nodes
 			// because correlated subselects can't use an ANSI-style join
-			bool explicitSubqueryFromElement = _fromClause.IsSubQuery && !_implied;
+			bool explicitSubqueryFromElement = _fromClause.IsScalarSubQuery && !_implied;
 			if (explicitSubqueryFromElement)
 			{
 				string pathRoot = StringHelper.Root(_path);
@@ -321,7 +317,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				//      1) 'elem' is the "root from-element" in correlated subqueries
 				//      2) The DotNode.useThetaStyleImplicitJoins has been set to true
 				//          and 'elem' represents an implicit join
-				if (elem.FromClause != elem.Origin.FromClause || DotNode.UseThetaStyleImplicitJoins)
+				if (DotNode.UseThetaStyleImplicitJoins)
 				{
 					// the "root from-element" in correlated subqueries do need this piece
 					elem.Type = HqlSqlWalker.FROM_FRAGMENT;

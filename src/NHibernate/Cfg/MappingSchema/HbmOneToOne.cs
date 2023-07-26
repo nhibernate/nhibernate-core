@@ -20,7 +20,8 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public bool OptimisticLock
 		{
-			get { return true; }
+			get => optimisticlock;
+			set => optimisticlock = value;
 		}
 
 		#endregion	
