@@ -48,16 +48,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
         private string ResolveToLiteralString(IType type)
         {
-            try
-            {
-                ILiteralType literalType = (ILiteralType)type;
-                Dialect.Dialect dialect = _factory.Dialect;
-                return literalType.ObjectToSQLString(_constantValue, dialect);
-            }
-            catch (Exception t)
-            {
-                throw new QueryException(LiteralProcessor.ErrorCannotFormatLiteral + Text, t);
-            }
+	        return ResolveToLiteralString(type, _constantValue, _factory.Dialect);
+        }
+
+        internal static string ResolveToLiteralString(IType type, object constantValue, Dialect.Dialect dialect)
+        {
+	        try
+	        {
+		        return ((ILiteralType)type).ObjectToSQLString(constantValue, dialect);
+	        }
+	        catch (Exception t)
+	        {
+		        throw new QueryException(LiteralProcessor.ErrorCannotFormatLiteral + constantValue, t);
+	        }
         }
 
         private void ProcessText()
