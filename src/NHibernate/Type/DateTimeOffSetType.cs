@@ -65,7 +65,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return rs.GetFieldValue<DateTimeOffset>(index);
+				return (DateTimeOffset) rs[index];
 			}
 			catch (Exception ex)
 			{
