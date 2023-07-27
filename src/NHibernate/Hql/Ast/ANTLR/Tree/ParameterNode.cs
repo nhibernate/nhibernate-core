@@ -14,7 +14,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class ParameterNode : HqlSqlWalkerNode, IDisplayableNode, IExpectedTypeAwareNode, ISelectExpression
+	public class ParameterNode : HqlSqlWalkerNode, IDisplayableNode, IExpectedTypeAwareNode, ISelectExpressionExtension
 	{
 		private string _alias;
 		private IParameterSpecification _parameterSpecification;
@@ -49,6 +49,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
+		internal IType GuessedType { get; set; }
+
 		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
 		{
 			int count;
@@ -73,6 +75,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		#region ISelectExpression
 
+		// Since 5.4
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public void SetScalarColumnText(int i)
 		{
 			ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i);
@@ -104,10 +108,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { _alias = value; }
 		}
 
+		// Since v5.4
+		[Obsolete("Use overload with aliasCreator parameter instead.")]
 		public void SetScalarColumn(int i)
 		{
 			_scalarColumnIndex = i;
 			SetScalarColumnText(i);
+		}
+
+		/// <inheritdoc />
+		public string[] SetScalarColumn(int i, Func<int, int, string> aliasCreator)
+		{
+			_scalarColumnIndex = i;
+			return new[] {ColumnHelper.GenerateSingleScalarColumn(ASTFactory, this, i, aliasCreator)};
 		}
 
 		public int ScalarColumnIndex

@@ -56,24 +56,20 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			IType lhsType = ExtractDataType( lhs );
 			IType rhsType = ExtractDataType( rhs );
 
-			if ( lhsType == null ) 
-			{
+			if (lhsType == null || (IsGuessedType(lhs) && rhsType != null))
 				lhsType = rhsType;
-			}
-			if ( rhsType == null ) 
-			{
+
+			if (rhsType == null || (IsGuessedType(rhs) && lhsType != null))
 				rhsType = lhsType;
+
+			if (lhs is IExpectedTypeAwareNode lshTypeAwareNode && lshTypeAwareNode.ExpectedType == null)
+			{
+				lshTypeAwareNode.ExpectedType = rhsType;
 			}
 
-			var lshExpectedTypeAwareNode = lhs as IExpectedTypeAwareNode;
-			if (lshExpectedTypeAwareNode != null)
+			if (rhs is IExpectedTypeAwareNode rshTypeAwareNode && rshTypeAwareNode.ExpectedType == null)
 			{
-				lshExpectedTypeAwareNode.ExpectedType = rhsType;
-			}
-			var rshExpectedTypeAwareNode = rhs as IExpectedTypeAwareNode;
-			if (rshExpectedTypeAwareNode != null)
-			{
-				rshExpectedTypeAwareNode.ExpectedType = lhsType;
+				rshTypeAwareNode.ExpectedType = lhsType;
 			}
 
 			MutateRowValueConstructorSyntaxesIfNecessary( lhsType, rhsType );
@@ -248,6 +244,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			throw new HibernateException( "dont know how to extract row value elements from node : " + operand );
 		}
+
+		private static bool IsGuessedType(IASTNode operand) => TransparentCastNode.IsTransparentCast(operand);
 
 		protected static IType ExtractDataType(IASTNode operand) 
 		{

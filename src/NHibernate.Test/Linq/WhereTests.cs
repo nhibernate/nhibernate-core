@@ -4,9 +4,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using log4net.Core;
+using NHibernate.Dialect;
 using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq.Functions;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
@@ -51,6 +54,32 @@ namespace NHibernate.Test.Linq
 						 select user).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(1));
+		}
+
+		[Test(Description = "GH-3256")]
+		public void CanUseStringEnumInConditional()
+		{
+			var query = db.Users
+			              .Where(
+				              user => (user.Enum1 == EnumStoredAsString.Small
+					              ? EnumStoredAsString.Small
+					              : EnumStoredAsString.Large) == user.Enum1)
+			              .Select(x => x.Enum1);
+
+			Assert.That(query.Count(), Is.GreaterThan(0));
+		}
+
+		[Test(Description = "GH-3256")]
+		public void CanUseStringEnumInConditional2()
+		{
+			var query = db.Users
+			              .Where(
+				              user => (user.Enum1 == EnumStoredAsString.Small
+					              ? user.Enum1
+					              : EnumStoredAsString.Large) == user.Enum1)
+			              .Select(x => x.Enum1);
+
+			Assert.That(query.Count(), Is.GreaterThan(0));
 		}
 
 		[Test]
@@ -420,6 +449,34 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void StringComparisonParamEmitsWarning()
+		{
+			Assert.Multiple(
+				() =>
+				{
+					AssertStringComparisonWarning(x => string.Compare(x.CustomerId, "ANATR", StringComparison.Ordinal) <= 0, 2);
+					AssertStringComparisonWarning(x => x.CustomerId.StartsWith("ANATR", StringComparison.Ordinal), 1);
+					AssertStringComparisonWarning(x => x.CustomerId.EndsWith("ANATR", StringComparison.Ordinal), 1);
+					AssertStringComparisonWarning(x => x.CustomerId.IndexOf("ANATR", StringComparison.Ordinal) == 0, 1);
+					AssertStringComparisonWarning(x => x.CustomerId.IndexOf("ANATR", 0, StringComparison.Ordinal) == 0, 1);
+#if NETCOREAPP2_0_OR_GREATER
+					AssertStringComparisonWarning(x => x.CustomerId.Replace("AN", "XX", StringComparison.Ordinal) == "XXATR", 1);
+#endif
+				});
+		}
+
+		private void AssertStringComparisonWarning(Expression<Func<Customer, bool>> whereParam, int expected)
+		{
+			using (var log = new LogSpy(typeof(BaseHqlGeneratorForMethod)))
+			{
+				var customers = session.Query<Customer>().Where(whereParam).ToList();
+
+				Assert.That(customers, Has.Count.EqualTo(expected), whereParam.ToString);
+				Assert.That(log.GetWholeLog(), Does.Contain($"parameter of type '{nameof(StringComparison)}' is ignored"), whereParam.ToString);
+			}
+		}
+
+		[Test]
 		public void UsersWithArrayContains()
 		{
 			var names = new[] { "ayende", "rahien" };
@@ -613,6 +670,38 @@ namespace NHibernate.Test.Linq
 						 select sheet).ToList();
 
 			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void TimesheetsWithEnumerableContainsOnSelect()
+		{
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("Dialect is not supported");
+
+			var value = (EnumStoredAsInt32) 1000;
+			var query = (from sheet in db.Timesheets
+			             where sheet.Users.Select(x => x.NullableEnum2 ?? value).Contains(value)
+			             select sheet).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void ContainsSubqueryWithCoalesceStringEnumSelect()
+		{
+			if (Dialect is MsSqlCeDialect || Dialect is SQLiteDialect)
+				Assert.Ignore("Dialect is not supported");
+
+			var results =
+				db.Timesheets.Where(
+					  o =>
+						  o.Users
+						   .Where(u => u.Id != 0.MappedAs(NHibernateUtil.Int32))
+						   .Select(u => u.Name == u.Name ? u.Enum1 : u.NullableEnum1.Value)
+						   .Contains(EnumStoredAsString.Small))
+				  .ToList();
+
+			Assert.That(results.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -817,6 +906,27 @@ namespace NHibernate.Test.Linq
 			                    .FirstOrDefault();
 			Assert.That(result, Is.Not.Null);
 			Assert.That(result.SerialNumber, Is.EqualTo("1121"));
+		}
+
+		[Test]
+		public void CanCompareAggregateResult()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+			{
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+			}
+
+			session.Query<Customer>()
+			       .Select(o => new AggregateDate { Id = o.CustomerId, MaxDate = o.Orders.Max(l => l.RequiredOrderDate)})
+			       .Where(o => o.MaxDate <= DateTime.Today && o.MaxDate >= DateTime.Today)
+			       .ToList();
+		}
+
+		private class AggregateDate
+		{
+			public string Id { get; set; }
+
+			public DateTime? MaxDate { get; set; }
 		}
 
 		private static List<object[]> CanUseCompareInQueryDataSource()

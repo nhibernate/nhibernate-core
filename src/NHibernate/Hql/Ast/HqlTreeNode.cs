@@ -204,6 +204,23 @@ namespace NHibernate.Hql.Ast
 
 	public class HqlIdent : HqlExpression
 	{
+		private static readonly Dictionary<TypeCode, string> SupportedIdentTypes = new Dictionary<TypeCode, string>
+		{
+			{TypeCode.Boolean, "bool"},
+			{TypeCode.Int16, "short"},
+			{TypeCode.Int32, "integer"},
+			{TypeCode.Int64, "long"},
+			{TypeCode.UInt16, "ushort"},
+			{TypeCode.UInt32, "uint"},
+			{TypeCode.UInt64, "ulong"},
+			{TypeCode.Decimal, "decimal"},
+			{TypeCode.Single, "single"},
+			{TypeCode.DateTime, "datetime"},
+			{TypeCode.String, "string"},
+			{TypeCode.Char, "char"},
+			{TypeCode.Double, "double"}
+		};
+
 		internal HqlIdent(IASTFactory factory, string ident)
 			: base(HqlSqlWalker.IDENT, ident, factory)
 		{
@@ -212,72 +229,37 @@ namespace NHibernate.Hql.Ast
 		internal HqlIdent(IASTFactory factory, System.Type type)
 			: base(HqlSqlWalker.IDENT, "", factory)
 		{
-			type = type.UnwrapIfNullable();
-
-			switch (System.Type.GetTypeCode(type))
+			if (!TryGetTypeName(type, out var typeName))
 			{
-				case TypeCode.Boolean:
-					SetText("bool");
-					break;
-				case TypeCode.Int16:
-					SetText("short");
-					break;
-				case TypeCode.Int32:
-					SetText("integer");
-					break;
-				case TypeCode.Int64:
-					SetText("long");
-					break;
-				case TypeCode.Decimal:
-					SetText("decimal");
-					break;
-				case TypeCode.Single:
-					SetText("single");
-					break;
-				case TypeCode.DateTime:
-					SetText("datetime");
-					break;
-				case TypeCode.String:
-					SetText("string");
-					break;
-				case TypeCode.Double:
-					SetText("double");
-					break;
-				default:
-					if (type == typeof(Guid))
-					{
-						SetText("guid");
-						break;
-					}
-					if (type == typeof(DateTimeOffset))
-					{
-						SetText("datetimeoffset");
-						break;
-					}
-					throw new NotSupportedException(string.Format("Don't currently support idents of type {0}", type.Name));
+				throw new NotSupportedException($"Don't currently support idents of type {type.Name}");
 			}
+
+			SetText(typeName);
 		}
 
 		internal static bool SupportsType(System.Type type)
 		{
+			return TryGetTypeName(type, out _);
+		}
+
+		private static bool TryGetTypeName(System.Type type, out string typeName)
+		{
 			type = type.UnwrapIfNullable();
-			switch (System.Type.GetTypeCode(type))
+			if (SupportedIdentTypes.TryGetValue(System.Type.GetTypeCode(type), out typeName))
 			{
-				case TypeCode.Boolean:
-				case TypeCode.Int16:
-				case TypeCode.Int32:
-				case TypeCode.Int64:
-				case TypeCode.Decimal:
-				case TypeCode.Single:
-				case TypeCode.DateTime:
-				case TypeCode.String:
-				case TypeCode.Double:
-					return true;
-				default:
-					return
-						type == typeof(Guid) ||
-						type == typeof(DateTimeOffset);
+				return true;
 			}
+
+			if (type == typeof(Guid))
+			{
+				typeName = "guid";
+			}
+			else if (type == typeof(DateTimeOffset))
+			{
+				typeName = "datetimeoffset";
+			}
+
+			return typeName != null;
 		}
 	}
 
@@ -697,6 +679,19 @@ namespace NHibernate.Hql.Ast
 		}
 	}
 
+	public class HqlCountBig : HqlExpression
+	{
+		public HqlCountBig(IASTFactory factory)
+			: base(HqlSqlWalker.COUNT, "count_big", factory)
+		{
+		}
+
+		public HqlCountBig(IASTFactory factory, HqlExpression child)
+			: base(HqlSqlWalker.COUNT, "count_big", factory, child)
+		{
+		}
+	}
+
 	public class HqlAs : HqlExpression
 	{
 		public HqlAs(IASTFactory factory, HqlExpression expression, System.Type type)
@@ -729,9 +724,9 @@ namespace NHibernate.Hql.Ast
 	public class HqlTransparentCast : HqlExpression
 	{
 		public HqlTransparentCast(IASTFactory factory, HqlExpression expression, System.Type type)
-			: base(HqlSqlWalker.METHOD_CALL, "method", factory)
+			: base(HqlSqlWalker.METHOD_CALL, TransparentCastNode.Name, factory)
 		{
-			AddChild(new HqlIdent(factory, "transparentcast"));
+			AddChild(new HqlIdent(factory, TransparentCastNode.Name));
 			AddChild(new HqlExpressionList(factory, expression, new HqlIdent(factory, type)));
 		}
 	}

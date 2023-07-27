@@ -64,7 +64,7 @@ namespace NHibernate.AdoNet
 			{
 				Log.Debug("Adding to batch:{0}", lineWithParameters);
 			}
-			_currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
+			_currentBatch.Append((System.Data.SqlClient.SqlCommand) Driver.UnwrapDbCommand(batchUpdate));
 
 			if (_currentBatch.CountOfCommands >= _batchSize)
 			{
@@ -99,7 +99,7 @@ namespace NHibernate.AdoNet
 				{
 					Log.Debug("Adding to batch:{0}", lineWithParameters);
 				}
-				_currentBatch.Append((System.Data.SqlClient.SqlCommand) batchUpdate);
+				_currentBatch.Append((System.Data.SqlClient.SqlCommand) Driver.UnwrapDbCommand(batchUpdate));
 
 				if (_currentBatch.CountOfCommands >= _batchSize)
 				{

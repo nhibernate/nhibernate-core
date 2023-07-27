@@ -14,14 +14,18 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using log4net.Core;
+using NHibernate.Dialect;
 using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq.Functions;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class WhereTestsAsync : LinqTestCase
 	{
@@ -62,6 +66,32 @@ namespace NHibernate.Test.Linq
 						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(1));
+		}
+
+		[Test(Description = "GH-3256")]
+		public async Task CanUseStringEnumInConditionalAsync()
+		{
+			var query = db.Users
+			              .Where(
+				              user => (user.Enum1 == EnumStoredAsString.Small
+					              ? EnumStoredAsString.Small
+					              : EnumStoredAsString.Large) == user.Enum1)
+			              .Select(x => x.Enum1);
+
+			Assert.That(await (query.CountAsync()), Is.GreaterThan(0));
+		}
+
+		[Test(Description = "GH-3256")]
+		public async Task CanUseStringEnumInConditional2Async()
+		{
+			var query = db.Users
+			              .Where(
+				              user => (user.Enum1 == EnumStoredAsString.Small
+					              ? user.Enum1
+					              : EnumStoredAsString.Large) == user.Enum1)
+			              .Select(x => x.Enum1);
+
+			Assert.That(await (query.CountAsync()), Is.GreaterThan(0));
 		}
 
 		[Test]
@@ -431,6 +461,34 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void StringComparisonParamEmitsWarningAsync()
+		{
+			Assert.Multiple(
+				async () =>
+				{
+					await (AssertStringComparisonWarningAsync(x => string.Compare(x.CustomerId, "ANATR", StringComparison.Ordinal) <= 0, 2));
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.StartsWith("ANATR", StringComparison.Ordinal), 1));
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.EndsWith("ANATR", StringComparison.Ordinal), 1));
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.IndexOf("ANATR", StringComparison.Ordinal) == 0, 1));
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.IndexOf("ANATR", 0, StringComparison.Ordinal) == 0, 1));
+#if NETCOREAPP2_0_OR_GREATER
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.Replace("AN", "XX", StringComparison.Ordinal) == "XXATR", 1));
+#endif
+				});
+		}
+
+		private async Task AssertStringComparisonWarningAsync(Expression<Func<Customer, bool>> whereParam, int expected, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			using (var log = new LogSpy(typeof(BaseHqlGeneratorForMethod)))
+			{
+				var customers = await (session.Query<Customer>().Where(whereParam).ToListAsync(cancellationToken));
+
+				Assert.That(customers, Has.Count.EqualTo(expected), whereParam.ToString);
+				Assert.That(log.GetWholeLog(), Does.Contain($"parameter of type '{nameof(StringComparison)}' is ignored"), whereParam.ToString);
+			}
+		}
+
+		[Test]
 		public async Task UsersWithArrayContainsAsync()
 		{
 			var names = new[] { "ayende", "rahien" };
@@ -611,6 +669,38 @@ namespace NHibernate.Test.Linq
 						 select sheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public async Task TimesheetsWithEnumerableContainsOnSelectAsync()
+		{
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("Dialect is not supported");
+
+			var value = (EnumStoredAsInt32) 1000;
+			var query = await ((from sheet in db.Timesheets
+			             where sheet.Users.Select(x => x.NullableEnum2 ?? value).Contains(value)
+			             select sheet).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public async Task ContainsSubqueryWithCoalesceStringEnumSelectAsync()
+		{
+			if (Dialect is MsSqlCeDialect || Dialect is SQLiteDialect)
+				Assert.Ignore("Dialect is not supported");
+
+			var results =
+				await (db.Timesheets.Where(
+					  o =>
+						  o.Users
+						   .Where(u => u.Id != 0.MappedAs(NHibernateUtil.Int32))
+						   .Select(u => u.Name == u.Name ? u.Enum1 : u.NullableEnum1.Value)
+						   .Contains(EnumStoredAsString.Small))
+				  .ToListAsync());
+
+			Assert.That(results.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -815,6 +905,27 @@ namespace NHibernate.Test.Linq
 			                    .FirstOrDefaultAsync());
 			Assert.That(result, Is.Not.Null);
 			Assert.That(result.SerialNumber, Is.EqualTo("1121"));
+		}
+
+		[Test]
+		public async Task CanCompareAggregateResultAsync()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+			{
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+			}
+
+			await (session.Query<Customer>()
+			       .Select(o => new AggregateDate { Id = o.CustomerId, MaxDate = o.Orders.Max(l => l.RequiredOrderDate)})
+			       .Where(o => o.MaxDate <= DateTime.Today && o.MaxDate >= DateTime.Today)
+			       .ToListAsync());
+		}
+
+		private class AggregateDate
+		{
+			public string Id { get; set; }
+
+			public DateTime? MaxDate { get; set; }
 		}
 
 		private static List<object[]> CanUseCompareInQueryDataSource()

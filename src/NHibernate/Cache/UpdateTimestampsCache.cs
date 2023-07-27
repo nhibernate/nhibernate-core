@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-
 using NHibernate.Cfg;
 using NHibernate.Util;
 
@@ -54,13 +52,14 @@ namespace NHibernate.Cache
 			PreInvalidate(spaces.OfType<string>().ToList());
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual void PreInvalidate(IReadOnlyCollection<string> spaces)
 		{
+			if (spaces.Count == 0)
+				return;
+
 			//TODO: to handle concurrent writes correctly, this should return a Lock to the client
 			var ts = _updateTimestamps.NextTimestamp() + _updateTimestamps.Timeout;
 			SetSpacesTimestamp(spaces, ts);
-
 			//TODO: return new Lock(ts);
 		}
 
@@ -72,9 +71,11 @@ namespace NHibernate.Cache
 			Invalidate(spaces.OfType<string>().ToList());
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual void Invalidate(IReadOnlyCollection<string> spaces)
 		{
+			if (spaces.Count == 0)
+				return;
+
 			//TODO: to handle concurrent writes correctly, the client should pass in a Lock
 			long ts = _updateTimestamps.NextTimestamp();
 			//TODO: if lock.getTimestamp().equals(ts)
@@ -85,15 +86,11 @@ namespace NHibernate.Cache
 
 		private void SetSpacesTimestamp(IReadOnlyCollection<string> spaces, long ts)
 		{
-			if (spaces.Count == 0)
-				return;
-
 			_updateTimestamps.PutMany(
 				spaces.ToArray<object>(),
 				ArrayHelper.Fill<object>(ts, spaces.Count));
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual bool IsUpToDate(ISet<string> spaces, long timestamp /* H2.1 has Long here */)
 		{
 			if (spaces.Count == 0)
@@ -103,7 +100,6 @@ namespace NHibernate.Cache
 			return lastUpdates.All(lastUpdate => !IsOutdated(lastUpdate as long?, timestamp));
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual bool[] AreUpToDate(ISet<string>[] spaces, long[] timestamps)
 		{
 			if (spaces.Length == 0)

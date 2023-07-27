@@ -2,9 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+using System.Linq;
 using System.Reflection;
 using log4net;
-using log4net.Config;
 using NHibernate.Cfg;
 using NHibernate.Connection;
 using NHibernate.Engine;
@@ -17,6 +18,7 @@ using System.Text;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Engine.Query;
+using NHibernate.SqlTypes;
 using NHibernate.Util;
 using NSubstitute;
 
@@ -30,15 +32,26 @@ namespace NHibernate.Test
 		private SchemaExport _schemaExport;
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(TestCase));
+		private static readonly FieldInfo PlanCacheField;
+		private Dialect.Dialect _dialect;
+		private TestDialect _testDialect;
+
+		static TestCase()
+		{
+			PlanCacheField = typeof(QueryPlanCache)
+				                 .GetField("planCache", BindingFlags.NonPublic | BindingFlags.Instance)
+			                 ?? throw new InvalidOperationException(
+				                 "planCache field does not exist in QueryPlanCache.");
+		}
 
 		protected Dialect.Dialect Dialect
 		{
-			get { return NHibernate.Dialect.Dialect.GetDialect(cfg.Properties); }
+			get { return _dialect ?? (_dialect = NHibernate.Dialect.Dialect.GetDialect(cfg.Properties)); }
 		}
 
 		protected TestDialect TestDialect
 		{
-			get { return TestDialect.GetTestDialect(Dialect); }
+			get { return _testDialect ?? (_testDialect = TestDialect.GetTestDialect(Dialect)); }
 		}
 
 		/// <summary>
@@ -55,12 +68,6 @@ namespace NHibernate.Test
 		}
 
 		protected SchemaExport SchemaExport => _schemaExport ?? (_schemaExport = new SchemaExport(cfg));
-
-		static TestCase()
-		{
-			// Configure log4net here since configuration through an attribute doesn't always work.
-			XmlConfigurator.Configure(LogManager.GetRepository(typeof(TestCase).Assembly));
-		}
 
 		/// <summary>
 		/// Creates the tables used in this TestCase
@@ -227,15 +234,22 @@ namespace NHibernate.Test
 
 		protected virtual bool CheckDatabaseWasCleaned()
 		{
-			if (Sfi.GetAllClassMetadata().Count == 0)
+			var allClassMetadata = Sfi.GetAllClassMetadata();
+			if (allClassMetadata.Count == 0)
 			{
 				// Return early in the case of no mappings, also avoiding
 				// a warning when executing the HQL below.
 				return true;
 			}
 
+			var explicitPolymorphismEntities = allClassMetadata.Values.Where(x => x is NHibernate.Persister.Entity.IQueryable queryable && queryable.IsExplicitPolymorphism).ToArray();
+
+			//TODO: Maybe add explicit load query checks 
+			if (explicitPolymorphismEntities.Length == allClassMetadata.Count)
+				return true;
+
 			bool empty;
-			using (ISession s = Sfi.OpenSession())
+			using (ISession s = OpenSession())
 			{
 				IList objects = s.CreateQuery("from System.Object o").List();
 				empty = objects.Count == 0;
@@ -289,15 +303,16 @@ namespace NHibernate.Test
 
 		protected virtual void CreateSchema()
 		{
-			SchemaExport.Create(OutputDdl, true);
+			using (var optionalConnection = OpenConnectionForSchemaExport())
+				SchemaExport.Create(OutputDdl, true, optionalConnection);
 		}
 
 		protected virtual void DropSchema()
 		{
-			DropSchema(OutputDdl, SchemaExport, Sfi);
+			DropSchema(OutputDdl, SchemaExport, Sfi, OpenConnectionForSchemaExport);
 		}
 
-		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi)
+		public static void DropSchema(bool useStdOut, SchemaExport export, ISessionFactoryImplementor sfi, Func<DbConnection> getConnection = null)
 		{
 			if (sfi?.ConnectionProvider.Driver is FirebirdClientDriver fbDriver)
 			{
@@ -310,7 +325,16 @@ namespace NHibernate.Test
 				fbDriver.ClearPool(null);
 			}
 
-			export.Drop(useStdOut, true);
+			using(var optionalConnection = getConnection?.Invoke())
+				export.Drop(useStdOut, true, optionalConnection);
+		}
+
+		/// <summary>
+		/// Specific connection is required only for Database multi-tenancy. In other cases can be null 
+		/// </summary>
+		protected virtual DbConnection OpenConnectionForSchemaExport()
+		{
+			return null;
 		}
 
 		protected virtual DebugSessionFactory BuildSessionFactory()
@@ -375,6 +399,11 @@ namespace NHibernate.Test
 			return Sfi.OpenSession();
 		}
 
+		protected virtual IDisposable EnableStatisticsScope()
+		{
+			return new StatisticsScope(Sfi);
+		}
+
 		protected virtual ISession OpenSession(IInterceptor sessionLocalInterceptor)
 		{
 			return Sfi.WithOptions().Interceptor(sessionLocalInterceptor).OpenSession();
@@ -429,11 +458,7 @@ namespace NHibernate.Test
 		{
 		}
 
-		protected virtual string CacheConcurrencyStrategy
-		{
-			get { return "nonstrict-read-write"; }
-			//get { return null; }
-		}
+		protected virtual string CacheConcurrencyStrategy => null;
 
 		#endregion
 
@@ -447,7 +472,6 @@ namespace NHibernate.Test
 		private static readonly Dictionary<string, HashSet<System.Type>> DialectsNotSupportingStandardFunction =
 			new Dictionary<string, HashSet<System.Type>>
 			{
-				{"locate", new HashSet<System.Type> {typeof (SQLiteDialect)}},
 				{"bit_length", new HashSet<System.Type> {typeof (SQLiteDialect)}},
 				{"extract", new HashSet<System.Type> {typeof (SQLiteDialect)}},
 				{
@@ -496,14 +520,14 @@ namespace NHibernate.Test
 				$"{dialect} doesn't support {functionName} standard function.");
 		}
 
+		protected SoftLimitMRUCache GetQueryPlanCache()
+		{
+			return (SoftLimitMRUCache) PlanCacheField.GetValue(Sfi.QueryPlanCache);
+		}
+
 		protected void ClearQueryPlanCache()
 		{
-			var planCacheField = typeof(QueryPlanCache)
-									.GetField("planCache", BindingFlags.NonPublic | BindingFlags.Instance)
-								?? throw new InvalidOperationException("planCache field does not exist in QueryPlanCache.");
-
-			var planCache = (SoftLimitMRUCache) planCacheField.GetValue(Sfi.QueryPlanCache);
-			planCache.Clear();
+			GetQueryPlanCache().Clear();
 		}
 
 		protected Substitute<Dialect.Dialect> SubstituteDialect()
@@ -513,6 +537,8 @@ namespace NHibernate.Test
 			var forPartsOfMethod = ReflectHelper.GetMethodDefinition(() => Substitute.ForPartsOf<object>());
 			var substitute = (Dialect.Dialect) forPartsOfMethod.MakeGenericMethod(origDialect.GetType())
 																.Invoke(null, new object[] { new object[0] });
+			substitute.GetCastTypeName(Arg.Any<SqlType>())
+			          .ReturnsForAnyArgs(x => origDialect.GetCastTypeName(x.ArgAt<SqlType>(0)));
 
 			dialectProperty.SetValue(Sfi.Settings, substitute);
 
@@ -556,6 +582,24 @@ namespace NHibernate.Test
 			public void Dispose()
 			{
 				_disposeAction();
+			}
+		}
+
+		protected class StatisticsScope : IDisposable
+		{
+			private readonly ISessionFactoryImplementor _factory;
+
+			public StatisticsScope(ISessionFactoryImplementor factory)
+			{
+				_factory = factory;
+				_factory.Statistics.IsStatisticsEnabled = true;
+				_factory.Statistics.Clear();
+			}
+
+			public void Dispose()
+			{
+				_factory.Statistics.IsStatisticsEnabled = false;
+				_factory.Statistics.Clear();
 			}
 		}
 

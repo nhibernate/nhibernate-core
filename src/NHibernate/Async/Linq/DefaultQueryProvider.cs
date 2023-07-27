@@ -21,6 +21,7 @@ using NHibernate.Type;
 using NHibernate.Util;
 using System.Threading.Tasks;
 using NHibernate.Multi;
+using NHibernate.Param;
 
 namespace NHibernate.Linq
 {
@@ -103,7 +104,7 @@ namespace NHibernate.Linq
 
 				var query = Session.CreateQuery(nhLinqExpression);
 
-				SetParameters(query, nhLinqExpression.ParameterValuesByName);
+				SetParameters(query, nhLinqExpression.NamedParameters);
 				_options?.Apply(query);
 				return query.ExecuteUpdateAsync(cancellationToken);
 			}

@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Antlr.Runtime;
 using NHibernate.Dialect.Function;
 using NHibernate.Hql.Ast.ANTLR.Util;
 using NHibernate.Persister.Collection;
-using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
+using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
 {
 	[CLSCompliant(false)]
-	public class IdentNode : FromReferenceNode, ISelectExpression
+	public class IdentNode : FromReferenceNode
 	{
 		private const int Unknown = 0;
 		private const int PropertyRef = 1;
@@ -38,7 +39,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					return fe.DataType;
 				}
 				ISQLFunction sf = Walker.SessionFactoryHelper.FindSQLFunction(Text);
-				return sf?.ReturnType(null, Walker.SessionFactoryHelper.Factory);
+				return sf?.GetReturnType(Enumerable.Empty<IType>(), Walker.SessionFactoryHelper.Factory, true);
 			}
 
 			set
@@ -47,6 +48,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
+		// Since v5.4
+		[Obsolete("Use overload with aliasCreator parameter instead.")]
 		public override void SetScalarColumnText(int i)
 		{
 			if (_nakedPropertyRef) 
@@ -64,6 +67,27 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					ColumnHelper.GenerateSingleScalarColumn(Walker.ASTFactory, this, i);
 				}
 			}
+		}
+
+		/// <inheritdoc />
+		public override string[] SetScalarColumnText(int i, Func<int,int, string> aliasCreator)
+		{
+			if (_nakedPropertyRef)
+			{
+				// do *not* over-write the column text, as that has already been
+				// "rendered" during resolve
+				return new[] {ColumnHelper.GenerateSingleScalarColumn(Walker.ASTFactory, this, i, aliasCreator)};
+			}
+
+			var fe = FromElement;
+			if (fe != null)
+			{
+				var fragment = fe.GetScalarIdentifierSelectFragment(i, aliasCreator);
+				Text = fragment.ToSqlStringFragment(false);
+				return fragment.GetColumnAliases().ToArray();
+			}
+
+			return new[] {ColumnHelper.GenerateSingleScalarColumn(Walker.ASTFactory, this, i, aliasCreator)};
 		}
 
 		public override void ResolveIndex(IASTNode parent)
@@ -104,7 +128,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 			FromElement elem = factory.CreateCollection(queryableCollection, role, JoinType.InnerJoin, false, true);
 			FromElement = elem;
-			Walker.AddQuerySpaces(queryableCollection.CollectionSpaces);	// Always add the collection's query spaces.
+			Walker.AddQuerySpaces(queryableCollection);	// Always add the collection's query spaces.
 		}
 
 		public override void Resolve(bool generateJoin, bool implicitJoin, string classAlias, IASTNode parent)

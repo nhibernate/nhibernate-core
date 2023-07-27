@@ -43,23 +43,32 @@ namespace NHibernate.Type
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			await (GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session, cancellationToken)).ConfigureAwait(false), index, session, cancellationToken)).ConfigureAwait(false);
+				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session, true, cancellationToken)).ConfigureAwait(false), index, session, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public override Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
+		public override async Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			if (IsSame(old, current))
 			{
-				return Task.FromCanceled<bool>(cancellationToken);
+				return false;
 			}
-			try
+
+			if (old == null || current == null)
 			{
-				return Task.FromResult<bool>(IsDirty(old, current, session));
+				return true;
 			}
-			catch (Exception ex)
+
+			if ((await (ForeignKeys.IsTransientFastAsync(GetAssociatedEntityName(), current, session, cancellationToken)).ConfigureAwait(false)).GetValueOrDefault())
 			{
-				return Task.FromException<bool>(ex);
+				return true;
 			}
+
+			object oldId = await (GetIdentifierAsync(old, session, cancellationToken)).ConfigureAwait(false);
+			object newId = await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false);
+			IType identifierType = GetIdentifierType(session);
+
+			return await (identifierType.IsDirtyAsync(oldId, newId, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public override Task<bool> IsDirtyAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
@@ -68,30 +77,24 @@ namespace NHibernate.Type
 			{
 				return Task.FromCanceled<bool>(cancellationToken);
 			}
-			try
-			{
-				return Task.FromResult<bool>(IsDirty(old, current, checkable, session));
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
+			return this.IsDirtyAsync(old, current, session, cancellationToken);
 		}
 
-		public override Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
+		public override async Task<bool> IsModifiedAsync(object old, object current, bool[] checkable, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			if (current == null)
 			{
-				return Task.FromCanceled<bool>(cancellationToken);
+				return old != null;
 			}
-			try
+			if (old == null)
 			{
-				return Task.FromResult<bool>(IsModified(old, current, checkable, session));
+				return true;
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
-			}
+			var oldIdentifier = IsIdentifier(old, session) ? old : await (GetIdentifierAsync(old, session, cancellationToken)).ConfigureAwait(false);
+			var currentIdentifier = await (GetIdentifierAsync(current, session, cancellationToken)).ConfigureAwait(false);
+			// the ids are fully resolved, so compare them with isDirty(), not isModified()
+			return await (GetIdentifierOrUniqueKeyType(session.Factory).IsDirtyAsync(oldIdentifier, currentIdentifier, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
@@ -123,39 +126,36 @@ namespace NHibernate.Type
 			return identifier;
 		}
 
-		public override Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
+		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			if (value == null)
 			{
-				return Task.FromCanceled<object>(cancellationToken);
+				return null;
 			}
-			try
+
+			object id = await (ForeignKeys.GetEntityIdentifierIfNotUnsavedAsync(GetAssociatedEntityName(), value, session, cancellationToken)).ConfigureAwait(false);
+
+			if (id == null)
 			{
-				return Task.FromResult<object>(Disassemble(value, session, owner));
+				throw new AssertionFailure("cannot cache a reference to an object with a null id: " + GetAssociatedEntityName());
 			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+
+			return await (GetIdentifierType(session).DisassembleAsync(id, session, owner, cancellationToken)).ConfigureAwait(false);
 		}
 
-		public override Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
+		public override async Task<object> AssembleAsync(object cached, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
+			cancellationToken.ThrowIfCancellationRequested();
+			// the owner of the association is not the owner of the id
+			object id = await (GetIdentifierType(session).AssembleAsync(cached, session, null, cancellationToken)).ConfigureAwait(false);
+
+			if (id == null)
 			{
-				return Task.FromCanceled<object>(cancellationToken);
+				return null;
 			}
-			try
-			{
-				//this should be a call to resolve(), not resolveIdentifier(), 
-				//'cos it might be a property-ref, and we did not cache the
-				//referenced value
-				return ResolveIdentifierAsync(session.GetContextEntityIdentifier(owner), session, owner, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+
+			return await (ResolveIdentifierAsync(id, session, cancellationToken)).ConfigureAwait(false);
 		}
 	}
 }

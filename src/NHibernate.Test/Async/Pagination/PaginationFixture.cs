@@ -37,11 +37,6 @@ namespace NHibernate.Test.Pagination
 			cfg.SetProperty(Environment.DefaultBatchFetchSize, "20");
 		}
 
-		protected override string CacheConcurrencyStrategy
-		{
-			get { return null; }
-		}
-
 		[Test]
 		public async Task PagTestAsync()
 		{

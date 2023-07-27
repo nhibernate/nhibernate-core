@@ -23,7 +23,13 @@ namespace NHibernate.Transform
 
 		public bool AutoDiscoverTypes { get; }
 
+		/// <summary>
+		/// The auto-discovered aliases.
+		/// </summary>
+		public string[] AutoDiscoveredAliases { get; private set; }
+
 		private readonly SqlString _autoDiscoveredQuery;
+		private readonly bool _skipTransformer;
 		private int _tupleLength;
 		private int _tupleSubsetLength;
 
@@ -60,12 +66,23 @@ namespace NHibernate.Transform
 		/// <returns>a CacheableResultTransformer that is used to transform
 		///    tuples to a value(s) that can be cached.</returns>
 		// Since v5.1
-		[Obsolete("Please use overload with autoDiscoverTypes parameter.")]
+		[Obsolete("Please use overload with skipTransformer parameter.")]
 		public static CacheableResultTransformer Create(IResultTransformer transformer,
 		                                                string[] aliases,
 		                                                bool[] includeInTuple)
 		{
 			return Create(transformer, aliases, includeInTuple, false, null);
+		}
+
+		// Since 5.2
+		[Obsolete("Please use overload with skipTransformer parameter.")]
+		public static CacheableResultTransformer Create(
+			IResultTransformer transformer, string[] aliases, bool[] includeInTuple, bool autoDiscoverTypes,
+			SqlString autoDiscoveredQuery)
+		{
+			return autoDiscoverTypes
+				? Create(autoDiscoveredQuery)
+				: Create(includeInTuple, GetIncludeInTransform(transformer, aliases, includeInTuple), false);
 		}
 
 		/// <summary>
@@ -84,15 +101,25 @@ namespace NHibernate.Transform
 		/// <param name="autoDiscoverTypes">Indicates if types auto-discovery is enabled.</param>
 		/// <param name="autoDiscoveredQuery">If <paramref name="autoDiscoverTypes"/>, the query for which they
 		/// will be autodiscovered.</param>
+		/// <param name="skipTransformer">If true cache results untransformed.</param>
 		/// <returns>a CacheableResultTransformer that is used to transform
 		///    tuples to a value(s) that can be cached.</returns>
 		public static CacheableResultTransformer Create(
-			IResultTransformer transformer, string[] aliases, bool[] includeInTuple, bool autoDiscoverTypes,
-			SqlString autoDiscoveredQuery)
+			IResultTransformer transformer,
+			string[] aliases,
+			bool[] includeInTuple,
+			bool autoDiscoverTypes,
+			SqlString autoDiscoveredQuery,
+			bool skipTransformer)
 		{
 			return autoDiscoverTypes
 				? Create(autoDiscoveredQuery)
-				: Create(includeInTuple, GetIncludeInTransform(transformer, aliases, includeInTuple));
+				: Create(
+					includeInTuple,
+					skipTransformer
+						? null
+						: GetIncludeInTransform(transformer, aliases, includeInTuple),
+					skipTransformer);
 		}
 
 		/// <summary>
@@ -106,11 +133,12 @@ namespace NHibernate.Transform
 		///   must be non-null</param>
 		/// <param name="includeInTransform">Indexes that are included in the transformation.
 		/// <c>null</c> if all elements in the tuple are included.</param>
+		/// <param name="skipTransformer"></param>
 		/// <returns>a CacheableResultTransformer that is used to transform
 		///    tuples to a value(s) that can be cached.</returns>
-		private static CacheableResultTransformer Create(bool[] includeInTuple, bool[] includeInTransform)
+		private static CacheableResultTransformer Create(bool[] includeInTuple, bool[] includeInTransform, bool skipTransformer)
 		{
-			return new CacheableResultTransformer(includeInTuple, includeInTransform);
+			return new CacheableResultTransformer(includeInTuple, includeInTransform, skipTransformer);
 		}
 
 		private static CacheableResultTransformer Create(SqlString autoDiscoveredQuery)
@@ -136,8 +164,9 @@ namespace NHibernate.Transform
 			return resultTransformer.IncludeInTransform(aliases, tupleLength);
 		}
 
-		private CacheableResultTransformer(bool[] includeInTuple, bool[] includeInTransform)
+		private CacheableResultTransformer(bool[] includeInTuple, bool[] includeInTransform, bool skipTransformer)
 		{
+			_skipTransformer = skipTransformer;
 			InitializeTransformer(includeInTuple, includeInTransform);
 		}
 
@@ -178,6 +207,8 @@ namespace NHibernate.Transform
 				throw new InvalidOperationException(
 					"Cannot supply auto-discovered parameters when it is not enabled on the transformer.");
 
+			AutoDiscoveredAliases = aliases;
+
 			var includeInTuple = ArrayHelper.Fill(true, aliases?.Length ?? 0);
 			InitializeTransformer(includeInTuple, GetIncludeInTransform(transformer, aliases, includeInTuple));
 		}
@@ -201,18 +232,20 @@ namespace NHibernate.Transform
 		/// <param name="aliases">The aliases that correspond to the untransformed tuple.</param>
 		/// <param name="transformer">The transformer for the re-transformation.</param>
 		/// <param name="includeInTuple"></param>
-		/// <returns>transformedResults, with each element re-transformed (if necessary).</returns>
+		/// <returns><paramref name="transformedResults"/>, with each element re-transformed (if necessary).</returns>
 		public IList RetransformResults(IList transformedResults,
 		                                string[] aliases,
 		                                IResultTransformer transformer,
 		                                bool[] includeInTuple)
 		{
+			if (transformedResults.Count == 0)
+				return transformedResults;
 			if (transformer == null)
 				throw new ArgumentNullException(nameof(transformer));
 			if (_includeInTuple == null)
 				throw new InvalidOperationException("This transformer is not initialized");
 
-			if (!HasSameParameters(Create(transformer, aliases, includeInTuple, false, null)))
+			if (!HasSameParameters(Create(transformer, aliases, includeInTuple, false, null, _skipTransformer)))
 			{
 				throw new InvalidOperationException(
 					"this CacheableResultTransformer is inconsistent with specified arguments; cannot re-transform"
@@ -220,7 +253,11 @@ namespace NHibernate.Transform
 			}
 			bool requiresRetransform = true;
 			string[] aliasesToUse = aliases == null ? null : Index(aliases);
-			if (transformer.Equals(_actualTransformer))
+
+			if (_skipTransformer)
+			{
+			}
+			else if (transformer.Equals(_actualTransformer))
 			{
 				requiresRetransform = false;
 			}
@@ -252,8 +289,7 @@ namespace NHibernate.Transform
 		/// elements are replaced with untransformed values) and the original
 		/// List is returned.
 		/// <para>
-		/// If not unnecessary, the original List is returned
-		/// unchanged.
+		/// If not necessary, the original List is returned unchanged.
 		/// </para>
 		/// </summary>
 		/// <remarks>
@@ -262,9 +298,12 @@ namespace NHibernate.Transform
 		/// excluded tuple elements will be null.
 		/// </remarks>
 		/// <param name="results">Results that were previously transformed.</param>
-		/// <returns>results, with each element untransformed (if necessary).</returns>
+		/// <returns><paramref name="results"/>, with each element untransformed (if necessary).</returns>
 		public IList UntransformToTuples(IList results)
 		{
+			if (results.Count == 0)
+				return results;
+
 			if (_includeInTuple == null)
 				throw new InvalidOperationException("This transformer is not initialized");
 			if (_includeInTransformIndex == null)
@@ -359,7 +398,7 @@ namespace NHibernate.Transform
 
 			// Auto-discovery does not allow distinguishing by transformer: just compare their queries
 			if (AutoDiscoverTypes && that.AutoDiscoverTypes)
-				return _autoDiscoveredQuery == that._autoDiscoveredQuery;
+				return Equals(_autoDiscoveredQuery, that._autoDiscoveredQuery);
 
 			return HasSameParameters(that);
 		}

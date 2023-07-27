@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Antlr.Runtime;
 using NHibernate.Hql.Ast.ANTLR.Util;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace NHibernate.Hql.Ast.ANTLR.Tree
@@ -21,11 +22,22 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private bool _scalarSelect;
 		private List<FromElement> _collectionFromElements;
 		private IType[] _queryReturnTypes;
+		// An 2d array of column names, the first dimension is parallel with the
+		// return types array. The second dimension is the list of column names for each
+		// type.
 		private string[][] _columnNames;
 		private readonly List<FromElement> _fromElementsForLoad = new List<FromElement>();
+		private readonly Dictionary<int, int> _entityByResultTypeDic = new Dictionary<int, int>();
+
 		private ConstructorNode _constructorNode;
 		private string[] _aliases;
 		private int[] _columnNamesStartPositions;
+		private HashSet<ISelectExpression> _derivedSelectExpressions;
+		private Dictionary<ISelectExpression, List<int>> _replacedExpressions = new Dictionary<ISelectExpression, List<int>>();
+
+		internal List<ISelectExpression> SelectExpressions;
+		internal List<ISelectExpression> OriginalSelectExpressions;
+		internal List<ISelectExpression> NonScalarExpressions;
 
 		public static bool VERSION2_SQL;
 
@@ -50,60 +62,24 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			//			// NOTE : the isSubQuery() bit is a temporary hack...
 			//			throw new QuerySyntaxException( "JPA-QL compliance requires select clause" );
 			//		}
+			var appender = new ASTAppender(ASTFactory, this);
 			var fromElements = fromClause.GetProjectionListTyped();
-
-			ASTAppender appender = new ASTAppender(ASTFactory, this);	// Get ready to start adding nodes.
-			int size = fromElements.Count;
-			List<IType> sqlResultTypeList = new List<IType>(size);
-			List<IType> queryReturnTypeList = new List<IType>(size);
-
-			int k = 0;
+			_derivedSelectExpressions = new HashSet<ISelectExpression>();
 			foreach (FromElement fromElement in fromElements)
 			{
-				IType type = fromElement.SelectType;
-
-				AddCollectionFromElement(fromElement);
-
-				if (type != null)
+				IType type;
+				if (fromElement.IsFetch || fromElement.IsCollectionOfValuesOrComponents || ((type = fromElement.SelectType) == null))
 				{
-					bool collectionOfElements = fromElement.IsCollectionOfValuesOrComponents;
-					if (!collectionOfElements)
-					{
-						if (!fromElement.IsFetch)
-						{
-							// Add the type to the list of returned sqlResultTypes.
-							queryReturnTypeList.Add(type);
-						}
-
-						_fromElementsForLoad.Add(fromElement);
-						sqlResultTypeList.Add(type);
-
-						// Generate the select expression.
-						string text = fromElement.RenderIdentifierSelect(size, k);
-
-						SelectExpressionImpl generatedExpr = (SelectExpressionImpl)appender.Append(HqlSqlWalker.SELECT_EXPR, text, false);
-						if (generatedExpr != null)
-						{
-							generatedExpr.FromElement = fromElement;
-						}
-					}
+					continue;
 				}
-				k++;
+
+				var node = (IdentNode)appender.Append(HqlSqlWalker.IDENT, fromElement.ClassAlias ?? "", true);
+				node.FromElement = fromElement;
+				node.DataType = type;
+				_derivedSelectExpressions.Add(node);
 			}
 
-			// Get all the select expressions (that we just generated) and render the select.
-			ISelectExpression[] selectExpressions = CollectSelectExpressions();
-
-			if (Walker.IsShallowQuery)
-			{
-				RenderScalarSelects(selectExpressions, fromClause);
-			}
-			else
-			{
-				RenderNonScalarSelects(selectExpressions, fromClause);
-			}
-
-			FinishInitialization( /*sqlResultTypeList,*/ queryReturnTypeList);
+			InitializeExplicitSelectClause(fromClause);
 		}
 
 		/// <summary>
@@ -125,126 +101,208 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// First, collect all of the select expressions.
 			// NOTE: This must be done *before* invoking setScalarColumnText() because setScalarColumnText()
 			// changes the AST!!!
-			ISelectExpression[] selectExpressions = CollectSelectExpressions();
-
-			for (int i = 0; i < selectExpressions.Length; i++)
+			var inheritedExpressions = new Dictionary<ISelectExpression, SelectClause>();
+			var selExprs = GetSelectExpressions();
+			OriginalSelectExpressions = selExprs;
+			SelectExpressions = new List<ISelectExpression>(selExprs.Count);
+			NonScalarExpressions = new List<ISelectExpression>();
+			foreach (var expr in selExprs)
 			{
-				ISelectExpression expr = selectExpressions[i];
-
 				if (expr.IsConstructor)
 				{
-					_constructorNode = (ConstructorNode)expr;
-					IList<IType> constructorArgumentTypeList = _constructorNode.ConstructorArgumentTypeList;
-					//sqlResultTypeList.addAll( constructorArgumentTypeList );
-					queryReturnTypeList.AddRange(constructorArgumentTypeList);
+					_constructorNode = (ConstructorNode) expr;
 					_scalarSelect = true;
-
-					for (int j = 1; j < _constructorNode.ChildCount; j++)
+					NonScalarExpressions.AddRange(_constructorNode.GetSelectExpressions(true, o => !o.IsScalar));
+					foreach (var argumentExpression in _constructorNode.GetSelectExpressions())
 					{
-						ISelectExpression se = _constructorNode.GetChild(j) as ISelectExpression;
+						SelectExpressions.Add(argumentExpression);
+						AddExpression(argumentExpression, queryReturnTypeList);
+					}
+				}
+				else if (expr.FromElement is JoinSubqueryFromElement joinSubquery &&
+				         TryProcessSubqueryExpressions(expr, joinSubquery, out var selectClause, out var subqueryExpressions))
+				{
+					var indexes = new List<int>(subqueryExpressions.Count);
+					foreach (var expression in subqueryExpressions)
+					{
+						inheritedExpressions[expression] = selectClause;
+						indexes.Add(SelectExpressions.Count);
+						SelectExpressions.Add(expression);
+						AddExpression(expression, queryReturnTypeList);
+					}
 
-						if (se != null && IsReturnableEntity(se))
-						{
-							_fromElementsForLoad.Add(se.FromElement);
-						}
+					_replacedExpressions.Add(expr, indexes);
+				}
+				else
+				{
+					if (!expr.IsScalar)
+					{
+						NonScalarExpressions.Add(expr);
+					}
+
+					SelectExpressions.Add(expr);
+					AddExpression(expr, queryReturnTypeList);
+				}
+			}
+
+			_queryReturnTypes = queryReturnTypeList.ToArray();
+
+			// Init the aliases for explicit select, after initing the constructornode
+			if (_derivedSelectExpressions == null)
+			{
+				InitAliases(SelectExpressions);
+			}
+
+			Render(fromClause, inheritedExpressions);
+
+			FinishInitialization();
+		}
+
+		private bool TryProcessSubqueryExpressions(
+			ISelectExpression selectExpression,
+			JoinSubqueryFromElement joinSubquery,
+			out SelectClause selectClause,
+			out List<ISelectExpression> subqueryExpressions)
+		{
+			if (selectExpression is IdentNode)
+			{
+				selectClause = joinSubquery.QueryNode.GetSelectClause();
+				subqueryExpressions = selectClause.SelectExpressions;
+				NonScalarExpressions.Add(selectExpression);
+			}
+			else if (selectExpression is DotNode dotNode)
+			{
+				subqueryExpressions = joinSubquery.GetRelatedSelectExpressions(dotNode, out selectClause);
+				if (subqueryExpressions == null)
+				{
+					return false;
+				}
+
+				if (!selectClause.IsScalarSelect)
+				{
+					RemoveChildAndUnsetParent((IASTNode) selectExpression);
+				}
+
+				foreach (var expression in subqueryExpressions)
+				{
+					if (!expression.IsScalar)
+					{
+						NonScalarExpressions.Add(expression);
+					}
+				}
+			}
+			else
+			{
+				selectClause = null;
+				subqueryExpressions = null;
+				return false;
+			}
+
+			return true;
+		}
+
+		private void Render(
+			FromClause fromClause,
+			Dictionary<ISelectExpression, SelectClause> inheritedExpressions)
+		{
+			if (_scalarSelect || Walker.IsShallowQuery)
+			{
+				// If there are any scalars (non-entities) selected, render the select column aliases.
+				RenderScalarSelects(fromClause, inheritedExpressions);
+				InitializeScalarColumnNames();
+			}
+
+			// generate id select fragment and then property select fragment for
+			// each expression, just like generateSelectFragments().
+			RenderNonScalarSelects(fromClause, inheritedExpressions, GetFetchedFromElements(fromClause));
+		}
+
+		private List<FromElement> GetFetchedFromElements(FromClause fromClause)
+		{
+			var fetchedFromElements = new List<FromElement>();
+			if (Walker.IsShallowQuery)
+			{
+				return fetchedFromElements;
+			}
+
+			// add the fetched entities
+			foreach (FromElement fromElement in fromClause.GetAllProjectionListTyped())
+			{
+				if (!fromElement.IsFetch)
+				{
+					continue;
+				}
+
+				var origin = GetOrigin(fromElement);
+
+				// Only perform the fetch if its owner is included in the select 
+				if (!_fromElementsForLoad.Contains(origin))
+				{
+					// NH-2846: Before 2012-01-18, we threw this exception. However, some
+					// components using LINQ (e.g. paging) like to automatically append e.g. Count(). It
+					// can then be difficult to avoid having a bogus fetch statement, so just ignore those.
+					// An alternative solution may be to have the linq provider filter out the fetch instead.
+					// throw new QueryException(string.Format(JoinFetchWithoutOwnerExceptionMsg, fromElement.GetDisplayText()));
+
+					//throw away the fromElement. It's clearly redundant.
+					if (fromElement.FromClause == fromClause && !fromElement.ReusedJoin)
+					{
+						fromElement.Parent.RemoveChild(fromElement);
 					}
 				}
 				else
 				{
-					IType type = expr.DataType;
-					if (type == null && !(expr is ParameterNode))
-					{
-						throw new QueryException("No data type for node: " + expr.GetType().Name + " " + new ASTPrinter().ShowAsString((IASTNode)expr, ""));
-					}
-					//sqlResultTypeList.add( type );
+					IType type = fromElement.SelectType;
+					AddCollectionFromElement(fromElement);
 
-					// If the data type is not an association type, it could not have been in the FROM clause.
-					if (expr.IsScalar)
+					if (type != null && !fromElement.IsCollectionOfValuesOrComponents)
 					{
-						_scalarSelect = true;
+						// Add the type to the list of returned sqlResultTypes.
+						fromElement.IncludeSubclasses = true;
+						_fromElementsForLoad.Add(fromElement);
+						//sqlResultTypeList.add( type );
+						// We will generate the select expression later in order to avoid having different
+						// columns order when _scalarSelect is true
+						fetchedFromElements.Add(fromElement);
 					}
-
-					if (IsReturnableEntity(expr))
-					{
-						_fromElementsForLoad.Add(expr.FromElement);
-					}
-
-					// Always add the type to the return type list.
-					queryReturnTypeList.Add(type);
 				}
 			}
 
-			//init the aliases, after initing the constructornode
-			InitAliases(selectExpressions);
+			return fetchedFromElements;
+		}
 
-			if (!Walker.IsShallowQuery)
+		private void AddExpression(ISelectExpression expr, List<IType> queryReturnTypeList)
+		{
+			IType type = expr.DataType;
+			if (type == null)
 			{
-				// add the fetched entities
-				var fromElements = fromClause.GetProjectionListTyped();
-
-				ASTAppender appender = new ASTAppender(ASTFactory, this);	// Get ready to start adding nodes.
-				int size = fromElements.Count;
-				int k = 0;
-
-				foreach (FromElement fromElement in fromElements)
+				if (expr is ParameterNode param)
 				{
-					if (fromElement.IsFetch)
-					{
-						var origin = GetOrigin(fromElement);
-
-						// Only perform the fetch if its owner is included in the select 
-						if (!_fromElementsForLoad.Contains(origin))
-						{
-							// NH-2846: Before 2012-01-18, we threw this exception. However, some
-							// components using LINQ (e.g. paging) like to automatically append e.g. Count(). It
-							// can then be difficult to avoid having a bogus fetch statement, so just ignore those.
-							// An alternative solution may be to have the linq provider filter out the fetch instead.
-							// throw new QueryException(string.Format(JoinFetchWithoutOwnerExceptionMsg, fromElement.GetDisplayText()));
-
-							//throw away the fromElement. It's clearly redundant.
-							fromElement.Parent.RemoveChild(fromElement);
-						}
-						else
-						{
-							IType type = fromElement.SelectType;
-							AddCollectionFromElement(fromElement);
-
-							if (type != null)
-							{
-								bool collectionOfElements = fromElement.IsCollectionOfValuesOrComponents;
-								if (!collectionOfElements)
-								{
-									// Add the type to the list of returned sqlResultTypes.
-									fromElement.IncludeSubclasses = true;
-									_fromElementsForLoad.Add(fromElement);
-									//sqlResultTypeList.add( type );
-									// Generate the select expression.
-									String text = fromElement.RenderIdentifierSelect(size, k);
-									SelectExpressionImpl generatedExpr = (SelectExpressionImpl)appender.Append(HqlSqlWalker.SELECT_EXPR, text, false);
-									if (generatedExpr != null)
-									{
-										generatedExpr.FromElement = fromElement;
-									}
-								}
-							}
-						}
-					}
-
-					k++;
+					type = param.GuessedType;
 				}
-
-				// generate id select fragment and then property select fragment for
-				// each expression, just like generateSelectFragments().
-				RenderNonScalarSelects(CollectSelectExpressions(true), fromClause);
+				else
+					throw new QueryException("No data type for node: " + expr.GetType().Name + " " + new ASTPrinter().ShowAsString((IASTNode)expr, ""));
 			}
+			//sqlResultTypeList.add( type );
 
-			if (_scalarSelect || Walker.IsShallowQuery)
+			// If the data type is not an association type, it could not have been in the FROM clause.
+			if (expr.IsScalar)
 			{
-				// If there are any scalars (non-entities) selected, render the select column aliases.
-				RenderScalarSelects(selectExpressions, fromClause);
+				_scalarSelect = true;
+			}
+			else if (IsReturnableEntity(expr))
+			{
+				AddEntityToProjection(queryReturnTypeList.Count, expr);
 			}
 
-			FinishInitialization( /*sqlResultTypeList,*/ queryReturnTypeList);
+			// Always add the type to the return type list.
+			queryReturnTypeList.Add(type);
+		}
+
+		private void AddEntityToProjection(int resultIndex, ISelectExpression se)
+		{
+			_entityByResultTypeDic[resultIndex] = _fromElementsForLoad.Count;
+			_fromElementsForLoad.Add(se.FromElement);
 		}
 
 		private static FromElement GetOrigin(FromElement fromElement)
@@ -270,6 +328,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		{
 			get { return _fromElementsForLoad; }
 		}
+
+		/// <summary>
+		/// Maps QueryReturnTypes[key] to entities from FromElementsForLoad[value]
+		/// </summary>
+		internal IReadOnlyDictionary<int, int> EntityByResultTypeDic => _entityByResultTypeDic;
 
 		public bool IsScalarSelect
 		{
@@ -357,12 +420,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-		private void InitAliases(ISelectExpression[] selectExpressions)
+		private void InitAliases(List<ISelectExpression> selectExpressions)
 		{
 			if (_constructorNode == null)
 			{
-				_aliases = new String[selectExpressions.Length];
-				for (int i = 0; i < selectExpressions.Length; i++)
+				_aliases = new String[selectExpressions.Count];
+				for (int i = 0; i < selectExpressions.Count; i++)
 				{
 					string alias = selectExpressions[i].Alias;
 					_aliases[i] = alias ?? i.ToString();
@@ -374,139 +437,286 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-		private void RenderNonScalarSelects(ISelectExpression[] selectExpressions, FromClause currentFromClause)
+		private void RenderNonScalarSelects(
+			FromClause currentFromClause,
+			Dictionary<ISelectExpression, SelectClause> inheritedExpressions,
+			IList<FromElement> fetchedFromElements)
 		{
 			var appender = new ASTAppender(ASTFactory, this);
-			var nonscalarSize = selectExpressions.Count(e => !e.IsScalar);
-
-			int j = 0;
-			foreach (var e in selectExpressions)
+			var combinedFromElements = new List<FromElement>();
+			var processedElements = new HashSet<FromElement>();
+			RenderNonScalarIdentifiers(appender, processedElements, combinedFromElements, inheritedExpressions);
+			if (Walker.IsShallowQuery)
 			{
-				if (!e.IsScalar)
-				{
-					FromElement fromElement = e.FromElement;
-					if (fromElement != null)
-					{
-						RenderNonScalarIdentifiers(fromElement, nonscalarSize, j, e, appender);
-						j++;
-					}
-				}
+				return;
 			}
 
-			if (!currentFromClause.IsSubQuery)
+			// Append fetched elements
+			RenderFetchedNonScalarIdentifiers(appender, fetchedFromElements, processedElements, combinedFromElements);
+			if (currentFromClause.IsScalarSubQuery)
 			{
-				// Generate the property select tokens.
-				int k = 0;
-				foreach (var e in selectExpressions)
-				{
-					if (!e.IsScalar)
-					{
-						FromElement fromElement = e.FromElement;
-						if (fromElement != null)
-						{
-							RenderNonScalarProperties(appender, fromElement, nonscalarSize, k);
-							k++;
-						}
-					}
-				}
+				return;
 			}
-		}
-
-		private void RenderNonScalarIdentifiers(FromElement fromElement, int nonscalarSize, int j, ISelectExpression expr, ASTAppender appender)
-		{
-			string text = fromElement.RenderIdentifierSelect(nonscalarSize, j);
-
-			if (!fromElement.FromClause.IsSubQuery)
+			
+			// Generate the property select tokens.
+			foreach (var fromElement in combinedFromElements)
 			{
-				if (!_scalarSelect && !Walker.IsShallowQuery)
+				RenderNonScalarProperties(appender, fromElement);
+			}
+
+			// Generate properties for fetched collections of components or values
+			var fromElements = currentFromClause.GetAllProjectionListTyped();
+			foreach (var fromElement in fromElements)
+			{
+				if (fromElement.IsCollectionOfValuesOrComponents &&
+					fromElement.IsFetch &&
+					processedElements.Add(fromElement))
 				{
-					//TODO: is this a bit ugly?
-					expr.Text = text;
-				}
-				else
-				{
-					appender.Append(HqlSqlWalker.SQL_TOKEN, text, false);
+					var suffix = Walker.GetSuffix(fromElement);
+					var fragment = fromElement.GetValueCollectionSelectFragment(suffix);
+					Append(appender, HqlSqlWalker.SQL_TOKEN, fragment);
 				}
 			}
 		}
 
-		private static void RenderNonScalarProperties(ASTAppender appender, FromElement fromElement, int nonscalarSize, int k)
+		private void RenderNonScalarIdentifiers(
+			ASTAppender appender,
+			HashSet<FromElement> processedElements,
+			List<FromElement> combinedFromElements,
+			Dictionary<ISelectExpression, SelectClause> inheritedExpressions)
 		{
-			string text = fromElement.RenderPropertySelect(nonscalarSize, k);
-			appender.Append(HqlSqlWalker.SQL_TOKEN, text, false);
+			foreach (var e in NonScalarExpressions)
+			{
+				var fromElement = e.FromElement;
+				if (fromElement == null)
+				{
+					continue;
+				}
+
+				var node = (IASTNode) e;
+				if (processedElements.Add(fromElement))
+				{
+					combinedFromElements.Add(fromElement);
+					RenderNonScalarIdentifiers(fromElement, inheritedExpressions.ContainsKey(e) ? null : e, appender);
+				}
+				else if (!inheritedExpressions.ContainsKey(e) && node.Parent != null)
+				{
+					RemoveChildAndUnsetParent(node);
+				}
+			}
+		}
+
+		private void RenderFetchedNonScalarIdentifiers(
+			ASTAppender appender,
+			IList<FromElement> fetchedFromElements,
+			HashSet<FromElement> processedElements,
+			List<FromElement> combinedFromElements)
+		{
+			foreach (var fetchedFromElement in fetchedFromElements)
+			{
+				if (!processedElements.Add(fetchedFromElement))
+				{
+					continue;
+				}
+
+				fetchedFromElement.EntitySuffix = Walker.GetEntitySuffix(fetchedFromElement);
+				combinedFromElements.Add(fetchedFromElement);
+				var fragment = fetchedFromElement.GetIdentifierSelectFragment(fetchedFromElement.EntitySuffix);
+				if (fragment == null)
+				{
+					// When a subquery join has a scalar select only
+					continue;
+				}
+
+				var generatedExpr = (SelectExpressionImpl) Append(appender, HqlSqlWalker.SELECT_EXPR, fragment);
+				generatedExpr.FromElement = fetchedFromElement;
+				generatedExpr.DataType = fetchedFromElement.DataType;
+				NonScalarExpressions.Add(generatedExpr);
+			}
+		}
+
+		private IASTNode Append(ASTAppender appender, int type, SelectFragment fragment)
+		{
+			if (fragment == null)
+			{
+				return null;
+			}
+
+			return appender.Append(type, fragment.ToSqlStringFragment(false), false);
+		}
+
+		private void RenderNonScalarIdentifiers(FromElement fromElement, ISelectExpression expr, ASTAppender appender)
+		{
+			if (fromElement.FromClause.IsScalarSubQuery && _derivedSelectExpressions?.Contains(expr) != true)
+			{
+				return;
+			}
+
+			if (Walker.IsShallowQuery && !fromElement.FromClause.IsScalarSubQuery && SelectExpressions.Contains(expr))
+			{
+				// A scalar column was generated
+				return;
+			}
+
+			fromElement.EntitySuffix = Walker.GetEntitySuffix(fromElement);
+			var fragment = fromElement.GetIdentifierSelectFragment(fromElement.EntitySuffix);
+			if (fragment == null)
+			{
+				// When a subquery join has a scalar select only
+				RemoveChildAndUnsetParent((IASTNode) expr);
+				return;
+			}
+
+			if ((!_scalarSelect || fromElement.Type == HqlSqlWalker.JOIN_SUBQUERY) && expr != null)
+			{
+				//TODO: is this a bit ugly?
+				expr.Text = fragment.ToSqlStringFragment(false);
+			}
+			else
+			{
+				Append(appender, HqlSqlWalker.SQL_TOKEN, fragment);
+			}
+		}
+
+		private void RenderNonScalarProperties(ASTAppender appender, FromElement fromElement)
+		{
+			var suffix = fromElement.EntitySuffix;
+			var fragment = fromElement.GetPropertiesSelectFragment(suffix);
+			Append(appender, HqlSqlWalker.SQL_TOKEN, fragment);
 
 			if (fromElement.QueryableCollection != null && fromElement.IsFetch)
 			{
-				text = fromElement.RenderCollectionSelectFragment(nonscalarSize, k);
-				appender.Append(HqlSqlWalker.SQL_TOKEN, text, false);
-			}
-
-			// Look through the FromElement's children to find any collections of values that should be fetched...
-			ASTIterator iter = new ASTIterator(fromElement);
-			foreach (FromElement child in iter)
-			{
-				if (child.IsCollectionOfValuesOrComponents && child.IsFetch)
-				{
-					// Need a better way to define the suffixes here...
-					text = child.RenderValueCollectionSelectFragment(nonscalarSize, nonscalarSize + k);
-					appender.Append(HqlSqlWalker.SQL_TOKEN, text, false);
-				}
+				fragment = fromElement.GetCollectionSelectFragment(suffix);
+				Append(appender, HqlSqlWalker.SQL_TOKEN, fragment);
 			}
 		}
 
-		private static void RenderScalarSelects(ISelectExpression[] se, FromClause currentFromClause)
+		internal List<ISelectExpression> GetReplacedExpressions(ISelectExpression expression)
 		{
-			if (!currentFromClause.IsSubQuery)
+			if (!_replacedExpressions.TryGetValue(expression, out var indexes))
 			{
-				for (int i = 0; i < se.Length; i++)
+				return null;
+			}
+
+			return indexes.Select(o => SelectExpressions[o]).ToList();
+		}
+
+		internal string[] GetScalarColumns(ISelectExpression expression)
+		{
+			if (_replacedExpressions.TryGetValue(expression, out var indexes))
+			{
+				var columns = new List<string>();
+				foreach (var index in indexes)
 				{
-					ISelectExpression expr = se[i];
-					expr.SetScalarColumn(i);	// Create SQL_TOKEN nodes for the columns.
+					columns.AddRange(ColumnNames[index]);
+				}
+
+				return columns.ToArray();
+			}
+			else
+			{
+				if (!IsScalarSelect)
+				{
+					return expression.FromElement
+					                 .GetIdentifierSelectFragment(expression.FromElement.EntitySuffix)
+					                 .GetColumnAliases()
+					                 .ToArray();
+				}
+
+				var index = SelectExpressions.IndexOf(expression);
+				if (index < 0)
+				{
+					throw new InvalidOperationException($"Unable to get scalar columns for expression: {expression}");
+				}
+
+				return ColumnNames[index];
+			}
+		}
+
+		private void RenderScalarSelects(
+			FromClause currentFromClause,
+			Dictionary<ISelectExpression, SelectClause> inheritedExpressions)
+		{
+			if (currentFromClause.IsScalarSubQuery)
+			{
+				return;
+			}
+
+			List<int> deprecateExpressions = null; // 6.0 TODO: Remove 
+			_columnNames = new string[SelectExpressions.Count][];
+			for (var i = 0; i < SelectExpressions.Count; i++)
+			{
+				var expr = SelectExpressions[i];
+				if (inheritedExpressions.TryGetValue(expr, out var selectClause))
+				{
+					_columnNames[i] = selectClause.GetScalarColumns(expr);
+
+					continue;
+				}
+
+				_columnNames[i] = expr.SetScalarColumn(Walker.CurrentScalarIndex++, NameGenerator.ScalarName); // Create SQL_TOKEN nodes for the columns.
+				// 6.0 TODO: Remove 
+				if (_columnNames[i] == null)
+				{
+					if (deprecateExpressions == null)
+					{
+						deprecateExpressions = new List<int>();
+					}
+
+					deprecateExpressions.Add(i);
+				}
+			}
+
+			// 6.0 TODO: Remove 
+			if (deprecateExpressions != null)
+			{
+#pragma warning disable 618
+				var columnNames = SessionFactoryHelper.GenerateColumnNames(_queryReturnTypes);
+#pragma warning restore 618
+				foreach (var index in deprecateExpressions)
+				{
+					_columnNames[index] = columnNames[index];
 				}
 			}
 		}
 
 		private void AddCollectionFromElement(FromElement fromElement)
 		{
-			if (fromElement.IsFetch)
+			if (!fromElement.IsFetch)
 			{
-				if (fromElement.CollectionJoin || fromElement.QueryableCollection != null)
-				{
-					String suffix;
-					if (_collectionFromElements == null)
-					{
-						_collectionFromElements = new List<FromElement>();
-						suffix = VERSION2_SQL ? "__" : "0__";
-					}
-					else
-					{
-						suffix = _collectionFromElements.Count + "__";
-					}
-					_collectionFromElements.Add(fromElement);
-					fromElement.CollectionSuffix = suffix;
-				}
+				return;
 			}
+
+			var suffix = Walker.GetCollectionSuffix(fromElement);
+			if (suffix == null)
+			{
+				return;
+			}
+
+			if (_collectionFromElements == null)
+			{
+				_collectionFromElements = new List<FromElement>();
+			}
+
+			_collectionFromElements.Add(fromElement);
+			fromElement.CollectionSuffix = suffix;
 		}
 
-		private void FinishInitialization(/*ArrayList sqlResultTypeList,*/ List<IType> queryReturnTypeList)
+		private void FinishInitialization()
 		{
-			//sqlResultTypes = ( Type[] ) sqlResultTypeList.toArray( new Type[sqlResultTypeList.size()] );
-			_queryReturnTypes = queryReturnTypeList.ToArray();
-			InitializeColumnNames();
 			_prepared = true;
 		}
 
-		private void InitializeColumnNames()
+		private void InitializeScalarColumnNames()
 		{
-			// Generate an 2d array of column names, the first dimension is parallel with the
-			// return types array.  The second dimension is the list of column names for each
-			// type.
+			if (_columnNames == null)
+			{
+				return;
+			}
 
-			// todo: we should really just collect these from the various SelectExpressions, rather than regenerating here
-			_columnNames = SessionFactoryHelper.GenerateColumnNames(_queryReturnTypes);
 			_columnNamesStartPositions = new int[_columnNames.Length];
-			int startPosition = 1;
-			for (int i = 0; i < _columnNames.Length; i++)
+			var startPosition = 1;
+			for (var i = 0; i < _columnNames.Length; i++)
 			{
 				_columnNamesStartPositions[i] = startPosition;
 				startPosition += _columnNames[i].Length;
@@ -516,6 +726,15 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		public int GetColumnNamesStartPosition(int i)
 		{
 			return _columnNamesStartPositions[i];
+		}
+
+		private static void RemoveChildAndUnsetParent(IASTNode node)
+		{
+			if (node?.Parent != null)
+			{
+				node.Parent.RemoveChild(node);
+				node.Parent = null;
+			}
 		}
 	}
 }

@@ -30,6 +30,46 @@ namespace NHibernate.SqlCommand
 			return buf.ToSqlString();
 		}
 
+		internal static SqlString JoinParts(object separator, IList<object> parts)
+		{
+			if (parts.Count == 0)
+				return SqlString.Empty;
+
+			if (parts.Count == 1)
+				return parts[0] is SqlString sqlstring
+					? sqlstring
+					: new SqlString(parts);
+
+			var buf = new SqlStringBuilder();
+
+			buf.AddObject(parts[0]);
+			for (var index = 1; index < parts.Count; index++)
+			{
+				buf.AddObject(separator).AddObject(parts[index]);
+			}
+
+			return buf.ToSqlString();
+		}
+
+		internal static SqlString Join(string separator, IList<SqlString> strings)
+		{
+			if (strings.Count == 0)
+				return SqlString.Empty;
+
+			if (strings.Count == 1)
+				return strings[0];
+
+			var buf = new SqlStringBuilder();
+
+			buf.Add(strings[0]);
+			for (var index = 1; index < strings.Count; index++)
+			{
+				buf.Add(separator).Add(strings[index]);
+			}
+
+			return buf.ToSqlString();
+		}
+
 		public static SqlString[] Add(SqlString[] x, string sep, SqlString[] y)
 		{
 			SqlString[] result = new SqlString[x.Length];
@@ -40,6 +80,12 @@ namespace NHibernate.SqlCommand
 			return result;
 		}
 
+		/// <summary>
+		/// Removes the <c>as someColumnAlias</c> clause from a <c>SqlString</c> representing a column expression.
+		/// Consider using <c>CriterionUtil.GetColumn...</c> methods instead.
+		/// </summary>
+		/// <param name="sql">The <c>SqlString</c> representing a column expression which might be aliased.</param>
+		/// <returns><paramref name="sql" /> if it was not aliased, otherwise an un-aliased <c>SqlString</c> representing the column.</returns>
 		public static SqlString RemoveAsAliasesFromSql(SqlString sql)
 		{
 			int index = sql.LastIndexOfCaseInsensitive(" as ");
@@ -82,6 +128,38 @@ namespace NHibernate.SqlCommand
 			}
 
 			builder.Add(")");
+
+			return builder.ToSqlString();
+		}
+
+		internal static SqlString Repeat(SqlString placeholder, int count, string separator, bool wrapInParens)
+		{
+			if (count == 0)
+				return SqlString.Empty;
+
+			if (count == 1)
+				return wrapInParens
+					? new SqlString("(", placeholder, ")")
+					: placeholder;
+
+			var builder = new SqlStringBuilder((placeholder.Count + 1) * count + 1);
+
+			if (wrapInParens)
+			{
+				builder.Add("(");
+			}
+
+			builder.Add(placeholder);
+
+			for (int i = 1; i < count; i++)
+			{
+				builder.Add(separator).Add(placeholder);
+			}
+
+			if (wrapInParens)
+			{
+				builder.Add(")");
+			}
 
 			return builder.ToSqlString();
 		}

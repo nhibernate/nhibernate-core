@@ -1,21 +1,21 @@
-version: 5.2.7.{build}
-image: Visual Studio 2017
+version: '{build}'
+image: Visual Studio 2022
 environment:
   matrix:
   - DB: SqlServer2008
     CONNECTION_STRING: Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;
+  - DB: SqlServer2008-MicrosoftDataSqlClientDriver
+    CONNECTION_STRING: Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;
   - DB: PostgreSQL
     CONNECTION_STRING: Host=localhost;Port=5432;Username=postgres;Password=Password12!;Database=nhibernate;Enlist=true;
   - DB: Firebird
+  - DB: Firebird4
   - DB: MySQL
-    CONNECTION_STRING: Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;
+    CONNECTION_STRING: Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;SslMode=none;CharSet=utf8;
   - DB: SQLite
 init:
     # Required for having windows endlines in sources zip
     - git config --global core.autocrlf true
-matrix:
-  allow_failures:
-  - DB: MySQL
 build: off
 before_test:
 - ps: |-
@@ -25,7 +25,28 @@ before_test:
         # Install Firebird
         New-Item -ItemType Directory -Force $FireBirdPath > $null
         Push-Location $FireBirdPath
-        Invoke-WebRequest 'https://github.com/FirebirdSQL/firebird/releases/download/R3_0_3/Firebird-3.0.3.32900-0_x64.zip' -OutFile firebird.zip
+        Invoke-WebRequest 'https://github.com/FirebirdSQL/firebird/releases/download/R3_0_5/Firebird-3.0.5.33220-0_x64.zip' -OutFile firebird.zip
+        Unblock-File firebird.zip
+        7z x firebird.zip
+        New-Item -ItemType Directory -Force Data
+        # Declare nhibernate db
+        Add-Content -Path '.\databases.conf' -Value "`r`nnhibernate = $FireBirdPath\Data\nhibernate.fdb"
+        # Minimal db settings
+        Add-Content -Path '.\firebird.conf' -Value "`r`nAuthServer = Srp`r`nAuthClient = Srp`r`nUserManager = Srp`r`nWireCrypt = Enabled"
+        # Create SYSDBA account
+        New-Item SYSDBA.sql -Type File
+        Add-Content -Path '.\SYSDBA.sql' -Value "CREATE USER SYSDBA PASSWORD 'masterkey';`r`nCOMMIT;`r`nQUIT;"
+        .\isql -user sysdba employee -input SYSDBA.sql
+        # Start Firebird
+        .\firebird.exe -a
+        Pop-Location
+      }
+      'Firebird4' {
+        $FireBirdPath = 'C:\firebird'
+        # Install Firebird
+        New-Item -ItemType Directory -Force $FireBirdPath > $null
+        Push-Location $FireBirdPath
+        Invoke-WebRequest 'https://github.com/FirebirdSQL/firebird/releases/download/v4.0.2/Firebird-4.0.2.2816-0-x64.zip' -OutFile firebird.zip
         Unblock-File firebird.zip
         7z x firebird.zip
         New-Item -ItemType Directory -Force Data
@@ -45,7 +66,7 @@ before_test:
         Start-Service 'MySQL57'
         # Create nhibernate database (not handled by NHibernate.TestDatabaseSetup.dll)
         $env:MYSQL_PWD = 'Password12!'
-        & 'C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql' -e 'CREATE DATABASE nhibernate;' --user=root
+        & 'C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql' -e 'CREATE DATABASE nhibernate CHARACTER SET utf8 COLLATE utf8_general_ci;' --user=root
       }
       'Odbc' { Start-Service 'MSSQL$SQL2017' }
       'PostgreSQL' {
@@ -54,7 +75,9 @@ before_test:
         Start-Service 'postgresql-x64-10'
       }
       'SqlServer2008' { Start-Service 'MSSQL$SQL2017' }
+      'SqlServer2008-MicrosoftDataSqlClientDriver' { Start-Service 'MSSQL$SQL2017' }
       'SqlServer2012' { Start-Service 'MSSQL$SQL2017' }
+      'SqlServer2012-MicrosoftDataSqlClientDriver' { Start-Service 'MSSQL$SQL2017' }
       'SQLite' { }
     }
 test_script:

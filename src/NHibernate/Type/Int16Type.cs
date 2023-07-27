@@ -5,6 +5,7 @@ using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using System.Collections.Generic;
 using System.Data;
+using System.Numerics;
 
 namespace NHibernate.Type
 {
@@ -31,7 +32,11 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Convert.ToInt16(rs[index]);
+				return rs[index] switch
+				{
+					BigInteger bi => (short) bi,
+					var c => Convert.ToInt16(c)
+				};
 			}
 			catch (Exception ex)
 			{
@@ -43,7 +48,11 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Convert.ToInt16(rs[name]);
+				return rs[name]switch
+				{
+					BigInteger bi => (short) bi,
+					var c => Convert.ToInt16(c)
+				};
 			}
 			catch (Exception ex)
 			{

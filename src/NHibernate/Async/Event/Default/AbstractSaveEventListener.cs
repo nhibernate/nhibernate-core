@@ -146,7 +146,8 @@ namespace NHibernate.Event.Default
 						throw new NonUniqueObjectException(id, persister.EntityName);
 					}
 				}
-				persister.SetIdentifier(entity, id);
+				if (!(id is DelayedPostInsertIdentifier))
+					persister.SetIdentifier(entity, id);
 			}
 			else
 			{
@@ -209,7 +210,7 @@ namespace NHibernate.Event.Default
 
 			if (persister.HasCollections)
 			{
-				substitute = substitute || await (VisitCollectionsBeforeSaveAsync(entity, id, values, types, source, cancellationToken)).ConfigureAwait(false);
+				substitute = await (VisitCollectionsBeforeSaveAsync(entity, id, values, types, source, cancellationToken)).ConfigureAwait(false) || substitute;
 			}
 
 			if (substitute)

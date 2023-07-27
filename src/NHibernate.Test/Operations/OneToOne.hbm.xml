@@ -32,7 +32,9 @@
 
 	<class name="PersonalDetails" table="OPS_PERS_DETAIL">
 		<id name="Id" column="ID" type="long">
-			<generator class="increment"/>
+			<generator class="foreign">
+				<param name="property">Person</param>
+			</generator>
 		</id>
 		<property name="SomePersonalDetail" column="SOME_DETAIL" type="string"/>
 		<one-to-one name="Person" class="Person" constrained="true" />

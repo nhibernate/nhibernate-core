@@ -47,6 +47,8 @@ namespace NHibernate.DomainModel.Northwind.Entities
             set { _orderDate = value; }
         }
 
+        public virtual DateTime RequiredOrderDate { get; set; }
+
         public virtual DateTime? RequiredDate
         {
             get { return _requiredDate; }
@@ -87,6 +89,8 @@ namespace NHibernate.DomainModel.Northwind.Entities
         {
             get { return _orderLines; }
         }
+
+        public virtual ISet<int> ProductIds { get; set; }
 
         public virtual void AddOrderLine(OrderLine orderLine)
         {

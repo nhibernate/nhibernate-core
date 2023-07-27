@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using NHibernate.Dialect.Function;
 using NHibernate.Engine.Query;
 using NHibernate.Hql.Ast;
 using NHibernate.Hql.Ast.ANTLR;
@@ -22,6 +24,7 @@ namespace NHibernate.Linq.Visitors
 		private readonly VisitorParameters _parameters;
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
 		private readonly NullableExpressionDetector _nullableExpressionDetector;
+		private readonly Dictionary<Expression, System.Type> _notCastableExpressions = new Dictionary<Expression, System.Type>();
 
 		public static HqlTreeNode Visit(Expression expression, VisitorParameters parameters)
 		{
@@ -225,18 +228,14 @@ possible solutions:
 
 		private HqlTreeNode VisitInvocationExpression(InvocationExpression expression)
 		{
-			//This is an ugly workaround for dynamic expressions.
-			//Unfortunately we can not tap into the expression tree earlier to intercept the dynamic expression
-			if (expression.Arguments.Count == 2 &&
-			    expression.Arguments[0] is ConstantExpression constant &&
-			    constant.Value is CallSite site &&
-			    site.Binder is GetMemberBinder binder)
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+			if (ExpressionsHelper.TryGetDynamicMemberBinder(expression, out var binder))
 			{
 				return _hqlTreeBuilder.Dot(
 					VisitExpression(expression.Arguments[1]).AsExpression(),
 					_hqlTreeBuilder.Ident(binder.Name));
 			}
-
+#endif
 			return VisitExpression(expression.Expression);
 		}
 
@@ -246,9 +245,11 @@ possible solutions:
 			// otherwise the result may be incorrect. In SQL Server avg always returns int
 			// when the argument is int.
 			var hqlExpression = VisitExpression(expression.Expression).AsExpression();
-			hqlExpression = IsCastRequired(expression.Expression, expression.Type, out _)
-				? (HqlExpression) _hqlTreeBuilder.Cast(hqlExpression, expression.Type)
-				: _hqlTreeBuilder.TransparentCast(hqlExpression, expression.Type);
+			hqlExpression = IsCastRequired(expression.Expression, expression.Type, out var needTransparentCast)
+				? _hqlTreeBuilder.Cast(hqlExpression, expression.Type)
+				: needTransparentCast
+					? _hqlTreeBuilder.TransparentCast(hqlExpression, expression.Type)
+					: hqlExpression;
 
 			// In Oracle the avg function can return a number with up to 40 digits which cannot be retrieved from the data reader due to the lack of such
 			// numeric type in .NET. In order to avoid that we have to add a cast to trim the number so that it can be converted into a .NET numeric type.
@@ -257,7 +258,22 @@ possible solutions:
 
 		protected HqlTreeNode VisitNhCount(NhCountExpression expression)
 		{
-			return _hqlTreeBuilder.Cast(_hqlTreeBuilder.Count(VisitExpression(expression.Expression).AsExpression()), expression.Type);
+			string functionName;
+			HqlExpression countHqlExpression;
+			if (expression is NhLongCountExpression)
+			{
+				functionName = "count_big";
+				countHqlExpression = _hqlTreeBuilder.CountBig(VisitExpression(expression.Expression).AsExpression());
+			}
+			else
+			{
+				functionName = "count";
+				countHqlExpression = _hqlTreeBuilder.Count(VisitExpression(expression.Expression).AsExpression());
+			}
+
+			return IsCastRequired(functionName, expression.Expression, expression.Type)
+				? (HqlTreeNode) _hqlTreeBuilder.Cast(countHqlExpression, expression.Type)
+				: _hqlTreeBuilder.TransparentCast(countHqlExpression, expression.Type);
 		}
 
 		protected HqlTreeNode VisitNhMin(NhMinExpression expression)
@@ -296,6 +312,17 @@ possible solutions:
 
 		protected HqlTreeNode VisitBinaryExpression(BinaryExpression expression)
 		{
+			// There are some cases where we do not want to add a sql cast:
+			// - When comparing numeric types that do not have their own operator (e.g. short == short)
+			// - When comparing a member expression with a parameter of similar type (e.g. o.Short == intParameter)
+			var leftType = GetExpressionType(expression.Left);
+			var rightType = GetExpressionType(expression.Right);
+			if (leftType != null && leftType == rightType)
+			{
+				_notCastableExpressions[expression.Left] = leftType;
+				_notCastableExpressions[expression.Right] = rightType;
+			}
+
 			if (expression.NodeType == ExpressionType.Equal)
 			{
 				return TranslateEqualityComparison(expression);
@@ -360,6 +387,23 @@ possible solutions:
 			}
 
 			throw new InvalidOperationException();
+		}
+
+		private System.Type GetExpressionType(Expression expression)
+		{
+			switch (expression.NodeType)
+			{
+				case ExpressionType.Constant:
+					return _parameters.ConstantToParameterMap.TryGetValue((ConstantExpression) expression, out var param)
+						? param.Type?.ReturnedClass
+						: null;
+				case ExpressionType.Convert:
+				case ExpressionType.ConvertChecked:
+					var operand = ((UnaryExpression) expression).Operand;
+					return GetExpressionType(operand) ?? operand.Type.UnwrapIfNullable();
+			}
+
+			return null;
 		}
 
 		private HqlTreeNode TranslateInequalityComparison(BinaryExpression expression)
@@ -484,11 +528,17 @@ possible solutions:
 				case ExpressionType.Convert:
 				case ExpressionType.ConvertChecked:
 				case ExpressionType.TypeAs:
-					return IsCastRequired(expression.Operand, expression.Type, out var existType)
-						? _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), expression.Type)
+					var castable = !_notCastableExpressions.TryGetValue(expression, out var castType);
+					if (castable)
+					{
+						castType = expression.Type;
+					}
+
+					return IsCastRequired(expression.Operand, castType, out var needTransparentCast) && castable
+						? _hqlTreeBuilder.Cast(VisitExpression(expression.Operand).AsExpression(), castType)
 						// Make a transparent cast when an IType exists, so that it can be used to retrieve the value from the data reader
-						: existType && HqlIdent.SupportsType(expression.Type)
-							? _hqlTreeBuilder.TransparentCast(VisitExpression(expression.Operand).AsExpression(), expression.Type)
+						: needTransparentCast 
+							? _hqlTreeBuilder.TransparentCast(VisitExpression(expression.Operand).AsExpression(), castType)
 							: VisitExpression(expression.Operand);
 			}
 
@@ -531,8 +581,12 @@ possible solutions:
 			if (_parameters.ConstantToParameterMap.TryGetValue(expression, out namedParameter))
 			{
 				_parameters.RequiredHqlParameters.Add(new NamedParameterDescriptor(namedParameter.Name, null, false));
+				var parameter = _hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression();
 
-				return _hqlTreeBuilder.Parameter(namedParameter.Name).AsExpression();
+				// SQLite driver binds decimal parameters to text, which can cause unexpected results in arithmetic operations.
+				return _parameters.SessionFactory.Dialect.IsDecimalStoredAsFloatingPointNumber && expression.Type.UnwrapIfNullable() == typeof(decimal)
+					? _hqlTreeBuilder.TransparentCast(parameter, expression.Type)
+					: parameter;
 			}
 
 			return _hqlTreeBuilder.Constant(expression.Value);
@@ -574,7 +628,7 @@ possible solutions:
 			// If both operands are parameters, HQL will not be able to determine the resulting type before
 			// parameters binding. But it has to compute result set columns type before parameters are bound,
 			// so an artificial cast is introduced to hint HQL at the resulting type.
-			return expression.Type == typeof(bool) || expression.Type == typeof(bool?)
+			return expression.Type == typeof(bool) || expression.Type == typeof(bool?) || !HqlIdent.SupportsType(expression.Type)
 				? @case
 				: _hqlTreeBuilder.TransparentCast(@case, expression.Type);
 		}
@@ -591,11 +645,16 @@ possible solutions:
 			return _hqlTreeBuilder.ExpressionSubTreeHolder(expressionSubTree);
 		}
 
-		private bool IsCastRequired(Expression expression, System.Type toType, out bool existType)
+		private bool IsCastRequired(Expression expression, System.Type toType, out bool needTransparentCast)
 		{
-			existType = false;
-			return toType != typeof(object) &&
-					IsCastRequired(GetType(expression), TypeFactory.GetDefaultTypeFor(toType), out existType);
+			needTransparentCast =
+				toType != typeof(object)
+				&& expression.Type != typeof(object)
+				&& expression.Type != toType
+				&& HqlIdent.SupportsType(toType)
+				&& expression.Type.UnwrapIfNullable() != toType.UnwrapIfNullable();
+
+			return needTransparentCast && IsCastRequired(ExpressionsHelper.GetType(_parameters, expression), TypeFactory.GetDefaultTypeFor(toType), out needTransparentCast);
 		}
 
 		private bool IsCastRequired(IType type, IType toType, out bool existType)
@@ -621,7 +680,7 @@ possible solutions:
 				return false;
 			}
 
-			if (type.ReturnedClass.IsEnum && sqlTypes[0].DbType == DbType.String)
+			if (type.ReturnedClass.IsEnum && sqlTypes[0].DbType.IsStringType())
 			{
 				existType = false;
 				return false; // Never cast an enum that is mapped as string, the type will provide a string for the parameter value
@@ -639,7 +698,7 @@ possible solutions:
 
 		private bool IsCastRequired(string sqlFunctionName, Expression argumentExpression, System.Type returnType)
 		{
-			var argumentType = GetType(argumentExpression);
+			var argumentType = ExpressionsHelper.GetType(_parameters, argumentExpression);
 			if (argumentType == null || returnType == typeof(object))
 			{
 				return false;
@@ -657,18 +716,8 @@ possible solutions:
 				return true; // Fallback to the old behavior
 			}
 
-			var fnReturnType = sqlFunction.ReturnType(argumentType, _parameters.SessionFactory);
+			var fnReturnType = sqlFunction.GetEffectiveReturnType(new[] {argumentType}, _parameters.SessionFactory, false);
 			return fnReturnType == null || IsCastRequired(fnReturnType, returnNhType, out _);
-		}
-
-		private IType GetType(Expression expression)
-		{
-			// Try to get the mapped type for the member as it may be a non default one
-			return expression.Type == typeof(object)
-				? null
-				: (ExpressionsHelper.TryGetMappedType(_parameters.SessionFactory, expression, out var type, out _, out _, out _)
-					? type
-					: TypeFactory.GetDefaultTypeFor(expression.Type));
 		}
 	}
 }

@@ -16,6 +16,7 @@ using NHibernate.Hql;
 using NHibernate.Intercept;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -104,6 +105,7 @@ namespace NHibernate.Impl
 			enabledFilterNames = (List<string>)info.GetValue("enabledFilterNames", typeof(List<string>));
 
 			ConnectionManager = (ConnectionManager)info.GetValue("connectionManager", typeof(ConnectionManager));
+			TenantConfiguration = info.GetValue<TenantConfiguration>(nameof(TenantConfiguration));
 		}
 
 		/// <summary>
@@ -143,6 +145,7 @@ namespace NHibernate.Impl
 			info.AddValue("enabledFilterNames", enabledFilterNames, typeof(List<string>));
 
 			info.AddValue("connectionManager", ConnectionManager, typeof(ConnectionManager));
+			info.AddValue(nameof(TenantConfiguration), TenantConfiguration);
 		}
 
 		#endregion
@@ -1156,45 +1159,59 @@ namespace NHibernate.Impl
 			return Load(entityClass.FullName, id);
 		}
 
+		/// <inheritdoc />
 		public T Get<T>(object id)
 		{
-			using (BeginProcess())
-			{
-				return (T)Get(typeof(T), id);
-			}
+			return (T) Get(typeof(T), id);
 		}
 
+		/// <inheritdoc />
 		public T Get<T>(object id, LockMode lockMode)
 		{
-			using (BeginProcess())
-			{
-				return (T)Get(typeof(T), id, lockMode);
-			}
+			return (T) Get(typeof(T), id, lockMode);
 		}
 
+		/// <inheritdoc />
 		public object Get(System.Type entityClass, object id)
 		{
 			return Get(entityClass.FullName, id);
 		}
 
-		/// <summary>
-		/// Load the data for the object with the specified id into a newly created object
-		/// using "for update", if supported. A new key will be assigned to the object.
-		/// This should return an existing proxy where appropriate.
-		///
-		/// If the object does not exist in the database, null is returned.
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
-		/// <param name="lockMode"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public object Get(System.Type clazz, object id, LockMode lockMode)
+		{
+			return Get(clazz.FullName, id, lockMode);
+		}
+
+		/// <inheritdoc />
+		public object Get(string entityName, object id, LockMode lockMode)
 		{
 			using (BeginProcess())
 			{
-				LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
+				LoadEvent loadEvent = new LoadEvent(id, entityName, lockMode, this);
 				FireLoad(loadEvent, LoadEventListener.Get);
+				//Note: AfterOperation call is skipped to avoid releasing the lock when outside of a transaction.
 				return loadEvent.Result;
+			}
+		}
+
+		/// <inheritdoc />
+		public object Get(string entityName, object id)
+		{
+			using (BeginProcess())
+			{
+				LoadEvent loadEvent = new LoadEvent(id, entityName, null, this);
+				bool success = false;
+				try
+				{
+					FireLoad(loadEvent, LoadEventListener.Get);
+					success = true;
+					return loadEvent.Result;
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
 			}
 		}
 
@@ -1223,25 +1240,6 @@ namespace NHibernate.Impl
 						+ obj.GetType().FullName);
 				}
 				return entry.Persister.EntityName;
-			}
-		}
-
-		public object Get(string entityName, object id)
-		{
-			using (BeginProcess())
-			{
-				LoadEvent loadEvent = new LoadEvent(id, entityName, false, this);
-				bool success = false;
-				try
-				{
-					FireLoad(loadEvent, LoadEventListener.Get);
-					success = true;
-					return loadEvent.Result;
-				}
-				finally
-				{
-					AfterOperation(success);
-				}
 			}
 		}
 
@@ -1486,14 +1484,6 @@ namespace NHibernate.Impl
 		private IDisposable _context;
 
 		/// <summary>
-		/// Finalizer that ensures the object is correctly disposed of.
-		/// </summary>
-		~SessionImpl()
-		{
-			Dispose(false);
-		}
-
-		/// <summary>
 		/// Perform a soft (distributed transaction aware) close of the session
 		/// </summary>
 		public void Dispose()
@@ -1519,15 +1509,12 @@ namespace NHibernate.Impl
 			_context?.Dispose();
 		}
 
+		//TODO: Get rid of isDisposing parameter. Finalizer is removed as not needed, so isDisposing  is always true
 		/// <summary>
 		/// Takes care of freeing the managed and unmanaged resources that
 		/// this class is responsible for.
 		/// </summary>
 		/// <param name="isDisposing">Indicates if this Session is being Disposed of or Finalized.</param>
-		/// <remarks>
-		/// If this Session is being Finalized (<c>isDisposing==false</c>) then make sure not
-		/// to call any methods that could potentially bring this Session back to life.
-		/// </remarks>
 		private void Dispose(bool isDisposing)
 		{
 			using (BeginContext())
@@ -1548,8 +1535,6 @@ namespace NHibernate.Impl
 					{
 						Close();
 					}
-					// nothing for Finalizer to do - so tell the GC to ignore it
-					GC.SuppressFinalize(this);
 				}
 
 				// free unmanaged resources here
@@ -1704,6 +1689,8 @@ namespace NHibernate.Impl
 			{
 				string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
 				int size = implementors.Length;
+				if (size == 0)
+					throw new QueryException(criteria.EntityOrClassName + " is not mapped");
 
 				CriteriaLoader[] loaders = new CriteriaLoader[size];
 				ISet<string> spaces = new HashSet<string>();
@@ -2417,6 +2404,7 @@ namespace NHibernate.Impl
 				: base((SessionFactoryImpl)session.Factory)
 			{
 				_session = session;
+				TenantConfiguration = session.TenantConfiguration;
 				SetSelf(this);
 			}
 
@@ -2469,6 +2457,7 @@ namespace NHibernate.Impl
 				: base((SessionFactoryImpl)session.Factory)
 			{
 				_session = session;
+				TenantConfiguration = session.TenantConfiguration;
 				SetSelf(this);
 			}
 

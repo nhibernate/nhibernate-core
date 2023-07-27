@@ -2825,7 +2825,7 @@ namespace NHibernate.Test.Legacy
 			s.Delete(baz.TopGlarchez['H']);
 
 			var cmd = s.Connection.CreateCommand();
-			s.Transaction.Enlist(cmd);
+			txn.Enlist(cmd);
 			cmd.CommandText = "update " + Dialect.QuoteForTableName("glarchez") + " set baz_map_id=null where baz_map_index='a'";
 			int rows = cmd.ExecuteNonQuery();
 			Assert.AreEqual(1, rows);
@@ -5406,6 +5406,20 @@ namespace NHibernate.Test.Legacy
 
 				s.Delete("from f in class Foo");
 				txn.Commit();
+			}
+		}
+
+		// NH-2329 (GH-1218)
+		[Test]
+		public void JoinOverJoin()
+		{
+			using (var s = OpenSession())
+			{
+				s.CreateCriteria(typeof(Stuff), "s1")
+				       .CreateAlias("s1.MoreStuff", "m1")
+				       .CreateAlias("m1.Stuffs", "s2")
+				       .Add(Expression.Eq("s2.Id", 2L))
+				       .List<Stuff>();
 			}
 		}
 

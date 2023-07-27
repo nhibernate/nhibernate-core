@@ -13,11 +13,13 @@
         
         <para>
             Note that, even though many NHibernate users choose to define XML mappings by hand,
-            a number of tools exist to generate the mapping document, including
-            NHibernate.Mapping.Attributes library and various template-based code
-            generators (CodeSmith, MyGeneration). You may also use
-            <literal>NHibernate.Mapping.ByCode</literal> available since NHibernate 3.2, or
-            <ulink url="https://github.com/jagregory/fluent-nhibernate">Fluent NHibernate</ulink>.
+            a number of tools exist to generate the mapping document, even transparently at runtime.
+            This includes the <link linkend="mapping-attributes">NHibernate.Mapping.Attributes
+            library</link> which allows to directly annotate your entities with mapping declarations,
+            various template-based code generators (CodeSmith, MyGeneration), the built-in
+            <literal>NHibernate.Mapping.ByCode</literal> API available since NHibernate 3.2, or
+            the <ulink url="https://github.com/jagregory/fluent-nhibernate">Fluent NHibernate</ulink>
+            independent library.
         </para>
 
         <para>
@@ -2383,6 +2385,7 @@
                     <area id="onetoone9" coords="10 60"/>
                     <area id="onetoone10" coords="11 60"/>
                     <area id="onetoone11" coords="12 60"/>
+                    <area id="onetoone12" coords="13 60"/>
                 </areaspec>
                 <programlisting><![CDATA[<one-to-one
     name="propertyName"
@@ -2396,6 +2399,7 @@
     formula="any SQL expression"
     entity-name="entityName"
     foreign-key="foreignKeyName"
+    optimistic-lock="true|false"
 />]]></programlisting>
                 <calloutlist>
                     <callout arearefs="onetoone1">
@@ -2469,10 +2473,18 @@
                             <literal>entity-name</literal> (optional): The entity name of the associated class.
                         </para>
                     </callout>
-                    <callout arearefs="manytoone11">
+                    <callout arearefs="onetoone11">
                         <para>
                             <literal>foreign-key</literal> (optional): Specifies the name of the foreign key
                             constraint for DDL generation.
+                        </para>
+                    </callout>
+                    <callout arearefs="onetoone12">
+                        <para>
+                            <literal>optimistic-lock</literal> (optional - defaults to <literal>true</literal>):
+                            Specifies that updates to this property do or do not require acquisition of the
+                            optimistic lock. In other words, determines if a version increment should occur when
+                            this property is dirty.
                         </para>
                     </callout>
                 </calloutlist>

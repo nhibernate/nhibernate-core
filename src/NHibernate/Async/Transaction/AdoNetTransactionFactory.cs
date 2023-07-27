@@ -46,8 +46,8 @@ namespace NHibernate.Transaction
 					// We make an exception for SQLite and use the session's connection,
 					// since SQLite only allows one connection to the database.
 					connection = session.Factory.Dialect is SQLiteDialect
-					? session.Connection
-					: await (session.Factory.ConnectionProvider.GetConnectionAsync(cancellationToken)).ConfigureAwait(false);
+						? session.Connection
+						: await (session.ConnectionManager.GetNewConnectionAsync(cancellationToken)).ConfigureAwait(false);
 
 					if (transacted)
 					{
@@ -78,15 +78,15 @@ namespace NHibernate.Transaction
 						}
 
 						switch (t)
-					{
-						case HibernateException _:
+						{
+							case HibernateException _:
 								throw;
-						case DbException _:
+							case DbException _:
 								throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, t,
-							                                 "error performing isolated work");
-						default:
+								                                 "error performing isolated work");
+							default:
 								throw new HibernateException("error performing isolated work", t);
-					}
+						}
 					}
 				}
 				finally

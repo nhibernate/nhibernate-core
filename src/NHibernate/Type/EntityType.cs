@@ -8,6 +8,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
 using System.Collections.Generic;
+using NHibernate.Action;
 
 namespace NHibernate.Type
 {
@@ -183,6 +184,19 @@ namespace NHibernate.Type
 
 				return propertyValue;
 			}
+		}
+
+		protected internal object GetReferenceValue(object value, ISessionImplementor session, bool forbidDelayed)
+		{
+			var referenceValue = GetReferenceValue(value, session);
+			if (forbidDelayed && referenceValue is DelayedPostInsertIdentifier)
+			{
+				throw new UnresolvableObjectException(
+					$"Cannot resolve the identifier from a {nameof(DelayedPostInsertIdentifier)}. Consider flushing the session first.",
+					referenceValue, returnedClass);
+			}
+
+			return referenceValue;
 		}
 
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)

@@ -1,141 +1,222 @@
+﻿using System;
+using System.Collections.Generic;
+using NHibernate.Engine;
+using NHibernate.SqlCommand;
+using NHibernate.Type;
+
 namespace NHibernate.Criterion
 {
-	using System;
-	using System.Collections.Generic;
-	using Engine;
-	using SqlCommand;
-	using Type;
-	using Util;
-
+	/// <summary>
+	/// Defines a "switch" projection which supports multiple "cases" ("when/then's").
+	/// </summary>
+	/// <seealso cref="SimpleProjection" />
+	/// <seealso cref="ConditionalProjectionCase" />
 	[Serializable]
 	public class ConditionalProjection : SimpleProjection
 	{
-		private readonly ICriterion criterion;
-		private readonly IProjection whenTrue;
-		private readonly IProjection whenFalse;
+		private readonly ConditionalProjectionCase[] _cases;
+		private readonly IProjection _elseProjection;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ConditionalProjection"/> class.
+		/// </summary>
+		/// <param name="criterion">The <see cref="ICriterion"/></param>
+		/// <param name="whenTrue">The true <see cref="IProjection"/></param>
+		/// <param name="whenFalse">The else <see cref="IProjection"/>.</param>
 		public ConditionalProjection(ICriterion criterion, IProjection whenTrue, IProjection whenFalse)
 		{
-			this.whenTrue = whenTrue;
-			this.whenFalse = whenFalse;
-			this.criterion = criterion;
+			_elseProjection = whenFalse;
+			_cases = new[] {new ConditionalProjectionCase(criterion, whenTrue)};
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ConditionalProjection"/> class.
+		/// </summary>
+		/// <param name="cases">The <see cref="ConditionalProjectionCase"/>s containing <see cref="ICriterion"/> and <see cref="IProjection"/> pairs.</param>
+		/// <param name="elseProjection">The else <see cref="IProjection"/>.</param>
+		public ConditionalProjection(ConditionalProjectionCase[] cases, IProjection elseProjection)
+		{
+			if (cases == null)
+				throw new ArgumentNullException(nameof(cases));
+			if (cases.Length == 0)
+				throw new ArgumentException("Array should not be empty.", nameof(cases));
+
+			_cases = cases;
+			_elseProjection = elseProjection;
 		}
 
 		public override bool IsAggregate
 		{
 			get
 			{
-				IProjection[] projections = criterion.GetProjections();
-				if(projections != null)
+				if (_elseProjection.IsAggregate)
+					return true;
+
+				foreach (var projectionCase in _cases)
 				{
-					foreach (IProjection projection in projections)
+					if (projectionCase.Projection.IsAggregate)
+						return true;
+
+					var projections = projectionCase.Criterion.GetProjections();
+					if (projections != null)
 					{
-						if (projection.IsAggregate)
-							return true;
+						foreach (var projection in projections)
+						{
+							if (projection.IsAggregate)
+							{
+								return true;
+							}
+						}
 					}
 				}
-				if(whenFalse.IsAggregate)
-					return true;
-				if(whenTrue.IsAggregate)
-					return true;
+
 				return false;
 			}
-		}
-
-		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
-		{
-			SqlString condition = criterion.ToSqlString(criteria, criteriaQuery);
-			SqlString ifTrue = whenTrue.ToSqlString(criteria, position + GetHashCode() + 1, criteriaQuery);
-			ifTrue = SqlStringHelper.RemoveAsAliasesFromSql(ifTrue);
-			SqlString ifFalse = whenFalse.ToSqlString(criteria, position + GetHashCode() + 2, criteriaQuery);
-			ifFalse = SqlStringHelper.RemoveAsAliasesFromSql(ifFalse);
-			return new SqlString("(case when ", condition, " then ", ifTrue, " else ", ifFalse, " end) as ",
-			                     GetColumnAliases(position, criteria, criteriaQuery)[0]);
-		}
-
-		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
-		{
-			IType[] trueTypes = whenTrue.GetTypes(criteria, criteriaQuery);
-			IType[] falseTypes = whenFalse.GetTypes(criteria, criteriaQuery);
-
-			bool areEqual = trueTypes.Length == falseTypes.Length;
-			if (trueTypes.Length == falseTypes.Length)
-			{
-				for (int i = 0; i < trueTypes.Length; i++)
-				{
-					if(trueTypes[i].Equals(falseTypes[i]) == false)
-					{
-						areEqual = false;
-						break;
-					}
-				}
-			}
-			if(areEqual == false)
-			{
-				string msg = "Both true and false projections must return the same types."+ Environment.NewLine +
-				             "But True projection returns: ["+string.Join<IType>(", ", trueTypes) +"] "+ Environment.NewLine+
-				             "And False projection returns: ["+string.Join<IType>(", ", falseTypes)+ "]";
-
-				throw new HibernateException(msg);
-			}
-
-			return trueTypes;
-		}
-
-		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
-		{
-			List<TypedValue> tv = new List<TypedValue>();
-			tv.AddRange(criterion.GetTypedValues(criteria, criteriaQuery));
-			tv.AddRange(whenTrue.GetTypedValues(criteria, criteriaQuery));
-			tv.AddRange(whenFalse.GetTypedValues(criteria, criteriaQuery));
-			return tv.ToArray();
 		}
 
 		public override bool IsGrouped
 		{
 			get
 			{
-				IProjection[] projections = criterion.GetProjections();
-				if(projections != null)
+				if (_elseProjection.IsGrouped)
+					return true;
+
+				foreach (var projectionCase in _cases)
 				{
-					foreach (IProjection projection in projections)
+					if (projectionCase.Projection.IsGrouped)
+						return true;
+
+					var projections = projectionCase.Criterion.GetProjections();
+					if (projections != null)
 					{
-						if (projection.IsGrouped)
-							return true;
+						foreach (var projection in projections)
+						{
+							if (projection.IsGrouped)
+								return true;
+						}
 					}
 				}
-				if(whenFalse.IsGrouped)
-					return true;
-				if(whenTrue.IsGrouped)
-					return true;
+
 				return false;
 			}
 		}
 
-		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		public override SqlString ToSqlString(ICriteria criteria, int position, ICriteriaQuery criteriaQuery)
 		{
-			SqlStringBuilder buf = new SqlStringBuilder();
-			IProjection[] projections = criterion.GetProjections();
-			if(projections != null)
+			var sqlBuilder = new SqlStringBuilder(5 + (_cases.Length * 4));
+
+			sqlBuilder.Add("(case");
+
+			foreach (var projectionCase in _cases)
 			{
-				foreach (IProjection proj in projections)
+				sqlBuilder.Add(" when ");
+				sqlBuilder.Add(projectionCase.Criterion.ToSqlString(criteria, criteriaQuery));
+				sqlBuilder.Add(" then ");
+				sqlBuilder.AddObject(CriterionUtil.GetColumnNameAsSqlStringPart(projectionCase.Projection, criteriaQuery, criteria));
+			}
+
+			sqlBuilder.Add(" else ");
+			sqlBuilder.AddObject(CriterionUtil.GetColumnNameAsSqlStringPart(_elseProjection, criteriaQuery, criteria));
+
+			sqlBuilder.Add(" end) as ");
+			sqlBuilder.Add(GetColumnAlias(position));
+
+			return sqlBuilder.ToSqlString();
+		}
+
+		public override IType[] GetTypes(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			var elseTypes = _elseProjection.GetTypes(criteria, criteriaQuery);
+
+			for (var i = 0; i < _cases.Length; i++)
+			{
+				var subsequentTypes = _cases[i].Projection.GetTypes(criteria, criteriaQuery);
+				if (!AreTypesEqual(elseTypes, subsequentTypes))
 				{
-					if (proj.IsGrouped)
-					{
-						buf.Add(proj.ToGroupSqlString(criteria, criteriaQuery)).Add(", ");
-					}
+					string msg = "All projections must return the same types." + Environment.NewLine +
+					             "But Else projection returns: [" + string.Join<IType>(", ", elseTypes) + "] " + Environment.NewLine +
+					             "And When projection " + i + " returns: [" + string.Join<IType>(", ", subsequentTypes) + "]";
+
+					throw new HibernateException(msg);
 				}
 			}
-			if(whenFalse.IsGrouped)
-				buf.Add(whenFalse.ToGroupSqlString(criteria, criteriaQuery)).Add(", ");
-			if(whenTrue.IsGrouped)
-				buf.Add(whenTrue.ToGroupSqlString(criteria, criteriaQuery)).Add(", ");
 
-			if(buf.Count >= 2)
+			return elseTypes;
+		}
+
+		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			var typedValues = new List<TypedValue>();
+			
+			foreach (var projectionCase in _cases)
 			{
-				buf.RemoveAt(buf.Count - 1);
+				typedValues.AddRange(projectionCase.Criterion.GetTypedValues(criteria, criteriaQuery));
+				typedValues.AddRange(projectionCase.Projection.GetTypedValues(criteria, criteriaQuery));
 			}
-			return buf.ToSqlString();
+
+			typedValues.AddRange(_elseProjection.GetTypedValues(criteria, criteriaQuery));
+
+			return typedValues.ToArray();
+		}
+
+		public override SqlString ToGroupSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			var sqlBuilder = new SqlStringBuilder();
+
+			foreach (var projection in _cases)
+			{
+				AddToGroupedSql(sqlBuilder, projection.Criterion.GetProjections(), criteria, criteriaQuery);
+				AddToGroupedSql(sqlBuilder, projection.Projection, criteria, criteriaQuery);
+			}
+
+			AddToGroupedSql(sqlBuilder, _elseProjection, criteria, criteriaQuery);
+
+			// Remove last comma 
+			if (sqlBuilder.Count >= 2)
+			{
+				sqlBuilder.RemoveAt(sqlBuilder.Count - 1);
+			}
+
+			return sqlBuilder.ToSqlString();
+		}
+
+		private static bool AreTypesEqual(IType[] types1, IType[] types2)
+		{
+			bool areEqual = types1.Length == types2.Length;
+			if (!areEqual)
+			{
+				return false;
+			}
+
+			for (int i = 0; i < types1.Length; i++)
+			{
+				if (types1[i].ReturnedClass != types2[i].ReturnedClass)
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		private void AddToGroupedSql(SqlStringBuilder sqlBuilder, IProjection[] projections, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			if (projections == null) 
+				return;
+			
+			foreach (var projection in projections)
+			{
+				AddToGroupedSql(sqlBuilder, projection, criteria, criteriaQuery);
+			}
+		}
+
+		private void AddToGroupedSql(SqlStringBuilder sqlBuilder, IProjection projection, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			if (projection.IsGrouped)
+			{
+				sqlBuilder.Add(projection.ToGroupSqlString(criteria, criteriaQuery));
+				sqlBuilder.Add(", ");
+			}
 		}
 	}
 }

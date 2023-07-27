@@ -27,20 +27,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1093
 			configuration.SetProperty(Environment.UseSecondLevelCache, "true");
 		}
 
-		protected override string CacheConcurrencyStrategy
-		{
-			get { return null; }
-		}
-
 		private async Task CleanupAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				using (s.BeginTransaction())
-				{
-					await (s.CreateQuery("delete from SimpleCached").ExecuteUpdateAsync(cancellationToken));
-					await (s.Transaction.CommitAsync(cancellationToken));
-				}
+				await (s.CreateQuery("delete from SimpleCached").ExecuteUpdateAsync(cancellationToken));
+				await (t.CommitAsync(cancellationToken));
 			}
 		}
 

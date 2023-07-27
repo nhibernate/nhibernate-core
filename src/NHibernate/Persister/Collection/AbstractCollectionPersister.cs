@@ -30,8 +30,14 @@ namespace NHibernate.Persister.Collection
 	/// <summary>
 	/// Summary description for AbstractCollectionPersister.
 	/// </summary>
-	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
-		IPostInsertIdentityPersister, ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable
+	public abstract partial class AbstractCollectionPersister : 
+		ICollectionMetadata, 
+		ISqlLoadableCollection,
+		IPostInsertIdentityPersister, 
+		ISupportSelectModeJoinable, 
+		ICompositeKeyPostInsertIdentityPersister, 
+		ISupportLazyPropsJoinable,
+		IPersister
 	{
 		protected static readonly object NotFoundPlaceHolder = new object();
 		private readonly string role;
@@ -91,6 +97,7 @@ namespace NHibernate.Persister.Collection
 
 		protected readonly string qualifiedTableName;
 		private readonly string queryLoaderName;
+		private readonly bool supportsQueryCache;
 
 		private readonly bool isPrimitiveArray;
 		private readonly bool isArray;
@@ -530,6 +537,8 @@ namespace NHibernate.Persister.Collection
 											: Template.RenderOrderByStringTemplate(manyToManyOrderByString, factory.Dialect,
 																				   factory.SQLFunctionRegistry);
 			InitCollectionPropertyMap();
+
+			supportsQueryCache = collection.CacheConcurrencyStrategy != CacheFactory.Never;
 		}
 
 		public void PostInstantiate()
@@ -634,6 +643,12 @@ namespace NHibernate.Persister.Collection
 		public bool HasCache
 		{
 			get { return cache != null; }
+		}
+
+		/// <inheritdoc />
+		public bool SupportsQueryCache
+		{
+			get { return supportsQueryCache; }
 		}
 
 		public string GetSQLWhereString(string alias)
@@ -857,14 +872,27 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
+		// Since v5.4
+		[Obsolete("Use GetSelectFragment method instead.")]
 		public string SelectFragment(string alias, string columnSuffix)
 		{
-			SelectFragment frag = GenerateSelectFragment(alias, columnSuffix);
+			return GetSelectFragment(alias, columnSuffix).ToSqlStringFragment(false);
+		}
+
+		/// <summary>
+		/// Gets the select fragment containing collection element, index and indentifier columns.
+		/// </summary>
+		/// <param name="alias">The table alias.</param>
+		/// <param name="columnSuffix">The column suffix.</param>
+		/// <returns>The select fragment containing collection element, index and indentifier columns.</returns>
+		public SelectFragment GetSelectFragment(string alias, string columnSuffix)
+		{
+			var frag = GenerateSelectFragment(alias, columnSuffix);
 			AppendElementColumns(frag, alias);
 			AppendIndexColumns(frag, alias);
 			AppendIdentifierColumns(frag, alias);
 
-			return frag.ToSqlStringFragment(false);
+			return frag;
 		}
 
 		private void AddWhereFragment(SqlSimpleSelectBuilder sql)
@@ -1380,7 +1408,9 @@ namespace NHibernate.Persister.Collection
 
 			return buffer.ToString();
 		}
-		
+
+		// Since 5.4
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public bool IsManyToManyFiltered(IDictionary<string, IFilter> enabledFilters)
 		{
 			return IsManyToMany && (manyToManyWhereString != null || manyToManyFilterHelper.IsAffectedBy(enabledFilters));
@@ -1473,10 +1503,16 @@ namespace NHibernate.Persister.Collection
 
 		public virtual string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
+			var filterFragment = FilterFragment(alias);
+			if (!filterHelper.IsAffectedBy(enabledFilters))
+				return filterFragment;
+
+			if (ElementType.IsEntityType && elementPersister is AbstractEntityPersister ep)
+				return ep.FilterFragment(filterHelper, alias, enabledFilters, filterFragment);
+
 			StringBuilder sessionFilterFragment = new StringBuilder();
 			filterHelper.Render(sessionFilterFragment, alias, enabledFilters);
-
-			return sessionFilterFragment.Append(FilterFragment(alias)).ToString();
+			return sessionFilterFragment.Append(filterFragment).ToString();
 		}
 
 		public string OneToManyFilterFragment(string alias)

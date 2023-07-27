@@ -19,6 +19,7 @@ using NHibernate.Impl;
 using NHibernate.Loader;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
+using NHibernate.Util;
 
 namespace NHibernate.Criterion
 {

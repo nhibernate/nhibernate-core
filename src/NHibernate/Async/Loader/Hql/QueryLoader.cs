@@ -13,7 +13,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
-using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR;
@@ -32,7 +31,7 @@ namespace NHibernate.Loader.Hql
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class QueryLoader : BasicLoader
+	public partial class QueryLoader : BasicLoader, IQueryLoader
 	{
 
 		public Task<IList> ListAsync(ISessionImplementor session, QueryParameters queryParameters, CancellationToken cancellationToken)
@@ -76,7 +75,9 @@ namespace NHibernate.Loader.Hql
 				resultRow = new object[queryCols];
 				for (int i = 0; i < queryCols; i++)
 				{
-					resultRow[i] = await (ResultTypes[i].NullSafeGetAsync(rs, scalarColumns[i], session, null, cancellationToken)).ConfigureAwait(false);
+					resultRow[i] = _entityByResultTypeDic.TryGetValue(i, out var rowIndex)
+						? row[rowIndex]
+						: await (ResultTypes[i].NullSafeGetAsync(rs, scalarColumns[i], session, null, cancellationToken)).ConfigureAwait(false);
 				}
 			}
 			else
@@ -87,7 +88,7 @@ namespace NHibernate.Loader.Hql
 			return resultRow;
 		}
 
-		internal async Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
+		public async Task<IEnumerable> GetEnumerableAsync(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			CheckQuery(queryParameters);

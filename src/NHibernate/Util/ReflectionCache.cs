@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -21,190 +22,221 @@ namespace NHibernate.Util
 		internal static class EnumerableMethods
 		{
 			internal static readonly MethodInfo AggregateDefinition =
-				ReflectHelper.GetMethodDefinition(() => Enumerable.Aggregate<object>(null, null));
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Aggregate, default(IEnumerable<object>), default(Func<object, object, object>));
 			internal static readonly MethodInfo AggregateWithSeedDefinition =
-				ReflectHelper.GetMethodDefinition(() => Enumerable.Aggregate<object, object>(null, null, null));
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Aggregate, default(IEnumerable<object>), default(object), default(Func<object, object, object>));
 			internal static readonly MethodInfo AggregateWithSeedAndResultSelectorDefinition =
-				ReflectHelper.GetMethodDefinition(() => Enumerable.Aggregate<object, object, object>(null, null, null, null));
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Aggregate, default(IEnumerable<object>), default(object), default(Func<object, object, object>), default(Func<object, object>));
 
 			internal static readonly MethodInfo AllDefinition =
-				ReflectHelper.GetMethodDefinition(() => Enumerable.All<object>(null, null));
+				ReflectHelper.FastGetMethodDefinition(Enumerable.All, default(IEnumerable<object>), default(Func<object, bool>));
 
 			internal static readonly MethodInfo CastDefinition =
-				ReflectHelper.GetMethodDefinition(() => Enumerable.Cast<object>(null));
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Cast<object>, default(IEnumerable));
 
-			internal static readonly MethodInfo GroupByWithElementSelectorDefinition = ReflectHelper.GetMethodDefinition(
-				() => Enumerable.GroupBy<object, object, object>(null, null, default(Func<object, object>)));
+			internal static readonly MethodInfo GroupByWithElementSelectorDefinition = 
+				ReflectHelper.FastGetMethodDefinition(Enumerable.GroupBy, default(IEnumerable<object>), default(Func<object, object>), default(Func<object, object>));
 
 			internal static readonly MethodInfo MaxDefinition =
-				ReflectHelper.GetMethodDefinition(() => Enumerable.Max<object>(null));
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Max, default(IEnumerable<object>));
 
 			internal static readonly MethodInfo MinDefinition =
-				ReflectHelper.GetMethodDefinition(() => Enumerable.Min<object>(null));
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Min, default(IEnumerable<object>));
 
 			internal static readonly MethodInfo SelectDefinition =
-				ReflectHelper.GetMethodDefinition(() => Enumerable.Select(null, default(Func<object, object>)));
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Select, default(IEnumerable<object>), default(Func<object, object>));
 
 			internal static readonly MethodInfo SumOnInt =
-				ReflectHelper.GetMethod(() => Enumerable.Sum(default(IEnumerable<int>)));
+				ReflectHelper.FastGetMethod(Enumerable.Sum, default(IEnumerable<int>));
 
 			internal static readonly MethodInfo ToArrayDefinition =
-				ReflectHelper.GetMethodDefinition(() => Enumerable.ToArray<object>(null));
+				ReflectHelper.FastGetMethodDefinition(Enumerable.ToArray, default(IEnumerable<object>));
 
 			internal static readonly MethodInfo ToListDefinition =
-				ReflectHelper.GetMethodDefinition(() => Enumerable.ToList<object>(null));
+				ReflectHelper.FastGetMethodDefinition(Enumerable.ToList, default(IEnumerable<object>));
+
+			internal static readonly MethodInfo SkipDefinition =
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Skip, default(IEnumerable<object>), default(int));
+			internal static readonly MethodInfo TakeDefinition =
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Take, default(IEnumerable<object>), default(int));
 		}
 
 		internal static class MethodBaseMethods
 		{
 			internal static readonly MethodInfo GetMethodFromHandle =
-				ReflectHelper.GetMethod(() => MethodBase.GetMethodFromHandle(default(RuntimeMethodHandle)));
+				ReflectHelper.FastGetMethod(MethodBase.GetMethodFromHandle, default(RuntimeMethodHandle));
 			internal static readonly MethodInfo GetMethodFromHandleWithDeclaringType =
-				ReflectHelper.GetMethod(() => MethodBase.GetMethodFromHandle(default(RuntimeMethodHandle), default(RuntimeTypeHandle)));
+				ReflectHelper.FastGetMethod(MethodBase.GetMethodFromHandle, default(RuntimeMethodHandle), default(RuntimeTypeHandle));
 		}
 
 		internal static class QueryableMethods
 		{
 			internal static readonly MethodInfo SelectDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Select(null, default(Expression<Func<object, object>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Select, default(IQueryable<object>), default(Expression<Func<object, object>>));
+			internal static readonly MethodInfo SelectManyDefinition =
+				ReflectHelper.FastGetMethodDefinition(
+					Queryable.SelectMany,
+					default(IQueryable<object>),
+					default(Expression<Func<object, IEnumerable<object>>>),
+					default(Expression<Func<object, object, object>>));
+
+			internal static readonly MethodInfo GroupJoinDefinition =
+				ReflectHelper.FastGetMethodDefinition(
+					Queryable.GroupJoin,
+					default(IQueryable<object>),
+					default(IEnumerable<object>),
+					default(Expression<Func<object, int>>),
+					default(Expression<Func<object, int>>),
+					default(Expression<Func<object, IEnumerable<object>, object>>));
 
 			internal static readonly MethodInfo CountDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Count<object>(null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Count, default(IQueryable<object>));
 			internal static readonly MethodInfo CountWithPredicateDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Count<object>(null, null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Count, default(IQueryable<object>), default(Expression<Func<object, bool>>));
 
 			internal static readonly MethodInfo LongCountDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.LongCount<object>(null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.LongCount, default(IQueryable<object>));
 			internal static readonly MethodInfo LongCountWithPredicateDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.LongCount<object>(null, null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.LongCount, default(IQueryable<object>), default(Expression<Func<object, bool>>));
 
 			internal static readonly MethodInfo AnyDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Any<object>(null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Any, default(IQueryable<object>));
 			internal static readonly MethodInfo AnyWithPredicateDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Any<object>(null, null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Any, default(IQueryable<object>), default(Expression<Func<object, bool>>));
 			
 			internal static readonly MethodInfo AllDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.All<object>(null, null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.All, default(IQueryable<object>), default(Expression<Func<object, bool>>));
 
 			internal static readonly MethodInfo FirstDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.First<object>(null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.First, default(IQueryable<object>));
 			internal static readonly MethodInfo FirstWithPredicateDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.First<object>(null, null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.First, default(IQueryable<object>), default(Expression<Func<object, bool>>));
 
 			internal static readonly MethodInfo FirstOrDefaultDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.FirstOrDefault<object>(null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.FirstOrDefault, default(IQueryable<object>));
 			internal static readonly MethodInfo FirstOrDefaultWithPredicateDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.FirstOrDefault<object>(null, null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.FirstOrDefault, default(IQueryable<object>), default(Expression<Func<object, bool>>));
 
 			internal static readonly MethodInfo SingleDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Single<object>(null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Single, default(IQueryable<object>));
 			internal static readonly MethodInfo SingleWithPredicateDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Single<object>(null, null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Single, default(IQueryable<object>), default(Expression<Func<object, bool>>));
 
 			internal static readonly MethodInfo SingleOrDefaultDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.SingleOrDefault<object>(null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.SingleOrDefault<object>, default(IQueryable<object>));
 			internal static readonly MethodInfo SingleOrDefaultWithPredicateDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.SingleOrDefault<object>(null, null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.SingleOrDefault<object>, default(IQueryable<object>), default(Expression<Func<object, bool>>));
 
 			internal static readonly MethodInfo MinDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Min<object>(null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Min<object>, default(IQueryable<object>));
 			internal static readonly MethodInfo MinWithSelectorDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Min<object, object>(null, null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Min<object, object>, default(IQueryable<object>), default(Expression<Func<object, object>>));
 
 			internal static readonly MethodInfo MaxDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Max<object>(null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Max<object>, default(IQueryable<object>));
 			internal static readonly MethodInfo MaxWithSelectorDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Max<object, object>(null, null));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Max<object, object>, default(IQueryable<object>), default(Expression<Func<object, object>>));
 
 			internal static readonly MethodInfo SumOfInt =
-				ReflectHelper.GetMethod(() => Queryable.Sum(default(IQueryable<int>)));
+				ReflectHelper.FastGetMethod(Queryable.Sum, default(IQueryable<int>));
 			internal static readonly MethodInfo SumOfNullableInt =
-				ReflectHelper.GetMethod(() => Queryable.Sum(default(IQueryable<int?>)));
+				ReflectHelper.FastGetMethod(Queryable.Sum, default(IQueryable<int?>));
 			internal static readonly MethodInfo SumOfLong =
-				ReflectHelper.GetMethod(() => Queryable.Sum(default(IQueryable<long>)));
+				ReflectHelper.FastGetMethod(Queryable.Sum, default(IQueryable<long>));
 			internal static readonly MethodInfo SumOfNullableLong =
-				ReflectHelper.GetMethod(() => Queryable.Sum(default(IQueryable<long?>)));
+				ReflectHelper.FastGetMethod(Queryable.Sum, default(IQueryable<long?>));
 			internal static readonly MethodInfo SumOfFloat =
-				ReflectHelper.GetMethod(() => Queryable.Sum(default(IQueryable<float>)));
+				ReflectHelper.FastGetMethod(Queryable.Sum, default(IQueryable<float>));
 			internal static readonly MethodInfo SumOfNullableFloat =
-				ReflectHelper.GetMethod(() => Queryable.Sum(default(IQueryable<float?>)));
+				ReflectHelper.FastGetMethod(Queryable.Sum, default(IQueryable<float?>));
 			internal static readonly MethodInfo SumOfDouble =
-				ReflectHelper.GetMethod(() => Queryable.Sum(default(IQueryable<double>)));
+				ReflectHelper.FastGetMethod(Queryable.Sum, default(IQueryable<double>));
 			internal static readonly MethodInfo SumOfNullableDouble =
-				ReflectHelper.GetMethod(() => Queryable.Sum(default(IQueryable<double?>)));
+				ReflectHelper.FastGetMethod(Queryable.Sum, default(IQueryable<double?>));
 			internal static readonly MethodInfo SumOfDecimal =
-				ReflectHelper.GetMethod(() => Queryable.Sum(default(IQueryable<decimal>)));
+				ReflectHelper.FastGetMethod(Queryable.Sum, default(IQueryable<decimal>));
 			internal static readonly MethodInfo SumOfNullableDecimal =
-				ReflectHelper.GetMethod(() => Queryable.Sum(default(IQueryable<decimal?>)));
+				ReflectHelper.FastGetMethod(Queryable.Sum, default(IQueryable<decimal?>));
 
 			internal static readonly MethodInfo SumWithSelectorOfIntDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Sum(null, default(Expression<Func<object, int>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Sum, default(IQueryable<object>), default(Expression<Func<object, int>>));
 			internal static readonly MethodInfo SumWithSelectorOfNullableIntDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Sum(null, default(Expression<Func<object, int?>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Sum, default(IQueryable<object>), default(Expression<Func<object, int?>>));
 			internal static readonly MethodInfo SumWithSelectorOfLongDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Sum(null, default(Expression<Func<object, long>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Sum, default(IQueryable<object>), default(Expression<Func<object, long>>));
 			internal static readonly MethodInfo SumWithSelectorOfNullableLongDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Sum(null, default(Expression<Func<object, long?>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Sum, default(IQueryable<object>), default(Expression<Func<object, long?>>));
 			internal static readonly MethodInfo SumWithSelectorOfFloatDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Sum(null, default(Expression<Func<object, float>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Sum, default(IQueryable<object>), default(Expression<Func<object, float>>));
 			internal static readonly MethodInfo SumWithSelectorOfNullableFloatDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Sum(null, default(Expression<Func<object, float?>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Sum, default(IQueryable<object>), default(Expression<Func<object, float?>>));
 			internal static readonly MethodInfo SumWithSelectorOfDoubleDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Sum(null, default(Expression<Func<object, double>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Sum, default(IQueryable<object>), default(Expression<Func<object, double>>));
 			internal static readonly MethodInfo SumWithSelectorOfNullableDoubleDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Sum(null, default(Expression<Func<object, double?>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Sum, default(IQueryable<object>), default(Expression<Func<object, double?>>));
 			internal static readonly MethodInfo SumWithSelectorOfDecimalDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Sum(null, default(Expression<Func<object, decimal>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Sum, default(IQueryable<object>), default(Expression<Func<object, decimal>>));
 			internal static readonly MethodInfo SumWithSelectorOfNullableDecimalDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Sum(null, default(Expression<Func<object, decimal?>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Sum, default(IQueryable<object>), default(Expression<Func<object, decimal?>>));
 
 			internal static readonly MethodInfo AverageOfInt =
-				ReflectHelper.GetMethod(() => Queryable.Average(default(IQueryable<int>)));
+				ReflectHelper.FastGetMethod(Queryable.Average, default(IQueryable<int>));
 			internal static readonly MethodInfo AverageOfNullableInt =
-				ReflectHelper.GetMethod(() => Queryable.Average(default(IQueryable<int?>)));
+				ReflectHelper.FastGetMethod(Queryable.Average, default(IQueryable<int?>));
 			internal static readonly MethodInfo AverageOfLong =
-				ReflectHelper.GetMethod(() => Queryable.Average(default(IQueryable<long>)));
+				ReflectHelper.FastGetMethod(Queryable.Average, default(IQueryable<long>));
 			internal static readonly MethodInfo AverageOfNullableLong =
-				ReflectHelper.GetMethod(() => Queryable.Average(default(IQueryable<long?>)));
+				ReflectHelper.FastGetMethod(Queryable.Average, default(IQueryable<long?>));
 			internal static readonly MethodInfo AverageOfFloat =
-				ReflectHelper.GetMethod(() => Queryable.Average(default(IQueryable<float>)));
+				ReflectHelper.FastGetMethod(Queryable.Average, default(IQueryable<float>));
 			internal static readonly MethodInfo AverageOfNullableFloat =
-				ReflectHelper.GetMethod(() => Queryable.Average(default(IQueryable<float?>)));
+				ReflectHelper.FastGetMethod(Queryable.Average, default(IQueryable<float?>));
 			internal static readonly MethodInfo AverageOfDouble =
-				ReflectHelper.GetMethod(() => Queryable.Average(default(IQueryable<double>)));
+				ReflectHelper.FastGetMethod(Queryable.Average, default(IQueryable<double>));
 			internal static readonly MethodInfo AverageOfNullableDouble =
-				ReflectHelper.GetMethod(() => Queryable.Average(default(IQueryable<double?>)));
+				ReflectHelper.FastGetMethod(Queryable.Average, default(IQueryable<double?>));
 			internal static readonly MethodInfo AverageOfDecimal =
-				ReflectHelper.GetMethod(() => Queryable.Average(default(IQueryable<decimal>)));
+				ReflectHelper.FastGetMethod(Queryable.Average, default(IQueryable<decimal>));
 			internal static readonly MethodInfo AverageOfNullableDecimal =
-				ReflectHelper.GetMethod(() => Queryable.Average(default(IQueryable<decimal?>)));
+				ReflectHelper.FastGetMethod(Queryable.Average, default(IQueryable<decimal?>));
 
 			internal static readonly MethodInfo AverageWithSelectorOfIntDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Average(null, default(Expression<Func<object, int>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Average, default(IQueryable<object>), default(Expression<Func<object, int>>));
 			internal static readonly MethodInfo AverageWithSelectorOfNullableIntDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Average(null, default(Expression<Func<object, int?>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Average, default(IQueryable<object>), default(Expression<Func<object, int?>>));
 			internal static readonly MethodInfo AverageWithSelectorOfLongDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Average(null, default(Expression<Func<object, long>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Average, default(IQueryable<object>), default(Expression<Func<object, long>>));
 			internal static readonly MethodInfo AverageWithSelectorOfNullableLongDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Average(null, default(Expression<Func<object, long?>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Average, default(IQueryable<object>), default(Expression<Func<object, long?>>));
 			internal static readonly MethodInfo AverageWithSelectorOfFloatDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Average(null, default(Expression<Func<object, float>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Average, default(IQueryable<object>), default(Expression<Func<object, float>>));
 			internal static readonly MethodInfo AverageWithSelectorOfNullableFloatDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Average(null, default(Expression<Func<object, float?>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Average, default(IQueryable<object>), default(Expression<Func<object, float?>>));
 			internal static readonly MethodInfo AverageWithSelectorOfDoubleDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Average(null, default(Expression<Func<object, double>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Average, default(IQueryable<object>), default(Expression<Func<object, double>>));
 			internal static readonly MethodInfo AverageWithSelectorOfNullableDoubleDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Average(null, default(Expression<Func<object, double?>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Average, default(IQueryable<object>), default(Expression<Func<object, double?>>));
 			internal static readonly MethodInfo AverageWithSelectorOfDecimalDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Average(null, default(Expression<Func<object, decimal>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Average, default(IQueryable<object>), default(Expression<Func<object, decimal>>));
 			internal static readonly MethodInfo AverageWithSelectorOfNullableDecimalDefinition =
-				ReflectHelper.GetMethodDefinition(() => Queryable.Average(null, default(Expression<Func<object, decimal?>>)));
+				ReflectHelper.FastGetMethodDefinition(Queryable.Average, default(IQueryable<object>), default(Expression<Func<object, decimal?>>));
+
+			internal static readonly MethodInfo SkipDefinition =
+				ReflectHelper.FastGetMethodDefinition(Queryable.Skip, default(IQueryable<object>), default(int));
+			internal static readonly MethodInfo TakeDefinition =
+				ReflectHelper.FastGetMethodDefinition(Queryable.Take, default(IQueryable<object>), default(int));
 		}
 
 		internal static class TypeMethods
 		{
 			internal static readonly MethodInfo GetTypeFromHandle =
-				ReflectHelper.GetMethod(() => System.Type.GetTypeFromHandle(default(RuntimeTypeHandle)));
+				ReflectHelper.FastGetMethod(System.Type.GetTypeFromHandle, default(RuntimeTypeHandle));
+		}
+
+		internal static class ObjectMethods
+		{
+			internal static readonly MethodInfo Finalize =
+				typeof(object).GetMethod("Finalize", BindingFlags.NonPublic | BindingFlags.Instance);
 		}
 	}
 }

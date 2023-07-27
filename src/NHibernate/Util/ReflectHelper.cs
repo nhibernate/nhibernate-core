@@ -104,6 +104,95 @@ namespace NHibernate.Util
 			return ((MethodCallExpression)method.Body).Method;
 		}
 
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		internal static MethodInfo FastGetMethod<TResult>(System.Func<TResult> func)
+		{
+			return func.Method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a">A dummy parameter</param>
+		internal static MethodInfo FastGetMethod<T, TResult>(System.Func<T, TResult> func, T a)
+		{
+			return func.Method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a1">A dummy parameter</param>
+		/// <param name="a2">A dummy parameter</param>
+		internal static MethodInfo FastGetMethod<T1, T2, TResult>(System.Func<T1, T2, TResult> func, T1 a1, T2 a2)
+		{
+			return func.Method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a1">A dummy parameter</param>
+		/// <param name="a2">A dummy parameter</param>
+		/// <param name="a3">A dummy parameter</param>
+		internal static MethodInfo FastGetMethod<T1, T2, T3, TResult>(System.Func<T1, T2, T3, TResult> func, T1 a1, T2 a2, T3 a3)
+		{
+			return func.Method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a">A dummy parameter</param>
+		internal static MethodInfo FastGetMethodDefinition<T, TResult>(System.Func<T, TResult> func, T a)
+		{
+			var method = func.Method;
+			return method.IsGenericMethod ? method.GetGenericMethodDefinition() : method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a1">A dummy parameter</param>
+		/// <param name="a2">A dummy parameter</param>
+		internal static MethodInfo FastGetMethodDefinition<T1, T2, TResult>(System.Func<T1, T2, TResult> func, T1 a1, T2 a2)
+		{
+			var method = func.Method;
+			return method.IsGenericMethod ? method.GetGenericMethodDefinition() : method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a1">A dummy parameter</param>
+		/// <param name="a2">A dummy parameter</param>
+		/// <param name="a3">A dummy parameter</param>
+		internal static MethodInfo FastGetMethodDefinition<T1, T2, T3, TResult>(System.Func<T1, T2, T3, TResult> func, T1 a1, T2 a2, T3 a3)
+		{
+			var method = func.Method;
+			return method.IsGenericMethod ? method.GetGenericMethodDefinition() : method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a1">A dummy parameter</param>
+		/// <param name="a2">A dummy parameter</param>
+		/// <param name="a3">A dummy parameter</param>
+		/// <param name="a4">A dummy parameter</param>
+		internal static MethodInfo FastGetMethodDefinition<T1, T2, T3, T4, TResult>(System.Func<T1, T2, T3, T4, TResult> func, T1 a1, T2 a2, T3 a3, T4 a4)
+		{
+			var method = func.Method;
+			return method.IsGenericMethod ? method.GetGenericMethodDefinition() : method;
+		}
+
+		/// <summary> Get a <see cref="MethodInfo"/> from a method group </summary>
+		/// <param name="func">A method group</param>
+		/// <param name="a1">A dummy parameter</param>
+		/// <param name="a2">A dummy parameter</param>
+		/// <param name="a3">A dummy parameter</param>
+		/// <param name="a4">A dummy parameter</param>
+		/// <param name="a5">A dummy parameter</param>
+		internal static MethodInfo FastGetMethodDefinition<T1, T2, T3, T4, T5, TResult>(System.Func<T1, T2, T3, T4, T5, TResult> func, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+		{
+			var method = func.Method;
+			return method.IsGenericMethod ? method.GetGenericMethodDefinition() : method;
+		}
+
 		/// <summary>
 		/// Get the <see cref="MethodInfo"/> for a public overload of a given method if the method does not match
 		/// given parameter types, otherwise directly yield the given method.
@@ -365,7 +454,7 @@ namespace NHibernate.Util
 		/// the method try to find the System.Type scanning all Assemblies of the <see cref="AppDomain.CurrentDomain"/>.
 		/// </remarks>
 		/// <exception cref="TypeLoadException">If no System.Type was found for <paramref name="classFullName"/>.</exception>
-				public static System.Type ClassForFullName(string classFullName)
+		public static System.Type ClassForFullName(string classFullName)
 		{
 			var result = ClassForFullNameOrNull(classFullName);
 			if (result == null)

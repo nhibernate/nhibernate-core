@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -40,10 +41,7 @@ namespace NHibernate.Mapping
 		}
 
 		/// <summary></summary>
-		public override IEnumerable<Column> ConstraintColumns
-		{
-			get { return new SafetyEnumerable<Column>(identifier.ColumnIterator); }
-		}
+		public override IEnumerable<Column> ConstraintColumns => identifier.ColumnIterator.OfType<Column>();
 
 		/// <summary></summary>
 		public bool IsConstrained

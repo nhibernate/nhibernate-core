@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using NUnit.Framework;
 using System.Linq;
@@ -8,25 +7,33 @@ namespace NHibernate.Test.SubclassFilterTest
 	[TestFixture]
 	public class JoinedSubclassFilterTest : TestCase
 	{
-		protected override string[] Mappings
+		protected override string[] Mappings => new[] {"SubclassFilterTest.joined-subclass.hbm.xml"};
+
+		protected override string MappingsAssembly => "NHibernate.Test";
+
+		protected override void OnSetUp()
 		{
-			get { return new string[] {"SubclassFilterTest.joined-subclass.hbm.xml"}; }
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			PrepareTestData(s);
+			t.Commit();
 		}
 
-		protected override string MappingsAssembly
+		protected override void OnTearDown()
 		{
-			get { return "NHibernate.Test"; }
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			s.Delete("from Customer c where c.ContactOwner is not null");
+			s.Delete("from Employee e where e.Manager is not null");
+			s.Delete("from Person");
+			t.Commit();
 		}
 
 		[Test]
 		public void FiltersWithSubclass()
 		{
-			ISession s = OpenSession();
+			using var s = OpenSession();
 			s.EnableFilter("region").SetParameter("userRegion", "US");
-			ITransaction t = s.BeginTransaction();
-
-			PrepareTestData(s);
-			s.Clear();
 
 			IList results;
 
@@ -49,14 +56,6 @@ namespace NHibernate.Test.SubclassFilterTest
 			}
 			s.Clear();
 
-			// TODO : currently impossible to define a collection-level filter w/
-			// joined-subclass elements that will filter based on a superclass
-			// column and function correctly in (theta only?) outer joins;
-			// this is consistent with the behaviour of a collection-level where.
-			// this might be one argument for "pulling" the attached class-level
-			// filters into collection assocations,
-			// although we'd need some way to apply the appropriate alias in that
-			// scenario.
 			results = s.CreateQuery("from Person as p left join fetch p.Minions").List<Person>().Distinct().ToList();
 			Assert.AreEqual(4, results.Count, "Incorrect qry result count");
 			foreach (Person p in results)
@@ -82,17 +81,29 @@ namespace NHibernate.Test.SubclassFilterTest
 					break;
 				}
 			}
+		}
 
-			t.Commit();
-			s.Close();
+		[Test]
+		public void FilterCollectionWithSubclass1()
+		{
+			using var s = OpenSession();
 
-			s = OpenSession();
-			t = s.BeginTransaction();
-			s.Delete("from Customer c where c.ContactOwner is not null");
-			s.Delete("from Employee e where e.Manager is not null");
-			s.Delete("from Person");
-			t.Commit();
-			s.Close();
+			s.EnableFilter("minionsWithManager");
+
+			var employees = s.Query<Employee>().Where(x => x.Minions.Any()).ToList();
+			Assert.That(employees.Count, Is.EqualTo(1));
+			Assert.That(employees[0].Minions.Count, Is.EqualTo(2));
+		}
+
+		[Test(Description = "GH-3079: Collection filter on subclass columns")]
+		public void FilterCollectionWithSubclass2()
+		{
+			using var s = OpenSession();
+			s.EnableFilter("minionsRegion").SetParameter("userRegion", "US");
+
+			var employees = s.Query<Employee>().Where(x => x.Minions.Any()).ToList();
+			Assert.That(employees.Count, Is.EqualTo(1));
+			Assert.That(employees[0].Minions.Count, Is.EqualTo(1));
 		}
 
 		private static void PrepareTestData(ISession s)
@@ -131,8 +142,6 @@ namespace NHibernate.Test.SubclassFilterTest
 			s.Save(john);
 			s.Save(cust);
 			s.Save(ups);
-
-			s.Flush();
 		}
 	}
 }

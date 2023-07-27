@@ -93,7 +93,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("lower", new StandardSQLFunction("lower"));
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
 			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));
-			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "?1 % ?2"));
+			RegisterFunction("mod", new ModulusFunctionTemplate(false));
 			RegisterFunction("month", new StandardSQLFunction("month", NHibernateUtil.Int32));
 			RegisterFunction("pi", new NoArgSQLFunction("pi", NHibernateUtil.Double));
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));

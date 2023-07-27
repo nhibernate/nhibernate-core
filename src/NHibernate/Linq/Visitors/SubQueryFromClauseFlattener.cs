@@ -4,6 +4,7 @@ using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ExpressionVisitors;
+using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.EagerFetching;
 
 namespace NHibernate.Linq.Visitors
@@ -15,7 +16,8 @@ namespace NHibernate.Linq.Visitors
 			typeof(LockResultOperator),
 			typeof(FetchLazyPropertiesResultOperator),
 			typeof(FetchOneRequest),
-			typeof(FetchManyRequest)
+			typeof(FetchManyRequest),
+			typeof(AsQueryableResultOperator)
 		};
 
 		public static void ReWrite(QueryModel queryModel)

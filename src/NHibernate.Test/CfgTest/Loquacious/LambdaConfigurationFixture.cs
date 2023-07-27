@@ -3,7 +3,6 @@ using NHibernate.AdoNet;
 using NHibernate.Bytecode;
 using NHibernate.Cache;
 using NHibernate.Cfg;
-using NHibernate.Cfg.Loquacious;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Hql.Ast.ANTLR;
@@ -11,6 +10,7 @@ using NHibernate.Linq.Functions;
 using NHibernate.Type;
 using NUnit.Framework;
 using NHibernate.Exceptions;
+using NHibernate.MultiTenancy;
 
 namespace NHibernate.Test.CfgTest.Loquacious
 {
@@ -63,6 +63,8 @@ namespace NHibernate.Test.CfgTest.Loquacious
 												db.MaximumDepthOfOuterJoinFetching = 11;
 												db.HqlToSqlSubstitutions = "true 1, false 0, yes 'Y', no 'N'";
 												db.SchemaAction = SchemaAutoAction.Validate;
+												db.ThrowOnSchemaUpdate = true;
+												db.MultiTenancy = MultiTenancyStrategy.Database;
 											});
 
 			Assert.That(configure.Properties[Environment.SessionFactoryName], Is.EqualTo("SomeName"));
@@ -106,8 +108,10 @@ namespace NHibernate.Test.CfgTest.Loquacious
 			Assert.That(configure.Properties[Environment.MaxFetchDepth], Is.EqualTo("11"));
 			Assert.That(configure.Properties[Environment.QuerySubstitutions], Is.EqualTo("true 1, false 0, yes 'Y', no 'N'"));
 			Assert.That(configure.Properties[Environment.Hbm2ddlAuto], Is.EqualTo("validate"));
+			Assert.That(configure.Properties[Environment.Hbm2ddlThrowOnUpdate], Is.EqualTo("true"));
 			Assert.That(configure.Properties[Environment.LinqToHqlGeneratorsRegistry], Is.EqualTo(typeof(DefaultLinqToHqlGeneratorsRegistry).AssemblyQualifiedName));
-			
+			Assert.That(configure.Properties[Environment.MultiTenancy], Is.EqualTo(nameof(MultiTenancyStrategy.Database)));
+
 			// Keywords import and auto-validation require a valid connection string, disable them before checking
 			// the session factory can be built.
 			configure.SetProperty(Environment.Hbm2ddlKeyWords, "none");

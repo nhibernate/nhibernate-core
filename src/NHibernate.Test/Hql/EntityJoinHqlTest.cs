@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Test.Hql.EntityJoinHqlTestEntities;
@@ -12,7 +14,7 @@ namespace NHibernate.Test.Hql
 	[TestFixture]
 	public class EntityJoinHqlTest : TestCaseMappingByCode
 	{
-		private const string _customEntityName = "CustomEntityName";
+		private const string _customEntityName = "CustomEntityName.Test";
 		private EntityWithCompositeId _entityWithCompositeId;
 		private EntityWithNoAssociation _noAssociation;
 		private EntityCustomEntityName _entityWithCustomEntityName;
@@ -28,6 +30,46 @@ namespace NHibernate.Test.Hql
 					.CreateQuery("select ex " +
 						"from EntityWithNoAssociation root " +
 						"left join EntityComplex ex with root.Complex1Id = ex.Id")
+						.SetMaxResults(1)
+					.UniqueResult<EntityComplex>();
+
+				Assert.That(entityComplex, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(entityComplex), Is.True);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public void CanJoinNotAssociatedEntityFullName()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex = 
+				session
+					.CreateQuery("select ex " +
+						"from EntityWithNoAssociation root " +
+						$"left join {typeof(EntityComplex).FullName} ex with root.Complex1Id = ex.Id")
+						.SetMaxResults(1)
+					.UniqueResult<EntityComplex>();
+
+				Assert.That(entityComplex, Is.Not.Null);
+				Assert.That(NHibernateUtil.IsInitialized(entityComplex), Is.True);
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public void CanJoinNotAssociatedInterfaceFullName()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				EntityComplex entityComplex = 
+				session
+					.CreateQuery("select ex " +
+						"from EntityWithNoAssociation root " +
+						$"left join {typeof(IEntityComplex).FullName} ex with root.Complex1Id = ex.Id")
 						.SetMaxResults(1)
 					.UniqueResult<EntityComplex>();
 
@@ -139,6 +181,192 @@ namespace NHibernate.Test.Hql
 				Assert.That(ej, Is.Not.Null);
 				Assert.That(NHibernateUtil.IsInitialized(ej), Is.True);
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public void EntityJoinWithNullableOneToOneEntityComparisonInWithClausShouldAddJoin()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var entity =
+					session
+						.CreateQuery(
+							"select ex "
+							+ "from NullableOwner ex "
+							+ "left join OneToOneEntity st with st = ex.OneToOne "
+						).SetMaxResults(1)
+						.UniqueResult<NullableOwner>();
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(2));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public void NullableOneToOneWhereEntityIsNotNull()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var entity =
+					session
+						.CreateQuery(
+							"select ex "
+							+ "from NullableOwner ex "
+							+ "where ex.OneToOne is not null "
+						).SetMaxResults(1)
+						.UniqueResult<NullableOwner>();
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public void NullableOneToOneWhereIdIsNotNull()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var entity =
+					session
+						.CreateQuery(
+							"select ex "
+							+ "from NullableOwner ex "
+							+ "where ex.OneToOne.Id is not null "
+						).SetMaxResults(1)
+						.UniqueResult<NullableOwner>();
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test]
+		public void NullablePropRefWhereIdEntityNotNullShouldAddJoin()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var entity =
+					session
+						.CreateQuery(
+							"select ex "
+							+ "from NullableOwner ex "
+							+ "where ex.PropRef is not null "
+						).SetMaxResults(1)
+						.UniqueResult<NullableOwner>();
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "PropRefEntity").Count, Is.EqualTo(1));
+				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");
+			}
+		}
+
+		[Test(Description = "GH-2688")]
+		public void NullableManyToOneDeleteQuery()
+		{
+			using (var session = OpenSession())
+			{
+				session
+					.CreateQuery(
+						"delete "
+						+ "from NullableOwner ex "
+						+ "where ex.ManyToOne.id = :id"
+					).SetParameter("id", Guid.Empty)
+					.ExecuteUpdate();
+			}
+		}
+
+		[Test]
+		public void NullableOneToOneFetchQueryIsNotAffected()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var entity =
+					session
+						.CreateQuery(
+							"select ex "
+							+ "from NullableOwner ex left join fetch ex.OneToOne o "
+							+ "where o is null "
+						).SetMaxResults(1)
+						.UniqueResult<NullableOwner>();
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
+			}
+		}
+		
+		[Test]
+		public void NullableOneToOneFetchQueryIsNotAffected2()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			using (var session = OpenSession())
+			{
+				var entity =
+					session
+						.CreateQuery(
+							"select ex "
+							+ "from NullableOwner ex left join fetch ex.OneToOne o "
+							+ "where o.Id is null "
+						).SetMaxResults(1)
+						.UniqueResult<NullableOwner>();
+
+				Assert.That(Regex.Matches(sqlLog.GetWholeLog(), "OneToOneEntity").Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test(Description = "GH-2772")]
+		public void NullableEntityProjection()
+		{
+			using (var session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var nullableOwner1 = new NullableOwner {Name = "1", ManyToOne = session.Load<OneToOneEntity>(Guid.NewGuid())};
+				var nullableOwner2 = new NullableOwner {Name = "2"};
+				session.Save(nullableOwner1);
+				session.Save(nullableOwner2);
+
+				var fullList = session.Query<NullableOwner>().Select(x => new {x.Name, ManyToOneId = (Guid?) x.ManyToOne.Id}).ToList();
+				var withValidManyToOneList = session.Query<NullableOwner>().Where(x => x.ManyToOne != null).Select(x => new {x.Name, ManyToOneId = (Guid?) x.ManyToOne.Id}).ToList();
+				var withValidManyToOneList2 = session.CreateQuery("from NullableOwner ex where not ex.ManyToOne is null").List<NullableOwner>();
+				var withNullManyToOneList = session.Query<NullableOwner>().Where(x => x.ManyToOne == null).ToList();
+				var withNullManyToOneJoinedList =
+					(from x in session.Query<NullableOwner>()
+					from x2 in session.Query<NullableOwner>()
+					where x == x2 && x.ManyToOne == null && x.OneToOne.Name == null
+					select x2).ToList();
+
+				var validManyToOne = new OneToOneEntity{Name = "valid"};
+				session.Save(validManyToOne);
+				nullableOwner2.ManyToOne = validManyToOne;
+				session.Flush();
+
+				//GH-2988
+				var withNullOrValidList = session.Query<NullableOwner>().Where(x => x.ManyToOne.Id == validManyToOne.Id || x.ManyToOne == null).ToList();
+				var withNullOrValidList2 = session.Query<NullableOwner>().Where(x =>  x.ManyToOne == null || x.ManyToOne.Id == validManyToOne.Id).ToList();
+				//GH-3269
+				var invalidId = Guid.NewGuid();
+				var withInvalidOrValid = session.Query<NullableOwner>().Where(x => x.OneToOne.Id == invalidId || x.ManyToOne.Id == validManyToOne.Id).ToList();
+				var withInvalidOrNull = session.Query<NullableOwner>().Where(x => x.ManyToOne.Id == invalidId || x.OneToOne == null).ToList();
+				var withInvalidOrNotNull = session.Query<NullableOwner>().Where(x => x.ManyToOne.Id == invalidId || x.OneToOne != null).ToList();
+
+				Assert.That(withInvalidOrValid.Count, Is.EqualTo(1));
+				Assert.That(withInvalidOrNull.Count, Is.EqualTo(2));
+				Assert.That(withInvalidOrNotNull.Count, Is.EqualTo(0));
+
+				//GH-3185
+				var mixImplicitAndLeftJoinList = session.Query<NullableOwner>().Where(x => x.ManyToOne.Id == validManyToOne.Id && x.OneToOne == null).ToList();
+
+				Assert.That(fullList.Count, Is.EqualTo(2));
+				Assert.That(withValidManyToOneList.Count, Is.EqualTo(0));
+				Assert.That(withValidManyToOneList2.Count, Is.EqualTo(0));
+				Assert.That(withNullManyToOneList.Count, Is.EqualTo(2));
+				Assert.That(withNullManyToOneJoinedList.Count, Is.EqualTo(2));
+				Assert.That(withNullOrValidList.Count, Is.EqualTo(2));
+				Assert.That(withNullOrValidList2.Count, Is.EqualTo(2));
+				Assert.That(mixImplicitAndLeftJoinList.Count, Is.EqualTo(1));
 			}
 		}
 
@@ -264,7 +492,7 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test, Ignore("Failing for unrelated reasons")]
-		public void ImplicitJoinAndWithClause()
+		public void CrossJoinAndWithClause()
 		{
 			//This is about complex theta style join fix that was implemented in hibernate along with entity join functionality
 			//https://hibernate.atlassian.net/browse/HHH-7321
@@ -273,8 +501,32 @@ namespace NHibernate.Test.Hql
 			{
 				session.CreateQuery(
 				"SELECT s " +
-				"FROM EntityComplex s, EntityComplex q " +
+				"FROM EntityComplex s CROSS JOIN EntityComplex q " +
 				"LEFT JOIN s.SameTypeChild AS sa WITH sa.SameTypeChild.Id = q.SameTypeChild.Id"
+				).List();
+			}
+		}
+
+		[Test]
+		public void WithImpliedJoinOnAssociation()
+		{
+			using (var session = OpenSession())
+			{
+				var result = session.CreateQuery(
+					"SELECT s " +
+					"FROM EntityComplex s left join s.SameTypeChild q on q.SameTypeChild.SameTypeChild.Name = s.Name"
+				).List();
+			}
+		}
+		
+		[Test]
+		public void WithImpliedEntityJoin()
+		{
+			using (var session = OpenSession())
+			{
+				var result = session.CreateQuery(
+					"SELECT s " +
+					"FROM EntityComplex s left join EntityComplex q on q.SameTypeChild.SameTypeChild.Name = s.Name"
 				).List();
 			}
 		}
@@ -334,7 +586,7 @@ namespace NHibernate.Test.Hql
 
 					rc.Property(e => e.Name);
 				});
-			
+
 			mapper.Class<EntityWithCompositeId>(
 				rc =>
 				{
@@ -371,6 +623,40 @@ namespace NHibernate.Test.Hql
 					rc.Id(e => e.Id, m => m.Generator(Generators.GuidComb));
 					rc.Property(e => e.Name);
 				});
+
+			mapper.Class<OneToOneEntity>(
+				rc =>
+				{
+					rc.Id(e => e.Id, m => m.Generator(Generators.GuidComb));
+					rc.Property(e => e.Name);
+				});
+
+			mapper.Class<PropRefEntity>(
+				rc =>
+				{
+					rc.Id(e => e.Id, m => m.Generator(Generators.GuidComb));
+					rc.Property(e => e.Name);
+					rc.Property(e => e.PropertyRef, m => m.Column("EntityPropertyRef"));
+				});
+
+			mapper.Class<NullableOwner>(
+				rc =>
+				{
+					rc.Id(e => e.Id, m => m.Generator(Generators.GuidComb));
+					rc.Property(e => e.Name);
+					rc.OneToOne(e => e.OneToOne, m => m.Constrained(false));
+					rc.ManyToOne(
+						e => e.PropRef,
+						m =>
+						{
+							m.Column("OwnerPropertyRef");
+							m.PropertyRef(nameof(PropRefEntity.PropertyRef));
+							m.ForeignKey("none");
+							m.NotFound(NotFoundMode.Ignore);
+						});
+					rc.ManyToOne(e => e.ManyToOne, m => m.NotFound(NotFoundMode.Ignore));
+				});
+
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
@@ -436,7 +722,6 @@ namespace NHibernate.Test.Hql
 					Composite1Key2 = _entityWithCompositeId.Key.Id2,
 					CustomEntityNameId = _entityWithCustomEntityName.Id
 				};
-
 				session.Save(_noAssociation);
 
 				session.Flush();

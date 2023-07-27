@@ -22,12 +22,13 @@ using NUnit.Framework;
 namespace NHibernate.Test.Futures
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class QueryBatchFixtureAsync : TestCaseMappingByCode
 	{
 		private Guid _parentId;
 		private Guid _eagerId;
+
+		protected override string CacheConcurrencyStrategy => "nonstrict-read-write";
 
 		[Test]
 		public async Task CanCombineCriteriaAndHqlInFutureAsync()
@@ -81,10 +82,10 @@ namespace NHibernate.Test.Futures
 
 				using (var sqlLog = new SqlLogSpy())
 				{
-					await (batch.GetResultAsync<int>(0, CancellationToken.None));
-					await (batch.GetResultAsync<EntityComplex>("queryOver", CancellationToken.None));
-					await (batch.GetResultAsync<EntityComplex>(2, CancellationToken.None));
-					await (batch.GetResultAsync<EntitySimpleChild>("sql", CancellationToken.None));
+					await (batch.GetResultAsync<int>(0));
+					await (batch.GetResultAsync<EntityComplex>("queryOver"));
+					await (batch.GetResultAsync<EntityComplex>(2));
+					await (batch.GetResultAsync<EntitySimpleChild>("sql"));
 					if (SupportsMultipleQueries)
 						Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1));
 				}
@@ -142,7 +143,7 @@ namespace NHibernate.Test.Futures
 
 				batch.Add(q1);
 				batch.Add(session.Query<EntityComplex>().Fetch(c => c.ChildrenList));
-				await (batch.ExecuteAsync(CancellationToken.None));
+				await (batch.ExecuteAsync());
 
 				var parent = await (session.LoadAsync<EntityComplex>(_parentId));
 				Assert.That(NHibernateUtil.IsInitialized(parent), Is.True);
@@ -162,7 +163,7 @@ namespace NHibernate.Test.Futures
 				int count = 0;
 				batch.Add(session.Query<EntityComplex>().WithOptions(o => o.SetCacheable(true)), r => results = r);
 				batch.Add(session.Query<EntityComplex>().WithOptions(o => o.SetCacheable(true)), ec => ec.Count(), r => count = r);
-				await (batch.ExecuteAsync(CancellationToken.None));
+				await (batch.ExecuteAsync());
 
 				Assert.That(results, Is.Not.Null);
 				Assert.That(count, Is.GreaterThan(0));
@@ -177,7 +178,7 @@ namespace NHibernate.Test.Futures
 				batch.Add(session.Query<EntityComplex>().WithOptions(o => o.SetCacheable(true)), r => results = r);
 				batch.Add(session.Query<EntityComplex>().WithOptions(o => o.SetCacheable(true)), ec => ec.Count(), r => count = r);
 
-				await (batch.ExecuteAsync(CancellationToken.None));
+				await (batch.ExecuteAsync());
 
 				Assert.That(results, Is.Not.Null);
 				Assert.That(count, Is.GreaterThan(0));

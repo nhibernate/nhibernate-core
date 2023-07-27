@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Numerics;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -35,7 +36,11 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Convert.ToSingle(rs[index]);
+				return rs[index] switch
+				{
+					BigInteger bi => (float) bi,
+					var v => Convert.ToSingle(v)
+				};
 			}
 			catch (Exception ex)
 			{
@@ -47,7 +52,11 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return Convert.ToSingle(rs[name]);
+				return rs[name] switch
+				{
+					BigInteger bi => (float) bi,
+					var v => Convert.ToSingle(v)
+				};
 			}
 			catch (Exception ex)
 			{
@@ -62,7 +71,7 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
-			rs.Parameters[index].Value = value;
+			rs.Parameters[index].Value = Convert.ToSingle(value);
 		}
 
 		// Since 5.2

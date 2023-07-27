@@ -15,6 +15,7 @@ using System.Reflection;
 using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Linq;
+using NHibernate.Loader;
 using NHibernate.Multi;
 using NHibernate.Test.CacheTest.Caches;
 using NUnit.Framework;
@@ -24,9 +25,17 @@ namespace NHibernate.Test.CacheTest
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	[TestFixture]
+	[TestFixture(BatchFetchStyle.Dynamic)]
+	[TestFixture(BatchFetchStyle.Legacy)]
 	public class BatchableCacheFixtureAsync : TestCase
 	{
+		private readonly BatchFetchStyle _fetchStyle;
+
+		public BatchableCacheFixtureAsync(BatchFetchStyle fetchStyle)
+		{
+			_fetchStyle = fetchStyle;
+		}
+
 		protected override string[] Mappings => new[]
 		{
 			"CacheTest.ReadOnly.hbm.xml",
@@ -35,14 +44,13 @@ namespace NHibernate.Test.CacheTest
 
 		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override string CacheConcurrencyStrategy => null;
-
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Environment.UseSecondLevelCache, "true");
 			configuration.SetProperty(Environment.UseQueryCache, "true");
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
 			configuration.SetProperty(Environment.CacheProvider, typeof(BatchableCacheProvider).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.BatchFetchStyle, _fetchStyle.ToString());
 		}
 
 		protected override void OnSetUp()
@@ -1112,7 +1120,7 @@ namespace NHibernate.Test.CacheTest
 
 				using (var t = s.BeginTransaction())
 				{
-					await (queries.ExecuteAsync(CancellationToken.None));
+					await (queries.ExecuteAsync());
 					await (t.CommitAsync());
 				}
 
@@ -1127,24 +1135,24 @@ namespace NHibernate.Test.CacheTest
 				// Run a second time, to test the query cache
 				using (var t = s.BeginTransaction())
 				{
-					await (queries.ExecuteAsync(CancellationToken.None));
+					await (queries.ExecuteAsync());
 					await (t.CommitAsync());
 				}
 
 				Assert.That(
-					await (queries.GetResultAsync<ReadOnly>(0, CancellationToken.None)),
+					await (queries.GetResultAsync<ReadOnly>(0)),
 					Has.Count.EqualTo(1).And.One.Property(nameof(ReadOnly.Name)).EqualTo(name1), "q1");
 				Assert.That(
-					await (queries.GetResultAsync<ReadOnly>(1, CancellationToken.None)),
+					await (queries.GetResultAsync<ReadOnly>(1)),
 					Has.Count.EqualTo(1).And.One.Property(nameof(ReadOnly.Name)).EqualTo(name2), "q2");
 				Assert.That(
-					await (queries.GetResultAsync<ReadWrite>(2, CancellationToken.None)),
+					await (queries.GetResultAsync<ReadWrite>(2)),
 					Has.Count.EqualTo(1).And.One.Property(nameof(ReadWrite.Name)).EqualTo(name3), "q3");
 				Assert.That(
-					await (queries.GetResultAsync<ReadWrite>(3, CancellationToken.None)),
+					await (queries.GetResultAsync<ReadWrite>(3)),
 					Has.Count.EqualTo(1).And.One.Property(nameof(ReadWrite.Name)).EqualTo(name4), "q4");
 				Assert.That(
-					await (queries.GetResultAsync<ReadOnly>(4, CancellationToken.None)),
+					await (queries.GetResultAsync<ReadOnly>(4)),
 					Has.Count.EqualTo(1).And.One.Property(nameof(ReadOnly.Name)).EqualTo(name5), "q5");
 
 				Assert.That(cache.GetMultipleCalls, Has.Count.EqualTo(2), "cache GetMany secondExecution");
@@ -1174,24 +1182,24 @@ namespace NHibernate.Test.CacheTest
 				// Run a third time, to re-test the query cache
 				using (var t = s.BeginTransaction())
 				{
-					await (queries.ExecuteAsync(CancellationToken.None));
+					await (queries.ExecuteAsync());
 					await (t.CommitAsync());
 				}
 
 				Assert.That(
-					await (queries.GetResultAsync<ReadOnly>(0, CancellationToken.None)),
+					await (queries.GetResultAsync<ReadOnly>(0)),
 					Has.Count.EqualTo(1).And.One.Property(nameof(ReadOnly.Name)).EqualTo(name1), "q1 after update");
 				Assert.That(
-					await (queries.GetResultAsync<ReadOnly>(1, CancellationToken.None)),
+					await (queries.GetResultAsync<ReadOnly>(1)),
 					Has.Count.EqualTo(1).And.One.Property(nameof(ReadOnly.Name)).EqualTo(name2), "q2 after update");
 				Assert.That(
-					await (queries.GetResultAsync<ReadWrite>(2, CancellationToken.None)),
+					await (queries.GetResultAsync<ReadWrite>(2)),
 					Has.Count.EqualTo(0), "q3 after update");
 				Assert.That(
-					await (queries.GetResultAsync<ReadWrite>(3, CancellationToken.None)),
+					await (queries.GetResultAsync<ReadWrite>(3)),
 					Has.Count.EqualTo(1).And.One.Property(nameof(ReadWrite.Name)).EqualTo(name4), "q4 after update");
 				Assert.That(
-					await (queries.GetResultAsync<ReadOnly>(4, CancellationToken.None)),
+					await (queries.GetResultAsync<ReadOnly>(4)),
 					Has.Count.EqualTo(1).And.One.Property(nameof(ReadOnly.Name)).EqualTo(name5), "q5 after update");
 
 				Assert.That(cache.GetMultipleCalls, Has.Count.EqualTo(3), "cache GetMany thirdExecution");

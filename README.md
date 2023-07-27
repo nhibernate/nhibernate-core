@@ -4,23 +4,48 @@ Welcome to NHibernate
 NHibernate is a mature, open source object-relational mapper for the .NET framework. It is actively developed,
 fully featured and used in thousands of successful projects.
 
-The NHibernate community website - <http://nhibernate.info> - has a range of resources to help you get started,
+The NHibernate community website - <https://nhibernate.info> - has a range of resources to help you get started,
 including [howtos][A1], [blogs][A2] and [reference documentation][A3].
 
-[A1]: http://nhibernate.info/doc/
-[A2]: http://nhibernate.info/blog/
-[A3]: http://nhibernate.info/doc/nh/en/index.html
+[A1]: https://nhibernate.info/doc/
+[A2]: https://nhibernate.info/blog/
+[A3]: https://nhibernate.info/doc/nh/en/index.html
 
-Latest Version
+Latest Release Version
 --------------
 
 The quickest way to get the latest release of NHibernate is to add it to your project using 
-NuGet (<http://nuget.org/List/Packages/NHibernate>).
+NuGet (<https://nuget.org/List/Packages/NHibernate>).
 
 Alternatively binaries are available from SourceForge at <http://sourceforge.net/projects/nhibernate>.
 
 You are encouraged to review the release notes ([releasenotes.txt](releasenotes.txt)), particularly when upgrading to a 
 later version. The release notes will generally document any breaking changes.
+
+Nightly Development Builds
+--------------------------
+
+The quickest way to get the latest development build of NHibernate is to add it to your project using 
+NuGet from Cloudsmith feed (<https://cloudsmith.io/~nhibernate/repos/nhibernate-core/packages/>).
+
+In order to make life a little bit easier you can register the package source in the NuGet.Config
+file in the top folder of your project, similar to the following.
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <add key="NHibernateDevBuilds" value="https://nuget.cloudsmith.io/nhibernate/nhibernate-core/v3/index.json" />
+  </packageSources>
+</configuration>
+```
+
+Package repository hosting is graciously provided by  [Cloudsmith](https://cloudsmith.com).
+Cloudsmith is the only fully hosted, cloud-native, universal package management solution, that
+enables your organization to create, store and share packages in any format, to any place, with total
+confidence.
+
+[![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=flat-square)](https://cloudsmith.com)
 
 Community Forums
 ----------------
@@ -40,8 +65,8 @@ If you find any bugs, please report them using the [GitHub issue tracker][C1]. A
 test-case that demonstrates the issue is usually required. Instructions on providing a test-case
 can be found in [contributing guidelines][C3] or [here][C2].
 
-[C1]: http://github.com/nhibernate/nhibernate-core/issues
-[C2]: http://nhibernate.info/blog/2008/10/04/the-best-way-to-solve-nhibernate-bugs-submit-good-unit-test.html
+[C1]: https://github.com/nhibernate/nhibernate-core/issues
+[C2]: https://nhibernate.info/blog/2008/10/04/the-best-way-to-solve-nhibernate-bugs-submit-good-unit-test.html
 [C3]: CONTRIBUTING.md
 
 Licenses
@@ -85,7 +110,7 @@ of NHibernate (in no particular order):
 [Apache Software Foundation]: http://www.apache.org
 [JetBrains]: http://www.jetbrains.com
 [ReSharper]: http://www.jetbrains.com/resharper
-[LinFu]: http://code.google.com/p/linfu
+[LinFu]: https://github.com/philiplaureano/LinFu
 [article]: http://www.codeproject.com/KB/recipes/sets.aspx
-[Relinq]: http://relinq.codeplex.com/
+[Relinq]: https://github.com/re-motion/Relinq
 [AsyncGenerator]: http://github.com/maca88/AsyncGenerator

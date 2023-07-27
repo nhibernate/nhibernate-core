@@ -105,19 +105,30 @@ namespace NHibernate.Test.Legacy
 			s.Close();
 		}
 
+		//NH-3893 (GH-1349) left and right functions are broken
 		[Test]
-		[Ignore("NH-3893 is not fixed")]
 		public void LeftAndRight()
 		{
-			// As of NH-3893, left and right functions are broken. Seemed confused with join keyword, and not
-			// supported on Hibernate side.
+			//left or right functions are supported by most dialects but not registered.
+			AssumeFunctionSupported("left");
+			AssumeFunctionSupported("right");
+
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
+				Simple simple = new Simple();
+				simple.Name = "Simple Dialect Function Test";
+				simple.Address = "Simple Address";
+				simple.Pay = 45.8f;
+				simple.Count = 2;
+				s.Save(simple, 10L);
+
 				var rset = s.CreateQuery("select left('abc', 2), right('abc', 2) from s in class Simple").List<object[]>();
 				var row = rset[0];
 				Assert.AreEqual("ab", row[0], "Left function is broken.");
 				Assert.AreEqual("bc", row[1], "Right function is broken.");
+
+				s.Delete(simple);
 				t.Commit();
 			}
 		}

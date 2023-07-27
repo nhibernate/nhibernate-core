@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Dialect;
 using NHibernate.Criterion;
+using NHibernate.Linq;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
 using NHibernate.Type;
@@ -1020,6 +1022,176 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
+		public void TestSQLProjectionWithAliases()
+		{
+			using(ISession s = OpenSession())
+			using(ITransaction t = s.BeginTransaction())
+			{
+				Course course = new Course();
+				course.CourseCode = "HIB";
+				course.Description = "Hibernate Training";
+				s.Save(course);
+
+				Student gavin = new Student();
+				gavin.Name = "Gavin King";
+				gavin.StudentNumber = 667;
+				s.Save(gavin);
+
+				Student xam = new Student();
+				xam.Name = "Max Rydahl Andersen";
+				xam.StudentNumber = 101;
+				s.Save(xam);
+
+				Enrolment enrolment = new Enrolment();
+				enrolment.Course = course;
+				enrolment.CourseCode = course.CourseCode;
+				enrolment.Semester = 1;
+				enrolment.Year = 1999;
+				enrolment.Student = xam;
+				enrolment.StudentNumber = xam.StudentNumber;
+				xam.Enrolments.Add(enrolment);
+				s.Save(enrolment);
+
+				enrolment = new Enrolment();
+				enrolment.Course = course;
+				enrolment.CourseCode = course.CourseCode;
+				enrolment.Semester = 3;
+				enrolment.Year = 1998;
+				enrolment.Student = gavin;
+				enrolment.StudentNumber = gavin.StudentNumber;
+				gavin.Enrolments.Add(enrolment);
+				s.Save(enrolment);
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			{
+				Student studentSubquery = null;
+				var subquery = QueryOver.Of(() => studentSubquery)
+				         .And(
+					         Expression.Sql("{e}.studentId = 667 and {studentSubquery}.studentId = 667")).Select(Projections.Id());
+				         
+				var uniqueResult = s.CreateCriteria(typeof(Student))
+				                    .Add(Subqueries.Exists(subquery.DetachedCriteria))
+				                    .AddOrder(Order.Asc("Name"))
+				                    .CreateCriteria("Enrolments", "e")
+				                    .AddOrder(Order.Desc("Year"))
+				                    .AddOrder(Order.Desc("Semester"))
+				                    .CreateCriteria("Course", "c")
+				                    .AddOrder(Order.Asc("Description"))
+				                    .SetProjection(
+					                    Projections.SqlProjection(
+						                    "{alias}.studentId as studentNumber, {e}.Semester as semester,"
+						                    + " {c}.CourseCode as courseCode, {c}.Description as descr",
+						                    new string[] {"studentNumber", "semester", "courseCode", "descr"},
+						                    new[]
+						                    {
+							                    TypeFactory.HeuristicType(typeof(long)),
+							                    TypeFactory.HeuristicType(typeof(short)),
+							                    TypeFactory.HeuristicType(typeof(string)),
+							                    TypeFactory.HeuristicType(typeof(string)),
+						                    }))
+				                    .UniqueResult();
+
+				Assert.That(uniqueResult, Is.Not.Null);
+			}
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Query<Enrolment>().Delete();
+				s.Query<Student>().Delete();
+				s.Query<Course>().Delete();
+				s.GetCurrentTransaction().Commit();
+			}
+		}
+
+		[Test]
+		public void TestSQLProjectionWithDuplicateAliases()
+		{
+			using(ISession s = OpenSession())
+			using(ITransaction t = s.BeginTransaction())
+			{
+				Course course = new Course();
+				course.CourseCode = "HIB";
+				course.Description = "Hibernate Training";
+				s.Save(course);
+
+				Student gavin = new Student();
+				gavin.Name = "Gavin King";
+				gavin.StudentNumber = 667;
+				s.Save(gavin);
+
+				Student xam = new Student();
+				xam.Name = "Max Rydahl Andersen";
+				xam.StudentNumber = 101;
+				s.Save(xam);
+
+				Enrolment enrolment = new Enrolment();
+				enrolment.Course = course;
+				enrolment.CourseCode = course.CourseCode;
+				enrolment.Semester = 1;
+				enrolment.Year = 1999;
+				enrolment.Student = xam;
+				enrolment.StudentNumber = xam.StudentNumber;
+				xam.Enrolments.Add(enrolment);
+				s.Save(enrolment);
+
+				enrolment = new Enrolment();
+				enrolment.Course = course;
+				enrolment.CourseCode = course.CourseCode;
+				enrolment.Semester = 3;
+				enrolment.Year = 1998;
+				enrolment.Student = gavin;
+				enrolment.StudentNumber = gavin.StudentNumber;
+				gavin.Enrolments.Add(enrolment);
+				s.Save(enrolment);
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			{
+				Student student = null;
+				var subquery = QueryOver.Of(() => student)
+				         .And(
+					         Expression.Sql("{e}.studentId = 667 and {student}.studentId = 667")).Select(Projections.Id());
+				         
+				var uniqueResult = s.CreateCriteria(typeof(Student), "student")
+				                    .Add(Subqueries.Exists(subquery.DetachedCriteria))
+				                    .AddOrder(Order.Asc("Name"))
+				                    .CreateCriteria("Enrolments", "e")
+				                    .AddOrder(Order.Desc("Year"))
+				                    .AddOrder(Order.Desc("Semester"))
+				                    .CreateCriteria("Course", "c")
+				                    .AddOrder(Order.Asc("Description"))
+				                    .SetProjection(
+					                    Projections.SqlProjection(
+						                    "{alias}.studentId as studentNumber, {e}.Semester as semester,"
+						                    + " {c}.CourseCode as courseCode, {c}.Description as descr",
+						                    new string[] {"studentNumber", "semester", "courseCode", "descr"},
+						                    new[]
+						                    {
+							                    TypeFactory.HeuristicType(typeof(long)),
+							                    TypeFactory.HeuristicType(typeof(short)),
+							                    TypeFactory.HeuristicType(typeof(string)),
+							                    TypeFactory.HeuristicType(typeof(string)),
+						                    }))
+				                    .UniqueResult();
+
+				Assert.That(uniqueResult, Is.Not.Null);
+			}
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				s.Query<Enrolment>().Delete();
+				s.Query<Student>().Delete();
+				s.Query<Course>().Delete();
+				s.GetCurrentTransaction().Commit();
+			}
+		}
+
+		[Test]
 		public void CloningProjectionsTest()
 		{
 			ISession s = OpenSession();
@@ -2011,6 +2183,64 @@ namespace NHibernate.Test.Criteria
 			s.Close();
 		}
 
+		//NH-2239 (GH-1075) - Wrong OrderBy in generated SQL
+		[Test]
+		public void OrderByAndOrderedCollection()
+		{
+			var reptile1 = new Reptile { SerialNumber = "9" };
+			var reptile2 = new Reptile { SerialNumber = "8" };
+			var reptile3 = new Reptile { SerialNumber = "7" };
+			var reptile4 = new Reptile { SerialNumber = "6" };
+			var reptile5 = new Reptile { SerialNumber = "5" };
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Save(reptile5);
+				s.Save(reptile1);
+				s.Save(reptile2);
+				s.Save(reptile3);
+				s.Save(reptile4);
+
+				reptile1.AddOffspring(reptile4);
+				reptile1.AddOffspring(reptile2);
+				reptile4.Father = reptile3;
+				reptile2.Father = reptile4;
+				reptile1.Father = reptile5;
+				reptile3.AddOffspring(reptile1);
+
+				t.Commit();
+			}
+
+			using(var s = OpenSession())
+			{
+				var list = s.CreateCriteria(typeof(Reptile))
+							.Fetch(SelectMode.Fetch, "offspring")
+							.AddOrder(Order.Asc("serialNumber"))
+							.SetResultTransformer(Transformers.DistinctRootEntity)
+							.List<Reptile>();
+
+				var expectedList = list.OrderBy(x => x.SerialNumber).ToList();
+
+				Assert.That(list.Count, Is.EqualTo(5));
+				CollectionAssert.AreEqual(expectedList, list);
+
+				var mother = expectedList.Last();
+				Assert.That(NHibernateUtil.IsInitialized(mother.Offspring), Is.True);
+
+				var expectedAssociationList = mother.Offspring.OrderBy(r => r.Father.Id).ToList();
+				Assert.That(expectedAssociationList.Count, Is.EqualTo(2));
+				CollectionAssert.AreEqual(expectedAssociationList, mother.Offspring);
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				s.Delete("from Reptile");
+				t.Commit();
+			}
+		}
+
 		[Test]
 		public void ClassProperty()
 		{
@@ -2365,6 +2595,22 @@ namespace NHibernate.Test.Criteria
 			session.Delete(courseB);
 			t.Commit();
 			session.Close();
+		}
+
+		public class NotMappedEntity
+		{
+			public  virtual  int Id { get; set; }
+			public  virtual  string Name { get; set; }
+		}
+
+		[Test]
+		public void CriteriaOnNotMappedEntity()
+		{
+			using (ISession session = OpenSession())
+			{
+				Assert.Throws<QueryException>(
+					() => session.CreateCriteria(typeof(NotMappedEntity)).List());
+			}
 		}
 
 		[Test]

@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace NHibernate.Test.Linq
 {
 	[SetUpFixture]
-	public class LinqReadonlyTestsContext
+	public class LinqReadonlyTestsContext : TestsContextBase
 	{
 		/// <summary>
 		/// Assembly to load mapping files from
@@ -43,7 +43,8 @@ namespace NHibernate.Test.Linq
 					"Northwind.Mappings.User.hbm.xml",
 					"Northwind.Mappings.TimeSheet.hbm.xml",
 					"Northwind.Mappings.Animal.hbm.xml",
-					"Northwind.Mappings.Patient.hbm.xml"
+					"Northwind.Mappings.Patient.hbm.xml",
+					"Northwind.Mappings.NumericEntity.hbm.xml"
 				};
 			}
 		}

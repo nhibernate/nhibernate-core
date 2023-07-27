@@ -1,10 +1,28 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cache.Access;
+using NHibernate.Util;
 
 namespace NHibernate.Cache
 {
+	public static class LocableExtension
+	{
+		//TODO 6.0: Remove after IMinimalPutAwareLockable merge
+		internal static bool IsPuttable(this ReadWriteCache.ILockable lockable, long txTimestamp, object newVersion, IComparer comparator, bool minimalPut)
+		{
+			if (lockable is ReadWriteCache.IMinimalPutAwareLockable l)
+			{
+				return l.IsPuttable(txTimestamp, newVersion, comparator, minimalPut);
+			}
+
+#pragma warning disable CS0618
+			return lockable.IsPuttable(txTimestamp, newVersion, comparator);
+#pragma warning restore CS0618
+		}
+	}
+
 	/// <summary>
 	/// Caches data that is sometimes updated while maintaining the semantics of
 	/// "read committed" isolation level. If the database is set to "repeatable
@@ -23,19 +41,37 @@ namespace NHibernate.Cache
 	/// </remarks>
 	public partial class ReadWriteCache : IBatchableCacheConcurrencyStrategy
 	{
+		//TODO 6.0: Merge with ILockable
+		internal interface IMinimalPutAwareLockable
+		{
+			bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator, bool minimalPut);
+		}
+
 		public interface ILockable
 		{
 			CacheLock Lock(long timeout, int id);
 			bool IsLock { get; }
 			bool IsGettable(long txTimestamp);
+
+			// Since 5.4
+			[Obsolete("Use overload with minimalPuts parameter")]
 			bool IsPuttable(long txTimestamp, object newVersion, IComparer comparator);
 		}
 
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ReadWriteCache));
 
-		private readonly object _lockObject = new object();
 		private CacheBase _cache;
 		private int _nextLockId;
+		private readonly ICacheLock _asyncReaderWriterLock;
+
+		public ReadWriteCache() : this(new AsyncReaderWriterLock())
+		{
+		}
+
+		public ReadWriteCache(ICacheLock locker)
+		{
+			_asyncReaderWriterLock = locker;
+		}
 
 		/// <summary>
 		/// Gets the cache region name.
@@ -95,7 +131,7 @@ namespace NHibernate.Cache
 		/// </remarks>
 		public object Get(CacheKey key, long txTimestamp)
 		{
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.ReadLock())
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -123,7 +159,7 @@ namespace NHibernate.Cache
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
 			var result = new object[keys.Length];
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.ReadLock())
 			{
 				var lockables = _cache.GetMany(keys);
 				for (var i = 0; i < lockables.Length; i++)
@@ -166,7 +202,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public ISoftLock Lock(CacheKey key, object version)
 		{
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -209,7 +245,7 @@ namespace NHibernate.Cache
 				return result;
 			}
 
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -227,7 +263,7 @@ namespace NHibernate.Cache
 						var version = versions[i];
 						var lockable = (ILockable) lockables[i];
 						bool puttable = lockable == null ||
-						                lockable.IsPuttable(timestamp, version, versionComparers[i]);
+						                lockable.IsPuttable(timestamp, version, versionComparers[i], minimalPuts[i]);
 						if (puttable)
 						{
 							putBatch.Add(key, CachedItem.Create(values[i], Cache.NextTimestamp(), version));
@@ -278,7 +314,7 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -291,7 +327,7 @@ namespace NHibernate.Cache
 					ILockable lockable = (ILockable) Cache.Get(key);
 
 					bool puttable = lockable == null ||
-					                lockable.IsPuttable(txTimestamp, version, versionComparator);
+					                lockable.IsPuttable(txTimestamp, version, versionComparator, minimalPut);
 
 					if (puttable)
 					{
@@ -330,7 +366,7 @@ namespace NHibernate.Cache
 
 		public void Release(CacheKey key, ISoftLock clientLock)
 		{
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -382,6 +418,7 @@ namespace NHibernate.Cache
 			// The cache is externally provided and may be shared. Destroying the cache is
 			// not the responsibility of this class.
 			Cache = null;
+			_asyncReaderWriterLock.Dispose();
 		}
 
 		/// <summary>
@@ -390,7 +427,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public bool AfterUpdate(CacheKey key, object value, object version, ISoftLock clientLock)
 		{
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -436,7 +473,7 @@ namespace NHibernate.Cache
 
 		public bool AfterInsert(CacheKey key, object value, object version)
 		{
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
 				{

@@ -8,37 +8,44 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
 using NUnit.Framework;
 using System.Linq;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.SubclassFilterTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class JoinedSubclassFilterTestAsync : TestCase
 	{
-		protected override string[] Mappings
+		protected override string[] Mappings => new[] {"SubclassFilterTest.joined-subclass.hbm.xml"};
+
+		protected override string MappingsAssembly => "NHibernate.Test";
+
+		protected override void OnSetUp()
 		{
-			get { return new string[] {"SubclassFilterTest.joined-subclass.hbm.xml"}; }
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			PrepareTestData(s);
+			t.Commit();
 		}
 
-		protected override string MappingsAssembly
+		protected override void OnTearDown()
 		{
-			get { return "NHibernate.Test"; }
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			s.Delete("from Customer c where c.ContactOwner is not null");
+			s.Delete("from Employee e where e.Manager is not null");
+			s.Delete("from Person");
+			t.Commit();
 		}
 
 		[Test]
 		public async Task FiltersWithSubclassAsync()
 		{
-			ISession s = OpenSession();
+			using var s = OpenSession();
 			s.EnableFilter("region").SetParameter("userRegion", "US");
-			ITransaction t = s.BeginTransaction();
-
-			await (PrepareTestDataAsync(s));
-			s.Clear();
 
 			IList results;
 
@@ -61,14 +68,6 @@ namespace NHibernate.Test.SubclassFilterTest
 			}
 			s.Clear();
 
-			// TODO : currently impossible to define a collection-level filter w/
-			// joined-subclass elements that will filter based on a superclass
-			// column and function correctly in (theta only?) outer joins;
-			// this is consistent with the behaviour of a collection-level where.
-			// this might be one argument for "pulling" the attached class-level
-			// filters into collection assocations,
-			// although we'd need some way to apply the appropriate alias in that
-			// scenario.
 			results = (await (s.CreateQuery("from Person as p left join fetch p.Minions").ListAsync<Person>())).Distinct().ToList();
 			Assert.AreEqual(4, results.Count, "Incorrect qry result count");
 			foreach (Person p in results)
@@ -94,20 +93,32 @@ namespace NHibernate.Test.SubclassFilterTest
 					break;
 				}
 			}
-
-			await (t.CommitAsync());
-			s.Close();
-
-			s = OpenSession();
-			t = s.BeginTransaction();
-			await (s.DeleteAsync("from Customer c where c.ContactOwner is not null"));
-			await (s.DeleteAsync("from Employee e where e.Manager is not null"));
-			await (s.DeleteAsync("from Person"));
-			await (t.CommitAsync());
-			s.Close();
 		}
 
-		private static async Task PrepareTestDataAsync(ISession s, CancellationToken cancellationToken = default(CancellationToken))
+		[Test]
+		public async Task FilterCollectionWithSubclass1Async()
+		{
+			using var s = OpenSession();
+
+			s.EnableFilter("minionsWithManager");
+
+			var employees = await (s.Query<Employee>().Where(x => x.Minions.Any()).ToListAsync());
+			Assert.That(employees.Count, Is.EqualTo(1));
+			Assert.That(employees[0].Minions.Count, Is.EqualTo(2));
+		}
+
+		[Test(Description = "GH-3079: Collection filter on subclass columns")]
+		public async Task FilterCollectionWithSubclass2Async()
+		{
+			using var s = OpenSession();
+			s.EnableFilter("minionsRegion").SetParameter("userRegion", "US");
+
+			var employees = await (s.Query<Employee>().Where(x => x.Minions.Any()).ToListAsync());
+			Assert.That(employees.Count, Is.EqualTo(1));
+			Assert.That(employees[0].Minions.Count, Is.EqualTo(1));
+		}
+
+		private static void PrepareTestData(ISession s)
 		{
 			Employee john = new Employee("John Doe");
 			john.Company = ("JBoss");
@@ -140,11 +151,9 @@ namespace NHibernate.Test.SubclassFilterTest
 			ups.Company = ("UPS");
 			ups.Region = ("US");
 
-			await (s.SaveAsync(john, cancellationToken));
-			await (s.SaveAsync(cust, cancellationToken));
-			await (s.SaveAsync(ups, cancellationToken));
-
-			await (s.FlushAsync(cancellationToken));
+			s.Save(john);
+			s.Save(cust);
+			s.Save(ups);
 		}
 	}
 }

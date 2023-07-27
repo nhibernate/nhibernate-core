@@ -2837,7 +2837,7 @@ namespace NHibernate.Test.Legacy
 			await (s.DeleteAsync(baz.TopGlarchez['H']));
 
 			var cmd = s.Connection.CreateCommand();
-			s.Transaction.Enlist(cmd);
+			txn.Enlist(cmd);
 			cmd.CommandText = "update " + Dialect.QuoteForTableName("glarchez") + " set baz_map_id=null where baz_map_index='a'";
 			int rows = await (cmd.ExecuteNonQueryAsync());
 			Assert.AreEqual(1, rows);
@@ -5418,6 +5418,20 @@ namespace NHibernate.Test.Legacy
 
 				await (s.DeleteAsync("from f in class Foo"));
 				await (txn.CommitAsync());
+			}
+		}
+
+		// NH-2329 (GH-1218)
+		[Test]
+		public async Task JoinOverJoinAsync()
+		{
+			using (var s = OpenSession())
+			{
+				await (s.CreateCriteria(typeof(Stuff), "s1")
+				       .CreateAlias("s1.MoreStuff", "m1")
+				       .CreateAlias("m1.Stuffs", "s2")
+				       .Add(Expression.Eq("s2.Id", 2L))
+				       .ListAsync<Stuff>());
 			}
 		}
 

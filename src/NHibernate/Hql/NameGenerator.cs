@@ -12,6 +12,8 @@ namespace NHibernate.Hql
 	/// </summary>
 	public class NameGenerator
 	{
+		// Since v5.4
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public static string[][] GenerateColumnNames(IType[] types, ISessionFactoryImplementor f)
 		{
 			string[][] columnNames = new string[types.Length][];

@@ -21,7 +21,7 @@ namespace NHibernate.Multi
 		/// Executes the batch.
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task ExecuteAsync(CancellationToken cancellationToken);
+		Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Gets a query result, triggering execution of the batch if it was not already executed.
@@ -32,7 +32,7 @@ namespace NHibernate.Multi
 		/// <returns>A query result.</returns>
 		/// <remarks><paramref name="queryIndex"/> is <c>0</c> based and matches the order in which queries have been
 		/// added into the batch.</remarks>
-		Task<IList<TResult>> GetResultAsync<TResult>(int queryIndex, CancellationToken cancellationToken);
+		Task<IList<TResult>> GetResultAsync<TResult>(int queryIndex, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Gets a query result, triggering execution of the batch if it was not already executed.
@@ -41,6 +41,6 @@ namespace NHibernate.Multi
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <typeparam name="TResult">The type of the result elements of the query.</typeparam>
 		/// <returns>A query result.</returns>
-		Task<IList<TResult>> GetResultAsync<TResult>(string querykey, CancellationToken cancellationToken);
+		Task<IList<TResult>> GetResultAsync<TResult>(string querykey, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

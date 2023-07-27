@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Security;
-using System.Security.Permissions;
 using System.Text;
+using NHibernate.Action;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
 using NHibernate.Impl;
@@ -238,13 +238,9 @@ namespace NHibernate.Engine
 			{
 				return null;
 			}
-			else
-			{
-				IPersistentCollection tempObject;
-				if (unownedCollections.TryGetValue(key, out tempObject))
-					unownedCollections.Remove(key);
-				return tempObject;
-			}
+
+			unownedCollections.Remove(key, out var tempObject);
+			return tempObject;
 		}
 
 		/// <summary> Clear the state of the persistence context</summary>
@@ -447,17 +443,18 @@ namespace NHibernate.Engine
 		/// </summary>
 		public object RemoveEntity(EntityKey key)
 		{
-			object tempObject = entitiesByKey[key];
-			entitiesByKey.Remove(key);
-			object entity = tempObject;
-			List<EntityUniqueKey> toRemove = new List<EntityUniqueKey>();
-			foreach (KeyValuePair<EntityUniqueKey, object> pair in entitiesByUniqueKey)
+			if (entitiesByKey.Remove(key, out var entity))
 			{
-				if (pair.Value == entity) toRemove.Add(pair.Key);
-			}
-			foreach (EntityUniqueKey uniqueKey in toRemove)
-			{
-				entitiesByUniqueKey.Remove(uniqueKey);
+				List<EntityUniqueKey> toRemove = new List<EntityUniqueKey>();
+				foreach (KeyValuePair<EntityUniqueKey, object> pair in entitiesByUniqueKey)
+				{
+					if (pair.Value == entity) toRemove.Add(pair.Key);
+				}
+
+				foreach (EntityUniqueKey uniqueKey in toRemove)
+				{
+					entitiesByUniqueKey.Remove(uniqueKey);
+				}
 			}
 
 			entitySnapshotsByKey.Remove(key);
@@ -1099,9 +1096,7 @@ namespace NHibernate.Engine
 				batchFetchQueue.RemoveBatchLoadableEntityKey(key);
 				batchFetchQueue.RemoveSubselect(key);
 			}
-			INHibernateProxy tempObject;
-			if (proxiesByKey.TryGetValue(key, out tempObject))
-				proxiesByKey.Remove(key);
+			proxiesByKey.Remove(key, out INHibernateProxy tempObject);
 			return tempObject;
 		}
 
@@ -1384,8 +1379,9 @@ namespace NHibernate.Engine
 		
 		public void ReplaceDelayedEntityIdentityInsertKeys(EntityKey oldKey, object generatedId)
 		{
-			object tempObject = entitiesByKey[oldKey];
-			entitiesByKey.Remove(oldKey);
+			if (!entitiesByKey.Remove(oldKey, out var tempObject))
+				throw new KeyNotFoundException(oldKey.ToString());
+
 			object entity = tempObject;
 			object tempObject2 = entityEntries[entity];
 			entityEntries.Remove(entity);
@@ -1396,6 +1392,8 @@ namespace NHibernate.Engine
 			AddEntity(newKey, entity);
 			AddEntry(entity, oldEntry.Status, oldEntry.LoadedState, oldEntry.RowId, generatedId, oldEntry.Version,
 					 oldEntry.LockMode, oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated);
+			if (oldKey.Identifier is DelayedPostInsertIdentifier delayed)
+				delayed.ActualId = generatedId;
 		}
 
 		public bool IsLoadFinished

@@ -13,11 +13,13 @@ using System.Collections;
 using NHibernate.Transform;
 using NHibernate.Type;
 using System.Collections.Generic;
+using NHibernate.Impl;
 
 namespace NHibernate
 {
 	using System.Threading.Tasks;
 	using System.Threading;
+
 	public partial interface IQuery
 	{
 

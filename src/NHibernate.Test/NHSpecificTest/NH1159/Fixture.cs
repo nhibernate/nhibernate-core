@@ -48,9 +48,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
-				ICriteria query = session.CreateCriteria(typeof(ContactTitle));
+				ICriteria query = session.CreateCriteria(typeof(Contact));
 				query.Add(Expression.Eq("Id", (Int64)1));
-				query.UniqueResult<ContactTitle>();
+				query.UniqueResult<Contact>();
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
@@ -78,9 +78,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
-				ICriteria query = session.CreateCriteria(typeof(ContactTitle));
+				ICriteria query = session.CreateCriteria(typeof(Contact));
 				query.Add(Expression.Eq("Id", (Int64)1));
-				query.UniqueResult<ContactTitle>();
+				query.UniqueResult<Contact>();
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
@@ -109,9 +109,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(1));
 
-				ICriteria query = session.CreateCriteria(typeof(ContactTitle));
+				ICriteria query = session.CreateCriteria(typeof(Contact));
 				query.Add(Expression.Eq("Id", (Int64)1));
-				query.UniqueResult<ContactTitle>();
+				query.UniqueResult<Contact>();
 
 				Assert.That(HibernateInterceptor.CallCount, Is.EqualTo(2));
 

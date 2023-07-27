@@ -1,4 +1,6 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using Antlr.Runtime;
+using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -15,14 +17,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			EntityType entityType = (EntityType) entityPersister.Type;
 			InitializeEntity(fromClause, entityPersister.EntityName, entityPersister, entityType, alias, tableAlias);
 
-			JoinSequence = new EntityJoinJoinSequenceImpl(
-				SessionFactoryHelper.Factory,
-				entityType,
-				entityPersister.TableName,
-				tableAlias,
-				joinType);
+			//NH Specific: hibernate uses special class EntityJoinJoinSequenceImpl
+			JoinSequence = new JoinSequence(SessionFactoryHelper.Factory) {ForceFilter = true}
+				.AddJoin(entityType, tableAlias, joinType, Array.Empty<string>());
 
-			fromClause.Walker.AddQuerySpaces(entityPersister.QuerySpaces);
+			fromClause.Walker.AddQuerySpaces(entityPersister);
 		}
 	}
 }

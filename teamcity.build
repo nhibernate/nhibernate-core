@@ -67,9 +67,20 @@
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.Sql2008ClientDriver" />
 	</target>
 
+	<target name="setup-teamcity-sqlServer-MicrosoftDataSqlClientDriver">
+		<property name="db-service" value="MSSQL$SQLEXPRESS" />
+		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.MicrosoftDataSqlClientDriver" />
+	</target>
+
 	<target name="setup-teamcity-sqlServer2012">
 		<property name="db-service" value="MSSQL$SQLEXPRESS" />
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2012Dialect" />
+	</target>
+
+	<target name="setup-teamcity-sqlServer2012-MicrosoftDataSqlClientDriver">
+		<property name="db-service" value="MSSQL$SQLEXPRESS" />
+		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2012Dialect" />
+		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.MicrosoftDataSqlClientDriver" />
 	</target>
 
 	<target name="setup-teamcity-sqlServerCe32">
@@ -207,7 +218,7 @@
 		<property name="db-service" value="MySQL57" />
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.MySqlDataDriver" />
 		<property name="nhibernate.dialect"	value="NHibernate.Dialect.MySQL5Dialect" />
-		<property name="nhibernate.connection.connection_string" value="Data Source=localhost;Database=nhibernate;User ID=nhibernate;Password=nhibernate;Protocol=memory;Old Guids=True;" />
+		<property name="nhibernate.connection.connection_string" value="Data Source=localhost;Database=nhibernate;User ID=nhibernate;Password=nhibernate;Old Guids=True;" />
 	</target>
 
 	<target name="setup-teamcity-sqlanywhere">

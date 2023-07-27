@@ -191,10 +191,11 @@ namespace NHibernate.Dialect
 			RegisterFunction("lower", new StandardSQLFunction("lower"));
 
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
-			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
+			RegisterFunction("iif", new IifSQLFunction());
 
 			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
-			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
+			// Modulo is not supported on real, float, money, and numeric data types
+			RegisterFunction("mod", new ModulusFunctionTemplate(false));
 
 			RegisterFunction("round", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0"}));
 			RegisterFunction("truncate", new StandardSQLFunctionWithRequiredParameters("round", new object[] {null, "0", "1"}));

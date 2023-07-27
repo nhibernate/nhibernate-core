@@ -329,6 +329,14 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void CanSelectNotMappedEntityProperty()
+		{
+			var list = db.Animals.Where(o => o.Mother != null).Select(o => o.FatherOrMother.SerialNumber).ToList();
+
+			Assert.That(list, Has.Count.GreaterThan(0));
+		}
+
+		[Test]
 		public void CanProjectWithCast()
 		{
 			// NH-2463
@@ -482,6 +490,39 @@ namespace NHibernate.Test.Linq
 			var father = db.Animals.Single(a => a.SerialNumber == "5678");
 			var fatherInsteadOfChild = db.Animals.Select(a => a.Father == father ? a.Father.SerialNumber : a.SerialNumber).ToList();
 			Assert.That(fatherInsteadOfChild, Has.Exactly(2).EqualTo("5678"));
+		}
+
+		[Test]
+		public void CanExecuteMethodWithNullObjectAndSubselect()
+		{
+			var list1 = db.Animals.Select(
+				              a => new
+				              {
+					              NullableId = (int?) a.Father.Father.Id,
+				              })
+			              .ToList();
+			Assert.That(list1, Has.Count.GreaterThan(0));
+			Assert.That(list1[0].NullableId, Is.Null);
+
+			var list2 = db.Animals.Select(
+				              a => new
+				              {
+					              Descriptions = a.Children.Select(z => z.Description)
+				              })
+			              .ToList();
+			Assert.That(list2, Has.Count.GreaterThan(0));
+			Assert.That(list2[0].Descriptions, Is.Not.Null);
+
+			var list3 = db.Animals.Select(
+				              a => new
+				              {
+					              NullableId = (int?) a.Father.Father.Id,
+					              Descriptions = a.Children.Select(z => z.Description)
+				              })
+			              .ToList();
+			Assert.That(list3, Has.Count.GreaterThan(0));
+			Assert.That(list3[0].NullableId, Is.Null);
+			Assert.That(list3[0].Descriptions, Is.Not.Null);
 		}
 
 		[Test]

@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
-
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR.Exec;
 using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Hql.Ast.ANTLR.Util;
+using NHibernate.Loader;
 using NHibernate.Loader.Hql;
 using NHibernate.Param;
+using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -22,18 +23,20 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Hql.Ast.ANTLR
 {
 	[CLSCompliant(false)]
-	public partial class QueryTranslatorImpl : IFilterTranslator
+	public partial class QueryTranslatorImpl : IFilterTranslator, IQueryTranslatorWithCustomizableLoader
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(QueryTranslatorImpl));
 
 		private readonly string _queryIdentifier;
 		private readonly IASTNode _stageOneAst;
 		private readonly ISessionFactoryImplementor _factory;
-		
+		private readonly IQueryLoaderFactory _queryLoaderFactory;
+		private readonly IDictionary<string, Tuple<IType, bool>> _namedParameters;
+
 		private bool _shallowQuery;
 		private bool _compiled;
 		private IDictionary<string, IFilter> _enabledFilters;
-		private QueryLoader _queryLoader;
+		private IQueryLoader _queryLoader;
 		private IStatementExecutor _statementExecutor;
 		private IStatement _sqlAst;
 		private IDictionary<string, string> _tokenReplacements;
@@ -46,11 +49,51 @@ namespace NHibernate.Hql.Ast.ANTLR
 		/// <param name="parsedQuery">The hql query to translate</param>
 		/// <param name="enabledFilters">Currently enabled filters</param>
 		/// <param name="factory">The session factory constructing this translator instance.</param>
+		// Since 5.5.
+		[Obsolete("Use overload taking an IQueryLoaderFactory.")]
 		public QueryTranslatorImpl(
-				string queryIdentifier,
-				IASTNode parsedQuery,
-				IDictionary<string, IFilter> enabledFilters,
-				ISessionFactoryImplementor factory)
+			string queryIdentifier,
+			IASTNode parsedQuery,
+			IDictionary<string, IFilter> enabledFilters,
+			ISessionFactoryImplementor factory)
+			: this(queryIdentifier, parsedQuery, enabledFilters, factory, new QueryLoaderFactory(), null)
+		{
+		}
+
+		/// <summary>
+		/// Creates a new AST-based query translator.
+		/// </summary>
+		/// <param name="queryIdentifier">The query-identifier (used in stats collection)</param>
+		/// <param name="parsedQuery">The hql query to translate</param>
+		/// <param name="enabledFilters">Currently enabled filters</param>
+		/// <param name="factory">The session factory constructing this translator instance.</param>
+		/// <param name="queryLoaderFactory">The query loader factory.</param>
+		public QueryTranslatorImpl(
+			string queryIdentifier,
+			IASTNode parsedQuery,
+			IDictionary<string, IFilter> enabledFilters,
+			ISessionFactoryImplementor factory,
+			IQueryLoaderFactory queryLoaderFactory)
+			: this(queryIdentifier, parsedQuery, enabledFilters, factory, queryLoaderFactory, null)
+		{
+		}
+
+		/// <summary>
+		/// Creates a new AST-based query translator.
+		/// </summary>
+		/// <param name="queryIdentifier">The query-identifier (used in stats collection)</param>
+		/// <param name="parsedQuery">The hql query to translate</param>
+		/// <param name="enabledFilters">Currently enabled filters</param>
+		/// <param name="factory">The session factory constructing this translator instance.</param>
+		/// <param name="queryLoaderFactory">The query loader factory.</param>
+		/// <param name="namedParameters">The named parameters information.</param>
+		public QueryTranslatorImpl(
+			string queryIdentifier,
+			IASTNode parsedQuery,
+			IDictionary<string, IFilter> enabledFilters,
+			ISessionFactoryImplementor factory,
+			IQueryLoaderFactory queryLoaderFactory,
+			IDictionary<string, Tuple<IType, bool>> namedParameters)
 		{
 			_queryIdentifier = queryIdentifier;
 			_stageOneAst = parsedQuery;
@@ -58,6 +101,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 			_shallowQuery = false;
 			_enabledFilters = enabledFilters;
 			_factory = factory;
+			_queryLoaderFactory = queryLoaderFactory;
+			_namedParameters = namedParameters;
 		}
 
 		/// <summary>
@@ -123,7 +168,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				int size = results.Count;
 				var tmp = new List<object>();
-				var distinction = new IdentitySet();
+				var distinction = new HashSet<object>(ReferenceComparer<object>.Instance);
 
 				for ( int i = 0; i < size; i++ ) 
 				{
@@ -171,10 +216,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
-		public NHibernate.Loader.Loader Loader
-		{
-			get { return _queryLoader; }
-		}
+		// Since 5.5
+		[Obsolete("Use QueryLoader property instead")]
+		public Loader.Loader Loader => _queryLoader as Loader.Loader ?? throw new NotSupportedException("Custom loader is not supported.");
+
+		/// <inheritdoc />
+		public ILoader QueryLoader => _queryLoader;
 
 		public virtual IType[] ActualReturnTypes
 		{
@@ -203,6 +250,10 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 			get { return _sqlAst.Walker.QuerySpaces; }
 		}
+
+		internal ISet<IPersister> Persisters => _sqlAst.Walker.Persisters;
+
+		public bool SupportsQueryCache => _sqlAst.Walker.SupportsQueryCache;
 
 		public string SQLString
 		{
@@ -368,7 +419,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 					_generator = new HqlSqlGenerator(_sqlAst, _factory);
 					_generator.Generate();
 
-					_queryLoader = new QueryLoader(this, _factory, _sqlAst.Walker.SelectClause);
+					_queryLoader = _queryLoaderFactory.Create(this, _factory, _sqlAst.Walker.SelectClause);
 				}
 
 				_compiled = true;
@@ -447,6 +498,20 @@ namespace NHibernate.Hql.Ast.ANTLR
 			{
 				throw new QueryExecutionRequestException("Not supported for DML operations", _queryIdentifier);
 			}
+		}
+
+		public bool TryGetNamedParameterType(string name, out IType type, out bool isGuessedType)
+		{
+			if (_namedParameters == null || !_namedParameters.TryGetValue(name, out var p))
+			{
+				type = null;
+				isGuessedType = false;
+				return false;
+			}
+
+			type = p.Item1;
+			isGuessedType = p.Item2;
+			return true;
 		}
 	}
 
@@ -551,7 +616,12 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private readonly string _collectionRole;
 		private IStatement _resultAst;
 
-		public HqlSqlTranslator(IASTNode ast, QueryTranslatorImpl qti, ISessionFactoryImplementor sfi, IDictionary<string, string> tokenReplacements, string collectionRole)
+		internal HqlSqlTranslator(
+			IASTNode ast,
+			QueryTranslatorImpl qti,
+			ISessionFactoryImplementor sfi,
+			IDictionary<string, string> tokenReplacements,
+			string collectionRole)
 		{
 			_inputAst = ast;
 			_qti = qti;
@@ -581,7 +651,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 				try
 				{
-					// Transform the tree.
 					_resultAst = (IStatement) hqlSqlWalker.statement().Tree;
 				}
 				finally

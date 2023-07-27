@@ -3,7 +3,6 @@ using System.Data;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
-using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -37,7 +36,7 @@ namespace NHibernate.Type
 			}
 			else
 			{
-				return code.Equals(TrueString, StringComparison.InvariantCultureIgnoreCase);
+				return GetBooleanAsObject(code.Equals(TrueString, StringComparison.InvariantCultureIgnoreCase));
 			}
 		}
 
@@ -68,11 +67,11 @@ namespace NHibernate.Type
 		{
 			if (string.Equals(TrueString, xml, StringComparison.InvariantCultureIgnoreCase))
 			{
-				return true;
+				return TrueObject;
 			}
 			else if (string.Equals(FalseString, xml, StringComparison.InvariantCultureIgnoreCase))
 			{
-				return false;
+				return FalseObject;
 			}
 			else
 			{

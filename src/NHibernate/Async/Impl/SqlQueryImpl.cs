@@ -11,6 +11,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
@@ -98,6 +99,7 @@ namespace NHibernate.Impl
 			Before();
 			try
 			{
+				ComputeFlattenedParameters();
 				return await (Session.ExecuteNativeUpdateAsync(GenerateQuerySpecification(namedParams), GetQueryParameters(namedParams), cancellationToken)).ConfigureAwait(false);
 			}
 			finally

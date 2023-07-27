@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
-using System.Linq;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR;
@@ -21,7 +20,7 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Loader.Hql
 {
 	[CLSCompliant(false)]
-	public partial class QueryLoader : BasicLoader
+	public partial class QueryLoader : BasicLoader, IQueryLoader
 	{
 		private readonly QueryTranslatorImpl _queryTranslator;
 
@@ -44,9 +43,8 @@ namespace NHibernate.Loader.Hql
 		private readonly NullableDictionary<string, string> _sqlAliasByEntityAlias = new NullableDictionary<string, string>();
 		private int _selectLength;
 		private LockMode[] _defaultLockModes;
-		private IType[] _cacheTypes;
 		private ISet<ICollectionPersister> _uncacheableCollectionPersisters;
-		private Dictionary<string, string[]>[] _collectionUserProvidedAliases;
+		private IReadOnlyDictionary<int, int> _entityByResultTypeDic;
 
 		public QueryLoader(QueryTranslatorImpl queryTranslator, ISessionFactoryImplementor factory, SelectClause selectClause)
 			: base(factory)
@@ -108,6 +106,11 @@ namespace NHibernate.Loader.Hql
 		protected override string[] Aliases
 		{
 			get { return _sqlAliases; }
+		}
+
+		public override bool IsCacheable(QueryParameters queryParameters)
+		{
+			return IsCacheable(queryParameters, _queryTranslator.SupportsQueryCache, _queryTranslator.Persisters);
 		}
 
 		protected override int[] CollectionOwners
@@ -199,21 +202,15 @@ namespace NHibernate.Loader.Hql
 			get { return _collectionSuffixes; }
 		}
 
-		protected override ICollectionPersister[] CollectionPersisters
+		protected internal override ICollectionPersister[] CollectionPersisters
 		{
 			get { return _collectionPersisters; }
-		}
-
-		public override IType[] CacheTypes => _cacheTypes;
-
-		protected override IDictionary<string, string[]> GetCollectionUserProvidedAlias(int index)
-		{
-			return _collectionUserProvidedAliases?[index];
 		}
 
 		private void Initialize(SelectClause selectClause)
 		{
 			IList<FromElement> fromElementList = selectClause.FromElementsForLoad;
+			_entityByResultTypeDic = selectClause.EntityByResultTypeDic;
 
 			_hasScalars = selectClause.IsScalarSelect;
 			_scalarColumnNames = selectClause.ColumnNames;
@@ -230,9 +227,6 @@ namespace NHibernate.Loader.Hql
 				_collectionPersisters = new IQueryableCollection[length];
 				_collectionOwners = new int[length];
 				_collectionSuffixes = new string[length];
-				CollectionFetches = new bool[length];
-				if (collectionFromElements.Any(qc => qc.QueryableCollection.IsManyToMany))
-					_collectionUserProvidedAliases = new Dictionary<string, string[]>[length];
 
 				for (int i = 0; i < length; i++)
 				{
@@ -242,7 +236,6 @@ namespace NHibernate.Loader.Hql
 					//				collectionSuffixes[i] = collectionFromElement.getColumnAliasSuffix();
 					//				collectionSuffixes[i] = Integer.toString( i ) + "_";
 					_collectionSuffixes[i] = collectionFromElement.CollectionSuffix;
-					CollectionFetches[i] = collectionFromElement.IsFetch;
 				}
 			}
 
@@ -256,8 +249,6 @@ namespace NHibernate.Loader.Hql
 			_includeInSelect = new bool[size];
 			_owners = new int[size];
 			_ownerAssociationTypes = new EntityType[size];
-			EntityFetches = new bool[size];
-			var cacheTypes = new List<IType>(ResultTypes);
 
 			for (int i = 0; i < size; i++)
 			{
@@ -273,39 +264,15 @@ namespace NHibernate.Loader.Hql
 				_entityFetchLazyProperties[i] = element.FetchLazyProperties != null
 					? new HashSet<string>(element.FetchLazyProperties)
 					: null;
-				_sqlAliases[i] = element.TableAlias;
+				_sqlAliases[i] = element.ParentFromElement?.TableAlias ?? element.TableAlias;
 				_entityAliases[i] = element.ClassAlias;
 				_sqlAliasByEntityAlias.Add(_entityAliases[i], _sqlAliases[i]);
-				// TODO should we just collect these like with the collections above?
-				_sqlAliasSuffixes[i] = (size == 1) ? "" : i + "_";
+				_sqlAliasSuffixes[i] = element.EntitySuffix;
 				//			sqlAliasSuffixes[i] = element.getColumnAliasSuffix();
 				_includeInSelect[i] = !element.IsFetch;
-				EntityFetches[i] = element.IsFetch;
-				if (element.IsFetch)
-				{
-					cacheTypes.Add(_entityPersisters[i].Type);
-				}
 				if (_includeInSelect[i])
 				{
 					_selectLength++;
-				}
-
-				if (collectionFromElements != null && element.IsFetch && element.QueryableCollection?.IsManyToMany == true
-					&& element.QueryableCollection.IsManyToManyFiltered(_queryTranslator.EnabledFilters))
-				{
-					var collectionIndex = collectionFromElements.IndexOf(element);
-
-					if (collectionIndex >= 0)
-					{
-						// When many-to-many is filtered we need to populate collection from element persister and not from bridge table.
-						// As bridge table will contain not-null values for filtered elements
-						// So do alias substitution for collection persister with element persister
-						// See test TestFilteredLinqQuery for details
-						_collectionUserProvidedAliases[collectionIndex] = new Dictionary<string, string[]>
-						{
-							{CollectionPersister.PropElement, _entityPersisters[i].GetIdentifierAliases(Suffixes[i])}
-						};
-					}
 				}
 
 				_owners[i] = -1; //by default
@@ -323,16 +290,10 @@ namespace NHibernate.Loader.Hql
 				}
 			}
 
-			if (_collectionPersisters != null)
-			{
-				cacheTypes.AddRange(_collectionPersisters.Where((t, i) => CollectionFetches[i]).Select(t => t.CollectionType));
-			}
-
-			_cacheTypes = cacheTypes.ToArray();
-
 			//NONE, because its the requested lock mode, not the actual! 
 			_defaultLockModes = ArrayHelper.Fill(LockMode.None, size);
 			_uncacheableCollectionPersisters = _queryTranslator.UncacheableCollectionPersisters;
+			CachePersistersWithCollections(ArrayHelper.IndexesOf(_includeInSelect, true));
 		}
 
 		public IList List(ISessionImplementor session, QueryParameters queryParameters)
@@ -401,7 +362,9 @@ namespace NHibernate.Loader.Hql
 				resultRow = new object[queryCols];
 				for (int i = 0; i < queryCols; i++)
 				{
-					resultRow[i] = ResultTypes[i].NullSafeGet(rs, scalarColumns[i], session, null);
+					resultRow[i] = _entityByResultTypeDic.TryGetValue(i, out var rowIndex)
+						? row[rowIndex]
+						: ResultTypes[i].NullSafeGet(rs, scalarColumns[i], session, null);
 				}
 			}
 			else
@@ -466,7 +429,7 @@ namespace NHibernate.Loader.Hql
 		[Obsolete("Please use ResultTypes instead")]
 		public IType[] ReturnTypes => ResultTypes;
 
-		internal IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session)
+		public IEnumerable GetEnumerable(QueryParameters queryParameters, IEventSource session)
 		{
 			CheckQuery(queryParameters);
 			Stopwatch stopWatch = null;

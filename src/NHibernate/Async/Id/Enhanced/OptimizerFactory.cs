@@ -24,13 +24,11 @@ namespace NHibernate.Id.Enhanced
 
 		public partial class HiLoOptimizer : OptimizerSupport
 		{
-			private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
-			[MethodImpl()]
 			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				using (await _generate.LockAsync())
+				using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
 				{
 					if (_lastSourceValue < 0)
 					{
@@ -51,6 +49,7 @@ namespace NHibernate.Id.Enhanced
 						_lastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
 						_upperLimit = (_lastSourceValue * IncrementSize) + 1;
 					}
+
 					return Make(_value++);
 				}
 			}
@@ -101,13 +100,11 @@ namespace NHibernate.Id.Enhanced
 
 		public partial class PooledOptimizer : OptimizerSupport, IInitialValueAwareOptimizer
 		{
-			private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
-			[MethodImpl()]
 			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				using (await _generate.LockAsync())
+				using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
 				{
 					if (_hiValue < 0)
 					{
@@ -134,6 +131,7 @@ namespace NHibernate.Id.Enhanced
 						_hiValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
 						_value = _hiValue - IncrementSize;
 					}
+
 					return Make(_value++);
 				}
 			}
@@ -145,13 +143,11 @@ namespace NHibernate.Id.Enhanced
 
 		public partial class PooledLoOptimizer : OptimizerSupport
 		{
-			private readonly NHibernate.Util.AsyncLock _generate = new NHibernate.Util.AsyncLock();
 
-			[MethodImpl()]
 			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				using (await _generate.LockAsync())
+				using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
 				{
 					if (_lastSourceValue < 0 || _value >= (_lastSourceValue + IncrementSize))
 					{
@@ -161,6 +157,7 @@ namespace NHibernate.Id.Enhanced
 						while (_value < 1)
 							_value++;
 					}
+
 					return Make(_value++);
 				}
 			}

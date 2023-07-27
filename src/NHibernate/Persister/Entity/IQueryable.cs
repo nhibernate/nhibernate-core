@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using NHibernate.SqlCommand;
 using NHibernate.Util;
 
 namespace NHibernate.Persister.Entity
@@ -10,16 +12,62 @@ namespace NHibernate.Persister.Entity
 		SuperClass
 	}
 
-	internal static class AbstractEntityPersisterExtensions
+	// 6.0 TODO: Move into IQueryable
+	public static class AbstractEntityPersisterExtensions
 	{
 		/// <summary>
-		/// Given a query alias and an identifying suffix, render the property select fragment.
+		/// Gets the properties select fragment.
 		/// </summary>
-		//6.0 TODO: Merge into IQueryable
-		public static string PropertySelectFragment(this IQueryable query, string alias, string suffix, string[] fetchProperties)
+		/// <param name="query">The <see cref="IQueryable"/> instance.</param>
+		/// <param name="alias">The table alias</param>
+		/// <param name="suffix">The column suffix.</param>
+		/// <param name="fetchProperties">Lazy properties to fetch.</param>
+		/// <returns>The properties select fragment.</returns>
+		internal static SelectFragment GetPropertiesSelectFragment(this IQueryable query, string alias, string suffix, ICollection<string> fetchProperties)
 		{
 			return ReflectHelper.CastOrThrow<AbstractEntityPersister>(query, "individual lazy property fetches")
-			                    .PropertySelectFragment(alias, suffix, fetchProperties);
+			                    .GetPropertiesSelectFragment(alias, suffix, fetchProperties);
+		}
+
+		/// <summary>
+		/// Gets the identifier select fragment.
+		/// </summary>
+		/// <param name="queryable">The <see cref="IQueryable"/> instance.</param>
+		/// <param name="alias">The table alias</param>
+		/// <param name="suffix">The column suffix.</param>
+		/// <returns>The identifier select fragment.</returns>
+		public static SelectFragment GetIdentifierSelectFragment(this IQueryable queryable, string alias, string suffix)
+		{
+			if (queryable is AbstractEntityPersister entityPersister)
+			{
+				return entityPersister.GetIdentifierSelectFragment(alias, suffix);
+			}
+
+			return new SelectFragment(queryable.Factory.Dialect)
+			       .SetSuffix(suffix)
+			       .AddColumns(alias, queryable.IdentifierColumnNames, queryable.GetIdentifierAliases(null));
+		}
+
+		/// <summary>
+		/// Gets the properties select fragment.
+		/// </summary>
+		/// <param name="queryable">The <see cref="IQueryable"/> instance.</param>
+		/// <param name="alias">The table alias</param>
+		/// <param name="suffix">The column suffix.</param>
+		/// <param name="allProperties">Whether to fetch all lazy properties.</param>
+		/// <returns>The properties select fragment.</returns>
+		public static SelectFragment GetPropertiesSelectFragment(this IQueryable queryable, string alias, string suffix, bool allProperties)
+		{
+			if (queryable is AbstractEntityPersister entityPersister)
+			{
+				return entityPersister.GetPropertiesSelectFragment(alias, suffix, allProperties);
+			}
+
+#pragma warning disable 618
+			var text = queryable.PropertySelectFragment(alias, suffix, allProperties);
+#pragma warning restore 618
+			return new SelectFragment(queryable.Factory.Dialect, text, null)
+				.SetSuffix(suffix);
 		}
 	}
 
@@ -100,11 +148,15 @@ namespace NHibernate.Persister.Entity
 		/// <param name="name"></param>
 		/// <param name="suffix"></param>
 		/// <returns></returns>
+		// Since v5.4
+		[Obsolete("Use GetIdentifierSelectFragment extension method instead.")]
 		string IdentifierSelectFragment(string name, string suffix);
 
 		/// <summary>
 		/// Given a query alias and an identifying suffix, render the property select fragment.
 		/// </summary>
+		// Since v5.4
+		[Obsolete("Use GetPropertiesSelectFragment extension method instead.")]
 		string PropertySelectFragment(string alias, string suffix, bool allProperties);
 
 		/// <summary> 

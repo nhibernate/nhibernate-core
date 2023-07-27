@@ -9,11 +9,10 @@
 
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NHibernate.Linq;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.TransactionTest
 {
@@ -96,41 +95,30 @@ namespace NHibernate.Test.TransactionTest
 			{
 				using (ITransaction t = s.BeginTransaction())
 				{
-					Assert.AreSame(t, s.Transaction);
-					Assert.IsFalse(s.Transaction.WasCommitted);
-					Assert.IsFalse(s.Transaction.WasRolledBack);
+					Assert.AreSame(t, s.GetCurrentTransaction());
+					Assert.IsFalse(s.GetCurrentTransaction().WasCommitted);
+					Assert.IsFalse(s.GetCurrentTransaction().WasRolledBack);
 					await (t.CommitAsync());
 
-					// ISession.Transaction returns a new transaction
-					// if the previous one completed!
-					Assert.IsNotNull(s.Transaction);
-					Assert.IsFalse(t == s.Transaction);
+					// ISession.GetCurrentTransaction() returns null if the transaction is completed.
+					Assert.IsNull(s.GetCurrentTransaction());
 
 					Assert.IsTrue(t.WasCommitted);
 					Assert.IsFalse(t.WasRolledBack);
-					Assert.IsFalse(s.Transaction.WasCommitted);
-					Assert.IsFalse(s.Transaction.WasRolledBack);
 					Assert.IsFalse(t.IsActive);
-					Assert.IsFalse(s.Transaction.IsActive);
 				}
 
 				using (ITransaction t = s.BeginTransaction())
 				{
 					await (t.RollbackAsync());
 
-					// ISession.Transaction returns a new transaction
-					// if the previous one completed!
-					Assert.IsNotNull(s.Transaction);
-					Assert.IsFalse(t == s.Transaction);
+					// ISession.GetCurrentTransaction() returns null if the transaction is completed.
+					Assert.IsNull(s.GetCurrentTransaction());
 
 					Assert.IsTrue(t.WasRolledBack);
 					Assert.IsFalse(t.WasCommitted);
 
-					Assert.IsFalse(s.Transaction.WasCommitted);
-					Assert.IsFalse(s.Transaction.WasRolledBack);
-
 					Assert.IsFalse(t.IsActive);
-					Assert.IsFalse(s.Transaction.IsActive);
 				}
 			}
 		}
@@ -145,7 +133,8 @@ namespace NHibernate.Test.TransactionTest
 
 				using (var s1 = builder.Interceptor(new TestInterceptor(1, flushOrder)).OpenSession())
 				using (var s2 = builder.Interceptor(new TestInterceptor(2, flushOrder)).OpenSession())
-				using (var s3 = s1.SessionWithOptions().Connection().Interceptor(new TestInterceptor(3, flushOrder)).OpenSession())
+				using (var s3 = s1.SessionWithOptions().Connection().Interceptor(new TestInterceptor(3, flushOrder))
+				                  .OpenSession())
 				using (var t = s.BeginTransaction())
 				{
 					var p1 = new Person();
@@ -234,8 +223,114 @@ namespace NHibernate.Test.TransactionTest
 			using (var s = Sfi.WithOptions().Connection(connection).OpenSession())
 			{
 				CacheablePerson person = null;
-				Assert.DoesNotThrowAsync(async () => person = await (s.LoadAsync<CacheablePerson>(id)), "Failed loading entity from second level cache.");
+				Assert.DoesNotThrowAsync(
+					async () => person = await (s.LoadAsync<CacheablePerson>(id)),
+					"Failed loading entity from second level cache.");
 				Assert.That(person.NotNullData, Is.EqualTo(notNullData));
+			}
+		}
+
+		[Test]
+		public async Task CanCommitFromSessionTransactionAsync()
+		{
+			int id;
+			using (var s = OpenSession())
+			{
+				Assert.That(s.GetCurrentTransaction(), Is.Null);
+				using (s.BeginTransaction())
+				{
+					var person = new Person();
+					await (s.SaveAsync(person));
+					id = person.Id;
+
+					await (s.GetCurrentTransaction().CommitAsync());
+				}
+				Assert.That(s.GetCurrentTransaction(), Is.Null);
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var person = await (s.GetAsync<Person>(id));
+				Assert.That(person, Is.Not.Null);
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test]
+		public async Task CanRollbackFromSessionTransactionAsync()
+		{
+			int id;
+			using (var s = OpenSession())
+			{
+				Assert.That(s.GetCurrentTransaction(), Is.Null);
+				using (s.BeginTransaction())
+				{
+					var person = new Person();
+					await (s.SaveAsync(person));
+					id = person.Id;
+
+					await (s.GetCurrentTransaction().RollbackAsync());
+
+					// Need to check before leaving the current using, otherwise the rollback could be the result of the
+					// disposing.
+					using (var s2 = OpenSession())
+					using (var t2 = s2.BeginTransaction())
+					{
+						person = await (s2.GetAsync<Person>(id));
+						Assert.That(person, Is.Null);
+						await (t2.CommitAsync());
+					}
+				}
+				Assert.That(s.GetCurrentTransaction(), Is.Null);
+			}
+		}
+
+		[Test, Obsolete]
+		public async Task CanCommitFromSessionObsoleteTransactionAsync()
+		{
+			int id;
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var person = new Person();
+				await (s.SaveAsync(person));
+				id = person.Id;
+
+				await (s.Transaction.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var person = await (s.GetAsync<Person>(id));
+				Assert.That(person, Is.Not.Null);
+				await (t.CommitAsync());
+			}
+		}
+
+		[Test, Obsolete]
+		public async Task CanRollbackFromSessionObsoleteTransactionAsync()
+		{
+			int id;
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
+			{
+				var person = new Person();
+				await (s.SaveAsync(person));
+				id = person.Id;
+
+				await (s.Transaction.RollbackAsync());
+
+				// Need to check before leaving the current using, otherwise the rollback could be the result of the
+				// disposing.
+				using (var s2 = OpenSession())
+				using (var t2 = s2.BeginTransaction())
+				{
+					person = await (s2.GetAsync<Person>(id));
+					Assert.That(person, Is.Null);
+					await (t2.CommitAsync());
+				}
 			}
 		}
 	}

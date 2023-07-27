@@ -1,7 +1,7 @@
-nuget.exe
 nunit.*
 vswhere/
 csharpasyncgenerator.commandline/
 gitreleasemanager/
 obj/
 microsoft.*
+netstandard.*

@@ -124,10 +124,20 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { _propertyPath = value; }
 		}
 
+		internal bool SkipSemiResolve { get; set; }
+
+		// Since v5.4
+		[Obsolete("Use overload with aliasCreator parameter instead.")]
 		public override void SetScalarColumnText(int i)
 		{
 			string[] sqlColumns = GetColumns();
 			ColumnHelper.GenerateScalarColumns(Walker.ASTFactory, this, sqlColumns, i);
+		}
+
+		/// <inheritdoc />
+		public override string[] SetScalarColumnText(int i, Func<int, int, string> aliasCreator)
+		{
+			return ColumnHelper.GenerateScalarColumns(ASTFactory, this, GetColumns(), i, aliasCreator);
 		}
 
 		public override void ResolveIndex(IASTNode parent) 
@@ -200,7 +210,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			// this might be a Java constant.
 			if ( propertyType == null ) 
 			{
-				if ( parent == null ) 
+				if (parent == null && !SkipSemiResolve)
 				{
 					Walker.LiteralProcessor.LookupConstant( this );
 				}
@@ -351,10 +361,11 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				IEntityPersister entityPersister = elem.EntityPersister;
 				if ( entityPersister != null ) 
 				{
-					Walker.AddQuerySpaces( entityPersister.QuerySpaces );
+					Walker.AddQuerySpaces(entityPersister);
 				}
 			}
-			Walker.AddQuerySpaces( queryableCollection.CollectionSpaces );	// Always add the collection's query spaces.
+			// Always add the collection's query spaces.
+			Walker.AddQuerySpaces(queryableCollection);
 		}
 
 		private void DereferenceEntity(EntityType entityType, bool implicitJoin, string classAlias, bool generateJoin, IASTNode parent) 
@@ -386,6 +397,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string property = _propertyName;
 			bool joinIsNeeded;
 
+			//For nullable entity comparisons we always need to add join (like not constrained one-to-one or not-found ignore associations)
+			bool comparisonWithNullableEntity = entityType.IsNullable && Walker.IsComparativeExpressionClause && !IsCorrelatedSubselect;
+
 			if ( IsDotNode( parent ) ) 
 			{
 				// our parent is another dot node, meaning we are being further dereferenced.
@@ -393,7 +407,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				// entity's PK (because 'our' table would know the FK).
 				parentAsDotNode = ( DotNode ) parent;
 				property = parentAsDotNode._propertyName;
-				joinIsNeeded = generateJoin && !IsReferenceToPrimaryKey( parentAsDotNode._propertyName, entityType );
+				joinIsNeeded = generateJoin && ((Walker.IsSelectStatement && comparisonWithNullableEntity) || !IsReferenceToPrimaryKey( parentAsDotNode._propertyName, entityType ));
 			}
 			else if ( ! Walker.IsSelectStatement ) 
 			{
@@ -406,12 +420,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else
 			{
-				joinIsNeeded = generateJoin || ((Walker.IsInSelect && !Walker.IsInCase) || (Walker.IsInFrom && !Walker.IsComparativeExpressionClause));
+				joinIsNeeded = generateJoin || (Walker.IsInSelect && !Walker.IsInCase) || (Walker.IsInFrom && !Walker.IsComparativeExpressionClause)
+				               || comparisonWithNullableEntity;
 			}
 
-			if ( joinIsNeeded ) 
+			if ( joinIsNeeded )
 			{
-				DereferenceEntityJoin( classAlias, entityType, implicitJoin, parent );
+				DereferenceEntityJoin(classAlias, entityType, implicitJoin, parent, comparisonWithNullableEntity);
+				if (comparisonWithNullableEntity)
+				{
+					_columns = FromElement.GetIdentityColumns();
+				}
 			}
 			else 
 			{
@@ -441,7 +460,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 		}
 
-		private void DereferenceEntityJoin(string classAlias, EntityType propertyType, bool impliedJoin, IASTNode parent)
+		private void DereferenceEntityJoin(string classAlias, EntityType propertyType, bool impliedJoin, IASTNode parent, bool forceLeftJoin)
 		{
 			_dereferenceType = DerefEntity;
 			if ( Log.IsDebugEnabled() ) 
@@ -453,14 +472,22 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				           ASTUtil.GetDebugstring( parent ));
 			}
 
-			// Create a new FROM node for the referenced class.
-			string associatedEntityName = propertyType.GetAssociatedEntityName();
-			string tableAlias = AliasGenerator.CreateName( associatedEntityName );
+			if (FromElement is JoinSubqueryFromElement joinSubquery &&
+			    joinSubquery.PropertyMapping.ContainsEntityAlias(PropertyPath, propertyType))
+			{
+				// No need to create a join 
+				SetPropertyNameAndPath(parent);
+				return;
+			}
 
 			string[] joinColumns = GetColumns();
 			string joinPath = Path;
 
-			if ( impliedJoin && Walker.IsInFrom ) 
+			if (forceLeftJoin)
+			{
+				_joinType = JoinType.LeftOuterJoin;
+			}
+			else if (impliedJoin && Walker.IsInFrom)
 			{
 				_joinType = Walker.ImpliedJoinType;
 			}
@@ -495,20 +522,17 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			//
 			///////////////////////////////////////////////////////////////////////////////
 
-			bool found = elem != null;
-			// even though we might find a pre-existing element by join path, for FromElements originating in a from-clause
-			// we should only ever use the found element if the aliases match (null != null here).  
-			// Implied joins are ok to reuse only if in same from clause (are there any other cases when we should reject implied joins?).
-			bool useFoundFromElement = found &&
-									   (elem.IsImplied && elem.FromClause == currentFromClause || // NH different behavior (NH-3002)
-										AreSame(classAlias, elem.ClassAlias));
+			// even though we might find a pre-existing element by join path, we may not be able to reuse it...
+			bool useFoundFromElement = elem != null && CanReuse(classAlias, elem);
 
 			if ( ! useFoundFromElement )
 			{
-				// If this is an implied join in a from element, then use the impled join type which is part of the
-				// tree parser's state (set by the gramamar actions).
+				// Create a new FROM node for the referenced class.
+				var associatedEntityName = propertyType.GetAssociatedEntityName();
+				var tableAlias = AliasGenerator.CreateName(associatedEntityName);
+
 				JoinSequence joinSequence = SessionFactoryHelper
-					.CreateJoinSequence( impliedJoin, propertyType, tableAlias, _joinType, joinColumns );
+					.CreateJoinSequence(false, propertyType, tableAlias, _joinType, joinColumns);
 
 				var factory = new FromElementFactory(
 						currentFromClause,
@@ -529,17 +553,36 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			}
 			else 
 			{
+				if (forceLeftJoin)
+				{
+					elem.JoinSequence.SetJoinType(_joinType);
+				}
+
+				elem.ReusedJoin = true;
 				currentFromClause.AddDuplicateAlias(classAlias, elem);
 			}
 
 			SetImpliedJoin( elem );
-			Walker.AddQuerySpaces( elem.EntityPersister.QuerySpaces );
+			Walker.AddQuerySpaces(elem.EntityPersister);
 			FromElement = elem;	// This 'dot' expression now refers to the resulting from element.
 		}
 
 		private bool AreSame(String alias1, String alias2) {
 			// again, null != null here
 			return !StringHelper.IsEmpty( alias1 ) && !StringHelper.IsEmpty( alias2 ) && alias1.Equals( alias2 );
+		}
+
+		private bool CanReuse(string classAlias, FromElement fromElement)
+		{
+			// if the from-clauses are the same, we can be a little more aggressive in terms of what we reuse
+			if (fromElement.FromClause == Walker.CurrentFromClause &&
+				AreSame(classAlias, fromElement.ClassAlias))
+			{
+				return true;
+			}
+
+			// otherwise (subquery case) don't reuse the fromElement if we are processing the from-clause of the subquery
+			return Walker.CurrentClauseType != HqlSqlWalker.FROM && Walker.CurrentClauseType != HqlSqlWalker.JOIN;
 		}
 
 		private void SetImpliedJoin(FromElement elem)

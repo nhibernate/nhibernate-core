@@ -28,6 +28,8 @@ namespace NHibernate.Test.FilterTest
 		private static readonly ILog log = LogManager.GetLogger(typeof(DynamicFilterTestAsync));
 		private TestData testData;
 
+		protected override string CacheConcurrencyStrategy => "nonstrict-read-write";
+
 		protected override void OnSetUp()
 		{
 			testData = new TestData(this);
@@ -45,7 +47,7 @@ namespace NHibernate.Test.FilterTest
 			var persister = Sfi
 				.GetCollectionPersister(typeof(Salesperson).FullName + ".Orders");
 			var cacheKey =
-				new CacheKey(testData.steveId, persister.KeyType, persister.Role, Sfi);
+				new CacheKey(testData.steveId, persister.KeyType, persister.Role, Sfi, null);
 			CollectionCacheEntry cachedData;
 
 			using (var session = OpenSession())

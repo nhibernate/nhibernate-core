@@ -15,20 +15,13 @@ namespace NHibernate.Test.NHSpecificTest.NH1093
 			configuration.SetProperty(Environment.UseSecondLevelCache, "true");
 		}
 
-		protected override string CacheConcurrencyStrategy
-		{
-			get { return null; }
-		}
-
 		private void Cleanup()
 		{
-			using (ISession s = OpenSession())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				using (s.BeginTransaction())
-				{
-					s.CreateQuery("delete from SimpleCached").ExecuteUpdate();
-					s.Transaction.Commit();
-				}
+				s.CreateQuery("delete from SimpleCached").ExecuteUpdate();
+				t.Commit();
 			}
 		}
 

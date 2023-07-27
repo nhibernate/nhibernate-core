@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using NHibernate.Engine;
 using NHibernate.Linq;
+using NHibernate.Linq.Clauses;
 using NHibernate.Linq.Expressions;
 using NHibernate.Linq.Functions;
 using NHibernate.Linq.Visitors;
@@ -13,6 +16,8 @@ using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses.ResultOperators;
+using TransparentIdentifierRemovingExpressionVisitor = NHibernate.Linq.Visitors.TransparentIdentifierRemovingExpressionVisitor;
 
 namespace NHibernate.Util
 {
@@ -26,6 +31,99 @@ namespace NHibernate.Util
 					string.Format("Invalid expression type: Expected ExpressionType.MemberAccess, Found {0}", expression.Body.NodeType));
 			}
 			return ((MemberExpression)expression.Body).Member;
+		}
+
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+		/// <summary>
+		/// Try to retrieve <see cref="GetMemberBinder"/> from a reduced <see cref="ExpressionType.Dynamic"/> expression.
+		/// </summary>
+		/// <param name="expression">The reduced dynamic expression.</param>
+		/// <param name="memberBinder">The out binder parameter.</param>
+		/// <returns>Whether the binder was found.</returns>
+		internal static bool TryGetDynamicMemberBinder(InvocationExpression expression, out GetMemberBinder memberBinder)
+		{
+			// This is an ugly workaround for dynamic expressions in .NET Core. In .NET Core a dynamic expression is reduced
+			// when first visited by a expression visitor that is not a DynamicExpressionVisitor, where in .NET Framework it is never reduced.
+			// As RelinqExpressionVisitor does not extend DynamicExpressionVisitor, we will always have a reduced dynamic expression in .NET Core.
+			// Unfortunately we can not tap into the expression tree earlier to intercept the dynamic expression
+			if (expression.Arguments.Count == 2 &&
+			    expression.Arguments[0] is ConstantExpression constant &&
+			    constant.Value is CallSite site &&
+			    site.Binder is GetMemberBinder binder)
+			{
+				memberBinder = binder;
+				return true;
+			}
+
+			memberBinder = null;
+			return false;
+		}
+#endif
+
+		/// <summary>
+		/// Check whether the given expression represent a variable.
+		/// </summary>
+		/// <param name="expression">The expression to check.</param>
+		/// <param name="path">The path of the variable.</param>
+		/// <param name="closureContext">The closure context where the variable is stored.</param>
+		/// <returns>Whether the expression represents a variable.</returns>
+		internal static bool IsVariable(Expression expression, out string path, out object closureContext)
+		{
+			Expression childExpression;
+			string currentPath;
+			switch (expression)
+			{
+				case MemberExpression memberExpression:
+					childExpression = memberExpression.Expression;
+					currentPath = memberExpression.Member.Name;
+					break;
+				case ConstantExpression constantExpression:
+					path = null;
+					if (constantExpression.Type.Attributes.HasFlag(TypeAttributes.NestedPrivate) &&
+					    Attribute.IsDefined(constantExpression.Type, typeof(CompilerGeneratedAttribute), inherit: true))
+					{
+						closureContext = constantExpression.Value;
+						return true;
+					}
+
+					closureContext = null;
+					return false;
+				default:
+					path = null;
+					closureContext = null;
+					return false;
+			}
+
+			if (!IsVariable(childExpression, out path, out closureContext))
+			{
+				return false;
+			}
+
+			path = path != null ? $"{currentPath}_{path}" : currentPath;
+			return true;
+		}
+
+		/// <summary>
+		/// Get the mapped type for the given expression.
+		/// </summary>
+		/// <param name="parameters">The query parameters.</param>
+		/// <param name="expression">The expression.</param>
+		/// <returns>The mapped type of the expression or <see langword="null"/> when the mapped type was not
+		/// found and the <paramref name="expression"/> type is <see cref="object"/>.</returns>
+		internal static IType GetType(VisitorParameters parameters, Expression expression)
+		{
+			if (expression is ConstantExpression constantExpression &&
+				parameters.ConstantToParameterMap.TryGetValue(constantExpression, out var param))
+			{
+				return param.Type;
+			}
+
+			if (TryGetMappedType(parameters.SessionFactory, expression, out var type, out _, out _, out _))
+			{
+				return type;
+			}
+
+			return expression.Type == typeof(object) ? null : TypeFactory.HeuristicType(expression.Type);
 		}
 
 		/// <summary>
@@ -62,10 +160,17 @@ namespace NHibernate.Util
 			int index;
 			if (componentType != null)
 			{
+				var propertyNullability = componentType.PropertyNullability;
+				if (propertyNullability == null)
+				{
+					nullable = false;
+					return false;
+				}
+
 				index = Array.IndexOf(
 					componentType.PropertyNames,
 					memberPath.Substring(memberPath.LastIndexOf('.') + 1));
-				nullable = componentType.PropertyNullability[index];
+				nullable = propertyNullability[index];
 				return true;
 			}
 
@@ -75,7 +180,14 @@ namespace NHibernate.Util
 				return true;
 			}
 
-			index = entityPersister.EntityMetamodel.GetPropertyIndex(memberPath);
+			var propIndex = entityPersister.EntityMetamodel.GetPropertyIndexOrNull(memberPath);
+			if (propIndex == null)
+			{
+				nullable = false;
+				return false;
+			}
+
+			index = propIndex.Value;
 			nullable = entityPersister.PropertyNullability[index];
 			return true;
 		}
@@ -240,7 +352,7 @@ namespace NHibernate.Util
 			// Traverse the members that were traversed by the TryGetAllMemberMetadata method in the reverse order and try to keep
 			// tracking the entity persister until all members are traversed.
 			var member = memberPaths.Pop();
-			var currentType = currentEntityPersister.EntityMetamodel.GetPropertyType(member.Path);
+			var currentType = GetPropertyType(currentEntityPersister, member.Path);
 			IAbstractComponentType currentComponentType = null;
 			while (memberPaths.Count > 0 && currentType != null)
 			{
@@ -262,23 +374,14 @@ namespace NHibernate.Util
 						break;
 					case IAbstractComponentType componentType:
 						currentComponentType = componentType;
-						if (currentEntityPersister == null)
+						currentType = TryGetComponentPropertyType(componentType, member.Path);
+						if (currentEntityPersister != null)
 						{
-							// When persister is not available (q.OneToManyCompositeElement[0].Prop), try to get the type from the component
-							currentType = TryGetComponentPropertyType(componentType, member.Path);
-						}
-						else
-						{
-							// Concatenate the component property path in order to be able to use EntityMetamodel.GetPropertyType to retrieve the type.
-							// As GetPropertyType supports only components, do not concatenate when dealing with collection composite elements or elements.
 							// q.Component.Prop
 							member = new MemberMetadata(
-								$"{memberPath}.{member.Path}",
+								memberPath + "." + member.Path,
 								member.ConvertType,
 								member.HasIndexer);
-
-							// q.Component.Prop
-							currentType = currentEntityPersister.EntityMetamodel.GetPropertyType(member.Path);
 						}
 
 						break;
@@ -307,6 +410,12 @@ namespace NHibernate.Util
 			entityPersister = null;
 			component = null;
 			return false;
+		}
+
+		private static IType GetPropertyType(IEntityPersister currentEntityPersister, string path)
+		{
+			((IPropertyMapping) currentEntityPersister).TryToType(path, out var type);
+			return type;
 		}
 
 		private static IType TryGetComponentPropertyType(IAbstractComponentType componentType, string memberPath)
@@ -373,7 +482,7 @@ namespace NHibernate.Util
 
 			memberComponent = null;
 			memberType = memberPersister != null
-				? memberPersister.EntityMetamodel.GetPropertyType(member.Path)
+				? GetPropertyType(memberPersister, member.Path)
 				: null; // q.AnyType.Member, ((NotMappedClass)q.ManyToOne)
 		}
 
@@ -425,10 +534,16 @@ namespace NHibernate.Util
 									.Select(sessionFactory.GetEntityPersister)
 									.FirstOrDefault(p => p.MappedClass == convertedType);
 
-				return persister != null;
+				if (persister != null)
+					return true;
 			}
+			else if (TryGetEntityPersister(convertedType, sessionFactory, out persister))
+				return true;
 
-			return TryGetEntityPersister(convertedType, sessionFactory, out persister);
+			// Assume type conversion doesn't change entity type
+			// TODO: Consider removing convertedType related logic above and always return currentEntityPersister
+			persister = currentEntityPersister;
+			return true;
 		}
 
 		private static bool TryGetEntityPersister(
@@ -496,6 +611,43 @@ namespace NHibernate.Util
 				: TypeFactory.GetDefaultTypeFor(member.ConvertType); // (long)q.OneToMany[0]
 		}
 
+		private class GroupingKeyFlattener : NhExpressionVisitor
+		{
+			private bool _flattened;
+
+			public static Expression FlattenGroupingKey(Expression expression)
+			{
+				var visitor = new GroupingKeyFlattener();
+				expression = visitor.Visit(expression);
+				if (visitor._flattened)
+				{
+					expression = TransparentIdentifierRemovingExpressionVisitor.ReplaceTransparentIdentifiers(expression);
+					// When the grouping key is an array we have to unwrap it (e.g. group.Key[0] == variable)
+					if (expression.NodeType == ExpressionType.ArrayIndex &&
+					    expression is BinaryExpression binaryExpression &&
+					    binaryExpression.Left is NewArrayExpression newArray &&
+					    binaryExpression.Right is ConstantExpression indexExpression &&
+					    indexExpression.Value is int index)
+					{
+						return newArray.Expressions[index];
+					}
+				}
+
+				return expression;
+			}
+
+			protected override Expression VisitMember(MemberExpression node)
+			{
+				if (node.TryGetGroupResultOperator(out var groupBy))
+				{
+					_flattened = true;
+					return groupBy.KeySelector;
+				}
+
+				return base.VisitMember(node);
+			}
+		}
+
 		private class MemberMetadataExtractor : NhExpressionVisitor
 		{
 			private readonly List<MemberMetadataResult> _childrenResults = new List<MemberMetadataResult>();
@@ -541,6 +693,8 @@ namespace NHibernate.Util
 				bool hasIndexer,
 				out MemberMetadataResult results)
 			{
+				expression = GroupingKeyFlattener.FlattenGroupingKey(expression);
+
 				var extractor = new MemberMetadataExtractor(memberPaths, convertType, hasIndexer);
 				extractor.Accept(expression);
 				results = extractor._entityName != null || extractor._childrenResults.Count > 0
@@ -567,10 +721,44 @@ namespace NHibernate.Util
 				return base.Visit(node.Expression);
 			}
 
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+			protected override Expression VisitInvocation(InvocationExpression node)
+			{
+				if (TryGetDynamicMemberBinder(node, out var binder))
+				{
+					_memberPaths.Push(new MemberMetadata(binder.Name, _convertType, _hasIndexer));
+					_convertType = null;
+					_hasIndexer = false;
+					return base.Visit(node.Arguments[1]);
+				}
+
+				return base.VisitInvocation(node);
+			}
+#endif
+
+			protected override Expression VisitDynamic(DynamicExpression node)
+			{
+				if (node.Binder is GetMemberBinder binder)
+				{
+					_memberPaths.Push(new MemberMetadata(binder.Name, _convertType, _hasIndexer));
+					_convertType = null;
+					_hasIndexer = false;
+					return base.Visit(node.Arguments[0]);
+				}
+
+				return Visit(node);
+			}
+
 			protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression node)
 			{
 				if (node.ReferencedQuerySource is IFromClause fromClause)
 				{
+					// Types will be different when OfType method is used (e.g. Query<A>().OfType<B>())
+					if (fromClause.ItemType != node.Type)
+					{
+						_convertType = node.Type;
+					}
+
 					return base.Visit(fromClause.FromExpression);
 				}
 
@@ -579,9 +767,26 @@ namespace NHibernate.Util
 					return base.Visit(joinClause.InnerSequence);
 				}
 
+				if (node.ReferencedQuerySource is NhOuterJoinClause outerJoinClause)
+				{
+					return base.Visit(outerJoinClause.JoinClause.InnerSequence);
+				}
+
 				// Not supported expression
 				_entityName = null;
 				return node;
+			}
+
+			protected override Expression VisitSubQuery(SubQueryExpression expression)
+			{
+				var ofTypeOperator = expression.QueryModel.ResultOperators.OfType<OfTypeResultOperator>().FirstOrDefault();
+				if (ofTypeOperator != null)
+				{
+					_convertType = ofTypeOperator.SearchedItemType;
+				}
+
+				base.Visit(expression.QueryModel.SelectClause.Selector);
+				return expression;
 			}
 
 			protected override Expression VisitUnary(UnaryExpression node)
@@ -646,6 +851,14 @@ namespace NHibernate.Util
 							? Enumerable.First(node.Arguments) // q.Children.ElementAt(0)
 							: node.Object // q.Children[0]
 					);
+				}
+
+				if (VisitorUtil.TryGetPotentialDynamicComponentDictionaryMember(node, out var memberName))
+				{
+					_memberPaths.Push(new MemberMetadata(memberName, _convertType, _hasIndexer));
+					_convertType = null;
+					_hasIndexer = false;
+					return base.Visit(node.Object);
 				}
 
 				return Visit(node);

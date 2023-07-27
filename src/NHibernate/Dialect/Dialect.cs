@@ -55,6 +55,7 @@ namespace NHibernate.Dialect
 		static Dialect()
 		{
 			StandardAggregateFunctions["count"] = new CountQueryFunctionInfo();
+			StandardAggregateFunctions["count_big"] = new CountQueryFunctionInfo();
 			StandardAggregateFunctions["avg"] = new AvgQueryFunctionInfo();
 			StandardAggregateFunctions["max"] = new ClassicAggregateFunction("max", false);
 			StandardAggregateFunctions["min"] = new ClassicAggregateFunction("min", false);
@@ -93,14 +94,14 @@ namespace NHibernate.Dialect
 			RegisterFunction("coalesce", new StandardSQLFunction("coalesce"));
 			RegisterFunction("nullif", new StandardSQLFunction("nullif"));
 			RegisterFunction("abs", new StandardSQLFunction("abs"));
-			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
+			RegisterFunction("mod", new ModulusFunction(false, false));
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
 			RegisterFunction("upper", new StandardSQLFunction("upper"));
 			RegisterFunction("lower", new StandardSQLFunction("lower"));
 			RegisterFunction("cast", new CastFunction());
 			RegisterFunction("transparentcast", new TransparentCastFunction());
 			RegisterFunction("extract", new AnsiExtractFunction());
-			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "||", ")"));
+			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", " || ", ")"));
 
 			// the syntax of current_timestamp is extracted from H3.2 tests 
 			// - test\hql\ASTParserLoadingTest.java
@@ -2609,6 +2610,11 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
+
+		/// <summary>
+		/// Whether <see cref="decimal"/> is stored as a floating point number.
+		/// </summary>
+		public virtual bool IsDecimalStoredAsFloatingPointNumber => false;
 
 		public virtual bool IsKnownToken(string currentToken, string nextToken)
 		{

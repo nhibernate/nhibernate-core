@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Text;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
+using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using NHibernate.Type;
 using NHibernate.Util;
 using Environment=NHibernate.Cfg.Environment;
 
@@ -151,6 +155,7 @@ namespace NHibernate.Dialect
 			"float8",
 			"force",
 			"fulltext",
+			"goto",
 			"high_priority",
 			"hour_microsecond",
 			"hour_minute",
@@ -166,6 +171,7 @@ namespace NHibernate.Dialect
 			"key",
 			"keys",
 			"kill",
+			"label",
 			"limit",
 			"linear",
 			"lines",
@@ -175,6 +181,7 @@ namespace NHibernate.Dialect
 			"longblob",
 			"longtext",
 			"low_priority",
+			"master_ssl_verify_server_cert",
 			"mediumblob",
 			"mediumint",
 			"mediumtext",
@@ -203,6 +210,8 @@ namespace NHibernate.Dialect
 			"second_microsecond",
 			"separator",
 			"show",
+			"shutdown",
+			"source_ssl_verify_server_cert",
 			"spatial",
 			"sql_big_result",
 			"sql_calc_found_rows",
@@ -242,7 +251,8 @@ namespace NHibernate.Dialect
 
 		protected virtual void RegisterFunctions()
 		{
-			RegisterFunction("iif", new StandardSQLFunction("if"));
+			RegisterFunction("iif", new IfSQLFunction());
+			RegisterFunction("mod", new ModulusFunction(true, true));
 
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
 			
@@ -549,5 +559,30 @@ namespace NHibernate.Dialect
 		public override bool SupportsDistributedTransactions => false;
 
 		#endregion
+
+		[Serializable]
+		internal class IfSQLFunction : StandardSQLFunction
+		{
+			public IfSQLFunction() : base("if")
+			{
+			}
+
+			/// <inheritdoc />
+			public override IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+				var args = argumentTypes.ToList();
+				if (args.Count != 3)
+				{
+					if (throwOnError)
+					{
+						throw new QueryException($"Invalid number of arguments for iif()");
+					}
+
+					return null;
+				}
+
+				return args[1] ?? args[2];
+			}
+		}
 	}
 }

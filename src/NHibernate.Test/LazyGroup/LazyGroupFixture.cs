@@ -11,6 +11,8 @@ namespace NHibernate.Test.LazyGroup
 	[TestFixture]
 	public class LazyGroupFixture : TestCase
 	{
+		protected override string CacheConcurrencyStrategy => "nonstrict-read-write";
+
 		protected override string MappingsAssembly => "NHibernate.Test";
 
 		protected override string[] Mappings => new[] { "LazyGroup.Mappings.hbm.xml" };

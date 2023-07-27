@@ -58,7 +58,7 @@ namespace NHibernate.AdoNet
 					cmd.Connection = sessionConnection;
 				}
 
-				_connectionManager.Transaction.Enlist(cmd);
+				_connectionManager.EnlistInTransaction(cmd);
 				Driver.PrepareCommand(cmd);
 			}
 			catch (InvalidOperationException ioe)
@@ -141,7 +141,7 @@ namespace NHibernate.AdoNet
 			}
 			finally
 			{
-				if (Log.IsDebugEnabled() && duration != null)
+				if (duration != null)
 					Log.Debug("ExecuteNonQuery took {0} ms", duration.ElapsedMilliseconds);
 			}
 		}
@@ -152,13 +152,30 @@ namespace NHibernate.AdoNet
 			await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
 			LogCommand(cmd);
 			await (PrepareAsync(cmd, cancellationToken)).ConfigureAwait(false);
-			Stopwatch duration = null;
-			if (Log.IsDebugEnabled())
-				duration = Stopwatch.StartNew();
-			DbDataReader reader = null;
+
+			var duration = Log.IsDebugEnabled() ? Stopwatch.StartNew() : null;
+
+			var reader = await (DoExecuteReaderAsync(cmd, cancellationToken)).ConfigureAwait(false);
+
+			_readersToClose.Add(reader);
+			LogOpenReader(duration , reader);
+			return reader;
+		}
+
+		private async Task<DbDataReader> DoExecuteReaderAsync(DbCommand cmd, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
-				reader = await (cmd.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false);
+				var reader = await (cmd.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false);
+				if (reader == null)
+				{
+					// MySql may return null instead of an exception, by example when the query is canceled by another thread.
+					throw new InvalidOperationException("The query execution has yielded a null reader. (Has it been canceled?)");
+				}
+				return _factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders
+					? reader
+					: await (NHybridDataReader.CreateAsync(reader, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (OperationCanceledException) { throw; }
 			catch (Exception e)
@@ -167,23 +184,6 @@ namespace NHibernate.AdoNet
 				Log.Error(e, "Could not execute query: {0}", cmd.CommandText);
 				throw;
 			}
-			finally
-			{
-				if (Log.IsDebugEnabled() && duration != null && reader != null)
-				{
-					Log.Debug("ExecuteReader took {0} ms", duration.ElapsedMilliseconds);
-					_readersDuration[reader] = duration;
-				}
-			}
-
-			if (!_factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders)
-			{
-				reader = await (NHybridDataReader.CreateAsync(reader, cancellationToken)).ConfigureAwait(false);
-			}
-
-			_readersToClose.Add(reader);
-			LogOpenReader();
-			return reader;
 		}
 
 		/// <summary>
@@ -234,7 +234,7 @@ namespace NHibernate.AdoNet
 				duration = Stopwatch.StartNew();
 			var countBeforeExecutingBatch = CountOfStatementsInCurrentBatch;
 			await (DoExecuteBatchAsync(ps, cancellationToken)).ConfigureAwait(false);
-			if (Log.IsDebugEnabled() && duration != null)
+			if (duration != null)
 				Log.Debug("ExecuteBatch for {0} statements took {1} ms",
 					countBeforeExecutingBatch,
 					duration.ElapsedMilliseconds);

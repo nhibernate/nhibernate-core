@@ -69,6 +69,22 @@ namespace NHibernate.Test.NHSpecificTest.NH3571Generic
 				Assert.That(product, Is.Not.Null);
 				Assert.That(product.Details.Properties["Name"], Is.EqualTo("First Product"));
 			}
+		}	
+		
+		[Test(Description = "GH-3150")]
+		public void CanQueryDynamicComponentInComponentByInterface()
+		{
+			using (var session = OpenSession())
+			{
+				var product = (
+					from p in session.Query<IProduct>()
+					where (string) p.Details.Properties["Name"] == "First Product"
+					select p
+				).Single();
+
+				Assert.That(product, Is.Not.Null);
+				Assert.That(product.Details.Properties["Name"], Is.EqualTo("First Product"));
+			}
 		}
 
 		[Test]

@@ -13,8 +13,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.DomainModel;
 using NHibernate.DomainModel.Northwind.Entities;
-using NHibernate.Linq;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.Linq
 {
@@ -195,9 +195,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CharIndexFunctionAsync()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a') == 0).ToList();
 
@@ -214,9 +211,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CharIndexOffsetNegativeFunctionAsync()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf('a', 2) == -1).ToList();
 
@@ -233,9 +227,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task IndexOfFunctionExpressionAsync()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.IndexOf("an") == 0).ToList();
 
@@ -252,9 +243,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task IndexOfFunctionProjectionAsync()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var raw = await ((from e in db.Employees select e.FirstName).ToListAsync());
 			var expected = raw.Select(x => x.ToLower()).Where(x => x.Contains("a")).Select(x => x.IndexOf("a", 1)).ToList();
 
@@ -271,9 +259,6 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task TwoFunctionExpressionAsync()
 		{
-			if (!TestDialect.SupportsLocate)
-				Assert.Ignore("Locate function not supported.");
-
 			var query = from e in db.Employees
 						where e.FirstName.IndexOf("A") == e.BirthDate.Value.Month 
 						select e.FirstName;
@@ -383,16 +368,6 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public async Task WhereShortEqualAsync()
-		{
-			var query = from item in session.Query<Foo>()
-						where item.Short.Equals(-1)
-						select item;
-
-			await (ObjectDumper.WriteAsync(query));
-		}
-
-		[Test]
 		public async Task WhereBoolConstantEqualAsync()
 		{
 			var query = from item in db.Role
@@ -473,42 +448,39 @@ namespace NHibernate.Test.Linq
 
 			await (ObjectDumper.WriteAsync(query));
 		}	
-	
-		[Test]
-		public async Task WhereFloatEqualAsync()
-		{
-			var query = from item in session.Query<Foo>()
-						where item.Float.Equals(-1)
-						select item;
-
-			await (ObjectDumper.WriteAsync(query));
-		}	
-
-		[Test]
-		public async Task WhereCharEqualAsync()
-		{
-			var query = from item in session.Query<Foo>()
-						where item.Char.Equals('A')
-						select item;
-
-			await (ObjectDumper.WriteAsync(query));
-		}
-
-		[Test]
-		public async Task WhereByteEqualAsync()
-		{
-			var query = from item in session.Query<Foo>()
-						where item.Byte.Equals(1)
-						select item;
-
-			await (ObjectDumper.WriteAsync(query));
-		}
 
 		[Test]
 		public async Task WhereDecimalEqualAsync()
 		{
 			var query = from item in db.OrderLines
 						where item.Discount.Equals(-1)
+						select item;
+
+			await (ObjectDumper.WriteAsync(query));
+		}
+
+		[Test]
+		public async Task WhereEnumEqualAsync()
+		{
+			var query = from item in db.PatientRecords
+						where item.Gender.Equals(Gender.Female)
+						select item;
+
+			await (ObjectDumper.WriteAsync(query));
+
+			query = from item in db.PatientRecords
+					where item.Gender.Equals(item.Gender)
+					select item;
+
+			await (ObjectDumper.WriteAsync(query));
+		}
+
+
+		[Test]
+		public async Task WhereObjectEqualAsync()
+		{
+			var query = from item in db.PatientRecords
+						where ((object) item.Gender).Equals(Gender.Female)
 						select item;
 
 			await (ObjectDumper.WriteAsync(query));

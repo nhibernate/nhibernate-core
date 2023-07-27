@@ -25,6 +25,8 @@ namespace NHibernate.Test.FetchLazyProperties
 	[TestFixture]
 	public class FetchLazyPropertiesFixtureAsync : TestCase
 	{
+		protected override string CacheConcurrencyStrategy => "nonstrict-read-write";
+
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
@@ -272,6 +274,45 @@ namespace NHibernate.Test.FetchLazyProperties
 			}
 
 			AssertFetchAllProperties(person);
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task TestLinqFetchAllProperties_WhenLazyPropertyChangedAsync(bool initLazyPropertyFetchGroup)
+		{
+			Person person;
+			using (var s = OpenSession())
+			{
+				person = await (s.GetAsync<Person>(1));
+				if (initLazyPropertyFetchGroup)
+					CollectionAssert.AreEqual(new byte[] { 0 }, person.Image);
+
+				person.Image = new byte[] { 1, 2, 3 };
+
+				var allPersons = await (s.Query<Person>().FetchLazyProperties().ToListAsync());
+				// After execute FetchLazyProperties(), I expected to see that the person.Image would be { 1, 2, 3 }.
+				// Because I changed this person.Image manually, I didn't want to lose those changes.
+				// But test failed. Оld value returned { 0 }.
+				CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, person.Image);
+			}
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task TestLinqFetchProperty_WhenLazyPropertyChangedAsync(bool initLazyPropertyFetchGroup)
+		{
+			Person person;
+			using (var s = OpenSession())
+			{
+				person = await (s.GetAsync<Person>(1));
+				if (initLazyPropertyFetchGroup)
+					CollectionAssert.AreEqual(new byte[] { 0 }, person.Image);
+
+				person.Image = new byte[] { 1, 2, 3 };
+
+				var allPersons = await (s.Query<Person>().Fetch(x => x.Image).ToListAsync());
+				CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, person.Image);
+			}
 		}
 
 		private static void AssertFetchAllProperties(Person person)
@@ -666,6 +707,40 @@ namespace NHibernate.Test.FetchLazyProperties
 
 		#endregion
 
+		#region TestHqlFetchManyToOneAndComponentManyToOne
+
+		[Test]
+		public async Task TestHqlFetchManyToOneAndComponentManyToOneAsync()
+		{
+			Person person;
+			using (var s = OpenSession())
+			{
+				person = await (s.CreateQuery("from Person p fetch p.Address left join fetch p.Address.Continent left join fetch p.BestFriend where p.Id = 1").UniqueResultAsync<Person>());
+			}
+
+			AssertFetchManyToOneAndComponentManyToOne(person);
+		}
+
+		[Test]
+		public async Task TestLinqFetchManyToOneAndComponentManyToOneAsync()
+		{
+			Person person;
+			using (var s = OpenSession())
+			{
+				person = await (s.Query<Person>().Fetch(o => o.BestFriend).Fetch(o => o.Address).ThenFetch(o => o.Continent).FirstOrDefaultAsync(o => o.Id == 1));
+			}
+
+			AssertFetchManyToOneAndComponentManyToOne(person);
+		}
+
+		private static void AssertFetchManyToOneAndComponentManyToOne(Person person)
+		{
+			AssertFetchComponentManyToOne(person);
+			Assert.That(NHibernateUtil.IsInitialized(person.BestFriend), Is.True);
+		}
+
+		#endregion
+
 		#region FetchSubClassFormula
 
 		[Test]
@@ -936,6 +1011,26 @@ namespace NHibernate.Test.FetchLazyProperties
 				person = await (s.CreateQuery("from Person where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>());
 				var image = person.Image;
 				person = await (s.CreateQuery("from Person fetch Image where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>());
+
+				await (tx.CommitAsync());
+			}
+
+			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Image"), Is.True);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Address"), Is.True);
+			Assert.That(NHibernateUtil.IsPropertyInitialized(person, "Formula"), Is.True);
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task TestFetchAllPropertiesAfterEntityIsInitializedAsync(bool readOnly)
+		{
+			Person person;
+			using(var s = OpenSession())
+			using(var tx = s.BeginTransaction())
+			{
+				person = await (s.CreateQuery("from Person where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>());
+				var image = person.Image;
+				person = await (s.CreateQuery("from Person fetch all properties where Id = 1").SetReadOnly(readOnly).UniqueResultAsync<Person>());
 
 				await (tx.CommitAsync());
 			}

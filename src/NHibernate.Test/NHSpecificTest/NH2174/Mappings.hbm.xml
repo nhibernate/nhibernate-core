@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.NH2174">
+
+  <class lazy="false" table="o_Details" dynamic-update="true" name="DocumentDetail">
+    <cache usage="nonstrict-read-write" />
+    <composite-id>
+      <key-property name="_id_item" column="id_item" access="field" />
+      <key-property name="_Version" column="Version" access="field" />
+      <key-property name="_id_Doc" column="id_Doc" access="field" />
+      <key-property name="_id_base" column="id_base" access="field" />
+    </composite-id>
+    <discriminator column="id_type" />
+
+  </class>
+  
+  <subclass discriminator-value="102" extends="DocumentDetail" lazy="false" name="DocumentDetailDocument">
+    <join table="o_DetailsDoc" fetch="select">
+      <key>
+        <column name="id_item" />
+        <column name="Version" />
+        <column name="id_Doc" />
+        <column name="id_base" />
+      </key>
+      <many-to-one name="ReferencedDocument" not-null="true" fetch="select" update="false" lazy="false">
+        <column name="id_Doc_detail" not-null="true" />
+        <column name="id_base_detail" not-null="true" />
+      </many-to-one>
+    </join>
+  </subclass>
+
+  <class lazy="false" table="o_DocumentInstances" dynamic-update="true" name="Document">
+    <cache usage="nonstrict-read-write" />
+    <composite-id>
+      <key-property name="_id_Doc" column="id_Doc" access="field"/>
+      <key-property name="_id_base" column="id_base" access="field" />
+    </composite-id>
+    <bag name="RefferedDetails" lazy="true" inverse="true" generic="true">
+      <key>
+        <column name="id_Doc_detail" />
+        <column name="id_base_detail" />
+      </key>
+      <one-to-many class="DocumentDetailDocument" />
+    </bag>
+    
+    <bag name="RefferedDetailsManyToMany" lazy="true" generic="true" cascade="all">
+      <key>
+        <column name="id_Doc_detail" />
+        <column name="id_base_detail" />
+      </key>
+      <many-to-many class="DocumentDetailDocument" >
+        <column name="id_item" />
+        <column name="Version" />
+        <column name="id_Doc" />
+        <column name="id_base" />
+      </many-to-many>
+    </bag>
+  </class>
+</hibernate-mapping>

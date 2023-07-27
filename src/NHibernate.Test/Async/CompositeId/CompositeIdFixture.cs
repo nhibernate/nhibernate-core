@@ -10,8 +10,10 @@
 
 using System;
 using System.Collections;
+using System.Linq;
 using NHibernate.Dialect;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.CompositeId
 {
@@ -34,11 +36,6 @@ namespace NHibernate.Test.CompositeId
 				       		"CompositeId.Product.hbm.xml"
 				       	};
 			}
-		}
-
-		protected override string CacheConcurrencyStrategy
-		{
-			get { return null; }
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)
@@ -295,6 +292,16 @@ namespace NHibernate.Test.CompositeId
 			await (s.CreateQuery("from LineItem ol where ol.Order.Id.CustomerId = 'C111'").ListAsync());
 			await (t.CommitAsync());
 			s.Close();
+		}
+
+		[Test(Description = "GH-2646")]
+		public async Task AnyOnCompositeIdAsync()
+		{
+			using (var s = OpenSession())
+			{
+				await (s.Query<Order>().Where(o => o.LineItems.Any()).ToListAsync());
+				await (s.Query<Order>().Select(o => o.LineItems.Any()).ToListAsync());
+			}
 		}
 	}
 }

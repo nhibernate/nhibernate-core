@@ -20,6 +20,8 @@ namespace NHibernate.Test.Futures
 	[TestFixture]
 	public class LinqFutureFixtureAsync : FutureFixture
 	{
+		protected override string CacheConcurrencyStrategy => "nonstrict-read-write";
+
 		protected override void OnTearDown()
 		{
 			using (var session = OpenSession())

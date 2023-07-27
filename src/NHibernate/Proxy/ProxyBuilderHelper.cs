@@ -21,6 +21,8 @@ namespace NHibernate.Proxy
 {
 	internal static class ProxyBuilderHelper
 	{
+		private const BindingFlags ProxiableMethodsBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+		
 		private static readonly ConstructorInfo ObjectConstructor = typeof(object).GetConstructor(System.Type.EmptyTypes);
 		private static readonly ConstructorInfo SecurityCriticalAttributeConstructor = typeof(SecurityCriticalAttribute).GetConstructor(System.Type.EmptyTypes);
 		private static readonly ConstructorInfo IgnoresAccessChecksToAttributeConstructor = typeof(IgnoresAccessChecksToAttribute).GetConstructor(new[] {typeof(string)});
@@ -94,10 +96,7 @@ namespace NHibernate.Proxy
 
 		internal static IEnumerable<MethodInfo> GetProxiableMethods(System.Type type)
 		{
-			const BindingFlags candidateMethodsBindingFlags =
-				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-
-			return type.GetMethods(candidateMethodsBindingFlags).Where(m => m.IsProxiable());
+			return type.GetMethods(ProxiableMethodsBindingFlags).Where(m => m.IsProxiable());
 		}
 
 		internal static IEnumerable<MethodInfo> GetProxiableMethods(System.Type type, IEnumerable<System.Type> interfaces)
@@ -105,12 +104,12 @@ namespace NHibernate.Proxy
 			if (type.IsInterface || type == typeof(object) || type.GetInterfaces().Length == 0)
 			{
 				return GetProxiableMethods(type)
-					.Concat(interfaces.SelectMany(i => i.GetMethods()))
+					.Concat(interfaces.SelectMany(i => i.GetMethods(ProxiableMethodsBindingFlags)))
 					.Distinct();
 			}
 
 			var proxiableMethods = new HashSet<MethodInfo>(GetProxiableMethods(type), new MethodInfoComparer(type));
-			foreach (var interfaceMethod in interfaces.SelectMany(i => i.GetMethods()))
+			foreach (var interfaceMethod in interfaces.SelectMany(i => i.GetMethods(ProxiableMethodsBindingFlags)))
 			{
 				proxiableMethods.Add(interfaceMethod);
 			}
@@ -171,15 +170,18 @@ namespace NHibernate.Proxy
 			var implementationName = explicitImplementation
 				? $"{method.DeclaringType.FullName}.{name}"
 				: name;
+
 			var methodBuilder =
 				typeBuilder.DefineMethod(
 					implementationName,
 					methodAttributes,
 					CallingConventions.HasThis,
 					method.ReturnType,
-					parameters.ToArray(param => param.ParameterType));
-			if (explicitImplementation)
-				methodBuilder.SetImplementationFlags(MethodImplAttributes.Managed | MethodImplAttributes.IL);
+					method.ReturnParameter?.GetRequiredCustomModifiers(),
+					method.ReturnParameter?.GetOptionalCustomModifiers(),
+					parameters.ToArray(p => p.ParameterType),
+					parameters.ToArray(p => p.GetRequiredCustomModifiers()),
+					parameters.ToArray(p => p.GetOptionalCustomModifiers()));
 
 			var typeArgs = method.GetGenericArguments();
 			if (typeArgs.Length > 0)
@@ -207,6 +209,9 @@ namespace NHibernate.Proxy
 					typeArgBuilder.SetInterfaceConstraints(interfaceTypeConstraints);
 				}
 			}
+
+			if (explicitImplementation)
+				methodBuilder.SetImplementationFlags(MethodImplAttributes.Managed | MethodImplAttributes.IL);
 
 			return methodBuilder;
 		}

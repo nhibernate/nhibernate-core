@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using NHibernate.AdoNet;
@@ -65,19 +66,56 @@ namespace NHibernate.Driver
 
 		protected override void InitializeParameter(DbParameter dbParam, string name, SqlTypes.SqlType sqlType)
 		{
-			base.InitializeParameter(dbParam, name, sqlType);
+			if (sqlType == null)
+				throw new QueryException($"No type assigned to parameter '{name}'");
 
-			// Since the .NET currency type has 4 decimal places, we use a decimal type in PostgreSQL instead of its native 2 decimal currency type.
+			dbParam.ParameterName = FormatNameForParameter(name);
 			if (sqlType.DbType == DbType.Currency)
+			{
+				// Since the .NET currency type has 4 decimal places, we use a decimal type in PostgreSQL instead of its native 2 decimal currency type.
 				dbParam.DbType = DbType.Decimal;
+			}
+			else
+			{
+				dbParam.DbType = sqlType.DbType;
+			}
+		}
+
+		public override void AdjustCommand(DbCommand command)
+		{
+			if (DriverVersionMajor >= 6)
+			{
+				for (var i = 0; i < command.Parameters.Count; i++)
+				{
+					var parameter = command.Parameters[i];
+					if (parameter.DbType == DbType.DateTime &&
+					    parameter.Value is DateTime dateTime &&
+					    dateTime.Kind != DateTimeKind.Utc)
+					{
+						// There are breaking changes in Npgsql 6 as following:
+						// UTC DateTime is now strictly mapped to timestamptz,
+						// while Local/Unspecified DateTime is now strictly mapped to timestamp.
+						//
+						// DbType.DateTime now maps to timestamptz, not timestamp.
+						// DbType.DateTime2 continues to map to timestamp
+						//
+						// See more details here: https://www.npgsql.org/doc/release-notes/6.0.html#detailed-notes
+						parameter.DbType = DbType.DateTime2;
+					}
+				}
+			}
+
+			base.AdjustCommand(command);
 		}
 
 		// Prior to v3, Npgsql was expecting DateTime for time.
 		// https://github.com/npgsql/npgsql/issues/347
-		public override bool RequiresTimeSpanForTime => (DriverVersion?.Major ?? 3) >= 3;
+		public override bool RequiresTimeSpanForTime => DriverVersionMajor >= 3;
 
 		public override bool HasDelayedDistributedTransactionCompletion => true;
 
 		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass => typeof(GenericBatchingBatcherFactory);
+
+		private int DriverVersionMajor => DriverVersion?.Major ?? 3;
 	}
 }

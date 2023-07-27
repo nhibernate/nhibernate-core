@@ -1,6 +1,5 @@
 using System;
 using NHibernate.Cache;
-using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
@@ -42,21 +41,21 @@ namespace NHibernate.Test.NHSpecificTest.NH2510
 			{
 				this.factory = factory;
 				using (var session = factory.OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					session.Persist(new Image { Id = 1 });
-					session.Transaction.Commit();
+					tran.Commit();
 				}
 			}
 
 			public void Dispose()
 			{
 				using (var session = factory.OpenSession())
-				using (session.BeginTransaction())
+				using (var tran = session.BeginTransaction())
 				{
 					session.CreateQuery("delete from Image").ExecuteUpdate();
-					session.Transaction.Commit();
-				}				
+					tran.Commit();
+				}
 			}
 		}
 
