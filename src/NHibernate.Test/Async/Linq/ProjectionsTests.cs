@@ -223,7 +223,7 @@ namespace NHibernate.Test.Linq
 			var result = await (query.ToListAsync());
 			Assert.That(result.Count, Is.EqualTo(2155));
 		}
-		
+
 		[Test]
 		public async Task CanProjectCollectionsAsync()
 		{
@@ -231,7 +231,7 @@ namespace NHibernate.Test.Linq
 			var result = await (query.ToListAsync());
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
-		
+
 		[Test]
 		public async Task CanProjectCollectionsInsideAnonymousTypeAsync()
 		{
@@ -240,7 +240,7 @@ namespace NHibernate.Test.Linq
 			Assert.That(NHibernateUtil.IsInitialized(result[0].OrderLines), Is.True);
 			Assert.That(result.Count, Is.EqualTo(830));
 		}
-		
+
 		[Test]
 		public async Task ProjectAnonymousTypeWithCollectionAsync()
 		{
