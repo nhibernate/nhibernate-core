@@ -46,6 +46,9 @@
     <Compile Remove="**\NHSpecificTest\NH3121\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\NHibernate\Hql\Ast\ANTLR\CaseInsensitiveStringStream.cs">
+      <Link>Hql\Parser\CaseInsensitiveStringStream.cs</Link>
+    </Compile>
     <Compile Include="..\NHibernate\Util\AsyncReaderWriterLock.cs">
       <Link>UtilityTest\AsyncReaderWriterLock.cs</Link>
     </Compile>

@@ -695,10 +695,9 @@ constant
 
 path
 @init {
-// TODO - need to clean up DotIdent - suspect that DotIdent2 supersedes the other one, but need to do the analysis
-//HandleDotIdent2();
+HandleDotIdents();
 }
-	: identifier ( DOT^ { WeakKeywords(); } identifier )*
+	: identifier ( DOT^ identifier )*
 	;
 
 // Wraps the IDENT token from the lexer, in order to provide
