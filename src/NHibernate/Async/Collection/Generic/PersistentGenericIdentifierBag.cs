@@ -44,10 +44,19 @@ namespace NHibernate.Collection.Generic
 			object[] array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
+
+			var identifierType = persister.IdentifierType;
+			var elementType = persister.ElementType;
 			for (int i = 0; i < size; i += 2)
 			{
-				_identifiers[i / 2] = await (persister.IdentifierType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false);
-				_values.Add((T) await (persister.ElementType.AssembleAsync(array[i + 1], Session, owner, cancellationToken)).ConfigureAwait(false));
+				await (identifierType.BeforeAssembleAsync(array[i], Session, cancellationToken)).ConfigureAwait(false);
+				await (elementType.BeforeAssembleAsync(array[i + 1], Session, cancellationToken)).ConfigureAwait(false);
+			}
+
+			for (int i = 0; i < size; i += 2)
+			{
+				_identifiers[i / 2] = await (identifierType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false);
+				_values.Add((T) await (elementType.AssembleAsync(array[i + 1], Session, owner, cancellationToken)).ConfigureAwait(false));
 			}
 		}
 

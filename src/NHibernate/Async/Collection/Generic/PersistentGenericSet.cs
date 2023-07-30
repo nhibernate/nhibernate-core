@@ -84,9 +84,16 @@ namespace NHibernate.Collection.Generic
 			var array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
+
+			var elementType = persister.ElementType;
 			for (int i = 0; i < size; i++)
 			{
-				var element = await (persister.ElementType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false);
+				await (elementType.BeforeAssembleAsync(array[i], Session, cancellationToken)).ConfigureAwait(false);
+			}
+
+			for (int i = 0; i < size; i++)
+			{
+				var element = await (elementType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false);
 				if (element != null)
 				{
 					WrappedSet.Add((T) element);

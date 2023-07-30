@@ -160,9 +160,16 @@ namespace NHibernate.Collection.Generic
 			object[] array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
+			
+			var elementType = persister.ElementType;
 			for (int i = 0; i < size; i++)
 			{
-				var element = persister.ElementType.Assemble(array[i], Session, owner);
+				elementType.BeforeAssemble(array[i], Session);
+			}
+
+			for (int i = 0; i < size; i++)
+			{
+				var element = elementType.Assemble(array[i], Session, owner);
 				WrappedList.Add((T) (element ?? DefaultForType));
 			}
 		}

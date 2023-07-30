@@ -163,10 +163,19 @@ namespace NHibernate.Collection.Generic
 			object[] array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
+
+			var indexType = persister.IndexType;
+			var elementType = persister.ElementType;
 			for (int i = 0; i < size; i += 2)
 			{
-				WrappedMap[(TKey)persister.IndexType.Assemble(array[i], Session, owner)] =
-					(TValue)persister.ElementType.Assemble(array[i + 1], Session, owner);
+				indexType.BeforeAssemble(array[i], Session);
+				elementType.BeforeAssemble(array[i + 1], Session);
+			}
+
+			for (int i = 0; i < size; i += 2)
+			{
+				WrappedMap[(TKey)indexType.Assemble(array[i], Session, owner)] =
+					(TValue)elementType.Assemble(array[i + 1], Session, owner);
 			}
 		}
 
@@ -246,8 +255,9 @@ namespace NHibernate.Collection.Generic
 		{
 			if (key == null)
 			{
-				throw new ArgumentNullException("key");
+				throw new ArgumentNullException(nameof(key));
 			}
+
 			if (PutQueueEnabled)
 			{
 				var found = TryReadElementByKey<TKey, TValue>(key, out _, out _);
