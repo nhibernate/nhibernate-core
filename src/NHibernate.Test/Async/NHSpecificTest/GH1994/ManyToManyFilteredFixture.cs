@@ -10,7 +10,6 @@
 
 using System.Linq;
 using NHibernate.Criterion;
-using NHibernate.Dialect;
 using NHibernate.Linq;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -41,14 +40,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				// The HQL delete does all the job inside the database without loading the entities, but it does
-				// not handle delete order for avoiding violating constraints if any. Use
-				// session.Delete("from System.Object");
-				// instead if in need of having NHibernate ordering the deletes, but this will cause
-				// loading the entities in the session.
-
 				session.Delete("from System.Object");
-
 				transaction.Commit();
 			}
 		}
@@ -70,9 +62,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 		[Test]
 		public async Task TestFilteredByWhereCollectionLinqQueryAsync()
 		{
-			if(Dialect is PostgreSQLDialect)
-				Assert.Ignore("Dialect doesn't support 0/1 to bool implicit cast");
-
 			using (var s = OpenSession())
 			{
 				var query = await (s.Query<Asset>()
@@ -154,9 +143,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 		[Test]
 		public async Task LazyLoadAsync()
 		{
-			if (Dialect is PostgreSQLDialect)
-				Assert.Ignore("Dialect doesn't support 0/1 to bool implicit cast");
-
 			using (var s = OpenSession())
 			{
 				var asset = await (s.Query<Asset>().FirstAsync());
@@ -169,9 +155,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 		[Test]
 		public async Task LazyLoadFilteredAsync()
 		{
-			if (Dialect is PostgreSQLDialect)
-				Assert.Ignore("Dialect doesn't support 0/1 to bool implicit cast");
-
 			using (var s = OpenSession())
 			{
 				s.EnableFilter("deletedFilter").SetParameter("deletedParam", false);
