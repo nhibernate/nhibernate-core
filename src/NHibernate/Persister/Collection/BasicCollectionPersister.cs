@@ -262,6 +262,12 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
+		[Obsolete("Please use overload without rhs and rhsAlias parameters")]
+		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
+		{
+			return SelectFragment(lhsAlias, collectionSuffix, includeCollectionColumns, entityInfo);
+		}
+
 		public override string SelectFragment(string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
 		{
 			return includeCollectionColumns ? GetSelectFragment(lhsAlias, collectionSuffix).ToSqlStringFragment(false) : string.Empty;
