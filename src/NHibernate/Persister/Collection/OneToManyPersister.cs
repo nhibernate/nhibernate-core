@@ -317,7 +317,7 @@ namespace NHibernate.Persister.Collection
 			{
 				var selectMode = ReflectHelper.CastOrThrow<ISupportLazyPropsJoinable>(ElementPersister, "fetch lazy properties");
 				if (selectMode != null)
-					return buf.Append(selectMode.SelectFragment( lhsAlias, null, false, entityInfo)).ToString();
+					return buf.Append(selectMode.SelectFragment(lhsAlias, null, false, entityInfo)).ToString();
 			}
 
 			var ojl = (IOuterJoinLoadable)ElementPersister;

@@ -13,7 +13,7 @@
 			<key column="DeviceId"/>
 			<many-to-many class="Drive" column="DriveId" not-found="ignore"/>
 		</bag>
-    <bag name="DrivesNotIgnored" lazy="true" table="DriveOfDeviceNotIgnored" cascade="persist"  >
+		<bag name="DrivesNotIgnored" lazy="true" table="DriveOfDeviceNotIgnored" cascade="persist"  >
 			<key column="DeviceId"/>
 			<many-to-many class="Drive" column="DriveId" foreign-key="none"/>
 		</bag>

@@ -143,7 +143,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 		[Test]
 		public void LazyLoad()
 		{
-			if(Dialect is PostgreSQLDialect)
+			if (Dialect is PostgreSQLDialect)
 				Assert.Ignore("Dialect doesn't support 0/1 to bool implicit cast");
 
 			using (var s = OpenSession())
@@ -158,7 +158,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1994
 		[Test]
 		public void LazyLoadFiltered()
 		{
-			if(Dialect is PostgreSQLDialect)
+			if (Dialect is PostgreSQLDialect)
 				Assert.Ignore("Dialect doesn't support 0/1 to bool implicit cast");
 
 			using (var s = OpenSession())

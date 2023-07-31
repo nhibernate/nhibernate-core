@@ -238,7 +238,7 @@ namespace NHibernate.Loader
 				case SelectMode.FetchLazyPropertyGroup:
 					return ReflectHelper.CastOrThrow<ISupportLazyPropsJoinable>(Joinable, "fetch lazy property")
 					                    .SelectFragment(
-											RHSAlias,
+						                    RHSAlias,
 						                    collectionSuffix,
 						                    ShouldFetchCollectionPersister(),
 						                    new EntityLoadInfo(entitySuffix)
