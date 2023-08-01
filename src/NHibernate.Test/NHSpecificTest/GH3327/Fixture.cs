@@ -48,5 +48,21 @@ namespace NHibernate.Test.NHSpecificTest.GH3327
 					)");
 			Assert.That(q.List()[0], Is.EqualTo(0));
 		}
+
+		[Test]
+		public void NotNotExistsNegated()
+		{
+			using var log = new SqlLogSpy();
+			using var session = OpenSession();
+			var results = session.CreateQuery(
+				@"SELECT COUNT(ROOT.Id)
+					FROM Entity AS ROOT
+					WHERE NOT (
+						NOT EXISTS (FROM ChildEntity AS CHILD WHERE CHILD.Parent = ROOT)
+						AND NOT ROOT.Name = 'Parent'
+					)").List();
+			Assert.That(log.GetWholeLog(), Does.Not.Contains(" NOT ").IgnoreCase);
+			Assert.That(results.Count, Is.EqualTo(1));
+		}
 	}
 }
