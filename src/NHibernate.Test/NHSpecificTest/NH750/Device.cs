@@ -33,11 +33,18 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 		}
 
 		private IList<Drive> _drives = new List<Drive>();
+		private IList<Drive> _drivesNotIgnored = new List<Drive>();
 
 		public IList<Drive> Drives
 		{
 			get { return _drives; }
 			set { _drives = value; }
+		}
+
+		public IList<Drive> DrivesNotIgnored
+		{
+			get => _drivesNotIgnored;
+			set => _drivesNotIgnored = value;
 		}
 	}
 }
