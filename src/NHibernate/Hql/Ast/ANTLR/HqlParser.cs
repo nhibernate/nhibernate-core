@@ -300,10 +300,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 					node.Type = BETWEEN;
 					node.Text = "{not}" + node.Text;
 					return node;	// (NOT (NOT_BETWEEN a b) ) => (BETWEEN a b)
-				/* This can never happen because this rule will always eliminate the child NOT.
-							case NOT:
-								return x.getFirstChild();			// (NOT (NOT x) ) => (x)
-				*/
+				case NOT:
+					return node.GetChild(0);	// (NOT (NOT x) ) => (x)
 				default:
 					IASTNode not = (IASTNode) TreeAdaptor.Create(NOT, "not");
 					not.AddChild(node);
