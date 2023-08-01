@@ -59,5 +59,21 @@ namespace NHibernate.Test.NHSpecificTest.GH3327
 					)");
 			Assert.That((await (q.ListAsync()))[0], Is.EqualTo(0));
 		}
+
+		[Test]
+		public async Task NotNotExistsNegatedAsync()
+		{
+			using var log = new SqlLogSpy();
+			using var session = OpenSession();
+			var results = await (session.CreateQuery(
+				@"SELECT COUNT(ROOT.Id)
+					FROM Entity AS ROOT
+					WHERE NOT (
+						NOT EXISTS (FROM ChildEntity AS CHILD WHERE CHILD.Parent = ROOT)
+						AND NOT ROOT.Name = 'Parent'
+					)").ListAsync());
+			Assert.That(log.GetWholeLog(), Does.Not.Contains(" NOT ").IgnoreCase);
+			Assert.That(results.Count, Is.EqualTo(1));
+		}
 	}
 }
