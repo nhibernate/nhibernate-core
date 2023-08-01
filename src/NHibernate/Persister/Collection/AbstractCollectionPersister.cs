@@ -1785,7 +1785,7 @@ namespace NHibernate.Persister.Collection
 		}
 
 		// 6.0 TODO: Make abstract
-		public virtual string SelectFragment(string lhsAlias, string currentCollectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
+		public virtual string SelectFragment(string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
 		{
 			throw new NotImplementedException("SelectFragment with fetching lazy properties option is not implemented by " + GetType().FullName);
 		}
