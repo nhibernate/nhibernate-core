@@ -262,51 +262,15 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
+		[Obsolete("Please use overload without rhs and rhsAlias parameters")]
 		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
 		{
-			// we need to determine the best way to know that two joinables
-			// represent a single many-to-many...
-			if (rhs != null && IsManyToMany && !rhs.IsCollection)
-			{
-				IAssociationType elementType = (IAssociationType) ElementType;
-				if (rhs.Equals(elementType.GetAssociatedJoinable(Factory)))
-				{
-					return ManyToManySelectFragment(rhs, rhsAlias, lhsAlias, collectionSuffix, elementType);
-				}
-			}
-			return includeCollectionColumns
-				? GetSelectFragment(lhsAlias, collectionSuffix).ToSqlStringFragment(false)
-				: string.Empty;
+			return SelectFragment(lhsAlias, collectionSuffix, includeCollectionColumns, entityInfo);
 		}
 
-		private string ManyToManySelectFragment(
-			IJoinable rhs,
-			string rhsAlias,
-			string lhsAlias,
-			string collectionSuffix,
-			IAssociationType elementType)
+		public override string SelectFragment(string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
 		{
-			SelectFragment frag = GenerateSelectFragment(lhsAlias, collectionSuffix);
-
-			// We need to select in the associated entity table instead of taking the collection actual element,
-			// because filters can be applied to the entity table outer join. In such case, we need to return null
-			// for filtered-out elements. (It is tempting to switch to an inner join and just use
-			// SelectFragment(lhsAlias, collectionSuffix) for many-to-many too, but this would hinder the proper
-			// handling of the not-found feature.)
-			var elementColumnNames = string.IsNullOrEmpty(elementType.RHSUniqueKeyPropertyName)
-				? rhs.KeyColumnNames
-				// rhs is the entity persister, it does not handle being referenced through an unique key by a
-				// collection and always yield its identifier columns as KeyColumnNames. We need to resolve the
-				// key columns instead.
-				// 6.0 TODO: consider breaking again that IJoinable.SelectFragment interface for transmitting
-				// the OuterJoinableAssociation instead of its Joinable property. This would allow to get the
-				// adequate columns directly instead of re-computing them.
-				: ((IPropertyMapping) rhs).ToColumns(elementType.RHSUniqueKeyPropertyName);
-			frag.AddColumns(rhsAlias, elementColumnNames, elementColumnAliases);
-			AppendIndexColumns(frag, lhsAlias);
-			AppendIdentifierColumns(frag, lhsAlias);
-
-			return frag.ToSqlStringFragment(false);
+			return includeCollectionColumns ? GetSelectFragment(lhsAlias, collectionSuffix).ToSqlStringFragment(false) : string.Empty;
 		}
 
 		/// <summary>

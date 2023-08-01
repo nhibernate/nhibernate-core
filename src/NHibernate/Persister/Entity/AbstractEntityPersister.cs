@@ -4461,10 +4461,17 @@ namespace NHibernate.Persister.Entity
 			IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix,
 			bool includeCollectionColumns, bool includeLazyProperties)
 		{
-			return SelectFragment(rhs, rhsAlias, lhsAlias, collectionSuffix, includeCollectionColumns, new EntityLoadInfo(entitySuffix) {IncludeLazyProps = includeLazyProperties});
+			return SelectFragment(lhsAlias, collectionSuffix, includeCollectionColumns, new EntityLoadInfo(entitySuffix) {IncludeLazyProps = includeLazyProperties});
 		}
 
+		//Since v5.5
+		[Obsolete("Please use overload without rhs and rhsAlias parameters")]
 		public string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
+		{
+			return SelectFragment(lhsAlias, collectionSuffix, includeCollectionColumns, entityInfo);
+		}
+
+		public string SelectFragment(string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
 		{
 			return GetIdentifierSelectFragment(lhsAlias, entityInfo.EntitySuffix).ToSqlStringFragment(false) +
 			       GetPropertiesSelectFragment(
