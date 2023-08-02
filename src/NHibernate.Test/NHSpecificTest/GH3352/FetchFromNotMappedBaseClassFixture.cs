@@ -117,7 +117,6 @@ namespace NHibernate.Test.NHSpecificTest.GH3352
 			Assert.That(result.Component.Field, Is.EqualTo("x"));
 		}
 
-		[KnownBug("GH-3356")]
 		[Test(Description = "GH-3356" )]
 		public void FetchAfterSelect()
 		{

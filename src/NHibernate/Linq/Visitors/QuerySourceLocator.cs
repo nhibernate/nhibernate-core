@@ -1,9 +1,12 @@
-﻿using NHibernate.Linq.Clauses;
+﻿using System;
+using NHibernate.Linq.Clauses;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 
 namespace NHibernate.Linq.Visitors
 {
+	// Since v5.5
+	[Obsolete("This class is not used and will be removed in a future version")]
 	public class QuerySourceLocator : NhQueryModelVisitorBase
 	{
 		readonly System.Type _type;

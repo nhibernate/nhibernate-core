@@ -4,7 +4,6 @@ using NHibernate.Linq.Clauses;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
-using Remotion.Linq.Parsing;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -75,24 +74,6 @@ namespace NHibernate.Linq.Visitors
 		private void AddJoin(QueryModel queryModel, NhJoinClause joinClause)
 		{
 			queryModel.BodyClauses.Add(joinClause);
-		}
-
-		private class QuerySourceExtractor : RelinqExpressionVisitor
-		{
-			private IQuerySource _querySource;
-
-			public static IQuerySource GetQuerySource(Expression expression)
-			{
-				var sourceExtractor = new QuerySourceExtractor();
-				sourceExtractor.Visit(expression);
-				return sourceExtractor._querySource;
-			}
-
-			protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
-			{
-				_querySource = expression.ReferencedQuerySource;
-				return base.VisitQuerySourceReference(expression);
-			}
 		}
 	}
 }

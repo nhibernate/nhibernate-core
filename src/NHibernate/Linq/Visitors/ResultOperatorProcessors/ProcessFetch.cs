@@ -3,6 +3,7 @@ using System.Linq;
 using NHibernate.Hql.Ast;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
+using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.EagerFetching;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
@@ -11,9 +12,8 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 	{
 		public void Process(FetchRequestBase resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{
-			var querySource = QuerySourceLocator.FindQuerySource(
-				queryModelVisitor.Model,
-				resultOperator.RelationMember.DeclaringType);
+			var expression = ((StreamedSequenceInfo) queryModelVisitor.PreviousEvaluationType).ItemExpression;
+			var querySource = QuerySourceExtractor.GetQuerySource(expression);
 			var name = queryModelVisitor.VisitorParameters.QuerySourceNamer.GetName(querySource);
 
 			Process(resultOperator, queryModelVisitor, tree, name);
