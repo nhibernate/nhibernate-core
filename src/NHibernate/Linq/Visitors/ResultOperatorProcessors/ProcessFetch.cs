@@ -51,6 +51,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			HqlTreeNode currentNode,
 			IType propType)
 		{
+			var property = resultOperator.RelationMember;
 			string alias = null;
 			if (resultOperator is FetchOneRequest)
 			{
@@ -63,13 +64,13 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 							         .GetImplementors(parentType.FullName))
 						{
 							if (queryModelVisitor.VisitorParameters.SessionFactory.GetClassMetadata(entityName) is IPropertyMapping propertyMapping
-							   && propertyMapping.TryToType(resultOperator.RelationMember.Name, out propType))
+							   && propertyMapping.TryToType(property.Name, out propType))
 								break;
 						}
 					}
 					else
 					{
-						propType = metadata.GetPropertyType(resultOperator.RelationMember.Name);
+						propType = metadata.GetPropertyType(property.Name);
 					}
 				}
 				
@@ -78,7 +79,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 					if (currentNode == null)
 					{
 						currentNode = tree.GetFromRangeClause()
-									?? throw new InvalidOperationException($"Property {resultOperator.RelationMember.Name} cannot be fetched for this type of query.");
+									?? throw new InvalidOperationException($"Property {property.Name} cannot be fetched for this type of query.");
 					}
 
 					currentNode.AddChild(tree.TreeBuilder.Fetch());
@@ -93,7 +94,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 							if (componentType == null)
 							{
 								throw new InvalidOperationException(
-									$"Property {innerFetch.RelationMember.Name} cannot be fetched from a non component type property {resultOperator.RelationMember.Name}.");
+									$"Property {innerFetch.RelationMember.Name} cannot be fetched from a non component type property {property.Name}.");
 							}
 						}
 
@@ -102,7 +103,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 							memberPath,
 							tree.TreeBuilder.Ident(innerFetch.RelationMember.Name));
 
-						Process(resultOperator.RelationMember.GetPropertyOrFieldType(), innerFetch, queryModelVisitor, tree, memberPath, currentNode, componentType.Subtypes[subTypeIndex]);
+						Process(property.GetPropertyOrFieldType(), innerFetch, queryModelVisitor, tree, memberPath, currentNode, componentType.Subtypes[subTypeIndex]);
 					}
 
 					return;
@@ -126,7 +127,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 			foreach (var innerFetch in resultOperator.InnerFetchRequests)
 			{
-				Process(resultOperator.RelationMember.GetPropertyOrFieldType(), innerFetch, queryModelVisitor, tree, currentNode, alias);
+				Process(property.GetPropertyOrFieldType(), innerFetch, queryModelVisitor, tree, currentNode, alias);
 			}
 		}
 	}
