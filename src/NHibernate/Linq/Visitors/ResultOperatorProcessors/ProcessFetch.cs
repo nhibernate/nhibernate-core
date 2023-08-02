@@ -3,6 +3,7 @@ using System.Linq;
 using NHibernate.Hql.Ast;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
+using NHibernate.Util;
 using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.EagerFetching;
 
@@ -12,19 +13,22 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 	{
 		public void Process(FetchRequestBase resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree)
 		{
-			var expression = ((StreamedSequenceInfo) queryModelVisitor.PreviousEvaluationType).ItemExpression;
-			var querySource = QuerySourceExtractor.GetQuerySource(expression);
+			var selector = ((StreamedSequenceInfo) queryModelVisitor.PreviousEvaluationType).ItemExpression;
+			var querySource = QuerySourceExtractor.GetQuerySource(selector);
 			var name = queryModelVisitor.VisitorParameters.QuerySourceNamer.GetName(querySource);
 
-			Process(resultOperator, queryModelVisitor, tree, name);
+			Process(selector.Type, resultOperator, queryModelVisitor, tree, null, name);
 		}
 
+		// Since v5.5
+		[Obsolete("This method is not used and will be removed in a future version.")]
 		public void Process(FetchRequestBase resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree, string sourceAlias)
 		{
-			Process(resultOperator, queryModelVisitor, tree, null, sourceAlias);
+			Process(resultOperator.RelationMember.ReflectedType, resultOperator, queryModelVisitor, tree, null, sourceAlias);
 		}
 
 		private void Process(
+			System.Type parentType,
 			FetchRequestBase resultOperator,
 			QueryModelVisitor queryModelVisitor,
 			IntermediateHqlTree tree,
@@ -35,10 +39,11 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 				tree.TreeBuilder.Ident(sourceAlias),
 				tree.TreeBuilder.Ident(resultOperator.RelationMember.Name));
 
-			Process(resultOperator, queryModelVisitor, tree, memberPath, currentNode, null);
+			Process(parentType, resultOperator, queryModelVisitor, tree, memberPath, currentNode, null);
 		}
 
 		private void Process(
+			System.Type parentType,
 			FetchRequestBase resultOperator,
 			QueryModelVisitor queryModelVisitor,
 			IntermediateHqlTree tree,
@@ -51,12 +56,11 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			{
 				if (propType == null)
 				{
-					var metadata = queryModelVisitor.VisitorParameters.SessionFactory
-													.GetClassMetadata(resultOperator.RelationMember.ReflectedType);
+					var metadata = queryModelVisitor.VisitorParameters.SessionFactory.GetClassMetadata(parentType);
 					if (metadata == null)
 					{
 						foreach (var entityName in queryModelVisitor.VisitorParameters.SessionFactory
-							         .GetImplementors(resultOperator.RelationMember.ReflectedType.FullName))
+							         .GetImplementors(parentType.FullName))
 						{
 							if (queryModelVisitor.VisitorParameters.SessionFactory.GetClassMetadata(entityName) is IPropertyMapping propertyMapping
 							   && propertyMapping.TryToType(resultOperator.RelationMember.Name, out propType))
@@ -98,7 +102,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 							memberPath,
 							tree.TreeBuilder.Ident(innerFetch.RelationMember.Name));
 
-						Process(innerFetch, queryModelVisitor, tree, memberPath, currentNode, componentType.Subtypes[subTypeIndex]);
+						Process(resultOperator.RelationMember.GetPropertyOrFieldType(), innerFetch, queryModelVisitor, tree, memberPath, currentNode, componentType.Subtypes[subTypeIndex]);
 					}
 
 					return;
@@ -122,7 +126,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 			foreach (var innerFetch in resultOperator.InnerFetchRequests)
 			{
-				Process(innerFetch, queryModelVisitor, tree, currentNode, alias);
+				Process(resultOperator.RelationMember.GetPropertyOrFieldType(), innerFetch, queryModelVisitor, tree, currentNode, alias);
 			}
 		}
 	}
