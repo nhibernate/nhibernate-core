@@ -69,14 +69,13 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 
 		protected override void OnTearDown()
 		{
-			using (ISession s = Sfi.OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				s.CreateSQLQuery("delete from DriveOfDevice").ExecuteUpdate();
-				s.Delete("from Device");
-				s.Delete("from Drive");
-				t.Commit();
-			}
+			using var s = Sfi.OpenSession();
+			using var t = s.BeginTransaction();
+
+			s.CreateSQLQuery("delete from DriveOfDevice").ExecuteUpdate();
+			s.Delete("from Device");
+			s.Delete("from Drive");
+			t.Commit();
 		}
 
 		[Test]
@@ -105,18 +104,19 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 
 			await (VerifyResultAsync(expectedInCollection: DrivesCountWithOneIgnored, expectedInDb: _drivesCount, msg: "not modified collection"));
 
-			//Many-to-many clears collection and recreates it so not-found ignore records are lost
+			// Many-to-many clears collection and recreates it so not-found ignore records are lost
+			// Note: It's not the case when no valid records are present, so loaded Drives collection is empty
+			// Just skip this check in this case:
+			if (_drivesCount < 2)
+				return;
+
 			using (var s = Sfi.OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				dv2 = await (s.GetAsync<Device>(dv2.Id));
-				if(_drivesCount > 0)
-					dv2.Drives.Add(await (s.LoadAsync<Drive>(_drive2Id)));
+				dv2.Drives.Add(await (s.LoadAsync<Drive>(_drive2Id)));
 				await (t.CommitAsync());
 			}
-
-			if(_drivesCount == 1)
-				Assert.Ignore("Test case fails for unrelated reasons");
 
 			await (VerifyResultAsync(_drivesCount, _drivesCount, msg: "modified collection"));
 
