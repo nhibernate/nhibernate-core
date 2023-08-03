@@ -58,14 +58,13 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 
 		protected override void OnTearDown()
 		{
-			using (ISession s = Sfi.OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				s.CreateSQLQuery("delete from DriveOfDevice").ExecuteUpdate();
-				s.Delete("from Device");
-				s.Delete("from Drive");
-				t.Commit();
-			}
+			using var s = Sfi.OpenSession();
+			using var t = s.BeginTransaction();
+
+			s.CreateSQLQuery("delete from DriveOfDevice").ExecuteUpdate();
+			s.Delete("from Device");
+			s.Delete("from Drive");
+			t.Commit();
 		}
 
 		[Test]
