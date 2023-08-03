@@ -110,7 +110,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			{
 				dv2 = await (s.GetAsync<Device>(dv2.Id));
 				if(_drivesCount > 0)
-					dv2.Drives.Add(dv1.Drives[0]);
+					dv2.Drives.Add(await (s.GetAsync<Drive>(dv1.Drives[0].Id)));
 				await (t.CommitAsync());
 			}
 
