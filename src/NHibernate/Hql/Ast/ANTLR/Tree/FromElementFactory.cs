@@ -424,7 +424,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 				// Add the second join, the one that ends in the destination table.
 				JoinSequence joinSequence = CreateJoinSequence(roleAlias, joinType, implicitJoin);
-				joinSequence.AddJoin(sfh.GetElementAssociationType(_collectionType), tableAlias,type.IsNullable ? JoinType.InnerJoin : joinType, secondJoinColumns);
+				// It's safe to always use inner join for many-to-many not-found ignore mapping as it's processed by table group join
+				var secondJoinType = type.IsNullable ? JoinType.InnerJoin : joinType;
+				joinSequence.AddJoin(sfh.GetElementAssociationType(_collectionType), tableAlias, secondJoinType, secondJoinColumns);
 				elem = CreateJoin(associatedEntityName, tableAlias, joinSequence, type, false);
 				elem.UseFromFragment = true;
 			}
