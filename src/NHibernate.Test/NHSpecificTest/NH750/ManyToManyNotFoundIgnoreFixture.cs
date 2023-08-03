@@ -94,18 +94,19 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 
 			VerifyResult(expectedInCollection: DrivesCountWithOneIgnored, expectedInDb: _drivesCount, msg: "not modified collection");
 
-			//Many-to-many clears collection and recreates it so not-found ignore records are lost
+			// Many-to-many clears collection and recreates it so not-found ignore records are lost
+			// Note: It's not the case when no valid records are present, so loaded Drives collection is empty
+			// Just skip this check in this case:
+			if (_drivesCount < 2)
+				return;
+
 			using (var s = Sfi.OpenSession())
 			using (var t = s.BeginTransaction())
 			{
 				dv2 = s.Get<Device>(dv2.Id);
-				if(_drivesCount > 0)
-					dv2.Drives.Add(s.Load<Drive>(_drive2Id));
+				dv2.Drives.Add(s.Load<Drive>(_drive2Id));
 				t.Commit();
 			}
-
-			if(_drivesCount == 1)
-				Assert.Ignore("Test case fails for unrelated reasons");
 
 			VerifyResult(_drivesCount, _drivesCount, msg: "modified collection");
 
