@@ -23,6 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 	{
 		private int id1;
 		private int id2;
+		private int _drive2Id;
 		private readonly int _drivesCount;
 		private int DrivesCountWithOneIgnored => _drivesCount == 0? 0 : _drivesCount - 1;
 
@@ -42,7 +43,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			using (var t = s.BeginTransaction())
 			{
 				s.Save(dr1);
-				s.Save(dr2);
+				_drive2Id = (int)s.Save(dr2);
 				s.Save(dr3);
 				AddDrive(dv1, dr2);
 				AddDrive(dv1, dr1);
@@ -110,7 +111,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			{
 				dv2 = await (s.GetAsync<Device>(dv2.Id));
 				if(_drivesCount > 0)
-					dv2.Drives.Add(await (s.GetAsync<Drive>(dv1.Drives[0].Id)));
+					dv2.Drives.Add(await (s.LoadAsync<Drive>(_drive2Id)));
 				await (t.CommitAsync());
 			}
 
