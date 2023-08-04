@@ -4,6 +4,7 @@ using System.Linq;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
@@ -68,14 +69,17 @@ namespace NHibernate.Engine
 
 			foreach (var join in joins)
 			{
-				var entityPersister = GetEntityPersister(join.Joinable, out var isManyToMany);
+				var entityPersister = GetEntityPersister(join.Joinable, out var manyToManyType);
+				if (manyToManyType?.IsNullable == true)
+					return true;
+
 				if (entityPersister?.HasSubclassJoins(includeSubclasses && isSubclassIncluded(join.Alias)) != true)
 					continue;
 
 				if (hasWithClause)
 					return true;
 
-				if (!isManyToMany // many-to-many keys are stored in separate table
+				if (manyToManyType == null // many-to-many keys are stored in separate table
 				    && entityPersister.ColumnsDependOnSubclassJoins(join.RHSColumns))
 				{
 					return true;
@@ -94,14 +98,14 @@ namespace NHibernate.Engine
 			var isAssociationJoin = lhsColumns.Length > 0;
 			if (isAssociationJoin)
 			{
-				var entityPersister = GetEntityPersister(first.Joinable, out var isManyToMany);
+				var entityPersister = GetEntityPersister(first.Joinable, out var manyToManyType);
 				string rhsAlias = first.Alias;
 				string[] rhsColumns = first.RHSColumns;
 				for (int j = 0; j < lhsColumns.Length; j++)
 				{
 					fromFragment.Add(lhsColumns[j])
 								.Add("=")
-								.Add((entityPersister == null || isManyToMany) // many-to-many keys are stored in separate table
+								.Add((entityPersister == null || manyToManyType != null) // many-to-many keys are stored in separate table
 									     ? rhsAlias
 									     : entityPersister.GenerateTableAliasForColumn(rhsAlias, rhsColumns[j]))
 								.Add(".")
@@ -116,15 +120,18 @@ namespace NHibernate.Engine
 			return fromFragment.ToSqlString();
 		}
 
-		private static AbstractEntityPersister GetEntityPersister(IJoinable joinable, out bool isManyToMany)
+		private static AbstractEntityPersister GetEntityPersister(IJoinable joinable, out EntityType manyToManyType)
 		{
-			isManyToMany = false;
+			manyToManyType = null;
 			if (!joinable.IsCollection)
 				return joinable as AbstractEntityPersister;
 
 			var collection = (IQueryableCollection) joinable;
-			isManyToMany = collection.IsManyToMany;
-			return collection.ElementType.IsEntityType ? collection.ElementPersister as AbstractEntityPersister : null;
+			if (!collection.ElementType.IsEntityType)
+				return null;
+			if (collection.IsManyToMany)
+				manyToManyType = (EntityType) collection.ElementType;
+			return collection.ElementPersister as AbstractEntityPersister;
 		}
 
 		private static void AppendWithClause(SqlStringBuilder fromFragment, bool hasConditions, SqlString[] withClauseFragments)
