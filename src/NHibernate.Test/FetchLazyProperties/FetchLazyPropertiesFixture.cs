@@ -175,6 +175,18 @@ namespace NHibernate.Test.FetchLazyProperties
 			AssertFetchProperty(person);
 		}
 
+		[Test]
+		public void TestLinqFetchPropertyAfterSelect()
+		{
+			using var s = OpenSession();
+			var owner = s.Query<Animal>()
+			             .Select(a => a.Owner)
+			             .Fetch(o => o.Image)
+			             .FirstOrDefault(o => o.Id == 1);
+
+			AssertFetchProperty(owner);
+		}
+
 		private static void AssertFetchProperty(Person person)
 		{
 			Assert.That(person, Is.Not.Null);
