@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NHibernate.Hql.Ast;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using Remotion.Linq.EagerFetching;
@@ -21,7 +22,7 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 
 		public void Process(FetchRequestBase resultOperator, QueryModelVisitor queryModelVisitor, IntermediateHqlTree tree, string sourceAlias)
 		{
-			Process(resultOperator, queryModelVisitor, tree, null, sourceAlias);
+			Process(resultOperator, queryModelVisitor, tree, tree.GetFromNodeByAlias(sourceAlias), sourceAlias);
 		}
 
 		private void Process(
@@ -68,13 +69,12 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 						propType = metadata.GetPropertyType(resultOperator.RelationMember.Name);
 					}
 				}
-				
+
 				if (propType != null && !propType.IsAssociationType)
 				{
 					if (currentNode == null)
 					{
-						currentNode = tree.GetFromRangeClause()
-									?? throw new InvalidOperationException($"Property {resultOperator.RelationMember.Name} cannot be fetched for this type of query.");
+						throw new InvalidOperationException($"Property {resultOperator.RelationMember.Name} cannot be fetched for this type of query.");
 					}
 
 					currentNode.AddChild(tree.TreeBuilder.Fetch());
@@ -85,12 +85,13 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 					{
 						if (componentType == null)
 						{
-							componentType = propType as ComponentType;
-							if (componentType == null)
+							if (!propType.IsComponentType)
 							{
 								throw new InvalidOperationException(
 									$"Property {innerFetch.RelationMember.Name} cannot be fetched from a non component type property {resultOperator.RelationMember.Name}.");
 							}
+
+							componentType = (ComponentType) propType;
 						}
 
 						var subTypeIndex = componentType.GetPropertyIndex(innerFetch.RelationMember.Name);
