@@ -274,7 +274,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				log.Debug("setConstantValue() {0} -> {1} {2}", text, value, value.GetType().Name);
 			}
 
-			node.ClearChildren();
+			node.ClearChildren();	// Chop off the rest of the tree.
 
 			node.Type = HqlSqlWalker.JAVA_CONSTANT;
 			node.DataType = TypeFactory.HeuristicType(value.GetType().Name);

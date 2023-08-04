@@ -289,12 +289,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return DataType;
 		}
 
-		public void SetResolvedConstant(string text)
-		{
-			_path = text;
-			_dereferenceType = DerefJavaConstant;
-			IsResolved = true; // Don't resolve the node again.
-		}
+		public void SetResolvedConstant(string text) => SetResolvedConstant(text, null);
 
 		public void SetResolvedConstant(string text, object value)
 		{
@@ -797,10 +792,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
 		{
-			if(Type != HqlSqlWalker.JAVA_CONSTANT)
-				return base.RenderText(sessionFactory);
-			return new SqlString(
-				JavaConstantNode.ResolveToLiteralString(DataType, _constantValue, sessionFactory.Dialect));
+			return Type == HqlSqlWalker.JAVA_CONSTANT
+				? JavaConstantNode.ResolveToLiteralString(DataType, _constantValue, sessionFactory.Dialect)
+				: base.RenderText(sessionFactory);
 		}
 	}
 }

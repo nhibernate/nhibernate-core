@@ -38,30 +38,30 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { _factory = value; }
 		}
 
-        public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
-        {
-            ProcessText();
+		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
+		{
+			ProcessText();
 
 			IType type = _expectedType ?? _heuristicType;
-			return new SqlString(ResolveToLiteralString( type ));
+			return ResolveToLiteralString(type);
 		}
 
-        private string ResolveToLiteralString(IType type)
-        {
-	        return ResolveToLiteralString(type, _constantValue, _factory.Dialect);
-        }
+		private SqlString ResolveToLiteralString(IType type)
+		{
+			return ResolveToLiteralString(type, _constantValue, _factory.Dialect);
+		}
 
-        internal static string ResolveToLiteralString(IType type, object constantValue, Dialect.Dialect dialect)
-        {
-	        try
-	        {
-		        return ((ILiteralType)type).ObjectToSQLString(constantValue, dialect);
-	        }
-	        catch (Exception t)
-	        {
-		        throw new QueryException(LiteralProcessor.ErrorCannotFormatLiteral + constantValue, t);
-	        }
-        }
+		internal static SqlString ResolveToLiteralString(IType type, object constantValue, Dialect.Dialect dialect)
+		{
+			try
+			{
+				return new SqlString(((ILiteralType) type).ObjectToSQLString(constantValue, dialect));
+			}
+			catch (Exception t)
+			{
+				throw new QueryException(LiteralProcessor.ErrorCannotFormatLiteral + constantValue, t);
+			}
+		}
 
         private void ProcessText()
         {
