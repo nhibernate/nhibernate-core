@@ -2,13 +2,13 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
 				   assembly="NHibernate.Test"
 				   namespace="NHibernate.Test.NHSpecificTest.NH750"
-				   default-access="field.camelcase-underscore"
-				   default-lazy="false">
+				   default-access="field.camelcase-underscore">
 	<class name="Device">
 		<id name="Id" column="`_id`" type="Int32">
 			<generator class="native"/>
 		</id>
 		<property name="Manifacturer"/>
+    <many-to-one name="Template" />
 		<bag name="Drives" table="DriveOfDevice" cascade="all">
 			<key column="DeviceId"/>
 			<many-to-many class="Drive" column="DriveId" not-found="ignore"/>

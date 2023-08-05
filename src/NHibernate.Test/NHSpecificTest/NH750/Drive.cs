@@ -16,7 +16,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 
 		private int _id;
 
-		public int Id
+		public virtual int Id
 		{
 			get { return _id; }
 			set { _id = value; }
@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 
 		private string _classFullName;
 
-		public string ClassFullName
+		public virtual string ClassFullName
 		{
 			get { return _classFullName; }
 			set { _classFullName = value; }
