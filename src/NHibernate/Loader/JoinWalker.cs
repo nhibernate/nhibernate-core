@@ -347,6 +347,8 @@ namespace NHibernate.Loader
 					string[] aliasedLhsColumns = persister.GetElementColumnNames(alias);
 					string[] lhsColumns = persister.ElementColumnNames;
 
+					const bool useInnerJoin = false;
+
 					var joinType =
 						GetJoinType(
 							associationType,
@@ -355,7 +357,7 @@ namespace NHibernate.Loader
 							pathAlias,
 							persister.TableName,
 							lhsColumns,
-							false,
+							!useInnerJoin,
 							_depth - 1,
 							null);
 
