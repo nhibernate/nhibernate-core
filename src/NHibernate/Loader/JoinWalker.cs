@@ -347,11 +347,6 @@ namespace NHibernate.Loader
 					string[] aliasedLhsColumns = persister.GetElementColumnNames(alias);
 					string[] lhsColumns = persister.ElementColumnNames;
 
-					// if the current depth is 0, the root thing being loaded is the
-					// many-to-many collection itself.  Here, it is alright to use
-					// an inner join...
-					bool useInnerJoin = _depth == 0;
-
 					var joinType =
 						GetJoinType(
 							associationType,
@@ -360,9 +355,15 @@ namespace NHibernate.Loader
 							pathAlias,
 							persister.TableName,
 							lhsColumns,
-							!useInnerJoin,
+							false,
 							_depth - 1,
 							null);
+
+					// It's safe to always use inner join for many-to-many not-found ignore mapping as it's processed by table group join;
+					// otherwise we need left join for proper not-found exception handling
+					if (joinType == JoinType.LeftOuterJoin && ((EntityType) type).IsNullable)
+						joinType = JoinType.InnerJoin;
+
 
 					AddAssociationToJoinTreeIfNecessary(
 						associationType,
