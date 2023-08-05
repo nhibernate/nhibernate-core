@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 		private int id2;
 		private int _drive2Id;
 		private readonly int _drivesCount;
-		private int DrivesCountWithOneIgnored => _drivesCount == 0? 0 : _drivesCount - 1;
+		private int ValidDrivesCount => _drivesCount == 0? 0 : _drivesCount - 1;
 
 		public ManyToManyNotFoundIgnoreFixture(int drivesCount)
 		{
@@ -80,7 +80,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 
 			Assert.That(dv1.Drives, Has.Count.EqualTo(_drivesCount).And.None.Null);
 			// Verify one is missing
-			Assert.That(dv2.Drives, Has.Count.EqualTo(DrivesCountWithOneIgnored).And.None.Null);
+			Assert.That(dv2.Drives, Has.Count.EqualTo(ValidDrivesCount).And.None.Null);
 
 			//Make sure that flush didn't touch not-found="ignore" records for not modified collection
 			using (var s = Sfi.OpenSession())
@@ -91,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 				t.Commit();
 			}
 
-			VerifyResult(expectedInCollection: DrivesCountWithOneIgnored, expectedInDb: _drivesCount, msg: "not modified collection");
+			VerifyResult(expectedInCollection: ValidDrivesCount, expectedInDb: _drivesCount, msg: "not modified collection");
 
 			// Many-to-many clears collection and recreates it so not-found ignore records are lost
 			// Note: It's not the case when no valid records are present, so loaded Drives collection is empty
@@ -128,17 +128,17 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 		[Test]
 		public void QueryOverFetch()
 		{
-			using (var s = OpenSession())
-			{
-				var dv2 = s.QueryOver<Device>()
-							.Fetch(SelectMode.Fetch, x => x.Drives)
-							.Where(Restrictions.IdEq(id2))
-							.TransformUsing(Transformers.DistinctRootEntity)
-							.SingleOrDefault();
+			using var log = new SqlLogSpy();
+			using var s = OpenSession();
+			var dv2 = s.QueryOver<Device>()
+				.Fetch(SelectMode.Fetch, x => x.Drives)
+				.Where(Restrictions.IdEq(id2))
+				.TransformUsing(Transformers.DistinctRootEntity)
+				.SingleOrDefault();
 
-				Assert.That(NHibernateUtil.IsInitialized(dv2.Drives), Is.True);
-				Assert.That(dv2.Drives, Has.Count.EqualTo(DrivesCountWithOneIgnored).And.None.Null);
-			}
+			Assert.That(NHibernateUtil.IsInitialized(dv2.Drives), Is.True);
+			Assert.That(dv2.Drives, Has.Count.EqualTo(ValidDrivesCount).And.None.Null);
+			Assert.That(log.Appender.GetEvents().Length, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -152,21 +152,22 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			           .UniqueResult<Device>();
 
 			Assert.That(NHibernateUtil.IsInitialized(dv2.Drives), Is.True);
-			Assert.That(dv2.Drives, Has.Count.EqualTo(DrivesCountWithOneIgnored).And.None.Null);
+			Assert.That(dv2.Drives, Has.Count.EqualTo(ValidDrivesCount).And.None.Null);
 			Assert.That(log.Appender.GetEvents().Length, Is.EqualTo(1));
 		}
 
 		[Test]
 		public void LazyLoad()
 		{
-			using (var s = OpenSession())
-			{
-				var dv2 = s.Get<Device>(id2);
-				NHibernateUtil.Initialize(dv2.Drives);
+			using var log = new SqlLogSpy();
+			using var s = OpenSession();
 
-				Assert.That(NHibernateUtil.IsInitialized(dv2.Drives), Is.True);
-				Assert.That(dv2.Drives, Has.Count.EqualTo(DrivesCountWithOneIgnored).And.None.Null);
-			}
+			var dv2 = s.Get<Device>(id2);
+
+			Assert.That(NHibernateUtil.IsInitialized(dv2.Drives), Is.True);
+			Assert.That(dv2.Drives, Has.Count.EqualTo(ValidDrivesCount).And.None.Null);
+			// First query for Device, second for Drives collection
+			Assert.That(log.Appender.GetEvents().Length, Is.EqualTo(2));
 		}
 	}
 }
