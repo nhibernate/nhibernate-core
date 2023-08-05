@@ -291,7 +291,7 @@ namespace NHibernate.Test.SubselectFetchTest
 
 			s = OpenSession();
 			t = s.BeginTransaction();
-
+			var log = new SqlLogSpy();
 			await (s.CreateCriteria(typeof(Parent))
 				.AddOrder(Order.Desc("Name"))
 				// H3 has this after CreateCriteria("Friends"), but it's not yet supported in NH

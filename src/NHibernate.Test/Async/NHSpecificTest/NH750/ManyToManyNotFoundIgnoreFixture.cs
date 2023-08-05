@@ -24,6 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 		private int id1;
 		private int id2;
 		private int _drive2Id;
+		private int _withTempalteId;
 		private readonly int _drivesCount;
 		private int ValidDrivesCount => _drivesCount == 0? 0 : _drivesCount - 1;
 
@@ -39,25 +40,26 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			Drive dr3 = new Drive("Drive 3");
 			Device dv1 = new Device("Device 1");
 			Device dv2 = new Device("Device 2");
-			using (var s = Sfi.OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				s.Save(dr1);
-				_drive2Id = (int)s.Save(dr2);
-				s.Save(dr3);
-				AddDrive(dv1, dr2);
-				AddDrive(dv1, dr1);
-				AddDrive(dv2, dr3);
-				AddDrive(dv2, dr1);
+			var withTempalte = new Device("Device With Device 2 template") { Template = dv2 };
 
-				id1 = (int) s.Save(dv1);
-				id2 = (int) s.Save(dv2);
-				s.Flush();
+			using var s = Sfi.OpenSession();
+			using var t = s.BeginTransaction();
+			s.Save(dr1);
+			_drive2Id = (int)s.Save(dr2);
+			s.Save(dr3);
+			AddDrive(dv1, dr2);
+			AddDrive(dv1, dr1);
+			AddDrive(dv2, dr3);
+			AddDrive(dv2, dr1);
 
-				s.Clear();
-				s.Delete(dr3);
-				t.Commit();
-			}
+			id1 = (int) s.Save(dv1);
+			id2 = (int) s.Save(dv2);
+			_withTempalteId = (int)s.Save(withTempalte);
+			s.Flush();
+
+			s.Clear();
+			s.Delete(dr3);
+			t.Commit();
 		}
 
 		private void AddDrive(Device dv, Drive drive)
@@ -87,6 +89,8 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			{
 				dv1 = (Device) await (s.LoadAsync(typeof(Device), id1));
 				dv2 = (Device) await (s.LoadAsync(typeof(Device), id2));
+				await (NHibernateUtil.InitializeAsync(dv1.Drives));
+				await (NHibernateUtil.InitializeAsync(dv2.Drives));
 			}
 
 			Assert.That(dv1.Drives, Has.Count.EqualTo(_drivesCount).And.None.Null);
@@ -153,6 +157,23 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 		}
 
 		[Test]
+		public async Task QueryOverFetch2Async()
+		{
+			using var log = new SqlLogSpy();
+			using var s = OpenSession();
+			var withTemplate = await (s.QueryOver<Device>()
+			                    .Fetch(SelectMode.Fetch, x => x.Template, x => x.Template.Drives)
+			                    .Where(Restrictions.IdEq(_withTempalteId))
+			                    .TransformUsing(Transformers.DistinctRootEntity)
+			                    .SingleOrDefaultAsync());
+
+			Assert.That(NHibernateUtil.IsInitialized(withTemplate.Template), Is.True);
+			Assert.That(NHibernateUtil.IsInitialized(withTemplate.Template.Drives), Is.True);
+			Assert.That(withTemplate.Template.Drives, Has.Count.EqualTo(ValidDrivesCount).And.None.Null);
+			Assert.That(log.Appender.GetEvents().Length, Is.EqualTo(1));
+		}
+
+		[Test]
 		public async Task HqlFetchAsync()
 		{
 			using var log = new SqlLogSpy();
@@ -168,17 +189,31 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 		}
 
 		[Test]
-		public async Task LazyLoadAsync()
+		public async Task HqlFetch2Async()
 		{
 			using var log = new SqlLogSpy();
 			using var s = OpenSession();
+			var withTemplate = await (s.CreateQuery("from Device t left join fetch t.Template d left join fetch d.Drives where d.id = :id")
+			                    .SetResultTransformer(Transformers.DistinctRootEntity)
+			                    .SetParameter("id", id2)
+			                    .UniqueResultAsync<Device>());
+
+			Assert.That(NHibernateUtil.IsInitialized(withTemplate.Template), Is.True);
+			Assert.That(NHibernateUtil.IsInitialized(withTemplate.Template.Drives), Is.True);
+			Assert.That(withTemplate.Template.Drives, Has.Count.EqualTo(ValidDrivesCount).And.None.Null);
+			Assert.That(log.Appender.GetEvents().Length, Is.EqualTo(1));
+		}
+
+		[Test]
+		public async Task LazyLoadAsync()
+		{
+			using var s = OpenSession();
 
 			var dv2 = await (s.GetAsync<Device>(id2));
+			using var log = new SqlLogSpy();
 
-			Assert.That(NHibernateUtil.IsInitialized(dv2.Drives), Is.True);
 			Assert.That(dv2.Drives, Has.Count.EqualTo(ValidDrivesCount).And.None.Null);
-			// First query for Device, second for Drives collection
-			Assert.That(log.Appender.GetEvents().Length, Is.EqualTo(2));
+			Assert.That(log.Appender.GetEvents().Length, Is.EqualTo(1));
 		}
 	}
 }

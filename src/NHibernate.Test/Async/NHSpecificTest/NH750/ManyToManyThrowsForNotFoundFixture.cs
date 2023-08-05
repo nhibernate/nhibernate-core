@@ -55,6 +55,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 		[Test]
 		public async Task LazyLoadAsync()
 		{
+			using var log = new SqlLogSpy();
 			using var s = OpenSession();
 			var device = await (s.GetAsync<Device>(_id));
 			Assert.ThrowsAsync<ObjectNotFoundException>(() => NHibernateUtil.InitializeAsync(device.DrivesNotIgnored));
