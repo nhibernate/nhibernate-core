@@ -10,24 +10,25 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 	public class ManyToManyThrowsForNotFoundFixture : BugTestCase
 	{
 		private int _id;
+		private int _withTempalteId;
 
 		protected override void OnSetUp()
 		{
-			using (var s = Sfi.OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				Device dv = new Device("Device");
-				Drive dr = new Drive("Drive");
-				s.Save(dr);
-				dv.DrivesNotIgnored.Add(dr);
+			using var s = Sfi.OpenSession();
+			using var t = s.BeginTransaction();
+			Device dv = new Device("Device");
+			Drive dr = new Drive("Drive");
+			var withTempalte = new Device("Device With Device 2 template") { Template = dv };
+			s.Save(dr);
+			dv.DrivesNotIgnored.Add(dr);
 
-				_id = (int) s.Save(dv);
-				s.Flush();
+			_id = (int) s.Save(dv);
+			_withTempalteId = (int)s.Save(withTempalte);
+			s.Flush();
 
-				s.Clear();
-				s.Delete(dr);
-				t.Commit();
-			}
+			s.Clear();
+			s.Delete(dr);
+			t.Commit();
 		}
 
 		protected override void OnTearDown()
@@ -58,7 +59,18 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			                 .Fetch(SelectMode.Fetch, x => x.DrivesNotIgnored)
 			                 .Where(Restrictions.IdEq(_id))
 			                 .TransformUsing(Transformers.DistinctRootEntity);
-			Assert.Throws<ObjectNotFoundException>(() => NHibernateUtil.Initialize(queryOver.SingleOrDefault()));
+			Assert.Throws<ObjectNotFoundException>(() => queryOver.SingleOrDefault());
+		}
+
+		[Test]
+		public void QueryOverFetch2()
+		{
+			using var s = OpenSession();
+			var queryOver = s.QueryOver<Device>()
+			                 .Fetch(SelectMode.Fetch, x=> x.Template, x => x.Template.DrivesNotIgnored)
+			                 .Where(Restrictions.IdEq(_withTempalteId))
+			                 .TransformUsing(Transformers.DistinctRootEntity);
+			Assert.Throws<ObjectNotFoundException>(() => queryOver.SingleOrDefault());
 		}
 
 		[Test]
@@ -69,6 +81,18 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 
 			             .Fetch(x => x.DrivesNotIgnored)
 			             .Where(x => x.Id == _id);
+			Assert.Throws<ObjectNotFoundException>(() => NHibernateUtil.Initialize(query.SingleOrDefault()));
+		}
+
+		[Test]
+		public void LinqFetch2()
+		{
+			using var s = OpenSession();
+			var query = s.Query<Device>()
+
+			             .Fetch(x => x.Template)
+			             .ThenFetchMany(x => x.DrivesNotIgnored)
+			             .Where(x => x.Id == _withTempalteId);
 			Assert.Throws<ObjectNotFoundException>(() => NHibernateUtil.Initialize(query.SingleOrDefault()));
 		}
 	}
