@@ -8,7 +8,7 @@
 			<generator class="native"/>
 		</id>
 		<property name="Manifacturer"/>
-    <many-to-one name="Template" />
+		<many-to-one name="Template" />
 		<bag name="Drives" table="DriveOfDevice" cascade="all">
 			<key column="DeviceId"/>
 			<many-to-many class="Drive" column="DriveId" not-found="ignore"/>

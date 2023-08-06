@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 	public class ManyToManyThrowsForNotFoundFixtureAsync : BugTestCase
 	{
 		private int _id;
-		private int _withTempalteId;
+		private int _withTemplateId;
 
 		protected override void OnSetUp()
 		{
@@ -29,12 +29,12 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			using var t = s.BeginTransaction();
 			Device dv = new Device("Device");
 			Drive dr = new Drive("Drive");
-			var withTempalte = new Device("Device With Device 2 template") { Template = dv };
+			var withTemplate = new Device("Device With Device 2 template") { Template = dv };
 			s.Save(dr);
 			dv.DrivesNotIgnored.Add(dr);
 
 			_id = (int) s.Save(dv);
-			_withTempalteId = (int)s.Save(withTempalte);
+			_withTemplateId = (int)s.Save(withTemplate);
 			s.Flush();
 
 			s.Clear();
@@ -79,7 +79,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			using var s = OpenSession();
 			var queryOver = s.QueryOver<Device>()
 			                 .Fetch(SelectMode.Fetch, x=> x.Template, x => x.Template.DrivesNotIgnored)
-			                 .Where(Restrictions.IdEq(_withTempalteId))
+			                 .Where(Restrictions.IdEq(_withTemplateId))
 			                 .TransformUsing(Transformers.DistinctRootEntity);
 			Assert.ThrowsAsync<ObjectNotFoundException>(() => queryOver.SingleOrDefaultAsync());
 		}
@@ -103,7 +103,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 
 			             .Fetch(x => x.Template)
 			             .ThenFetchMany(x => x.DrivesNotIgnored)
-			             .Where(x => x.Id == _withTempalteId);
+			             .Where(x => x.Id == _withTemplateId);
 			Assert.ThrowsAsync<ObjectNotFoundException>(async () => await (NHibernateUtil.InitializeAsync(await (query.SingleOrDefaultAsync()))));
 		}
 	}

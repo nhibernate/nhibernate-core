@@ -366,7 +366,6 @@ namespace NHibernate.Loader
 					if (joinType == JoinType.LeftOuterJoin && ((EntityType) type).IsNullable)
 						joinType = JoinType.InnerJoin;
 
-
 					AddAssociationToJoinTreeIfNecessary(
 						associationType,
 						aliasedLhsColumns,

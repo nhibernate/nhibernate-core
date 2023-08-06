@@ -23,7 +23,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 	{
 		private int id2;
 		private readonly int _drivesCount;
-		private int _withTempalteId;
+		private int _withTemplateId;
 		private int ValidDrivesCount => _drivesCount;
 
 		public ManyToManyFixtureAsync(int drivesCount)
@@ -38,7 +38,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			Drive dr3 = new Drive("Drive 3");
 			Device dv1 = new Device("Device 1");
 			Device dv2 = new Device("Device 2");
-			var withTempalte = new Device("Device With Device 2 template") { Template = dv2 };
+			var withTemplate = new Device("Device With Device 2 template") { Template = dv2 };
 			using var s = Sfi.OpenSession();
 			using var t = s.BeginTransaction();
 			s.Save(dr1);
@@ -51,7 +51,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 
 			s.Save(dv1);
 			id2 = (int) s.Save(dv2);
-			_withTempalteId = (int)s.Save(withTempalte);
+			_withTemplateId = (int)s.Save(withTemplate);
 			t.Commit();
 		}
 
@@ -96,7 +96,7 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			using var s = OpenSession();
 			var withTemplate = await (s.QueryOver<Device>()
 				.Fetch(SelectMode.Fetch, x => x.Template, x => x.Template.DrivesNotIgnored)
-				.Where(Restrictions.IdEq(_withTempalteId))
+				.Where(Restrictions.IdEq(_withTemplateId))
 				.TransformUsing(Transformers.DistinctRootEntity)
 				.SingleOrDefaultAsync());
 
