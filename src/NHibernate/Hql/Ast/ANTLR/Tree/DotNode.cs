@@ -18,7 +18,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 	/// Ported by: Steve Strong
 	/// </summary>
 	[CLSCompliant(false)]
-	public class DotNode : FromReferenceNode 
+	public class DotNode : FromReferenceNode, IExpectedTypeAwareNode
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(DotNode));
 
@@ -71,6 +71,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// The type of join to create.   Default is an inner join.
 		/// </summary>
 		private JoinType _joinType = JoinType.InnerJoin;
+
+		private object _constantValue;
 
 		public DotNode(IToken token) : base(token)
 		{
@@ -287,11 +289,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			return DataType;
 		}
 
-		public void SetResolvedConstant(string text)
+		public void SetResolvedConstant(string text) => SetResolvedConstant(text, null);
+
+		public void SetResolvedConstant(string text, object value)
 		{
 			_path = text;
 			_dereferenceType = DerefJavaConstant;
 			IsResolved = true; // Don't resolve the node again.
+			_constantValue = value;
 		}
 
 		private static QueryException BuildIllegalCollectionDereferenceException(string propertyName, IASTNode lhs)
@@ -771,6 +776,25 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				CheckSubclassOrSuperclassPropertyReference(lhs, lhs.NextSibling.Text);
 				lhs = (FromReferenceNode)lhs.GetChild(0);
 			}
+		}
+
+		public IType ExpectedType
+		{
+			get => DataType;
+			set
+			{
+				if (Type != HqlSqlWalker.JAVA_CONSTANT)
+					return;
+
+				DataType = value;
+			}
+		}
+
+		public override SqlString RenderText(ISessionFactoryImplementor sessionFactory)
+		{
+			return Type == HqlSqlWalker.JAVA_CONSTANT
+				? JavaConstantNode.ResolveToLiteralString(DataType, _constantValue, sessionFactory.Dialect)
+				: base.RenderText(sessionFactory);
 		}
 	}
 }
