@@ -236,7 +236,7 @@ namespace NHibernate.Cfg
 			}
 
 			public Dialect.Dialect Dialect =>
-				NHibernate.Dialect.Dialect.GetDialect(configuration.Properties);
+				throw new InvalidOperationException("The dialect is not ready at this stage of the configuration.");
 		}
 
 		[Serializable]
