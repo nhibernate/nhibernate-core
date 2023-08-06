@@ -1296,12 +1296,12 @@ namespace NHibernate.Cfg
 			// It furthermore allows some hack on NHibernate.Spatial side to go on working,
 			// See nhibernate/NHibernate.Spatial#104
 			var m = BuildMapping();
-			var mapping = new StaticDialectMappingWrapper(m, m.Dialect);
+			var settings = BuildSettings();
+			var mapping = new StaticDialectMappingWrapper(m, settings.Dialect);
 			ConfigureProxyFactoryFactory();
 			SecondPassCompile();
 			Validate(mapping);
 			Environment.VerifyProperties(properties);
-			Settings settings = BuildSettings();
 
 			// Ok, don't need schemas anymore, so free them
 			Schemas = null;
