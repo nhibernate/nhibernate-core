@@ -244,10 +244,14 @@ namespace NHibernate.Cfg
 		{
 			private readonly IMapping _mapping;
 
-			public StaticDialectMappingWrapper(IMapping mapping)
+			public StaticDialectMappingWrapper(IMapping mapping): this(mapping, mapping.Dialect)
+			{
+			}
+
+			public StaticDialectMappingWrapper(IMapping mapping, Dialect.Dialect dialect)
 			{
 				_mapping = mapping;
-				Dialect = mapping.Dialect;
+				Dialect = dialect;
 			}
 
 			public IType GetIdentifierType(string className)
@@ -939,11 +943,12 @@ namespace NHibernate.Cfg
 
 			var script = new List<string>();
 
+			var staticDialectMapping = new StaticDialectMappingWrapper(mapping, dialect);
 			foreach (var table in TableMappings)
 			{
 				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Export))
 				{
-					script.Add(table.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+					script.Add(table.SqlCreateString(dialect, staticDialectMapping, defaultCatalog, defaultSchema));
 					script.AddRange(table.SqlCommentStrings(dialect, defaultCatalog, defaultSchema));
 				}
 			}
@@ -956,7 +961,7 @@ namespace NHibernate.Cfg
 					{
 						foreach (var uk in table.UniqueKeyIterator)
 						{
-							string constraintString = uk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
+							string constraintString = uk.SqlCreateString(dialect, staticDialectMapping, defaultCatalog, defaultSchema);
 							if (constraintString != null)
 							{
 								script.Add(constraintString);
@@ -966,7 +971,7 @@ namespace NHibernate.Cfg
 
 					foreach (var index in table.IndexIterator)
 					{
-						script.Add(index.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+						script.Add(index.SqlCreateString(dialect, staticDialectMapping, defaultCatalog, defaultSchema));
 					}
 
 					if (dialect.SupportsForeignKeyConstraintInAlterTable)
@@ -975,7 +980,7 @@ namespace NHibernate.Cfg
 						{
 							if (fk.IsGenerated(dialect) && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Export))
 							{
-								script.Add(fk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+								script.Add(fk.SqlCreateString(dialect, staticDialectMapping, defaultCatalog, defaultSchema));
 							}
 						}
 					}
@@ -992,7 +997,7 @@ namespace NHibernate.Cfg
 			{
 				if (auxDbObj.AppliesToDialect(dialect))
 				{
-					script.Add(auxDbObj.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+					script.Add(auxDbObj.SqlCreateString(dialect, staticDialectMapping, defaultCatalog, defaultSchema));
 				}
 			}
 
@@ -2363,6 +2368,7 @@ namespace NHibernate.Cfg
 			var defaultSchema = GetQuotedDefaultSchema(dialect);
 
 			var script = new List<string>(50);
+			var staticDialectMapping = new StaticDialectMappingWrapper(mapping, dialect);
 			foreach (var table in TableMappings)
 			{
 				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Update))
@@ -2371,11 +2377,11 @@ namespace NHibernate.Cfg
 																				 table.Catalog ?? defaultCatalog, table.IsQuoted);
 					if (tableInfo == null)
 					{
-						script.Add(table.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+						script.Add(table.SqlCreateString(dialect, staticDialectMapping, defaultCatalog, defaultSchema));
 					}
 					else
 					{
-						string[] alterDDL = table.SqlAlterStrings(dialect, mapping, tableInfo, defaultCatalog, defaultSchema);
+						string[] alterDDL = table.SqlAlterStrings(dialect, staticDialectMapping, tableInfo, defaultCatalog, defaultSchema);
 						script.AddRange(alterDDL);
 					}
 
@@ -2403,7 +2409,7 @@ namespace NHibernate.Cfg
 											   && (!(dialect is MySQLDialect) || tableInfo.GetIndexMetadata(fk.Name) == null));
 								if (create)
 								{
-									script.Add(fk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+									script.Add(fk.SqlCreateString(dialect, staticDialectMapping, defaultCatalog, defaultSchema));
 								}
 							}
 						}
@@ -2413,7 +2419,7 @@ namespace NHibernate.Cfg
 					{
 						if (tableInfo == null || tableInfo.GetIndexMetadata(index.Name) == null)
 						{
-							script.Add(index.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+							script.Add(index.SqlCreateString(dialect, staticDialectMapping, defaultCatalog, defaultSchema));
 						}
 					}
 				}
@@ -2439,6 +2445,7 @@ namespace NHibernate.Cfg
 		{
 			SecondPassCompile();
 
+			var staticDialectMapping = new StaticDialectMappingWrapper(mapping, dialect);
 			var defaultCatalog = GetQuotedDefaultCatalog(dialect);
 			var defaultSchema = GetQuotedDefaultSchema(dialect);
 
@@ -2465,7 +2472,7 @@ namespace NHibernate.Cfg
 					}
 					else
 					{
-						validationErrors.AddRange(table.ValidateColumns(dialect, mapping, tableInfo));
+						validationErrors.AddRange(table.ValidateColumns(dialect, staticDialectMapping, tableInfo));
 					}
 				}
 			}
