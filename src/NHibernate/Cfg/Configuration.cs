@@ -538,9 +538,8 @@ namespace NHibernate.Cfg
 		public void AddDeserializedMapping(HbmMapping mappingDocument, string documentFileName)
 		{
 			if (mappingDocument == null)
-			{
-				throw new ArgumentNullException("mappingDocument");
-			}
+				throw new ArgumentNullException(nameof(mappingDocument));
+
 			try
 			{
 				var dialect = new Lazy<Dialect.Dialect>(() => Dialect.Dialect.GetDialect(properties));
@@ -735,9 +734,8 @@ namespace NHibernate.Cfg
 		public Configuration AddResources(IEnumerable<string> paths, Assembly assembly)
 		{
 			if (paths == null)
-			{
-				throw new ArgumentNullException("paths");
-			}
+				throw new ArgumentNullException(nameof(paths));
+			
 			foreach (var path in paths)
 			{
 				AddResource(path, assembly);
