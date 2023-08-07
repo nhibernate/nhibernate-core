@@ -123,7 +123,10 @@ namespace NHibernate.Cfg
 		{
 			ConfigureProxyFactoryFactory();
 			SecondPassCompile();
-			Validate(BuildMapping());
+#pragma warning disable CS0618
+			var mapping = BuildMapping();
+#pragma warning restore CS0618
+			Validate(mapping);
 
 			info.AddValue("entityNotFoundDelegate", EntityNotFoundDelegate);
 
