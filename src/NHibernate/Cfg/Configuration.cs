@@ -279,6 +279,8 @@ namespace NHibernate.Cfg
 			Reset();
 		}
 
+		// Since v5.5
+		[Obsolete("Use BuildSessionFactory to obtain a new ISessionFactory instance instead.")]
 		public virtual IMapping BuildMapping()
 		{
 			return new Mapping(this);
@@ -286,7 +288,10 @@ namespace NHibernate.Cfg
 
 		private IMapping BuildMapping(Dialect.Dialect dialect)
 		{
-			return new StaticDialectMappingWrapper(BuildMapping(), dialect);
+#pragma warning disable CS0618
+			var mapping = BuildMapping();
+#pragma warning restore CS0618
+			return new StaticDialectMappingWrapper(mapping, dialect);
 		}
 
 		/// <summary>
