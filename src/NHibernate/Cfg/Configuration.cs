@@ -284,6 +284,11 @@ namespace NHibernate.Cfg
 			return new Mapping(this);
 		}
 
+		private IMapping BuildMapping(Dialect.Dialect dialect)
+		{
+			return new StaticDialectMappingWrapper(BuildMapping(), dialect);
+		}
+
 		/// <summary>
 		/// Create a new Configuration object.
 		/// </summary>
@@ -922,9 +927,7 @@ namespace NHibernate.Cfg
 		/// <param name="dialect"></param>
 		public string[] GenerateSchemaCreationScript(Dialect.Dialect dialect)
 		{
-			var m = BuildMapping();
-			var mapping = new StaticDialectMappingWrapper(m, dialect);
-
+			var mapping = BuildMapping(dialect);
 			SecondPassCompile();
 
 			var defaultCatalog = GetQuotedDefaultCatalog(dialect);
@@ -991,7 +994,7 @@ namespace NHibernate.Cfg
 
 			return script.ToArray();
 		}
-
+		
 		private void Validate(IMapping mapping)
 		{
 			ValidateEntities(mapping);
@@ -1293,9 +1296,8 @@ namespace NHibernate.Cfg
 			// at each access. The dialect does not change while building a session factory.
 			// It furthermore allows some hack on NHibernate.Spatial side to go on working,
 			// See nhibernate/NHibernate.Spatial#104
-			var m = BuildMapping();
 			var settings = BuildSettings();
-			var mapping = new StaticDialectMappingWrapper(m, settings.Dialect);
+			var mapping = BuildMapping(settings.Dialect);
 			ConfigureProxyFactoryFactory();
 			SecondPassCompile();
 			Validate(mapping);
@@ -2337,8 +2339,7 @@ namespace NHibernate.Cfg
 		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaUpdate"/>
 		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, IDatabaseMetadata databaseMetadata)
 		{
-			var m = BuildMapping();
-			var mapping = new StaticDialectMappingWrapper(m, dialect);
+			var mapping = BuildMapping(dialect);
 			SecondPassCompile();
 
 			var defaultCatalog = GetQuotedDefaultCatalog(dialect);
@@ -2419,8 +2420,7 @@ namespace NHibernate.Cfg
 
 		public void ValidateSchema(Dialect.Dialect dialect, IDatabaseMetadata databaseMetadata)
 		{
-			var m = BuildMapping();
-			var mapping = new StaticDialectMappingWrapper(m, dialect);
+			var mapping = BuildMapping(dialect);
 			SecondPassCompile();
 
 			var defaultCatalog = GetQuotedDefaultCatalog(dialect);
