@@ -45,7 +45,6 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 		[Test]
 		public void LazyLoad()
 		{
-			using var log = new SqlLogSpy();
 			using var s = OpenSession();
 			var device = s.Get<Device>(_id);
 			Assert.Throws<ObjectNotFoundException>(() => NHibernateUtil.Initialize(device.DrivesNotIgnored));
