@@ -13,20 +13,24 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class OneToOneType : EntityType, IAssociationType
 	{
-		private static readonly SqlType[] NoSqlTypes = Array.Empty<SqlType>();
-
 		private readonly ForeignKeyDirection foreignKeyDirection;
 		private readonly string propertyName;
 		private readonly string entityName;
 
-		public override int GetColumnSpan(IMapping session)
+		public override int GetColumnSpan(IMapping mapping)
+		{
+			// our column span is the number of columns in the PK
+			return GetIdentifierOrUniqueKeyType(mapping).GetColumnSpan(mapping);
+		}
+		
+		public override int GetOwnerColumnSpan(IMapping mapping)
 		{
 			return 0;
 		}
 
 		public override SqlType[] SqlTypes(IMapping mapping)
 		{
-			return NoSqlTypes;
+			return GetIdentifierOrUniqueKeyType(mapping).SqlTypes(mapping);
 		}
 
 		public OneToOneType(string referencedEntityName, ForeignKeyDirection foreignKeyType, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, string entityName, string propertyName)
@@ -44,7 +48,8 @@ namespace NHibernate.Type
 
 		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			//nothing to do
+			GetIdentifierOrUniqueKeyType(session.Factory)
+				.NullSafeSet(cmd, GetReferenceValue(value, session, true), index, session);
 		}
 
 		public override bool IsOneToOne
@@ -69,7 +74,7 @@ namespace NHibernate.Type
 
 		public override bool IsNull(object owner, ISessionImplementor session)
 		{
-			if (propertyName != null)
+			if (propertyName != null && owner != null)
 			{
 				IEntityPersister ownerPersister = session.Factory.GetEntityPersister(entityName);
 				object id = session.GetContextEntityIdentifier(owner);
@@ -91,12 +96,18 @@ namespace NHibernate.Type
 
 		public override object Hydrate(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
 		{
+			if (owner == null && names.Length > 0)
+			{
+				// return the (fully resolved) identifier value, but do not resolve
+				// to the actual referenced entity instance
+				return GetIdentifierOrUniqueKeyType(session.Factory)
+					.NullSafeGet(rs, names, session, null);
+			}
 			IType type = GetIdentifierOrUniqueKeyType(session.Factory);
 			object identifier = session.GetContextEntityIdentifier(owner);
 
 			//This ugly mess is only used when mapping one-to-one entities with component ID types
-			EmbeddedComponentType componentType = type as EmbeddedComponentType;
-			if (componentType != null)
+			if (type.IsComponentType && type is EmbeddedComponentType componentType)
 			{
 				EmbeddedComponentType ownerIdType = session.GetEntityPersister(null, owner).IdentifierType as EmbeddedComponentType;
 				if (ownerIdType != null)
@@ -111,6 +122,7 @@ namespace NHibernate.Type
 			return identifier;
 		}
 
+		/// <inheritdoc />
 		public override bool IsNullable
 		{
 			get { return foreignKeyDirection.Equals(ForeignKeyDirection.ForeignKeyToParent); }
@@ -151,7 +163,12 @@ namespace NHibernate.Type
 
 		public override bool[] ToColumnNullness(object value, IMapping mapping)
 		{
-			return Array.Empty<bool>();
+			bool[] result = new bool[GetColumnSpan(mapping)];
+			if (value != null)
+			{
+				ArrayHelper.Fill(result, true);
+			}
+			return result;
 		}
 	}
 }

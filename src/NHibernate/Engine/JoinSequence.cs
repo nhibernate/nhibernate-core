@@ -43,7 +43,7 @@ namespace NHibernate.Engine
 		{
 			private readonly IAssociationType associationType;
 			private readonly IJoinable joinable;
-			private readonly JoinType joinType;
+			private JoinType joinType;
 			private readonly string alias;
 			private readonly string[] lhsColumns;
 
@@ -75,6 +75,7 @@ namespace NHibernate.Engine
 			public JoinType JoinType
 			{
 				get { return joinType; }
+				internal set { joinType = value; }
 			}
 
 			public string[] LHSColumns
@@ -142,11 +143,21 @@ namespace NHibernate.Engine
 			SqlString withClauseFragment,
 			string withClauseJoinAlias)
 		{
+			return ToJoinFragment(enabledFilters, includeExtraJoins, withClauseFragment, withClauseJoinAlias, rootAlias);
+		}
+
+		internal virtual JoinFragment ToJoinFragment(
+			IDictionary<string, IFilter> enabledFilters,
+			bool includeExtraJoins,
+			SqlString withClauseFragment,
+			string withClauseJoinAlias,
+			string withRootAlias)
+		{
 			QueryJoinFragment joinFragment = new QueryJoinFragment(factory.Dialect, useThetaStyle);
 			if (rootJoinable != null)
 			{
-				joinFragment.AddCrossJoin(rootJoinable.TableName, rootAlias);
-				string filterCondition = rootJoinable.FilterFragment(rootAlias, enabledFilters);
+				joinFragment.AddCrossJoin(rootJoinable.TableName, withRootAlias);
+				string filterCondition = rootJoinable.FilterFragment(withRootAlias, enabledFilters);
 				// JoinProcessor needs to know if the where clause fragment came from a dynamic filter or not so it
 				// can put the where clause fragment in the right place in the SQL AST.   'hasFilterCondition' keeps track
 				// of that fact.
@@ -154,7 +165,7 @@ namespace NHibernate.Engine
 				if (includeExtraJoins)
 				{
 					//TODO: not quite sure about the full implications of this!
-					AddExtraJoins(joinFragment, rootAlias, rootJoinable, true);
+					AddExtraJoins(joinFragment, withRootAlias, rootJoinable, true);
 				}
 			}
 
@@ -164,7 +175,7 @@ namespace NHibernate.Engine
 			{
 				Join join = joins[i];
 				string on = join.AssociationType.GetOnCondition(join.Alias, factory, enabledFilters);
-				SqlString condition = new SqlString();
+				SqlString condition;
 				if (last != null &&
 						IsManyToManyRoot(last) &&
 						((IQueryableCollection)last).ElementType == join.AssociationType)
@@ -183,18 +194,25 @@ namespace NHibernate.Engine
 				else
 				{
 					// NH Different behavior : NH1179 and NH1293
-					// Apply filters in Many-To-One association
-					var enabledForManyToOne = FilterHelper.GetEnabledForManyToOne(enabledFilters);
-					condition = new SqlString(string.IsNullOrEmpty(on) && enabledForManyToOne.Count > 0
-					            	? join.Joinable.FilterFragment(join.Alias, enabledForManyToOne)
-					            	: on);
+					// Apply filters for entity joins and Many-To-One association
+					if (string.IsNullOrEmpty(on))
+					{
+						var enabledFiltersForJoin = ForceFilter ? enabledFilters : FilterHelper.GetEnabledForManyToOne(enabledFilters);
+						condition = new SqlString(ForceFilter || enabledFiltersForJoin.Count > 0
+										? join.Joinable.FilterFragment(join.Alias, enabledFiltersForJoin)
+										: on);
+					}
+					else
+					{
+						condition = new SqlString(on);
+					}
 				}
 
 				if (withClauseFragment != null)
 				{
 					if (join.Alias.Equals(withClauseJoinAlias))
 					{
-						condition = condition.Append(" and ").Append(withClauseFragment);
+						condition = condition.Append(" and ", withClauseFragment);
 					}
 				}
 
@@ -239,7 +257,7 @@ namespace NHibernate.Engine
 			return selector != null && selector.IncludeSubclasses(alias);
 		}
 
-		private void AddExtraJoins(JoinFragment joinFragment, string alias, IJoinable joinable, bool innerJoin)
+		private protected void AddExtraJoins(JoinFragment joinFragment, string alias, IJoinable joinable, bool innerJoin)
 		{
 			bool include = IsIncluded(alias);
 			joinFragment.AddJoins(joinable.FromJoinFragment(alias, innerJoin, include),
@@ -312,6 +330,18 @@ namespace NHibernate.Engine
 		public interface ISelector
 		{
 			bool IncludeSubclasses(string alias);
+		}
+
+		internal string RootAlias => rootAlias;
+
+		public ISessionFactoryImplementor Factory => factory;
+
+		internal bool ForceFilter { get; set; }
+
+		internal void SetJoinType(JoinType joinType)
+		{
+			joins[0].JoinType = joinType;
+			SetUseThetaStyle(false);
 		}
 	}
 }

@@ -96,6 +96,8 @@ namespace NHibernate.Tuple
 			get { return nullable; }
 		}
 
+		// Since 5.3
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public bool IsDirtyCheckable(bool hasUninitializedProperties)
 		{
 			return IsDirtyCheckable() && (!hasUninitializedProperties || !IsLazy);

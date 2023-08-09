@@ -72,7 +72,7 @@ namespace NHibernate.Event.Default
 				case EntityState.Persistent:
 					return EntityIsPersistent(@event);
 
-				default:  //TRANSIENT or DELETED
+				default: //TRANSIENT or DELETED
 					return EntityIsTransient(@event);
 			}
 		}
@@ -262,8 +262,7 @@ namespace NHibernate.Event.Default
 				LockMode.None, 
 				true, 
 				persister,
-				false,
-				true);
+				false);
 
 			//persister.AfterReassociate(entity, source); TODO H3.2 not ported
 

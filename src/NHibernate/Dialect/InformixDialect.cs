@@ -68,7 +68,7 @@ namespace NHibernate.Dialect
 
 			RegisterFunction("substr", new StandardSQLFunction("substr"));
 			//			RegisterFunction("trim", new AnsiTrimFunction()); // defined in base class
-			//			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));  // defined in base class
+			//			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32)); // defined in base class
 			RegisterFunction("coalesce", new NvlFunction()); // base class override
 			//			RegisterFunction("abs", new StandardSQLFunction("abs")); 
 			//			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
@@ -78,7 +78,8 @@ namespace NHibernate.Dialect
 			//			RegisterFunction("cast", new CastFunction());
 			//			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "||", ")"));
 
-			RegisterFunction("current_timestamp", new NoArgSQLFunction("current", NHibernateUtil.DateTime, false));
+			RegisterFunction("current_timestamp", new NoArgSQLFunction("current", NHibernateUtil.LocalDateTime, false));
+			RegisterFunction("current_date", new NoArgSQLFunction("today", NHibernateUtil.LocalDate, false));
 			RegisterFunction("sysdate", new NoArgSQLFunction("today", NHibernateUtil.DateTime, false));
 			RegisterFunction("current", new NoArgSQLFunction("current", NHibernateUtil.DateTime, false));
 			RegisterFunction("today", new NoArgSQLFunction("today", NHibernateUtil.DateTime, false));
@@ -332,6 +333,9 @@ namespace NHibernate.Dialect
 			return new InformixJoinFragment();
 		}
 
+		/// <inheritdoc />
+		public override bool SupportsCrossJoin => false;
+
 		/// <summary> The SQL literal value to which this database maps boolean values. </summary>
 		/// <param name="value">The boolean value </param>
 		/// <returns> The appropriate SQL literal. </returns>
@@ -441,14 +445,14 @@ namespace NHibernate.Dialect
 			var res = new StringBuilder(200);
 
 			res.Append(" add constraint foreign key (")
-				.Append(StringHelper.Join(StringHelper.CommaSpace, foreignKey))
+				.Append(string.Join(StringHelper.CommaSpace, foreignKey))
 				.Append(") references ")
 				.Append(referencedTable);
 
 			if (!referencesPrimaryKey)
 			{
 				res.Append(" (")
-					.Append(StringHelper.Join(StringHelper.CommaSpace, primaryKey))
+					.Append(string.Join(StringHelper.CommaSpace, primaryKey))
 					.Append(')');
 			}
 

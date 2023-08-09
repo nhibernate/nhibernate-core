@@ -13,7 +13,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cfg;
+using NHibernate.Collection;
 using NHibernate.Engine;
+using NHibernate.Persister.Collection;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -207,43 +209,85 @@ namespace NHibernate.Cache
 			var persistenceContext = session.PersistenceContext;
 			var defaultReadOnlyOrig = persistenceContext.DefaultReadOnly;
 			var results = new IList[keys.Length];
-			for (var i = 0; i < keys.Length; i++)
+			var finalReturnTypes = new ICacheAssembler[keys.Length][];
+			try
 			{
-				var cacheable = (IList) cacheables[i];
-				if (cacheable == null)
-					continue;
+				session.PersistenceContext.BatchFetchQueue.InitializeQueryCacheQueue();
 
-				var key = keys[i];
-				if (checkedSpacesIndexes.Contains(i) && !upToDates[upToDatesIndex++])
+				for (var i = 0; i < keys.Length; i++)
 				{
-					Log.Debug("cached query results were not up to date for: {0}", key);
-					continue;
+					var cacheable = (IList) cacheables[i];
+					if (cacheable == null)
+						continue;
+
+					var key = keys[i];
+					if (checkedSpacesIndexes.Contains(i) && !upToDates[upToDatesIndex++])
+					{
+						Log.Debug("cached query results were not up to date for: {0}", key);
+						continue;
+					}
+
+					var queryParams = queryParameters[i];
+					if (queryParams.IsReadOnlyInitialized)
+						persistenceContext.DefaultReadOnly = queryParams.ReadOnly;
+					else
+						queryParams.ReadOnly = persistenceContext.DefaultReadOnly;
+
+					Log.Debug("returning cached query results for: {0}", key);
+
+					finalReturnTypes[i] = GetReturnTypes(key, returnTypes[i], cacheable);
+					await (PerformBeforeAssembleAsync(finalReturnTypes[i], session, cacheable, cancellationToken)).ConfigureAwait(false);
 				}
 
-				var queryParams = queryParameters[i];
-				if (queryParams.IsReadOnlyInitialized)
-					persistenceContext.DefaultReadOnly = queryParams.ReadOnly;
-				else
-					queryParams.ReadOnly = persistenceContext.DefaultReadOnly;
-
-				// Adjust the session cache mode, as GetResultFromCacheable assemble types which may cause
-				// entity loads, which may interact with the cache.
-				using (session.SwitchCacheMode(queryParams.CacheMode))
+				for (var i = 0; i < keys.Length; i++)
 				{
-					try
+					if (finalReturnTypes[i] == null)
 					{
-						results[i] = await (GetResultFromCacheableAsync(
-							key,
-							returnTypes[i],
-							queryParams.NaturalKeyLookup,
-							session,
-							cacheable, cancellationToken)).ConfigureAwait(false);
+						continue;
 					}
-					finally
+
+					var queryParams = queryParameters[i];
+					// Adjust the session cache mode, as PerformAssemble assemble types which may cause
+					// entity loads, which may interact with the cache.
+					using (session.SwitchCacheMode(queryParams.CacheMode))
 					{
-						persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
+						try
+						{
+							results[i] = await (PerformAssembleAsync(keys[i], finalReturnTypes[i], queryParams.NaturalKeyLookup, session, (IList) cacheables[i], cancellationToken)).ConfigureAwait(false);
+						}
+						finally
+						{
+							persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
+						}
 					}
 				}
+
+				for (var i = 0; i < keys.Length; i++)
+				{
+					if (finalReturnTypes[i] == null)
+					{
+						continue;
+					}
+
+					var queryParams = queryParameters[i];
+					// Adjust the session cache mode, as InitializeCollections will initialize collections,
+					// which may interact with the cache.
+					using (session.SwitchCacheMode(queryParams.CacheMode))
+					{
+						try
+						{
+							await (InitializeCollectionsAsync(finalReturnTypes[i], session, results[i], (IList) cacheables[i], cancellationToken)).ConfigureAwait(false);
+						}
+						finally
+						{
+							persistenceContext.DefaultReadOnly = defaultReadOnlyOrig;
+						}
+					}
+				}
+			}
+			finally
+			{
+				session.PersistenceContext.BatchFetchQueue.TerminateQueryCacheQueue();
 			}
 
 			return results;
@@ -274,7 +318,33 @@ namespace NHibernate.Cache
 			return cacheable;
 		}
 
-		private async Task<IList> GetResultFromCacheableAsync(
+		private static async Task PerformBeforeAssembleAsync(
+			ICacheAssembler[] returnTypes,
+			ISessionImplementor session,
+			IList cacheable, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (returnTypes.Length == 1)
+			{
+				var returnType = returnTypes[0];
+
+				// Skip first element, it is the timestamp
+				for (var i = 1; i < cacheable.Count; i++)
+				{
+					await (returnType.BeforeAssembleAsync(cacheable[i], session, cancellationToken)).ConfigureAwait(false);
+				}
+			}
+			else
+			{
+				// Skip first element, it is the timestamp
+				for (var i = 1; i < cacheable.Count; i++)
+				{
+					await (TypeHelper.BeforeAssembleAsync((object[]) cacheable[i], returnTypes, session, cancellationToken)).ConfigureAwait(false);
+				}
+			}
+		}
+
+		private async Task<IList> PerformAssembleAsync(
 			QueryKey key,
 			ICacheAssembler[] returnTypes,
 			bool isNaturalKeyLookup,
@@ -282,12 +352,6 @@ namespace NHibernate.Cache
 			IList cacheable, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			Log.Debug("returning cached query results for: {0}", key);
-			if (key.ResultTransformer?.AutoDiscoverTypes == true && cacheable.Count > 0)
-			{
-				returnTypes = GuessTypes(cacheable);
-			}
-
 			try
 			{
 				var result = new List<object>(cacheable.Count - 1);
@@ -296,39 +360,26 @@ namespace NHibernate.Cache
 					var returnType = returnTypes[0];
 
 					// Skip first element, it is the timestamp
-					var rows = new List<object>(cacheable.Count - 1);
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						rows.Add(cacheable[i]);
-					}
-
-					foreach (var row in rows)
-					{
-						await (returnType.BeforeAssembleAsync(row, session, cancellationToken)).ConfigureAwait(false);
-					}
-
-					foreach (var row in rows)
-					{
-						result.Add(await (returnType.AssembleAsync(row, session, null, cancellationToken)).ConfigureAwait(false));
+						result.Add(await (returnType.AssembleAsync(cacheable[i], session, null, cancellationToken)).ConfigureAwait(false));
 					}
 				}
 				else
 				{
+					var nonCollectionTypeIndexes = new List<int>();
+					for (var i = 0; i < returnTypes.Length; i++)
+					{
+						if (!(returnTypes[i] is CollectionType))
+						{
+							nonCollectionTypeIndexes.Add(i);
+						}
+					}
+
 					// Skip first element, it is the timestamp
-					var rows = new List<object[]>(cacheable.Count - 1);
 					for (var i = 1; i < cacheable.Count; i++)
 					{
-						rows.Add((object[]) cacheable[i]);
-					}
-
-					foreach (var row in rows)
-					{
-						await (TypeHelper.BeforeAssembleAsync(row, returnTypes, session, cancellationToken)).ConfigureAwait(false);
-					}
-
-					foreach (var row in rows)
-					{
-						result.Add(await (TypeHelper.AssembleAsync(row, returnTypes, session, null, cancellationToken)).ConfigureAwait(false));
+						result.Add(await (TypeHelper.AssembleAsync((object[]) cacheable[i], returnTypes, nonCollectionTypeIndexes, session, cancellationToken)).ConfigureAwait(false));
 					}
 				}
 
@@ -353,12 +404,75 @@ namespace NHibernate.Cache
 			}
 		}
 
+		private static async Task InitializeCollectionsAsync(
+			ICacheAssembler[] returnTypes,
+			ISessionImplementor session,
+			IList assembleResult,
+			IList cacheResult, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var collectionIndexes = new Dictionary<int, ICollectionPersister>();
+			for (var i = 0; i < returnTypes.Length; i++)
+			{
+				if (returnTypes[i] is CollectionType collectionType)
+				{
+					collectionIndexes.Add(i, session.Factory.GetCollectionPersister(collectionType.Role));
+				}
+			}
+
+			if (collectionIndexes.Count == 0)
+			{
+				return;
+			}
+
+			// Skip first element, it is the timestamp
+			for (var i = 1; i < cacheResult.Count; i++)
+			{
+				// Initialization of the fetched collection must be done at the end in order to be able to batch fetch them
+				// from the cache or database. The collections were already created when their owners were assembled so we only
+				// have to initialize them.
+				await (TypeHelper.InitializeCollectionsAsync(
+					(object[]) cacheResult[i],
+					(object[]) assembleResult[i - 1],
+					collectionIndexes,
+					session, cancellationToken)).ConfigureAwait(false);
+			}
+		}
+
+		private async Task<IList> GetResultFromCacheableAsync(
+			QueryKey key,
+			ICacheAssembler[] returnTypes,
+			bool isNaturalKeyLookup,
+			ISessionImplementor session,
+			IList cacheable, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			Log.Debug("returning cached query results for: {0}", key);
+			returnTypes = GetReturnTypes(key, returnTypes, cacheable);
+			try
+			{
+				session.PersistenceContext.BatchFetchQueue.InitializeQueryCacheQueue();
+
+				await (PerformBeforeAssembleAsync(returnTypes, session, cacheable, cancellationToken)).ConfigureAwait(false);
+				var result = await (PerformAssembleAsync(key, returnTypes, isNaturalKeyLookup, session, cacheable, cancellationToken)).ConfigureAwait(false);
+				await (InitializeCollectionsAsync(returnTypes, session, result, cacheable, cancellationToken)).ConfigureAwait(false);
+				return result;
+			}
+			finally
+			{
+				session.PersistenceContext.BatchFetchQueue.TerminateQueryCacheQueue();
+			}
+		}
+
 		protected virtual Task<bool> IsUpToDateAsync(ISet<string> spaces, long timestamp, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<bool>(cancellationToken);
 			}
+			if (spaces.Count == 0)
+				return Task.FromResult<bool>(true);
+
 			return _updateTimestampsCache.IsUpToDateAsync(spaces, timestamp, cancellationToken);
 		}
 	}

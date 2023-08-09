@@ -101,7 +101,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("translate", new StandardSQLFunction("translate", NHibernateUtil.String));
 
 			// Multi-param numeric dialect functions...
-			RegisterFunction("mod", new StandardSQLFunction("mod", NHibernateUtil.Int32));
+			RegisterFunction("mod", new ModulusFunction(true, false));
 			RegisterFunction("nvl", new StandardSQLFunction("nvl"));
 
 			// Multi-param date dialect functions...

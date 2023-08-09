@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using NHibernate.Criterion;
 using NHibernate.Engine;
-using NHibernate.Loader.Criteria;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
@@ -62,6 +61,7 @@ namespace NHibernate.Loader
 				var associations = new OuterJoinableAssociation[countEntities];
 				var eagerProps = new bool[countEntities];
 				var suffixes = new string[countEntities];
+				var fetchLazyProperties = new ISet<string>[countEntities];
 				for (var i = 0; i < countEntities; i++)
 				{
 					var e = entityProjections[i];
@@ -70,6 +70,11 @@ namespace NHibernate.Loader
 					{
 						eagerProps[i] = true;
 					}
+
+					if (e.FetchLazyPropertyGroups?.Count > 0)
+					{
+						fetchLazyProperties[i] = new HashSet<string>(e.FetchLazyPropertyGroups);
+					}
 					suffixes[i] = e.ColumnAliasSuffix;
 				}
 
@@ -77,6 +82,7 @@ namespace NHibernate.Loader
 
 				Suffixes = suffixes;
 				EagerPropertyFetches = eagerProps;
+				EntityFetchLazyProperties = fetchLazyProperties;
 			}
 			else
 			{
@@ -105,7 +111,6 @@ namespace NHibernate.Loader
 				CollectionHelper.EmptyDictionary<string, IFilter>());
 		}
 
-
 		private void InitStatementString(OuterJoinableAssociation rootAssociation, SqlString projection, SqlString condition, SqlString orderBy, SqlString groupBy, SqlString having, LockMode lockMode)
 		{
 			SqlString selectClause = projection;
@@ -115,7 +120,7 @@ namespace NHibernate.Loader
 
 				Suffixes = BasicLoader.GenerateSuffixes(joins + 1);
 				var suffix = Suffixes[joins];
-				selectClause = new SqlString(GetSelectFragment(rootAssociation, suffix, null) + SelectString(associations));
+				selectClause = new SqlString(rootAssociation.GetSelectFragment(suffix, null, null) + SelectString(associations));
 			}
 
 			JoinFragment ojf = MergeOuterJoins(associations);
@@ -126,7 +131,10 @@ namespace NHibernate.Loader
 				.SetFromClause(Dialect.AppendLockHint(lockMode, persister.FromTableFragment(alias)) +persister.FromJoinFragment(alias, true, true))
 				.SetWhereClause(condition)
 				.SetOuterJoins(ojf.ToFromFragmentString,ojf.ToWhereFragmentString + WhereFragment)
-				.SetOrderByClause(OrderBy(associations, orderBy))
+				.SetOrderByClause(
+					projection == null
+						? OrderBy(associations, orderBy)
+						: orderBy)
 				.SetGroupByClause(groupBy)
 				.SetHavingClause(having);
 

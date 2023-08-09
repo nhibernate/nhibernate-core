@@ -1,8 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
-
+using NHibernate.Util;
 
 namespace NHibernate.Transform
 {
@@ -10,28 +11,7 @@ namespace NHibernate.Transform
 	public class DistinctRootEntityResultTransformer : IResultTransformer, ITupleSubsetResultTransformer
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DistinctRootEntityResultTransformer));
-		private static readonly object Hasher = new object();
-
-		internal sealed class Identity
-		{
-			internal readonly object entity;
-
-			internal Identity(object entity)
-			{
-				this.entity = entity;
-			}
-
-			public override bool Equals(object other)
-			{
-				Identity that = (Identity) other;
-				return ReferenceEquals(entity, that.entity);
-			}
-
-			public override int GetHashCode()
-			{
-				return RuntimeHelpers.GetHashCode(entity);
-			}
-		}
+		internal static readonly DistinctRootEntityResultTransformer Instance = new DistinctRootEntityResultTransformer();
 
 		public object TransformTuple(object[] tuple, string[] aliases)
 		{
@@ -40,13 +20,16 @@ namespace NHibernate.Transform
 
 		public IList TransformList(IList list)
 		{
-			IList result = (IList)Activator.CreateInstance(list.GetType());
-			var distinct = new HashSet<Identity>();
+			if (list.Count < 2)
+				return list;
+
+			IList result = (IList) Activator.CreateInstance(list.GetType());
+			var distinct = new HashSet<object>(ReferenceComparer<object>.Instance);
 
 			for (int i = 0; i < list.Count; i++)
 			{
 				object entity = list[i];
-				if (distinct.Add(new Identity(entity)))
+				if (distinct.Add(entity))
 				{
 					result.Add(entity);
 				}
@@ -59,36 +42,38 @@ namespace NHibernate.Transform
 			return result;
 		}
 
+		internal static List<T> TransformList<T>(IEnumerable<T> list) where T: class
+		{
+			var result = list.Distinct(ReferenceComparer<T>.Instance).ToList();
+			if (log.IsDebugEnabled())
+			{
+				log.Debug("transformed: {0} rows to: {1} distinct results", list.Count(), result.Count);
+			}
+			return result;
+		}
 
 		public bool[] IncludeInTransform(String[] aliases, int tupleLength)
 		{
-			//return RootEntityResultTransformer.INSTANCE.includeInTransform(aliases, tupleLength);
-			var transformer = new RootEntityResultTransformer();
-			return transformer.IncludeInTransform(aliases, tupleLength);
+			return RootEntityResultTransformer.Instance.IncludeInTransform(aliases, tupleLength);
 		}
-
 
 		public bool IsTransformedValueATupleElement(String[] aliases, int tupleLength)
 		{
-			//return RootEntityResultTransformer.INSTANCE.isTransformedValueATupleElement(null, tupleLength);
-			var transformer = new RootEntityResultTransformer();
-			return transformer.IsTransformedValueATupleElement(null, tupleLength);
+			return RootEntityResultTransformer.Instance.IsTransformedValueATupleElement(null, tupleLength);
 		}
 
 		public override bool Equals(object obj)
 		{
-			if (obj == null || obj.GetHashCode() != Hasher.GetHashCode())
-			{
+			if (ReferenceEquals(obj, this))
+				return true;
+			if (obj == null)
 				return false;
-			}
-			// NH-3957: do not rely on hashcode alone.
-			// Must be the exact same type
-			return obj.GetType() == typeof(DistinctRootEntityResultTransformer);
+			return obj.GetType() == GetType();
 		}
 
 		public override int GetHashCode()
 		{
-			return Hasher.GetHashCode();
+			return RuntimeHelpers.GetHashCode(Instance);
 		}
 	}
 }

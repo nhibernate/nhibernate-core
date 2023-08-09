@@ -16,6 +16,7 @@ using NHibernate.Hql;
 using NHibernate.Intercept;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -104,6 +105,7 @@ namespace NHibernate.Impl
 			enabledFilterNames = (List<string>)info.GetValue("enabledFilterNames", typeof(List<string>));
 
 			ConnectionManager = (ConnectionManager)info.GetValue("connectionManager", typeof(ConnectionManager));
+			TenantConfiguration = info.GetValue<TenantConfiguration>(nameof(TenantConfiguration));
 		}
 
 		/// <summary>
@@ -143,6 +145,7 @@ namespace NHibernate.Impl
 			info.AddValue("enabledFilterNames", enabledFilterNames, typeof(List<string>));
 
 			info.AddValue("connectionManager", ConnectionManager, typeof(ConnectionManager));
+			info.AddValue(nameof(TenantConfiguration), TenantConfiguration);
 		}
 
 		#endregion
@@ -183,7 +186,11 @@ namespace NHibernate.Impl
 		internal SessionImpl(SessionFactoryImpl factory, ISessionCreationOptions options)
 			: base(factory, options)
 		{
-			using (BeginContext())
+			// This context is disposed only on session own disposal. This greatly reduces the number of context switches
+			// for most usual session usages. It may cause an irrelevant session id to be set back on disposal, but since all
+			// session entry points are supposed to set it, it should not have any consequences.
+			_context = SessionIdLoggingContext.CreateOrNull(SessionId);
+			try
 			{
 				actionQueue = new ActionQueue(this);
 				persistenceContext = new StatefulPersistenceContext(this);
@@ -202,6 +209,11 @@ namespace NHibernate.Impl
 					SessionId, Timestamp, factory.Name, factory.Uuid);
 
 				CheckAndUpdateSessionStatus();
+			}
+			catch
+			{
+				_context?.Dispose();
+				throw;
 			}
 		}
 
@@ -752,6 +764,8 @@ namespace NHibernate.Impl
 				: Factory.QueryPlanCache.GetFilterQueryPlan(filter, role, shallow, EnabledFilters);
 		}
 
+		//Since 5.3
+		[Obsolete("Use override with persister parameter")]
 		public override object Instantiate(string clazz, object id)
 		{
 			using (BeginProcess())
@@ -776,7 +790,7 @@ namespace NHibernate.Impl
 		/// <param name="persister"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		public object Instantiate(IEntityPersister persister, object id)
+		public override object Instantiate(IEntityPersister persister, object id)
 		{
 			using (BeginProcess())
 			{
@@ -958,11 +972,11 @@ namespace NHibernate.Impl
 					}
 					entity = initializer.GetImplementation();
 				}
-				if (FieldInterceptionHelper.IsInstrumented(entity))
+
+				if (entity is IFieldInterceptorAccessor interceptorAccessor && interceptorAccessor.FieldInterceptor != null)
 				{
 					// NH: support of field-interceptor-proxy
-					IFieldInterceptor interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(entity);
-					return interceptor.EntityName;
+					return interceptorAccessor.FieldInterceptor.EntityName;
 				}
 				EntityEntry entry = persistenceContext.GetEntry(entity);
 				if (entry == null)
@@ -1145,45 +1159,59 @@ namespace NHibernate.Impl
 			return Load(entityClass.FullName, id);
 		}
 
+		/// <inheritdoc />
 		public T Get<T>(object id)
 		{
-			using (BeginProcess())
-			{
-				return (T)Get(typeof(T), id);
-			}
+			return (T) Get(typeof(T), id);
 		}
 
+		/// <inheritdoc />
 		public T Get<T>(object id, LockMode lockMode)
 		{
-			using (BeginProcess())
-			{
-				return (T)Get(typeof(T), id, lockMode);
-			}
+			return (T) Get(typeof(T), id, lockMode);
 		}
 
+		/// <inheritdoc />
 		public object Get(System.Type entityClass, object id)
 		{
 			return Get(entityClass.FullName, id);
 		}
 
-		/// <summary>
-		/// Load the data for the object with the specified id into a newly created object
-		/// using "for update", if supported. A new key will be assigned to the object.
-		/// This should return an existing proxy where appropriate.
-		///
-		/// If the object does not exist in the database, null is returned.
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
-		/// <param name="lockMode"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public object Get(System.Type clazz, object id, LockMode lockMode)
+		{
+			return Get(clazz.FullName, id, lockMode);
+		}
+
+		/// <inheritdoc />
+		public object Get(string entityName, object id, LockMode lockMode)
 		{
 			using (BeginProcess())
 			{
-				LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
+				LoadEvent loadEvent = new LoadEvent(id, entityName, lockMode, this);
 				FireLoad(loadEvent, LoadEventListener.Get);
+				//Note: AfterOperation call is skipped to avoid releasing the lock when outside of a transaction.
 				return loadEvent.Result;
+			}
+		}
+
+		/// <inheritdoc />
+		public object Get(string entityName, object id)
+		{
+			using (BeginProcess())
+			{
+				LoadEvent loadEvent = new LoadEvent(id, entityName, null, this);
+				bool success = false;
+				try
+				{
+					FireLoad(loadEvent, LoadEventListener.Get);
+					success = true;
+					return loadEvent.Result;
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
 			}
 		}
 
@@ -1215,25 +1243,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public object Get(string entityName, object id)
-		{
-			using (BeginProcess())
-			{
-				LoadEvent loadEvent = new LoadEvent(id, entityName, false, this);
-				bool success = false;
-				try
-				{
-					FireLoad(loadEvent, LoadEventListener.Get);
-					success = true;
-					return loadEvent.Result;
-				}
-				finally
-				{
-					AfterOperation(success);
-				}
-			}
-		}
-
 		/// <summary>
 		/// Load the data for the object with the specified id into a newly created object.
 		/// This is only called when lazily initializing a proxy.
@@ -1254,7 +1263,6 @@ namespace NHibernate.Impl
 				return loadEvent.Result;
 			}
 		}
-
 
 		/// <summary>
 		/// Return the object with the specified id or throw exception if no row with that id exists. Defer the load,
@@ -1473,14 +1481,7 @@ namespace NHibernate.Impl
 		#region System.IDisposable Members
 
 		private string fetchProfile;
-
-		/// <summary>
-		/// Finalizer that ensures the object is correctly disposed of.
-		/// </summary>
-		~SessionImpl()
-		{
-			Dispose(false);
-		}
+		private IDisposable _context;
 
 		/// <summary>
 		/// Perform a soft (distributed transaction aware) close of the session
@@ -1505,17 +1506,15 @@ namespace NHibernate.Impl
 				}
 				Dispose(true);
 			}
+			_context?.Dispose();
 		}
 
+		//TODO: Get rid of isDisposing parameter. Finalizer is removed as not needed, so isDisposing  is always true
 		/// <summary>
 		/// Takes care of freeing the managed and unmanaged resources that
 		/// this class is responsible for.
 		/// </summary>
 		/// <param name="isDisposing">Indicates if this Session is being Disposed of or Finalized.</param>
-		/// <remarks>
-		/// If this Session is being Finalized (<c>isDisposing==false</c>) then make sure not
-		/// to call any methods that could potentially bring this Session back to life.
-		/// </remarks>
 		private void Dispose(bool isDisposing)
 		{
 			using (BeginContext())
@@ -1530,17 +1529,16 @@ namespace NHibernate.Impl
 
 				// free managed resources that are being managed by the session if we
 				// know this call came through Dispose()
-				if (isDisposing && !IsClosed)
+				if (isDisposing)
 				{
-					Close();
+					if (!IsClosed)
+					{
+						Close();
+					}
 				}
 
 				// free unmanaged resources here
-
 				IsAlreadyDisposed = true;
-
-				// nothing for Finalizer to do - so tell the GC to ignore it
-				GC.SuppressFinalize(this);
 			}
 		}
 
@@ -1685,7 +1683,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override void List(CriteriaImpl criteria, IList results)
+		public override IList<T> List<T>(CriteriaImpl criteria)
 		{
 			using (BeginProcess())
 			{
@@ -1697,7 +1695,7 @@ namespace NHibernate.Impl
 
 				for (int i = 0; i < size; i++)
 				{
-					loaders[i] = new CriteriaLoader(
+					var loader = new CriteriaLoader(
 						GetOuterJoinLoadable(implementors[i]),
 						Factory,
 						criteria,
@@ -1705,7 +1703,8 @@ namespace NHibernate.Impl
 						enabledFilters
 						);
 
-					spaces.UnionWith(loaders[i].QuerySpaces);
+					spaces.UnionWith(loader.QuerySpaces);
+					loaders[size - 1 - i] = loader;
 				}
 
 				AutoFlushIfRequired(spaces);
@@ -1715,11 +1714,9 @@ namespace NHibernate.Impl
 				{
 					try
 					{
-						for (int i = size - 1; i >= 0; i--)
-						{
-							ArrayHelper.AddAll(results, loaders[i].List(this));
-						}
+						var results = loaders.LoadAllToList<T>(this); 
 						success = true;
+						return results;
 					}
 					catch (HibernateException)
 					{
@@ -1736,6 +1733,12 @@ namespace NHibernate.Impl
 					}
 				}
 			}
+		}
+
+		//TODO 6.0: Remove (use base class implementation)
+		public override void List(CriteriaImpl criteria, IList results)
+		{
+			ArrayHelper.AddAll(results, List(criteria));
 		}
 
 		public bool Contains(object obj)
@@ -2399,6 +2402,7 @@ namespace NHibernate.Impl
 				: base((SessionFactoryImpl)session.Factory)
 			{
 				_session = session;
+				TenantConfiguration = session.TenantConfiguration;
 				SetSelf(this);
 			}
 
@@ -2451,6 +2455,7 @@ namespace NHibernate.Impl
 				: base((SessionFactoryImpl)session.Factory)
 			{
 				_session = session;
+				TenantConfiguration = session.TenantConfiguration;
 				SetSelf(this);
 			}
 

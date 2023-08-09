@@ -31,7 +31,7 @@ namespace NHibernate.Persister.Collection
 	/// Summary description for AbstractCollectionPersister.
 	/// </summary>
 	public abstract partial class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
-		IPostInsertIdentityPersister, ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister
+		IPostInsertIdentityPersister, ISupportSelectModeJoinable, ICompositeKeyPostInsertIdentityPersister, ISupportLazyPropsJoinable
 	{
 		protected static readonly object NotFoundPlaceHolder = new object();
 		private readonly string role;
@@ -158,8 +158,8 @@ namespace NHibernate.Persister.Collection
 
 		private readonly string[] spaces;
 
-		private readonly IDictionary<string, object> collectionPropertyColumnAliases = new Dictionary<string, object>();
-		private readonly IDictionary<string, object> collectionPropertyColumnNames = new Dictionary<string, object>();
+		private readonly Dictionary<string, object> collectionPropertyColumnAliases = new Dictionary<string, object>();
+		private readonly Dictionary<string, object> collectionPropertyColumnNames = new Dictionary<string, object>();
 
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof (ICollectionPersister));
 
@@ -638,19 +638,19 @@ namespace NHibernate.Persister.Collection
 
 		public string GetSQLWhereString(string alias)
 		{
-			return StringHelper.Replace(sqlWhereStringTemplate, Template.Placeholder, alias);
+			return Template.ReplacePlaceholder(sqlWhereStringTemplate, alias);
 		}
 
 		public string GetSQLOrderByString(string alias)
 		{
-			return HasOrdering ? StringHelper.Replace(sqlOrderByStringTemplate, Template.Placeholder, alias) : string.Empty;
+			return HasOrdering ? Template.ReplacePlaceholder(sqlOrderByStringTemplate, alias) : string.Empty;
 		}
 
 		public string GetManyToManyOrderByString(string alias)
 		{
 			if (IsManyToMany && manyToManyOrderByString != null)
 			{
-				return StringHelper.Replace(manyToManyOrderByTemplate, Template.Placeholder, alias);
+				return Template.ReplacePlaceholder(manyToManyOrderByTemplate, alias);
 			}
 			else
 			{
@@ -1020,7 +1020,7 @@ namespace NHibernate.Persister.Collection
 			{
 				if (columnNames[i] == null)
 				{
-					result[i] = StringHelper.Replace(formulaTemplates[i], Template.Placeholder, alias);
+					result[i] = Template.ReplacePlaceholder(formulaTemplates[i], alias);
 				}
 				else
 				{
@@ -1375,10 +1375,15 @@ namespace NHibernate.Persister.Collection
 
 			if (manyToManyWhereString != null)
 			{
-				buffer.Append(" and ").Append(StringHelper.Replace(manyToManyWhereTemplate, Template.Placeholder, alias));
+				buffer.Append(" and ").Append(Template.ReplacePlaceholder(manyToManyWhereTemplate, alias));
 			}
 
 			return buffer.ToString();
+		}
+		
+		public bool IsManyToManyFiltered(IDictionary<string, IFilter> enabledFilters)
+		{
+			return IsManyToMany && (manyToManyWhereString != null || manyToManyFilterHelper.IsAffectedBy(enabledFilters));
 		}
 
 		public string[] ToColumns(string alias, string propertyName)
@@ -1512,17 +1517,17 @@ namespace NHibernate.Persister.Collection
 
 		public void InitCollectionPropertyMap()
 		{
-			InitCollectionPropertyMap("key", keyType, keyColumnAliases, keyColumnNames);
-			InitCollectionPropertyMap("element", elementType, elementColumnAliases, elementColumnNames);
+			InitCollectionPropertyMap(CollectionPersister.PropKey, keyType, keyColumnAliases, keyColumnNames);
+			InitCollectionPropertyMap(CollectionPersister.PropElement, elementType, elementColumnAliases, elementColumnNames);
 
 			if (hasIndex)
 			{
-				InitCollectionPropertyMap("index", indexType, indexColumnAliases, indexColumnNames);
+				InitCollectionPropertyMap(CollectionPersister.PropIndex, indexType, indexColumnAliases, indexColumnNames);
 			}
 
 			if (hasIdentifier)
 			{
-				InitCollectionPropertyMap("id", identifierType, new string[] {identifierColumnAlias},
+				InitCollectionPropertyMap(CollectionPersister.PropId, identifierType, new string[] {identifierColumnAlias},
 										  new string[] {identifierColumnName});
 			}
 		}
@@ -1713,9 +1718,9 @@ namespace NHibernate.Persister.Collection
 
 		public abstract SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 
-		// 6.0 TODO: Remove (Replace with ISupportSelectModeJoinable.SelectFragment)
+		// 6.0 TODO: Remove
 		// Since v5.2
-		[Obsolete("Use overload taking includeLazyProperties parameter")]
+		[Obsolete("Please use overload taking EntityLoadInfo")]
 		public virtual string SelectFragment(
 			IJoinable rhs,
 			string rhsAlias,
@@ -1724,14 +1729,20 @@ namespace NHibernate.Persister.Collection
 			string currentCollectionSuffix,
 			bool includeCollectionColumns)
 		{
-			return SelectFragment(
-				rhs, rhsAlias, lhsAlias, currentEntitySuffix, currentCollectionSuffix, includeCollectionColumns, false);
+			return SelectFragment(rhs, rhsAlias, lhsAlias, currentCollectionSuffix, includeCollectionColumns, new EntityLoadInfo(currentEntitySuffix));
 		}
 
-		// 6.0 TODO: Make abstract
+		// 6.0 TODO: Remove
+		[Obsolete("Please use overload taking EntityLoadInfo")]
 		public virtual string SelectFragment(
 			IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix,
 			bool includeCollectionColumns, bool includeLazyProperties)
+		{
+			return SelectFragment(rhs, rhsAlias, lhsAlias, collectionSuffix, includeCollectionColumns, new EntityLoadInfo(entitySuffix) {IncludeLazyProps = true});
+		}
+
+		//6.0 TODO: Make abstract
+		public virtual string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string currentCollectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
 		{
 			throw new NotImplementedException("SelectFragment with fetching lazy properties option is not implemented by " + GetType().FullName);
 		}

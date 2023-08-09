@@ -114,7 +114,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1274ExportExclude
 			return cfg;
 		}
 
-
 		protected static string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }

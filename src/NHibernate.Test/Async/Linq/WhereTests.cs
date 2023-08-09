@@ -14,14 +14,17 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using log4net.Core;
 using NHibernate.Engine.Query;
 using NHibernate.Linq;
 using NHibernate.DomainModel.Northwind.Entities;
+using NHibernate.Linq.Functions;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class WhereTestsAsync : LinqTestCase
 	{
@@ -141,7 +144,6 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
-
 
 		[Test]
 		public async Task UsersRegisteredAtOrAfterY2K_And_Before2001Async()
@@ -361,7 +363,6 @@ namespace NHibernate.Test.Linq
 			await (query.ToListAsync());
 		}
 
-
 		[Test]
 		[Description("NH-3337")]
 		public async Task ProductWithDoubleStringContainsAndNotNullAsync()
@@ -411,7 +412,6 @@ namespace NHibernate.Test.Linq
 			var results = await (db.Products.Where(expr).ToListAsync());
 			Assert.That(results, Has.Count.EqualTo(1));
 		}
-		
 
 		[Test(Description = "NH-3261")]
 		public async Task UsersWithStringContainsAndNotNullNameAsync()
@@ -431,6 +431,34 @@ namespace NHibernate.Test.Linq
 			var users = await (session.CreateQuery("from User u where (case when u.Name is null then 'false' else (case when u.Name LIKE '%yend%' then 'true' else 'false' end) end) = 'true'").ListAsync<User>());
 
 			Assert.That(users.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void StringComparisonParamEmitsWarningAsync()
+		{
+			Assert.Multiple(
+				async () =>
+				{
+					await (AssertStringComparisonWarningAsync(x => string.Compare(x.CustomerId, "ANATR", StringComparison.Ordinal) <= 0, 2));
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.StartsWith("ANATR", StringComparison.Ordinal), 1));
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.EndsWith("ANATR", StringComparison.Ordinal), 1));
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.IndexOf("ANATR", StringComparison.Ordinal) == 0, 1));
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.IndexOf("ANATR", 0, StringComparison.Ordinal) == 0, 1));
+#if NETCOREAPP2_0_OR_GREATER
+					await (AssertStringComparisonWarningAsync(x => x.CustomerId.Replace("AN", "XX", StringComparison.Ordinal) == "XXATR", 1));
+#endif
+				});
+		}
+
+		private async Task AssertStringComparisonWarningAsync(Expression<Func<Customer, bool>> whereParam, int expected, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			using (var log = new LogSpy(typeof(BaseHqlGeneratorForMethod)))
+			{
+				var customers = await (session.Query<Customer>().Where(whereParam).ToListAsync(cancellationToken));
+
+				Assert.That(customers, Has.Count.EqualTo(expected), whereParam.ToString);
+				Assert.That(log.GetWholeLog(), Does.Contain($"parameter of type '{nameof(StringComparison)}' is ignored"), whereParam.ToString);
+			}
 		}
 
 		[Test]
@@ -505,19 +533,6 @@ namespace NHibernate.Test.Linq
 
 			var query = await ((from user in db.Users
 						 where names.Contains(user.Name)
-						 select user).ToListAsync());
-
-			Assert.That(query.Count, Is.EqualTo(0));
-		}
-
-		[Test]
-		[Ignore("Inline empty list expression does not evaluate correctly")]
-		public async Task UsersWithEmptyInlineEnumerableAsync()
-		{
-			var allNames = new List<string> { "ayende", "rahien" };
-
-			var query = await ((from user in db.Users
-						 where allNames.Where(n => n == "does not exist").Contains(user.Name)
 						 select user).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(0));
@@ -774,7 +789,6 @@ namespace NHibernate.Test.Linq
 			Assert.That(query.Count, Is.EqualTo(1));
 		}
 
-
 		[Test(Description = "NH-3366")]
 		public async Task CanUseCompareInQueryWithNonConstantZeroAsync()
 		{
@@ -794,7 +808,6 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-
 		[Test(Description = "NH-3366")]
 		[TestCaseSource(typeof(WhereTestsAsync), nameof(CanUseCompareInQueryDataSource))]
 		public async Task CanUseCompareInQueryAsync(Expression<Func<Product, bool>> expression, int expectedCount, bool expectCase)
@@ -809,7 +822,6 @@ namespace NHibernate.Test.Linq
 				Assert.That(wholeLog, expectCase ? Does.Contain("case") : Does.Not.Contain("case"));
 			}
 		}
-
 
 		[Test(Description = "NH-3665")]
 		public async Task SelectOnCollectionReturnsResultAsync()
@@ -834,6 +846,27 @@ namespace NHibernate.Test.Linq
 			                    .FirstOrDefaultAsync());
 			Assert.That(result, Is.Not.Null);
 			Assert.That(result.SerialNumber, Is.EqualTo("1121"));
+		}
+
+		[Test]
+		public async Task CanCompareAggregateResultAsync()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+			{
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+			}
+
+			await (session.Query<Customer>()
+			       .Select(o => new AggregateDate { Id = o.CustomerId, MaxDate = o.Orders.Max(l => l.RequiredOrderDate)})
+			       .Where(o => o.MaxDate <= DateTime.Today && o.MaxDate >= DateTime.Today)
+			       .ToListAsync());
+		}
+
+		private class AggregateDate
+		{
+			public string Id { get; set; }
+
+			public DateTime? MaxDate { get; set; }
 		}
 
 		private static List<object[]> CanUseCompareInQueryDataSource()

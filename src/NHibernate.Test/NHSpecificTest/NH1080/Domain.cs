@@ -17,7 +17,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
             set { c = value; }
         }
 
-
         public virtual B B1
         {
             get { return b1; }
@@ -30,14 +29,11 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
             set { b2 = value; }
         }
 
-
         public virtual string Value
         {
             get { return this.value; }
             set { this.value = value; }
         }
-
-
 
         public virtual int ID
         {
@@ -45,7 +41,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1080
             set { id = value; }
         }
     }
-
 
     public class B
     {

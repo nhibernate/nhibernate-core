@@ -90,7 +90,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						property.IsUpdateable = false;
 					property.IsNaturalIdentifier = true;
 
-					uk.AddColumns(property.ColumnIterator.OfType<Column>());
+					uk.AddColumns(property.ColumnIterator);
 				});
 
 			rootClass.Table.AddUniqueKey(uk);	
@@ -268,6 +268,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			{
 				rootClass.CacheConcurrencyStrategy = cacheSchema.usage.ToCacheConcurrencyStrategy();
 				rootClass.CacheRegionName = cacheSchema.region;
+				rootClass.SetLazyPropertiesCacheable(cacheSchema.include == HbmCacheInclude.All);
 			}
 		}
 	}

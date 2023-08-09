@@ -342,32 +342,24 @@ namespace NHibernate.Event.Default
 			{
 				return Task.FromCanceled<bool>(cancellationToken);
 			}
-			try
-			{
-				IEntityPersister persister = @event.EntityEntry.Persister;
-				Status status = @event.EntityEntry.Status;
+			IEntityPersister persister = @event.EntityEntry.Persister;
+			Status status = @event.EntityEntry.Status;
 
-				if (!@event.DirtyCheckPossible)
+			if (!@event.DirtyCheckPossible)
+			{
+				return Task.FromResult<bool>(true);
+			}
+			else
+			{
+				int[] dirtyProperties = @event.DirtyProperties;
+				if (dirtyProperties != null && dirtyProperties.Length != 0)
 				{
-					return Task.FromResult<bool>(true);
+					return Task.FromResult<bool>(true); //TODO: suck into event class
 				}
 				else
 				{
-
-					int[] dirtyProperties = @event.DirtyProperties;
-					if (dirtyProperties != null && dirtyProperties.Length != 0)
-					{
-						return Task.FromResult<bool>(true); //TODO: suck into event class
-					}
-					else
-					{
-						return HasDirtyCollectionsAsync(@event, persister, status, cancellationToken);
-					}
+					return HasDirtyCollectionsAsync(@event, persister, status, cancellationToken);
 				}
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<bool>(ex);
 			}
 		}
 
@@ -462,7 +454,6 @@ namespace NHibernate.Event.Default
 			@event.DirtyCheckPossible = !cannotDirtyCheck;
 		}
 
-
 		private async Task<object[]> GetDatabaseSnapshotAsync(ISessionImplementor session, IEntityPersister persister, object id, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -490,6 +481,5 @@ namespace NHibernate.Event.Default
 				return session.PersistenceContext.GetCachedDatabaseSnapshot(entityKey);
 			}
 		}
-
 	}
 }

@@ -4,7 +4,6 @@ namespace NHibernate.Test.Hql
 {
 	public class Name
 	{
-
 		protected Name() { }
 
 		public Name(string first, char initial, string last)

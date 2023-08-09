@@ -35,7 +35,7 @@ namespace NHibernate.Event.Default
 			get { return null; }
 		}
 
-		protected abstract CascadingAction CascadeAction { get;}
+		protected abstract CascadingAction CascadeAction { get; }
 
 		/// <summary> 
 		/// After the save, will te version number be incremented
@@ -173,7 +173,8 @@ namespace NHibernate.Event.Default
 						throw new NonUniqueObjectException(id, persister.EntityName);
 					}
 				}
-				persister.SetIdentifier(entity, id);
+				if (!(id is DelayedPostInsertIdentifier))
+					persister.SetIdentifier(entity, id);
 			}
 			else
 			{
@@ -211,15 +212,12 @@ namespace NHibernate.Event.Default
 
 			object id = key == null ? null : key.Identifier;
 
-			// NH Different behavior (shouldDelayIdentityInserts=false anyway)
-			//bool inTxn = source.ConnectionManager.IsInActiveTransaction;
-			//bool shouldDelayIdentityInserts = !inTxn && !requiresImmediateIdAccess;
-			bool shouldDelayIdentityInserts = false;
+			bool shouldDelayIdentityInserts = !requiresImmediateIdAccess;
 
 			// Put a placeholder in entries, so we don't recurse back and try to save() the
 			// same object again. QUESTION: should this be done before onSave() is called?
 			// likewise, should it be done before onUpdate()?
-			source.PersistenceContext.AddEntry(entity, Status.Saving, null, null, id, null, LockMode.Write, useIdentityColumn, persister, false, false);
+			source.PersistenceContext.AddEntry(entity, Status.Saving, null, null, id, null, LockMode.Write, useIdentityColumn, persister, false);
 
 			CascadeBeforeSave(source, persister, entity, anything);
 
@@ -281,8 +279,7 @@ namespace NHibernate.Event.Default
 				LockMode.Write, 
 				useIdentityColumn, 
 				persister, 
-				VersionIncrementDisabled, 
-				false);
+				VersionIncrementDisabled);
 			//source.getPersistenceContext().removeNonExist( new EntityKey( id, persister, source.getEntityMode() ) );
 
 			if (!useIdentityColumn)
@@ -299,10 +296,11 @@ namespace NHibernate.Event.Default
 
 		private void MarkInterceptorDirty(object entity, IEntityPersister persister, IEventSource source)
 		{
-			if (FieldInterceptionHelper.IsInstrumented(entity))
+			if (persister.IsInstrumented)
 			{
-				IFieldInterceptor interceptor = FieldInterceptionHelper.InjectFieldInterceptor(entity, persister.EntityName, persister.MappedClass, null, null, source);
-				interceptor.MarkDirty();
+				var interceptor = persister.EntityMetamodel.BytecodeEnhancementMetadata
+				                           .InjectInterceptor(entity, source);
+				interceptor?.MarkDirty();
 			}
 		}
 

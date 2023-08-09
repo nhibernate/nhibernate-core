@@ -114,34 +114,6 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		[Ignore("Need to coalesce the subquery - timesheet with no entries should return average of 0, not null")]
-		public async Task TimeSheetsWithAverageSubqueryComparedToPropertyAsync()
-		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
-
-			var query = await ((from timesheet in db.Timesheets
-						 where timesheet.Entries.Average(e => e.NumberOfHours) < timesheet.Id
-						 select timesheet).ToListAsync());
-
-			Assert.That(query.Count, Is.EqualTo(1));
-		}
-
-		[Test]
-		[Ignore("Need to coalesce the subquery - timesheet with no entries should return average of 0, not null")]
-		public async Task TimeSheetsWithAverageSubqueryComparedToPropertyReversedAsync()
-		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
-
-			var query = await ((from timesheet in db.Timesheets
-						 where timesheet.Id > timesheet.Entries.Average(e => e.NumberOfHours)
-						 select timesheet).ToListAsync());
-
-			Assert.That(query.Count, Is.EqualTo(1));
-		}
-
-		[Test]
 		public async Task TimeSheetsWithMaxSubqueryAsync()
 		{
 			if (!Dialect.SupportsScalarSubSelects)
@@ -272,34 +244,6 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		[Ignore("Need to coalesce the subquery - timesheet with no entries should return sum of 0, not null")]
-		public async Task TimeSheetsWithSumSubqueryComparedToPropertyAsync()
-		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
-
-			var query = await ((from timesheet in db.Timesheets
-						 where timesheet.Entries.Sum(e => e.NumberOfHours) <= timesheet.Id
-						 select timesheet).ToListAsync());
-
-			Assert.That(query.Count, Is.EqualTo(1));
-		}
-
-		[Test]
-		[Ignore("Need to coalesce the subquery - timesheet with no entries should return sum of 0, not null")]
-		public async Task TimeSheetsWithSumSubqueryComparedToPropertyReversedAsync()
-		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
-
-			var query = await ((from timesheet in db.Timesheets
-						 where timesheet.Id >= timesheet.Entries.Sum(e => e.NumberOfHours)
-						 select timesheet).ToListAsync());
-
-			Assert.That(query.Count, Is.EqualTo(1));
-		}
-
-		[Test]
 		public async Task TimeSheetsWithStringContainsSubQueryAsync()
 		{
 			var query = await ((from timesheet in db.Timesheets
@@ -380,6 +324,17 @@ namespace NHibernate.Test.Linq
 			var query = await ((from timesheet in db.Timesheets
 						 where timesheet.Entries.AsQueryable().Any(e => !new[] { 1 }.Contains(e.Id))
 						 select timesheet).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+		[Test(Description = "GH-2471")]
+		public async Task TimeSheetsWithStringContainsSubQueryWithAsQueryableAfterWhereAsync()
+		{
+			var query = await ((
+				from timesheet in db.Timesheets
+				where timesheet.Entries.Where(e => e.Comments != null).AsQueryable().Any(e => e.Comments.Contains("testing"))
+				select timesheet).ToListAsync());
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
@@ -592,21 +547,6 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
 
-		[Test(Description = "NH-3155"), Ignore("Not fixed yet.")]
-		public async Task SubqueryWithGroupByAsync()
-		{
-			var sq = db.Orders
-				.GroupBy(x => x.ShippingDate)
-				.Select(x => x.Max(o => o.OrderId));
-
-			var result = await (db.Orders
-				.Where(x => sq.Contains(x.OrderId))
-				.Select(x => x.OrderId)
-				.ToListAsync());
-
-			Assert.That(result.Count, Is.EqualTo(388));
-		}
-
 		[Test(Description = "NH-3111")]
 		public async Task SubqueryWhereFailingTestAsync()
 		{
@@ -710,28 +650,6 @@ where c.Order.Customer.CustomerId = 'VINET'
 		}
 
 		[Test(Description = "NH-3190")]
-		[Ignore("Not fixed yet.")]
-		public async Task ProductsWithSubqueryReturningProjectionBoolFirstOrDefaultEqAsync()
-		{
-			if (!Dialect.SupportsScalarSubSelects)
-				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
-
-			if (!TestDialect.SupportsOrderByAndLimitInSubQueries)
-				Assert.Ignore("Dialect does not support sub-selects with order by or limit/top");
-
-			//NH-3190
-			var result = await ((from p in db.Products
-						  where (from c in db.Categories
-								 where c.Name == "Confections"
-								 && c == p.Category
-								 select new{R=p.Discontinued}).FirstOrDefault().R == false
-						  select p)
-				.ToListAsync());
-
-			Assert.That(result.Count, Is.EqualTo(13));
-		}
-
-		[Test(Description = "NH-3190")]
 		public async Task ProductsWithSubqueryReturningStringFirstOrDefaultEqAsync()
 		{
 			if (!Dialect.SupportsScalarSubSelects)
@@ -750,7 +668,6 @@ where c.Order.Customer.CustomerId = 'VINET'
 
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
-
 
 		[Test(Description = "NH-3423")]
 		public async Task NullComparedToNewExpressionInWhereClauseAsync()
@@ -789,6 +706,31 @@ where c.Order.Customer.CustomerId = 'VINET'
 				.ToListAsync());
 
 			Assert.That(result.Count, Is.EqualTo(45));
+		}
+
+		public class Specification<T>
+		{
+			private Expression<Func<T, bool>> _expression;
+
+			public Specification(Expression<Func<T, bool>> expression)
+			{
+				_expression = expression;
+			}
+
+			public static implicit operator Expression<Func<T, bool>>(Specification<T> specification)
+			{
+				return specification._expression;
+			}
+		}
+
+		[Test]
+		public async Task ImplicitConversionInsideWhereSubqueryExpressionAsync()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
+			var spec = new Specification<Order>(x => x.Freight > 1000);
+			await (db.Orders.Where(o => db.Orders.Where(spec).Any(x => x.OrderId == o.OrderId)).ToListAsync());
 		}
 	}
 }

@@ -22,6 +22,7 @@ using NHibernate.Hql.Ast.ANTLR.Tree;
 using NHibernate.Param;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
+using NHibernate.Util;
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
@@ -44,12 +45,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				try
 				{
 					CheckParametersExpectedType(parameters); // NH Different behavior (NH-1898)
+					// Create a copy of Parameters as ExpandDynamicFilterParameters may modify it
+					var parameterSpecifications = Parameters.ToList();
+					var sqlString = FilterHelper.ExpandDynamicFilterParameters(sql, parameterSpecifications, session);
+					var sqlQueryParametersList = sqlString.GetParameters().ToList();
+					SqlType[] parameterTypes = parameterSpecifications.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
 
-					var sqlQueryParametersList = sql.GetParameters().ToList();
-					SqlType[] parameterTypes = Parameters.GetQueryParameterTypes(sqlQueryParametersList, session.Factory);
-
-					st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sql, parameterTypes, cancellationToken)).ConfigureAwait(false);
-					foreach (var parameterSpecification in Parameters)
+					st = await (session.Batcher.PrepareCommandAsync(CommandType.Text, sqlString, parameterTypes, cancellationToken)).ConfigureAwait(false);
+					foreach (var parameterSpecification in parameterSpecifications)
 					{
 						await (parameterSpecification.BindAsync(st, sqlQueryParametersList, parameters, session, cancellationToken)).ConfigureAwait(false);
 					}

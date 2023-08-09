@@ -294,7 +294,7 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix, bool includeCollectionColumns, bool fetchLazyProperties)
+		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string collectionSuffix, bool includeCollectionColumns, EntityLoadInfo entityInfo)
 		{
 			var buf = new StringBuilder();
 
@@ -303,15 +303,25 @@ namespace NHibernate.Persister.Collection
 				buf.Append(SelectFragment(lhsAlias, collectionSuffix)).Append(StringHelper.CommaSpace);
 			}
 
-			if (fetchLazyProperties)
+			//6.0 TODO: Remove
+#pragma warning disable 618
+			if (entityInfo.IncludeLazyProps)
 			{
 				var selectMode = ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(ElementPersister, "fetch lazy properties");
 				if (selectMode != null)
-					return buf.Append(selectMode.SelectFragment(null, null, lhsAlias, entitySuffix, null, false, fetchLazyProperties)).ToString();
+					return buf.Append(selectMode.SelectFragment(null, null, lhsAlias, entityInfo.EntitySuffix, null, false, true)).ToString();
+			}
+#pragma warning restore 618
+
+			if (entityInfo.LazyProperties?.Count > 0)
+			{
+				var selectMode = ReflectHelper.CastOrThrow<ISupportLazyPropsJoinable>(ElementPersister, "fetch lazy properties");
+				if (selectMode != null)
+					return buf.Append(selectMode.SelectFragment(null, null, lhsAlias, null, false, entityInfo)).ToString();
 			}
 
 			var ojl = (IOuterJoinLoadable)ElementPersister;
-			return buf.Append(ojl.SelectFragment(lhsAlias, entitySuffix)).ToString(); //use suffix for the entity columns
+			return buf.Append(ojl.SelectFragment(lhsAlias, entityInfo.EntitySuffix)).ToString(); //use suffix for the entity columns
 		}
 
 		protected override SelectFragment GenerateSelectFragment(string alias, string columnSuffix)

@@ -9,7 +9,6 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 
-
 namespace NHibernate.Event.Default
 {
 	/// <summary>
@@ -380,7 +379,7 @@ namespace NHibernate.Event.Default
 				CopyValues(persister, entity, target, source, copyCache);
 
 				//copyValues works by reflection, so explicitly mark the entity instance dirty
-				MarkInterceptorDirty(entity, target);
+				MarkInterceptorDirty(entity, persister, target);
 
 				@event.Result = result;
 			}
@@ -400,15 +399,12 @@ namespace NHibernate.Event.Default
 			return false;
 		}
 
-		private void MarkInterceptorDirty(object entity, object target)
+		private void MarkInterceptorDirty(object entity, IEntityPersister persister, object target)
 		{
-			if (FieldInterceptionHelper.IsInstrumented(entity))
+			if (persister.IsInstrumented)
 			{
-				IFieldInterceptor interceptor = FieldInterceptionHelper.ExtractFieldInterceptor(target);
-				if (interceptor != null)
-				{
-					interceptor.MarkDirty();
-				}
+				var interceptor = persister.EntityMetamodel.BytecodeEnhancementMetadata.ExtractInterceptor(target);
+				interceptor?.MarkDirty();
 			}
 		}
 

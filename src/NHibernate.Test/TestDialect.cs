@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Id;
 using NHibernate.SqlTypes;
 
@@ -33,9 +35,18 @@ namespace NHibernate.Test
 		public bool HasIdentityNativeGenerator
 			=> _dialect.NativeIdentifierGeneratorClass == typeof(IdentityGenerator);
 
+		/// <summary>
+		/// Has a native generator strategy supporting id generation on DML insert.
+		/// </summary>
+		public bool NativeGeneratorSupportsBulkInsertion
+			=> HqlSqlWalker.SupportsIdGenWithBulkInsertion(
+				(IIdentifierGenerator) Cfg.Environment.ObjectsFactory.CreateInstance(
+					_dialect.NativeIdentifierGeneratorClass));
+
+		public virtual bool SupportsTime => _dialect.GetTypeName(new SqlType(DbType.Time)) != _dialect.GetTypeName(new SqlType(DbType.DateTime));
+
 		public virtual bool SupportsOperatorAll => true;
 		public virtual bool SupportsOperatorSome => true;
-		public virtual bool SupportsLocate => true;
 
 		public virtual bool SupportsFullJoin => true;
 
@@ -73,6 +84,8 @@ namespace NHibernate.Test
 
 		public virtual bool SupportsDuplicatedColumnAliases => true;
 
+		public virtual bool SupportsAggregateInSubSelect => false;
+
 		/// <summary>
 		/// Supports inserting in a table without any column specified in the insert.
 		/// </summary>
@@ -86,7 +99,6 @@ namespace NHibernate.Test
 		/// generator is <c>native</c> while the dialect uses <c>identity</c> for this generator.</remarks>
 		public bool SupportsEmptyInsertsOrHasNonIdentityNativeGenerator
 			=> SupportsEmptyInserts || !HasIdentityNativeGenerator;
-
 
 		/// <summary>
 		/// Supports condition not bound to any data, like "where @p1 = @p2".
@@ -175,5 +187,11 @@ namespace NHibernate.Test
 		/// their type in the query.
 		/// </remarks>
 		public virtual bool HasBrokenTypeInferenceOnSelectedParameters => false;
+
+		/// <summary>
+		/// Note: Dialect.SupportsRawValueConstructorSyntax is currently disabled for all Dialects (even for ones that support this feature).
+		/// This flag is added to be able to test this feature selectively
+		/// </summary>
+		public virtual bool SupportsRowValueConstructorSyntax => _dialect.SupportsRowValueConstructorSyntax;
 	}
 }

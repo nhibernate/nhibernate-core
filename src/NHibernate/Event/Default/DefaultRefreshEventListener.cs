@@ -50,7 +50,7 @@ namespace NHibernate.Event.Default
 
 			if (e == null)
 			{
-				persister = source.GetEntityPersister(null, obj); //refresh() does not pass an entityName
+				persister = source.GetEntityPersister(source.BestGuessEntityName(obj), obj); //refresh() does not pass an entityName
 				id = persister.GetIdentifier(obj);
 				if (log.IsDebugEnabled())
 				{
@@ -112,8 +112,7 @@ namespace NHibernate.Event.Default
 				if (!persister.IsMutable)
 					source.SetReadOnly(result, true);
 				else
-					source.SetReadOnly(result, (e == null ? source.DefaultReadOnly : e.IsReadOnly));
-			
+					source.SetReadOnly(result, e == null ? source.DefaultReadOnly : !e.IsModifiableEntity());
 			source.FetchProfile = previousFetchProfile;
 
 			// NH Different behavior : we are ignoring transient entities without throw any kind of exception

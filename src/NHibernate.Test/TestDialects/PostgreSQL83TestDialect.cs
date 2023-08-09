@@ -22,5 +22,10 @@
 		/// dependent transaction, it is then usually already disposed of, causing Npgsql to crash.
 		/// </summary>
 		public override bool SupportsDependentTransaction => false;
+
+		public override bool SupportsAggregateInSubSelect => true;
+
+		/// <inheritdoc />
+		public override bool SupportsRowValueConstructorSyntax => true;
 	}
 }

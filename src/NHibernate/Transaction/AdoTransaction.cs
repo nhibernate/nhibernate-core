@@ -23,8 +23,8 @@ namespace NHibernate.Transaction
 		private bool commitFailed;
 		// Since v5.2
 		[Obsolete]
-		private IList<ISynchronization> synchronizations;
-		private IList<ITransactionCompletionSynchronization> _completionSynchronizations;
+		private List<ISynchronization> synchronizations;
+		private List<ITransactionCompletionSynchronization> _completionSynchronizations;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AdoTransaction"/> class.
@@ -246,7 +246,7 @@ namespace NHibernate.Transaction
 		/// </exception>
 		public void Rollback()
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (SessionIdLoggingContext.CreateOrNull(sessionId))
 			{
 				CheckNotDisposed();
 				CheckBegun();
@@ -363,37 +363,45 @@ namespace NHibernate.Transaction
 		/// </remarks>
 		protected virtual void Dispose(bool isDisposing)
 		{
-			using (new SessionIdLoggingContext(sessionId))
+			using (SessionIdLoggingContext.CreateOrNull(sessionId))
 			{
 				if (_isAlreadyDisposed)
 				{
 					// don't dispose of multiple times.
 					return;
 				}
+				_isAlreadyDisposed = true;
 
 				// free managed resources that are being managed by the AdoTransaction if we
 				// know this call came through Dispose()
 				if (isDisposing)
 				{
-					if (trans != null)
+					try
 					{
-						trans.Dispose();
-						trans = null;
-						log.Debug("DbTransaction disposed.");
-					}
+						if (trans != null)
+						{
+							trans.Dispose();
+							trans = null;
+							log.Debug("DbTransaction disposed.");
+						}
 
-					if (IsActive && session != null)
+						if (IsActive && session != null)
+						{
+							// Assume we are rolled back
+							AfterTransactionCompletion(false);
+						}
+						// nothing for Finalizer to do - so tell the GC to ignore it
+						GC.SuppressFinalize(this);
+					}
+					finally
 					{
-						// Assume we are rolled back
-						AfterTransactionCompletion(false);
+						// Do not leave the object in an inconsistent state in case of disposal failure: we should assume
+						// the DbTransaction is either no more ongoing or unrecoverable.
+						begun = false;
 					}
 				}
 
 				// free unmanaged resources here
-
-				_isAlreadyDisposed = true;
-				// nothing for Finalizer to do - so tell the GC to ignore it
-				GC.SuppressFinalize(this);
 			}
 		}
 

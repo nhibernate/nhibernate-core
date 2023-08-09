@@ -1,7 +1,7 @@
 using System;
 using System.Data.Common;
 using NHibernate.Engine;
-using NHibernate.Persister.Entity;
+using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -26,13 +26,22 @@ namespace NHibernate.Type
 		{
 			ignoreNotFound = false;
 			isLogicalOneToOne = false;
+			PropertyName = null;
+		}
+		
+		//Since 5.3
+		[Obsolete("Use Constructor with property name")]
+		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
+			: this(entityName, uniqueKeyPropertyName, lazy, unwrapProxy, ignoreNotFound, isLogicalOneToOne, null)
+		{
 		}
 
-		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne)
+		public ManyToOneType(string entityName, string uniqueKeyPropertyName, bool lazy, bool unwrapProxy, bool ignoreNotFound, bool isLogicalOneToOne, string propertyName)
 			: base(entityName, uniqueKeyPropertyName, !lazy, unwrapProxy)
 		{
 			this.ignoreNotFound = ignoreNotFound;
 			this.isLogicalOneToOne = isLogicalOneToOne;
+			PropertyName = propertyName;
 		}
 
 		public override int GetColumnSpan(IMapping mapping)
@@ -49,13 +58,13 @@ namespace NHibernate.Type
 		public override void NullSafeSet(DbCommand st, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSet(st, GetReferenceValue(value, session), index, settable, session);
+				.NullSafeSet(st, GetReferenceValue(value, session, true), index, settable, session);
 		}
 
 		public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSet(cmd, GetReferenceValue(value, session), index, session);
+				.NullSafeSet(cmd, GetReferenceValue(value, session, true), index, session);
 		}
 
 		public override bool IsOneToOne
@@ -67,6 +76,8 @@ namespace NHibernate.Type
 		{
 			return isLogicalOneToOne;
 		}
+
+		public override string PropertyName { get; }
 
 		public override ForeignKeyDirection ForeignKeyDirection
 		{
@@ -90,20 +101,30 @@ namespace NHibernate.Type
 			// NOTE: the owner of the association is not really the owner of the id!
 			object id = GetIdentifierOrUniqueKeyType(session.Factory)
 				.NullSafeGet(rs, names, session, owner);
-			ScheduleBatchLoadIfNeeded(id, session);
+			ScheduleBatchLoadIfNeeded(id, session, false);
 			return id;
 		}
 
-		private void ScheduleBatchLoadIfNeeded(object id, ISessionImplementor session)
+		private void ScheduleBatchLoadIfNeeded(object id, ISessionImplementor session, bool addToQueryCacheBatch)
 		{
 			//cannot batch fetch by unique key (property-ref associations)
 			if (uniqueKeyPropertyName == null && id != null)
 			{
-				IEntityPersister persister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
-				EntityKey entityKey = session.GenerateEntityKey(id, persister);
-				if (entityKey.IsBatchLoadable && !session.PersistenceContext.ContainsEntity(entityKey))
+				var persister = session.Factory.GetEntityPersister(GetAssociatedEntityName());
+				if (!persister.IsBatchLoadable && !addToQueryCacheBatch)
+				{
+					return;
+				}
+
+				var entityKey = session.GenerateEntityKey(id, persister);
+				if (persister.IsBatchLoadable && !session.PersistenceContext.ContainsEntity(entityKey))
 				{
 					session.PersistenceContext.BatchFetchQueue.AddBatchLoadableEntityKey(entityKey);
+				}
+
+				if (addToQueryCacheBatch)
+				{
+					session.PersistenceContext.BatchFetchQueue.QueryCacheQueue?.AddEntityKey(entityKey);
 				}
 			}
 		}
@@ -137,6 +158,28 @@ namespace NHibernate.Type
 				return false;
 			}
 			return value.GetType() == identifierType.ReturnedClass;
+		}
+
+		public override bool IsNull(object owner, ISessionImplementor session)
+		{
+			if (!IsNullable || string.IsNullOrEmpty(PropertyName) || owner == null)
+				return false;
+
+			var entityKey = GetEntityKey(owner, session);
+			if (entityKey == null)
+				return false;
+
+			return session.PersistenceContext.IsPropertyNull(entityKey, PropertyName);
+		}
+
+		private static EntityKey GetEntityKey(object owner, ISessionImplementor session)
+		{
+			var entry = session.PersistenceContext.GetEntry(owner);
+			if (entry != null)
+				return entry.EntityKey;
+			if (owner is INHibernateProxy proxy)
+				return session.GenerateEntityKey(proxy.HibernateLazyInitializer.Identifier, session.Factory.GetEntityPersister(proxy.HibernateLazyInitializer.EntityName));
+			return null;
 		}
 
 		public override object Disassemble(object value, ISessionImplementor session, object owner)
@@ -177,7 +220,7 @@ namespace NHibernate.Type
 
 		public override void BeforeAssemble(object oid, ISessionImplementor session)
 		{
-			ScheduleBatchLoadIfNeeded(AssembleId(oid, session), session);
+			ScheduleBatchLoadIfNeeded(AssembleId(oid, session), session, true);
 		}
 
 		private object AssembleId(object oid, ISessionImplementor session)
@@ -201,7 +244,7 @@ namespace NHibernate.Type
 			return IsDirtyManyToOne(old, current, IsAlwaysDirtyChecked ? null : checkable, session);
 		}
 
-
+		/// <inheritdoc />
 		public override bool IsNullable
 		{
 			get { return ignoreNotFound; }

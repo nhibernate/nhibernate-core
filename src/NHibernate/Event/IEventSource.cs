@@ -9,13 +9,14 @@ namespace NHibernate.Event
 	public partial interface IEventSource : ISessionImplementor, ISession
 	{
 		/// <summary> Get the ActionQueue for this session</summary>
-		ActionQueue ActionQueue { get;}
+		ActionQueue ActionQueue { get; }
 
 		/// <summary>
 		/// Is auto-flush suspended?
 		/// </summary>
 		bool AutoFlushSuspended { get; }
 
+		//6.0 TODO Remove it (it's added directly to ISessionImplementor)
 		/// <summary> 
 		/// Instantiate an entity instance, using either an interceptor,
 		/// or the given persister

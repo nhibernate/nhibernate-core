@@ -130,7 +130,6 @@ namespace NHibernate.Test.ExpressionTest.SubQueries
 			set { post_title = value; }
 		}
 
-
 		public virtual Blog Blog
 		{
 			get { return _blog; }

@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -165,7 +164,7 @@ namespace NHibernate.Cache
 			{
 				return Task.FromResult<ISoftLock>(Lock(key, version));
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<ISoftLock>(ex);
 			}
@@ -185,7 +184,7 @@ namespace NHibernate.Cache
 				}
 				return Cache.RemoveAsync(key, cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -205,7 +204,7 @@ namespace NHibernate.Cache
 				}
 				return Cache.ClearAsync(cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -228,7 +227,7 @@ namespace NHibernate.Cache
 				}
 				return Cache.RemoveAsync(key, cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -262,7 +261,7 @@ namespace NHibernate.Cache
 
 				return Cache.RemoveAsync(key, cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
@@ -291,7 +290,7 @@ namespace NHibernate.Cache
 			{
 				return Task.FromResult<bool>(AfterInsert(key, value, version));
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<bool>(ex);
 			}

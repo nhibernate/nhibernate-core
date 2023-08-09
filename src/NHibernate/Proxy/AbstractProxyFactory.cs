@@ -18,16 +18,39 @@ namespace NHibernate.Proxy
 		protected virtual MethodInfo GetIdentifierMethod { get; private set; }
 		protected virtual MethodInfo SetIdentifierMethod { get; private set; }
 		protected virtual IAbstractComponentType ComponentIdType { get; private set; }
+		protected virtual bool IsClassProxy { get; private set; }
 		protected virtual bool OverridesEquals { get; set; }
 
-		protected bool IsClassProxy
+		public virtual void PostInstantiate(
+			string entityName,
+			System.Type persistentClass,
+			ISet<System.Type> interfaces,
+			MethodInfo getIdentifierMethod,
+			MethodInfo setIdentifierMethod,
+			IAbstractComponentType componentIdType,
+			bool isClassProxy)
 		{
-			get { return Interfaces.Length == 1; }
+#pragma warning disable 618
+			PostInstantiate(
+				entityName,
+				persistentClass,
+				interfaces,
+				getIdentifierMethod,
+				setIdentifierMethod,
+				componentIdType);
+#pragma warning restore 618
+			IsClassProxy = isClassProxy;
 		}
 
-		public virtual void PostInstantiate(string entityName, System.Type persistentClass, ISet<System.Type> interfaces,
-																				MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
-																				IAbstractComponentType componentIdType)
+		// Since v5.3
+		[Obsolete("Override PostInstantiate method with isClassProxy parameter instead.")]
+		public virtual void PostInstantiate(
+			string entityName,
+			System.Type persistentClass,
+			ISet<System.Type> interfaces,
+			MethodInfo getIdentifierMethod,
+			MethodInfo setIdentifierMethod,
+			IAbstractComponentType componentIdType)
 		{
 			EntityName = entityName;
 			PersistentClass = persistentClass;
@@ -42,11 +65,13 @@ namespace NHibernate.Proxy
 			SetIdentifierMethod = setIdentifierMethod;
 			ComponentIdType = componentIdType;
 			OverridesEquals = ReflectHelper.OverridesEquals(persistentClass);
+			IsClassProxy = interfaces.Count == 1;
 		}
-
 
 		public abstract INHibernateProxy GetProxy(object id, ISessionImplementor session);
 
+		// Since 5.3
+		[Obsolete("Use ProxyFactoryExtensions.GetFieldInterceptionProxy extension method instead.")]
 		public virtual object GetFieldInterceptionProxy(object instanceToWrap)
 		{
 			throw new NotSupportedException();

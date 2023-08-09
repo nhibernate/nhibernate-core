@@ -7,7 +7,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1611OneToOneIdentity
 
 		public Adjunct()
 		{
-
 		}
 
 		virtual public int ID

@@ -24,7 +24,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1727
          * The second test passes where I've just switched the order in the where clause
           */
 
-
 		[Test]
 		public async Task VerifyFilterAndInAndProperty_DoesNotWorkTodayAsync()
 		{
@@ -47,7 +46,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1727
 					.ListAsync<ClassA>());
 			}
 		}
-
 
 		[Test]
 		public async Task VerifyFilterAndInAndProperty_WorksTodayAsync()
@@ -82,6 +80,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1727
 				t.Commit();
 			}
 		}
-        
 	}
 }

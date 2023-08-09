@@ -70,7 +70,6 @@ namespace NHibernate.Engine
 
 		#region Implementation of ILhsAssociationTypeSqlInfo
 
-
 		public string[] GetAliasedColumnNames(IAssociationType type, int begin)
 		{
 			if (type.UseLHSPrimaryKey)
@@ -207,5 +206,4 @@ namespace NHibernate.Engine
 
 		#endregion
 	}
-
 }

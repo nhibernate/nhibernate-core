@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Engine;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.Expressions;
@@ -11,16 +13,19 @@ using NHibernate.Linq.NestedSelects;
 using NHibernate.Linq.ResultOperators;
 using NHibernate.Linq.ReWriters;
 using NHibernate.Linq.Visitors.ResultOperatorProcessors;
+using NHibernate.Persister.Entity;
 using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.EagerFetching;
+using OrderByClause = Remotion.Linq.Clauses.OrderByClause;
+using SelectClause = Remotion.Linq.Clauses.SelectClause;
 
 namespace NHibernate.Linq.Visitors
 {
-	public class QueryModelVisitor : NhQueryModelVisitorBase, INhQueryModelVisitor
+	public class QueryModelVisitor : NhQueryModelVisitorBase, INhQueryModelVisitor, INhQueryModelVisitorExtended
 	{
 		private readonly QueryMode _queryMode;
 
@@ -142,6 +147,7 @@ namespace NHibernate.Linq.Visitors
 			ResultOperatorMap.Add<CastResultOperator, ProcessCast>();
 			ResultOperatorMap.Add<AsQueryableResultOperator, ProcessAsQueryable>();
 			ResultOperatorMap.Add<LockResultOperator, ProcessLock>();
+			ResultOperatorMap.Add<FetchLazyPropertiesResultOperator, ProcessFetchLazyProperties>();
 		}
 
 		private QueryModelVisitor(VisitorParameters visitorParameters, bool root, QueryModel queryModel,
@@ -314,22 +320,16 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)
 		{
 			var querySourceName = VisitorParameters.QuerySourceNamer.GetName(fromClause);
-
+			var fromExpressionTree = HqlGeneratorExpressionVisitor.Visit(fromClause.FromExpression, VisitorParameters);
+			var alias = _hqlTree.TreeBuilder.Alias(querySourceName);
 			if (fromClause.FromExpression is MemberExpression)
 			{
 				// It's a join
-				_hqlTree.AddFromClause(
-					_hqlTree.TreeBuilder.Join(
-						HqlGeneratorExpressionVisitor.Visit(fromClause.FromExpression, VisitorParameters).AsExpression(),
-						_hqlTree.TreeBuilder.Alias(querySourceName)));
+				_hqlTree.AddFromClause(_hqlTree.TreeBuilder.Join(fromExpressionTree.AsExpression(), alias));
 			}
 			else
 			{
-				// TODO - exact same code as in MainFromClause; refactor this out
-				_hqlTree.AddFromClause(
-					_hqlTree.TreeBuilder.Range(
-						HqlGeneratorExpressionVisitor.Visit(fromClause.FromExpression, VisitorParameters),
-						_hqlTree.TreeBuilder.Alias(querySourceName)));
+				_hqlTree.AddFromClause(CreateCrossJoin(fromExpressionTree, alias));
 			}
 
 			base.VisitAdditionalFromClause(fromClause, queryModel, index);
@@ -364,7 +364,7 @@ namespace NHibernate.Linq.Visitors
 		public override void VisitResultOperator(ResultOperatorBase resultOperator, QueryModel queryModel, int index)
 		{
 			PreviousEvaluationType = CurrentEvaluationType;
-			CurrentEvaluationType = resultOperator.GetOutputDataInfo(PreviousEvaluationType);
+			CurrentEvaluationType = GetOutputDataInfo(resultOperator, PreviousEvaluationType);
 
 			if (resultOperator is ClientSideTransformOperator)
 			{
@@ -379,6 +379,26 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			ResultOperatorMap.Process(resultOperator, this, _hqlTree);
+		}
+
+		private static IStreamedDataInfo GetOutputDataInfo(ResultOperatorBase resultOperator, IStreamedDataInfo evaluationType)
+		{
+			//ContainsResultOperator contains data integrity check so for `values.Contains(x)` it checks that  'x' is proper type to be used inside 'values.Contains()'
+			//Due to some reasons (possibly NH expression rewritings) those types might be incompatible (known case NH-3155 - group by subquery). So resultOperator.GetOutputDataInfo throws something like: 
+			//System.ArgumentException : The items of the input sequence of type 'System.Linq.IGrouping`2[System.Object[],EntityType]' are not compatible with the item expression of type 'System.Int32'.
+			//Parameter name: inputInfo
+			//at Remotion.Linq.Clauses.ResultOperators.ContainsResultOperator.GetOutputDataInfo(StreamedSequenceInfo inputInfo)
+			//But in this place we don't really care about types involving inside expression, all we need to know is operation result which is bool for Contains
+			//So let's skip possible type exception mismatch if it allows to generate proper SQL
+			switch (resultOperator)
+			{
+				case ContainsResultOperator _:
+				case AnyResultOperator _:
+				case AllResultOperator _:
+					return new StreamedScalarValueInfo(typeof(bool));
+			}
+
+			return resultOperator.GetOutputDataInfo(evaluationType);
 		}
 
 		public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
@@ -417,20 +437,20 @@ namespace NHibernate.Linq.Visitors
 
 		private void VisitInsertClause(Expression expression)
 		{
-			var listInit = expression as ListInitExpression
+			var assignments = expression as BlockExpression
 				?? throw new QueryException("Malformed insert expression");
 			var insertedType = VisitorParameters.TargetEntityType;
 			var idents = new List<HqlIdent>();
 			var selectColumns = new List<HqlExpression>();
 
 			//Extract the insert clause from the projected ListInit
-			foreach (var assignment in listInit.Initializers)
+			foreach (BinaryExpression assignment in assignments.Expressions)
 			{
-				var member = (ConstantExpression)assignment.Arguments[0];
-				var value = assignment.Arguments[1];
+				var propName = ((ParameterExpression) assignment.Left).Name;
+				var value = assignment.Right;
 
 				//The target property
-				idents.Add(_hqlTree.TreeBuilder.Ident((string)member.Value));
+				idents.Add(_hqlTree.TreeBuilder.Ident(propName));
 
 				var valueHql = HqlGeneratorExpressionVisitor.Visit(value, VisitorParameters).AsExpression();
 				selectColumns.Add(valueHql);
@@ -446,16 +466,15 @@ namespace NHibernate.Linq.Visitors
 
 		private void VisitUpdateClause(Expression expression)
 		{
-			var listInit = expression as ListInitExpression
+			var assignments = expression as BlockExpression
 				?? throw new QueryException("Malformed update expression");
-			foreach (var initializer in listInit.Initializers)
+			foreach (BinaryExpression assigment in assignments.Expressions)
 			{
-				var member = (ConstantExpression)initializer.Arguments[0];
-				var setter = initializer.Arguments[1];
+				var propName = ((ParameterExpression) assigment.Left).Name;
+				var setter = assigment.Right;
 				var setterHql = HqlGeneratorExpressionVisitor.Visit(setter, VisitorParameters).AsExpression();
 
-				_hqlTree.AddSet(_hqlTree.TreeBuilder.Equality(_hqlTree.TreeBuilder.Ident((string)member.Value),
-					setterHql));
+				_hqlTree.AddSet(_hqlTree.TreeBuilder.Equality(_hqlTree.TreeBuilder.Ident(propName), setterHql));
 			}
 		}
 
@@ -496,15 +515,94 @@ namespace NHibernate.Linq.Visitors
 
 		public override void VisitJoinClause(JoinClause joinClause, QueryModel queryModel, int index)
 		{
+			AddJoin(joinClause, queryModel, true);
+		}
+
+		public void VisitNhOuterJoinClause(NhOuterJoinClause outerJoinClause, QueryModel queryModel, int index)
+		{
+			AddJoin(outerJoinClause.JoinClause, queryModel, false);
+		}
+
+		private void AddJoin(JoinClause joinClause, QueryModel queryModel, bool innerJoin)
+		{
 			var equalityVisitor = new EqualityHqlGenerator(VisitorParameters);
-			var whereClause = equalityVisitor.Visit(joinClause.InnerKeySelector, joinClause.OuterKeySelector);
+			var withClause = equalityVisitor.Visit(joinClause.InnerKeySelector, joinClause.OuterKeySelector);
+			var alias = _hqlTree.TreeBuilder.Alias(VisitorParameters.QuerySourceNamer.GetName(joinClause));
+			var joinExpression = HqlGeneratorExpressionVisitor.Visit(joinClause.InnerSequence, VisitorParameters);
+			var baseMemberCheker = new BaseMemberChecker(VisitorParameters.SessionFactory);
 
-			_hqlTree.AddWhereClause(whereClause);
+			HqlTreeNode join;
+			// When associations or members from another table are located inside the inner key selector we have to use a cross join
+			// instead of an inner join and add the condition in the where statement.
+			if (queryModel.BodyClauses.OfType<NhJoinClause>().Any(o => o.ParentJoinClause == joinClause) ||
+			    queryModel.BodyClauses.OfType<JoinClause>().Any(baseMemberCheker.ContainsBaseMember))
+			{
+				if (!innerJoin)
+				{
+					throw new NotSupportedException("Left joins that have association properties in the inner key selector are not supported.");
+				}
 
-			_hqlTree.AddFromClause(
-				_hqlTree.TreeBuilder.Range(
-					HqlGeneratorExpressionVisitor.Visit(joinClause.InnerSequence, VisitorParameters),
-					_hqlTree.TreeBuilder.Alias(joinClause.ItemName)));
+				_hqlTree.AddWhereClause(withClause);
+				join = CreateCrossJoin(joinExpression, alias);
+			}
+			else
+			{
+				join = innerJoin
+					? _hqlTree.TreeBuilder.InnerJoin(joinExpression.AsExpression(), alias)
+					: (HqlTreeNode) _hqlTree.TreeBuilder.LeftJoin(joinExpression.AsExpression(), alias);
+				join.AddChild(_hqlTree.TreeBuilder.With(withClause));
+			}
+
+			_hqlTree.AddFromClause(join);
+		}
+
+		private class BaseMemberChecker : NhExpressionVisitor
+		{
+			private readonly ISessionFactoryImplementor _sessionFactory;
+			private bool _result;
+
+			public BaseMemberChecker(ISessionFactoryImplementor sessionFactory)
+			{
+				_sessionFactory = sessionFactory;
+			}
+
+			public bool ContainsBaseMember(JoinClause joinClause)
+			{
+				// Visit the join inner key only for entities that have subclasses
+				if (joinClause.InnerSequence is ConstantExpression constantNode &&
+				    constantNode.Value is IEntityNameProvider &&
+					ExpressionsHelper.TryGetMappedType(_sessionFactory, constantNode, out _, out var _persister, out _, out _) &&
+					_persister?.EntityMetamodel.HasSubclasses == true)
+				{
+					_result = false;
+					Visit(joinClause.InnerKeySelector);
+
+					return _result;
+				}
+
+				return false;
+			}
+
+			protected override Expression VisitMember(MemberExpression node)
+			{
+				if (ExpressionsHelper.TryGetMappedType(
+						_sessionFactory,
+						node,
+						out _,
+						out var persister,
+						out _,
+						out var propertyPath) &&
+					persister is IOuterJoinLoadable joinLoadable &&
+					joinLoadable.EntityMetamodel.GetIdentifierPropertyType(propertyPath) == null &&
+					joinLoadable.GetPropertyTableName(propertyPath) != joinLoadable.TableName
+				)
+				{
+					_result = true;
+					return node;
+				}
+
+				return base.VisitMember(node);
+			}
 		}
 
 		public override void VisitGroupJoinClause(GroupJoinClause groupJoinClause, QueryModel queryModel, int index)
@@ -530,6 +628,23 @@ namespace NHibernate.Linq.Visitors
 			// Visit the predicate to build the query
 			var expression = HqlGeneratorExpressionVisitor.Visit(withClause.Predicate, VisitorParameters).ToBooleanExpression();
 			_hqlTree.AddWhereClause(expression);
+		}
+
+		private HqlTreeNode CreateCrossJoin(HqlTreeNode joinExpression, HqlAlias alias)
+		{
+			if (VisitorParameters.SessionFactory.Dialect.SupportsCrossJoin)
+			{
+				return _hqlTree.TreeBuilder.CrossJoin(joinExpression.AsExpression(), alias);
+			}
+
+			// Simulate cross join as a inner join on 1=1
+			var join = _hqlTree.TreeBuilder.InnerJoin(joinExpression.AsExpression(), alias);
+			var onExpression = _hqlTree.TreeBuilder.Equality(
+				_hqlTree.TreeBuilder.True(),
+				_hqlTree.TreeBuilder.True());
+			join.AddChild(_hqlTree.TreeBuilder.With(onExpression));
+
+			return join;
 		}
 	}
 }

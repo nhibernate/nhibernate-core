@@ -97,7 +97,6 @@ namespace NHibernate.Util
 			return sb.ToString();
 		}
 
-
 		/// <summary>
 		/// Append all elements in the 'from' list to the 'to' list.
 		/// </summary>
@@ -181,6 +180,15 @@ namespace NHibernate.Util
 			return array.Count(t => t);
 		}
 
+		internal static IEnumerable<int> IndexesOf<T>(T[] array, T value)
+		{
+			for (int i = 0; i < array.Length; i++)
+			{
+				if (EqualityComparer<T>.Default.Equals(array[i], value))
+					yield return i;
+			}
+		}
+
 		public static bool ArrayEquals<T>(T[] a, T[] b)
 		{
 			return ArrayComparer<T>.Default.Equals(a, b);
@@ -202,6 +210,28 @@ namespace NHibernate.Util
 		public static int ArrayGetHashCode<T>(T[] array)
 		{
 			return ArrayComparer<T>.Default.GetHashCode(array);
+		}
+
+		/// <summary>
+		/// Append a value to an array.
+		/// </summary>
+		/// <remarks>
+		/// If <paramref name="array"/> is null, then return an array with length of 1 containing the <paramref name="value"/>.
+		/// </remarks>
+		/// <returns>A new array containing all elements from <paramref name="array"/> and a <paramref name="value"/> at the end.</returns>
+		internal static T[] Append<T>(T[] array, T value)
+		{
+			if (array == null)
+			{
+				return new[] {value};
+			}
+			else
+			{
+				var result = new T[array.Length + 1];
+				array.CopyTo(result, 0);
+				result[array.Length] = value;
+				return result;
+			}
 		}
 
 		internal class ArrayComparer<T> : IEqualityComparer<T[]>

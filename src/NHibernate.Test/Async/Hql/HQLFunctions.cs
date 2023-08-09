@@ -215,8 +215,7 @@ namespace NHibernate.Test.Hql
 				Assert.DoesNotThrowAsync(() => s.CreateQuery("select a.Id, sum(BodyWeight)/avg(BodyWeight) from Animal a group by a.Id having sum(BodyWeight)>0").ListAsync());
 			}			
 		}
-
-
+		
 		[Test]
 		public async Task SubStringTwoParametersAsync()
 		{
@@ -257,8 +256,7 @@ namespace NHibernate.Test.Hql
 				Assert.AreEqual("abcdef", result.Description);
 			}
 		}
-
-
+		
 		[Test]
 		public async Task SubStringAsync()
 		{
@@ -283,7 +281,6 @@ namespace NHibernate.Test.Hql
 					.UniqueResultAsync());
 				Assert.AreEqual("abcdef", result.Description);
 
-
 				// Following tests verify that parameters can be used.
 
 				hql = "from Animal a where substring(a.Description, 2, ?) = 'bcd'";
@@ -291,7 +288,6 @@ namespace NHibernate.Test.Hql
 					.SetParameter(0, 3)
 					.UniqueResultAsync());
 				Assert.AreEqual("abcdef", result.Description);
-
 
 				hql = "from Animal a where substring(a.Description, ?, ?) = ?";
 				result = (Animal)await (s.CreateQuery(hql)
@@ -314,7 +310,6 @@ namespace NHibernate.Test.Hql
 		[Test]
 		public async Task LocateAsync()
 		{
-			AssumeFunctionSupported("locate");
 			using (ISession s = OpenSession())
 			{
 				Animal a1 = new Animal("abcdef", 20);
@@ -1254,40 +1249,6 @@ group by mr.Description";
 				await (s.CreateQuery(hql).ListAsync());
 				hql = "select new ForNh1725(mr.Description, cast(iif(mr.State= 0,1,0) as int)) from MaterialResource mr";
 				await (s.CreateQuery(hql).ListAsync());
-			}
-		}
-
-		[Test, Ignore("Not supported yet!")]
-		public async Task ParameterLikeArgumentAsync()
-		{
-			using (ISession s = OpenSession())
-			{
-				Animal a1 = new Animal("abcdef", 1.3f);
-				await (s.SaveAsync(a1));
-				await (s.FlushAsync());
-			}
-
-			using (ISession s = OpenSession())
-			{
-				string hql;
-				IList l;
-				Animal result;
-
-				// Render in WHERE
-				hql = "from Animal a where cast(:aParam as Double)>0";
-				result = (Animal)await (s.CreateQuery(hql).SetDouble("aParam", 2D).UniqueResultAsync());
-				Assert.IsNotNull(result);
-
-				// Render in WHERE with math operation
-				hql = "from Animal a where cast(:aParam+a.BodyWeight as Double)>3";
-				result = (Animal) await (s.CreateQuery(hql).SetDouble("aParam", 2D).UniqueResultAsync());
-				Assert.IsNotNull(result);
-
-				// Render in all clauses
-				hql =
-					"select cast(:aParam+a.BodyWeight as int) from Animal a group by cast(:aParam+a.BodyWeight as int) having cast(:aParam+a.BodyWeight as Double)>0";
-				l = await (s.CreateQuery(hql).SetInt32("aParam", 10).ListAsync());
-				Assert.AreEqual(1, l.Count);
 			}
 		}
 

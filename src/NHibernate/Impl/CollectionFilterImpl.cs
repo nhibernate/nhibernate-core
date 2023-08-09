@@ -3,6 +3,9 @@ using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Type;
 using System.Collections.Generic;
+using System.Linq;
+using System;
+using NHibernate.Util;
 
 namespace NHibernate.Impl
 {
@@ -33,6 +36,38 @@ namespace NHibernate.Impl
 			return Session.EnumerableFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
 		}
 
+		protected internal override IEnumerable<ITranslator> GetTranslators(ISessionImplementor session, QueryParameters queryParameters)
+		{
+			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
+			var queryExpression = ExpandParameters(queryParameters.NamedParameters);
+
+			return GetTranslators(session, queryParameters, queryExpression, collection);
+		}
+
+		internal static IEnumerable<ITranslator> GetTranslators(ISessionImplementor session, QueryParameters queryParameters, IQueryExpression queryExpression, object collection)
+		{
+			if (collection == null)
+				throw new ArgumentNullException(nameof(collection), "null collection passed to filter");
+			
+			//NOTE: SessionImpl.GetFilterQueryPlan might do flushing to support not saved collections and handles collection role changes (?)
+			//It's not supported for Future queries
+
+			var entry = session.PersistenceContext.GetCollectionEntryOrNull(collection);
+			var persiter = entry?.LoadedPersister;
+			if (persiter == null)
+			{
+				throw new QueryException("Not persistent collections are not supported");
+			}
+
+			var plan = session.Factory.QueryPlanCache.GetFilterQueryPlan(queryExpression, persiter.Role, false, session.EnabledFilters);
+			if (queryParameters != null)
+			{
+				queryParameters.PositionalParameterValues[0] = entry.LoadedKey;
+				queryParameters.PositionalParameterTypes[0] = entry.LoadedPersister.KeyType;
+			}
+			return plan.Translators.Select(t => new HqlTranslatorWrapper(t));
+		}
+
 		public override IList List()
 		{
 			VerifyParameters();
@@ -45,6 +80,11 @@ namespace NHibernate.Impl
 			VerifyParameters();
 			IDictionary<string, TypedValue> namedParams = NamedParams;
 			return Session.ListFilter<T>(collection, ExpandParameterLists(namedParams), GetQueryParameters(namedParams));
+		}
+
+		public override void List(IList results)
+		{
+			ArrayHelper.AddAll(results, List());
 		}
 
 		public override IType[] TypeArray()

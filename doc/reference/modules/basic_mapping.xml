@@ -13,11 +13,13 @@
         
         <para>
             Note that, even though many NHibernate users choose to define XML mappings by hand,
-            a number of tools exist to generate the mapping document, including
-            NHibernate.Mapping.Attributes library and various template-based code
-            generators (CodeSmith, MyGeneration). You may also use
-            <literal>NHibernate.Mapping.ByCode</literal> available since NHibernate 3.2, or
-            <ulink url="https://github.com/jagregory/fluent-nhibernate">Fluent NHibernate</ulink>.
+            a number of tools exist to generate the mapping document, even transparently at runtime.
+            This includes the <link linkend="mapping-attributes">NHibernate.Mapping.Attributes
+            library</link> which allows to directly annotate your entities with mapping declarations,
+            various template-based code generators (CodeSmith, MyGeneration), the built-in
+            <literal>NHibernate.Mapping.ByCode</literal> API available since NHibernate 3.2, or
+            the <ulink url="https://github.com/jagregory/fluent-nhibernate">Fluent NHibernate</ulink>
+            independent library.
         </para>
 
         <para>
@@ -1694,6 +1696,7 @@
                     <area id="property15" coords="16 55" />
                     <area id="property16" coords="17 55" />
                     <area id="property17" coords="18 55" />
+                    <area id="property18" coords="19 55" />
                 </areaspec>
                 <programlisting><![CDATA[<property
     name="propertyName"
@@ -1706,6 +1709,7 @@
     optimistic-lock="true|false"
     generated="never|insert|always"
     lazy="true|false"
+    lazy-group="groupName"
     not-null="true|false"
     unique="true|false"
     unique-key="uniqueKeyName"
@@ -1773,27 +1777,35 @@
                             <literal>lazy</literal> (optional - defaults to <literal>false</literal>):
                             specifies that this property is lazy. A lazy property is not loaded when
                             the object is initially loaded, unless the fetch mode has been overridden
-                            in a specific query. Values for lazy properties are loaded when any lazy
-                            property of the object is accessed. Having lazy properties causes instances
-                            of the entity to be loaded as proxies. Theses proxies ignore the class
-                            <literal>proxy</literal> setting and always derives from the persistent class,
-                            requiring its members to be overridable.
+                            in a specific query. Values for lazy properties are loaded per lazy-group.
+                        </para>
+                        <para>
+                            Having lazy properties causes instances of the entity to be loaded as proxies.
+                            Theses proxies ignore the class <literal>proxy</literal> setting and always
+                            derives from the persistent class, requiring its members to be overridable.
                         </para>
                     </callout>
-                   <callout arearefs="property11">
+                    <callout arearefs="property11">
+                        <para>
+                            <literal>lazy-group</literal> (optional - defaults to <literal>DEFAULT</literal>):
+                            if the property is lazy, its lazy-loading group. When a lazy property is accessed,
+                            the other lazy properties of the lazy group are also loaded with it.
+                        </para>
+                    </callout>
+                    <callout arearefs="property12">
                         <para>
                             <literal>not-null</literal> (optional - defaults to <literal>false</literal>):
                             sets the column nullability for DDL generation.
                         </para>
                     </callout>
-                   <callout arearefs="property12">
+                    <callout arearefs="property13">
                         <para>
                             <literal>unique</literal> (optional - defaults to <literal>false</literal>):
                             sets the column uniqueness for DDL generation. Use <literal>unique-key</literal>
                             instead if the value is unique only in combination with other properties.
                         </para>
                     </callout>
-                   <callout arearefs="property13">
+                    <callout arearefs="property14">
                         <para>
                             <literal>unique-key</literal> (optional):
                             a logical name for an unique index for DDL generation. The column will be included in
@@ -1801,7 +1813,7 @@
                             logical name. The actual index name depends on the dialect.
                         </para>
                     </callout>
-                   <callout arearefs="property14">
+                    <callout arearefs="property15">
                         <para>
                             <literal>index</literal> (optional):
                             a logical name for an index for DDL generation. The column will be included in
@@ -1809,19 +1821,19 @@
                             name. The actual index name depends on the dialect.
                         </para>
                     </callout>
-                   <callout arearefs="property15">
+                    <callout arearefs="property16">
                         <para>
                             <literal>length</literal> (optional): if the type takes a length and does not
                             already specify it, its length.
                         </para>
                     </callout>
-                   <callout arearefs="property16">
+                    <callout arearefs="property17">
                         <para>
                             <literal>precision</literal> (optional): if the type takes a precision and does not
                             already specify it, its precision.
                         </para>
                     </callout>
-                   <callout arearefs="property17">
+                    <callout arearefs="property18">
                         <para>
                             <literal>scale</literal> (optional): if the type takes a scale and does not
                             already specify it, its scale.
@@ -2598,6 +2610,7 @@
                     <area id="component6" coords="7 60"/>
                     <area id="component7" coords="8 60"/>
                     <area id="component8" coords="9 60"/>
+                    <area id="component9" coords="10 60"/>
                 </areaspec>
                 <programlisting><![CDATA[<component
     name="propertyName"
@@ -2607,6 +2620,7 @@
     access="field|property|nosetter|className"
     optimistic-lock="true|false"
     lazy="true|false"
+    lazy-group="groupName"
     unique="true|false">
 
         <property ... />
@@ -2660,6 +2674,14 @@
                         </para>
                     </callout>
                     <callout arearefs="component8">
+                        <para>
+                            <literal>lazy-group</literal> (optional - defaults to <literal>DEFAULT</literal>):
+                            If the component is lazy, its lazy-loading group. When a lazy property is accessed
+                            on an object, included when the property is a component, the other lazy properties
+                            of the lazy group are also loaded with it.
+                        </para>
+                    </callout>
+                    <callout arearefs="component9">
                         <para>
                             <literal>unique</literal> (optional - defaults to <literal>false</literal>): Specifies
                             that an unique constraint exists upon all mapped columns of the component.

@@ -29,7 +29,7 @@ namespace NHibernate.Proxy
 			_proxyFactoryInfo = info.GetValue<NHibernateProxyFactoryInfo>(nameof(_proxyFactoryInfo));
 			_fieldInterceptor = info.GetValue<IFieldInterceptor>(nameof(_fieldInterceptor));
 
-			var proxy = _proxyFactoryInfo.CreateProxyFactory().GetFieldInterceptionProxy(null);
+			var proxy = _proxyFactoryInfo.CreateProxyFactory().GetFieldInterceptionProxy();
 			if (info.GetBoolean(HasAdditionalDataName))
 			{
 				var members = FormatterServices.GetSerializableMembers(_proxyFactoryInfo.PersistentClass, context);

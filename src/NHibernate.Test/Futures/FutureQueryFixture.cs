@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using NHibernate.Driver;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Futures
@@ -7,9 +8,21 @@ namespace NHibernate.Test.Futures
 	[TestFixture]
 	public class FutureQueryFixture : FutureFixture
 	{
+		protected override void OnTearDown()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				session.Delete("from Person");
+				transaction.Commit();
+			}
+		}
+
 		[Test]
 		public void DefaultReadOnlyTest()
 		{
+			CreatePersons();
+
 			//NH-3575
 			using (var s = Sfi.OpenSession())
 			{
@@ -39,12 +52,10 @@ namespace NHibernate.Test.Futures
 				{
 					foreach (var person in persons5.GetEnumerable())
 					{
-
 					}
 
 					foreach (var person in persons10.GetEnumerable())
 					{
-
 					}
 
 					var events = logSpy.Appender.GetEvents();
@@ -114,11 +125,11 @@ namespace NHibernate.Test.Futures
 			using (var s = Sfi.OpenSession())
 			{
 				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-			
+
 				var meContainer = s.CreateQuery("from Person p where p.Id = :personId")
 					.SetParameter("personId", 1)
 					.FutureValue<Person>();
-			
+
 				var possiblefriends = s.CreateQuery("from Person p where p.Id != :personId")
 					.SetParameter("personId", 2)
 					.Future<Person>();
@@ -126,11 +137,11 @@ namespace NHibernate.Test.Futures
 				using (var logSpy = new SqlLogSpy())
 				{
 					var me = meContainer.Value;
-			
+
 					foreach (var person in possiblefriends.GetEnumerable())
 					{
 					}
-			
+
 					var events = logSpy.Appender.GetEvents();
 					Assert.AreEqual(1, events.Length);
 					var wholeLog = logSpy.GetWholeLog();
@@ -159,6 +170,25 @@ namespace NHibernate.Test.Futures
 			finally
 			{
 				Sfi.Statistics.IsStatisticsEnabled = false;
+			}
+		}
+
+		//NH-1953 - Future<> doesn't work on CreateFilter
+		[Test]
+		public void FutureOnFilter()
+		{
+			CreatePersons();
+
+			using (var s = Sfi.OpenSession())
+			{
+				var person = s.Query<Person>().Where(n => n.Name == "ParentTwoChildren").FirstOrDefault();
+
+				var f1 = s.CreateFilter(person.Children, "where Age > 30").Future<Person>();
+				var f2 = s.CreateFilter(person.Children, "where Age > 5").Future<Person>();
+
+				Assert.That(person.Children.Count, Is.EqualTo(2), "invalid test set up");
+				Assert.That(f1.GetEnumerable().ToList().Count, Is.EqualTo(0), "Invalid filtered results");
+				Assert.That(f2.GetEnumerable().ToList().Count, Is.EqualTo(1), "Invalid filtered results");
 			}
 		}
 	}

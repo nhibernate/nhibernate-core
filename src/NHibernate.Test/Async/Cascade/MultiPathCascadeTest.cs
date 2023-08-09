@@ -8,12 +8,8 @@
 //------------------------------------------------------------------------------
 
 
-using System;
-using System.Collections;
 using System.Linq;
-using NHibernate.Engine;
 using NHibernate.Proxy;
-using NHibernate.Test;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Cascade
@@ -37,23 +33,24 @@ namespace NHibernate.Test.Cascade
 		public async Task MultiPathMergeModifiedDetachedAsync()
 		{
 			// persist a simple A in the database
-	
-			ISession s = base.OpenSession();
-			s.BeginTransaction();
 			A a = new A();
-			a.Data = "Anna";
-			await (s.SaveAsync(a));
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
+
+			using (ISession s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				a.Data = "Anna";
+				await (s.SaveAsync(a));
+				await (t.CommitAsync());
+			}
 			// modify detached entity
 			this.ModifyEntity(a);
-	
-			s = base.OpenSession();
-			s.BeginTransaction();
-			a = (A)await (s.MergeAsync(a));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				a = await (s.MergeAsync(a));
+				await (t.CommitAsync());
+			}
 	
 			await (this.VerifyModificationsAsync(a.Id));
 		}
@@ -62,25 +59,25 @@ namespace NHibernate.Test.Cascade
 		public async Task MultiPathMergeModifiedDetachedIntoProxyAsync()
 		{
 			// persist a simple A in the database
-	
-			ISession s = base.OpenSession();
-			s.BeginTransaction();
 			A a = new A();
-			a.Data = "Anna";
-			await (s.SaveAsync(a));
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
+			using (ISession s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				a.Data = "Anna";
+				await (s.SaveAsync(a));
+				await (t.CommitAsync());
+			}
 			// modify detached entity
 			this.ModifyEntity(a);
-	
-			s = base.OpenSession();
-			s.BeginTransaction();
-			A aLoaded = await (s.LoadAsync<A>(a.Id));
-			Assert.That(aLoaded, Is.InstanceOf<INHibernateProxy>());
-			Assert.That(await (s.MergeAsync(a)), Is.SameAs(aLoaded));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				A aLoaded = await (s.LoadAsync<A>(a.Id));
+				Assert.That(aLoaded, Is.InstanceOf<INHibernateProxy>());
+				Assert.That(await (s.MergeAsync(a)), Is.SameAs(aLoaded));
+				await (t.CommitAsync());
+			}
 	
 			await (this.VerifyModificationsAsync(a.Id));
 		}
@@ -89,24 +86,25 @@ namespace NHibernate.Test.Cascade
 		public async Task MultiPathUpdateModifiedDetachedAsync()
 		{
 			// persist a simple A in the database
-	
-			ISession s = base.OpenSession();
-			s.BeginTransaction();
 			A a = new A();
-			a.Data = "Anna";
-			await (s.SaveAsync(a));
-			await (s.Transaction.CommitAsync());
-			s.Close();
+
+			using (ISession s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				a.Data = "Anna";
+				await (s.SaveAsync(a));
+				await (t.CommitAsync());
+			}
 	
 			// modify detached entity
 			this.ModifyEntity(a);
-			
-			s = base.OpenSession();
-			s.BeginTransaction();
-			await (s.UpdateAsync(a));
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
+
+			using (ISession s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				await (s.UpdateAsync(a));
+				await (t.CommitAsync());
+			}
 			await (this.VerifyModificationsAsync(a.Id));
 		}
 	
@@ -114,23 +112,24 @@ namespace NHibernate.Test.Cascade
 		public async Task MultiPathGetAndModifyAsync()
 		{
 			// persist a simple A in the database
-	
-			ISession s = base.OpenSession();
-			s.BeginTransaction();
 			A a = new A();
-			a.Data = "Anna";
-			await (s.SaveAsync(a));
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
-			s = base.OpenSession();
-			s.BeginTransaction();
-			// retrieve the previously saved instance from the database, and update it
-			a = await (s.GetAsync<A>(a.Id));
-			this.ModifyEntity(a);
-			await (s.Transaction.CommitAsync());
-			s.Close();
 
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				a.Data = "Anna";
+				await (s.SaveAsync(a));
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				// retrieve the previously saved instance from the database, and update it
+				a = await (s.GetAsync<A>(a.Id));
+				this.ModifyEntity(a);
+				await (t.CommitAsync());
+			}
 			await (this.VerifyModificationsAsync(a.Id));
 		}
 	
@@ -138,24 +137,24 @@ namespace NHibernate.Test.Cascade
 		public async Task MultiPathMergeNonCascadedTransientEntityInCollectionAsync()
 		{
 			// persist a simple A in the database
-	
-			ISession s = base.OpenSession();
-			s.BeginTransaction();
 			A a = new A();
-			a.Data = "Anna";
-			await (s.SaveAsync(a));
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				a.Data = "Anna";
+				await (s.SaveAsync(a));
+				await (t.CommitAsync());
+			}	
 			// modify detached entity
 			this.ModifyEntity(a);
-			
-			s = base.OpenSession();
-			s.BeginTransaction();
-			a = (A)await (s.MergeAsync(a));
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				a = await (s.MergeAsync(a));
+				await (t.CommitAsync());
+			}
 			await (this.VerifyModificationsAsync(a.Id));
 	
 			// add a new (transient) G to collection in h
@@ -166,48 +165,45 @@ namespace NHibernate.Test.Cascade
 			gNew.Data = "Gail";
 			gNew.Hs.Add(h);
 			h.Gs.Add(gNew);
-	
-			s = base.OpenSession();
-			s.BeginTransaction();
-			try
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				await (s.MergeAsync(a));
-				await (s.MergeAsync(h));
-				Assert.Fail("should have thrown TransientObjectException");
+				try
+				{
+					await (s.MergeAsync(a));
+					await (s.MergeAsync(h));
+					Assert.Fail("should have thrown TransientObjectException");
+				}
+				catch (TransientObjectException)
+				{
+					// expected
+				}
 			}
-			catch (TransientObjectException)
-			{
-				// expected
-			}
-			finally
-			{
-				await (s.Transaction.RollbackAsync());
-			}
-			s.Close();
 		}
 	
 		[Test]
 		public async Task MultiPathMergeNonCascadedTransientEntityInOneToOneAsync()
 		{
 			// persist a simple A in the database
-	
-			ISession s = base.OpenSession();
-			s.BeginTransaction();
 			A a = new A();
-			a.Data = "Anna";
-			await (s.SaveAsync(a));
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				a.Data = "Anna";
+				await (s.SaveAsync(a));
+				await (t.CommitAsync());
+			}
 			// modify detached entity
 			this.ModifyEntity(a);
-	
-			s = base.OpenSession();
-			s.BeginTransaction();
-			a = (A)await (s.MergeAsync(a));
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				a = (A) await (s.MergeAsync(a));
+				await (t.CommitAsync());
+			}
 			await (this.VerifyModificationsAsync(a.Id));
 	
 			// change the one-to-one association from g to be a new (transient) A
@@ -218,48 +214,45 @@ namespace NHibernate.Test.Cascade
 			aNew.Data = "Alice";
 			g.A = aNew;
 			aNew.G = g;
-	
-			s = base.OpenSession();
-			s.BeginTransaction();
-			try
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
 			{
-				await (s.MergeAsync(a));
-				await (s.MergeAsync(g));
-				Assert.Fail("should have thrown TransientObjectException");
+				try
+				{
+					await (s.MergeAsync(a));
+					await (s.MergeAsync(g));
+					Assert.Fail("should have thrown TransientObjectException");
+				}
+				catch (TransientObjectException)
+				{
+					// expected
+				}
 			}
-			catch (TransientObjectException )
-			{
-				// expected
-			}
-			finally
-			{
-				await (s.Transaction.RollbackAsync());
-			}
-			s.Close();
 		}
 	
 		[Test]
 		public async Task MultiPathMergeNonCascadedTransientEntityInManyToOneAsync()
 		{
 			// persist a simple A in the database
-	
-			ISession s = base.OpenSession();
-			s.BeginTransaction();
 			A a = new A();
-			a.Data = "Anna";
-			await (s.SaveAsync(a));
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				a.Data = "Anna";
+				await (s.SaveAsync(a));
+				await (t.CommitAsync());
+			}
 			// modify detached entity
 			this.ModifyEntity(a);
-	
-			s = base.OpenSession();
-			s.BeginTransaction();
-			a = (A)await (s.MergeAsync(a));
-			await (s.Transaction.CommitAsync());
-			s.Close();
-	
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				a = (A) await (s.MergeAsync(a));
+				await (t.CommitAsync());
+			}
 			await (this.VerifyModificationsAsync(a.Id));
 	
 			// change the many-to-one association from h to be a new (transient) A
@@ -270,29 +263,26 @@ namespace NHibernate.Test.Cascade
 			A aNew = new A();
 			aNew.Data = "Alice";
 			aNew.AddH(h);
-	
-			s = base.OpenSession();
-			s.BeginTransaction();
-			try
+
+			using (var s = OpenSession())
+			using (s.BeginTransaction())
 			{
-				await (s.MergeAsync(a));
-				await (s.MergeAsync(h));
-				Assert.Fail("should have thrown TransientObjectException");
+				try
+				{
+					await (s.MergeAsync(a));
+					await (s.MergeAsync(h));
+					Assert.Fail("should have thrown TransientObjectException");
+				}
+				catch (TransientObjectException)
+				{
+					// expected
+				}
 			}
-			catch (TransientObjectException)
-			{
-				// expected
-			}
-			finally
-			{
-				await (s.Transaction.RollbackAsync());
-			}
-			s.Close();
 		}
 		
 		protected override void OnTearDown()
 		{
-			using (ISession session = base.OpenSession())
+			using (ISession session = OpenSession())
 			using (ITransaction transaction = session.BeginTransaction())
 			{
 				session.Delete("from H");
@@ -326,36 +316,36 @@ namespace NHibernate.Test.Cascade
 	
 		private async Task VerifyModificationsAsync(long aId, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			ISession s = base.OpenSession();
-			s.BeginTransaction();
-	
-			// retrieve the A object and check it
-			A a = await (s.GetAsync<A>(aId, cancellationToken));
-			Assert.That(a.Id, Is.EqualTo(aId));
-			Assert.That(a.Data, Is.EqualTo("Anthony"));
-			Assert.That(a.G, Is.Not.Null);
-			Assert.That(a.Hs, Is.Not.Null);
-			Assert.That(a.Hs.Count, Is.EqualTo(1));
-	
-			G gFromA = a.G;
-			H hFromA = a.Hs.First();
-	
-			// check the G object
-			Assert.That(gFromA.Data, Is.EqualTo("Giovanni"));
-			Assert.That(gFromA.A, Is.SameAs(a));
-			Assert.That(gFromA.Hs, Is.Not.Null);
-			Assert.That(gFromA.Hs, Is.EqualTo(a.Hs));
-			Assert.That(gFromA.Hs.First(), Is.SameAs(hFromA));
-	
-			// check the H object
-			Assert.That(hFromA.Data, Is.EqualTo("Hellen"));
-			Assert.That(hFromA.A, Is.SameAs(a));
-			Assert.That(hFromA.Gs, Is.Not.Null);
-			Assert.That(hFromA.Gs.Count, Is.EqualTo(1));
-			Assert.That(hFromA.Gs.First(), Is.SameAs(gFromA));
-	
-			await (s.Transaction.CommitAsync(cancellationToken));
-			s.Close();
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				// retrieve the A object and check it
+				A a = await (s.GetAsync<A>(aId, cancellationToken));
+				Assert.That(a.Id, Is.EqualTo(aId));
+				Assert.That(a.Data, Is.EqualTo("Anthony"));
+				Assert.That(a.G, Is.Not.Null);
+				Assert.That(a.Hs, Is.Not.Null);
+				Assert.That(a.Hs.Count, Is.EqualTo(1));
+
+				G gFromA = a.G;
+				H hFromA = a.Hs.First();
+
+				// check the G object
+				Assert.That(gFromA.Data, Is.EqualTo("Giovanni"));
+				Assert.That(gFromA.A, Is.SameAs(a));
+				Assert.That(gFromA.Hs, Is.Not.Null);
+				Assert.That(gFromA.Hs, Is.EqualTo(a.Hs));
+				Assert.That(gFromA.Hs.First(), Is.SameAs(hFromA));
+
+				// check the H object
+				Assert.That(hFromA.Data, Is.EqualTo("Hellen"));
+				Assert.That(hFromA.A, Is.SameAs(a));
+				Assert.That(hFromA.Gs, Is.Not.Null);
+				Assert.That(hFromA.Gs.Count, Is.EqualTo(1));
+				Assert.That(hFromA.Gs.First(), Is.SameAs(gFromA));
+
+				await (t.CommitAsync(cancellationToken));
+			}
 		}
 	}
 }

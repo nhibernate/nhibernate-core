@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using NHibernate.Type;
 using NHibernate.Engine;
 using System.Data.Common;
@@ -63,12 +65,66 @@ namespace NHibernate.Persister.Entity
 		string GetDiscriminatorAlias(string suffix);
 
 		/// <summary> Does the result set contain rowids?</summary>
-		bool HasRowId { get;}
+		bool HasRowId { get; }
 
 		/// <summary>
 		/// Retrieve property values from one row of a result set
 		/// </summary>
+		// Since v5.3
+		[Obsolete("Use the extension method with fetchedLazyProperties parameter instead")]
 		object[] Hydrate(DbDataReader rs, object id, object obj, ILoadable rootLoadable, string[][] suffixedPropertyColumns,
 						 bool allProperties, ISessionImplementor session);
+	}
+
+	public static partial class LoadableExtensions
+	{
+		/// <summary>
+		/// Retrieve property values from one row of a result set
+		/// </summary>
+		//6.0 TODO: Merge into ILoadable
+		public static object[] Hydrate(
+			this ILoadable loadable, DbDataReader rs, object id, object obj,
+			string[][] suffixedPropertyColumns, ISet<string> fetchedLazyProperties, bool allProperties, ISessionImplementor session)
+		{
+			if (loadable is AbstractEntityPersister abstractEntityPersister)
+			{
+				return abstractEntityPersister.Hydrate(
+					rs, id, obj, suffixedPropertyColumns, fetchedLazyProperties, allProperties, session);
+			}
+			
+			var rootLoadable = loadable.RootEntityName == loadable.EntityName
+				? loadable
+				: (ILoadable) loadable.Factory.GetEntityPersister(loadable.RootEntityName);
+
+#pragma warning disable 618
+			// Fallback to the old behavior
+			return loadable.Hydrate(rs, id, obj, rootLoadable, suffixedPropertyColumns, allProperties, session);
+#pragma warning restore 618
+		}
+
+		/// <summary>
+		/// Set lazy properties from one row of a result set
+		/// </summary>
+		//6.0 TODO: Change to void and merge into ILoadable
+		internal static bool InitializeLazyProperties(
+			this ILoadable loadable, DbDataReader rs, object id, object entity, string[][] suffixedPropertyColumns,
+			string[] uninitializedLazyProperties, bool allLazyProperties, ISessionImplementor session)
+		{
+			if (loadable is AbstractEntityPersister abstractEntityPersister)
+			{
+				abstractEntityPersister.InitializeLazyProperties(
+					rs,
+					id,
+					entity,
+					suffixedPropertyColumns,
+					uninitializedLazyProperties,
+					allLazyProperties,
+					session);
+
+				return true;
+			}
+
+			return false;
+		}
 	}
 }

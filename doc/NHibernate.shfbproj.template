@@ -18,12 +18,12 @@
     <HtmlHelpName>NHibernateAPI</HtmlHelpName>
     <HelpFileFormat>HtmlHelp1x</HelpFileFormat>
     <CopyrightText>NHibernate</CopyrightText>
-    <CopyrightHref>nhibernate.info</CopyrightHref>
-    <FeedbackEMailAddress>http://groups.google.com/group/nhibernate-development</FeedbackEMailAddress>
+    <CopyrightHref>https://nhibernate.info</CopyrightHref>
+    <FeedbackEMailAddress>https://groups.google.com/group/nhibernate-development</FeedbackEMailAddress>
     <FeedbackEMailLinkText>nhibernate team</FeedbackEMailLinkText>
     <HelpTitle>NHibernate API Reference</HelpTitle>
     <IndentHtml>False</IndentHtml>
-    <HelpFileVersion>${project.version.numeric}</HelpFileVersion>
+    <HelpFileVersion>${project.version}</HelpFileVersion>
     <DocumentationSources>
       <DocumentationSource sourceFile="${root.dir}/src/NHibernate/bin/${build.config}/net461/NHibernate.dll" />
       <DocumentationSource sourceFile="${root.dir}/src/NHibernate/bin/${build.config}/net461/Nhibernate.xml" />

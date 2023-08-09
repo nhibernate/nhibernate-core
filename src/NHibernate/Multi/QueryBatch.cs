@@ -139,12 +139,10 @@ namespace NHibernate.Multi
 			var resultSetsCommand = Session.Factory.ConnectionProvider.Driver.GetResultSetsCommand(Session);
 			CombineQueries(resultSetsCommand);
 
-			var statsEnabled = Session.Factory.Statistics.IsStatisticsEnabled;
 			Stopwatch stopWatch = null;
-			if (statsEnabled)
+			if (Session.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWatch = new Stopwatch();
-				stopWatch.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 
 			if (Log.IsDebugEnabled())
@@ -198,7 +196,7 @@ namespace NHibernate.Multi
 					resultSetsCommand.Sql);
 			}
 
-			if (statsEnabled)
+			if (stopWatch != null && resultSetsCommand.HasQueries)
 			{
 				stopWatch.Stop();
 				Session.Factory.StatisticsImplementor.QueryExecuted(
@@ -227,7 +225,7 @@ namespace NHibernate.Multi
 					parameters[i] = queryInfo.Parameters;
 					returnTypes[i] = queryInfo.Parameters.HasAutoDiscoverScalarTypes
 						? null
-						: queryInfo.CacheKey.ResultTransformer.GetCachedResultTypes(queryInfo.ResultTypes);
+						: queryInfo.CacheKey.ResultTransformer.GetCachedResultTypes(queryInfo.GetCacheTypes());
 					spaces[i] = queryInfo.QuerySpaces;
 				}
 
@@ -235,11 +233,12 @@ namespace NHibernate.Multi
 
 				for (var i = 0; i < queryInfos.Length; i++)
 				{
-					queryInfos[i].SetCachedResult(results[i]);
+					var queryInfo = queryInfos[i];
+					queryInfo.SetCachedResult(results[i]);
 
 					if (statisticsEnabled)
 					{
-						var queryIdentifier = queryInfos[i].QueryIdentifier;
+						var queryIdentifier = queryInfo.QueryIdentifier;
 						if (results[i] == null)
 						{
 							Session.Factory.StatisticsImplementor.QueryCacheMiss(queryIdentifier, cache.RegionName);
@@ -279,7 +278,7 @@ namespace NHibernate.Multi
 					var queryInfo = queryInfos[i];
 					keys[i] = queryInfo.CacheKey;
 					parameters[i] = queryInfo.Parameters;
-					returnTypes[i] = queryInfo.CacheKey.ResultTransformer.GetCachedResultTypes(queryInfo.ResultTypes);
+					returnTypes[i] = queryInfo.CacheKey.ResultTransformer.GetCachedResultTypes(queryInfo.GetCacheTypes());
 					results[i] = queryInfo.ResultToCache;
 				}
 

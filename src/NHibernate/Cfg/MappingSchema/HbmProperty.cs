@@ -20,6 +20,8 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return lazy; }
 		}
 
+		public string FetchGroup => lazygroup;
+
 		public string Access
 		{
 			get { return access; }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -18,7 +19,7 @@ namespace NHibernate.Loader
 		private readonly HashSet<AssociationKey> visitedAssociationKeys = new HashSet<AssociationKey>();
 		private readonly IDictionary<string, IFilter> enabledFilters;
 		private readonly IDictionary<string, IFilter> enabledFiltersForManyToOne;
-		private static readonly Regex aliasRegex = new Regex(@"([\w]+)\.", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+		private static readonly Regex aliasRegex = new Regex(@"[\w]+(?=\.)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
 		private string[] suffixes;
 		private string[] collectionSuffixes;
@@ -57,6 +58,7 @@ namespace NHibernate.Loader
 
 		public bool[] EagerPropertyFetches { get; set; }
 		public bool[] ChildFetchEntities { get; set; }
+		public ISet<string>[] EntityFetchLazyProperties { get; set; }
 
 		public int[] CollectionOwners
 		{
@@ -114,13 +116,13 @@ namespace NHibernate.Loader
 			get { return false; }
 		}
 
+		//Since v5.3
+		[Obsolete("This class is not used and will be removed in a future version.")]
 		public class DependentAlias
 		{
 			public string Alias { get; set; }
 			public string[] DependsOn { get; set; }
 		}
-
-		readonly List<DependentAlias> _dependentAliases = new List<DependentAlias>();
 
 		protected JoinWalker(ISessionFactoryImplementor factory, IDictionary<string, IFilter> enabledFilters)
 		{
@@ -167,24 +169,28 @@ namespace NHibernate.Loader
 			IJoinable joinable = type.GetAssociatedJoinable(Factory);
 
 			string subalias = GenerateTableAlias(associations.Count + 1, path, pathAlias, joinable);
+			var qc = joinable.IsCollection ? (IQueryableCollection) joinable : null;
 
 			var assoc =
-				new OuterJoinableAssociation(
-					type,
-					alias,
-					aliasedLhsColumns,
-					subalias,
-					joinType,
-					GetWithClause(path, pathAlias),
-					Factory,
-					enabledFilters,
-					GetSelectMode(path));
+				InitAssociation(
+					new OuterJoinableAssociation(
+						type,
+						alias,
+						aliasedLhsColumns,
+						subalias,
+						joinType,
+						//for many-to-many with clause is applied with OuterJoinableAssociation created for entity persister so simply skip it here
+						qc?.IsManyToMany == true ? null :GetWithClause(path, pathAlias),
+						Factory,
+						enabledFilters,
+						GetSelectMode(path)),
+					path);
 			assoc.ValidateJoin(path);
-			AddAssociation(subalias, assoc);
+			AddAssociation(assoc);
 
 			int nextDepth = currentDepth + 1;
 
-			if (!joinable.IsCollection)
+			if (qc == null)
 			{
 				IOuterJoinLoadable pjl = joinable as IOuterJoinLoadable;
 				if (pjl != null)
@@ -192,9 +198,7 @@ namespace NHibernate.Loader
 			}
 			else
 			{
-				IQueryableCollection qc = joinable as IQueryableCollection;
-				if (qc != null)
-					WalkCollectionTree(qc, subalias, path, pathAlias, nextDepth);
+				WalkCollectionTree(qc, subalias, path, pathAlias, nextDepth);
 			}
 		}
 
@@ -203,28 +207,46 @@ namespace NHibernate.Loader
 			return SelectMode.Undefined;
 		}
 
-		private static int[] GetTopologicalSortOrder(List<DependentAlias> fields)
+		protected virtual ISet<string> GetEntityFetchLazyProperties(string path)
+		{
+			return null;
+		}
+		
+		private struct DependentAlias2
+		{
+			public DependentAlias2(string alias, ICollection<string> dependsOn)
+			{
+				Alias = alias;
+				DependsOn = dependsOn;
+			}
+
+			public string Alias { get; }
+			public ICollection<string> DependsOn { get; }
+		}
+
+		/// <summary>
+		/// Returns list of indexes in sorted order
+		/// </summary>
+		private static int[] GetTopologicalSortOrder(IList<DependentAlias2> fields)
 		{
 			TopologicalSorter g = new TopologicalSorter(fields.Count);
-			Dictionary<string, int> _indexes = new Dictionary<string, int>();
+			Dictionary<string, int> indexes = new Dictionary<string, int>(fields.Count, StringComparer.OrdinalIgnoreCase);
 
 			// add vertices
 			for (int i = 0; i < fields.Count; i++)
 			{
-				_indexes[fields[i].Alias.ToLower()] = g.AddVertex(i);
+				indexes[fields[i].Alias] = g.AddVertex(i);
 			}
 
 			// add edges
 			for (int i = 0; i < fields.Count; i++)
 			{
-				var dependentAlias = fields[i];
-				if (dependentAlias.DependsOn != null)
+				var dependentFields = fields[i].DependsOn;
+				if (dependentFields != null)
 				{
-					for (int j = 0; j < dependentAlias.DependsOn.Length; j++)
+					foreach (var dependentField in dependentFields)
 					{
-						var dependentField = dependentAlias.DependsOn[j].ToLower();
-						int end;
-						if (_indexes.TryGetValue(dependentField, out end))
+						if (indexes.TryGetValue(dependentField, out var end))
 						{
 							g.AddEdge(i, end);
 						}
@@ -235,31 +257,40 @@ namespace NHibernate.Loader
 			return g.Sort();
 		}
 
-		/// <summary>
-		/// Adds an association and extracts the aliases the association's 'with clause' is dependent on
-		/// </summary>
-		private void AddAssociation(string subalias, OuterJoinableAssociation association)
+		private static List<DependentAlias2> GetDependentAliases(IList<OuterJoinableAssociation> associations)
 		{
-			subalias = subalias.ToLower();
-
-			var dependencies = new List<string>();
-			var on = association.On.ToString();
-			if (!String.IsNullOrEmpty(on))
+			var dependentAliases = new List<DependentAlias2>(associations.Count);
+			foreach (var association in associations)
 			{
-				foreach (Match match in aliasRegex.Matches(on))
-				{
-					string alias = match.Groups[1].Value;
-					if (alias == subalias) continue;
-					dependencies.Add(alias.ToLower());
-				}
+				dependentAliases.Add(new DependentAlias2(association.RHSAlias, GetDependsOn(association)));
 			}
 
-			_dependentAliases.Add(new DependentAlias
-			{
-				Alias = subalias,
-				DependsOn = dependencies.ToArray()
-			});
+			return dependentAliases;
+		}
 
+		private static HashSet<string> GetDependsOn(OuterJoinableAssociation association)
+		{
+			if (SqlStringHelper.IsEmpty(association.On))
+				return null;
+
+			var dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (Match match in aliasRegex.Matches(association.On.ToString()))
+			{
+				string alias = match.Value;
+				if (string.Equals(alias, association.RHSAlias, StringComparison.OrdinalIgnoreCase))
+					continue;
+
+				dependencies.Add(alias);
+			}
+
+			return dependencies;
+		}
+
+		/// <summary>
+		/// Adds an association
+		/// </summary>
+		private void AddAssociation(OuterJoinableAssociation association)
+		{
 			associations.Add(association);
 		}
 
@@ -348,7 +379,7 @@ namespace NHibernate.Loader
 			string pathAlias)
 		{
 			OuterJoinableAssociation assoc =
-				new OuterJoinableAssociation(
+				InitAssociation(new OuterJoinableAssociation(
 					persister.EntityType,
 					string.Empty,
 					Array.Empty<string>(),
@@ -357,8 +388,15 @@ namespace NHibernate.Loader
 					GetWithClause(path, pathAlias),
 					Factory,
 					enabledFilters,
-					GetSelectMode(path));
-			AddAssociation(tableAlias, assoc);
+					GetSelectMode(path)) {ForceFilter = true},
+				path);
+			AddAssociation(assoc);
+		}
+
+		internal OuterJoinableAssociation InitAssociation(OuterJoinableAssociation association, string path)
+		{
+			association.EntityFetchLazyProperties = GetEntityFetchLazyProperties(path);
+			return association;
 		}
 
 		private void WalkEntityAssociationTree(IAssociationType associationType, IOuterJoinLoadable persister,
@@ -784,7 +822,7 @@ namespace NHibernate.Loader
 			else if (orderBy.Length == 0)
 				return ass;
 			else
-				return ass.Append(StringHelper.CommaSpace).Append(orderBy);
+				return ass.Append(StringHelper.CommaSpace, orderBy);
 		}
 
 		protected SqlString MergeOrderings(string ass, SqlString orderBy) {
@@ -800,16 +838,9 @@ namespace NHibernate.Loader
 		/// </summary>
 		protected JoinFragment MergeOuterJoins(IList<OuterJoinableAssociation> associations)
 		{
-			IList<OuterJoinableAssociation> sortedAssociations = new List<OuterJoinableAssociation>();
-
-			var indices = GetTopologicalSortOrder(_dependentAliases);
-			for (int index = indices.Length - 1; index >= 0; index--)
-			{
-				sortedAssociations.Add(associations[indices[index]]);
-			}
-
 			JoinFragment outerjoin = Dialect.CreateOuterJoinFragment();
 
+			var sortedAssociations = GetSortedAssociations(associations);
 			OuterJoinableAssociation last = null;
 			foreach (OuterJoinableAssociation oj in sortedAssociations)
 			{
@@ -821,10 +852,11 @@ namespace NHibernate.Loader
 				{
 					oj.AddJoins(outerjoin);
 					// NH Different behavior : NH1179 and NH1293
-					// Apply filters in Many-To-One association
-					if (enabledFiltersForManyToOne.Count > 0)
+					// Apply filters for entity joins and Many-To-One associations
+					var enabledFiltersForJoin = oj.ForceFilter ? enabledFilters : enabledFiltersForManyToOne;
+					if (oj.ForceFilter || enabledFiltersForJoin.Count > 0)
 					{
-						string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForManyToOne);
+						string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForJoin);
 						bool joinClauseDoesNotContainsFilterAlready =
 							outerjoin.ToFromFragmentString.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
 						if (joinClauseDoesNotContainsFilterAlready)
@@ -839,6 +871,25 @@ namespace NHibernate.Loader
 			}
 
 			return outerjoin;
+		}
+
+		private static IList<OuterJoinableAssociation> GetSortedAssociations(IList<OuterJoinableAssociation> associations)
+		{
+			if (associations.Count < 2)
+				return associations;
+
+			var fields = GetDependentAliases(associations);
+			if (!fields.Exists(a => a.DependsOn?.Count > 0))
+				return associations;
+
+			var indexes = GetTopologicalSortOrder(fields);
+			var sortedAssociations = new List<OuterJoinableAssociation>(associations.Count);
+			for (int index = indexes.Length - 1; index >= 0; index--)
+			{
+				sortedAssociations.Add(associations[indexes[index]]);
+			}
+
+			return sortedAssociations;
 		}
 
 		/// <summary>
@@ -884,32 +935,26 @@ namespace NHibernate.Loader
 			OuterJoinableAssociation last = null;
 			foreach (OuterJoinableAssociation oj in associations)
 			{
-				if (oj.JoinType == JoinType.LeftOuterJoin)
+				if (oj.ShouldFetchCollectionPersister())
 				{
-					if (oj.Joinable.IsCollection)
+					IQueryableCollection queryableCollection = (IQueryableCollection) oj.Joinable;
+					if (queryableCollection.HasOrdering)
 					{
-						IQueryableCollection queryableCollection = (IQueryableCollection)oj.Joinable;
-						if (queryableCollection.HasOrdering)
-						{
-							string orderByString = queryableCollection.GetSQLOrderByString(oj.RHSAlias);
-							buf.Add(orderByString).Add(StringHelper.CommaSpace);
-						}
+						string orderByString = queryableCollection.GetSQLOrderByString(oj.RHSAlias);
+						buf.Add(orderByString).Add(StringHelper.CommaSpace);
 					}
-					else
+				}
+				else if (!oj.IsCollection && last?.ShouldFetchCollectionPersister() == true)
+				{
+					// it might still need to apply a collection ordering based on a
+					// many-to-many defined order-by...
+					IQueryableCollection queryableCollection = (IQueryableCollection) last.Joinable;
+					if (queryableCollection.IsManyToMany && last.IsManyToManyWith(oj))
 					{
-						// it might still need to apply a collection ordering based on a
-						// many-to-many defined order-by...
-						if (last != null && last.Joinable.IsCollection)
+						if (queryableCollection.HasManyToManyOrdering)
 						{
-							IQueryableCollection queryableCollection = (IQueryableCollection)last.Joinable;
-							if (queryableCollection.IsManyToMany && last.IsManyToManyWith(oj))
-							{
-								if (queryableCollection.HasManyToManyOrdering)
-								{
-									string orderByString = queryableCollection.GetManyToManyOrderByString(oj.RHSAlias);
-									buf.Add(orderByString).Add(StringHelper.CommaSpace);
-								}
-							}
+							string orderByString = queryableCollection.GetManyToManyOrderByString(oj.RHSAlias);
+							buf.Add(orderByString).Add(StringHelper.CommaSpace);
 						}
 					}
 				}
@@ -937,42 +982,96 @@ namespace NHibernate.Loader
 			{
 				// if not a composite key, use "foo in (?, ?, ?)" for batching
 				// if no batch, and not a composite key, use "foo = ?"
-				string tableAlias = GenerateAliasForColumn(alias, columnNames[0]);
-				InFragment inf = new InFragment().SetColumn(tableAlias, columnNames[0]);
+				var columnName = columnNames[0];
 
-				for (int i = 0; i < batchSize; i++)
-					inf.AddValue(Parameter.Placeholder);
-
-				return new SqlStringBuilder(inf.ToFragmentString());
-			}
-			else
-			{
-				var fragments = new ConditionalFragment[batchSize];
-				for (int i = 0; i < batchSize; i++)
+				var tableAlias = GenerateAliasForColumn(alias, columnName);
+				var qualifiedName = !string.IsNullOrEmpty(tableAlias)
+					? tableAlias + StringHelper.Dot + columnName
+					: columnName;
+				
+				var whereString = new SqlStringBuilder(batchSize * 5);
+				whereString.Add(qualifiedName);
+				if (batchSize == 1)
 				{
-					fragments[i] = new ConditionalFragment()
-						.SetTableAlias(alias)
-						.SetCondition(columnNames, Parameter.GenerateParameters(columnNames.Length));
-				}
-
-				var whereString = new SqlStringBuilder();
-
-				if (fragments.Length == 1)
-				{
-					// if no batch, use "foo = ? and bar = ?"
-					whereString.Add(fragments[0].ToSqlStringFragment());
+					whereString.Add("=").Add(Parameter.Placeholder);
 				}
 				else
 				{
-					// if batching, use "( (foo = ? and bar = ?) or (foo = ? and bar = ?) )"
-					var df = new DisjunctionFragment(fragments);
+					bool added = false;
 
-					whereString.Add(StringHelper.OpenParen);
-					whereString.Add(df.ToFragmentString());
+					whereString.Add(" in (");
+					for (var i = 0; i < batchSize; i++)
+					{
+						var value = Parameter.Placeholder;
+						if (added)
+						{
+							whereString.Add(StringHelper.CommaSpace);
+						}
+
+						whereString.Add(value);
+
+						added = true;
+					}
+
 					whereString.Add(StringHelper.ClosedParen);
 				}
 
 				return whereString;
+			}
+			else
+			{
+				if (batchSize == 1)
+				{
+					// if no batch, use "foo = ? and bar = ?"
+					var whereString = new SqlStringBuilder(columnNames.Length * 4);
+					ColumnFragment(whereString, alias, columnNames);
+					return whereString;
+				}
+				else
+				{
+					// if batching, use "( (foo = ? and bar = ?) or (foo = ? and bar = ?) )"
+
+					var whereString = new SqlStringBuilder();
+					whereString.Add(StringHelper.OpenParen);
+
+					var added = false;
+					for (var i = 0; i < batchSize; i++)
+					{
+						if (added)
+						{
+							whereString.Add(" or ");
+						}
+
+						whereString.Add("(");
+						ColumnFragment(whereString, alias, columnNames);
+						whereString.Add(")");
+						added = true;
+					}
+					whereString.Add(StringHelper.ClosedParen);
+					return whereString;
+				}
+			}
+		}
+
+		private static void ColumnFragment(SqlStringBuilder builder, string alias, string[] columnNames)
+		{
+			//foo = ? and bar = ?
+			var prefix = alias + StringHelper.Dot;
+			var added = false;
+			foreach (var columnName in columnNames)
+			{
+				if (added)
+				{
+					builder.Add(" and ");
+				}
+
+				builder
+					.Add(prefix)
+					.Add(columnName)
+					.Add("=")
+					.Add(Parameter.Placeholder);
+
+				added = true;
 			}
 		}
 
@@ -992,6 +1091,7 @@ namespace NHibernate.Loader
 			owners = new int[joins];
 			ownerAssociationTypes = new EntityType[joins];
 			lockModeArray = ArrayHelper.Fill(lockMode, joins);
+			EntityFetchLazyProperties = new ISet<string>[joins];
 
 			int i = 0;
 			int j = 0;
@@ -1041,6 +1141,7 @@ namespace NHibernate.Loader
 			aliases[i] = oj.RHSAlias;
 			EagerPropertyFetches[i] = oj.SelectMode == SelectMode.FetchLazyProperties;
 			ChildFetchEntities[i] = oj.SelectMode == SelectMode.ChildFetch;
+			EntityFetchLazyProperties[i] = oj.EntityFetchLazyProperties;
 		}
 
 		/// <summary>
@@ -1071,8 +1172,7 @@ namespace NHibernate.Loader
 																			? null
 																			: collectionSuffixes[collectionAliasCount];
 
-					string selectFragment = 
-						GetSelectFragment(join, entitySuffix, collectionSuffix, next);
+					string selectFragment = join.GetSelectFragment(entitySuffix, collectionSuffix, next);
 
 					if (!string.IsNullOrWhiteSpace(selectFragment))
 					{
@@ -1090,41 +1190,11 @@ namespace NHibernate.Loader
 			}
 		}
 
+		//Since v5.3
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		protected static string GetSelectFragment(OuterJoinableAssociation join, string entitySuffix, string collectionSuffix, OuterJoinableAssociation next = null)
 		{
-			switch (join.SelectMode)
-			{
-				case SelectMode.Undefined:
-				case SelectMode.Fetch:
-#pragma warning disable 618
-					return join.Joinable.SelectFragment(
-						next?.Joinable,
-						next?.RHSAlias,
-						join.RHSAlias,
-						entitySuffix,
-						collectionSuffix,
-						join.ShouldFetchCollectionPersister());
-#pragma warning restore 618
-
-				case SelectMode.FetchLazyProperties:
-					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "fetch lazy propertie")
-						.SelectFragment(
-							next?.Joinable,
-							next?.RHSAlias,
-							join.RHSAlias,
-							entitySuffix,
-							collectionSuffix,
-							join.ShouldFetchCollectionPersister(),
-							true);
-				
-				case SelectMode.ChildFetch:
-					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(join.Joinable, "child fetch select mode").IdentifierSelectFragment(join.RHSAlias, entitySuffix);
-
-				case SelectMode.JoinOnly:
-					return string.Empty;
-				default:
-					throw new ArgumentOutOfRangeException(nameof(join.SelectMode), $"{join.SelectMode} is unexpected.");
-			}
+			return join.GetSelectFragment(entitySuffix, collectionSuffix, next);
 		}
 	}
 }

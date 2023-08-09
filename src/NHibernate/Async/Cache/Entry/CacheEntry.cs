@@ -22,6 +22,8 @@ namespace NHibernate.Cache.Entry
 	public sealed partial class CacheEntry
 	{
 
+		// Since 5.3
+		[Obsolete("Use the overload without unfetched parameter instead.")]
 		public static async Task<CacheEntry> CreateAsync(object[] state, IEntityPersister persister, bool unfetched, object version,
 										ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
@@ -29,8 +31,31 @@ namespace NHibernate.Cache.Entry
 			return new CacheEntry
 			{
 				//disassembled state gets put in a new array (we write to cache by value!)
-				DisassembledState = await (TypeHelper.DisassembleAsync(state, persister.PropertyTypes, null, session, owner, cancellationToken)).ConfigureAwait(false),
+				DisassembledState = await (TypeHelper.DisassembleAsync(
+					state,
+					persister.PropertyTypes,
+					persister.IsLazyPropertiesCacheable ? null : persister.PropertyLaziness,
+					session,
+					owner, cancellationToken)).ConfigureAwait(false),
 				AreLazyPropertiesUnfetched = unfetched || !persister.IsLazyPropertiesCacheable,
+				Subclass = persister.EntityName,
+				Version = version
+			};
+		}
+
+		public static async Task<CacheEntry> CreateAsync(object[] state, IEntityPersister persister, object version,
+		                                ISessionImplementor session, object owner, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			return new CacheEntry
+			{
+				//disassembled state gets put in a new array (we write to cache by value!)
+				DisassembledState = await (TypeHelper.DisassembleAsync(
+					state,
+					persister.PropertyTypes,
+					persister.IsLazyPropertiesCacheable ? null : persister.PropertyLaziness,
+					session,
+					owner, cancellationToken)).ConfigureAwait(false),
 				Subclass = persister.EntityName,
 				Version = version
 			};

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Transactions;
@@ -638,6 +639,44 @@ namespace NHibernate.Test.SystemTransactions
 					var count = s.Query<Person>().Count();
 					Assert.That(count, Is.EqualTo(1), "Unexpected entity count after global commit.");
 					tx.Complete();
+				}
+			}
+		}
+
+		[Theory, Explicit("Bench")]
+		public void BenchTransactionAccess(bool inTransaction)
+		{
+			var currentTransaction = System.Transactions.Transaction.Current;
+			using (inTransaction ? new TransactionScope() : null)
+			using (var s = OpenSession())
+			{
+				var impl = s.GetSessionImplementation();
+				var transactionContext = impl.TransactionContext;
+				if (inTransaction)
+					s.JoinTransaction();
+
+				// warm-up
+				for (var i = 0; i < 10; i++)
+					currentTransaction = System.Transactions.Transaction.Current;
+				for (var i = 0; i < 10; i++)
+					transactionContext = impl.TransactionContext;
+
+				var sw = new Stopwatch();
+				for (var j = 0; j < 4; j++)
+				{
+					sw.Restart();
+					for (var i = 0; i < 10000; i++)
+						currentTransaction = System.Transactions.Transaction.Current;
+					sw.Stop();
+					Assert.That(currentTransaction, inTransaction ? Is.Not.Null : Is.Null);
+
+					Console.WriteLine($"Current transaction reads have taken {sw.Elapsed}");
+					sw.Restart();
+					for (var i = 0; i < 10000; i++)
+						transactionContext = impl.TransactionContext;
+					sw.Stop();
+					Assert.That(transactionContext, inTransaction ? Is.Not.Null : Is.Null);
+					Console.WriteLine($"Transaction context reads have taken {sw.Elapsed}");
 				}
 			}
 		}

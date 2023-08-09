@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Configuration;
 using System.Data.Common;
 
 using NHibernate.Driver;
@@ -25,6 +24,9 @@ namespace NHibernate.Connection
 		/// <param name="conn">The <see cref="DbConnection"/> to clean up.</param>
 		public virtual void CloseConnection(DbConnection conn)
 		{
+			if (conn == null)
+				throw new ArgumentNullException(nameof(conn));
+
 			log.Debug("Closing connection");
 			try
 			{
@@ -116,7 +118,8 @@ namespace NHibernate.Connection
 		/// The <see cref="String"/> for the <see cref="DbConnection"/>
 		/// to connect to the database.
 		/// </value>
-		protected virtual string ConnectionString
+		//TODO 6.0: Make public
+		protected internal virtual string ConnectionString
 		{
 			get { return connString; }
 		}
@@ -136,7 +139,20 @@ namespace NHibernate.Connection
 		/// Get an open <see cref="DbConnection"/>.
 		/// </summary>
 		/// <returns>An open <see cref="DbConnection"/>.</returns>
-		public abstract DbConnection GetConnection();
+		public virtual DbConnection GetConnection()
+		{
+			return GetConnection(ConnectionString);
+		}
+
+		//TODO 6.0: Make abstract
+		/// <summary>
+		/// Gets an open <see cref="DbConnection"/> for given connectionString
+		/// </summary>
+		/// <returns>An open <see cref="DbConnection"/>.</returns>
+		public virtual DbConnection GetConnection(string connectionString)
+		{
+			throw new NotImplementedException("This method must be overriden.");
+		}
 
 		#region IDisposable Members
 
@@ -191,13 +207,13 @@ namespace NHibernate.Connection
 			if (isDisposing)
 			{
 				log.Debug("Disposing of ConnectionProvider.");
+				// nothing for Finalizer to do - so tell the GC to ignore it
+				GC.SuppressFinalize(this);
 			}
 
 			// free unmanaged resources here
 
 			_isAlreadyDisposed = true;
-			// nothing for Finalizer to do - so tell the GC to ignore it
-			GC.SuppressFinalize(this);
 		}
 
 		#endregion

@@ -689,16 +689,9 @@ namespace NHibernate.Test.SystemTransactions
 
 		private Task DodgeTransactionCompletionDelayIfRequiredAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			try
-			{
-				if (Sfi.ConnectionProvider.Driver.HasDelayedDistributedTransactionCompletion)
-					return Task.Delay(500, cancellationToken);
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			if (Sfi.ConnectionProvider.Driver.HasDelayedDistributedTransactionCompletion)
+				return Task.Delay(500, cancellationToken);
+			return Task.CompletedTask;
 		}
 
 		private void DodgeTransactionCompletionDelayIfRequired()

@@ -19,7 +19,6 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 
-
 namespace NHibernate.Event.Default
 {
 	using System.Threading.Tasks;
@@ -389,7 +388,7 @@ namespace NHibernate.Event.Default
 				await (CopyValuesAsync(persister, entity, target, source, copyCache, cancellationToken)).ConfigureAwait(false);
 
 				//copyValues works by reflection, so explicitly mark the entity instance dirty
-				MarkInterceptorDirty(entity, target);
+				MarkInterceptorDirty(entity, persister, target);
 
 				@event.Result = result;
 			}

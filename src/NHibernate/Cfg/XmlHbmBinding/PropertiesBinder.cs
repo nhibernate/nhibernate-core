@@ -244,6 +244,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			model.ReferencedEntityName = GetEntityName(manyToOneMapping, mappings);
 			model.IsIgnoreNotFound = manyToOneMapping.NotFoundMode == HbmNotFoundMode.Ignore;
+			model.PropertyName = manyToOneMapping.Name;
 
 			if (ukName != null && !model.IsIgnoreNotFound)
 			{
@@ -371,12 +372,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			HbmTuplizer[] tuplizers = componentMapping.tuplizer;
 			if (tuplizers != null)
 			{
-				Array.ForEach(tuplizers.Select(tuplizer => new
-				                                           	{
-				                                           		TuplizerClassName = FullQualifiedClassName(tuplizer.@class, mappings),
-				                                           		Mode = tuplizer.entitymode.ToEntityMode()
-				                                           	}).ToArray(),
-				              x => model.AddTuplizer(x.Mode, x.TuplizerClassName));
+				foreach (var tuplizer in tuplizers)
+				{
+					var mode = tuplizer.entitymode.ToEntityMode();
+					var tuplizerClassName = FullQualifiedClassName(tuplizer.@class, mappings);
+					model.AddTuplizer(mode, tuplizerClassName);
+				}
 			}
 		}
 
@@ -419,6 +420,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 						PropertyAccessorName = propertyAccessorName,
 						Value = value,
                         IsLazy = propertyMapping.IsLazyProperty,
+						LazyGroup = propertyMapping.GetLazyGroup(),
 						IsOptimisticLocked = propertyMapping.OptimisticLock,
 						MetaAttributes = GetMetas(propertyMapping, inheritedMetas)
 					};

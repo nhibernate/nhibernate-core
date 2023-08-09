@@ -119,15 +119,8 @@ namespace NHibernate.Type
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				ObjectTypeCacheEntry e = cached as ObjectTypeCacheEntry;
-				return (e == null) ? Task.FromResult<object>(null ): session.InternalLoadAsync(e.EntityName, e.Id, false, false, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			ObjectTypeCacheEntry e = cached as ObjectTypeCacheEntry;
+			return (e == null) ? Task.FromResult<object>(null ): session.InternalLoadAsync(e.EntityName, e.Id, false, false, cancellationToken);
 		}
 
 		public override async Task<object> DisassembleAsync(object value, ISessionImplementor session, object owner, CancellationToken cancellationToken)
@@ -225,6 +218,5 @@ namespace NHibernate.Type
 			}
 			return entityName == null || id == null ? Task.FromResult<object>(null ): session.InternalLoadAsync(entityName, id, false, false, cancellationToken);
 		}
-
 	}
 }

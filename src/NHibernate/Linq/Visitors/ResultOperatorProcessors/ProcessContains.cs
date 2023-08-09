@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Linq;
 using NHibernate.Hql.Ast;
+using NHibernate.Hql.Ast.ANTLR;
 using Remotion.Linq.Clauses.ResultOperators;
 
 namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
@@ -35,9 +36,9 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 				if (itemExpression is HqlParameter)
 				{
 					tree.AddWhereClause(tree.TreeBuilder.Equality(
-						tree.TreeBuilder.Ident(GetFromAlias(tree.Root).AstNode.Text),
+						GetSelectExpression(tree.Root),
 						itemExpression));
-					tree.SetRoot(tree.TreeBuilder.Exists((HqlQuery)tree.Root));
+					ProcessAny.Process(tree);
 				}
 				else
 				{
@@ -51,15 +52,16 @@ namespace NHibernate.Linq.Visitors.ResultOperatorProcessors
 			return node.NodesPreOrder.OfType<HqlRange>().First();
 		}
 
-		private static HqlAlias GetFromAlias(HqlTreeNode node)
+		private static HqlExpression GetSelectExpression(HqlTreeNode node)
 		{
-			return node.NodesPreOrder.Single(n => n is HqlRange).Children.Single(n => n is HqlAlias) as HqlAlias;
+			return node.NodesPreOrder.First(x => x.AstNode.Type == HqlSqlWalker.SELECT).Children.Single() as HqlExpression;
 		}
 
 		private static bool IsEmptyList(HqlParameter source, VisitorParameters parameters)
 		{
 			var parameterName = source.NodesPreOrder.Single(n => n is HqlIdent).AstNode.Text;
-			var parameterValue = parameters.ConstantToParameterMap.Single(p => p.Value.Name == parameterName).Key.Value;
+			// Multiple constants may be linked to the same parameter, take the first matching parameter
+			var parameterValue = parameters.ConstantToParameterMap.First(p => p.Value.Name == parameterName).Key.Value;
 			return !((IEnumerable)parameterValue).Cast<object>().Any();
 		}
 	}

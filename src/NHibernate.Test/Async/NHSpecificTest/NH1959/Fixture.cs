@@ -16,7 +16,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1959
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-
 		protected override void OnTearDown()
 		{
 			using (ISession s = OpenSession())

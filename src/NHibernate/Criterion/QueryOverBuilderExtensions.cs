@@ -4,7 +4,6 @@ namespace NHibernate.Criterion
 {
 	public static class QueryOverBuilderExtensions
 	{
-
 		// Fetch builder
 		// Since v5.2
 		[Obsolete("Use Fetch(SelectMode.Default, Expression<Func<TSubType, object>> path) instead")]
@@ -109,7 +108,6 @@ namespace NHibernate.Criterion
 			return builder.Write;
 		}
 
-
 		// Order builder
 		public static QueryOver<TRoot, TSubType> Asc<TRoot, TSubType>(this Lambda.QueryOverOrderBuilder<TRoot, TSubType> builder)
 		{
@@ -130,7 +128,6 @@ namespace NHibernate.Criterion
 		{
 			return builder.Desc;
 		}
-
 
 		// Restriction builder
 		public static QueryOver<TRoot, TSubType> IsEmpty<TRoot, TSubType>(this Lambda.QueryOverRestrictionBuilder<TRoot, TSubType> builder)
@@ -172,6 +169,5 @@ namespace NHibernate.Criterion
 		{
 			return builder.IsNull;
 		}
-
 	}
 }

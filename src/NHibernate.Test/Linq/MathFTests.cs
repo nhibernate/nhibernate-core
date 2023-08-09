@@ -1,4 +1,4 @@
-#if NETCOREAPP2_0
+#if NETCOREAPP2_0_OR_GREATER
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -7,7 +7,9 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
-	[TestFixture]
+	// [TestFixture] is omitted on purpose: it is not required by NUnit. It is used by the async generator
+	// to generated async tests. Async tests cannot works for this fixture due to using a non NHibernate
+	// queryable which will not be supported by NHibernate ToListAsync.
 	public class MathFTests : LinqTestCase
 	{
 		private IQueryable<OrderLine> _orderLines;

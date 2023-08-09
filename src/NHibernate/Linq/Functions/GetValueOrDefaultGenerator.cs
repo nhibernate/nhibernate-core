@@ -9,7 +9,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Linq.Functions
 {
-	internal class GetValueOrDefaultGenerator : IHqlGeneratorForMethod, IRuntimeMethodHqlGenerator
+	internal class GetValueOrDefaultGenerator : IHqlGeneratorForMethod, IRuntimeMethodHqlGenerator, IHqlGeneratorForMethodExtended
 	{
 		public bool SupportsMethod(MethodInfo method)
 		{
@@ -39,6 +39,15 @@ namespace NHibernate.Linq.Functions
 			var returnType = method.ReturnType;
 			var instance = returnType.IsValueType ? Activator.CreateInstance(returnType) : null;
 			return treeBuilder.Constant(instance);
+		}
+
+		public bool AllowsNullableReturnType(MethodInfo method) => !method.ReturnType.IsValueType;
+
+		/// <inheritdoc />
+		public bool TryGetCollectionParameter(MethodCallExpression expression, out ConstantExpression collectionParameter)
+		{
+			collectionParameter = null;
+			return false;
 		}
 	}
 }

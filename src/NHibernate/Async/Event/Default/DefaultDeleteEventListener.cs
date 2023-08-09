@@ -37,7 +37,7 @@ namespace NHibernate.Event.Default
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return OnDeleteAsync(@event, new IdentitySet(), cancellationToken);
+			return OnDeleteAsync(@event, new HashSet<object>(ReferenceComparer<object>.Instance), cancellationToken);
 		}
 
 		public virtual async Task OnDeleteAsync(DeleteEvent @event, ISet<object> transientEntities, CancellationToken cancellationToken)
@@ -93,7 +93,6 @@ namespace NHibernate.Event.Default
 					LockMode.None, 
 					true, 
 					persister, 
-					false, 
 					false);
 			}
 			else
@@ -146,7 +145,7 @@ namespace NHibernate.Event.Default
 			// NH different impl : NH-1895
 			if(transientEntities == null)
 			{
-				transientEntities = new HashSet<object>();
+				transientEntities = new HashSet<object>(ReferenceComparer<object>.Instance);
 			}
 			if (!transientEntities.Add(entity))
 			{

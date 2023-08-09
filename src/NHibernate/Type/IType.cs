@@ -5,6 +5,16 @@ using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
+	internal static class TypeExtensions
+	{
+		public static int GetOwnerColumnSpan(this IType type, IMapping sessionFactory)
+		{
+			return type.IsEntityType
+				? ((EntityType) type).GetOwnerColumnSpan(sessionFactory)
+				: type.GetColumnSpan(sessionFactory);
+		}
+	}
+
 	/// <summary>
 	/// Defines a mapping from a .NET <see cref="System.Type"/> to a SQL data-type.
 	/// This interface is intended to be implemented by applications that need custom types.

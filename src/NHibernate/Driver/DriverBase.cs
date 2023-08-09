@@ -249,7 +249,7 @@ namespace NHibernate.Driver
 		public virtual void ExpandQueryParameters(DbCommand cmd, SqlString sqlString, SqlType[] parameterTypes)
 		{
 			if (UseNamedPrefixInSql)
-				return;  // named parameters are ok
+				return; // named parameters are ok
 
 			var expandedParameters = new List<DbParameter>();
 			foreach (object part in sqlString)
@@ -345,5 +345,11 @@ namespace NHibernate.Driver
 
 		/// <inheritdoc />
 		public virtual DateTime MinDate => DateTime.MinValue;
+
+		//6.0 TODO: Add property definition to IDialect
+		/// <summary>
+		/// Get the timeout in seconds for ADO.NET queries.
+		/// </summary>
+		public virtual int CommandTimeout => commandTimeout;
 	}
 }

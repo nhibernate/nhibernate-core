@@ -7,12 +7,47 @@ using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Metadata;
 using NHibernate.Stat;
+using NHibernate.Util;
 
 namespace NHibernate
 {
 	// 6.0 TODO: move below methods directly in ISessionFactory then remove SessionFactoryExtension
 	public static partial class SessionFactoryExtension
 	{
+		/// <summary> 
+		/// Evict an entry from the second-level  cache. This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy. Use with care.
+		/// </summary>
+		/// <param name="factory">The session factory.</param>
+		/// <param name="entityName">The name of the entity to evict.</param>
+		/// <param name="id"></param>
+		/// <param name="tenantIdentifier">Tenant identifier</param>
+		public static void EvictEntity(this ISessionFactory factory, string entityName, object id, string tenantIdentifier)
+		{
+			if (tenantIdentifier == null)
+				factory.EvictEntity(entityName, id);
+
+			ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictEntity(entityName, id, tenantIdentifier);
+		}
+
+		/// <summary>
+		/// Evict an entry from the process-level cache.  This method occurs outside
+		/// of any transaction; it performs an immediate "hard" remove, so does not respect
+		/// any transaction isolation semantics of the usage strategy.  Use with care.
+		/// </summary>
+		/// <param name="factory">The session factory.</param>
+		/// <param name="roleName">Collection role name.</param>
+		/// <param name="id">Collection id</param>
+		/// <param name="tenantIdentifier">Tenant identifier</param>
+		public static void EvictCollection(this ISessionFactory factory, string roleName, object id, string tenantIdentifier)
+		{
+			if (tenantIdentifier == null)
+				factory.EvictCollection(roleName, id);
+
+			ReflectHelper.CastOrThrow<SessionFactoryImpl>(factory, "multi-tenancy").EvictCollection(roleName, id, tenantIdentifier);
+		}
+
 		/// <summary>
 		/// Evict all entries from the process-level cache. This method occurs outside
 		/// of any transaction; it performs an immediate "hard" remove, so does not respect
@@ -296,10 +331,10 @@ namespace NHibernate
 		ISession GetCurrentSession();
 
 		/// <summary> Get the statistics for this session factory</summary>
-		IStatistics Statistics { get;}
+		IStatistics Statistics { get; }
 
 		/// <summary> Was this <see cref="ISessionFactory"/> already closed?</summary>
-		bool IsClosed { get;}
+		bool IsClosed { get; }
 
 		/// <summary>
 		/// Obtain a set of the names of all filters defined on this SessionFactory.

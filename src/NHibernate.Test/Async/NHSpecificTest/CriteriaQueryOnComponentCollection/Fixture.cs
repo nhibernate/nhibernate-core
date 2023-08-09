@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 
-using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
@@ -19,7 +18,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : TestCase
 	{
@@ -31,7 +29,7 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 		protected override void OnSetUp()
 		{
 			using (var s = Sfi.OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				var parent = new Employee
 				{
@@ -57,18 +55,18 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 				s.Save(parent);
 				s.Save(emp);
 
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 
 		protected override void OnTearDown()
 		{
 			using (var s = Sfi.OpenSession())
-			using (s.BeginTransaction())
+			using (var t = s.BeginTransaction())
 			{
 				s.Delete("from System.Object");
 
-				s.Transaction.Commit();
+				t.Commit();
 			}
 		}
 
@@ -106,10 +104,9 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 			}
 		}
 
-
 		[TestCase(JoinType.LeftOuterJoin)]
 		[TestCase(JoinType.InnerJoin)]
-		public async Task CanQueryByCriteriaOnSetOfElementByCreateAliasAsync(JoinType joinType, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task CanQueryByCriteriaOnSetOfElementByCreateAliasAsync(JoinType joinType)
 		{
 			using (var s = Sfi.OpenSession())
 			{
@@ -117,14 +114,13 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 				            .CreateAlias("x.Amounts", "amount", joinType)
 				            .Add(Restrictions.Gt("amount.Amount", 5m))
 				            .SetResultTransformer(new RootEntityResultTransformer())
-				            .ListAsync(cancellationToken));
+				            .ListAsync());
 				Assert.That(list, Has.Count.EqualTo(1));
 				Assert.That(list[0], Is.Not.Null);
 				Assert.That(list[0], Is.TypeOf<Employee>());
 				Assert.That(((Employee) list[0]).Id, Is.EqualTo(1));
 			}
 		}
-
 
 		[Test]
 		public async Task CanQueryByCriteriaOnSetOfCompositeElement_UsingDetachedCriteriaAsync()
@@ -145,7 +141,6 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 			}
 		}
 
-
 		protected override string[] Mappings
 		{
 			get { return new[] {"NHSpecificTest.CriteriaQueryOnComponentCollection.Mappings.hbm.xml"}; }
@@ -155,6 +150,5 @@ namespace NHibernate.Test.NHSpecificTest.CriteriaQueryOnComponentCollection
 		{
 			get { return "NHibernate.Test"; }
 		}
-
 	}
 }

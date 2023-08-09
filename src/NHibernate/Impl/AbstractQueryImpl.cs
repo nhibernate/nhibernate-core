@@ -10,6 +10,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -78,11 +79,11 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Perform parameter validation.  Used prior to executing the encapsulated query.
+		/// Perform parameters validation. Flatten them if needed. Used prior to executing the encapsulated query.
 		/// </summary>
 		/// <param name="reserveFirstParameter">
-		/// if true, the first ? will not be verified since
-		/// its needed for e.g. callable statements returning a out parameter
+		/// If true, the first positional parameter will not be verified since
+		/// its needed for e.g. callable statements returning an out parameter.
 		/// </param>
 		protected internal virtual void VerifyParameters(bool reserveFirstParameter)
 		{
@@ -94,11 +95,15 @@ namespace NHibernate.Impl
 				throw new QueryException("Not all named parameters have been set: " + CollectionPrinter.ToString(missingParams), QueryString);
 			}
 
-			int positionalValueSpan = 0;
-			for (int i = 0; i < values.Count; i++)
+			var positionalValueSpan = 0;
+			// Values and Types may be overriden to yield refined parameters, check them
+			// instead of the fields.
+			var values = Values;
+			var types = Types;
+			for (var i = 0; i < values.Count; i++)
 			{
-				object obj = types[i];
-				if (values[i] == UNSET_PARAMETER || obj == UNSET_TYPE)
+				var type = types[i];
+				if (values[i] == UNSET_PARAMETER || type == UNSET_TYPE)
 				{
 					if (reserveFirstParameter && i == 0)
 					{
@@ -137,7 +142,8 @@ namespace NHibernate.Impl
 
 		protected internal virtual IType DetermineType(int paramPosition, object paramValue)
 		{
-			IType type = parameterMetadata.GetOrdinalParameterExpectedType(paramPosition + 1) ?? GuessType(paramValue);
+			IType type = parameterMetadata.GetOrdinalParameterExpectedType(paramPosition + 1) ??
+			             ParameterHelper.GuessType(paramValue, session.Factory);
 			return type;
 		}
 
@@ -149,78 +155,16 @@ namespace NHibernate.Impl
 
 		protected internal virtual IType DetermineType(string paramName, object paramValue)
 		{
-			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName) ?? GuessType(paramValue);
+			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName) ??
+			             ParameterHelper.GuessType(paramValue, session.Factory);
 			return type;
 		}
 
 		protected internal virtual IType DetermineType(string paramName, System.Type clazz)
 		{
-			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName) ?? GuessType(clazz);
+			IType type = parameterMetadata.GetNamedParameterExpectedType(paramName) ??
+			             ParameterHelper.GuessType(clazz, session.Factory);
 			return type;
-		}
-
-		/// <summary>
-		/// Guesses the <see cref="IType"/> from the <c>param</c>'s value.
-		/// </summary>
-		/// <param name="param">The object to guess the <see cref="IType"/> of.</param>
-		/// <returns>An <see cref="IType"/> for the object.</returns>
-		/// <exception cref="ArgumentNullException">
-		/// Thrown when the <c>param</c> is null because the <see cref="IType"/>
-		/// can't be guess from a null value.
-		/// </exception>
-		private IType GuessType(object param)
-		{
-			if (param == null)
-			{
-				throw new ArgumentNullException("param", "The IType can not be guessed for a null value.");
-			}
-
-			System.Type clazz = NHibernateProxyHelper.GetClassWithoutInitializingProxy(param);
-			return GuessType(clazz);
-		}
-
-		/// <summary>
-		/// Guesses the <see cref="IType"/> from the <see cref="System.Type"/>.
-		/// </summary>
-		/// <param name="clazz">The <see cref="System.Type"/> to guess the <see cref="IType"/> of.</param>
-		/// <returns>An <see cref="IType"/> for the <see cref="System.Type"/>.</returns>
-		/// <exception cref="ArgumentNullException">
-		/// Thrown when the <c>clazz</c> is null because the <see cref="IType"/>
-		/// can't be guess from a null type.
-		/// </exception>
-		private IType GuessType(System.Type clazz)
-		{
-			if (clazz == null)
-			{
-				throw new ArgumentNullException("clazz", "The IType can not be guessed for a null value.");
-			}
-
-			string typename = clazz.AssemblyQualifiedName;
-			IType type = TypeFactory.HeuristicType(typename);
-			bool serializable = (type != null && type is SerializableType);
-			if (type == null || serializable)
-			{
-				try
-				{
-					session.Factory.GetEntityPersister(clazz.FullName);
-				}
-				catch (MappingException)
-				{
-					if (serializable)
-					{
-						return type;
-					}
-					else
-					{
-						throw new HibernateException("Could not determine a type for class: " + typename);
-					}
-				}
-				return NHibernateUtil.Entity(clazz);
-			}
-			else
-			{
-				return type;
-			}
 		}
 
 		/// <summary>
@@ -265,7 +209,10 @@ namespace NHibernate.Impl
 
 			var paramPrefix = isJpaPositionalParam ? StringHelper.SqlParameter : ParserHelper.HqlVariablePrefix;
 
-			return StringHelper.Replace(query, paramPrefix + name, string.Join(StringHelper.CommaSpace, aliases), true);
+			return Regex.Replace(
+				query,
+				Regex.Escape(paramPrefix + name) + @"\b",
+				string.Join(StringHelper.CommaSpace, aliases));
 		}
 
 		#region Parameters
@@ -312,7 +259,11 @@ namespace NHibernate.Impl
 		{
 			CheckPositionalParameter(position);
 
-			return SetParameter(position, val, parameterMetadata.GetOrdinalParameterExpectedType(position + 1) ?? GuessType(typeof(T)));
+			return SetParameter(
+				position,
+				val,
+				parameterMetadata.GetOrdinalParameterExpectedType(position + 1) ??
+				ParameterHelper.GuessType(typeof(T), session.Factory));
 		}
 
 		private void CheckPositionalParameter(int position)
@@ -329,7 +280,11 @@ namespace NHibernate.Impl
 
 		public IQuery SetParameter<T>(string name, T val)
 		{
-			return SetParameter(name, val, parameterMetadata.GetNamedParameterExpectedType(name) ?? GuessType(typeof (T)));
+			return SetParameter(
+				name,
+				val,
+				parameterMetadata.GetNamedParameterExpectedType(name) ??
+				ParameterHelper.GuessType(typeof(T), session.Factory));
 		}
 
 		public IQuery SetParameter(string name, object val)
@@ -657,6 +612,8 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		// Since 5.3
+		[Obsolete("This method was never surfaced to a query interface. Use the overload taking an object instead, and supply to it a generic IDictionary<string, object>.")]
 		public IQuery SetProperties(IDictionary map)
 		{
 			string[] @params = NamedParameters;
@@ -680,8 +637,56 @@ namespace NHibernate.Impl
 			return this;
 		}
 
+		private IQuery SetParameters(IDictionary<string, object> map)
+		{
+			foreach (var namedParam in NamedParameters)
+			{
+				if (map.TryGetValue(namedParam, out var obj))
+				{
+					switch (obj)
+					{
+						case IEnumerable enumerable when !(enumerable is string):
+							SetParameterList(namedParam, enumerable);
+							break;
+						default:
+							SetParameter(namedParam, obj);
+							break;
+					}
+				}
+			}
+			return this;
+		}
+
+		private IQuery SetParameters(IDictionary map)
+		{
+			foreach (var namedParam in NamedParameters)
+			{
+				var obj = map[namedParam];
+				switch (obj)
+				{
+					case IEnumerable enumerable when !(enumerable is string):
+						SetParameterList(namedParam, enumerable);
+						break;
+					case null when map.Contains(namedParam):
+					default:
+						SetParameter(namedParam, obj);
+						break;
+				}
+			}
+			return this;
+		}
+
 		public IQuery SetProperties(object bean)
 		{
+			if (bean is IDictionary<string, object> map)
+			{
+				return SetParameters(map);
+			}
+			if (bean is IDictionary hashtable)
+			{
+				return SetParameters(hashtable);
+			}
+
 			System.Type clazz = bean.GetType();
 			string[] @params = NamedParameters;
 			for (int i = 0; i < @params.Length; i++)
@@ -744,7 +749,12 @@ namespace NHibernate.Impl
 			}
 
 			object firstValue = vals.Cast<object>().FirstOrDefault();
-			SetParameterList(name, vals, firstValue == null ? GuessType(vals.GetCollectionElementType()) : DetermineType(name, firstValue));
+			SetParameterList(
+				name,
+				vals,
+				firstValue == null
+					? ParameterHelper.GuessType(vals.GetCollectionElementType(), session.Factory)
+					: DetermineType(name, firstValue));
 
 			return this;
 		}
@@ -769,12 +779,13 @@ namespace NHibernate.Impl
 			get { return namedParameterLists; }
 		}
 
-		protected IList Values
+		// TODO 6.0: Change type to IList<object>
+		protected virtual IList Values
 		{
 			get { return values; }
 		}
 
-		protected IList<IType> Types
+		protected virtual IList<IType> Types
 		{
 			get { return types; }
 		}
@@ -922,7 +933,6 @@ namespace NHibernate.Impl
 		{
 			this.cacheMode = cacheMode;
 			return this;
-
 		}
 
 		public IQuery SetIgnoreUknownNamedParameters(bool ignoredUnknownNamedParameters)
@@ -931,7 +941,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		protected internal abstract IDictionary<string, LockMode> LockModes { get;}
+		protected internal abstract IDictionary<string, LockMode> LockModes { get; }
 
 		#endregion
 

@@ -25,7 +25,7 @@ namespace NHibernate.Engine.Loading
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(CollectionLoadContext));
 		private readonly LoadContexts loadContexts;
 		private readonly DbDataReader resultSet;
-		private readonly ISet<CollectionKey> localLoadingCollectionKeys = new HashSet<CollectionKey>();
+		private readonly HashSet<CollectionKey> localLoadingCollectionKeys = new HashSet<CollectionKey>();
 
 		/// <summary> 
 		/// Creates a collection load context for the given result set. 
@@ -148,7 +148,7 @@ namespace NHibernate.Engine.Loading
 		/// </summary>
 		/// <param name="persister">The persister for which to complete loading.</param>
 		// Since v5.2
-		[Obsolete("Please use overload with skipCache parameter instead.")]
+		[Obsolete("Please use overload with skipCache and cacheBatcher parameter instead.")]
 		public void EndLoadingCollections(ICollectionPersister persister)
 		{
 			EndLoadingCollections(persister, false);
@@ -161,7 +161,22 @@ namespace NHibernate.Engine.Loading
 		/// </summary>
 		/// <param name="persister">The persister for which to complete loading.</param>
 		/// <param name="skipCache">Indicates if collection must not be put in cache.</param>
+		// Since v5.3
+		[Obsolete("Please use overload with cacheBatcher parameter instead.")]
 		public void EndLoadingCollections(ICollectionPersister persister, bool skipCache)
+		{
+			EndLoadingCollections(persister, skipCache, null);
+		}
+
+		/// <summary>
+		/// Finish the process of collection-loading for this bound result set. Mainly this
+		/// involves cleaning up resources and notifying the collections that loading is
+		/// complete.
+		/// </summary>
+		/// <param name="persister">The persister for which to complete loading.</param>
+		/// <param name="skipCache">Indicates if collection must not be put in cache.</param>
+		/// <param name="cacheBatcher">The cache batcher used to batch put the collections into the cache.</param>
+		public void EndLoadingCollections(ICollectionPersister persister, bool skipCache, CacheBatcher cacheBatcher)
 		{
 			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
 			{
@@ -206,7 +221,7 @@ namespace NHibernate.Engine.Loading
 			}
 			localLoadingCollectionKeys.ExceptWith(toRemove);
 
-			EndLoadingCollections(persister, matches, skipCache);
+			EndLoadingCollections(persister, matches, skipCache, cacheBatcher);
 			if ((localLoadingCollectionKeys.Count == 0))
 			{
 				// todo : hack!!!
@@ -219,7 +234,8 @@ namespace NHibernate.Engine.Loading
 			}
 		}
 
-		private void EndLoadingCollections(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, bool skipCache)
+		private void EndLoadingCollections(ICollectionPersister persister, IList<LoadingCollectionEntry> matchedCollectionEntries, bool skipCache,
+		                                   CacheBatcher cacheBatcher = null)
 		{
 			if (matchedCollectionEntries == null || matchedCollectionEntries.Count == 0)
 			{
@@ -236,7 +252,9 @@ namespace NHibernate.Engine.Loading
 				log.Debug("{0} collections were found in result set for role: {1}", count, persister.Role);
 			}
 
-			var cacheBatcher = new CacheBatcher(LoadContext.PersistenceContext.Session);
+			var ownCacheBatcher = cacheBatcher == null;
+			if (ownCacheBatcher)
+				cacheBatcher = new CacheBatcher(LoadContext.PersistenceContext.Session);
 			for (int i = 0; i < count; i++)
 			{
 				EndLoadingCollection(
@@ -245,7 +263,8 @@ namespace NHibernate.Engine.Loading
 					data => cacheBatcher.AddToBatch(persister, data),
 					skipCache);
 			}
-			cacheBatcher.ExecuteBatch();
+			if (ownCacheBatcher)
+				cacheBatcher.ExecuteBatch();
 
 			if (log.IsDebugEnabled())
 			{
@@ -267,11 +286,10 @@ namespace NHibernate.Engine.Loading
 			var persistenceContext = LoadContext.PersistenceContext;
 			var session = persistenceContext.Session;
 
-			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (session.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWath.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 
 			bool hasNoQueuedOperations = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
@@ -309,10 +327,10 @@ namespace NHibernate.Engine.Loading
 				log.Debug("collection fully initialized: {0}", MessageHelper.CollectionInfoString(persister, lce.Collection, lce.Key, session));
 			}
 
-			if (statsEnabled)
+			if (stopWatch != null)
 			{
-				stopWath.Stop();
-				session.Factory.StatisticsImplementor.LoadCollection(persister.Role, stopWath.Elapsed);
+				stopWatch.Stop();
+				session.Factory.StatisticsImplementor.LoadCollection(persister.Role, stopWatch.Elapsed);
 			}
 		}
 

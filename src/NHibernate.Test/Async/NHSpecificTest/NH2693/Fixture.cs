@@ -43,7 +43,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 					var fourthLevel2 = new FourthLevel { SomeString = "second", SpecificThirdLevel = thirdLevel1 };
 					thirdLevel1.FourthLevels.Add(fourthLevel2);
 
-
 					var firstLevel2 = new FirstLevel();
 
 					var secondLevel2 = new SecondLevelComponent { FirstLevel = firstLevel2 };
@@ -58,7 +57,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 					var fourthLevel4 = new FourthLevel { SomeString = "fourth", SpecificThirdLevel = thirdLevel2 };
 					thirdLevel2.FourthLevels.Add(fourthLevel4);
 
-
 					var firstLevel3 = new FirstLevel();
 
 					var secondLevel3 = new SecondLevelComponent { FirstLevel = firstLevel3 };
@@ -67,7 +65,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 					var thirdLevel3 = new SpecificThirdLevel();
 					secondLevel3.ThirdLevel = thirdLevel3;
 					secondLevel3.SpecificThirdLevel = thirdLevel3;
-
 
 					session.Save(thirdLevel1);
 					session.Save(thirdLevel2);
@@ -98,158 +95,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2693
 					session.Delete("from ThirdLevel");
 					session.Delete("from FirstLevel");
 					tx.Commit();
-				}
-			}
-		}
-
-		[Test, Ignore("Not fixed yet")]
-		public async Task _1_Querying_BasedOnFourthLevelExistence_WithIsAndCasting_ShouldReturnSameEntitiesAsLinqToObjectsAsync()
-		{
-			var expected = _firstLevels
-			   .Where(first => first.SecondLevels
-				  .Any(second => second.ThirdLevel is SpecificThirdLevel &&
-					 ((SpecificThirdLevel)second.ThirdLevel).FourthLevels
-						.Any()
-				  )
-			   )
-			   .ToList();
-
-			using (ISession session = OpenSession())
-			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					var result = await (session.Query<FirstLevel>()
-					   .Where(first => first.SecondLevels
-						  .Any(second => second.ThirdLevel is SpecificThirdLevel &&
-							 ((SpecificThirdLevel)second.ThirdLevel).FourthLevels
-								.Any()
-						  )
-					   )
-					   .ToListAsync());
-
-					Assert.AreEqual(expected.Count, result.Count);
-					Assert.IsTrue(result
-					   .All(f => f.SecondLevels
-						  .Any(s => ((SpecificThirdLevel)s.ThirdLevel).FourthLevels
-							 .Any()
-						  )
-					   )
-					);
-				}
-			}
-		}
-
-		[Test, Ignore("Not fixed yet")]
-		public async Task _2_Querying_BasedOnFourthLevelExistence_WithSelectAndOfType_ShouldReturnSameEntitiesAsLinqToObjectsAsync()
-		{
-			var expected = _firstLevels
-			   .Where(first => first.SecondLevels
-				  .Select(second => second.ThirdLevel)
-				  .OfType<SpecificThirdLevel>()
-				  .Any(specificThird => specificThird.FourthLevels
-					 .Any()
-				  )
-			   )
-			   .ToList();
-
-			using (ISession session = OpenSession())
-			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					var result = await (session.Query<FirstLevel>()
-					   .Where(first => first.SecondLevels
-						  .Select(second => second.ThirdLevel)
-						  .OfType<SpecificThirdLevel>()
-						  .Any(specificThird => specificThird.FourthLevels
-							 .Any()
-						  )
-					   )
-					   .ToListAsync());
-
-					Assert.AreEqual(expected.Count, result.Count);
-					Assert.IsTrue(result
-					   .All(f => f.SecondLevels
-						  .Any(s => ((SpecificThirdLevel)s.ThirdLevel).FourthLevels
-							 .Any()
-						  )
-					   )
-					);
-				}
-			}
-		}
-
-		[Test, Ignore("Not fixed yet")]
-		public async Task _3_Querying_BasedOnFourthLevelProperty_WithIsAndCasting_ShouldReturnSameEntitiesAsLinqToObjectsAsync()
-		{
-			var expected = _firstLevels
-			   .Where(first => first.SecondLevels
-				  .Any(second => second.ThirdLevel is SpecificThirdLevel &&
-					 ((SpecificThirdLevel)second.ThirdLevel).FourthLevels
-						.Any(fourth => fourth.SomeString == "first")
-				  )
-			   )
-			   .ToList();
-
-			using (ISession session = OpenSession())
-			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					var result = await (session.Query<FirstLevel>()
-					   .Where(first => first.SecondLevels
-						  .Any(second => second.ThirdLevel is SpecificThirdLevel &&
-							 ((SpecificThirdLevel)second.ThirdLevel).FourthLevels
-								.Any(fourth => fourth.SomeString == "first")
-						  )
-					   )
-					   .ToListAsync());
-
-					Assert.AreEqual(expected.Count, result.Count);
-					Assert.IsTrue(result
-					   .All(f => f.SecondLevels
-						  .Any(s => ((SpecificThirdLevel)s.ThirdLevel).FourthLevels
-							 .Any(fo => fo.SomeString == "first")
-						  )
-					   )
-					);
-				}
-			}
-		}
-
-		[Test, Ignore("Not fixed yet")]
-		public async Task _4_Querying_BasedOnFourthLevelProperty_WithSelectAndOfType_ShouldReturnSameEntitiesAsLinqToObjectsAsync()
-		{
-			var expected = _firstLevels
-			   .Where(first => first.SecondLevels
-				  .Select(second => second.ThirdLevel)
-				  .OfType<SpecificThirdLevel>()
-				  .Any(specificThird => specificThird.FourthLevels
-					 .Any(fourth => fourth.SomeString == "first")
-				  )
-			   )
-			   .ToList();
-
-			using (ISession session = OpenSession())
-			{
-				using (ITransaction tx = session.BeginTransaction())
-				{
-					var result = await (session.Query<FirstLevel>()
-					   .Where(first => first.SecondLevels
-						  .Select(second => second.ThirdLevel)
-						  .OfType<SpecificThirdLevel>()
-						  .Any(specificThird => specificThird.FourthLevels
-							 .Any(fourth => fourth.SomeString == "first")
-						  )
-					   )
-					   .ToListAsync());
-
-					Assert.AreEqual(expected.Count, result.Count);
-					Assert.IsTrue(result
-					   .All(f => f.SecondLevels
-						  .Any(s => ((SpecificThirdLevel)s.ThirdLevel).FourthLevels
-							 .Any(fo => fo.SomeString == "first")
-						  )
-					   )
-					);
 				}
 			}
 		}

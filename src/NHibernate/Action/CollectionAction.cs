@@ -17,7 +17,6 @@ namespace NHibernate.Action
 	public abstract partial class CollectionAction : IAsyncExecutable, IComparable<CollectionAction>, IDeserializationCallback, IAfterTransactionCompletionProcess
 	{
 		private readonly object key;
-		private object finalKey;
 		[NonSerialized] private ICollectionPersister persister;
 		private readonly ISessionImplementor session;
 		private readonly string collectionRole;
@@ -51,23 +50,26 @@ namespace NHibernate.Action
 			get { return persister; }
 		}
 
-		protected internal object Key
+		//Since v5.3
+		[Obsolete("Please use GetKey() instead.")]
+		protected internal object Key => GetKey();
+
+		protected object GetKey()
 		{
-			get
+			if (key is DelayedPostInsertIdentifier)
 			{
-				finalKey = key;
-				if (key is DelayedPostInsertIdentifier)
+				// need to look it up
+				var finalKey = persister.CollectionType.GetKeyOfOwner(collection.Owner, session);
+				if (finalKey == key)
 				{
-					// need to look it up from the persistence-context
-					finalKey = session.PersistenceContext.GetEntry(collection.Owner).Id;
-					if (finalKey == key)
-					{
-						// we may be screwed here since the collection action is about to execute
-						// and we do not know the final owner key value
-					}
+					// we may be screwed here since the collection action is about to execute
+					// and we do not know the final owner key value
 				}
+
 				return finalKey;
 			}
+
+			return key;
 		}
 
 		protected internal ISessionImplementor Session
@@ -122,7 +124,7 @@ namespace NHibernate.Action
 
 		public virtual void ExecuteAfterTransactionCompletion(bool success)
 		{
-			var ck = new CacheKey(key, persister.KeyType, persister.Role, Session.Factory);
+			var ck = session.GenerateCacheKey(key, persister.KeyType, persister.Role);
 			persister.Cache.Release(ck, softLock);
 		}
 

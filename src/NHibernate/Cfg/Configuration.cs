@@ -47,7 +47,7 @@ namespace NHibernate.Cfg
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public class Configuration : ISerializable
+	public partial class Configuration : ISerializable
 	{
 		/// <summary>Default name for hibernate configuration file.</summary>
 		public const string DefaultHibernateCfgFileName = "hibernate.cfg.xml";
@@ -171,7 +171,9 @@ namespace NHibernate.Cfg
 			propertyReferences = new List<Mappings.PropertyReference>();
 			FilterDefinitions = new Dictionary<string, FilterDefinition>();
 			interceptor = EmptyInterceptor.Instance;
+#pragma warning disable 618
 			properties = Environment.Properties;
+#pragma warning restore 618
 			auxiliaryDatabaseObjects = new List<IAuxiliaryDatabaseObject>();
 			SqlFunctions = new Dictionary<string, ISQLFunction>();
 			mappingsQueue = new MappingsQueue();
@@ -820,7 +822,7 @@ namespace NHibernate.Cfg
 			return this;
 		}
 
-		private static IList<string> GetAllHbmXmlResourceNames(Assembly assembly)
+		private static List<string> GetAllHbmXmlResourceNames(Assembly assembly)
 		{
 			var result = new List<string>();
 
@@ -2231,7 +2233,6 @@ namespace NHibernate.Cfg
 					break;
 			}
 		}
-
 
 		/// <summary>
 		/// Append the listeners to the end of the currently configured

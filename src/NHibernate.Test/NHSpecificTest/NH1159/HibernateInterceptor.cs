@@ -12,5 +12,4 @@ namespace NHibernate.Test.NHSpecificTest.NH1159
 			return false;
 		}
 	}
-
 }

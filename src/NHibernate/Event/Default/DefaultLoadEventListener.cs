@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using NHibernate.Action;
 using NHibernate.Cache;
 using NHibernate.Cache.Access;
 using NHibernate.Cache.Entry;
@@ -32,8 +33,8 @@ namespace NHibernate.Event.Default
 			IEntityPersister persister;
 			if (@event.InstanceToLoad != null)
 			{
-				persister = source.GetEntityPersister(null, @event.InstanceToLoad); //the load() which takes an entity does not pass an entityName
-				@event.EntityClassName = @event.InstanceToLoad.GetType().FullName;
+				@event.EntityClassName = source.BestGuessEntityName(@event.InstanceToLoad); //the load() which takes an entity does not pass an entityName
+				persister = source.GetEntityPersister(@event.EntityClassName, @event.InstanceToLoad);
 			}
 			else
 			{
@@ -42,7 +43,6 @@ namespace NHibernate.Event.Default
 
 			if (persister == null)
 			{
-
 				var message = new StringBuilder(512);
 				message.AppendLine(string.Format("Unable to locate persister for the entity named '{0}'.", @event.EntityClassName));
 				message.AppendLine("The persister define the persistence strategy for an entity.");
@@ -60,7 +60,8 @@ namespace NHibernate.Event.Default
 			else
 			{
 				System.Type idClass = persister.IdentifierType.ReturnedClass;
-				if (idClass != null && !idClass.IsInstanceOfType(@event.EntityId))
+				if (idClass != null && !idClass.IsInstanceOfType(@event.EntityId) &&
+					!(@event.EntityId is DelayedPostInsertIdentifier))
 				{
 					throw new TypeMismatchException("Provided id of the wrong type. Expected: " + idClass + ", got " + @event.EntityId.GetType());
 				}
@@ -342,19 +343,18 @@ namespace NHibernate.Event.Default
 		{
 			ISessionImplementor source = @event.Session;
 
-			bool statsEnabled = source.Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (source.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWath.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 
 			object entity = persister.Load(@event.EntityId, @event.InstanceToLoad, @event.LockMode, source);
 
-			if (@event.IsAssociationFetch && statsEnabled)
+			if (stopWatch != null && @event.IsAssociationFetch)
 			{
-				stopWath.Stop();
-				source.Factory.StatisticsImplementor.FetchEntity(@event.EntityClassName, stopWath.Elapsed);
+				stopWatch.Stop();
+				source.Factory.StatisticsImplementor.FetchEntity(@event.EntityClassName, stopWatch.Elapsed);
 			}
 
 			return entity;
@@ -405,7 +405,6 @@ namespace NHibernate.Event.Default
 			return old;
 		}
 
-
 		/// <summary> Attempts to load the entity from the second-level cache. </summary>
 		/// <param name="event">The load event </param>
 		/// <param name="persister">The persister for the entity being requested for load </param>
@@ -423,11 +422,26 @@ namespace NHibernate.Event.Default
 			}
 			ISessionFactoryImplementor factory = source.Factory;
 			var batchSize = persister.GetBatchSize();
-			if (batchSize > 1 && persister.Cache.PreferMultipleGet())
+			var entityBatch = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue
+			                        ?.GetEntityBatch(persister, @event.EntityId);
+			if (entityBatch != null || batchSize > 1 && persister.Cache.PreferMultipleGet())
 			{
 				// The first item in the array is the item that we want to load
-				var entityBatch =
-					source.PersistenceContext.BatchFetchQueue.GetEntityBatch(persister, @event.EntityId, batchSize, false);
+				if (entityBatch != null)
+				{
+					if (entityBatch.Length == 0)
+					{
+						return null; // The key was already checked
+					}
+
+					batchSize = entityBatch.Length;
+				}
+
+				if (entityBatch == null)
+				{
+					entityBatch = source.PersistenceContext.BatchFetchQueue.GetEntityBatch(persister, @event.EntityId, batchSize, false);
+				}
+
 				// Ignore null values as the retrieved batch may contains them when there are not enough
 				// uninitialized entities in the queue
 				var keys = new List<CacheKey>(batchSize);
@@ -503,7 +517,7 @@ namespace NHibernate.Event.Default
 
 			// make it circular-reference safe
 			EntityKey entityKey = session.GenerateEntityKey(id, subclassPersister);
-			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.AreLazyPropertiesUnfetched, entry.Version, session);
+			TwoPhaseLoad.AddUninitializedCachedEntity(entityKey, result, subclassPersister, LockMode.None, entry.Version, session);
 
 			IType[] types = subclassPersister.PropertyTypes;
 			object[] values = entry.Assemble(result, id, subclassPersister, session.Interceptor, session); // intializes result by side-effect
@@ -541,10 +555,9 @@ namespace NHibernate.Event.Default
 				LockMode.None,
 				true,
 				subclassPersister,
-				false,
-				entry.AreLazyPropertiesUnfetched);
+				false);
 			
-			subclassPersister.AfterInitialize(result, entry.AreLazyPropertiesUnfetched, session);
+			subclassPersister.AfterInitialize(result, session);
 			persistenceContext.InitializeNonLazyCollections();
 			// upgrade the lock if necessary:
 			//lock(result, lockMode);

@@ -39,21 +39,11 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
+		public override async Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
 		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			try
-			{
-				NullSafeSet(cmd, value, index, session);
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			await (GetIdentifierOrUniqueKeyType(session.Factory)
+				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session, true, cancellationToken)).ConfigureAwait(false), index, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public override Task<bool> IsDirtyAsync(object old, object current, ISessionImplementor session, CancellationToken cancellationToken)
@@ -107,12 +97,18 @@ namespace NHibernate.Type
 		public override async Task<object> HydrateAsync(DbDataReader rs, string[] names, ISessionImplementor session, object owner, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			if (owner == null && names.Length > 0)
+			{
+				// return the (fully resolved) identifier value, but do not resolve
+				// to the actual referenced entity instance
+				return await (GetIdentifierOrUniqueKeyType(session.Factory)
+					.NullSafeGetAsync(rs, names, session, null, cancellationToken)).ConfigureAwait(false);
+			}
 			IType type = GetIdentifierOrUniqueKeyType(session.Factory);
 			object identifier = session.GetContextEntityIdentifier(owner);
 
 			//This ugly mess is only used when mapping one-to-one entities with component ID types
-			EmbeddedComponentType componentType = type as EmbeddedComponentType;
-			if (componentType != null)
+			if (type.IsComponentType && type is EmbeddedComponentType componentType)
 			{
 				EmbeddedComponentType ownerIdType = session.GetEntityPersister(null, owner).IdentifierType as EmbeddedComponentType;
 				if (ownerIdType != null)

@@ -113,7 +113,6 @@ namespace NHibernate
 			logger.Log(NHibernateLogLevel.Debug, new NHibernateLogValues(message, null), null);
 		}
 
-
 		// catch any method calls with an Exception argument second as they would otherwise silently be consumed by `params object[] args`.
 
 		/// <summary>

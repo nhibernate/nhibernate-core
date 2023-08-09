@@ -22,11 +22,10 @@ namespace NHibernate.Event.Default
 			IPersistentCollection collection = @event.Collection;
 			ISessionImplementor source = @event.Session;
 
-			bool statsEnabled = source.Factory.Statistics.IsStatisticsEnabled;
-			var stopWath = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (source.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWath.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 
 			CollectionEntry ce = source.PersistenceContext.GetCollectionEntry(collection);
@@ -52,10 +51,10 @@ namespace NHibernate.Event.Default
 					ce.LoadedPersister.Initialize(ce.LoadedKey, source);
 					log.Debug("collection initialized");
 
-					if (statsEnabled)
+					if (stopWatch != null)
 					{
-						stopWath.Stop();
-						source.Factory.StatisticsImplementor.FetchCollection(ce.LoadedPersister.Role, stopWath.Elapsed);
+						stopWatch.Stop();
+						source.Factory.StatisticsImplementor.FetchCollection(ce.LoadedPersister.Role, stopWatch.Elapsed);
 					}
 				}
 			}
@@ -80,12 +79,29 @@ namespace NHibernate.Event.Default
 			}
 
 			var batchSize = persister.GetBatchSize();
-			if (batchSize > 1 && persister.Cache.PreferMultipleGet())
+			CollectionEntry[] collectionEntries = null;
+			var collectionBatch = source.PersistenceContext.BatchFetchQueue.QueryCacheQueue
+			                            ?.GetCollectionBatch(persister, collectionKey, out collectionEntries);
+			if (collectionBatch != null || batchSize > 1 && persister.Cache.PreferMultipleGet())
 			{
-				var collectionEntries = new CollectionEntry[batchSize];
 				// The first item in the array is the item that we want to load
-				var collectionBatch = source.PersistenceContext.BatchFetchQueue
-				                            .GetCollectionBatch(persister, collectionKey, batchSize, false, collectionEntries);
+				if (collectionBatch != null)
+				{
+					if (collectionBatch.Length == 0)
+					{
+						return false; // The key was already checked
+					}
+
+					batchSize = collectionBatch.Length;
+				}
+
+				if (collectionBatch == null)
+				{
+					collectionEntries = new CollectionEntry[batchSize];
+					collectionBatch = source.PersistenceContext.BatchFetchQueue
+					                        .GetCollectionBatch(persister, collectionKey, batchSize, false, collectionEntries);
+				}
+
 				// Ignore null values as the retrieved batch may contains them when there are not enough
 				// uninitialized collection in the queue
 				var keys = new List<CacheKey>(batchSize);

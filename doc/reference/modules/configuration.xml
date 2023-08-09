@@ -433,6 +433,45 @@ var session = sessions.OpenSession(conn);
 
     </sect1>
 
+    <sect1 id="configuration-provider">
+        <title>Using a custom configuration provider</title>
+
+        <para>
+            By default, NHibernate attempts to read the <literal>hibernate-configuration</literal> section
+            through the .Net <literal>ConfigurationManager</literal>. Some environments do not support it, so
+            NHibernate provides a way to set a custom configuration provider, through the
+            <literal>NHibernate.Cfg.ConfigurationProvider.Current</literal> property.
+        </para>
+
+        <para>
+            To disable the configuration provider, in case you configure NHibernate entirely programmatically,
+            set this property to <literal>null</literal>.
+        </para>
+
+        <programlisting><![CDATA[ConfigurationProvider.Current = null;]]></programlisting>
+
+        <para>
+            To provide directly the <literal>System.Configuration.Configuration</literal> instance to use, assign
+            the <literal>Current</literal> property with an instance of
+            <literal>NHibernate.Cfg.SystemConfigurationProvider</literal> built with your
+            <literal>Configuration</literal> instance.
+        </para>
+
+        <programlisting><![CDATA[ConfigurationProvider.Current = new SystemConfigurationProvider(yourConfig);]]></programlisting>
+
+        <para>
+            You may also derive a custom provider from <literal>NHibernate.Cfg.ConfigurationProvider</literal>,
+            implements its abstract methods, and assign an instance of your custom provider to the
+            <literal>NHibernate.Cfg.ConfigurationProvider.Current</literal> property.
+        </para>
+
+        <para>
+            Changes of the <literal>ConfigurationProvider.Current</literal> property value are to be done very
+            early in the application lifecycle, before any other call on a NHibernate API. Otherwise they
+            may not be taken into account.
+        </para>
+    </sect1>
+
     <sect1 id="configuration-optional">
         <title>Optional configuration properties</title>
         
@@ -573,6 +612,26 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>cache.read_write_lock_factory</literal>
+                        </entry>
+                        <entry>
+                            Specify the cache lock factory to use for read-write cache regions.
+                            Defaults to the built-in <literal>async</literal> cache lock factory.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>async</literal>, or <literal>sync</literal>, or <literal>classname.of.CacheLockFactory, assembly</literal> with custom implementation of <literal>ICacheReadWriteLockFactory</literal>
+                            </para>
+                            <para>
+                                <literal>async</literal> uses a single writer multiple readers locking mechanism supporting asynchronous operations.
+                            </para>
+                            <para>
+                                <literal>sync</literal> uses a single access locking mechanism which will throw on asynchronous
+                                operations but may have better performances than the <literal>async</literal> provider for applications using the .Net Framework (4.8 and below).
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>cache.region_prefix</literal>
                         </entry>
                         <entry>
@@ -705,6 +764,19 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>query.pre_transformer_registrar</literal>
+                        </entry>
+                        <entry>
+                            The class name of the LINQ query pre-transformer registrar, implementing
+                            <literal>IExpressionTransformerRegistrar</literal>. Defaults to <literal>null</literal> (no registrar).
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>classname.of.ExpressionTransformerRegistrar, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>linqtohql.generatorsregistry</literal>
                         </entry>
                         <entry>
@@ -714,6 +786,57 @@ var session = sessions.OpenSession(conn);
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>classname.of.LinqToHqlGeneratorsRegistry, assembly</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>linqtohql.legacy_preevaluation</literal>
+                        </entry>
+                        <entry>
+                            Whether to use the legacy pre-evaluation or not in Linq queries. Defaults to <literal>true</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                            <para>
+                                Legacy pre-evaluation is causing special properties or functions like <literal>DateTime.Now</literal>
+                                or <literal>Guid.NewGuid()</literal> to be always evaluated with the .Net runtime and replaced in the
+                                query by parameter values.
+                            </para>
+                            <para>
+                                The new pre-evaluation allows them to be converted to HQL function calls which will be run on the db
+                                side. This allows for example to retrieve the server time instead of the client time, or to generate
+                                UUIDs for each row instead of an unique one for all rows.
+                            </para>
+                            <para>
+                                The new pre-evaluation will likely be enabled by default in the next major version (6.0).
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>linqtohql.fallback_on_preevaluation</literal>
+                        </entry>
+                        <entry>
+                            When the new pre-evaluation is enabled, should methods which translation is not supported by the current
+                            dialect fallback to pre-evaluation? Defaults to <literal>false</literal>.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                            <para>
+                                When this fallback option is enabled while legacy pre-evaluation is disabled, properties or functions
+                                like <literal>DateTime.Now</literal> or <literal>Guid.NewGuid()</literal> used in Linq expressions
+                                will not fail when the dialect does not support them, but will instead be pre-evaluated.
+                            </para>
+                            <para>
+                                When this fallback option is disabled while legacy pre-evaluation is disabled, properties or functions
+                                like <literal>DateTime.Now</literal> or <literal>Guid.NewGuid()</literal> used in Linq expressions
+                                will fail when the dialect does not support them.
+                            </para>
+                            <para>
+                                This option has no effect if the legacy pre-evaluation is enabled.
                             </para>
                         </entry>
                     </row>
@@ -778,7 +901,7 @@ var session = sessions.OpenSession(conn);
                             is closed explicitly.
                             <para>
                                 <emphasis role="strong">eg.</emphasis> 
-                                <literal>create</literal> | <literal>create-drop</literal>
+                                <literal>create</literal> | <literal>create-drop</literal> | <literal>update</literal> | <literal>validate</literal>
                             </para>
                         </entry>
                     </row>
@@ -804,6 +927,20 @@ var session = sessions.OpenSession(conn);
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>none</literal> | <literal>keywords</literal> | <literal>auto-quote</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>hbm2ddl.throw_on_update</literal>
+                        </entry>
+                        <entry>
+                            When <literal>hbm2ddl.auto</literal> is <literal>update</literal>, whether to throw or not on schema auto-update failures.
+                            <!-- 6.0 TODO: should become true by default. -->
+                            Disabled by default.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>true</literal> | <literal>false</literal>
                             </para>
                         </entry>
                     </row>
@@ -902,6 +1039,25 @@ var session = sessions.OpenSession(conn);
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
                                 <literal>10000</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <literal>transaction.auto_join</literal>
+                        </entry>
+                        <entry>
+                            Should sessions check on every operation whether there is an ongoing system transaction or not, and enlist
+                            into it if any?
+                            <para>
+                                Default is <literal>true</literal>. It can also be controlled at session opening, with
+                                <literal>ISessionFactory.WithOptions</literal>. A session can also be instructed to explicitly join the current
+                                transaction by calling <literal>ISession.JoinTransaction</literal>. This setting has no effect when using a
+                                transaction factory that is not system transactions aware.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>false</literal>
                             </para>
                         </entry>
                     </row>

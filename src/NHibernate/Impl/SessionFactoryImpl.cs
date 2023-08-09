@@ -21,6 +21,7 @@ using NHibernate.Hql;
 using NHibernate.Id;
 using NHibernate.Mapping;
 using NHibernate.Metadata;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
@@ -77,13 +78,18 @@ namespace NHibernate.Impl
 	{
 		#region Default entity not found delegate
 
-		private class DefaultEntityNotFoundDelegate : IEntityNotFoundDelegate
+		internal class DefaultEntityNotFoundDelegate : IEntityNotFoundDelegate
 		{
 			#region IEntityNotFoundDelegate Members
 
 			public void HandleEntityNotFound(string entityName, object id)
 			{
 				throw new ObjectNotFoundException(id, entityName);
+			}
+
+			public void HandleEntityNotFound(string entityName, string propertyName, object key)
+			{
+				throw new ObjectNotFoundByUniqueKeyException(entityName, propertyName, key);
 			}
 
 			#endregion
@@ -95,11 +101,8 @@ namespace NHibernate.Impl
 		private static readonly IIdentifierGenerator UuidGenerator = new UUIDHexGenerator();
 
 		[NonSerialized]
-		// 6.0 TODO: type as CacheBase instead
-#pragma warning disable 618
-		private readonly ConcurrentDictionary<string, ICache> allCacheRegions =
-			new ConcurrentDictionary<string, ICache>();
-#pragma warning restore 618
+		private readonly ConcurrentDictionary<string, CacheBase> _allCacheRegions =
+			new ConcurrentDictionary<string, CacheBase>();
 
 		[NonSerialized]
 		private readonly IDictionary<string, IClassMetadata> classMetadata;
@@ -165,13 +168,16 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly UpdateTimestampsCache updateTimestampsCache;
 		[NonSerialized]
-		private readonly IDictionary<string, string[]> entityNameImplementorsMap = new ConcurrentDictionary<string, string[]>(4 * System.Environment.ProcessorCount, 100);
+		private readonly ConcurrentDictionary<string, string[]> entityNameImplementorsMap = new ConcurrentDictionary<string, string[]>(4 * System.Environment.ProcessorCount, 100);
 		private readonly string uuid;
+
+		[NonSerialized]
 		private bool disposed;
 
 		[NonSerialized]
 		private bool isClosed = false;
 
+		[NonSerialized]
 		private QueryPlanCache queryPlanCache;
 		[NonSerialized]
 		private StatisticsImpl statistics;
@@ -251,7 +257,7 @@ namespace NHibernate.Impl
 
 			#region Persisters
 
-			Dictionary<string, ICacheConcurrencyStrategy> caches = new Dictionary<string, ICacheConcurrencyStrategy>();
+			var caches = new Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy>();
 			entityPersisters = new Dictionary<string, IEntityPersister>();
 			implementorToEntityName = new Dictionary<System.Type, string>();
 
@@ -260,22 +266,13 @@ namespace NHibernate.Impl
 			foreach (PersistentClass model in cfg.ClassMappings)
 			{
 				model.PrepareTemporaryTables(mapping, settings.Dialect);
-				string cacheRegion = model.RootClazz.CacheRegionName;
-				ICacheConcurrencyStrategy cache;
-				if (!caches.TryGetValue(cacheRegion, out cache))
-				{
-					cache =
-						CacheFactory.CreateCache(model.CacheConcurrencyStrategy, cacheRegion, model.IsMutable, settings, properties);
-					if (cache != null)
-					{
-						caches.Add(cacheRegion, cache);
-						if (!allCacheRegions.TryAdd(cache.RegionName, cache.Cache))
-						{
-							throw new HibernateException("An item with the same key has already been added to allCacheRegions.");
-						}
-					}
-				}
-				IEntityPersister cp = PersisterFactory.CreateClassPersister(model, cache, this, mapping);
+				var cache = GetCacheConcurrencyStrategy(
+					model.RootClazz.CacheRegionName,
+					model.CacheConcurrencyStrategy,
+					model.IsMutable,
+					model.EntityName,
+					caches);
+				var cp = PersisterFactory.CreateClassPersister(model, cache, this, mapping);
 				entityPersisters[model.EntityName] = cp;
 				classMeta[model.EntityName] = cp.ClassMetadata;
 
@@ -290,14 +287,13 @@ namespace NHibernate.Impl
 			collectionPersisters = new Dictionary<string, ICollectionPersister>();
 			foreach (Mapping.Collection model in cfg.CollectionMappings)
 			{
-				ICacheConcurrencyStrategy cache =
-					CacheFactory.CreateCache(model.CacheConcurrencyStrategy, model.CacheRegionName, model.Owner.IsMutable, settings,
-											 properties);
-				if (cache != null)
-				{
-					allCacheRegions[cache.RegionName] = cache.Cache;
-				}
-				ICollectionPersister persister = PersisterFactory.CreateCollectionPersister(model, cache, this);
+				var cache = GetCacheConcurrencyStrategy(
+					model.CacheRegionName,
+					model.CacheConcurrencyStrategy,
+					model.Owner.IsMutable,
+					model.OwnerEntityName,
+					caches);
+				var persister = PersisterFactory.CreateCollectionPersister(model, cache, this);
 				collectionPersisters[model.Role] = persister;
 				IType indexType = persister.IndexType;
 				if (indexType != null && indexType.IsAssociationType && !indexType.IsAnyType)
@@ -362,12 +358,23 @@ namespace NHibernate.Impl
 
 			if (settings.IsAutoUpdateSchema)
 			{
-				new SchemaUpdate(cfg).Execute(false, true);
+				var schemaUpdate = new SchemaUpdate(cfg);
+				schemaUpdate.Execute(false, true);
+				if (settings.ThrowOnSchemaUpdate)
+				{
+					if (schemaUpdate.Exceptions.Any())
+					{
+						throw new AggregateHibernateException(
+							"Schema update has failed, see inner exceptions for details", schemaUpdate.Exceptions);
+					}
+				}
 			}
+			
 			if (settings.IsAutoValidateSchema)
 			{
 				new SchemaValidator(cfg, settings).Validate();
 			}
+			
 			if (settings.IsAutoDropSchema)
 			{
 				schemaExport = new SchemaExport(cfg);
@@ -382,9 +389,12 @@ namespace NHibernate.Impl
 
 			if (settings.IsQueryCacheEnabled)
 			{
-				updateTimestampsCache = new UpdateTimestampsCache(settings, properties);
-				queryCache = settings.QueryCacheFactory.GetQueryCache(null, updateTimestampsCache, settings, properties);
+				var updateTimestampsCacheName = nameof(Cache.UpdateTimestampsCache);
+				updateTimestampsCache = new UpdateTimestampsCache(GetCache(updateTimestampsCacheName), settings.CacheReadWriteLockFactory.Create());
+				var queryCacheName = typeof(StandardQueryCache).FullName;
+				queryCache = BuildQueryCache(queryCacheName);
 				queryCaches = new ConcurrentDictionary<string, Lazy<IQueryCache>>();
+				queryCaches.TryAdd(queryCacheName, new Lazy<IQueryCache>(() => queryCache));
 			}
 			else
 			{
@@ -421,9 +431,51 @@ namespace NHibernate.Impl
 			entityNotFoundDelegate = enfd;
 		}
 
+		private IQueryCache BuildQueryCache(string queryCacheName)
+		{
+			return
+				settings.QueryCacheFactory.GetQueryCache(
+					updateTimestampsCache,
+					properties,
+					GetCache(queryCacheName))
+				// 6.0 TODO: remove the coalesce once IQueryCacheFactory todos are done
+#pragma warning disable 618
+				?? settings.QueryCacheFactory.GetQueryCache(
+#pragma warning restore 618
+					queryCacheName,
+					updateTimestampsCache,
+					settings,
+					properties);
+		}
+
+		private ICacheConcurrencyStrategy GetCacheConcurrencyStrategy(string cacheRegion,
+			string strategy,
+			bool isMutable,
+			string entityName,
+			Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy> caches)
+		{
+			if (strategy == null || !settings.IsSecondLevelCacheEnabled)
+				return null;
+
+			var cacheKey = new Tuple<string, string>(cacheRegion, strategy);
+			if (caches.TryGetValue(cacheKey, out var cache)) 
+				return cache;
+
+			cache = CacheFactory.CreateCache(strategy, GetCache(cacheRegion), settings);
+			caches.Add(cacheKey, cache);
+			if (isMutable && strategy == CacheFactory.ReadOnly)
+				log.Warn("read-only cache configured for mutable: {0}", entityName);
+
+			return cache;
+		}
+
 		public EventListeners EventListeners
 		{
-			get { return eventListeners; }
+			get
+			{
+				CheckNotClosed();
+				return eventListeners;
+			}
 		}
 
 		#region IObjectReference Members
@@ -467,6 +519,7 @@ namespace NHibernate.Impl
 
 		public ISessionBuilder WithOptions()
 		{
+			CheckNotClosed();
 			return new SessionBuilderImpl(this);
 		}
 
@@ -517,6 +570,7 @@ namespace NHibernate.Impl
 
 		public IStatelessSessionBuilder WithStatelessOptions()
 		{
+			CheckNotClosed();
 			return new StatelessSessionBuilderImpl(this);
 		}
 
@@ -534,6 +588,7 @@ namespace NHibernate.Impl
 
 		public IEntityPersister GetEntityPersister(string entityName)
 		{
+			CheckNotClosed();
 			IEntityPersister value;
 			if (entityPersisters.TryGetValue(entityName, out value) == false)
 				throw new MappingException("No persister for: " + entityName);
@@ -542,6 +597,7 @@ namespace NHibernate.Impl
 
 		public IEntityPersister TryGetEntityPersister(string entityName)
 		{
+			CheckNotClosed();
 			IEntityPersister result;
 			entityPersisters.TryGetValue(entityName, out result);
 			return result;
@@ -549,6 +605,7 @@ namespace NHibernate.Impl
 
 		public ICollectionPersister GetCollectionPersister(string role)
 		{
+			CheckNotClosed();
 			ICollectionPersister value;
 			if (collectionPersisters.TryGetValue(role, out value) == false)
 				throw new MappingException("Unknown collection role: " + role);
@@ -702,7 +759,7 @@ namespace NHibernate.Impl
 			{
 				// try to get the class from imported names
 				string importedName = GetImportedClassName(entityOrClassName);
-				if (importedName != null)
+				if (importedName != entityOrClassName)
 				{
 					clazz = System.Type.GetType(importedName, false);
 				}
@@ -817,6 +874,14 @@ namespace NHibernate.Impl
 			Close();
 		}
 
+		private void CheckNotClosed()
+		{
+			if (isClosed)
+			{
+				throw new ObjectDisposedException($"Session factory {Name} with id {Uuid}");
+			}
+		}
+
 		/// <summary>
 		/// Closes the session factory, releasing all held resources.
 		/// <list>
@@ -826,6 +891,16 @@ namespace NHibernate.Impl
 		/// </summary>
 		public void Close()
 		{
+			if (isClosed)
+			{
+				if (log.IsDebugEnabled())
+				{
+					log.Debug("Already closed");
+				}
+
+				return;
+			}
+
 			log.Info("Closing");
 
 			isClosed = true;
@@ -848,14 +923,15 @@ namespace NHibernate.Impl
 
 			if (settings.IsQueryCacheEnabled)
 			{
-				queryCache.Destroy();
-
 				foreach (var cache in queryCaches.Values)
 				{
 					cache.Value.Destroy();
 				}
+			}
 
-				updateTimestampsCache.Destroy();
+			foreach (var cache in _allCacheRegions.Values)
+			{
+				cache.Destroy();
 			}
 
 			settings.CacheProvider.Stop();
@@ -879,16 +955,7 @@ namespace NHibernate.Impl
 
 		public void Evict(System.Type persistentClass, object id)
 		{
-			IEntityPersister p = GetEntityPersister(persistentClass.FullName);
-			if (p.HasCache)
-			{
-				if (log.IsDebugEnabled())
-				{
-					log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id));
-				}
-				CacheKey ck = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
-				p.Cache.Remove(ck);
-			}
+			EvictEntity(persistentClass.FullName, id);
 		}
 
 		public void Evict(System.Type persistentClass)
@@ -942,33 +1009,44 @@ namespace NHibernate.Impl
 
 		public void EvictEntity(string entityName, object id)
 		{
+			EvictEntity(entityName, id, null);
+		}
+
+		public void EvictEntity(string entityName, object id, string tenantIdentifier)
+		{
 			IEntityPersister p = GetEntityPersister(entityName);
 			if (p.HasCache)
 			{
 				if (log.IsDebugEnabled())
 				{
-					log.Debug("evicting second-level cache: {0}", MessageHelper.InfoString(p, id, this));
+					LogEvict(tenantIdentifier, MessageHelper.InfoString(p, id, this));
 				}
-				CacheKey cacheKey = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName);
+				CacheKey cacheKey = GenerateCacheKeyForEvict(id, p.IdentifierType, p.RootEntityName, tenantIdentifier);
 				p.Cache.Remove(cacheKey);
 			}
 		}
 
 		public void EvictCollection(string roleName, object id)
 		{
+			EvictCollection(roleName, id, null);
+		}
+
+		public void EvictCollection(string roleName, object id, string tenantIdentifier)
+		{
 			ICollectionPersister p = GetCollectionPersister(roleName);
 			if (p.HasCache)
 			{
 				if (log.IsDebugEnabled())
 				{
-					log.Debug("evicting second-level cache: {0}", MessageHelper.CollectionInfoString(p, id));
+					LogEvict(tenantIdentifier, MessageHelper.CollectionInfoString(p, id));
 				}
-				CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role);
+
+				CacheKey ck = GenerateCacheKeyForEvict(id, p.KeyType, p.Role, tenantIdentifier);
 				p.Cache.Remove(ck);
 			}
 		}
 
-		private CacheKey GenerateCacheKeyForEvict(object id, IType type, string entityOrRoleName)
+		private CacheKey GenerateCacheKeyForEvict(object id, IType type, string entityOrRoleName, string tenantIdentifier)
 		{
 			// if there is a session context, use that to generate the key.
 			if (CurrentSessionContext != null)
@@ -979,7 +1057,12 @@ namespace NHibernate.Impl
 					.GenerateCacheKey(id, type, entityOrRoleName);
 			}
 
-			return new CacheKey(id, type, entityOrRoleName, this);
+			if (settings.MultiTenancyStrategy != MultiTenancyStrategy.None && tenantIdentifier == null)
+			{
+				throw new ArgumentException("Use overload with tenantIdentifier or initialize CurrentSessionContext.");
+			}
+
+			return new CacheKey(id, type, entityOrRoleName, this, tenantIdentifier);
 		}
 
 		public void EvictCollection(string roleName)
@@ -1041,8 +1124,14 @@ namespace NHibernate.Impl
 		public IDictionary<string, ICache> GetAllSecondLevelCacheRegions()
 #pragma warning restore 618
 		{
-			// ToArray creates a moment in time snapshot
-			return allCacheRegions.ToArray().ToDictionary(kv => kv.Key, kv => kv.Value);
+			CheckNotClosed();
+			return
+				_allCacheRegions
+					// ToArray creates a moment in time snapshot
+					.ToArray()
+#pragma warning disable 618
+					.ToDictionary(kv => kv.Key, kv => (ICache) kv.Value);
+#pragma warning restore 618
 		}
 
 		// 6.0 TODO: return CacheBase instead
@@ -1050,8 +1139,23 @@ namespace NHibernate.Impl
 		public ICache GetSecondLevelCacheRegion(string regionName)
 #pragma warning restore 618
 		{
-			allCacheRegions.TryGetValue(regionName, out var result);
+			CheckNotClosed();
+			_allCacheRegions.TryGetValue(regionName, out var result);
 			return result;
+		}
+
+		private CacheBase GetCache(string cacheRegion)
+		{
+			// If run concurrently for the same region and type, this may built many caches for the same region and type.
+			// Currently only GetQueryCache may be run concurrently, and its implementation prevents
+			// concurrent creation call for the same region, so this will not happen.
+			// Otherwise the dictionary will have to be changed for using a lazy, see
+			// https://stackoverflow.com/a/31637510/1178314
+			cacheRegion = settings.GetFullCacheRegionName(cacheRegion);
+
+			return _allCacheRegions.GetOrAdd(
+				cacheRegion,
+				cr => CacheFactory.BuildCacheBase(cr, settings, properties));
 		}
 
 		/// <summary> Statistics SPI</summary>
@@ -1062,7 +1166,12 @@ namespace NHibernate.Impl
 
 		public IQueryCache QueryCache
 		{
-			get { return queryCache; }
+			get
+			{
+				if (queryCache != null)
+					CheckNotClosed();
+				return queryCache;
+			}
 		}
 
 		public IQueryCache GetQueryCache(string cacheRegion)
@@ -1076,18 +1185,16 @@ namespace NHibernate.Impl
 				return null;
 			}
 
+			CheckNotClosed();
 			// The factory may be run concurrently by threads trying to get the same region.
 			// But the GetOrAdd will yield the same lazy for all threads, so only one will
 			// initialize. https://stackoverflow.com/a/31637510/1178314
-			return queryCaches.GetOrAdd(
-				cacheRegion,
-				cr => new Lazy<IQueryCache>(
-					() =>
-					{
-						var currentQueryCache = settings.QueryCacheFactory.GetQueryCache(cr, updateTimestampsCache, settings, properties);
-						allCacheRegions[currentQueryCache.RegionName] = currentQueryCache.Cache;
-						return currentQueryCache;
-					})).Value;
+			return
+				queryCaches
+					.GetOrAdd(
+						cacheRegion,
+						cr => new Lazy<IQueryCache>(() => BuildQueryCache(cr)))
+					.Value;
 		}
 
 		public void EvictQueries()
@@ -1095,6 +1202,7 @@ namespace NHibernate.Impl
 			// NH Different implementation
 			if (queryCache != null)
 			{
+				CheckNotClosed();
 				queryCache.Clear();
 				if (queryCaches.Count == 0)
 				{
@@ -1113,6 +1221,7 @@ namespace NHibernate.Impl
 			{
 				if (settings.IsQueryCacheEnabled)
 				{
+					CheckNotClosed();
 					if (queryCaches.TryGetValue(cacheRegion, out var currentQueryCache))
 					{
 						currentQueryCache.Value.Clear();
@@ -1193,6 +1302,17 @@ namespace NHibernate.Impl
 		}
 
 		#endregion
+
+		private static void LogEvict(string tenantIdentifier, string infoString)
+		{
+			if (string.IsNullOrEmpty(tenantIdentifier))
+			{
+				log.Debug("evicting second-level cache: {0}", infoString);
+				return;
+			}
+
+			log.Debug("evicting second-level cache for tenant '{1}': {0}", infoString, tenantIdentifier);
+		}
 
 		private void Init()
 		{
@@ -1354,7 +1474,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		internal class SessionBuilderImpl<T> : ISessionBuilder<T>, ISessionCreationOptions where T : ISessionBuilder<T>
+		internal class SessionBuilderImpl<T> : ISessionBuilder<T>, ISessionCreationOptions, ISessionCreationOptionsWithMultiTenancy where T : ISessionBuilder<T>
 		{
 			// NH specific: implementing return type covariance with interface is a mess in .Net.
 			private T _this;
@@ -1367,7 +1487,7 @@ namespace NHibernate.Impl
 			private ConnectionReleaseMode _connectionReleaseMode;
 			private FlushMode _flushMode;
 			private bool _autoClose;
-			private bool _autoJoinTransaction = true;
+			private bool _autoJoinTransaction;
 
 			public SessionBuilderImpl(SessionFactoryImpl sessionFactory)
 			{
@@ -1376,6 +1496,7 @@ namespace NHibernate.Impl
 				// set up default builder values...
 				_connectionReleaseMode = sessionFactory.Settings.ConnectionReleaseMode;
 				_autoClose = sessionFactory.Settings.IsAutoCloseSessionEnabled;
+				_autoJoinTransaction = sessionFactory.Settings.AutoJoinTransaction;
 				// NH different implementation: not using Settings.IsFlushBeforeCompletionEnabled
 				_flushMode = sessionFactory.Settings.DefaultFlushMode;
 			}
@@ -1462,6 +1583,13 @@ namespace NHibernate.Impl
 				_flushMode = flushMode;
 				return _this;
 			}
+
+			public TenantConfiguration TenantConfiguration
+			{
+				get;
+				//TODO 6.0: Make protected
+				set;
+			}
 		}
 
 		// NH specific: implementing return type covariance with interface is a mess in .Net.
@@ -1473,7 +1601,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		internal class StatelessSessionBuilderImpl<T> : IStatelessSessionBuilder, ISessionCreationOptions where T : IStatelessSessionBuilder
+		internal class StatelessSessionBuilderImpl<T> : IStatelessSessionBuilder, ISessionCreationOptionsWithMultiTenancy, ISessionCreationOptions where T : IStatelessSessionBuilder
 		{
 			// NH specific: implementing return type covariance with interface is a mess in .Net.
 			private T _this;
@@ -1514,6 +1642,13 @@ namespace NHibernate.Impl
 			public IInterceptor SessionInterceptor => EmptyInterceptor.Instance;
 
 			public ConnectionReleaseMode SessionConnectionReleaseMode => ConnectionReleaseMode.AfterTransaction;
+
+			public TenantConfiguration TenantConfiguration
+			{
+				get;
+				//TODO 6.0: Make protected
+				set;
+			}
 		}
 	}
 }

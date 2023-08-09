@@ -10,6 +10,7 @@
 
 using System.Linq;
 using NHibernate.Driver;
+using NHibernate.Linq;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Futures
@@ -18,9 +19,21 @@ namespace NHibernate.Test.Futures
 	[TestFixture]
 	public class FutureQueryFixtureAsync : FutureFixture
 	{
+		protected override void OnTearDown()
+		{
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				session.Delete("from Person");
+				transaction.Commit();
+			}
+		}
+
 		[Test]
 		public async Task DefaultReadOnlyTestAsync()
 		{
+			CreatePersons();
+
 			//NH-3575
 			using (var s = Sfi.OpenSession())
 			{
@@ -50,12 +63,10 @@ namespace NHibernate.Test.Futures
 				{
 					foreach (var person in await (persons5.GetEnumerableAsync()))
 					{
-
 					}
 
 					foreach (var person in await (persons10.GetEnumerableAsync()))
 					{
-
 					}
 
 					var events = logSpy.Appender.GetEvents();
@@ -125,11 +136,11 @@ namespace NHibernate.Test.Futures
 			using (var s = Sfi.OpenSession())
 			{
 				IgnoreThisTestIfMultipleQueriesArentSupportedByDriver();
-			
+
 				var meContainer = s.CreateQuery("from Person p where p.Id = :personId")
 					.SetParameter("personId", 1)
 					.FutureValue<Person>();
-			
+
 				var possiblefriends = s.CreateQuery("from Person p where p.Id != :personId")
 					.SetParameter("personId", 2)
 					.Future<Person>();
@@ -137,11 +148,11 @@ namespace NHibernate.Test.Futures
 				using (var logSpy = new SqlLogSpy())
 				{
 					var me = await (meContainer.GetValueAsync());
-			
+
 					foreach (var person in await (possiblefriends.GetEnumerableAsync()))
 					{
 					}
-			
+
 					var events = logSpy.Appender.GetEvents();
 					Assert.AreEqual(1, events.Length);
 					var wholeLog = logSpy.GetWholeLog();
@@ -170,6 +181,25 @@ namespace NHibernate.Test.Futures
 			finally
 			{
 				Sfi.Statistics.IsStatisticsEnabled = false;
+			}
+		}
+
+		//NH-1953 - Future<> doesn't work on CreateFilter
+		[Test]
+		public async Task FutureOnFilterAsync()
+		{
+			CreatePersons();
+
+			using (var s = Sfi.OpenSession())
+			{
+				var person = await (s.Query<Person>().Where(n => n.Name == "ParentTwoChildren").FirstOrDefaultAsync());
+
+				var f1 = (await (s.CreateFilterAsync(person.Children, "where Age > 30"))).Future<Person>();
+				var f2 = (await (s.CreateFilterAsync(person.Children, "where Age > 5"))).Future<Person>();
+
+				Assert.That(person.Children.Count, Is.EqualTo(2), "invalid test set up");
+				Assert.That((await (f1.GetEnumerableAsync())).ToList().Count, Is.EqualTo(0), "Invalid filtered results");
+				Assert.That((await (f2.GetEnumerableAsync())).ToList().Count, Is.EqualTo(1), "Invalid filtered results");
 			}
 		}
 	}

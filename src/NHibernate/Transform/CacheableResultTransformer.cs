@@ -19,11 +19,12 @@ namespace NHibernate.Transform
 		// is private (as it should be for a singleton)
 		//private const PassThroughResultTransformer ACTUAL_TRANSFORMER =
 		//    PassThroughResultTransformer.INSTANCE;
-		private readonly PassThroughResultTransformer _actualTransformer = new PassThroughResultTransformer();
+		private readonly PassThroughResultTransformer _actualTransformer = PassThroughResultTransformer.Instance;
 
 		public bool AutoDiscoverTypes { get; }
 
 		private readonly SqlString _autoDiscoveredQuery;
+		private readonly bool _skipTransformer;
 		private int _tupleLength;
 		private int _tupleSubsetLength;
 
@@ -60,12 +61,23 @@ namespace NHibernate.Transform
 		/// <returns>a CacheableResultTransformer that is used to transform
 		///    tuples to a value(s) that can be cached.</returns>
 		// Since v5.1
-		[Obsolete("Please use overload with autoDiscoverTypes parameter.")]
+		[Obsolete("Please use overload with skipTransformer parameter.")]
 		public static CacheableResultTransformer Create(IResultTransformer transformer,
 		                                                string[] aliases,
 		                                                bool[] includeInTuple)
 		{
 			return Create(transformer, aliases, includeInTuple, false, null);
+		}
+
+		// Since 5.2
+		[Obsolete("Please use overload with skipTransformer parameter.")]
+		public static CacheableResultTransformer Create(
+			IResultTransformer transformer, string[] aliases, bool[] includeInTuple, bool autoDiscoverTypes,
+			SqlString autoDiscoveredQuery)
+		{
+			return autoDiscoverTypes
+				? Create(autoDiscoveredQuery)
+				: Create(includeInTuple, GetIncludeInTransform(transformer, aliases, includeInTuple), false);
 		}
 
 		/// <summary>
@@ -84,15 +96,25 @@ namespace NHibernate.Transform
 		/// <param name="autoDiscoverTypes">Indicates if types auto-discovery is enabled.</param>
 		/// <param name="autoDiscoveredQuery">If <paramref name="autoDiscoverTypes"/>, the query for which they
 		/// will be autodiscovered.</param>
+		/// <param name="skipTransformer">If true cache results untransformed.</param>
 		/// <returns>a CacheableResultTransformer that is used to transform
 		///    tuples to a value(s) that can be cached.</returns>
 		public static CacheableResultTransformer Create(
-			IResultTransformer transformer, string[] aliases, bool[] includeInTuple, bool autoDiscoverTypes,
-			SqlString autoDiscoveredQuery)
+			IResultTransformer transformer,
+			string[] aliases,
+			bool[] includeInTuple,
+			bool autoDiscoverTypes,
+			SqlString autoDiscoveredQuery,
+			bool skipTransformer)
 		{
 			return autoDiscoverTypes
 				? Create(autoDiscoveredQuery)
-				: Create(includeInTuple, GetIncludeInTransform(transformer, aliases, includeInTuple));
+				: Create(
+					includeInTuple,
+					skipTransformer
+						? null
+						: GetIncludeInTransform(transformer, aliases, includeInTuple),
+					skipTransformer);
 		}
 
 		/// <summary>
@@ -106,11 +128,12 @@ namespace NHibernate.Transform
 		///   must be non-null</param>
 		/// <param name="includeInTransform">Indexes that are included in the transformation.
 		/// <c>null</c> if all elements in the tuple are included.</param>
+		/// <param name="skipTransformer"></param>
 		/// <returns>a CacheableResultTransformer that is used to transform
 		///    tuples to a value(s) that can be cached.</returns>
-		private static CacheableResultTransformer Create(bool[] includeInTuple, bool[] includeInTransform)
+		private static CacheableResultTransformer Create(bool[] includeInTuple, bool[] includeInTransform, bool skipTransformer)
 		{
-			return new CacheableResultTransformer(includeInTuple, includeInTransform);
+			return new CacheableResultTransformer(includeInTuple, includeInTransform, skipTransformer);
 		}
 
 		private static CacheableResultTransformer Create(SqlString autoDiscoveredQuery)
@@ -136,8 +159,9 @@ namespace NHibernate.Transform
 			return resultTransformer.IncludeInTransform(aliases, tupleLength);
 		}
 
-		private CacheableResultTransformer(bool[] includeInTuple, bool[] includeInTransform)
+		private CacheableResultTransformer(bool[] includeInTuple, bool[] includeInTransform, bool skipTransformer)
 		{
+			_skipTransformer = skipTransformer;
 			InitializeTransformer(includeInTuple, includeInTransform);
 		}
 
@@ -212,7 +236,7 @@ namespace NHibernate.Transform
 			if (_includeInTuple == null)
 				throw new InvalidOperationException("This transformer is not initialized");
 
-			if (!HasSameParameters(Create(transformer, aliases, includeInTuple, false, null)))
+			if (!HasSameParameters(Create(transformer, aliases, includeInTuple, false, null, _skipTransformer)))
 			{
 				throw new InvalidOperationException(
 					"this CacheableResultTransformer is inconsistent with specified arguments; cannot re-transform"
@@ -220,7 +244,11 @@ namespace NHibernate.Transform
 			}
 			bool requiresRetransform = true;
 			string[] aliasesToUse = aliases == null ? null : Index(aliases);
-			if (transformer.Equals(_actualTransformer))
+
+			if (_skipTransformer)
+			{
+			}
+			else if (transformer.Equals(_actualTransformer))
 			{
 				requiresRetransform = false;
 			}
@@ -244,7 +272,6 @@ namespace NHibernate.Transform
 
 			return transformedResults;
 		}
-
 
 		/// <summary>
 		/// Untransforms, if necessary, a List of values previously
@@ -283,12 +310,10 @@ namespace NHibernate.Transform
 						results[i], _tupleSubsetLength == 1);
 					results[i] = Unindex(tuple);
 				}
-
 			}
 
 			return results;
 		}
-
 
 		/// <summary>
 		/// Returns the result types for the transformed value.
@@ -302,12 +327,10 @@ namespace NHibernate.Transform
 				       : tupleResultTypes;
 		}
 
-
 		public IList TransformList(IList list)
 		{
 			return list;
 		}
-
 
 		/// <summary>
 		/// "Compact" the given array by picking only the elements identified by
@@ -329,7 +352,6 @@ namespace NHibernate.Transform
 			}
 			return objectsIndexed;
 		}
-
 
 		/// <summary>
 		/// Expand the given array by putting each of its elements at the
@@ -358,14 +380,14 @@ namespace NHibernate.Transform
 			if (this == o)
 				return true;
 
-			if (o == null || typeof (CacheableResultTransformer) != o.GetType())
+			if (o == null || GetType() != o.GetType())
 				return false;
 
 			var that = (CacheableResultTransformer) o;
 
 			// Auto-discovery does not allow distinguishing by transformer: just compare their queries
 			if (AutoDiscoverTypes && that.AutoDiscoverTypes)
-				return _autoDiscoveredQuery == that._autoDiscoveredQuery;
+				return Equals(_autoDiscoveredQuery, that._autoDiscoveredQuery);
 
 			return HasSameParameters(that);
 		}

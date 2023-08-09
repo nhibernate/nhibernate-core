@@ -4,8 +4,9 @@ using System.Data;
 using System.Data.Common;
 using System.Runtime.Serialization;
 using System.Security;
-
+using NHibernate.Connection;
 using NHibernate.Engine;
+using NHibernate.Impl;
 
 namespace NHibernate.AdoNet
 {
@@ -19,6 +20,7 @@ namespace NHibernate.AdoNet
 	[Serializable]
 	public partial class ConnectionManager : ISerializable, IDeserializationCallback
 	{
+		private readonly IConnectionAccess _connectionAccess;
 		private static readonly INHibernateLogger _log = NHibernateLogger.For(typeof(ConnectionManager));
 
 		[NonSerialized]
@@ -78,7 +80,8 @@ namespace NHibernate.AdoNet
 			DbConnection suppliedConnection,
 			ConnectionReleaseMode connectionReleaseMode,
 			IInterceptor interceptor,
-			bool shouldAutoJoinTransaction)
+			bool shouldAutoJoinTransaction,
+			IConnectionAccess connectionAccess)
 		{
 			Session = session;
 			_connection = suppliedConnection;
@@ -89,6 +92,18 @@ namespace NHibernate.AdoNet
 
 			_ownConnection = suppliedConnection == null;
 			ShouldAutoJoinTransaction = shouldAutoJoinTransaction;
+			_connectionAccess = connectionAccess ?? throw new ArgumentNullException(nameof(connectionAccess));
+		}
+
+		//Since 5.3
+		[Obsolete("Use overload with connectionAccess parameter")]
+		public ConnectionManager(
+			ISessionImplementor session,
+			DbConnection suppliedConnection,
+			ConnectionReleaseMode connectionReleaseMode,
+			IInterceptor interceptor,
+			bool shouldAutoJoinTransaction) : this(session, suppliedConnection, connectionReleaseMode, interceptor, shouldAutoJoinTransaction, new NonContextualConnectionAccess(session.Factory))
+		{
 		}
 
 		public void AddDependentSession(ISessionImplementor session)
@@ -148,7 +163,7 @@ namespace NHibernate.AdoNet
 			if (_backupConnection != null)
 			{
 				_log.Warn("Backup connection was still defined at time of closing.");
-				Factory.ConnectionProvider.CloseConnection(_backupConnection);
+				_connectionAccess.CloseConnection(_backupConnection);
 				_backupConnection = null;
 			}
 
@@ -205,10 +220,23 @@ namespace NHibernate.AdoNet
 
 		private void CloseConnection()
 		{
-			Factory.ConnectionProvider.CloseConnection(_connection);
+			_connectionAccess.CloseConnection(_connection);
 			_connection = null;
 		}
 
+		/// <summary>
+		/// Get a new opened connection. The caller is responsible for closing it.
+		/// </summary>
+		/// <returns>An opened connection.</returns>
+		public DbConnection GetNewConnection()
+		{
+			return _connectionAccess.GetConnection();
+		}
+
+		/// <summary>
+		/// Get the managed connection.
+		/// </summary>
+		/// <returns>An opened connection.</returns>
 		public DbConnection GetConnection()
 		{
 			if (!_allowConnectionUsage)
@@ -239,7 +267,7 @@ namespace NHibernate.AdoNet
 			{
 				if (_ownConnection)
 				{
-					_connection = Factory.ConnectionProvider.GetConnection();
+					_connection = GetNewConnection();
 					// Will fail if the connection is already enlisted in another transaction.
 					// Probable case: nested transaction scope with connection auto-enlistment enabled.
 					// That is an user error.
@@ -362,6 +390,7 @@ namespace NHibernate.AdoNet
 			_connectionReleaseMode =
 				(ConnectionReleaseMode)info.GetValue("connectionReleaseMode", typeof(ConnectionReleaseMode));
 			_interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
+			_connectionAccess = (IConnectionAccess) info.GetValue("connectionAccess", typeof(IConnectionAccess));
 		}
 
 		[SecurityCritical]
@@ -371,6 +400,7 @@ namespace NHibernate.AdoNet
 			info.AddValue("session", Session, typeof(ISessionImplementor));
 			info.AddValue("connectionReleaseMode", _connectionReleaseMode, typeof(ConnectionReleaseMode));
 			info.AddValue("interceptor", _interceptor, typeof(IInterceptor));
+			info.AddValue("connectionAccess", _connectionAccess, typeof(IConnectionAccess));
 		}
 
 		#endregion
@@ -386,27 +416,41 @@ namespace NHibernate.AdoNet
 
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
 		{
-			Transaction.Begin(isolationLevel);
+			EnsureTransactionIsCreated();
+			_transaction.Begin(isolationLevel);
 			return _transaction;
 		}
 
 		public ITransaction BeginTransaction()
 		{
-			Transaction.Begin();
+			EnsureTransactionIsCreated();
+			_transaction.Begin();
 			return _transaction;
 		}
 
+		private void EnsureTransactionIsCreated()
+		{
+			if (_transaction == null)
+			{
+				_transaction = Factory.TransactionFactory.CreateTransaction(Session);
+			}
+		}
+
+		// Since v5.3
+		[Obsolete("Use CurrentTransaction instead, and check for null.")]
 		public ITransaction Transaction
 		{
 			get
 			{
-				if (_transaction == null)
-				{
-					_transaction = Factory.TransactionFactory.CreateTransaction(Session);
-				}
+				EnsureTransactionIsCreated();
 				return _transaction;
 			}
 		}
+
+		/// <summary>
+		/// The current transaction if any is ongoing, else <see langword="null" />.
+		/// </summary>
+		public ITransaction CurrentTransaction => _transaction;
 
 		public void AfterNonTransactionalQuery(bool success)
 		{
@@ -444,8 +488,30 @@ namespace NHibernate.AdoNet
 		public DbCommand CreateCommand()
 		{
 			var result = GetConnection().CreateCommand();
-			Transaction.Enlist(result);
+			EnlistInTransaction(result);
 			return result;
+		}
+
+		/// <summary>
+		/// Enlist a command in the current transaction, if any.
+		/// </summary>
+		/// <param name="command">The command to enlist.</param>
+		public void EnlistInTransaction(DbCommand command)
+		{
+			if (command == null)
+				throw new ArgumentNullException(nameof(command));
+
+			if (_transaction != null)
+			{
+				_transaction.Enlist(command);
+				return;
+			}
+
+			if (command.Transaction != null)
+			{
+				_log.Warn("set a nonnull DbCommand.Transaction to null because the Session had no Transaction");
+				command.Transaction = null;
+			}
 		}
 
 		/// <summary>

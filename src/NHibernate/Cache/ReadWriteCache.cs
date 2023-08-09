@@ -1,8 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cache.Access;
+using NHibernate.Util;
 
 namespace NHibernate.Cache
 {
@@ -34,10 +34,18 @@ namespace NHibernate.Cache
 
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ReadWriteCache));
 
-		private readonly object _lockObject = new object();
-		// 6.0 TODO: remove
 		private CacheBase _cache;
 		private int _nextLockId;
+		private readonly ICacheLock _asyncReaderWriterLock;
+
+		public ReadWriteCache() : this(new AsyncReaderWriterLock())
+		{
+		}
+
+		public ReadWriteCache(ICacheLock locker)
+		{
+			_asyncReaderWriterLock = locker;
+		}
 
 		/// <summary>
 		/// Gets the cache region name.
@@ -53,10 +61,7 @@ namespace NHibernate.Cache
 #pragma warning restore 618
 		{
 			get { return _cache; }
-			set
-			{
-				_cache = value as CacheBase ?? new ObsoleteCacheWrapper(value);
-			}
+			set { _cache = value?.AsCacheBase(); }
 		}
 
 		// 6.0 TODO: make implicit and switch to auto-property
@@ -100,7 +105,7 @@ namespace NHibernate.Cache
 		/// </remarks>
 		public object Get(CacheKey key, long txTimestamp)
 		{
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.ReadLock())
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -128,7 +133,7 @@ namespace NHibernate.Cache
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
 			var result = new object[keys.Length];
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.ReadLock())
 			{
 				var lockables = _cache.GetMany(keys);
 				for (var i = 0; i < lockables.Length; i++)
@@ -171,7 +176,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public ISoftLock Lock(CacheKey key, object version)
 		{
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -214,7 +219,7 @@ namespace NHibernate.Cache
 				return result;
 			}
 
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -283,7 +288,7 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -335,7 +340,7 @@ namespace NHibernate.Cache
 
 		public void Release(CacheKey key, ISoftLock clientLock)
 		{
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -384,14 +389,10 @@ namespace NHibernate.Cache
 
 		public void Destroy()
 		{
-			try
-			{
-				Cache.Destroy();
-			}
-			catch (Exception e)
-			{
-				log.Warn(e, "Could not destroy cache");
-			}
+			// The cache is externally provided and may be shared. Destroying the cache is
+			// not the responsibility of this class.
+			Cache = null;
+			_asyncReaderWriterLock.Dispose();
 		}
 
 		/// <summary>
@@ -400,7 +401,7 @@ namespace NHibernate.Cache
 		/// </summary>
 		public bool AfterUpdate(CacheKey key, object value, object version, ISoftLock clientLock)
 		{
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -446,7 +447,7 @@ namespace NHibernate.Cache
 
 		public bool AfterInsert(CacheKey key, object value, object version)
 		{
-			lock (_lockObject)
+			using (_asyncReaderWriterLock.WriteLock())
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -456,7 +457,6 @@ namespace NHibernate.Cache
 				var lockValue = _cache.Lock(key);
 				try
 				{
-					
 					ILockable lockable = (ILockable) Cache.Get(key);
 					if (lockable == null)
 					{

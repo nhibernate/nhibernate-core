@@ -372,6 +372,17 @@ namespace NHibernate.Test.Linq
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
 
+		[Test(Description = "GH-2471")]
+		public void TimeSheetsWithStringContainsSubQueryWithAsQueryableAfterWhere()
+		{
+			var query = (
+				from timesheet in db.Timesheets
+				where timesheet.Entries.Where(e => e.Comments != null).AsQueryable().Any(e => e.Comments.Contains("testing"))
+				select timesheet).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
 		[Test(Description = "NH-3002")]
 		public void HqlOrderLinesWithInnerJoinAndSubQuery()
 		{
@@ -739,7 +750,6 @@ where c.Order.Customer.CustomerId = 'VINET'
 			Assert.That(result.Count, Is.EqualTo(13));
 		}
 
-
 		[Test(Description = "NH-3423")]
 		public void NullComparedToNewExpressionInWhereClause()
 		{
@@ -777,6 +787,31 @@ where c.Order.Customer.CustomerId = 'VINET'
 				.ToList();
 
 			Assert.That(result.Count, Is.EqualTo(45));
+		}
+
+		public class Specification<T>
+		{
+			private Expression<Func<T, bool>> _expression;
+
+			public Specification(Expression<Func<T, bool>> expression)
+			{
+				_expression = expression;
+			}
+
+			public static implicit operator Expression<Func<T, bool>>(Specification<T> specification)
+			{
+				return specification._expression;
+			}
+		}
+
+		[Test]
+		public void ImplicitConversionInsideWhereSubqueryExpression()
+		{
+			if (!Dialect.SupportsScalarSubSelects)
+				Assert.Ignore(Dialect.GetType().Name + " does not support scalar sub-queries");
+
+			var spec = new Specification<Order>(x => x.Freight > 1000);
+			db.Orders.Where(o => db.Orders.Where(spec).Any(x => x.OrderId == o.OrderId)).ToList();
 		}
 	}
 }

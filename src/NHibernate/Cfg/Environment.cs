@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Reflection;
 
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
 using NHibernate.Engine;
 using NHibernate.Linq;
+using NHibernate.Linq.Visitors;
+using NHibernate.MultiTenancy;
 using NHibernate.Util;
 
 namespace NHibernate.Cfg
@@ -123,6 +124,10 @@ namespace NHibernate.Cfg
 		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string OutputStylesheet = "xml.output_stylesheet";
 
+		/// <summary>
+		/// The class name of a custom <see cref="Transaction.ITransactionFactory"/> implementation. Defaults to the
+		/// built-in <see cref="Transaction.AdoNetWithSystemTransactionFactory" />.
+		/// </summary>
 		public const string TransactionStrategy = "transaction.factory_class";
 		/// <summary>
 		/// <para>Timeout duration in milliseconds for the system transaction completion lock.</para>
@@ -144,6 +149,14 @@ namespace NHibernate.Cfg
 		/// transaction preparation, while still benefiting from <see cref="FlushMode.Auto"/> on querying.
 		/// </summary>
 		public const string UseConnectionOnSystemTransactionPrepare = "transaction.use_connection_on_system_prepare";
+		/// <summary>
+		/// Should sessions check on every operation whether there is an ongoing system transaction or not, and enlist
+		/// into it if any? Default is <see langword="true"/>. It can also be controlled at session opening, see
+		/// <see cref="ISessionFactory.WithOptions" />. A session can also be instructed to explicitly join the current
+		/// transaction by calling <see cref="ISession.JoinTransaction" />. This setting has no effect when using a
+		/// transaction factory that is not system transactions aware.
+		/// </summary>
+		public const string AutoJoinTransaction = "transaction.auto_join";
 
 		// Since v5.0.1
 		[Obsolete("This setting has no usages and will be removed in a future version")]
@@ -152,6 +165,7 @@ namespace NHibernate.Cfg
 		public const string CacheProvider = "cache.provider_class";
 		public const string UseQueryCache = "cache.use_query_cache";
 		public const string QueryCacheFactory = "cache.query_cache_factory";
+		public const string CacheReadWriteLockFactory = "cache.read_write_lock_factory";
 		public const string UseSecondLevelCache = "cache.use_second_level_cache";
 		public const string CacheRegionPrefix = "cache.region_prefix";
 		public const string UseMinimalPuts = "cache.use_minimal_puts";
@@ -182,6 +196,12 @@ namespace NHibernate.Cfg
 		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string QueryImports = "query.imports";
 		public const string Hbm2ddlAuto = "hbm2ddl.auto";
+
+		// 6.0 TODO default should become true
+		/// <summary>
+		/// Whether to throw or not on schema auto-update failures. <c>false</c> by default.
+		/// </summary>
+		public const string Hbm2ddlThrowOnUpdate = "hbm2ddl.throw_on_update";
 		public const string Hbm2ddlKeyWords = "hbm2ddl.keywords";
 
 		public const string SqlExceptionConverter = "sql_exception_converter";
@@ -215,6 +235,48 @@ namespace NHibernate.Cfg
 
 		public const string LinqToHqlGeneratorsRegistry = "linqtohql.generatorsregistry";
 
+		/// <summary>
+		/// Whether to use the legacy pre-evaluation or not in Linq queries. <c>true</c> by default.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Legacy pre-evaluation is causing special properties or functions like <c>DateTime.Now</c> or
+		/// <c>Guid.NewGuid()</c> to be always evaluated with the .Net runtime and replaced in the query by
+		/// parameter values.
+		/// </para>
+		/// <para>
+		/// The new pre-evaluation allows them to be converted to HQL function calls which will be run on the db
+		/// side. This allows for example to retrieve the server time instead of the client time, or to generate
+		/// UUIDs for each row instead of an unique one for all rows. (This does not happen if the dialect does
+		/// not support the required HQL function.)
+		/// </para>
+		/// <para>
+		/// The new pre-evaluation will likely be enabled by default in the next major version (6.0).
+		/// </para>
+		/// </remarks>
+		public const string LinqToHqlLegacyPreEvaluation = "linqtohql.legacy_preevaluation";
+
+		/// <summary>
+		/// When the new pre-evaluation is enabled, should methods which translation is not supported by the current
+		/// dialect fallback to pre-evaluation? <c>false</c> by default.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// When this fallback option is enabled while legacy pre-evaluation is disabled, properties or functions
+		/// like <c>DateTime.Now</c> or <c>Guid.NewGuid()</c> used in Linq expressions will not fail when the dialect does not
+		/// support them, but will instead be pre-evaluated.
+		/// </para>
+		/// <para>
+		/// When this fallback option is disabled while legacy pre-evaluation is disabled, properties or functions
+		/// like <c>DateTime.Now</c> or <c>Guid.NewGuid()</c> used in Linq expressions will fail when the dialect does not
+		/// support them.
+		/// </para>
+		/// <para>
+		/// This option has no effect if the legacy pre-evaluation is enabled.
+		/// </para>
+		/// </remarks>
+		public const string LinqToHqlFallbackOnPreEvaluation = "linqtohql.fallback_on_preevaluation";
+
 		/// <summary> Enable ordering of insert statements for the purpose of more efficient batching.</summary>
 		public const string OrderInserts = "order_inserts";
 
@@ -222,6 +284,11 @@ namespace NHibernate.Cfg
 		public const string OrderUpdates = "order_updates";
 
 		public const string QueryModelRewriterFactory = "query.query_model_rewriter_factory";
+
+		/// <summary>
+		/// The class name of the LINQ query pre-transformer registrar, implementing <see cref="IExpressionTransformerRegistrar"/>.
+		/// </summary>
+		public const string PreTransformerRegistrar = "query.pre_transformer_registrar";
 
 		/// <summary>
 		/// Set the default length used in casting when the target type is length bound and
@@ -267,6 +334,20 @@ namespace NHibernate.Cfg
 		public const string OracleUseNPrefixedTypesForUnicode = "oracle.use_n_prefixed_types_for_unicode";
 
 		/// <summary>
+		/// Oracle 10g introduced BINARY_DOUBLE and BINARY_FLOAT types which are compatible with .NET
+		/// <see cref="double"/> and <see cref="float"/> types, where FLOAT and DOUBLE are not. Oracle
+		/// FLOAT and DOUBLE types do not conform to the IEEE standard as they are internally implemented as
+		/// NUMBER type, which makes them an exact numeric type.
+		/// <para>
+		/// <see langword="false"/> by default.
+		/// </para>
+		/// </summary>
+		/// <remarks>
+		/// See https://docs.oracle.com/database/121/TTSQL/types.htm#TTSQL126
+		/// </remarks>
+		public const string OracleUseBinaryFloatingPointTypes = "oracle.use_binary_floating_point_types";
+
+		/// <summary>
 		/// <para>
 		/// Firebird with FirebirdSql.Data.FirebirdClient may be unable to determine the type
 		/// of parameters in many circumstances, unless they are explicitly casted in the SQL
@@ -305,6 +386,16 @@ namespace NHibernate.Cfg
 		public const string TrackSessionId = "track_session_id";
 
 		private static readonly Dictionary<string, string> GlobalProperties = new Dictionary<string, string>();
+
+		/// <summary>
+		/// Strategy for multi-tenancy.</summary>
+		/// See also <seealso cref="MultiTenancyStrategy"/>
+		public const string MultiTenancy = "multi_tenancy.strategy";
+
+		/// <summary>
+		/// Connection provider for given multi-tenancy strategy. Class name implementing IMultiTenancyConnectionProvider.
+		/// </summary>
+		public const string MultiTenancyConnectionProvider = "multi_tenancy.connection_provider";
 
 		private static IBytecodeProvider BytecodeProviderInstance;
 		private static bool EnableReflectionOptimizer;
@@ -370,19 +461,10 @@ namespace NHibernate.Cfg
 
 		private static IHibernateConfiguration GetHibernateConfiguration()
 		{
-			object config = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName);
-			if (config == null)
+			var nhConfig = ConfigurationProvider.Current.GetConfiguration();
+			if (nhConfig == null && log.IsInfoEnabled())
 			{
 				log.Info("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName);
-				return null;
-			}
-
-			var nhConfig = config as IHibernateConfiguration;
-			if (nhConfig == null)
-			{
-				log.Info(
-					"{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored",
-					CfgXmlHelper.CfgSectionName);
 			}
 
 			return nhConfig;
@@ -395,6 +477,8 @@ namespace NHibernate.Cfg
 		/// <remarks>
 		/// This is the replacement for hibernate.properties
 		/// </remarks>
+		//Since v5.3
+		[Obsolete("This property is not used and will be removed in a future version.")]
 		public static IDictionary<string, string> Properties
 		{
 			get { return new Dictionary<string, string>(GlobalProperties); }
@@ -552,7 +636,6 @@ namespace NHibernate.Cfg
 			}
 		}
 
-
 		/// <summary>
 		/// Get a named connection string, if configured.
 		/// </summary>
@@ -562,17 +645,12 @@ namespace NHibernate.Cfg
 		/// </exception>
 		internal static string GetNamedConnectionString(IDictionary<string, string> settings)
 		{
-			string connStringName;
-			if (!settings.TryGetValue(ConnectionStringName, out connStringName))
+			if (!settings.TryGetValue(ConnectionStringName, out var connStringName))
 				return null;
 
-			ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings[connStringName];
-			if (connectionStringSettings == null)
-				throw new HibernateException($"Could not find named connection string '{connStringName}'.");
-
-			return connectionStringSettings.ConnectionString;
+			return ConfigurationProvider.Current.GetNamedConnectionString(connStringName)
+			       ?? throw new HibernateException($"Could not find named connection string '{connStringName}'.");
 		}
-
 
 		/// <summary>
 		/// Get the configured connection string, from <see cref="ConnectionString"/> if that

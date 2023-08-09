@@ -53,6 +53,9 @@ namespace NHibernate.Proxy
 
 		public bool Equals(ProxyCacheEntry other)
 		{
+			if (ReferenceEquals(this, other))
+				return true;
+
 			if (ReferenceEquals(null, other) ||
 				// hashcode inequality allows an early exit, but their equality is not enough for guaranteeing instances equality.
 				_hashCode != other._hashCode ||

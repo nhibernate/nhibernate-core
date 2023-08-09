@@ -1,10 +1,14 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Text;
 using NHibernate.Dialect.Function;
+using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Dialect
@@ -25,7 +29,6 @@ namespace NHibernate.Dialect
 		/// </summary>
 		private bool _binaryGuid = true;
 
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -39,30 +42,48 @@ namespace NHibernate.Dialect
 
 		protected virtual void RegisterColumnTypes()
 		{
+			// SQLite really has only five types, and a very lax typing system, see https://www.sqlite.org/datatype3.html
+			// Please do not map (again) fancy types that do not actually exist in SQLite, as this is kind of supported by
+			// SQLite but creates bugs in convert operations.
 			RegisterColumnType(DbType.Binary, "BLOB");
-			RegisterColumnType(DbType.Byte, "TINYINT");
-			RegisterColumnType(DbType.Int16, "SMALLINT");
-			RegisterColumnType(DbType.Int32, "INT");
-			RegisterColumnType(DbType.Int64, "BIGINT");
+			RegisterColumnType(DbType.Byte, "INTEGER");
+			RegisterColumnType(DbType.Int16, "INTEGER");
+			RegisterColumnType(DbType.Int32, "INTEGER");
+			RegisterColumnType(DbType.Int64, "INTEGER");
 			RegisterColumnType(DbType.SByte, "INTEGER");
 			RegisterColumnType(DbType.UInt16, "INTEGER");
 			RegisterColumnType(DbType.UInt32, "INTEGER");
 			RegisterColumnType(DbType.UInt64, "INTEGER");
-			RegisterColumnType(DbType.Currency, "NUMERIC");
-			RegisterColumnType(DbType.Decimal, "NUMERIC");
-			RegisterColumnType(DbType.Double, "DOUBLE");
-			RegisterColumnType(DbType.Single, "DOUBLE");
-			RegisterColumnType(DbType.VarNumeric, "NUMERIC");
+
+			// NUMERIC and REAL are almost the same, they are binary floating point numbers. There is only a slight difference
+			// for values without a floating part. They will be represented as integers with numeric, but still as floating
+			// values with real. The side-effect of this is numeric being able of storing exactly bigger integers than real.
+			// But it also creates bugs in division, when dividing two numeric happening to be integers, the result is then
+			// never fractional. So we use "REAL" for all.
+			RegisterColumnType(DbType.Currency, "REAL");
+			RegisterColumnType(DbType.Decimal, "REAL");
+			RegisterColumnType(DbType.Double, "REAL");
+			RegisterColumnType(DbType.Single, "REAL");
+			RegisterColumnType(DbType.VarNumeric, "REAL");
+
 			RegisterColumnType(DbType.AnsiString, "TEXT");
 			RegisterColumnType(DbType.String, "TEXT");
 			RegisterColumnType(DbType.AnsiStringFixedLength, "TEXT");
 			RegisterColumnType(DbType.StringFixedLength, "TEXT");
 
-			RegisterColumnType(DbType.Date, "DATE");
-			RegisterColumnType(DbType.DateTime, "DATETIME");
-			RegisterColumnType(DbType.Time, "TIME");
-			RegisterColumnType(DbType.Boolean, "BOOL");
-			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
+			// https://www.sqlite.org/datatype3.html#boolean_datatype
+			RegisterColumnType(DbType.Boolean, "INTEGER");
+
+			// See https://www.sqlite.org/datatype3.html#date_and_time_datatype, we have three choices for date and time
+			// The one causing the less issues in case of an explicit cast is text. Beware, System.Data.SQLite has an
+			// internal use only "DATETIME" type. Using it causes it to directly convert the text stored into SQLite to
+			// a .Net DateTime, but also causes columns in SQLite to have numeric affinity and convert to destroy the
+			// value. As said in their chm documentation, this "DATETIME" type is for System.Data.SQLite internal use only.
+			RegisterColumnType(DbType.Date, "TEXT");
+			RegisterColumnType(DbType.DateTime, "TEXT");
+			RegisterColumnType(DbType.Time, "TEXT");
+
+			RegisterColumnType(DbType.Guid, _binaryGuid ? "BLOB" : "TEXT");
 		}
 
 		protected virtual void RegisterFunctions()
@@ -75,24 +96,28 @@ namespace NHibernate.Dialect
 			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%m', ?1) as int)"));
 			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(strftime('%Y', ?1) as int)"));
 			// Uses local time like MSSQL and PostgreSQL.
-			RegisterFunction("current_timestamp", new SQLFunctionTemplate(NHibernateUtil.DateTime, "datetime(current_timestamp, 'localtime')"));
+			RegisterFunction("current_timestamp", new SQLFunctionTemplate(NHibernateUtil.LocalDateTime, "datetime(current_timestamp, 'localtime')"));
+			RegisterFunction("current_utctimestamp", new SQLFunctionTemplate(NHibernateUtil.UtcDateTime, "datetime(current_timestamp)"));
 			// The System.Data.SQLite driver stores both Date and DateTime as 'YYYY-MM-DD HH:MM:SS'
 			// The SQLite date() function returns YYYY-MM-DD, which unfortunately SQLite does not consider
 			// as equal to 'YYYY-MM-DD 00:00:00'.  Because of this, it is best to return the
 			// 'YYYY-MM-DD 00:00:00' format for the date function.
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "datetime(date(?1))"));
+			// SQLite has current_date, but as current_timestamp, it is in UTC. So converting the timestamp to
+			// localtime then to date then, like the above date function, go back to datetime format for comparisons
+			// sake.
+			RegisterFunction("current_date", new SQLFunctionTemplate(NHibernateUtil.LocalDate, "datetime(date(current_timestamp, 'localtime'))"));
 
 			RegisterFunction("substring", new StandardSQLFunction("substr", NHibernateUtil.String));
 			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
 			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.Character));
+			RegisterFunction("locate", new LocateFunction());
 
-			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
+			RegisterFunction("mod", new ModulusFunctionTemplate(false));
 
-			RegisterFunction("iif", new SQLFunctionTemplate(null, "case when ?1 then ?2 else ?3 end"));
-
-			RegisterFunction("cast", new SQLiteCastFunction());
+			RegisterFunction("iif", new IifSQLFunction());
 
 			RegisterFunction("round", new StandardSQLFunction("round"));
 
@@ -106,9 +131,18 @@ namespace NHibernate.Dialect
 			if (_binaryGuid)
 				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "substr(hex(?1), 7, 2) || substr(hex(?1), 5, 2) || substr(hex(?1), 3, 2) || substr(hex(?1), 1, 2) || '-' || substr(hex(?1), 11, 2) || substr(hex(?1), 9, 2) || '-' || substr(hex(?1), 15, 2) || substr(hex(?1), 13, 2) || '-' || substr(hex(?1), 17, 4) || '-' || substr(hex(?1), 21) "));
 			else
-				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as char)"));
-		}
+				RegisterFunction("strguid", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as text)"));
 
+			// SQLite random function yields a long, ranging form MinValue to MaxValue. (-9223372036854775808 to
+			// 9223372036854775807). HQL random requires a float from 0 inclusive to 1 exclusive, so we divide by
+			// 9223372036854775808 then 2 for having a value between -0.5 included to 0.5 excluded, and finally
+			// add 0.5. The division is written as "/ 4611686018427387904 / 4" for avoiding overflowing long.
+			RegisterFunction(
+				"random",
+				new SQLFunctionTemplate(
+					NHibernateUtil.Double,
+					"(cast(random() as real) / 4611686018427387904 / 4 + 0.5)"));
+		}
 
 		public override void Configure(IDictionary<string, string> settings)
 		{
@@ -116,7 +150,8 @@ namespace NHibernate.Dialect
 
 			ConfigureBinaryGuid(settings);
 
-			// Re-register functions depending on settings.
+			// Re-register functions and types depending on settings.
+			RegisterColumnTypes();
 			RegisterFunctions();
 		}
 
@@ -327,6 +362,9 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
+		/// <inheritdoc />
+		public override bool IsDecimalStoredAsFloatingPointNumber => true;
+
 		public override string Qualify(string catalog, string schema, string table)
 		{
 			StringBuilder qualifiedName = new StringBuilder();
@@ -376,7 +414,6 @@ namespace NHibernate.Dialect
 			if (quoted)
 				return OpenQuote + name + CloseQuote;
 			return name;
-
 		}
 
 		public override string NoColumnsInsertString
@@ -471,15 +508,86 @@ namespace NHibernate.Dialect
 		/// <inheritdoc />
 		public override int MaxAliasLength => 128;
 
+		// Since v5.3
+		[Obsolete("This class has no usage in NHibernate anymore and will be removed in a future version. Use or extend CastFunction instead.")]
 		[Serializable]
 		protected class SQLiteCastFunction : CastFunction
 		{
+			// Since v5.3
+			[Obsolete("This method has no usages and will be removed in a future version")]
 			protected override bool CastingIsRequired(string sqlType)
 			{
-				// SQLite doesn't support casting to datetime types.  It assumes you want an integer and destroys the date string.
-				if (StringHelper.ContainsCaseInsensitive(sqlType, "date") || StringHelper.ContainsCaseInsensitive(sqlType, "time"))
+				if (StringHelper.ContainsCaseInsensitive(sqlType, "date") ||
+					StringHelper.ContainsCaseInsensitive(sqlType, "time"))
 					return false;
 				return true;
+			}
+		}
+
+		[Serializable]
+		private class LocateFunction : ISQLFunction, ISQLFunctionExtended
+		{
+			// Since v5.3
+			[Obsolete("Use GetReturnType method instead.")]
+			public IType ReturnType(IType columnType, IMapping mapping)
+			{
+				return NHibernateUtil.Int32;
+			}
+
+			/// <inheritdoc />
+			public IType GetReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+#pragma warning disable 618
+				return ReturnType(argumentTypes.FirstOrDefault(), mapping);
+#pragma warning restore 618
+			}
+
+			/// <inheritdoc />
+			public IType GetEffectiveReturnType(IEnumerable<IType> argumentTypes, IMapping mapping, bool throwOnError)
+			{
+				return GetReturnType(argumentTypes, mapping, throwOnError);
+			}
+
+			/// <inheritdoc />
+			public string Name => "instr";
+
+			public bool HasArguments => true;
+
+			public bool HasParenthesesIfNoArguments => true;
+
+			public SqlString Render(IList args, ISessionFactoryImplementor factory)
+			{
+				if (args.Count != 2 && args.Count != 3)
+				{
+					throw new QueryException("'locate' function takes 2 or 3 arguments. Provided count: " + args.Count);
+				}
+
+				if (args.Count == 2)
+				{
+					return new SqlString("instr(", args[1], ", ", args[0], ")");
+				}
+
+				var text = args[1];
+				var value = args[0];
+				var startIndex = args[2];
+				//ifnull(
+				//	nullif(
+				//		instr(substr(text, startIndex), value)
+				//		, 0)
+				//	+ startIndex -1
+				//, 0)
+				return
+					new SqlString(
+						"ifnull(nullif(instr(substr(",
+						text,
+						", ",
+						startIndex,
+						"), ",
+						value,
+						"), 0) + ",
+						startIndex,
+						" -1, 0)"
+					);
 			}
 		}
 	}

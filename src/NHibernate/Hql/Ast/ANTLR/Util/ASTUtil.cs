@@ -99,9 +99,39 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			return null;
 		}
 
+		//Since 5.3
+		[Obsolete("Use generic version instead")]
 		public static IList<IASTNode> CollectChildren(IASTNode root, FilterPredicate predicate)
 		{
-			return new CollectingNodeVisitor(predicate).Collect(root);
+			return new CollectingNodeVisitor<IASTNode>(predicate).Collect(root);
+		}
+
+		public static IList<TNode> CollectChildren<TNode>(IASTNode root, FilterPredicate predicate) where TNode : IASTNode
+		{
+			return new CollectingNodeVisitor<TNode>(predicate).Collect(root);
+		}
+
+		/// <summary>
+		/// Iterates over all children and sub-children and finds elements of required type.
+		/// </summary>
+		internal static IEnumerable<TRequiredType> IterateChildrenOfType<TRequiredType>(IASTNode root, Func<TRequiredType, bool> skipSearchInChildrenWhen)
+		{
+			foreach (var child in root)
+			{
+				var searchInChildren = true;
+				if (child is TRequiredType typedChild)
+				{
+					searchInChildren = !skipSearchInChildrenWhen(typedChild);
+					yield return typedChild;
+				}
+				if (searchInChildren)
+				{
+					foreach (var subChild in IterateChildrenOfType(child, skipSearchInChildrenWhen))
+					{
+						yield return subChild;
+					}
+				}
+			}
 		}
 	}
 }

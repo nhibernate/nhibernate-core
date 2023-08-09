@@ -34,14 +34,38 @@ namespace NHibernate.Cache.Entry
 			Version = version;
 		}
 
+		// Since 5.3
+		[Obsolete("Use the overload without unfetched parameter instead.")]
 		public static CacheEntry Create(object[] state, IEntityPersister persister, bool unfetched, object version,
 										ISessionImplementor session, object owner)
 		{
 			return new CacheEntry
 			{
 				//disassembled state gets put in a new array (we write to cache by value!)
-				DisassembledState = TypeHelper.Disassemble(state, persister.PropertyTypes, null, session, owner),
+				DisassembledState = TypeHelper.Disassemble(
+					state,
+					persister.PropertyTypes,
+					persister.IsLazyPropertiesCacheable ? null : persister.PropertyLaziness,
+					session,
+					owner),
 				AreLazyPropertiesUnfetched = unfetched || !persister.IsLazyPropertiesCacheable,
+				Subclass = persister.EntityName,
+				Version = version
+			};
+		}
+
+		public static CacheEntry Create(object[] state, IEntityPersister persister, object version,
+		                                ISessionImplementor session, object owner)
+		{
+			return new CacheEntry
+			{
+				//disassembled state gets put in a new array (we write to cache by value!)
+				DisassembledState = TypeHelper.Disassemble(
+					state,
+					persister.PropertyTypes,
+					persister.IsLazyPropertiesCacheable ? null : persister.PropertyLaziness,
+					session,
+					owner),
 				Subclass = persister.EntityName,
 				Version = version
 			};
@@ -63,8 +87,9 @@ namespace NHibernate.Cache.Entry
 			set => subclass = value;
 		}
 
-		// 6.0 TODO convert to auto-property
 		[DataMember]
+		// Since 5.3
+		[Obsolete("This property is not used and will be removed in a future version.")]
 		public bool AreLazyPropertiesUnfetched
 		{
 			get => lazyPropertiesAreUnfetched;

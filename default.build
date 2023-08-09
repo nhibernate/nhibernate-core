@@ -2,10 +2,11 @@
 <project 
 	name="NHibernate" 
 	default="build"
-	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd"
+	xmlns="http://nant.sf.net/release/0.90/nant.xsd"
 >
 
 	<property name="root.dir" value="." />
+	<property name="target.dir" value="net461" />
 
 	<include buildfile="${root.dir}/build-common/common.xml" />
 
@@ -20,14 +21,14 @@
 	</target>
 
 	<target name="nuget.set-properties">
-		<property name="nuget.nupackages.relative-dir" value="nuget_gallery" />
-		<property name="nuget.nupackages.dir" value="${build.dir}/${nuget.nupackages.relative-dir}" />
+		<property name="nuget.nupackages.dir" value="${build.dir}/nuget_gallery" />
 		<property name="nuget.nupackages.pushbatfile" value="${nuget.nupackages.dir}/NuGetPush.bat" />
 	</target>
 
 	<target name="build"
 		depends="init prepare-build-directory nuget.set-properties"
 		description="Builds NHibernate in the current configuration">
+		<property name="build.counter" value="" overwrite="false" />
 
 		<exec program="dotnet" verbose="true">
 			<arg value="msbuild" />
@@ -38,6 +39,8 @@
 			<arg value="/p:IncludeSymbols=&quot;True&quot;" />
 			<arg value="/p:IncludeSource=&quot;True&quot;" />
 			<arg value="/p:PackageOutputPath=&quot;${path::get-full-path(nuget.nupackages.dir)}&quot;" />
+			<!-- build.counter is not available by default. It needs to be exposed in Team City as system parameter system.build.counter with value %build.counter% -->
+			<arg value="/p:BuildNumber=&quot;${build.counter}&quot;" unless="${build.counter == ''}" />
 			<arg value="/t:Restore" />
 			<arg value="/t:Rebuild" />
 			<arg value="/v:q" />
@@ -45,7 +48,7 @@
 		</exec> 
 	</target>
 
-	<target name="solution-restore" depends="common.nuget-restore">
+	<target name="solution-restore" depends="common.tools-restore">
 		<exec program="dotnet" verbose="true">
 			<arg value="msbuild" />
 			<arg value="/t:Restore" />
@@ -53,24 +56,24 @@
 		</exec> 
 	</target>
 
-	<target name="get-nuget-package-path" depends="common.nuget-restore">
+	<target name="get-tool-info" depends="common.tools-restore">
 		<xmlpeek 
-			file="${tools.dir}/packages.config" 
-			xpath="/packages/package[@id = '${nuget-package-id}']/@version"
-			property="nuget-package-version" />
-		<property name="nuget-package-path" value="${tools.dir}/${nuget-package-id}.${nuget-package-version}/" />
+			file="${tools.dir}/packages.csproj" 
+			xpath="/Project/ItemGroup/PackageReference[@Include = '${tool.id}']/@Version"
+			property="tool.version" />
+		<property name="tool.path" value="${tools.dir}/${tool.id}/${tool.version}/" />
 	</target>
 
 	<target name="find-async-generator-console">
-		<property name="nuget-package-id" value="CSharpAsyncGenerator.CommandLine" />
-		<call target="get-nuget-package-path" />
-		<property name="async-generator-console"  value="${nuget-package-path}/tools/AsyncGenerator.CommandLine.exe" />
+		<property name="tool.id" value="CSharpAsyncGenerator.CommandLine" />
+		<call target="get-tool-info" />
+		<property name="async-generator-console"  value="${tool.path}tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll" />
 	</target>
 
-	<target name="generate-async" depends="common.nuget-restore solution-restore find-async-generator-console">
-		<exec
-			workingdir="${root.dir}/src"
-			program="${async-generator-console}" />
+	<target name="generate-async" depends="solution-restore find-async-generator-console">
+		<exec workingdir="${root.dir}/src" program="dotnet" verbose="true">
+			<arg line=".${async-generator-console}" />
+		</exec> 
 	</target>
 
 	<target name="put-connection-settings-into-defined-app-config">
@@ -144,19 +147,19 @@
 	</target>
 
 	<target name="put-connection-settings-into-app-config">
-		<property name="app.config" value="src/${test.file}/bin/${build.config}/net461/${test.file}.dll.config" />
+		<property name="app.config" value="src/${test.file}/bin/${build.config}/${target.dir}/${test.file}.dll.config" />
 		<call target="put-connection-settings-into-defined-app-config" />
 	</target>
 
 	<target name="find-nunit">
-		<property name="nuget-package-id" value="NUnit.ConsoleRunner" />
-		<call target="get-nuget-package-path" />
-		<property name="nunit-console" value="${nuget-package-path}/tools/nunit3-console.exe" />
+		<property name="tool.id" value="NUnit.Console" />
+		<call target="get-tool-info" />
+		<property name="nunit-console" value="${tools.dir}/NUnit.ConsoleRunner/${tool.version}/tools/nunit3-console.exe" />
 	</target>
 
 	<target name="run-tests" depends="find-nunit" description="Run NUnit tests">
 		<exec program="${nunit-console}" failonerror="${not property::exists(test.file + '.IgnoreFail')}">
-			<arg value="${root.dir}/src/${test.file}/bin/${build.config}/net461/${test.file}.dll" />
+			<arg value="${root.dir}/src/${test.file}/bin/${build.config}/${target.dir}/${test.file}.dll" />
 			<arg value="--result=${testresults.dir}/${test.file}.dll-results.xml;format=nunit2" />
 			<arg value="--teamcity" if="${property::exists('config.teamcity')}" />
 			<arg value="--x86" unless="${property::exists('nunit-x64')}" />
@@ -164,7 +167,7 @@
 	</target>
 
 	<target name="remove-connection-settings-from-app-config">
-		<property name="app.config" value="${root.dir}/src/${test.file}/bin/${build.config}/net461/${test.file}.dll.config" />
+		<property name="app.config" value="${root.dir}/src/${test.file}/bin/${build.config}/${target.dir}/${test.file}.dll.config" />
 
 		<xmlpoke
 			file="${app.config}"
@@ -246,7 +249,7 @@
 			</fileset>
 		</copy>
 		<copy todir="${bin-pack.required}">
-			<fileset basedir="${root.dir}/src/NHibernate/bin/${build.config}/net461/">
+			<fileset basedir="${root.dir}/src/NHibernate/bin/${build.config}/${target.dir}/">
 				<include name="Antlr3.Runtime.???" />
 				<include name="Iesi.Collections.???" />
 				<include name="NHibernate.???" />
@@ -263,7 +266,7 @@
 			</fileset>
 		</copy>
 		<copy todir="${bin-pack.tests}">
-			<fileset basedir="${root.dir}/src/NHibernate.Test/bin/${build.config}/net461">
+			<fileset basedir="${root.dir}/src/NHibernate.Test/bin/${build.config}/${target.dir}">
 				<include name="log4net*" />
 				<include name="NHibernate.DomainModel.*" />
 				<include name="NHibernate.Test.*" />
@@ -271,12 +274,12 @@
 			</fileset>
 		</copy>
 		<copy todir="${bin-pack.tests}">
-			<fileset basedir="${root.dir}/src/NHibernate.Test.VisualBasic/bin/${build.config}/net461">
+			<fileset basedir="${root.dir}/src/NHibernate.Test.VisualBasic/bin/${build.config}/${target.dir}">
 				<include name="NHibernate.Test.VisualBasic.*" />
 			</fileset>
 		</copy>
 		<copy todir="${bin-pack.tests}">
-			<fileset basedir="${root.dir}/src/NHibernate.TestDatabaseSetup/bin/${build.config}/net461">
+			<fileset basedir="${root.dir}/src/NHibernate.TestDatabaseSetup/bin/${build.config}/${target.dir}">
 				<include name="NHibernate.TestDatabaseSetup.*" />
 			</fileset>
 		</copy>
@@ -309,36 +312,23 @@
 		
 	</target>
 	
-	<target name="nugetpushbat" depends="init binaries common.download-nuget nuget.set-properties"
+	<target name="nugetpushbat" depends="init binaries nuget.set-properties"
 					description="Creates files for the release on nuget gallery.">
-
-		<copy file="${tools.dir}/NuGet.exe" todir="${nuget.nupackages.dir}"/>
 
 		<echo message="rem In order to use this bat you have to be sure you have executed 'nuget SetApiKey' ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="false"/>
 		<foreach item="File" property="filename">
 			<in>
 				<items>
 					<include name="${nuget.nupackages.dir}/*.nupkg"/>
-					<exclude name="${nuget.nupackages.dir}/*.symbols.nupkg"/>
 				</items>
 			</in>
 			<do>
-				<echo message="nuget push -source https://nuget.org/ ${path::get-file-name(filename)} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
-			</do>
-		</foreach>
-		<foreach item="File" property="filename">
-			<in>
-				<items>
-					<include name="${nuget.nupackages.dir}/*.symbols.nupkg"/>
-				</items>
-			</in>
-			<do>
-				<echo message="nuget push -source https://nuget.smbsrc.net/ ${path::get-file-name(filename)} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
+				<echo message="dotnet nuget push -s https://api.nuget.org/v3/index.json ${path::get-file-name(filename)} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
 			</do>
 		</foreach>
 	</target>
 	
-	<target name="nugetpush" depends="init binaries common.download-nuget nuget.set-properties"
+	<target name="nugetpush" depends="init binaries nuget.set-properties"
 					description="Push packages on nuget gallery.">
 		<!-- In order to use this task you have to be sure you have executed 'nuget SetApiKey' -->
 		<foreach item="File" property="filename">
@@ -348,7 +338,8 @@
 				</items>
 			</in>
 			<do>
-				<exec basedir="${tools.dir}" workingdir="${nuget.nupackages.dir}" program="NuGet.exe">
+				<exec basedir="${tools.dir}" workingdir="${nuget.nupackages.dir}" program="dotnet">
+					<arg value="nuget" />
 					<arg value="push" />
 					<arg value="${filename}" />
 				</exec>

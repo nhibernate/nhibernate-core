@@ -26,6 +26,7 @@ using NHibernate.Hql;
 using NHibernate.Intercept;
 using NHibernate.Loader.Criteria;
 using NHibernate.Loader.Custom;
+using NHibernate.MultiTenancy;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -803,24 +804,21 @@ namespace NHibernate.Impl
 			return LoadAsync(entityClass.FullName, id, cancellationToken);
 		}
 
+		/// <inheritdoc />
 		public async Task<T> GetAsync<T>(object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (BeginProcess())
-			{
-				return (T)await (GetAsync(typeof(T), id, cancellationToken)).ConfigureAwait(false);
-			}
+			return (T) await (GetAsync(typeof(T), id, cancellationToken)).ConfigureAwait(false);
 		}
 
+		/// <inheritdoc />
 		public async Task<T> GetAsync<T>(object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			using (BeginProcess())
-			{
-				return (T)await (GetAsync(typeof(T), id, lockMode, cancellationToken)).ConfigureAwait(false);
-			}
+			return (T) await (GetAsync(typeof(T), id, lockMode, cancellationToken)).ConfigureAwait(false);
 		}
 
+		/// <inheritdoc />
 		public Task<object> GetAsync(System.Type entityClass, object id, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -830,26 +828,47 @@ namespace NHibernate.Impl
 			return GetAsync(entityClass.FullName, id, cancellationToken);
 		}
 
-		/// <summary>
-		/// Load the data for the object with the specified id into a newly created object
-		/// using "for update", if supported. A new key will be assigned to the object.
-		/// This should return an existing proxy where appropriate.
-		///
-		/// If the object does not exist in the database, null is returned.
-		/// </summary>
-		/// <param name="clazz"></param>
-		/// <param name="id"></param>
-		/// <param name="lockMode"></param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns></returns>
-		public async Task<object> GetAsync(System.Type clazz, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
+		/// <inheritdoc />
+		public Task<object> GetAsync(System.Type clazz, object id, LockMode lockMode, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return GetAsync(clazz.FullName, id, lockMode, cancellationToken);
+		}
+
+		/// <inheritdoc />
+		public async Task<object> GetAsync(string entityName, object id, LockMode lockMode, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
 			{
-				LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
+				LoadEvent loadEvent = new LoadEvent(id, entityName, lockMode, this);
 				await (FireLoadAsync(loadEvent, LoadEventListener.Get, cancellationToken)).ConfigureAwait(false);
+				//Note: AfterOperation call is skipped to avoid releasing the lock when outside of a transaction.
 				return loadEvent.Result;
+			}
+		}
+
+		/// <inheritdoc />
+		public async Task<object> GetAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			using (BeginProcess())
+			{
+				LoadEvent loadEvent = new LoadEvent(id, entityName, null, this);
+				bool success = false;
+				try
+				{
+					await (FireLoadAsync(loadEvent, LoadEventListener.Get, cancellationToken)).ConfigureAwait(false);
+					success = true;
+					return loadEvent.Result;
+				}
+				finally
+				{
+					await (AfterOperationAsync(success, cancellationToken)).ConfigureAwait(false);
+				}
 			}
 		}
 
@@ -882,26 +901,6 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public async Task<object> GetAsync(string entityName, object id, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			using (BeginProcess())
-			{
-				LoadEvent loadEvent = new LoadEvent(id, entityName, false, this);
-				bool success = false;
-				try
-				{
-					await (FireLoadAsync(loadEvent, LoadEventListener.Get, cancellationToken)).ConfigureAwait(false);
-					success = true;
-					return loadEvent.Result;
-				}
-				finally
-				{
-					await (AfterOperationAsync(success, cancellationToken)).ConfigureAwait(false);
-				}
-			}
-		}
-
 		/// <summary>
 		/// Load the data for the object with the specified id into a newly created object.
 		/// This is only called when lazily initializing a proxy.
@@ -923,7 +922,6 @@ namespace NHibernate.Impl
 				return loadEvent.Result;
 			}
 		}
-
 
 		/// <summary>
 		/// Return the object with the specified id or throw exception if no row with that id exists. Defer the load,
@@ -1122,7 +1120,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken)
+		public override async Task<IList<T>> ListAsync<T>(CriteriaImpl criteria, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (BeginProcess())
@@ -1135,7 +1133,7 @@ namespace NHibernate.Impl
 
 				for (int i = 0; i < size; i++)
 				{
-					loaders[i] = new CriteriaLoader(
+					var loader = new CriteriaLoader(
 						GetOuterJoinLoadable(implementors[i]),
 						Factory,
 						criteria,
@@ -1143,7 +1141,8 @@ namespace NHibernate.Impl
 						enabledFilters
 						);
 
-					spaces.UnionWith(loaders[i].QuerySpaces);
+					spaces.UnionWith(loader.QuerySpaces);
+					loaders[size - 1 - i] = loader;
 				}
 
 				await (AutoFlushIfRequiredAsync(spaces, cancellationToken)).ConfigureAwait(false);
@@ -1153,11 +1152,9 @@ namespace NHibernate.Impl
 				{
 					try
 					{
-						for (int i = size - 1; i >= 0; i--)
-						{
-							ArrayHelper.AddAll(results, await (loaders[i].ListAsync(this, cancellationToken)).ConfigureAwait(false));
-						}
+						var results = await (loaders.LoadAllToListAsync<T>(this, cancellationToken)).ConfigureAwait(false); 
 						success = true;
+						return results;
 					}
 					catch (OperationCanceledException) { throw; }
 					catch (HibernateException)
@@ -1175,6 +1172,13 @@ namespace NHibernate.Impl
 					}
 				}
 			}
+		}
+
+		//TODO 6.0: Remove (use base class implementation)
+		public override async Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			ArrayHelper.AddAll(results, await (ListAsync(criteria, cancellationToken)).ConfigureAwait(false));
 		}
 
 		/// <summary>
@@ -1266,16 +1270,9 @@ namespace NHibernate.Impl
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			try
-			{
-				if (FlushMode != FlushMode.Manual)
-					return FlushAsync(cancellationToken);
-				return Task.CompletedTask;
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			if (FlushMode != FlushMode.Manual)
+				return FlushAsync(cancellationToken);
+			return Task.CompletedTask;
 		}
 
 		private async Task FireDeleteAsync(DeleteEvent @event, CancellationToken cancellationToken)

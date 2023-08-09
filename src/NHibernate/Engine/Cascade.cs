@@ -86,7 +86,6 @@ namespace NHibernate.Engine
 			this.action = action;
 		}
 
-
 		/// <summary> Cascade an action from the parent entity instance to all its children. </summary>
 		/// <param name="persister">The parent's entity persister </param>
 		/// <param name="parent">The parent reference. </param>
@@ -113,12 +112,12 @@ namespace NHibernate.Engine
 
 				IType[] types = persister.PropertyTypes;
 				CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
-				bool hasUninitializedLazyProperties = persister.HasUninitializedLazyProperties(parent);
+				var uninitializedLazyProperties = persister.EntityMetamodel.BytecodeEnhancementMetadata.GetUninitializedLazyProperties(parent);
 				for (int i = 0; i < types.Length; i++)
 				{
 					CascadeStyle style = cascadeStyles[i];
 					string propertyName = persister.PropertyNames[i];
-					if (hasUninitializedLazyProperties && persister.PropertyLaziness[i] && !action.PerformOnLazyProperty)
+					if (uninitializedLazyProperties.Contains(propertyName) && persister.PropertyLaziness[i] && !action.PerformOnLazyProperty)
 					{
 						//do nothing to avoid a lazy property initialization
 						continue;
@@ -169,7 +168,8 @@ namespace NHibernate.Engine
 						// value is orphaned if loaded state for this property shows not null
 						// because it is currently null.
 						EntityEntry entry = eventSource.PersistenceContext.GetEntry(parent);
-						if (entry != null && entry.Status != Status.Saving)
+						//LoadedState is null when detached entity is cascaded from session.Update context
+						if (entry?.LoadedState != null && entry.Status != Status.Saving)
 						{
 							object loadedValue;
 							if (componentPathStack.Count == 0)

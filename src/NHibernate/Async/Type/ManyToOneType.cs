@@ -11,7 +11,7 @@
 using System;
 using System.Data.Common;
 using NHibernate.Engine;
-using NHibernate.Persister.Entity;
+using NHibernate.Proxy;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -26,14 +26,14 @@ namespace NHibernate.Type
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			await (GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSetAsync(st, await (GetReferenceValueAsync(value, session, cancellationToken)).ConfigureAwait(false), index, settable, session, cancellationToken)).ConfigureAwait(false);
+				.NullSafeSetAsync(st, await (GetReferenceValueAsync(value, session, true, cancellationToken)).ConfigureAwait(false), index, settable, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		public override async Task NullSafeSetAsync(DbCommand cmd, object value, int index, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			await (GetIdentifierOrUniqueKeyType(session.Factory)
-				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session, cancellationToken)).ConfigureAwait(false), index, session, cancellationToken)).ConfigureAwait(false);
+				.NullSafeSetAsync(cmd, await (GetReferenceValueAsync(value, session, true, cancellationToken)).ConfigureAwait(false), index, session, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -55,7 +55,7 @@ namespace NHibernate.Type
 			// NOTE: the owner of the association is not really the owner of the id!
 			object id = await (GetIdentifierOrUniqueKeyType(session.Factory)
 				.NullSafeGetAsync(rs, names, session, owner, cancellationToken)).ConfigureAwait(false);
-			ScheduleBatchLoadIfNeeded(id, session);
+			ScheduleBatchLoadIfNeeded(id, session, false);
 			return id;
 		}
 
@@ -117,7 +117,7 @@ namespace NHibernate.Type
 		public override async Task BeforeAssembleAsync(object oid, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			ScheduleBatchLoadIfNeeded(await (AssembleIdAsync(oid, session, cancellationToken)).ConfigureAwait(false), session);
+			ScheduleBatchLoadIfNeeded(await (AssembleIdAsync(oid, session, cancellationToken)).ConfigureAwait(false), session, true);
 		}
 
 		private Task<object> AssembleIdAsync(object oid, ISessionImplementor session, CancellationToken cancellationToken)

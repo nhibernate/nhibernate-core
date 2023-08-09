@@ -58,7 +58,5 @@ namespace NHibernate.Test.NHSpecificTest.NH1499
 				Assert.Throws<QueryException>(() => criteria.List<Document>());
 			}
 		}
-
-
 	}
 }

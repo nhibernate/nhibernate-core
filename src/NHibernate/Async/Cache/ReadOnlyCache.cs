@@ -82,7 +82,7 @@ namespace NHibernate.Cache
 				return result;
 			}
 
-			var checkKeys = new List<object>();
+			var checkKeys = new List<CacheKey>();
 			var checkKeyIndexes = new List<int>();
 			for (var i = 0; i < minimalPuts.Length; i++)
 			{

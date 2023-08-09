@@ -49,7 +49,7 @@ namespace NHibernate.Loader
 			rhsColumns = JoinHelper.GetRHSColumnNames(joinableType, factory);
 			on = new SqlString(joinableType.GetOnCondition(rhsAlias, factory, enabledFilters));
 			if (SqlStringHelper.IsNotEmpty(withClause))
-				on = on.Append(" and ( ").Append(withClause).Append(" )");
+				on = on.Append(" and ( ", withClause, " )");
 			this.enabledFilters = enabledFilters; // needed later for many-to-many/filter application
 		}
 
@@ -68,20 +68,9 @@ namespace NHibernate.Loader
 			get { return on; }
 		}
 
-		private bool IsOneToOne
+		private bool IsEntityType
 		{
-			get
-			{
-				if (joinableType.IsEntityType)
-				{
-					EntityType etype = (EntityType) joinableType;
-					return etype.IsOneToOne;
-				}
-				else
-				{
-					return false;
-				}
-			}
+			get { return joinableType.IsEntityType; }
 		}
 
 		public IAssociationType JoinableType
@@ -109,9 +98,13 @@ namespace NHibernate.Loader
 			get { return _selectMode; }
 		}
 
+		public ISet<string> EntityFetchLazyProperties { get; set; }
+
+		internal bool ForceFilter { get; set; }
+
 		public int GetOwner(IList<OuterJoinableAssociation> associations)
 		{
-			if (IsOneToOne || IsCollection)
+			if (IsEntityType || IsCollection)
 			{
 				return GetPosition(lhsAlias, associations);
 			}
@@ -177,7 +170,7 @@ namespace NHibernate.Loader
 			SqlString condition = string.Empty.Equals(manyToManyFilter)
 								? on
 								: SqlStringHelper.IsEmpty(on) ? new SqlString(manyToManyFilter) : 
-									on.Append(" and ").Append(manyToManyFilter);
+									on.Append(" and ", manyToManyFilter);
 
 			outerjoin.AddJoin(joinable.TableName, rhsAlias, lhsColumns, rhsColumns, joinType, condition);
 			outerjoin.AddJoins(joinable.FromJoinFragment(rhsAlias, false, true),
@@ -204,6 +197,62 @@ namespace NHibernate.Loader
 			}
 
 			throw new ArgumentOutOfRangeException(nameof(SelectMode), SelectMode.ToString());
+		}
+
+		internal string GetSelectFragment(string entitySuffix, string collectionSuffix, OuterJoinableAssociation next)
+		{
+			switch (SelectMode)
+			{
+				case SelectMode.Undefined:
+				case SelectMode.Fetch:
+#pragma warning disable 618
+					return Joinable.SelectFragment(
+						next?.Joinable,
+						next?.RHSAlias,
+						RHSAlias,
+						entitySuffix,
+						collectionSuffix,
+						ShouldFetchCollectionPersister());
+#pragma warning restore 618
+
+				case SelectMode.FetchLazyProperties:
+#pragma warning disable 618
+					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(Joinable, "fetch lazy properties")
+					                    .SelectFragment(
+						                    next?.Joinable,
+						                    next?.RHSAlias,
+						                    RHSAlias,
+						                    entitySuffix,
+						                    collectionSuffix,
+						                    ShouldFetchCollectionPersister(),
+						                    true);
+#pragma warning restore 618
+
+				case SelectMode.FetchLazyPropertyGroup:
+					return ReflectHelper.CastOrThrow<ISupportLazyPropsJoinable>(Joinable, "fetch lazy property")
+					                    .SelectFragment(
+						                    next?.Joinable,
+						                    next?.RHSAlias,
+						                    RHSAlias,
+						                    collectionSuffix,
+						                    ShouldFetchCollectionPersister(),
+						                    new EntityLoadInfo(entitySuffix)
+						                    {
+							                    LazyProperties = EntityFetchLazyProperties,
+							                    IncludeLazyProps = SelectMode == SelectMode.FetchLazyProperties,
+						                    });
+				case SelectMode.ChildFetch:
+					// Skip ChildFetch for many-to-many as element id is added by element persister.
+					if (Joinable.IsCollection && ((IQueryableCollection) Joinable).IsManyToMany)
+						return string.Empty;
+					return ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(Joinable, "child fetch select mode")
+					                    .IdentifierSelectFragment(RHSAlias, entitySuffix);
+
+				case SelectMode.JoinOnly:
+					return string.Empty;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(SelectMode), $"{SelectMode} is unexpected.");
+			}
 		}
 	}
 }

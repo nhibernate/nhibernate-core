@@ -43,25 +43,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			}
 		}
 
-		// Failing case due to lack of polymorphic results ordering.
-		[Test, Ignore("Polymorphic results sets are unioned without reordering, whatever the API")]
-		public async Task AggregateGBaseOrderingMismatchAsync()
-		{
-			using (var session = OpenSession())
-			{
-				// This case cannot work because the aggregate is sensitive to ordering, and NHibernate currently always order polymorphic queries by class names,
-				// then only honors query ordering as secondary order criteria.
-				var query = session.Query<DomainClassGExtendedByH>()
-				                   .OrderByDescending(dc => dc.Id)
-				                   .Select(dc => dc.Id.ToString());
-				var result = query.Aggregate((p, n) => p + "," + n);
-				// Currently yields "2,1,4,3" instead.
-				Assert.That(result, Is.EqualTo("4,3,2,1"));
-				var futureQuery = query.ToFutureValue(qdc => qdc.Aggregate((p, n) => p + "," + n));
-				Assert.That(await (futureQuery.GetValueAsync()), Is.EqualTo("4,3,2,1"), "Future");
-			}
-		}
-
 		// Non-reg case
 		[Test]
 		public async Task AggregateMutableSeedGBaseAsync()
@@ -206,6 +187,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			}
 		}
 
+		[Test]
+		public async Task ContainsBBaseAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var item = await (session.Query<DomainClassBExtendedByA>().FirstAsync(dc => dc.Name == SearchName1));
+				var result = session.Query<DomainClassBExtendedByA>().Contains(item);
+				Assert.That(result, Is.True);
+			}
+		}
+
 		// Non-reg case
 		[Test]
 		public async Task AnyCBaseAsync()
@@ -232,6 +224,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			}
 		}
 
+		[Test]
+		public async Task ContainsCBaseAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var item = await (session.Query<DomainClassCExtendedByD>().FirstAsync(dc => dc.Name == SearchName1));
+				var result = session.Query<DomainClassCExtendedByD>().Contains(item);
+				Assert.That(result, Is.True);
+			}
+		}
+
 		// Non-reg case
 		[Test]
 		public async Task AnyEAsync()
@@ -255,6 +258,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				Assert.That(result, Is.True);
 				result = await (session.Query<DomainClassE>().ToFutureValue(qdc => qdc.Any(dc => dc.Name == SearchName1)).GetValueAsync());
 				Assert.That(result, Is.True, "Future");
+			}
+		}
+
+		[Test]
+		public async Task ContainsEAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var item = await (session.Query<DomainClassE>().FirstAsync(dc => dc.Name == SearchName1));
+				var result = session.Query<DomainClassE>().Contains(item);
+				Assert.That(result, Is.True);
 			}
 		}
 
@@ -310,6 +324,17 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			}
 		}
 
+		[Test]
+		public async Task ContainsGBaseAsync()
+		{
+			using (var session = OpenSession())
+			{
+				var item = await (session.Query<DomainClassGExtendedByH>().FirstAsync(dc => dc.Name == SearchName1));
+				var result = session.Query<DomainClassGExtendedByH>().Contains(item);
+				Assert.That(result, Is.True);
+			}
+		}
+
 		// Failing case till NH-3850 is fixed
 		[Test]
 		public async Task AnyObjectAsync()
@@ -321,18 +346,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 				result = await (session.Query<object>().ToFutureValue(qdc => qdc.Any()).GetValueAsync());
 				Assert.That(result, Is.True, "Future");
 			}
-		}
-
-		[Test, Ignore("Won't fix: requires reshaping the query")]
-		public async Task AverageBBaseAsync()
-		{
-			await (AverageAsync<DomainClassBExtendedByA>(1.5m));
-		}
-
-		[Test, Ignore("Won't fix: requires reshaping the query")]
-		public async Task AverageCBaseAsync()
-		{
-			await (AverageAsync<DomainClassCExtendedByD>(1.5m));
 		}
 
 		// Non-reg case
@@ -347,12 +360,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 		public async Task AverageFAsync()
 		{
 			await (AverageAsync<DomainClassF>(null));
-		}
-
-		[Test, Ignore("Won't fix: requires reshaping the query")]
-		public async Task AverageGBaseAsync()
-		{
-			await (AverageAsync<DomainClassGExtendedByH>(2.5m));
 		}
 
 		private async Task AverageAsync<DC>(decimal? expectedResult, CancellationToken cancellationToken = default(CancellationToken)) where DC : DomainClassBase
@@ -408,18 +415,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 					                  .Or.InnerException.InstanceOf<ArgumentNullException>(),
 					            "Future non nullable decimal average has failed");
 				}
-			}
-		}
-
-		[Test, Ignore("Won't fix: requires reshaping the query")]
-		public async Task AverageObjectAsync()
-		{
-			using (var session = OpenSession())
-			{
-				var result = await (session.Query<object>().AverageAsync(o => (int?)2));
-				Assert.That(result, Is.EqualTo(2));
-				result = await (session.Query<object>().ToFutureValue(qdc => qdc.Average(o => (int?)2)).GetValueAsync());
-				Assert.That(result, Is.EqualTo(2), "Future");
 			}
 		}
 

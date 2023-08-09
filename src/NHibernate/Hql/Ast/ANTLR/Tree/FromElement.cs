@@ -28,6 +28,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private string _collectionTableAlias;
 		private FromClause _fromClause;
 		private string[] _columns;
+		private string[] _fetchLazyProperties;
 		private FromElement _origin;
 		private bool _useFromFragment;
 		private bool _useWhereFragment = true;
@@ -100,7 +101,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public bool IsFromOrJoinFragment
 		{
-			get { return Type == HqlSqlWalker.FROM_FRAGMENT || Type == HqlSqlWalker.JOIN_FRAGMENT; }
+			get { return Type == HqlSqlWalker.FROM_FRAGMENT || Type == HqlSqlWalker.JOIN_FRAGMENT || Type == HqlSqlWalker.ENTITY_JOIN; }
 		}
 
 		public bool IsAllPropertyFetch
@@ -109,9 +110,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			set { _isAllPropertyFetch = value; }
 		}
 
+		/// <summary>
+		/// Names of lazy properties to be fetched.
+		/// </summary>
+		public string[] FetchLazyProperties
+		{
+			get { return _fetchLazyProperties; }
+			set { _fetchLazyProperties = value; }
+		}
+
 		public virtual bool IsImpliedInFromClause
 		{
-			get { return false; }  // Since this is an explicit FROM element, it can't be implied in the FROM clause.
+			get { return false; } // Since this is an explicit FROM element, it can't be implied in the FROM clause.
 		}
 
 		public bool IsFetch
@@ -327,7 +337,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		/// <returns>the property select SQL fragment.</returns>
 		public string RenderPropertySelect(int size, int k)
 		{
-			return _elementType.RenderPropertySelect(size, k, IsAllPropertyFetch);
+			return IsAllPropertyFetch
+				? _elementType.RenderPropertySelect(size, k, IsAllPropertyFetch)
+				: _elementType.RenderPropertySelect(size, k, _fetchLazyProperties);
 		}
 
 		public override SqlString RenderText(Engine.ISessionFactoryImplementor sessionFactory)
@@ -445,7 +457,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public bool UseWhereFragment
 		{
-			get { return _useWhereFragment;}
+			get { return _useWhereFragment; }
 			set { _useWhereFragment = value; }
 		}
 
@@ -471,6 +483,19 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		public virtual string GetIdentityColumn()
 		{
+			var cols = GetIdentityColumns();
+			string result = string.Join(", ", cols);
+
+			if (cols.Length > 1 && Walker.IsComparativeExpressionClause)
+			{
+				return "(" + result + ")";
+			}
+
+			return result;
+		}
+
+		internal string[] GetIdentityColumns()
+		{
 			CheckInitialized();
 			string table = TableAlias;
 
@@ -493,7 +518,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				propertyName = NHibernate.Persister.Entity.EntityPersister.EntityID;
 			}
-			if (Walker.StatementType == HqlSqlWalker.SELECT)
+			if (Walker.StatementType == HqlSqlWalker.SELECT || Walker.IsSubQuery)
 			{
 				cols = GetPropertyMapping(propertyName).ToColumns(table, propertyName);
 			}
@@ -501,12 +526,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				cols = GetPropertyMapping(propertyName).ToColumns(propertyName);
 			}
-			string result = StringHelper.Join(", ", cols);
 
-			// There used to be code here that added parentheses if the number of columns was greater than one.
-			// This was causing invalid queries like select (c1, c2) from x.  I couldn't think of a reason that
-			// parentheses would be wanted around a list of columns, so I removed them.
-			return result;
+			return cols;
 		}
 
 		public void HandlePropertyBeingDereferenced(IType propertySource, string propertyName)
@@ -569,13 +590,13 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 				else
 				{
-					if (!Walker.IsInFrom && !Walker.IsInSelect)
+					if (Walker.IsInFrom || Walker.IsInSelect || (this.IsImplied && !this.JoinSequence.IsThetaStyle))
 					{
-						FromClause.AddChild(this);
+						origin.AddChild(this);
 					}
 					else
 					{
-						origin.AddChild(this);
+						FromClause.AddChild(this);
 					}
 				}
 			}
@@ -685,6 +706,10 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_className = className;
 			_classAlias = classAlias;
 			_elementType = new FromElementType(this, persister, type);
+			if (Walker == null)
+			{
+				Walker = _fromClause.Walker;
+			}
 
 			// Register the FromElement with the FROM clause, now that we have the names and aliases.
 			fromClause.RegisterFromElement(this);
@@ -711,5 +736,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			_embeddedParameters.Add(specification);
 		}
 
+		internal bool IsEntityJoin()
+		{
+			return Type == HqlSqlWalker.ENTITY_JOIN;
+		}
 	}
 }

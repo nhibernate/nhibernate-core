@@ -27,7 +27,7 @@ namespace NHibernate.Impl
 		private readonly List<IQuery> queries = new List<IQuery>();
 		private readonly List<ITranslator> translators = new List<ITranslator>();
 		private readonly List<int> translatorQueryMap = new List<int>();
-		private readonly IList<System.Type> resultCollectionGenericType = new List<System.Type>();
+		private readonly List<System.Type> resultCollectionGenericType = new List<System.Type>();
 		private readonly List<QueryParameters> parameters = new List<QueryParameters>();
 		private IList queryResults;
 		private readonly Dictionary<string, int> queryResultPositions = new Dictionary<string, int>();
@@ -520,11 +520,10 @@ namespace NHibernate.Impl
 
 		protected List<object> DoList()
 		{
-			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
-			var stopWatch = new Stopwatch();
-			if (statsEnabled)
+			Stopwatch stopWatch = null;
+			if (session.Factory.Statistics.IsStatisticsEnabled)
 			{
-				stopWatch.Start();
+				stopWatch = Stopwatch.StartNew();
 			}
 			int rowCount = 0;
 
@@ -533,6 +532,7 @@ namespace NHibernate.Impl
 			var hydratedObjects = new List<object>[Translators.Count];
 			List<EntityKey[]>[] subselectResultKeys = new List<EntityKey[]>[Translators.Count];
 			bool[] createSubselects = new bool[Translators.Count];
+			var cacheBatcher = new CacheBatcher(session);
 
 			try
 			{
@@ -586,7 +586,8 @@ namespace NHibernate.Impl
 
 							rowCount++;
 							object result = translator.Loader.GetRowFromResultSet(
-								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true);
+								reader, session, parameter, lockModeArray, optionalObjectKey, hydratedObjects[i], keys, true, null, null,
+								(persister, data) => cacheBatcher.AddToBatch(persister, data));
 							tempResults.Add(result);
 
 							if (createSubselects[i])
@@ -616,13 +617,15 @@ namespace NHibernate.Impl
 						ITranslator translator = translators[i];
 						QueryParameters parameter = parameters[i];
 
-						translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false);
+						translator.Loader.InitializeEntitiesAndCollections(hydratedObjects[i], reader, session, false, cacheBatcher);
 
 						if (createSubselects[i])
 						{
 							translator.Loader.CreateSubselects(subselectResultKeys[i], parameter, session);
 						}
 					}
+
+					cacheBatcher.ExecuteBatch();
 				}
 			}
 			catch (Exception sqle)
@@ -631,7 +634,7 @@ namespace NHibernate.Impl
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "Failed to execute multi query", resultSetsCommand.Sql);
 			}
 
-			if (statsEnabled)
+			if (stopWatch != null)
 			{
 				stopWatch.Stop();
 				session.Factory.StatisticsImplementor.QueryExecuted(string.Format("{0} queries (MultiQuery)", translators.Count), rowCount, stopWatch.Elapsed);
@@ -770,7 +773,7 @@ namespace NHibernate.Impl
 			return combinedQueryParameters;
 		}
 
-		private IList<QueryParameters> Parameters
+		private List<QueryParameters> Parameters
 		{
 			get
 			{

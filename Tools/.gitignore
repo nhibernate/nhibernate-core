@@ -1,6 +1,7 @@
-nuget.exe
-NUnit.*
-vswhere.*
-CSharpAsyncGenerator.CommandLine.*
-gitreleasemanager.*
-SQLitePCLRaw.core.*
+nunit.*
+vswhere/
+csharpasyncgenerator.commandline/
+gitreleasemanager/
+obj/
+microsoft.*
+netstandard.*

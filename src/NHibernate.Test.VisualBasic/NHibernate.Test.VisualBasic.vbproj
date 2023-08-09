@@ -1,4 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <NhVbNet>true</NhVbNet>
+  </PropertyGroup>
   <Import Project="../../build-common/NHibernate.props" />
   <PropertyGroup>
     <Description>The Visual Basic Unit Tests for NHibernate.</Description>
@@ -8,18 +11,18 @@
     <OptionExplicit>On</OptionExplicit>
     <OptionStrict>On</OptionStrict>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-    <DefineConstants>NETCOREAPP2_0,$(DefineConstants)</DefineConstants>
+  <PropertyGroup Condition="$(NhNetCoreApp)">
+    <DefineConstants>NETCOREAPP2_0_OR_GREATER,$(DefineConstants)</DefineConstants>
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
-    <DefineConstants>NET461,$(DefineConstants)</DefineConstants>
+  <PropertyGroup Condition="$(NhNetFx)">
+    <DefineConstants>NETFX,$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="**\*.hbm.xml" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+  <ItemGroup Condition="$(NhNetCoreApp)">
     <Compile Remove="**\Issues\NH3302\**" />
   </ItemGroup>
   <ItemGroup>
@@ -29,10 +32,19 @@
     <None Include="..\NHibernate.Test\App.config" Link="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
     <PackageReference Include="Microsoft.VisualBasic" Version="10.2.0" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
+  </ItemGroup>
+  <ItemGroup Condition="$(NhNetFx)">
+    <PackageReference Include="NUnit3TestAdapter" Version="4.1.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-    <PackageReference Include="NUnitLite" Version="3.10.1" />
+    <PackageReference Include="NUnitLite" Version="3.13.2" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
+    <PackageReference Include="NUnitLite" Version="3.13.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate\NHibernate.csproj" />

@@ -1,4 +1,4 @@
-version: 5.2.7.{build}
+version: '{build}'
 image: Visual Studio 2017
 environment:
   matrix:
@@ -25,7 +25,7 @@ before_test:
         # Install Firebird
         New-Item -ItemType Directory -Force $FireBirdPath > $null
         Push-Location $FireBirdPath
-        Invoke-WebRequest 'https://github.com/FirebirdSQL/firebird/releases/download/R3_0_3/Firebird-3.0.3.32900-0_x64.zip' -OutFile firebird.zip
+        Invoke-WebRequest 'https://github.com/FirebirdSQL/firebird/releases/download/R3_0_5/Firebird-3.0.5.33220-0_x64.zip' -OutFile firebird.zip
         Unblock-File firebird.zip
         7z x firebird.zip
         New-Item -ItemType Directory -Force Data

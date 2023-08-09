@@ -1,10 +1,8 @@
-
 using System;
 using System.Collections.Generic;
 
 namespace NHibernate.Test.Criteria.Lambda
 {
-
 	public enum PersonGender
 	{
 		Male = 1,
@@ -13,7 +11,6 @@ namespace NHibernate.Test.Criteria.Lambda
 
 	public class Person
 	{
-
 		public Person()
 		{
 			Children = new List<Child>();
@@ -26,6 +23,7 @@ namespace NHibernate.Test.Criteria.Lambda
 
 		public virtual int					Id			{ get; set; }
 		public virtual string				Name		{ get; set; }
+		public virtual string				Nickname	{ get; set; }
 		public virtual int					Age			{ get; set; }
 		public virtual PersonGender			Gender		{ get; set; }
 		public virtual int					Height		{ get; set; }
@@ -50,7 +48,6 @@ namespace NHibernate.Test.Criteria.Lambda
 			(Children as IList<Child>).Add(child);
 			return this;
 		}
-
 	}
 
 	public class PersonDetail
@@ -75,7 +72,6 @@ namespace NHibernate.Test.Criteria.Lambda
 
 	public class Relation
 	{
-
 		public virtual Relation Related1	{ get; set; }
 		public virtual Relation Related2	{ get; set; }
 		public virtual Relation Related3	{ get; set; }
@@ -87,13 +83,13 @@ namespace NHibernate.Test.Criteria.Lambda
 		public virtual IEnumerable<Relation>	Collection4	{ get; set; }
 
 		public virtual IEnumerable<Person>		People		{ get; set; }
-
 	}
 
 	public class PersonSummary
 	{
 		public string Name { get; set; }
 		public int Count { get; set; }
+		public int BirthYear { get; set; }
 	}
 
 	public class Parent
@@ -120,4 +116,3 @@ namespace NHibernate.Test.Criteria.Lambda
 		public virtual Parent	Parent		{ get; set; }
 	}
 }
-

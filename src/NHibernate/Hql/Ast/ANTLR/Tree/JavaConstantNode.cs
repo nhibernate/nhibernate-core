@@ -70,10 +70,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
                 }
                 
                 _constantValue = ReflectHelper.GetConstantValue(base.Text, _factory);
-                _heuristicType = TypeFactory.HeuristicType(_constantValue.GetType().AssemblyQualifiedName);
+                _heuristicType = TypeFactory.HeuristicType(_constantValue.GetType());
                 _processedText = true;
             }
         }
-
 	}
 }

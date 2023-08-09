@@ -28,10 +28,23 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			_hqlSqlWalker = hqlSqlWalker;
 		}
 
+		// Since v5.3
+		[Obsolete("Use AddWhereFragment taking an IRestrictableStatement instead")]
 		public void AddWhereFragment(
 				JoinFragment joinFragment,
 				SqlString whereFragment,
 				QueryNode query,
+				FromElement fromElement,
+				HqlSqlWalker hqlSqlWalker)
+		{
+			IRestrictableStatement rs = query;
+			AddWhereFragment(joinFragment, whereFragment, rs, fromElement, hqlSqlWalker);
+		}
+
+		public void AddWhereFragment(
+				JoinFragment joinFragment,
+				SqlString whereFragment,
+				IRestrictableStatement query,
 				FromElement fromElement,
 				HqlSqlWalker hqlSqlWalker)
 		{
@@ -145,6 +158,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 			return _hqlSqlWalker.ASTFactory.CreateNode(tokenType, text);
 		}
 
+		// Since v5.3
+		[Obsolete("This method has no more usages")]
 		public virtual void AddDiscriminatorWhereFragment(IRestrictableStatement statement, IQueryable persister, IDictionary<string, IFilter> enabledFilters, string alias)
 		{
 			string whereFragment = persister.FilterFragment(alias, enabledFilters).Trim();
@@ -159,7 +174,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 
 			// Need to parse off the column qualifiers; this is assuming (which is true as of now)
 			// that this is only used from update and delete HQL statement parsing
-			whereFragment = StringHelper.Replace(whereFragment, persister.GenerateFilterConditionAlias(alias) + ".", "");
+			whereFragment = whereFragment.Replace(persister.GenerateFilterConditionAlias(alias) + ".", "");
 
 			// Note: this simply constructs a "raw" SQL_TOKEN representing the
 			// where fragment and injects this into the tree.  This "works";
@@ -183,6 +198,5 @@ namespace NHibernate.Hql.Ast.ANTLR.Util
 				statement.WhereClause.SetFirstChild(and);
 			}
 		}
-
 	}
 }

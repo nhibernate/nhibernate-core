@@ -4,12 +4,27 @@
 					namespace="NHibernate.Test.LazyProperty">
 	
 	<class name="Book">
+		<cache usage="nonstrict-read-write" include="non-lazy" />
 		<id name="Id">
 			<generator class="assigned" />
 		</id>
 		<property name="Name" />
 		<property name="ALotOfText" lazy="true" />
+		<property name="Image" lazy="true" />
+		<property name="NoSetterImage" access="nosetter.pascalcase-underscore" lazy="true" />
 		<property name="FieldInterceptor" />
+    <bag name="Words" inverse="true" generic="true" cascade="all-delete-orphan" lazy="true" >
+      <key column="ParentId" />
+      <one-to-many class="Word" />
+    </bag>
 	</class>
+
+  <class name="Word">
+    <id name="Id" column="Id">
+      <generator class="assigned" />
+    </id>
+    <property name="Content" lazy="true" />
+    <many-to-one name="Parent" class="Book" column="ParentId" />
+  </class>
 
 </hibernate-mapping>

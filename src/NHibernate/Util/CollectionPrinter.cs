@@ -92,6 +92,5 @@ namespace NHibernate.Util
 			result.Append("]");
 			return result.ToString();
 		}
-
 	}
 }

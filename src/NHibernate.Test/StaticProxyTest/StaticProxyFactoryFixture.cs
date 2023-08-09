@@ -24,6 +24,12 @@ namespace NHibernate.Test.StaticProxyTest
 		{
 			int Id { get; }
 		}
+		
+		public interface IWithEqualsAndGetHashCode
+		{
+			bool Equals(object that);
+			int GetHashCode();
+		}
 
 		[Serializable]
 		public class InternalInterfaceTestClass : IInternal
@@ -67,6 +73,30 @@ namespace NHibernate.Test.StaticProxyTest
 				Assert.That(pub.Id, Is.EqualTo(-1));
 				pub.Name = "Unknown";
 				Assert.That(pub.Name, Is.EqualTo("Unknown"));
+			}
+		}
+
+		[Serializable]
+		public class PublicExplicitInterfaceWithSameMembersTestClass : IPublic
+		{
+			public virtual int Id { get; set; }
+			public virtual string Name { get; set; }
+
+			int IPublic.Id { get; set; }
+			string IPublic.Name { get; set; }
+
+			public PublicExplicitInterfaceWithSameMembersTestClass()
+			{
+				// Check access to properties from the default constructor do not fail once proxified
+				Id = -1;
+				Assert.That(Id, Is.EqualTo(-1));
+				Name = "Unknown";
+				Assert.That(Name, Is.EqualTo("Unknown"));
+				IPublic pub = this;
+				pub.Id = -2;
+				Assert.That(pub.Id, Is.EqualTo(-2));
+				pub.Name = "Unknown2";
+				Assert.That(pub.Name, Is.EqualTo("Unknown2"));
 			}
 		}
 
@@ -176,7 +206,7 @@ namespace NHibernate.Test.StaticProxyTest
 		public void VerifyProxyForClassWithInternalInterface()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(InternalInterfaceTestClass).FullName, typeof(InternalInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			factory.PostInstantiate(typeof(InternalInterfaceTestClass).FullName, typeof(InternalInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
 
 #if NETFX
 			VerifyGeneratedAssembly(
@@ -202,7 +232,7 @@ namespace NHibernate.Test.StaticProxyTest
 				// having an additional interface in the interface list, instead of just having INHibernateProxy.
 				// (Quite a loose semantic...)
 				new HashSet<System.Type> { typeof(INHibernateProxy), typeof(IPublic) },
-				null, null, null);
+				null, null, null, false);
 
 #if NETFX
 			VerifyGeneratedAssembly(
@@ -219,6 +249,39 @@ namespace NHibernate.Test.StaticProxyTest
 		}
 
 		[Test]
+		public void VerifyProxyForInterfaceWithEqualsAndGetHashCode()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(
+				typeof(IWithEqualsAndGetHashCode).FullName,
+				typeof(object),
+				new HashSet<System.Type> {typeof(IWithEqualsAndGetHashCode), typeof(INHibernateProxy)},
+				null, null, null, false);
+
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var proxy = factory.GetProxy(1, null);
+					Assert.That(proxy, Is.Not.Null);
+					Assert.That(proxy, Is.InstanceOf<IWithEqualsAndGetHashCode>());
+					var proxyType = proxy.GetType();
+					var proxyMap = proxyType.GetInterfaceMap(typeof(IWithEqualsAndGetHashCode));
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.One.Property("Name").EqualTo("Equals").And.Property("IsPublic").EqualTo(true),
+						"Equals is not implicitly implemented");
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.One.Property("Name").EqualTo("GetHashCode").And.Property("IsPublic").EqualTo(true),
+						"GetHashCode is not implicitly implemented");
+#if NETFX
+				});
+#endif
+		}
+
+		[Test]
 		public void VerifyProxyForClassWithInterface()
 		{
 			var factory = new StaticProxyFactory();
@@ -226,7 +289,7 @@ namespace NHibernate.Test.StaticProxyTest
 				typeof(PublicInterfaceTestClass).FullName,
 				typeof(PublicInterfaceTestClass),
 				new HashSet<System.Type> {typeof(INHibernateProxy)},
-				null, null, null);
+				null, null, null, true);
 
 #if NETFX
 			VerifyGeneratedAssembly(
@@ -237,12 +300,30 @@ namespace NHibernate.Test.StaticProxyTest
 					Assert.That(proxy, Is.Not.Null);
 					Assert.That(proxy, Is.InstanceOf<IPublic>());
 					Assert.That(proxy, Is.InstanceOf<PublicInterfaceTestClass>());
+					var proxyType = proxy.GetType();
+					var proxyMap = proxyType.GetInterfaceMap(typeof(IPublic));
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.One.EqualTo(proxyType.GetProperty(nameof(PublicInterfaceTestClass.Name)).GetMethod),
+						"Name getter does not implement IPublic");
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.One.EqualTo(proxyType.GetProperty(nameof(PublicInterfaceTestClass.Name)).SetMethod),
+						"Name setter does not implement IPublic");
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.One.EqualTo(proxyType.GetProperty(nameof(PublicInterfaceTestClass.Id)).GetMethod),
+						"Id setter does not implement IPublic");
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.One.EqualTo(proxyType.GetProperty(nameof(PublicInterfaceTestClass.Id)).SetMethod),
+						"Id setter does not implement IPublic");
 
 					// Check interface and implicit implementations do both call the delegated state
 					var state = new PublicInterfaceTestClass { Id = 5, Name = "State" };
 					proxy.HibernateLazyInitializer.SetImplementation(state);
-					var pub = (IPublic) proxy;
 					var ent = (PublicInterfaceTestClass) proxy;
+					IPublic pub = ent;
 					Assert.That(pub.Id, Is.EqualTo(5), "IPublic.Id");
 					Assert.That(ent.Id, Is.EqualTo(5), "entity.Id");
 					Assert.That(pub.Name, Is.EqualTo("State"), "IPublic.Name");
@@ -266,7 +347,7 @@ namespace NHibernate.Test.StaticProxyTest
 				typeof(PublicExplicitInterfaceTestClass).FullName,
 				typeof(PublicExplicitInterfaceTestClass),
 				new HashSet<System.Type> {typeof(INHibernateProxy)},
-				null, null, null);
+				null, null, null, true);
 #if NETFX
 			VerifyGeneratedAssembly(
 				() =>
@@ -276,8 +357,13 @@ namespace NHibernate.Test.StaticProxyTest
 					Assert.That(proxy, Is.Not.Null);
 					Assert.That(proxy, Is.InstanceOf<IPublic>());
 					Assert.That(proxy, Is.InstanceOf<PublicExplicitInterfaceTestClass>());
-					
-					// Check interface and implicit implementations do both call the delegated state
+					var proxyType = proxy.GetType();
+					Assert.That(proxyType.GetMethod($"get_{nameof(IPublic.Name)}"), Is.Null, "get Name is implicitly implemented");
+					Assert.That(proxyType.GetMethod($"set_{nameof(IPublic.Name)}"), Is.Null, "set Name is implicitly implemented");
+					Assert.That(proxyType.GetMethod($"get_{nameof(IPublic.Id)}"), Is.Null, "get Id is implicitly implemented");
+					Assert.That(proxyType.GetMethod($"set_{nameof(IPublic.Id)}"), Is.Null, "set Id is implicitly implemented");
+
+					// Check explicit implementation
 					IPublic state = new PublicExplicitInterfaceTestClass();
 					state.Id = 5;
 					state.Name = "State";
@@ -285,13 +371,82 @@ namespace NHibernate.Test.StaticProxyTest
 					var entity = (IPublic) proxy;
 					Assert.That(entity.Id, Is.EqualTo(5), "Id");
 					Assert.That(entity.Name, Is.EqualTo("State"), "Name");
-					
+
 					entity.Id = 10;
 					entity.Name = "Test";
 					Assert.That(entity.Id, Is.EqualTo(10), "entity.Id");
 					Assert.That(state.Id, Is.EqualTo(10), "state.Id");
 					Assert.That(entity.Name, Is.EqualTo("Test"), "entity.Name");
 					Assert.That(state.Name, Is.EqualTo("Test"), "state.Name");
+#if NETFX
+				});
+#endif
+		}
+
+		[Test]
+		public void VerifyProxyForClassWithExplicitInterfaceWithSameMembers()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(
+				typeof(PublicExplicitInterfaceWithSameMembersTestClass).FullName,
+				typeof(PublicExplicitInterfaceWithSameMembersTestClass),
+				new HashSet<System.Type> {typeof(INHibernateProxy)},
+				null, null, null, true);
+#if NETFX
+			VerifyGeneratedAssembly(
+				() =>
+				{
+#endif
+					var proxy = factory.GetProxy(1, null);
+					Assert.That(proxy, Is.Not.Null);
+					Assert.That(proxy, Is.InstanceOf<IPublic>());
+					Assert.That(proxy, Is.InstanceOf<PublicExplicitInterfaceWithSameMembersTestClass>());
+					var proxyType = proxy.GetType();
+					var proxyMap = proxyType.GetInterfaceMap(typeof(IPublic));
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.None.EqualTo(proxyType.GetProperty(nameof(PublicExplicitInterfaceWithSameMembersTestClass.Name)).GetMethod),
+						"class Name getter does implement IPublic");
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.None.EqualTo(proxyType.GetProperty(nameof(PublicExplicitInterfaceWithSameMembersTestClass.Name)).SetMethod),
+						"class Name setter does implement IPublic");
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.None.EqualTo(proxyType.GetProperty(nameof(PublicExplicitInterfaceWithSameMembersTestClass.Id)).GetMethod),
+						"class Id setter does implement IPublic");
+					Assert.That(
+						proxyMap.TargetMethods,
+						Has.None.EqualTo(proxyType.GetProperty(nameof(PublicExplicitInterfaceWithSameMembersTestClass.Id)).SetMethod),
+						"class Id setter does implement IPublic");
+
+					// Check interface and implicit implementations do both call the delegated state
+					var state = new PublicExplicitInterfaceWithSameMembersTestClass();
+					IPublic pubState = state;
+					state.Id = 5;
+					state.Name = "State";
+					pubState.Id = 10;
+					pubState.Name = "State2";
+					proxy.HibernateLazyInitializer.SetImplementation(state);
+					var entity = (PublicExplicitInterfaceWithSameMembersTestClass) proxy;
+					IPublic pubEntity = entity;
+					Assert.That(entity.Id, Is.EqualTo(5), "Id member");
+					Assert.That(entity.Name, Is.EqualTo("State"), "Name member");
+					Assert.That(pubEntity.Id, Is.EqualTo(10), "Id from interface");
+					Assert.That(pubEntity.Name, Is.EqualTo("State2"), "Name from interface");
+
+					entity.Id = 15;
+					entity.Name = "Test";
+					pubEntity.Id = 20;
+					pubEntity.Name = "Test2";
+					Assert.That(entity.Id, Is.EqualTo(15), "entity.Id");
+					Assert.That(state.Id, Is.EqualTo(15), "state.Id");
+					Assert.That(entity.Name, Is.EqualTo("Test"), "entity.Name");
+					Assert.That(state.Name, Is.EqualTo("Test"), "state.Name");
+					Assert.That(pubEntity.Id, Is.EqualTo(20), "pubEntity.Id");
+					Assert.That(pubState.Id, Is.EqualTo(20), "pubState.Id");
+					Assert.That(pubEntity.Name, Is.EqualTo("Test2"), "pubEntity.Name");
+					Assert.That(pubState.Name, Is.EqualTo("Test2"), "pubState.Name");
 #if NETFX
 				});
 #endif
@@ -307,7 +462,8 @@ namespace NHibernate.Test.StaticProxyTest
 				new HashSet<System.Type> { typeof(INHibernateProxy) },
 				null,
 				null,
-				null);
+				null,
+				true);
 
 #if NETFX
 			VerifyGeneratedAssembly(
@@ -350,7 +506,7 @@ namespace NHibernate.Test.StaticProxyTest
 				typeof(AbstractTestClass).FullName,
 				typeof(AbstractTestClass),
 				new HashSet<System.Type> { typeof(INHibernateProxy) },
-				null, null, null);
+				null, null, null, true);
 
 #if NETFX
 			VerifyGeneratedAssembly(
@@ -370,7 +526,7 @@ namespace NHibernate.Test.StaticProxyTest
 		public void InitializedProxyStaysInitializedAfterDeserialization()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(SimpleTestClass).FullName, typeof(SimpleTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			factory.PostInstantiate(typeof(SimpleTestClass).FullName, typeof(SimpleTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
 			var proxy = factory.GetProxy(2, null);
 			Assert.That(proxy, Is.Not.Null, "proxy");
 			Assert.That(NHibernateUtil.IsInitialized(proxy), Is.False, "proxy already initialized after creation");
@@ -399,7 +555,7 @@ namespace NHibernate.Test.StaticProxyTest
 		public void NonInitializedProxyStaysNonInitializedAfterSerialization()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(SimpleTestClass).FullName, typeof(SimpleTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			factory.PostInstantiate(typeof(SimpleTestClass).FullName, typeof(SimpleTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
 			var proxy = factory.GetProxy(2, null);
 			Assert.That(proxy, Is.Not.Null, "proxy");
 			Assert.That(NHibernateUtil.IsInitialized(proxy), Is.False, "proxy already initialized after creation");
@@ -422,8 +578,8 @@ namespace NHibernate.Test.StaticProxyTest
 		public void CanSerializeFieldInterceptorProxy()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(PublicInterfaceTestClass).FullName, typeof(PublicInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
-			var proxy = (PublicInterfaceTestClass) factory.GetFieldInterceptionProxy(new PublicInterfaceTestClass());
+			factory.PostInstantiate(typeof(PublicInterfaceTestClass).FullName, typeof(PublicInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
+			var proxy = (PublicInterfaceTestClass) factory.GetFieldInterceptionProxy();
 			proxy.Id = 1;
 
 			var serializer = GetFormatter();
@@ -440,8 +596,8 @@ namespace NHibernate.Test.StaticProxyTest
 		public void CanSerializeFieldInterceptorProxyWithISerializableEntity()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(CustomSerializationClass).FullName, typeof(CustomSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
-			var proxy = (CustomSerializationClass) factory.GetFieldInterceptionProxy(new CustomSerializationClass());
+			factory.PostInstantiate(typeof(CustomSerializationClass).FullName, typeof(CustomSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
+			var proxy = (CustomSerializationClass) factory.GetFieldInterceptionProxy();
 			proxy.Id = 2;
 
 			var serializer = GetFormatter();
@@ -458,8 +614,8 @@ namespace NHibernate.Test.StaticProxyTest
 		public void CanSerializeFieldInterceptorProxyWithExplicitISerializableEntity()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(CustomExplicitSerializationClass).FullName, typeof(CustomExplicitSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
-			var proxy = (CustomExplicitSerializationClass) factory.GetFieldInterceptionProxy(new CustomExplicitSerializationClass());
+			factory.PostInstantiate(typeof(CustomExplicitSerializationClass).FullName, typeof(CustomExplicitSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
+			var proxy = (CustomExplicitSerializationClass) factory.GetFieldInterceptionProxy();
 			proxy.Id = 2;
 
 			var serializer = GetFormatter();
@@ -476,13 +632,13 @@ namespace NHibernate.Test.StaticProxyTest
 		public void VerifyFieldInterceptorProxy()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(InternalInterfaceTestClass).FullName, typeof(InternalInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			factory.PostInstantiate(typeof(InternalInterfaceTestClass).FullName, typeof(InternalInterfaceTestClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
 #if NETFX
 			VerifyGeneratedAssembly(
 				() =>
 				{
 #endif
-					var fieldProxy = factory.GetFieldInterceptionProxy(new InternalInterfaceTestClass());
+					var fieldProxy = factory.GetFieldInterceptionProxy();
 					Assert.That(fieldProxy, Is.InstanceOf<InternalInterfaceTestClass>());
 #if NETFX
 				});
@@ -493,13 +649,13 @@ namespace NHibernate.Test.StaticProxyTest
 		public void VerifyFieldInterceptorProxyWithISerializableEntity()
 		{
 			var factory = new StaticProxyFactory();
-			factory.PostInstantiate(typeof(CustomSerializationClass).FullName, typeof(CustomSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null);
+			factory.PostInstantiate(typeof(CustomSerializationClass).FullName, typeof(CustomSerializationClass), new HashSet<System.Type> {typeof(INHibernateProxy)}, null, null, null, true);
 #if NETFX
 			VerifyGeneratedAssembly(
 				() =>
 				{
 #endif
-					var fieldProxy = factory.GetFieldInterceptionProxy(new CustomSerializationClass());
+					var fieldProxy = factory.GetFieldInterceptionProxy();
 					Assert.That(fieldProxy, Is.InstanceOf<CustomSerializationClass>());
 #if NETFX
 				});
@@ -521,13 +677,13 @@ namespace NHibernate.Test.StaticProxyTest
 				// to an instance of the persistentClass, and so cannot implement interface methods if it does not
 				// inherit the persistentClass.
 				new HashSet<System.Type> {typeof(INHibernateProxy), typeof(IPublic)},
-				null, null, null);
+				null, null, null, false);
 #if NETFX
 			VerifyGeneratedAssembly(
 				() =>
 				{
 #endif
-					var fieldProxy = factory.GetFieldInterceptionProxy(new PublicInterfaceTestClass());
+					var fieldProxy = factory.GetFieldInterceptionProxy();
 					Assert.That(fieldProxy, Is.InstanceOf<PublicInterfaceTestClass>());
 #if NETFX
 				});

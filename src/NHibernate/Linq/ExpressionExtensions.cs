@@ -15,6 +15,23 @@ namespace NHibernate.Linq
 					 expression.Member.DeclaringType.IsGenericType && expression.Member.DeclaringType.GetGenericTypeDefinition() == typeof(IGrouping<,>);
 		}
 
+		internal static bool TryGetGroupResultOperator(this MemberExpression keyExpression, out GroupResultOperator groupBy)
+		{
+			if (keyExpression.IsGroupingKey() &&
+				keyExpression.Expression is QuerySourceReferenceExpression querySource &&
+				querySource.ReferencedQuerySource is MainFromClause fromClause &&
+				fromClause.FromExpression is SubQueryExpression query)
+			{
+				groupBy = query.QueryModel.ResultOperators
+				               .OfType<GroupResultOperator>()
+				               .FirstOrDefault(o => o.KeySelector.Type == keyExpression.Type);
+				return groupBy != null;
+			}
+
+			groupBy = null;
+			return false;
+		}
+
 		public static bool IsGroupingKeyOf(this MemberExpression expression,GroupResultOperator groupBy)
 		{
 			if (!expression.IsGroupingKey())

@@ -103,12 +103,12 @@ namespace NHibernate.Test.NHSpecificTest.GH1547
 				{
 					var query = queryFactory(session);
 					// Warm up.
-					await (RunBenchmarkUnitAsync(cache, query));
+					await (RunBenchmarkUnitAsync(cache, query, cancellationToken));
 
 					for (var j = 0; j < 1000; j++)
 					{
 						sw.Restart();
-						await (RunBenchmarkUnitAsync(cache, query));
+						await (RunBenchmarkUnitAsync(cache, query, cancellationToken));
 						sw.Stop();
 						timings.Add(sw.Elapsed.TotalMilliseconds);
 					}
@@ -122,7 +122,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1547
 				$"{test} average time: {avg}ms (s {Math.Sqrt(timings.Sum(t => Math.Pow(t - avg, 2)) / (timings.Count - 1))}ms)");
 		}
 
-		private static Task RunBenchmarkUnitAsync<T>(SoftLimitMRUCache cache, IQueryable<T> query)
+		private static Task RunBenchmarkUnitAsync<T>(SoftLimitMRUCache cache, IQueryable<T> query, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			try
 			{
@@ -158,14 +158,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1547
 
 			protected override Task<DbDataReader> ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
 			{
-				try
-				{
-					return Task.FromResult<DbDataReader>(_substituteReader);
-				}
-				catch (Exception ex)
-				{
-					return Task.FromException<DbDataReader>(ex);
-				}
+				return Task.FromResult<DbDataReader>(_substituteReader);
 			}
 
 			public override Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)
