@@ -197,14 +197,22 @@ namespace NHibernate.Collection
 			array = System.Array.CreateInstance(persister.ElementClass, cached.Length);
 
 			var elementType = persister.ElementType;
-			for (int i = 0; i < cached.Length; i++)
-			{
-				elementType.BeforeAssemble(cached[i], Session);
-			}
+			BeforeAssemble(elementType, cached);
 
 			for (int i = 0; i < cached.Length; i++)
 			{
 				array.SetValue(elementType.Assemble(cached[i], Session, owner), i);
+			}
+		}
+
+		private void BeforeAssemble(IType elementType, object[] cached)
+		{
+			if (Session.PersistenceContext.BatchFetchQueue.QueryCacheQueue != null)
+				return;
+
+			for (int i = 0; i < cached.Length; i++)
+			{
+				elementType.BeforeAssemble(cached[i], Session);
 			}
 		}
 

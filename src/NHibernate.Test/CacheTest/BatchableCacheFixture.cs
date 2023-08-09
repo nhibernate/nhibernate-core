@@ -1576,6 +1576,53 @@ namespace NHibernate.Test.CacheTest
 			Assert.That(itemCache.GetMultipleCalls.Count, Is.EqualTo(2));
 		}
 
+		[Test]
+		public void CollectionLazyInitializationFromCacheIsBatched_FillCacheByQueryCache()
+		{
+			var itemPersister = Sfi.GetEntityPersister(typeof(ReadOnlyItem).FullName);
+			var itemCache = (BatchableCache) itemPersister.Cache.Cache;
+			int id;
+			using (var s = OpenSession())
+			{
+				id = s.Query<ReadOnly>().Select(x => x.Id).First();
+				var readOnly = s.Query<ReadOnly>().Fetch(x => x.Items)
+				                .Where(x => x.Id == id)
+				                .WithOptions(x => x.SetCacheable(true))
+				                .ToList()
+				                .First();
+				Assert.That(itemCache.PutMultipleCalls.Count, Is.EqualTo(1));
+				Assert.That(itemCache.GetMultipleCalls.Count, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(readOnly.Items));
+				Assert.That(readOnly.Items.Count, Is.EqualTo(6));
+			}
+
+			itemCache.ClearStatistics();
+			using (var s = OpenSession())
+			{
+				var readOnly = s.Query<ReadOnly>().Fetch(x => x.Items)
+				                .Where(x => x.Id == id)
+				                .WithOptions(x => x.SetCacheable(true))
+				                .ToList()
+				                .First();
+				Assert.That(itemCache.PutMultipleCalls.Count, Is.EqualTo(0));
+				Assert.That(itemCache.GetMultipleCalls.Count, Is.EqualTo(1));
+				Assert.That(NHibernateUtil.IsInitialized(readOnly.Items));
+				Assert.That(readOnly.Items.Count, Is.EqualTo(6));
+			}
+
+			itemCache.ClearStatistics();
+
+
+			using (var s = OpenSession())
+			{
+				var readOnly = s.Get<ReadOnly>(id);
+				Assert.That(readOnly.Items.Count, Is.EqualTo(6));
+			}
+
+			// 6 items with batch-size = 4 so 2 GetMany calls are expected 1st call: 4 items + 2nd call: 2 items
+			Assert.That(itemCache.GetMultipleCalls.Count, Is.EqualTo(2));
+		}
+
 		private void AssertMultipleCacheCalls<TEntity>(IEnumerable<int> loadIds,  IReadOnlyList<int> getIds, int idIndex, 
 		                                               int[][] fetchedIdIndexes, int[] putIdIndexes, Func<int, bool> cacheBeforeLoadFn = null)
 			where TEntity : CacheEntity
