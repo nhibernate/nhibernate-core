@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
 using NHibernate.Util;
@@ -33,7 +34,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 												? querySchema.cachemode.ToCacheMode()
 												: null;
 
-					var parameterTypes = new LinkedHashMap<string,string>();
+					var parameterTypes =
+						querySchema.Items.EmptyIfNull().OfType<HbmQueryParam>()
+							.Where(x => !string.IsNullOrEmpty(x.type))
+							.ToDictionary(x => x.name, x => x.type);
+
 					var synchronizedTables = GetSynchronizedTables(querySchema);
 
 					NamedSQLQueryDefinition namedQuery;
