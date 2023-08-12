@@ -54,7 +54,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3311SqlQueryParam
 		{
 			using var log = new SqlLogSpy();
 			using var s = OpenSession();
-			await (s.GetNamedQuery("entityIdByName").SetParameter("name", "Bob").UniqueResultAsync<long>());
+			await (s.GetNamedQuery("entityIdByName").SetParameter("name", "Bob").UniqueResultAsync<object>());
 			Assert.That(log.GetWholeLog(), Does.Contain("Type: AnsiString"));
 		}
 	}
