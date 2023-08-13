@@ -282,6 +282,22 @@ Release notes - NHibernate - Version 5.4.0
    * #2242 Test case for NH-3972 - SQL error when selecting a column of a subclass when sibling classes have a column of the same name
 
 
+Build 5.3.19
+=============================
+
+Release notes - NHibernate - Version 5.3.19
+
+2 issues were resolved in this release.
+
+** Bug
+
+   * #3397 GenerateSchemaCreationScript creates many identical dialect instances
+
+** Task
+
+   * #3405 Release 5.3.19
+
+
 Build 5.3.18
 =============================
 
