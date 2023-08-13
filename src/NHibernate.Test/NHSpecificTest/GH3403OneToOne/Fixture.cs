@@ -36,16 +36,28 @@ namespace NHibernate.Test.NHSpecificTest.GH3403OneToOne
 		[Test]
 		public void OrphanDeleteForDetachedOneToOne()
 		{
-			using var session = OpenSession();
-			using var transaction = session.BeginTransaction();
+			Guid childId;
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				var entity = session.Get<Entity1>(_id);
+				childId = entity.Child.Id
+				session.Evict(entity.Child);
+				entity.Child = null;
 
-			var entity = session.Get<Entity1>(_id);
-			session.Evict(entity.Child);
-			entity.Child = null;
+				session.Flush();
+				transaction.Commit();
+			}
 
-			session.Flush();
+			using (var session = OpenSession())
+			{
+				var entity = session.Get<Entity1>(_id);
+				Assert.That(entity, Is.Not.Null);
+				Assert.That(entity.Child, Is.Null, "Unexpected child on parent");
 
-			transaction.Commit();
+				var child = session.Get<Entity1>(_id);
+				Assert.That(child , Is.Null, "Child is still in database");
+			}
 		}
 	}
 }
