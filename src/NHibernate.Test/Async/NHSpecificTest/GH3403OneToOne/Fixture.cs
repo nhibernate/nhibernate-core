@@ -47,16 +47,28 @@ namespace NHibernate.Test.NHSpecificTest.GH3403OneToOne
 		[Test]
 		public async Task OrphanDeleteForDetachedOneToOneAsync()
 		{
-			using var session = OpenSession();
-			using var transaction = session.BeginTransaction();
+			Guid childId;
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				var entity = await (session.GetAsync<Entity1>(_id));
+				childId = entity.Child.Id
+				await (session.EvictAsync(entity.Child));
+				entity.Child = null;
 
-			var entity = await (session.GetAsync<Entity1>(_id));
-			await (session.EvictAsync(entity.Child));
-			entity.Child = null;
+				await (session.FlushAsync());
+				await (transaction.CommitAsync());
+			}
 
-			await (session.FlushAsync());
+			using (var session = OpenSession())
+			{
+				var entity = await (session.GetAsync<Entity1>(_id));
+				Assert.That(entity, Is.Not.Null);
+				Assert.That(entity.Child, Is.Null, "Unexpected child on parent");
 
-			await (transaction.CommitAsync());
+				var child = await (session.GetAsync<Entity2>(_id));
+				Assert.That(child , Is.Null, "Child is still in database");
+			}
 		}
 	}
 }
