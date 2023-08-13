@@ -1,4 +1,17 @@
-﻿Build 5.4.4
+﻿Build 5.4.5
+=============================
+
+Release notes - NHibernate - Version 5.4.5
+
+2 issues were resolved in this release.
+
+** Task
+
+   * #3408 Release 5.4.4
+   * #3407 Release Merge 5.3.19 in 5.4.x
+
+
+Build 5.4.4
 =============================
 
 Release notes - NHibernate - Version 5.4.4
@@ -280,6 +293,22 @@ Release notes - NHibernate - Version 5.4.0
    * #2489 Improve CriteriaAssertFixture
    * #2456 Test case for #1180 and improve NullableType.ToString 
    * #2242 Test case for NH-3972 - SQL error when selecting a column of a subclass when sibling classes have a column of the same name
+
+
+Build 5.3.19
+=============================
+
+Release notes - NHibernate - Version 5.3.19
+
+2 issues were resolved in this release.
+
+** Bug
+
+   * #3397 GenerateSchemaCreationScript creates many identical dialect instances
+
+** Task
+
+   * #3405 Release 5.3.19
 
 
 Build 5.3.18
