@@ -52,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3403OneToOne
 			using (var transaction = session.BeginTransaction())
 			{
 				var entity = await (session.GetAsync<Entity1>(_id));
-				childId = entity.Child.Id
+				childId = entity.Child.Id;
 				await (session.EvictAsync(entity.Child));
 				entity.Child = null;
 
@@ -66,7 +66,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3403OneToOne
 				Assert.That(entity, Is.Not.Null);
 				Assert.That(entity.Child, Is.Null, "Unexpected child on parent");
 
-				var child = await (session.GetAsync<Entity2>(_id));
+				var child = await (session.GetAsync<Entity2>(childId));
 				Assert.That(child , Is.Null, "Child is still in database");
 			}
 		}
