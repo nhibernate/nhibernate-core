@@ -21,24 +21,25 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 	public class ManyToManyThrowsForNotFoundFixtureAsync : BugTestCase
 	{
 		private int _id;
+		private int _withTemplateId;
 
 		protected override void OnSetUp()
 		{
-			using (var s = Sfi.OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				Device dv = new Device("Device");
-				Drive dr = new Drive("Drive");
-				s.Save(dr);
-				dv.DrivesNotIgnored.Add(dr);
+			using var s = Sfi.OpenSession();
+			using var t = s.BeginTransaction();
+			Device dv = new Device("Device");
+			Drive dr = new Drive("Drive");
+			var withTemplate = new Device("Device With Device 2 template") { Template = dv };
+			s.Save(dr);
+			dv.DrivesNotIgnored.Add(dr);
 
-				_id = (int) s.Save(dv);
-				s.Flush();
+			_id = (int) s.Save(dv);
+			_withTemplateId = (int)s.Save(withTemplate);
+			s.Flush();
 
-				s.Clear();
-				s.Delete(dr);
-				t.Commit();
-			}
+			s.Clear();
+			s.Delete(dr);
+			t.Commit();
 		}
 
 		protected override void OnTearDown()
@@ -68,7 +69,18 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 			                 .Fetch(SelectMode.Fetch, x => x.DrivesNotIgnored)
 			                 .Where(Restrictions.IdEq(_id))
 			                 .TransformUsing(Transformers.DistinctRootEntity);
-			Assert.ThrowsAsync<ObjectNotFoundException>(async () => await (NHibernateUtil.InitializeAsync(await (queryOver.SingleOrDefaultAsync()))));
+			Assert.ThrowsAsync<ObjectNotFoundException>(() => queryOver.SingleOrDefaultAsync());
+		}
+
+		[Test]
+		public void QueryOverFetch2Async()
+		{
+			using var s = OpenSession();
+			var queryOver = s.QueryOver<Device>()
+			                 .Fetch(SelectMode.Fetch, x=> x.Template, x => x.Template.DrivesNotIgnored)
+			                 .Where(Restrictions.IdEq(_withTemplateId))
+			                 .TransformUsing(Transformers.DistinctRootEntity);
+			Assert.ThrowsAsync<ObjectNotFoundException>(() => queryOver.SingleOrDefaultAsync());
 		}
 
 		[Test]
@@ -79,6 +91,18 @@ namespace NHibernate.Test.NHSpecificTest.NH750
 
 			             .Fetch(x => x.DrivesNotIgnored)
 			             .Where(x => x.Id == _id);
+			Assert.ThrowsAsync<ObjectNotFoundException>(async () => await (NHibernateUtil.InitializeAsync(await (query.SingleOrDefaultAsync()))));
+		}
+
+		[Test]
+		public void LinqFetch2Async()
+		{
+			using var s = OpenSession();
+			var query = s.Query<Device>()
+
+			             .Fetch(x => x.Template)
+			             .ThenFetchMany(x => x.DrivesNotIgnored)
+			             .Where(x => x.Id == _withTemplateId);
 			Assert.ThrowsAsync<ObjectNotFoundException>(async () => await (NHibernateUtil.InitializeAsync(await (query.SingleOrDefaultAsync()))));
 		}
 	}

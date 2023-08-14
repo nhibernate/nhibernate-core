@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Hql;
 using NHibernate.Linq;
+using NHibernate.Type;
 using NHibernate.Util;
 
 namespace NHibernate.Engine.Query
@@ -41,6 +42,11 @@ namespace NHibernate.Engine.Query
 
 		public ParameterMetadata GetSQLParameterMetadata(string query)
 		{
+			return GetSQLParameterMetadata(query, CollectionHelper.EmptyDictionary<string, string>());
+		}
+
+		public ParameterMetadata GetSQLParameterMetadata(string query, IDictionary<string, string> parameterTypes)
+		{
 			var metadata = (ParameterMetadata)sqlParamMetadataCache[query];
 			if (metadata == null)
 			{
@@ -49,7 +55,7 @@ namespace NHibernate.Engine.Query
 				// retrieval for a native-sql query depends on all of the return
 				// types having been set, which might not be the case up-front when
 				// param metadata would be most useful
-				metadata = BuildNativeSQLParameterMetadata(query);
+				metadata = BuildNativeSQLParameterMetadata(query, parameterTypes);
 				sqlParamMetadataCache.Put(query, metadata);
 			}
 			return metadata;
@@ -170,14 +176,14 @@ namespace NHibernate.Engine.Query
 			return plan;
 		}
 
-		private ParameterMetadata BuildNativeSQLParameterMetadata(string sqlString)
+		private ParameterMetadata BuildNativeSQLParameterMetadata(string sqlString,
+			IDictionary<string, string> parameterTypes)
 		{
 			ParamLocationRecognizer recognizer = ParamLocationRecognizer.ParseLocations(sqlString);
 
 			var ordinalDescriptors = new OrdinalParameterDescriptor[recognizer.OrdinalParameterLocationList.Count];
-			for (int i = 0; i < recognizer.OrdinalParameterLocationList.Count; i++)
+			for (int i = 0; i < ordinalDescriptors.Length; i++)
 			{
-				int position = recognizer.OrdinalParameterLocationList[i];
 				ordinalDescriptors[i] = new OrdinalParameterDescriptor(i, null);
 			}
 
@@ -187,8 +193,14 @@ namespace NHibernate.Engine.Query
 			{
 				string name = entry.Key;
 				ParamLocationRecognizer.NamedParameterDescription description = entry.Value;
+				IType expectedType = null;
+				if (parameterTypes.TryGetValue(name, out var type) && !string.IsNullOrEmpty(type))
+				{
+					expectedType = TypeFactory.HeuristicType(type);
+				}
+
 				namedParamDescriptorMap[name] =
-					new NamedParameterDescriptor(name, null, description.JpaStyle);				
+					new NamedParameterDescriptor(name, expectedType, description.JpaStyle);
 			}
 
 			return new ParameterMetadata(ordinalDescriptors, namedParamDescriptorMap);

@@ -299,7 +299,7 @@ namespace NHibernate.Impl
 					throw new MappingException("Named SQL query not known: " + name);
 				}
 				var query = new SqlQueryImpl(nsqlqd, this,
-					_factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString));
+					_factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString, nsqlqd.ParameterTypes));
 				query.SetComment("named native SQL query " + name);
 				InitQuery(query, nsqlqd);
 				return query;
@@ -378,7 +378,7 @@ namespace NHibernate.Impl
 						throw new MappingException("Named query not known: " + queryName);
 					}
 					query = new SqlQueryImpl(nsqlqd, this,
-						_factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString));
+						_factory.QueryPlanCache.GetSQLParameterMetadata(nsqlqd.QueryString, nsqlqd.ParameterTypes));
 					query.SetComment("named native SQL query " + queryName);
 					nqd = nsqlqd;
 				}
