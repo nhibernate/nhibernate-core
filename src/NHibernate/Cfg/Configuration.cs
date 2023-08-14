@@ -235,7 +235,7 @@ namespace NHibernate.Cfg
 			}
 
 			public Dialect.Dialect Dialect =>
-				throw new InvalidOperationException("The dialect is not ready at this stage of the configuration.");
+				NHibernate.Dialect.Dialect.GetDialect(configuration.Properties);
 		}
 
 		[Serializable]
@@ -285,7 +285,7 @@ namespace NHibernate.Cfg
 			return new Mapping(this);
 		}
 
-		private IMapping BuildMapping(Dialect.Dialect dialect)
+		public virtual IMapping BuildMapping(Dialect.Dialect dialect)
 		{
 #pragma warning disable CS0618
 			var mapping = BuildMapping();
