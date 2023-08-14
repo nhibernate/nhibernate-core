@@ -999,7 +999,7 @@ namespace NHibernate.Cfg
 
 			return script.ToArray();
 		}
-		
+
 		private void Validate(IMapping mapping)
 		{
 			ValidateEntities(mapping);
