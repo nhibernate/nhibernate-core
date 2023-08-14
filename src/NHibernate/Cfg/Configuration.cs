@@ -279,7 +279,7 @@ namespace NHibernate.Cfg
 		}
 
 		// Since v5.5
-		[Obsolete("Use BuildSessionFactory to obtain a new ISessionFactory instance instead.")]
+		[Obsolete("Use BuildMapping(Dialect.Dialect) instead.")]
 		public virtual IMapping BuildMapping()
 		{
 			return new Mapping(this);
