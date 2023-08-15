@@ -898,8 +898,7 @@ namespace NHibernate.Loader
 							new[] {oj.On, entityAssociation.On, string.IsNullOrEmpty(f) ? SqlString.Empty : new SqlString(f)},
 							true,
 							outerjoin,
-							alias => true,
-							factory))
+							_ => true))
 					{
 						index++;
 						continue;
@@ -921,7 +920,7 @@ namespace NHibernate.Loader
 					}
 				}
 
-				if (TableGroupJoinHelper.ProcessAsTableGroupJoin(new[] {oj}, new[] {oj.On, filter}, true, outerjoin, alias => true, factory))
+				if (TableGroupJoinHelper.ProcessAsTableGroupJoin(new[] {oj}, new[] {oj.On, filter}, true, outerjoin, _ => true))
 					continue;
 
 				oj.AddJoins(outerjoin);
