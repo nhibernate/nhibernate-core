@@ -1593,6 +1593,7 @@ namespace NHibernate.Test.CacheTest
 		{
 			var itemPersister = Sfi.GetEntityPersister(typeof(ReadOnlyItem).FullName);
 			var itemCache = (BatchableCache) itemPersister.Cache.Cache;
+			itemCache.ClearStatistics();
 			int id;
 			using (var s = OpenSession())
 			{
