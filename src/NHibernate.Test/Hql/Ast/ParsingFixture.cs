@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml.Linq;
 using NHibernate.Hql.Ast.ANTLR;
 using NUnit.Framework;
@@ -42,7 +43,7 @@ namespace NHibernate.Test.Hql.Ast
 		/// <summary>
 		/// Helper "test" to display queries that are ignored
 		/// </summary>
-		[Test]
+		[Test, Explicit]
 		public void ShowIgnoredQueries()
 		{
 			foreach (string query in QueryFactoryClass.GetIgnores)
@@ -54,7 +55,7 @@ namespace NHibernate.Test.Hql.Ast
 		/// <summary>
 		/// Helper "test" to display queries that don't parse in H3
 		/// </summary>
-		[Test]
+		[Test, Explicit]
 		public void ShowExceptionQueries()
 		{
 			foreach (string query in QueryFactoryClass.GetExceptions)
@@ -107,7 +108,9 @@ namespace NHibernate.Test.Hql.Ast
 				Func<QueryTestData, bool> predicate,
 				Func<QueryTestData, T> projection)
 			{
-				XDocument doc = XDocument.Load(@"Hql/Ast/TestQueriesWithResults.xml");
+
+				XDocument doc = XDocument.Load(
+					Path.Join(Path.GetDirectoryName(typeof(ParsingFixture).Assembly.Location), @"Hql/Ast/TestQueriesWithResults.xml"));
 
 				foreach (XElement testGroup in doc.Element("Tests").Elements("TestGroup"))
 				{
