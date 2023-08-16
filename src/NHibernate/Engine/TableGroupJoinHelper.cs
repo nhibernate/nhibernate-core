@@ -17,7 +17,7 @@ namespace NHibernate.Engine
 	// ) ON person0_.Id = individual1_.PersonID AND individual1_1_.Deleted = @p0
 	internal class TableGroupJoinHelper
 	{
-		internal static bool ProcessAsTableGroupJoin(IReadOnlyList<IJoin> tableGroupJoinables, SqlString[] withClauseFragments, bool includeAllSubclassJoins, JoinFragment joinFragment, Func<string, bool> isSubclassIncluded, ISessionFactoryImplementor sessionFactoryImplementor)
+		internal static bool ProcessAsTableGroupJoin(IReadOnlyList<IJoin> tableGroupJoinables, SqlString[] withClauseFragments, bool includeAllSubclassJoins, JoinFragment joinFragment, Func<string, bool> isSubclassIncluded)
 		{
 			if (!NeedsTableGroupJoin(tableGroupJoinables, withClauseFragments, includeAllSubclassJoins, isSubclassIncluded))
 				return false;
