@@ -69,40 +69,25 @@ namespace NHibernate.Test.Hql.Ast
 		/// </summary>
 		public class QueryFactoryClass
 		{
-			public static IEnumerable<TestCaseData> TestCases
-			{
-				get
-				{
-					// TODO - need to handle Ignore better (it won't show in results...)
-					return EnumerateTests(
-						td => !td.Ignore && !td.Result.StartsWith("Exception"),
-						td => new TestCaseData(td.Query)
-						      .Returns(td.Result)
-						      .SetCategory(td.Category)
-						      .SetName(td.Name)
-						      .SetDescription(td.Description));
-				}
-			}
+			public static IEnumerable<TestCaseData> TestCases =>
+				// TODO - need to handle Ignore better (it won't show in results...)
+				EnumerateTests(
+					td => !td.Ignore && !td.Result.StartsWith("Exception"),
+					td => new TestCaseData(td.Query)
+					      .Returns(td.Result)
+					      .SetCategory(td.Category)
+					      .SetName(td.Name)
+					      .SetDescription(td.Description));
 
-			public static IEnumerable<string> GetIgnores
-			{
-				get
-				{
-					return EnumerateTests(
-						td => td.Ignore,
-						td => td.Query);
-				}
-			}
+			public static IEnumerable<string> GetIgnores =>
+				EnumerateTests(
+					td => td.Ignore,
+					td => td.Query);
 
-			public static IEnumerable<string> GetExceptions
-			{
-				get
-				{
-					return EnumerateTests(
-						td => td.Result.StartsWith("Exception"),
-						td => td.Query);
-				}
-			}
+			public static IEnumerable<string> GetExceptions =>
+				EnumerateTests(
+					td => td.Result.StartsWith("Exception"),
+					td => td.Query);
 
 			static IEnumerable<T> EnumerateTests<T>(
 				Func<QueryTestData, bool> predicate,
