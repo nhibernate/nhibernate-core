@@ -110,7 +110,7 @@ namespace NHibernate.Test.Hql.Ast
 			{
 
 				XDocument doc = XDocument.Load(
-					Path.Join(Path.GetDirectoryName(typeof(ParsingFixture).Assembly.Location), @"Hql/Ast/TestQueriesWithResults.xml"));
+					Path.Combine(Path.GetDirectoryName(typeof(ParsingFixture).Assembly.Location), @"Hql/Ast/TestQueriesWithResults.xml"));
 
 				foreach (XElement testGroup in doc.Element("Tests").Elements("TestGroup"))
 				{
