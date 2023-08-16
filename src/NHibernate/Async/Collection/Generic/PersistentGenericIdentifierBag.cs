@@ -47,16 +47,25 @@ namespace NHibernate.Collection.Generic
 
 			var identifierType = persister.IdentifierType;
 			var elementType = persister.ElementType;
-			for (int i = 0; i < size; i += 2)
-			{
-				await (identifierType.BeforeAssembleAsync(array[i], Session, cancellationToken)).ConfigureAwait(false);
-				await (elementType.BeforeAssembleAsync(array[i + 1], Session, cancellationToken)).ConfigureAwait(false);
-			}
+			await (BeforeAssembleAsync(identifierType, elementType, array, cancellationToken)).ConfigureAwait(false);
 
 			for (int i = 0; i < size; i += 2)
 			{
 				_identifiers[i / 2] = await (identifierType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false);
 				_values.Add((T) await (elementType.AssembleAsync(array[i + 1], Session, owner, cancellationToken)).ConfigureAwait(false));
+			}
+		}
+
+		private async Task BeforeAssembleAsync(IType identifierType, IType elementType, object[] array, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (Session.PersistenceContext.BatchFetchQueue.QueryCacheQueue != null)
+				return;
+
+			for (int i = 0; i < array.Length; i += 2)
+			{
+				await (identifierType.BeforeAssembleAsync(array[i], Session, cancellationToken)).ConfigureAwait(false);
+				await (elementType.BeforeAssembleAsync(array[i + 1], Session, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 

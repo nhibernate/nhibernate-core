@@ -95,14 +95,23 @@ namespace NHibernate.Collection
 			array = System.Array.CreateInstance(persister.ElementClass, cached.Length);
 
 			var elementType = persister.ElementType;
-			for (int i = 0; i < cached.Length; i++)
-			{
-				await (elementType.BeforeAssembleAsync(cached[i], Session, cancellationToken)).ConfigureAwait(false);
-			}
+			await (BeforeAssembleAsync(elementType, cached, cancellationToken)).ConfigureAwait(false);
 
 			for (int i = 0; i < cached.Length; i++)
 			{
 				array.SetValue(await (elementType.AssembleAsync(cached[i], Session, owner, cancellationToken)).ConfigureAwait(false), i);
+			}
+		}
+
+		private async Task BeforeAssembleAsync(IType elementType, object[] cached, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (Session.PersistenceContext.BatchFetchQueue.QueryCacheQueue != null)
+				return;
+
+			for (int i = 0; i < cached.Length; i++)
+			{
+				await (elementType.BeforeAssembleAsync(cached[i], Session, cancellationToken)).ConfigureAwait(false);
 			}
 		}
 

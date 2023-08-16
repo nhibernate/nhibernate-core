@@ -162,15 +162,23 @@ namespace NHibernate.Collection.Generic
 			BeforeInitialize(persister, size);
 			
 			var elementType = persister.ElementType;
-			for (int i = 0; i < size; i++)
-			{
-				elementType.BeforeAssemble(array[i], Session);
-			}
+			BeforeAssemble(elementType, array);
 
 			for (int i = 0; i < size; i++)
 			{
 				var element = elementType.Assemble(array[i], Session, owner);
 				WrappedList.Add((T) (element ?? DefaultForType));
+			}
+		}
+
+		private void BeforeAssemble(IType elementType, object[] array)
+		{
+			if (Session.PersistenceContext.BatchFetchQueue.QueryCacheQueue != null)
+				return;
+
+			for (int i = 0; i < array.Length; i++)
+			{
+				elementType.BeforeAssemble(array[i], Session);
 			}
 		}
 

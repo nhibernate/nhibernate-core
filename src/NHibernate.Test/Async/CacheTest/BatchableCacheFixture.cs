@@ -1588,6 +1588,54 @@ namespace NHibernate.Test.CacheTest
 			Assert.That(itemCache.GetMultipleCalls.Count, Is.EqualTo(2));
 		}
 
+		[Test]
+		public async Task CollectionLazyInitializationFromCacheIsBatched_FillCacheByQueryCacheAsync()
+		{
+			var itemPersister = Sfi.GetEntityPersister(typeof(ReadOnlyItem).FullName);
+			var itemCache = (BatchableCache) itemPersister.Cache.Cache;
+			itemCache.ClearStatistics();
+			int id;
+			using (var s = OpenSession())
+			{
+				id = await (s.Query<ReadOnly>().Select(x => x.Id).FirstAsync());
+				var readOnly = (await (s.Query<ReadOnly>().Fetch(x => x.Items)
+				                .Where(x => x.Id == id)
+				                .WithOptions(x => x.SetCacheable(true))
+				                .ToListAsync()))
+				                .First();
+				Assert.That(itemCache.PutMultipleCalls.Count, Is.EqualTo(1));
+				Assert.That(itemCache.GetMultipleCalls.Count, Is.EqualTo(0));
+				Assert.That(NHibernateUtil.IsInitialized(readOnly.Items));
+				Assert.That(readOnly.Items.Count, Is.EqualTo(6));
+			}
+
+			itemCache.ClearStatistics();
+			using (var s = OpenSession())
+			{
+				var readOnly = (await (s.Query<ReadOnly>().Fetch(x => x.Items)
+				                .Where(x => x.Id == id)
+				                .WithOptions(x => x.SetCacheable(true))
+				                .ToListAsync()))
+				                .First();
+				Assert.That(itemCache.PutMultipleCalls.Count, Is.EqualTo(0));
+				Assert.That(itemCache.GetMultipleCalls.Count, Is.EqualTo(1));
+				Assert.That(NHibernateUtil.IsInitialized(readOnly.Items));
+				Assert.That(readOnly.Items.Count, Is.EqualTo(6));
+			}
+
+			itemCache.ClearStatistics();
+
+
+			using (var s = OpenSession())
+			{
+				var readOnly = await (s.GetAsync<ReadOnly>(id));
+				Assert.That(readOnly.Items.Count, Is.EqualTo(6));
+			}
+
+			// 6 items with batch-size = 4 so 2 GetMany calls are expected 1st call: 4 items + 2nd call: 2 items
+			Assert.That(itemCache.GetMultipleCalls.Count, Is.EqualTo(2));
+		}
+
 		private async Task AssertMultipleCacheCallsAsync<TEntity>(IEnumerable<int> loadIds,  IReadOnlyList<int> getIds, int idIndex, 
 		                                               int[][] fetchedIdIndexes, int[] putIdIndexes, Func<int, bool> cacheBeforeLoadFn = null, CancellationToken cancellationToken = default(CancellationToken))
 			where TEntity : CacheEntity
