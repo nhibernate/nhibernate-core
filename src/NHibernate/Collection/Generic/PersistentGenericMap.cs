@@ -166,16 +166,24 @@ namespace NHibernate.Collection.Generic
 
 			var indexType = persister.IndexType;
 			var elementType = persister.ElementType;
-			for (int i = 0; i < size; i += 2)
-			{
-				indexType.BeforeAssemble(array[i], Session);
-				elementType.BeforeAssemble(array[i + 1], Session);
-			}
+			BeforeAssemble(indexType, elementType, array);
 
 			for (int i = 0; i < size; i += 2)
 			{
 				WrappedMap[(TKey)indexType.Assemble(array[i], Session, owner)] =
 					(TValue)elementType.Assemble(array[i + 1], Session, owner);
+			}
+		}
+
+		private void BeforeAssemble(IType indexType, IType elementType, object[] array)
+		{
+			if (Session.PersistenceContext.BatchFetchQueue.QueryCacheQueue != null)
+				return;
+
+			for (int i = 0; i < array.Length; i += 2)
+			{
+				indexType.BeforeAssemble(array[i], Session);
+				elementType.BeforeAssemble(array[i + 1], Session);
 			}
 		}
 
