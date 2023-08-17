@@ -65,7 +65,7 @@ namespace NHibernate.Test.Hql.Ast
 		}
 
 		/// <summary>
-		/// Class used by Nunit 2.5 to drive the data into the HqlParse test
+		/// Class used by NUnit to drive the data into the HqlParse test.
 		/// </summary>
 		public class QueryFactoryClass
 		{
