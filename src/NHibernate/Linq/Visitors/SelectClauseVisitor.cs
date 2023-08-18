@@ -34,7 +34,7 @@ namespace NHibernate.Linq.Visitors
 			return _hqlTreeNodes;
 		}
 
-		public void VisitSelector(Expression expression)
+		public void VisitSelector(Expression expression, bool isSubQuery = false)
 		{
 			var distinct = expression as NhDistinctExpression;
 			if (distinct != null)
@@ -44,7 +44,7 @@ namespace NHibernate.Linq.Visitors
 
 			// Find the sub trees that can be expressed purely in HQL
 			var nominator = new SelectClauseHqlNominator(_parameters);
-			expression = nominator.Nominate(expression);
+			expression = nominator.Nominate(expression, isSubQuery);
 			_hqlNodes = nominator.HqlCandidates;
 
 			// Linq2SQL ignores calls to local methods. Linq2EF seems to not support

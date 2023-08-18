@@ -661,6 +661,19 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void TimesheetsWithProjectionInSubquery()
+		{
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("Dialect is not supported");
+
+			var query = (from sheet in db.Timesheets
+						 where sheet.Users.Select(x => new { Id = x.Id, Name = x.Name }).Any(x => x.Id == 1)
+						 select sheet).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+		[Test]
 		public void ContainsSubqueryWithCoalesceStringEnumSelect()
 		{
 			if (Dialect is MsSqlCeDialect || Dialect is SQLiteDialect)
