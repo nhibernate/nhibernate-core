@@ -7,6 +7,9 @@ using NHibernate.Linq.Expressions;
 using NHibernate.Param;
 using NHibernate.Util;
 using Remotion.Linq.Parsing;
+using Remotion.Linq.Clauses.Expressions;
+using Remotion.Linq.Clauses;
+using NHibernate.Linq.Clauses;
 
 namespace NHibernate.Linq.Visitors
 {
@@ -49,7 +52,7 @@ namespace NHibernate.Linq.Visitors
 			ContainsUntranslatedMethodCalls = false;
 			_canBeCandidate = true;
 			_stateStack = new Stack<bool>();
-			_stateStack.Push(false);
+			_stateStack.Push(true);
 
 			return Visit(expression);
 		}
@@ -67,16 +70,14 @@ namespace NHibernate.Linq.Visitors
 				return innerExpression;
 			}
 
-			var projectConstantsInHql = _stateStack.Peek() || expression.NodeType == ExpressionType.Equal || IsRegisteredFunction(expression);
+			var isRegisteredFunction = IsRegisteredFunction(expression);
+			var projectConstantsInHql = (_stateStack.Peek() && IsConstantExpression(expression)) || isRegisteredFunction;
 
 			// Set some flags, unless we already have proper values for them:
 			//    projectConstantsInHql if they are inside a method call executed server side.
 			//    ContainsUntranslatedMethodCalls if a method call must be executed locally.
-			var isMethodCall = expression.NodeType == ExpressionType.Call;
-			if (isMethodCall && (!projectConstantsInHql || !ContainsUntranslatedMethodCalls))
+			if (expression.NodeType == ExpressionType.Call && (!projectConstantsInHql || !ContainsUntranslatedMethodCalls))
 			{
-				var isRegisteredFunction = IsRegisteredFunction(expression);
-				projectConstantsInHql = projectConstantsInHql || isRegisteredFunction;
 				ContainsUntranslatedMethodCalls = ContainsUntranslatedMethodCalls || !isRegisteredFunction;
 			}
 
@@ -96,7 +97,7 @@ namespace NHibernate.Linq.Visitors
 
 				if (_canBeCandidate)
 				{
-					if (CanBeEvaluatedInHqlSelectStatement(expression, projectConstantsInHql))
+					if (CanBeEvaluatedInHqlSelectStatement(expression, projectConstantsInHql, isRegisteredFunction))
 					{
 						HqlCandidates.Add(expression);
 					}
@@ -113,6 +114,80 @@ namespace NHibernate.Linq.Visitors
 			}
 
 			return expression;
+		}
+
+		private static bool IsAllowedToProjectInHql(System.Type type)
+		{
+			return (type.IsValueType || type == typeof(string)) && typeof(DateTime) != type && typeof(DateTime?) != type && typeof(TimeSpan) != type && typeof(TimeSpan?) != type;
+		}
+
+		private static bool IsValueType(System.Type type)
+		{
+			return type.IsValueType || type == typeof(string);
+		}
+
+		private static bool IsConstantExpression(Expression expression)
+		{
+			//if (expression.NodeType != ExpressionType.Equal) return false;
+
+			if(expression == null) return true;
+
+			switch (expression.NodeType)
+			{
+				case ExpressionType.Equal:
+				case ExpressionType.NotEqual:
+				case ExpressionType.Not:
+				case ExpressionType.MemberInit:
+				case ExpressionType.New:
+				case ExpressionType.NewArrayInit:
+				case ExpressionType.ListInit:
+					return true;
+				case ExpressionType.Extension:
+					if( expression is QuerySourceReferenceExpression extension &&
+						(extension.ReferencedQuerySource is NhClauseBase || 
+						(extension.ReferencedQuerySource is MainFromClause fromClause && 
+						 fromClause.FromExpression.Type.IsGenericType && 
+						 fromClause.FromExpression.Type.GetGenericTypeDefinition() == typeof(NhQueryable<>))))
+					{
+						return true;
+					}
+					return false;
+				case ExpressionType.Convert:
+					var convert = (UnaryExpression) expression;
+					return convert.Method == null && IsAllowedToProjectInHql(convert.Operand.Type) && IsConstantExpression(convert.Operand);
+				case ExpressionType.Constant:
+					var constant = (ConstantExpression) expression;
+					return constant.Value == null || IsValueType(expression.Type);
+				case ExpressionType.MemberAccess:
+					var member = (MemberExpression) expression;
+					return IsConstantExpression(member.Expression);
+				case ExpressionType.LessThan:
+				case ExpressionType.LessThanOrEqual:
+				case ExpressionType.GreaterThan:
+				case ExpressionType.GreaterThanOrEqual:
+				case ExpressionType.And:
+				case ExpressionType.AndAlso:
+				case ExpressionType.Or:
+				case ExpressionType.OrElse:
+				case ExpressionType.Add:
+				case ExpressionType.Subtract:
+				case ExpressionType.Multiply:
+				case ExpressionType.Divide:
+				case ExpressionType.Modulo:
+					var binary = (BinaryExpression) expression;
+					return IsAllowedToProjectInHql(binary.Left.Type) && IsConstantExpression(binary.Left) && 
+						   IsAllowedToProjectInHql(binary.Right.Type) && IsConstantExpression(binary.Right);
+				case ExpressionType.Coalesce:
+					var coalesce = (BinaryExpression) expression;
+					return IsConstantExpression(coalesce.Left) && IsConstantExpression(coalesce.Right);
+				case ExpressionType.Conditional:
+					var conditional = (ConditionalExpression) expression;
+					return IsConstantExpression(conditional.Test) &&
+						   IsValueType(conditional.IfTrue.Type) && IsConstantExpression(conditional.IfTrue) &&
+						   IsValueType(conditional.IfFalse.Type) && IsConstantExpression(conditional.IfFalse);
+				default:
+					return false;
+			}
 		}
 
 		private bool IsRegisteredFunction(Expression expression)
@@ -141,7 +216,7 @@ namespace NHibernate.Linq.Visitors
 			return false;
 		}
 
-		private bool CanBeEvaluatedInHqlSelectStatement(Expression expression, bool projectConstantsInHql)
+		private bool CanBeEvaluatedInHqlSelectStatement(Expression expression, bool projectConstantsInHql, bool isRegisteredFunction)
 		{
 			// HQL can't do New or Member Init
 			if (expression.NodeType == ExpressionType.MemberInit || 
@@ -166,7 +241,7 @@ namespace NHibernate.Linq.Visitors
 			if (expression.NodeType == ExpressionType.Call)
 			{
 				// Depends if it's in the function registry
-				return IsRegisteredFunction(expression);
+				return isRegisteredFunction;
 			}
 
 			if (expression.NodeType == ExpressionType.Conditional)
