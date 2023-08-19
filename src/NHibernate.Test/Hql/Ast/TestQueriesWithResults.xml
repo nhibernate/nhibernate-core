@@ -269,14 +269,14 @@
         select cat.color, sum(cat.weight), count(cat) from eg.Cat cat group by cat.color
         having cat.color in (eg.Color.TABBY, eg.Color.BLACK)
       ]]></Query>
-         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE ( . eg Cat ) cat ) ) ( select ( . cat color ) ( sum ( . cat weight ) ) ( count cat ) ) ) ( group ( . cat color ) ( having ( in ( . cat color ) ( inList ( . ( . eg Color ) TABBY ) ( . ( . eg Color ) BLACK ) ) ) ) ) )]]></Result>
+         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE ( . eg Cat ) cat ) ) ( select ( . cat color ) ( sum ( . cat weight ) ) ( count cat ) ) ) ( group ( . cat color ) ) ( having ( in ( . cat color ) ( inList ( . ( . eg Color ) TABBY ) ( . ( . eg Color ) BLACK ) ) ) ) )]]></Result>
       </Test>
       <Test>
          <Query><![CDATA[
         select cat from eg.Cat cat join cat.kittens kitten group by cat having avg(kitten.weight) > 100
         order by count(kitten) asc, sum(kitten.weight) desc
       ]]></Query>
-         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE ( . eg Cat ) cat ) ( join ( . cat kittens ) kitten ) ) ( select cat ) ) ( group cat ( having ( > ( avg ( . kitten weight ) ) 100 ) ) ) ( order ( count kitten ) asc ( sum ( . kitten weight ) ) desc ) )]]></Result>
+         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE ( . eg Cat ) cat ) ( join ( . cat kittens ) kitten ) ) ( select cat ) ) ( group cat ) ( having ( > ( avg ( . kitten weight ) ) 100 ) ) ( order ( count kitten ) asc ( sum ( . kitten weight ) ) desc ) )]]></Result>
       </Test>
    </TestGroup>
    <TestGroup Name="DocExamplesHqlExamples">
@@ -290,7 +290,7 @@
         select cat.effectiveDate from Catalog as cat where cat.effectiveDate < sysdate) group by ord
         having sum(price.amount) > :minAmount order by sum(price.amount) desc
       ]]></Query>
-         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Order ord ) ( join ( . ord lineItems ) item ) ( join ( . item product ) product ) ( RANGE Catalog catalog ) ( join ( . catalog prices ) price ) ) ( select ( . ord id ) ( sum ( . price amount ) ) ( count item ) ) ) ( where ( and ( and ( and ( and ( = ( . ord paid ) false ) ( = ( . ord customer ) ( : customer ) ) ) ( = ( . price product ) product ) ) ( < ( . catalog effectiveDate ) sysdate ) ) ( >= ( . catalog effectiveDate ) ( all ( query ( SELECT_FROM ( from ( RANGE Catalog cat ) ) ( select ( . cat effectiveDate ) ) ) ( where ( < ( . cat effectiveDate ) sysdate ) ) ) ) ) ) ) ( group ord ( having ( > ( sum ( . price amount ) ) ( : minAmount ) ) ) ) ( order ( sum ( . price amount ) ) desc ) )]]></Result>
+         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Order ord ) ( join ( . ord lineItems ) item ) ( join ( . item product ) product ) ( RANGE Catalog catalog ) ( join ( . catalog prices ) price ) ) ( select ( . ord id ) ( sum ( . price amount ) ) ( count item ) ) ) ( where ( and ( and ( and ( and ( = ( . ord paid ) false ) ( = ( . ord customer ) ( : customer ) ) ) ( = ( . price product ) product ) ) ( < ( . catalog effectiveDate ) sysdate ) ) ( >= ( . catalog effectiveDate ) ( all ( query ( SELECT_FROM ( from ( RANGE Catalog cat ) ) ( select ( . cat effectiveDate ) ) ) ( where ( < ( . cat effectiveDate ) sysdate ) ) ) ) ) ) ) ( group ord ) ( having ( > ( sum ( . price amount ) ) ( : minAmount ) ) ) ( order ( sum ( . price amount ) ) desc ) )]]></Result>
       </Test>
       <Test>
          <Query><![CDATA[
@@ -300,7 +300,7 @@
         and price.product = product and catalog = :currentCatalog
         group by ord having sum(price.amount) > :minAmount order by sum(price.amount) desc
       ]]></Query>
-         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Order ord ) ( join ( . ord lineItems ) item ) ( join ( . item product ) product ) ( RANGE Catalog catalog ) ( join ( . catalog prices ) price ) ) ( select ( . ord id ) ( sum ( . price amount ) ) ( count item ) ) ) ( where ( and ( and ( and ( = ( . ord paid ) false ) ( = ( . ord customer ) ( : customer ) ) ) ( = ( . price product ) product ) ) ( = catalog ( : currentCatalog ) ) ) ) ( group ord ( having ( > ( sum ( . price amount ) ) ( : minAmount ) ) ) ) ( order ( sum ( . price amount ) ) desc ) )]]></Result>
+         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Order ord ) ( join ( . ord lineItems ) item ) ( join ( . item product ) product ) ( RANGE Catalog catalog ) ( join ( . catalog prices ) price ) ) ( select ( . ord id ) ( sum ( . price amount ) ) ( count item ) ) ) ( where ( and ( and ( and ( = ( . ord paid ) false ) ( = ( . ord customer ) ( : customer ) ) ) ( = ( . price product ) product ) ) ( = catalog ( : currentCatalog ) ) ) ) ( group ord ) ( having ( > ( sum ( . price amount ) ) ( : minAmount ) ) ) ( order ( sum ( . price amount ) ) desc ) )]]></Result>
       </Test>
       <Test>
          <Query><![CDATA[
@@ -2458,11 +2458,11 @@
       </Test>
       <Test>
          <Query><![CDATA[select sum(s.count) from s in class org.hibernate.test.Simple group by s.count having sum(s.count) > 10]]></Query>
-         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE ( . ( . ( . org hibernate ) test ) Simple ) s ) ) ( select ( sum ( . s count ) ) ) ) ( group ( . s count ) ( having ( > ( sum ( . s count ) ) 10 ) ) ) )]]></Result>
+         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE ( . ( . ( . org hibernate ) test ) Simple ) s ) ) ( select ( sum ( . s count ) ) ) ) ( group ( . s count ) ) ( having ( > ( sum ( . s count ) ) 10 ) ) )]]></Result>
       </Test>
       <Test>
          <Query><![CDATA[select s.count from s in class org.hibernate.test.Simple group by s.count having s.count = 12]]></Query>
-         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE ( . ( . ( . org hibernate ) test ) Simple ) s ) ) ( select ( . s count ) ) ) ( group ( . s count ) ( having ( = ( . s count ) 12 ) ) ) )]]></Result>
+         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE ( . ( . ( . org hibernate ) test ) Simple ) s ) ) ( select ( . s count ) ) ) ( group ( . s count ) ) ( having ( = ( . s count ) 12 ) ) )]]></Result>
       </Test>
       <Test>
          <Query><![CDATA[select s.id, s.count, count(t), max(t.date) from s in class org.hibernate.test.Simple, t in class org.hibernate.test.Simple where s.count = t.count group by s.id, s.count order by s.count]]></Query>
@@ -3510,7 +3510,7 @@
       </Test>
       <Test>
          <Query><![CDATA[select abs(a.BodyWeight*-1) from Animal a group by abs(a.BodyWeight*-1) having abs(a.BodyWeight*-1)>0]]></Query>
-         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Animal a ) ) ( select ( ( abs ( exprList ( * ( . a BodyWeight ) ( - 1 ) ) ) ) ) ) ( group ( ( abs ( exprList ( * ( . a BodyWeight ) ( - 1 ) ) ) ) ( having ( > ( ( abs ( exprList ( * ( . a BodyWeight ) ( - 1 ) ) ) ) 0 ) ) ) )]]></Result>
+         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Animal a ) ) ( select ( ( abs ( exprList ( * ( . a BodyWeight ) ( - 1 ) ) ) ) ) ) ( group ( ( abs ( exprList ( * ( . a BodyWeight ) ( - 1 ) ) ) ) ) ( having ( > ( ( abs ( exprList ( * ( . a BodyWeight ) ( - 1 ) ) ) ) 0 ) ) )]]></Result>
       </Test>
    </TestGroup>
    <TestGroup Name="HQLFuctions - Mod">
@@ -3551,7 +3551,7 @@
       </Test>
       <Test>
          <Query><![CDATA[select upper(an.Description) from Animal an group by upper(an.Description) having upper(an.Description)='ABCDEF']]></Query>
-         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Animal an ) ) ( select ( ( upper ( exprList ( . an Description ) ) ) ) ) ( group ( ( upper ( exprList ( . an Description ) ) ) ( having ( = ( ( upper ( exprList ( . an Description ) ) ) 'ABCDEF' ) ) ) )]]></Result>
+         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Animal an ) ) ( select ( ( upper ( exprList ( . an Description ) ) ) ) ) ( group ( ( upper ( exprList ( . an Description ) ) ) ) ( having ( = ( ( upper ( exprList ( . an Description ) ) ) 'ABCDEF' ) ) )]]></Result>
       </Test>
    </TestGroup>
    <TestGroup Name="HQLFuctions - Lower">
@@ -3568,7 +3568,7 @@
          <Query><![CDATA[
         select lower(an.Description) from Animal an group by lower(an.Description) having lower(an.Description)='abcdef'
       ]]></Query>
-         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Animal an ) ) ( select ( ( lower ( exprList ( . an Description ) ) ) ) ) ( group ( ( lower ( exprList ( . an Description ) ) ) ( having ( = ( ( lower ( exprList ( . an Description ) ) ) 'abcdef' ) ) ) )]]></Result>
+         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Animal an ) ) ( select ( ( lower ( exprList ( . an Description ) ) ) ) ) ( group ( ( lower ( exprList ( . an Description ) ) ) ) ( having ( = ( ( lower ( exprList ( . an Description ) ) ) 'abcdef' ) ) )]]></Result>
       </Test>
    </TestGroup>
    <TestGroup Name="HQLFuctions - Cast">
@@ -3615,15 +3615,15 @@
       </Test>
       <Test>
          <Query><![CDATA[select cast(a.BodyWeight as Double) from Animal a group by cast(a.BodyWeight as Double) having cast(a.BodyWeight as Double)>0]]></Query>
-         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Animal a ) ) ( select ( ( cast ( exprList ( . a BodyWeight ) Double ) ) ) ) ( group ( ( cast ( exprList ( . a BodyWeight ) Double ) ) ( having ( > ( ( cast ( exprList ( . a BodyWeight ) Double ) ) 0 ) ) ) )]]></Result>
+         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Animal a ) ) ( select ( ( cast ( exprList ( . a BodyWeight ) Double ) ) ) ) ( group ( ( cast ( exprList ( . a BodyWeight ) Double ) ) ) ( having ( > ( ( cast ( exprList ( . a BodyWeight ) Double ) ) 0 ) ) )]]></Result>
       </Test>
       <Test>
          <Query><![CDATA[select cast(7+123.3-1*a.BodyWeight as int) from Animal a group by cast(7+123.3-1*a.BodyWeight as int) having cast(7+123.3-1*a.BodyWeight as int)>0]]></Query>
-         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Animal a ) ) ( select ( ( cast ( exprList ( - ( + 7 123.3 ) ( * 1 ( . a BodyWeight ) ) ) int ) ) ) ) ( group ( ( cast ( exprList ( - ( + 7 123.3 ) ( * 1 ( . a BodyWeight ) ) ) int ) ) ( having ( > ( ( cast ( exprList ( - ( + 7 123.3 ) ( * 1 ( . a BodyWeight ) ) ) int ) ) 0 ) ) ) )]]></Result>
+         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Animal a ) ) ( select ( ( cast ( exprList ( - ( + 7 123.3 ) ( * 1 ( . a BodyWeight ) ) ) int ) ) ) ) ( group ( ( cast ( exprList ( - ( + 7 123.3 ) ( * 1 ( . a BodyWeight ) ) ) int ) ) ) ( having ( > ( ( cast ( exprList ( - ( + 7 123.3 ) ( * 1 ( . a BodyWeight ) ) ) int ) ) 0 ) ) )]]></Result>
       </Test>
       <Test>
          <Query><![CDATA[select cast(:aParam+a.BodyWeight as int) from Animal a group by cast(:aParam+a.BodyWeight as int) having cast(:aParam+a.BodyWeight as int)>0]]></Query>
-         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Animal a ) ) ( select ( ( cast ( exprList ( + ( : aParam ) ( . a BodyWeight ) ) int ) ) ) ) ( group ( ( cast ( exprList ( + ( : aParam ) ( . a BodyWeight ) ) int ) ) ( having ( > ( ( cast ( exprList ( + ( : aParam ) ( . a BodyWeight ) ) int ) ) 0 ) ) ) )]]></Result>
+         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Animal a ) ) ( select ( ( cast ( exprList ( + ( : aParam ) ( . a BodyWeight ) ) int ) ) ) ) ( group ( ( cast ( exprList ( + ( : aParam ) ( . a BodyWeight ) ) int ) ) ) ( having ( > ( ( cast ( exprList ( + ( : aParam ) ( . a BodyWeight ) ) int ) ) 0 ) ) )]]></Result>
       </Test>
       <Test>
          <Query><![CDATA[select cast(cast(cast(a.BodyWeight as string) as double) as int from Animal a group by cast(cast(cast(a.BodyWeight as string) as double) as int having cast(cast(cast(a.BodyWeight as string) as double) as int = 1]]></Query>
@@ -3718,7 +3718,7 @@
       </Test>
       <Test>
          <Query><![CDATA[select cast(:aParam+a.BodyWeight as int) from Animal a group by cast(:aParam+a.BodyWeight as int) having cast(:aParam+a.BodyWeight as Double)>0]]></Query>
-         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Animal a ) ) ( select ( ( cast ( exprList ( + ( : aParam ) ( . a BodyWeight ) ) int ) ) ) ) ( group ( ( cast ( exprList ( + ( : aParam ) ( . a BodyWeight ) ) int ) ) ( having ( > ( ( cast ( exprList ( + ( : aParam ) ( . a BodyWeight ) ) Double ) ) 0 ) ) ) )]]></Result>
+         <Result><![CDATA[ ( query ( SELECT_FROM ( from ( RANGE Animal a ) ) ( select ( ( cast ( exprList ( + ( : aParam ) ( . a BodyWeight ) ) int ) ) ) ) ( group ( ( cast ( exprList ( + ( : aParam ) ( . a BodyWeight ) ) int ) ) ) ( having ( > ( ( cast ( exprList ( + ( : aParam ) ( . a BodyWeight ) ) Double ) ) 0 ) ) )]]></Result>
       </Test>
    </TestGroup>
 </Tests>

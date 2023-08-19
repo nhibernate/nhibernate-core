@@ -34,6 +34,9 @@
     <Content Include="..\NHibernate.DomainModel\ABC.hbm.xml" Link="ABC.hbm.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Hql\Ast\TestQueriesWithResults.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
     <Compile Remove="**\CfgTest\DefaultNsAssmFixture.cs" />
