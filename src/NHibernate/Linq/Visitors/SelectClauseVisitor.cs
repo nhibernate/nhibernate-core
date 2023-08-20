@@ -33,6 +33,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			return _hqlTreeNodes;
 		}
+
 		public void VisitSelector(Expression expression) => VisitSelector(expression, false);
 
 		public void VisitSelector(Expression expression, bool isSubQuery)
