@@ -33,8 +33,8 @@ namespace NHibernate.Linq.Visitors
 		{
 			return _hqlTreeNodes;
 		}
-
-		public void VisitSelector(Expression expression, bool isSubQuery = false)
+		public void VisitSelector(Expression expression) => VisitSelector(expression, false);
+		public void VisitSelector(Expression expression, bool isSubQuery)
 		{
 			var distinct = expression as NhDistinctExpression;
 			if (distinct != null)
