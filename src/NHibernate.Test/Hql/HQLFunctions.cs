@@ -1131,6 +1131,25 @@ namespace NHibernate.Test.Hql
 				}
 			}
 		}
+		
+		[Test]
+		public void ConcatWithNull()
+		{
+			AssumeFunctionSupported("concat");
+			using (var s = OpenSession())
+			{
+				var a1 = new Animal("abcdef", 1f);
+				s.Save(a1);
+				s.Flush();
+			}
+
+			using (var s = OpenSession())
+			{
+				var hql = "select concat(a.Description,null) from Animal a";
+				var lresult = s.CreateQuery(hql).List<string>();
+				Assert.That(lresult[0], Is.EqualTo("abcdef"));
+			}
+		}
 
 		[Test]
 		public void HourMinuteSecond()
