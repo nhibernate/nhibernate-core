@@ -660,6 +660,19 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public async Task TimesheetsWithProjectionInSubqueryAsync()
+		{
+			if (Dialect is MsSqlCeDialect)
+				Assert.Ignore("Dialect is not supported");
+
+			var query = await ((from sheet in db.Timesheets
+						 where sheet.Users.Select(x => new { Id = x.Id, Name = x.Name }).Any(x => x.Id == 1)
+						 select sheet).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+		[Test]
 		public async Task ContainsSubqueryWithCoalesceStringEnumSelectAsync()
 		{
 			if (Dialect is MsSqlCeDialect || Dialect is SQLiteDialect)
