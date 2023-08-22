@@ -3,9 +3,9 @@
 
   <PropertyGroup>
     <NhVersion     Condition="'$(NhVersion)' == ''"    >5.4</NhVersion>
-    <VersionPatch  Condition="'$(VersionPatch)'  == ''">5</VersionPatch>
+    <VersionPatch  Condition="'$(VersionPatch)'  == ''">6</VersionPatch>
     <!-- Clear VersionSuffix for making release and set it to dev for making development builds -->
-    <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
+    <VersionSuffix Condition="'$(VersionSuffix)' == ''">dev</VersionSuffix>
     <LangVersion Condition="'$(MSBuildProjectExtension)' != '.vbproj'">9.0</LangVersion>
 
     <VersionPrefix Condition="'$(VersionPrefix)' == ''">$(NhVersion).$(VersionPatch)</VersionPrefix>
