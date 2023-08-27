@@ -1,4 +1,20 @@
-﻿Build 5.4.5
+﻿Build 5.4.6
+=============================
+
+Release notes - NHibernate - Version 5.4.6
+
+2 issues were resolved in this release.
+
+** Bug
+
+   * #3414 Reenable use of SelectClauseVisitor for subqueries
+
+** Task
+
+   * #3419 Release 5.4.6
+
+
+Build 5.4.5
 =============================
 
 Release notes - NHibernate - Version 5.4.5
@@ -7,8 +23,8 @@ Release notes - NHibernate - Version 5.4.5
 
 ** Task
 
-   * #3408 Release 5.4.4
-   * #3407 Release Merge 5.3.19 in 5.4.x
+   * #3408 Release 5.4.5
+   * #3407 Merge 5.3.19 in 5.4.x
 
 
 Build 5.4.4
