@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 
 namespace NHibernate.Dialect.Schema
 {
@@ -31,13 +32,20 @@ namespace NHibernate.Dialect.Schema
 				result.Add(row["ReservedWord"].ToString());
 			}
 
-			if (IncludeDataTypesInReservedWords)
+			if (!IncludeDataTypesInReservedWords)
+				return result;
+
+			var dtTypes = Connection.GetSchema(DbMetaDataCollectionNames.DataTypes);
+
+			var typeNameColumn = dtTypes.Columns.Cast<DataColumn>()
+										.FirstOrDefault(column => column.ColumnName == "SQL_TYPE_NAME");
+
+			if (typeNameColumn == null) //todo We can try to fallback to "TypeName" columnName
+				return result;
+
+			foreach (DataRow row in dtTypes.Rows)
 			{
-				var dtTypes = Connection.GetSchema(DbMetaDataCollectionNames.DataTypes);
-				foreach (DataRow row in dtTypes.Rows)
-				{
-					result.Add(row["SQL_TYPE_NAME"].ToString());
-				}
+				result.Add(row[typeNameColumn].ToString());
 			}
 
 			return result;
