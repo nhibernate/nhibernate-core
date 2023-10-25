@@ -38,7 +38,7 @@ namespace NHibernate.Dialect.Schema
 			var dtTypes = Connection.GetSchema(DbMetaDataCollectionNames.DataTypes);
 
 			var typeNameColumn = dtTypes.Columns.Cast<DataColumn>()
-										.FirstOrDefault(column => column.ColumnName == "SQL_TYPE_NAME");
+							.FirstOrDefault(column => column.ColumnName == "SQL_TYPE_NAME");
 
 			if (typeNameColumn == null) //todo We can try to fallback to "TypeName" columnName
 				return result;
