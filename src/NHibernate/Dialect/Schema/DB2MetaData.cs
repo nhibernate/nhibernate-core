@@ -37,15 +37,19 @@ namespace NHibernate.Dialect.Schema
 
 			var dtTypes = Connection.GetSchema(DbMetaDataCollectionNames.DataTypes);
 
-			var typeNameColumn = dtTypes.Columns.Cast<DataColumn>()
-							.FirstOrDefault(column => column.ColumnName == "SQL_TYPE_NAME");
+			var typeNameColumnIndex = dtTypes.Columns.IndexOf("SQL_TYPE_NAME");
 
-			if (typeNameColumn == null) //todo We can try to fallback to "TypeName" columnName
-				return result;
+			if (typeNameColumnIndex == -1)
+			{
+				typeNameColumnIndex = dtTypes.Columns.IndexOf("TypeName");
+
+				if (typeNameColumnIndex == -1)
+					return result;
+			}
 
 			foreach (DataRow row in dtTypes.Rows)
 			{
-				result.Add(row[typeNameColumn].ToString());
+				result.Add(row[typeNameColumnIndex].ToString());
 			}
 
 			return result;
