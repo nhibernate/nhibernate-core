@@ -1,4 +1,94 @@
-﻿Build 5.4.7
+﻿Build 5.5.0
+=============================
+
+Release notes - NHibernate - Version 5.5.0
+
+    ##### Possible Breaking Changes #####
+        * `Object.Finalize` is no more proxified when the entity base class has a destructor. See #3205.
+        * Default not-found behavior now works correctly on many-to-many Criteria fetch. It now throws
+          ObjectNotFoundException exception for not found records. See #2687.
+
+62 issues were resolved in this release.
+
+** Bug
+
+   * #3413 Downgrade dependency System.Data.SQLite.Core 1.0.118 -> 1.0.117
+   * #3406 Fix orphan removal for detached one-to-one
+   * #3392 Partial fix fetching lazy property after Select in Linq
+   * #3360 Incorrect parameter length for char types in MicrosoftDataSqlClientDriver
+   * #3334 Exception executing HQL query with uncorrelated left joins in subselect
+   * #3327 HqlParser does not correctly negate EXISTS-nodes below an AND/OR
+   * #3325 Cascading orphan delete may not work on versioned entity
+   * #3311 NamedQuery igonres <query-param type="AnsiString"> and any other
+   * #3264 Fix collection filter on subclass columns
+   * #3256 Invalid SQL is generated for string Enum used in conditional LINQ
+   * #3205 `Object.Finalize` should not be proxiable
+   * #2687 Use table group joins for many-to-many in Criteria and Entity loaders
+   * #1267 NH-3047 - Lazy=no-proxy ignores join fetch
+
+** New Feature
+
+   * #3242 Linq: add enum Equals and object Equals support
+   * #3165 Add support for Firebird 4
+   * #829 NH-3365 - Support for HasFlag method for enums with Flags attribute applied
+
+** Improvement
+
+   * #3429 Explicit how to use advanced Redis strategies
+   * #3410 Remove redundant collection BeforeAssemble call from query cache
+   * #3398 Do not store mapping field in Configuration
+   * #3396 Get rid of select queries for each ManyToMany not found ignored element in Criteria and lazy loading
+   * #3395 Remove ConstantConverter
+   * #3394 Get rid of select queries for each ManyToMany not found ignored element in hql
+   * #3390 Enable Not node handling in HqlParser.NegateNode
+   * #3384 Improve path rule handling with reserved words in Hql.g
+   * #3377 Move HqlToken.PossibleId to HqlParser.IsPossibleId method and remove castings
+   * #3374 Simplify aggregateDistinctAll rule in Hql.g
+   * #3373 Refactor sequential select related members in AbstractEntityPersister
+   * #3341 Apply fromFragment processing only when required in ProcessDynamicFilterParameters
+   * #3340 SqlString.Trim should return the same instance for not modified string
+   * #3253 Do not throw for unknown type in hql case node
+   * #3230 Add cached boxed boolean values to BooleanType
+   * #3209 Allow custom query loader
+
+** Task
+
+   * #3460 Merge 5.4.7 in master
+   * #3445 Release 5.5.0
+   * #3440 Update NUnit to v3.14.0
+   * #3423 Update actions/checkout action to v4
+   * #3420 Merge 5.4.6 in master
+   * #3411 Remove ISessionFactoryImplementor parameter from TableGroupJoinHelper
+   * #3409 Merge 5.4.5 in master
+   * #3387 Merge 5.4.4 in master
+   * #3379 Remove NHibernate.Example.Web project
+   * #3362 Update dependency NUnit3TestAdapter to v4.5.0
+   * #3361 Update dependency NUnit.Console to v3.16.3
+   * #3353 Migrate renovate config
+   * #3351 Merge 5.4.3 in master
+   * #3284 Update NHibernate.Caches to v5.9.0
+   * #3283 Update dependency NSubstitute to v5
+   * #3280 Add tests for Microsoft.Data.SqlClient driver
+   * #3275 Migrate dev packages to Cloudsmith
+   * #3241 Exclude generated files from Deepsource analisys
+   * #3236 Add MySQL8Dialect and MySQL8InnoDBDialect
+   * #3223 Simplify GitHub Actions Tests DB initialization
+   * #3206 Update actions/setup-dotnet action to v3
+   * #3202 Update dependency Npgsql to v7
+   * #3129 [Security] Update Oracle.ManagedDataAccess
+   * #3122 Update dependency FirebirdSql.Data.FirebirdClient to v9
+   * #3102 Update dependency Microsoft.Data.SqlClient to v3.1.3
+   * #3099 [Security] Update dependency System.Linq.Dynamic.Core to v1.3.3
+   * #3098 Update dependency System.Data.SQLite.Core to v1.0.118
+   * #3092 Update dependency Microsoft.AspNetCore.OData to v7.7.0
+   * #3088 Update NUnit to v3.13.3
+
+** Tests
+
+   * #3412 Revive hql ParsingFixture
+
+
+Build 5.4.7
 =============================
 
 Release notes - NHibernate - Version 5.4.7
