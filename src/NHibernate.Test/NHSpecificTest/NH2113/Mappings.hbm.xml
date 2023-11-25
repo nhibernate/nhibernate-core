@@ -15,7 +15,7 @@
     <property name="Name" />
 	</class>
 
-  <class name="Group" table="Groups">
+  <class name="Group" table="`Groups`">
     <id name="Id" column="GroupID">
       <generator class="increment"/>
     </id>
