@@ -21,6 +21,7 @@
     <NhNetCoreApp>false</NhNetCoreApp>
     <NhNetCoreApp Condition="$(TargetFramework.StartsWith('netcoreapp'))">true</NhNetCoreApp>
     <DefineConstants Condition="$(NhNetCoreApp) AND $(NhVbNet) == ''" >NETCOREAPP2_0_OR_GREATER;$(DefineConstants)</DefineConstants>
+    <WarningsNotAsErrors>NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
 
     <Product>NHibernate</Product>
     <Company>NHibernate.info</Company>
