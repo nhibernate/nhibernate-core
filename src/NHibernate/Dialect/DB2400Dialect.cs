@@ -1,4 +1,6 @@
-using NHibernate.Cfg;
+using System;
+using System.Data.Common;
+using NHibernate.Dialect.Schema;
 using NHibernate.SqlCommand;
 
 namespace NHibernate.Dialect
@@ -23,7 +25,13 @@ namespace NHibernate.Dialect
 	{
 		public DB2400Dialect()
 		{
-			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.DB2400Driver";
+			DefaultProperties[Cfg.Environment.ConnectionDriver] = "NHibernate.Driver.DB2400Driver";
+		}
+
+		public override IDataBaseSchema GetDataBaseSchema(DbConnection connection)
+		{
+			// The DB2 implementation is not valid for DB2400.
+			throw new NotSupportedException();
 		}
 
 		public override bool SupportsSequences
