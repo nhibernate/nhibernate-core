@@ -27,7 +27,7 @@ jobs:
       run: |
         dotnet restore "./Tools/packages.csproj" --packages ./Tools
         pushd src
-        dotnet restore ./NHibernate.sln
+        dotnet restore ./NHibernate.sln /p:TreatWarningsAsErrors=false
         dotnet $(find ./../Tools/csharpasyncgenerator.commandline -name AsyncGenerator.CommandLine.dll) 
         popd
 
