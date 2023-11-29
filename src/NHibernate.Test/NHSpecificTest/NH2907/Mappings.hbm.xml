@@ -12,7 +12,7 @@
 		<property name="Name" type="string"/>
 	</class>
 
-	<class name="Group" table="groups">
+	<class name="Group" table="`groups`">
 		<id name="Id">
 			<column name="GroupId"/>
 			<generator class="native"/>
