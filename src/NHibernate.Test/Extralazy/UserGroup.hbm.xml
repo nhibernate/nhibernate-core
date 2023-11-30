@@ -4,7 +4,7 @@
 				   assembly="NHibernate.Test"
 				   namespace="NHibernate.Test.Extralazy">
 
-	<class name="Group" table="groups">
+	<class name="Group" table="`groups`">
 		<id name="Name"/>
 		<map name="Users" cascade="persist" table="group_user" lazy="extra">
 			<key column="groupName"/>
