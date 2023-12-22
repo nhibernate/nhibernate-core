@@ -1516,12 +1516,6 @@ in the parameter binding.</programlisting>
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>PostgreSQL</entry>
-                            <entry><literal>NHibernate.Dialect.PostgreSQLDialect</literal></entry>
-                            <entry>
-                            </entry>
-                        </row>
-                        <row>
                             <entry>PostgreSQL 8.1</entry>
                             <entry><literal>NHibernate.Dialect.PostgreSQL81Dialect</literal></entry>
                             <entry>
