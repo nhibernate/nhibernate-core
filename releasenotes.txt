@@ -19,7 +19,7 @@ Release notes - NHibernate - Version 5.5.0
    * #3334 Exception executing HQL query with uncorrelated left joins in subselect
    * #3327 HqlParser does not correctly negate EXISTS-nodes below an AND/OR
    * #3325 Cascading orphan delete may not work on versioned entity
-   * #3311 NamedQuery igonres <query-param type="AnsiString"> and any other
+   * #3311 NamedQuery ignores <query-param type="AnsiString"> and any other
    * #3264 Fix collection filter on subclass columns
    * #3256 Invalid SQL is generated for string Enum used in conditional LINQ
    * #3205 `Object.Finalize` should not be proxiable
