@@ -643,6 +643,26 @@ namespace NHibernate.Test.SystemTransactions
 			}
 		}
 
+		[Test]
+		public void SupportsTransactionTimeout()
+		{
+			// Test case adapted from https://github.com/kaksmet/NHibBugRepro
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				for (var i = 0; i < 5000; i++)
+				{
+					var person = new Person();
+					s.Save(person);
+				}
+
+				t.Commit();
+			}
+
+			var txOptions = new TransactionOptions { Timeout = TimeSpan.FromMilliseconds(1) };
+
+		}
+
 		[Theory, Explicit("Bench")]
 		public void BenchTransactionAccess(bool inTransaction)
 		{
