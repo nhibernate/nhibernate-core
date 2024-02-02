@@ -52,6 +52,8 @@ namespace NHibernate.DomainModel
 			set { _locale = value; }
 		}
 
+		public CultureInfo ExtendedLocale { get; set; }
+
 		#region System.Object Members
 
 		public override bool Equals(object obj)
