@@ -838,9 +838,11 @@ sess.Lock(pk, LockMode.Upgrade);]]></programlisting>
             It is possible to change the default behavior so that flush occurs less frequently.
             The <literal>FlushMode</literal> class defines three different modes:
             only flush at commit time (and only when the NHibernate <literal>ITransaction</literal>
-            API is used, or inside a transaction scope), flush automatically using the explained
-            routine (will only work inside an explicit NHibernate <literal>ITransaction</literal> or
-            inside a transaction scope), or never flush unless
+            API is used, or inside a transaction scope with a legacy option enabled - see
+            <xref linkend="transactions-scopes"/>), flush automatically using the explained
+            routine (will only work inside an explicit NHibernate <literal>ITransaction</literal>, or
+            inside a transaction scope with limitations for flushes on commit - see
+            <xref linkend="transactions-scopes"/>), or never flush unless
             <literal>Flush()</literal> is called explicitly. The last mode is useful for long
             running units of work, where an ISession is kept open and disconnected for a long time
             (see <xref linkend="transactions-optimistic" />).
