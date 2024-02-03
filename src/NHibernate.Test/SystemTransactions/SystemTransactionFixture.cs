@@ -10,6 +10,8 @@ using NHibernate.Engine;
 using NHibernate.Test.TransactionTest;
 using NUnit.Framework;
 
+using SysTran = System.Transactions;
+
 namespace NHibernate.Test.SystemTransactions
 {
 	[TestFixture]
@@ -643,24 +645,114 @@ namespace NHibernate.Test.SystemTransactions
 			}
 		}
 
+		// This test check a concurrency issue hard to reproduce. If it is flaky, it has to be considered failing.
+		// In such case, raise triesCount to investigate it locally with more chances of triggering the trouble.
 		[Test]
 		public void SupportsTransactionTimeout()
 		{
 			// Test case adapted from https://github.com/kaksmet/NHibBugRepro
+
+			// Create some test data.
+			const int entitiesCount = 5000;
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				for (var i = 0; i < 5000; i++)
+				for (var i = 0; i < entitiesCount; i++)
 				{
-					var person = new Person();
+					var person = new Person
+					{
+						NotNullData = Guid.NewGuid().ToString()
+					};
+
 					s.Save(person);
 				}
 
 				t.Commit();
 			}
 
-			var txOptions = new TransactionOptions { Timeout = TimeSpan.FromMilliseconds(1) };
+			// Setup unhandler exception catcher
+			_unhandledExceptionCount = 0;
+			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+			try
+			{
+				// Generate transaction timeouts.
+				const int triesCount = 100;
+				var txOptions = new TransactionOptions { Timeout = TimeSpan.FromMilliseconds(1) };
+				var timeoutsCount = 0;
+				for (var i = 0; i < triesCount; i++)
+				{
+					try
+					{
+						using var txScope = new TransactionScope(TransactionScopeOption.Required, txOptions);
+						using var session = OpenSession();
+						var data = session.CreateCriteria<Person>().List();
+						Assert.That(data, Has.Count.EqualTo(entitiesCount));
+						Thread.Sleep(2);
+						var count = session.Query<Person>().Count();
+						Assert.That(count, Is.EqualTo(entitiesCount));
+						txScope.Complete();
+					}
+					catch (Exception ex)
+					{
+						var currentEx = ex;
+						// Depending on where the transaction aborption has broken NHibernate processing, we may
+						// get various exceptions, like directly a TransactionAbortedException with an inner
+						// TimeoutException, or a HibernateException encapsulating a TransactionException with a
+						// timeout, ...
+						bool isTransactionException;
+						do
+						{
+							isTransactionException = currentEx is SysTran.TransactionException;
+							currentEx = currentEx.InnerException;
+						}
+						while (!isTransactionException && currentEx != null);
+						bool isTimeout;
+						do
+						{
+							isTimeout = currentEx is TimeoutException;
+							currentEx = currentEx?.InnerException;
+						}
+						while (!isTimeout && currentEx != null);
 
+						if (!isTimeout)
+						{
+							// We may also get a GenericADOException with an InvalidOperationException stating the
+							// transaction associated to the connection is no more active but not yet suppressed,
+							// and that for executing some SQL, we need to suppress it. That is a weak way of
+							// identifying the case, especially with the possibility of localization of the message.
+							currentEx = ex;
+							do
+							{
+								isTimeout = currentEx is InvalidOperationException && currentEx.Message.Contains("SQL");
+								currentEx = currentEx?.InnerException;
+							}
+							while (!isTimeout && currentEx != null);
+						}
+
+						if (isTimeout)
+							timeoutsCount++;
+						else
+							throw;
+					}
+				}
+
+				// Despite the Thread sleep and the count of entities to load, this test does get the timeout only for slightly
+				// more than 10% of the attempts.
+				Assert.That(timeoutsCount, Is.GreaterThan(5));
+				Assert.That(_unhandledExceptionCount, Is.EqualTo(0));
+			}
+			finally
+			{
+				AppDomain.CurrentDomain.UnhandledException -= CurrentDomain_UnhandledException;
+			}
+		}
+
+		private int _unhandledExceptionCount;
+
+		private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			_unhandledExceptionCount++;
+			Assert.Warn("Unhandled exception: {0}", e.ExceptionObject);
 		}
 
 		[Theory, Explicit("Bench")]

@@ -429,7 +429,7 @@ namespace NHibernate.Impl
 			private IDisposable _context;
 
 			[NonSerialized]
-			private bool _processing;
+			private volatile bool _processing;
 
 			public ProcessHelper()
 			{
