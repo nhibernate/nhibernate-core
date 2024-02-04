@@ -5162,7 +5162,6 @@ namespace NHibernate.Test.Legacy
 			l.CountryCode = "AU";
 			l.Description = "foo bar";
 			l.Locale = CultureInfo.CreateSpecificCulture("en-AU");
-			l.ExtendedLocale = CultureInfo.CreateSpecificCulture("en-US-POSIX");
 			l.StreetName = "Brunswick Rd";
 			l.StreetNumber = 300;
 			l.City = "Melbourne";
@@ -5178,7 +5177,6 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual("AU", l.CountryCode);
 			Assert.AreEqual("Melbourne", l.City);
 			Assert.AreEqual(CultureInfo.CreateSpecificCulture("en-AU"), l.Locale);
-			Assert.That(l.ExtendedLocale, Is.EqualTo(CultureInfo.CreateSpecificCulture("en-US-POSIX")));
 			s.Close();
 
 			s = OpenSession();

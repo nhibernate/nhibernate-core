@@ -19,7 +19,6 @@
 			/>
 		</composite-id>
 		<property name="Locale" />
-		<property name="ExtendedLocale" length="11" />
 		<property name="Description" />
 	</class>
 </hibernate-mapping>

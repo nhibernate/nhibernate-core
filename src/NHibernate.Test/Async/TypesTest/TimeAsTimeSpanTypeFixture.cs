@@ -50,18 +50,6 @@ namespace NHibernate.Test.TypesTest
 			get { return "TimeAsTimeSpan"; }
 		}
 
-		protected override void OnTearDown()
-		{
-			base.OnTearDown();
-
-			using (var s = OpenSession())
-			using (var tx = s.BeginTransaction())
-			{
-				s.CreateQuery("delete from TimeAsTimeSpanClass").ExecuteUpdate();
-				tx.Commit();
-			}
-		}
-
 		[Test]
 		public async Task SavingAndRetrievingAsync()
 		{

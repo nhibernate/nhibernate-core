@@ -29,14 +29,6 @@ namespace NHibernate.Test.TypesTest
 			s.Close();
 		}
 
-		protected override void OnTearDown()
-		{
-			ISession s = OpenSession();
-			s.Delete("from EnumStringClass");
-			s.Flush();
-			s.Close();
-		}
-
 		[Test]
 		public void ReadFromLoad()
 		{
