@@ -9,10 +9,7 @@ namespace NHibernate.Test.TypesTest
 	[TestFixture]
 	public class CultureInfoTypeFixture : TypeFixtureBase
 	{
-		protected override string TypeName
-		{
-			get { return "CultureInfo"; }
-		}
+		protected override string TypeName => "CultureInfo";
 
 		[Test]
 		public void ReadWriteBasicCulture()
@@ -75,7 +72,8 @@ namespace NHibernate.Test.TypesTest
 			{
 				var entity = s.Get<CultureInfoClass>(id);
 				Assert.That(entity.ExtendedCulture, Is.Not.Null);
-				Assert.That(entity.ExtendedCulture.Name, Is.EqualTo("en-US-posix"));
+				// Under Windows, it is named en-US-posix, but en-US-POSIX under Linux.
+				Assert.That(entity.ExtendedCulture.Name, Is.EqualTo("en-US-posix").IgnoreCase);
 				Assert.That(entity.ExtendedCulture, Is.EqualTo(CultureInfo.GetCultureInfo("en-US-posix")));
 				t.Commit();
 			}
