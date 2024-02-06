@@ -69,18 +69,6 @@ namespace NHibernate.Test.TypesTest
 			}
 		}
 
-		protected override void OnTearDown()
-		{
-			base.OnTearDown();
-
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				s.CreateQuery("delete from DateTimeOffsetClass").ExecuteUpdate();
-				t.Commit();
-			}
-		}
-
 		protected override void DropSchema()
 		{
 			(Sfi.ConnectionProvider.Driver as ClientDriverWithParamsStats)?.CleanUp();
@@ -353,6 +341,14 @@ namespace NHibernate.Test.TypesTest
 		protected override long DateAccuracyInTicks => Math.Max(TimeSpan.TicksPerMillisecond, base.DateAccuracyInTicks);
 		// The timestamp rounding in seeding does not account scale.
 		protected override bool RevisionCheck => false;
+
+		protected override void OnTearDown()
+		{
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			s.CreateQuery("delete DateTimeOffsetClass").ExecuteUpdate();
+			t.Commit();
+		}
 
 		[Test]
 		public async Task LowerDigitsAreIgnoredAsync()
