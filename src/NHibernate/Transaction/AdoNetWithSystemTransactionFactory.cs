@@ -467,7 +467,7 @@ namespace NHibernate.Transaction
 						timeOutGuard.Start();
 						while (isProcessing && timeOutGuard.ElapsedMilliseconds < _systemTransactionCompletionLockTimeout)
 						{
-							// Naïve yield.
+							// NaÃ¯ve yield.
 							Thread.Sleep(10);
 							isProcessing = _session.IsProcessing();
 						}
