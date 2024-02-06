@@ -395,6 +395,11 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
+		/// Indicates if the session is currently processing some operations.
+		/// </summary>
+		public bool IsProcessing => _processHelper.Processing;
+
+		/// <summary>
 		/// If not nested in another call to <c>BeginProcess</c> on this session, check and update the
 		/// session status and set its session id in context.
 		/// </summary>

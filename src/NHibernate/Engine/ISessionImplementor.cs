@@ -66,6 +66,15 @@ namespace NHibernate.Engine
 				: SessionIdLoggingContext.CreateOrNull(session.SessionId);
 		}
 
+		internal static bool IsProcessing(this ISessionImplementor session)
+		{
+			if (session == null)
+				return false;
+			return session is AbstractSessionImpl impl
+				? impl.IsProcessing
+				: false;
+		}
+
 		//6.0 TODO: Expose as ISessionImplementor.FutureBatch and replace method usages with property
 		internal static IQueryBatch GetFutureBatch(this ISessionImplementor session)
 		{

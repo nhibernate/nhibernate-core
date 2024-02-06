@@ -460,24 +460,24 @@ namespace NHibernate.Transaction
 					// cancelled on a new thread even for non-distributed scopes. So, the session could be doing some processing,
 					// and will not be interrupted until attempting some usage of the connection. See #3355.
 					// Thread safety of a concurrent session BeginProcess is ensured by the Wait performed by BeginProcess.
-					var context = _session.BeginProcess();
-					if (context == null)
+					var isProcessing = _session.IsProcessing();
+					if (isProcessing)
 					{
 						var timeOutGuard = new Stopwatch();
 						timeOutGuard.Start();
-						while (context == null && timeOutGuard.ElapsedMilliseconds < _systemTransactionCompletionLockTimeout)
+						while (isProcessing && timeOutGuard.ElapsedMilliseconds < _systemTransactionCompletionLockTimeout)
 						{
 							// Naïve yield.
 							Thread.Sleep(10);
-							context = _session.BeginProcess();
+							isProcessing = _session.IsProcessing();
 						}
-						if (context == null)
+						if (isProcessing)
 							throw new HibernateException(
 								$"Synchronization timeout for transaction completion. Either raise" +
 								$"{Cfg.Environment.SystemTransactionCompletionLockTimeout}, or check all scopes are properly" +
 								$"disposed and/or all direct System.Transaction.Current changes are properly managed.");
 					}
-					using (context)
+					using (_session.BeginContext())
 					{
 						// Flag active as false before running actions, otherwise the session may not cleanup as much
 						// as possible.
