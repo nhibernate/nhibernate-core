@@ -2471,6 +2471,9 @@ namespace NHibernate.Dialect
 			get { return "create table"; }
 		}
 
+		/// <summary>Command used to drop a temporary table.</summary>
+		public virtual string DropTemporaryTableString => "drop table";
+
 		/// <summary> 
 		/// Get any fragments needing to be postfixed to the command for
 		/// temporary table creation. 
