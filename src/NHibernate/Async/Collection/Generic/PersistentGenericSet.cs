@@ -84,15 +84,31 @@ namespace NHibernate.Collection.Generic
 			var array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
+
+			var elementType = persister.ElementType;
+			await (BeforeAssembleAsync(elementType, array, cancellationToken)).ConfigureAwait(false);
+
 			for (int i = 0; i < size; i++)
 			{
-				var element = await (persister.ElementType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false);
+				var element = await (elementType.AssembleAsync(array[i], Session, owner, cancellationToken)).ConfigureAwait(false);
 				if (element != null)
 				{
 					WrappedSet.Add((T) element);
 				}
 			}
 			SetInitialized();
+		}
+
+		private async Task BeforeAssembleAsync(IType elementType, object[] array, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (Session.PersistenceContext.BatchFetchQueue.QueryCacheQueue != null)
+				return;
+
+			for (int i = 0; i < array.Length; i++)
+			{
+				await (elementType.BeforeAssembleAsync(array[i], Session, cancellationToken)).ConfigureAwait(false);
+			}
 		}
 
 		public override async Task<object> ReadFromAsync(DbDataReader rs, ICollectionPersister role, ICollectionAliases descriptor, object owner, CancellationToken cancellationToken)

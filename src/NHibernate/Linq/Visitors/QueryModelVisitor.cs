@@ -476,13 +476,9 @@ namespace NHibernate.Linq.Visitors
 
 		private HqlSelect GetSelectClause(Expression selectClause)
 		{
-			if (!_root)
-				return _hqlTree.TreeBuilder.Select(
-					HqlGeneratorExpressionVisitor.Visit(selectClause, VisitorParameters).AsExpression());
-
 			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters);
 
-			visitor.VisitSelector(selectClause);
+			visitor.VisitSelector(selectClause, !_root);
 
 			if (visitor.ProjectionExpression != null)
 			{

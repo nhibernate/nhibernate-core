@@ -816,6 +816,50 @@ namespace NHibernate.Test.StaticProxyTest
 #endif
 		}
 
+#if NETCOREAPP3_1_OR_GREATER
+		public interface IWithStaticMethods
+		{
+			// C# 8
+			static void StaticMethod()
+			{
+			}
+
+#if NET7_0_OR_GREATER
+			// C# 11
+			static abstract void StaticAbstractMethod();
+
+			// C# 11
+			static virtual void StaticVirtualMethod()
+			{
+			}
+#endif
+		}
+
+		public class ClassWithStaticInterfaceMethods : IWithStaticMethods
+		{
+			public static void StaticAbstractMethod()
+			{
+			}
+		}
+		
+		[Test(Description = "GH3295")]
+		public void VerifyProxyForClassWithStaticInterfaceMethod()
+		{
+			var factory = new StaticProxyFactory();
+			factory.PostInstantiate(
+				typeof(ClassWithStaticInterfaceMethods).FullName,
+				typeof(ClassWithStaticInterfaceMethods),
+				new HashSet<System.Type> { typeof(INHibernateProxy) },
+				null, null, null, true);
+
+			var proxy = factory.GetProxy(1, null);
+			Assert.That(proxy, Is.Not.Null);
+			Assert.That(proxy, Is.InstanceOf<ClassWithStaticInterfaceMethods>());
+
+			Assert.That(factory.GetFieldInterceptionProxy(), Is.InstanceOf<ClassWithStaticInterfaceMethods>());
+		}
+#endif
+		
 #if NETFX
 		private static void VerifyGeneratedAssembly(System.Action assemblyGenerator)
 		{

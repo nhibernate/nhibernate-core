@@ -511,7 +511,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 		internal string GetCollectionSuffix(FromElement fromElement)
 		{
-			if (!fromElement.CollectionJoin && fromElement.QueryableCollection == null)
+			if (fromElement.QueryableCollection == null)
 			{
 				return null;
 			}
@@ -832,16 +832,6 @@ namespace NHibernate.Hql.Ast.ANTLR
 
 					HandleWithFragment(fromElement, with);
 				}
-
-				if (fromElement.Parent == null)
-				{
-					// Most likely means association join is used in invalid context
-					// I.e. in subquery: from EntityA a where exists (from EntityB join a.Assocation)  
-					// Maybe we should throw exception instead
-					fromElement.FromClause.AddChild(fromElement);
-					if (fromElement.IsImplied)
-						fromElement.JoinSequence.SetUseThetaStyle(true);
-				}
 			}
 
 			if ( log.IsDebugEnabled() )
@@ -930,7 +920,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 			return lhs.Path + "." + path;
 		}
 
-		IASTNode CreateFromElement(string path, IASTNode pathNode, IASTNode alias, IASTNode propertyFetch)
+		FromElement CreateFromElement(string path, IASTNode pathNode, IASTNode alias, IASTNode propertyFetch)
 		{
 			FromElement fromElement = _currentFromClause.AddFromElement(path, alias);
 			SetPropertyFetch(fromElement, propertyFetch, alias);

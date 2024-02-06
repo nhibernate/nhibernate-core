@@ -39,10 +39,9 @@ namespace NHibernate.Hql.Ast.ANTLR
         /// <summary>
         /// Indicates if the token could be an identifier.
         /// </summary>
-        public bool PossibleId
-        {
-            get { return HqlParser.possibleIds[Type]; }
-        }
+        // Since 5.5
+        [Obsolete("Use HqlParser.IsPossibleId method instead.")]
+        public bool PossibleId => HqlParser.IsPossibleId(this);
 
         /// <summary>
         /// Returns the previous token type.
@@ -62,7 +61,7 @@ namespace NHibernate.Hql.Ast.ANTLR
                     + Text
                     + "\",<" + Type + "> previously: <" + PreviousType + ">,line="
                     + Line + ",col="
-                    + CharPositionInLine + ",possibleID=" + PossibleId + "]";
+                    + CharPositionInLine + ",possibleID=" + HqlParser.IsPossibleId(this) + "]";
         }
     }
 }

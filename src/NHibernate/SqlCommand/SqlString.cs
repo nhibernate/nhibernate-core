@@ -702,6 +702,10 @@ namespace NHibernate.SqlCommand
 			if (_firstPartIndex < 0) return this;
 
 			GetTrimmedIndexes(out var sqlStartIndex, out var length);
+
+			if (_sqlStartIndex == sqlStartIndex && _length == length)
+				return this;
+
 			return length > 0
 				? new SqlString(this, sqlStartIndex, length)
 				: Empty;

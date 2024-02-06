@@ -127,6 +127,17 @@ namespace NHibernate.Linq
 			_root.NodesPreOrder.OfType<HqlFrom>().First().AddChild(from);
 		}
 
+		internal HqlTreeNode GetFromNodeByAlias(string alias) =>
+			_root.NodesPreOrder
+			     .First(x => x.AstNode.Type == HqlSqlWalker.FROM).Children
+			     .First(x => GetNodeAlias(x) == alias);
+
+		private static string GetNodeAlias(HqlTreeNode fromNode) =>
+			fromNode.Children
+			        .Select(x => x.AstNode)
+			        .First(x => x.Type == HqlSqlWalker.ALIAS)
+			        .Text;
+
 		internal HqlRange GetFromRangeClause()
 		{
 			return _root.NodesPreOrder.OfType<HqlFrom>().First().Children.OfType<HqlRange>().FirstOrDefault();

@@ -1208,8 +1208,13 @@ namespace NHibernate.Loader
 				? persister.EntityMetamodel.BytecodeEnhancementMetadata.GetUninitializedLazyProperties(entry.LoadedState)
 				: persister.EntityMetamodel.BytecodeEnhancementMetadata.GetUninitializedLazyProperties(obj);
 
-			var updateLazyProperties = fetchLazyProperties?.Intersect(uninitializedProperties).ToArray();
-			if (updateLazyProperties?.Length == 0)
+			if (uninitializedProperties.Count == 0)
+				return;
+
+			var updateLazyProperties = fetchAllProperties
+				? uninitializedProperties.ToArray()
+				: fetchLazyProperties.Intersect(uninitializedProperties).ToArray();
+			if (updateLazyProperties.Length == 0)
 			{
 				return; // No new lazy properites were loaded
 			}
@@ -1225,7 +1230,7 @@ namespace NHibernate.Loader
 				? EntityAliases[i].SuffixedPropertyAliases
 				: GetSubclassEntityAliases(i, persister);
 
-			if (!persister.InitializeLazyProperties(rs, id, obj, cols, updateLazyProperties, fetchAllProperties, session))
+			if (!persister.InitializeLazyProperties(rs, id, obj, cols, updateLazyProperties, false, session))
 			{
 				return;
 			}

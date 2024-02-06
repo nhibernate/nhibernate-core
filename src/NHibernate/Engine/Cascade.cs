@@ -203,7 +203,7 @@ namespace NHibernate.Engine
 
 							if (loadedValue != null)
 							{
-								eventSource.Delete(entry.Persister.EntityName, loadedValue, false, null);
+								eventSource.Delete(((EntityType) type).GetAssociatedEntityName(), loadedValue, false, null);
 							}
 						}
 					}

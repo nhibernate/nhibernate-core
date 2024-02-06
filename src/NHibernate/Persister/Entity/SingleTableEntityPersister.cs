@@ -696,7 +696,7 @@ possible solutions:
 		protected override bool IsSubclassPropertyDeferred(string propertyName, string entityName)
 		{
 			return
-				hasSequentialSelects && IsSubclassTableSequentialSelect(base.GetSubclassPropertyTableNumber(propertyName, entityName));
+				hasSequentialSelects && IsSubclassTableSequentialSelect(GetSubclassPropertyTableNumber(propertyName, entityName));
 		}
 
 		protected override bool IsPropertyDeferred(int propertyIndex)
@@ -713,9 +713,9 @@ possible solutions:
 
 		//Since v5.3
 		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
-		public new int GetSubclassPropertyTableNumber(string propertyName, string entityName)
+		public int GetSubclassPropertyTableNumber(string propertyName, string entityName)
 		{
-			return base.GetSubclassPropertyTableNumber(propertyName, entityName);
+			return GetSubclassJoinPropertyTableNumber(propertyName, entityName);
 		}
 
 		//Since v5.3

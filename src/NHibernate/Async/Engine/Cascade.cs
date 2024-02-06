@@ -151,7 +151,7 @@ namespace NHibernate.Engine
 
 							if (loadedValue != null)
 							{
-								await (eventSource.DeleteAsync(entry.Persister.EntityName, loadedValue, false, null, cancellationToken)).ConfigureAwait(false);
+								await (eventSource.DeleteAsync(((EntityType) type).GetAssociatedEntityName(), loadedValue, false, null, cancellationToken)).ConfigureAwait(false);
 							}
 						}
 					}

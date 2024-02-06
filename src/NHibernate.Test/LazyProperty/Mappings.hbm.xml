@@ -11,6 +11,7 @@
 		<property name="Name" />
 		<property name="ALotOfText" lazy="true" />
 		<property name="Image" lazy="true" />
+		<property name="NoSetterImage" access="nosetter.pascalcase-underscore" lazy="true" />
 		<property name="FieldInterceptor" />
     <bag name="Words" inverse="true" generic="true" cascade="all-delete-orphan" lazy="true" >
       <key column="ParentId" />

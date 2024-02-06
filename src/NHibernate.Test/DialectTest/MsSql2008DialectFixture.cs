@@ -148,16 +148,7 @@ namespace NHibernate.Test.DialectTest
 			Assert.That(dialect.GetTypeName(SqlTypeFactory.GetTime(max + 1)), Is.EqualTo("time").IgnoreCase, "Over max time");
 		}
 
-		private static readonly FieldInfo _mappingField =
-			typeof(Configuration).GetField("mapping", BindingFlags.Instance | BindingFlags.NonPublic);
-
-		private static IMapping GetMapping(Configuration cfg)
-		{
-			Assert.That(_mappingField, Is.Not.Null, "Unable to find field mapping");
-			var mapping = _mappingField.GetValue(cfg) as IMapping;
-			Assert.That(mapping, Is.Not.Null, "Unable to find mapping object");
-			return mapping;
-		}
+		private static IMapping GetMapping(Configuration cfg) => (IMapping) cfg.BuildSessionFactory();
 
 		private static void AssertSqlType(IType type, SqlType sqlType, IMapping mapping)
 		{

@@ -5,7 +5,7 @@
 	<class name="Base" abstract="true" dynamic-update="true" lazy="true">
 		<id name="Key" column="pdoid" generator="guid.comb"/>
 
-		<property name="IsDeleted" column="IsDeleted" />
+		<property name="IsDeleted" column="IsDeleted" type="TrueFalse" />
 
 		<filter name="deletedFilter" condition="IsDeleted = :deletedParam"/>
 
@@ -26,7 +26,7 @@
     </bag>
 		<set name="DocumentsFiltered" table="asset_to_document" lazy="true" cascade="none">
 			<key column="AssetId"/>
-			<many-to-many class="Document" column="DocumentId" where="IsDeleted = 0"/>
+			<many-to-many class="Document" column="DocumentId" where="IsDeleted = 'F'"/>
 		</set>
 	</union-subclass>
 
@@ -39,7 +39,7 @@
 	</union-subclass>
 
 	<filter-def name="deletedFilter">
-		<filter-param name="deletedParam" type="bool"/>
+		<filter-param name="deletedParam" type="TrueFalse"/>
 	</filter-def>
 
 </hibernate-mapping>

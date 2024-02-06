@@ -2,16 +2,20 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
 				   assembly="NHibernate.Test"
 				   namespace="NHibernate.Test.NHSpecificTest.NH750"
-				   default-access="field.camelcase-underscore"
-				   default-lazy="false">
+				   default-access="field.camelcase-underscore">
 	<class name="Device">
-		<id name="_id" column="`_id`" type="Int32" access="field">
+		<id name="Id" column="`_id`" type="Int32">
 			<generator class="native"/>
 		</id>
 		<property name="Manifacturer"/>
+		<many-to-one name="Template" />
 		<bag name="Drives" table="DriveOfDevice" cascade="all">
 			<key column="DeviceId"/>
 			<many-to-many class="Drive" column="DriveId" not-found="ignore"/>
+		</bag>
+		<bag name="DrivesNotIgnored" lazy="true" table="DriveOfDeviceNotIgnored" cascade="persist"  >
+			<key column="DeviceId"/>
+			<many-to-many class="Drive" column="DriveId" foreign-key="none"/>
 		</bag>
 	</class>
 

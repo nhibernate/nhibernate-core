@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -192,7 +191,15 @@ namespace NHibernate.Loader
 
 			if (qc != null)
 			{
-				_joinQueue.Enqueue(new CollectionJoinQueueEntry(qc, subalias, path, pathAlias));
+				var collection = new CollectionJoinQueueEntry(qc, subalias, path, pathAlias);
+				// Many-to-Many element entity join needs to be added right after collection bridge table
+				// (see IsManyToManyWith, ManyToManySelectFragment, IsManyToManyRoot usages)
+				if (qc.IsManyToMany)
+				{
+					collection.Walk(this);
+					return;
+				}
+				_joinQueue.Enqueue(collection);
 			}
 			else if (joinable is IOuterJoinLoadable jl)
 			{
@@ -340,10 +347,7 @@ namespace NHibernate.Loader
 					string[] aliasedLhsColumns = persister.GetElementColumnNames(alias);
 					string[] lhsColumns = persister.ElementColumnNames;
 
-					// if the current depth is 0, the root thing being loaded is the
-					// many-to-many collection itself.  Here, it is alright to use
-					// an inner join...
-					bool useInnerJoin = _depth == 0;
+					const bool useInnerJoin = false;
 
 					var joinType =
 						GetJoinType(
@@ -357,6 +361,11 @@ namespace NHibernate.Loader
 							_depth - 1,
 							null);
 
+					// It's safe to always use inner join for many-to-many not-found ignore mapping as it's processed by table group join;
+					// otherwise we need left join for proper not-found exception handling
+					if (joinType == JoinType.LeftOuterJoin && ((EntityType) type).IsNullable)
+						joinType = JoinType.InnerJoin;
+
 					AddAssociationToJoinTreeIfNecessary(
 						associationType,
 						aliasedLhsColumns,
@@ -367,6 +376,7 @@ namespace NHibernate.Loader
 				}
 				else if (type.IsComponentType)
 				{
+					_joinQueue.Enqueue(NextLevelJoinQueueEntry.Instance);
 					WalkCompositeElementTree(
 						(IAbstractComponentType) type,
 						persister.ElementColumnNames,
@@ -875,41 +885,50 @@ namespace NHibernate.Loader
 			JoinFragment outerjoin = Dialect.CreateOuterJoinFragment();
 
 			var sortedAssociations = GetSortedAssociations(associations);
-			OuterJoinableAssociation last = null;
-			foreach (OuterJoinableAssociation oj in sortedAssociations)
+			for (var index = 0; index < sortedAssociations.Count; index++)
 			{
-				if (last != null && last.IsManyToManyWith(oj))
+				OuterJoinableAssociation oj = sortedAssociations[index];
+				if (oj.IsCollection && oj.Joinable is IQueryableCollection qc && qc.IsManyToMany && index < sortedAssociations.Count - 1)
 				{
-					oj.AddManyToManyJoin(outerjoin, (IQueryableCollection) last.Joinable);
-				}
-				else
-				{
-					// NH Different behavior : NH1179 and NH1293
-					// Apply filters for entity joins and Many-To-One associations
-					SqlString filter = null;
-					var enabledFiltersForJoin = oj.ForceFilter ? enabledFilters : enabledFiltersForManyToOne;
-					if (oj.ForceFilter || enabledFiltersForJoin.Count > 0)
+					var entityAssociation = sortedAssociations[index + 1];
+					var f = qc.GetManyToManyFilterFragment(entityAssociation.RHSAlias, enabledFilters);
+					if (oj.IsManyToManyWith(entityAssociation)
+						&& TableGroupJoinHelper.ProcessAsTableGroupJoin(
+							new[] {oj, entityAssociation},
+							new[] {oj.On, entityAssociation.On, string.IsNullOrEmpty(f) ? SqlString.Empty : new SqlString(f)},
+							true,
+							outerjoin,
+							_ => true))
 					{
-						string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForJoin);
-						bool joinClauseDoesNotContainsFilterAlready =
-							oj.On?.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
-						if (joinClauseDoesNotContainsFilterAlready)
-						{
-							filter = new SqlString(manyToOneFilterFragment);
-						}
-					}
-
-					if (TableGroupJoinHelper.ProcessAsTableGroupJoin(new[] {oj}, new[] {oj.On, filter}, true, outerjoin, alias => true, factory))
+						index++;
 						continue;
-
-					oj.AddJoins(outerjoin);
-
-					// Ensure that the join condition is added to the join, not the where clause.
-					// Adding the condition to the where clause causes left joins to become inner joins.
-					if (SqlStringHelper.IsNotEmpty(filter))
-						outerjoin.AddFromFragmentString(filter);
+					}
 				}
-				last = oj;
+
+				// NH Different behavior : NH1179 and NH1293
+				// Apply filters for entity joins and Many-To-One associations
+				SqlString filter = null;
+				var enabledFiltersForJoin = oj.ForceFilter ? enabledFilters : enabledFiltersForManyToOne;
+				if (oj.ForceFilter || enabledFiltersForJoin.Count > 0)
+				{
+					string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForJoin);
+					bool joinClauseDoesNotContainsFilterAlready =
+						oj.On?.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
+					if (joinClauseDoesNotContainsFilterAlready)
+					{
+						filter = new SqlString(manyToOneFilterFragment);
+					}
+				}
+
+				if (TableGroupJoinHelper.ProcessAsTableGroupJoin(new[] {oj}, new[] {oj.On, filter}, true, outerjoin, _ => true))
+					continue;
+
+				oj.AddJoins(outerjoin);
+
+				// Ensure that the join condition is added to the join, not the where clause.
+				// Adding the condition to the where clause causes left joins to become inner joins.
+				if (SqlStringHelper.IsNotEmpty(filter))
+					outerjoin.AddFromFragmentString(filter);
 			}
 
 			return outerjoin;
@@ -1203,7 +1222,6 @@ namespace NHibernate.Loader
 				for (int i = 0; i < associations.Count; i++)
 				{
 					OuterJoinableAssociation join = associations[i];
-					OuterJoinableAssociation next = (i == associations.Count - 1) ? null : associations[i + 1];
 
 					IJoinable joinable = join.Joinable;
 					string entitySuffix = (suffixes == null || entityAliasCount >= suffixes.Length) ? null : suffixes[entityAliasCount];
@@ -1212,7 +1230,7 @@ namespace NHibernate.Loader
 																			? null
 																			: collectionSuffixes[collectionAliasCount];
 
-					string selectFragment = join.GetSelectFragment(entitySuffix, collectionSuffix, next);
+					string selectFragment = join.GetSelectFragment(entitySuffix, collectionSuffix);
 
 					if (!string.IsNullOrWhiteSpace(selectFragment))
 					{
@@ -1234,7 +1252,7 @@ namespace NHibernate.Loader
 		[Obsolete("This method has no more usages and will be removed in a future version")]
 		protected static string GetSelectFragment(OuterJoinableAssociation join, string entitySuffix, string collectionSuffix, OuterJoinableAssociation next = null)
 		{
-			return join.GetSelectFragment(entitySuffix, collectionSuffix, next);
+			return join.GetSelectFragment(entitySuffix, collectionSuffix);
 		}
 
 		protected interface IJoinQueueEntry

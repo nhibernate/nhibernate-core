@@ -67,9 +67,20 @@
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.Sql2008ClientDriver" />
 	</target>
 
+	<target name="setup-teamcity-sqlServer-MicrosoftDataSqlClientDriver">
+		<property name="db-service" value="MSSQL$SQLEXPRESS" />
+		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.MicrosoftDataSqlClientDriver" />
+	</target>
+
 	<target name="setup-teamcity-sqlServer2012">
 		<property name="db-service" value="MSSQL$SQLEXPRESS" />
 		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2012Dialect" />
+	</target>
+
+	<target name="setup-teamcity-sqlServer2012-MicrosoftDataSqlClientDriver">
+		<property name="db-service" value="MSSQL$SQLEXPRESS" />
+		<property name="nhibernate.dialect" value="NHibernate.Dialect.MsSql2012Dialect" />
+		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.MicrosoftDataSqlClientDriver" />
 	</target>
 
 	<target name="setup-teamcity-sqlServerCe32">

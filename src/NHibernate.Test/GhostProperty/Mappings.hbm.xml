@@ -19,6 +19,7 @@
 			<generator class="assigned" />
 		</id>
 		<discriminator column="Type" type="System.String"/>
+		<property name="Type" column="Type" insert="false" update="false" />
 		<subclass name="WireTransfer" discriminator-value="WT">
 			
 		</subclass>

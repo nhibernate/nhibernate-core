@@ -187,11 +187,11 @@ namespace NHibernate.Engine
 			{
 				Join join = joins[i];
 
-				withClauses[i] = GetWithClause(enabledFilters, ref withClauseFragment, join, last);
+				withClauses[i] = GetWithClause(enabledFilters, join, last, ref withClauseFragment);
 				last = join.Joinable;
 			}
 
-			if (rootJoinable == null && !IsThetaStyle && TableGroupJoinHelper.ProcessAsTableGroupJoin(joins, withClauses, includeAllSubclassJoins, joinFragment, alias => IsIncluded(alias), factory))
+			if (rootJoinable == null && !IsThetaStyle && TableGroupJoinHelper.ProcessAsTableGroupJoin(joins, withClauses, includeAllSubclassJoins, joinFragment, alias => IsIncluded(alias)))
 			{
 				return joinFragment;
 			}
@@ -223,7 +223,7 @@ namespace NHibernate.Engine
 			return joinFragment;
 		}
 
-		private SqlString GetWithClause(IDictionary<string, IFilter> enabledFilters, ref SqlString withClauseFragment, Join join, IJoinable last)
+		private SqlString GetWithClause(IDictionary<string, IFilter> enabledFilters, Join join, IJoinable last, ref SqlString withClauseFragment)
 		{
 			string on = join.AssociationType.GetOnCondition(join.Alias, factory, enabledFilters);
 			var withConditions = new List<object>();

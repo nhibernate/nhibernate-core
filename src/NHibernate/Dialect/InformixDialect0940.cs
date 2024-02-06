@@ -126,10 +126,7 @@ namespace NHibernate.Dialect
             return new ANSIJoinFragment();
         }
 
-		/// <inheritdoc />
-		public override bool SupportsCrossJoin => false;
-
-		/// <summary>
+        /// <summary>
         /// Does this Dialect have some kind of <c>LIMIT</c> syntax?
         /// </summary>
         /// <value>False, unless overridden.</value>

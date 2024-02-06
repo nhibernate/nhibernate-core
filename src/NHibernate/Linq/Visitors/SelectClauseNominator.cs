@@ -43,13 +43,13 @@ namespace NHibernate.Linq.Visitors
 			_parameters = parameters;
 		}
 
-		internal Expression Nominate(Expression expression)
+		internal Expression Nominate(Expression expression, bool isSubQuery = false)
 		{
 			HqlCandidates = new HashSet<Expression>();
 			ContainsUntranslatedMethodCalls = false;
 			_canBeCandidate = true;
 			_stateStack = new Stack<bool>();
-			_stateStack.Push(false);
+			_stateStack.Push(isSubQuery);
 
 			return Visit(expression);
 		}

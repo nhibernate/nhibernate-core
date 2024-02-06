@@ -47,6 +47,7 @@ namespace NHibernate.Test.Linq
 		public void CanSelectPropertiesIntoObjectArray()
 		{
 			var result = db.Users
+				.OrderBy(u => u.Id)
 				.Select(u => new object[] {u.Id, u.Name, u.InvalidLoginAttempts})
 				.First();
 
@@ -59,6 +60,7 @@ namespace NHibernate.Test.Linq
 		public void CanSelectComponentsIntoObjectArray()
 		{
 			var result = db.Users
+				.OrderBy(u => u.Id)
 				.Select(u => new object[] {u.Component, u.Component.OtherComponent})
 				.First();
 
@@ -94,6 +96,7 @@ namespace NHibernate.Test.Linq
 			const string name = "Julian";
 
 			var result = db.Users
+				.OrderBy(u => u.Id)
 				.Select(u => new object[] {u.Id, pi, name, DateTime.MinValue})
 				.First();
 
@@ -107,6 +110,7 @@ namespace NHibernate.Test.Linq
 		public void CanSelectPropertiesFromAssociationsIntoObjectArray()
 		{
 			var result = db.Users
+				.OrderBy(u => u.Id)
 				.Select(u => new object[] {u.Id, u.Role.Name, u.Role.Entity.Output})
 				.First();
 
@@ -119,6 +123,7 @@ namespace NHibernate.Test.Linq
 		public void CanSelectPropertiesIntoObjectArrayInProperty()
 		{
 			var result = db.Users
+				.OrderBy(u => u.Id)
 				.Select(u => new { Cells = new object[] { u.Id, u.Name, new object[u.Id] } })
 				.First();
 
@@ -132,6 +137,7 @@ namespace NHibernate.Test.Linq
 		public void CanSelectPropertiesIntoPropertyListInProperty()
 		{
 			var result = db.Users
+				.OrderBy(u => u.Id)
 				.Select(u => new { Cells = new List<object> { u.Id, u.Name, new object[u.Id] } })
 				.First();
 
@@ -144,7 +150,7 @@ namespace NHibernate.Test.Linq
 		[Test, Description("NH-2744")]
 		public void CanSelectPropertiesIntoNestedObjectArrays()
 		{
-			var query = db.Users.Select(u => new object[] {"Root", new object[] {"Sub1", u.Name, new object[] {"Sub2", u.Name}}});
+			var query = db.Users.OrderBy(u => u.Id).Select(u => new object[] {"Root", new object[] {"Sub1", u.Name, new object[] {"Sub2", u.Name}}});
 			var result = query.First();
 
 			Assert.That(result.Length, Is.EqualTo(2));

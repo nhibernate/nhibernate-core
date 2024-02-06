@@ -112,7 +112,7 @@ namespace NHibernate.Driver
 				case DbType.AnsiStringFixedLength:
 					dbParam.Size = IsAnsiText(dbParam, sqlType)
 						? MsSql2000Dialect.MaxSizeForAnsiClob
-						: MsSql2000Dialect.MaxSizeForLengthLimitedAnsiString;
+						: IsChar(dbParam, sqlType) ? sqlType.Length : MsSql2000Dialect.MaxSizeForLengthLimitedAnsiString;
 					break;
 				case DbType.Binary:
 					dbParam.Size = IsBlob(dbParam, sqlType)
@@ -130,7 +130,7 @@ namespace NHibernate.Driver
 				case DbType.StringFixedLength:
 					dbParam.Size = IsText(dbParam, sqlType)
 						? MsSql2000Dialect.MaxSizeForClob
-						: MsSql2000Dialect.MaxSizeForLengthLimitedString;
+						: IsChar(dbParam, sqlType) ? sqlType.Length : MsSql2000Dialect.MaxSizeForLengthLimitedString;
 					break;
 				case DbType.DateTime2:
 					dbParam.Size = MsSql2000Dialect.MaxDateTime2;
@@ -198,6 +198,18 @@ namespace NHibernate.Driver
 		{
 			return sqlType is BinaryBlobSqlType || DbType.Binary == dbParam.DbType && sqlType.LengthDefined &&
 			       sqlType.Length > MsSql2000Dialect.MaxSizeForLengthLimitedBinary;
+		}
+		
+		/// <summary>
+		/// Interprets if a parameter is a character (for the purposes of setting its default size)
+		/// </summary>
+		/// <param name="dbParam">The parameter</param>
+		/// <param name="sqlType">The <see cref="SqlType" /> of the parameter</param>
+		/// <returns>True, if the parameter should be interpreted as a character, otherwise False</returns>
+		protected static bool IsChar(DbParameter dbParam, SqlType sqlType)
+		{
+			return sqlType.LengthDefined && sqlType.Length == 1 &&
+			       (dbParam.DbType == DbType.StringFixedLength || dbParam.DbType == DbType.AnsiStringFixedLength);
 		}
 
 		/// <inheritdoc />

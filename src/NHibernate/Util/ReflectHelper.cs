@@ -820,31 +820,18 @@ namespace NHibernate.Util
 			return foundMethod;
 		}
 
-		internal static object GetConstantValue(string qualifiedName)
-		{
-			return GetConstantValue(qualifiedName, null);
-		}
-
 		internal static object GetConstantValue(string qualifiedName, ISessionFactoryImplementor sfi)
 		{
 			string className = StringHelper.Qualifier(qualifiedName);
 
-			if (!string.IsNullOrEmpty(className))
-			{
-				System.Type t = System.Type.GetType(className);
+			if (string.IsNullOrEmpty(className))
+				return null;
 
-				if (t == null && sfi != null)
-				{
-					t = System.Type.GetType(sfi.GetImportedClassName(className));
-				}
+			var t = System.Type.GetType(sfi?.GetImportedClassName(className) ?? className);
 
-				if (t != null)
-				{
-					return GetConstantValue(t, StringHelper.Unqualify(qualifiedName));
-				}
-			}
-
-			return null;
+			return t == null
+				? null
+				: GetConstantValue(t, StringHelper.Unqualify(qualifiedName));
 		}
 
 		// Since v5

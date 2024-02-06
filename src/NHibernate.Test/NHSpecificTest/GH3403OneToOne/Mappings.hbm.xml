@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH3403OneToOne">
+  <class name="Entity1">
+    <id name="Id">
+      <generator class="guid"/>
+    </id>
+    <one-to-one name="Child" cascade="all-delete-orphan" foreign-key="none" />
+  </class>
+  <class name="Entity2">
+    <id name="Id">
+      <generator class="foreign">
+        <param name="property">Parent</param>
+      </generator>
+    </id>
+    <one-to-one name="Parent" foreign-key="none"  />
+  </class>
+</hibernate-mapping>

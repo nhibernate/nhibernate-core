@@ -547,62 +547,11 @@ namespace NHibernate.Hql.Ast.ANTLR
 			try
 			{
 				var ast = (IASTNode) parser.statement().Tree;
-
-				var walker = new NodeTraverser(new ConstantConverter(_sfi));
-				walker.TraverseDepthFirst(ast);
-
 				return ast;
 			}
 			finally
 			{
 				parser.ParseErrorHandler.ThrowQueryException();
-			}
-		}
-
-		class ConstantConverter : IVisitationStrategy
-		{
-			private IASTNode _dotRoot;
-			private readonly ISessionFactoryImplementor _sfi;
-
-			public ConstantConverter(ISessionFactoryImplementor sfi)
-			{
-				_sfi = sfi;
-			}
-
-			public void Visit(IASTNode node)
-			{
-				if (_dotRoot != null)
-				{
-					// we are already processing a dot-structure
-					if (ASTUtil.IsSubtreeChild(_dotRoot, node))
-					{
-						// ignore it...
-						return;
-					}
-
-					// we are now at a new tree level
-					_dotRoot = null;
-				}
-
-				if (_dotRoot == null && node.Type == HqlSqlWalker.DOT)
-				{
-					_dotRoot = node;
-					HandleDotStructure(_dotRoot);
-				}
-			}
-
-			private void HandleDotStructure(IASTNode dotStructureRoot)
-			{
-				var expression = ASTUtil.GetPathText(dotStructureRoot);
-
-				var constant = ReflectHelper.GetConstantValue(expression, _sfi);
-
-				if (constant != null)
-				{
-					dotStructureRoot.ClearChildren();
-					dotStructureRoot.Type = HqlSqlWalker.JAVA_CONSTANT;
-					dotStructureRoot.Text = expression;
-				}
 			}
 		}
 	}

@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using NHibernate.AdoNet;
@@ -74,14 +75,37 @@ namespace NHibernate.Driver
 				// Since the .NET currency type has 4 decimal places, we use a decimal type in PostgreSQL instead of its native 2 decimal currency type.
 				dbParam.DbType = DbType.Decimal;
 			}
-			else if (DriverVersionMajor < 6 || sqlType.DbType != DbType.DateTime)
+			else
 			{
 				dbParam.DbType = sqlType.DbType;
 			}
-			else
+		}
+
+		public override void AdjustCommand(DbCommand command)
+		{
+			if (DriverVersionMajor >= 6)
 			{
-				// Let Npgsql 6 driver to decide parameter type 
+				for (var i = 0; i < command.Parameters.Count; i++)
+				{
+					var parameter = command.Parameters[i];
+					if (parameter.DbType == DbType.DateTime &&
+					    parameter.Value is DateTime dateTime &&
+					    dateTime.Kind != DateTimeKind.Utc)
+					{
+						// There are breaking changes in Npgsql 6 as following:
+						// UTC DateTime is now strictly mapped to timestamptz,
+						// while Local/Unspecified DateTime is now strictly mapped to timestamp.
+						//
+						// DbType.DateTime now maps to timestamptz, not timestamp.
+						// DbType.DateTime2 continues to map to timestamp
+						//
+						// See more details here: https://www.npgsql.org/doc/release-notes/6.0.html#detailed-notes
+						parameter.DbType = DbType.DateTime2;
+					}
+				}
 			}
+
+			base.AdjustCommand(command);
 		}
 
 		// Prior to v3, Npgsql was expecting DateTime for time.

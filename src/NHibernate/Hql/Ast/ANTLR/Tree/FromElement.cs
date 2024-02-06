@@ -707,12 +707,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			{
 				// HHH-276 : implied joins in a subselect where clause - The destination needs to be added
 				// to the destination's from clause.
-				FromClause.AddChild(this);	// Not sure if this is will fix everything, but it works.
+				FromClause.AddChild(this);
+
+				// Generate correlated implied joins inside subquery implicitly
+				// As some dialects (MySql) do not support correlated columns to be used in subquery join ON clause
+				if (IsImplied)
+				{
+					JoinSequence.SetUseThetaStyle(true);
+				}
 			}
 			else
 			{
-				// Otherwise, the destination node was implied by the FROM clause and the FROM clause processor
-				// will automatically add it in the right place.
+				FromClause.AppendFromElement(this);
 			}
 		}
 

@@ -188,6 +188,7 @@ namespace NHibernate.Event.Default
 		{
 			log.Debug("processing flush-time cascades");
 
+			var anything = Anything;
 			ICollection list = IdentityMap.ConcurrentEntries(session.PersistenceContext.EntityEntries);
 			//safe from concurrent modification because of how entryList() is implemented on IdentityMap
 			foreach (DictionaryEntry me in list)
@@ -196,7 +197,7 @@ namespace NHibernate.Event.Default
 				Status status = entry.Status;
 				if (status == Status.Loaded || status == Status.Saving || status == Status.ReadOnly)
 				{
-					CascadeOnFlush(session, entry.Persister, me.Key, Anything);
+					CascadeOnFlush(session, entry.Persister, me.Key, anything);
 				}
 			}
 		}

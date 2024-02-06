@@ -25,10 +25,7 @@ namespace NHibernate.Linq.Visitors
 		{
 			_nameGenerator = new NameGenerator(queryModel);
 			_queryModel = queryModel;
-			AddJoinMethod = AddJoin;
 		}
-		
-		internal System.Action<QueryModel, NhJoinClause> AddJoinMethod { get; }
 
 		public IEnumerable<NhJoinClause> Joins
 		{
@@ -42,7 +39,7 @@ namespace NHibernate.Linq.Visitors
 			if (!_joins.TryGetValue(key, out join))
 			{
 				join = new NhJoinClause(_nameGenerator.GetNewName(), expression.Type, expression);
-				AddJoinMethod(_queryModel, join);
+				AddJoin(_queryModel, join);
 				_joins.Add(key, join);
 			}
 

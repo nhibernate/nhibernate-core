@@ -154,15 +154,30 @@ namespace NHibernate.Collection.Generic
 			var array = (object[])disassembled;
 			int size = array.Length;
 			BeforeInitialize(persister, size);
+
+			var elementType = persister.ElementType;
+			BeforeAssemble(elementType, array);
+
 			for (int i = 0; i < size; i++)
 			{
-				var element = persister.ElementType.Assemble(array[i], Session, owner);
+				var element = elementType.Assemble(array[i], Session, owner);
 				if (element != null)
 				{
 					WrappedSet.Add((T) element);
 				}
 			}
 			SetInitialized();
+		}
+
+		private void BeforeAssemble(IType elementType, object[] array)
+		{
+			if (Session.PersistenceContext.BatchFetchQueue.QueryCacheQueue != null)
+				return;
+
+			for (int i = 0; i < array.Length; i++)
+			{
+				elementType.BeforeAssemble(array[i], Session);
+			}
 		}
 
 		public override bool Empty

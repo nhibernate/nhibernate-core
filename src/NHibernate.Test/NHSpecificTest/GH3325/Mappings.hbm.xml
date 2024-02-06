@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH3325">
+
+  <class name="Entity">
+    <id name="Id" generator="guid.comb"/>
+    <version name="Version" column="Version" type="Int32" unsaved-value="-1" />
+    <property name="Name"/>
+    <set name="Children" cascade="persist,delete,save-update,evict,lock,replicate,delete-orphan">
+      <key column="Parent" />
+      <one-to-many class="ChildEntity"/>
+    </set>
+  </class>
+
+  <class name="EntityWithoutDeleteOrphan">
+    <id name="Id" generator="guid.comb"/>
+    <property name="Name"/>
+    <set name="Children" cascade="persist,merge,save-update">
+      <key column="ParentWdo" />
+      <one-to-many class="ChildEntity"/>
+    </set>
+  </class>
+
+  <class name="ChildEntity">
+    <!-- Do not use a persisted on save generator for children. Otherwise flush cascade may
+         trigger parent insertion as a side effect, which tends to hide troubles. -->
+    <id name="Id" generator="guid.comb"/>
+    <property name="Name"/>
+  </class>
+
+</hibernate-mapping>
