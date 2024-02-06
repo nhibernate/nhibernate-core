@@ -21,12 +21,12 @@ namespace NHibernate.Test.NHSpecificTest.GH0000
 	/// Fixture using 'by code' mappings
 	/// </summary>
 	/// <remarks>
-	/// This fixture is identical to <see cref="FixtureAsync" /> except the <see cref="Entity" /> mapping is performed 
+	/// This fixture is identical to <see cref="FixtureAsync" /> except the <see cref="Entity" /> mapping is performed
 	/// by code in the GetMappings method, and does not require the <c>Mappings.hbm.xml</c> file. Use this approach
 	/// if you prefer.
 	/// </remarks>
 	[TestFixture]
-	public class ByCodeFixtureAsync : TestCaseMappingByCode
+	public class FixtureByCodeAsync : TestCaseMappingByCode
 	{
 		protected override HbmMapping GetMappings()
 		{
