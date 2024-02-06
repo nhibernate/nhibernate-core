@@ -532,6 +532,8 @@ namespace NHibernate.Dialect
 			return name.Length > 30 ? name.Substring(1, (30) - (1)) : name;
 		}
 
+		public override bool? PerformTemporaryTableDDLInIsolation() => true;
+
 		public override bool DropTemporaryTableAfterUse()
 		{
 			return false;

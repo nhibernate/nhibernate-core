@@ -717,28 +717,28 @@ namespace NHibernate.Dialect
 
 		/// <summary> 
 		/// Does the dialect require that temporary table DDL statements occur in
-		/// isolation from other statements?  This would be the case if the creation
+		/// isolation from other statements? This would be the case if the creation
 		/// would cause any current transaction to get committed implicitly.
-		///  </summary>
-		/// <returns> see the result matrix above. </returns>
+		/// </summary>
+		/// <returns>See the result matrix in the remarks.</returns>
 		/// <remarks>
-		/// JDBC defines a standard way to query for this information via the
-		/// {@link java.sql.DatabaseMetaData#dataDefinitionCausesTransactionCommit()}
-		/// method.  However, that does not distinguish between temporary table
-		/// DDL and other forms of DDL; MySQL, for example, reports DDL causing a
-		/// transaction commit via its driver, even though that is not the case for
-		/// temporary table DDL.
-		/// <p/>
-		/// Possible return values and their meanings:<ul>
-		/// <li>{@link Boolean#TRUE} - Unequivocally, perform the temporary table DDL in isolation.</li>
-		/// <li>{@link Boolean#FALSE} - Unequivocally, do <b>not</b> perform the temporary table DDL in isolation.</li>
-		/// <li><i>null</i> - defer to the JDBC driver response in regards to {@link java.sql.DatabaseMetaData#dataDefinitionCausesTransactionCommit()}</li>
-		/// </ul>
+		/// Possible return values and their meanings:
+		/// <list type="bullet">
+		/// <item>
+		/// <term><see langword="true" /></term>
+		/// <description>Unequivocally, perform the temporary table DDL in isolation.</description>
+		/// </item>
+		/// <item>
+		/// <term><see langword="false" /></term>
+		/// <description>Unequivocally, do <b>not</b> perform the temporary table DDL in isolation.</description>
+		/// </item>
+		/// <item>
+		/// <term><see langword="null" /></term>
+		/// <description>Defer to <see cref="Cfg.Settings.IsDataDefinitionImplicitCommit" />.</description>
+		/// </item>
+		/// </list>
 		/// </remarks>
-		public virtual bool? PerformTemporaryTableDDLInIsolation()
-		{
-			return null;
-		}
+		public virtual bool? PerformTemporaryTableDDLInIsolation() => null;
 
 		/// <summary> Do we need to drop the temporary table after use? </summary>
 		public virtual bool DropTemporaryTableAfterUse()
