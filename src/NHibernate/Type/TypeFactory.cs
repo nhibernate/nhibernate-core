@@ -292,7 +292,9 @@ namespace NHibernate.Type
 			RegisterType(typeof (Boolean), NHibernateUtil.Boolean, new[] { "boolean", "bool" });
 			RegisterType(typeof (Byte), NHibernateUtil.Byte, new[]{ "byte"});
 			RegisterType(typeof (Char), NHibernateUtil.Character, new[] {"character", "char"});
-			RegisterType(typeof (CultureInfo), NHibernateUtil.CultureInfo, new[]{ "locale"});
+			RegisterType(typeof (CultureInfo), NHibernateUtil.CultureInfo, new[] { "locale" },
+				l => GetType(NHibernateUtil.CultureInfo, l, len => new CultureInfoType(SqlTypeFactory.GetString(len))),
+				false);
 			RegisterType(typeof (DateTime), NHibernateUtil.DateTime, new[] { "datetime" },
 				s => GetType(NHibernateUtil.DateTime, s, scale => new DateTimeType(SqlTypeFactory.GetDateTime((byte)scale))),
 				false);
@@ -344,11 +346,10 @@ namespace NHibernate.Type
 		}
 
 		/// <summary>
-		/// Register other NO Default .NET type
+		/// Register types which are not a default for a .NET type.
 		/// </summary>
 		/// <remarks>
-		/// These type will be used only when the "type" attribute was is specified in the mapping.
-		/// These are in here because needed to NO override default CLR types and be available in mappings
+		/// These types will be used only when the "type" attribute is specified in the mapping.
 		/// </remarks>
 		private static void RegisterBuiltInTypes()
 		{

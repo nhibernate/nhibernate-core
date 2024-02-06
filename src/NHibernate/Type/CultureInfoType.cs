@@ -8,17 +8,21 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// Maps a <see cref="System.Globalization.CultureInfo"/> Property 
+	/// Maps a <see cref="CultureInfo"/> Property 
 	/// to a <see cref="DbType.String"/> column.
 	/// </summary>
 	/// <remarks>
 	/// CultureInfoType stores the culture name (not the Culture ID) of the 
-	/// <see cref="System.Globalization.CultureInfo"/> in the DB.
+	/// <see cref="CultureInfo"/> in the DB.
 	/// </remarks>
 	[Serializable]
 	public partial class CultureInfoType : ImmutableType, ILiteralType
 	{
 		internal CultureInfoType() : base(new StringSqlType(5))
+		{
+		}
+
+		internal CultureInfoType(StringSqlType sqlType) : base(sqlType)
 		{
 		}
 

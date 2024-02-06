@@ -45,18 +45,6 @@ namespace NHibernate.Test.TypesTest
 			}
 		}
 
-		protected override void OnTearDown()
-		{
-			base.OnTearDown();
-
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				s.CreateQuery("delete from DecimalClass").ExecuteUpdate();
-				t.Commit();
-			}
-		}
-
 		/// <summary>
 		/// Test that two decimal fields that are exactly equal are returned
 		/// as Equal by the DecimalType.

@@ -57,14 +57,10 @@ namespace NHibernate.Test.TypesTest
 
 		protected override void OnTearDown()
 		{
-			base.OnTearDown();
-
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				s.CreateQuery("delete from DateTimeClass").ExecuteUpdate();
-				t.Commit();
-			}
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			s.CreateQuery("delete from DateTimeClass").ExecuteUpdate();
+			t.Commit();
 		}
 
 		protected override void DropSchema()

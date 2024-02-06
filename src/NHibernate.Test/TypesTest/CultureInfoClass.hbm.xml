@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" default-lazy="false">
+  <class name="NHibernate.Test.TypesTest.CultureInfoClass, NHibernate.Test" table="nh_ci">
+    <id name="Id" generator="guid.comb" />
+
+    <property name="BasicCulture" />
+    <property name="ExtendedCulture" length="11" />
+  </class>
+</hibernate-mapping>
