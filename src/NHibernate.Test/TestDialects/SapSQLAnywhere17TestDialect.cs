@@ -1,4 +1,4 @@
-﻿namespace NHibernate.Test.TestDialects
+namespace NHibernate.Test.TestDialects
 {
 	public class SapSQLAnywhere17TestDialect : TestDialect
 	{
@@ -43,5 +43,11 @@
 		/// Does not support SELECT FOR UPDATE 
 		/// </summary>
 		public override bool SupportsSelectForUpdate => false;
+
+		/// <summary>
+		/// SQL Anywhere freezes on transaction scope timeout occuring on concurrent threads, always causing the
+		/// synchronization for end of session processing to timeout.
+		/// </summary>
+		public override bool SupportsTransactionScopeTimeouts => false;
 	}
 }

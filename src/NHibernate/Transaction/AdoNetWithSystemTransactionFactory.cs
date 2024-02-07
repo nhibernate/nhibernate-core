@@ -243,9 +243,9 @@ namespace NHibernate.Transaction
 					// Remove the block then throw.
 					Unlock();
 					throw new HibernateException(
-						$"Synchronization timeout for transaction completion. Either raise" +
-						$"{Cfg.Environment.SystemTransactionCompletionLockTimeout}, or check all scopes are properly" +
-						$"disposed and/or all direct System.Transaction.Current changes are properly managed.");
+						"A synchronization timeout occurred at transaction completion. Either raise " +
+						$"{Cfg.Environment.SystemTransactionCompletionLockTimeout}, or check all scopes are properly " +
+						"disposed and/or all direct System.Transaction.Current changes are properly managed.");
 				}
 				catch (HibernateException)
 				{
@@ -452,6 +452,7 @@ namespace NHibernate.Transaction
 				// do an early exit here in such case.
 				if (!IsInActiveTransaction)
 					return;
+				var isSessionProcessing = _session.IsProcessing();
 				try
 				{
 					// Allow transaction completed actions to run while others stay blocked.
@@ -460,22 +461,27 @@ namespace NHibernate.Transaction
 					// cancelled on a new thread even for non-distributed scopes. So, the session could be doing some processing,
 					// and will not be interrupted until attempting some usage of the connection. See #3355.
 					// Thread safety of a concurrent session BeginProcess is ensured by the Wait performed by BeginProcess.
-					var isProcessing = _session.IsProcessing();
-					if (isProcessing)
+					if (isSessionProcessing)
 					{
 						var timeOutGuard = new Stopwatch();
 						timeOutGuard.Start();
-						while (isProcessing && timeOutGuard.ElapsedMilliseconds < _systemTransactionCompletionLockTimeout)
+						while (isSessionProcessing && timeOutGuard.ElapsedMilliseconds < _systemTransactionCompletionLockTimeout)
 						{
 							// Naïve yield.
 							Thread.Sleep(10);
-							isProcessing = _session.IsProcessing();
+							isSessionProcessing = _session.IsProcessing();
 						}
-						if (isProcessing)
-							throw new HibernateException(
-								$"Synchronization timeout for transaction completion. Either raise" +
-								$"{Cfg.Environment.SystemTransactionCompletionLockTimeout}, or check all scopes are properly" +
-								$"disposed and/or all direct System.Transaction.Current changes are properly managed.");
+						if (isSessionProcessing)
+						{
+							// Throwing would give up attempting to close the session if need be, which may still succeed. So,
+							// just log an error.
+							_logger.Error(
+								"A synchronization timeout occurred at transaction completion: the session is still processing. Attempting " +
+									"to finalize the transaction concurrently, which may cause thread safety failure. You may " +
+									"raise {0} if it is set too low. It may also be a limitation of the data provider, like not " +
+									"supporting transaction scope timeouts occurring on concurrent threads.",
+								Cfg.Environment.SystemTransactionCompletionLockTimeout);
+						}
 					}
 					using (_session.BeginContext())
 					{
@@ -515,6 +521,15 @@ namespace NHibernate.Transaction
 				{
 					// Dispose releases blocked threads by the way.
 					Dispose();
+				}
+
+				if (isSessionProcessing)
+				{
+					throw new HibernateException(
+						"A synchronization timeout occurred at transaction completion: the session was still processing. You may " +
+							$"raise {Cfg.Environment.SystemTransactionCompletionLockTimeout} if it is set too low. It may also " +
+							"be a limitation of the data provider, like not supporting transaction scope timeouts occurring on " +
+							"concurrent threads.");
 				}
 			}
 
