@@ -476,10 +476,11 @@ namespace NHibernate.Transaction
 							// Throwing would give up attempting to close the session if need be, which may still succeed. So,
 							// just log an error.
 							_logger.Error(
-								"A synchronization timeout occurred at transaction completion: the session is still processing. Attempting " +
-									"to finalize the transaction concurrently, which may cause thread safety failure. You may " +
-									"raise {0} if it is set too low. It may also be a limitation of the data provider, like not " +
-									"supporting transaction scope timeouts occurring on concurrent threads.",
+								"A synchronization timeout occurred at transaction completion: the session is still processing. " +
+									"Attempting to finalize the transaction concurrently, which may cause a thread concurrency failure. " +
+									"You may raise {0} if it is set too low. It may also be a limitation of the data provider, " +
+									"like locks applied on its side while processing transaction cancellations occurring on concurrent threads, " +
+									"thus preventing the session to finish its current processing during a transaction cancellation.",
 								Cfg.Environment.SystemTransactionCompletionLockTimeout);
 						}
 					}
@@ -526,10 +527,11 @@ namespace NHibernate.Transaction
 				if (isSessionProcessing)
 				{
 					throw new HibernateException(
-						"A synchronization timeout occurred at transaction completion: the session was still processing. You may " +
-							$"raise {Cfg.Environment.SystemTransactionCompletionLockTimeout} if it is set too low. It may also " +
-							"be a limitation of the data provider, like not supporting transaction scope timeouts occurring on " +
-							"concurrent threads.");
+						"A synchronization timeout occurred at transaction completion: the session was still processing. " +
+							$"You may raise {Cfg.Environment.SystemTransactionCompletionLockTimeout} if it is set too low. " +
+							"It may also be a limitation of the data provider, " +
+							"like locks applied on its side while processing transaction cancellations occurring on concurrent threads, " +
+							"thus preventing the session to finish its current processing during a transaction cancellation.");
 				}
 			}
 

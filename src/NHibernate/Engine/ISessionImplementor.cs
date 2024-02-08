@@ -67,13 +67,7 @@ namespace NHibernate.Engine
 		}
 
 		internal static bool IsProcessing(this ISessionImplementor session)
-		{
-			if (session == null)
-				return false;
-			return session is AbstractSessionImpl impl
-				? impl.IsProcessing
-				: false;
-		}
+			=> session is AbstractSessionImpl impl && impl.IsProcessing;
 
 		//6.0 TODO: Expose as ISessionImplementor.FutureBatch and replace method usages with property
 		internal static IQueryBatch GetFutureBatch(this ISessionImplementor session)
