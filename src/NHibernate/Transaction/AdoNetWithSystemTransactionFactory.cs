@@ -24,6 +24,10 @@ namespace NHibernate.Transaction
 		/// </summary>
 		protected int SystemTransactionCompletionLockTimeout { get; private set; }
 		/// <summary>
+		/// See <see cref="Cfg.Environment.IgnoreSessionSynchronizationFailuresOnSystemTransaction"/>.
+		/// </summary>
+		protected bool IgnoreSessionSynchronizationFailuresOnSystemTransaction { get; private set; }
+		/// <summary>
 		/// See <see cref="Cfg.Environment.UseConnectionOnSystemTransactionPrepare"/>.
 		/// </summary>
 		protected bool UseConnectionOnSystemTransactionPrepare { get; private set; }
@@ -33,10 +37,12 @@ namespace NHibernate.Transaction
 		{
 			base.Configure(props);
 			SystemTransactionCompletionLockTimeout =
-				PropertiesHelper.GetInt32(Cfg.Environment.SystemTransactionCompletionLockTimeout, props, 5000);
+				PropertiesHelper.GetInt32(Cfg.Environment.SystemTransactionCompletionLockTimeout, props, 1000);
 			if (SystemTransactionCompletionLockTimeout < -1)
 				throw new HibernateException(
 					$"Invalid {Cfg.Environment.SystemTransactionCompletionLockTimeout} value: {SystemTransactionCompletionLockTimeout}. It can not be less than -1.");
+			IgnoreSessionSynchronizationFailuresOnSystemTransaction =
+				PropertiesHelper.GetBoolean(Cfg.Environment.IgnoreSessionSynchronizationFailuresOnSystemTransaction, props, true);
 			UseConnectionOnSystemTransactionPrepare =
 				PropertiesHelper.GetBoolean(Cfg.Environment.UseConnectionOnSystemTransactionPrepare, props, true);
 		}
@@ -130,7 +136,7 @@ namespace NHibernate.Transaction
 		{
 			var transactionContext = new SystemTransactionContext(
 				session, transaction, SystemTransactionCompletionLockTimeout,
-				UseConnectionOnSystemTransactionPrepare);
+				UseConnectionOnSystemTransactionPrepare, IgnoreSessionSynchronizationFailuresOnSystemTransaction);
 			transactionContext.EnlistedTransaction.EnlistVolatile(
 				transactionContext,
 				UseConnectionOnSystemTransactionPrepare
@@ -189,6 +195,7 @@ namespace NHibernate.Transaction
 
 			private readonly ISessionImplementor _session;
 			private readonly bool _useConnectionOnSystemTransactionPrepare;
+			private readonly bool _ignoreSessionSynchronizationFailures;
 			private readonly System.Transactions.Transaction _originalTransaction;
 			private readonly ManualResetEventSlim _lock = new ManualResetEventSlim(true);
 			private volatile bool _needCompletionLocking = true;
@@ -204,6 +211,8 @@ namespace NHibernate.Transaction
 			/// <param name="transaction">The transaction into which the context will be enlisted.</param>
 			/// <param name="systemTransactionCompletionLockTimeout">See <see cref="Cfg.Environment.SystemTransactionCompletionLockTimeout"/>.</param>
 			/// <param name="useConnectionOnSystemTransactionPrepare">See <see cref="Cfg.Environment.UseConnectionOnSystemTransactionPrepare"/>.</param>
+			// Since 5.6
+			[Obsolete("Use overload with an additionnal boolean parameter")]
 			public SystemTransactionContext(
 				ISessionImplementor session,
 				System.Transactions.Transaction transaction,
@@ -215,6 +224,29 @@ namespace NHibernate.Transaction
 				EnlistedTransaction = transaction.Clone();
 				_systemTransactionCompletionLockTimeout = systemTransactionCompletionLockTimeout;
 				_useConnectionOnSystemTransactionPrepare = useConnectionOnSystemTransactionPrepare;
+			}
+
+			/// <summary>
+			/// Default constructor.
+			/// </summary>
+			/// <param name="session">The session to enlist with the transaction.</param>
+			/// <param name="transaction">The transaction into which the context will be enlisted.</param>
+			/// <param name="systemTransactionCompletionLockTimeout">See <see cref="Cfg.Environment.SystemTransactionCompletionLockTimeout"/>.</param>
+			/// <param name="useConnectionOnSystemTransactionPrepare">See <see cref="Cfg.Environment.UseConnectionOnSystemTransactionPrepare"/>.</param>
+			/// <param name="ignoreSessionSynchronizationFailures">See <see cref="Cfg.Environment.IgnoreSessionSynchronizationFailuresOnSystemTransaction"/>.</param>
+			public SystemTransactionContext(
+				ISessionImplementor session,
+				System.Transactions.Transaction transaction,
+				int systemTransactionCompletionLockTimeout,
+				bool useConnectionOnSystemTransactionPrepare,
+				bool ignoreSessionSynchronizationFailures)
+			{
+				_session = session ?? throw new ArgumentNullException(nameof(session));
+				_originalTransaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
+				EnlistedTransaction = transaction.Clone();
+				_systemTransactionCompletionLockTimeout = systemTransactionCompletionLockTimeout;
+				_useConnectionOnSystemTransactionPrepare = useConnectionOnSystemTransactionPrepare;
+				_ignoreSessionSynchronizationFailures = ignoreSessionSynchronizationFailures;
 			}
 
 			/// <inheritdoc />
@@ -524,14 +556,16 @@ namespace NHibernate.Transaction
 					Dispose();
 				}
 
-				if (isSessionProcessing)
+				if (isSessionProcessing && !_ignoreSessionSynchronizationFailures)
 				{
 					throw new HibernateException(
 						"A synchronization timeout occurred at transaction completion: the session was still processing. " +
 							$"You may raise {Cfg.Environment.SystemTransactionCompletionLockTimeout} if it is set too low. " +
 							"It may also be a limitation of the data provider, " +
 							"like locks applied on its side while processing transaction cancellations occurring on concurrent threads, " +
-							"thus preventing the session to finish its current processing during a transaction cancellation.");
+							"thus preventing the session to finish its current processing during a transaction cancellation. " +
+							$"In such case, you may enable {Cfg.Environment.IgnoreSessionSynchronizationFailuresOnSystemTransaction}, " +
+							$"and possibly lower {Cfg.Environment.SystemTransactionCompletionLockTimeout}.");
 				}
 			}
 

@@ -29,6 +29,8 @@ Task Set-Configuration {
             'connection.connection_string' = 'Server=(local)\SQL2017;Uid=sa;Pwd=Password12!;Database=nhibernateOdbc;Driver={SQL Server Native Client 11.0};Mars_Connection=yes;';
             'connection.driver_class' = 'NHibernate.Driver.OdbcDriver';
             'odbc.explicit_datetime_scale' = '3';
+            'transaction.ignore_session_synchronization_failures' = 'true';
+            'transaction.system_completion_lock_timeout' = '200';
             <# We need to use a dialect that avoids mapping DbType.Time to TIME on MSSQL. On modern SQL Server
                 this becomes TIME(7). Later, such values cannot be read back over ODBC. The
                 error we get is "System.ArgumentException : Unknown SQL type - SS_TIME_EX.". I don't know for certain

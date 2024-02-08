@@ -650,8 +650,9 @@ namespace NHibernate.Test.SystemTransactions
 		public void SupportsTransactionTimeout()
 		{
 			Assume.That(TestDialect.SupportsTransactionScopeTimeouts, Is.True, "The tested dialect is not supported for transaction scope timeouts.");
-			// ODBC always freezes the session during transaction scopes timeouts.
-			Assume.That(Sfi.ConnectionProvider.Driver, Is.Not.InstanceOf(typeof(OdbcDriver)), "ODBC is not supported for transaction scope timeouts.");
+			// Other special cases: ODBC succeeds this test only with transaction.ignore_session_synchronization_failures enabled.
+			// It freezes the session during the transaction cancellation. To avoid the test to be very long, the synchronization
+			// lock timeout should be lowered too.
 
 			// Test case adapted from https://github.com/kaksmet/NHibBugRepro
 
