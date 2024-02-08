@@ -42,7 +42,7 @@ namespace NHibernate.Transaction
 				throw new HibernateException(
 					$"Invalid {Cfg.Environment.SystemTransactionCompletionLockTimeout} value: {SystemTransactionCompletionLockTimeout}. It can not be less than -1.");
 			IgnoreSessionSynchronizationFailuresOnSystemTransaction =
-				PropertiesHelper.GetBoolean(Cfg.Environment.IgnoreSessionSynchronizationFailuresOnSystemTransaction, props, true);
+				PropertiesHelper.GetBoolean(Cfg.Environment.IgnoreSessionSynchronizationFailuresOnSystemTransaction, props, false);
 			UseConnectionOnSystemTransactionPrepare =
 				PropertiesHelper.GetBoolean(Cfg.Environment.UseConnectionOnSystemTransactionPrepare, props, true);
 		}
