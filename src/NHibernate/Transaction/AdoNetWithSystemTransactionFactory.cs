@@ -507,7 +507,7 @@ namespace NHibernate.Transaction
 						{
 							// Throwing would give up attempting to close the session if need be, which may still succeed. So,
 							// just log an error.
-							_logger.Error(
+							_logger.Warn(
 								"A synchronization timeout occurred at transaction completion: the session is still processing. " +
 									"Attempting to finalize the transaction concurrently, which may cause a thread concurrency failure. " +
 									"You may raise {0} if it is set too low. It may also be a limitation of the data provider, " +
