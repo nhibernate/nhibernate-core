@@ -50,6 +50,12 @@ namespace NHibernate.Test.NHSpecificTest.GH3474
 			transaction.Commit();
 		}
 
+		protected override bool AppliesTo(Dialect.Dialect dialect)
+		{
+			// Polymorphic updates require support of temp tables.
+			return Dialect.SupportsTemporaryTables;
+		}
+
 		[Test]
 		public async Task PolymorphicUpdateShouldNotCommitAsync()
 		{
