@@ -19,7 +19,7 @@ namespace NHibernate.SqlCommand
 		private string comment;
 
 		// columns-> (ColumnName, Value) or (ColumnName, SqlType) for parametrized column
-		private readonly LinkedHashMap<string, object> columns = new LinkedHashMap<string, object>();
+		private readonly LinkHashMap<string, object> columns = new();
 
 		public SqlInsertBuilder(ISessionFactoryImplementor factory)
 		{
