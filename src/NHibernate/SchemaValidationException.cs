@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.Security;
+using System.Text;
 
 namespace NHibernate
 {
@@ -27,6 +28,22 @@ namespace NHibernate
 		{
 			base.GetObjectData(info, context);
 			info.AddValue("ValidationErrors", ValidationErrors);
+		}
+
+		public override string Message
+		{
+			get
+			{
+				var message = base.Message;
+				if (ValidationErrors == null || ValidationErrors.Count == 0)
+					return message;
+
+				var sb = new StringBuilder(message).AppendLine().AppendLine("Validation errors:");
+				foreach (var error in ValidationErrors)
+					sb.Append("\t- ").AppendLine(error);
+
+				return sb.ToString();
+			}
 		}
 	}
 }

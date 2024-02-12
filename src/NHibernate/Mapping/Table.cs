@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.Util;
@@ -1035,7 +1036,13 @@ namespace NHibernate.Mapping
 				}
 
 				//TODO: Add new method to ColumnMetadata :getTypeCode
-				bool typesMatch = column.GetSqlType(dialect, mapping).StartsWith(columnInfo.TypeName, StringComparison.OrdinalIgnoreCase);
+				var columnType = column.GetSqlType(dialect, mapping);
+				var typesMatch =
+					string.Equals(columnType, columnInfo.TypeName, StringComparison.OrdinalIgnoreCase) ||
+					Regex.IsMatch(
+						columnType,
+						$@"^{Regex.Escape(columnInfo.TypeName)}\b",
+						RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 				//|| columnInfo.get() == column.GetSqlTypeCode(mapping);
 				if (!typesMatch)
 				{
@@ -1045,7 +1052,7 @@ namespace NHibernate.Mapping
 							dialect.Qualify(tableInfo.Catalog, tableInfo.Schema, tableInfo.Name),
 							column.Name,
 							columnInfo.TypeName.ToLowerInvariant(),
-							column.GetSqlType(dialect, mapping)));
+							columnType));
 				}
 			}
 
