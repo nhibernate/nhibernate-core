@@ -484,6 +484,7 @@ namespace NHibernate.Transaction
 				// do an early exit here in such case.
 				if (!IsInActiveTransaction)
 					return;
+				Lock();
 				var isSessionProcessing = _session.IsProcessing();
 				try
 				{
