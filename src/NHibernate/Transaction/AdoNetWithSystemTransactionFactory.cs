@@ -485,7 +485,13 @@ namespace NHibernate.Transaction
 				if (!IsInActiveTransaction)
 					return;
 				Lock();
-				var isSessionProcessing = _session.IsProcessing();
+				// In case of a rollback due to a timeout, we may have the session disposal running concurrently
+				// to the transaction completion in a way our current locking mechanism cannot fully protect: the
+				// session disposal "BeginProcess" can go through the Wait before it is locked but flag the
+				// session as procesisng after the transaction completion has read it as not processing. To dodge
+				// that case, we consider the session as still processing initially regardless of its actual
+				// status in case of rollback.
+				var isSessionProcessing = !isCommitted || _session.IsProcessing();
 				try
 				{
 					// Allow transaction completed actions to run while others stay blocked.
