@@ -55,6 +55,7 @@
     <Compile Include="..\NHibernate\Util\AsyncReaderWriterLock.cs">
       <Link>UtilityTest\AsyncReaderWriterLock.cs</Link>
     </Compile>
+    <Compile Include="..\NHibernate\Util\LinkHashMap.cs" Link="UtilityTest\LinkHashMap.cs" />
     <Compile Include="..\NHibernate\Collection\Generic\SetHelpers\SetSnapShot.cs">
       <Link>UtilityTest\SetSnapShot.cs</Link>
     </Compile>

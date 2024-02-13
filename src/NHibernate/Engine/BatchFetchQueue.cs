@@ -31,7 +31,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		private readonly Dictionary<EntityKey, SubselectFetch> subselectsByEntityKey = new Dictionary<EntityKey, SubselectFetch>(8);
 
-		private readonly Dictionary<string, LinkedHashMap<CollectionEntry, IPersistentCollection>> batchLoadableCollections = new Dictionary<string, LinkedHashMap<CollectionEntry, IPersistentCollection>>(8);
+		private readonly Dictionary<string, LinkHashMap<CollectionEntry, IPersistentCollection>> batchLoadableCollections = new(8);
 		/// <summary>
 		/// The owning persistence context.
 		/// </summary>
@@ -164,7 +164,7 @@ namespace NHibernate.Engine
 
 			if (!batchLoadableCollections.TryGetValue(persister.Role, out var map))
 			{
-				map = new LinkedHashMap<CollectionEntry, IPersistentCollection>();
+				map = new LinkHashMap<CollectionEntry, IPersistentCollection>();
 				batchLoadableCollections.Add(persister.Role, map);
 			}
 			map[ce] = collection;
@@ -245,7 +245,7 @@ namespace NHibernate.Engine
 				return keys;
 			}
 
-			foreach (KeyValuePair<CollectionEntry, IPersistentCollection> me in map)
+			foreach (var me in map)
 			{
 				if (ProcessKey(me) ?? CheckCacheAndProcessResult())
 				{
