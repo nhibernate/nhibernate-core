@@ -32,5 +32,18 @@ namespace NHibernate.Test.BulkManipulation
 				tx.Commit();
 			}
 		}
+
+		[Test, KnownBug("#3489")]
+		public void InsertFromSelectWithMultipleAssociations()
+		{
+			using var s = OpenSession();
+			using var tx = s.BeginTransaction();
+
+			s.CreateQuery("insert into Enrolment (Course, Student)" +
+				" select e.Course, e.Student from Enrolment e")
+				.ExecuteUpdate();
+
+			tx.Commit();
+		}
 	}
 }
