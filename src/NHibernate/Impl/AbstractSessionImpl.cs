@@ -410,31 +410,31 @@ namespace NHibernate.Impl
 		public IDisposable BeginProcess()
 		{
 			return _processHelper.BeginProcess(this);
-        }
+		}
 
-        /// <summary>
-        /// If not nested in another call to <c>BeginProcess</c> on this session, optionnaly check
+		/// <summary>
+		/// If not nested in another call to <c>BeginProcess</c> on this session, optionnaly check
 		/// and update the session status, then set its session id in context and flag it as processing.
-        /// </summary>
+		/// </summary>
 		/// <param name="noCheckAndUpdate"><see langword="true" /> to initiate a processing without
 		/// checking and updating the session.</param>
-        /// <returns>
-        /// If not already processing, an object to dispose for signaling the end of the process.
-        /// Otherwise, <see langword="null" />.
-        /// </returns>
-        protected IDisposable BeginProcess(bool noCheckAndUpdate)
-        {
-            return _processHelper.BeginProcess(this, noCheckAndUpdate);
-        }
+		/// <returns>
+		/// If not already processing, an object to dispose for signaling the end of the process.
+		/// Otherwise, <see langword="null" />.
+		/// </returns>
+		protected IDisposable BeginProcess(bool noCheckAndUpdate)
+		{
+			return _processHelper.BeginProcess(this, noCheckAndUpdate);
+		}
 
-        /// <summary>
-        /// If not nested in a call to <c>BeginProcess</c> on this session, set its session id in context.
-        /// </summary>
-        /// <returns>
-        /// If not already processing, an object to dispose for restoring the previous session id.
-        /// Otherwise, <see langword="null" />.
-        /// </returns>
-        public IDisposable BeginContext()
+		/// <summary>
+		/// If not nested in a call to <c>BeginProcess</c> on this session, set its session id in context.
+		/// </summary>
+		/// <returns>
+		/// If not already processing, an object to dispose for restoring the previous session id.
+		/// Otherwise, <see langword="null" />.
+		/// </returns>
+		public IDisposable BeginContext()
 		{
 			return _processHelper.Processing ? null : SessionIdLoggingContext.CreateOrNull(SessionId);
 		}
