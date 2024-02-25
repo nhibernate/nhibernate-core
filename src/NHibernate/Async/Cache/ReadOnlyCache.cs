@@ -24,7 +24,7 @@ namespace NHibernate.Cache
 		public async Task<object> GetAsync(CacheKey key, long timestamp, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			var result = await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
+			var result = await (InternalCache.GetAsync(key, cancellationToken)).ConfigureAwait(false);
 			if (log.IsDebugEnabled())
 			{
 				log.Debug(result != null ? "Cache hit: {0}" : "Cache miss: {0}", key);
@@ -41,7 +41,7 @@ namespace NHibernate.Cache
 				log.Debug("Cache lookup: {0}", string.Join(",", keys.AsEnumerable()));
 			}
 
-			var results = await (_cache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
+			var results = await (InternalCache.GetManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 			if (log.IsDebugEnabled())
 			{
 				log.Debug("Cache hit: {0}", string.Join(",", keys.Where((k, i) => results[i] != null)));
@@ -92,10 +92,12 @@ namespace NHibernate.Cache
 					checkKeyIndexes.Add(i);
 				}
 			}
+
+			var cache = InternalCache;
 			var skipKeyIndexes = new HashSet<int>();
 			if (checkKeys.Any())
 			{
-				var objects = await (_cache.GetManyAsync(checkKeys.ToArray(), cancellationToken)).ConfigureAwait(false);
+				var objects = await (cache.GetManyAsync(checkKeys.ToArray(), cancellationToken)).ConfigureAwait(false);
 				for (var i = 0; i < objects.Length; i++)
 				{
 					if (objects[i] != null)
@@ -127,7 +129,7 @@ namespace NHibernate.Cache
 				putValues[j++] = values[i];
 				result[i] = true;
 			}
-			await (_cache.PutManyAsync(putKeys, putValues, cancellationToken)).ConfigureAwait(false);
+			await (cache.PutManyAsync(putKeys, putValues, cancellationToken)).ConfigureAwait(false);
 			return result;
 		}
 
@@ -141,7 +143,8 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			if (minimalPut && await (Cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null)
+			var cache = InternalCache;
+			if (minimalPut && await (cache.GetAsync(key, cancellationToken)).ConfigureAwait(false) != null)
 			{
 				if (log.IsDebugEnabled())
 				{
@@ -153,7 +156,7 @@ namespace NHibernate.Cache
 			{
 				log.Debug("Caching: {0}", key);
 			}
-			await (Cache.PutAsync(key, value, cancellationToken)).ConfigureAwait(false);
+			await (cache.PutAsync(key, value, cancellationToken)).ConfigureAwait(false);
 			return true;
 		}
 
@@ -183,7 +186,7 @@ namespace NHibernate.Cache
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return Cache.ClearAsync(cancellationToken);
+			return InternalCache.ClearAsync(cancellationToken);
 		}
 
 		public Task RemoveAsync(CacheKey key, CancellationToken cancellationToken)
@@ -192,7 +195,7 @@ namespace NHibernate.Cache
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return Cache.RemoveAsync(key, cancellationToken);
+			return InternalCache.RemoveAsync(key, cancellationToken);
 		}
 
 		/// <summary>
