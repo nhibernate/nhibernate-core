@@ -299,8 +299,8 @@ namespace NHibernate.Transaction
 			{
 				if (!_needCompletionLocking || _isDisposed)
 					return;
-				_needCompletionLocking = false;
 				_lock.Reset();
+				_needCompletionLocking = false;
 			}
 
 			/// <summary>
@@ -583,7 +583,7 @@ namespace NHibernate.Transaction
 				foreach (var dependentSession in session.ConnectionManager.DependentSessions.ToList())
 				{
 					var dependentContext = dependentSession.TransactionContext;
-					// Do not nullify TransactionContext here, could create a race condition with
+					// Do not nullify TransactionContext here, it could create a race condition with
 					// would be await-er on session for disposal (test cases cleanup checks by example).
 					if (dependentContext == null)
 						continue;

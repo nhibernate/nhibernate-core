@@ -264,16 +264,10 @@ namespace NHibernate.Impl
 			get { return IsAutoCloseSessionEnabled && !IsClosed; }
 		}
 
-		/// <summary>
-		/// Close the session and release all resources
-		/// <remarks>
-		/// Do not call this method inside a transaction scope, use <c>Dispose</c> instead, since
-		/// Close() is not aware of distributed transactions
-		/// </remarks>
-		/// </summary>
+		/// <inheritdoc />
 		public DbConnection Close()
 		{
-			using (BeginContext())
+			using (BeginProcess(true))
 			{
 				log.Debug("closing session");
 				if (IsClosed)
@@ -1498,7 +1492,8 @@ namespace NHibernate.Impl
 				// a local variable for avoiding it, but that would turn a failure causing an exception
 				// into a failure causing a session and connection leak. So do not do it, better blow away
 				// with a null ref rather than silently leaking a session. And then fix the synchronization.
-				if (TransactionContext != null && TransactionContext.CanFlushOnSystemTransactionCompleted)
+				if (TransactionContext != null && TransactionContext.CanFlushOnSystemTransactionCompleted &&
+					TransactionContext.IsInActiveTransaction)
 				{
 					TransactionContext.ShouldCloseSessionOnSystemTransactionCompleted = true;
 					return;
