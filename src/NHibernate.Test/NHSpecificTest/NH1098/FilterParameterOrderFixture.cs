@@ -226,7 +226,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1098
 
 				var a = query.UniqueResult<A>();
 
-				Assert.AreEqual(a.C[1], "Text1");
+				Assert.AreEqual("Text1", a.C[1]);
 			}
 		}
 	}

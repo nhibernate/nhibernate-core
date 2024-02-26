@@ -52,7 +52,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1679
 				action.Invoke(criteria);
 				
 				IList  l = criteria.GetExecutableCriteria(session).List();
-				Assert.AreNotEqual(l, null);
+				Assert.AreNotEqual(null, l);
 			}
 		}
 	}

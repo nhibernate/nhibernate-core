@@ -13,7 +13,7 @@ namespace NHibernate.Test.Linq.ByMethod
 			//NH-2429
 			var average = db.Products.Average(x => x.UnitsOnOrder);
 
-			Assert.AreEqual(average, 10.129870d, 0.000001d);
+			Assert.AreEqual(10.129870d, average, 0.000001d);
 		}
 	}
 }

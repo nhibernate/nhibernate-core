@@ -15,13 +15,13 @@ namespace NHibernate.Test.FilterTest
 		{
 			Configuration cfg = new Configuration();
 			cfg.AddResource(mappingCfg, this.GetType().Assembly);
-			Assert.AreEqual(cfg.FilterDefinitions.Count, 2);
+			Assert.AreEqual(2, cfg.FilterDefinitions.Count);
 
 			Assert.IsTrue(cfg.FilterDefinitions.ContainsKey("LiveFilter"));
 
 			FilterDefinition f = cfg.FilterDefinitions["LiveFilter"];
 
-			Assert.AreEqual(f.ParameterTypes.Count, 1);
+			Assert.AreEqual(1, f.ParameterTypes.Count);
 
 			BooleanType t = f.ParameterTypes["LiveParam"] as BooleanType;
 
@@ -40,7 +40,7 @@ namespace NHibernate.Test.FilterTest
 
 			IFilter filter = session.EnableFilter("LiveFilter");
 
-			Assert.AreEqual(filter.FilterDefinition.FilterName, "LiveFilter");
+			Assert.AreEqual("LiveFilter", filter.FilterDefinition.FilterName);
 
 			filter.SetParameter("LiveParam", true);
 
