@@ -434,7 +434,8 @@ namespace NHibernate.Test.SqlCommandTest
 			Assert.IsNull(parameters2[0].ParameterPosition);
 
 			// more simple version of the test
-			Assert.That(Parameter.Placeholder, Is.Not.SameAs(Parameter.Placeholder));
+			var placeholder = Parameter.Placeholder;
+			Assert.That(placeholder, Is.Not.SameAs(Parameter.Placeholder));
 		}
 
 		[Test]
