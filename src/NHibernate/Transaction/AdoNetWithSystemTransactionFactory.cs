@@ -187,7 +187,11 @@ namespace NHibernate.Transaction
 			/// </summary>
 			protected internal System.Transactions.Transaction EnlistedTransaction { get; }
 			/// <inheritdoc />
-			public bool ShouldCloseSessionOnSystemTransactionCompleted { get; set; }
+			public bool ShouldCloseSessionOnSystemTransactionCompleted
+			{
+				get => _shouldCloseSessionOnSystemTransactionCompleted;
+				set => _shouldCloseSessionOnSystemTransactionCompleted = value;
+			}
 			/// <inheritdoc />
 			public bool IsInActiveTransaction { get; protected set; } = true;
 			/// <inheritdoc />
@@ -199,6 +203,7 @@ namespace NHibernate.Transaction
 			private readonly System.Transactions.Transaction _originalTransaction;
 			private readonly ManualResetEventSlim _lock = new ManualResetEventSlim(true);
 			private volatile bool _needCompletionLocking = true;
+			private volatile bool _shouldCloseSessionOnSystemTransactionCompleted;
 			private bool _preparing;
 			// Required for not locking the completion phase itself when locking session usages from concurrent threads.
 			private static readonly AsyncLocal<bool> _bypassLock = new AsyncLocal<bool>();
@@ -488,12 +493,15 @@ namespace NHibernate.Transaction
 				// In case of a rollback due to a timeout, we may have the session disposal running concurrently
 				// to the transaction completion in a way our current locking mechanism cannot fully protect: the
 				// session disposal "BeginProcess" can go through the Wait before it is locked but flag the
-				// session as processing after the transaction completion has read it as not processing. To dodge
-				// that very unlikely case, we could consider the session as still processing initially regardless
-				// of its actual status in case of rollback by changing below condition to
-				// "!isCommitted || _session.IsProcessing()". That would cause a Thread.Sleep in all rollback cases.
-				// That would reinforce the impracticality of that concurrency possibility, but with an ugly crutch.
-				var isSessionProcessing = _session.IsProcessing();
+				// session as processing after the transaction completion has read it as not processing. This may
+				// then cause concurrency issues in the case the transaction context has to close the session
+				// instead of the session disposal. To dodge that unlikely case occuring witb a legacy behavior
+				// we advise to disable, we consider, when the legacy behavior is used, that the session is still
+				// processing initially regardless of its actual status in case of rollback. That is a crutch,
+				// relying on Thread.Sleep() to dodge the possible concurrency issue. If users do not want to rely
+				// on such crutch, they should disable the commit on system transaction completion setting
+				// (transaction.use_connection_on_system_prepare).
+				var isSessionProcessing = !isCommitted && _useConnectionOnSystemTransactionPrepare || _session.IsProcessing();
 				try
 				{
 					// Allow transaction completed actions to run while others stay blocked.
