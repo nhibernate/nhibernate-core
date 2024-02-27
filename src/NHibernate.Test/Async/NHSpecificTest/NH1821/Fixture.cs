@@ -42,13 +42,13 @@ where 1=1";
 				Regex whitespaces = new Regex(@"\s+", RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
 
 				Assert.AreEqual(
+					0
+,
 					string.Compare(
 						whitespaces.Replace(sql, " ").Trim(),
 						whitespaces.Replace(renderedSql, " ").Trim(),
 						true
-						),
-					0
-				);
+						)				);
 			}
 		}
 	}

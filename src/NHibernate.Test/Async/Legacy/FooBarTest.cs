@@ -1078,8 +1078,8 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Holder h = (Holder) await (s.LoadAsync(typeof(Holder), hid));
-				Assert.AreEqual(h.Name, "foo");
-				Assert.AreEqual(h.OtherHolder.Name, "bar");
+				Assert.AreEqual("foo", h.Name);
+				Assert.AreEqual("bar", h.OtherHolder.Name);
 				object[] res =
 					(object[]) (await (s.CreateQuery("from Holder h join h.OtherHolder oh where h.OtherHolder.Name = 'bar'").ListAsync()))[0];
 				Assert.AreSame(h, res[0]);
@@ -1430,7 +1430,7 @@ namespace NHibernate.Test.Legacy
 			// DictionaryEntry key - not the index.
 			foreach (Sortable sortable in b.Sortablez)
 			{
-				Assert.AreEqual(sortable.name, "bar");
+				Assert.AreEqual("bar", sortable.name);
 				break;
 			}
 
@@ -1446,7 +1446,7 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(b.Sortablez.Count == 3);
 			foreach (Sortable sortable in b.Sortablez)
 			{
-				Assert.AreEqual(sortable.name, "bar");
+				Assert.AreEqual("bar", sortable.name);
 				break;
 			}
 			await (s.FlushAsync());
@@ -1461,7 +1461,7 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(b.Sortablez.Count == 3);
 			foreach (Sortable sortable in b.Sortablez)
 			{
-				Assert.AreEqual(sortable.name, "bar");
+				Assert.AreEqual("bar", sortable.name);
 				break;
 			}
 			await (s.DeleteAsync(b));

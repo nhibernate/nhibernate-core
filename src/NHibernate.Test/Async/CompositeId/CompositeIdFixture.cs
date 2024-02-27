@@ -199,8 +199,8 @@ namespace NHibernate.Test.CompositeId
 			Assert.AreEqual(2, c.Orders.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(((Order) c.Orders[0]).LineItems));
 			Assert.IsTrue(NHibernateUtil.IsInitialized(((Order) c.Orders[1]).LineItems));
-			Assert.AreEqual(((Order) c.Orders[0]).LineItems.Count, 2);
-			Assert.AreEqual(((Order) c.Orders[1]).LineItems.Count, 2);
+			Assert.AreEqual(2, ((Order) c.Orders[0]).LineItems.Count);
+			Assert.AreEqual(2, ((Order) c.Orders[1]).LineItems.Count);
 			await (t.CommitAsync());
 			s.Close();
 
