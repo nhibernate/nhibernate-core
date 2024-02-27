@@ -26,6 +26,8 @@ dotnet_diagnostic.NUnit2031.severity = suggestion
 dotnet_diagnostic.NUnit2049.severity = suggestion
 # NUnit 4 no longer supports string.Format specification for Assert
 dotnet_diagnostic.NUnit2050.severity = suggestion
+# The SameAs constraint always fails on value types as the actual and the expected value cannot be the same reference
+dotnet_diagnostic.NUnit2040.severity = suggestion
 
 [*.xsd]
 indent_style = tab
