@@ -15,6 +15,20 @@ csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_members_in_anonymous_types = true
 csharp_new_line_between_query_expression_clauses = true
 
+dotnet_diagnostic.NUnit1032.severity = suggestion
+dotnet_diagnostic.NUnit1028.severity = none
+dotnet_diagnostic.NUnit2045.severity = none
+# Consider using the constraint model, Assert.That
+dotnet_diagnostic.NUnit2005.severity = suggestion
+dotnet_diagnostic.NUnit2006.severity = suggestion
+dotnet_diagnostic.NUnit2015.severity = suggestion
+dotnet_diagnostic.NUnit2031.severity = suggestion
+dotnet_diagnostic.NUnit2049.severity = suggestion
+# NUnit 4 no longer supports string.Format specification for Assert
+dotnet_diagnostic.NUnit2050.severity = suggestion
+# The SameAs constraint always fails on value types as the actual and the expected value cannot be the same reference
+dotnet_diagnostic.NUnit2040.severity = suggestion
+
 [*.xsd]
 indent_style = tab
 
@@ -33,10 +47,6 @@ indent_size = 2
 [*.vbproj]
 indent_style = space
 indent_size = 2
-
-[*.cshtml]
-indent_style = space
-indent_size = 4
 
 [*.g]
 indent_style = tab

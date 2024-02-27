@@ -48,7 +48,7 @@ namespace NHibernate.Test.VersionTest
 			await (t.CommitAsync());
 			s.Close();
 
-			Assert.AreEqual(passp.Version, 2);
+			Assert.AreEqual(2, passp.Version);
 
 			s = OpenSession();
 			t = s.BeginTransaction();

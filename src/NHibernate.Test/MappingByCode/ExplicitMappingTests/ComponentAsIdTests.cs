@@ -41,7 +41,7 @@ namespace NHibernate.Test.MappingByCode.ExpliticMappingTests
 
 			var mapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
 
-			Assert.AreEqual(mapping.RootClasses[0].CompositeId.unsavedvalue, HbmUnsavedValueType.Any);
+			Assert.AreEqual(HbmUnsavedValueType.Any, mapping.RootClasses[0].CompositeId.unsavedvalue);
 		}
 
 		[Test]

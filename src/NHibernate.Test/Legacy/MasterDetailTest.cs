@@ -183,7 +183,7 @@ namespace NHibernate.Test.Legacy
 			// Save parent and cascade update detached child
 			Category persistentParent = s.Merge(parent);
 			Assert.IsTrue(persistentParent.Subcategories.Count == 1);
-			Assert.AreEqual(((Category) persistentParent.Subcategories[0]).Name, "child2");
+			Assert.AreEqual("child2", ((Category) persistentParent.Subcategories[0]).Name);
 			s.Flush();
 			s.Close();
 

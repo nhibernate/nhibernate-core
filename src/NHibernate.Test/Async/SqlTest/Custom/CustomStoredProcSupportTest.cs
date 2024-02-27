@@ -26,8 +26,8 @@ namespace NHibernate.Test.SqlTest.Custom
 			namedQuery.SetInt64("number", 43L);
 			IList list = await (namedQuery.ListAsync());
 			object[] o = (object[])list[0];
-			Assert.AreEqual(o[0], "getAll");
-			Assert.AreEqual(o[1], 43L);
+			Assert.AreEqual("getAll", o[0]);
+			Assert.AreEqual(43L, o[1]);
 			s.Close();
 		}
 
@@ -41,16 +41,16 @@ namespace NHibernate.Test.SqlTest.Custom
 			namedQuery.SetInt64(1, 20L);
 			IList list = await (namedQuery.ListAsync());
 			object[] o = (Object[])list[0];
-			Assert.AreEqual(o[0], 10L);
-			Assert.AreEqual(o[1], 20L);
+			Assert.AreEqual(10L, o[0]);
+			Assert.AreEqual(20L, o[1]);
 
 			namedQuery = s.GetNamedQuery("paramhandling_mixed");
 			namedQuery.SetInt64(0, 10L);
 			namedQuery.SetInt64("second", 20L);
 			list = await (namedQuery.ListAsync());
 			o = (object[])list[0];
-			Assert.AreEqual(o[0], 10L);
-			Assert.AreEqual(o[1], 20L);
+			Assert.AreEqual(10L, o[0]);
+			Assert.AreEqual(20L, o[1]);
 			s.Close();
 		}
 

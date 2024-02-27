@@ -336,7 +336,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 
 				Assert.That(NHibernateUtil.IsInitialized(rootChild), Is.True);
 				Assert.That(NHibernateUtil.IsInitialized(parentJoin), Is.True);
-				Assert.That(NHibernateUtil.IsPropertyInitialized(parentJoin, nameof(parentJoin.LazyProp)), Is.Not.Null.Or.Empty);
+				Assert.That(NHibernateUtil.IsPropertyInitialized(parentJoin, nameof(parentJoin.LazyProp)), Is.True);
 				Assert.That(parentJoin.LazyProp, Is.Not.Null.Or.Empty);
 
 				Assert.That(sqlLog.Appender.GetEvents().Length, Is.EqualTo(1), "Only one SQL select is expected");

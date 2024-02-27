@@ -55,24 +55,24 @@ namespace NHibernate.Test.SubselectFetchTest
 			Assert.IsFalse(NHibernateUtil.IsInitialized(p.Children));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(q.Children));
 
-			Assert.AreEqual(p.Children.Count, 2);
+			Assert.AreEqual(2, p.Children.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Children[0]));
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.Children));
 
-			Assert.AreEqual(q.Children.Count, 2);
+			Assert.AreEqual(2, q.Children.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.Children[0]));
 
 			Assert.IsFalse(NHibernateUtil.IsInitialized(p.MoreChildren));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(q.MoreChildren));
 
-			Assert.AreEqual(p.MoreChildren.Count, 0);
+			Assert.AreEqual(0, p.MoreChildren.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.MoreChildren));
 
-			Assert.AreEqual(q.MoreChildren.Count, 2);
+			Assert.AreEqual(2, q.MoreChildren.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.MoreChildren[0]));
 
@@ -120,24 +120,24 @@ namespace NHibernate.Test.SubselectFetchTest
 			Assert.IsFalse(NHibernateUtil.IsInitialized(p.Children));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(q.Children));
 
-			Assert.AreEqual(p.Children.Count, 2);
+			Assert.AreEqual(2, p.Children.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Children[0]));
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.Children));
 
-			Assert.AreEqual(q.Children.Count, 2);
+			Assert.AreEqual(2, q.Children.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.Children[0]));
 
 			Assert.IsFalse(NHibernateUtil.IsInitialized(p.MoreChildren));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(q.MoreChildren));
 
-			Assert.AreEqual(p.MoreChildren.Count, 0);
+			Assert.AreEqual(0, p.MoreChildren.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.MoreChildren));
 
-			Assert.AreEqual(q.MoreChildren.Count, 2);
+			Assert.AreEqual(2, q.MoreChildren.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.MoreChildren[0]));
 
@@ -185,24 +185,24 @@ namespace NHibernate.Test.SubselectFetchTest
 			Assert.IsFalse(NHibernateUtil.IsInitialized(p.Children));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(q.Children));
 
-			Assert.AreEqual(p.Children.Count, 2);
+			Assert.AreEqual(2, p.Children.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Children[0]));
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.Children));
 
-			Assert.AreEqual(q.Children.Count, 2);
+			Assert.AreEqual(2, q.Children.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.Children[0]));
 
 			Assert.IsFalse(NHibernateUtil.IsInitialized(p.MoreChildren));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(q.MoreChildren));
 
-			Assert.AreEqual(p.MoreChildren.Count, 0);
+			Assert.AreEqual(0, p.MoreChildren.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.MoreChildren));
 
-			Assert.AreEqual(q.MoreChildren.Count, 2);
+			Assert.AreEqual(2, q.MoreChildren.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.MoreChildren[0]));
 
@@ -251,8 +251,8 @@ namespace NHibernate.Test.SubselectFetchTest
 			Assert.IsFalse(NHibernateUtil.IsInitialized(p.MoreChildren));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(q.Children));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(q.MoreChildren));
-			Assert.AreEqual(p.MoreChildren.Count, 0);
-			Assert.AreEqual(p.Children.Count, 2);
+			Assert.AreEqual(0, p.MoreChildren.Count);
+			Assert.AreEqual(2, p.Children.Count);
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.Children));
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.MoreChildren));
 
@@ -261,8 +261,8 @@ namespace NHibernate.Test.SubselectFetchTest
 			r = (Parent) await (s.GetAsync(typeof(Parent), r.Name));
 			Assert.IsTrue(NHibernateUtil.IsInitialized(r.Children)); // The test for True is the test of H3.2
 			Assert.IsFalse(NHibernateUtil.IsInitialized(r.MoreChildren));
-			Assert.AreEqual(r.Children.Count, 1);
-			Assert.AreEqual(r.MoreChildren.Count, 0);
+			Assert.AreEqual(1, r.Children.Count);
+			Assert.AreEqual(0, r.MoreChildren.Count);
 
 			await (s.DeleteAsync(p));
 			await (s.DeleteAsync(q));
@@ -344,24 +344,24 @@ namespace NHibernate.Test.SubselectFetchTest
 			Assert.IsFalse(NHibernateUtil.IsInitialized(p.Children));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(q.Children));
 
-			Assert.AreEqual(p.Children.Count, 2);
+			Assert.AreEqual(2, p.Children.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(p.Children[0]));
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.Children));
 
-			Assert.AreEqual(q.Children.Count, 2);
+			Assert.AreEqual(2, q.Children.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.Children[0]));
 
 			Assert.IsFalse(NHibernateUtil.IsInitialized(p.MoreChildren));
 			Assert.IsFalse(NHibernateUtil.IsInitialized(q.MoreChildren));
 
-			Assert.AreEqual(p.MoreChildren.Count, 0);
+			Assert.AreEqual(0, p.MoreChildren.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.MoreChildren));
 
-			Assert.AreEqual(q.MoreChildren.Count, 2);
+			Assert.AreEqual(2, q.MoreChildren.Count);
 
 			Assert.IsTrue(NHibernateUtil.IsInitialized(q.MoreChildren[0]));
 

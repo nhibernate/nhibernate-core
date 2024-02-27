@@ -105,9 +105,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 						// Oracle order NULL Last (ASC)
 						nullRelationOffSet = 0;
 					}
-					Assert.AreEqual(list[nullRelationOffSet].Name, "Tim");
-					Assert.AreEqual(list[nullRelationOffSet + 1].Name, "Joe");
-					Assert.AreEqual(list[nullRelationOffSet + 2].Name, "Sally");
+					Assert.AreEqual("Tim", list[nullRelationOffSet].Name);
+					Assert.AreEqual("Joe", list[nullRelationOffSet + 1].Name);
+					Assert.AreEqual("Sally", list[nullRelationOffSet + 2].Name);
 				}
 			}
 		}
@@ -133,9 +133,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1394
 					// Oracle order NULL First (DESC)
 					nullRelationOffSet = 2;
 				}
-				Assert.AreEqual(list[nullRelationOffSet+2].Name, "Tim");
-				Assert.AreEqual(list[nullRelationOffSet+1].Name, "Joe");
-				Assert.AreEqual(list[nullRelationOffSet].Name, "Sally");
+				Assert.AreEqual("Tim", list[nullRelationOffSet+2].Name);
+				Assert.AreEqual("Joe", list[nullRelationOffSet+1].Name);
+				Assert.AreEqual("Sally", list[nullRelationOffSet].Name);
 			}
 		}
 
