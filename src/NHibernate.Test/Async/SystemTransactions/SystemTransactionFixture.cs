@@ -31,6 +31,12 @@ namespace NHibernate.Test.SystemTransactions
 		protected override bool UseConnectionOnSystemTransactionPrepare => true;
 		protected override bool AutoJoinTransaction => true;
 
+		protected override void OnTearDown()
+		{
+			// The SupportsTransactionTimeout test may change this, restore it to its default value.
+			FailOnNotClosedSession = false;
+		}
+
 		[Test]
 		public async Task WillNotCrashOnPrepareFailureAsync()
 		{
@@ -536,6 +542,10 @@ namespace NHibernate.Test.SystemTransactions
 			// enabled.
 			// They freeze the session during the transaction cancellation. To avoid the test to be very long, the synchronization
 			// lock timeout should be lowered too.
+
+			// A concurrency issue exists with the legacy setting allowing to use the session from transaction completion, which
+			// may cause session leaks. Ignore them.
+			FailOnNotClosedSession = !UseConnectionOnSystemTransactionPrepare;
 
 			// Test case adapted from https://github.com/kaksmet/NHibBugRepro
 
