@@ -54,6 +54,8 @@ namespace NHibernate.Test
 			get { return _testDialect ?? (_testDialect = TestDialect.GetTestDialect(Dialect)); }
 		}
 
+		protected bool FailOnNotClosedSession { get; set; } = true;
+
 		/// <summary>
 		/// Mapping files used in the TestCase
 		/// </summary>
@@ -157,6 +159,9 @@ namespace NHibernate.Test
 		{
 			var testResult = TestContext.CurrentContext.Result;
 			var fail = false;
+			var wereClosed = true;
+			// In case the test Teardown needs to switch it off for other tests, back it up.
+			var failOnNotClosedSession = FailOnNotClosedSession;
 			var testOwnTearDownDone = false;
 			string badCleanupMessage = null;
 			try
@@ -170,12 +175,12 @@ namespace NHibernate.Test
 				{
 					try
 					{
-						var wereClosed = _sessionFactory.CheckSessionsWereClosed();
+						wereClosed = _sessionFactory.CheckSessionsWereClosed();
 						var wasCleaned = CheckDatabaseWasCleaned();
 						var wereConnectionsClosed = CheckConnectionsWereClosed();
-						fail = !wereClosed || !wasCleaned || !wereConnectionsClosed;
+						fail = !wereClosed && failOnNotClosedSession || !wasCleaned || !wereConnectionsClosed;
 
-						if (fail)
+						if (fail || !wereClosed)
 						{
 							badCleanupMessage = "Test didn't clean up after itself. session closed: " + wereClosed + "; database cleaned: " +
 												wasCleaned
@@ -212,6 +217,10 @@ namespace NHibernate.Test
 			if (fail)
 			{
 				Assert.Fail(badCleanupMessage);
+			}
+			else if (!wereClosed)
+			{
+				Assert.Warn(badCleanupMessage);
 			}
 		}
 
