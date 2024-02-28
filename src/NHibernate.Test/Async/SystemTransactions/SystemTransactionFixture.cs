@@ -33,8 +33,9 @@ namespace NHibernate.Test.SystemTransactions
 
 		protected override void OnTearDown()
 		{
+			base.OnTearDown();
 			// The SupportsTransactionTimeout test may change this, restore it to its default value.
-			FailOnNotClosedSession = false;
+			FailOnNotClosedSession = true;
 		}
 
 		[Test]
