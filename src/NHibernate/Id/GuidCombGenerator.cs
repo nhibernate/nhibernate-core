@@ -26,6 +26,8 @@ namespace NHibernate.Id
 	{
 		private static readonly long BaseDateTicks = new DateTime(1900, 1, 1).Ticks;
 
+		private static readonly double TickResolution = TimeSpan.FromDays(1).Ticks / (double) uint.MaxValue;
+
 		#region IIdentifierGenerator Members
 
 		/// <summary>
@@ -48,20 +50,19 @@ namespace NHibernate.Id
 
 			DateTime now = DateTime.UtcNow;
 
-			// Get the days and milliseconds which will be used to build the byte string 
-			TimeSpan days = new TimeSpan(now.Ticks - BaseDateTicks);
-			TimeSpan msecs = now.TimeOfDay;
+			// We use 2 bytes for the day (65,535 possible values) so we're good until 6/6/2079.
+			var days = new TimeSpan(now.Ticks - BaseDateTicks);
+			var daysArray = BitConverter.GetBytes(days.Days);
 
-			// Convert to a byte array 
-			// Note that SQL Server is accurate to 1/300th of a millisecond so we divide by 3.333333 
-			byte[] daysArray = BitConverter.GetBytes(days.Days);
-			byte[] msecsArray = BitConverter.GetBytes((long) (msecs.TotalMilliseconds / 3.333333));
+			// Get the ticks for the time of day
+			// Divide the ticks by TickResolution to produce a number relating to the time of day that will exactly fit into 4 bytes
+			var msecsArray = BitConverter.GetBytes((long) (now.TimeOfDay.Ticks / TickResolution));
 
-			// Reverse the bytes to match SQL Servers ordering 
+			// Reverse the bytes to match SQL Servers ordering
 			Array.Reverse(daysArray);
 			Array.Reverse(msecsArray);
 
-			// Copy the bytes into the guid 
+			// Copy the bytes into the guid
 			Array.Copy(daysArray, daysArray.Length - 2, guidArray, guidArray.Length - 6, 2);
 			Array.Copy(msecsArray, msecsArray.Length - 4, guidArray, guidArray.Length - 4, 4);
 
