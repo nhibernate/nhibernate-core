@@ -88,6 +88,7 @@ namespace NHibernate
 			identifier = info.GetValue("identifier", typeof(object));
 		}
 
+#pragma warning disable CS0809
 		/// <summary>
 		/// Sets the serialization info for <see cref="StaleObjectStateException"/> after 
 		/// getting the info from the base Exception.
@@ -108,6 +109,7 @@ namespace NHibernate
 			info.AddValue("entityName", entityName, typeof(string));
 			info.AddValue("identifier", identifier, typeof(object));
 		}
+#pragma warning restore CS0809
 
 		#endregion
 	}

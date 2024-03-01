@@ -26,6 +26,7 @@ namespace NHibernate.Bytecode
 			}
 		}
 
+#pragma warning disable CS0809
 		// Since v5.6
 		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
@@ -34,6 +35,7 @@ namespace NHibernate.Bytecode
 			base.GetObjectData(info, context);
 			info.AddValue("TypeName", TypeName);
 		}
+#pragma warning restore CS0809
 
 		public string TypeName { get; }
 		public override string Message

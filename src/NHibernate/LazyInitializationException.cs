@@ -91,6 +91,7 @@ namespace NHibernate
 			}
 		}
 
+#pragma warning disable CS0809
 		// Since v5.6
 		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
@@ -100,5 +101,6 @@ namespace NHibernate
 			info.AddValue("EntityName", EntityName);
 			info.AddValue("EntityId", EntityId, typeof(object));
 		}
+#pragma warning restore CS0809
 	}
 }

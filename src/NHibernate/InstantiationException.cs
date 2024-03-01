@@ -81,6 +81,7 @@ namespace NHibernate
 			this.type = info.GetValue("type", typeof(System.Type)) as System.Type;
 		}
 
+#pragma warning disable CS0809
 		/// <summary>
 		/// Sets the serialization info for <see cref="InstantiationException"/> after 
 		/// getting the info from the base Exception.
@@ -100,6 +101,7 @@ namespace NHibernate
 			base.GetObjectData(info, context);
 			info.AddValue("type", type, typeof(System.Type));
 		}
+#pragma warning restore CS0809
 
 		#endregion
 	}

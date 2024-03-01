@@ -44,6 +44,7 @@ namespace NHibernate
 			PropertyName = info.GetString(nameof(PropertyName));
 		}
 
+#pragma warning disable CS0809
 		// Since v5.6
 		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
@@ -53,6 +54,7 @@ namespace NHibernate
 			info.AddValue(nameof(Key), Key);
 			info.AddValue(nameof(PropertyName), PropertyName);
 		}
+#pragma warning restore CS0809
 
 		#endregion Serialization
 	}

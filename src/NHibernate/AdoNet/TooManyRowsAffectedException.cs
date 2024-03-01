@@ -26,6 +26,7 @@ namespace NHibernate.AdoNet
 			this.actualRowCount = info.GetInt32("actualRowCount");
 		}
 
+#pragma warning disable CS0809
 		// Since v5.6
 		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
@@ -35,6 +36,7 @@ namespace NHibernate.AdoNet
 			info.AddValue("expectedRowCount", expectedRowCount);
 			info.AddValue("actualRowCount", actualRowCount);
 		}
+#pragma warning restore CS0809
 
 		public int ExpectedRowCount
 		{

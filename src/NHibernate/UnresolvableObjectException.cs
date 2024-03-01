@@ -92,6 +92,7 @@ namespace NHibernate
 
 		#region ISerializable Members
 
+#pragma warning disable CS0809
 		// Since v5.6
 		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
@@ -102,6 +103,7 @@ namespace NHibernate
 			info.AddValue("clazz", clazz);
 			info.AddValue("entityName", entityName);
 		}
+#pragma warning restore CS0809
 
 		// Since v5.6
 		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]

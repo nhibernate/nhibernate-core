@@ -72,6 +72,7 @@ namespace NHibernate
 			propertyName = info.GetString("propertyName");
 		}
 
+#pragma warning disable CS0809
 		/// <summary>
 		/// Sets the serialization info for <see cref="PropertyValueException"/> after 
 		/// getting the info from the base Exception.
@@ -92,6 +93,7 @@ namespace NHibernate
 			info.AddValue("entityName", entityName);
 			info.AddValue("propertyName", propertyName);
 		}
+#pragma warning restore CS0809
 
 		#endregion
 	}

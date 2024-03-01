@@ -90,6 +90,7 @@ namespace NHibernate
 			wasSetter = info.GetBoolean("wasSetter");
 		}
 
+#pragma warning disable CS0809
 		/// <summary>
 		/// Sets the serialization info for <see cref="PropertyAccessException"/> after 
 		/// getting the info from the base Exception.
@@ -111,6 +112,7 @@ namespace NHibernate
 			info.AddValue("propertyName", propertyName);
 			info.AddValue("wasSetter", wasSetter);
 		}
+#pragma warning restore CS0809
 
 		#endregion
 	}

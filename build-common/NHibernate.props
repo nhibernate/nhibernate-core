@@ -21,6 +21,7 @@
     <!-- Visual Basic requires to use coma (,) as a separator, other project types - semicolon (;) -->
     <DefineConstants Condition="$(NhNetFx) AND '$(MSBuildProjectExtension)' != '.vbproj'">NETFX;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="$(NhNetFx) AND '$(MSBuildProjectExtension)' == '.vbproj'">NETFX,$(DefineConstants)</DefineConstants>
+    <NoWarn>$(NoWarn);NU1903</NoWarn>
     <NoWarn Condition="'$(TargetFramework)' == 'net6.0'">$(NoWarn);SYSLIB0011</NoWarn>
     <NoWarn Condition="'$(TargetFramework)' == 'net8.0'">$(NoWarn);SYSLIB0011;SYSLIB0050;SYSLIB0051</NoWarn>
 

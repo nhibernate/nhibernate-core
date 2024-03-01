@@ -119,6 +119,7 @@ namespace NHibernate
 			queryString = info.GetString("queryString");
 		}
 
+#pragma warning disable CS0809
 		/// <summary>
 		/// Sets the serialization info for <see cref="QueryException"/> after 
 		/// getting the info from the base Exception.
@@ -138,6 +139,7 @@ namespace NHibernate
 			base.GetObjectData(info, context);
 			info.AddValue("queryString", queryString, typeof(String));
 		}
+#pragma warning restore CS0809
 
 		#endregion
 	}

@@ -21,6 +21,7 @@ namespace NHibernate
 		public ADOException()
 		{
 		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ADOException"/> class.
 		/// </summary>
@@ -57,6 +58,7 @@ namespace NHibernate
 			this.sql = (string) info.GetValue("sql", typeof(string));
 		}
 
+#pragma warning disable CS0809
 		// Since v5.6
 		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
@@ -65,6 +67,7 @@ namespace NHibernate
 			base.GetObjectData(info, context);
 			info.AddValue("sql", sql);
 		}
+#pragma warning restore CS0809
 
 		public string SqlString
 		{

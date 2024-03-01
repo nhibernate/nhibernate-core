@@ -88,6 +88,7 @@ namespace NHibernate.Exceptions
 			InnerExceptions = (ReadOnlyCollection<Exception>) info.GetValue("InnerExceptions", typeof(ReadOnlyCollection<Exception>));
 		}
 
+#pragma warning disable CS0809
 		// Since v5.6
 		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
@@ -96,6 +97,7 @@ namespace NHibernate.Exceptions
 			base.GetObjectData(info, context);
 			info.AddValue("InnerExceptions", InnerExceptions);
 		}
+#pragma warning restore CS0809
 
 		/// <summary>
 		/// Return a string representation of the aggregate exception.

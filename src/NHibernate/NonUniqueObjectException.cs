@@ -69,6 +69,7 @@ namespace NHibernate
 			entityName = info.GetValue("entityName", typeof(string)) as string;
 		}
 
+#pragma warning disable CS0809
 		/// <summary>
 		/// Sets the serialization info for <see cref="InstantiationException"/> after 
 		/// getting the info from the base Exception.
@@ -89,6 +90,7 @@ namespace NHibernate
 			info.AddValue("identifier", identifier, typeof(Object));
 			info.AddValue("entityName", entityName, typeof(string));
 		}
+#pragma warning restore CS0809
 
 		#endregion
 	}

@@ -58,6 +58,7 @@ namespace NHibernate
 			}
 		}
 
+#pragma warning disable CS0809
 		// Since v5.6
 		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
@@ -67,6 +68,7 @@ namespace NHibernate
 			info.AddValue("Type", Type);
 			info.AddValue("Name", Name);
 		}
+#pragma warning restore CS0809
 
 		/// <summary>
 		/// The type of the duplicated object
