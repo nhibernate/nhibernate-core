@@ -18,13 +18,16 @@ namespace NHibernate.AdoNet
 			this.actualRowCount = actualRowCount;
 		}
 
-		protected TooManyRowsAffectedException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
+		protected TooManyRowsAffectedException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			this.expectedRowCount = info.GetInt32("expectedRowCount");
 			this.actualRowCount = info.GetInt32("actualRowCount");
 		}
 
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{

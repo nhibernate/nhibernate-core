@@ -11,6 +11,8 @@ namespace NHibernate
 	{
 		public TypeMismatchException(string message) : base(message) { }
 		public TypeMismatchException(string message, Exception inner) : base(message, inner) { }
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		protected TypeMismatchException(SerializationInfo info,StreamingContext context): base(info, context) { }
 	}
 }

@@ -92,6 +92,8 @@ namespace NHibernate
 
 		#region ISerializable Members
 
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
@@ -101,8 +103,9 @@ namespace NHibernate
 			info.AddValue("entityName", entityName);
 		}
 
-		protected UnresolvableObjectException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
+		protected UnresolvableObjectException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			identifier = info.GetValue("identifier", typeof(object));
 			clazz = info.GetValue("clazz", typeof(System.Type)) as System.Type;

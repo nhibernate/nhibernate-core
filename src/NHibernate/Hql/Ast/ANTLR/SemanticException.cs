@@ -15,6 +15,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 		{
 		}
 
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		protected SemanticException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}

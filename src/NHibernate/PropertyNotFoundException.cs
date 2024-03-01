@@ -59,8 +59,9 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected PropertyNotFoundException(SerializationInfo info, StreamingContext context) 
-			: base(info, context)
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
+		protected PropertyNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			foreach (var entry in info)
 			{
@@ -81,6 +82,8 @@ namespace NHibernate
 			}
 		}
 
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
