@@ -6,6 +6,7 @@
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);3001;3002;3003;3005;8981;SYSLIB0003;SYSLIB0012</NoWarn>
     <ContentSQLiteInteropFiles>true</ContentSQLiteInteropFiles>
+    <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <OutputType>Exe</OutputType>
