@@ -9,6 +9,7 @@
 
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -29,6 +30,13 @@ namespace NHibernate.Test.SystemTransactions
 	{
 		protected override bool UseConnectionOnSystemTransactionPrepare => true;
 		protected override bool AutoJoinTransaction => true;
+
+		protected override void OnTearDown()
+		{
+			base.OnTearDown();
+			// The SupportsTransactionTimeout test may change this, restore it to its default value.
+			FailOnNotClosedSession = true;
+		}
 
 		[Test]
 		public async Task WillNotCrashOnPrepareFailureAsync()
@@ -523,6 +531,152 @@ namespace NHibernate.Test.SystemTransactions
 			}
 			// Currently always forbidden, whatever UseConnectionOnSystemTransactionEvents.
 			Assert.That(interceptor.AfterException, Is.TypeOf<HibernateException>());
+		}
+
+		// This test check a concurrency issue hard to reproduce. If it is flaky, it has to be considered failing.
+		// In such case, raise triesCount to investigate it locally with more chances of triggering the trouble.
+		[Test]
+		public async Task SupportsTransactionTimeoutAsync()
+		{
+			Assume.That(TestDialect.SupportsTransactionScopeTimeouts, Is.True, "The tested dialect is not supported for transaction scope timeouts.");
+			// Other special cases: ODBC and SAP SQL Anywhere succeed this test only with transaction.ignore_session_synchronization_failures
+			// enabled.
+			// They freeze the session during the transaction cancellation. To avoid the test to be very long, the synchronization
+			// lock timeout should be lowered too.
+
+			// A concurrency issue exists with the legacy setting allowing to use the session from transaction completion, which
+			// may cause session leaks. Ignore them.
+			FailOnNotClosedSession = !UseConnectionOnSystemTransactionPrepare;
+
+			// Test case adapted from https://github.com/kaksmet/NHibBugRepro
+
+			// Create some test data.
+			const int entitiesCount = 5000;
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				for (var i = 0; i < entitiesCount; i++)
+				{
+					var person = new Person
+					{
+						NotNullData = Guid.NewGuid().ToString()
+					};
+
+					await (s.SaveAsync(person));
+				}
+
+				await (t.CommitAsync());
+			}
+
+			// Setup unhandled exception catcher.
+			_unhandledExceptions = new ConcurrentBag<object>();
+			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+			try
+			{
+				// Generate transaction timeouts.
+				const int triesCount = 100;
+				var txOptions = new TransactionOptions { Timeout = TimeSpan.FromMilliseconds(1) };
+				var timeoutsCount = 0;
+				for (var i = 0; i < triesCount; i++)
+				{
+					try
+					{
+						using var txScope = new TransactionScope(TransactionScopeOption.Required, txOptions, TransactionScopeAsyncFlowOption.Enabled);
+						using var session = OpenSession();
+						var data = await (session.CreateCriteria<Person>().ListAsync());
+						Assert.That(data, Has.Count.EqualTo(entitiesCount), "Unexpected count of loaded entities.");
+						await (Task.Delay(2));
+						var count = await (session.Query<Person>().CountAsync());
+						Assert.That(count, Is.EqualTo(entitiesCount), "Unexpected entities count.");
+						txScope.Complete();
+					}
+					catch
+					{
+						// Assume that is a transaction timeout. It may cause various failures, of which some are hard to identify.
+						timeoutsCount++;
+					}
+					// If in need of checking some specific failures, the following code may be used instead:
+					/*
+					catch (Exception ex)
+					{
+						var currentEx = ex;
+						// Depending on where the transaction aborption has broken NHibernate processing, we may
+						// get various exceptions, like directly a TransactionAbortedException with an inner
+						// TimeoutException, or a HibernateException encapsulating a TransactionException with a
+						// timeout, ...
+						bool isTransactionException, isTimeout;
+						do
+						{
+							isTransactionException = currentEx is System.Transactions.TransactionException;
+							isTimeout = isTransactionException && currentEx is TransactionAbortedException;
+							currentEx = currentEx.InnerException;
+						}
+						while (!isTransactionException && currentEx != null);
+						while (!isTimeout && currentEx != null)
+						{
+							isTimeout = currentEx is TimeoutException;
+							currentEx = currentEx?.InnerException;
+						}
+
+						if (!isTimeout)
+						{
+							// We may also get a GenericADOException with an InvalidOperationException stating the
+							// transaction associated to the connection is no more active but not yet suppressed,
+							// and that for executing some SQL, we need to suppress it. That is a weak way of
+							// identifying the case, especially with the many localizations of the message.
+							currentEx = ex;
+							do
+							{
+								isTimeout = currentEx is InvalidOperationException && currentEx.Message.Contains("SQL");
+								currentEx = currentEx?.InnerException;
+							}
+							while (!isTimeout && currentEx != null);
+						}
+
+						if (isTimeout)
+							timeoutsCount++;
+						else
+							throw;
+					}
+					*/
+				}
+
+				Assert.That(
+					_unhandledExceptions.Count,
+					Is.EqualTo(0),
+					"Unhandled exceptions have occurred: {0}",
+					string.Join(@"
+
+", _unhandledExceptions));
+
+				// Despite the Thread sleep and the count of entities to load, this test may get the timeout only for slightly
+				// more than 10% of the attempts.
+				Warn.Unless(timeoutsCount, Is.GreaterThan(5), "The test should have generated more timeouts.");
+			}
+			finally
+			{
+				AppDomain.CurrentDomain.UnhandledException -= CurrentDomain_UnhandledException;
+			}
+		}
+
+		private ConcurrentBag<object> _unhandledExceptions;
+
+		private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			if (e.ExceptionObject is Exception exception)
+			{
+				// Ascertain NHibernate is involved. Some unhandled exceptions occur due to the
+				// TransactionScope timeout operating on an unexpected thread for the data provider.
+				var isNHibernateInvolved = false;
+				while (exception != null && !isNHibernateInvolved)
+				{
+					isNHibernateInvolved = exception.StackTrace != null && exception.StackTrace.ToLowerInvariant().Contains("nhibernate");
+					exception = exception.InnerException;
+				}
+				if (!isNHibernateInvolved)
+					return;
+			}
+			_unhandledExceptions.Add(e.ExceptionObject);
 		}
 	}
 

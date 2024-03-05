@@ -1,4 +1,4 @@
-﻿namespace NHibernate.Test.TestDialects
+namespace NHibernate.Test.TestDialects
 {
 	public class SapSQLAnywhere17TestDialect : TestDialect
 	{

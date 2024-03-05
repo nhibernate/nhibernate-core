@@ -178,6 +178,11 @@ namespace NHibernate.Test
 		public virtual bool SupportsDependentTransaction => true;
 
 		/// <summary>
+		/// Transaction scope timeouts occur on a dedicated thread which wrecks some data providers.
+		/// </summary>
+		public virtual bool SupportsTransactionScopeTimeouts => true;
+
+		/// <summary>
 		/// Some databases (provider?) fails to compute adequate column types for queries which columns
 		/// computing include a parameter value.
 		/// </summary>

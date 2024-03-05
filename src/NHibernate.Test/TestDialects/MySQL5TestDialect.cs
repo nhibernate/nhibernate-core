@@ -21,5 +21,10 @@
 		/// See https://dev.mysql.com/doc/refman/8.0/en/correlated-subqueries.html
 		/// </summary>
 		public override bool SupportsCorrelatedColumnsInSubselectJoin => false;
+
+		/// <summary>
+		/// MySQL data provider may be wrecked by transaction scope timeouts to the point of causing even the teardown to fail.
+		/// </summary>
+		public override bool SupportsTransactionScopeTimeouts => false;
 	}
 }

@@ -243,8 +243,11 @@ namespace NHibernate
 		/// End the <c>ISession</c> by disconnecting from the ADO.NET connection and cleaning up.
 		/// </summary>
 		/// <remarks>
-		/// It is not strictly necessary to <c>Close()</c> the <c>ISession</c> but you must
-		/// at least <c>Disconnect()</c> it.
+		/// <para>It is not strictly necessary to <c>Close()</c> the <c>ISession</c> but you must
+		/// at least <c>Disconnect()</c> or <c>Dispose</c> it.</para>
+		/// <para>Do not call this method inside a transaction scope, use <c>Dispose</c> instead,
+		/// since <c>Close()</c> is not aware of system transactions: if the transaction completion
+		/// requires the session, it will fail.</para>
 		/// </remarks>
 		/// <returns>The connection provided by the application or <see langword="null" /></returns>
 		DbConnection Close();
