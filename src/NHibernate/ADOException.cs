@@ -21,6 +21,7 @@ namespace NHibernate
 		public ADOException()
 		{
 		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ADOException"/> class.
 		/// </summary>
@@ -50,17 +51,23 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		protected ADOException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			this.sql = (string) info.GetValue("sql", typeof(string));
 		}
 
+#pragma warning disable CS0809
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
 			info.AddValue("sql", sql);
 		}
+#pragma warning restore CS0809
 
 		public string SqlString
 		{

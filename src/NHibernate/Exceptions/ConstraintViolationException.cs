@@ -23,8 +23,9 @@ namespace NHibernate.Exceptions
 			ConstraintName = constraintName;
 		}
 
-		public ConstraintViolationException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
+		public ConstraintViolationException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			foreach (var entry in info)
 			{
@@ -35,12 +36,16 @@ namespace NHibernate.Exceptions
 			}
 		}
 
+#pragma warning disable CS0809
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
 			info.AddValue("ConstraintName", ConstraintName);
 		}
+#pragma warning restore CS0809
 
 		/// <summary> 
 		/// Returns the name of the violated constraint, if known. 

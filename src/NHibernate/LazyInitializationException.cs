@@ -74,6 +74,8 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		protected LazyInitializationException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			foreach (var entry in info)
@@ -89,6 +91,9 @@ namespace NHibernate
 			}
 		}
 
+#pragma warning disable CS0809
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
@@ -96,5 +101,6 @@ namespace NHibernate
 			info.AddValue("EntityName", EntityName);
 			info.AddValue("EntityId", EntityId, typeof(object));
 		}
+#pragma warning restore CS0809
 	}
 }
