@@ -142,11 +142,28 @@ namespace NHibernate.Cfg
 		/// after scope disposal. This occurs when the transaction is distributed.
 		/// This notably concerns <see cref="ISessionImplementor.AfterTransactionCompletion(bool, ITransaction)"/>.
 		/// NHibernate protects the session from being concurrently used by the code following the scope disposal
-		/// with a lock. To prevent any application freeze, this lock has a default timeout of five seconds. If the
-		/// application appears to require longer (!) running transaction completion events, this setting allows to
+		/// with a lock. To prevent any application freeze, this lock has a default timeout of one second. If the
+		/// application appears to require longer running transaction completion events, this setting allows to
 		/// raise this timeout. <c>-1</c> disables the timeout.</para>
 		/// </summary>
 		public const string SystemTransactionCompletionLockTimeout = "transaction.system_completion_lock_timeout";
+		/// <summary>
+		/// Whether session synchronisation failures occuring during finalizations of system transaction should be
+		/// ignored or not. <see langword="false" /> by default.
+		/// </summary>
+		/// <remarks>
+		/// <para>When a system transaction terminates abnormaly, especially through timeouts, it may have its
+		/// completion events running on concurrent threads while the session is still performing some processing.
+		/// To prevent threading concurrency failures, NHibernate then wait for the session to end its processing,
+		/// up to <see cref="SystemTransactionCompletionLockTimeout" />. If the session processing is still ongoing
+		/// afterwards, it will by default log an error, perform transaction finalization processing concurrently,
+		/// then throw a synchronization error. This setting allows to disable that later throw.</para>
+		/// <para>Disabling the throw can be useful if the used data provider has its own locking mechanism applied
+		/// during transaction completion, preventing the session to end its processing. It may then be safe to
+		/// ignore this synchronization failure. In case of threading concurrency failure, you may then need to
+		/// raise <see cref="SystemTransactionCompletionLockTimeout" />.</para>
+		/// </remarks>
+		public const string IgnoreSessionSynchronizationFailuresOnSystemTransaction = "transaction.ignore_session_synchronization_failures";
 		/// <summary>
 		/// When a system transaction is being prepared, is using connection during this process enabled?
 		/// Default is <see langword="true"/>, for supporting <see cref="FlushMode.Commit"/> with transaction factories

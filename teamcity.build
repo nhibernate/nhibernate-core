@@ -50,6 +50,8 @@
 		<property name="db-service" value="MSSQL$SQLEXPRESS" />
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.OdbcDriver" />
 		<property name="nhibernate.odbc.explicit_datetime_scale" value="3" />
+		<property name="nhibernate.transaction.ignore_session_synchronization_failures" value="true" />
+		<property name="nhibernate.transaction.system_completion_lock_timeout" value="200" />
 	<!-- We need to use a dialect that avoids mapping DbType.Time to TIME on MSSQL. On modern SQL Server
 		this becomes TIME(7). Later, such values cannot be read back over ODBC. The
 		error we get is "System.ArgumentException : Unknown SQL type - SS_TIME_EX.". I don't know for certain
