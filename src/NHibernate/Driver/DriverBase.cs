@@ -15,6 +15,9 @@ namespace NHibernate.Driver
 	/// Base class for the implementation of IDriver
 	/// </summary>
 	public abstract class DriverBase : IDriver, ISqlParameterFormatter
+#if NET6_0_OR_GREATER
+		, IDriverWithBatchSupport
+#endif
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DriverBase));
 
@@ -328,6 +331,51 @@ namespace NHibernate.Driver
 		public virtual void AdjustCommand(DbCommand command)
 		{
 		}
+
+#if NET6_0_OR_GREATER
+		public void PrepareBatch(DbBatch batch)
+		{
+			AdjustBatch(batch);
+			OnBeforePrepare(batch);
+
+			if (SupportsPreparingCommands && prepareSql)
+			{
+				batch.Prepare();
+			}
+		}
+
+		/// <summary>
+		/// Override to make any adjustments to the DbBatch object.  (e.g., Oracle custom OUT parameter)
+		/// Parameters have been bound by this point, so their order can be adjusted too.
+		/// This is analogous to the RegisterResultSetOutParameter() function in Hibernate.
+		/// </summary>
+		protected virtual void OnBeforePrepare(DbBatch command)
+		{
+		}
+
+		/// <summary>
+		/// Override to make any adjustments to each DbBatch object before it added to the batcher.
+		/// </summary>
+		/// <param name="batch">The batch.</param>
+		/// <remarks>
+		/// This method is similar to the <see cref="OnBeforePrepare"/> but, instead be called just before execute the command (that can be a batch)
+		/// is executed before add each single command to the batcher and before <see cref="OnBeforePrepare"/> .
+		/// If you have to adjust parameters values/type (when the command is full filled) this is a good place where do it.
+		/// </remarks>
+		public virtual void AdjustBatch(DbBatch batch)
+		{
+	
+		}
+
+		public virtual DbBatch CreateBatch()
+		{
+			throw new NotImplementedException();
+		}
+
+		public virtual bool CanCreateBatch => false;
+
+
+#endif
 
 		public DbParameter GenerateOutputParameter(DbCommand command)
 		{
