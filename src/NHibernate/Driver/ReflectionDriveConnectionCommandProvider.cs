@@ -5,6 +5,9 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Driver
 {
 	public class ReflectionDriveConnectionCommandProvider : IDriveConnectionCommandProvider
+#if NET6_0_OR_GREATER
+		, IDriveConnectionCommandProviderWithBatchSupport
+#endif
 	{
 		private readonly System.Type commandType;
 		private readonly System.Type connectionType;
@@ -21,6 +24,14 @@ namespace NHibernate.Driver
 			}
 			this.connectionType = connectionType;
 			this.commandType = commandType;
+#if NET6_0_OR_GREATER
+			_canCreateBatch = new Lazy<bool>(() => {
+				using (var connection = CreateConnection())
+				{
+					return connection.CanCreateBatch && connection.CreateCommand() is ICloneable;
+				}
+			});
+#endif
 		}
 
 		#region IDriveConnectionCommandProvider Members
@@ -36,5 +47,24 @@ namespace NHibernate.Driver
 		}
 
 		#endregion
+
+#if NET6_0_OR_GREATER
+
+		private Lazy<bool> _canCreateBatch;
+
+		public DbBatch CreateBatch()
+		{
+			using (var connection = CreateConnection())
+			{
+				var batch = connection.CreateBatch();
+				batch.Connection = null;
+				return batch;
+			}
+		}
+
+		public bool CanCreateBatch => _canCreateBatch.Value;
+
+	
+#endif
 	}
 }
