@@ -524,15 +524,15 @@ namespace NHibernate.AdoNet
 			if (batch == null)
 				throw new ArgumentNullException(nameof(batch));
 
-			if (_transaction is ITransactionWithBatchSupport transactionWithBatch)
+			if (_transaction != null)
 			{
-				transactionWithBatch.Enlist(batch);
+				_transaction.Enlist(batch);
 				return;
 			}
 
 			if (batch.Transaction != null)
 			{
-				_log.Warn("set a nonnull DbCommand.Transaction to null because the Session had no Transaction");
+				_log.Warn("set a nonnull DbBatch.Transaction to null because the Session had no Transaction");
 				batch.Transaction = null;
 			}
 		}

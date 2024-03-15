@@ -15,9 +15,6 @@ namespace NHibernate.Driver
 	/// Base class for the implementation of IDriver
 	/// </summary>
 	public abstract class DriverBase : IDriver, ISqlParameterFormatter
-#if NET6_0_OR_GREATER
-		, IDriverWithBatchSupport
-#endif
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DriverBase));
 

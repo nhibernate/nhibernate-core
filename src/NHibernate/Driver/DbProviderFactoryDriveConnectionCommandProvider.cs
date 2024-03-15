@@ -4,9 +4,6 @@ using System.Data.Common;
 namespace NHibernate.Driver
 {
 	public class DbProviderFactoryDriveConnectionCommandProvider : IDriveConnectionCommandProvider
-#if NET6_0_OR_GREATER
-		, IDriveConnectionCommandProviderWithBatchSupport
-#endif
 	{
 		private readonly DbProviderFactory dbProviderFactory;
 
@@ -29,10 +26,7 @@ namespace NHibernate.Driver
 			return dbProviderFactory.CreateCommand();
 		}
 #if NET6_0_OR_GREATER
-		public DbBatch CreateBatch()
-		{
-			return dbProviderFactory.CreateBatch();
-		}
+		public DbBatch CreateBatch() => dbProviderFactory.CreateBatch();
 
 		public bool CanCreateBatch => dbProviderFactory.CanCreateBatch && dbProviderFactory.CreateCommand() is ICloneable;
 #endif

@@ -75,26 +75,9 @@ namespace NHibernate.Driver
 		}
 
 #if NET6_0_OR_GREATER
-		public override DbBatch CreateBatch()
-		{
-			if (connectionCommandProvider is IDriveConnectionCommandProviderWithBatchSupport driveConnectionCommandProviderWithBatch)
-			{
-				return driveConnectionCommandProviderWithBatch.CreateBatch();
-			}
-			throw new NotSupportedException();
-		}
+		public override DbBatch CreateBatch() => connectionCommandProvider.CreateBatch();
 
-		public override bool CanCreateBatch
-		{
-			get
-			{
-				if (connectionCommandProvider is IDriveConnectionCommandProviderWithBatchSupport driveConnectionCommandProviderWithBatch)
-				{
-					return driveConnectionCommandProviderWithBatch.CanCreateBatch;
-				}
-				return false;
-			}
-		}
+		public override bool CanCreateBatch => connectionCommandProvider.CanCreateBatch;
 #endif
 	}
 }

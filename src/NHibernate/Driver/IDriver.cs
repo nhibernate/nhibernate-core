@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Linq;
-using System.Windows.Input;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -165,5 +163,13 @@ namespace NHibernate.Driver
 		/// The minimal date supplied as a <see cref="DateTime" /> supported by this driver.
 		/// </summary>
 		DateTime MinDate { get; }
+
+#if NET6_0_OR_GREATER
+		DbBatch CreateBatch() => throw new NotImplementedException();
+		bool CanCreateBatch => false;
+
+		void AdjustBatch(DbBatch dbBatch) => throw new NotImplementedException();
+		void PrepareBatch(DbBatch dbBatch) => throw new NotImplementedException();
+#endif
 	}
 }

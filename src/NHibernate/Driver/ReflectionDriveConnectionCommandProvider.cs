@@ -5,9 +5,6 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Driver
 {
 	public class ReflectionDriveConnectionCommandProvider : IDriveConnectionCommandProvider
-#if NET6_0_OR_GREATER
-		, IDriveConnectionCommandProviderWithBatchSupport
-#endif
 	{
 		private readonly System.Type commandType;
 		private readonly System.Type connectionType;
@@ -49,7 +46,6 @@ namespace NHibernate.Driver
 		#endregion
 
 #if NET6_0_OR_GREATER
-
 		private Lazy<bool> _canCreateBatch;
 
 		public DbBatch CreateBatch()
@@ -63,8 +59,6 @@ namespace NHibernate.Driver
 		}
 
 		public bool CanCreateBatch => _canCreateBatch.Value;
-
-	
 #endif
 	}
 }
