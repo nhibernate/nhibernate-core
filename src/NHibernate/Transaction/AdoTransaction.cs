@@ -13,9 +13,6 @@ namespace NHibernate.Transaction
 	/// the <see cref="ITransaction" /> interface.
 	/// </summary>
 	public partial class AdoTransaction : ITransaction
-#if NET6_0_OR_GREATER
-		, ITransactionWithBatchSupport
-#endif
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AdoTransaction));
 		private ISessionImplementor session;
@@ -112,7 +109,7 @@ namespace NHibernate.Transaction
 				{
 					if (batch.Transaction != null)
 					{
-						log.Warn("set a nonnull DbCommand.Transaction to null because the Session had no Transaction");
+						log.Warn("set a nonnull DbBatch.Transaction to null because the Session had no Transaction");
 					}
 				}
 
@@ -127,11 +124,11 @@ namespace NHibernate.Transaction
 					// don't need to be confused by that - just a normal part of initialization...
 					if (batch.Transaction != null && batch.Transaction != trans)
 					{
-						log.Warn("The DbCommand had a different Transaction than the Session.  This can occur when " +
+						log.Warn("The DbBatch had a different Transaction than the Session.  This can occur when " +
 								 "Disconnecting and Reconnecting Sessions because the PreparedCommand Cache is Session specific.");
 					}
 				}
-				log.Debug("Enlist Command");
+				log.Debug("Enlist DbBatch");
 
 				// If you try to assign a disposed transaction to a command with MSSQL, it will leave the command's
 				// transaction as null and not throw an error.  With SQLite, for example, it will throw an exception

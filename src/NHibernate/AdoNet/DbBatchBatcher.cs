@@ -1,4 +1,4 @@
-﻿#if NET6_0_OR_GREATER
+#if NET6_0_OR_GREATER
 using System;
 using System.Data.Common;
 using System.Linq;
@@ -26,7 +26,7 @@ namespace NHibernate.AdoNet
 		{
 			_batchSize = Factory.Settings.AdoBatchSize;
 			_defaultTimeout = Driver.GetCommandTimeout();
-			
+
 			_currentBatch = CreateConfiguredBatch();
 			//we always create this, because we need to deal with a scenario in which
 			//the user change the logging configuration at runtime. Trying to put this
@@ -152,7 +152,7 @@ namespace NHibernate.AdoNet
 				{
 					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
 				}
-				
+
 				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected, ps);
 			}
 			finally
@@ -168,8 +168,7 @@ namespace NHibernate.AdoNet
 			{
 				Log.Debug("Executing batch");
 				await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
-				//await (PrepareAsync(_currentBatch, cancellationToken)).ConfigureAwait(false);
-				Prepare(_currentBatch);
+				await (PrepareAsync(_currentBatch, cancellationToken)).ConfigureAwait(false);
 				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 				{
 					Factory.Settings.SqlStatementLogger.LogBatchCommand(_currentBatchCommandsLog.ToString());
@@ -194,7 +193,7 @@ namespace NHibernate.AdoNet
 
 		private DbBatch CreateConfiguredBatch()
 		{
-			var result = ((IDriverWithBatchSupport) Driver).CreateBatch();
+			var result = Driver.CreateBatch();
 			if (_defaultTimeout > 0)
 			{
 				try
@@ -218,7 +217,7 @@ namespace NHibernate.AdoNet
 			_currentBatch.Dispose();
 			_totalExpectedRowsAffected = 0;
 			_currentBatch = CreateConfiguredBatch();
-			
+
 			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 			{
 				_currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
@@ -285,7 +284,44 @@ namespace NHibernate.AdoNet
 				}
 
 				_connectionManager.EnlistInTransaction(batch);
-				(Driver as IDriverWithBatchSupport).PrepareBatch(batch);
+				Driver.PrepareBatch(batch);
+			}
+			catch (InvalidOperationException ioe)
+			{
+				throw new ADOException("While preparing " + string.Join(Environment.NewLine, batch.BatchCommands.Select(x => x.CommandText)) + " an error occurred", ioe);
+			}
+		}
+
+		/// <summary>
+		/// Prepares the <see cref="DbBatch"/> for execution in the database.
+		/// </summary>
+		/// <remarks>
+		/// This takes care of hooking the <see cref="DbBatch"/> up to an <see cref="DbConnection"/>
+		/// and <see cref="DbTransaction"/> if one exists.  It will call <c>Prepare</c> if the Driver
+		/// supports preparing batches.
+		/// </remarks>
+		protected async Task PrepareAsync(DbBatch batch, CancellationToken cancellationToken)
+		{
+			try
+			{
+				var sessionConnection = await _connectionManager.GetConnectionAsync(cancellationToken).ConfigureAwait(false);
+
+				if (batch.Connection != null)
+				{
+					// make sure the commands connection is the same as the Sessions connection
+					// these can be different when the session is disconnected and then reconnected
+					if (batch.Connection != sessionConnection)
+					{
+						batch.Connection = sessionConnection;
+					}
+				}
+				else
+				{
+					batch.Connection = sessionConnection;
+				}
+
+				_connectionManager.EnlistInTransaction(batch);
+				Driver.PrepareBatch(batch);
 			}
 			catch (InvalidOperationException ioe)
 			{
