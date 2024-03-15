@@ -21,8 +21,6 @@ namespace NHibernate.Transaction
 	using System.Threading.Tasks;
 	using System.Threading;
 	public partial class AdoTransaction : ITransaction
-#if NET6_0_OR_GREATER
-#endif
 	{
 
 		private async Task AfterTransactionCompletionAsync(bool successful, CancellationToken cancellationToken)
