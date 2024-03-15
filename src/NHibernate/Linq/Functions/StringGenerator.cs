@@ -269,7 +269,7 @@ namespace NHibernate.Linq.Functions
 
 	public class ReplaceGenerator : BaseHqlGeneratorForMethod
 	{
-#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER  
+#if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 		private static readonly MethodInfo MethodWithComparer = ReflectHelper.GetMethodDefinition<string>(x => x.Replace(string.Empty, string.Empty, default(StringComparison)));
 #endif
 

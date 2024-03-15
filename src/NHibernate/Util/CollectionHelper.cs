@@ -733,7 +733,7 @@ namespace NHibernate.Util
 				(comparer == null ? DictionaryEquals(m1, m2, EqualityComparer<V>.Default) :
 					m1.All(kv => m2.TryGetValue(kv.Key, out var value) && comparer.Equals(kv.Value, value)));
 
-#if !NETCOREAPP2_0_OR_GREATER && !NETSTANDARD2_1_OR_GREATER
+#if !NETCOREAPP2_0_OR_GREATER && !NETSTANDARD2_1_OR_GREATER && !NET5_0_OR_GREATER
 		//It's added to make use of optimized .NET Core Dictionary.Remove(key, out value) method
 		public static bool Remove<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, out TValue value)
 		{
