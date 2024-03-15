@@ -140,7 +140,7 @@ namespace NHibernate.Test.Ado
 			{
 				await (FillDbAsync());
 				var log = sqlLog.GetWholeLog();
-				Assert.IsTrue(log.Contains("INSERT \n    INTO"));
+				Assert.That(log, Does.Contain("INSERT \n    INTO").IgnoreCase);
 			}
 
 			await (CleanupAsync());
@@ -211,7 +211,7 @@ namespace NHibernate.Test.Ado
 					foreach (var loggingEvent in sl.Appender.GetEvents())
 					{
 						string message = loggingEvent.RenderedMessage;
-						if(message.ToLowerInvariant().Contains("insert"))
+						if(message.Contains("insert"))
 						{
 							Assert.That(message, Does.Contain("batch").IgnoreCase);
 						}
