@@ -167,8 +167,8 @@ namespace NHibernate.AdoNet
 			try
 			{
 				Log.Debug("Executing batch");
-				await (CheckReadersAsync(cancellationToken)).ConfigureAwait(false);
-				await (PrepareAsync(_currentBatch, cancellationToken)).ConfigureAwait(false);
+				await CheckReadersAsync(cancellationToken).ConfigureAwait(false);
+				await PrepareAsync(_currentBatch, cancellationToken).ConfigureAwait(false);
 				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
 				{
 					Factory.Settings.SqlStatementLogger.LogBatchCommand(_currentBatchCommandsLog.ToString());
@@ -176,7 +176,7 @@ namespace NHibernate.AdoNet
 				int rowsAffected;
 				try
 				{
-					rowsAffected = _currentBatch.ExecuteNonQuery();
+					rowsAffected = await _currentBatch.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
 				}
 				catch (DbException e)
 				{
