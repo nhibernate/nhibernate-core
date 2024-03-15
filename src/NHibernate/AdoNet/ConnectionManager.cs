@@ -514,6 +514,30 @@ namespace NHibernate.AdoNet
 			}
 		}
 
+#if NET6_0_OR_GREATER
+		/// <summary>
+		/// Enlist a batch in the current transaction, if any.
+		/// </summary>
+		/// <param name="batch">The batch to enlist.</param>
+		public void EnlistInTransaction(DbBatch batch)
+		{
+			if (batch == null)
+				throw new ArgumentNullException(nameof(batch));
+
+			if (_transaction != null)
+			{
+				_transaction.Enlist(batch);
+				return;
+			}
+
+			if (batch.Transaction != null)
+			{
+				_log.Warn("set a nonnull DbBatch.Transaction to null because the Session had no Transaction");
+				batch.Transaction = null;
+			}
+		}
+#endif
+
 		/// <summary>
 		/// Enlist the connection into provided transaction if the connection should be enlisted.
 		/// Do nothing in case an explicit transaction is ongoing.
