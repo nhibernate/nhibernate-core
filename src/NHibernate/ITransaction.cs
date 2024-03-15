@@ -81,11 +81,8 @@ namespace NHibernate
 			"RegisterSynchronization(ITransactionCompletionSynchronization)': the TransactionExtensions extension " +
 			"method will call it.")]
 		void RegisterSynchronization(ISynchronization synchronization);
-	}
 
 #if NET6_0_OR_GREATER
-	internal interface ITransactionWithBatchSupport : ITransaction
-	{
 		/// <summary>
 		/// Enlist a <see cref="DbBatch"/> in the current Transaction.
 		/// </summary>
@@ -93,9 +90,9 @@ namespace NHibernate
 		/// <remarks>
 		/// It is okay for this to be a no op implementation.
 		/// </remarks>
-		void Enlist(DbBatch batch);
-	}
+		void Enlist(DbBatch batch) => throw new NotImplementedException();
 #endif
+	}
 
 	// 6.0 TODO: merge into ITransaction
 	public static class TransactionExtensions
