@@ -33,7 +33,7 @@ namespace NHibernate.Test.BulkManipulation
 			}
 		}
 
-		[Test, KnownBug("#3489")]
+		[Test]
 		public void InsertFromSelectWithMultipleAssociations()
 		{
 			using var s = OpenSession();

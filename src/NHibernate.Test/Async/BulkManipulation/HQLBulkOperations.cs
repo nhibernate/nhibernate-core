@@ -44,7 +44,7 @@ namespace NHibernate.Test.BulkManipulation
 			}
 		}
 
-		[Test, KnownBug("#3489")]
+		[Test]
 		public async Task InsertFromSelectWithMultipleAssociationsAsync()
 		{
 			using var s = OpenSession();

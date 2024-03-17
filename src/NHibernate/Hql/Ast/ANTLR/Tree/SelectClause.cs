@@ -493,10 +493,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					continue;
 				}
 
-				var node = (IASTNode) e;
-				if (processedElements.Add(fromElement))
+				var isNewFrom = processedElements.Add(fromElement);
+				if (isNewFrom)
 				{
 					combinedFromElements.Add(fromElement);
+				}
+				var node = (IASTNode) e;
+				if (isNewFrom || node.Type == SqlGenerator.DOT)
+				{
 					RenderNonScalarIdentifiers(fromElement, inheritedExpressions.ContainsKey(e) ? null : e, appender);
 				}
 				else if (!inheritedExpressions.ContainsKey(e) && node.Parent != null)
