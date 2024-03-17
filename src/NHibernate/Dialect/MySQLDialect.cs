@@ -286,7 +286,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("radians", new StandardSQLFunction("radians", NHibernateUtil.Double));
 			RegisterFunction("exp", new StandardSQLFunction("exp", NHibernateUtil.Double));
 
-			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "concat(", ",", ")"));
+			RegisterFunction("concat", new VarArgsSQLFunction("concat(", ",", ")"));
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
 			RegisterFunction("rtrim", new StandardSQLFunction("ltrim"));

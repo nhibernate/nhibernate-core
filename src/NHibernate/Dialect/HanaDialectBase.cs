@@ -454,7 +454,6 @@ namespace NHibernate.Dialect
 			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
 			RegisterFunction("char", new StandardSQLFunction("char", NHibernateUtil.AnsiChar));
 			RegisterFunction("coalesce", new TypeConvertingVarArgsSQLFunction("coalesce(", ",", ")"));
-			RegisterFunction("concat", new VarArgsSQLFunction("(", " || ", ")"));
 			RegisterFunction("concat_naz", new StandardSQLFunction("concat_naz", NHibernateUtil.String));
 			RegisterFunction("convert_currency", new VarArgsSQLFunction("convert_currency(", ",", ")"));
 			RegisterFunction("convert_unit", new VarArgsSQLFunction("convert_unit(", ",", ")"));

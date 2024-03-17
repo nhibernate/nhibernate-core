@@ -193,7 +193,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 			RegisterFunction("iif", new IifSQLFunction());
 
-			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
+			RegisterFunction("concat", new VarArgsSQLFunction("(", "+", ")"));
 			// Modulo is not supported on real, float, money, and numeric data types
 			RegisterFunction("mod", new ModulusFunctionTemplate(false));
 

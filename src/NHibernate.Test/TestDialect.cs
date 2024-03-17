@@ -57,6 +57,8 @@ namespace NHibernate.Test
 
 		public virtual bool SupportsNullCharactersInUtfStrings => true;
 
+		public virtual bool SupportsAnsiString => _dialect.GetTypeName(new SqlType(DbType.AnsiString)) != _dialect.GetTypeName(new SqlType(DbType.String));   
+
 		/// <summary>
 		/// Some databases do not support SELECT FOR UPDATE 
 		/// </summary>

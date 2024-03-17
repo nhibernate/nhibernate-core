@@ -69,9 +69,6 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public async Task UsingSqlFunctions_ConcatAsync()
 		{
-			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
-				Assert.Ignore("Current dialect does not support this test");
-
 			using (ISession session = Sfi.OpenSession())
 			{
 				string result = await (session.CreateCriteria(typeof(Student))
@@ -89,12 +86,8 @@ namespace NHibernate.Test.Criteria
 		[Test]
 		public async Task UsingSqlFunctions_Concat_WithCastAsync()
 		{
-			if(Dialect is Oracle8iDialect)
-			{
+			if (Dialect is Oracle8iDialect)
 				Assert.Ignore("Not supported by the active dialect:{0}.", Dialect);
-			}
-			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
-				Assert.Ignore("Current dialect does not support this test");
 
 			using (ISession session = Sfi.OpenSession())
 			{
