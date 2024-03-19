@@ -517,10 +517,31 @@ namespace NHibernate.Test.Linq
 			Assert.That(await (db.Users.Where(o => (NullableInt32) o.Id == 1).ToListAsync()), Has.Count.EqualTo(1));
 		}
 
+		[Test]
+		public async Task ToHashSetAsync()
+		{
+			var hashSet = await (db.Employees.Select(employee => employee.TitleOfCourtesy).ToHashSetAsync());
+			Assert.That(hashSet.Count, Is.EqualTo(4));
+		}
+
+		[Test]
+		public async Task ToHashSet_With_ComparerAsync()
+		{
+			var hashSet = await (db.Employees.Select(employee => employee.Address).ToHashSetAsync(new AddressByCountryComparer()));
+			Assert.That(hashSet.Count, Is.EqualTo(2));
+		}
+
 		public class Wrapper<T>
 		{
 			public T item;
 			public string message;
+		}
+
+		private class AddressByCountryComparer : IEqualityComparer<Address>
+		{
+			public bool Equals(Address x, Address y) => x?.Country == y?.Country;
+
+			public int GetHashCode(Address obj) => obj.Country.GetHashCode();
 		}
 	}
 }
