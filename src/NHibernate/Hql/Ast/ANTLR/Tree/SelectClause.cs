@@ -443,22 +443,23 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			IList<FromElement> fetchedFromElements)
 		{
 			var appender = new ASTAppender(ASTFactory, this);
+			var combinedFromElements = new List<FromElement>();
 			var processedElements = new HashSet<FromElement>();
-			RenderNonScalarIdentifiers(appender, processedElements, inheritedExpressions);
+			RenderNonScalarIdentifiers(appender, processedElements, combinedFromElements, inheritedExpressions);
 			if (Walker.IsShallowQuery)
 			{
 				return;
 			}
 
 			// Append fetched elements
-			RenderFetchedNonScalarIdentifiers(appender, fetchedFromElements, processedElements);
+			RenderFetchedNonScalarIdentifiers(appender, fetchedFromElements, processedElements, combinedFromElements);
 			if (currentFromClause.IsScalarSubQuery)
 			{
 				return;
 			}
 			
 			// Generate the property select tokens.
-			foreach (var fromElement in processedElements)
+			foreach (var fromElement in combinedFromElements)
 			{
 				RenderNonScalarProperties(appender, fromElement);
 			}
@@ -481,6 +482,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private void RenderNonScalarIdentifiers(
 			ASTAppender appender,
 			HashSet<FromElement> processedElements,
+			List<FromElement> combinedFromElements,
 			Dictionary<ISelectExpression, SelectClause> inheritedExpressions)
 		{
 			foreach (var e in NonScalarExpressions)
@@ -494,6 +496,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				var node = (IASTNode) e;
 				if (Walker.IsShallowQuery && node.Type == SqlGenerator.DOT || processedElements.Add(fromElement))
 				{
+					combinedFromElements.Add(fromElement);
 					RenderNonScalarIdentifiers(fromElement, inheritedExpressions.ContainsKey(e) ? null : e, appender);
 				}
 				else if (!inheritedExpressions.ContainsKey(e) && node.Parent != null)
@@ -506,7 +509,8 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 		private void RenderFetchedNonScalarIdentifiers(
 			ASTAppender appender,
 			IList<FromElement> fetchedFromElements,
-			HashSet<FromElement> processedElements)
+			HashSet<FromElement> processedElements,
+			List<FromElement> combinedFromElements)
 		{
 			foreach (var fetchedFromElement in fetchedFromElements)
 			{
@@ -516,6 +520,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 
 				fetchedFromElement.EntitySuffix = Walker.GetEntitySuffix(fetchedFromElement);
+				combinedFromElements.Add(fetchedFromElement);
 				var fragment = fetchedFromElement.GetIdentifierSelectFragment(fetchedFromElement.EntitySuffix);
 				if (fragment == null)
 				{
