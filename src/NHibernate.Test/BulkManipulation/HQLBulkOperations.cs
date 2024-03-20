@@ -36,6 +36,9 @@ namespace NHibernate.Test.BulkManipulation
 		[Test]
 		public void InsertFromSelectWithMultipleAssociations()
 		{
+			Assume.That(TestDialect.NativeGeneratorSupportsBulkInsertion,
+				"The dialect does not support a native generator compatible with bulk insertion.");
+
 			using var s = OpenSession();
 			using var tx = s.BeginTransaction();
 
