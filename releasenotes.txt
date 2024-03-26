@@ -88,6 +88,22 @@ Release notes - NHibernate - Version 5.5.0
    * #3412 Revive hql ParsingFixture
 
 
+Build 5.4.8
+=============================
+
+Release notes - NHibernate - Version 5.4.8
+
+2 issues were resolved in this release.
+
+** Bug
+
+   * #3489 Inserting multiple associations of the same entity fails
+
+** Task
+
+   * #3507 Release 5.4.8
+
+
 Build 5.4.7
 =============================
 

@@ -43,5 +43,21 @@ namespace NHibernate.Test.BulkManipulation
 				await (tx.CommitAsync());
 			}
 		}
+
+		[Test]
+		public async Task InsertFromSelectWithMultipleAssociationsAsync()
+		{
+			Assume.That(TestDialect.NativeGeneratorSupportsBulkInsertion,
+				"The dialect does not support a native generator compatible with bulk insertion.");
+
+			using var s = OpenSession();
+			using var tx = s.BeginTransaction();
+
+			await (s.CreateQuery("insert into Enrolment (Course, Student)" +
+				" select e.Course, e.Student from Enrolment e")
+				.ExecuteUpdateAsync());
+
+			await (tx.CommitAsync());
+		}
 	}
 }
