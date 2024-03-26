@@ -1,4 +1,21 @@
-﻿Build 5.5.0
+﻿Build 5.5.1
+=============================
+
+Release notes - NHibernate - Version 5.5.1
+
+3 issues were resolved in this release.
+
+** Bug
+
+   * #3465 Invalid SQL created for some joins in a subquery
+
+** Task
+
+   * #3509 Release 5.5.1
+   * #3508 Merge 5.4.8 into 5.5.x
+
+
+Build 5.5.0
 =============================
 
 Release notes - NHibernate - Version 5.5.0
