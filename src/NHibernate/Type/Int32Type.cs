@@ -31,8 +31,10 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return rs[index] switch
+				var value = rs[index];
+				return value switch
 				{
+					int _ => value,
 					BigInteger bi => (int) bi,
 					var c => Convert.ToInt32(c)
 				};
