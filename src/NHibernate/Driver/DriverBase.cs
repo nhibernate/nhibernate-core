@@ -246,10 +246,36 @@ namespace NHibernate.Driver
 
 			var formatter = GetSqlStringFormatter();
 			formatter.Format(sqlString);
+
 			var assignedParameterNames = new HashSet<string>(formatter.AssignedParameterNames);
 
+			if (assignedParameterNames.Count != formatter.AssignedParameterNames.Count())
+			{
+				// Some parameters should be removed
+				int index = 0;
+				// Iterate from the parameters and replace those which are aliased.
+				foreach (DbParameter p in cmd.Parameters)
+				{
+					if (!assignedParameterNames.Contains(UseNamedPrefixInParameter ? p.ParameterName : FormatNameForSql(p.ParameterName)))
+					{
+						// instead of just removing, replace with the parameter it's substituted with
+						Parameter parameter = sqlString.GetParameters().ElementAt(index);
+						if (parameter?.ParameterPosition != null)
+						{
+							// rename the parameter name with it's replacement
+							var replacementParameterName = UseNamedPrefixInSql
+								? NamedPrefix + ToParameterName(parameter.ParameterPosition.Value)
+								: ToParameterName(parameter.ParameterPosition.Value);
+							cmd.CommandText = cmd.CommandText.Replace(p.ParameterName, replacementParameterName);
+						}
+					}
+					index++;
+				}
+
+			}
+			// Delete any parameters that aren't used.
 			cmd.Parameters
-				.Cast<DbParameter>()
+  				.Cast<DbParameter>()
 				.Select(p => p.ParameterName)
 				.Where(p => !assignedParameterNames.Contains(UseNamedPrefixInParameter ? p : FormatNameForSql(p)))
 				.ToList()
