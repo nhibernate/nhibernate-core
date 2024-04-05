@@ -14,7 +14,7 @@
     <PackageTags>ORM; O/RM; DataBase; DAL; ObjectRelationalMapping; NHibernate; ADO.Net; Core</PackageTags>
     <PackageReadmeFile>NHibernate.readme.md</PackageReadmeFile>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <None Remove="**\*.g" />
     <None Remove="**\*.xsd" />
@@ -97,6 +97,8 @@
   <Target Name="_AntrlDesignTimeGrammarCompilationWorkaround" BeforeTargets="CoreCompile" Condition="'$(BuildingByReSharper)' == 'true'">
     <CallTarget
       Targets="AntlrCompile"
-      Condition="'$(DesignTimeBuild)' == 'true' OR '$(BuildingProject)' != 'true'" />
+      ContinueOnError="true"
+      Condition="'$(DesignTimeBuild)' == 'true' OR '$(BuildingProject)' != 'true'"
+    />
   </Target>
 </Project>
