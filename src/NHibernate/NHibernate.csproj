@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../build-common/NHibernate.props" />
 
   <PropertyGroup>
@@ -13,8 +13,6 @@
     <PackageDescription>NHibernate is a mature, open source object-relational mapper for the .NET framework. It is actively developed, fully featured and used in thousands of successful projects.</PackageDescription>
     <PackageTags>ORM; O/RM; DataBase; DAL; ObjectRelationalMapping; NHibernate; ADO.Net; Core</PackageTags>
     <PackageReadmeFile>NHibernate.readme.md</PackageReadmeFile>
-    <!-- Workaround to enable Rider to see the Antlr3 generated files at design time -->
-    <CoreCompileDependsOn>DesignTimeGrammarCompilation;$(CoreCompileDependsOn)</CoreCompileDependsOn>
   </PropertyGroup>
   
   <ItemGroup>
@@ -94,4 +92,11 @@
     </Content>
     <None Include="../../logo/NHibernate-NuGet.png" Pack="true" PackagePath="/" />
   </ItemGroup>
+
+  <!-- Workaround to enable Rider to see the Antlr3 generated files at design time -->
+  <Target Name="_AntrlDesignTimeGrammarCompilationWorkaround" BeforeTargets="CoreCompile" Condition="'$(BuildingByReSharper)' == 'true'">
+    <CallTarget
+      Targets="AntlrCompile"
+      Condition="'$(DesignTimeBuild)' == 'true' OR '$(BuildingProject)' != 'true'" />
+  </Target>
 </Project>
