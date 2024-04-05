@@ -5,7 +5,7 @@ using NHibernate.Engine;
 namespace NHibernate.Linq.Visitors
 {
 	/// <summary>
-	/// The result of <see cref="NhRelinqQueryParser.PreTransform"/> method.
+	/// The result of <see cref="NhRelinqQueryParser.PreTransform(System.Linq.Expressions.Expression, PreTransformationParameters)"/> method.
 	/// </summary>
 	public class PreTransformationResult
 	{
