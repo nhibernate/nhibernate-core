@@ -37,17 +37,10 @@ indent_style = tab
 indent_style = space
 indent_size = 2
 
-[*.xml]
+[{*.xml,*.csproj,*.vbproj}]
 indent_style = space
 indent_size = 2
-
-[*.csproj]
-indent_style = space
-indent_size = 2
-
-[*.vbproj]
-indent_style = space
-indent_size = 2
+ij_xml_space_inside_empty_tag = true
 
 [*.g]
 indent_style = tab
