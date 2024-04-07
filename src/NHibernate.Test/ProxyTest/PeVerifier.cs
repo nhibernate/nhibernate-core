@@ -62,7 +62,11 @@ namespace NHibernate.Test.ProxyTest
 			var result = process.ExitCode + " code ";
 
 			if (process.ExitCode != 0)
-				Assert.Fail("PeVerify reported error(s): " + Environment.NewLine + processOutput, result);
+				Assert.Fail(
+					$@"PeVerify reported error(s):
+{processOutput}
+
+{result}");
 		}
 	}
 }
