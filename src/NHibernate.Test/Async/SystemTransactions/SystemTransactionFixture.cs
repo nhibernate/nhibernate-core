@@ -299,7 +299,7 @@ namespace NHibernate.Test.SystemTransactions
 				if (count != 1)
 					// We are not testing that here, so just issue a warning. Do not use DodgeTransactionCompletionDelayIfRequired
 					// before previous assert. We want to ascertain the session is usable in any cases.
-					Assert.Warn("Unexpected entity count: {0} instead of {1}. The transaction seems to have a delayed commit.", count, 1);
+					Assert.Warn($"Unexpected entity count: {count} instead of {1}. The transaction seems to have a delayed commit.");
 			}
 		}
 
@@ -643,11 +643,9 @@ namespace NHibernate.Test.SystemTransactions
 
 				Assert.That(
 					_unhandledExceptions.Count,
-					Is.EqualTo(0),
-					"Unhandled exceptions have occurred: {0}",
-					string.Join(@"
+					Is.EqualTo(0), $"Unhandled exceptions have occurred: {string.Join(@"
 
-", _unhandledExceptions));
+", _unhandledExceptions)}");
 
 				// Despite the Thread sleep and the count of entities to load, this test may get the timeout only for slightly
 				// more than 10% of the attempts.

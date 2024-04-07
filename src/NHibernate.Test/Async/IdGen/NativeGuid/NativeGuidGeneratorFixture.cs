@@ -43,7 +43,7 @@ namespace NHibernate.Test.IdGen.NativeGuid
 			}
 			catch (NotSupportedException)
 			{
-				Assert.Ignore("This test does not apply to {0}", Dialect.Dialect.GetDialect());
+				Assert.Ignore($"This test does not apply to {Dialect.Dialect.GetDialect()}");
 			}
 			 
 			var gen = new NativeGuidGenerator();
