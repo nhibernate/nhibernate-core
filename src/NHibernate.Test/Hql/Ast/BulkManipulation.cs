@@ -884,7 +884,7 @@ namespace NHibernate.Test.Hql.Ast
 		{
 			if (Dialect.HasSelfReferentialForeignKeyBug)
 			{
-				Assert.Ignore($"self referential FK bug");
+				Assert.Ignore("self referential FK bug - HQL delete testing");
 				return;
 			}
 
