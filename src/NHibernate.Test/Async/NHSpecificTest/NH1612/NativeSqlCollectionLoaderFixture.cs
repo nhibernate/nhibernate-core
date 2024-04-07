@@ -259,7 +259,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		[Test]
 		public async Task NativeScalarQueryWithoutResultsAsync()
 		{
-			Assume.That(Dialect, Is.InstanceOf<MsSql2000Dialect>(), "This does not apply to {0}", Dialect);
+			Assume.That(Dialect, Is.InstanceOf<MsSql2000Dialect>(), $"This does not apply to {Dialect}");
 			Assume.That(WithQueryCache, Is.False, "This test does not use a cacheable query.");
 			using (ISession session = OpenSession())
 			{
