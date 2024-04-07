@@ -1430,7 +1430,12 @@ namespace NHibernate.Test.NHSpecificTest.NH3850
 			}
 			swEnHlp.Stop();
 
-			Assert.Pass($"Blunt perf timings:\r\nDirect reflection: {swNoSameParamsCheck.Elapsed}\r\nCurrent impl, same overload: {swCurrentChoiceSameType.Elapsed}\r\nCurrent impl, other overload: {swCurrentChoice.Elapsed}\r\nEnumerableHelper.GetMethod(non generic overload): {swEnHlp.Elapsed}");
+			Assert.Pass(
+				$@"Blunt perf timings:
+Direct reflection: {swNoSameParamsCheck.Elapsed}
+Current impl, same overload: {swCurrentChoiceSameType.Elapsed}
+Current impl, other overload: {swCurrentChoice.Elapsed}
+EnumerableHelper.GetMethod(non generic overload): {swEnHlp.Elapsed}");
 		}
 	}
 }

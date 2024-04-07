@@ -243,9 +243,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 					}
 				}
 
-				Assert.Fail($"{(missingDeadlock
-								? "Deadlock not reported on initial request, and initial request failed"
-								: "Initial request failed")}; {subsequentFailedRequests} subsequent requests failed.");
+				Assert.Fail(
+					missingDeadlock
+						? $"Deadlock not reported on initial request, and initial request failed; {subsequentFailedRequests} subsequent requests failed."
+						: $"Initial request failed; {subsequentFailedRequests} subsequent requests failed.");
+				
 			} while (tryCount < 3);
 			//
 			// I'll change this to while(true) sometimes so I don't have to keep running the test

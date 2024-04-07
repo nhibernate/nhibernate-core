@@ -57,7 +57,8 @@ namespace NHibernate.Test.ConnectionTest
 		{
 			Assert.That(
 				Sfi.GetCurrentSession(),
-				Is.EqualTo(session), $"{message} {Sfi.GetCurrentSession().GetSessionImplementation().SessionId} instead of {session.GetSessionImplementation().SessionId}.");
+				Is.EqualTo(session),
+				$"{message} {Sfi.GetCurrentSession().GetSessionImplementation().SessionId} instead of {session.GetSessionImplementation().SessionId}.");
 		}
 	}
 }
