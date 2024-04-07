@@ -113,7 +113,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 							//
 							// ? This shouldn't happen
 							//
-							Assert.Fail("Surprising exception when trying to force a deadlock: {0}", x);
+							Assert.Fail($"Surprising exception when trying to force a deadlock: {x}");
 						}
 
 						_log.WarnFormat("Initial session seemingly not deadlocked at attempt {0}", tryCount);
@@ -243,11 +243,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 					}
 				}
 
-				Assert.Fail("{0}; {1} subsequent requests failed.",
-							missingDeadlock
+				Assert.Fail($"{(missingDeadlock
 								? "Deadlock not reported on initial request, and initial request failed"
-								: "Initial request failed",
-							subsequentFailedRequests);
+								: "Initial request failed")}; {subsequentFailedRequests} subsequent requests failed.");
 			} while (tryCount < 3);
 			//
 			// I'll change this to while(true) sometimes so I don't have to keep running the test

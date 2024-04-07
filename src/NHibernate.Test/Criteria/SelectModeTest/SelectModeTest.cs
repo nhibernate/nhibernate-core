@@ -694,7 +694,7 @@ namespace NHibernate.Test.Criteria.SelectModeTest
 		private void SkipFutureTestIfNotSupported()
 		{
 			if (Sfi.ConnectionProvider.Driver.SupportsMultipleQueries == false)
-				Assert.Ignore("Driver {0} does not support multi-queries", Sfi.ConnectionProvider.Driver.GetType().FullName);
+				Assert.Ignore($"Driver {Sfi.ConnectionProvider.Driver.GetType().FullName} does not support multi-queries");
 		}
 
 		#region Test Setup
