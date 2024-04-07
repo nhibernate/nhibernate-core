@@ -254,12 +254,63 @@ namespace NHibernate.Test.NHSpecificTest.NH3023
 					}
 				}
 
-				Assert.Fail($"{(missingDeadlock
-								? "Deadlock not reported on initial request, and initial request failed"
-								: "Initial request failed")}; {subsequentFailedRequests} subsequent requests failed.");
+				Assert.Fail(
+					missingDeadlock
+						? $"Deadlock not reported on initial request, and initial request failed; {subsequentFailedRequests} subsequent requests failed."
+						: $"Initial request failed; {subsequentFailedRequests} subsequent requests failed.");
+				
 			} while (tryCount < 3);
 			//
 			// I'll change this to while(true) sometimes so I don't have to keep running the test
 			//
 		}
+
+		private static TransactionScope CreateDistributedTransactionScope()
+		{
+			var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+			//
+			// Forces promotion to distributed transaction
+			//
+			TransactionInterop.GetTransmitterPropagationToken(System.Transactions.Transaction.Current);
+			return scope;
+		}
+
+		private void RunScript(string script)
+		{
+			var cxnString = GetConnectionString() + "; Pooling=No";
+			// Disable connection pooling so this won't be hindered by
+			// problems encountered during the actual test
+
+			string sql;
+			using (var reader = new StreamReader(GetType().Assembly.GetManifestResourceStream(GetType().Namespace + "." + script)))
+			{
+				sql = reader.ReadToEnd();
+			}
+
+			using (var cxn = new SqlConnection(cxnString))
+			{
+				cxn.Open();
+
+				foreach (var batch in Regex.Split(sql, @"^go\s*$", RegexOptions.IgnoreCase | RegexOptions.Multiline)
+					.Where(b => !string.IsNullOrEmpty(b)))
+				{
+					using (var cmd = new System.Data.SqlClient.SqlCommand(batch, cxn))
+					{
+						cmd.ExecuteNonQuery();
+					}
+				}
+			}
+		}
+
+		private string GetConnectionString()
+		{
+			return cfg.Properties["connection.connection_string"];
+		}
 	}
+
+	[TestFixture]
+	public class DeadlockConnectionPoolIssueWithoutConnectionFromPrepareAsync : DeadlockConnectionPoolIssueAsync
+	{
+		protected override bool UseConnectionOnSystemTransactionPrepare => false;
+	}
+}

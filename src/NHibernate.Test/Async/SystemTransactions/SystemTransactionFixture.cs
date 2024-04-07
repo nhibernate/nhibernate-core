@@ -643,7 +643,8 @@ namespace NHibernate.Test.SystemTransactions
 
 				Assert.That(
 					_unhandledExceptions.Count,
-					Is.EqualTo(0), $"Unhandled exceptions have occurred: {string.Join(@"
+					Is.EqualTo(0),
+					$"Unhandled exceptions have occurred: {string.Join(@"
 
 ", _unhandledExceptions)}");
 
