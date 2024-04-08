@@ -23,69 +23,46 @@ namespace NHibernate.SqlTypes
 	[Serializable]
 	public class SqlType : IEquatable<SqlType>
 	{
-		private readonly DbType dbType;
-		private readonly int length;
-		private readonly byte precision;
-		private readonly byte scale;
-		private readonly bool lengthDefined;
-		private readonly bool precisionDefined;
-
 		public SqlType(DbType dbType)
 		{
-			this.dbType = dbType;
+			DbType = dbType;
 		}
 
 		public SqlType(DbType dbType, int length)
 		{
-			this.dbType = dbType;
-			this.length = length;
-			lengthDefined = true;
+			DbType = dbType;
+			Length = length;
+			LengthDefined = true;
 		}
 
 		public SqlType(DbType dbType, byte precision, byte scale)
 		{
-			this.dbType = dbType;
-			this.precision = precision;
-			this.scale = scale;
-			precisionDefined = true;
+			DbType = dbType;
+			Precision = precision;
+			Scale = scale;
+			ScaleDefined = true;
+			PrecisionDefined = true;
 		}
 
 		public SqlType(DbType dbType, byte scale)
 		{
-			this.dbType = dbType;
-			this.scale = scale;
+			DbType = dbType;
+			Scale = scale;
 			ScaleDefined = true;
 		}
 
-		public DbType DbType
-		{
-			get { return dbType; }
-		}
+		public DbType DbType { get; }
 
-		public int Length
-		{
-			get { return length; }
-		}
+		public int Length { get; }
 
-		public byte Precision
-		{
-			get { return precision; }
-		}
+		public byte Precision { get; }
 
-		public byte Scale
-		{
-			get { return scale; }
-		}
+		public byte Scale { get; }
 
-		public bool LengthDefined
-		{
-			get { return lengthDefined; }
-		}
+		public bool LengthDefined { get; }
 
-		public bool PrecisionDefined
-		{
-			get { return precisionDefined; }
-		}
+		public bool PrecisionDefined { get; }
+		
 
 		public bool ScaleDefined { get; }
 
