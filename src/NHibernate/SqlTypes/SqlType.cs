@@ -23,6 +23,10 @@ namespace NHibernate.SqlTypes
 	[Serializable]
 	public class SqlType : IEquatable<SqlType>
 	{
+		private readonly int? _length;
+		private readonly byte? _precision;
+		private readonly byte? _scale;
+
 		public SqlType(DbType dbType)
 		{
 			DbType = dbType;
@@ -31,40 +35,33 @@ namespace NHibernate.SqlTypes
 		public SqlType(DbType dbType, int length)
 		{
 			DbType = dbType;
-			Length = length;
-			LengthDefined = true;
+			_length = length;
 		}
 
 		public SqlType(DbType dbType, byte precision, byte scale)
 		{
 			DbType = dbType;
-			Precision = precision;
-			Scale = scale;
-			ScaleDefined = true;
-			PrecisionDefined = true;
+			_precision = precision;
+			_scale = scale;
 		}
 
 		public SqlType(DbType dbType, byte scale)
 		{
 			DbType = dbType;
-			Scale = scale;
-			ScaleDefined = true;
+			_scale = scale;
 		}
 
 		public DbType DbType { get; }
 
-		public int Length { get; }
+		public int Length => _length.GetValueOrDefault();
+		public byte Precision => _precision.GetValueOrDefault();
+		public byte Scale => _scale.GetValueOrDefault();
+		public bool LengthDefined => _length.HasValue;
 
-		public byte Precision { get; }
+		public bool PrecisionDefined => _precision.HasValue;
 
-		public byte Scale { get; }
 
-		public bool LengthDefined { get; }
-
-		public bool PrecisionDefined { get; }
-		
-
-		public bool ScaleDefined { get; }
+		public bool ScaleDefined => _scale.HasValue;
 
 		#region System.Object Members
 
