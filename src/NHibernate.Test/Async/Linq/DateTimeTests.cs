@@ -28,9 +28,8 @@ namespace NHibernate.Test.Linq
 	{
 		private bool DialectSupportsDateTimeOffset => TestDialect.SupportsSqlType(new SqlType(DbType.DateTimeOffset));
 		private bool DialectSupportsDateTimeWithScale => TestDialect.SupportsSqlType(new SqlType(DbType.DateTime, 2));
-
-		private DateTimeTestsClass[] _referenceEntities = new DateTimeTestsClass[]
-		{
+		private readonly DateTimeTestsClass[] _referenceEntities =
+		[
 			new() {Id =1, DateTimeValue = new DateTime(1998, 02, 26)},
 			new() {Id =2, DateTimeValue = new DateTime(1998, 02, 26)},
 			new() {Id =3, DateTimeValue = new DateTime(1998, 02, 26, 01, 01, 01)},
@@ -39,7 +38,7 @@ namespace NHibernate.Test.Linq
 			new() {Id =6, DateTimeValue = new DateTime(1998, 02, 26, 04, 04, 04)},
 			new() {Id =7, DateTimeValue = new DateTime(1998, 03, 01)},
 			new() {Id =8, DateTimeValue = new DateTime(2000, 01, 01)}
-		};
+		];
 
 		protected override string[] Mappings => default;
 		protected override void AddMappings(Configuration configuration)
