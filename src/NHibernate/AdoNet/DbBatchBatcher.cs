@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using NHibernate.AdoNet.Util;
 using NHibernate.Driver;
-using NHibernate.Engine;
 using NHibernate.Exceptions;
 
 namespace NHibernate.AdoNet
@@ -38,20 +37,14 @@ namespace NHibernate.AdoNet
 
 		public override int BatchSize
 		{
-			get { return _batchSize; }
-			set { _batchSize = value; }
+			get => _batchSize;
+			set => _batchSize = value;
 		}
 
-		protected override int CountOfStatementsInCurrentBatch
-		{
-			get { return _currentBatch.BatchCommands.Count; }
-		}
+		protected override int CountOfStatementsInCurrentBatch => _currentBatch.BatchCommands.Count;
 
-		public override void AddToBatch(IExpectation expectation)
+		private void LogBatchCommand(DbCommand batchUpdate)
 		{
-			_totalExpectedRowsAffected += expectation.ExpectedRowCount;
-			var batchUpdate = CurrentCommand;
-			Driver.AdjustCommand(batchUpdate);
 			string lineWithParameters = null;
 			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
 			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
@@ -60,20 +53,14 @@ namespace NHibernate.AdoNet
 				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
 				lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
 				_currentBatchCommandsLog.Append("command ")
-					.Append(_currentBatch.BatchCommands.Count)
-					.Append(":")
-					.AppendLine(lineWithParameters);
+				                        .Append(_currentBatch.BatchCommands.Count)
+				                        .Append(':')
+				                        .AppendLine(lineWithParameters);
 			}
+
 			if (Log.IsDebugEnabled())
 			{
 				Log.Debug("Adding to batch:{0}", lineWithParameters);
-			}
-
-			AddCommandToBatch(batchUpdate);
-
-			if (CountOfStatementsInCurrentBatch >= _batchSize)
-			{
-				ExecuteBatchWithTiming(batchUpdate);
 			}
 		}
 
@@ -87,48 +74,49 @@ namespace NHibernate.AdoNet
 			{
 				dbBatchCommand.Parameters.Add(((ICloneable) param).Clone());
 			}
+
 			_currentBatch.BatchCommands.Add(dbBatchCommand);
+		}
+
+		public override void AddToBatch(IExpectation expectation)
+		{
+			_totalExpectedRowsAffected += expectation.ExpectedRowCount;
+			var batchUpdate = CurrentCommand;
+			Driver.AdjustCommand(batchUpdate);
+			LogBatchCommand(batchUpdate);
+			AddCommandToBatch(batchUpdate);
+
+			if (CountOfStatementsInCurrentBatch >= _batchSize)
+			{
+				ExecuteBatchWithTiming(batchUpdate);
+			}
 		}
 
 		public override Task AddToBatchAsync(IExpectation expectation, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
-				return Task.FromCanceled<object>(cancellationToken);
+				return Task.FromCanceled(cancellationToken);
 			}
+
 			try
 			{
 				_totalExpectedRowsAffected += expectation.ExpectedRowCount;
 				var batchUpdate = CurrentCommand;
 				Driver.AdjustCommand(batchUpdate);
-				string lineWithParameters = null;
-				var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-				if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
-				{
-					lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
-					var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
-					lineWithParameters = formatStyle.Formatter.Format(lineWithParameters);
-					_currentBatchCommandsLog.Append("command ")
-											.Append(_currentBatch.BatchCommands.Count)
-											.Append(":")
-											.AppendLine(lineWithParameters);
-				}
-				if (Log.IsDebugEnabled())
-				{
-					Log.Debug("Adding to batch:{0}", lineWithParameters);
-				}
-
+				LogBatchCommand(batchUpdate);
 				AddCommandToBatch(batchUpdate);
 
 				if (CountOfStatementsInCurrentBatch >= _batchSize)
 				{
 					return ExecuteBatchWithTimingAsync(batchUpdate, cancellationToken);
 				}
+
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)
 			{
-				return Task.FromException<object>(ex);
+				return Task.FromException(ex);
 			}
 		}
 
