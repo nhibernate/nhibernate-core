@@ -165,11 +165,46 @@ namespace NHibernate.Driver
 		DateTime MinDate { get; }
 
 #if NET6_0_OR_GREATER
+		/// <summary>
+		/// Create a <see cref="DbBatch"/>
+		/// </summary>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
 		DbBatch CreateBatch() => throw new NotImplementedException();
+		
+		/// <summary>
+		/// Can this driver create <see cref="DbBatch"/>es?
+		/// </summary>
 		bool CanCreateBatch => false;
 
+		/// <summary>
+		/// Make any adjustments to each <see cref="DbBatch"/> object before it is added to the batcher.
+		/// </summary>
+		/// <param name="dbBatch">The batch.</param>
+		/// <remarks>
+		/// This method should be executed before adding each single batch to the batcher.
+		/// If you have to adjust parameters values/type (when the command is fullfilled) this is a good place to do it.
+		/// </remarks>
 		void AdjustBatch(DbBatch dbBatch) => throw new NotImplementedException();
+
+		/// <summary>
+		/// Prepare the <paramref name="dbBatch" /> by calling <see cref="DbBatch.Prepare()" />.
+		/// May be a no-op if the driver does not support preparing commands, or for any other reason.
+		/// </summary>
+		/// <param name="dbBatch">The batch.</param>
 		void PrepareBatch(DbBatch dbBatch) => throw new NotImplementedException();
+
+		/// <summary>
+		/// Creates (clones) a <see cref="DbBatchCommand"/> from a <see cref="DbCommand"/>,
+		/// copying its <see cref="DbCommand.CommandText"/>, <see cref="DbCommand.CommandType"/>
+		/// and all its parameters.
+		/// The returned <see cref="DbBatchCommand"/> will not be added to <paramref name="dbBatch"/> 
+		/// </summary>
+		/// <param name="dbBatch"></param>
+		/// <param name="dbCommand"></param>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
+		DbBatchCommand CreateDbBatchCommandFromDbCommand(DbBatch dbBatch, DbCommand dbCommand) => throw new NotImplementedException();
 #endif
 	}
 }
