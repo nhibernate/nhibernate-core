@@ -371,6 +371,25 @@ namespace NHibernate.Driver
 
 		public virtual bool CanCreateBatch => false;
 
+		/// <summary>
+		/// Override to use a custom mechanism to create a <see cref="DbBatchCommand"/> from a <see cref="DbCommand"/>.
+		/// The default implementation relies on the parameters implementing (and properly supporting) <see cref="System.ICloneable"/>
+		/// </summary>
+		/// <param name="dbBatch"></param>
+		/// <param name="dbCommand"></param>
+		/// <returns></returns>
+		public virtual DbBatchCommand CreateDbBatchCommandFromDbCommand(DbBatch dbBatch, DbCommand dbCommand)
+		{
+			var dbBatchCommand = dbBatch.CreateBatchCommand();
+			dbBatchCommand.CommandText = dbCommand.CommandText;
+			dbBatchCommand.CommandType = dbCommand.CommandType;
+			
+			foreach (var param in dbCommand.Parameters)
+			{
+				dbBatchCommand.Parameters.Add(((ICloneable) param).Clone());
+			}
+			return dbBatchCommand;
+		}
 
 #endif
 

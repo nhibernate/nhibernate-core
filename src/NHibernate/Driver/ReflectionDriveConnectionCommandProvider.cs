@@ -25,7 +25,7 @@ namespace NHibernate.Driver
 			_canCreateBatch = new Lazy<bool>(() => {
 				using (var connection = CreateConnection())
 				{
-					return connection.CanCreateBatch && connection.CreateCommand() is ICloneable;
+					return connection.CanCreateBatch && connection.CreateCommand().CreateParameter() is ICloneable;
 				}
 			});
 #endif

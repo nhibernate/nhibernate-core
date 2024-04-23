@@ -66,15 +66,8 @@ namespace NHibernate.AdoNet
 
 		private void AddCommandToBatch(DbCommand batchUpdate)
 		{
-			var dbBatchCommand = _currentBatch.CreateBatchCommand();
-			dbBatchCommand.CommandText = batchUpdate.CommandText;
-			dbBatchCommand.CommandType = batchUpdate.CommandType;
-
-			foreach (var param in batchUpdate.Parameters)
-			{
-				dbBatchCommand.Parameters.Add(((ICloneable) param).Clone());
-			}
-
+			var dbBatchCommand = Driver.CreateDbBatchCommandFromDbCommand(_currentBatch, batchUpdate);
+			
 			_currentBatch.BatchCommands.Add(dbBatchCommand);
 		}
 

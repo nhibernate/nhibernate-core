@@ -28,7 +28,7 @@ namespace NHibernate.Driver
 #if NET6_0_OR_GREATER
 		public DbBatch CreateBatch() => dbProviderFactory.CreateBatch();
 
-		public bool CanCreateBatch => dbProviderFactory.CanCreateBatch && dbProviderFactory.CreateCommand() is ICloneable;
+		public bool CanCreateBatch => dbProviderFactory.CanCreateBatch && dbProviderFactory.CreateCommand().CreateParameter() is ICloneable;
 #endif
 	}
 }
