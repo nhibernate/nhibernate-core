@@ -232,7 +232,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		[Test]
 		public void NativeUpdateQueryWithoutResults()
 		{
-			Assume.That(Dialect, Is.InstanceOf<MsSql2000Dialect>(), "This does not apply to {0}", Dialect);
+			Assume.That(Dialect, Is.InstanceOf<MsSql2000Dialect>(), $"This does not apply to {Dialect}");
 			Assume.That(WithQueryCache, Is.False, "This test does not use a cacheable query.");
 			using (ISession session = OpenSession())
 			{
@@ -247,7 +247,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		[Test]
 		public void NativeScalarQueryWithoutResults()
 		{
-			Assume.That(Dialect, Is.InstanceOf<MsSql2000Dialect>(), "This does not apply to {0}", Dialect);
+			Assume.That(Dialect, Is.InstanceOf<MsSql2000Dialect>(), $"This does not apply to {Dialect}");
 			Assume.That(WithQueryCache, Is.False, "This test does not use a cacheable query.");
 			using (ISession session = OpenSession())
 			{
@@ -266,7 +266,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		{
 			if (!(Dialect is MsSql2000Dialect))
 			{
-				Assert.Ignore("This does not apply to {0}", Dialect);
+				Assert.Ignore($"This does not apply to {Dialect}");
 			}
 			using (ISession session = OpenSession())
 			{
@@ -289,7 +289,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 		{
 			if (!(Dialect is MsSql2000Dialect))
 			{
-				Assert.Ignore("This does not apply to {0}", Dialect);
+				Assert.Ignore($"This does not apply to {Dialect}");
 			}
 			using (ISession session = OpenSession())
 			{

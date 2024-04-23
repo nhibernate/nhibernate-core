@@ -91,7 +91,7 @@ namespace NHibernate.Test.Criteria
 		{
 			if(Dialect is Oracle8iDialect)
 			{
-				Assert.Ignore("Not supported by the active dialect:{0}.", Dialect);
+				Assert.Ignore($"Not supported by the active dialect:{Dialect}.");
 			}
 			if (TestDialect.HasBrokenTypeInferenceOnSelectedParameters)
 				Assert.Ignore("Current dialect does not support this test");

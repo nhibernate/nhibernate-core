@@ -20,7 +20,7 @@ namespace NHibernate.Test.Futures
 		{
 			var driver = Sfi.ConnectionProvider.Driver;
 			if (driver.SupportsMultipleQueries == false)
-				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+				Assert.Ignore($"Driver {driver.GetType().FullName} does not support multi-queries");
 		}
 
 		protected void CreatePersons()

@@ -37,7 +37,7 @@ namespace NHibernate.Test.NHSpecificTest.NH940
 				}
 				catch (Exception e)
 				{
-					Assert.Fail("Should have thrown MyException, thrown {0} instead", e);
+					Assert.Fail($"Should have thrown MyException, thrown {e} instead");
 				}
 			}
 

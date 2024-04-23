@@ -115,15 +115,14 @@ namespace NHibernate.Test.SqlCommandTest
 			{
 				if (tokenIndex >= expectedTokens.Length)
 				{
-					Assert.Fail("Tokenizer returns more than expected '{0}' tokens. \nSQL: {1}\nLast Token: {2}({3})",
-						expectedTokens.Length, sql, token.TokenType, token.Value);
+					Assert.Fail($"Tokenizer returns more than expected '{expectedTokens.Length}' tokens. \nSQL: {sql}\nLast Token: {token.TokenType}({token.Value})");
 				}
 
 				var expectedToken = expectedTokens[tokenIndex];
-				Assert.That(token.TokenType, Is.EqualTo(expectedToken.TokenType), "[Token #{0} in '{1}']TokenType", tokenIndex, sql);
-				Assert.That(token.Value, Is.EqualTo(expectedToken.Value), "[Token #{0} in {1}]Value", tokenIndex, sql);
-				Assert.That(token.SqlIndex, Is.EqualTo(sqlIndex), "[Token #{0} in {1}]SqlIndex", tokenIndex, sql);
-				Assert.That(token.Length, Is.EqualTo(expectedToken.Length), "[Token #{0} in {1}]Length", tokenIndex, sql);
+				Assert.That(token.TokenType, Is.EqualTo(expectedToken.TokenType), $"[Token #{tokenIndex} in '{sql}']TokenType");
+				Assert.That(token.Value, Is.EqualTo(expectedToken.Value), $"[Token #{tokenIndex} in {sql}]Value");
+				Assert.That(token.SqlIndex, Is.EqualTo(sqlIndex), $"[Token #{tokenIndex} in {sql}]SqlIndex");
+				Assert.That(token.Length, Is.EqualTo(expectedToken.Length), $"[Token #{tokenIndex} in {sql}]Length");
 
 				tokenIndex++;
 				sqlIndex += expectedToken.Length;
@@ -131,7 +130,7 @@ namespace NHibernate.Test.SqlCommandTest
 
 			if (tokenIndex < expectedTokens.Length)
 			{
-				Assert.Fail("Tokenizer returns less than expected '{0}' tokens.\nSQL: {1}", expectedTokens.Length, sql);
+				Assert.Fail($"Tokenizer returns less than expected '{expectedTokens.Length}' tokens.\nSQL: {sql}");
 			}
 		}
 

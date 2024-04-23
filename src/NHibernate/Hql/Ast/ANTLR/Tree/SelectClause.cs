@@ -494,7 +494,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 				}
 
 				var node = (IASTNode) e;
-				if (processedElements.Add(fromElement))
+				if (Walker.IsShallowQuery && node.Type == SqlGenerator.DOT || processedElements.Add(fromElement))
 				{
 					combinedFromElements.Add(fromElement);
 					RenderNonScalarIdentifiers(fromElement, inheritedExpressions.ContainsKey(e) ? null : e, appender);

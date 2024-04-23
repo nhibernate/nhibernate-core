@@ -1,0 +1,29 @@
+﻿<?xml version="1.0"?>
+<hibernate-mapping
+	xmlns="urn:nhibernate-mapping-2.2"
+	assembly="NHibernate.Test"
+	namespace="NHibernate.Test.BulkManipulation">
+
+  <class name="Course">
+    <id name="CourseId">
+      <generator class="native" />
+    </id>
+    <property name="Description" />
+  </class>
+
+  <class name="Student">
+    <id name="StudentId">
+      <generator class="native" />
+    </id>
+    <property name="Name" />
+  </class>
+
+  <class name="Enrolment">
+    <id name="EnrolmentId">
+      <generator class="native" />
+    </id>
+    <many-to-one name="Student" column="StudentId" class="Student" />
+    <many-to-one name="Course" column="CourseId" class="Course" />
+  </class>
+
+</hibernate-mapping>

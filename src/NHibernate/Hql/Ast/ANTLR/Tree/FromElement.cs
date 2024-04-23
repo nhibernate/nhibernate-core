@@ -716,7 +716,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 					JoinSequence.SetUseThetaStyle(true);
 				}
 			}
-			else
+			else if (Walker.CurrentClauseType != HqlSqlWalker.FROM)
 			{
 				FromClause.AppendFromElement(this);
 			}

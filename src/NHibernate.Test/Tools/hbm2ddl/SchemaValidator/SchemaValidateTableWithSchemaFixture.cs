@@ -53,7 +53,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 					{
 						// Unfortunateley Assert.Warn and Console.WriteLine at this place seems to be ignored in Rider
 						// viewer.
-						Assert.Warn("Creating the schema failed, assuming it already exists. {0}", ex);
+						Assert.Warn($"Creating the schema failed, assuming it already exists. {ex}");
 						Console.WriteLine("Creating the schema failed, assuming it already exists.");
 						Console.WriteLine(ex);
 					}
@@ -102,7 +102,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaValidator
 			}
 			catch (SchemaValidationException sve)
 			{
-				Assert.Fail("Validation failed: {0}.\n{1}", StringHelper.CollectionToString(sve.ValidationErrors), sve);
+				Assert.Fail($"Validation failed: {StringHelper.CollectionToString(sve.ValidationErrors)}.\n{sve}");
 			}
 		}
 	}

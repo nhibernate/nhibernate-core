@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../build-common/NHibernate.props" />
 
   <PropertyGroup>
@@ -14,7 +14,7 @@
     <PackageTags>ORM; O/RM; DataBase; DAL; ObjectRelationalMapping; NHibernate; ADO.Net; Core</PackageTags>
     <PackageReadmeFile>NHibernate.readme.md</PackageReadmeFile>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <None Remove="**\*.g" />
     <None Remove="**\*.xsd" />
@@ -92,4 +92,13 @@
     </Content>
     <None Include="../../logo/NHibernate-NuGet.png" Pack="true" PackagePath="/" />
   </ItemGroup>
+
+  <!-- Workaround to enable Rider to see the Antlr3 generated files at design time -->
+  <Target Name="_AntrlDesignTimeGrammarCompilationWorkaround" BeforeTargets="CoreCompile" Condition="'$(BuildingByReSharper)' == 'true'">
+    <CallTarget
+      Targets="AntlrCompile"
+      ContinueOnError="true"
+      Condition="'$(DesignTimeBuild)' == 'true' OR '$(BuildingProject)' != 'true'"
+    />
+  </Target>
 </Project>

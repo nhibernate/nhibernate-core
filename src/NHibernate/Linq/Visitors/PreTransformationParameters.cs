@@ -7,7 +7,7 @@ using Remotion.Linq.Parsing.ExpressionVisitors.TreeEvaluation;
 namespace NHibernate.Linq.Visitors
 {
 	/// <summary>
-	/// Contains the information needed by <see cref="NhRelinqQueryParser.PreTransform"/> to perform an early transformation.
+	/// Contains the information needed by <see cref="NhRelinqQueryParser.PreTransform(System.Linq.Expressions.Expression, PreTransformationParameters)"/> to perform an early transformation.
 	/// </summary>
 	public class PreTransformationParameters
 	{

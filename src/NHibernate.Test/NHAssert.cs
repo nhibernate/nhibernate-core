@@ -19,12 +19,12 @@ namespace NHibernate.Test
 
 		public static void HaveSerializableAttribute(System.Type clazz)
 		{
-			HaveSerializableAttribute(clazz, null, null);
+			HaveSerializableAttribute(clazz, null);
 		}
 
-		public static void HaveSerializableAttribute(System.Type clazz, string message, params object[] args)
+		public static void HaveSerializableAttribute(System.Type clazz, string message)
 		{
-			Assert.That(clazz, Has.Attribute<SerializableAttribute>(), message, args);
+			Assert.That(clazz, Has.Attribute<SerializableAttribute>(), message);
 		}
 
 		public static void InheritedAreMarkedSerializable(System.Type clazz)
@@ -54,15 +54,15 @@ namespace NHibernate.Test
 
 		public static void IsSerializable(object obj)
 		{
-			IsSerializable(obj, null, null);
+			IsSerializable(obj, null);
 		}
 
-		public static void IsSerializable(object obj, string message, params object[] args)
+		public static void IsSerializable(object obj, string message)
 		{
 #if NETFX
-			Assert.That(obj, Is.BinarySerializable, message, args);
+			Assert.That(obj, Is.BinarySerializable, message);
 #else
-			if (obj == null) throw new ArgumentNullException(nameof(args));
+			if (obj == null) throw new ArgumentNullException(nameof(obj));
 			var formatter = new BinaryFormatter
 			{
 				SurrogateSelector = new SerializationHelper.SurrogateSelector()
@@ -83,19 +83,19 @@ namespace NHibernate.Test
 				}
 			}
 
-			Assert.That(isSuccess, message, args);
+			Assert.That(isSuccess, message);
 #endif
 		}
 
 		public static void IsXmlSerializable(object obj)
 		{
-			IsXmlSerializable(obj, null, null);
+			IsXmlSerializable(obj, null);
 		}
 
-		public static void IsXmlSerializable(object obj, string message, params object[] args)
+		public static void IsXmlSerializable(object obj, string message)
 		{
 #if NETFX
-			Assert.That(obj, Is.XmlSerializable, message, args);
+			Assert.That(obj, Is.XmlSerializable, message);
 #else
 			if (obj == null) throw new ArgumentNullException(nameof(obj));
 			var isSuccess = false;
@@ -116,7 +116,7 @@ namespace NHibernate.Test
 				}
 			}
 
-			Assert.That(isSuccess, message, args);
+			Assert.That(isSuccess, message);
 #endif
 		}
 

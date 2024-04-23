@@ -79,9 +79,7 @@ namespace NHibernate.Test.ConnectionTest
 			Assert.That(
 				factory.GetCurrentSession(),
 				Is.EqualTo(session),
-				"{0} {1} instead of {2}.", message,
-				factory.GetCurrentSession().GetSessionImplementation().SessionId,
-				session.GetSessionImplementation().SessionId);
+				$"{message} {factory.GetCurrentSession().GetSessionImplementation().SessionId} instead of {session.GetSessionImplementation().SessionId}.");
 		}
 	}
 }
