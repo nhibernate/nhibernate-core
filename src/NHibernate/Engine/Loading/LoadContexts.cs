@@ -239,7 +239,7 @@ namespace NHibernate.Engine.Loading
 			xrefLoadingCollectionEntries.TryGetValue(key, out rtn);
 			if (log.IsDebugEnabled())
 			{
-				log.Debug("collection [{0}] {1} in load context", key, (rtn == null ? "located" : "not located"));
+				log.Debug("collection [{0}] {1} in load context", key, (rtn == null ? "not located" : "located"));
 			}
 			return rtn;
 		}
