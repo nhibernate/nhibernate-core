@@ -33,7 +33,7 @@ namespace NHibernate.Test.TypesTest
 			foreach (var fieldInfo in builtInCustomTypes)
 			{
 				var ntp = (IType) fieldInfo.GetValue(null);
-				NHAssert.IsSerializable(ntp, fieldInfo.Name + " is not serializable");
+				NHAssert.IsSerializable(ntp, $"{fieldInfo.Name} is not serializable");
 			}
 
 			if (typeof(System.Type).IsSerializable)
