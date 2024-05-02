@@ -1,7 +1,6 @@
 using System;
 using NHibernate.Proxy;
 using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 {
@@ -9,15 +8,6 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 	public class Fixture
 	{
 		private readonly IProxyValidator pv = new DynProxyTypeValidator();
-
-		private void Validate(System.Type type)
-		{
-			ICollection<string> errors = pv.ValidateType(type);
-			if (errors != null)
-			{
-				throw new InvalidProxyTypeException(errors);
-			}
-		}
 
 		public class ValidClass
 		{
@@ -65,11 +55,34 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		}
 
 		[Test]
-		public void ValidClassTest()
+		public void ObjectIsValid()
 		{
-			Validate(typeof(ValidClass));
+			var errors = pv.ValidateType(typeof(object));
+			Assert.That(errors, Is.Null);
 		}
 
+		[Test]
+		public void ValidClassTest()
+		{
+			var errors = pv.ValidateType(typeof(ValidClass));
+			Assert.That(errors, Is.Null);
+		}
+
+		public class InvalidSealedToString : ValidClass
+		{
+			public sealed override string ToString()
+			{
+				return base.ToString();
+			}
+		}
+		
+		[Test]
+		public void SealedObjectOverride()
+		{
+			var errors = pv.ValidateType(typeof(InvalidSealedToString));
+			Assert.That(errors, Has.Count.EqualTo(1));
+		}
+		
 		public class InvalidPrivateConstructor : ValidClass
 		{
 			private InvalidPrivateConstructor()
@@ -80,7 +93,8 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		[Test]
 		public void PrivateConstructor()
 		{
-			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidPrivateConstructor)));
+			var errors = pv.ValidateType(typeof(InvalidPrivateConstructor));
+			Assert.That(errors, Has.Count.EqualTo(1));
 		}
 
 		public class InvalidNonVirtualProperty : ValidClass
@@ -95,7 +109,8 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		[Test]
 		public void NonVirtualProperty()
 		{
-			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidNonVirtualProperty)));
+			var errors = pv.ValidateType(typeof(InvalidNonVirtualProperty));
+			Assert.That(errors, Has.Count.EqualTo(2));
 		}
 
 		public class InvalidPublicField : ValidClass
@@ -106,7 +121,8 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		[Test]
 		public void PublicField()
 		{
-			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidPublicField)));
+			var errors = pv.ValidateType(typeof(InvalidPublicField));
+			Assert.That(errors, Has.Count.EqualTo(1));
 		}
 
 		public class InvalidNonVirtualEvent : ValidClass
@@ -119,7 +135,8 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		[Test]
 		public void NonVirtualEvent()
 		{
-			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidNonVirtualEvent)));
+			var errors = pv.ValidateType(typeof(InvalidNonVirtualEvent));
+			Assert.That(errors, Has.Count.EqualTo(2));
 		}
 
 		public interface ValidInterface
@@ -129,7 +146,8 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		[Test]
 		public void Interface()
 		{
-			Validate(typeof(ValidInterface));
+			var errors = pv.ValidateType(typeof(ValidInterface));
+			Assert.That(errors, Is.Null);
 		}
 
 		public class MultipleErrors
@@ -153,15 +171,8 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		[Test]
 		public void MultipleErrorsReported()
 		{
-			try
-			{
-				Validate(typeof(MultipleErrors));
-				Assert.Fail("Should have failed validation");
-			}
-			catch (InvalidProxyTypeException e)
-			{
-				Assert.IsTrue(e.Errors.Count > 1);
-			}
+			var errors = pv.ValidateType(typeof(MultipleErrors));
+			Assert.That(errors, Has.Count.GreaterThan(1));
 		}
 
 		public class InvalidNonVirtualInternalProperty : ValidClass
@@ -183,16 +194,18 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		[Test]
 		public void NonVirtualInternal()
 		{
-			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidNonVirtualInternalProperty)));
+			var errors = pv.ValidateType(typeof(InvalidNonVirtualInternalProperty));
+			Assert.That(errors, Has.Count.EqualTo(2));
 		}
 
 		[Test]
 		public void InternalField()
 		{
-			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidInternalField)));
+			var errors = pv.ValidateType(typeof(InvalidInternalField));
+			Assert.That(errors, Has.Count.EqualTo(1));
 		}
 
-		public class InvalidNonVirtualProtectedProperty : ValidClass
+		public class ValidNonVirtualProtectedProperty : ValidClass
 		{
 			protected int NonVirtualProperty
 			{
@@ -204,8 +217,8 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		[Test]
 		public void NonVirtualProtected()
 		{
-			Validate(typeof(InvalidNonVirtualProtectedProperty));
-			Assert.IsTrue(true, "Always should pass, protected members do not need to be virtual.");
+			var errors = pv.ValidateType(typeof(ValidNonVirtualProtectedProperty));
+			Assert.That(errors, Is.Null);
 		}
 
 		public class InvalidNonVirtualProtectedInternalProperty : ValidClass
@@ -220,7 +233,8 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		[Test]
 		public void NonVirtualProtectedInternal()
 		{
-			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidNonVirtualProtectedInternalProperty)));
+			var errors = pv.ValidateType(typeof(InvalidNonVirtualProtectedInternalProperty));
+			Assert.That(errors, Has.Count.EqualTo(2));
 		}
 
 		interface INonVirtualPublicImplementsInterface
@@ -239,7 +253,8 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		[Test]
 		public void VirtualPublicImplementsInterface()
 		{
-			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(NonVirtualPublicImplementsInterface)));
+			var errors = pv.ValidateType(typeof(NonVirtualPublicImplementsInterface));
+			Assert.That(errors, Has.Count.EqualTo(1));
 		}
 
 		public class InvalidVirtualPrivateAutoProperty : ValidClass
@@ -254,7 +269,8 @@ namespace NHibernate.Test.NHSpecificTest.ProxyValidator
 		[Test]
 		public void PrivateSetterOnVirtualPropertyShouldThrows()
 		{
-			Assert.Throws<InvalidProxyTypeException>(() => Validate(typeof(InvalidVirtualPrivateAutoProperty)));
+			var errors = pv.ValidateType(typeof(InvalidVirtualPrivateAutoProperty));
+			Assert.That(errors, Has.Count.EqualTo(1));
 		}
 	}
 }
