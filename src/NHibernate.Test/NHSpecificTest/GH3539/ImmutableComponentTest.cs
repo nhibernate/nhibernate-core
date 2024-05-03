@@ -72,6 +72,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3539
 
 				Assert.That(oldCardInfo.GetCardsCopy().Contains("card1"));
 				Assert.That(oldCardInfo.GetCardsCopy().Contains("card2"));
+				Assert.That(oldCardInfo.GetHashCode(), Is.EqualTo(newCardInfo.GetHashCode()));
 
 				var newCardInfo = new CardInfo("card1", "card2");
 
