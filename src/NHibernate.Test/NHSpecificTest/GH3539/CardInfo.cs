@@ -41,7 +41,7 @@ public class CardInfo
 	public override int GetHashCode()
 	{
 		var hashCode = new HashCode();
-		hashCode.Add(_oldCards);
+		foreach (var card in _oldCards) hashCode.Add(card);
 		return hashCode.ToHashCode();
 	}
 }
