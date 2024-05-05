@@ -2405,6 +2405,9 @@ namespace NHibernate.Linq
 		/// <summary>
 		/// Executes the query and returns its result as a <see cref="HashSet{T}"/>.
 		/// </summary>
+		/// <remarks>
+		/// Note that this method still allocates an intermediate <see cref="List{T}"/> instance from which the result is created.
+		/// </remarks>
 		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to return a HashSet from.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
@@ -2417,6 +2420,9 @@ namespace NHibernate.Linq
 		/// <summary>
 		/// Executes the query and returns its result as a <see cref="HashSet{T}"/>.
 		/// </summary>
+		/// <remarks>
+		/// Note that this method still allocates an intermediate <see cref="List{T}"/> instance from which the result is created.
+		/// </remarks>
 		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to return a HashSet from.</param>
 		/// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing values in the set, or null to use the default <see cref="EqualityComparer{T}"/> implementation for the set type.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
@@ -2454,6 +2460,9 @@ namespace NHibernate.Linq
 		/// <summary>
 		/// Executes the query and returns its result as a <see cref="Dictionary{TKey, TValue}" /> according to a specified key selector function.
 		/// </summary>
+		/// <remarks>
+		/// Note that this method still allocates an intermediate <see cref="List{T}"/> instance from which the result is created.
+		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" /></typeparam>
 		/// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" /></typeparam>
 		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to return a Dictionary from.</param>
@@ -2471,6 +2480,9 @@ namespace NHibernate.Linq
 		/// <summary>
 		/// Executes the query and returns its result as a <see cref="Dictionary{TKey, TValue}" /> according to a specified key selector function and a comparer.
 		/// </summary>
+		/// <remarks>
+		/// Note that this method still allocates an intermediate <see cref="List{T}"/> instance from which the result is created.
+		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" /></typeparam>
 		/// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" /></typeparam>
 		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to return a Dictionary from.</param>
@@ -2489,6 +2501,9 @@ namespace NHibernate.Linq
 		/// <summary>
 		/// Executes the query and returns its result as a <see cref="Dictionary{TKey, TValue}" /> according to a specified key selector function and an element selector function.
 		/// </summary>
+		/// <remarks>
+		/// Note that this method still allocates an intermediate <see cref="List{T}"/> instance from which the result is created.
+		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" /></typeparam>
 		/// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" /></typeparam>
 		/// <typeparam name="TElement">The type of the value returned by <paramref name="elementSelector" />.</typeparam>
@@ -2508,6 +2523,9 @@ namespace NHibernate.Linq
 		/// <summary>
 		/// Executes the query and returns its result as a <see cref="Dictionary{TKey, TValue}" /> according to a specified key selector function, a comparer, and an element selector function.
 		/// </summary>
+		/// <remarks>
+		/// Note that this method still allocates an intermediate <see cref="List{T}"/> instance from which the result is created.
+		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" /></typeparam>
 		/// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" /></typeparam>
 		/// <typeparam name="TElement">The type of the value returned by <paramref name="elementSelector" />.</typeparam>
