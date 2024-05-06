@@ -5263,9 +5263,9 @@ namespace NHibernate.Test.Legacy
 			baz.FooBag = foos;
 			s.Save(baz);
 
-			foreach (var source in foos.Concat(bars.Cast<Foo>()))
+			foreach (var foo in foos.Concat(bars.Cast<FooProxy>()))
 			{
-				var cmp = source.Component;
+				var cmp = foo.Component;
 				s.Delete(cmp.Glarch);
 				cmp.Glarch = null;
 			}
