@@ -13,7 +13,7 @@ namespace NHibernate.AdoNet
 	/// and Postgres). 
 	/// </summary>
 	/// <seealso cref="IDataRecord.GetOrdinal"/>
-	public class ResultSetWrapper : DbDataReader
+	public partial class ResultSetWrapper : DbDataReader
 	{
 		private DbDataReader rs;
 		private readonly ColumnNameCache columnNameCache;
