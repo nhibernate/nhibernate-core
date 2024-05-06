@@ -16,6 +16,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -1222,10 +1223,7 @@ namespace NHibernate.Test.Legacy
 				await (s.DeleteAsync(baz2));
 				await (s.DeleteAsync(baz3));
 
-				IEnumerable en = new JoinedEnumerable(
-					new IEnumerable[] {baz.FooSet, baz2.FooSet});
-
-				foreach (object obj in en)
+				foreach (var obj in baz.FooSet.Concat(baz2.FooSet))
 				{
 					await (s.DeleteAsync(obj));
 				}
@@ -5273,16 +5271,13 @@ namespace NHibernate.Test.Legacy
 			Baz baz = new Baz();
 			var bars = new HashSet<BarProxy> { new Bar(), new Bar(), new Bar() };
 			baz.CascadingBars = bars;
-			IList<Foo> foos = new List<Foo>();
-			foos.Add(new Foo());
-			foos.Add(new Foo());
+			var foos = new List<Foo> { new Foo(), new Foo() };
 			baz.FooBag = foos;
 			await (s.SaveAsync(baz));
 
-			IEnumerator enumer = new JoinedEnumerable(new IEnumerable[] {foos, bars}).GetEnumerator();
-			while (enumer.MoveNext())
+			foreach (var source in foos.Concat(bars.Cast<Foo>()))
 			{
-				FooComponent cmp = ((Foo) enumer.Current).Component;
+				var cmp = source.Component;
 				await (s.DeleteAsync(cmp.Glarch));
 				cmp.Glarch = null;
 			}

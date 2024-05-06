@@ -122,7 +122,8 @@ namespace NHibernate.Engine.Query
 				var result = await (Translators[i].GetEnumerableAsync(queryParameters, session, cancellationToken)).ConfigureAwait(false);
 				results[i] = result;
 			}
-			return new JoinedEnumerable(results);
+
+			return Enumerate(results);
 		}
 
 		public async Task<IEnumerable<T>> PerformIterateAsync<T>(QueryParameters queryParameters, IEventSource session, CancellationToken cancellationToken)
