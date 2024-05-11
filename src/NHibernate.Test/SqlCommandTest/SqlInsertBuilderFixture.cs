@@ -26,7 +26,9 @@ namespace NHibernate.Test.SqlCommandTest
 
 			insert.AddColumn("intColumn", NHibernateUtil.Int32);
 			insert.AddColumn("longColumn", NHibernateUtil.Int64);
+#pragma warning disable CS0618 // Type or member is obsolete
 			insert.AddColumn("literalColumn", false, (ILiteralType) NHibernateUtil.Boolean);
+#pragma warning restore CS0618 // Type or member is obsolete
 			insert.AddColumn("stringColumn", 5.ToString());
 
 			SqlCommandInfo sqlCommand = insert.ToSqlCommandInfo();
@@ -53,7 +55,9 @@ namespace NHibernate.Test.SqlCommandTest
 
 			insert.SetTableName("test_insert_builder");
 
+#pragma warning disable CS0618 // Type or member is obsolete
 			insert.AddColumn("stringColumn", "aSQLValue", (ILiteralType)NHibernateUtil.String);
+#pragma warning restore CS0618 // Type or member is obsolete
 			insert.SetComment("Test insert");
 			string expectedSql =
 	"/* Test insert */ INSERT INTO test_insert_builder (stringColumn) VALUES ('aSQLValue')";
@@ -71,7 +75,9 @@ namespace NHibernate.Test.SqlCommandTest
 
 			insert.SetTableName("test_insert_builder");
 
+#pragma warning disable CS0618 // Type or member is obsolete
 			insert.AddColumn("literalColumn", false, (ILiteralType)NHibernateUtil.Boolean);
+#pragma warning restore CS0618 // Type or member is obsolete
 			insert.AddColumn("intColumn", NHibernateUtil.Int32);
 			insert.AddColumn("stringColumn", 5.ToString());
 			insert.AddColumn("longColumn", NHibernateUtil.Int64);
