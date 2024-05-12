@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Data.Common;
 using NHibernate.Exceptions;
+using Npgsql;
 
 namespace NHibernate.Test.ExceptionsTest
 {
@@ -10,20 +10,20 @@ namespace NHibernate.Test.ExceptionsTest
 
 		public Exception Convert(AdoExceptionContextInfo exInfo)
 		{
-			var sqle = ADOExceptionHelper.ExtractDbException(exInfo.SqlException) as DbException;
-			if (sqle != null)
+			if (ADOExceptionHelper.ExtractDbException(exInfo.SqlException) is PostgresException pge)
 			{
-				string code = (string)sqle.GetType().GetProperty("Code").GetValue(sqle, null);
-
+				string code = pge.SqlState;
 				if (code == "23503")
 				{
-					return new ConstraintViolationException(exInfo.Message, sqle.InnerException, exInfo.Sql, null);
+					return new ConstraintViolationException(exInfo.Message, pge.InnerException, exInfo.Sql, null);
 				}
+
 				if (code == "42P01")
 				{
-					return new SQLGrammarException(exInfo.Message, sqle.InnerException, exInfo.Sql);
+					return new SQLGrammarException(exInfo.Message, pge.InnerException, exInfo.Sql);
 				}
 			}
+
 			return SQLStateConverter.HandledNonSpecificException(exInfo.SqlException, exInfo.Message, exInfo.Sql);
 		}
 
