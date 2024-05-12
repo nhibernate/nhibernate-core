@@ -208,6 +208,7 @@ namespace NHibernate.Dialect
 			DefaultCastLength = PropertiesHelper.GetInt32(Environment.QueryDefaultCastLength, settings, 4000);
 			DefaultCastPrecision = PropertiesHelper.GetByte(Environment.QueryDefaultCastPrecision, settings, null) ?? 29;
 			DefaultCastScale = PropertiesHelper.GetByte(Environment.QueryDefaultCastScale, settings, null) ?? 10;
+			EscapeBackslashInStrings = PropertiesHelper.GetBoolean(Environment.EscapeBackslashInStrings, settings, EscapeBackslashInStrings);
 		}
 
 		#endregion
@@ -1354,14 +1355,6 @@ namespace NHibernate.Dialect
 			return new ANSICaseFragment(this);
 		}
 
-		/// <summary> The SQL literal value to which this database maps boolean values. </summary>
-		/// <param name="value">The boolean value </param>
-		/// <returns> The appropriate SQL literal. </returns>
-		public virtual string ToBooleanValueString(bool value)
-		{
-			return value ? "1" : "0";
-		}
-
 		internal static void ExtractColumnOrAliasNames(SqlString select, out List<SqlString> columnsOrAliases, out Dictionary<SqlString, SqlString> aliasToColumn, out Dictionary<SqlString, SqlString> columnToAlias)
 		{
 			columnsOrAliases = new List<SqlString>();
@@ -2072,6 +2065,55 @@ namespace NHibernate.Dialect
 			return StringHelper.IsBackticksEnclosed(catalogName)
 				? Quote(catalogName)
 				: catalogName;
+		}
+
+		#endregion
+
+		#region Literals support
+
+		/// <summary>The SQL literal value to which this database maps boolean values.</summary>
+		/// <param name="value">The boolean value.</param>
+		/// <returns>The appropriate SQL literal.</returns>
+		public virtual string ToBooleanValueString(bool value)
+			=> value ? "1" : "0";
+
+		/// <summary>
+		/// <see langword="true" /> if the database needs to have backslash escaped in string literals.
+		/// </summary>
+		/// <remarks><see langword="false" /> by default in the base dialect, to conform to SQL standard.</remarks>
+		protected virtual bool EscapeBackslashInStrings { get; set; }
+
+		/// <summary>
+		/// <see langword="true" /> if the database needs to have Unicode literals prefixed by <c>N</c>.
+		/// </summary>
+		/// <remarks><see langword="false" /> by default in the base dialect.</remarks>
+		protected virtual bool UseNPrefixForUnicodeStrings => false;
+
+		/// <summary>The SQL string literal value to which this database maps string values.</summary>
+		/// <param name="value">The string value.</param>
+		/// <param name="type">The SQL type of the string value.</param>
+		/// <returns>The appropriate SQL string literal.</returns>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="value"/> or
+		/// <paramref name="type"/> is <see langword="null" />.</exception>
+		public virtual string ToStringLiteral(string value, SqlType type)
+		{
+			if (value == null)
+				throw new ArgumentNullException(nameof(value));
+			if (type == null)
+				throw new ArgumentNullException(nameof(value));
+
+			var literal = new StringBuilder(value);
+			if (EscapeBackslashInStrings)
+				literal.Replace(@"\", @"\\");
+
+			literal
+				.Replace("'", "''")
+				.Insert(0, '\'')
+				.Append('\'');
+
+			if (UseNPrefixForUnicodeStrings && (type.DbType == DbType.String || type.DbType == DbType.StringFixedLength))
+				literal.Insert(0, 'N');
+			return literal.ToString();
 		}
 
 		#endregion

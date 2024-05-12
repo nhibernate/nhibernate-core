@@ -5,6 +5,7 @@ using NHibernate.Cfg;
 using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Dialect
 {
@@ -295,6 +296,30 @@ namespace NHibernate.Dialect
 		public override int MaxAliasLength => 32;
 
 		public override long TimestampResolutionInTicks => 10L; // Microseconds.
+
+		/// <inheritdoc />
+		public override string ToStringLiteral(string value, SqlType type)
+		{
+			if (value == null)
+				throw new System.ArgumentNullException(nameof(value));
+			if (type == null)
+				throw new System.ArgumentNullException(nameof(value));
+
+			// See https://www.ibm.com/docs/en/db2/11.5?topic=elements-constants#r0000731__title__7
+			var literal = new StringBuilder(value);
+			var isUnicode = type.DbType == DbType.String || type.DbType == DbType.StringFixedLength;
+			if (isUnicode)
+				literal.Replace(@"\", @"\\");
+
+			literal
+				.Replace("'", "''")
+				.Insert(0, '\'')
+				.Append('\'');
+
+			if (isUnicode)
+				literal.Insert(0, "U&");
+			return literal.ToString();
+		}
 
 		#region Overridden informational metadata
 

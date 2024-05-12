@@ -9,7 +9,7 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Dialect
 {
 	/// <summary>
-	/// An SQL dialect for Sybase Adaptive Server Anywhere 9.0
+	/// An SQL dialect for Sybase Adaptive Server Anywhere 9.0. (Renamed SQL Anywhere from its version 10.)
 	/// </summary>
 	/// <remarks>
 	/// <p>
@@ -188,5 +188,15 @@ namespace NHibernate.Dialect
 			}
 			return 0;
 		}
+
+		/// <inheritdoc />
+		/// <remarks><see langword="true" /> by default for SQL Anywhere,
+		/// <see href="https://help.sap.com/docs/SAP_SQL_Anywhere/93079d4ba8e44920ae63ffb4def91f5b/817a3ded6ce21014bd99f3e554573180.html?version=17.0" />.</remarks>
+		protected override bool EscapeBackslashInStrings { get; set; } = true;
+
+		/// <inheritdoc />
+		/// <remarks><see langword="true" /> by default for SQL Anywhere,
+		/// <see href="https://help.sap.com/docs/SAP_SQL_Anywhere/93079d4ba8e44920ae63ffb4def91f5b/817a2c5f6ce21014aceea962de72126c.html?version=17.0" />.</remarks>
+		protected override bool UseNPrefixForUnicodeStrings => true;
 	}
 }
