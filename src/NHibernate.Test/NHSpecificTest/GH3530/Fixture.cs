@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 		protected override void CreateSchema()
 		{
 			var sb = new StringBuilder();
-			var intType = Dialect.GetTypeName(SqlTypeFactory.Int32);
+			var guidType = Dialect.GetTypeName(SqlTypeFactory.Guid);
 			var stringType = Dialect.GetTypeName(SqlTypeFactory.GetAnsiString(255));
 
 			var catalog = GetQuotedDefaultCatalog();
@@ -51,9 +51,9 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 
 			if (Dialect.HasDataTypeInIdentityColumn)
 			{
-				sb.Append($"{intType}");
+				sb.Append($"{guidType}");
 			}
-			sb.Append(" ").Append(Dialect.GetIdentityColumnString(DbType.Int32)).Append(", ");
+			sb.Append(" ").Append(Dialect.GetIdentityColumnString(DbType.Guid)).Append(", ");
 
 			// Generate columns
 			sb.Append($"IntegerValue {stringType}, ");
