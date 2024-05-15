@@ -126,7 +126,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			{
 				var entity = new U()
 				{
-					Value = expectedValue
+					DataValue = expectedValue
 				};
 
 				id = await (session.SaveAsync(entity, cancellationToken));
@@ -139,7 +139,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			{
 				var entity = await (session.GetAsync<U>(id, cancellationToken));
 
-				assert(expectedValue, entity.Value);
+				assert(expectedValue, entity.DataValue);
 			}
 		}
 

@@ -14,7 +14,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 
 	public abstract class Entity<T>:Entity where T : struct
 	{
-		public virtual T Value { get; set; }
+		public virtual T DataValue { get; set; }
 	}
 
 	public class IntegerEntity : Entity<int> { }

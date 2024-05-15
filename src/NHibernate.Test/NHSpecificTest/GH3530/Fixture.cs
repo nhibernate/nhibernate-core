@@ -58,7 +58,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 
 			// Generate columns
 			sb.Append($"Id {guidType}, ");
-			sb.Append($"Value {stringType}");
+			sb.Append($"DataValue {stringType}");
 
 			// Add the primary key contraint for the identity column
 			sb.Append($", {Dialect.PrimaryKeyString} ( Id )");
@@ -114,7 +114,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			{
 				var entity = new U()
 				{
-					Value = expectedValue
+					DataValue = expectedValue
 				};
 
 				id = session.Save(entity);
@@ -127,7 +127,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			{
 				var entity = session.Get<U>(id);
 
-				assert(expectedValue, entity.Value);
+				assert(expectedValue, entity.DataValue);
 			}
 		}
 

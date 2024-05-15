@@ -3,18 +3,18 @@
                    namespace="NHibernate.Test.NHSpecificTest.GH3530">
   <class name="IntegerEntity">
     <id name="Id" generator="guid.comb" />
-    <property name="Value" column="Value"/>
+    <property name="DataValue" column="DataValue"/>
   </class>
   <class name="DateTimeEntity">
     <id name="Id" generator="guid.comb" />
-    <property name="Value" column="Value"/>
+    <property name="DataValue" column="DataValue"/>
   </class>
   <class name="DoubleEntity">
     <id name="Id" generator="guid.comb" />
-    <property name="Value" column="Value"/>
+    <property name="DataValue" column="DataValue"/>
   </class>
   <class name="DecimalEntity">
     <id name="Id" generator="guid.comb" />
-    <property name="Value" column="Value"/>
+    <property name="DataValue" column="DataValue"/>
   </class>
 </hibernate-mapping>
