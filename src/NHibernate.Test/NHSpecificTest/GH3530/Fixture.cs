@@ -189,7 +189,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			{
 				var entity = session.Get<LocaleEntity>(id);
 
-				Assert.True(Math.Abs(doubleValue - entity.DoubleValue) < double.Epsilon);
+				Assert.True(Math.Abs(doubleValue - entity.DoubleValue) < double.Epsilon, $"Expected: {doubleValue}\nBut was: {entity.DoubleValue}\n");
 			}
 		}
 
