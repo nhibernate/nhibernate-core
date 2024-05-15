@@ -47,15 +47,9 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			var table = GetQualifiedName(catalog, schema, "LocaleEntity");
 
 			sb.Append($"{Dialect.CreateTableString} {table} (");
-			sb.Append("Id ");
-
-			if (Dialect.HasDataTypeInIdentityColumn)
-			{
-				sb.Append($"{guidType}");
-			}
-			sb.Append(" ").Append(Dialect.GetIdentityColumnString(DbType.Guid)).Append(", ");
 
 			// Generate columns
+			sb.Append($"Id {guidType}, ");
 			sb.Append($"IntegerValue {stringType}, ");
 			sb.Append($"DateTimeValue {stringType}, ");
 			sb.Append($"DoubleValue {stringType}, ");
