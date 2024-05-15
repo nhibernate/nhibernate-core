@@ -38,22 +38,27 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 
 		protected override void CreateSchema()
 		{
+			CreateTable("Integer");
+			CreateTable("DateTime");
+			CreateTable("Double");
+			CreateTable("Decimal");
+		}
+
+		private void CreateTable(string name)
+		{
 			var sb = new StringBuilder();
 			var guidType = Dialect.GetTypeName(SqlTypeFactory.Guid);
 			var stringType = Dialect.GetTypeName(SqlTypeFactory.GetAnsiString(255));
 
 			var catalog = GetQuotedDefaultCatalog();
 			var schema = GetQuotedDefaultSchema();
-			var table = GetQualifiedName(catalog, schema, "LocaleEntity");
+			var table = GetQualifiedName(catalog, schema, $"{name}Entity");
 
 			sb.Append($"{Dialect.CreateTableString} {table} (");
 
 			// Generate columns
 			sb.Append($"Id {guidType}, ");
-			sb.Append($"IntegerValue {stringType}, ");
-			sb.Append($"DateTimeValue {stringType}, ");
-			sb.Append($"DoubleValue {stringType}, ");
-			sb.Append($"DecimalValue {stringType}");
+			sb.Append($"Value {stringType}, ");
 
 			// Add the primary key contraint for the identity column
 			sb.Append($", {Dialect.PrimaryKeyString} ( Id )");
@@ -81,7 +86,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			var t = cfg.GetType();
 			var getQuotedDefaultCatalog = t.GetMethod("GetQuotedDefaultCatalog", BindingFlags.Instance | BindingFlags.NonPublic);
 
-			return (string)getQuotedDefaultCatalog.Invoke(cfg, [Dialect]);
+			return (string) getQuotedDefaultCatalog.Invoke(cfg, [Dialect]);
 		}
 
 		private string GetQuotedDefaultSchema()
@@ -97,19 +102,19 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			return Dialect.Qualify(catalog, schema, name);
 		}
 
-		[Test, TestCaseSource(nameof(GetTestCases))]
-		public void TestDateTime(CultureInfo from, CultureInfo to)
+		private void PerformTest<T, U>(CultureInfo from, CultureInfo to, T expectedValue, Action<T, T> assert)
+			where T : struct
+			where U : Entity<T>, new()
 		{
-			DateTime leapDay = new DateTime(2024, 2, 29, new GregorianCalendar(GregorianCalendarTypes.USEnglish));
 			object id;
 
 			CurrentCulture = from;
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var entity = new LocaleEntity()
+				var entity = new U()
 				{
-					DateTimeValue = leapDay
+					Value = expectedValue
 				};
 
 				id = session.Save(entity);
@@ -120,96 +125,45 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			using (var session = OpenSession())
 			using (var tx = session.BeginTransaction())
 			{
-				var entity = session.Get<LocaleEntity>(id);
+				var entity = session.Get<U>(id);
 
-				Assert.AreEqual(leapDay, entity.DateTimeValue);
+				assert(expectedValue, entity.Value);
 			}
+		}
+
+		[Test, TestCaseSource(nameof(GetTestCases))]
+		public void TestDateTime(CultureInfo from, CultureInfo to)
+		{
+			DateTime leapDay = new DateTime(2024, 2, 29, new GregorianCalendar(GregorianCalendarTypes.USEnglish));
+
+			PerformTest<DateTime, DateTimeEntity>(from, to, leapDay, (expected, actual) => Assert.AreEqual(expected, actual));
 		}
 
 		[Test, TestCaseSource(nameof(GetTestCases))]
 		public void TestDecimal(CultureInfo from, CultureInfo to)
 		{
 			decimal decimalValue = 12.3m;
-			object id;
 
-			CurrentCulture = from;
-			using (var session = OpenSession())
-			using (var tx = session.BeginTransaction())
-			{
-				var entity = new LocaleEntity()
-				{
-					DecimalValue = decimalValue
-				};
-
-				id = session.Save(entity);
-				tx.Commit();
-			}
-
-			CurrentCulture = to;
-			using (var session = OpenSession())
-			using (var tx = session.BeginTransaction())
-			{
-				var entity = session.Get<LocaleEntity>(id);
-
-				Assert.AreEqual(decimalValue, entity.DecimalValue);
-			}
+			PerformTest<decimal, DecimalEntity>(from, to, decimalValue, (expected, actual) => Assert.AreEqual(expected, actual));
 		}
 
 		[Test, TestCaseSource(nameof(GetTestCases))]
 		public void TestDouble(CultureInfo from, CultureInfo to)
 		{
 			double doubleValue = 12.3d;
-			object id;
 
-			CurrentCulture = from;
-			using (var session = OpenSession())
-			using (var tx = session.BeginTransaction())
-			{
-				var entity = new LocaleEntity()
-				{
-					DoubleValue = doubleValue
-				};
-
-				id = session.Save(entity);
-				tx.Commit();
-			}
-
-			CurrentCulture = to;
-			using (var session = OpenSession())
-			using (var tx = session.BeginTransaction())
-			{
-				var entity = session.Get<LocaleEntity>(id);
-
-				Assert.True(Math.Abs(doubleValue - entity.DoubleValue) < double.Epsilon, $"Expected: {doubleValue}\nBut was: {entity.DoubleValue}\n");
-			}
+			PerformTest<double, DoubleEntity>(from, to, doubleValue, 
+				(expected, actual) => Assert.True(Math.Abs(expected - actual) < double.Epsilon, $"Expected: {expected}\nBut was: {actual}\n")
+			);
 		}
+
+		[Test, TestCaseSource(nameof(GetTestCases))]
 
 		public void TestInteger(CultureInfo from, CultureInfo to)
 		{
 			int integerValue = 123;
-			object id;
 
-			CurrentCulture = from;
-			using (var session = OpenSession())
-			using (var tx = session.BeginTransaction())
-			{
-				var entity = new LocaleEntity()
-				{
-					IntegerValue = integerValue
-				};
-
-				id = session.Save(entity);
-				tx.Commit();
-			}
-
-			CurrentCulture = to;
-			using (var session = OpenSession())
-			using (var tx = session.BeginTransaction())
-			{
-				var entity = session.Get<LocaleEntity>(id);
-
-				Assert.AreEqual(integerValue, entity.IntegerValue);
-			}
+			PerformTest<int, IntegerEntity>(from, to, integerValue, (expected, actual) => Assert.AreEqual(expected, actual));
 		}
 
 		private CultureInfo CurrentCulture
