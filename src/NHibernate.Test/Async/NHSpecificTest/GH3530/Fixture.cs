@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 
 			// Generate columns
 			sb.Append($"Id {guidType}, ");
-			sb.Append($"Value {stringType}, ");
+			sb.Append($"Value {stringType}");
 
 			// Add the primary key contraint for the identity column
 			sb.Append($", {Dialect.PrimaryKeyString} ( Id )");
