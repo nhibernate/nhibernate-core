@@ -1,5 +1,9 @@
 using System;
+using System.Data;
 using System.Globalization;
+using System.Reflection;
+using System.Text;
+using NHibernate.SqlTypes;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH3530
@@ -30,6 +34,76 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 
 				transaction.Commit();
 			}
+		}
+
+		protected override void CreateSchema()
+		{
+			var sb = new StringBuilder();
+			var intType = Dialect.GetTypeName(SqlTypeFactory.Int32);
+			var stringType = Dialect.GetTypeName(SqlTypeFactory.GetAnsiString(255));
+
+			var catalog = GetQuotedDefaultCatalog();
+			var schema = GetQuotedDefaultSchema();
+			var table = GetQualifiedName(catalog, schema, "LocaleEntity");
+
+			sb.Append($"{Dialect.CreateTableString} {table} (");
+			sb.Append($"Id ");
+
+			if (Dialect.HasDataTypeInIdentityColumn)
+			{
+				sb.Append($"{intType}");
+			}
+			sb.Append($" {Dialect.GetIdentityColumnString(DbType.Int32)}");
+
+			// Generate columns
+			sb.Append($"IntegerValue {stringType}, ");
+			sb.Append($"DateTimeValue {stringType}, ");
+			sb.Append($"DoubleValue {stringType}, ");
+			sb.Append($"DecimalValue {stringType}");
+
+			// Add the primary key contraint for the identity column
+			if (Dialect.GenerateTablePrimaryKeyConstraintForIdentityColumn)
+			{
+				sb.Append($", {Dialect.PrimaryKeyString} ( Id )");
+			}
+			sb.Append(")");
+
+			using (var cn = Sfi.ConnectionProvider.GetConnection())
+			{
+				try
+				{
+					using (var cmd = cn.CreateCommand())
+					{
+						cmd.CommandText = sb.ToString();
+						cmd.ExecuteNonQuery();
+					}
+				}
+				finally
+				{
+					Sfi.ConnectionProvider.CloseConnection(cn);
+				}
+			}
+		}
+
+		private string GetQuotedDefaultCatalog()
+		{
+			var t = cfg.GetType();
+			var getQuotedDefaultCatalog = t.GetMethod("GetQuotedDefaultCatalog", BindingFlags.Instance | BindingFlags.NonPublic);
+
+			return (string)getQuotedDefaultCatalog.Invoke(cfg, [Dialect]);
+		}
+
+		private string GetQuotedDefaultSchema()
+		{
+			var t = cfg.GetType();
+			var getQuotedDefaultSchema = t.GetMethod("GetQuotedDefaultSchema", BindingFlags.Instance | BindingFlags.NonPublic);
+
+			return (string) getQuotedDefaultSchema.Invoke(cfg, [Dialect]);
+		}
+
+		private string GetQualifiedName(string catalog, string schema, string name)
+		{
+			return Dialect.Qualify(catalog, schema, name);
 		}
 
 		[TestCaseSource(nameof(GetTestCases))]
