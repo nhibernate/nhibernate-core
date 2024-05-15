@@ -106,12 +106,10 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			return Dialect.Qualify(catalog, schema, name);
 		}
 
-		[TestCaseSource(nameof(GetTestCases))]
-		public void TestLocales(CultureInfo from, CultureInfo to)
+		[Test, TestCaseSource(nameof(GetTestCases))]
+		public void TestDateTime(CultureInfo from, CultureInfo to)
 		{
 			DateTime leapDay = new DateTime(2024, 2, 29, new GregorianCalendar(GregorianCalendarTypes.USEnglish));
-			double doubleValue = 12.3f;
-			int intValue = 4;
 			object id;
 
 			CurrentCulture = from;
@@ -120,9 +118,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			{
 				var entity = new LocaleEntity()
 				{
-					DateTimeValue = leapDay,
-					DoubleValue = doubleValue,
-					IntegerValue = intValue,
+					DateTimeValue = leapDay
 				};
 
 				id = session.Save(entity);
@@ -136,8 +132,92 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 				var entity = session.Get<LocaleEntity>(id);
 
 				Assert.AreEqual(leapDay, entity.DateTimeValue);
-				Assert.AreEqual(intValue, entity.IntegerValue);
+			}
+		}
+
+		[Test, TestCaseSource(nameof(GetTestCases))]
+		public void TestDecimal(CultureInfo from, CultureInfo to)
+		{
+			decimal decimalValue = 12.3m;
+			object id;
+
+			CurrentCulture = from;
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				var entity = new LocaleEntity()
+				{
+					DecimalValue = decimalValue
+				};
+
+				id = session.Save(entity);
+				tx.Commit();
+			}
+
+			CurrentCulture = to;
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				var entity = session.Get<LocaleEntity>(id);
+
+				Assert.AreEqual(decimalValue, entity.DecimalValue);
+			}
+		}
+
+		[Test, TestCaseSource(nameof(GetTestCases))]
+		public void TestDouble(CultureInfo from, CultureInfo to)
+		{
+			double doubleValue = 12.3d;
+			object id;
+
+			CurrentCulture = from;
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				var entity = new LocaleEntity()
+				{
+					DoubleValue = doubleValue
+				};
+
+				id = session.Save(entity);
+				tx.Commit();
+			}
+
+			CurrentCulture = to;
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				var entity = session.Get<LocaleEntity>(id);
+
 				Assert.True(doubleValue - entity.DoubleValue < double.Epsilon);
+			}
+		}
+
+		public void TestInteger(CultureInfo from, CultureInfo to)
+		{
+			int integerValue = 123;
+			object id;
+
+			CurrentCulture = from;
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				var entity = new LocaleEntity()
+				{
+					IntegerValue = integerValue
+				};
+
+				id = session.Save(entity);
+				tx.Commit();
+			}
+
+			CurrentCulture = to;
+			using (var session = OpenSession())
+			using (var tx = session.BeginTransaction())
+			{
+				var entity = session.Get<LocaleEntity>(id);
+
+				Assert.AreEqual(integerValue, entity.IntegerValue);
 			}
 		}
 
