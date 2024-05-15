@@ -2,9 +2,10 @@
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
                    namespace="NHibernate.Test.NHSpecificTest.GH3530">
   <class name="LocaleEntity">
-    <id name="Id" generator="guid.comb" />
+    <id name="Id" generator="identity" />
     <property name="IntegerValue" column="IntegerValue"/>
     <property name="DateTimeValue" column="DateTimeValue"/>
     <property name="DoubleValue" column="DoubleValue"/>
+    <property name="DecimalValue" column="DecimalValue"/>
   </class>
 </hibernate-mapping>
