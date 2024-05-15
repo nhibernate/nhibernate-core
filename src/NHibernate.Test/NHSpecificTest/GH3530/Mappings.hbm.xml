@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH3530">
+  <class name="LocaleEntity">
+    <id name="Id" generator="guid.comb" />
+    <property name="IntegerValue" column="IntegerValue"/>
+    <property name="DateTimeValue" column="DateTimeValue"/>
+    <property name="DoubleValue" column="DoubleValue"/>
+  </class>
+</hibernate-mapping>
