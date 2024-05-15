@@ -56,10 +56,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			sb.Append($"DecimalValue {stringType}");
 
 			// Add the primary key contraint for the identity column
-			if (Dialect.GenerateTablePrimaryKeyConstraintForIdentityColumn)
-			{
-				sb.Append($", {Dialect.PrimaryKeyString} ( Id )");
-			}
+			sb.Append($", {Dialect.PrimaryKeyString} ( Id )");
 			sb.Append(")");
 
 			using (var cn = Sfi.ConnectionProvider.GetConnection())
