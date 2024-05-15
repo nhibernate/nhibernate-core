@@ -53,7 +53,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			{
 				sb.Append($"{intType}");
 			}
-			sb.Append($" {Dialect.GetIdentityColumnString(DbType.Int32)}");
+			sb.Append($" {Dialect.GetIdentityColumnString(DbType.Int32)}, ");
 
 			// Generate columns
 			sb.Append($"IntegerValue {stringType}, ");
