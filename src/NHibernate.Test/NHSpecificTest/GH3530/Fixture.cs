@@ -70,7 +70,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 
 			// Add the primary key contraint for the identity column
 			sb.Append($", {Dialect.PrimaryKeyString} ( Id )");
-			sb.Append(")");
+			sb.Append(')');
 
 			using (var cn = Sfi.ConnectionProvider.GetConnection())
 			{
