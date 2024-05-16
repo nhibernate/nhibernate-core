@@ -35,7 +35,7 @@ namespace NHibernate.Linq.Functions
 		public override HqlTreeNode BuildHql(MemberInfo member, Expression expression, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
 			var functionName = member.Name.ToLowerInvariant();
-			if (functionName == "second" && (visitor.SessionFactory as ISessionFactoryImplementor)?.Dialect.Functions.ContainsKey("secondtruncated") == true)
+			if (functionName == "second")
 			{
 				functionName = "secondtruncated";
 			}
