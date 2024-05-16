@@ -142,7 +142,7 @@ public class Fixture : BugTestCase
 	[Test, TestCaseSource(nameof(GetTestCases))]
 	public void TestNHDateTime(CultureInfo from, CultureInfo to)
 	{
-		DateTime leapDay = new DateTime(2024, 2, 29, new GregorianCalendar(GregorianCalendarTypes.USEnglish));
+		var leapDay = new DateTime(2024, 2, 29, new GregorianCalendar(GregorianCalendarTypes.USEnglish));
 
 		PerformTest<DateTime, NHDateTimeEntity>(from, to, leapDay, (expected, actual) => Assert.AreEqual(expected, actual));
 	}
@@ -150,7 +150,7 @@ public class Fixture : BugTestCase
 	[Test, TestCaseSource(nameof(GetTestCases))]
 	public void TestDateTime(CultureInfo from, CultureInfo to)
 	{
-		DateTime leapDay = new DateTime(2024, 2, 29, new GregorianCalendar(GregorianCalendarTypes.USEnglish));
+		var leapDay = new DateTime(2024, 2, 29, new GregorianCalendar(GregorianCalendarTypes.USEnglish));
 
 		PerformTest<DateTime, DateTimeEntity>(from, to, leapDay, (expected, actual) => Assert.AreEqual(expected, actual));
 	}
