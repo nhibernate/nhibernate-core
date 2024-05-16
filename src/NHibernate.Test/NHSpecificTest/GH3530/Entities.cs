@@ -12,15 +12,15 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 		public virtual Guid Id { get; set; }
 	}
 
-	public abstract class Entity<T>:Entity where T : struct
+	public abstract class DataEntity<T>:Entity where T : struct
 	{
 		public virtual T DataValue { get; set; }
 	}
 
-	public class IntegerEntity : Entity<int> { }
-	public class DateTimeEntity : Entity<DateTime> { }
+	public class IntegerEntity : DataEntity<int> { }
+	public class DateTimeEntity : DataEntity<DateTime> { }
 
-	public class DoubleEntity : Entity<double> { }
-	public class DecimalEntity : Entity<decimal> { }
-	public class  NHDateTimeEntity : Entity<DateTime> { }
+	public class DoubleEntity : DataEntity<double> { }
+	public class DecimalEntity : DataEntity<decimal> { }
+	public class  NHDateTimeEntity : DataEntity<DateTime> { }
 }

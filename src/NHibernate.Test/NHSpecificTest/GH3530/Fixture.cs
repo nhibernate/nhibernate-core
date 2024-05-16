@@ -116,7 +116,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 
 		private void PerformTest<T, U>(CultureInfo from, CultureInfo to, T expectedValue, Action<T, T> assert)
 			where T : struct
-			where U : Entity<T>, new()
+			where U : DataEntity<T>, new()
 		{
 			object id;
 
