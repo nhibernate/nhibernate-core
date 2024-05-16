@@ -22,4 +22,5 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 
 	public class DoubleEntity : Entity<double> { }
 	public class DecimalEntity : Entity<decimal> { }
+	public class  NHDateTimeEntity : Entity<DateTime> { }
 }

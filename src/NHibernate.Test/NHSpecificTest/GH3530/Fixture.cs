@@ -42,8 +42,16 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			CreateTable("DateTime");
 			CreateTable("Double");
 			CreateTable("Decimal");
+
+			base.CreateSchema();
 		}
 
+		/// <summary>
+		/// This function creates the schema for our custom entities.
+		/// If the SchemaExporter provided a mechanism to override the database
+		/// type, this method would not be required.
+		/// </summary>
+		/// <param name="name"></param>
 		private void CreateTable(string name)
 		{
 			var sb = new StringBuilder();
@@ -132,6 +140,14 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 		}
 
 		[Test, TestCaseSource(nameof(GetTestCases))]
+		public void TestNHDateTime(CultureInfo from, CultureInfo to)
+		{
+			DateTime leapDay = new DateTime(2024, 2, 29, new GregorianCalendar(GregorianCalendarTypes.USEnglish));
+
+			PerformTest<DateTime, NHDateTimeEntity>(from, to, leapDay, (expected, actual) => Assert.AreEqual(expected, actual));
+		}
+
+		[Test, TestCaseSource(nameof(GetTestCases))]
 		public void TestDateTime(CultureInfo from, CultureInfo to)
 		{
 			DateTime leapDay = new DateTime(2024, 2, 29, new GregorianCalendar(GregorianCalendarTypes.USEnglish));
@@ -168,14 +184,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 
 		private CultureInfo CurrentCulture
 		{
-			get
-			{
-				return CultureInfo.CurrentCulture;
-			}
-			set
-			{
-				CultureInfo.CurrentCulture = value;
-			}
+			get => CultureInfo.CurrentCulture;
+			set => CultureInfo.CurrentCulture = value;
 		}
 
 		public static object[][] GetTestCases()

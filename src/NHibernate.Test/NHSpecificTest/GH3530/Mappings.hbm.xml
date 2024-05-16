@@ -1,19 +1,33 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
                    namespace="NHibernate.Test.NHSpecificTest.GH3530">
-  <class name="IntegerEntity">
+  <!--
+  The following classes have custom-built schema to override the
+  database column type to a text type as the SchemaExporter does
+  not provide a mechanism of doing this, hence they have a
+  schema-action of 'none'.
+  -->
+  <class name="IntegerEntity" schema-action="none">
     <id name="Id" generator="guid.comb" />
     <property name="DataValue" column="DataValue"/>
   </class>
-  <class name="DateTimeEntity">
+  <class name="DateTimeEntity" schema-action="none">
     <id name="Id" generator="guid.comb" />
     <property name="DataValue" column="DataValue"/>
   </class>
-  <class name="DoubleEntity">
+  <class name="DoubleEntity" schema-action="none">
     <id name="Id" generator="guid.comb" />
     <property name="DataValue" column="DataValue"/>
   </class>
-  <class name="DecimalEntity">
+  <class name="DecimalEntity" schema-action="none">
+    <id name="Id" generator="guid.comb" />
+    <property name="DataValue" column="DataValue"/>
+  </class>
+  
+  <!--
+  The following classes will be exported as expected by the SchemaExport.
+  -->
+  <class name="NHDateTimeEntity">
     <id name="Id" generator="guid.comb" />
     <property name="DataValue" column="DataValue"/>
   </class>
