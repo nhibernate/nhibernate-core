@@ -50,13 +50,12 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 
 		protected override void CreateSchema()
 		{
-			// Let the SchemaExporter drop and create tables if needed.
-			base.CreateSchema();
-
 			CreateTable("Integer");
 			CreateTable("DateTime");
 			CreateTable("Double");
 			CreateTable("Decimal");
+
+			base.CreateSchema();
 		}
 
 		/// <summary>
@@ -94,6 +93,10 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 						cmd.CommandText = sb.ToString();
 						cmd.ExecuteNonQuery();
 					}
+				}
+				catch (Exception ex)
+				{
+					Assert.Warn($"Creating the schema failed, assuming it already exists. {ex}");
 				}
 				finally
 				{
