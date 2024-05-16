@@ -27,13 +27,12 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 
 		protected override void OnTearDown()
 		{
-			using (var session = OpenSession())
-			using (var transaction = session.BeginTransaction())
-			{
-				session.CreateQuery("delete from System.Object").ExecuteUpdate();
+			using var session = OpenSession();
+			using var transaction = session.BeginTransaction();
 
-				transaction.Commit();
-			}
+			session.CreateQuery("delete from System.Object").ExecuteUpdate();
+
+			transaction.Commit();
 		}
 
 		protected override void CreateSchema()
@@ -72,24 +71,21 @@ namespace NHibernate.Test.NHSpecificTest.GH3530
 			sb.Append($", {Dialect.PrimaryKeyString} ( Id )");
 			sb.Append(')');
 
-			using (var cn = Sfi.ConnectionProvider.GetConnection())
+			using var cn = Sfi.ConnectionProvider.GetConnection();
+			try
 			{
-				try
-				{
-					using (var cmd = cn.CreateCommand())
-					{
-						cmd.CommandText = sb.ToString();
-						cmd.ExecuteNonQuery();
-					}
-				}
-				catch (Exception ex)
-				{
-					Assert.Warn($"Creating the schema failed, assuming it already exists. {ex}");
-				}
-				finally
-				{
-					Sfi.ConnectionProvider.CloseConnection(cn);
-				}
+				using var cmd = cn.CreateCommand();
+
+				cmd.CommandText = sb.ToString();
+				cmd.ExecuteNonQuery();
+			}
+			catch (Exception ex)
+			{
+				Assert.Warn($"Creating the schema failed, assuming it already exists. {ex}");
+			}
+			finally
+			{
+				Sfi.ConnectionProvider.CloseConnection(cn);
 			}
 		}
 
