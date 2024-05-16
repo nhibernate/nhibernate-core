@@ -7,19 +7,19 @@
   not provide a mechanism of doing this, hence they have a
   schema-action of 'none'.
   -->
-  <class name="IntegerEntity" schema-action="drop">
+  <class name="IntegerEntity" schema-action="none">
     <id name="Id" generator="guid.comb" />
     <property name="DataValue" column="DataValue"/>
   </class>
-  <class name="DateTimeEntity" schema-action="drop">
+  <class name="DateTimeEntity" schema-action="none">
     <id name="Id" generator="guid.comb" />
     <property name="DataValue" column="DataValue"/>
   </class>
-  <class name="DoubleEntity" schema-action="drop">
+  <class name="DoubleEntity" schema-action="none">
     <id name="Id" generator="guid.comb" />
     <property name="DataValue" column="DataValue"/>
   </class>
-  <class name="DecimalEntity" schema-action="drop">
+  <class name="DecimalEntity" schema-action="none">
     <id name="Id" generator="guid.comb" />
     <property name="DataValue" column="DataValue"/>
   </class>
