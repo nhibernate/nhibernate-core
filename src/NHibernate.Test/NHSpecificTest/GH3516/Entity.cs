@@ -9,5 +9,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 
 		public const string NameWithSingleQuote = "'; drop table Entity; --";
 		public const string NameWithEscapedSingleQuote = @"\'; drop table Entity; --";
+
+		// Do not switch to property, the feature of referencing static fields in HQL does not work with properties.
+		public static string ArbitraryStringValue;
 	}
 }
