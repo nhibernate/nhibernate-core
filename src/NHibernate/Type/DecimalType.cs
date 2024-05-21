@@ -27,11 +27,6 @@ namespace NHibernate.Type
 			return Convert.ToDecimal(rs[index]);
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return Convert.ToDecimal(rs[name]);
-		}
-
 		public override System.Type ReturnedClass
 		{
 			get { return typeof(Decimal); }

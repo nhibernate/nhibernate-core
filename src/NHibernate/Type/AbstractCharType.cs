@@ -30,11 +30,6 @@ namespace NHibernate.Type
 			return '\0'; // This line should never be executed
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return Get(rs, rs.GetOrdinal(name), session);
-		}
-
 		public override System.Type PrimitiveClass
 		{
 			get { return typeof(char); }

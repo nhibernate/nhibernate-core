@@ -44,22 +44,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			try
-			{
-				return rs[name] switch
-				{
-					BigInteger bi => (ushort) bi,
-					var c => Convert.ToUInt16(c)
-				};
-			}
-			catch (Exception ex)
-			{
-				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[name]), ex);
-			}
-		}
-
 		public override System.Type ReturnedClass
 		{
 			get { return typeof(UInt16); }

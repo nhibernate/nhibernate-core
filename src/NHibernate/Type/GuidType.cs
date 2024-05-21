@@ -33,11 +33,6 @@ namespace NHibernate.Type
 			return new Guid(Convert.ToString(rs[index]));
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return Get(rs, rs.GetOrdinal(name), session);
-		}
-
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{

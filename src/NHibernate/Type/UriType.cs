@@ -54,11 +54,6 @@ namespace NHibernate.Type
 			return StringToObject(Convert.ToString(rs[index]));
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return StringToObject(Convert.ToString(rs[name]));
-		}
-
 		/// <inheritdoc />
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{

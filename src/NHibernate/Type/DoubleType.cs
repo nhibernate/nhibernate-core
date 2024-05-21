@@ -30,15 +30,6 @@ namespace NHibernate.Type
 			};
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return rs[name] switch
-			{
-				BigInteger bi => (double) bi,
-				var v => Convert.ToDouble(v)
-			};
-		}
-
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{

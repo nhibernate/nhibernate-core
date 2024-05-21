@@ -226,11 +226,6 @@ namespace NHibernate.Type
 			cmd.Parameters[index].Value = value != null ? GetValue(value) : DBNull.Value;
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return Get(rs, rs.GetOrdinal(name), session);
-		}
-
 		public override string Name
 		{
 			get { return ReturnedClass.FullName; }

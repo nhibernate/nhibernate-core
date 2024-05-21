@@ -1,3 +1,4 @@
+using System;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Type;
@@ -69,6 +70,7 @@ namespace NHibernate.Test.TypesTest
 		}
 
 		[Theory]
+		[Obsolete("Testing obsolete API")]
 		public void GetByName(bool expected)
 		{
 			const string name0 = "name0";

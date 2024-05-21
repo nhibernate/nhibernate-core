@@ -58,10 +58,6 @@ namespace NHibernate.Type
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session) =>
 			GetDateTime(rs, index, session);
 
-		/// <inheritdoc />
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session) =>
-			Get(rs, rs.GetOrdinal(name), session);
-
 		/// <summary>
 		/// Get the <see cref="DateTime" /> in the <see cref="DbDataReader"/> for the Property.
 		/// </summary>

@@ -73,11 +73,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return Get(rs, rs.GetOrdinal(name), session);
-		}
-
 		public object Next(object current, ISessionImplementor session)
 		{
 			return Seed(session);
