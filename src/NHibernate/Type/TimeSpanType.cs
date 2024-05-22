@@ -38,18 +38,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			try
-			{
-				return new TimeSpan(Convert.ToInt64(rs[name]));
-			}
-			catch (Exception ex)
-			{
-				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[name]), ex);
-			}
-		}
-
 		/// <summary></summary>
 		public override System.Type ReturnedClass
 		{

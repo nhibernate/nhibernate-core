@@ -66,11 +66,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return Get(rs, rs.GetOrdinal(name), session);
-		}
-
 		public override System.Type ReturnedClass
 		{
 			get { return typeof(DateTime); }

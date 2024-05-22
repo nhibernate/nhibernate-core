@@ -90,11 +90,6 @@ namespace NHibernate.Type
 			return ToExternalFormat(buffer);
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return Get(rs, rs.GetOrdinal(name), session);
-		}
-
 		public override int GetHashCode(object x)
 		{
 			byte[] bytes = ToInternalFormat(x);

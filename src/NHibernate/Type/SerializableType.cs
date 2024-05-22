@@ -56,11 +56,6 @@ namespace NHibernate.Type
 			binaryType.Set(st, ToBytes(value), index, session);
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return Get(rs, rs.GetOrdinal(name), session);
-		}
-
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			byte[] bytes = (byte[]) binaryType.Get(rs, index, session);

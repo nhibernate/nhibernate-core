@@ -32,15 +32,6 @@ namespace NHibernate.Type
 			};
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return rs[name] switch
-			{
-				BigInteger bi => (byte) bi,
-				var c => Convert.ToByte(c)
-			};
-		}
-
 		public override System.Type ReturnedClass
 		{
 			get { return typeof(byte); }
