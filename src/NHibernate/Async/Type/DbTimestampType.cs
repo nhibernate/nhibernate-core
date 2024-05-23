@@ -31,12 +31,12 @@ namespace NHibernate.Type
 			if (session == null)
 			{
 				log.Debug("incoming session was null; using current application host time");
-				return await (base.SeedAsync(null, cancellationToken)).ConfigureAwait(false);
+				return base.Seed(null);
 			}
 			if (!SupportsCurrentTimestampSelection(session.Factory.Dialect))
 			{
 				log.Info("falling back to application host based timestamp, as dialect does not support current timestamp selection");
-				return await (base.SeedAsync(session, cancellationToken)).ConfigureAwait(false);
+				return base.Seed(session);
 			}
 			return await (GetCurrentTimestampAsync(session, cancellationToken)).ConfigureAwait(false);
 		}

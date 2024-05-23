@@ -15,32 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.TypesTest
 {
 	using System.Threading.Tasks;
-	using System.Threading;
-	/// <summary>
-	/// Summary description for TimeSpanTypeFixture.
-	/// </summary>
-	[TestFixture]
-	public class TimeSpanTypeFixtureAsync
-	{
-		[Test]
-		public async Task NextAsync()
-		{
-			var type = (TimeSpanType) NHibernateUtil.TimeSpan;
-			object current = new TimeSpan(DateTime.Now.Ticks - 5);
-			object next = await (type.NextAsync(current, null, CancellationToken.None));
-
-			Assert.IsTrue(next is TimeSpan, "Next should be TimeSpan");
-			Assert.IsTrue((TimeSpan) next > (TimeSpan) current,
-			              "next should be greater than current (could be equal depending on how quickly this occurs)");
-		}
-
-		[Test]
-		public async Task SeedAsync()
-		{
-			var type = (TimeSpanType) NHibernateUtil.TimeSpan;
-			Assert.IsTrue(await (type.SeedAsync(null, CancellationToken.None)) is TimeSpan, "seed should be TimeSpan");
-		}
-	}
 
 	[TestFixture]
 	public class TimeSpanTypeFixture2Async : TypeFixtureBase

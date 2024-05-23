@@ -699,24 +699,6 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
-		public async Task ContainsSubqueryWithCoalesceStringEnumSelectAsync()
-		{
-			if (Dialect is MsSqlCeDialect || Dialect is SQLiteDialect)
-				Assert.Ignore("Dialect is not supported");
-
-			var results =
-				await (db.Timesheets.Where(
-					  o =>
-						  o.Users
-						   .Where(u => u.Id != 0.MappedAs(NHibernateUtil.Int32))
-						   .Select(u => u.Name == u.Name ? u.Enum1 : u.NullableEnum1.Value)
-						   .Contains(EnumStoredAsString.Small))
-				  .ToListAsync());
-
-			Assert.That(results.Count, Is.EqualTo(1));
-		}
-
-		[Test]
 		public async Task SearchOnObjectTypeWithExtensionMethodAsync()
 		{
 			var query = await ((from o in session.Query<Animal>()
