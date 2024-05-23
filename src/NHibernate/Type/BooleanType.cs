@@ -17,12 +17,23 @@ namespace NHibernate.Type
 		protected static readonly object TrueObject = true;
 		protected static readonly object FalseObject = false;
 
-		/// <summary />
+		/// <summary>
+		/// Initialize a new instance of the BooleanType
+		/// </summary>
+		/// <remarks>This is used when the Property is mapped to a native boolean type.</remarks>
 		public BooleanType() : base(SqlTypeFactory.Boolean)
 		{
 		}
 
-		/// <summary />
+		/// <summary>
+		/// Initialize a new instance of the BooleanType class using a
+		/// <see cref="AnsiStringFixedLengthSqlType"/>.
+		/// </summary>
+		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
+		/// <remarks>
+		/// This is used when the Property is mapped to a string column
+		/// that stores true or false as a string.
+		/// </remarks>
 		public BooleanType(AnsiStringFixedLengthSqlType sqlType) : base(sqlType)
 		{
 		}
