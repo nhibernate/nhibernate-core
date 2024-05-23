@@ -16,11 +16,16 @@ namespace NHibernate.Type
 	/// matches up with the capabilities of <see cref="System.Single" />  
 	/// </remarks>
 	[Serializable]
-	public class SingleType(SqlType sqlType) : PrimitiveType(sqlType)
+	public class SingleType : PrimitiveType
 	{
 		private static readonly object ZeroObject = (float) 0;
 
 		public SingleType() : this(SqlTypeFactory.Single)
+		{
+		}
+
+		/// <summary />
+		public SingleType(SqlType sqlType) : base(sqlType)
 		{
 		}
 

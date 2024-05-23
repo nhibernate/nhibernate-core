@@ -13,9 +13,14 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Byte"/> column.
 	/// </summary>
 	[Serializable]
-	public partial class ByteType() : PrimitiveType(SqlTypeFactory.Byte), IDiscriminatorType, IVersionType
+	public partial class ByteType : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 		private static readonly object ZeroObject = (byte) 0;
+
+		/// <summary />
+		public ByteType() : base(SqlTypeFactory.Byte)
+		{
+		}
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{

@@ -14,9 +14,14 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Int64"/> column.
 	/// </summary>
 	[Serializable]
-	public partial class Int64Type() : PrimitiveType(SqlTypeFactory.Int64), IDiscriminatorType, IVersionType
+	public partial class Int64Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 		private static readonly object ZeroObject = (Int64) 0;
+
+		/// <summary />
+		public Int64Type() : base(SqlTypeFactory.Int64)
+		{
+		}
 
 		/// <summary></summary>
 		public override string Name => "Int64";

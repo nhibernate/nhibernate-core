@@ -12,9 +12,13 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.TimeSpan" /> Property to an <see cref="DbType.Int64" /> column 
 	/// </summary>
 	[Serializable]
-	public partial class TimeSpanType() : PrimitiveType(SqlTypeFactory.Int64), IVersionType, ILiteralType
+	public partial class TimeSpanType : PrimitiveType, IVersionType, ILiteralType
 	{
 		private static readonly object ZeroObject = TimeSpan.Zero;
+
+		public TimeSpanType() : base(SqlTypeFactory.Int64)
+		{
+		}
 
 		/// <summary></summary>
 		public override string Name => "TimeSpan";

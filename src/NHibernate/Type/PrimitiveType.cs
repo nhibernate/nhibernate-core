@@ -8,8 +8,13 @@ namespace NHibernate.Type
 	/// Superclass of <see cref="ValueType"/> types.
 	/// </summary>
 	[Serializable]
-	public abstract class PrimitiveType(SqlType sqlType) : ImmutableType(sqlType), ILiteralType
+	public abstract class PrimitiveType : ImmutableType, ILiteralType
 	{
+		/// <summary />
+		protected PrimitiveType(SqlType sqlType) : base(sqlType)
+		{
+		}
+
 		public abstract System.Type PrimitiveClass { get; }
 
 		public abstract object DefaultValue { get; }

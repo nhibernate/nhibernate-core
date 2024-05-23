@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// Base class for date time types.
 	/// </summary>
 	[Serializable]
-	public abstract partial class AbstractDateTimeType(SqlType sqlTypeDateTime) : PrimitiveType(sqlTypeDateTime), IIdentifierType, ILiteralType, IVersionType
+	public abstract partial class AbstractDateTimeType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
 		private static readonly object BaseDateValue = DateTime.MinValue;
 
@@ -33,6 +33,11 @@ namespace NHibernate.Type
 
 		/// <summary />
 		protected AbstractDateTimeType() : this(SqlTypeFactory.DateTime)
+		{
+		}
+
+		/// <summary />
+		protected AbstractDateTimeType(SqlType sqlTypeDateTime) : base(sqlTypeDateTime)
 		{
 		}
 

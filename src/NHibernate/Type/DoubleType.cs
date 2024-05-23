@@ -12,12 +12,17 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Double"/> column.
 	/// </summary>
 	[Serializable]
-	public class DoubleType(SqlType sqlType) : PrimitiveType(sqlType)
+	public class DoubleType : PrimitiveType
 	{
 		private static readonly object ZeroObject = 0D;
 
 		/// <summary></summary>
 		public DoubleType() : this(SqlTypeFactory.Double)
+		{
+		}
+
+		/// <summary />
+		public DoubleType(SqlType sqlType) : base(sqlType)
 		{
 		}
 

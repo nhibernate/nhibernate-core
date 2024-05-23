@@ -11,13 +11,18 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Decimal"/> column.
 	/// </summary>
 	[Serializable]
-	public class DecimalType(SqlType sqlType) : PrimitiveType(sqlType), IIdentifierType
+	public class DecimalType : PrimitiveType, IIdentifierType
 	{
 		private static readonly object ZeroObject = 0m;
 
 		/// <summary />
 		public DecimalType()
 			: this(SqlTypeFactory.Decimal)
+		{
+		}
+
+		/// <summary />
+		public DecimalType(SqlType sqlType) : base(sqlType)
 		{
 		}
 

@@ -14,9 +14,14 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.SByte"/> column.
 	/// </summary>
 	[Serializable]
-	public class SByteType() : PrimitiveType(SqlTypeFactory.SByte), IDiscriminatorType
+	public class SByteType : PrimitiveType, IDiscriminatorType
 	{
 		private static readonly object ZeroObject = (sbyte) 0;
+
+		/// <summary />
+		public SByteType() : base(SqlTypeFactory.SByte)
+		{
+		}
 
 		/// <summary></summary>
 		public override string Name => "SByte";

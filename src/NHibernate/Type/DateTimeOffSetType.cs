@@ -12,12 +12,16 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.DateTimeOffset" /> Property to a <see cref="DbType.DateTimeOffset"/>
 	/// </summary>
 	[Serializable]
-	public partial class DateTimeOffsetType(DateTimeOffsetSqlType sqlType)
-		: PrimitiveType(sqlType), IIdentifierType, ILiteralType, IVersionType
+	public partial class DateTimeOffsetType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
 		private static readonly object BaseDateValue = DateTimeOffset.MinValue;
 
 		public DateTimeOffsetType() : this((DateTimeOffsetSqlType) SqlTypeFactory.DateTimeOffSet)
+		{
+		}
+
+		/// <summary />
+		public DateTimeOffsetType(DateTimeOffsetSqlType sqlType) : base(sqlType)
 		{
 		}
 

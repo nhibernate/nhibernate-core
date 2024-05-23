@@ -12,12 +12,17 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Boolean"/> column.
 	/// </summary>
 	[Serializable]
-	public class BooleanType(AnsiStringFixedLengthSqlType sqlType) : PrimitiveType(sqlType), IDiscriminatorType
+	public class BooleanType : PrimitiveType, IDiscriminatorType
 	{
 		protected static readonly object TrueObject = true;
 		protected static readonly object FalseObject = false;
 
 		public BooleanType() : this((AnsiStringFixedLengthSqlType) SqlTypeFactory.Boolean)
+		{
+		}
+
+		/// <summary />
+		public BooleanType(AnsiStringFixedLengthSqlType sqlType) : base(sqlType)
 		{
 		}
 

@@ -14,9 +14,14 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.UInt32"/> column.
 	/// </summary>
 	[Serializable]
-	public partial class UInt32Type() : PrimitiveType(SqlTypeFactory.UInt32), IDiscriminatorType, IVersionType
+	public partial class UInt32Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 		private static readonly object ZeroObject = (UInt32) 0;
+
+		/// <summary />
+		public UInt32Type() : base(SqlTypeFactory.UInt32)
+		{
+		}
 
 		/// <summary></summary>
 		public override string Name => "UInt32";
