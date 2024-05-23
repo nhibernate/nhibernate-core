@@ -43,7 +43,10 @@ namespace NHibernate.Type
 		{
 		}
 
-		public override string Name => "Time";
+		public override string Name
+		{
+			get { return "Time"; }
+		}
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
@@ -63,7 +66,10 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override System.Type ReturnedClass => typeof(DateTime);
+		public override System.Type ReturnedClass
+		{
+			get { return typeof(DateTime); }
+		}
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
@@ -149,9 +155,15 @@ namespace NHibernate.Type
 			return DateTime.Parse(xml);
 		}
 
-		public override System.Type PrimitiveClass => typeof(DateTime);
+		public override System.Type PrimitiveClass
+		{
+			get { return typeof(DateTime); }
+		}
 
-		public override object DefaultValue => BaseDateValue;
+		public override object DefaultValue
+		{
+			get { return BaseDateValue; }
+		}
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
