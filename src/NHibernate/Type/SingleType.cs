@@ -18,7 +18,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public class SingleType : PrimitiveType
 	{
-		private static readonly object ZeroObject = (float) 0;
+		private static readonly object ZeroObject = 0F;
 
 		public SingleType() : this(SqlTypeFactory.Single)
 		{

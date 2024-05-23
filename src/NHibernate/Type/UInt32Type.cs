@@ -16,7 +16,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class UInt32Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
-		private static readonly object ZeroObject = (UInt32) 0;
+		private static readonly object ZeroObject = 0U;
 
 		/// <summary />
 		public UInt32Type() : base(SqlTypeFactory.UInt32)
