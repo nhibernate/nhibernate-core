@@ -12,14 +12,14 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Double"/> column.
 	/// </summary>
 	[Serializable]
-	public class DoubleType : PrimitiveType
+	public class DoubleType(SqlType sqlType) : PrimitiveType(sqlType)
 	{
+		private static readonly object ZeroObject = 0D;
+
 		/// <summary></summary>
-		public DoubleType() : base(SqlTypeFactory.Double)
+		public DoubleType() : this(SqlTypeFactory.Double)
 		{
 		}
-
-		public DoubleType(SqlType sqlType) : base(sqlType) {}
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
@@ -59,10 +59,7 @@ namespace NHibernate.Type
 			get { return typeof(double); }
 		}
 
-		public override object DefaultValue
-		{
-			get { return 0D; }
-		}
+		public override object DefaultValue => ZeroObject;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{

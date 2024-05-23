@@ -160,10 +160,7 @@ namespace NHibernate.Type
 			get { return typeof(DateTime); }
 		}
 
-		public override object DefaultValue
-		{
-			get { return BaseDateValue; }
-		}
+		public override object DefaultValue => BaseDateValue;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{

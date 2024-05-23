@@ -14,22 +14,13 @@ namespace NHibernate.Type
 	/// but mapping against a <see cref="DateTime"/>.
 	/// </summary>
 	[Serializable]
-	public partial class TimeAsTimeSpanType : PrimitiveType, IVersionType
+	public partial class TimeAsTimeSpanType(TimeSqlType sqlType) : PrimitiveType(sqlType), IVersionType
 	{
+		private static readonly object ZeroObject = TimeSpan.Zero;
 		private static readonly DateTime BaseDateValue = new DateTime(1753, 01, 01);
 
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		public TimeAsTimeSpanType() : base(SqlTypeFactory.Time)
-		{
-		}
 
-		/// <summary>
-		/// Constructor for specifying a time with a scale. Use <see cref="SqlTypeFactory.GetTime"/>.
-		/// </summary>
-		/// <param name="sqlType">The sql type to use for the type.</param>
-		public TimeAsTimeSpanType(TimeSqlType sqlType) : base(sqlType)
+		public TimeAsTimeSpanType() : this((TimeSqlType) SqlTypeFactory.Time)
 		{
 		}
 
@@ -129,10 +120,7 @@ namespace NHibernate.Type
 			get { return typeof(TimeSpan); }
 		}
 
-		public override object DefaultValue
-		{
-			get { return TimeSpan.Zero; }
-		}
+		public override object DefaultValue => ZeroObject;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{

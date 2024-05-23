@@ -9,15 +9,9 @@ namespace NHibernate.Type
 	/// Common base class for <see cref="CharType" /> and <see cref="AnsiCharType" />.
 	/// </summary>
 	[Serializable]
-	public abstract class AbstractCharType : PrimitiveType, IDiscriminatorType
+	public abstract class AbstractCharType(SqlType sqlType) : PrimitiveType(sqlType), IDiscriminatorType
 	{
-		public AbstractCharType(SqlType sqlType)
-			: base(sqlType) {}
-
-		public override object DefaultValue
-		{
-			get { throw new NotSupportedException("not a valid id type"); }
-		}
+		public override object DefaultValue => throw new NotSupportedException("not a valid id type");
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{

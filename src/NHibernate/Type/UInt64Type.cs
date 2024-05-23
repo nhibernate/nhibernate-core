@@ -14,19 +14,15 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.UInt64"/> column.
 	/// </summary>
 	[Serializable]
-	public partial class UInt64Type : PrimitiveType, IDiscriminatorType, IVersionType
+	public partial class UInt64Type() : PrimitiveType(SqlTypeFactory.UInt64), IDiscriminatorType, IVersionType
 	{
-		/// <summary></summary>
-		public UInt64Type() : base(SqlTypeFactory.UInt64)
-		{
-		}
+		private static readonly object ZeroObject = (UInt32) 0;
 
 		public override string Name
 		{
 			get { return "UInt64"; }
 		}
 
-		private static readonly UInt32 ZERO = 0;
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
@@ -99,10 +95,7 @@ namespace NHibernate.Type
 			get { return typeof(UInt64); }
 		}
 
-		public override object DefaultValue
-		{
-			get { return ZERO; }
-		}
+		public override object DefaultValue => ZeroObject;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{

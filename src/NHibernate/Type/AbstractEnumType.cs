@@ -9,27 +9,20 @@ namespace NHibernate.Type
 	[Serializable]
 	public abstract class AbstractEnumType : PrimitiveType, IDiscriminatorType
 	{
-		protected AbstractEnumType(SqlType sqlType,System.Type enumType)
-			: base(sqlType)
+		protected AbstractEnumType(SqlType sqlType, System.Type enumType) : base(sqlType)
 		{
-			if (enumType.IsEnum)
-			{
-				this.enumType = enumType;
-			}
-			else
+			if (!enumType.IsEnum)
 			{
 				throw new MappingException(enumType.Name + " did not inherit from System.Enum");
 			}
-			defaultValue = Enum.ToObject(enumType, 0);
+
+			this.enumType = enumType;
+			DefaultValue = Enum.ToObject(enumType, 0);
 		}
 
-		private readonly object defaultValue;
 		private readonly System.Type enumType;
 
-		public override System.Type ReturnedClass
-		{
-			get { return enumType; }
-		}
+		public override System.Type ReturnedClass => enumType;
 
 		#region IIdentifierType Members
 
@@ -50,14 +43,8 @@ namespace NHibernate.Type
 			return StringToObject(xml);
 		}
 
-		public override System.Type PrimitiveClass
-		{
-			get { return this.enumType; }
-		}
+		public override System.Type PrimitiveClass => enumType;
 
-		public override object DefaultValue
-		{
-			get { return defaultValue; }
-		}
+		public override object DefaultValue { get; }
 	}
 }

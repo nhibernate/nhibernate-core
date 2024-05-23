@@ -12,13 +12,9 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.TimeSpan" /> Property to an <see cref="DbType.Int64" /> column 
 	/// </summary>
 	[Serializable]
-	public partial class TimeSpanType : PrimitiveType, IVersionType, ILiteralType
+	public partial class TimeSpanType() : PrimitiveType(SqlTypeFactory.Int64), IVersionType, ILiteralType
 	{
-		/// <summary></summary>
-		public TimeSpanType()
-			: base(SqlTypeFactory.Int64)
-		{
-		}
+		private static readonly object ZeroObject = TimeSpan.Zero;
 
 		/// <summary></summary>
 		public override string Name
@@ -109,10 +105,7 @@ namespace NHibernate.Type
 			get { return typeof(TimeSpan); }
 		}
 
-		public override object DefaultValue
-		{
-			get { return TimeSpan.Zero; }
-		}
+		public override object DefaultValue => ZeroObject;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{

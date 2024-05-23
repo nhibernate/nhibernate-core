@@ -16,14 +16,13 @@ namespace NHibernate.Type
 	/// matches up with the capabilities of <see cref="System.Single" />  
 	/// </remarks>
 	[Serializable]
-	public class SingleType : PrimitiveType
+	public class SingleType(SqlType sqlType) : PrimitiveType(sqlType)
 	{
-		/// <summary></summary>
-		public SingleType() : base(SqlTypeFactory.Single)
+		private static readonly object ZeroObject = (float) 0;
+
+		public SingleType() : this(SqlTypeFactory.Single)
 		{
 		}
-
-		public SingleType(SqlType sqlType) : base(sqlType) {}
 
 		/// <summary></summary>
 		public override string Name
@@ -31,7 +30,6 @@ namespace NHibernate.Type
 			get { return "Single"; }
 		}
 
-		private static readonly Single ZERO = 0;
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
@@ -77,10 +75,7 @@ namespace NHibernate.Type
 			get { return typeof(Single); }
 		}
 
-		public override object DefaultValue
-		{
-			get { return ZERO; }
-		}
+		public override object DefaultValue => ZeroObject;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{

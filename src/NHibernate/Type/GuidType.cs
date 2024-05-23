@@ -11,12 +11,9 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Guid"/> column.
 	/// </summary>
 	[Serializable]
-	public class GuidType : PrimitiveType, IDiscriminatorType
+	public class GuidType() : PrimitiveType(SqlTypeFactory.Guid), IDiscriminatorType
 	{
-		/// <summary></summary>
-		public GuidType() : base(SqlTypeFactory.Guid)
-		{
-		}
+		private static readonly object EmptyObject = Guid.Empty;
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
@@ -76,10 +73,7 @@ namespace NHibernate.Type
 			get { return typeof(Guid); }
 		}
 
-		public override object DefaultValue
-		{
-			get { return Guid.Empty; }
-		}
+		public override object DefaultValue => EmptyObject;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{

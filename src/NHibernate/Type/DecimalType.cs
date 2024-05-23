@@ -11,14 +11,13 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Decimal"/> column.
 	/// </summary>
 	[Serializable]
-	public class DecimalType : PrimitiveType, IIdentifierType
+	public class DecimalType(SqlType sqlType) : PrimitiveType(sqlType), IIdentifierType
 	{
+		private static readonly object ZeroObject = 0m;
+
+		/// <summary />
 		public DecimalType()
 			: this(SqlTypeFactory.Decimal)
-		{
-		}
-
-		public DecimalType(SqlType sqlType) : base(sqlType)
 		{
 		}
 
@@ -47,10 +46,7 @@ namespace NHibernate.Type
 			get { return typeof (Decimal); }
 		}
 
-		public override object DefaultValue
-		{
-			get { return 0m; }
-		}
+		public override object DefaultValue => ZeroObject;
 
 		// Since 5.2
 		[Obsolete("This method has no more usages and will be removed in a future version.")]

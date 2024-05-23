@@ -14,12 +14,9 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.UInt16"/> column.
 	/// </summary>
 	[Serializable]
-	public partial class UInt16Type : PrimitiveType, IDiscriminatorType, IVersionType
+	public partial class UInt16Type() : PrimitiveType(SqlTypeFactory.UInt16), IDiscriminatorType, IVersionType
 	{
-		/// <summary></summary>
-		public UInt16Type() : base(SqlTypeFactory.UInt16)
-		{
-		}
+		private static readonly object ZeroObject = (ushort) 0;
 
 		/// <summary></summary>
 		public override string Name
@@ -27,7 +24,6 @@ namespace NHibernate.Type
 			get { return "UInt16"; }
 		}
 
-		private static readonly UInt16 ZERO = 0;
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
@@ -100,10 +96,7 @@ namespace NHibernate.Type
 			get { return typeof(UInt16); }
 		}
 
-		public override object DefaultValue
-		{
-			get { return ZERO; }
-		}
+		public override object DefaultValue => ZeroObject;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{

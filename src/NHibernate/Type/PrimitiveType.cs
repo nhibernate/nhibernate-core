@@ -8,20 +8,11 @@ namespace NHibernate.Type
 	/// Superclass of <see cref="ValueType"/> types.
 	/// </summary>
 	[Serializable]
-	public abstract class PrimitiveType : ImmutableType, ILiteralType
+	public abstract class PrimitiveType(SqlType sqlType) : ImmutableType(sqlType), ILiteralType
 	{
-		/// <summary>
-		/// Initialize a new instance of the PrimitiveType class using a <see cref="SqlType"/>. 
-		/// </summary>
-		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
-		protected PrimitiveType(SqlType sqlType)
-			: base(sqlType) {}
-
 		public abstract System.Type PrimitiveClass { get; }
 
 		public abstract object DefaultValue { get; }
-
-		#region ILiteralType Members
 
 		/// <summary>
 		/// When implemented by a class, return a <see cref="String"/> representation 
@@ -31,8 +22,6 @@ namespace NHibernate.Type
 		/// <param name="dialect"></param>
 		/// <returns>A string that containts a well formed SQL Statement.</returns>
 		public abstract string ObjectToSQLString(object value, Dialect.Dialect dialect);
-
-		#endregion
 
 		/// <inheritdoc />
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)

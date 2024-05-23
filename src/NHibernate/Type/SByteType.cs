@@ -14,12 +14,9 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.SByte"/> column.
 	/// </summary>
 	[Serializable]
-	public class SByteType : PrimitiveType, IDiscriminatorType
+	public class SByteType() : PrimitiveType(SqlTypeFactory.SByte), IDiscriminatorType
 	{
-		/// <summary></summary>
-		public SByteType() : base(SqlTypeFactory.SByte)
-		{
-		}
+		private static readonly object ZeroObject = (sbyte) 0;
 
 		/// <summary></summary>
 		public override string Name
@@ -27,7 +24,6 @@ namespace NHibernate.Type
 			get { return "SByte"; }
 		}
 
-		private static readonly SByte ZERO = 0;
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
@@ -102,10 +98,7 @@ namespace NHibernate.Type
 			get { return typeof(SByte); }
 		}
 
-		public override object DefaultValue
-		{
-			get { return ZERO; }
-		}
+		public override object DefaultValue => ZeroObject;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{

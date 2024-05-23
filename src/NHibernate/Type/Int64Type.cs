@@ -14,12 +14,9 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Int64"/> column.
 	/// </summary>
 	[Serializable]
-	public partial class Int64Type : PrimitiveType, IDiscriminatorType, IVersionType
+	public partial class Int64Type() : PrimitiveType(SqlTypeFactory.Int64), IDiscriminatorType, IVersionType
 	{
-		/// <summary></summary>
-		public Int64Type() : base(SqlTypeFactory.Int64)
-		{
-		}
+		private static readonly object ZeroObject = (Int64) 0;
 
 		/// <summary></summary>
 		public override string Name
@@ -27,7 +24,6 @@ namespace NHibernate.Type
 			get { return "Int64"; }
 		}
 
-		private static readonly Int64 ZERO = 0;
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
@@ -100,10 +96,7 @@ namespace NHibernate.Type
 			get { return typeof(Int64); }
 		}
 
-		public override object DefaultValue
-		{
-			get { return ZERO; }
-		}
+		public override object DefaultValue => ZeroObject;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{

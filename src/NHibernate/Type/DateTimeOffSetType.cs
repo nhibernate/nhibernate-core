@@ -12,22 +12,12 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.DateTimeOffset" /> Property to a <see cref="DbType.DateTimeOffset"/>
 	/// </summary>
 	[Serializable]
-	public partial class DateTimeOffsetType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
+	public partial class DateTimeOffsetType(DateTimeOffsetSqlType sqlType)
+		: PrimitiveType(sqlType), IIdentifierType, ILiteralType, IVersionType
 	{
-		static readonly DateTimeOffset BaseDateValue = DateTimeOffset.MinValue;
+		private static readonly object BaseDateValue = DateTimeOffset.MinValue;
 
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		public DateTimeOffsetType() : base(SqlTypeFactory.DateTimeOffSet)
-		{
-		}
-
-		/// <summary>
-		/// Constructor for specifying a datetimeoffset with a scale. Use <see cref="SqlTypeFactory.GetDateTimeOffset"/>.
-		/// </summary>
-		/// <param name="sqlType">The sql type to use for the type.</param>
-		public DateTimeOffsetType(DateTimeOffsetSqlType sqlType) : base(sqlType)
+		public DateTimeOffsetType() : this((DateTimeOffsetSqlType) SqlTypeFactory.DateTimeOffSet)
 		{
 		}
 
@@ -46,10 +36,7 @@ namespace NHibernate.Type
 			get { return typeof (DateTimeOffset); }
 		}
 
-		public override object DefaultValue
-		{
-			get { return BaseDateValue; }
-		}
+		public override object DefaultValue => BaseDateValue;
 
 		public IComparer Comparator
 		{

@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	/// <see cref="DbType.Date"/> column
 	/// </summary>
 	[Serializable]
-	public class DateType : AbstractDateTimeType, IParameterizedType
+	public class DateType() : AbstractDateTimeType(SqlTypeFactory.Date), IParameterizedType
 	{
 		private static readonly INHibernateLogger _log = NHibernateLogger.For(typeof(DateType));
 		// Since v5.0
@@ -21,14 +21,10 @@ namespace NHibernate.Type
 		// Since v5.0
 		[Obsolete("Use DateTime.MinValue.")]
 		public static readonly DateTime BaseDateValue = DateTime.MinValue;
-		private DateTime customBaseDate = _baseDateValue;
 
 		private static readonly DateTime _baseDateValue = DateTime.MinValue;
 
-		/// <summary>Default constructor</summary>
-		public DateType() : base(SqlTypeFactory.Date)
-		{
-		}
+		private object customBaseDate = _baseDateValue;
 
 		/// <inheritdoc />
 		public override string Name => "Date";
