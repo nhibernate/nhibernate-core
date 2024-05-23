@@ -16,7 +16,7 @@ namespace NHibernate.Type
 	{
 		private static readonly object BaseDateValue = DateTimeOffset.MinValue;
 
-		public DateTimeOffsetType() : this((DateTimeOffsetSqlType) SqlTypeFactory.DateTimeOffSet)
+		public DateTimeOffsetType() : base(SqlTypeFactory.DateTimeOffSet)
 		{
 		}
 

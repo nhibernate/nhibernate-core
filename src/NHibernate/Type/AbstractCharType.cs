@@ -12,7 +12,7 @@ namespace NHibernate.Type
 	public abstract class AbstractCharType : PrimitiveType, IDiscriminatorType
 	{
 		/// <summary />
-		protected AbstractCharType(SqlType sqlType) : base(sqlType)
+		public AbstractCharType(SqlType sqlType) : base(sqlType)
 		{
 		}
 

@@ -16,8 +16,8 @@ namespace NHibernate.Type
 	{
 		private static readonly object ZeroObject = 0D;
 
-		/// <summary></summary>
-		public DoubleType() : this(SqlTypeFactory.Double)
+		/// <summary />
+		public DoubleType() : base(SqlTypeFactory.Double)
 		{
 		}
 

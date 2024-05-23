@@ -17,7 +17,8 @@ namespace NHibernate.Type
 		protected static readonly object TrueObject = true;
 		protected static readonly object FalseObject = false;
 
-		public BooleanType() : this((AnsiStringFixedLengthSqlType) SqlTypeFactory.Boolean)
+		/// <summary />
+		public BooleanType() : base(SqlTypeFactory.Boolean)
 		{
 		}
 

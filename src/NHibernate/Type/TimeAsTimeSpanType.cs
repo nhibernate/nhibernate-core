@@ -19,8 +19,8 @@ namespace NHibernate.Type
 		private static readonly object ZeroObject = TimeSpan.Zero;
 		private static readonly DateTime BaseDateValue = new DateTime(1753, 01, 01);
 
-
-		public TimeAsTimeSpanType() : this((TimeSqlType) SqlTypeFactory.Time)
+		/// <summary />
+		public TimeAsTimeSpanType() : base(SqlTypeFactory.Time)
 		{
 		}
 
