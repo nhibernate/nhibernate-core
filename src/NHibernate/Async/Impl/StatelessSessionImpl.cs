@@ -381,8 +381,8 @@ namespace NHibernate.Impl
 				if (persister.IsVersioned)
 				{
 					object versionValue = state[persister.VersionProperty];
-					bool substitute = Versioning.SeedVersion(state, persister.VersionProperty, persister.VersionType,
-															 persister.IsUnsavedVersion(versionValue), this);
+					bool substitute = await (Versioning.SeedVersionAsync(state, persister.VersionProperty, persister.VersionType,
+															 persister.IsUnsavedVersion(versionValue), this, cancellationToken)).ConfigureAwait(false);
 					if (substitute)
 					{
 						persister.SetPropertyValues(entity, state);
@@ -429,7 +429,7 @@ namespace NHibernate.Impl
 				if (persister.IsVersioned)
 				{
 					oldVersion = persister.GetVersion(entity);
-					object newVersion = Versioning.Increment(oldVersion, persister.VersionType, this);
+					object newVersion = await (Versioning.IncrementAsync(oldVersion, persister.VersionType, this, cancellationToken)).ConfigureAwait(false);
 					Versioning.SetVersion(state, newVersion, persister);
 					persister.SetPropertyValues(entity, state);
 				}

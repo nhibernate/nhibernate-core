@@ -231,7 +231,7 @@ namespace NHibernate.Event.Default
 			Validate(entity, persister, status);
 
 			// increment the version number (if necessary)
-			object nextVersion = GetNextVersion(@event);
+			object nextVersion = await (GetNextVersionAsync(@event, cancellationToken)).ConfigureAwait(false);
 
 			// if it was dirtied by a collection only
 			int[] dirtyProperties = @event.DirtyProperties;
@@ -294,6 +294,41 @@ namespace NHibernate.Event.Default
 			}
 
 			return intercepted;
+		}
+
+		private async Task<object> GetNextVersionAsync(FlushEntityEvent @event, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			// Convience method to retrieve an entities next version value
+			EntityEntry entry = @event.EntityEntry;
+			IEntityPersister persister = entry.Persister;
+			if (persister.IsVersioned)
+			{
+				object[] values = @event.PropertyValues;
+
+				if (entry.IsBeingReplicated)
+				{
+					return Versioning.GetVersion(values, persister);
+				}
+				else
+				{
+					int[] dirtyProperties = @event.DirtyProperties;
+
+					bool isVersionIncrementRequired = IsVersionIncrementRequired(@event, entry, persister, dirtyProperties);
+
+					object nextVersion = isVersionIncrementRequired ?
+						await (Versioning.IncrementAsync(entry.Version, persister.VersionType, @event.Session, cancellationToken)).ConfigureAwait(false) :
+						entry.Version; //use the current version
+
+					Versioning.SetVersion(values, nextVersion, persister);
+
+					return nextVersion;
+				}
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		/// <summary>

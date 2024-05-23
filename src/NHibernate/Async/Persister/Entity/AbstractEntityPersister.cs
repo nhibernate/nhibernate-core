@@ -203,7 +203,7 @@ namespace NHibernate.Persister.Entity
 			async Task<object> InternalForceVersionIncrementAsync()
 			{
 
-				object nextVersion = VersionType.Next(currentVersion, session);
+				object nextVersion = await (VersionType.NextAsync(currentVersion, session, cancellationToken)).ConfigureAwait(false);
 				if (log.IsDebugEnabled())
 				{
 					log.Debug("Forcing version increment [{0}; {1} -> {2}]",

@@ -67,6 +67,103 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 
 		// Non-reg test case
 		[Test]
+		public async Task NonNullableMappedAsDateShouldBeCultureAgnosticAsync()
+		{
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = await (session.Query<Entity>()
+					.Where(e => e.NonNullableDateTime == _testDate.MappedAs(NHibernateUtil.Date))
+					.ToListAsync());
+
+				Assert.AreEqual(1, result.Count);
+				Assert.AreEqual("Bob", result[0].Name);
+			}
+		}
+
+		// Non-reg test case
+		[Test]
+		public async Task NonNullableMappedAsDateShouldIgnoreTimeAsync()
+		{
+			using (ISession session = OpenSession())
+			{
+				var result = await (session.Query<Entity>()
+					.Where(e => e.NonNullableDateTime == _testDate.AddMinutes(10).MappedAs(NHibernateUtil.Date))
+					.ToListAsync());
+
+				Assert.AreEqual(1, result.Count);
+				Assert.AreEqual("Bob", result[0].Name);
+			}
+		}
+
+		// Non-reg test case
+		[Test]
+		public async Task NonNullableMappedAsDateTimeShouldBeCultureAgnosticAsync()
+		{
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = await (session.Query<Entity>()
+					.Where(e => e.NonNullableDateTime == _testDate.MappedAs(NHibernateUtil.DateTime))
+					.ToListAsync());
+
+				Assert.AreEqual(1, result.Count);
+				Assert.AreEqual("Bob", result[0].Name);
+			}
+		}
+
+		// Non-reg test case
+		[Test]
+		[Obsolete]
+		public async Task NonNullableMappedAsTimestampShouldBeCultureAgnosticAsync()
+		{
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = await (session.Query<Entity>()
+					.Where(e => e.NonNullableDateTime == _testDate.MappedAs(NHibernateUtil.Timestamp))
+					.ToListAsync());
+
+				Assert.AreEqual(1, result.Count);
+				Assert.AreEqual("Bob", result[0].Name);
+			}
+		}
+
+		// Non-reg test case
+		[Test]
+		public async Task NonNullableParameterValueShouldNotBeCachedWithMappedAsAndAsync()
+		{
+			// Dodges the query parameter formatting bug for showcasing the parameter value bug
+			CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+			CultureInfo.CurrentUICulture = CultureInfo.CurrentCulture;
+			try
+			{
+				using (ISession session = OpenSession())
+				{
+					var result = await (session.Query<Entity>()
+						.Where(e => e.NonNullableDateTime == _testDate.MappedAs(NHibernateUtil.DateTime))
+						.ToListAsync());
+
+					Assert.AreEqual(1, result.Count);
+					Assert.AreEqual("Bob", result[0].Name);
+
+					var testDate = _testDate.AddMinutes(10);
+					result = await (session.Query<Entity>()
+						.Where(e => e.NonNullableDateTime == testDate.MappedAs(NHibernateUtil.DateTime))
+						.ToListAsync());
+
+					CollectionAssert.IsEmpty(result);
+				}
+			}
+			finally
+			{
+				CultureInfo.CurrentCulture = _testCulture;
+				CultureInfo.CurrentUICulture = _testCulture;
+			}
+		}
+
+		// Non-reg test case
+		[Test]
 		public async Task NonNullableShouldBeCultureAgnosticAsync()
 		{
 			using (ISession session = OpenSession())
@@ -78,6 +175,104 @@ namespace NHibernate.Test.NHSpecificTest.NH3961
 
 				Assert.AreEqual(1, result.Count);
 				Assert.AreEqual("Bob", result[0].Name);
+			}
+		}
+
+		// Failing test case till NH-3961 is fixed
+		[Test]
+		public async Task NullableMappedAsDateShouldBeCultureAgnosticAsync()
+		{
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = await (session.Query<Entity>()
+					.Where(e => e.NullableDateTime == _testDate.MappedAs(NHibernateUtil.Date))
+					.ToListAsync());
+
+				Assert.AreEqual(1, result.Count);
+				Assert.AreEqual("Bob", result[0].Name);
+			}
+		}
+
+		// Failing test case till NH-3961 is fixed
+		[Test]
+		public async Task NullableMappedAsDateShouldIgnoreTimeAsync()
+		{
+			var testDate = _testDate.AddMinutes(10);
+			using (ISession session = OpenSession())
+			{
+				var result = await (session.Query<Entity>()
+					.Where(e => e.NullableDateTime == testDate.MappedAs(NHibernateUtil.Date))
+					.ToListAsync());
+
+				Assert.AreEqual(1, result.Count);
+				Assert.AreEqual("Bob", result[0].Name);
+			}
+		}
+
+		// Failing test case till NH-3961 is fixed
+		[Test]
+		public async Task NullableMappedAsDateTimeShouldBeCultureAgnosticAsync()
+		{
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = await (session.Query<Entity>()
+					.Where(e => e.NullableDateTime == _testDate.MappedAs(NHibernateUtil.DateTime))
+					.ToListAsync());
+
+				Assert.AreEqual(1, result.Count);
+				Assert.AreEqual("Bob", result[0].Name);
+			}
+		}
+
+		// Failing test case till NH-3961 is fixed
+		[Test]
+		[Obsolete]
+		public async Task NullableMappedAsTimestampShouldBeCultureAgnosticAsync()
+		{
+			using (ISession session = OpenSession())
+			using (session.BeginTransaction())
+			{
+				var result = await (session.Query<Entity>()
+					.Where(e => e.NullableDateTime == _testDate.MappedAs(NHibernateUtil.Timestamp))
+					.ToListAsync());
+
+				Assert.AreEqual(1, result.Count);
+				Assert.AreEqual("Bob", result[0].Name);
+			}
+		}
+
+		// Failing test case till NH-3961 is fixed
+		[Test]
+		public async Task NullableParameterValueShouldNotBeCachedWithMappedAsAsync()
+		{
+			// Dodges the query parameter formatting bug for showcasing the parameter value bug
+			CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+			CultureInfo.CurrentUICulture = CultureInfo.CurrentCulture;
+			try
+			{
+				using (ISession session = OpenSession())
+				{
+					var result = await (session.Query<Entity>()
+						.Where(e => e.NullableDateTime == _testDate.MappedAs(NHibernateUtil.DateTime))
+						.ToListAsync());
+
+					Assert.AreEqual(1, result.Count);
+					Assert.AreEqual("Bob", result[0].Name);
+
+					var testDate = _testDate.AddMinutes(10);
+					result = await (session.Query<Entity>()
+						.Where(e => e.NullableDateTime == testDate.MappedAs(NHibernateUtil.DateTime))
+						.ToListAsync());
+
+					CollectionAssert.IsEmpty(result);
+				}
+			}
+			finally
+			{
+				CultureInfo.CurrentCulture = _testCulture;
+				CultureInfo.CurrentUICulture = _testCulture;
 			}
 		}
 

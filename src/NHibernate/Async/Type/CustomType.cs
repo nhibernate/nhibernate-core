@@ -90,6 +90,46 @@ namespace NHibernate.Type
 			return checkable[0] && await (IsDirtyAsync(old, current, session, cancellationToken)).ConfigureAwait(false);
 		}
 
+		public Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (!(userType is IUserVersionType userVersionType))
+				throw new InvalidOperationException(
+					$"User type {userType} does not implement {nameof(IUserVersionType)}, Either implement it, or " +
+					$"avoid using this user type as a version type.");
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				return Task.FromResult<object>(Next(current, session));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		public Task<object> SeedAsync(ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			if (!(userType is IUserVersionType userVersionType))
+				throw new InvalidOperationException(
+					$"User type {userType} does not implement {nameof(IUserVersionType)}, Either implement it, or " +
+					$"avoid using this user type as a version type.");
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				return Task.FromResult<object>(Seed(session));
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
 		public override Task<object> ReplaceAsync(object original, object current, ISessionImplementor session, object owner,
 									   IDictionary copiedAlready, CancellationToken cancellationToken)
 		{
