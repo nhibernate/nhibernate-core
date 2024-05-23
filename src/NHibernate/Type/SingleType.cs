@@ -25,10 +25,7 @@ namespace NHibernate.Type
 		}
 
 		/// <summary></summary>
-		public override string Name
-		{
-			get { return "Single"; }
-		}
+		public override string Name => "Single";
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
@@ -46,10 +43,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(Single); }
-		}
+		public override System.Type ReturnedClass => typeof(Single);
 
 		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
@@ -70,10 +64,7 @@ namespace NHibernate.Type
 			return Single.Parse(xml);
 		}
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof(Single); }
-		}
+		public override System.Type PrimitiveClass => typeof(Single);
 
 		public override object DefaultValue => ZeroObject;
 

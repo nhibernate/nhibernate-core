@@ -12,29 +12,12 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Boolean"/> column.
 	/// </summary>
 	[Serializable]
-	public class BooleanType : PrimitiveType, IDiscriminatorType
+	public class BooleanType(AnsiStringFixedLengthSqlType sqlType) : PrimitiveType(sqlType), IDiscriminatorType
 	{
 		protected static readonly object TrueObject = true;
 		protected static readonly object FalseObject = false;
 
-		/// <summary>
-		/// Initialize a new instance of the BooleanType
-		/// </summary>
-		/// <remarks>This is used when the Property is mapped to a native boolean type.</remarks>
-		public BooleanType() : base(SqlTypeFactory.Boolean)
-		{
-		}
-
-		/// <summary>
-		/// Initialize a new instance of the BooleanType class using a
-		/// <see cref="AnsiStringFixedLengthSqlType"/>.
-		/// </summary>
-		/// <param name="sqlType">The underlying <see cref="SqlType"/>.</param>
-		/// <remarks>
-		/// This is used when the Property is mapped to a string column
-		/// that stores true or false as a string.
-		/// </remarks>
-		public BooleanType(AnsiStringFixedLengthSqlType sqlType) : base(sqlType)
+		public BooleanType() : this((AnsiStringFixedLengthSqlType) SqlTypeFactory.Boolean)
 		{
 		}
 

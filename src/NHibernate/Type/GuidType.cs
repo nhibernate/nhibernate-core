@@ -31,10 +31,7 @@ namespace NHibernate.Type
 		}
 
 		/// <summary></summary>
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(Guid); }
-		}
+		public override System.Type ReturnedClass => typeof(Guid);
 
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
@@ -44,10 +41,7 @@ namespace NHibernate.Type
 		}
 
 		/// <summary></summary>
-		public override string Name
-		{
-			get { return "Guid"; }
-		}
+		public override string Name => "Guid";
 
 		// Since 5.2
 		[Obsolete("This method has no more usages and will be removed in a future version.")]
@@ -68,10 +62,7 @@ namespace NHibernate.Type
 #pragma warning restore 618
 		}
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof(Guid); }
-		}
+		public override System.Type PrimitiveClass => typeof(Guid);
 
 		public override object DefaultValue => EmptyObject;
 

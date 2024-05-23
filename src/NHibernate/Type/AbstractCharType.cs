@@ -24,15 +24,9 @@ namespace NHibernate.Type
 			return '\0'; // This line should never be executed
 		}
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof(char); }
-		}
+		public override System.Type PrimitiveClass => typeof(char);
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(char); }
-		}
+		public override System.Type ReturnedClass => typeof(char);
 
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{

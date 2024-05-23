@@ -21,27 +21,15 @@ namespace NHibernate.Type
 		{
 		}
 
-		public override string Name
-		{
-			get { return "DateTimeOffset"; }
-		}
+		public override string Name => "DateTimeOffset";
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof (DateTimeOffset); }
-		}
+		public override System.Type ReturnedClass => typeof (DateTimeOffset);
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof (DateTimeOffset); }
-		}
+		public override System.Type PrimitiveClass => typeof (DateTimeOffset);
 
 		public override object DefaultValue => BaseDateValue;
 
-		public IComparer Comparator
-		{
-			get { return Comparer<DateTimeOffset>.Default; }
-		}
+		public IComparer Comparator => Comparer<DateTimeOffset>.Default;
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{

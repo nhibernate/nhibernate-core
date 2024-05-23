@@ -19,10 +19,7 @@ namespace NHibernate.Type
 		private static readonly object ZeroObject = (ushort) 0;
 
 		/// <summary></summary>
-		public override string Name
-		{
-			get { return "UInt16"; }
-		}
+		public override string Name => "UInt16";
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
@@ -40,10 +37,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(UInt16); }
-		}
+		public override System.Type ReturnedClass => typeof(UInt16);
 
 		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
@@ -84,17 +78,11 @@ namespace NHibernate.Type
 			return 1;
 		}
 
-		public IComparer Comparator
-		{
-			get { return Comparer<UInt16>.Default; }
-		}
+		public IComparer Comparator => Comparer<UInt16>.Default;
 
 		#endregion
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof(UInt16); }
-		}
+		public override System.Type PrimitiveClass => typeof(UInt16);
 
 		public override object DefaultValue => ZeroObject;
 

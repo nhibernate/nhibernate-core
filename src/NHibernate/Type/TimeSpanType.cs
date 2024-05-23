@@ -17,10 +17,7 @@ namespace NHibernate.Type
 		private static readonly object ZeroObject = TimeSpan.Zero;
 
 		/// <summary></summary>
-		public override string Name
-		{
-			get { return "TimeSpan"; }
-		}
+		public override string Name => "TimeSpan";
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
@@ -35,10 +32,7 @@ namespace NHibernate.Type
 		}
 
 		/// <summary></summary>
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(TimeSpan); }
-		}
+		public override System.Type ReturnedClass => typeof(TimeSpan);
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
@@ -82,10 +76,7 @@ namespace NHibernate.Type
 			return TimeSpan.Parse(xml);
 		}
 
-		public IComparer Comparator
-		{
-			get { return Comparer<TimeSpan>.Default; }
-		}
+		public IComparer Comparator => Comparer<TimeSpan>.Default;
 
 		#endregion
 
@@ -100,10 +91,7 @@ namespace NHibernate.Type
 			return TimeSpan.Parse(xml);
 		}
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof(TimeSpan); }
-		}
+		public override System.Type PrimitiveClass => typeof(TimeSpan);
 
 		public override object DefaultValue => ZeroObject;
 

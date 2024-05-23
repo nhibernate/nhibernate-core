@@ -24,10 +24,7 @@ namespace NHibernate.Type
 		{
 		}
 
-		public override string Name
-		{
-			get { return "TimeAsTimeSpan"; }
-		}
+		public override string Name => "TimeAsTimeSpan";
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
@@ -56,10 +53,7 @@ namespace NHibernate.Type
 				st.Parameters[index].Value = BaseDateValue.AddTicks(((TimeSpan)value).Ticks);
 		}
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(TimeSpan); }
-		}
+		public override System.Type ReturnedClass => typeof(TimeSpan);
 
 		/// <inheritdoc />
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
@@ -97,10 +91,7 @@ namespace NHibernate.Type
 			return TimeSpan.Parse(xml);
 		}
 
-		public IComparer Comparator
-		{
-			get { return Comparer<TimeSpan>.Default; }
-		}
+		public IComparer Comparator => Comparer<TimeSpan>.Default;
 
 		#endregion
 
@@ -115,10 +106,7 @@ namespace NHibernate.Type
 			return TimeSpan.Parse(xml);
 		}
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof(TimeSpan); }
-		}
+		public override System.Type PrimitiveClass => typeof(TimeSpan);
 
 		public override object DefaultValue => ZeroObject;
 

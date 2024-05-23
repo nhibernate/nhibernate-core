@@ -26,25 +26,16 @@ namespace NHibernate.Type
 			return Convert.ToDecimal(rs[index]);
 		}
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(Decimal); }
-		}
+		public override System.Type ReturnedClass => typeof(Decimal);
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			st.Parameters[index].Value = Convert.ToDecimal(value);
 		}
 
-		public override string Name
-		{
-			get { return "Decimal"; }
-		}
+		public override string Name => "Decimal";
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof (Decimal); }
-		}
+		public override System.Type PrimitiveClass => typeof (Decimal);
 
 		public override object DefaultValue => ZeroObject;
 

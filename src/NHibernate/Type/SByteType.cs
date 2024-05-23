@@ -19,10 +19,7 @@ namespace NHibernate.Type
 		private static readonly object ZeroObject = (sbyte) 0;
 
 		/// <summary></summary>
-		public override string Name
-		{
-			get { return "SByte"; }
-		}
+		public override string Name => "SByte";
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
@@ -40,10 +37,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(SByte); }
-		}
+		public override System.Type ReturnedClass => typeof(SByte);
 
 		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
@@ -68,8 +62,6 @@ namespace NHibernate.Type
 			return SByte.Parse(xml);
 		}
 
-		#region IVersionType Members
-
 		// Since 5.2
 		[Obsolete("This member has no more usage and will be removed in a future version.")]
 		public virtual object Next(object current, ISessionImplementor session)
@@ -86,17 +78,9 @@ namespace NHibernate.Type
 
 		// Since 5.2
 		[Obsolete("This member has no more usage and will be removed in a future version.")]
-		public IComparer Comparator
-		{
-			get { return Comparer<SByte>.Default; }
-		}
+		public IComparer Comparator => Comparer<SByte>.Default;
 
-		#endregion
-
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof(SByte); }
-		}
+		public override System.Type PrimitiveClass => typeof(SByte);
 
 		public override object DefaultValue => ZeroObject;
 
