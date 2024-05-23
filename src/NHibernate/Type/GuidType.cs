@@ -11,9 +11,14 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Guid"/> column.
 	/// </summary>
 	[Serializable]
-	public class GuidType() : PrimitiveType(SqlTypeFactory.Guid), IDiscriminatorType
+	public class GuidType : PrimitiveType, IDiscriminatorType
 	{
 		private static readonly object EmptyObject = Guid.Empty;
+
+		/// <summary />
+		public GuidType() : base(SqlTypeFactory.Guid)
+		{
+		}
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
