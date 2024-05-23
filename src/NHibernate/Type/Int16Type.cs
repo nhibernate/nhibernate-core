@@ -14,9 +14,14 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Int16"/> column.
 	/// </summary>
 	[Serializable]
-	public partial class Int16Type() : PrimitiveType(SqlTypeFactory.Int16), IDiscriminatorType, IVersionType
+	public partial class Int16Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 		private static readonly object ZeroObject = (short) 0;
+
+		/// <summary />
+		public Int16Type() : base(SqlTypeFactory.Int16)
+		{
+		}
 
 		/// <summary></summary>
 		public override string Name => "Int16";
@@ -66,8 +71,6 @@ namespace NHibernate.Type
 			return Int16.Parse(xml);
 		}
 
-		#region IVersionType Members
-
 		public virtual object Next(object current, ISessionImplementor session)
 		{
 			return (Int16)((Int16)current + 1);
@@ -79,8 +82,6 @@ namespace NHibernate.Type
 		}
 
 		public IComparer Comparator => Comparer<Int16>.Default;
-
-		#endregion
 
 		public override System.Type PrimitiveClass => typeof (Int16);
 
