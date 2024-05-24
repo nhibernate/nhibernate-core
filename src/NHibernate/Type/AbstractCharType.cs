@@ -11,13 +11,12 @@ namespace NHibernate.Type
 	[Serializable]
 	public abstract class AbstractCharType : PrimitiveType, IDiscriminatorType
 	{
-		public AbstractCharType(SqlType sqlType)
-			: base(sqlType) {}
-
-		public override object DefaultValue
+		/// <summary />
+		public AbstractCharType(SqlType sqlType) : base(sqlType)
 		{
-			get { throw new NotSupportedException("not a valid id type"); }
 		}
+
+		public override object DefaultValue => throw new NotSupportedException("not a valid id type");
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
@@ -30,15 +29,9 @@ namespace NHibernate.Type
 			return '\0'; // This line should never be executed
 		}
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof(char); }
-		}
+		public override System.Type PrimitiveClass => typeof(char);
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(char); }
-		}
+		public override System.Type ReturnedClass => typeof(char);
 
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{

@@ -16,18 +16,16 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class Int16Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
-		/// <summary></summary>
+		private static readonly object ZeroObject = (short) 0;
+
+		/// <summary />
 		public Int16Type() : base(SqlTypeFactory.Int16)
 		{
 		}
 
 		/// <summary></summary>
-		public override string Name
-		{
-			get { return "Int16"; }
-		}
+		public override string Name => "Int16";
 
-		private static readonly Int16 ZERO = 0;
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
@@ -44,10 +42,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(Int16); }
-		}
+		public override System.Type ReturnedClass => typeof(Int16);
 
 		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
@@ -76,8 +71,6 @@ namespace NHibernate.Type
 			return Int16.Parse(xml);
 		}
 
-		#region IVersionType Members
-
 		public virtual object Next(object current, ISessionImplementor session)
 		{
 			return (Int16)((Int16)current + 1);
@@ -88,22 +81,11 @@ namespace NHibernate.Type
 			return (Int16)1;
 		}
 
-		public IComparer Comparator
-		{
-			get { return Comparer<Int16>.Default; }
-		}
+		public IComparer Comparator => Comparer<Int16>.Default;
 
-		#endregion
+		public override System.Type PrimitiveClass => typeof (Int16);
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof (Int16); }
-		}
-
-		public override object DefaultValue
-		{
-			get { return ZERO; }
-		}
+		public override object DefaultValue => ZeroObject;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
