@@ -24,8 +24,6 @@ namespace NHibernate.Type
 	public partial class Int16Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 
-		#region IVersionType Members
-
 		public virtual Task<object> NextAsync(object current, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -57,7 +55,5 @@ namespace NHibernate.Type
 				return Task.FromException<object>(ex);
 			}
 		}
-
-		#endregion
 	}
 }

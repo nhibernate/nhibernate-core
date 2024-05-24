@@ -18,20 +18,20 @@ namespace NHibernate.Type
 	[Serializable]
 	public class SingleType : PrimitiveType
 	{
-		/// <summary></summary>
-		public SingleType() : base(SqlTypeFactory.Single)
+		private static readonly object ZeroObject = 0F;
+
+		public SingleType() : this(SqlTypeFactory.Single)
 		{
 		}
 
-		public SingleType(SqlType sqlType) : base(sqlType) {}
-
-		/// <summary></summary>
-		public override string Name
+		/// <summary />
+		public SingleType(SqlType sqlType) : base(sqlType)
 		{
-			get { return "Single"; }
 		}
 
-		private static readonly Single ZERO = 0;
+		/// <summary></summary>
+		public override string Name => "Single";
+
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
@@ -48,10 +48,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(Single); }
-		}
+		public override System.Type ReturnedClass => typeof(Single);
 
 		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
@@ -72,15 +69,9 @@ namespace NHibernate.Type
 			return Single.Parse(xml);
 		}
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof(Single); }
-		}
+		public override System.Type PrimitiveClass => typeof(Single);
 
-		public override object DefaultValue
-		{
-			get { return ZERO; }
-		}
+		public override object DefaultValue => ZeroObject;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
