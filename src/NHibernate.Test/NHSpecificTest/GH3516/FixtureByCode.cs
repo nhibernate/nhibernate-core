@@ -17,6 +17,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
+				rc.Property(x => x.Initial);
 			});
 
 			mapper.Class<BaseClass>(rc =>
@@ -36,8 +37,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 		{
 			using var session = OpenSession();
 			using var transaction = session.BeginTransaction();
-			session.Save(new Entity { Name = Entity.NameWithSingleQuote });
-			session.Save(new Entity { Name = Entity.NameWithEscapedSingleQuote });
+			session.Save(new Entity { Name = Entity.NameWithSingleQuote, Initial = Entity.QuoteInitial });
+			session.Save(new Entity { Name = Entity.NameWithEscapedSingleQuote, Initial = Entity.BackslashInitial });
 
 			transaction.Commit();
 		}
@@ -148,6 +149,23 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 				Assert.That(() => list = query.List(), Throws.Nothing, $"Unable to list entities of {entityName}");
 				Assert.That(list, Has.Count.EqualTo(1), $"Unable to find the {entityName} entity");
 			}
+		}
+
+		private static readonly string[] _charInjectionsProperties =
+			new[]
+			{
+				nameof(Entity.QuoteInitial),
+				nameof(Entity.BackslashInitial)
+			};
+
+		[TestCaseSource(nameof(_charInjectionsProperties))]
+		public void SqlInjectionInChar(string propertyName)
+		{
+			using var session = OpenSession();
+			var query = session.CreateQuery($"from Entity e where e.Initial = Entity.{propertyName}");
+			IList<Entity> list = null;
+			Assert.That(() => list = query.List<Entity>(), Throws.Nothing);
+			Assert.That(list, Is.Not.Null.And.Count.EqualTo(1), $"Unable to find entity with initial {propertyName}");
 		}
 	}
 }
