@@ -15,6 +15,7 @@ using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using System.Collections.Generic;
 using System.Data;
+using NHibernate.AdoNet;
 
 namespace NHibernate.Type
 {

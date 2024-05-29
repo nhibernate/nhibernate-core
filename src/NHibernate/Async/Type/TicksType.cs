@@ -11,6 +11,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 

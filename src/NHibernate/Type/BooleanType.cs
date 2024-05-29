@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Runtime.CompilerServices;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -40,7 +41,14 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			return GetBooleanAsObject(Convert.ToBoolean(rs[index]));
+			if (!rs.TryGetBoolean(index, out var dbValue))
+			{
+				var locale = session.Factory.Settings.Locale;
+
+				dbValue = Convert.ToBoolean(rs[index], locale);
+			}
+
+			return GetBooleanAsObject(dbValue);
 		}
 
 		public override System.Type PrimitiveClass => typeof(bool);

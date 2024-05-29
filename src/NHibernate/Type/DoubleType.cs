@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Numerics;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -28,10 +29,17 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
+			if (rs.TryGetDouble(index, out var dbValue))
+			{
+				return dbValue;
+			}
+
+			var locale = session.Factory.Settings.Locale;
+
 			return rs[index] switch
 			{
 				BigInteger bi => (double) bi,
-				var v => Convert.ToDouble(v)
+				var v => Convert.ToDouble(v, locale)
 			};
 		}
 

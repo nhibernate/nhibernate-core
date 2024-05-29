@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Numerics;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -28,12 +29,19 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
+			if (rs.TryGetUInt32(index, out var dbValue))
+			{
+				return dbValue;
+			}
+
 			try
 			{
+				var locale = session.Factory.Settings.Locale;
+
 				return rs[index] switch
 				{
 					BigInteger bi => (uint) bi,
-					var c => Convert.ToUInt32(c)
+					var c => Convert.ToUInt32(c, locale)
 				};
 			}
 			catch (Exception ex)

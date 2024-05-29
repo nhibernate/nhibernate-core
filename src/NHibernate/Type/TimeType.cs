@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -50,20 +51,26 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			try
+			if (rs.TryGetTimeSpan(index, out var dbTimeSpan))
 			{
-				if (rs[index] is TimeSpan time) //For those dialects where DbType.Time means TimeSpan.
-				{
-					return BaseDateValue.AddTicks(time.Ticks);
-				}
+				return BaseDateValue.AddTicks(dbTimeSpan.Ticks);
+			}
 
-				DateTime dbValue = Convert.ToDateTime(rs[index]);
-				return BaseDateValue.Add(dbValue.TimeOfDay);
-			}
-			catch (Exception ex)
+			if (!rs.TryGetDateTime(index, out var dbDateTime))
 			{
-				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
+				try
+				{
+					var locale = session.Factory.Settings.Locale;
+
+					dbDateTime = Convert.ToDateTime(rs[index], locale);
+				}
+				catch (Exception ex)
+				{
+					throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
+				}
 			}
+
+			return BaseDateValue.Add(dbDateTime.TimeOfDay);
 		}
 
 		public override System.Type ReturnedClass
