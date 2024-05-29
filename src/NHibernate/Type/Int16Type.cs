@@ -54,7 +54,9 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
-			rs.Parameters[index].Value = Convert.ToInt16(value);
+			var locale = session.Factory.Settings.Locale;
+
+			rs.Parameters[index].Value = Convert.ToInt16(value, locale);
 		}
 
 		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml

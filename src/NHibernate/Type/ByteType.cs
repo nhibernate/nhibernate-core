@@ -46,7 +46,11 @@ namespace NHibernate.Type
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			var dp = cmd.Parameters[index];
-			dp.Value = dp.DbType == DbType.Int16 ? Convert.ToInt16(value) : Convert.ToByte(value);
+			var locale = session.Factory.Settings.Locale;
+
+			dp.Value = dp.DbType == DbType.Int16
+				? Convert.ToInt16(value, locale)
+				: Convert.ToByte(value, locale);
 		}
 		
 		public override string Name => "Byte";

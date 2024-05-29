@@ -60,7 +60,9 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
-			rs.Parameters[index].Value = Convert.ToSingle(value);
+			var locale = session.Factory.Settings.Locale;
+
+			rs.Parameters[index].Value = Convert.ToSingle(value, locale);
 		}
 
 		// Since 5.2

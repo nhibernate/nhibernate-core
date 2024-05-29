@@ -43,7 +43,9 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			st.Parameters[index].Value = Convert.ToDecimal(value);
+			var locale = session.Factory.Settings.Locale;
+
+			st.Parameters[index].Value = Convert.ToDecimal(value, locale);
 		}
 
 		public override string Name => "Decimal";

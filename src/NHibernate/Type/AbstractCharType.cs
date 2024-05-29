@@ -48,7 +48,9 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			cmd.Parameters[index].Value = Convert.ToChar(value);
+			var locale = session.Factory.Settings.Locale;
+
+			cmd.Parameters[index].Value = Convert.ToChar(value, locale);
 		}
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
