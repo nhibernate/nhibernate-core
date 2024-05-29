@@ -388,27 +388,25 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private Property CreateProperty(IEntityPropertyMapping propertyMapping, IValue value, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
-			var type = mappedClass.UnwrapIfNullable();
+			var type = mappedClass?.UnwrapIfNullable();
 			if (string.IsNullOrEmpty(propertyMapping.Name))
 				throw new MappingException("A property mapping must define the name attribute [" + type + "]");
 
 			var propertyAccessorName = GetPropertyAccessorName(propertyMapping.Access);
 
-			if (mappedClass != null && value.IsSimpleValue)
+			if (type != null && value.IsSimpleValue)
 				value.SetTypeUsingReflection(type.AssemblyQualifiedName, propertyMapping.Name, propertyAccessorName);
 
-			var property = new Property
-					{
-						Name = propertyMapping.Name,
-						PropertyAccessorName = propertyAccessorName,
-						Value = value,
-                        IsLazy = propertyMapping.IsLazyProperty,
-						LazyGroup = propertyMapping.GetLazyGroup(),
-						IsOptimisticLocked = propertyMapping.OptimisticLock,
-						MetaAttributes = GetMetas(propertyMapping, inheritedMetas)
-					};
-
-			return property;
+			return new Property
+			{
+				Name = propertyMapping.Name,
+				PropertyAccessorName = propertyAccessorName,
+				Value = value,
+				IsLazy = propertyMapping.IsLazyProperty,
+				LazyGroup = propertyMapping.GetLazyGroup(),
+				IsOptimisticLocked = propertyMapping.OptimisticLock,
+				MetaAttributes = GetMetas(propertyMapping, inheritedMetas)
+			};
 		}
 
 		private string GetPropertyAccessorName(string propertyMappedAccessor)
