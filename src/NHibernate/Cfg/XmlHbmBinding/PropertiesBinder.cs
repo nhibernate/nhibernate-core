@@ -4,7 +4,6 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping;
 using System;
 using NHibernate.Util;
-using Array = System.Array;
 
 namespace NHibernate.Cfg.XmlHbmBinding
 {
@@ -14,7 +13,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private readonly Component component;
 		private readonly string entityName;
 		private readonly System.Type mappedClass;
-		private readonly string className;
 		private readonly bool componetDefaultNullable;
 		private readonly string propertyBasePath;
 
@@ -38,7 +36,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			this.persistentClass = persistentClass;
 			entityName = persistentClass.EntityName;
 			propertyBasePath = entityName;
-			className = persistentClass.ClassName;
 			mappedClass = persistentClass.MappedClass;
 			componetDefaultNullable = true;
 			component = null;
@@ -50,7 +47,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			persistentClass = component.Owner;
 			this.component = component;
 			entityName = className;
-			this.className = component.ComponentClassName;
 			mappedClass = component.ComponentClass;
 			propertyBasePath = path;
 			componetDefaultNullable = isNullable;
@@ -116,7 +112,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 					mappings.AddCollection(collection);
 
-					property = CreateProperty(collectionMapping, className, collection, inheritedMetas);
+					property = CreateProperty(collectionMapping, mappedClass, collection, inheritedMetas);
 					BindCollectionProperty(collectionMapping, property);
 				}
 				else if ((propertiesMapping = entityPropertyMapping as HbmProperties) != null)
@@ -428,11 +424,11 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			return property;
 		}
 		
-		private Property CreateProperty(IEntityPropertyMapping propertyMapping, string propertyOwnerClassName, Mapping.Collection value, IDictionary<string, MetaAttribute> inheritedMetas)
+		private Property CreateProperty(IEntityPropertyMapping propertyMapping, System.Type propertyOwnerType, Mapping.Collection value, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			if (string.IsNullOrEmpty(propertyMapping.Name))
 			{
-				throw new MappingException("A property mapping must define the name attribute [" + propertyOwnerClassName + "]");
+				throw new MappingException("A property mapping must define the name attribute [" + propertyOwnerType + "]");
 			}
 
 			var propertyAccessorName = GetPropertyAccessorName(propertyMapping.Access);
