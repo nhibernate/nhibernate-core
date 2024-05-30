@@ -401,16 +401,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		private Property CreateProperty(IEntityPropertyMapping propertyMapping, System.Type propertyOwnerType, SimpleValue value, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			if (string.IsNullOrEmpty(propertyMapping.Name))
-			{
 				throw new MappingException("A property mapping must define the name attribute [" + propertyOwnerType + "]");
-			}
 
 			var propertyAccessorName = GetPropertyAccessorName(propertyMapping.Access);
 
 			if (propertyOwnerType != null && value.IsSimpleValue)
 				value.SetTypeUsingReflection(propertyOwnerType, propertyMapping.Name, propertyAccessorName);
 
-			var property = new Property
+			return new Property
 			{
 				Name = propertyMapping.Name,
 				PropertyAccessorName = propertyAccessorName,
@@ -420,16 +418,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				IsOptimisticLocked = propertyMapping.OptimisticLock,
 				MetaAttributes = GetMetas(propertyMapping, inheritedMetas)
 			};
-
-			return property;
 		}
 		
 		private Property CreateProperty(IEntityPropertyMapping propertyMapping, System.Type propertyOwnerType, Mapping.Collection value, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			if (string.IsNullOrEmpty(propertyMapping.Name))
-			{
 				throw new MappingException("A property mapping must define the name attribute [" + propertyOwnerType + "]");
-			}
 
 			var propertyAccessorName = GetPropertyAccessorName(propertyMapping.Access);
 
