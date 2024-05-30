@@ -53,6 +53,7 @@ public class FixtureAsync : BugTestCase
 		CreateTable("DateTime");
 		CreateTable("Double");
 		CreateTable("Decimal");
+		CreateTable("Float");
 
 		base.CreateSchema();
 	}
@@ -181,7 +182,7 @@ public class FixtureAsync : BugTestCase
 		double doubleValue = 12.3d;
 
 		await (PerformTestAsync<double, DoubleEntity>(from, to, doubleValue, 
-			(expected, actual) => Assert.True(Math.Abs(expected - actual) < double.Epsilon, $"Expected: {expected}\nBut was: {actual}\n")
+			(expected, actual) => Assert.True(Math.Abs(expected - actual) < double.Epsilon, $"Expected {expected} but was {actual}\n")
 		));
 	}
 
@@ -192,6 +193,16 @@ public class FixtureAsync : BugTestCase
 		int integerValue = 123;
 
 		await (PerformTestAsync<int, IntegerEntity>(from, to, integerValue, (expected, actual) => Assert.AreEqual(expected, actual)));
+	}
+
+	[Test, TestCaseSource(nameof(GetTestCases))]
+	public async Task TestFloatAsync(CultureInfo from, CultureInfo to)
+	{
+		float floatValue = 12.3f;
+
+		await (PerformTestAsync<float, FloatEntity>(from, to, floatValue,
+			(expected, actual) => Assert.True(Math.Abs(expected - actual) < float.Epsilon, $"Expected {expected} but was {actual}\n")
+		));
 	}
 
 	private CultureInfo CurrentCulture

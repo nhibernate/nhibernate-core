@@ -23,6 +23,10 @@
     <id name="Id" generator="guid.comb" />
     <property name="DataValue" column="DataValue"/>
   </class>
+  <class name="FloatEntity" schema-action="none">
+    <id name="Id" generator="guid.comb"/>
+    <property name="DataValue" column="DataValue"/>
+  </class>
   
   <!--
   The following classes will be exported as expected by the SchemaExport.

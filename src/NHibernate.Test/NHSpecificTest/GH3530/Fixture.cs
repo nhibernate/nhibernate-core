@@ -41,6 +41,7 @@ public class Fixture : BugTestCase
 		CreateTable("DateTime");
 		CreateTable("Double");
 		CreateTable("Decimal");
+		CreateTable("Float");
 
 		base.CreateSchema();
 	}
@@ -169,7 +170,7 @@ public class Fixture : BugTestCase
 		double doubleValue = 12.3d;
 
 		PerformTest<double, DoubleEntity>(from, to, doubleValue, 
-			(expected, actual) => Assert.True(Math.Abs(expected - actual) < double.Epsilon, $"Expected: {expected}\nBut was: {actual}\n")
+			(expected, actual) => Assert.True(Math.Abs(expected - actual) < double.Epsilon, $"Expected {expected} but was {actual}\n")
 		);
 	}
 
@@ -180,6 +181,16 @@ public class Fixture : BugTestCase
 		int integerValue = 123;
 
 		PerformTest<int, IntegerEntity>(from, to, integerValue, (expected, actual) => Assert.AreEqual(expected, actual));
+	}
+
+	[Test, TestCaseSource(nameof(GetTestCases))]
+	public void TestFloat(CultureInfo from, CultureInfo to)
+	{
+		float floatValue = 12.3f;
+
+		PerformTest<float, FloatEntity>(from, to, floatValue,
+			(expected, actual) => Assert.True(Math.Abs(expected - actual) < float.Epsilon, $"Expected {expected} but was {actual}\n")
+		);
 	}
 
 	private CultureInfo CurrentCulture

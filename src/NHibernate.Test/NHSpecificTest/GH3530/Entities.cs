@@ -17,4 +17,5 @@ public class DateTimeEntity : DataEntity<DateTime> { }
 
 public class DoubleEntity : DataEntity<double> { }
 public class DecimalEntity : DataEntity<decimal> { }
+public class FloatEntity : DataEntity<float> { }
 public class  NHDateTimeEntity : DataEntity<DateTime> { }
