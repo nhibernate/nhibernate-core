@@ -341,6 +341,8 @@ namespace NHibernate.Mapping
 			set { isAlternateUniqueKey = value; }
 		}
 
+		// Since v5.6
+		[Obsolete("This method is not used and will be removed in a future version")]
 		public virtual void SetTypeUsingReflection(string className, string propertyName, string accesorName)
 		{
 			if (typeName == null)
@@ -352,6 +354,25 @@ namespace NHibernate.Mapping
 				try
 				{
 					typeName = ReflectHelper.ReflectedPropertyClass(className, propertyName, accesorName).AssemblyQualifiedName;
+				}
+				catch (HibernateException he)
+				{
+					throw new MappingException("Problem trying to set property type by reflection", he);
+				}
+			}
+		}
+		
+		public virtual void SetTypeUsingReflection(System.Type propertyOwnerType, string propertyName, string accessorName)
+		{
+			if (typeName == null)
+			{
+				if (propertyOwnerType == null)
+				{
+					throw new MappingException("you must specify types for a dynamic entity: " + propertyName);
+				}
+				try
+				{
+					typeName = ReflectHelper.ReflectedPropertyClass(propertyOwnerType, propertyName, accessorName).AssemblyQualifiedName;
 				}
 				catch (HibernateException he)
 				{
