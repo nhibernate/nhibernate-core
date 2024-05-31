@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
+using System.Numerics;
 using System.Reflection;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Visitors;
@@ -20,6 +21,10 @@ namespace NHibernate.Linq.Functions
 
 #if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 				ReflectHelper.FastGetMethod(MathF.Truncate, default(float)),
+#endif
+#if NET8_0_OR_GREATER
+				ReflectHelper.FastGetMethod(float.Truncate, default(float)),
+				ReflectHelper.FastGetMethod(double.Truncate, default(double)),
 #endif
 			};
 		}

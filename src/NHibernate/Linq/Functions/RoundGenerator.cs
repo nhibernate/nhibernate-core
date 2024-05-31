@@ -25,6 +25,13 @@ namespace NHibernate.Linq.Functions
 				ReflectHelper.FastGetMethod(MathF.Round, default(float)),
 				ReflectHelper.FastGetMethod(MathF.Round, default(float), default(int)),
 #endif
+
+#if NET8_0_OR_GREATER
+				ReflectHelper.FastGetMethod(float.Round, default(float)),
+				ReflectHelper.FastGetMethod(float.Round, default(float), default(int)),
+				ReflectHelper.FastGetMethod(double.Round, default(double)),
+				ReflectHelper.FastGetMethod(double.Round, default(double), default(int)),
+#endif
 			};
 		}
 
