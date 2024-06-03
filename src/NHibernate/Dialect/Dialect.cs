@@ -2100,7 +2100,7 @@ namespace NHibernate.Dialect
 			if (value == null)
 				throw new ArgumentNullException(nameof(value));
 			if (type == null)
-				throw new ArgumentNullException(nameof(value));
+				throw new ArgumentNullException(nameof(type));
 
 			var literal = new StringBuilder(value);
 			if (EscapeBackslashInStrings)
