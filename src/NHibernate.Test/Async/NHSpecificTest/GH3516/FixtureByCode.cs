@@ -47,10 +47,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 		{
 			using var session = OpenSession();
 			using var transaction = session.BeginTransaction();
-			var e = new Entity { Name = Entity.NameWithSingleQuote };
-			session.Save(e);
-			e = new Entity { Name = Entity.NameWithEscapedSingleQuote };
-			session.Save(e);
+			session.Save(new Entity { Name = Entity.NameWithSingleQuote });
+			session.Save(new Entity { Name = Entity.NameWithEscapedSingleQuote });
 
 			transaction.Commit();
 		}
@@ -64,14 +62,12 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 			transaction.Commit();
 		}
 
-		private static readonly string[] _stringInjectionsProperties =
-			new[]
-			{
-				nameof(Entity.NameWithSingleQuote),
-				nameof(Entity.NameWithEscapedSingleQuote)
-			};
+		private static readonly string[] StringInjectionsProperties =
+		{
+			nameof(Entity.NameWithSingleQuote), nameof(Entity.NameWithEscapedSingleQuote)
+		};
 
-		[TestCaseSource(nameof(_stringInjectionsProperties))]
+		[TestCaseSource(nameof(StringInjectionsProperties))]
 		public void SqlInjectionInStringsAsync(string propertyName)
 		{
 			using var session = OpenSession();
@@ -82,20 +78,19 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 			Assert.That(list, Has.Count.EqualTo(1), $"Unable to find entity with name {propertyName}");
 		}
 
-		private static readonly string[] _specialNames =
-			new[]
-			{
-				"\0; drop table Entity; --",
-				"\b; drop table Entity; --",
-				"\n; drop table Entity; --",
-				"\r; drop table Entity; --",
-				"\t; drop table Entity; --",
-				"\x1A; drop table Entity; --",
-				"\"; drop table Entity; --",
-				"\\; drop table Entity; --"
-			};
+		private static readonly string[] SpecialNames =
+		{
+			"\0; drop table Entity; --",
+			"\b; drop table Entity; --",
+			"\n; drop table Entity; --",
+			"\r; drop table Entity; --",
+			"\t; drop table Entity; --",
+			"\x1A; drop table Entity; --",
+			"\"; drop table Entity; --",
+			"\\; drop table Entity; --"
+		};
 
-		[TestCaseSource(nameof(_specialNames))]
+		[TestCaseSource(nameof(SpecialNames))]
 		public async Task StringsWithSpecialCharactersAsync(string name)
 		{
 			// We may not even be able to insert the entity.
