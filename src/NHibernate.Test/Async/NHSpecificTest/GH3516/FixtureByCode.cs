@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 			{
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
-				rc.Property(x => x.Initial);
+				rc.Property(x => x.FirstChar);
 			});
 
 			mapper.Class<BaseClass>(rc =>
@@ -48,8 +48,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 		{
 			using var session = OpenSession();
 			using var transaction = session.BeginTransaction();
-			session.Save(new Entity { Name = Entity.NameWithSingleQuote, Initial = Entity.QuoteInitial });
-			session.Save(new Entity { Name = Entity.NameWithEscapedSingleQuote, Initial = Entity.BackslashInitial });
+			session.Save(new Entity { Name = Entity.NameWithSingleQuote, FirstChar = Entity.QuoteInitial });
+			session.Save(new Entity { Name = Entity.NameWithEscapedSingleQuote, FirstChar = Entity.BackslashInitial });
 
 			transaction.Commit();
 		}
@@ -171,7 +171,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 		public void SqlInjectionInCharAsync(string propertyName)
 		{
 			using var session = OpenSession();
-			var query = session.CreateQuery($"from Entity e where e.Initial = Entity.{propertyName}");
+			var query = session.CreateQuery($"from Entity e where e.FirstChar = Entity.{propertyName}");
 			IList<Entity> list = null;
 			Assert.That(async () => list = await (query.ListAsync<Entity>()), Throws.Nothing);
 			Assert.That(list, Is.Not.Null.And.Count.EqualTo(1), $"Unable to find entity with initial {propertyName}");
