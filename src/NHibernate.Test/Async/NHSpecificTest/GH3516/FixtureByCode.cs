@@ -162,14 +162,12 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 			}
 		}
 
-		private static readonly string[] _charInjectionsProperties =
-			new[]
-			{
-				nameof(Entity.QuoteInitial),
-				nameof(Entity.BackslashInitial)
-			};
+		private static readonly string[] CharInjectionsProperties =
+		{
+			nameof(Entity.QuoteInitial), nameof(Entity.BackslashInitial)
+		};
 
-		[TestCaseSource(nameof(_charInjectionsProperties))]
+		[TestCaseSource(nameof(CharInjectionsProperties))]
 		public void SqlInjectionInCharAsync(string propertyName)
 		{
 			using var session = OpenSession();
