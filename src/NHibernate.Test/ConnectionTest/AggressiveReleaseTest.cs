@@ -14,7 +14,6 @@ namespace NHibernate.Test.ConnectionTest
 	{
 		protected override void Configure(Configuration cfg)
 		{
-			base.Configure(cfg);
 			cfg.SetProperty(Environment.ReleaseConnections, "after_transaction");
 			//cfg.SetProperty(Environment.ConnectionProvider, typeof(DummyConnectionProvider).AssemblyQualifiedName);
 			//cfg.SetProperty(Environment.GenerateStatistics, "true");

@@ -17,8 +17,7 @@ namespace NHibernate.Test.ConnectionTest
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(cfg);
-			cfg.SetProperty(Environment.CurrentSessionContextClass, "async_local");
+			configuration.SetProperty(Environment.CurrentSessionContextClass, "async_local");
 		}
 
 		[Test]

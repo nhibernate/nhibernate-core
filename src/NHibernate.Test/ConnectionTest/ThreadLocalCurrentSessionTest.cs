@@ -17,9 +17,8 @@ namespace NHibernate.Test.ConnectionTest
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(cfg);
-			cfg.SetProperty(Environment.CurrentSessionContextClass, typeof (TestableThreadLocalContext).AssemblyQualifiedName);
-			cfg.SetProperty(Environment.GenerateStatistics, "true");
+			configuration.SetProperty(Environment.CurrentSessionContextClass, typeof (TestableThreadLocalContext).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
 		protected override void Release(ISession session)

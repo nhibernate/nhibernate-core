@@ -36,7 +36,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3912
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(Cfg.Environment.BatchStrategy,
 			                          typeof(OracleDataClientBatchingBatcherFactory).AssemblyQualifiedName);
 		}

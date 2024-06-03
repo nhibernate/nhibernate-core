@@ -47,7 +47,6 @@ namespace NHibernate.Test.TypesTest
 				_testDefaultType,
 				new[] {"currency"},
 				(precision, scale) => new CustomCurrencyType(precision, scale));
-			base.Configure(configuration);
 		}
 
 		protected override void DropSchema()

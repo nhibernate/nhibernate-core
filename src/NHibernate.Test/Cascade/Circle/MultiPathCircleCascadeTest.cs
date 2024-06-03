@@ -42,7 +42,6 @@ namespace NHibernate.Test.Cascade.Circle
 		
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
 			configuration.SetProperty(NHibernate.Cfg.Environment.BatchSize, "0");
 		}

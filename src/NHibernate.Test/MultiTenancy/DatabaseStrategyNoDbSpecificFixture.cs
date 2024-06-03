@@ -32,7 +32,6 @@ namespace NHibernate.Test.MultiTenancy
 					x.MultiTenancyConnectionProvider<TestMultiTenancyConnectionProvider>();
 				});
 			configuration.Properties[Cfg.Environment.GenerateStatistics] = "true";
-			base.Configure(configuration);
 		}
 
 		[Test]
