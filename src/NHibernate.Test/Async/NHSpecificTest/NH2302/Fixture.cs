@@ -18,15 +18,15 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2302
 {
-    using System.Threading.Tasks;
-    [TestFixture]
-    public class FixtureAsync : BugTestCase
-    {
-	    protected override void AddMappings(Configuration configuration)
-	    {
-		    base.AddMappings(configuration);
+	using System.Threading.Tasks;
+	[TestFixture]
+	public class FixtureAsync : BugTestCase
+	{
+		protected override void AddMappings(Configuration configuration)
+		{
+			base.AddMappings(configuration);
 
-		    foreach (var cls in configuration.ClassMappings)
+			foreach (var cls in configuration.ClassMappings)
 			{
 				foreach (var prop in cls.PropertyIterator)
 				{
