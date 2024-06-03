@@ -27,12 +27,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2055
 			return (dialect is Dialect.MsSql2000Dialect);
 		}
 
-		protected override void Configure(Configuration configuration)
-		{
-			base.Configure(configuration);
-			cfg = configuration;
-		}
-
 		[Test] 
 		public async Task CanCreateAndDropSchemaAsync() 
 		{

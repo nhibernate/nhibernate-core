@@ -25,7 +25,6 @@ namespace NHibernate.Test.Linq
 		{
 			cfg.SetProperty(Environment.UseQueryCache, "true");
 			cfg.SetProperty(Environment.GenerateStatistics, "true");
-			base.Configure(cfg);
 		}
 
 		[Test]

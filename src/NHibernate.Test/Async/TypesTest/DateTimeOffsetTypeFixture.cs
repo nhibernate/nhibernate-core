@@ -42,8 +42,6 @@ namespace NHibernate.Test.TypesTest
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
-
 			var driverClass = ReflectHelper.ClassForName(configuration.GetProperty(Cfg.Environment.ConnectionDriver));
 			ClientDriverWithParamsStats.DriverClass = driverClass;
 

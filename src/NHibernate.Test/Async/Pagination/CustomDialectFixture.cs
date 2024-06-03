@@ -41,12 +41,12 @@ namespace NHibernate.Test.Pagination
 			// Configure is called before Applies, must check here.
 			if (!(Dialect is MsSql2005Dialect))
 				Assert.Ignore("Test is for SQL dialect only");
-			var driverClass = ReflectHelper.ClassForName(cfg.GetProperty(Environment.ConnectionDriver));
+			var driverClass = ReflectHelper.ClassForName(configuration.GetProperty(Environment.ConnectionDriver));
 			if (!typeof(SqlClientDriver).IsAssignableFrom(driverClass))
 				Assert.Ignore("Test is compatible only with Sql Server Client driver connection strings");
 
-			cfg.SetProperty(Environment.Dialect, typeof(CustomMsSqlDialect).AssemblyQualifiedName);
-			cfg.SetProperty(Environment.ConnectionDriver, typeof(CustomMsSqlDriver).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.Dialect, typeof(CustomMsSqlDialect).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.ConnectionDriver, typeof(CustomMsSqlDriver).AssemblyQualifiedName);
 		}
 
 		private CustomMsSqlDialect CustomDialect

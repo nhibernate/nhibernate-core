@@ -19,8 +19,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3058
 	{
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			base.Configure(configuration);
-
 			configuration.Properties.Add("current_session_context_class", "thread_static");
 		}
 

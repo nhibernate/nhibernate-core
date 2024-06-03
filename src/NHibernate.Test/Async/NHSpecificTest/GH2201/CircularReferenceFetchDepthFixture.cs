@@ -28,7 +28,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2201
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty("max_fetch_depth", _depth.ToString());
-			base.Configure(configuration);
 		}
 
 		protected override void OnSetUp()
