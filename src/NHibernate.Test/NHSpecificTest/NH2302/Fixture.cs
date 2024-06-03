@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Mapping;
@@ -10,26 +11,26 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
     [TestFixture]
     public class Fixture : BugTestCase
     {
-		protected override void Configure(Cfg.Configuration configuration)
-		{
-			foreach (var cls in configuration.ClassMappings)
+	    protected override void AddMappings(Configuration configuration)
+	    {
+		    base.AddMappings(configuration);
+
+		    foreach (var cls in configuration.ClassMappings)
 			{
 				foreach (var prop in cls.PropertyIterator)
 				{
 					foreach (var col in prop.ColumnIterator)
 					{
-						if (col is Column)
+						if (col is Column column && column.SqlType == "nvarchar(max)")
 						{
-							var column = col as Column;
-							if (column.SqlType == "nvarchar(max)")
-								column.SqlType = Dialect.GetLongestTypeName(DbType.String);
+							column.SqlType = Dialect.GetLongestTypeName(DbType.String);
 						}
 					}
 				}
 			}
 		}
 
-        protected override void OnTearDown()
+	    protected override void OnTearDown()
         {
             CleanUp();
 
