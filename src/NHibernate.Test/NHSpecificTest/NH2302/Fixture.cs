@@ -30,7 +30,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2302
 			}
 		}
 
-	    protected override void OnTearDown()
+		protected override void OnTearDown()
         {
             CleanUp();
 
