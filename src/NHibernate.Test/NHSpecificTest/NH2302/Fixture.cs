@@ -8,14 +8,14 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.NH2302
 {
-    [TestFixture]
-    public class Fixture : BugTestCase
-    {
-	    protected override void AddMappings(Configuration configuration)
-	    {
-		    base.AddMappings(configuration);
+	[TestFixture]
+	public class Fixture : BugTestCase
+	{
+		protected override void AddMappings(Configuration configuration)
+		{
+			base.AddMappings(configuration);
 
-		    foreach (var cls in configuration.ClassMappings)
+			foreach (var cls in configuration.ClassMappings)
 			{
 				foreach (var prop in cls.PropertyIterator)
 				{
