@@ -7,6 +7,7 @@ namespace NHibernate.Test.TestDialects
 		}
 
 		public override bool HasBrokenTypeInferenceOnSelectedParameters => true;
+		public override bool SupportsCancelQuery => false;
 		public override bool SupportsComplexExpressionInGroupBy => false;
 		public override bool SupportsNonDataBoundCondition => false;
 		public override bool SupportsSelectForUpdateWithPaging => false;
