@@ -143,7 +143,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("replace", new StandardSQLFunction("replace", NHibernateUtil.String));
 			RegisterFunction("truncate", new StandardSQLFunction("truncate"));
 			RegisterFunction("left", new StandardSQLFunction("left", NHibernateUtil.String));
-			RegisterFunction("right", new StandardSQLFunction("left", NHibernateUtil.String));
+			RegisterFunction("right", new StandardSQLFunction("right", NHibernateUtil.String));
 
 			RegisterFunction("mod", new ModulusFunction(true, false));
 
