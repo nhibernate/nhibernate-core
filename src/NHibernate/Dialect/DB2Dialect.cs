@@ -69,7 +69,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
 			RegisterFunction("asin", new StandardSQLFunction("asin", NHibernateUtil.Double));
 			RegisterFunction("atan", new StandardSQLFunction("atan", NHibernateUtil.Double));
+			RegisterFunction("atanh", new StandardSQLFunction("atanh", NHibernateUtil.Double));
 			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
+			RegisterFunction("cosh", new StandardSQLFunction("cosh", NHibernateUtil.Double));
 			RegisterFunction("cot", new StandardSQLFunction("cot", NHibernateUtil.Double));
 			RegisterFunction("degrees", new StandardSQLFunction("degrees", NHibernateUtil.Double));
 			RegisterFunction("exp", new StandardSQLFunction("exp", NHibernateUtil.Double));
@@ -82,11 +84,14 @@ namespace NHibernate.Dialect
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("random", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("sin", new StandardSQLFunction("sin", NHibernateUtil.Double));
+			RegisterFunction("sinh", new StandardSQLFunction("sinh", NHibernateUtil.Double));
 			RegisterFunction("soundex", new StandardSQLFunction("soundex", NHibernateUtil.String));
 			RegisterFunction("sqrt", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
 			RegisterFunction("stddev", new StandardSQLFunction("stddev", NHibernateUtil.Double));
 			RegisterFunction("tan", new StandardSQLFunction("tan", NHibernateUtil.Double));
+			RegisterFunction("tanh", new StandardSQLFunction("tanh", NHibernateUtil.Double));
 			RegisterFunction("variance", new StandardSQLFunction("variance", NHibernateUtil.Double));
+			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime, false));
 			RegisterFunction("current_date", new NoArgSQLFunction("current_date", NHibernateUtil.LocalDate, false));
