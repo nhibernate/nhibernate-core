@@ -155,6 +155,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("bxor", new Function.BitwiseFunctionOperation("bitxor"));
 			RegisterFunction("bnot", new Function.BitwiseFunctionOperation("bitnot"));
 
+			RegisterFunction("nvl", new StandardSQLFunction("nvl"));
+			RegisterFunction("iif", new IifSQLFunction());
+
 			RegisterKeywords();
 
 			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.DB2Driver";
