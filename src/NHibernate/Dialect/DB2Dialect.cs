@@ -69,6 +69,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("acos", new StandardSQLFunction("acos", NHibernateUtil.Double));
 			RegisterFunction("asin", new StandardSQLFunction("asin", NHibernateUtil.Double));
 			RegisterFunction("atan", new StandardSQLFunction("atan", NHibernateUtil.Double));
+			RegisterFunction("atan2", new SQLFunctionTemplate(NHibernateUtil.Double, "atan2(?2,?1)"));
 			RegisterFunction("atanh", new StandardSQLFunction("atanh", NHibernateUtil.Double));
 			RegisterFunction("cos", new StandardSQLFunction("cos", NHibernateUtil.Double));
 			RegisterFunction("cosh", new StandardSQLFunction("cosh", NHibernateUtil.Double));
