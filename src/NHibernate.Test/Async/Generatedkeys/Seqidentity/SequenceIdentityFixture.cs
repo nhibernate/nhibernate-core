@@ -34,7 +34,8 @@ namespace NHibernate.Test.Generatedkeys.Seqidentity
 				// SAP HANA does not support a syntax allowing to return the inserted id as an output parameter or a return value
 				!(dialect is Dialect.HanaDialectBase) &&
 				// SQL Anywhere does not support a syntax allowing to return the inserted id as an output parameter or a return value
-				!(dialect is Dialect.SybaseSQLAnywhere10Dialect);
+				!(dialect is Dialect.SybaseSQLAnywhere10Dialect) &&
+				!(dialect is Dialect.DB2Dialect);
 		}
 
 		[Test]
