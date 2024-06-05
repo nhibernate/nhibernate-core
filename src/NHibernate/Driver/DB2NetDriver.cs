@@ -1,4 +1,4 @@
-﻿using System.Data.Common;
+using System.Data.Common;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Driver
@@ -8,6 +8,10 @@ namespace NHibernate.Driver
 	/// </summary>
 	public class DB2NetDriver : DB2DriverBase
 	{
+		private protected DB2NetDriver(string assemblyName) : base(assemblyName)
+		{
+		}
+
 		public DB2NetDriver() : base("IBM.Data.Db2")
 		{
 		}
