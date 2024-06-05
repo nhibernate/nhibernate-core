@@ -1132,5 +1132,8 @@ namespace NHibernate.Dialect
 		public override bool DoesReadCommittedCauseWritersToBlockReaders => true;
 
 		#endregion
+
+		public override bool SupportsTemporaryTables => true;
+		public override string CreateTemporaryTableString => "create global temporary table";
 	}
 }

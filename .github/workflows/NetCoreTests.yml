@@ -43,8 +43,10 @@ jobs:
             DB_INIT: |
               docker run --name DB2 --privileged=true -e DB2INSTANCE=nhib -e DB2INST1_PASSWORD=nhib -e DBNAME=nhib -e LICENSE=accept -e AUTOCONFIG=false -e ARCHIVE_LOGS=false -p 50000:50000 -d icr.io/db2_community/db2:11.5.9.0
               docker logs -f DB2 | sed '/(*) Setup has completed./ q'
+              docker exec DB2 su - nhib bash -c "db2 connect to nhib; db2 CREATE USER TEMPORARY TABLESPACE TEMPSPACE_32"
 
               DB2_CLI_DRIVER_INSTALL_PATH="$(pwd)/src/NHibernate.Test/bin/Release/net8.0/clidriver"
+              echo "DB2LANG=en_US" >> $GITHUB_ENV
               echo "DB2_CLI_DRIVER_INSTALL_PATH=$DB2_CLI_DRIVER_INSTALL_PATH" >> $GITHUB_ENV
               echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DB2_CLI_DRIVER_INSTALL_PATH/lib" >> $GITHUB_ENV
               echo "LIBPATH=$LIBPATH:$DB2_CLI_DRIVER_INSTALL_PATH/lib" >> $GITHUB_ENV
