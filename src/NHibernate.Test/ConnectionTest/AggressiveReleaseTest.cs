@@ -12,12 +12,12 @@ namespace NHibernate.Test.ConnectionTest
 	[TestFixture]
 	public class AggressiveReleaseTest : ConnectionManagementTestCase
 	{
-		protected override void Configure(Configuration cfg)
+		protected override void Configure(Configuration configuration)
 		{
-			cfg.SetProperty(Environment.ReleaseConnections, "after_transaction");
-			//cfg.SetProperty(Environment.ConnectionProvider, typeof(DummyConnectionProvider).AssemblyQualifiedName);
-			//cfg.SetProperty(Environment.GenerateStatistics, "true");
-			cfg.SetProperty(Environment.BatchSize, "0");
+			configuration.SetProperty(Environment.ReleaseConnections, "after_transaction");
+			//configuration.SetProperty(Environment.ConnectionProvider, typeof(DummyConnectionProvider).AssemblyQualifiedName);
+			//configuration.SetProperty(Environment.GenerateStatistics, "true");
+			configuration.SetProperty(Environment.BatchSize, "0");
 		}
 
 		protected override ISession GetSessionUnderTest()
