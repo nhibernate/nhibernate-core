@@ -160,7 +160,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 			if (Dialect is SQLiteDialect && _useBinaryGuid)
 				Assert.Ignore("Fails with BinaryGuid=True due to GH-2109. (2019-04-09).");
 
-			if (Dialect is FirebirdDialect || Dialect is MySQLDialect || Dialect is Oracle8iDialect)
+			if (Dialect is FirebirdDialect or MySQLDialect || Dialect is Oracle8iDialect || Dialect is DB2Dialect)
 				Assert.Ignore("Since strguid() is not applied, it fails on Firebird, MySQL and Oracle " +
 							"because a simple cast cannot be used for GUID to string conversion on " +
 							"these dialects. See GH-2109.");
@@ -184,7 +184,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 			if (Dialect is SQLiteDialect && _useBinaryGuid)
 				Assert.Ignore("Fails with BinaryGuid=True due to GH-2109. (2019-04-09).");
 
-			if (Dialect is FirebirdDialect || Dialect is MySQLDialect || Dialect is Oracle8iDialect)
+			if (Dialect is FirebirdDialect || Dialect is MySQLDialect || Dialect is Oracle8iDialect || Dialect is DB2Dialect)
 				Assert.Ignore("Since strguid() is not applied, it fails on Firebird, MySQL and Oracle " +
 							"because a simple cast cannot be used for GUID to string conversion on " +
 							"these dialects. See GH-2109.");
