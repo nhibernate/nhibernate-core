@@ -137,9 +137,13 @@ namespace NHibernate.Dialect
 			RegisterFunction("lcase", new StandardSQLFunction("lcase"));
 			RegisterFunction("lower", new StandardSQLFunction("lower"));
 			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
+			RegisterFunction("octet_length", new StandardSQLFunction("octet_length", NHibernateUtil.Int32));
+			RegisterFunction("bit_length", new SQLFunctionTemplate(NHibernateUtil.Int32, "octet_length(?1) * 8"));
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
 			RegisterFunction("replace", new StandardSQLFunction("replace", NHibernateUtil.String));
 			RegisterFunction("truncate", new StandardSQLFunction("truncate"));
+			RegisterFunction("left", new StandardSQLFunction("left", NHibernateUtil.String));
+			RegisterFunction("right", new StandardSQLFunction("left", NHibernateUtil.String));
 
 			RegisterFunction("mod", new ModulusFunction(true, false));
 
