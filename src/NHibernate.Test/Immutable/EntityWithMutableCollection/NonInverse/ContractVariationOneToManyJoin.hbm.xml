@@ -47,7 +47,7 @@
 		</id>
 		<property name="CustomerName" not-null="true" />
 		<property name="Type" not-null="true" />
-		<bag name="Variations" inverse="false" order-by="id asc" mutable="true" cascade="all-delete-orphan" fetch="join">
+		<bag name="Variations" inverse="false" order-by="`id` asc" mutable="true" cascade="all-delete-orphan" fetch="join">
 			<key column="contract" />
 			<one-to-many class="ContractVariation" />
 		</bag>
@@ -71,7 +71,7 @@
 	</class>
 
 	<class name="ContractVariation" mutable="false">
-		<id name="Id">
+		<id name="Id" column="`id`">
 			<generator class="increment" />
 		</id>
 		<property name="Text" type="StringClob" />
