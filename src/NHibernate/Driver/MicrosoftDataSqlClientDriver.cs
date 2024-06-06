@@ -13,7 +13,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	///     A NHibernate Driver for using the SqlClient DataProvider
 	/// </summary>
-	public class MicrosoftDataSqlClientDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider, IParameterAdjuster
+	public partial class MicrosoftDataSqlClientDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider, IParameterAdjuster
 	{
 		const byte MaxTime = 5;
 
@@ -216,6 +216,13 @@ namespace NHibernate.Driver
 		public override IResultSetsCommand GetResultSetsCommand(ISessionImplementor session)
 		{
 			return new BasicResultSetsCommand(session);
+		}
+
+		public override DbDataReader ExecuteReader(DbCommand command)
+		{
+			var reader = command.ExecuteReader();
+
+			return new NoCharDbDataReader(reader);
 		}
 	}
 }
