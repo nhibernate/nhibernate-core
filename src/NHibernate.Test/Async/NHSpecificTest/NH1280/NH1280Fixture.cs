@@ -228,9 +228,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1280
 		[Test]
 		public async Task SubstringShouldUseAllParametersAsync()
 		{
-			// https://technet.microsoft.com/en-us/library/ms174077(v=sql.110).aspx
-			if (Dialect is MsSqlCeDialect)
-				Assert.Ignore("Sql function left not supported by MS SQL CE");
+			if (!Dialect.Functions.ContainsKey("left"))
+				Assert.Ignore($"Sql function left not is supported by {Dialect}");
 
 			using (ISession s = OpenSession())
 			using (ITransaction tx = s.BeginTransaction())

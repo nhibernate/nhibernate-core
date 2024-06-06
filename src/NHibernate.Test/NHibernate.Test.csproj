@@ -92,6 +92,9 @@
     <PackageReference Include="System.CodeDom" Version="4.7.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Data.OracleClient" Version="1.0.8" />
+    <PackageReference Include="Net.IBM.Data.Db2" Version="8.0.0.200" Condition="$([MSBuild]::IsOSPlatform('Windows'))" />
+    <PackageReference Include="Net.IBM.Data.Db2-lnx" Version="8.0.0.200" Condition="$([MSBuild]::IsOSPlatform('Linux'))" />
+    <PackageReference Include="Net.IBM.Data.Db2-osx" Version="8.0.0.200" Condition="$([MSBuild]::IsOSPlatform('OSX'))"  />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.100" />
     <PackageReference Include="System.Data.Odbc" Version="4.7.0" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />

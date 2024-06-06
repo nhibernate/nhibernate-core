@@ -49,7 +49,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				session.CreateQuery("delete from System.Object").ExecuteUpdate();
+				session.CreateQuery("delete from Entity").ExecuteUpdate();
+				// Some dialects don't support multi-table deletes, so delete via in memory loading
+				session.Delete("from MultiTableEntity");
 
 				transaction.Commit();
 			}
@@ -142,6 +144,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 		[TestCase("OtherNameFilter")]
 		public async Task MultiTableDmlUpdateAsync(string filter)
 		{
+			if (!Dialect.SupportsTemporaryTables)
+				Assert.Ignore("Dialect does not support multi-table update");
+
 			var isFiltered = !string.IsNullOrEmpty(filter);
 
 			using (var session = OpenSession())
@@ -180,6 +185,9 @@ namespace NHibernate.Test.NHSpecificTest.GH1921
 		[TestCase("OtherNameFilter")]
 		public async Task MultiTableDmlDeleteAsync(string filter)
 		{
+			if (!Dialect.SupportsTemporaryTables)
+				Assert.Ignore("Dialect does not support multi-table delete");
+			
 			var isFiltered = !string.IsNullOrEmpty(filter);
 
 			using (var session = OpenSession())

@@ -465,7 +465,7 @@ namespace NHibernate.Test.Legacy
 			{
 				s.CreateQuery("from foo in class Foo where lower( foo.TheFoo.String ) = 'foo'").List();
 				s.CreateQuery("from foo in class Foo where lower( (foo.TheFoo.String || 'foo') || 'bar' ) = 'foo'").List();
-				s.CreateQuery("from foo in class Foo where repeat( (foo.TheFoo.STring || 'foo') || 'bar', 2 ) = 'foo'").List();
+				s.CreateQuery("from foo in class Foo where repeat( (foo.TheFoo.String || 'foo') || 'bar', 2 ) = 'foo'").List();
 				s.CreateQuery(
 					"From foo in class Bar where foo.TheFoo.Integer is not null and repeat( (foo.TheFoo.String || 'foo') || 'bar', (5+5)/2 ) = 'foo'")
 					.List();
