@@ -14,7 +14,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// Base class for the implementation of IDriver
 	/// </summary>
-	public abstract class DriverBase : IDriver, ISqlParameterFormatter
+	public abstract partial class DriverBase : IDriver, ISqlParameterFormatter
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DriverBase));
 
@@ -361,5 +361,11 @@ namespace NHibernate.Driver
 		/// Get the timeout in seconds for ADO.NET queries.
 		/// </summary>
 		public virtual int CommandTimeout => commandTimeout;
+
+		/// <inheritdoc />
+		public virtual DbDataReader ExecuteReader(DbCommand command)
+		{
+			return command.ExecuteReader();
+		}
 	}
 }
