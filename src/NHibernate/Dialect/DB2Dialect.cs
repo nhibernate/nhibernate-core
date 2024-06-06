@@ -1115,6 +1115,8 @@ namespace NHibernate.Dialect
 
 		public override bool SupportsNullInUnique => false;
 
+		public override bool SupportsUnionAll => true;
+
 		public override bool SupportsEmptyInList => false;
 
 		public override bool SupportsResultSetPositionQueryMethodsOnForwardOnlyCursor => false;
