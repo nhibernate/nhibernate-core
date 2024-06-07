@@ -43,19 +43,6 @@ namespace NHibernate.Test.CacheTest.Caches
 			}
 		}
 
-		public override Task RemoveAsync(object key, CancellationToken cancellationToken)
-		{
-			try
-			{
-				_hashtable.Remove(key);
-				return Task.CompletedTask;
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
 		public override Task ClearAsync(CancellationToken cancellationToken)
 		{
 			try
