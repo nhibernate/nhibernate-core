@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Type;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH3516
@@ -18,6 +19,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 				rc.Id(x => x.Id, m => m.Generator(Generators.GuidComb));
 				rc.Property(x => x.Name);
 				rc.Property(x => x.FirstChar);
+				rc.Property(x => x.CharacterEnum, m => m.Type<EnumCharType<CharEnum>>());
 			});
 
 			mapper.Class<BaseClass>(rc =>
@@ -30,6 +32,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 			mapper.Subclass<Subclass1>(rc => rc.DiscriminatorValue(Entity.NameWithSingleQuote));
 			mapper.Subclass<Subclass2>(rc => rc.DiscriminatorValue(Entity.NameWithEscapedSingleQuote));
 
+			mapper.Import<CharEnum>();
+
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
 
@@ -37,8 +41,20 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 		{
 			using var session = OpenSession();
 			using var transaction = session.BeginTransaction();
-			session.Save(new Entity { Name = Entity.NameWithSingleQuote, FirstChar = Entity.QuoteInitial });
-			session.Save(new Entity { Name = Entity.NameWithEscapedSingleQuote, FirstChar = Entity.BackslashInitial });
+			session.Save(
+				new Entity
+				{ 
+					Name = Entity.NameWithSingleQuote,
+					FirstChar = Entity.QuoteInitial,
+					CharacterEnum = CharEnum.SingleQuote
+				});
+			session.Save(
+				new Entity
+				{
+					Name = Entity.NameWithEscapedSingleQuote,
+					FirstChar = Entity.BackslashInitial,
+					CharacterEnum = CharEnum.Backslash
+				});
 
 			transaction.Commit();
 		}
@@ -164,6 +180,22 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 			IList<Entity> list = null;
 			Assert.That(() => list = query.List<Entity>(), Throws.Nothing);
 			Assert.That(list, Is.Not.Null.And.Count.EqualTo(1), $"Unable to find entity with initial {propertyName}");
+		}
+
+		private static readonly string[] CharEnumInjections =
+		{
+			nameof(CharEnum.SingleQuote), nameof(CharEnum.Backslash)
+		};
+
+		[TestCaseSource(nameof(CharEnumInjections))]
+		public void SqlInjectionWithCharEnum(string enumName)
+		{
+			using var session = OpenSession();
+
+			var query = session.CreateQuery($"from Entity e where e.CharacterEnum = CharEnum.{enumName}");
+			IList<Entity> list = null;
+			Assert.That(() => list = query.List<Entity>(), Throws.Nothing);
+			Assert.That(list, Has.Count.EqualTo(1), $"Unable to find entity with CharacterEnum {enumName}");
 		}
 	}
 }

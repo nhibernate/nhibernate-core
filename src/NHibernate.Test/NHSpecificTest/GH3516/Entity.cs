@@ -7,6 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 		public virtual Guid Id { get; set; }
 		public virtual string Name { get; set; }
 		public virtual char FirstChar { get; set; }
+		public virtual CharEnum CharacterEnum { get; set; } = CharEnum.SimpleChar;
 
 		public const string NameWithSingleQuote = "'; drop table Entity; --";
 		public const string NameWithEscapedSingleQuote = @"\'; drop table Entity; --";
@@ -16,5 +17,13 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 
 		public const char QuoteInitial = '\'';
 		public const char BackslashInitial = '\\';
+
+	}
+
+	public enum CharEnum
+	{
+		SimpleChar = 'A',
+		SingleQuote = '\'',
+		Backslash = '\\'
 	}
 }
