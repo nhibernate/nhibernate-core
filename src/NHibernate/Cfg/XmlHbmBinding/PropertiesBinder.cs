@@ -390,12 +390,12 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			var type = propertyOwnerType?.UnwrapIfNullable();
 			if (string.IsNullOrEmpty(propertyMapping.Name))
-				throw new MappingException("A property mapping must define the name attribute [" + propertyOwnerType + "]");
+				throw new MappingException("A property mapping must define the name attribute [" + type + "]");
 
 			var propertyAccessorName = GetPropertyAccessorName(propertyMapping.Access);
 
-			if (propertyOwnerType != null && value.IsSimpleValue)
-				value.SetTypeUsingReflection(propertyOwnerType, propertyMapping.Name, propertyAccessorName);
+			if (type != null)
+				value.SetTypeUsingReflection(type, propertyMapping.Name, propertyAccessorName);
 
 			return new Property
 			{
