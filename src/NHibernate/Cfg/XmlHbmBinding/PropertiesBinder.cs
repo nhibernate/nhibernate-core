@@ -83,26 +83,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				string propertyName = entityPropertyMapping.Name;
 
-				ICollectionPropertiesMapping collectionMapping;
-				HbmManyToOne manyToOneMapping;
-				HbmAny anyMapping;
-				HbmOneToOne oneToOneMapping;
-				HbmProperty propertyMapping;
-				HbmComponent componentMapping;
-				HbmDynamicComponent dynamicComponentMapping;
-				HbmNestedCompositeElement nestedCompositeElementMapping;
-				HbmKeyProperty keyPropertyMapping;
-				HbmKeyManyToOne keyManyToOneMapping;
-				HbmProperties propertiesMapping;
-
-				if ((propertyMapping = entityPropertyMapping as HbmProperty) != null)
+				if (entityPropertyMapping is HbmProperty propertyMapping)
 				{
 					var value = new SimpleValue(table);
 					new ValuePropertyBinder(value, Mappings).BindSimpleValue(propertyMapping, propertyName, true);
 					property = CreateProperty(entityPropertyMapping, mappedClass, value, inheritedMetas);
 					BindValueProperty(propertyMapping, property);
 				}
-				else if ((collectionMapping = entityPropertyMapping as ICollectionPropertiesMapping) != null)
+				else if (entityPropertyMapping is ICollectionPropertiesMapping collectionMapping)
 				{
 					var collectionBinder = new CollectionBinder(Mappings);
 					string propertyPath = propertyName == null ? null : StringHelper.Qualify(propertyBasePath, propertyName);
@@ -115,7 +103,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					property = CreateProperty(collectionMapping, mappedClass, collection, inheritedMetas);
 					BindCollectionProperty(collectionMapping, property);
 				}
-				else if ((propertiesMapping = entityPropertyMapping as HbmProperties) != null)
+				else if (entityPropertyMapping is HbmProperties propertiesMapping)
 				{
 					var subpath = propertyName == null ? null : StringHelper.Qualify(propertyBasePath, propertyName);
 					var value = CreateNewComponent(table);
@@ -123,14 +111,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					property = CreateProperty(entityPropertyMapping, mappedClass, value, inheritedMetas);
 					BindComponentProperty(propertiesMapping, property, value);
 				}
-				else if ((manyToOneMapping = entityPropertyMapping as HbmManyToOne) != null)
+				else if (entityPropertyMapping is HbmManyToOne manyToOneMapping)
 				{
 					var value = new ManyToOne(table);
 					BindManyToOne(manyToOneMapping, value, propertyName, true);
 					property = CreateProperty(entityPropertyMapping, mappedClass, value, inheritedMetas);
 					BindManyToOneProperty(manyToOneMapping, property);
 				}
-				else if ((componentMapping = entityPropertyMapping as HbmComponent) != null)
+				else if (entityPropertyMapping is HbmComponent componentMapping)
 				{
 					string subpath = propertyName == null ? null : StringHelper.Qualify(propertyBasePath, propertyName);
 					var value = CreateNewComponent(table);
@@ -140,14 +128,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					property = CreateProperty(entityPropertyMapping, mappedClass, value, inheritedMetas);
 					BindComponentProperty(componentMapping, property, value);
 				}
-				else if ((oneToOneMapping = entityPropertyMapping as HbmOneToOne) != null)
+				else if (entityPropertyMapping is HbmOneToOne oneToOneMapping)
 				{
 					var value = new OneToOne(table, persistentClass);
 					BindOneToOne(oneToOneMapping, value);
 					property = CreateProperty(entityPropertyMapping, mappedClass, value, inheritedMetas);
 					BindOneToOneProperty(oneToOneMapping, property);
 				}
-				else if ((dynamicComponentMapping = entityPropertyMapping as HbmDynamicComponent) != null)
+				else if (entityPropertyMapping is HbmDynamicComponent dynamicComponentMapping)
 				{
 					string subpath = propertyName == null ? null : StringHelper.Qualify(propertyBasePath, propertyName);
 					var value = CreateNewComponent(table);
@@ -157,14 +145,14 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					property = CreateProperty(entityPropertyMapping, mappedClass, value, inheritedMetas);
 					BindComponentProperty(dynamicComponentMapping, property, value);
 				}
-				else if ((anyMapping = entityPropertyMapping as HbmAny) != null)
+				else if (entityPropertyMapping is HbmAny anyMapping)
 				{
 					var value = new Any(table);
 					BindAny(anyMapping, value, true);
 					property = CreateProperty(entityPropertyMapping, mappedClass, value, inheritedMetas);
 					BindAnyProperty(anyMapping, property);
 				}
-				else if ((nestedCompositeElementMapping = entityPropertyMapping as HbmNestedCompositeElement) != null)
+				else if (entityPropertyMapping is HbmNestedCompositeElement nestedCompositeElementMapping)
 				{
 					if (component == null)
 					{
@@ -177,13 +165,13 @@ namespace NHibernate.Cfg.XmlHbmBinding
 					BindComponent(nestedCompositeElementMapping, value, reflectedClass, entityName, subpath, componetDefaultNullable, inheritedMetas);
 					property = CreateProperty(entityPropertyMapping, mappedClass, value, inheritedMetas);
 				}
-				else if ((keyPropertyMapping = entityPropertyMapping as HbmKeyProperty) != null)
+				else if (entityPropertyMapping is HbmKeyProperty keyPropertyMapping)
 				{
 					var value = new SimpleValue(table);
 					new ValuePropertyBinder(value, Mappings).BindSimpleValue(keyPropertyMapping, propertyName, componetDefaultNullable);
 					property = CreateProperty(entityPropertyMapping, mappedClass, value, inheritedMetas);
 				}
-				else if ((keyManyToOneMapping = entityPropertyMapping as HbmKeyManyToOne) != null)
+				else if (entityPropertyMapping is HbmKeyManyToOne keyManyToOneMapping)
 				{
 					var value = new ManyToOne(table);
 					BindKeyManyToOne(keyManyToOneMapping, value, propertyName, componetDefaultNullable);
@@ -400,6 +388,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 		private Property CreateProperty(IEntityPropertyMapping propertyMapping, System.Type propertyOwnerType, SimpleValue value, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
+			var type = propertyOwnerType?.UnwrapIfNullable();
 			if (string.IsNullOrEmpty(propertyMapping.Name))
 				throw new MappingException("A property mapping must define the name attribute [" + propertyOwnerType + "]");
 
