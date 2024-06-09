@@ -13,6 +13,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
 
@@ -32,6 +33,34 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 				rc.Property(x => x.FirstChar);
 				rc.Property(x => x.CharacterEnum, m => m.Type<EnumCharType<CharEnum>>());
 				rc.Property(x => x.UriProperty);
+
+				rc.Property(x => x.ByteProperty);
+				rc.Property(x => x.DecimalProperty);
+				rc.Property(x => x.DoubleProperty);
+				rc.Property(x => x.FloatProperty);
+				rc.Property(x => x.ShortProperty);
+				rc.Property(x => x.IntProperty);
+				rc.Property(x => x.LongProperty);
+
+				if (TestDialect.SupportsSqlType(SqlTypeFactory.SByte))
+					rc.Property(x => x.SByteProperty);
+				else
+					_unsupportedNumericalProperties.Add(nameof(Entity.SByteProperty));
+
+				if (TestDialect.SupportsSqlType(SqlTypeFactory.UInt16))
+					rc.Property(x => x.UShortProperty);
+				else
+					_unsupportedNumericalProperties.Add(nameof(Entity.UShortProperty));
+
+				if (TestDialect.SupportsSqlType(SqlTypeFactory.UInt32))
+					rc.Property(x => x.UIntProperty);
+				else
+					_unsupportedNumericalProperties.Add(nameof(Entity.UIntProperty));
+
+				if (TestDialect.SupportsSqlType(SqlTypeFactory.UInt64))
+					rc.Property(x => x.ULongProperty);
+				else
+					_unsupportedNumericalProperties.Add(nameof(Entity.ULongProperty));
 			});
 
 			mapper.Class<BaseClass>(rc =>
@@ -226,6 +255,66 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 			IList<Entity> list = null;
 			Assert.That(async () => list = await (query.ListAsync<Entity>()), Throws.Nothing);
 			Assert.That(list, Has.Count.EqualTo(1), $"Unable to find entity with UriProperty {propertyName}");
+		}
+
+		private static readonly string[] NumericalTypesInjections =
+		{
+			nameof(Entity.ByteProperty),
+			nameof(Entity.DecimalProperty),
+			nameof(Entity.DoubleProperty),
+			nameof(Entity.FloatProperty),
+			nameof(Entity.ShortProperty),
+			nameof(Entity.IntProperty),
+			nameof(Entity.LongProperty),
+			nameof(Entity.SByteProperty),
+			nameof(Entity.UShortProperty),
+			nameof(Entity.UIntProperty),
+			nameof(Entity.ULongProperty)
+		};
+
+		private readonly HashSet<string> _unsupportedNumericalProperties = new();
+
+		[TestCaseSource(nameof(NumericalTypesInjections))]
+		public async Task SqlInjectionInNumericalTypeAsync(string propertyName)
+		{
+			Assume.That(_unsupportedNumericalProperties, Does.Not.Contains((object)propertyName), $"The {propertyName} property is unsupported by the dialect");
+
+			Entity.ArbitraryStringValue = "0; drop table Entity; --";
+			using (var session = OpenSession())
+			{
+				IQuery query;
+				// Defining that query is invalid and should throw.
+				try
+				{
+					query = session.CreateQuery($"from Entity e where e.{propertyName} = Entity.{nameof(Entity.ArbitraryStringValue)}");
+				}
+				catch (Exception ex)
+				{
+					// All good.
+					Assert.Pass($"The wicked query creation has been rejected, as it should: {ex}");
+					// Needed for the compiler who does not know "Pass" always throw.
+					return;
+				}
+
+				// The query definition has been accepted, run it.
+				try
+				{
+					await (query.ListAsync<Entity>());
+				}
+				catch (Exception ex)
+				{
+					// Expecting no exception at that point, but the test is to check if the injection succeeded.
+					Assert.Warn($"The wicked query execution has failed: {ex}");
+				}
+			}
+
+			// Check if we can still query Entity. If it succeeds, at least it means the injection failed.
+			using (var session = OpenSession())
+			{
+				IList<Entity> list = null;
+				Assert.That(async () => list = await (session.CreateQuery("from Entity e").ListAsync<Entity>()), Throws.Nothing);
+				Assert.That(list, Has.Count.GreaterThan(0));
+			}
 		}
 	}
 }

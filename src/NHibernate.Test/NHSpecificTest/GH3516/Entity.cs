@@ -10,6 +10,18 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 		public virtual CharEnum CharacterEnum { get; set; } = CharEnum.SimpleChar;
 		public virtual Uri UriProperty { get; set; }
 
+		public virtual byte ByteProperty { get; set; }
+		public virtual decimal DecimalProperty { get; set; }
+		public virtual double DoubleProperty { get; set; }
+		public virtual float FloatProperty { get; set; }
+		public virtual short ShortProperty { get; set; }
+		public virtual int IntProperty { get; set; }
+		public virtual long LongProperty { get; set; }
+		public virtual sbyte SByteProperty { get; set; }
+		public virtual ushort UShortProperty { get; set; }
+		public virtual uint UIntProperty { get; set; }
+		public virtual ulong ULongProperty { get; set; }
+
 		public const string NameWithSingleQuote = "'; drop table Entity; --";
 		public const string NameWithEscapedSingleQuote = @"\'; drop table Entity; --";
 

@@ -15,7 +15,7 @@ for your own use before compiling tests in Visual Studio.
 		<property name="connection.connection_string">
 			UID=DBA;PWD=sql;Server=localhost;DBN=nhibernate;DBF=c:\nhibernate.db;ASTOP=No;Enlist=false;
 		</property>
-		<property name="dialect">NHibernate.Dialect.SybaseSQLAnywhere12Dialect</property>
+		<property name="dialect">NHibernate.Dialect.SapSQLAnywhere17Dialect</property>
 		<property name="query.substitutions">true=1;false=0</property>
 	</session-factory>
 </hibernate-configuration>
