@@ -24,7 +24,14 @@ jobs:
             CONNECTION_STRING: "Host=localhost;Username=nhibernate;Password=nhibernate;Database=nhibernate;Enlist=true;"
             OS: ubuntu-latest
             DB_INIT: |
-             docker run -d -e POSTGRES_USER=nhibernate  -e POSTGRES_PASSWORD=nhibernate -e POSTGRES_DB=nhibernate -p 5432:5432 postgres:13
+             docker run -d -e POSTGRES_USER=nhibernate -e POSTGRES_PASSWORD=nhibernate -e POSTGRES_DB=nhibernate -p 5432:5432 postgres:13
+          - DB: PostgreSQL
+            CONNECTION_STRING: "Host=localhost;Username=postgres;Password=nhibernate;Database=nhibernate;Enlist=true;"
+            OS: windows-latest
+            DB_INIT: |
+              choco install postgresql13 --no-progress --params '/Password:nhibernate'
+              Add-Content -Path 'C:\Program Files\PostgreSQL\13\data\postgresql.conf' -Value "`r`nmax_prepared_transactions = 100"
+              Start-Service 'postgresql-x64-13'
           - DB: Firebird
             CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
             OS: ubuntu-latest
@@ -55,11 +62,16 @@ jobs:
     steps:
     - name: Set up ${{matrix.DB}}
       run: ${{matrix.DB_INIT}}
-    - uses: actions/checkout@v4
-    - name: Setup .NET
+
+    - name: Set up .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        show-progress: false
 
     - name: Build and Test
       run: |
