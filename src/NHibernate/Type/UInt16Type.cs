@@ -114,7 +114,7 @@ namespace NHibernate.Type
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return value.ToString();
+			return Convert.ToUInt16(value).ToString();
 		}
 	}
 }
