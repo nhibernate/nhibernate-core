@@ -1,4 +1,4 @@
-name: .NET Core ${{matrix.OS}}
+name: .NET Core
 
 on: [push, pull_request]
 
@@ -50,7 +50,7 @@ jobs:
     continue-on-error: ${{matrix.ALLOW_FAILURE == true}}
     env:
       LANG: en-US.UTF-8 #default POSIX locale doesn't support ignore case comparisons
-    name: ${{matrix.DB}}
+    name: ${{matrix.DB}} - ${{matrix.OS}}
 
     steps:
     - name: Set up ${{matrix.DB}}
