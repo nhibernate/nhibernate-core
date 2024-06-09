@@ -12,7 +12,6 @@ environment:
   - DB: Firebird4
   - DB: MySQL
     CONNECTION_STRING: Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;SslMode=none;CharSet=utf8;
-  - DB: SQLite
 init:
     # Required for having windows endlines in sources zip
     - git config --global core.autocrlf true
