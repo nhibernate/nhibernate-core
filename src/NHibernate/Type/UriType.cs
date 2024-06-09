@@ -84,9 +84,7 @@ namespace NHibernate.Type
 		}
 
 		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
-		{
-			return "'" + ((Uri)value).OriginalString + "'";
-		}
+			=> dialect.ToStringLiteral(((Uri) value).OriginalString, SqlType);
 
 		/// <inheritdoc />
 		public override object Assemble(object cached, ISessionImplementor session, object owner)
