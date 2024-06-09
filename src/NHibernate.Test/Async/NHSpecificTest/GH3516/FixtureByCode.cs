@@ -31,6 +31,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 				rc.Property(x => x.Name);
 				rc.Property(x => x.FirstChar);
 				rc.Property(x => x.CharacterEnum, m => m.Type<EnumCharType<CharEnum>>());
+				rc.Property(x => x.UriProperty);
 			});
 
 			mapper.Class<BaseClass>(rc =>
@@ -57,14 +58,16 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 				{ 
 					Name = Entity.NameWithSingleQuote,
 					FirstChar = Entity.QuoteInitial,
-					CharacterEnum = CharEnum.SingleQuote
+					CharacterEnum = CharEnum.SingleQuote,
+					UriProperty = Entity.UriWithSingleQuote
 				});
 			session.Save(
 				new Entity
 				{
 					Name = Entity.NameWithEscapedSingleQuote,
 					FirstChar = Entity.BackslashInitial,
-					CharacterEnum = CharEnum.Backslash
+					CharacterEnum = CharEnum.Backslash,
+					UriProperty = Entity.UriWithEscapedSingleQuote
 				});
 
 			transaction.Commit();
@@ -207,6 +210,22 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 			IList<Entity> list = null;
 			Assert.That(async () => list = await (query.ListAsync<Entity>()), Throws.Nothing);
 			Assert.That(list, Has.Count.EqualTo(1), $"Unable to find entity with CharacterEnum {enumName}");
+		}
+
+		private static readonly string[] UriInjections =
+		{
+			nameof(Entity.UriWithSingleQuote), nameof(Entity.UriWithEscapedSingleQuote)
+		};
+
+		[TestCaseSource(nameof(UriInjections))]
+		public void SqlInjectionWithUriAsync(string propertyName)
+		{
+			using var session = OpenSession();
+
+			var query = session.CreateQuery($"from Entity e where e.UriProperty = Entity.{propertyName}");
+			IList<Entity> list = null;
+			Assert.That(async () => list = await (query.ListAsync<Entity>()), Throws.Nothing);
+			Assert.That(list, Has.Count.EqualTo(1), $"Unable to find entity with UriProperty {propertyName}");
 		}
 	}
 }

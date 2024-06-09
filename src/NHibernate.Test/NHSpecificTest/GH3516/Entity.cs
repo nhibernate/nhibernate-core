@@ -8,6 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 		public virtual string Name { get; set; }
 		public virtual char FirstChar { get; set; }
 		public virtual CharEnum CharacterEnum { get; set; } = CharEnum.SimpleChar;
+		public virtual Uri UriProperty { get; set; }
 
 		public const string NameWithSingleQuote = "'; drop table Entity; --";
 		public const string NameWithEscapedSingleQuote = @"\'; drop table Entity; --";
@@ -18,6 +19,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 		public const char QuoteInitial = '\'';
 		public const char BackslashInitial = '\\';
 
+		public static readonly Uri UriWithSingleQuote = new("https://somewhere/?sql='; drop table Entity; --");
+		public static readonly Uri UriWithEscapedSingleQuote = new(@"https://somewhere/?sql=\'; drop table Entity; --");
 	}
 
 	public enum CharEnum
