@@ -386,7 +386,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			property.Cascade = collectionMapping.Cascade ?? mappings.DefaultCascade;
 		}
 
-		private Property CreateProperty(IEntityPropertyMapping propertyMapping, System.Type propertyOwnerType, IValue value, IDictionary<string, MetaAttribute> inheritedMetas)
+		private Property CreateProperty(IEntityPropertyMapping propertyMapping, System.Type propertyOwnerType, SimpleValue value, IDictionary<string, MetaAttribute> inheritedMetas)
 		{
 			var type = propertyOwnerType?.UnwrapIfNullable();
 			if (string.IsNullOrEmpty(propertyMapping.Name))
@@ -394,8 +394,27 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 			var propertyAccessorName = GetPropertyAccessorName(propertyMapping.Access);
 
-			if (type != null && value.IsSimpleValue)
-				value.SetTypeUsingReflection(type.AssemblyQualifiedName, propertyMapping.Name, propertyAccessorName);
+			if (type != null)
+				value.SetTypeUsingReflection(type, propertyMapping.Name, propertyAccessorName);
+
+			return new Property
+			{
+				Name = propertyMapping.Name,
+				PropertyAccessorName = propertyAccessorName,
+				Value = value,
+				IsLazy = propertyMapping.IsLazyProperty,
+				LazyGroup = propertyMapping.GetLazyGroup(),
+				IsOptimisticLocked = propertyMapping.OptimisticLock,
+				MetaAttributes = GetMetas(propertyMapping, inheritedMetas)
+			};
+		}
+		
+		private Property CreateProperty(IEntityPropertyMapping propertyMapping, System.Type propertyOwnerType, Mapping.Collection value, IDictionary<string, MetaAttribute> inheritedMetas)
+		{
+			if (string.IsNullOrEmpty(propertyMapping.Name))
+				throw new MappingException("A property mapping must define the name attribute [" + propertyOwnerType + "]");
+
+			var propertyAccessorName = GetPropertyAccessorName(propertyMapping.Access);
 
 			return new Property
 			{

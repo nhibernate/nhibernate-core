@@ -45,7 +45,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (idSchema.name != null)
 			{
 				string access = idSchema.access ?? mappings.DefaultAccess;
-				id.SetTypeUsingReflection(rootClass.MappedClass?.AssemblyQualifiedName, idSchema.name, access);
+				id.SetTypeUsingReflection(rootClass.MappedClass, idSchema.name, access);
 
 				var property = new Property(id) { Name = idSchema.name };
 
