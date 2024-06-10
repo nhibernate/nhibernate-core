@@ -11,6 +11,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.SqlTypes;
@@ -61,6 +62,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 					rc.Property(x => x.ULongProperty);
 				else
 					_unsupportedNumericalProperties.Add(nameof(Entity.ULongProperty));
+
+				rc.Property(x => x.DateProperty);
 			});
 
 			mapper.Class<BaseClass>(rc =>
@@ -77,6 +80,9 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
 		}
+
+		private CultureInfo _backupCulture;
+		private CultureInfo _backupUICulture;
 
 		protected override void OnSetUp()
 		{
@@ -100,10 +106,19 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 				});
 
 			transaction.Commit();
+
+			_backupCulture = CultureInfo.CurrentCulture;
+			_backupUICulture = CultureInfo.CurrentUICulture;
 		}
 
 		protected override void OnTearDown()
 		{
+			if (_backupCulture != null)
+			{
+				CultureInfo.CurrentCulture = _backupCulture;
+				CultureInfo.CurrentUICulture = _backupUICulture;
+			}
+
 			using var session = OpenSession();
 			using var transaction = session.BeginTransaction();
 			session.CreateQuery("delete from System.Object").ExecuteUpdate();
@@ -315,6 +330,25 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 				Assert.That(async () => list = await (session.CreateQuery("from Entity e").ListAsync<Entity>()), Throws.Nothing);
 				Assert.That(list, Has.Count.GreaterThan(0));
 			}
+		}
+
+		[Test]
+		public void SqlInjectionWithDatetimeAsync()
+		{
+			var wickedCulture = new CultureInfo("en-US");
+			wickedCulture.DateTimeFormat.ShortDatePattern = "yyyy-MM-ddTHH:mm:ss\\'\"; drop table Entity; --\"";
+			CultureInfo.CurrentCulture = wickedCulture;
+			CultureInfo.CurrentUICulture = wickedCulture;
+
+			using var session = OpenSession();
+
+			var query = session.CreateQuery($"from Entity e where e.DateProperty = Entity.StaticDateProperty");
+			IList<Entity> list = null;
+			Assume.That(() => list = query.List<Entity>(), Throws.Nothing,
+				"The first execution of the query failed, the injection has likely failed");
+			// Execute again to check the table is still here.
+			Assert.That(async () => list = await (query.ListAsync<Entity>()), Throws.Nothing,
+				"The second execution of the query failed although the first one did not: the injection has succeeded");
 		}
 	}
 }

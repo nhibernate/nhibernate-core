@@ -22,6 +22,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 		public virtual uint UIntProperty { get; set; }
 		public virtual ulong ULongProperty { get; set; }
 
+		public virtual DateTime DateProperty { get; set; } = StaticDateProperty;
+
 		public const string NameWithSingleQuote = "'; drop table Entity; --";
 		public const string NameWithEscapedSingleQuote = @"\'; drop table Entity; --";
 
@@ -33,6 +35,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 
 		public static readonly Uri UriWithSingleQuote = new("https://somewhere/?sql='; drop table Entity; --");
 		public static readonly Uri UriWithEscapedSingleQuote = new(@"https://somewhere/?sql=\'; drop table Entity; --");
+
+		public static readonly DateTime StaticDateProperty = DateTime.Today;
 	}
 
 	public enum CharEnum
