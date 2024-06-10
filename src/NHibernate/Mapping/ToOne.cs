@@ -54,11 +54,22 @@ namespace NHibernate.Mapping
 		/// </summary>
 		public abstract override void CreateForeignKey();
 
+		// Since v5.6
+		[Obsolete("This method is not used and will be removed in a future version")]
 		public override void SetTypeUsingReflection(string className, string propertyName, string accesorName)
 		{
 			if (referencedEntityName == null)
 			{
 				System.Type refType = ReflectHelper.ReflectedPropertyClass(className, propertyName, accesorName);
+				referencedEntityName = refType.FullName;
+			}
+		}
+
+		public override void SetTypeUsingReflection(System.Type propertyOwnerType, string propertyName, string accessorName)
+		{
+			if (referencedEntityName == null)
+			{
+				System.Type refType = ReflectHelper.ReflectedPropertyClass(propertyOwnerType, propertyName, accessorName);
 				referencedEntityName = refType.FullName;
 			}
 		}
