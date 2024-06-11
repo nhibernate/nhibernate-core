@@ -27,7 +27,6 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 		{
 			config.SetProperty(Environment.UseQueryCache, "true");
 			config.SetProperty(Environment.GenerateStatistics, "true");
-			base.Configure(config);
 		}
 
 		[Test]

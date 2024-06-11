@@ -21,12 +21,9 @@ namespace NHibernate.Test.NHSpecificTest.NH1144
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
-		private Configuration configuration;
-
 		protected override void Configure(Configuration configuration)
 		{
-			this.configuration = configuration;
-			this.configuration.Properties[Environment.BatchSize] = "10";
+			configuration.Properties[Environment.BatchSize] = "10";
 		}
 
 		[Test]

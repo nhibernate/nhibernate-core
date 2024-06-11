@@ -13,7 +13,6 @@ namespace NHibernate.Test.SqlTest.Identity
 
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(Environment.FormatSql, "false");
 		}
 

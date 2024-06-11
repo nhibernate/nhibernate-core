@@ -22,7 +22,6 @@ namespace NHibernate.Test.Linq
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(Environment.BatchStrategy,
 									  typeof(TimeoutCatchingNonBatchingBatcherFactory).AssemblyQualifiedName);
 		}

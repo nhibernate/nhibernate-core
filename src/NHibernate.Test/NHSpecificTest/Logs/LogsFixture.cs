@@ -35,7 +35,6 @@ namespace NHibernate.Test.NHSpecificTest.Logs
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(Cfg.Environment.UseSecondLevelCache, "false");
 		}
 

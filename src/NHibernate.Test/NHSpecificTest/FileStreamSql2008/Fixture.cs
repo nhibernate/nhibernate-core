@@ -28,10 +28,10 @@ namespace NHibernate.Test.NHSpecificTest.FileStreamSql2008
 			return dialect is MsSql2008Dialect;
 		}
 
-		protected override void Configure(Configuration cfg)
+		protected override void Configure(Configuration configuration)
 		{
 			//Points to the database created with FileStream Filegroup.
-			cfg.Properties["connection.connection_string"] =
+			configuration.Properties["connection.connection_string"] =
 				@"Data Source=localhost\SQLEXPRESS;Initial Catalog=FileStreamDB;Integrated Security=True;Pooling=False";
 
 			#region CREATE DATABASE example

@@ -30,8 +30,6 @@ namespace NHibernate.Test.Unionsubclass
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
-
 			configuration.SetProperty(Environment.Hbm2ddlKeyWords, "auto-quote");
 		}
 

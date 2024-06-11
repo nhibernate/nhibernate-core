@@ -33,7 +33,6 @@ namespace NHibernate.Test.FetchLazyProperties
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
 			configuration.Properties[Environment.UseSecondLevelCache] = "true";
 		}

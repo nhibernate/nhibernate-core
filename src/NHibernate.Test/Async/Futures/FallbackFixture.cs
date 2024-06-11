@@ -43,8 +43,7 @@ namespace NHibernate.Test.Futures
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
-			using (var cp = ConnectionProviderFactory.NewConnectionProvider(cfg.Properties))
+			using (var cp = ConnectionProviderFactory.NewConnectionProvider(configuration.Properties))
 			{
 				if (cp.Driver is SqlClientDriver)
 				{

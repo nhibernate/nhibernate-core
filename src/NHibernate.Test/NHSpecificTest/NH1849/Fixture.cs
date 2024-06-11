@@ -29,8 +29,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1849
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
-
 			// Ugly hack.
 			_OrignalDialectIsMsSql2005Dialect = Regex.IsMatch(configuration.GetProperty("dialect"), "MsSql200(5|8)Dialect");
 
