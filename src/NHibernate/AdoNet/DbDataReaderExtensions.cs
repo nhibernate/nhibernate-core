@@ -12,7 +12,7 @@ namespace NHibernate.AdoNet
 				value = rs.GetBoolean(ordinal);
 				return true;
 			}
-			catch (InvalidCastException)
+			catch (Exception)
 			{
 				value = default;
 				return false;
@@ -26,7 +26,7 @@ namespace NHibernate.AdoNet
 				value = rs.GetByte(ordinal);
 				return true;
 			}
-			catch (InvalidCastException)
+			catch (Exception)
 			{
 				value = default;
 				return false;
@@ -40,7 +40,7 @@ namespace NHibernate.AdoNet
 				value = rs.GetChar(ordinal);
 				return true;
 			}
-			catch (InvalidCastException)
+			catch (Exception)
 			{
 				value = default;
 				return false;
@@ -54,7 +54,7 @@ namespace NHibernate.AdoNet
 				value = rs.GetDecimal(ordinal);
 				return true;
 			}
-			catch (InvalidCastException)
+			catch (Exception)
 			{
 				value = default;
 				return false;
@@ -68,7 +68,7 @@ namespace NHibernate.AdoNet
 				value = rs.GetDouble(ordinal);
 				return true;
 			}
-			catch (InvalidCastException)
+			catch (Exception)
 			{
 				value = default;
 				return false;
@@ -82,7 +82,7 @@ namespace NHibernate.AdoNet
 				value = rs.GetDateTime(ordinal);
 				return true;
 			}
-			catch (InvalidCastException)
+			catch (Exception)
 			{
 				value = default;
 				return false;
@@ -95,7 +95,7 @@ namespace NHibernate.AdoNet
 				value = rs.GetFloat(ordinal);
 				return true;
 			}
-			catch (InvalidCastException)
+			catch (Exception)
 			{
 				value = default;
 				return false;
@@ -108,7 +108,7 @@ namespace NHibernate.AdoNet
 				value = rs.GetGuid(ordinal);
 				return true;
 			}
-			catch (InvalidCastException)
+			catch (Exception)
 			{
 				value = default;
 				return false;
@@ -136,7 +136,7 @@ namespace NHibernate.AdoNet
 				value = rs.GetInt16(ordinal);
 				return true;
 			}
-			catch (InvalidCastException)
+			catch (Exception)
 			{
 				value = default;
 				return false;
@@ -149,7 +149,7 @@ namespace NHibernate.AdoNet
 				value = rs.GetInt32(ordinal);
 				return true;
 			}
-			catch (InvalidCastException)
+			catch (Exception)
 			{
 				value = default;
 				return false;
@@ -177,7 +177,7 @@ namespace NHibernate.AdoNet
 				value = rs.GetInt64(ordinal);
 				return true;
 			}
-			catch (InvalidCastException)
+			catch (Exception)
 			{
 				value = default;
 				return false;
@@ -219,7 +219,7 @@ namespace NHibernate.AdoNet
 				value = rs.GetString(ordinal);
 				return true;
 			}
-			catch (InvalidCastException)
+			catch (Exception)
 			{
 				value = default;
 				return false;
