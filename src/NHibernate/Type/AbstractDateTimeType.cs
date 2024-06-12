@@ -176,7 +176,7 @@ namespace NHibernate.Type
 		public override object DefaultValue => BaseDateValue;
 
 		/// <inheritdoc />
-		public override string ObjectToSQLString(object value, Dialect.Dialect dialect) =>
-			"'" + (DateTime) value + "'";
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
+			=> dialect.ToStringLiteral(((DateTime) value).ToString(), SqlTypeFactory.GetAnsiString(50));
 	}
 }

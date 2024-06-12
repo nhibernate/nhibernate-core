@@ -56,7 +56,7 @@ namespace NHibernate.Test.SqlCommandTest
 			insert.SetTableName("test_insert_builder");
 
 #pragma warning disable CS0618 // Type or member is obsolete
-			insert.AddColumn("stringColumn", "aSQLValue", (ILiteralType)NHibernateUtil.String);
+			insert.AddColumn("stringColumn", "aSQLValue", (ILiteralType)NHibernateUtil.AnsiString);
 #pragma warning restore CS0618 // Type or member is obsolete
 			insert.SetComment("Test insert");
 			string expectedSql =

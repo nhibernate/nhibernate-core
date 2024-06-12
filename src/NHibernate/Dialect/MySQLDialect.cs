@@ -530,6 +530,16 @@ namespace NHibernate.Dialect
 		/// </remarks>
 		public override bool SupportsConcurrentWritingConnectionsInSameTransaction => false;
 
+		/// <inheritdoc />
+		/// <remarks><see langword="true" /> by default for MySQL,
+		/// <see href="https://dev.mysql.com/doc/refman/8.0/en/string-literals.html" />.</remarks>
+		protected override bool EscapeBackslashInStrings { get; set; } = true;
+
+		/// <inheritdoc />
+		/// <remarks><see langword="true" /> by default for MySQL,
+		/// <see href="https://dev.mysql.com/doc/refman/8.0/en/string-literals.html" />.</remarks>
+		protected override bool UseNPrefixForUnicodeStrings => true;
+
 		#region Overridden informational metadata
 
 		public override bool SupportsEmptyInList => false;

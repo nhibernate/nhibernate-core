@@ -105,7 +105,7 @@ namespace NHibernate.Test
 		/// </summary>
 		public virtual bool SupportsNonDataBoundCondition => true;
 
-		public bool SupportsSqlType(SqlType sqlType)
+		public virtual bool SupportsSqlType(SqlType sqlType)
 		{
 			try
 			{
