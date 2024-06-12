@@ -27,6 +27,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 		public virtual DateTimeOffset DateTimeOffsetProperty { get; set; } = StaticDateProperty;
 		public virtual DateTime TimeProperty { get; set; } = StaticDateProperty;
 
+		public virtual Guid GuidProperty { get; set; } = Guid.Empty;
+
 		public const string NameWithSingleQuote = "'; drop table Entity; --";
 		public const string NameWithEscapedSingleQuote = @"\'; drop table Entity; --";
 

@@ -63,6 +63,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 				else
 					_unsupportedProperties.Add(nameof(Entity.DateTimeOffsetProperty));
 				rc.Property(x => x.TimeProperty, m => m.Type(NHibernateUtil.Time));
+
+				rc.Property(x => x.GuidProperty);
 			});
 
 			mapper.Class<BaseClass>(rc =>
@@ -89,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 			using var transaction = session.BeginTransaction();
 			session.Save(
 				new Entity
-				{ 
+				{
 					Name = Entity.NameWithSingleQuote,
 					FirstChar = Entity.QuoteInitial,
 					CharacterEnum = CharEnum.SingleQuote,
@@ -289,7 +291,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 		[TestCaseSource(nameof(NumericalTypesInjections))]
 		public void SqlInjectionInNumericalType(string propertyName)
 		{
-			Assume.That(_unsupportedProperties, Does.Not.Contains((object)propertyName), $"The {propertyName} property is unsupported by the dialect");
+			Assume.That(_unsupportedProperties, Does.Not.Contains((object) propertyName), $"The {propertyName} property is unsupported by the dialect");
 
 			Entity.ArbitraryStringValue = "0; drop table Entity; --";
 			using (var session = OpenSession())
@@ -355,6 +357,26 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 			var staticPropertyName = propertyName == nameof(Entity.DateTimeOffsetProperty) ?
 				nameof(Entity.StaticDateTimeOffsetProperty) : nameof(Entity.StaticDateProperty);
 			var query = session.CreateQuery($"from Entity e where e.{propertyName} = Entity.{staticPropertyName}");
+			IList<Entity> list = null;
+			Assume.That(() => list = query.List<Entity>(), Throws.Nothing,
+				"The first execution of the query failed, the injection has likely failed");
+			// Execute again to check the table is still here.
+			Assert.That(() => list = query.List<Entity>(), Throws.Nothing,
+				"The second execution of the query failed although the first one did not: the injection has succeeded");
+		}
+
+		private static readonly string[] GuidInjections =
+		{
+			Entity.NameWithSingleQuote, Entity.NameWithEscapedSingleQuote
+		};
+
+		[TestCaseSource(nameof(GuidInjections))]
+		public void SqlInjectionWithGuid(string injection)
+		{
+			Entity.ArbitraryStringValue = $"{Guid.NewGuid()}{injection}";
+			using var session = OpenSession();
+
+			var query = session.CreateQuery($"from Entity e where e.GuidProperty = Entity.{nameof(Entity.ArbitraryStringValue)}");
 			IList<Entity> list = null;
 			Assume.That(() => list = query.List<Entity>(), Throws.Nothing,
 				"The first execution of the query failed, the injection has likely failed");
