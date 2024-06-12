@@ -7,12 +7,16 @@ using NHibernate.Mapping.ByCode;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace NHibernate.Test.NHSpecificTest.GH3516
 {
 	[TestFixture]
 	public class FixtureByCode : TestCaseMappingByCode
 	{
+
+		private readonly HashSet<string> _unsupportedProperties = new();
+
 		protected override HbmMapping GetMappings()
 		{
 			var mapper = new ModelMapper();
@@ -35,24 +39,30 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 				if (TestDialect.SupportsSqlType(SqlTypeFactory.SByte))
 					rc.Property(x => x.SByteProperty);
 				else
-					_unsupportedNumericalProperties.Add(nameof(Entity.SByteProperty));
+					_unsupportedProperties.Add(nameof(Entity.SByteProperty));
 
 				if (TestDialect.SupportsSqlType(SqlTypeFactory.UInt16))
 					rc.Property(x => x.UShortProperty);
 				else
-					_unsupportedNumericalProperties.Add(nameof(Entity.UShortProperty));
+					_unsupportedProperties.Add(nameof(Entity.UShortProperty));
 
 				if (TestDialect.SupportsSqlType(SqlTypeFactory.UInt32))
 					rc.Property(x => x.UIntProperty);
 				else
-					_unsupportedNumericalProperties.Add(nameof(Entity.UIntProperty));
+					_unsupportedProperties.Add(nameof(Entity.UIntProperty));
 
 				if (TestDialect.SupportsSqlType(SqlTypeFactory.UInt64))
 					rc.Property(x => x.ULongProperty);
 				else
-					_unsupportedNumericalProperties.Add(nameof(Entity.ULongProperty));
+					_unsupportedProperties.Add(nameof(Entity.ULongProperty));
 
-				rc.Property(x => x.DateProperty);
+				rc.Property(x => x.DateTimeProperty);
+				rc.Property(x => x.DateProperty, m => m.Type(NHibernateUtil.Date));
+				if (TestDialect.SupportsSqlType(SqlTypeFactory.DateTimeOffSet))
+					rc.Property(x => x.DateTimeOffsetProperty);
+				else
+					_unsupportedProperties.Add(nameof(Entity.DateTimeOffsetProperty));
+				rc.Property(x => x.TimeProperty, m => m.Type(NHibernateUtil.Time));
 			});
 
 			mapper.Class<BaseClass>(rc =>
@@ -276,12 +286,10 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 			nameof(Entity.ULongProperty)
 		};
 
-		private readonly HashSet<string> _unsupportedNumericalProperties = new();
-
 		[TestCaseSource(nameof(NumericalTypesInjections))]
 		public void SqlInjectionInNumericalType(string propertyName)
 		{
-			Assume.That(_unsupportedNumericalProperties, Does.Not.Contains((object)propertyName), $"The {propertyName} property is unsupported by the dialect");
+			Assume.That(_unsupportedProperties, Does.Not.Contains((object)propertyName), $"The {propertyName} property is unsupported by the dialect");
 
 			Entity.ArbitraryStringValue = "0; drop table Entity; --";
 			using (var session = OpenSession())
@@ -321,17 +329,32 @@ namespace NHibernate.Test.NHSpecificTest.GH3516
 			}
 		}
 
-		[Test]
-		public void SqlInjectionWithDatetime()
+		private static readonly string[] DateTypesInjections =
 		{
+			nameof(Entity.DateTimeProperty),
+			nameof(Entity.DateProperty),
+			nameof(Entity.DateTimeOffsetProperty),
+			nameof(Entity.TimeProperty)
+		};
+
+		[TestCaseSource(nameof(DateTypesInjections))]
+		public void SqlInjectionWithDatetime(string propertyName)
+		{
+			Assume.That(_unsupportedProperties, Does.Not.Contains((object) propertyName), $"The {propertyName} property is unsupported by the dialect");
+
 			var wickedCulture = new CultureInfo("en-US");
-			wickedCulture.DateTimeFormat.ShortDatePattern = "yyyy-MM-ddTHH:mm:ss\\'\"; drop table Entity; --\"";
+			if (propertyName == nameof(Entity.TimeProperty))
+				wickedCulture.DateTimeFormat.ShortTimePattern = "HH:mm:ss\\'\"; drop table Entity; --\"";
+			else
+				wickedCulture.DateTimeFormat.ShortDatePattern = "yyyy-MM-ddTHH:mm:ss\\'\"; drop table Entity; --\"";
 			CultureInfo.CurrentCulture = wickedCulture;
 			CultureInfo.CurrentUICulture = wickedCulture;
 
 			using var session = OpenSession();
 
-			var query = session.CreateQuery($"from Entity e where e.DateProperty = Entity.StaticDateProperty");
+			var staticPropertyName = propertyName == nameof(Entity.DateTimeOffsetProperty) ?
+				nameof(Entity.StaticDateTimeOffsetProperty) : nameof(Entity.StaticDateProperty);
+			var query = session.CreateQuery($"from Entity e where e.{propertyName} = Entity.{staticPropertyName}");
 			IList<Entity> list = null;
 			Assume.That(() => list = query.List<Entity>(), Throws.Nothing,
 				"The first execution of the query failed, the injection has likely failed");
