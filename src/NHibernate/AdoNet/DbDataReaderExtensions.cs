@@ -239,5 +239,41 @@ namespace NHibernate.AdoNet
 			value = default;
 			return false;
 		}
+
+		public static object[] GetValues(this DbDataReader rs, System.Type[] types)
+		{
+			if (types.Length != rs.FieldCount)
+			{
+				throw new InvalidOperationException("Exptected number of types does not match the number of fields.");
+			}
+
+			var values = new object[rs.FieldCount];
+
+			for (var i = 0; i < rs.FieldCount; i++)
+			{
+				var typeCode = System.Type.GetTypeCode(types[i]);
+
+				values[i] = typeCode switch
+				{
+					TypeCode.Boolean => rs.GetBoolean(i),
+					TypeCode.Char => rs.GetChar(i),
+					TypeCode.Byte => rs.GetByte(i),
+					TypeCode.Int16 => rs.GetInt16(i),
+					TypeCode.Int32 => rs.GetInt32(i),
+					TypeCode.Int64 => rs.GetInt64(i),
+					TypeCode.Single => rs.GetFloat(i),
+					TypeCode.Double => rs.GetDouble(i),
+					TypeCode.Decimal => rs.GetDecimal(i),
+					TypeCode.DateTime => rs.GetDateTime(i),
+					TypeCode.String => rs.GetString(i),
+					TypeCode.UInt16 => (ushort) rs[i],
+					TypeCode.UInt32 => (uint) rs[i],
+					TypeCode.UInt64 => (ulong) rs[i],
+					_ => rs[i]
+				};
+			}
+
+			return values;
+		}
 	}
 }
