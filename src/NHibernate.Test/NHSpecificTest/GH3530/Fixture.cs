@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using NHibernate.SqlTypes;
 using NUnit.Framework;
@@ -134,10 +135,17 @@ public class Fixture : BugTestCase
 		using (var session = OpenSession())
 		using (var tx = session.BeginTransaction())
 		{
+			AppDomain.CurrentDomain.FirstChanceException += OnFirstChanceException;
 			var entity = session.Get<U>(id);
+			AppDomain.CurrentDomain.FirstChanceException -= OnFirstChanceException;
 
 			assert(expectedValue, entity.DataValue);
 		}
+	}
+
+	private void OnFirstChanceException(object sender, FirstChanceExceptionEventArgs e)
+	{
+		Assert.Warn($"Driver threw a {e.Exception.GetType().Name} exception while retrieving the value.");
 	}
 
 	[Test, TestCaseSource(nameof(GetTestCases))]
