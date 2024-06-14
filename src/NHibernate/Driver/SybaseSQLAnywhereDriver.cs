@@ -1,9 +1,12 @@
-﻿namespace NHibernate.Driver
+using System.Data.Common;
+using NHibernate.AdoNet;
+
+namespace NHibernate.Driver
 {
 	/// <summary>
 	/// The SybaseSQLAnywhereDriver Driver provides a database driver for Sybase SQL Anywhere 10 and above
 	/// </summary>
-	public class SybaseSQLAnywhereDriver : ReflectionBasedDriver
+	public partial class SybaseSQLAnywhereDriver : ReflectionBasedDriver
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SybaseSQLAnywhereDriver"/> class.
@@ -32,5 +35,12 @@
 		}
 
 		public override bool RequiresTimeSpanForTime => true;
+
+		public override DbDataReader ExecuteReader(DbCommand command)
+		{
+			var reader = command.ExecuteReader();
+
+			return new SqlAnywhereDbDataReader(reader);
+		}
 	}
 }
