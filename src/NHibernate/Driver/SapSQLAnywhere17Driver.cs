@@ -22,7 +22,7 @@ namespace NHibernate.Driver
 		{
 			var reader = command.ExecuteReader();
 
-			return new NoCharDbDataReader(reader);
+			return new SqlAnywhereDbDataReader(reader);
 		}
 	}
 }

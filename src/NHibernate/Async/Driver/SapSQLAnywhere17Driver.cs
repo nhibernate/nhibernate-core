@@ -23,7 +23,7 @@ namespace NHibernate.Driver
 			cancellationToken.ThrowIfCancellationRequested();
 			var reader = await (command.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false);
 
-			return new NoCharDbDataReader(reader);
+			return new SqlAnywhereDbDataReader(reader);
 		}
 	}
 }
