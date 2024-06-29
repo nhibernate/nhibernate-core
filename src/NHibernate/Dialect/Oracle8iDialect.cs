@@ -529,7 +529,7 @@ namespace NHibernate.Dialect
 		public override string GenerateTemporaryTableName(String baseTableName)
 		{
 			string name = base.GenerateTemporaryTableName(baseTableName);
-			return name.Length > 30 ? name.Substring(1, (30) - (1)) : name;
+			return name.Length > 30 ? name.Substring(0, (30) - (1)) : name;
 		}
 
 		/// <inheritdoc />
