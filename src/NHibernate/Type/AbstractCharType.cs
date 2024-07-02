@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -20,12 +21,24 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			string dbValue = Convert.ToString(rs[index]);
-			// The check of the Length is a workaround see NH-2340
-			if (dbValue.Length > 0)
+			if (rs.TryGetChar(index, out var dbValue))
 			{
-				return dbValue[0];
+				return dbValue;
 			}
+
+			if (!rs.TryGetString(index, out var strValue))
+			{
+				var locale = session.Factory.Settings.Locale;
+
+				strValue = Convert.ToString(rs[index], locale);
+			}
+
+			// The check of the Length is a workaround see NH-2340
+			if (strValue.Length > 0)
+			{
+				return strValue[0];
+			}
+
 			return '\0'; // This line should never be executed
 		}
 

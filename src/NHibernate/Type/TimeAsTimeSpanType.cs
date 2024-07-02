@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using System.Collections.Generic;
 using System.Data;
+using NHibernate.AdoNet;
 
 namespace NHibernate.Type
 {
@@ -35,14 +36,19 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				var value = rs[index];
-				if (value is TimeSpan time) //For those dialects where DbType.Time means TimeSpan.
-					return time;
+				if (rs.TryGetTimeSpan(index, out var dbTimeSpan))
+				{
+					return dbTimeSpan;
+				}
 
-				// Todo: investigate if this convert should be made culture invariant, here and in other NHibernate types,
-				// such as AbstractDateTimeType and TimeType, or even in all other places doing such converts in NHibernate.
-				var dbValue = Convert.ToDateTime(value);
-				return dbValue.TimeOfDay;
+				if (!rs.TryGetDateTime(index, out var dbDateTime))
+				{
+					var locale = session.Factory.Settings.Locale;
+
+					dbDateTime = Convert.ToDateTime(rs[index], locale);
+				}
+
+				return dbDateTime.TimeOfDay;
 			}
 			catch (Exception ex)
 			{

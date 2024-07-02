@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using NHibernate.AdoNet;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
 
@@ -9,7 +10,7 @@ namespace NHibernate.Driver
 	/// <summary>
 	/// A NHibernate driver for Microsoft SQL Server CE data provider
 	/// </summary>
-	public class SqlServerCeDriver : ReflectionBasedDriver
+	public partial class SqlServerCeDriver : ReflectionBasedDriver
 	{
 		private static readonly Action<object, SqlDbType> SetSqlDbType =
 			DelegateHelper.BuildPropertySetter<SqlDbType>(
@@ -125,5 +126,12 @@ namespace NHibernate.Driver
 
 		/// <inheritdoc />
 		public override DateTime MinDate => new DateTime(1753, 1, 1);
+
+		public override DbDataReader ExecuteReader(DbCommand command)
+		{
+			var reader = command.ExecuteReader();
+
+			return new NoCharDbDataReader(reader);
+		}
 	}
 }

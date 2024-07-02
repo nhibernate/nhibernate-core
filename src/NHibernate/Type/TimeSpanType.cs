@@ -5,6 +5,7 @@ using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using System.Collections.Generic;
 using System.Data;
+using NHibernate.AdoNet;
 
 namespace NHibernate.Type
 {
@@ -27,7 +28,14 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return new TimeSpan(Convert.ToInt64(rs[index]));
+				if (!rs.TryGetInt64(index, out var dbValue))
+				{
+					var locale = session.Factory.Settings.Locale;
+
+					dbValue = Convert.ToInt64(rs[index], locale);
+				}
+
+				return new TimeSpan(dbValue);
 			}
 			catch (Exception ex)
 			{

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -19,6 +19,9 @@ namespace NHibernate.Test.TypesTest
 			CharBooleanType type =new CharBooleanTypeStub();
 			var session = Substitute.For<ISessionImplementor>();
 			var reader = Substitute.For<DbDataReader>();
+
+			reader.GetString(index0).Returns(expected.ToString());
+			reader.GetString(index1).Returns(expected.ToString());
 			reader[index0].Returns(expected.ToString());
 			reader[index1].Returns(expected.ToString());
 

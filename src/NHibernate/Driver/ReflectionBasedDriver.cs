@@ -41,10 +41,10 @@ namespace NHibernate.Driver
 		protected ReflectionBasedDriver(string providerInvariantName, string driverAssemblyName, string connectionTypeName, string commandTypeName)
 		{
 			// Try to get the types from an already loaded assembly
-			var connectionType = ReflectHelper.TypeFromAssembly(connectionTypeName, driverAssemblyName, false);
-			var commandType = ReflectHelper.TypeFromAssembly(commandTypeName, driverAssemblyName, false);
+			TypeOfConnection = ReflectHelper.TypeFromAssembly(connectionTypeName, driverAssemblyName, false);
+			TypeOfCommand = ReflectHelper.TypeFromAssembly(commandTypeName, driverAssemblyName, false);
 
-			if (connectionType == null || commandType == null)
+			if (TypeOfConnection == null || TypeOfCommand == null)
 			{
 #if NETFX || NETSTANDARD2_1_OR_GREATER
 				if (string.IsNullOrEmpty(providerInvariantName))
@@ -59,8 +59,8 @@ namespace NHibernate.Driver
 			}
 			else
 			{
-				connectionCommandProvider = new ReflectionDriveConnectionCommandProvider(connectionType, commandType);
-				DriverVersion = connectionType.Assembly.GetName().Version;
+				connectionCommandProvider = new ReflectionDriveConnectionCommandProvider(TypeOfConnection, TypeOfCommand);
+				DriverVersion = TypeOfConnection.Assembly.GetName().Version;
 			}
 		}
 
@@ -73,5 +73,8 @@ namespace NHibernate.Driver
 		{
 			return connectionCommandProvider.CreateCommand();
 		}
+
+		protected System.Type TypeOfConnection { get; private set; }
+		protected System.Type TypeOfCommand { get; private set; }
 	}
 }
