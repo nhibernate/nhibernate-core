@@ -5,7 +5,8 @@ on:
     paths:
       - '**.cs'
 
-permissions: {}
+permissions:
+  contents: write
 
 jobs:
   generate-async:
@@ -16,7 +17,6 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
         repository: ${{ github.event.pull_request.head.repo.full_name }}
-        token: ${{ secrets.NHIBERNATE_BOT_TOKEN }}
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
