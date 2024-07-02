@@ -14,11 +14,11 @@ using NHibernate.Test.NHSpecificTest;
 using NHibernate;
 using NHibernate.Test;
 using NHibernate.Test.MappingTest;
-using NHibernate.Test.NHSpecificTest.NHNewBug;
+using NHibernate.Test.NHSpecificTest.GH3569;
 */
 using NHibernate.Test.NHSpecificTest;
 
-namespace NHibernate.Test.NHSpecificTest.NHNewBug
+namespace NHibernate.Test.NHSpecificTest.GH3569
 {
 	
 

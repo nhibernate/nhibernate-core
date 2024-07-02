@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NHibernate.Test.NHSpecificTest.NHNewBug
+namespace NHibernate.Test.NHSpecificTest.GH3569
 {
 	public class Parent
 	{

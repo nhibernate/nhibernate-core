@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NHibernate.UserTypes;
 
-namespace NHibernate.Test.NHSpecificTest.NHNewBug
+namespace NHibernate.Test.NHSpecificTest.GH3569
 {
 	public class ContainedChild
 	{
