@@ -119,6 +119,12 @@ namespace NHibernate.Cfg
 		/// <summary> Enable formatting of SQL logged to the console</summary>
 		public const string FormatSql = "format_sql";
 
+		/// <summary>
+		/// Indicates if the database needs to have backslash escaped in string literals.
+		/// </summary>
+		/// <remarks>The default value is dialect dependent.</remarks>
+		public const string EscapeBackslashInStrings = "escape_backslash_in_strings";
+
 		// Since v5.0.1
 		[Obsolete("This setting has no usages and will be removed in a future version")]
 		public const string UseGetGeneratedKeys = "jdbc.use_get_generated_keys";

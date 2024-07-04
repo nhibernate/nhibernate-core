@@ -105,6 +105,26 @@ Release notes - NHibernate - Version 5.5.0
    * #3412 Revive hql ParsingFixture
 
 
+Build 5.4.9
+=============================
+
+Release notes - NHibernate - Version 5.4.9
+
+6 issues were resolved in this release, including CVE-2024-39677.
+
+** Bug
+
+   * #3547 Handle SQL injection vulnerabilities within ObjectToSQLString
+
+** Task
+
+   * #3576 Release 5.4.9
+   * #3558 Migrate AppVeyor & TC builds to PostgreSQL 13
+   * #3545 Upgrade Npgsql to a non vulnerable version
+   * #3544 Upgrade vulnerable test dependencies
+   * #3517 Obsolete vulnerable literal AddColumn
+
+
 Build 5.4.8
 =============================
 

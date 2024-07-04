@@ -873,6 +873,20 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>escape_backslash_in_strings</literal>
+                        </entry>
+                        <entry>
+                            Indicates if the database needs to have backslash escaped in string literals.
+                            The default value is dialect dependant. That is <literal>false</literal> for
+                            most dialects.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>show_sql</literal>
                         </entry>
                         <entry>
@@ -1514,12 +1528,6 @@ in the parameter binding.</programlisting>
                             <entry>PostgreSQL</entry>
                             <entry><literal>NHibernate.Dialect.PostgreSQLDialect</literal></entry>
                             <entry></entry>
-                        </row>
-                        <row>
-                            <entry>PostgreSQL</entry>
-                            <entry><literal>NHibernate.Dialect.PostgreSQLDialect</literal></entry>
-                            <entry>
-                            </entry>
                         </row>
                         <row>
                             <entry>PostgreSQL 8.1</entry>

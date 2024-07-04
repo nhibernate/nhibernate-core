@@ -71,8 +71,8 @@ before_test:
       'Odbc' { Start-Service 'MSSQL$SQL2017' }
       'PostgreSQL' {
         # Enable prepared transactions
-        Add-Content -Path 'C:\Program Files\PostgreSQL\10\data\postgresql.conf' -Value "`r`nmax_prepared_transactions = 100"
-        Start-Service 'postgresql-x64-10'
+        Add-Content -Path 'C:\Program Files\PostgreSQL\13\data\postgresql.conf' -Value "`r`nmax_prepared_transactions = 100"
+        Start-Service 'postgresql-x64-13'
       }
       'SqlServer2008' { Start-Service 'MSSQL$SQL2017' }
       'SqlServer2008-MicrosoftDataSqlClientDriver' { Start-Service 'MSSQL$SQL2017' }

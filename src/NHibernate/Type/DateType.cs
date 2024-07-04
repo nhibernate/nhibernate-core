@@ -93,8 +93,8 @@ namespace NHibernate.Type
 		public override object DefaultValue => customBaseDate;
 
 		/// <inheritdoc />
-		public override string ObjectToSQLString(object value, Dialect.Dialect dialect) =>
-			"\'" + ((DateTime)value).ToShortDateString() + "\'";
+		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
+			=> dialect.ToStringLiteral(((DateTime) value).ToShortDateString(), SqlTypeFactory.GetAnsiString(50));
 
 		// Since v5
 		[Obsolete("Its only parameter, BaseValue, is obsolete.")]

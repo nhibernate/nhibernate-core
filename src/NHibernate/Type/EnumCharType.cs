@@ -171,8 +171,6 @@ namespace NHibernate.Type
 		}
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
-		{
-			return '\'' + GetValue(value).ToString() + '\'';
-		}
+			=> dialect.ToStringLiteral(GetValue(value).ToString(), SqlType);
 	}
 }
