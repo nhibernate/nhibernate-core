@@ -129,10 +129,9 @@ namespace NHibernate.Type
 
 		#region ILiteralType Members
 
+		/// <inheritdoc />
 		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
-		{
-			return "'" + (string)value + "'";
-		}
+			=> dialect.ToStringLiteral((string)value, SqlType);
 
 		#endregion
 

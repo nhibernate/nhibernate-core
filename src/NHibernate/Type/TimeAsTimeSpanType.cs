@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Data.Common;
-using NHibernate.Engine;
-using NHibernate.SqlTypes;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+using System.Globalization;
+using NHibernate.Engine;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
@@ -117,7 +118,7 @@ namespace NHibernate.Type
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return '\'' + ((TimeSpan)value).Ticks.ToString() + '\'';
+			return '\'' + ((TimeSpan)value).Ticks.ToString(CultureInfo.InvariantCulture) + '\'';
 		}
 	}
 }

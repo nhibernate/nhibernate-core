@@ -16,6 +16,7 @@
 
     <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net48;net8.0</NhAppTargetFrameworks>
     <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;net48;netcoreapp2.0;netstandard2.0;netstandard2.1;net6.0;net8.0</NhLibTargetFrameworks>
+    <RuntimeFrameworkVersion Condition="'$(TargetFramework)' == 'netcoreapp2.0'">2.0.3</RuntimeFrameworkVersion>
     <NhNetFx>false</NhNetFx>
     <NhNetFx Condition="$(TargetFramework.StartsWith('net4'))">true</NhNetFx>
     <!-- Visual Basic requires to use coma (,) as a separator, other project types - semicolon (;) -->

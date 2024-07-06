@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
+using System.Globalization;
 using System.Numerics;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -46,7 +47,7 @@ namespace NHibernate.Type
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return value.ToString();
+			return ((byte)value).ToString(CultureInfo.InvariantCulture);
 		}
 
 		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml

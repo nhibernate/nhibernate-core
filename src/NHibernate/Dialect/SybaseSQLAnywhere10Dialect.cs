@@ -969,5 +969,15 @@ namespace NHibernate.Dialect
 		/// <inheritdoc />
 		/// <remarks>SQL Anywhere has a micro-second resolution.</remarks>
 		public override long TimestampResolutionInTicks => 10L;
+
+		/// <inheritdoc />
+		/// <remarks><see langword="true" /> by default for SQL Anywhere,
+		/// <see href="https://help.sap.com/docs/SAP_SQL_Anywhere/93079d4ba8e44920ae63ffb4def91f5b/817a3ded6ce21014bd99f3e554573180.html?version=17.0" />.</remarks>
+		protected override bool EscapeBackslashInStrings { get; set; } = true;
+
+		/// <inheritdoc />
+		/// <remarks><see langword="true" /> by default for SQL Anywhere,
+		/// <see href="https://help.sap.com/docs/SAP_SQL_Anywhere/93079d4ba8e44920ae63ffb4def91f5b/817a2c5f6ce21014aceea962de72126c.html?version=17.0" />.</remarks>
+		protected override bool UseNPrefixForUnicodeStrings => true;
 	}
 }

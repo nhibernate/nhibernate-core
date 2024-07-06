@@ -102,6 +102,7 @@ namespace NHibernate.Dialect
 
 			// If changing the default value, keep it in sync with OracleDataClientDriverBase.Configure.
 			UseNPrefixedTypesForUnicode = PropertiesHelper.GetBoolean(Environment.OracleUseNPrefixedTypesForUnicode, settings, false);
+
 			RegisterCharacterTypeMappings();
 			RegisterFloatingPointTypeMappings();
 		}
@@ -565,6 +566,10 @@ namespace NHibernate.Dialect
 		// 30 before 12.1. https://stackoverflow.com/a/756569/1178314
 		/// <inheritdoc />
 		public override int MaxAliasLength => 30;
+
+		/// <inheritdoc />
+		/// <remarks>Returns the same value as <see cref="UseNPrefixedTypesForUnicode" />.</remarks>
+		protected override bool UseNPrefixForUnicodeStrings => UseNPrefixedTypesForUnicode;
 
 		#region Overridden informational metadata
 

@@ -1,4 +1,21 @@
-﻿Build 5.5.1
+﻿Build 5.5.2
+=============================
+
+Release notes - NHibernate - Version 5.5.2
+
+3 issues were resolved in this release, including CVE CVE-2024-39677 through the merge of 5.4.9.
+
+** Bug
+
+   * #3536 MemberwiseClone should be virtual error in dotnet 9 preview 3
+
+** Task
+
+   * #3578 Release 5.5.1
+   * #3577 Merge 5.4.9 into 5.5.x
+
+
+Build 5.5.1
 =============================
 
 Release notes - NHibernate - Version 5.5.1
@@ -103,6 +120,26 @@ Release notes - NHibernate - Version 5.5.0
 ** Tests
 
    * #3412 Revive hql ParsingFixture
+
+
+Build 5.4.9
+=============================
+
+Release notes - NHibernate - Version 5.4.9
+
+6 issues were resolved in this release, including CVE-2024-39677.
+
+** Bug
+
+   * #3547 Handle SQL injection vulnerabilities within ObjectToSQLString
+
+** Task
+
+   * #3576 Release 5.4.9
+   * #3558 Migrate AppVeyor & TC builds to PostgreSQL 13
+   * #3545 Upgrade Npgsql to a non vulnerable version
+   * #3544 Upgrade vulnerable test dependencies
+   * #3517 Obsolete vulnerable literal AddColumn
 
 
 Build 5.4.8

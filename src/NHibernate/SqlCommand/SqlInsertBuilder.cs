@@ -66,6 +66,8 @@ namespace NHibernate.SqlCommand
 		/// <param name="val">The value to set for the column.</param>
 		/// <param name="literalType">The NHibernateType to use to convert the value to a sql string.</param>
 		/// <returns>The SqlInsertBuilder.</returns>
+		// Since v5.6
+		[Obsolete("This method is unsafe and has no more usages. Use the overload with a property type and use a parameterized query.")]
 		public SqlInsertBuilder AddColumn(string columnName, object val, ILiteralType literalType)
 		{
 			return AddColumn(columnName, literalType.ObjectToSQLString(val, Dialect));

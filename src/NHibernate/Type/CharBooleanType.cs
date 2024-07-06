@@ -51,9 +51,7 @@ namespace NHibernate.Type
 		}
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
-		{
-			return "'" + ToCharacter(value) + "'";
-		}
+			=> dialect.ToStringLiteral(ToCharacter(value), SqlType);
 
 		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
 		// attribute value is irrelevant to the method behavior.

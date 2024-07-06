@@ -166,8 +166,6 @@ namespace NHibernate.Type
 		}
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
-		{
-			return "'" + ((DateTime)value).ToShortTimeString() + "'";
-		}
+			=> dialect.ToStringLiteral(((DateTime) value).ToShortTimeString(), SqlTypeFactory.GetAnsiString(50));
 	}
 }
