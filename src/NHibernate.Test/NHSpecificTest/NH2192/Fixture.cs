@@ -45,7 +45,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2192
 		[Test]
 		public void HqlIsThreadsafe_UsingThreads()
 		{
-			object sync = new object();
+			Lock sync = new Lock();
 			List<int> results = new List<int>();
 			List<Exception> exceptions = new List<Exception>();
 

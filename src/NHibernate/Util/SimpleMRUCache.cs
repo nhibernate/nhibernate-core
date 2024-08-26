@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using System.Threading;
 
 namespace NHibernate.Util
 {
@@ -17,7 +18,7 @@ namespace NHibernate.Util
 	{
 		private const int DefaultStrongRefCount = 128;
 
-		private readonly object _syncRoot = new object();
+		private readonly Lock _syncRoot = new Lock();
 
 		private readonly int strongReferenceCount;
 

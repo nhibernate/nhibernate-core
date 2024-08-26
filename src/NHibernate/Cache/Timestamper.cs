@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 
 namespace NHibernate.Cache
 {
@@ -11,7 +12,7 @@ namespace NHibernate.Cache
 	///	</remarks>
 	public static class Timestamper
 	{
-		private static object lockObject = new object();
+		private static Lock lockObject = new Lock();
 
 		// hibernate is using System.currentMilliSeconds which is calculated
 		// from jan 1, 1970

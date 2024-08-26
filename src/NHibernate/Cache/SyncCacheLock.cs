@@ -10,28 +10,23 @@ namespace NHibernate.Cache
 
 		class MonitorLock : IDisposable
 		{
-			private readonly object _lockObj;
-
-			public MonitorLock(object lockObj)
-			{
-				_lockObj = lockObj;
-			}
+			private readonly Lock _lockObj = new Lock();
 
 			public IDisposable Lock()
 			{
-				Monitor.Enter(_lockObj);
+				_lockObj.Enter();
 				return this;
 			}
 
 			public void Dispose()
 			{
-				Monitor.Exit(_lockObj);
+				_lockObj.Exit();
 			}
 		}
 
 		public SyncCacheLock()
 		{
-			_monitorLock = new MonitorLock(this);
+			_monitorLock = new();
 		}
 
 		public void Dispose()

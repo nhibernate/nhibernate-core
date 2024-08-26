@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2030
 		[Test]
 		public void GetTypeWithLenShouldBeThreadSafe()
 		{
-			object sync = new object();
+			Lock sync = new Lock();
 			List<Exception> exceptions = new List<Exception>();
 
 			ManualResetEvent startEvent = new ManualResetEvent(false);

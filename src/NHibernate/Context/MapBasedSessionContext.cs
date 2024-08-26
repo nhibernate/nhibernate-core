@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Threading;
 using NHibernate.Engine;
 
 namespace NHibernate.Context
@@ -9,7 +10,7 @@ namespace NHibernate.Context
 		private readonly ISessionFactoryImplementor _factory;
 
 		// Must be static, different instances of MapBasedSessionContext may have to yield the same map.
-		private static readonly object _locker = new object();
+		private static readonly Lock _locker = new Lock();
 
 		protected MapBasedSessionContext(ISessionFactoryImplementor factory)
 		{

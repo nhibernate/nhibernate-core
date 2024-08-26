@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using NHibernate.Engine;
 using System.Linq;
+using System.Threading;
 
 namespace NHibernate.Stat
 {
 	public class StatisticsImpl : IStatistics, IStatisticsImplementor
 	{
-		private readonly object _syncRoot = new object();
+		private readonly Lock _syncRoot = new Lock();
 
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(StatisticsImpl));
 		private readonly ISessionFactoryImplementor sessionFactory;
