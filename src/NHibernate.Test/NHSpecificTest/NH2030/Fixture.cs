@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2030
 		[Test]
 		public void GetTypeWithLenShouldBeThreadSafe()
 		{
-			Lock sync = new Lock();
+			object sync = new object();
 			List<Exception> exceptions = new List<Exception>();
 
 			ManualResetEvent startEvent = new ManualResetEvent(false);
