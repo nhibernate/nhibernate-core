@@ -10,6 +10,8 @@
 
 using System;
 using System.Diagnostics;
+using NHibernate.Cache;
+using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Event;
@@ -73,6 +75,29 @@ namespace NHibernate.Action
 					await (preListeners[i].OnPreRecreateCollectionAsync(preEvent, cancellationToken)).ConfigureAwait(false);
 				}
 			}
+		}
+
+		public override async Task ExecuteAfterTransactionCompletionAsync(bool success, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			var cacheKey = new CacheKey(await (GetKeyAsync(cancellationToken)).ConfigureAwait(false), Persister.KeyType, Persister.Role, Session.Factory);
+			if (success)
+			{
+				if (Collection.WasInitialized && Session.PersistenceContext.ContainsCollection(Collection)
+				    && CollectionCacheEntry.TryCreate(Collection, Persister, out CollectionCacheEntry entry))
+				{
+					bool put = await (Persister.Cache.AfterInsertAsync(cacheKey, Persister.CacheEntryStructure.Structure(entry), null, cancellationToken)).ConfigureAwait(false);
+
+					if (put && Session.Factory.Statistics.IsStatisticsEnabled)
+					{
+						Session.Factory.StatisticsImplementor.SecondLevelCachePut(Persister.Cache.RegionName);
+					}
+
+					return; 
+				}
+			}
+
+			await (Persister.Cache.ReleaseAsync(cacheKey, Lock, cancellationToken)).ConfigureAwait(false);
 		}
 
 		private async Task PostRecreateAsync(CancellationToken cancellationToken)
