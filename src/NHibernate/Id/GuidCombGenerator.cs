@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using NHibernate.Engine;
 
 namespace NHibernate.Id
@@ -36,21 +37,50 @@ namespace NHibernate.Id
 		/// <returns>The new identifier as a <see cref="Guid"/>.</returns>
 		public object Generate(ISessionImplementor session, object obj)
 		{
-			return GenerateComb();
+			return GenerateComb(Guid.NewGuid(), DateTime.UtcNow);
 		}
 
 		/// <summary>
 		/// Generate a new <see cref="Guid"/> using the comb algorithm.
 		/// </summary>
-		private Guid GenerateComb()
+		protected static Guid GenerateComb(in Guid guid, DateTime utcNow)
 		{
-			byte[] guidArray = Guid.NewGuid().ToByteArray();
+#if NET8_0_OR_GREATER
+			Span<byte> guidArray = stackalloc byte[16];
+			Span<byte> msecsArray = stackalloc byte[sizeof(long)];
+			Span<byte> daysArray = stackalloc byte[sizeof(int)];
 
-			DateTime now = DateTime.UtcNow;
+			var bytesWritten = guid.TryWriteBytes(guidArray);
+			Debug.Assert(bytesWritten);
 
 			// Get the days and milliseconds which will be used to build the byte string 
-			TimeSpan days = new TimeSpan(now.Ticks - BaseDateTicks);
-			TimeSpan msecs = now.TimeOfDay;
+			TimeSpan days = new TimeSpan(utcNow.Ticks - BaseDateTicks);
+			TimeSpan msecs = utcNow.TimeOfDay;
+
+			// Convert to a byte array 
+			// Note that SQL Server is accurate to 1/300th of a millisecond so we divide by 3.333333 
+
+			bytesWritten = BitConverter.TryWriteBytes(daysArray, days.Days)
+				&& BitConverter.TryWriteBytes(msecsArray, (long)(msecs.TotalMilliseconds / 3.333333));
+			Debug.Assert(bytesWritten);
+
+			msecsArray.Reverse();
+
+			// Copy the bytes into the guid 
+			//Array.Copy(daysArray, daysArray.Length - 2, guidArray, guidArray.Length - 6, 2);
+			guidArray[10] = daysArray[1];
+			guidArray[11] = daysArray[0];
+
+			//Array.Copy(msecsArray, msecsArray.Length - 4, guidArray, guidArray.Length - 4, 4);
+			msecsArray[^4..].CopyTo(guidArray[^4..]);
+			return new Guid(guidArray);
+#else
+
+			byte[] guidArray = guid.ToByteArray();
+
+			// Get the days and milliseconds which will be used to build the byte string 
+			TimeSpan days = new TimeSpan(utcNow.Ticks - BaseDateTicks);
+			TimeSpan msecs = utcNow.TimeOfDay;
 
 			// Convert to a byte array 
 			// Note that SQL Server is accurate to 1/300th of a millisecond so we divide by 3.333333 
@@ -66,6 +96,7 @@ namespace NHibernate.Id
 			Array.Copy(msecsArray, msecsArray.Length - 4, guidArray, guidArray.Length - 4, 4);
 
 			return new Guid(guidArray);
+#endif
 		}
 
 		#endregion
