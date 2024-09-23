@@ -161,7 +161,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string propName = property.Text;
 			_propertyName = propName;
 
-			// If the uresolved property path isn't set yet, just use the property name.
+			// If the unresolved property path isn't set yet, just use the property name.
 			if (_propertyPath == null)
 			{
 				_propertyPath = propName;
