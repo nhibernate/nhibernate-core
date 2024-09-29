@@ -68,7 +68,7 @@
     <PackageReference Include="NHibernate.Caches.CoreDistributedCache.Memory" Version="5.9.0" />
     <PackageReference Include="NHibernate.Caches.Util.JsonSerializer" Version="5.9.0" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.117" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.14" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.4.5" />
     <PackageReference Include="NSubstitute" Version="5.1.0" />
     <PackageReference Include="NUnit" Version="3.14.0" />
     <PackageReference Include="NUnit.Analyzers" Version="4.2.0" />
