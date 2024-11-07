@@ -62,7 +62,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.17" />
+    <PackageReference Include="log4net" Version="3.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.7.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="3.1.5" />
     <PackageReference Include="NHibernate.Caches.CoreDistributedCache.Memory" Version="5.9.0" />
