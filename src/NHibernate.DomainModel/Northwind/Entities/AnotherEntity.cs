@@ -4,7 +4,7 @@
     {
         public virtual int Id { get; set; }
         public virtual string Output { get; set; }
-		public virtual string Input { get; set; }
-		public virtual CompositeIdEntity CompositeIdEntity { get; set; }
+        public virtual string Input { get; set; } 
+        public virtual CompositeIdEntity CompositeIdEntity { get; set; }
     }
 }
