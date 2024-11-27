@@ -113,5 +113,10 @@ namespace NHibernate.DomainModel.Northwind.Entities
         {
             get { return _session.Query<IUser>(); }
         }
+		
+		public IQueryable<AnotherEntity> AnotherEntity
+		{
+			get { return _session.Query<AnotherEntity>(); }
+		}
     }
 }

@@ -149,6 +149,8 @@ CREATE TABLE [dbo].[AnotherEntity](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Output] [nvarchar](255) NULL,
 	[Input] [nvarchar](255) NULL,
+	[CompositeObjectId] INT NULL,
+	[CompositeTenantId] INT NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -161,7 +163,26 @@ INSERT [dbo].[AnotherEntity] ([Id], [Input]) VALUES (2, N'input')
 INSERT [dbo].[AnotherEntity] ([Id], [Input], [Output]) VALUES (3, N'i/o', N'i/o')
 INSERT [dbo].[AnotherEntity] ([Id], [Input], [Output]) VALUES (4, N'input', N'output')
 INSERT [dbo].[AnotherEntity] ([Id], [Input], [Output]) VALUES (5, NULL, NULL)
+INSERT [dbo].[AnotherEntity] ([Id], [Input], [Output], [CompositeObjectId], [CompositeTenantId]) VALUES (6, N'in', N'out', 1, 10)
 SET IDENTITY_INSERT [dbo].[AnotherEntity] OFF
+/****** Object:  Table [dbo].[CompositeIdEntity] ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CompositeIdEntity](
+	[ObjectId] [int] NOT NULL,
+	[TenantId] [int] NOT NULL,
+	[Name] [nvarchar](128) NULL
+PRIMARY KEY CLUSTERED 
+(
+	[ObjectId] ASC,
+	[TenantId] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+INSERT [dbo].[CompositeIdEntity] ([ObjectId], [TenantId], [Name]) VALUES (1, 10, N'Jack Stephan')
+
 /****** Object:  Table [dbo].[Animal]    Script Date: 06/17/2010 13:08:54 ******/
 SET ANSI_NULLS ON
 GO
@@ -3952,6 +3973,12 @@ ALTER TABLE [dbo].[Roles]  WITH CHECK ADD  CONSTRAINT [FK1A2E670F36A436] FOREIGN
 REFERENCES [dbo].[AnotherEntity] ([Id])
 GO
 ALTER TABLE [dbo].[Roles] CHECK CONSTRAINT [FK1A2E670F36A436]
+GO
+/****** Object:  ForeignKey [FK_AnotherEntity_CompositeIdEntity] ******/
+ALTER TABLE [dbo].[AnotherEntity]  WITH CHECK ADD  CONSTRAINT [FK_AnotherEntity_CompositeIdEntity] FOREIGN KEY([CompositeObjectId], [CompositeTenantId])
+REFERENCES [dbo].[CompositeIdEntity] ([ObjectId], [TenantId])
+GO
+ALTER TABLE [dbo].[AnotherEntity] CHECK CONSTRAINT [FK_AnotherEntity_CompositeIdEntity]
 GO
 /****** Object:  ForeignKey [FK1A2E670F9E248253]    Script Date: 06/17/2010 13:08:54 ******/
 ALTER TABLE [dbo].[Roles]  WITH CHECK ADD  CONSTRAINT [FK1A2E670F9E248253] FOREIGN KEY([ParentId])
