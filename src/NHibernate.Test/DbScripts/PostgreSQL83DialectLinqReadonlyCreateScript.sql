@@ -114,7 +114,7 @@ SELECT pg_catalog.setval('anotherentity_id_seq', 5, true);
 
 CREATE TABLE compositeidentity (
     objectid integer NOT NULL,
-    tenantid integer NOT NULL
+    tenantid integer NOT NULL,
     name character varying(255)
 );
 
@@ -1017,7 +1017,7 @@ INSERT INTO anotherentity (id, output, input) VALUES (3, NULL, NULL);
 INSERT INTO anotherentity (id, output, input, compositeobjectid, compositetenantid) VALUES (4, 'output', 'input', 1, 10);
 INSERT INTO anotherentity (id, output, input) VALUES (5, 'output', NULL);
 
-INSERT INTO compositeidentity (objectid, tenantid, name) VALUES (1, 10, 'Jack Stephan')
+INSERT INTO compositeidentity (objectid, tenantid, name) VALUES (1, 10, 'Jack Stephan');
 --
 -- TOC entry 2004 (class 0 OID 29626)
 -- Dependencies: 1603
