@@ -161,9 +161,8 @@ SET IDENTITY_INSERT [dbo].[AnotherEntity] ON
 INSERT [dbo].[AnotherEntity] ([Id], [Output]) VALUES (1, N'output')
 INSERT [dbo].[AnotherEntity] ([Id], [Input]) VALUES (2, N'input')
 INSERT [dbo].[AnotherEntity] ([Id], [Input], [Output]) VALUES (3, N'i/o', N'i/o')
-INSERT [dbo].[AnotherEntity] ([Id], [Input], [Output]) VALUES (4, N'input', N'output')
+INSERT [dbo].[AnotherEntity] ([Id], [Input], [Output], [CompositeObjectId], [CompositeTenantId]) VALUES (4, N'input', N'output', 1, 10)
 INSERT [dbo].[AnotherEntity] ([Id], [Input], [Output]) VALUES (5, NULL, NULL)
-INSERT [dbo].[AnotherEntity] ([Id], [Input], [Output], [CompositeObjectId], [CompositeTenantId]) VALUES (6, N'in', N'out', 1, 10)
 SET IDENTITY_INSERT [dbo].[AnotherEntity] OFF
 /****** Object:  Table [dbo].[CompositeIdEntity] ******/
 SET ANSI_NULLS ON

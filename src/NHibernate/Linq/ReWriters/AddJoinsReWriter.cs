@@ -97,7 +97,7 @@ namespace NHibernate.Linq.ReWriters
 			if (ExpressionsHelper.TryGetMappedType(_sessionFactory, expression, out var mappedType, out var entityPersister, out var componentType, out var memberPath))
 			{
 				isIdentifier = IsIdentifierPath(entityPersister, componentType, memberPath);
-				return mappedType.IsEntityType;
+				return mappedType?.IsEntityType == true;
 			}
 			isIdentifier = false;
 			return false;
@@ -105,6 +105,10 @@ namespace NHibernate.Linq.ReWriters
 
 		bool IsIdentifierPath(IEntityPersister entityPersister, IAbstractComponentType componentType, string memberPath)
 		{
+			if (entityPersister == null)
+			{
+				return false;
+			}
 			if (entityPersister.IdentifierPropertyName == memberPath)
 			{
 				return true;
