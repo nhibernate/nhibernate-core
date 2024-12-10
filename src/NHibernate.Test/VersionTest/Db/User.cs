@@ -11,6 +11,8 @@ namespace NHibernate.Test.VersionTest.Db
 
 		public virtual string Username { get; set; }
 
+		public virtual string NoOptimisticLock { get; set; }
+
 		public virtual ISet<Group> Groups { get; set; }
 
 		public virtual ISet<Permission> Permissions { get; set; }
