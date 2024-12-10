@@ -42,6 +42,7 @@ namespace NHibernate.Test.VersionTest.Db
 			admin = s.Get<Group>(admin.Id);
 			guy.Groups.Add(admin);
 			admin.Users.Add(guy);
+			guy.NoOptimisticLock = "changed";
 			t.Commit();
 			s.Close();
 

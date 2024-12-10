@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
     Demonstrates how to control the optimistic locking behavior
     of a collection (do changes to the collection result in
@@ -14,6 +14,7 @@
 		</id>
 		<timestamp name="Timestamp" column="ts" source="db"/>
 		<property name="Username" column="user_name" type="string" unique="true"/>
+		<property name="NoOptimisticLock" column="no_optimistic_lock" type="string" optimistic-lock="false"/>
 		<set name="Groups" table="db_vers_user_group" batch-size="9" inverse="true" optimistic-lock="true" lazy="true" cascade="none" >
 			<key column="user_id"/>
 			<many-to-many column="group_id" class="Group" lazy="false" fetch="join" />
