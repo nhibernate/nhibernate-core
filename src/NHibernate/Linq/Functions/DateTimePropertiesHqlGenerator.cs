@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using NHibernate.Engine;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Visitors;
 using NHibernate.Util;
@@ -33,7 +34,12 @@ namespace NHibernate.Linq.Functions
 
 		public override HqlTreeNode BuildHql(MemberInfo member, Expression expression, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
-			return treeBuilder.MethodCall(member.Name.ToLowerInvariant(),
+			var functionName = member.Name.ToLowerInvariant();
+			if (functionName == "second")
+			{
+				functionName = "secondtruncated";
+			}
+			return treeBuilder.MethodCall(functionName,
 										  visitor.Visit(expression).AsExpression());
 		}
 	}
