@@ -34,7 +34,7 @@ namespace NHibernate.Id.Enhanced
 			}
 		}
 
-		private partial class TableAccessCallback : IAccessCallback
+		private partial class TableAccessCallback : IMultiTenantAccessCallback
 		{
 
 			#region IAccessCallback Members

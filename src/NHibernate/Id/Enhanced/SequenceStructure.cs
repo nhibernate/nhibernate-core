@@ -80,7 +80,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: SequenceAccessCallback
 
-		private partial class SequenceAccessCallback : IAccessCallback
+		private partial class SequenceAccessCallback : IMultiTenantAccessCallback
 		{
 			private readonly SequenceStructure _owner;
 			private readonly ISessionImplementor _session;

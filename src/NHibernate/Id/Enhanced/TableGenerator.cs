@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -385,7 +385,7 @@ namespace NHibernate.Id.Enhanced
 			}
 		}
 
-		private partial class TableAccessCallback : IAccessCallback
+		private partial class TableAccessCallback : IMultiTenantAccessCallback
 		{
 			private TableGenerator _owner;
 			private readonly ISessionImplementor _session;
