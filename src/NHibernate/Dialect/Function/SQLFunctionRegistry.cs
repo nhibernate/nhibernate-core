@@ -7,6 +7,8 @@ namespace NHibernate.Dialect.Function
 	{
 		private readonly Dialect dialect;
 		private readonly IDictionary<string, ISQLFunction> userFunctions;
+		//Temporary alias support
+		private static Dictionary<string, string> _functionAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "secondtruncated", "second" } };
 
 		public SQLFunctionRegistry(Dialect dialect, IDictionary<string, ISQLFunction> userFunctions)
 		{
@@ -20,8 +22,11 @@ namespace NHibernate.Dialect.Function
 		/// </summary>
 		public ISQLFunction FindSQLFunction(string functionName)
 		{
-			ISQLFunction result;
-			if (!userFunctions.TryGetValue(functionName, out result))
+			if (!userFunctions.ContainsKey(functionName) && !dialect.Functions.ContainsKey(functionName) && _functionAliases.TryGetValue(functionName, out var sqlFunction))
+			{
+				functionName = sqlFunction;
+			}
+			if (!userFunctions.TryGetValue(functionName, out ISQLFunction result))
 			{
 				dialect.Functions.TryGetValue(functionName, out result);
 			}
@@ -30,6 +35,10 @@ namespace NHibernate.Dialect.Function
 
 		public bool HasFunction(string functionName)
 		{
+			if (!userFunctions.ContainsKey(functionName) && !dialect.Functions.ContainsKey(functionName) && _functionAliases.TryGetValue(functionName, out var sqlFunction))
+			{
+				functionName = sqlFunction;
+			}
 			return userFunctions.ContainsKey(functionName) || dialect.Functions.ContainsKey(functionName);
 		}
 	}
