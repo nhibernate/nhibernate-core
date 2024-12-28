@@ -11,13 +11,13 @@
 using System;
 using System.Data;
 using System.Linq;
-using NHibernate.Cfg;
-using NHibernate.SqlTypes;
-using NHibernate.Mapping.ByCode;
-using NUnit.Framework;
-using NHibernate.Type;
-using NHibernate.Linq;
 using System.Linq.Expressions;
+using NHibernate.Cfg;
+using NHibernate.Linq;
+using NHibernate.Mapping.ByCode;
+using NHibernate.SqlTypes;
+using NHibernate.Type;
+using NUnit.Framework;
 
 namespace NHibernate.Test.Linq
 {
@@ -27,7 +27,6 @@ namespace NHibernate.Test.Linq
 	public class DateTimeTestsAsync : TestCase
 	{
 		private bool DialectSupportsDateTimeOffset => TestDialect.SupportsSqlType(new SqlType(DbType.DateTimeOffset));
-		private bool DialectSupportsDateTimeWithScale => TestDialect.SupportsSqlType(new SqlType(DbType.DateTime,(byte) 2));
 		private readonly DateTimeTestsClass[] _referenceEntities =
 		[
 			new() {Id =1, DateTimeValue = new DateTime(1998, 02, 26)},
@@ -39,6 +38,8 @@ namespace NHibernate.Test.Linq
 			new() {Id =7, DateTimeValue = new DateTime(1998, 03, 01)},
 			new() {Id =8, DateTimeValue = new DateTime(2000, 01, 01)}
 		];
+
+		private TimeSpan FractionalSecondsAdded => TimeSpan.FromMilliseconds(900);
 
 		protected override string[] Mappings => default;
 		protected override void AddMappings(Configuration configuration)
@@ -68,30 +69,26 @@ namespace NHibernate.Test.Linq
 			foreach (var entity in _referenceEntities)
 			{
 				entity.DateValue = entity.DateTimeValue.Date;
-				entity.DateTimeValueWithScale = entity.DateTimeValue.AddSeconds(0.9);
+				entity.DateTimeValueWithScale = entity.DateTimeValue + FractionalSecondsAdded;
 				entity.DateTimeOffsetValue = new DateTimeOffset(entity.DateTimeValue, TimeSpan.FromHours(3));
-				entity.DateTimeOffsetValueWithScale = new DateTimeOffset(entity.DateTimeValue, TimeSpan.FromHours(3));
+				entity.DateTimeOffsetValueWithScale = new DateTimeOffset(entity.DateTimeValueWithScale, TimeSpan.FromHours(3));
 			}
 
-			using (var session = OpenSession())
-			using (var trans = session.BeginTransaction())
+			using var session = OpenSession();
+			using var trans = session.BeginTransaction();
+			foreach (var entity in _referenceEntities)
 			{
-				foreach (var entity in _referenceEntities)
-				{
-					session.Save(entity);
-				}
-				trans.Commit();
+				session.Save(entity);
 			}
+			trans.Commit();
 		}
 
 		protected override void OnTearDown()
 		{
-			using (var session = OpenSession())
-			using (var trans = session.BeginTransaction())
-			{
-				session.Query<DateTimeTestsClass>().Delete();
-				trans.Commit();
-			}
+			using var session = OpenSession();
+			using var trans = session.BeginTransaction();
+			session.Query<DateTimeTestsClass>().Delete();
+			trans.Commit();
 		}
 
 		private void AssertDateTimeOffsetSupported()
@@ -102,22 +99,22 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
-		private async Task AssertDateTimeWithScaleSupportedAsync(CancellationToken cancellationToken = default(CancellationToken))
+		private async Task AssertDateTimeWithFractionalSecondsSupportedAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (!DialectSupportsDateTimeWithScale)
+			//Ideally, the dialect should know whether this is supported or not
+			if (!TestDialect.SupportsDateTimeWithFractionalSeconds)
 			{
-				Assert.Ignore("Dialect doesn't support DateTime with scale (2)");
-			}
-			using (var session = OpenSession())
-			using (var trans = session.BeginTransaction())
-			{
-				var entity1 = await (session.GetAsync<DateTimeTestsClass>(_referenceEntities[0].Id, cancellationToken));
-				if (entity1.DateTimeValueWithScale != entity1.DateTimeValue.AddSeconds(0.9))
-				{
-					Assert.Ignore("Current setup doesn't support DateTime with scale (2)");
-				}
+				Assert.Ignore("Dialect doesn't support DateTime with factional seconds");
 			}
 
+			//But it sometimes doesn't
+			using var session = OpenSession();
+			using var trans = session.BeginTransaction();
+			var entity1 = await (session.GetAsync<DateTimeTestsClass>(_referenceEntities[0].Id, cancellationToken));
+			if (entity1.DateTimeValueWithScale != entity1.DateTimeValue + FractionalSecondsAdded)
+			{
+				Assert.Ignore("Current setup doesn't support DateTime with scale (2)");
+			}
 		}
 
 		private Task AssertQueryAsync(Expression<Func<DateTimeTestsClass, bool>> where, CancellationToken cancellationToken = default(CancellationToken)) => AssertQueryAsync(where, x => x.Id, cancellationToken);
@@ -159,7 +156,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CanQueryDateTimeBySecondWhenValueContainsFractionalSecondsAsync()
 		{
-			await (AssertDateTimeWithScaleSupportedAsync());
+			await (AssertDateTimeWithFractionalSecondsSupportedAsync());
 			await (AssertQueryAsync(o => o.DateTimeValueWithScale.Second == 4));
 		}
 
@@ -236,7 +233,7 @@ namespace NHibernate.Test.Linq
 		[Test]
 		public async Task CanSelectDateTimeWithScaleAsync()
 		{
-			await (AssertDateTimeWithScaleSupportedAsync());
+			await (AssertDateTimeWithFractionalSecondsSupportedAsync());
 			await (AssertQueryAsync(o => o.DateTimeValueWithScale == _referenceEntities[0].DateTimeValueWithScale, o => o.DateTimeValueWithScale));
 		}
 
