@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,6 +9,7 @@ namespace NHibernate.Util
 	// https://devblogs.microsoft.com/pfxteam/building-async-coordination-primitives-part-7-asyncreaderwriterlock/
 	internal class AsyncReaderWriterLock : IDisposable, Cache.ICacheLock
 	{
+		private readonly Lock _writeLockLock = LockFactory.Create();
 		private readonly SemaphoreSlim _writeLockSemaphore = new SemaphoreSlim(1, 1);
 		private readonly SemaphoreSlim _readLockSemaphore = new SemaphoreSlim(0, 1);
 		private readonly Releaser _writerReleaser;
@@ -48,7 +49,7 @@ namespace NHibernate.Util
 			if (!CanEnterWriteLock(out var waitForReadLocks))
 			{
 				_writeLockSemaphore.Wait();
-				lock (_writeLockSemaphore)
+				lock (_writeLockLock)
 				{
 					_writersWaiting--;
 				}
@@ -74,7 +75,7 @@ namespace NHibernate.Util
 			if (!CanEnterWriteLock(out var waitForReadLocks))
 			{
 				await _writeLockSemaphore.WaitAsync().ConfigureAwait(false);
-				lock (_writeLockSemaphore)
+				lock (_writeLockLock)
 				{
 					_writersWaiting--;
 				}
@@ -126,7 +127,7 @@ namespace NHibernate.Util
 
 		public void Dispose()
 		{
-			lock (_writeLockSemaphore)
+			lock (_writeLockLock)
 			{
 				_writeLockSemaphore.Dispose();
 				_readLockSemaphore.Dispose();
@@ -139,7 +140,7 @@ namespace NHibernate.Util
 		private bool CanEnterWriteLock(out bool waitForReadLocks)
 		{
 			waitForReadLocks = false;
-			lock (_writeLockSemaphore)
+			lock (_writeLockLock)
 			{
 				AssertNotDisposed();
 				if (_writeLockSemaphore.CurrentCount > 0 && _writeLockSemaphore.Wait(0))
@@ -156,7 +157,7 @@ namespace NHibernate.Util
 
 		private void ExitWriteLock()
 		{
-			lock (_writeLockSemaphore)
+			lock (_writeLockLock)
 			{
 				AssertNotDisposed();
 				if (_writeLockSemaphore.CurrentCount == 1)
@@ -187,7 +188,7 @@ namespace NHibernate.Util
 
 		private bool CanEnterReadLock(out SemaphoreSlim waitingReadLockSemaphore)
 		{
-			lock (_writeLockSemaphore)
+			lock (_writeLockLock)
 			{
 				AssertNotDisposed();
 				if (_writersWaiting == 0 && _writeLockSemaphore.CurrentCount > 0)
@@ -212,7 +213,7 @@ namespace NHibernate.Util
 
 		private void ExitReadLock()
 		{
-			lock (_writeLockSemaphore)
+			lock (_writeLockLock)
 			{
 				AssertNotDisposed();
 				if (_currentReaders == 0)

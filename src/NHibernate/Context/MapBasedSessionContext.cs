@@ -10,7 +10,7 @@ namespace NHibernate.Context
 		private readonly ISessionFactoryImplementor _factory;
 
 		// Must be static, different instances of MapBasedSessionContext may have to yield the same map.
-		private static readonly Lock _locker = new Lock();
+		private static readonly Lock _locker = LockFactory.Create();
 
 		protected MapBasedSessionContext(ISessionFactoryImplementor factory)
 		{

@@ -12,7 +12,7 @@ namespace NHibernate.Cache
 	///	</remarks>
 	public static class Timestamper
 	{
-		private static Lock lockObject = new Lock();
+		private static Lock lockObject = LockFactory.Create();
 
 		// hibernate is using System.currentMilliSeconds which is calculated
 		// from jan 1, 1970

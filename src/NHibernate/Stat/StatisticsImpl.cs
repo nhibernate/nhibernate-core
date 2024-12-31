@@ -9,7 +9,7 @@ namespace NHibernate.Stat
 {
 	public class StatisticsImpl : IStatistics, IStatisticsImplementor
 	{
-		private readonly Lock _syncRoot = new Lock();
+		private readonly Lock _syncRoot = LockFactory.Create();
 
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(StatisticsImpl));
 		private readonly ISessionFactoryImplementor sessionFactory;
