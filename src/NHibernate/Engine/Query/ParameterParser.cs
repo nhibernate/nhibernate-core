@@ -48,47 +48,47 @@ namespace NHibernate.Engine.Query
 
 			int stringLength = sqlString.Length;
 			bool inQuote = false;
-			bool afterNewLine = false;
 			for (int indx = 0; indx < stringLength; indx++)
 			{
 				int currentNewLineLength;
 
-				// check comments
-				if (indx + 1 < stringLength && sqlString.Substring(indx,2) == "/*")
+				// check comments, unless in quote
+				if (!inQuote)
 				{
-					var closeCommentIdx = sqlString.IndexOf("*/", indx + 2, StringComparison.Ordinal);
-					recognizer.Other(sqlString.Substring(indx, (closeCommentIdx- indx)+2));
-					indx = closeCommentIdx + 1;
-					continue;
-				}
-				
-				if (afterNewLine && (indx + 1 < stringLength) && sqlString.Substring(indx, 2) == "--")
-				{
-					var closeCommentIdx = sqlString.IndexOfAnyNewLine(indx + 2, out currentNewLineLength);
-						
-					string comment;
-					if (closeCommentIdx == -1)
+					if (indx + 1 < stringLength && sqlString.Substring(indx, 2) == "/*")
 					{
-						closeCommentIdx = sqlString.Length;
-						comment = sqlString.Substring(indx);
+						var closeCommentIdx = sqlString.IndexOf("*/", indx + 2, StringComparison.Ordinal);
+						recognizer.Other(sqlString.Substring(indx, (closeCommentIdx - indx) + 2));
+						indx = closeCommentIdx + 1;
+						continue;
 					}
-					else
+
+					if ((indx + 1 < stringLength) && sqlString.Substring(indx, 2) == "--")
 					{
-						comment = sqlString.Substring(indx, closeCommentIdx - indx + currentNewLineLength);
+						var closeCommentIdx = sqlString.IndexOfAnyNewLine(indx + 2, out currentNewLineLength);
+
+						string comment;
+						if (closeCommentIdx == -1)
+						{
+							closeCommentIdx = sqlString.Length;
+							comment = sqlString.Substring(indx);
+						}
+						else
+						{
+							comment = sqlString.Substring(indx, closeCommentIdx - indx + currentNewLineLength);
+						}
+						recognizer.Other(comment);
+						indx = closeCommentIdx + currentNewLineLength - 1;
+						continue;
 					}
-					recognizer.Other(comment);
-					indx = closeCommentIdx + currentNewLineLength - 1;
-					continue;
 				}
 
 				if (sqlString.IsAnyNewLine(indx, out currentNewLineLength))
 				{
-					afterNewLine = true;
 					indx += currentNewLineLength - 1;
 					recognizer.Other(Environment.NewLine);
 					continue;
 				}
-				afterNewLine = false;
 
 				char c = sqlString[indx];
 				if (inQuote)
