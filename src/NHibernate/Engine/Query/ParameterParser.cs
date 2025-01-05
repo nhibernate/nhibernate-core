@@ -52,8 +52,8 @@ namespace NHibernate.Engine.Query
 			{
 				int currentNewLineLength;
 
-				// check comments, unless in quote
-				if (!inQuote)
+				// check comments, unless in quote or at end of string
+				if (!inQuote && indx + 1 < stringLength)
 				{
 					if (indx + 1 < stringLength && sqlString.Substring(indx, 2) == "/*")
 					{
