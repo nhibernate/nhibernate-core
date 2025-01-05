@@ -64,7 +64,7 @@ namespace NHibernate.Engine.Query
 						continue;
 					}
 
-					if ((indx + 1 < stringLength) && sqlString.Substring(indx, 2) == "--")
+					if (candidateOpenCommentToken == "--")
 					{
 						var closeCommentIdx = sqlString.IndexOfAnyNewLine(indx + 2, out currentNewLineLength);
 
