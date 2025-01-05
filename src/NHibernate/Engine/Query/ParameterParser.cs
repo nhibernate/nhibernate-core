@@ -55,7 +55,8 @@ namespace NHibernate.Engine.Query
 				// check comments, unless in quote or at end of string
 				if (!inQuote && indx + 1 < stringLength)
 				{
-					if (indx + 1 < stringLength && sqlString.Substring(indx, 2) == "/*")
+					var candidateOpenCommentToken = sqlString.Substring(indx, 2);
+					if (candidateOpenCommentToken == "/*")
 					{
 						var closeCommentIdx = sqlString.IndexOf("*/", indx + 2, StringComparison.Ordinal);
 						recognizer.Other(sqlString.Substring(indx, (closeCommentIdx - indx) + 2));
