@@ -32,11 +32,11 @@ namespace NHibernate.Dialect.Function
 
 		public bool HasFunction(string functionName)
 		{
-			if (!userFunctions.ContainsKey(functionName) && !dialect.Functions.ContainsKey(functionName) && _functionAliases.TryGetValue(functionName, out var sqlFunction))
-			{
-				functionName = sqlFunction;
-			}
-			return userFunctions.ContainsKey(functionName) || dialect.Functions.ContainsKey(functionName);
+			if (userFunctions.ContainsKey(functionName) || dialect.Functions.ContainsKey(functionName))
+				return true;
+			if (_functionAliases.TryGetValue(functionName, out var sqlFunction) && !_functionAliases.ContainsKey(sqlFunction))
+				return HasFunction(sqlFunction);
+			return false;
 		}
 	}
 }
