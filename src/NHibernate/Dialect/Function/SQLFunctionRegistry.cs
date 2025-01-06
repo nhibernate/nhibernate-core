@@ -22,13 +22,10 @@ namespace NHibernate.Dialect.Function
 		/// </summary>
 		public ISQLFunction FindSQLFunction(string functionName)
 		{
-			if (!userFunctions.ContainsKey(functionName) && !dialect.Functions.ContainsKey(functionName) && _functionAliases.TryGetValue(functionName, out var sqlFunction))
+			if (!userFunctions.TryGetValue(functionName, out ISQLFunction result) && !dialect.Functions.TryGetValue(functionName, out result))
 			{
-				functionName = sqlFunction;
-			}
-			if (!userFunctions.TryGetValue(functionName, out ISQLFunction result))
-			{
-				dialect.Functions.TryGetValue(functionName, out result);
+				if (_functionAliases.TryGetValue(functionName, out var sqlFunction) && !_functionAliases.ContainsKey(sqlFunction))
+					return FindSQLFunction(sqlFunction);
 			}
 			return result;
 		}
