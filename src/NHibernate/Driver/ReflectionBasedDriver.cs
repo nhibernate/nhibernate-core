@@ -8,9 +8,9 @@ namespace NHibernate.Driver
 	{
 		protected const string ReflectionTypedProviderExceptionMessageTemplate =
 			"The DbCommand and DbConnection implementation in the assembly {0} could not be found. "
-																			   + "Ensure that the assembly {0} is located in the application directory or in the Global "
-																			   + "Assembly Cache. If the assembly is in the GAC, use <qualifyAssembly/> element in the "
-																			   + "application configuration file to specify the full name of the assembly.";
+			+ "Ensure that the assembly {0} is located in the application directory or in the Global "
+			+ "Assembly Cache. If the assembly is in the GAC, use <qualifyAssembly/> element in the "
+			+ "application configuration file to specify the full name of the assembly.";
 
 		private readonly IDriveConnectionCommandProvider connectionCommandProvider;
 

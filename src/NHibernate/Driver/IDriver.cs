@@ -178,16 +178,6 @@ namespace NHibernate.Driver
 		bool CanCreateBatch => false;
 
 		/// <summary>
-		/// Make any adjustments to each <see cref="DbBatch"/> object before it is added to the batcher.
-		/// </summary>
-		/// <param name="dbBatch">The batch.</param>
-		/// <remarks>
-		/// This method should be executed before adding each single batch to the batcher.
-		/// If you have to adjust parameters values/type (when the command is fullfilled) this is a good place to do it.
-		/// </remarks>
-		void AdjustBatch(DbBatch dbBatch) => throw new NotImplementedException();
-
-		/// <summary>
 		/// Prepare the <paramref name="dbBatch" /> by calling <see cref="DbBatch.Prepare()" />.
 		/// May be a no-op if the driver does not support preparing commands, or for any other reason.
 		/// </summary>
