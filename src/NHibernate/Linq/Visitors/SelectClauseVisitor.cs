@@ -21,6 +21,12 @@ namespace NHibernate.Linq.Visitors
 		private List<HqlExpression> _hqlTreeNodes = new List<HqlExpression>();
 		private readonly HqlGeneratorExpressionVisitor _hqlVisitor;
 
+		// Since v5.6
+		[Obsolete("Use overload providing expressions to be executed with HQL.")]
+		public SelectClauseVisitor(System.Type inputType, VisitorParameters parameters) :
+			this(inputType, parameters, new HashSet<Expression>())
+		{ }
+
 		public SelectClauseVisitor(System.Type inputType, VisitorParameters parameters, HashSet<Expression> hqlCandidates)
 		{
 			_inputParameter = Expression.Parameter(inputType, "input");
