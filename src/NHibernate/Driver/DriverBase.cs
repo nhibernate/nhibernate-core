@@ -345,7 +345,7 @@ namespace NHibernate.Driver
 		/// Parameters have been bound by this point, so their order can be adjusted too.
 		/// This is analogous to the RegisterResultSetOutParameter() function in Hibernate.
 		/// </summary>
-		protected virtual void OnBeforePrepare(DbBatch command)
+		protected virtual void OnBeforePrepare(DbBatch batch)
 		{
 		}
 
