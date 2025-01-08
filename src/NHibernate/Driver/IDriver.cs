@@ -169,9 +169,9 @@ namespace NHibernate.Driver
 		/// Create a <see cref="DbBatch"/>
 		/// </summary>
 		/// <returns></returns>
-		/// <exception cref="NotImplementedException"></exception>
-		DbBatch CreateBatch() => throw new NotImplementedException();
-		
+		/// <exception cref="NotSupportedException"></exception>
+		DbBatch CreateBatch() => throw new NotSupportedException();
+
 		/// <summary>
 		/// Can this driver create <see cref="DbBatch"/>es?
 		/// </summary>
@@ -182,7 +182,7 @@ namespace NHibernate.Driver
 		/// May be a no-op if the driver does not support preparing commands, or for any other reason.
 		/// </summary>
 		/// <param name="dbBatch">The batch.</param>
-		void PrepareBatch(DbBatch dbBatch) => throw new NotImplementedException();
+		void PrepareBatch(DbBatch dbBatch) { }
 
 		/// <summary>
 		/// Creates (clones) a <see cref="DbBatchCommand"/> from a <see cref="DbCommand"/>,
@@ -193,8 +193,8 @@ namespace NHibernate.Driver
 		/// <param name="dbBatch"></param>
 		/// <param name="dbCommand"></param>
 		/// <returns></returns>
-		/// <exception cref="NotImplementedException"></exception>
-		DbBatchCommand CreateDbBatchCommandFromDbCommand(DbBatch dbBatch, DbCommand dbCommand) => throw new NotImplementedException();
+		/// <exception cref="NotSupportedException"></exception>
+		DbBatchCommand CreateDbBatchCommandFromDbCommand(DbBatch dbBatch, DbCommand dbCommand) => throw new NotSupportedException();
 #endif
 	}
 }
