@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Runtime.Serialization;
+using System.Threading;
 
 namespace NHibernate.Util
 {
@@ -23,7 +24,7 @@ namespace NHibernate.Util
 	public class SoftLimitMRUCache : IDeserializationCallback
 	{
 		private const int DefaultStrongRefCount = 128;
-		private readonly object _syncRoot = new object();
+		private readonly Lock _syncRoot = LockFactory.Create();
 
 		private readonly int strongReferenceCount;
 
