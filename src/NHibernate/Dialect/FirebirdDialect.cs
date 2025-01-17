@@ -537,6 +537,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("addweek", new StandardSQLFunction("addweek", NHibernateUtil.DateTime));
 			RegisterFunction("addyear", new StandardSQLFunction("addyear", NHibernateUtil.DateTime));
 			RegisterFunction("getexacttimestamp", new NoArgSQLFunction("getexacttimestamp", NHibernateUtil.DateTime));
+			RegisterFunction("secondtruncated", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(floor(extract(second from ?1)) as int)"));
 		}
 
 		private void RegisterStringAndCharFunctions()
