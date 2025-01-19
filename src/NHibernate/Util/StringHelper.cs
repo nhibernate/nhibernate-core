@@ -871,5 +871,15 @@ namespace NHibernate.Util
 			newLineLength = 0;
 			return false;
 		}
+
+		public static string GenerateSuffix(int index)
+		{
+			return index switch
+			{
+				0 => "0_",
+				1 => "1_",
+				_ => string.Intern(index.ToString() + Underscore)
+			};
+		}
 	}
 }
