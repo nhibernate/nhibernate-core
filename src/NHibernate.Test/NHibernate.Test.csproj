@@ -85,14 +85,14 @@
     <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Data.OracleClient" />
     <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
-    <PackageReference Include="Oracle.ManagedDataAccess" Version="21.14.0" />
+    <PackageReference Include="Oracle.ManagedDataAccess" Version="23.6.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="8.0.0" />
     <PackageReference Include="System.CodeDom" Version="4.7.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Data.OracleClient" Version="1.0.8" />
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.140" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.6.0" />
     <PackageReference Include="System.Data.Odbc" Version="4.7.0" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="NUnitLite" Version="3.14.0" />
