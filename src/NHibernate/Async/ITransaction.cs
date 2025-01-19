@@ -11,14 +11,26 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Threading.Tasks;
 using NHibernate.Transaction;
 
 namespace NHibernate
 {
-	using System.Threading.Tasks;
 	using System.Threading;
 	public partial interface ITransaction : IDisposable
 	{
+		/// <summary>
+		/// Begin the transaction with the default isolation level.
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task BeginAsync(CancellationToken cancellationToken = default(CancellationToken));
+
+		/// <summary>
+		/// Begin the transaction with the specified isolation level.
+		/// </summary>
+		/// <param name="isolationLevel">Isolation level of the transaction</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task BeginAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Flush the associated <c>ISession</c> and end the unit of work.
