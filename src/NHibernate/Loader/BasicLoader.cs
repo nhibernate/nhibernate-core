@@ -104,5 +104,10 @@ namespace NHibernate.Loader
 
 			return suffixes;
 		}
+
+		public static string GenerateSuffix(int index)
+		{
+			return StringHelper.GenerateSuffix(index);
+		}
 	}
 }
