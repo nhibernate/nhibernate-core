@@ -23,31 +23,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2898
 	public partial class BinaryFormatterCache : CacheBase
 	{
 
-		public override Task<object> GetAsync(object key, CancellationToken cancellationToken)
-		{
-			try
-			{
-				var entry = _hashtable[key] as byte[];
-				if (entry == null)
-					return Task.FromResult<object>(null);
-
-				var fmt = new BinaryFormatter
-				{
-#if !NETFX
-					SurrogateSelector = new SerializationHelper.SurrogateSelector()	
-#endif
-				};
-				using (var stream = new MemoryStream(entry))
-				{
-					return Task.FromResult<object>(fmt.Deserialize(stream));
-				}
-			}
-			catch (System.Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
-		}
-
 		public override Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			try

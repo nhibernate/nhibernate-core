@@ -99,7 +99,7 @@ namespace NHibernate.Loader
 
 			for (int i = 0; i < length; i++)
 			{
-				suffixes[i] = GenerateSuffix(i + seed);
+				suffixes[i] = StringHelper.GenerateSuffix(i + seed);
 			}
 
 			return suffixes;
@@ -107,7 +107,7 @@ namespace NHibernate.Loader
 
 		public static string GenerateSuffix(int index)
 		{
-			return index.ToString() + StringHelper.Underscore;
+			return StringHelper.GenerateSuffix(index);
 		}
 	}
 }

@@ -60,7 +60,7 @@ namespace NHibernate.Mapping
 		public string IdentifierGeneratorStrategy
 		{
 			get { return identifierGeneratorStrategy; }
-			set { identifierGeneratorStrategy = value; }
+			set { identifierGeneratorStrategy = value == null ? null : string.Intern(value); }
 		}
 
 		public virtual bool IsComposite
@@ -127,7 +127,7 @@ namespace NHibernate.Mapping
 				if ((typeName == null && value != null) || (typeName != null && !typeName.Equals(value)))
 				{
 					// the property change
-					typeName = value;
+					typeName = value == null ? null : string.Intern(value);
 					type = null; // invalidate type
 				}
 			}
@@ -353,7 +353,8 @@ namespace NHibernate.Mapping
 				}
 				try
 				{
-					typeName = ReflectHelper.ReflectedPropertyClass(className, propertyName, accesorName).AssemblyQualifiedName;
+					var aqn = ReflectHelper.ReflectedPropertyClass(className, propertyName, accesorName).AssemblyQualifiedName;
+					typeName = aqn == null ? null : string.Intern(aqn);
 				}
 				catch (HibernateException he)
 				{
@@ -372,7 +373,8 @@ namespace NHibernate.Mapping
 				}
 				try
 				{
-					typeName = ReflectHelper.ReflectedPropertyClass(propertyOwnerType, propertyName, accessorName).AssemblyQualifiedName;
+					var aqn = ReflectHelper.ReflectedPropertyClass(propertyOwnerType, propertyName, accessorName).AssemblyQualifiedName;
+					typeName = aqn == null ? null : string.Intern(aqn);
 				}
 				catch (HibernateException he)
 				{
