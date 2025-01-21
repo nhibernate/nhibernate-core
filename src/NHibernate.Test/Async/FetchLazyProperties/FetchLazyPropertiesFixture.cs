@@ -1087,6 +1087,41 @@ namespace NHibernate.Test.FetchLazyProperties
 			}
 		}
 
+		[Test]
+		public async Task TestRefreshRemovesLazyLoadedPropertiesAsync()
+		{
+			using (var outerSession = OpenSession())
+			{
+				const string query = "from Person fetch Image where Id = 1";
+				const string namePostFix = "_MODIFIED";
+				const int imageLength = 4711;
+				
+				Person outerPerson = await (outerSession.CreateQuery(query).UniqueResultAsync<Person>());
+				
+				Assert.That(outerPerson.Name.EndsWith(namePostFix), Is.False); // Normal property 
+				Assert.That(outerPerson.Image.Length, Is.EqualTo(1)); // Lazy Property
+				
+				// Changing the properties of the person in a different sessions
+				using (var innerSession = OpenSession())
+				{
+					var transaction = innerSession.BeginTransaction();
+				
+					Person innerPerson = await (innerSession.CreateQuery(query).UniqueResultAsync<Person>());
+					innerPerson.Image = new byte[imageLength];
+					innerPerson.Name += namePostFix;
+					await (innerSession.UpdateAsync(innerPerson));
+					
+					await (transaction.CommitAsync());
+				}
+				
+				// Refreshing the person in the outer session
+				await (outerSession.RefreshAsync(outerPerson));
+				
+				Assert.That(outerPerson.Name.EndsWith(namePostFix), Is.True); // Value has changed
+				Assert.That(outerPerson.Image.Length, Is.EqualTo(imageLength)); // This is still the old value
+			}
+		}
+		
 		private static Person GeneratePerson(int i, Person bestFriend)
 		{
 			return new Person

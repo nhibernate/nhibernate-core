@@ -757,7 +757,8 @@ namespace NHibernate.Loader
 
 			ILoadable concretePersister = await (GetConcretePersisterAsync(dr, i, persister, key.Identifier, session, cancellationToken)).ConfigureAwait(false);
 
-			if (optionalObjectKey != null && key.Equals(optionalObjectKey))
+			bool useOptionalObject = optionalObjectKey != null && key.Equals(optionalObjectKey);
+			if (useOptionalObject)
 			{
 				// its the given optional object
 				obj = optionalObject;
@@ -773,8 +774,8 @@ namespace NHibernate.Loader
 			// (but don't yet initialize the object itself)
 			// note that we acquired LockMode.READ even if it was not requested
 			LockMode acquiredLockMode = lockMode == LockMode.None ? LockMode.Read : lockMode;
-			await (LoadFromResultSetAsync(dr, i, obj, concretePersister, key, acquiredLockMode, persister, session, cancellationToken)).ConfigureAwait(false);
-
+			await (LoadFromResultSetAsync(dr, i, obj, concretePersister, key, acquiredLockMode, persister, session, useOptionalObject, cancellationToken)).ConfigureAwait(false);
+			
 			// materialize associations (and initialize the object) later
 			hydratedObjects.Add(obj);
 
@@ -886,7 +887,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		private async Task LoadFromResultSetAsync(DbDataReader rs, int i, object obj, ILoadable persister, EntityKey key,
 									   LockMode lockMode, ILoadable rootPersister,
-									   ISessionImplementor session, CancellationToken cancellationToken)
+									   ISessionImplementor session, bool lazyPropertiesAreUnfetched, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			object id = key.Identifier;
@@ -912,7 +913,7 @@ namespace NHibernate.Loader
 
 			object rowId = persister.HasRowId ? rs[EntityAliases[i].RowIdAlias] : null;
 
-			TwoPhaseLoad.PostHydrate(persister, id, values, rowId, obj, lockMode, session);
+			TwoPhaseLoad.PostHydrate(persister, id, values, rowId, obj, lockMode, lazyPropertiesAreUnfetched, session);
 		}
 
 		/// <summary>
