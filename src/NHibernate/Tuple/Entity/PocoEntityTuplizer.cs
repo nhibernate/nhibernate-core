@@ -226,7 +226,7 @@ namespace NHibernate.Tuple.Entity
 			if (IsInstrumented)
 			{
 				var interceptor = _enhancementMetadata.ExtractInterceptor(entity);
-				if (interceptor == null)
+				if (interceptor == null || HasAnyInitializedLazyProperty(entity, session))
 				{
 					interceptor = _enhancementMetadata.InjectInterceptor(entity, session);
 				}
@@ -237,6 +237,13 @@ namespace NHibernate.Tuple.Entity
 
 				interceptor?.ClearDirty();
 			}
+		}
+
+		private static bool HasAnyInitializedLazyProperty(object entity, ISessionImplementor session)
+		{
+			IPersistenceContext persistenceContext = session.PersistenceContext;
+			EntityEntry entityEntry = persistenceContext.GetEntry(entity);
+			return entityEntry.LoadedWithLazyPropertiesUnfetched;
 		}
 
 		public override object GetPropertyValue(object entity, int i)

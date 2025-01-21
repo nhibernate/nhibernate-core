@@ -200,9 +200,7 @@ namespace NHibernate.Engine
 		{
 			get { return rowId; }
 		}
-
-		// Since 5.3
-		[Obsolete("This property is not used and will be removed in a future version.")]
+		
 		public bool LoadedWithLazyPropertiesUnfetched
 		{
 			get { return loadedWithLazyPropertiesUnfetched; }
