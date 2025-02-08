@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using NHibernate.Util;
 using System;
+using System.Linq;
 
 namespace NHibernate.Mapping
 {
@@ -14,7 +15,7 @@ namespace NHibernate.Mapping
 		private Table referencedTable;
 		private string referencedEntityName;
 		private bool cascadeDeleteEnabled;
-		private readonly List<Column> referencedColumns = new List<Column>();
+		private List<Column> referencedColumns;
 
 		/// <summary>
 		/// Generates the SQL string to create the named Foreign Key Constraint in the database.
@@ -35,7 +36,7 @@ namespace NHibernate.Mapping
 			if (IsReferenceToPrimaryKey)
 				refiter = referencedTable.PrimaryKey.ColumnIterator;
 			else
-				refiter = referencedColumns;
+				refiter = referencedColumns ?? Enumerable.Empty<Column>();
 			foreach (Column column in ColumnIterator)
 			{
 				cols[i] = column.GetQuotedName(d);
@@ -172,13 +173,14 @@ namespace NHibernate.Mapping
 
 		private void AddReferencedColumn(Column column)
 		{
+			referencedColumns ??= new List<Column>(1);
 			if (!referencedColumns.Contains(column))
 				referencedColumns.Add(column);
 		}
 
 		internal void AddReferencedTable(PersistentClass referencedClass)
 		{
-			if (referencedColumns.Count > 0)
+			if (referencedColumns != null && referencedColumns.Count > 0)
 			{
 				referencedTable = referencedColumns[0].Value.Table;
 			}
@@ -199,7 +201,7 @@ namespace NHibernate.Mapping
 					.Append(string.Join(", ", Columns))
 					.Append(" ref-columns:")
 					.Append('(')
-					.Append(string.Join(", ", ReferencedColumns))
+					.Append(string.Join(", ", ReferencedColumnsReadOnly))
 					.Append(") as ")
 					.Append(Name);
 				return result.ToString();
@@ -218,7 +220,16 @@ namespace NHibernate.Mapping
 
 		public IList<Column> ReferencedColumns
 		{
-			get { return referencedColumns; }
+			get
+			{	
+				referencedColumns ??= new List<Column>(1);
+				return referencedColumns;
+			}
+		}
+
+		private IEnumerable<Column> ReferencedColumnsReadOnly
+		{
+			get { return referencedColumns ?? Enumerable.Empty<Column>(); }
 		}
 
 		public string ReferencedEntityName
@@ -230,7 +241,7 @@ namespace NHibernate.Mapping
 		/// <summary>Does this foreignkey reference the primary key of the reference table </summary>
 		public bool IsReferenceToPrimaryKey
 		{
-			get { return referencedColumns.Count == 0; }
+			get { return referencedColumns == null || referencedColumns.Count == 0; }
 		}
 
 		public string GeneratedConstraintNamePrefix => "FK_";
@@ -242,7 +253,7 @@ namespace NHibernate.Mapping
 			if (dialect.SupportsNullInUnique || IsReferenceToPrimaryKey)
 				return true;
 
-			foreach (var column in ReferencedColumns)
+			foreach (var column in ReferencedColumnsReadOnly)
 			{
 				if (column.IsNullable)
 					return false;

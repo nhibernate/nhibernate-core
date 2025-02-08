@@ -82,7 +82,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Caches subclass entity aliases for given persister index in <see cref="EntityPersisters"/>  and subclass entity name
 		/// </summary>
-		private readonly ConcurrentDictionary<Tuple<int, string>, string[][]> _subclassEntityAliasesMap = new ConcurrentDictionary<Tuple<int, string>, string[][]>();
+		private readonly Lazy<ConcurrentDictionary<Tuple<int, string>, string[][]>> _subclassEntityAliasesMap = new(()=>new ConcurrentDictionary<Tuple<int, string>, string[][]>());
 
 		protected Loader(ISessionFactoryImplementor factory)
 		{
@@ -1322,7 +1322,7 @@ namespace NHibernate.Loader
 		private string[][] GetSubclassEntityAliases(int i, ILoadable persister)
 		{
 			var cacheKey = System.Tuple.Create(i, persister.EntityName);
-			return _subclassEntityAliasesMap.GetOrAdd(
+			return _subclassEntityAliasesMap.Value.GetOrAdd(
 				cacheKey,
 				k => EntityAliases[i].GetSuffixedPropertyAliases(persister));
 		}
