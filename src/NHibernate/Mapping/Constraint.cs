@@ -15,7 +15,7 @@ namespace NHibernate.Mapping
 	public abstract class Constraint : IRelationalModel
 	{
 		private string name;
-		private readonly List<Column> columns = new List<Column>();
+		private readonly List<Column> columns = new List<Column>(1);
 		private Table table;
 
 		/// <summary>

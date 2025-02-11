@@ -1064,9 +1064,12 @@ namespace NHibernate.Mapping
 			{
 				this.referencedClassName = referencedClassName;
 				this.columns = new List<Column>(columns);
+				this.columns.TrimExcess();
+
 				if (referencedColumns != null)
 				{
 					this.referencedColumns = new List<Column>(referencedColumns);
+					this.referencedColumns.TrimExcess();
 				}
 				else
 				{

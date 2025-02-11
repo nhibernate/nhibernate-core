@@ -215,6 +215,9 @@ namespace NHibernate.SqlCommand
 			_firstPartIndex = _parts.Count > 0 ? 0 : -1;
 			_lastPartIndex = _parts.Count - 1;
 			_length = sqlIndex;
+
+			_parts.TrimExcess();
+			_parameters.TrimExcess();
 		}
 
 		#endregion

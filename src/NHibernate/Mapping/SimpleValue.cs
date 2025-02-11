@@ -15,7 +15,7 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class SimpleValue : IKeyValue
 	{
-		private readonly List<ISelectable> columns = new List<ISelectable>();
+		private readonly List<ISelectable> columns = new List<ISelectable>(1);
 		private IType type;
 		private IDictionary<string, string> typeParameters;
 
