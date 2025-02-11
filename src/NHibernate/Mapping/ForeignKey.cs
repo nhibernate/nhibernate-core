@@ -180,14 +180,7 @@ namespace NHibernate.Mapping
 
 		internal void AddReferencedTable(PersistentClass referencedClass)
 		{
-			if (referencedColumns != null && referencedColumns.Count > 0)
-			{
-				referencedTable = referencedColumns[0].Value.Table;
-			}
-			else
-			{
-				referencedTable = referencedClass.Table;
-			}
+			referencedTable = IsReferenceToPrimaryKey ? referencedClass.Table : referencedColumns[0].Value.Table;
 		}
 
 		public override string ToString()
