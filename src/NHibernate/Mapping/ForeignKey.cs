@@ -192,22 +192,12 @@ namespace NHibernate.Mapping
 
 		public override string ToString()
 		{
-			if (!IsReferenceToPrimaryKey)
-			{
-				var result = new StringBuilder();
-				result.Append(GetType().FullName)
-					.Append('(')
-					.Append(Table.Name)
-					.Append(string.Join(", ", Columns))
-					.Append(" ref-columns:")
-					.Append('(')
-					.Append(string.Join(", ", ReferencedColumnsReadOnly))
-					.Append(") as ")
-					.Append(Name);
-				return result.ToString();
-			}
+			if (IsReferenceToPrimaryKey)
+				return base.ToString();
 
-			return base.ToString();
+			var columns = string.Join(", ", Columns);
+			var refColumns = string.Join(", ", referencedColumns);
+			return $"{GetType().FullName}({Table.Name}{columns} ref-columns:({refColumns}) as {Name}";
 		}
 
 		public bool HasPhysicalConstraint
@@ -225,11 +215,6 @@ namespace NHibernate.Mapping
 				referencedColumns ??= new List<Column>(1);
 				return referencedColumns;
 			}
-		}
-
-		private IEnumerable<Column> ReferencedColumnsReadOnly
-		{
-			get { return referencedColumns ?? Enumerable.Empty<Column>(); }
 		}
 
 		public string ReferencedEntityName
@@ -253,7 +238,7 @@ namespace NHibernate.Mapping
 			if (dialect.SupportsNullInUnique || IsReferenceToPrimaryKey)
 				return true;
 
-			foreach (var column in ReferencedColumnsReadOnly)
+			foreach (var column in referencedColumns)
 			{
 				if (column.IsNullable)
 					return false;
