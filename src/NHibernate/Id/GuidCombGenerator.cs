@@ -43,60 +43,28 @@ namespace NHibernate.Id
 		/// <summary>
 		/// Generate a new <see cref="Guid"/> using the comb algorithm.
 		/// </summary>
-		protected static Guid GenerateComb(in Guid guid, DateTime utcNow)
+		protected static Guid GenerateComb(Guid guid, DateTime utcNow)
 		{
-#if NET8_0_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
 			Span<byte> guidArray = stackalloc byte[16];
-			Span<byte> msecsArray = stackalloc byte[sizeof(long)];
-			Span<byte> daysArray = stackalloc byte[sizeof(int)];
-
-			var bytesWritten = guid.TryWriteBytes(guidArray);
-			Debug.Assert(bytesWritten);
-
-			// Get the days and milliseconds which will be used to build the byte string 
-			TimeSpan days = new TimeSpan(utcNow.Ticks - BaseDateTicks);
-			TimeSpan msecs = utcNow.TimeOfDay;
-
-			// Convert to a byte array 
-			// Note that SQL Server is accurate to 1/300th of a millisecond so we divide by 3.333333 
-
-			bytesWritten = BitConverter.TryWriteBytes(daysArray, days.Days)
-				&& BitConverter.TryWriteBytes(msecsArray, (long)(msecs.TotalMilliseconds / 3.333333));
-			Debug.Assert(bytesWritten);
-
-			msecsArray.Reverse();
-
-			// Copy the bytes into the guid 
-			//Array.Copy(daysArray, daysArray.Length - 2, guidArray, guidArray.Length - 6, 2);
-			guidArray[10] = daysArray[1];
-			guidArray[11] = daysArray[0];
-
-			//Array.Copy(msecsArray, msecsArray.Length - 4, guidArray, guidArray.Length - 4, 4);
-			msecsArray[^4..].CopyTo(guidArray[^4..]);
-			return new Guid(guidArray);
+			guid.TryWriteBytes(guidArray);
 #else
-
-			byte[] guidArray = guid.ToByteArray();
-
+			var guidArray = guid.ToByteArray();
+#endif
 			// Get the days and milliseconds which will be used to build the byte string 
-			TimeSpan days = new TimeSpan(utcNow.Ticks - BaseDateTicks);
-			TimeSpan msecs = utcNow.TimeOfDay;
-
-			// Convert to a byte array 
+			var ts = new TimeSpan(utcNow.Ticks - BaseDateTicks);
+			var days = ts.Days;
+			guidArray[10] = (byte) (days >> 8);
+			guidArray[11] = (byte) days;
+					
 			// Note that SQL Server is accurate to 1/300th of a millisecond so we divide by 3.333333 
-			byte[] daysArray = BitConverter.GetBytes(days.Days);
-			byte[] msecsArray = BitConverter.GetBytes((long) (msecs.TotalMilliseconds / 3.333333));
-
-			// Reverse the bytes to match SQL Servers ordering 
-			Array.Reverse(daysArray);
-			Array.Reverse(msecsArray);
-
-			// Copy the bytes into the guid 
-			Array.Copy(daysArray, daysArray.Length - 2, guidArray, guidArray.Length - 6, 2);
-			Array.Copy(msecsArray, msecsArray.Length - 4, guidArray, guidArray.Length - 4, 4);
+			var msecs = (long) (utcNow.TimeOfDay.TotalMilliseconds / 3.333333);
+			guidArray[12] = (byte) (msecs >> 24);
+			guidArray[13] = (byte) (msecs >> 16);
+			guidArray[14] = (byte) (msecs >> 8);
+			guidArray[15] = (byte) msecs;
 
 			return new Guid(guidArray);
-#endif
 		}
 
 		#endregion
