@@ -96,8 +96,11 @@ namespace NHibernate.Type
 		/// <param name="value">The value to round.</param>
 		/// <param name="resolution">The resolution in ticks (100ns).</param>
 		/// <returns>A rounded <see cref="DateTime"/>.</returns>
-		public static DateTime Round(DateTime value, long resolution) =>
-			value.AddTicks(-(value.Ticks % resolution));
+		public static DateTime Round(DateTime value, long resolution)
+		{
+            var remainder = value.Ticks % resolution;
+            return remainder * 2 >= resolution ? value.AddTicks(resolution - remainder) : value.AddTicks(-remainder);
+        }
 
 		/// <inheritdoc />
 		public virtual object Seed(ISessionImplementor session) =>
