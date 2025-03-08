@@ -147,7 +147,7 @@ namespace NHibernate.Impl
 		private readonly IInterceptor interceptor;
 		private readonly string name;
 		[NonSerialized]
-		private readonly Dictionary<string, NamedQueryDefinition> namedQueries;
+		private readonly IReadOnlyDictionary<string, NamedQueryDefinition> namedQueries;
 
 		[NonSerialized]
 		private readonly Dictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
@@ -352,7 +352,7 @@ namespace NHibernate.Impl
 			#endregion
 
 			#region Named Queries
-			namedQueries = new Dictionary<string, NamedQueryDefinition>(cfg.NamedQueries);
+			namedQueries = new ReadOnlyDictionary<string, NamedQueryDefinition>(cfg.NamedQueries);
 			namedSqlQueries = new Dictionary<string, NamedSQLQueryDefinition>(cfg.NamedSQLQueries);
 			sqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>(cfg.SqlResultSetMappings);
 			#endregion
