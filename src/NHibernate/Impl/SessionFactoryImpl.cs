@@ -150,7 +150,7 @@ namespace NHibernate.Impl
 		private readonly IReadOnlyDictionary<string, NamedQueryDefinition> namedQueries;
 
 		[NonSerialized]
-		private readonly Dictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
+		private readonly IReadOnlyDictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
 
 		[NonSerialized]
 		private readonly IDictionary<string, string> properties;
@@ -168,7 +168,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly SQLFunctionRegistry sqlFunctionRegistry;
 		[NonSerialized]
-		private readonly Dictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
+		private readonly ReadOnlyDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
 		[NonSerialized]
 		private readonly UpdateTimestampsCache updateTimestampsCache;
 		[NonSerialized]
@@ -353,8 +353,8 @@ namespace NHibernate.Impl
 
 			#region Named Queries
 			namedQueries = new ReadOnlyDictionary<string, NamedQueryDefinition>(cfg.NamedQueries);
-			namedSqlQueries = new Dictionary<string, NamedSQLQueryDefinition>(cfg.NamedSQLQueries);
-			sqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>(cfg.SqlResultSetMappings);
+			namedSqlQueries = new ReadOnlyDictionary<string, NamedSQLQueryDefinition>(cfg.NamedSQLQueries);
+			sqlResultSetMappings = new ReadOnlyDictionary<string, ResultSetMappingDefinition>(cfg.SqlResultSetMappings);
 			#endregion
 
 			imports = new ReadOnlyDictionary<string, string>(cfg.Imports);
