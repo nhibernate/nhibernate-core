@@ -266,7 +266,7 @@ namespace NHibernate.Impl
 
 			var caches = new Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy>();
 			var tmpEntityPersisters = new Dictionary<string, IEntityPersister>();
-			implementorToEntityName = new Dictionary<System.Type, string>();
+			var tmpImplementorToEntityName = new Dictionary<System.Type, string>();
 
 			Dictionary<string, IClassMetadata> classMeta = new Dictionary<string, IClassMetadata>();
 
@@ -285,11 +285,12 @@ namespace NHibernate.Impl
 
 				if (model.HasPocoRepresentation)
 				{
-					implementorToEntityName[model.MappedClass] = model.EntityName;
+					tmpImplementorToEntityName[model.MappedClass] = model.EntityName;
 				}
 			}
 
 			entityPersisters = new ReadOnlyDictionary<string, IEntityPersister>(tmpEntityPersisters);
+			implementorToEntityName = new ReadOnlyDictionary<System.Type, string>(tmpImplementorToEntityName);
 
 			entityPersistersSpaces = entityPersisters
 				.SelectMany(x => x.Value.QuerySpaces.Select(y => new { QuerySpace = y, Persister = x.Value }))
