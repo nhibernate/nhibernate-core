@@ -105,10 +105,10 @@ namespace NHibernate.Impl
 			new ConcurrentDictionary<string, CacheBase>();
 
 		[NonSerialized]
-		private readonly IReadOnlyDictionary<string, IClassMetadata> classMetadata;
+		private readonly IDictionary<string, IClassMetadata> classMetadata;
 
 		[NonSerialized]
-		private readonly IReadOnlyDictionary<string, ICollectionMetadata> collectionMetadata;
+		private readonly IDictionary<string, ICollectionMetadata> collectionMetadata;
 		[NonSerialized]
 		private readonly IReadOnlyDictionary<string, ICollectionPersister> collectionPersisters;
 		[NonSerialized]
@@ -248,7 +248,7 @@ namespace NHibernate.Impl
 			#endregion
 
 			#region Generators
-			identifierGenerators = new Dictionary<string, IIdentifierGenerator>();
+			var tmpIdentifierGenerators = new Dictionary<string, IIdentifierGenerator>();
 			foreach (PersistentClass model in cfg.ClassMappings)
 			{
 				if (!model.IsInherited)
@@ -257,9 +257,10 @@ namespace NHibernate.Impl
 						model.Identifier.CreateIdentifierGenerator(settings.Dialect, settings.DefaultCatalogName,
 																   settings.DefaultSchemaName, (RootClass)model);
 
-					identifierGenerators[model.EntityName] = generator;
+					tmpIdentifierGenerators[model.EntityName] = generator;
 				}
 			}
+			identifierGenerators = new ReadOnlyDictionary<string, IIdentifierGenerator>(tmpIdentifierGenerators);
 			#endregion
 
 			#region Persisters
