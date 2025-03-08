@@ -141,7 +141,7 @@ namespace NHibernate.Impl
 		private readonly Dictionary<string, IIdentifierGenerator> identifierGenerators;
 
 		[NonSerialized]
-		private readonly IDictionary<string, string> imports;
+		private readonly IReadOnlyDictionary<string, string> imports;
 
 		[NonSerialized]
 		private readonly IInterceptor interceptor;
