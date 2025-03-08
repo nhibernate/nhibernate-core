@@ -141,7 +141,7 @@ namespace NHibernate.Impl
 		private readonly Dictionary<string, IIdentifierGenerator> identifierGenerators;
 
 		[NonSerialized]
-		private readonly Dictionary<string, string> imports;
+		private readonly IDictionary<string, string> imports;
 
 		[NonSerialized]
 		private readonly IInterceptor interceptor;
@@ -357,7 +357,7 @@ namespace NHibernate.Impl
 			sqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>(cfg.SqlResultSetMappings);
 			#endregion
 
-			imports = new Dictionary<string, string>(cfg.Imports);
+			imports = new ReadOnlyDictionary<string, string>(cfg.Imports);
 
 			#region after *all* persisters and named queries are registered
 			foreach (IEntityPersister persister in entityPersisters.Values)
