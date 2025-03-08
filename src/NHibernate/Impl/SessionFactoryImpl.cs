@@ -110,7 +110,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly IDictionary<string, ICollectionMetadata> collectionMetadata;
 		[NonSerialized]
-		private readonly Dictionary<string, ICollectionPersister> collectionPersisters;
+		private readonly IDictionary<string, ICollectionPersister> collectionPersisters;
 		[NonSerialized]
 		private readonly ILookup<string, ICollectionPersister> collectionPersistersSpaces;
 
@@ -296,7 +296,7 @@ namespace NHibernate.Impl
 			classMetadata = new ReadOnlyDictionary<string, IClassMetadata>(classMeta);
 
 			Dictionary<string, ISet<string>> tmpEntityToCollectionRoleMap = new Dictionary<string, ISet<string>>();
-			collectionPersisters = new Dictionary<string, ICollectionPersister>();
+			var collPersisters = new Dictionary<string, ICollectionPersister>();
 			foreach (Mapping.Collection model in cfg.CollectionMappings)
 			{
 				var cache = GetCacheConcurrencyStrategy(
@@ -306,7 +306,7 @@ namespace NHibernate.Impl
 					model.OwnerEntityName,
 					caches);
 				var persister = PersisterFactory.CreateCollectionPersister(model, cache, this);
-				collectionPersisters[model.Role] = persister;
+				collPersisters[model.Role] = persister;
 				IType indexType = persister.IndexType;
 				if (indexType != null && indexType.IsAssociationType && !indexType.IsAnyType)
 				{
@@ -332,6 +332,8 @@ namespace NHibernate.Impl
 					roles.Add(persister.Role);
 				}
 			}
+
+			collectionPersisters = new ReadOnlyDictionary<string, ICollectionPersister>(collPersisters);
 
 			collectionPersistersSpaces = collectionPersisters
 				.SelectMany(x => x.Value.CollectionSpaces.Select(y => new { QuerySpace = y, Persister = x.Value }))
