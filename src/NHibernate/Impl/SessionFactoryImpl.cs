@@ -265,7 +265,7 @@ namespace NHibernate.Impl
 			#region Persisters
 
 			var caches = new Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy>();
-			entityPersisters = new Dictionary<string, IEntityPersister>();
+			var tmpEntityPersisters = new Dictionary<string, IEntityPersister>();
 			implementorToEntityName = new Dictionary<System.Type, string>();
 
 			Dictionary<string, IClassMetadata> classMeta = new Dictionary<string, IClassMetadata>();
@@ -280,7 +280,7 @@ namespace NHibernate.Impl
 					model.EntityName,
 					caches);
 				var cp = PersisterFactory.CreateClassPersister(model, cache, this, mapping);
-				entityPersisters[model.EntityName] = cp;
+				tmpEntityPersisters[model.EntityName] = cp;
 				classMeta[model.EntityName] = cp.ClassMetadata;
 
 				if (model.HasPocoRepresentation)
@@ -289,6 +289,8 @@ namespace NHibernate.Impl
 				}
 			}
 
+			entityPersisters = new ReadOnlyDictionary<string, IEntityPersister>(tmpEntityPersisters);
+
 			entityPersistersSpaces = entityPersisters
 				.SelectMany(x => x.Value.QuerySpaces.Select(y => new { QuerySpace = y, Persister = x.Value }))
 				.ToLookup(x => x.QuerySpace, x => x.Persister);
@@ -296,7 +298,7 @@ namespace NHibernate.Impl
 			classMetadata = new ReadOnlyDictionary<string, IClassMetadata>(classMeta);
 
 			Dictionary<string, ISet<string>> tmpEntityToCollectionRoleMap = new Dictionary<string, ISet<string>>();
-			var collPersisters = new Dictionary<string, ICollectionPersister>();
+			var tmpCollectionPersisters = new Dictionary<string, ICollectionPersister>();
 			foreach (Mapping.Collection model in cfg.CollectionMappings)
 			{
 				var cache = GetCacheConcurrencyStrategy(
@@ -306,7 +308,7 @@ namespace NHibernate.Impl
 					model.OwnerEntityName,
 					caches);
 				var persister = PersisterFactory.CreateCollectionPersister(model, cache, this);
-				collPersisters[model.Role] = persister;
+				tmpCollectionPersisters[model.Role] = persister;
 				IType indexType = persister.IndexType;
 				if (indexType != null && indexType.IsAssociationType && !indexType.IsAnyType)
 				{
@@ -333,7 +335,7 @@ namespace NHibernate.Impl
 				}
 			}
 
-			collectionPersisters = new ReadOnlyDictionary<string, ICollectionPersister>(collPersisters);
+			collectionPersisters = new ReadOnlyDictionary<string, ICollectionPersister>(tmpCollectionPersisters);
 
 			collectionPersistersSpaces = collectionPersisters
 				.SelectMany(x => x.Value.CollectionSpaces.Select(y => new { QuerySpace = y, Persister = x.Value }))
