@@ -105,23 +105,23 @@ namespace NHibernate.Impl
 			new ConcurrentDictionary<string, CacheBase>();
 
 		[NonSerialized]
-		private readonly IDictionary<string, IClassMetadata> classMetadata;
+		private readonly IReadOnlyDictionary<string, IClassMetadata> classMetadata;
 
 		[NonSerialized]
-		private readonly IDictionary<string, ICollectionMetadata> collectionMetadata;
+		private readonly IReadOnlyDictionary<string, ICollectionMetadata> collectionMetadata;
 		[NonSerialized]
-		private readonly IDictionary<string, ICollectionPersister> collectionPersisters;
+		private readonly IReadOnlyDictionary<string, ICollectionPersister> collectionPersisters;
 		[NonSerialized]
 		private readonly ILookup<string, ICollectionPersister> collectionPersistersSpaces;
 
 		[NonSerialized]
-		private readonly IDictionary<string, ISet<string>> collectionRolesByEntityParticipant;
+		private readonly IReadOnlyDictionary<string, ISet<string>> collectionRolesByEntityParticipant;
 		[NonSerialized]
 		private readonly ICurrentSessionContext currentSessionContext;
 		[NonSerialized]
 		private readonly IEntityNotFoundDelegate entityNotFoundDelegate;
 		[NonSerialized]
-		private readonly IDictionary<string, IEntityPersister> entityPersisters;
+		private readonly IReadOnlyDictionary<string, IEntityPersister> entityPersisters;
 		[NonSerialized]
 		private readonly ILookup<string, IEntityPersister> entityPersistersSpaces;
 
@@ -130,7 +130,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <remarks>this is a shortcut.</remarks>
 		[NonSerialized]
-		private readonly IDictionary<System.Type, string> implementorToEntityName;
+		private readonly IReadOnlyDictionary<System.Type, string> implementorToEntityName;
 
 		[NonSerialized]
 		private readonly EventListeners eventListeners;
@@ -138,7 +138,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly Dictionary<string, FilterDefinition> filters;
 		[NonSerialized]
-		private readonly Dictionary<string, IIdentifierGenerator> identifierGenerators;
+		private readonly IReadOnlyDictionary<string, IIdentifierGenerator> identifierGenerators;
 
 		[NonSerialized]
 		private readonly IReadOnlyDictionary<string, string> imports;
