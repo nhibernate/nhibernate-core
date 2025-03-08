@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
@@ -21,8 +22,8 @@ namespace NHibernate.Impl
 	{
 		private static readonly INHibernateLogger log;
 
-		private static readonly IDictionary<string, ISessionFactory> Instances = new Dictionary<string, ISessionFactory>();
-		private static readonly IDictionary<string, ISessionFactory> NamedInstances = new Dictionary<string, ISessionFactory>();
+		private static readonly IDictionary<string, ISessionFactory> Instances = new ConcurrentDictionary<string, ISessionFactory>();
+		private static readonly IDictionary<string, ISessionFactory> NamedInstances = new ConcurrentDictionary<string, ISessionFactory>();
 
 		/// <summary></summary>
 		static SessionFactoryObjectFactory()
