@@ -110,18 +110,18 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly IDictionary<string, ICollectionMetadata> collectionMetadata;
 		[NonSerialized]
-		private readonly Dictionary<string, ICollectionPersister> collectionPersisters;
+		private readonly IReadOnlyDictionary<string, ICollectionPersister> collectionPersisters;
 		[NonSerialized]
 		private readonly ILookup<string, ICollectionPersister> collectionPersistersSpaces;
 
 		[NonSerialized]
-		private readonly IDictionary<string, ISet<string>> collectionRolesByEntityParticipant;
+		private readonly IReadOnlyDictionary<string, ISet<string>> collectionRolesByEntityParticipant;
 		[NonSerialized]
 		private readonly ICurrentSessionContext currentSessionContext;
 		[NonSerialized]
 		private readonly IEntityNotFoundDelegate entityNotFoundDelegate;
 		[NonSerialized]
-		private readonly IDictionary<string, IEntityPersister> entityPersisters;
+		private readonly IReadOnlyDictionary<string, IEntityPersister> entityPersisters;
 		[NonSerialized]
 		private readonly ILookup<string, IEntityPersister> entityPersistersSpaces;
 
@@ -130,7 +130,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <remarks>this is a shortcut.</remarks>
 		[NonSerialized]
-		private readonly IDictionary<System.Type, string> implementorToEntityName;
+		private readonly IReadOnlyDictionary<System.Type, string> implementorToEntityName;
 
 		[NonSerialized]
 		private readonly EventListeners eventListeners;
@@ -138,19 +138,19 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly Dictionary<string, FilterDefinition> filters;
 		[NonSerialized]
-		private readonly Dictionary<string, IIdentifierGenerator> identifierGenerators;
+		private readonly IReadOnlyDictionary<string, IIdentifierGenerator> identifierGenerators;
 
 		[NonSerialized]
-		private readonly Dictionary<string, string> imports;
+		private readonly IReadOnlyDictionary<string, string> imports;
 
 		[NonSerialized]
 		private readonly IInterceptor interceptor;
 		private readonly string name;
 		[NonSerialized]
-		private readonly Dictionary<string, NamedQueryDefinition> namedQueries;
+		private readonly IReadOnlyDictionary<string, NamedQueryDefinition> namedQueries;
 
 		[NonSerialized]
-		private readonly Dictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
+		private readonly IReadOnlyDictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
 
 		[NonSerialized]
 		private readonly IDictionary<string, string> properties;
@@ -168,7 +168,7 @@ namespace NHibernate.Impl
 		[NonSerialized]
 		private readonly SQLFunctionRegistry sqlFunctionRegistry;
 		[NonSerialized]
-		private readonly Dictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
+		private readonly ReadOnlyDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
 		[NonSerialized]
 		private readonly UpdateTimestampsCache updateTimestampsCache;
 		[NonSerialized]
@@ -248,7 +248,7 @@ namespace NHibernate.Impl
 			#endregion
 
 			#region Generators
-			identifierGenerators = new Dictionary<string, IIdentifierGenerator>();
+			var tmpIdentifierGenerators = new Dictionary<string, IIdentifierGenerator>();
 			foreach (PersistentClass model in cfg.ClassMappings)
 			{
 				if (!model.IsInherited)
@@ -257,16 +257,17 @@ namespace NHibernate.Impl
 						model.Identifier.CreateIdentifierGenerator(settings.Dialect, settings.DefaultCatalogName,
 																   settings.DefaultSchemaName, (RootClass)model);
 
-					identifierGenerators[model.EntityName] = generator;
+					tmpIdentifierGenerators[model.EntityName] = generator;
 				}
 			}
+			identifierGenerators = new ReadOnlyDictionary<string, IIdentifierGenerator>(tmpIdentifierGenerators);
 			#endregion
 
 			#region Persisters
 
 			var caches = new Dictionary<Tuple<string, string>, ICacheConcurrencyStrategy>();
-			entityPersisters = new Dictionary<string, IEntityPersister>();
-			implementorToEntityName = new Dictionary<System.Type, string>();
+			var tmpEntityPersisters = new Dictionary<string, IEntityPersister>();
+			var tmpImplementorToEntityName = new Dictionary<System.Type, string>();
 
 			Dictionary<string, IClassMetadata> classMeta = new Dictionary<string, IClassMetadata>();
 
@@ -280,14 +281,17 @@ namespace NHibernate.Impl
 					model.EntityName,
 					caches);
 				var cp = PersisterFactory.CreateClassPersister(model, cache, this, mapping);
-				entityPersisters[model.EntityName] = cp;
+				tmpEntityPersisters[model.EntityName] = cp;
 				classMeta[model.EntityName] = cp.ClassMetadata;
 
 				if (model.HasPocoRepresentation)
 				{
-					implementorToEntityName[model.MappedClass] = model.EntityName;
+					tmpImplementorToEntityName[model.MappedClass] = model.EntityName;
 				}
 			}
+
+			entityPersisters = new ReadOnlyDictionary<string, IEntityPersister>(tmpEntityPersisters);
+			implementorToEntityName = new ReadOnlyDictionary<System.Type, string>(tmpImplementorToEntityName);
 
 			entityPersistersSpaces = entityPersisters
 				.SelectMany(x => x.Value.QuerySpaces.Select(y => new { QuerySpace = y, Persister = x.Value }))
@@ -296,7 +300,7 @@ namespace NHibernate.Impl
 			classMetadata = new ReadOnlyDictionary<string, IClassMetadata>(classMeta);
 
 			Dictionary<string, ISet<string>> tmpEntityToCollectionRoleMap = new Dictionary<string, ISet<string>>();
-			collectionPersisters = new Dictionary<string, ICollectionPersister>();
+			var tmpCollectionPersisters = new Dictionary<string, ICollectionPersister>();
 			foreach (Mapping.Collection model in cfg.CollectionMappings)
 			{
 				var cache = GetCacheConcurrencyStrategy(
@@ -306,7 +310,7 @@ namespace NHibernate.Impl
 					model.OwnerEntityName,
 					caches);
 				var persister = PersisterFactory.CreateCollectionPersister(model, cache, this);
-				collectionPersisters[model.Role] = persister;
+				tmpCollectionPersisters[model.Role] = persister;
 				IType indexType = persister.IndexType;
 				if (indexType != null && indexType.IsAssociationType && !indexType.IsAnyType)
 				{
@@ -333,6 +337,8 @@ namespace NHibernate.Impl
 				}
 			}
 
+			collectionPersisters = new ReadOnlyDictionary<string, ICollectionPersister>(tmpCollectionPersisters);
+
 			collectionPersistersSpaces = collectionPersisters
 				.SelectMany(x => x.Value.CollectionSpaces.Select(y => new { QuerySpace = y, Persister = x.Value }))
 				.ToLookup(x => x.QuerySpace, x => x.Persister);
@@ -347,12 +353,12 @@ namespace NHibernate.Impl
 			#endregion
 
 			#region Named Queries
-			namedQueries = new Dictionary<string, NamedQueryDefinition>(cfg.NamedQueries);
-			namedSqlQueries = new Dictionary<string, NamedSQLQueryDefinition>(cfg.NamedSQLQueries);
-			sqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>(cfg.SqlResultSetMappings);
+			namedQueries = new ReadOnlyDictionary<string, NamedQueryDefinition>(cfg.NamedQueries);
+			namedSqlQueries = new ReadOnlyDictionary<string, NamedSQLQueryDefinition>(cfg.NamedSQLQueries);
+			sqlResultSetMappings = new ReadOnlyDictionary<string, ResultSetMappingDefinition>(cfg.SqlResultSetMappings);
 			#endregion
 
-			imports = new Dictionary<string, string>(cfg.Imports);
+			imports = new ReadOnlyDictionary<string, string>(cfg.Imports);
 
 			#region after *all* persisters and named queries are registered
 			foreach (IEntityPersister persister in entityPersisters.Values)
