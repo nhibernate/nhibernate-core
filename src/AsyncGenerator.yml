@@ -187,7 +187,7 @@
     scanForMissingAsyncMembers:
     - all: true
 - filePath: NHibernate.Test/NHibernate.Test.csproj
-  targetFramework: net8.0
+  targetFramework: net10.0
   concurrentRun: true
   applyChanges: true
   suppressDiagnosticFailures:
