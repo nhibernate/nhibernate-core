@@ -24,6 +24,7 @@
     <DefineConstants Condition="$(NhNetFx) AND '$(MSBuildProjectExtension)' == '.vbproj'">NETFX,$(DefineConstants)</DefineConstants>
     <NoWarn>$(NoWarn);NU1903</NoWarn>
     <NoWarn Condition="'$(TargetFramework)' == 'net6.0'">$(NoWarn);SYSLIB0011</NoWarn>
+    <NoWarn Condition="'$(TargetFramework)' == 'net8.0'">$(NoWarn);SYSLIB0011;SYSLIB0050;SYSLIB0051</NoWarn>
     <NoWarn Condition="'$(TargetFramework)' == 'net10.0'">$(NoWarn);SYSLIB0011;SYSLIB0050;SYSLIB0051</NoWarn>
 
     <Product>NHibernate</Product>
