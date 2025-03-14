@@ -93,7 +93,6 @@
     </PackageReference>
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.140" />
     <PackageReference Include="System.Data.Odbc" Version="4.7.0" />
-    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="NUnitLite" Version="3.14.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(NuGetPackageRoot)' != '' ">
