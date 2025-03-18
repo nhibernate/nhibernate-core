@@ -872,7 +872,7 @@ namespace NHibernate.Util
 			return false;
 		}
 
-		public static string GenerateSuffix(int index)
+		internal static string GenerateSuffix(int index)
 		{
 			return index switch
 			{
