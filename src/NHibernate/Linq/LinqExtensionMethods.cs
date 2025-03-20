@@ -2400,6 +2400,179 @@ namespace NHibernate.Linq
 
 		#endregion
 
+		#region ToHashSetAsync
+
+		/// <summary>
+		/// Executes the query and returns its result as a <see cref="HashSet{T}"/>.
+		/// </summary>
+		/// <remarks>
+		/// Note that this method still allocates an intermediate <see cref="List{T}"/> instance from which the result is created.
+		/// </remarks>
+		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to return a HashSet from.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// A task that represents the asynchronous operation.
+		/// The task result contains a <see cref="HashSet{T}" /> that contains elements from the input sequence.
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
+		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
+		public static Task<HashSet<TSource>> ToHashSetAsync<TSource>(this IQueryable<TSource> source, CancellationToken cancellationToken = default(CancellationToken)) => ToHashSetAsync(source, null, cancellationToken);
+		
+		/// <summary>
+		/// Executes the query and returns its result as a <see cref="HashSet{T}"/>.
+		/// </summary>
+		/// <remarks>
+		/// Note that this method still allocates an intermediate <see cref="List{T}"/> instance from which the result is created.
+		/// </remarks>
+		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to return a HashSet from.</param>
+		/// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing values in the set, or null to use the default <see cref="EqualityComparer{T}"/> implementation for the set type.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+		/// <returns>
+		/// A task that represents the asynchronous operation.
+		/// The task result contains a <see cref="HashSet{T}" /> that contains elements from the input sequence.
+		/// </returns>
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
+		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
+		public static async Task<HashSet<TSource>> ToHashSetAsync<TSource>(this IQueryable<TSource> source, IEqualityComparer<TSource> comparer, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException(nameof(source));
+			}
+			if (source.Provider is not INhQueryProvider)
+			{
+				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
+			}
+
+			var hashSet = new HashSet<TSource>(comparer);
+			foreach (var item in await source.ToListAsync(cancellationToken).ConfigureAwait(false))
+			{
+				hashSet.Add(item);
+			}
+
+			return hashSet;
+		}
+
+		#endregion
+
+		#region ToDictionaryAsync
+
+		/// <summary>
+		/// Executes the query and returns its result as a <see cref="Dictionary{TKey, TValue}" /> according to a specified key selector function.
+		/// </summary>
+		/// <remarks>
+		/// Note that this method still allocates an intermediate <see cref="List{T}"/> instance from which the result is created.
+		/// </remarks>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" /></typeparam>
+		/// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" /></typeparam>
+		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to return a Dictionary from.</param>
+		/// <param name="keySelector">A function to extract a key from each element.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
+		/// <returns>
+		/// A task that represents the asynchronous operation.
+		/// The task result contains a <see cref="Dictionary{TKey, TSource}" /> that contains selected keys and values.
+		/// </returns>
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
+		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
+		public static Task<Dictionary<TKey, TSource>> ToDictionaryAsync<TSource, TKey>(this IQueryable<TSource> source, Func<TSource, TKey> keySelector, CancellationToken cancellationToken = default(CancellationToken))
+			where TKey : notnull => ToDictionaryAsync(source, keySelector, e => e, comparer: null, cancellationToken);
+
+		/// <summary>
+		/// Executes the query and returns its result as a <see cref="Dictionary{TKey, TValue}" /> according to a specified key selector function and a comparer.
+		/// </summary>
+		/// <remarks>
+		/// Note that this method still allocates an intermediate <see cref="List{T}"/> instance from which the result is created.
+		/// </remarks>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" /></typeparam>
+		/// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" /></typeparam>
+		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to return a Dictionary from.</param>
+		/// <param name="keySelector">A function to extract a key from each element.</param>
+		/// <param name="comparer">An <see cref="IEqualityComparer{TKey}" /> to compare keys.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
+		/// <returns>
+		/// A task that represents the asynchronous operation.
+		/// The task result contains a <see cref="Dictionary{TKey, TSource}" /> that contains selected keys and values.
+		/// </returns>
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
+		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
+		public static Task<Dictionary<TKey, TSource>> ToDictionaryAsync<TSource, TKey>(this IQueryable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer, CancellationToken cancellationToken = default(CancellationToken))
+			where TKey : notnull => ToDictionaryAsync(source, keySelector, e => e, comparer, cancellationToken);
+
+		/// <summary>
+		/// Executes the query and returns its result as a <see cref="Dictionary{TKey, TValue}" /> according to a specified key selector function and an element selector function.
+		/// </summary>
+		/// <remarks>
+		/// Note that this method still allocates an intermediate <see cref="List{T}"/> instance from which the result is created.
+		/// </remarks>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" /></typeparam>
+		/// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" /></typeparam>
+		/// <typeparam name="TElement">The type of the value returned by <paramref name="elementSelector" />.</typeparam>
+		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to return a Dictionary from.</param>
+		/// <param name="keySelector">A function to extract a key from each element.</param>
+		/// <param name="elementSelector">A transform function to produce a result element value from each element.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
+		/// <returns>
+		/// A task that represents the asynchronous operation.
+		/// The task result contains a <see cref="Dictionary{TKey, TSource}" /> that contains selected keys and values.
+		/// </returns>
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
+		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
+		public static Task<Dictionary<TKey, TElement>> ToDictionaryAsync<TSource, TKey, TElement>(this IQueryable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, CancellationToken cancellationToken = default(CancellationToken))
+			where TKey : notnull => ToDictionaryAsync(source, keySelector, elementSelector, comparer: null, cancellationToken);
+
+		/// <summary>
+		/// Executes the query and returns its result as a <see cref="Dictionary{TKey, TValue}" /> according to a specified key selector function, a comparer, and an element selector function.
+		/// </summary>
+		/// <remarks>
+		/// Note that this method still allocates an intermediate <see cref="List{T}"/> instance from which the result is created.
+		/// </remarks>
+		/// <typeparam name="TSource">The type of the elements of <paramref name="source" /></typeparam>
+		/// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" /></typeparam>
+		/// <typeparam name="TElement">The type of the value returned by <paramref name="elementSelector" />.</typeparam>
+		/// <param name="source">An <see cref="T:System.Linq.IQueryable`1" /> to return a Dictionary from.</param>
+		/// <param name="keySelector">A function to extract a key from each element.</param>
+		/// <param name="elementSelector">A transform function to produce a result element value from each element.</param>
+		/// <param name="comparer">An <see cref="IEqualityComparer{TKey}" /> to compare keys.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
+		/// <returns>
+		/// A task that represents the asynchronous operation.
+		/// The task result contains a <see cref="Dictionary{TKey, TSource}" /> that contains selected keys and values.
+		/// </returns>
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is <see langword="null"/>.</exception>
+		/// <exception cref="T:System.NotSupportedException"><paramref name="source" /> <see cref="IQueryable.Provider"/> is not a <see cref="INhQueryProvider"/>.</exception>
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="keySelector" /> is <see langword="null"/>.</exception>
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="elementSelector" /> is <see langword="null"/>.</exception>
+		public static async Task<Dictionary<TKey, TElement>> ToDictionaryAsync<TSource, TKey, TElement>(this IQueryable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer,
+		                                                                                                CancellationToken cancellationToken = default(CancellationToken)) where TKey : notnull
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException(nameof(source));
+			}
+			if (source.Provider is not INhQueryProvider)
+			{
+				throw new NotSupportedException($"Source {nameof(source.Provider)} must be a {nameof(INhQueryProvider)}");
+			}
+			if (keySelector == null)
+			{
+				throw new ArgumentNullException(nameof(keySelector));
+			}
+			if (elementSelector == null)
+			{
+				throw new ArgumentNullException(nameof(elementSelector));
+			}
+
+			var dictionary = new Dictionary<TKey, TElement>(comparer);
+			foreach (var element in await source.ToListAsync(cancellationToken).ConfigureAwait(false))
+			{
+				dictionary.Add(keySelector(element), elementSelector(element));
+			}
+
+			return dictionary;
+		}
+		
+		#endregion
+
 		/// <summary>
 		/// Wraps the query in a deferred <see cref="IFutureEnumerable{T}"/> which enumeration will trigger a batch of all pending future queries.
 		/// </summary>
