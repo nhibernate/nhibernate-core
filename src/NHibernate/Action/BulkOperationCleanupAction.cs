@@ -166,8 +166,8 @@ namespace NHibernate.Action
 		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]
 		public virtual async Task InitAsync(CancellationToken cancellationToken)
 		{
-			await EvictEntityRegionsAsync(cancellationToken);
-			await EvictCollectionRegionsAsync(cancellationToken);
+			await EvictEntityRegionsAsync(cancellationToken).ConfigureAwait(false);
+			await EvictCollectionRegionsAsync(cancellationToken).ConfigureAwait(false);
 		}
 	}
 }
