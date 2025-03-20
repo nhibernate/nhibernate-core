@@ -9,6 +9,7 @@
 
 
 using System;
+using System.Diagnostics;
 using NHibernate.Engine;
 
 namespace NHibernate.Id
