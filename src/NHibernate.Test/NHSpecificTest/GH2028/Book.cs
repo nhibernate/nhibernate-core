@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace NHibernate.Test.NHSpecificTest.GH3665
+namespace NHibernate.Test.NHSpecificTest.GH2028
 {
 	public class Book
 	{

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace NHibernate.Test.NHSpecificTest.GH3665
+namespace NHibernate.Test.NHSpecificTest.GH2028
 {
 	[TestFixture]
 	public class TempReattachedChildFixture : BugTestCase
