@@ -1602,14 +1602,14 @@ in the parameter binding.</programlisting>
                             <entry></entry>
                         </row>
                         <row>
-                          <entry>Sybase Adaptive Server Enterprise 15</entry>
-                          <entry><literal>NHibernate.Dialect.SybaseASE15Dialect</literal></entry>
-                          <entry></entry>
+                            <entry>Sybase Adaptive Server Enterprise 15</entry>
+                            <entry><literal>NHibernate.Dialect.SybaseASE15Dialect</literal></entry>
+                            <entry></entry>
                         </row>
                         <row>
-                          <entry>Sybase Adaptive Server Enterprise 16</entry>
-                          <entry><literal>NHibernate.Dialect.SybaseASE16Dialect</literal></entry>
-                          <entry></entry>
+                            <entry>Sybase Adaptive Server Enterprise 16</entry>
+                            <entry><literal>NHibernate.Dialect.SybaseASE16Dialect</literal></entry>
+                            <entry></entry>
                         </row>
                         <row>
                             <entry>Sybase SQL Anywhere 10</entry>
