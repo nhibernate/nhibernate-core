@@ -20,53 +20,31 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class SybaseASE16Dialect : SybaseASE15Dialect
 	{
-		#region Limit/offset support
-
 		/// <summary>
-		/// Does this Dialect have some kind of <c>LIMIT</c> syntax?
+		/// ASE 16 supports limit statements, see: https://help.sap.com/docs/SAP_ASE/e0d4539d39c34f52ae9ef822c2060077/26d84b4ddae94fed89d4e7c88bc8d1e6.html?locale=en-US
 		/// </summary>
-		/// <value>False, unless overridden.</value>
-		public override bool SupportsLimit
-		{
-			get { return true; }
-		}
+		/// <returns>true</returns>
+		public override bool SupportsLimit => true;
 
-		/// <summary>
-		/// Does this Dialect support an offset?
-		/// </summary>
-		public override bool SupportsLimitOffset
-		{
-			get { return true; }
-		}
+		/// <inheritdoc />
+		/// <returns>true</returns>
+		public override bool SupportsLimitOffset => true;
 
-		/// <summary>
-		/// Can parameters be used for a statement containing a LIMIT?
-		/// </summary>
-		public override bool SupportsVariableLimit
-		{
-			get { return false; }
-		}
+		/// <inheritdoc />
+		/// <returns>false</returns>
+		public override bool SupportsVariableLimit => false;
 
-		/// <summary>
-		/// Attempts to add a <c>LIMIT</c> clause to the given SQL <c>SELECT</c>.
-		/// Expects any database-specific offset and limit adjustments to have already been performed (ex. UseMaxForLimit, OffsetStartsAtOne).
-		/// </summary>
-		/// <param name="queryString">The <see cref="SqlString"/> to base the limit query off.</param>
-		/// <param name="offset">Offset of the first row to be returned by the query.  This may be represented as a parameter, a string literal, or a null value if no limit is requested.  This should have already been adjusted to account for OffsetStartsAtOne.</param>
-		/// <param name="limit">Maximum number of rows to be returned by the query.  This may be represented as a parameter, a string literal, or a null value if no offset is requested.  This should have already been adjusted to account for UseMaxForLimit.</param>
-		/// <returns>A new <see cref="SqlString"/> that contains the <c>LIMIT</c> clause. Returns <c>null</c> 
-		/// if <paramref name="queryString"/> represents a SQL statement to which a limit clause cannot be added, 
-		/// for example when the query string is custom SQL invoking a stored procedure.</returns>
+		/// <inheritdoc />
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
 			if (offset == null && limit == null)
 				return queryString;
 
-			SqlStringBuilder pagingBuilder = new SqlStringBuilder();
+			var pagingBuilder = new SqlStringBuilder();
 			pagingBuilder.Add(queryString);
 			pagingBuilder.Add(" rows ");
 
-			if(limit !=null)
+			if (limit != null)
 			{
 				pagingBuilder.Add(" limit ");
 				pagingBuilder.Add(limit);
@@ -80,7 +58,5 @@ namespace NHibernate.Dialect
 
 			return pagingBuilder.ToSqlString();
 		}
-
-		#endregion
 	}
 }
