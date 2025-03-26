@@ -173,8 +173,6 @@ namespace NHibernate.Engine
 		/// Generates an appropriate EntityEntry instance and adds it
 		/// to the event source's internal caches.
 		/// </summary>
-		// Since 5.3
-		[Obsolete("Use the AddEntry extension method instead")]
 		EntityEntry AddEntry(object entity, Status status, object[] loadedState, object rowId, object id, object version,
 		                     LockMode lockMode, bool existsInDatabase, IEntityPersister persister, bool disableVersionIncrement,
 		                     bool lazyPropertiesAreUnfetched);

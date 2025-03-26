@@ -1148,7 +1148,8 @@ namespace NHibernate.Loader
 
 			ILoadable concretePersister = GetConcretePersister(dr, i, persister, key.Identifier, session);
 
-			if (optionalObjectKey != null && key.Equals(optionalObjectKey))
+			bool useOptionalObject = optionalObjectKey != null && key.Equals(optionalObjectKey);
+			if (useOptionalObject)
 			{
 				// its the given optional object
 				obj = optionalObject;
@@ -1164,8 +1165,8 @@ namespace NHibernate.Loader
 			// (but don't yet initialize the object itself)
 			// note that we acquired LockMode.READ even if it was not requested
 			LockMode acquiredLockMode = lockMode == LockMode.None ? LockMode.Read : lockMode;
-			LoadFromResultSet(dr, i, obj, concretePersister, key, acquiredLockMode, persister, session);
-
+			LoadFromResultSet(dr, i, obj, concretePersister, key, acquiredLockMode, persister, session, useOptionalObject);
+			
 			// materialize associations (and initialize the object) later
 			hydratedObjects.Add(obj);
 
@@ -1292,7 +1293,7 @@ namespace NHibernate.Loader
 		/// </summary>
 		private void LoadFromResultSet(DbDataReader rs, int i, object obj, ILoadable persister, EntityKey key,
 									   LockMode lockMode, ILoadable rootPersister,
-									   ISessionImplementor session)
+									   ISessionImplementor session, bool lazyPropertiesAreUnfetched)
 		{
 			object id = key.Identifier;
 
@@ -1317,7 +1318,7 @@ namespace NHibernate.Loader
 
 			object rowId = persister.HasRowId ? rs[EntityAliases[i].RowIdAlias] : null;
 
-			TwoPhaseLoad.PostHydrate(persister, id, values, rowId, obj, lockMode, session);
+			TwoPhaseLoad.PostHydrate(persister, id, values, rowId, obj, lockMode, lazyPropertiesAreUnfetched, session);
 		}
 
 		private string[][] GetSubclassEntityAliases(int i, ILoadable persister)
