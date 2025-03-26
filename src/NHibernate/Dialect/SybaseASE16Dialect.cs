@@ -21,7 +21,7 @@ namespace NHibernate.Dialect
 	public class SybaseASE16Dialect : SybaseASE15Dialect
 	{
 		/// <summary>
-		/// ASE 16 supports limit statements, see: https://help.sap.com/docs/SAP_ASE/e0d4539d39c34f52ae9ef822c2060077/26d84b4ddae94fed89d4e7c88bc8d1e6.html?locale=en-US
+		/// ASE 16 supports limit statements, see https://help.sap.com/docs/SAP_ASE/e0d4539d39c34f52ae9ef822c2060077/26d84b4ddae94fed89d4e7c88bc8d1e6.html?locale=en-US
 		/// </summary>
 		/// <returns>true</returns>
 		public override bool SupportsLimit => true;
