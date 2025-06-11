@@ -1,11 +1,12 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using NHibernate.Engine;
-using NHibernate.Loader;
 using NHibernate.Loader.Criteria;
 using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
+using NHibernate.Util;
+
 using IQueryable = NHibernate.Persister.Entity.IQueryable;
 
 namespace NHibernate.Criterion
@@ -204,7 +205,7 @@ namespace NHibernate.Criterion
 				subcriteria,
 				Persister.IdentifierPropertyName ?? string.Empty);
 
-			ColumnAliasSuffix = BasicLoader.GenerateSuffix(criteriaQuery.GetIndexForAlias());
+			ColumnAliasSuffix = StringHelper.GenerateSuffix(criteriaQuery.GetIndexForAlias());
 
 			_identifierColumnAliases = Persister.GetIdentifierAliases(ColumnAliasSuffix);
 
