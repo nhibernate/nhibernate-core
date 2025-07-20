@@ -15,4 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NHibernate\NHibernate.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
+  </ItemGroup>
 </Project>
