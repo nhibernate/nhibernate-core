@@ -76,7 +76,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="9.1.1" />
     <PackageReference Include="Npgsql" Version="8.0.3" />
-    <PackageReference Include="MySql.Data" Version="8.0.30" />
+    <PackageReference Include="MySql.Data" Version="9.1.0" />
   </ItemGroup>
   <ItemGroup Condition="$(NhNetFx)">
     <Reference Include="System.Configuration" />
