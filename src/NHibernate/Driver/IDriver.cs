@@ -163,5 +163,38 @@ namespace NHibernate.Driver
 		/// The minimal date supplied as a <see cref="DateTime" /> supported by this driver.
 		/// </summary>
 		DateTime MinDate { get; }
+
+#if NET6_0_OR_GREATER
+		/// <summary>
+		/// Create a <see cref="DbBatch"/>
+		/// </summary>
+		/// <returns></returns>
+		/// <exception cref="NotSupportedException"></exception>
+		DbBatch CreateBatch() => throw new NotSupportedException();
+
+		/// <summary>
+		/// Can this driver create <see cref="DbBatch"/>es?
+		/// </summary>
+		bool CanCreateBatch => false;
+
+		/// <summary>
+		/// Prepare the <paramref name="dbBatch" /> by calling <see cref="DbBatch.Prepare()" />.
+		/// May be a no-op if the driver does not support preparing commands, or for any other reason.
+		/// </summary>
+		/// <param name="dbBatch">The batch.</param>
+		void PrepareBatch(DbBatch dbBatch) { }
+
+		/// <summary>
+		/// Creates (clones) a <see cref="DbBatchCommand"/> from a <see cref="DbCommand"/>,
+		/// copying its <see cref="DbCommand.CommandText"/>, <see cref="DbCommand.CommandType"/>
+		/// and all its parameters.
+		/// The returned <see cref="DbBatchCommand"/> will not be added to <paramref name="dbBatch"/> 
+		/// </summary>
+		/// <param name="dbBatch"></param>
+		/// <param name="dbCommand"></param>
+		/// <returns></returns>
+		/// <exception cref="NotSupportedException"></exception>
+		DbBatchCommand CreateDbBatchCommandFromDbCommand(DbBatch dbBatch, DbCommand dbCommand) => throw new NotSupportedException();
+#endif
 	}
 }
