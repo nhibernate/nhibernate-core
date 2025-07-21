@@ -87,6 +87,14 @@ namespace NHibernate
 		public static LockMode UpgradeNoWait = new LockMode(10, "UpgradeNoWait");
 
 		/// <summary>
+		/// Attempt to obtain and upgrade lock, using an Oracle-style
+		/// <c>SELET ... FOR UPDATE SKIP LOCKED</c>. The semantics of
+		/// this lock mode, once obtained, are the same as
+		/// <c>Upgrade</c>.
+		/// </summary>
+		public static LockMode UpgradeSkipLocked = new LockMode(10, "UpgradeSkipLocked");
+
+		/// <summary>
 		/// A <c>Write</c> lock is obtained when an object is updated or inserted.
 		/// </summary>
 		/// <remarks>
