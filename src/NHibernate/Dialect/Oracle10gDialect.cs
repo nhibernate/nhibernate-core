@@ -34,6 +34,13 @@ namespace NHibernate.Dialect
 			base.Configure(settings);
 		}
 
+		public override string ForUpdateSkipLockedString => " for update skip locked";
+
+		public override string GetForUpdateSkipLockedString(string aliases)
+		{
+			return ForUpdateString + " of " + aliases + " skip locked";
+		}
+
 		// Avoid registering weighted double type when using binary floating point types
 		protected override void RegisterFloatingPointTypeMappings()
 		{

@@ -1637,6 +1637,7 @@
 			<xs:enumeration value="read" />
 			<xs:enumeration value="upgrade" />
 			<xs:enumeration value="upgrade-nowait" />
+			<xs:enumeration value="upgrade-skiplocked" />
 			<xs:enumeration value="write" />
 		</xs:restriction>
 	</xs:simpleType>

@@ -83,6 +83,11 @@ namespace NHibernate.Dialect
 					return tableName + " with (updlock, rowlock, nowait)";
 				}
 
+				if (lockMode == LockMode.UpgradeSkipLocked)
+				{
+					return tableName + "with (rowlock, updlock, readpast)";
+				}
+
 				return tableName + " with (updlock, rowlock)";
 			}
 

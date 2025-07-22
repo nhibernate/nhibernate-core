@@ -307,7 +307,8 @@ namespace NHibernate.SqlCommand
 				var isUpgrade = Equals(lockMode, LockMode.Upgrade);
 				var isUpgradeNoWait = !isUpgrade && (
 					Equals(lockMode, LockMode.UpgradeNoWait) || Equals(lockMode, LockMode.Force));
-				if (!isUpgrade && !isUpgradeNoWait)
+				var isUpgradeSkipLocked = !isUpgrade && !isUpgradeNoWait && Equals(lockMode, LockMode.UpgradeSkipLocked);
+				if (!isUpgrade && !isUpgradeNoWait && !isUpgradeSkipLocked)
 					return string.Empty;
 
 				if (!Dialect.SupportsForUpdateOf)
@@ -328,7 +329,11 @@ namespace NHibernate.SqlCommand
 					return string.Empty;
 				}
 
-				return isUpgrade ? Dialect.GetForUpdateString(mainTableAlias) : Dialect.GetForUpdateNowaitString(mainTableAlias);
+				return isUpgrade
+					? Dialect.GetForUpdateString(mainTableAlias)
+					: isUpgradeNoWait
+						? Dialect.GetForUpdateNowaitString(mainTableAlias)
+						: Dialect.GetForUpdateSkipLockedString(mainTableAlias);
 			}
 
 			return Dialect.GetForUpdateString(lockMode);
