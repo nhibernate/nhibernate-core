@@ -100,4 +100,12 @@
       Condition="'$(DesignTimeBuild)' == 'true' OR '$(BuildingProject)' != 'true'"
     />
   </Target>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>
+        NHibernate.Test, PublicKey=002400000480000094000000060200000024000052534131000400000100010097dcf11f130a2a2ac4df89be27a41d403258c943574cd324c819f20798506b9ffadf8870efae2c40073b6cd97076e88a3c80dfe5011d259de719e85d68d1673720f6a36476a3a25b6a6277dd8bc3ce394f5c2a7b04bda884edc8d4c9d6e1d376b509ba68ae64031cab45b0b1a4ea95933258722a3a4ee98f1c6b4c8571e3b8a5
+      </_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>
