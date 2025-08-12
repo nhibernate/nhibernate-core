@@ -100,4 +100,8 @@
       Condition="'$(DesignTimeBuild)' == 'true' OR '$(BuildingProject)' != 'true'"
     />
   </Target>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="NHibernate.Test" />
+  </ItemGroup>
 </Project>
