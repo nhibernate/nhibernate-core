@@ -58,6 +58,7 @@ namespace NHibernate.Mapping.ByCode
 		void Discriminator(Action<IDiscriminatorMapper> discriminatorMapping);
 		void DiscriminatorValue(object value);
 		void Table(string tableName);
+		void Check(string check);
 		void Catalog(string catalogName);
 		void Schema(string schemaName);
 		void Mutable(bool isMutable);
