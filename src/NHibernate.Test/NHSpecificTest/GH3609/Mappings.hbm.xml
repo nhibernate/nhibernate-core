@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
                    namespace="NHibernate.Test.NHSpecificTest.GH3609">
-  
+
   <class name="Order" table="TheOrder">
     <id name="Id" generator="identity" />
     <property name="CreatedDate" />
-    <property name="UniqueId" />
+    <property name="UniqueId" unique="true" />
   </class>
-  
+
   <class name="LineItem">
     <id name="Id" generator="identity" />
     <property name="ItemName" />
@@ -15,6 +15,15 @@
     <many-to-one name="Order"
                  property-ref="UniqueId"
                  not-found="ignore"
+                 column="OrderId" />
+  </class>
+
+  <class name="CleanLineItem">
+    <id name="Id" generator="identity" />
+    <property name="ItemName" />
+    <property name="Amount" />
+    <many-to-one name="Order"
+                 property-ref="UniqueId"
                  column="OrderId" />
   </class>
 
