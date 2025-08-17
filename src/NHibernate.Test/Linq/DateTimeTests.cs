@@ -99,6 +99,7 @@ namespace NHibernate.Test.Linq
 			using var session = OpenSession();
 			using var trans = session.BeginTransaction();
 			var entity1 = session.Get<DateTimeTestsClass>(_referenceEntities[0].Id);
+			trans.Commit();
 			if (entity1.DateTimeValueWithScale != entity1.DateTimeValue + FractionalSecondsAdded)
 			{
 				Assert.Ignore("Current setup doesn't support DateTime with scale (2)");
