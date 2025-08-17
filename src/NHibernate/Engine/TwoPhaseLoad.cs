@@ -30,8 +30,6 @@ namespace NHibernate.Engine
 		/// to resolve any associations yet, because there might be other entities waiting to be
 		/// read from the JDBC result set we are currently processing
 		/// </summary>
-		// Since 5.3
-		[Obsolete("Use the overload without lazyPropertiesAreUnfetched parameter instead")]
 		public static void PostHydrate(IEntityPersister persister, object id, object[] values, object rowId, object obj, LockMode lockMode, bool lazyPropertiesAreUnfetched, ISessionImplementor session)
 		{
 			object version = Versioning.GetVersion(values, persister);
