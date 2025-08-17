@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using NHibernate.Engine;
 
 namespace NHibernate.Id
@@ -36,34 +37,32 @@ namespace NHibernate.Id
 		/// <returns>The new identifier as a <see cref="Guid"/>.</returns>
 		public object Generate(ISessionImplementor session, object obj)
 		{
-			return GenerateComb();
+			return GenerateComb(Guid.NewGuid(), DateTime.UtcNow);
 		}
 
 		/// <summary>
 		/// Generate a new <see cref="Guid"/> using the comb algorithm.
 		/// </summary>
-		private Guid GenerateComb()
+		protected static Guid GenerateComb(Guid guid, DateTime utcNow)
 		{
-			byte[] guidArray = Guid.NewGuid().ToByteArray();
-
-			DateTime now = DateTime.UtcNow;
-
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
+			Span<byte> guidArray = stackalloc byte[16];
+			guid.TryWriteBytes(guidArray);
+#else
+			var guidArray = guid.ToByteArray();
+#endif
 			// Get the days and milliseconds which will be used to build the byte string 
-			TimeSpan days = new TimeSpan(now.Ticks - BaseDateTicks);
-			TimeSpan msecs = now.TimeOfDay;
-
-			// Convert to a byte array 
+			var ts = new TimeSpan(utcNow.Ticks - BaseDateTicks);
+			var days = ts.Days;
+			guidArray[10] = (byte) (days >> 8);
+			guidArray[11] = (byte) days;
+					
 			// Note that SQL Server is accurate to 1/300th of a millisecond so we divide by 3.333333 
-			byte[] daysArray = BitConverter.GetBytes(days.Days);
-			byte[] msecsArray = BitConverter.GetBytes((long) (msecs.TotalMilliseconds / 3.333333));
-
-			// Reverse the bytes to match SQL Servers ordering 
-			Array.Reverse(daysArray);
-			Array.Reverse(msecsArray);
-
-			// Copy the bytes into the guid 
-			Array.Copy(daysArray, daysArray.Length - 2, guidArray, guidArray.Length - 6, 2);
-			Array.Copy(msecsArray, msecsArray.Length - 4, guidArray, guidArray.Length - 4, 4);
+			var msecs = (long) (utcNow.TimeOfDay.TotalMilliseconds / 3.333333);
+			guidArray[12] = (byte) (msecs >> 24);
+			guidArray[13] = (byte) (msecs >> 16);
+			guidArray[14] = (byte) (msecs >> 8);
+			guidArray[15] = (byte) msecs;
 
 			return new Guid(guidArray);
 		}

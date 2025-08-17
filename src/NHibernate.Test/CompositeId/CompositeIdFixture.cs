@@ -21,7 +21,7 @@ namespace NHibernate.Test.CompositeId
 				return new string[]
 				       	{
 				       		"CompositeId.Customer.hbm.xml", "CompositeId.Order.hbm.xml", "CompositeId.LineItem.hbm.xml",
-				       		"CompositeId.Product.hbm.xml"
+				       		"CompositeId.Product.hbm.xml", "CompositeId.Shipper.hbm.xml"
 				       	};
 			}
 		}
@@ -64,9 +64,13 @@ namespace NHibernate.Test.CompositeId
 
 				Order o = new Order(c);
 				o.OrderDate = DateTime.Today;
+				o.Shipper = new Shipper() { Id = new NullableId(null, 13) };
+				s.Persist(o);
+				
 				LineItem li = new LineItem(o, p);
 				li.Quantity = 2;
-
+				s.Persist(li);
+				
 				t.Commit();
 			}
 
@@ -120,6 +124,19 @@ namespace NHibernate.Test.CompositeId
 				li2.Quantity = 5;
 				IList bigOrders = s.CreateQuery("from Order o where o.Total>10.0").List();
 				Assert.AreEqual(1, bigOrders.Count);
+				t.Commit();
+			}
+
+			using (s = OpenSession())
+			{
+				t = s.BeginTransaction();
+				var noShippersForWarehouse = s.Query<Order>()
+					// NOTE: .Where(x => x.Shipper.Id == new NullableId(null, 13)) improperly renders
+					// "where (ShipperId = @p1 and WarehouseId = @p2)" with @p1 = NULL (needs to be is null)
+					// But the effort to fix is pretty high due to how component tuples are managed in linq / hql.
+					.Where(x => x.Shipper.Id.WarehouseId == 13 && x.Shipper.Id.Id == null)
+					.ToList();
+				Assert.AreEqual(1, noShippersForWarehouse.Count);
 				t.Commit();
 			}
 
@@ -284,6 +301,15 @@ namespace NHibernate.Test.CompositeId
 
 		[Test(Description = "GH-2646")]
 		public void AnyOnCompositeId()
+		{
+			using (var s = OpenSession())
+			{
+				s.Query<Order>().Where(o => o.LineItems.Any()).ToList();
+				s.Query<Order>().Select(o => o.LineItems.Any()).ToList();
+			}
+		}
+
+		public void NullCompositeId()
 		{
 			using (var s = OpenSession())
 			{
