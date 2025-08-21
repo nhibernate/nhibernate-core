@@ -9,7 +9,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 	{
 		private readonly HbmCollectionId hbmId;
 		private const string DefaultColumnName = "collection_key";
-		private string autosetType;
+		private string autosetType = "Int32";
 
 		public CollectionIdMapper(HbmCollectionId hbmId)
 		{
