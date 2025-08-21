@@ -161,7 +161,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string propName = property.Text;
 			_propertyName = propName;
 
-			// If the uresolved property path isn't set yet, just use the property name.
+			// If the unresolved property path isn't set yet, just use the property name.
 			if (_propertyPath == null)
 			{
 				_propertyPath = propName;
@@ -397,10 +397,14 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			string property = _propertyName;
 			bool joinIsNeeded;
 
-			//For nullable entity comparisons we always need to add join (like not constrained one-to-one or not-found ignore associations)
-			bool comparisonWithNullableEntity = entityType.IsNullable && Walker.IsComparativeExpressionClause && !IsCorrelatedSubselect;
+			// For nullable entity comparisons we always need to add join (like not constrained one-to-one or not-found ignore associations).
+			var comparisonWithNullableEntity = Walker.IsComparativeExpressionClause && entityType.IsNullable;
+			// For property-ref association comparison, we also need to join unless finding a way in the node for the other hand of the comparison
+			// to detect it should yield the property-ref columns instead of the primary key columns. And if the other hand is an association too,
+			// it may be a reference to the primary key, so we would need to join anyway.
+			var comparisonThroughPropertyRef = Walker.IsComparativeExpressionClause && !entityType.IsReferenceToPrimaryKey;
 
-			if ( IsDotNode( parent ) ) 
+			if (IsDotNode(parent))
 			{
 				// our parent is another dot node, meaning we are being further dereferenced.
 				// thus we need to generate a join unless the parent refers to the associated
@@ -421,15 +425,18 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 			else
 			{
 				joinIsNeeded = generateJoin || (Walker.IsInSelect && !Walker.IsInCase) || (Walker.IsInFrom && !Walker.IsComparativeExpressionClause)
-				               || comparisonWithNullableEntity;
+					|| comparisonWithNullableEntity || comparisonThroughPropertyRef;
 			}
 
 			if ( joinIsNeeded )
 			{
-				DereferenceEntityJoin(classAlias, entityType, implicitJoin, parent, comparisonWithNullableEntity);
-				if (comparisonWithNullableEntity)
+				// Subselect queries use theta style joins, which cannot be forced to left outer joins.
+				var forceLeftJoin = comparisonWithNullableEntity && !IsCorrelatedSubselect;
+				DereferenceEntityJoin(classAlias, entityType, implicitJoin, parent, forceLeftJoin);
+				if (comparisonWithNullableEntity || comparisonThroughPropertyRef)
 				{
 					_columns = FromElement.GetIdentityColumns();
+					DataType = FromElement.EntityPersister.EntityMetamodel.EntityType;
 				}
 			}
 			else 
