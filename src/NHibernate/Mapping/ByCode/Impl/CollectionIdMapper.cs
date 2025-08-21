@@ -36,7 +36,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 				throw new NotSupportedException("The generator '" + generator.Class + "' cannot be used as collection element id.");
 			}
 			ApplyGenerator(generator);
-			generatorMapping(new GeneratorMapper(hbmId.generator));
+			generatorMapping(new GeneratorMapper(hbmId.Generator));
 		}
 
 		public void Type(IIdentifierType persistentType)

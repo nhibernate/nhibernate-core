@@ -31,13 +31,14 @@ namespace NHibernate.Cfg.MappingSchema
 			}
 		}
 
-		#region Implementation of ITypeMapping
-
 		public HbmType Type
 		{
 			get { return !string.IsNullOrEmpty(type) ? new HbmType { name = type } : null; }
 		}
 
-		#endregion
+		public HbmGenerator Generator
+		{
+			get { return string.IsNullOrEmpty(generator1) ? generator : new HbmGenerator { @class = generator1 }; }
+		}
 	}
 }
