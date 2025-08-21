@@ -33,7 +33,7 @@ namespace NHibernate.Cfg.MappingSchema
 
 		public HbmType Type
 		{
-			get { return !string.IsNullOrEmpty(type) ? new HbmType { name = type } : null; }
+			get { return type ?? (!string.IsNullOrEmpty(type1) ? new HbmType { name = type1 } : null); }
 		}
 
 		public HbmGenerator Generator

@@ -6,8 +6,10 @@
 		</id>
 		<property name="Name" column="aname" />
     <idbag name="Items" cascade="all-delete-orphan">
-      <collection-id type="Int32" column="item_id">
+      <collection-id>
+        <column name="item_id" />
         <generator class="increment" />
+        <type name="Int64" />
       </collection-id>
       <key column="a_id" />
       <element type="string" />

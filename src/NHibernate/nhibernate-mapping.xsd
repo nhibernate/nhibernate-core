@@ -217,6 +217,7 @@
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="generator" minOccurs="0" />
+				<xs:element ref="type" minOccurs="0" />
 			</xs:sequence>
 			<xs:attribute name="column" type="xs:string" />
 			<xs:attribute name="type" default="Int32" type="xs:string" />

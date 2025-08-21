@@ -43,7 +43,8 @@ namespace NHibernate.Mapping.ByCode.Impl
 		{
 			if (persistentType != null)
 			{
-				hbmId.type = persistentType.Name;
+				hbmId.type1 = persistentType.Name;
+				hbmId.type = null;
 			}
 		}
 
@@ -87,10 +88,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		private void AutosetTypeThroughGeneratorDef(IGeneratorDef generator)
 		{
-			if (Equals(hbmId.type, autosetType) && generator.DefaultReturnType != null)
+			if (Equals(hbmId.type1, autosetType) && generator.DefaultReturnType != null)
 			{
 				autosetType = generator.DefaultReturnType.GetNhTypeName();
-				hbmId.type = autosetType;
+				hbmId.type1 = autosetType;
+				hbmId.type = null;
 			}
 		}
 	}
