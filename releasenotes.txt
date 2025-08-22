@@ -1,4 +1,17 @@
-﻿Build 5.5.2
+﻿Build 5.5.3
+=============================
+
+Release notes - NHibernate - Version 5.5.3
+
+2 issues were resolved in this release.
+
+** Task
+
+   * #3692 Release 5.5.3
+   * #3691 Merge 5.4.10 into 5.5.x
+
+
+Build 5.5.2
 =============================
 
 Release notes - NHibernate - Version 5.5.2
