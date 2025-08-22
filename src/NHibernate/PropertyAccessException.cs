@@ -81,6 +81,8 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		protected PropertyAccessException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			persistentType = info.GetValue("persistentType", typeof(System.Type)) as System.Type;
@@ -88,6 +90,7 @@ namespace NHibernate
 			wasSetter = info.GetBoolean("wasSetter");
 		}
 
+#pragma warning disable CS0809
 		/// <summary>
 		/// Sets the serialization info for <see cref="PropertyAccessException"/> after 
 		/// getting the info from the base Exception.
@@ -99,6 +102,8 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
@@ -107,6 +112,7 @@ namespace NHibernate
 			info.AddValue("propertyName", propertyName);
 			info.AddValue("wasSetter", wasSetter);
 		}
+#pragma warning restore CS0809
 
 		#endregion
 	}

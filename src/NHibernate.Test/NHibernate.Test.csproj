@@ -4,10 +4,15 @@
     <Description>The Unit Tests for NHibernate.</Description>
     <TargetFrameworks>$(NhAppTargetFrameworks)</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
-    <NoWarn>$(NoWarn);3001;3002;3003;3005;SYSLIB0003;SYSLIB0012</NoWarn>
+    <NoWarn>$(NoWarn);3001;3002;3003;3005;8981;SYSLIB0003;SYSLIB0012</NoWarn>
     <ContentSQLiteInteropFiles>true</ContentSQLiteInteropFiles>
+    <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\NHibernate.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
@@ -38,7 +43,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
+  <ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
     <Compile Remove="**\CfgTest\DefaultNsAssmFixture.cs" />
     <Compile Remove="**\CfgTest\HbmOrderingFixture.cs" />
     <Compile Remove="**\DynamicProxyTests\PeVerifyFixture.cs" />
@@ -49,27 +54,17 @@
     <Compile Remove="**\NHSpecificTest\NH3121\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\NHibernate\Hql\Ast\ANTLR\CaseInsensitiveStringStream.cs">
-      <Link>Hql\Parser\CaseInsensitiveStringStream.cs</Link>
-    </Compile>
-    <Compile Include="..\NHibernate\Util\AsyncReaderWriterLock.cs">
-      <Link>UtilityTest\AsyncReaderWriterLock.cs</Link>
-    </Compile>
-    <Compile Include="..\NHibernate\Collection\Generic\SetHelpers\SetSnapShot.cs">
-      <Link>UtilityTest\SetSnapShot.cs</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.15" />
+    <PackageReference Include="log4net" Version="3.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.7.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="3.1.5" />
     <PackageReference Include="NHibernate.Caches.CoreDistributedCache.Memory" Version="5.9.0" />
     <PackageReference Include="NHibernate.Caches.Util.JsonSerializer" Version="5.9.0" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.117" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.14" />
-    <PackageReference Include="NSubstitute" Version="5.0.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.0.2" />
+    <PackageReference Include="NSubstitute" Version="5.1.0" />
     <PackageReference Include="NUnit" Version="3.14.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="NUnit.Analyzers" Version="4.2.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="9.1.1" />
     <PackageReference Include="Npgsql" Version="8.0.3" />
@@ -84,11 +79,13 @@
     <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
     <PackageReference Include="Oracle.ManagedDataAccess" Version="21.14.0" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.1" />
+  <ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="8.0.0" />
     <PackageReference Include="System.CodeDom" Version="4.7.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
-    <PackageReference Include="System.Data.OracleClient" Version="1.0.8" />
+    <PackageReference Include="System.Data.OracleClient" Version="1.0.8">
+      <ExcludeAssets>compile</ExcludeAssets>
+    </PackageReference>
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.140" />
     <PackageReference Include="System.Data.Odbc" Version="4.7.0" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />

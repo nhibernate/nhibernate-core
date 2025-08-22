@@ -27,7 +27,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2092
 
 					Assert.That(NHibernateUtil.IsInitialized(employee.Person), Is.False);
 
-					Assert.That("Person1", Is.EqualTo(employee.Person.Name));
+					Assert.That(employee.Person.Name, Is.EqualTo("Person1"));
 
 					Assert.That(NHibernateUtil.IsInitialized(employee.Person), Is.True);
 				}

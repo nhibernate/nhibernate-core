@@ -15,7 +15,7 @@ namespace NHibernate.Test.NHSpecificTest
 		protected sealed override string MappingsAssembly =>
 			throw new InvalidOperationException("BugTestCase does not support overriding mapping assembly.");
 
-		protected sealed override void AddMappings(Configuration configuration)
+		protected override void AddMappings(Configuration configuration)
 		{
 			var mappings = Mappings;
 			if (mappings == null || mappings.Length == 0)

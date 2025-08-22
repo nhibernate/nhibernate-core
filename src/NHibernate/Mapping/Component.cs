@@ -105,7 +105,13 @@ namespace NHibernate.Mapping
 			owner = component.Owner;
 		}
 
+		// Since v5.6
+		[Obsolete("This method is not used and will be removed in a future version")]
 		public override void SetTypeUsingReflection(string className, string propertyName, string accesorName)
+		{
+		}
+
+		public override void SetTypeUsingReflection(System.Type propertyOwnerType, string propertyName, string accesorName)
 		{
 		}
 

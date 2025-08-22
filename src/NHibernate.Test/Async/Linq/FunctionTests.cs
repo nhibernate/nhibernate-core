@@ -204,7 +204,7 @@ namespace NHibernate.Test.Linq
 						select lowerName;
 			var result = await (query.ToListAsync());
 
-			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
+			Assert.That(result, Is.EqualTo(expected), $"Expected {string.Join("|", expected)} but was {string.Join("|", result)}");
 			await (ObjectDumper.WriteAsync(query));
 		}
 
@@ -220,7 +220,7 @@ namespace NHibernate.Test.Linq
 						select lowerName;
 			var result = await (query.ToListAsync());
 
-			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
+			Assert.That(result, Is.EqualTo(expected), $"Expected {string.Join("|", expected)} but was {string.Join("|", result)}");
 			await (ObjectDumper.WriteAsync(query));
 		}
 
@@ -236,7 +236,7 @@ namespace NHibernate.Test.Linq
 						select lowerName;
 			var result = await (query.ToListAsync());
 
-			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
+			Assert.That(result, Is.EqualTo(expected), $"Expected {string.Join("|", expected)} but was {string.Join("|", result)}");
 			await (ObjectDumper.WriteAsync(query));
 		}
 
@@ -252,7 +252,7 @@ namespace NHibernate.Test.Linq
 						select lowerName.IndexOf("a", 1);
 			var result = await (query.ToListAsync());
 
-			Assert.That(result, Is.EqualTo(expected), "Expected {0} but was {1}", string.Join("|", expected), string.Join("|", result));
+			Assert.That(result, Is.EqualTo(expected), $"Expected {string.Join("|", expected)} but was {string.Join("|", result)}");
 			await (ObjectDumper.WriteAsync(query));
 		}
 

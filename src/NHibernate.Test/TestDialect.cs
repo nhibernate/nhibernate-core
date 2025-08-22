@@ -124,9 +124,14 @@ namespace NHibernate.Test
 		public virtual bool SupportsModuloOnDecimal => true;
 
 		/// <summary>
+		/// Supports sub-selects in order by clause
+		/// </summary>
+		public virtual bool SupportsSubSelectsInOrderBy => _dialect.SupportsScalarSubSelects;
+
+		/// <summary>
 		/// Supports aggregating sub-selects in order by clause
 		/// </summary>
-		public virtual bool SupportsAggregatingScalarSubSelectsInOrderBy => _dialect.SupportsScalarSubSelects;
+		public virtual bool SupportsAggregatingScalarSubSelectsInOrderBy => SupportsSubSelectsInOrderBy;
 
 		/// <summary>
 		/// Supports order by and limits/top in correlated sub-queries
@@ -176,6 +181,11 @@ namespace NHibernate.Test
 		/// clone transactions for avoiding this trouble.)
 		/// </summary>
 		public virtual bool SupportsDependentTransaction => true;
+
+		/// <summary>
+		/// Transaction scope timeouts occur on a dedicated thread which wrecks some data providers.
+		/// </summary>
+		public virtual bool SupportsTransactionScopeTimeouts => true;
 
 		/// <summary>
 		/// Some databases (provider?) fails to compute adequate column types for queries which columns

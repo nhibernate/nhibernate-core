@@ -21,16 +21,16 @@
       "groupName": "NUnit"
     },
     {
-      "matchPackagePrefixes": [
-        "Oracle.ManagedDataAccess"
-      ],
-      "groupName": "Oracle.ManagedDataAccess"
+      "groupName": "Oracle.ManagedDataAccess",
+      "matchPackageNames": [
+        "Oracle.ManagedDataAccess{/,}**"
+      ]
     },
     {
-      "matchPackagePrefixes": [
-        "NHibernate.Caches"
-      ],
-      "groupName": "NHibernate.Caches"
+      "groupName": "NHibernate.Caches",
+      "matchPackageNames": [
+        "NHibernate.Caches{/,}**"
+      ]
     }
   ]
 }

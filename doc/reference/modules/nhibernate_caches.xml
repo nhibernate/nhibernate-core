@@ -44,17 +44,6 @@
 			Several cache providers have been contributed by NHibernate users:
 			<variablelist>
 				<varlistentry>
-					<term><classname>NHibernate.Caches.Prevalence</classname></term>
-					<listitem>
-						<para>
-							Uses <classname>Bamboo.Prevalence</classname> as the cache provider. Open the
-							file <filename>Bamboo.Prevalence.license.txt</filename> for more information about its license;
-							you can also visit its <ulink url="http://bbooprevalence.sourceforge.net/">website</ulink>. This
-							provider is available for the .Net Framework only. Also see <xref linkend="NHibernate.Caches.Prevalence" />.
-						</para>
-					</listitem>
-				</varlistentry>
-				<varlistentry>
 					<term><classname>NHibernate.Caches.SysCache</classname></term>
 					<listitem>
 						<para>
@@ -158,8 +147,7 @@
 				<listitem>
 					<para>
 						Choose the cache provider you want to use and copy its assembly in your assemblies directory.
-						(For example, <filename>NHibernate.Caches.Prevalence.dll</filename> or
-						<filename>NHibernate.Caches.SysCache.dll</filename>.)
+						(For example, <filename>NHibernate.Caches.SysCache.dll</filename>.)
 					</para>
 				</listitem>
 				<listitem>
@@ -276,19 +264,6 @@
 			Changes of the <literal>ConfigurationProvider.Current</literal> property value are to be done very
 			early in the application lifecycle, before building any session factory using the cache provider or
 			before any other call on the cache API. Otherwise they will not be taken into account.
-		</para>
-	</section>
-
-	<section id="NHibernate.Caches.Prevalence">
-		<title>Prevalence Cache Configuration</title>
-		<para>
-			There is only one configurable parameter: <literal>prevalenceBase</literal>. This is the directory on the
-			file system where the Prevalence engine will save data. It can be relative to the current directory or a
-			full path. If the directory doesn't exist, it will be created.
-		</para>
-		<para>
-			The <literal>prevalenceBase</literal> setting can only be set programmatically through the NHibernate
-			configuration object, by example with <literal>Configuration.SetProperty</literal>.
 		</para>
 	</section>
 

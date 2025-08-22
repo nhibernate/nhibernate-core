@@ -13,7 +13,6 @@ namespace NHibernate.Test.ReadOnly
 		
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
 			configuration.SetProperty(Environment.BatchSize, "0");
 		}

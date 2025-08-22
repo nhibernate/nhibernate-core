@@ -13,7 +13,7 @@ namespace NHibernate.Event
 		{
 			if (entity == null)
 			{
-				throw new ArgumentNullException("entity", "Attempt to create create event with null entity");
+				throw new ArgumentNullException("entity", "Attempt to create event with null entity");
 			}
 			this.entity = entity;
 		}

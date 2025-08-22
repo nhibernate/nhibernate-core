@@ -8,12 +8,12 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// Maps a <see cref="System.Globalization.CultureInfo"/> Property 
+	/// Maps a <see cref="CultureInfo"/> Property 
 	/// to a <see cref="DbType.String"/> column.
 	/// </summary>
 	/// <remarks>
 	/// CultureInfoType stores the culture name (not the Culture ID) of the 
-	/// <see cref="System.Globalization.CultureInfo"/> in the DB.
+	/// <see cref="CultureInfo"/> in the DB.
 	/// </remarks>
 	[Serializable]
 	public partial class CultureInfoType : ImmutableType, ILiteralType
@@ -22,16 +22,14 @@ namespace NHibernate.Type
 		{
 		}
 
+		internal CultureInfoType(StringSqlType sqlType) : base(sqlType)
+		{
+		}
+
 		/// <inheritdoc />
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			return ParseStringRepresentation(NHibernateUtil.String.Get(rs, index, session));
-		}
-
-		/// <inheritdoc />
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		/// <inheritdoc />

@@ -2377,14 +2377,14 @@ namespace NHibernate.Persister.Entity
 				{
 					if (entityMetamodel.HasNonIdentifierPropertyNamedId)
 					{
-						subclassPropertyAliases[EntityPersister.EntityID + "." + idPropertyNames[i]] = new string[] { idAliases[i] };
-						subclassPropertyColumnNames[EntityPersister.EntityID + "." + IdentifierPropertyName + "." + idPropertyNames[i]] = new string[] { idColumnNames[i] };
+						subclassPropertyAliases[string.Intern(EntityPersister.EntityID + "." + idPropertyNames[i])] = new string[] { idAliases[i] };
+						subclassPropertyColumnNames[string.Intern(EntityPersister.EntityID + "." + IdentifierPropertyName + "." + idPropertyNames[i])] = new string[] { idColumnNames[i] };
 					}
 					//				if (hasIdentifierProperty() && !ENTITY_ID.equals( getIdentifierPropertyName() ) ) {
 					if (HasIdentifierProperty)
 					{
-						subclassPropertyAliases[IdentifierPropertyName + "." + idPropertyNames[i]] = new string[] { idAliases[i] };
-						subclassPropertyColumnNames[IdentifierPropertyName + "." + idPropertyNames[i]] = new string[] { idColumnNames[i] };
+						subclassPropertyAliases[string.Intern(IdentifierPropertyName + "." + idPropertyNames[i])] = new string[] { idAliases[i] };
+						subclassPropertyColumnNames[string.Intern(IdentifierPropertyName + "." + idPropertyNames[i])] = new string[] { idColumnNames[i] };
 					}
 					else
 					{

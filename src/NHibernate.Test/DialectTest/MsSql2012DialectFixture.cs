@@ -167,13 +167,13 @@ namespace NHibernate.Test.DialectTest
 		{
 			var d = new MsSql2012Dialect();
 			var limitSql = d.GetLimitString(new SqlString(sql), null, new SqlString("2"));
-			Assert.That(limitSql, Is.Null, "Limit only: {0}", sql);
+			Assert.That(limitSql, Is.Null, $"Limit only: {sql}");
 
 			limitSql = d.GetLimitString(new SqlString(sql), new SqlString("10"), null);
-			Assert.That(limitSql, Is.Null, "Offset only: {0}", sql);
+			Assert.That(limitSql, Is.Null, $"Offset only: {sql}");
 
 			limitSql = d.GetLimitString(new SqlString(sql), new SqlString("10"), new SqlString("2"));
-			Assert.That(limitSql, Is.Null, "Limit and Offset: {0}", sql);
+			Assert.That(limitSql, Is.Null, $"Limit and Offset: {sql}");
 		}
 	}
 }

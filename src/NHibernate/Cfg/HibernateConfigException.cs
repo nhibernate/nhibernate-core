@@ -68,8 +68,9 @@ namespace NHibernate.Cfg
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
-		protected HibernateConfigException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
+		protected HibernateConfigException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

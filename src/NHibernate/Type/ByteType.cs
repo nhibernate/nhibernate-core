@@ -16,10 +16,10 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class ByteType : PrimitiveType, IDiscriminatorType, IVersionType
 	{
-		private static readonly byte ZERO = 0;
+		private static readonly object ZeroObject = (byte) 0;
 
-		public ByteType()
-			: base(SqlTypeFactory.Byte)
+		/// <summary />
+		public ByteType() : base(SqlTypeFactory.Byte)
 		{
 		}
 
@@ -33,24 +33,9 @@ namespace NHibernate.Type
 			};
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return rs[name] switch
-			{
-				BigInteger bi => (byte) bi,
-				var c => Convert.ToByte(c)
-			};
-		}
+		public override System.Type ReturnedClass => typeof(byte);
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(byte); }
-		}
-
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof(byte); }
-		}
+		public override System.Type PrimitiveClass => typeof(byte);
 
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
@@ -58,10 +43,7 @@ namespace NHibernate.Type
 			dp.Value = dp.DbType == DbType.Int16 ? Convert.ToInt16(value) : Convert.ToByte(value);
 		}
 		
-		public override string Name
-		{
-			get { return "Byte"; }
-		}
+		public override string Name => "Byte";
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
@@ -94,17 +76,11 @@ namespace NHibernate.Type
 
 		public virtual object Seed(ISessionImplementor session)
 		{
-			return ZERO;
+			return ZeroObject;
 		}
 
-		public IComparer Comparator
-		{
-			get { return Comparer.DefaultInvariant; }
-		}
+		public IComparer Comparator => Comparer.DefaultInvariant;
 
-		public override object DefaultValue
-		{
-			get { return ZERO; }
-		}
+		public override object DefaultValue => ZeroObject;
 	}
 }

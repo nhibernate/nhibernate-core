@@ -33,7 +33,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1859
 				IQuery qry = session.CreateSQLQuery("select /* first comment */ o.* /* second comment*/ from domainclass o")
 					.AddEntity("o", typeof (DomainClass));
 				var res = qry.List<DomainClass>();
-				Assert.AreEqual(res[0].Id, 1);
+				Assert.AreEqual(1, res[0].Id);
 			}
 		}
 	}

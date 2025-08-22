@@ -33,8 +33,6 @@ namespace NHibernate.Test.TypesTest
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
-
 			if (Dialect is FirebirdDialect)
 			{
 				configuration.SetProperty(Environment.QueryDefaultCastPrecision, "18");
@@ -50,18 +48,6 @@ namespace NHibernate.Test.TypesTest
 			using (var t = s.BeginTransaction())
 			{
 				s.Save(new DecimalClass { Id = _highScaleId, HighScaleDecimalValue = _highScaleTestedValue });
-				t.Commit();
-			}
-		}
-
-		protected override void OnTearDown()
-		{
-			base.OnTearDown();
-
-			using (var s = OpenSession())
-			using (var t = s.BeginTransaction())
-			{
-				s.CreateQuery("delete from DecimalClass").ExecuteUpdate();
 				t.Commit();
 			}
 		}

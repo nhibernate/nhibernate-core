@@ -17,5 +17,7 @@ for your own use before compiling tests in Visual Studio.
 		</property>
 		<property name="dialect">NHibernate.Dialect.SapSQLAnywhere17Dialect</property>
 		<property name="query.substitutions">true=1;false=0</property>
+		<property name="transaction.ignore_session_synchronization_failures">true</property>
+		<property name="transaction.system_completion_lock_timeout">200</property>
 	</session-factory>
 </hibernate-configuration>

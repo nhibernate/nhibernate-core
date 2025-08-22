@@ -93,7 +93,7 @@ namespace NHibernate.Test.TypesTest
 		[Test]
 		public void GetGuidWorksWhenUnderlyingTypeIsRepresentedByString()
 		{
-			GuidType type = (GuidType)NHibernateUtil.Guid;
+			var type = NHibernateUtil.Guid;
 
 			Guid value = Guid.NewGuid();
 			DataTable data = new DataTable("test");
@@ -106,14 +106,15 @@ namespace NHibernate.Test.TypesTest
 			var reader = data.CreateDataReader();
 			reader.Read();
 
-			using (var s = OpenSession())
-			{
-				var si = s.GetSessionImplementation();
-				Assert.AreEqual(value, type.Get(reader, "guid", si));
-				Assert.AreEqual(value, type.Get(reader, 0, si));
-				Assert.AreEqual(value, type.Get(reader, "varchar", si));
-				Assert.AreEqual(value, type.Get(reader, 1, si));
-			}
+			using var s = OpenSession();
+			var si = s.GetSessionImplementation();
+			
+			Assert.That(type.Get(reader, 0, si), Is.EqualTo(value));
+			Assert.That(type.Get(reader, 1, si), Is.EqualTo(value));
+#pragma warning disable CS0618 // Type or member is obsolete
+			Assert.That(type.Get(reader, "guid", si), Is.EqualTo(value));
+			Assert.That(type.Get(reader, "varchar", si), Is.EqualTo(value));
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 	}
 }

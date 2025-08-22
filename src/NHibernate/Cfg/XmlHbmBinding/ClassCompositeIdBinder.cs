@@ -190,7 +190,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			if (parentClass != null && value.IsSimpleValue)
 			{
-				value.SetTypeUsingReflection(parentClass.AssemblyQualifiedName, propertyName,
+				value.SetTypeUsingReflection(parentClass, propertyName,
 				                             keyManyToOneSchema.access ?? mappings.DefaultAccess);
 			}
 
@@ -242,7 +242,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 		{
 			if (parentClass != null && value.IsSimpleValue)
 			{
-				value.SetTypeUsingReflection(parentClass.AssemblyQualifiedName, propertyName,
+				value.SetTypeUsingReflection(parentClass, propertyName,
 				                             keyPropertySchema.access ?? mappings.DefaultAccess);
 			}
 

@@ -14,47 +14,26 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class DateTimeOffsetType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
-		static readonly DateTimeOffset BaseDateValue = DateTimeOffset.MinValue;
+		private static readonly object BaseDateValue = DateTimeOffset.MinValue;
 
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
 		public DateTimeOffsetType() : base(SqlTypeFactory.DateTimeOffSet)
 		{
 		}
 
-		/// <summary>
-		/// Constructor for specifying a datetimeoffset with a scale. Use <see cref="SqlTypeFactory.GetDateTimeOffset"/>.
-		/// </summary>
-		/// <param name="sqlType">The sql type to use for the type.</param>
+		/// <summary />
 		public DateTimeOffsetType(DateTimeOffsetSqlType sqlType) : base(sqlType)
 		{
 		}
 
-		public override string Name
-		{
-			get { return "DateTimeOffset"; }
-		}
+		public override string Name => "DateTimeOffset";
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof (DateTimeOffset); }
-		}
+		public override System.Type ReturnedClass => typeof (DateTimeOffset);
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof (DateTimeOffset); }
-		}
+		public override System.Type PrimitiveClass => typeof (DateTimeOffset);
 
-		public override object DefaultValue
-		{
-			get { return BaseDateValue; }
-		}
+		public override object DefaultValue => BaseDateValue;
 
-		public IComparer Comparator
-		{
-			get { return Comparer<DateTimeOffset>.Default; }
-		}
+		public IComparer Comparator => Comparer<DateTimeOffset>.Default;
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
@@ -71,11 +50,6 @@ namespace NHibernate.Type
 			{
 				throw new FormatException(string.Format("Input '{0}' was not in the correct format.", rs[index]), ex);
 			}
-		}
-
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		public object Next(object current, ISessionImplementor session)

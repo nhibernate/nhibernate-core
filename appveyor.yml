@@ -6,13 +6,10 @@ environment:
     CONNECTION_STRING: Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;
   - DB: SqlServer2008-MicrosoftDataSqlClientDriver
     CONNECTION_STRING: Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;
-  - DB: PostgreSQL
-    CONNECTION_STRING: Host=localhost;Port=5432;Username=postgres;Password=Password12!;Database=nhibernate;Enlist=true;
   - DB: Firebird
   - DB: Firebird4
   - DB: MySQL
     CONNECTION_STRING: Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;SslMode=none;CharSet=utf8;
-  - DB: SQLite
 init:
     # Required for having windows endlines in sources zip
     - git config --global core.autocrlf true
@@ -69,11 +66,6 @@ before_test:
         & 'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql' -e 'CREATE DATABASE nhibernate CHARACTER SET utf8 COLLATE utf8_general_ci;' --user=root
       }
       'Odbc' { Start-Service 'MSSQL$SQL2017' }
-      'PostgreSQL' {
-        # Enable prepared transactions
-        Add-Content -Path 'C:\Program Files\PostgreSQL\13\data\postgresql.conf' -Value "`r`nmax_prepared_transactions = 100"
-        Start-Service 'postgresql-x64-13'
-      }
       'SqlServer2008' { Start-Service 'MSSQL$SQL2017' }
       'SqlServer2008-MicrosoftDataSqlClientDriver' { Start-Service 'MSSQL$SQL2017' }
       'SqlServer2012' { Start-Service 'MSSQL$SQL2017' }

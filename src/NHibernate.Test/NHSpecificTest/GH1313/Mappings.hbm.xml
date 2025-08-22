@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1313">
+
+  <class name="HoldClose" >
+    <id name="Id" generator="native"/>
+    <many-to-one name="Account" class="Account" column="accountnumber" property-ref="OldAccountNumber"/>
+    <property name="CloseDate"  />
+  </class>
+  <class name="Account" >
+    <id name="Id" generator="assigned"/>
+    <property name="Name"/>
+    <property name="OldAccountNumber"  insert="false" update="false" generated="never" >
+      <formula>convert(int,substring([Oldaccountnumber],3,8))</formula>
+    </property>
+  </class>
+
+</hibernate-mapping>

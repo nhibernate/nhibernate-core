@@ -28,7 +28,6 @@ namespace NHibernate.Test.TypesTest
 				? (IType) NHibernateUtil.DateTimeNoMs
 				: NHibernateUtil.DateTime;
 			TypeFactory.RegisterType(typeof(DateTime), _testDefaultDateTimeType, TypeFactory.EmptyAliases);
-			base.Configure(configuration);
 		}
 
 		protected override void DropSchema()

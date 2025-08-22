@@ -46,11 +46,6 @@ namespace NHibernate.Type
 #pragma warning restore 618
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return Get(rs, rs.GetOrdinal(name), session);
-		}
-
 		/// <inheritdoc />
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
 		{

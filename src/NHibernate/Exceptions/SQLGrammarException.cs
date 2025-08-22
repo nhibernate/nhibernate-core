@@ -10,6 +10,8 @@ namespace NHibernate.Exceptions
 	[Serializable]
 	public class SQLGrammarException : ADOException
 	{
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		public SQLGrammarException(SerializationInfo info, StreamingContext context) : base(info, context) {}
 		public SQLGrammarException(string message, Exception innerException, string sql) : base(message, innerException, sql) {}
 		public SQLGrammarException(string message, Exception innerException) : base(message, innerException) {}

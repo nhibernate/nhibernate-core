@@ -315,6 +315,17 @@ namespace NHibernate.Test.Linq
 				Assert.That(countJoins, Is.EqualTo(2));
 			}
 		}
+		
+		[Test]
+		public void ShouldConstipateJoinsWhenOnlyComparingCompositeIdProperties()
+		{
+			using (var spy = new SqlLogSpy())
+			{
+				db.AnotherEntity.Where(x => x.CompositeIdEntity.Id.TenantId == 3).ToList();
+				var countJoins = CountJoins(spy);
+				Assert.That(countJoins, Is.EqualTo(0));
+			}
+		}
 
 		private static int CountJoins(LogSpy sqlLog)
 		{

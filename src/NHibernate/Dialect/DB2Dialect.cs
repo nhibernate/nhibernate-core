@@ -215,6 +215,8 @@ namespace NHibernate.Dialect
 			get { return true; }
 		}
 
+		public override string QuerySequencesString => "select seqname from syscat.sequences";
+
 		/// <summary></summary>
 		public override bool SupportsLimit
 		{
@@ -335,6 +337,9 @@ namespace NHibernate.Dialect
 		public override bool SupportsLobValueChangePropogation => false;
 
 		public override bool SupportsExistsInSelect => false;
+
+		/// <inheritdoc/>
+		public override bool SupportsHavingOnGroupedByComputation => false;
 
 		public override bool DoesReadCommittedCauseWritersToBlockReaders => true;
 

@@ -30,7 +30,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1882
 			{
 				listener
 			};
-			base.Configure(configuration);
 		}
 
 		protected override HbmMapping GetMappings()

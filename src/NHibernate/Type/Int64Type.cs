@@ -17,18 +17,16 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class Int64Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
-		/// <summary></summary>
+		private static readonly object ZeroObject = 0L;
+
+		/// <summary />
 		public Int64Type() : base(SqlTypeFactory.Int64)
 		{
 		}
 
 		/// <summary></summary>
-		public override string Name
-		{
-			get { return "Int64"; }
-		}
+		public override string Name => "Int64";
 
-		private static readonly Int64 ZERO = 0;
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
@@ -45,26 +43,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			try
-			{
-				return rs[name] switch
-				{
-					BigInteger bi => (long) bi,
-					var c => Convert.ToInt64(c)
-				};
-			}
-			catch (Exception ex)
-			{
-				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[name]), ex);
-			}
-		}
-
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(Int64); }
-		}
+		public override System.Type ReturnedClass => typeof(Int64);
 
 		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
@@ -105,22 +84,13 @@ namespace NHibernate.Type
 			return 1L;
 		}
 
-		public IComparer Comparator
-		{
-			get { return Comparer<Int64>.Default; }
-		}
+		public IComparer Comparator => Comparer<Int64>.Default;
 
 		#endregion
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof(Int64); }
-		}
+		public override System.Type PrimitiveClass => typeof(Int64);
 
-		public override object DefaultValue
-		{
-			get { return ZERO; }
-		}
+		public override object DefaultValue => ZeroObject;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{

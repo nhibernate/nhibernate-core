@@ -87,7 +87,7 @@ namespace NHibernate.Test.TypesTest
 			var errors = mtr.GetErrors();
 			if (errors.Length > 0)
 			{
-				Assert.Fail("One or more thread failed, found {0} errors. First exception: {1}", errors.Length, errors[0]);
+				Assert.Fail($"One or more thread failed, found {errors.Length} errors. First exception: {errors[0]}");
 			}
 		}
 

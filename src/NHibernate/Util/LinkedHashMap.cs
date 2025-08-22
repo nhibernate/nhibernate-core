@@ -19,6 +19,8 @@ namespace NHibernate.Util
 	/// </remarks>
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
 	[Serializable]
+	// Since 5.6
+	[Obsolete("This class has no more usages and will be removed in a future version.")]
 	public class LinkedHashMap<TKey, TValue> : IDictionary<TKey, TValue>, IDeserializationCallback
 	{
 		[Serializable]

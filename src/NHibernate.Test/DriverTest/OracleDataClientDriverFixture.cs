@@ -121,7 +121,7 @@ namespace NHibernate.Test.DriverTest
 			}
 			catch (Exception ex)
 			{
-				Assert.Ignore("Unable to load the driver: {0}", ex);
+				Assert.Ignore($"Unable to load the driver: {ex}");
 			}
 
 			driver.Configure(settings);

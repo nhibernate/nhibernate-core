@@ -22,7 +22,6 @@ namespace NHibernate.Test.NHSpecificTest.GH3198
 			{
 				new TestEventListener()
 			};
-			base.Configure(configuration);
 		}
 
 		protected override HbmMapping GetMappings()

@@ -32,8 +32,6 @@ namespace NHibernate.Test.NHSpecificTest.GH3113
 			var dialect = NHibernate.Dialect.Dialect.GetDialect(configuration.Properties);
 			if (dialect is Oracle8iDialect)
 				configuration.SetProperty(Environment.Dialect, typeof(Oracle9iDialect).FullName);
-
-			base.Configure(configuration);
 		}
 
 		protected override void OnSetUp()

@@ -72,7 +72,7 @@ namespace NHibernate.Engine
 				return keys;
 			}
 
-			foreach (KeyValuePair<CollectionEntry, IPersistentCollection> me in map)
+			foreach (var me in map)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				if (ProcessKey(me) ?? await (CheckCacheAndProcessResultAsync()).ConfigureAwait(false))

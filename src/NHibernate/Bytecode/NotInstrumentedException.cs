@@ -25,7 +25,8 @@ namespace NHibernate.Bytecode
 		}
 
 		/// <inheritdoc />
-		protected NotInstrumentedException(SerializationInfo info, StreamingContext context)
-			: base(info, context) {}
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
+		protected NotInstrumentedException(SerializationInfo info, StreamingContext context) : base(info, context) {}
 	}
 }

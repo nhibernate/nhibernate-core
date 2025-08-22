@@ -6,5 +6,9 @@
     </id>
     <property name="Output" />
     <property name="Input" />
+    <many-to-one name="CompositeIdEntity" fetch="select">
+      <column name="CompositeObjectId" />
+      <column name="CompositeTenantId" />
+    </many-to-one>
   </class>
 </hibernate-mapping>
