@@ -72,6 +72,7 @@
 	<target name="setup-teamcity-sqlServer-MicrosoftDataSqlClientDriver">
 		<property name="db-service" value="MSSQL$SQLEXPRESS" />
 		<property name="nhibernate.connection.driver_class" value="NHibernate.Driver.MicrosoftDataSqlClientDriver" />
+		<property name="nhibernate.connection.connection_string" value="Server=(local);initial catalog=nhibernate;Integrated Security=SSPI;TrustServerCertificate=true;" />
 	</target>
 
 	<target name="setup-teamcity-sqlServer2012">
