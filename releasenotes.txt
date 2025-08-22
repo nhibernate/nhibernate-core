@@ -122,6 +122,23 @@ Release notes - NHibernate - Version 5.5.0
    * #3412 Revive hql ParsingFixture
 
 
+Build 5.4.10
+=============================
+
+Release notes - NHibernate - Version 5.4.10
+
+3 issues were resolved in this release.
+
+** Bug
+
+   * #3609 Fitering with a subquery on a many-to-one with property-ref generates invalid SQL
+   * #3607 Invalid ByCode serialization to XML for OneToOne mappings
+
+** Task
+
+   * #3688 Release 5.4.10
+
+
 Build 5.4.9
 =============================
 
