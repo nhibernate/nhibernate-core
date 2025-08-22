@@ -11,6 +11,7 @@
 *.cmd     text
 *.msbuild text
 *.md      text
+*.sql     text
 
 *.sln text eol=crlf
 *.csproj text eol=crlf

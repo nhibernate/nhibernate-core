@@ -211,7 +211,7 @@ namespace NHibernate.Persister.Entity
 			if (string.IsNullOrEmpty(path))
 				return property;
 			
-			return StringHelper.Qualify(path, property);
+			return string.Intern(StringHelper.Qualify(path, property));
 		}
 
 		public string[] GetColumnNames(string propertyName)
