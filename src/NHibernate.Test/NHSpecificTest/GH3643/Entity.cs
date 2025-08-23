@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 // ReSharper disable CollectionNeverUpdated.Local
 // ReSharper disable UnassignedGetOnlyAutoProperty
@@ -9,14 +7,14 @@ namespace NHibernate.Test.NHSpecificTest.GH3643
 {
 	class Entity
 	{
-		private readonly ICollection<ChildEntity> _children = new List<ChildEntity>();
-		public virtual EntityId Id { get; protected set; }
-		public virtual IEnumerable<ChildEntity> Children => _children.AsEnumerable();
+		private readonly ICollection<ChildEntity> _children = [];
+		public virtual EntityId Id { get; set; }
+		public virtual ICollection<ChildEntity> Children => _children;
 	}
 
 	class ChildEntity
 	{
-		public virtual int Id { get; protected set; }
+		public virtual int Id { get; set; }
 	}
 
 	enum EntityId
