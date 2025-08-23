@@ -42,6 +42,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3643
 						{
 							m.Access(Accessor.Field);
 							m.Key(k => k.Column("EntityId"));
+							m.Cascade(Mapping.ByCode.Cascade.All);
 						},
 						r => r.OneToMany());
 			
@@ -72,19 +73,12 @@ namespace NHibernate.Test.NHSpecificTest.GH3643
 		{
 			using var session = OpenSession();
 			using var transaction = session.BeginTransaction();
-			
-			session.CreateSQLQuery(
-				"INSERT INTO Entity (Id) VALUES (0)"
-			).ExecuteUpdate();
 
-			session.CreateSQLQuery(
-				"INSERT INTO ChildEntity (Id, EntityId) VALUES (0, 0)"
-			).ExecuteUpdate();
+			var entity = new Entity { Id = EntityId.Id1 };
+			entity.Children.Add(new ChildEntity { Id = 0 });
+			entity.Children.Add(new ChildEntity { Id = 1 });
+			session.Save(entity);
 
-			session.CreateSQLQuery(
-				"INSERT INTO ChildEntity (Id, EntityId) VALUES (1, 0)"
-			).ExecuteUpdate();
-			
 			transaction.Commit();
 		}
 
@@ -93,8 +87,8 @@ namespace NHibernate.Test.NHSpecificTest.GH3643
 			using var session = OpenSession();
 			using var transaction = session.BeginTransaction();
 
-			session.CreateSQLQuery("DELETE FROM ChildEntity").ExecuteUpdate();
-			session.CreateSQLQuery("DELETE FROM Entity").ExecuteUpdate();
+			session.CreateQuery("delete from ChildEntity").ExecuteUpdate();
+			session.CreateQuery("delete from System.Object").ExecuteUpdate();
 
 			transaction.Commit();
 		}
@@ -118,10 +112,10 @@ namespace NHibernate.Test.NHSpecificTest.GH3643
 			using var session = OpenSession();
 			using var transaction = session.BeginTransaction();
 			var entity = (await (session
-			          .Query<Entity>()
-			          .FetchMany(x => x.Children)
-			          .WithOptions(opt => opt.SetCacheable(true))
-			          .ToListAsync(cancellationToken)))[0];
+				.Query<Entity>()
+				.FetchMany(x => x.Children)
+				.WithOptions(opt => opt.SetCacheable(true))
+				.ToListAsync(cancellationToken)))[0];
 			
 			await (transaction.CommitAsync(cancellationToken));
 			return entity;
