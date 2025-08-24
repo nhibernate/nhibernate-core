@@ -5,14 +5,10 @@
 			<generator class="native" />
 		</id>
 		<property name="Name" column="aname" />
-    <idbag name="Items" cascade="all-delete-orphan">
-      <collection-id>
-        <column name="item_id" />
-        <generator class="increment" />
-        <type name="Int64" />
-      </collection-id>
-      <key column="a_id" />
-      <element type="string" />
-    </idbag>
+		<idbag name="Items" cascade="all-delete-orphan">
+			<collection-id column="item_id" generator="increment" />
+			<key column="a_id" />
+			<element type="string" />
+		</idbag>
 	</class>
 </hibernate-mapping>
