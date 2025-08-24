@@ -351,7 +351,7 @@ namespace NHibernate.Driver
 
 		public virtual DbBatch CreateBatch()
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 
 		public virtual bool CanCreateBatch => false;
