@@ -354,6 +354,9 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				case HbmLockMode.UpgradeNowait:
 					return LockMode.UpgradeNoWait;
 
+				case HbmLockMode.UpgradeSkiplocked:
+					return LockMode.UpgradeSkipLocked;
+
 				case HbmLockMode.Write:
 					return LockMode.Write;
 

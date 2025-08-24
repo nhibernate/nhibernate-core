@@ -953,11 +953,14 @@ namespace NHibernate.Test.Legacy
 			s3.Count = 3;
 			Simple s4 = new Simple();
 			s4.Count = 4;
+			Simple s5 = new Simple();
+			s5.Count = 5;
 
 			await (s.SaveAsync(s1, (long) 1));
 			await (s.SaveAsync(s2, (long) 2));
 			await (s.SaveAsync(s3, (long) 3));
 			await (s.SaveAsync(s4, (long) 4));
+			await (s.SaveAsync(s5, (long) 5));
 			Assert.AreEqual(LockMode.Write, s.GetCurrentLockMode(s1));
 			await (tx.CommitAsync());
 			s.Close();
@@ -972,6 +975,8 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(LockMode.Upgrade, s.GetCurrentLockMode(s3));
 			s4 = (Simple) await (s.LoadAsync(typeof(Simple), (long) 4, LockMode.UpgradeNoWait));
 			Assert.AreEqual(LockMode.UpgradeNoWait, s.GetCurrentLockMode(s4));
+			s5 = (Simple) await (s.LoadAsync(typeof(Simple), (long) 5, LockMode.UpgradeSkipLocked));
+			Assert.AreEqual(LockMode.UpgradeSkipLocked, s.GetCurrentLockMode(s5));
 
 			s1 = (Simple) await (s.LoadAsync(typeof(Simple), (long) 1, LockMode.Upgrade)); //upgrade
 			Assert.AreEqual(LockMode.Upgrade, s.GetCurrentLockMode(s1));
@@ -981,6 +986,8 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(LockMode.Upgrade, s.GetCurrentLockMode(s3));
 			s4 = (Simple) await (s.LoadAsync(typeof(Simple), (long) 4, LockMode.Upgrade));
 			Assert.AreEqual(LockMode.UpgradeNoWait, s.GetCurrentLockMode(s4));
+			s5 = (Simple) await (s.LoadAsync(typeof(Simple), (long) 5, LockMode.Upgrade));
+			Assert.AreEqual(LockMode.UpgradeSkipLocked, s.GetCurrentLockMode(s4));
 
 			await (s.LockAsync(s2, LockMode.Upgrade)); //upgrade
 			Assert.AreEqual(LockMode.Upgrade, s.GetCurrentLockMode(s2));
@@ -988,7 +995,9 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(LockMode.Upgrade, s.GetCurrentLockMode(s3));
 			await (s.LockAsync(s1, LockMode.UpgradeNoWait));
 			await (s.LockAsync(s4, LockMode.None));
+			await (s.LockAsync(s5, LockMode.UpgradeSkipLocked));
 			Assert.AreEqual(LockMode.UpgradeNoWait, s.GetCurrentLockMode(s4));
+			Assert.AreEqual(LockMode.UpgradeSkipLocked, s.GetCurrentLockMode(s5));
 
 			await (tx.CommitAsync());
 			tx = s.BeginTransaction();
@@ -997,6 +1006,7 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s1));
 			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s2));
 			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s4));
+			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s5));
 
 			await (s.LockAsync(s1, LockMode.Read)); //upgrade
 			Assert.AreEqual(LockMode.Read, s.GetCurrentLockMode(s1));
@@ -1017,11 +1027,13 @@ namespace NHibernate.Test.Legacy
 			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s1));
 			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s2));
 			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s4));
+			Assert.AreEqual(LockMode.None, s.GetCurrentLockMode(s5));
 
 			await (s.DeleteAsync(s1));
 			await (s.DeleteAsync(s2));
 			await (s.DeleteAsync(s3));
 			await (s.DeleteAsync(s4));
+			await (s.DeleteAsync(s5));
 			await (tx.CommitAsync());
 			s.Close();
 		}

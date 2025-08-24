@@ -2080,6 +2080,7 @@ namespace NHibernate.Persister.Entity
 			lockers[LockMode.Read] = GenerateLocker(LockMode.Read);
 			lockers[LockMode.Upgrade] = GenerateLocker(LockMode.Upgrade);
 			lockers[LockMode.UpgradeNoWait] = GenerateLocker(LockMode.UpgradeNoWait);
+			lockers[LockMode.UpgradeSkipLocked] = GenerateLocker(LockMode.UpgradeSkipLocked);
 			lockers[LockMode.Force] = GenerateLocker(LockMode.Force);
 		}
 
@@ -4106,6 +4107,7 @@ namespace NHibernate.Persister.Entity
 
 			loaders[LockMode.Upgrade.ToString()] = disableForUpdate ? readLoader : CreateEntityLoader(LockMode.Upgrade);
 			loaders[LockMode.UpgradeNoWait.ToString()] = disableForUpdate ? readLoader : CreateEntityLoader(LockMode.UpgradeNoWait);
+			loaders[LockMode.UpgradeSkipLocked.ToString()] = disableForUpdate ? readLoader : CreateEntityLoader(LockMode.UpgradeSkipLocked);
 			loaders[LockMode.Force.ToString()] = disableForUpdate ? readLoader : CreateEntityLoader(LockMode.Force);
 
 			loaders["merge"] = new CascadeEntityLoader(this, CascadingAction.Merge, Factory);

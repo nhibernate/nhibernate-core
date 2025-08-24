@@ -12,7 +12,6 @@ namespace NHibernate.SqlCommand
 	{
 		private readonly Dialect.Dialect dialect;
 		private readonly StringBuilder aliases = new StringBuilder();
-		private bool isNoWaitEnabled;
 
 		public ForUpdateFragment(Dialect.Dialect dialect)
 		{
@@ -58,14 +57,16 @@ namespace NHibernate.SqlCommand
 				{
 					IsNoWaitEnabled = true;
 				}
+
+				if (upgradeType == LockMode.UpgradeNoWait)
+				{
+					IsSkipLockedEnabled = true;
+				}
 			}
 		}
 
-		public bool IsNoWaitEnabled
-		{
-			get { return isNoWaitEnabled; }
-			set { isNoWaitEnabled = value; }
-		}
+		public bool IsNoWaitEnabled { get; set; }
+		public bool IsSkipLockedEnabled { get; set; }
 
 		public ForUpdateFragment AddTableAlias(string alias)
 		{
@@ -84,9 +85,11 @@ namespace NHibernate.SqlCommand
 				return string.Empty;
 			}
 
-			return isNoWaitEnabled
+			return IsNoWaitEnabled
 					? dialect.GetForUpdateNowaitString(aliases.ToString())
-					: dialect.GetForUpdateString(aliases.ToString());
+					: IsSkipLockedEnabled
+						? dialect.GetForUpdateSkipLockedString(aliases.ToString())
+						: dialect.GetForUpdateString(aliases.ToString());
 		}
 	}
 }

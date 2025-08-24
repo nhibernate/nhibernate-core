@@ -85,6 +85,15 @@ namespace NHibernate.Criterion.Lambda
 			}
 		}
 
+		public TReturn UpgradeSkipLocked
+		{
+			get
+			{
+				SetLockMode(LockMode.UpgradeSkipLocked);
+				return this.root;
+			}
+		}
+
 		public TReturn Write
 		{
 			get

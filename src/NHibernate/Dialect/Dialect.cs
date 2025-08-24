@@ -563,6 +563,10 @@ namespace NHibernate.Dialect
 			{
 				return ForUpdateNowaitString;
 			}
+			if (Equals(lockMode, LockMode.UpgradeSkipLocked))
+			{
+				return ForUpdateSkipLockedString;
+			}
 			return string.Empty;
 		}
 
@@ -640,6 +644,26 @@ namespace NHibernate.Dialect
 		/// <returns>The appropriate <c>FOR UPDATE colunm_or_table_list NOWAIT</c> clause string.</returns>
 		public virtual string GetForUpdateNowaitString(string aliases)
 		{
+			return GetForUpdateString(aliases);
+		}
+
+		/// <summary>
+		/// Retrieves the <c>FOR UPDATE SKIP LOCKED</c> syntax specific to this dialect
+		/// </summary>
+		/// <value>The appropriate <c>FOR UPDATE SKIP LOCKED</c> clause string.</value>
+		public virtual string ForUpdateSkipLockedString
+		{
+			// by default we report no support for NOWAIT lock semantics
+			get { return ForUpdateString; }
+		}
+
+		/// <summary>
+		/// Retrieves the <c>FOR UPDATE OF column_list SKIP LOCKED</c> syntax specific to this dialect
+		/// </summary>
+		/// <value>The appropriate <c>FOR UPDATE OF column_list SKIP LOCKED</c> clause string.</value>
+		public virtual string GetForUpdateSkipLockedString(string aliases)
+		{
+			// by default we report no support for NOWAIT lock semantics
 			return GetForUpdateString(aliases);
 		}
 
