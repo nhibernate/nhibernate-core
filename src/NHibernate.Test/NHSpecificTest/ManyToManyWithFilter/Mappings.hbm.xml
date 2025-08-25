@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   namespace="NHibernate.Test.NHSpecificTest.ManyToManyWithFilter"
+                   assembly="NHibernate.Test">
+
+  <class name="BaseClass">
+    <id name="Id">
+      <generator class="guid.comb" />
+    </id>
+    <discriminator column="discriminator" type="String" />
+
+    <subclass name="Employee" discriminator-value="Emp">
+      <set name="Departments" table="EmployeeDepartment" cascade="all-delete-orphan" inverse="false">
+        <key column="EmployeeId"/>
+        <many-to-many class="Department" column="DepartmentId"/>
+      </set>
+    </subclass>
+
+    <subclass name="Department" discriminator-value="Dep">
+      <property name="DeletedAt" column="DeletedAt" type="DateTime"/>
+      <set name="Employees" table="EmployeeDepartment" cascade="none" inverse="true">
+        <key column="DepartmentId"/>
+        <many-to-many class="Employee" column="EmployeeId"/>
+      </set>
+      <filter name="NotDeletedFilter" condition="DeletedAt IS NULL"/>
+    </subclass>
+  </class>
+  <filter-def name="NotDeletedFilter"/>
+
+</hibernate-mapping>
