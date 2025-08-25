@@ -603,7 +603,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			var id = new SimpleValue(model.CollectionTable);
 			new ValuePropertyBinder(id, Mappings).BindSimpleValue(idbagMapping.collectionid, IdentifierCollection.DefaultIdentifierColumnName);
 			model.Identifier = id;
-			new IdGeneratorBinder(Mappings).BindGenerator(id, idbagMapping.collectionid.generator);
+			new IdGeneratorBinder(Mappings).BindGenerator(id, idbagMapping.collectionid.Generator);
 			id.Table.SetIdentifierValue(id);
 		}
 

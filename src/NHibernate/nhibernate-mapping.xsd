@@ -216,11 +216,13 @@
 			<xs:sequence>
 				<xs:element ref="meta" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="column" minOccurs="0" maxOccurs="unbounded" />
-				<xs:element ref="generator" />
+				<xs:element ref="generator" minOccurs="0" />
+				<xs:element ref="type" minOccurs="0" />
 			</xs:sequence>
-			<xs:attribute name="column" use="required" type="xs:string" />
-			<xs:attribute name="type" use="required" type="xs:string" />
+			<xs:attribute name="column" type="xs:string" />
+			<xs:attribute name="type" default="Int32" type="xs:string" />
 			<xs:attribute name="length" type="xs:positiveInteger" />
+			<xs:attribute name="generator" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="column">
@@ -228,15 +230,12 @@
 			<xs:sequence>
 				<xs:element ref="comment" minOccurs="0" />
 			</xs:sequence>
-			<xs:attribute name="name" use="required" type="xs:string">
-			</xs:attribute>
+			<xs:attribute name="name" use="required" type="xs:string" />
 			<xs:attribute name="length" type="xs:positiveInteger" />
 			<xs:attribute name="precision" type="xs:positiveInteger" />
 			<xs:attribute name="scale" type="xs:nonNegativeInteger" />
-			<xs:attribute name="not-null" type="xs:boolean">
-			</xs:attribute>
-			<xs:attribute name="unique" type="xs:boolean">
-			</xs:attribute>
+			<xs:attribute name="not-null" type="xs:boolean" />
+			<xs:attribute name="unique" type="xs:boolean" />
 			<xs:attribute name="unique-key" type="xs:string" />
 			<xs:attribute name="sql-type" type="xs:string" />
 			<xs:attribute name="index" type="xs:string" />
