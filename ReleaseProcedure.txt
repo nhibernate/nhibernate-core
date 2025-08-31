@@ -7,7 +7,7 @@ These are the tasks typically needed to create an official NHibernate release.
 
   * Create a draft release in Github with GitReleaseManager. For example:
 
-dotnet gitreleasemanager create -o nhibernate -r nhibernate-core -m 5.3 --token yourGitHubTokenWithRepoScope
+dotnet gitreleasemanager create -o nhibernate -r nhibernate-core -m 5.3 --token yourGitHubTokenWithRepoContentWritePermission
 
     (Adjust the -m milestone parameter above, and add "-c branchname" if
     releasing another branch than master)
