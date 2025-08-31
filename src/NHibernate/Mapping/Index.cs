@@ -14,7 +14,7 @@ namespace NHibernate.Mapping
 	public class Index : IRelationalModel
 	{
 		private Table table;
-		private readonly List<Column> columns = new List<Column>();
+		private readonly List<Column> columns = new List<Column>(1);
 		private string name;
 
 		public static string BuildSqlCreateIndexString(Dialect.Dialect dialect, string name, Table table,
