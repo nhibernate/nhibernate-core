@@ -41,6 +41,8 @@ namespace NHibernate.Intercept
 
 		/// <summary> Get the MappedClass (field container).</summary>
 		System.Type MappedClass { get; }
+		
+		void ClearInitializedLazyFields();
 	}
 
 	public static class FieldInterceptorExtensions

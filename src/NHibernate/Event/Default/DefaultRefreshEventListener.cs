@@ -97,7 +97,9 @@ namespace NHibernate.Event.Default
 			}
 
 			EvictCachedCollections(persister, id, source.Factory);
-
+			
+			RefreshLazyProperties(persister, obj);
+			
 			// NH Different behavior : NH-1601
 			// At this point the entity need the real refresh, all elementes of collections are Refreshed,
 			// the collection state was evicted, but the PersistentCollection (in the entity state)
@@ -140,6 +142,21 @@ namespace NHibernate.Event.Default
 					IAbstractComponentType actype = (IAbstractComponentType)types[i];
 					EvictCachedCollections(actype.Subtypes, id, factory);
 				}
+			}
+		}
+		
+		private static void RefreshLazyProperties(IEntityPersister persister, object obj)
+		{
+			if (obj == null)
+				return;
+			
+			// TODO: InstrumentationMetadata needs to be in IPersister
+			var castedPersister = persister as AbstractEntityPersister;
+			if (castedPersister?.InstrumentationMetadata?.EnhancedForLazyLoading == true)
+			{
+				var interceptor = castedPersister.InstrumentationMetadata.ExtractInterceptor(obj);
+				// The list of initialized lazy fields have to be cleared in order to refresh them from the database.
+				interceptor?.ClearInitializedLazyFields();
 			}
 		}
 	}
