@@ -114,7 +114,7 @@ When you introduce any breaking change:
 2. Provide a concise migration note (old → new) for each item.
 3. Update tests without deleting coverage.
 
-See Microsoft guidance on breaking changes for libraries [5][6] for definitions and recommended practices.
+See Microsoft guidance: the [.NET library breaking change guidance][5] and the [.NET compatibility change rules][6] for definitions and recommended practices.
 
 ## Further Discussion
 
