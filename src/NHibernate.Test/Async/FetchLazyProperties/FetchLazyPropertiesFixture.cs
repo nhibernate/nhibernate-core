@@ -1094,7 +1094,7 @@ namespace NHibernate.Test.FetchLazyProperties
 			{
 				const string query = "from Person fetch Image where Id = 1";
 				const string namePostFix = "_MODIFIED";
-				const int imageLength = 4711;
+				const int imageLength = 1985;
 				
 				Person outerPerson = await (outerSession.CreateQuery(query).UniqueResultAsync<Person>());
 				
