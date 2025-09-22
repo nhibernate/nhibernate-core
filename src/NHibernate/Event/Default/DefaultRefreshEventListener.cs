@@ -4,6 +4,7 @@ using System.Collections;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Impl;
+using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -97,7 +98,9 @@ namespace NHibernate.Event.Default
 			}
 
 			EvictCachedCollections(persister, id, source.Factory);
-
+			
+			RefreshLazyProperties(persister, obj);
+			
 			// NH Different behavior : NH-1601
 			// At this point the entity need the real refresh, all elementes of collections are Refreshed,
 			// the collection state was evicted, but the PersistentCollection (in the entity state)
@@ -140,6 +143,18 @@ namespace NHibernate.Event.Default
 					IAbstractComponentType actype = (IAbstractComponentType)types[i];
 					EvictCachedCollections(actype.Subtypes, id, factory);
 				}
+			}
+		}
+
+		private static void RefreshLazyProperties(IEntityPersister persister, object obj)
+		{
+			if (obj == null)
+				return;
+
+			if (persister.IsInstrumented)
+			{
+				// The list of initialized lazy fields have to be cleared in order to refresh them from the database.
+				persister.EntityMetamodel.BytecodeEnhancementMetadata.ExtractInterceptor(obj)?.ClearInitializedLazyFields();
 			}
 		}
 	}
