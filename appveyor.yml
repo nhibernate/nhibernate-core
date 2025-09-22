@@ -1,5 +1,6 @@
 version: '{build}'
 image: Visual Studio 2022
+skip_branch_with_pr: true
 environment:
   matrix:
   - DB: SqlServer2008
