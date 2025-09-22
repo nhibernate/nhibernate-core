@@ -14,6 +14,7 @@ using System.Collections;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Impl;
+using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
