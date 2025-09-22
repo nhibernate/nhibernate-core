@@ -144,19 +144,16 @@ namespace NHibernate.Event.Default
 				}
 			}
 		}
-		
+
 		private static void RefreshLazyProperties(IEntityPersister persister, object obj)
 		{
 			if (obj == null)
 				return;
-			
-			// TODO: InstrumentationMetadata needs to be in IPersister
-			var castedPersister = persister as AbstractEntityPersister;
-			if (castedPersister?.InstrumentationMetadata?.EnhancedForLazyLoading == true)
+
+			if (persister.IsInstrumented)
 			{
-				var interceptor = castedPersister.InstrumentationMetadata.ExtractInterceptor(obj);
 				// The list of initialized lazy fields have to be cleared in order to refresh them from the database.
-				interceptor?.ClearInitializedLazyFields();
+				persister.EntityMetamodel.BytecodeEnhancementMetadata.ExtractInterceptor(obj)?.ClearInitializedLazyFields();
 			}
 		}
 	}
