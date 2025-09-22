@@ -210,7 +210,7 @@ namespace NHibernate.Intercept
 
 		public ISet<string> GetUninitializedFields()
 		{
-			return uninitializedFieldsReadOnly ?? CollectionHelper.EmptySet<string>();
+			return uninitializedFields ?? CollectionHelper.EmptySet<string>();
 		}
 		
 		public void ClearInitializedLazyFields()
