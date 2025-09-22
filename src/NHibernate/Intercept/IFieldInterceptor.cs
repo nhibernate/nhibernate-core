@@ -41,8 +41,6 @@ namespace NHibernate.Intercept
 
 		/// <summary> Get the MappedClass (field container).</summary>
 		System.Type MappedClass { get; }
-		
-		void ClearInitializedLazyFields();
 	}
 
 	public static class FieldInterceptorExtensions
@@ -75,6 +73,15 @@ namespace NHibernate.Intercept
 #pragma warning disable 618
 			return interceptor.Intercept(target, fieldName, value);
 #pragma warning restore 618
+		}
+
+		// 6.0 TODO: merge into IFieldInterceptor
+		public static void ClearInitializedLazyFields(this IFieldInterceptor interceptor)
+		{
+			if (interceptor is AbstractFieldInterceptor fieldInterceptor)
+			{
+				fieldInterceptor.ClearInitializedLazyFields();
+			}
 		}
 	}
 }
