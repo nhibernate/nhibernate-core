@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
-using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Util;
 
@@ -22,8 +20,7 @@ namespace NHibernate.Intercept
 		private readonly HashSet<string> loadedUnwrapProxyFieldNames = new HashSet<string>();
 		private readonly string entityName;
 		private readonly System.Type mappedClass;
-		private readonly string[] originalUninitializedFields;
-		
+
 		[NonSerialized]
 		private bool initializing;
 		private bool isDirty;
@@ -36,7 +33,6 @@ namespace NHibernate.Intercept
 			this.entityName = entityName;
 			this.mappedClass = mappedClass;
 			this.uninitializedFieldsReadOnly = uninitializedFields != null ? new ReadOnlySet<string>(new HashSet<string>(uninitializedFields)) : null;
-			this.originalUninitializedFields = uninitializedFields != null ? uninitializedFields.ToArray() : null;
 		}
 
 		#region IFieldInterceptor Members
@@ -215,12 +211,9 @@ namespace NHibernate.Intercept
 		
 		public void ClearInitializedLazyFields()
 		{
-			if (this.originalUninitializedFields == null) 
-				return;
-
-			foreach (var originalUninitializedField in this.originalUninitializedFields)
+			if (uninitializedFieldsReadOnly != null)
 			{
-				this.uninitializedFields.Add(originalUninitializedField);
+				uninitializedFields.UnionWith(uninitializedFieldsReadOnly);
 			}
 		}
 	}
