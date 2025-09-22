@@ -35,7 +35,7 @@ namespace NHibernate.Intercept
 			this.unwrapProxyFieldNames = unwrapProxyFieldNames ?? new HashSet<string>();
 			this.entityName = entityName;
 			this.mappedClass = mappedClass;
-			this.uninitializedFieldsReadOnly = uninitializedFields != null ? new ReadOnlySet<string>(uninitializedFields) : null;
+			this.uninitializedFieldsReadOnly = uninitializedFields != null ? new ReadOnlySet<string>(new HashSet<string>(uninitializedFields)) : null;
 			this.originalUninitializedFields = uninitializedFields != null ? uninitializedFields.ToArray() : null;
 		}
 
