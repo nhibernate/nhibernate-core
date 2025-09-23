@@ -14,6 +14,10 @@ environment:
 init:
     # Required for having windows endlines in sources zip
     - git config --global core.autocrlf true
+    - ps: |
+      Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -UseBasicParsing -OutFile "$env:temp\dotnet-install.ps1"
+      & $env:temp\dotnet-install.ps1 -Channel 10.0 -Quality preview -InstallDir "$env:ProgramFiles\dotnet"
+
 build: off
 before_test:
 - ps: |-
