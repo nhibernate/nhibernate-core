@@ -46,7 +46,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 		public void Generator(IGeneratorDef generator, Action<IGeneratorMapper> generatorMapping)
 		{
 			ApplyGenerator(generator);
-			generatorMapping(new GeneratorMapper(hbmId.generator));
+			generatorMapping(new GeneratorMapper(hbmId.Generator));
 		}
 
 		public void Access(Accessor accessor)

@@ -8,6 +8,10 @@
     <ContentSQLiteInteropFiles>true</ContentSQLiteInteropFiles>
     <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\NHibernate.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
@@ -50,21 +54,9 @@
     <Compile Remove="**\NHSpecificTest\NH3121\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\NHibernate\Hql\Ast\ANTLR\CaseInsensitiveStringStream.cs">
-      <Link>Hql\Parser\CaseInsensitiveStringStream.cs</Link>
-    </Compile>
-    <Compile Include="..\NHibernate\Util\AsyncReaderWriterLock.cs">
-      <Link>UtilityTest\AsyncReaderWriterLock.cs</Link>
-    </Compile>
-    <Compile Include="..\NHibernate\Util\LinkHashMap.cs" Link="UtilityTest\LinkHashMap.cs" />
-    <Compile Include="..\NHibernate\Collection\Generic\SetHelpers\SetSnapShot.cs">
-      <Link>UtilityTest\SetSnapShot.cs</Link>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="log4net" Version="3.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.7.0" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.3" />
     <PackageReference Include="NHibernate.Caches.CoreDistributedCache.Memory" Version="5.9.0" />
     <PackageReference Include="NHibernate.Caches.Util.JsonSerializer" Version="5.9.0" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.117" />
@@ -91,7 +83,9 @@
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="8.0.0" />
     <PackageReference Include="System.CodeDom" Version="4.7.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
-    <PackageReference Include="System.Data.OracleClient" Version="1.0.8" />
+    <PackageReference Include="System.Data.OracleClient" Version="1.0.8">
+      <ExcludeAssets>compile</ExcludeAssets>
+    </PackageReference>
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.140" />
     <PackageReference Include="System.Data.Odbc" Version="4.7.0" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />

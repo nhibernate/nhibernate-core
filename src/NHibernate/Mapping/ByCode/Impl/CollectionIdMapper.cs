@@ -9,7 +9,7 @@ namespace NHibernate.Mapping.ByCode.Impl
 	{
 		private readonly HbmCollectionId hbmId;
 		private const string DefaultColumnName = "collection_key";
-		private string autosetType;
+		private string autosetType = "Int32";
 
 		public CollectionIdMapper(HbmCollectionId hbmId)
 		{
@@ -36,14 +36,15 @@ namespace NHibernate.Mapping.ByCode.Impl
 				throw new NotSupportedException("The generator '" + generator.Class + "' cannot be used as collection element id.");
 			}
 			ApplyGenerator(generator);
-			generatorMapping(new GeneratorMapper(hbmId.generator));
+			generatorMapping(new GeneratorMapper(hbmId.Generator));
 		}
 
 		public void Type(IIdentifierType persistentType)
 		{
 			if (persistentType != null)
 			{
-				hbmId.type = persistentType.Name;
+				hbmId.type1 = persistentType.Name;
+				hbmId.type = null;
 			}
 		}
 
@@ -87,10 +88,11 @@ namespace NHibernate.Mapping.ByCode.Impl
 
 		private void AutosetTypeThroughGeneratorDef(IGeneratorDef generator)
 		{
-			if (Equals(hbmId.type, autosetType) && generator.DefaultReturnType != null)
+			if (Equals(hbmId.type1, autosetType) && generator.DefaultReturnType != null)
 			{
 				autosetType = generator.DefaultReturnType.GetNhTypeName();
-				hbmId.type = autosetType;
+				hbmId.type1 = autosetType;
+				hbmId.type = null;
 			}
 		}
 	}

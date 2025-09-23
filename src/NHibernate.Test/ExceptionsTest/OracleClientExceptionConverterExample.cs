@@ -1,5 +1,4 @@
 using System;
-using System.Data.OracleClient;
 using NHibernate.Exceptions;
 
 namespace NHibernate.Test.ExceptionsTest
@@ -10,14 +9,15 @@ namespace NHibernate.Test.ExceptionsTest
 
 		public Exception Convert(AdoExceptionContextInfo exInfo)
 		{
-			var sqle = ADOExceptionHelper.ExtractDbException(exInfo.SqlException) as OracleException;
-			if (sqle != null)
+			var sqle = ADOExceptionHelper.ExtractDbException(exInfo.SqlException);
+			if (sqle != null && sqle.GetType().Name == "OracleException")
 			{
-				if (sqle.Code == 1036)
+				var code = (int)sqle.GetType().GetProperty("Code").GetValue(sqle);
+				if (code == 1036)
 				{
 					return new ConstraintViolationException(exInfo.Message, sqle.InnerException, exInfo.Sql, null);
 				}
-				if (sqle.Code == 942)
+				if (code == 942)
 				{
 					return new SQLGrammarException(exInfo.Message, sqle.InnerException, exInfo.Sql);
 				}
