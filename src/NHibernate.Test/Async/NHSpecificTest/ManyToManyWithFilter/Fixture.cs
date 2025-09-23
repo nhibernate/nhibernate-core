@@ -11,6 +11,7 @@
 using System;
 using NUnit.Framework;
 using System.Linq;
+using NHibernate.Test.NHSpecificTest.GH3652;
 
 namespace NHibernate.Test.NHSpecificTest.ManyToManyWithFilter
 {
