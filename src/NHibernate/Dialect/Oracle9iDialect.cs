@@ -10,14 +10,7 @@ namespace NHibernate.Dialect
 		public override string CurrentTimestampSelectString =>
 			$"select {CurrentTimestampSQLFunctionName} from dual";
 
-		public override string CurrentTimestampSQLFunctionName
-		{
-			get
-			{
-				// the standard SQL function name is current_timestamp...
-				return "current_timestamp";
-			}
-		}
+		public override string CurrentTimestampSQLFunctionName => "localtimestamp";
 
 		// Current_timestamp is a timestamp with time zone, so it can always be converted back to UTC.
 		/// <inheritdoc />
@@ -44,6 +37,9 @@ namespace NHibernate.Dialect
 		{
 			base.RegisterFunctions();
 
+			RegisterFunction(
+				"current_timestamp",
+				new NoArgSQLFunction("localtimestamp", NHibernateUtil.LocalDateTime, false));
 			RegisterFunction(
 				"current_utctimestamp",
 				new SQLFunctionTemplate(NHibernateUtil.UtcDateTime, "SYS_EXTRACT_UTC(current_timestamp)"));
