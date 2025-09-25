@@ -1,19 +1,21 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{593DCEA7-C933-46F3-939F-D8172399AB05}"
 	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
+		..\appveyor.yml = ..\appveyor.yml
 		AsyncGenerator.yml = AsyncGenerator.yml
+		..\build-common\common.xml = ..\build-common\common.xml
 		..\default.build = ..\default.build
+		..\global.json = ..\global.json
 		..\build-common\NHibernate.props = ..\build-common\NHibernate.props
 		..\releasenotes.txt = ..\releasenotes.txt
-		..\teamcity.build = ..\teamcity.build
-		..\build-common\common.xml = ..\build-common\common.xml
-		..\appveyor.yml = ..\appveyor.yml
 		..\ReleaseProcedure.txt = ..\ReleaseProcedure.txt
-		..\global.json = ..\global.json
-		..\.editorconfig = ..\.editorconfig
+		..\SECURITY.md = ..\SECURITY.md
+		..\teamcity.build = ..\teamcity.build
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate", "NHibernate\NHibernate.csproj", "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}"

@@ -27,6 +27,8 @@ dotnet gitreleasemanager create -o nhibernate -r nhibernate-core -m 5.3 --token 
   * Check/update version number in NHibernate.props under build-common folder.
     Clear VersionSuffix if present.
 
+  * If releasing a new minor or major, check whether SECURITY.md should be updated or not.
+
   * Don't forget to commit the above.
 
   * Check the CI release build.
