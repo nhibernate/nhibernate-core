@@ -12,12 +12,13 @@ Release notes - NHibernate - Version 5.6.0
         * Binary serializations of a session factory or a session from previous versions of NHibernate
           will not be deserializable with NHibernate 5.6.
 
-68 issues were resolved in this release.
+72 issues were resolved in this release.
 
 ** Bug
 
    * #3643 Collection cache lookup failure with enum keys
    * #3631 Missing version update on dirty collection with another property having optimistic-lock false
+   * #3622 ISession.Refresh does not update lazy properties
    * #3618 ISQLQuery.ExecuteUpdate produces an exception in certain cases
    * #3602 Unable to implement custom tuplizer due to internal constructor
    * #3557 Fix configuration order in tests
@@ -58,6 +59,9 @@ Release notes - NHibernate - Version 5.6.0
 
 ** Task
 
+   * #3706 Update actions/setup-dotnet action to v5
+   * #3705 Enable skip_branch_with_pr: true for appveyor
+   * #3701 Update dependency gitreleasemanager.tool to v0.20.0
    * #3696 Release 5.6.0
    * #3694 Merge 5.5.3 into master
    * #3690 Update actions/checkout action to v5
