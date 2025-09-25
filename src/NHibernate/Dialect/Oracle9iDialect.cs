@@ -7,10 +7,8 @@ namespace NHibernate.Dialect
 {
 	public class Oracle9iDialect : Oracle8iDialect
 	{
-		public override string CurrentTimestampSelectString
-		{
-			get { return "select systimestamp from dual"; }
-		}
+		public override string CurrentTimestampSelectString =>
+			$"select {CurrentTimestampSQLFunctionName} from dual";
 
 		public override string CurrentTimestampSQLFunctionName
 		{
