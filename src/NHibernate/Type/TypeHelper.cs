@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using NHibernate.Collection;
@@ -133,6 +133,7 @@ namespace NHibernate.Type
 					continue;
 				}
 
+				value = pair.Value.KeyType.Assemble(value, session, null);
 				var collection = session.PersistenceContext.GetCollection(new CollectionKey(pair.Value, value));
 				collection.ForceInitialization();
 				assembleRow[pair.Key] = collection;

@@ -35,5 +35,8 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		Task RollbackAsync(CancellationToken cancellationToken = default(CancellationToken));
+
+#if NET6_0_OR_GREATER
+#endif
 	}
 }

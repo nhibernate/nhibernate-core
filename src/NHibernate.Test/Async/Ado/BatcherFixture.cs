@@ -16,9 +16,18 @@ namespace NHibernate.Test.Ado
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	[TestFixture]
+#if NET6_0_OR_GREATER
+	[TestFixture(true)]
+#endif
+	[TestFixture(false)]
 	public class BatcherFixtureAsync: TestCase
 	{
+		private readonly bool _useDbBatch;
+
+		public BatcherFixtureAsync(bool useDbBatch)
+		{
+			_useDbBatch = useDbBatch;
+		}
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
@@ -34,10 +43,22 @@ namespace NHibernate.Test.Ado
 			configuration.SetProperty(Environment.FormatSql, "true");
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
 			configuration.SetProperty(Environment.BatchSize, "10");
+			#if NET6_0_OR_GREATER
+			if (_useDbBatch)
+			{
+				configuration.SetProperty(Environment.BatchStrategy, typeof(DbBatchBatcherFactory).AssemblyQualifiedName);
+			}
+			#endif
 		}
 
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
+#if NET6_0_OR_GREATER
+			if (_useDbBatch)
+			{
+				return factory.Settings.BatcherFactory is DbBatchBatcherFactory && factory.Settings.ConnectionProvider.Driver is Driver.DriverBase driverBase && driverBase.CanCreateBatch;
+			}
+#endif
 			return !(factory.Settings.BatcherFactory is NonBatchingBatcherFactory);
 		}
 
@@ -101,20 +122,25 @@ namespace NHibernate.Test.Ado
 			await (CleanupAsync());
 		}
 
-		[Test, NetFxOnly]
+		[Test]
 		[Description("SqlClient: The batcher log output should be formatted")]
 		public async Task BatchedoutputShouldBeFormattedAsync()
 		{
 #if NETFX
 			if (Sfi.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
 				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
+#elif NET6_0_OR_GREATER
+			if (Sfi.Settings.BatcherFactory is DbBatchBatcherFactory == false)
+				Assert.Ignore("This test is for DbBatchBatcherFactory only");
+#else
+			Assert.Ignore("This test is for NETFX and NET6_0_OR_GREATER only");
 #endif
 
 			using (var sqlLog = new SqlLogSpy())
 			{
 				await (FillDbAsync());
 				var log = sqlLog.GetWholeLog();
-				Assert.IsTrue(log.Contains("INSERT \n    INTO"));
+				Assert.That(log, Does.Contain("INSERT \n    INTO").IgnoreCase);
 			}
 
 			await (CleanupAsync());
@@ -185,7 +211,7 @@ namespace NHibernate.Test.Ado
 					foreach (var loggingEvent in sl.Appender.GetEvents())
 					{
 						string message = loggingEvent.RenderedMessage;
-						if(message.ToLowerInvariant().Contains("insert"))
+						if(message.Contains("insert"))
 						{
 							Assert.That(message, Does.Contain("batch").IgnoreCase);
 						}

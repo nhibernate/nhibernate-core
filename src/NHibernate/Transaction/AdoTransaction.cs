@@ -81,10 +81,62 @@ namespace NHibernate.Transaction
 
 				// If you try to assign a disposed transaction to a command with MSSQL, it will leave the command's
 				// transaction as null and not throw an error.  With SQLite, for example, it will throw an exception
-				// here instead.  Because of this, we set the trans field to null in when Dispose is called.
+				// here instead.  Because of this, we set the trans field to null when Dispose is called.
 				command.Transaction = trans;
 			}
 		}
+
+#if NET6_0_OR_GREATER
+		/// <summary>
+		/// Enlist a <see cref="DbBatch"/> in the current <see cref="ITransaction"/>.
+		/// </summary>
+		/// <param name="batch">The <see cref="DbBatch"/> to enlist in this Transaction.</param>
+		/// <remarks>
+		/// <para>
+		/// This takes care of making sure the <see cref="DbBatch"/>'s Transaction property 
+		/// contains the correct <see cref="DbTransaction"/> or <see langword="null" /> if there is no
+		/// Transaction for the ISession - ie <c>BeginTransaction()</c> not called.
+		/// </para>
+		/// <para>
+		/// This method may be called even when the transaction is disposed.
+		/// </para>
+		/// </remarks>
+		public void Enlist(DbBatch batch)
+		{
+			if (trans == null)
+			{
+				if (log.IsWarnEnabled())
+				{
+					if (batch.Transaction != null)
+					{
+						log.Warn("set a nonnull DbBatch.Transaction to null because the Session had no Transaction");
+					}
+				}
+
+				batch.Transaction = null;
+				return;
+			}
+			else
+			{
+				if (log.IsWarnEnabled())
+				{
+					// got into here because the command was being initialized and had a null Transaction - probably
+					// don't need to be confused by that - just a normal part of initialization...
+					if (batch.Transaction != null && batch.Transaction != trans)
+					{
+						log.Warn("The DbBatch had a different Transaction than the Session.  This can occur when " +
+								 "Disconnecting and Reconnecting Sessions because the PreparedCommand Cache is Session specific.");
+					}
+				}
+				log.Debug("Enlist DbBatch");
+
+				// If you try to assign a disposed transaction to a command with MSSQL, it will leave the command's
+				// transaction as null and not throw an error.  With SQLite, for example, it will throw an exception
+				// here instead.  Because of this, we set the trans field to null when Dispose is called.
+				batch.Transaction = trans;
+			}
+		}
+#endif
 
 		// Since 5.2
 		[Obsolete("Use RegisterSynchronization(ITransactionCompletionSynchronization) instead")]

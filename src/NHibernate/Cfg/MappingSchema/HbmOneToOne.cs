@@ -18,9 +18,13 @@ namespace NHibernate.Cfg.MappingSchema
 			get { return access; }
 		}
 
+		// 6.0 Todo : remove XmlIgnore after removing the setter. See #3607 fix.
+		[XmlIgnore]
 		public bool OptimisticLock
 		{
 			get => optimisticlock;
+			// Since v5.4.10
+			[Obsolete("Providing a setter for OptimisticLock was unintended and will be removed.")]
 			set => optimisticlock = value;
 		}
 

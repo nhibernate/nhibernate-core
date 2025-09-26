@@ -10,7 +10,7 @@ namespace NHibernate.Tool.HbmXsd
 		private static void Main(string[] args)
 		{
 			string outFile = Path.GetFullPath(args.Length == 0
-				? @"..\..\..\..\NHibernate\Cfg\MappingSchema\Hbm.generated.cs"
+				? Path.Combine("..", "..", "..", "..", "NHibernate", "Cfg", "MappingSchema", "Hbm.generated.cs")
 				: args[0]);
 			if (!Directory.Exists(Path.GetDirectoryName(outFile)))
 			{
@@ -19,6 +19,7 @@ namespace NHibernate.Tool.HbmXsd
 				Environment.ExitCode = -1;
 				return;
 			}
+
 			var currentUiCulture = new CultureInfo("en-us");
 			Thread.CurrentThread.CurrentCulture = currentUiCulture;
 			Thread.CurrentThread.CurrentUICulture = currentUiCulture;
