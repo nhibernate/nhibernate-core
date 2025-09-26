@@ -1,0 +1,10 @@
+pull_request_rules:
+  - name: Backport patches to the release branch
+    conditions:
+      - label = backport
+    actions:
+      backport:
+        branches:
+          - "5.5.x"
+        assignees:
+          - "{{ author }}"
