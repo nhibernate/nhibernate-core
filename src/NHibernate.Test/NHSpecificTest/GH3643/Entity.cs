@@ -7,7 +7,7 @@ namespace NHibernate.Test.NHSpecificTest.GH3643
 {
 	class Entity
 	{
-		private readonly ICollection<ChildEntity> _children = [];
+		private readonly ICollection<ChildEntity> _children = new List<ChildEntity>();
 		public virtual EntityId Id { get; set; }
 		public virtual ICollection<ChildEntity> Children => _children;
 	}
