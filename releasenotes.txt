@@ -12,7 +12,7 @@ Release notes - NHibernate - Version 5.6.0
         * Binary serializations of a session factory or a session from previous versions of NHibernate
           will not be deserializable with NHibernate 5.6.
 
-72 issues were resolved in this release.
+74 issues were resolved in this release.
 
 ** Bug
 
@@ -44,6 +44,7 @@ Release notes - NHibernate - Version 5.6.0
 
 ** Improvement
 
+   * #3703 Guidelines for handling breaking changes
    * #3687 Relax collection-id mapping
    * #3682 InternalsVisibleTo NHibernate.Test
    * #3676 When referencing a composite-id in Linq, the fkey table is wrongly joined
@@ -61,6 +62,7 @@ Release notes - NHibernate - Version 5.6.0
 
    * #3706 Update actions/setup-dotnet action to v5
    * #3705 Enable skip_branch_with_pr: true for appveyor
+   * #3702 Configure backports with Mergify
    * #3701 Update dependency gitreleasemanager.tool to v0.20.0
    * #3696 Release 5.6.0
    * #3694 Merge 5.5.3 into master
