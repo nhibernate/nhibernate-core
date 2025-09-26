@@ -104,6 +104,18 @@ We use tabs for code indentation, not spaces. To make this easier, NHibernate ha
 
 After submitting your pull request, come back later to check the outcome of automated builds. If some have failed, they will be listed in your pull request with a link to the corresponding TeamCity build. Find out in the build which tests are newly failing, and take appropriate action. Some of those builds may have known failing tests, which does not trigger a build failure. In this case a *Comparison.txt* file in build Artifacts may help finding which failing tests are not known failing tests and must be addressed.
 
+## Breaking Changes
+
+* Avoid binary breaking changes (changes that make previously compiled user assemblies fail to load or run: removed/renamed public members, signature changes, sealed/abstract changes impacting inheritance, etc.).
+* Source and behaviour breaking changes are acceptable when they provide clear value and are documented.
+
+When you introduce any breaking change:
+1. Clearly state it in the PR description under a heading: `Breaking Changes` (list each item).
+2. Provide a concise migration note (old → new) for each item.
+3. Update tests without deleting coverage.
+
+See Microsoft guidance: the [.NET library breaking change guidance][5] and the [.NET compatibility change rules][6] for definitions and recommended practices.
+
 ## Further Discussion
 
 The NHibernate team monitors GitHub regularly, so your request will be noticed. If you want to discuss it further, you are welcome to post to the [nhibernate-development mailing list][4]. 
@@ -116,3 +128,5 @@ The NHibernate community values your contributions. Thank you for the time you h
  [2]: https://github.com/nhibernate/nhibernate-core/
  [3]: http://www.editorconfig.org/
  [4]: http://groups.google.com/group/nhibernate-development
+ [5]: https://learn.microsoft.com/en-us/dotnet/standard/library-guidance/breaking-changes
+ [6]: https://learn.microsoft.com/en-us/dotnet/core/compatibility/library-change-rules
