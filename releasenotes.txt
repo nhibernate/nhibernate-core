@@ -11,11 +11,14 @@ Release notes - NHibernate - Version 5.6.0
           (5 seconds) to 1000 (1 second). See #3355.
         * Binary serializations of a session factory or a session from previous versions of NHibernate
           will not be deserializable with NHibernate 5.6.
+        * Oracle9iDialect now registers localtimestamp as current_timestamp, instead of systimestamp.
+          See #3707.
 
 74 issues were resolved in this release.
 
 ** Bug
 
+   * #3707 Register localtimestamp as current_timestamp in Oracle9iDialect
    * #3643 Collection cache lookup failure with enum keys
    * #3631 Missing version update on dirty collection with another property having optimistic-lock false
    * #3622 ISession.Refresh does not update lazy properties
