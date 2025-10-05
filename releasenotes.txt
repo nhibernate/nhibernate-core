@@ -14,7 +14,7 @@ Release notes - NHibernate - Version 5.6.0
         * Oracle9iDialect now registers localtimestamp as current_timestamp, instead of systimestamp.
           See #3707.
 
-74 issues were resolved in this release.
+76 issues were resolved in this release.
 
 ** Bug
 
