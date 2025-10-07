@@ -111,6 +111,7 @@ namespace NHibernate.Linq.Visitors
 		}
 
 		private readonly IntermediateHqlTree _hqlTree;
+		private readonly HashSet<Expression> _hqlCandidates;
 		private readonly NhLinqExpressionReturnType? _rootReturnType;
 		private static readonly ResultOperatorMap ResultOperatorMap;
 		private bool _serverSide = true;
@@ -165,6 +166,7 @@ namespace NHibernate.Linq.Visitors
 			_root = root;
 			_rootReturnType = root ? rootReturnType : null;
 			_hqlTree = new IntermediateHqlTree(root, _queryMode);
+			_hqlCandidates = new HashSet<Expression>();
 		}
 
 		private void Visit()
@@ -476,7 +478,7 @@ namespace NHibernate.Linq.Visitors
 
 		private HqlSelect GetSelectClause(Expression selectClause)
 		{
-			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters);
+			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters, _hqlCandidates);
 
 			visitor.VisitSelector(selectClause, !_root);
 
@@ -537,7 +539,7 @@ namespace NHibernate.Linq.Visitors
 				return;
 
 			// We only need to check there is no unexpected select, for avoiding silently ignoring them.
-			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters);
+			var visitor = new SelectClauseVisitor(typeof(object[]), VisitorParameters, new HashSet<Expression>());
 			visitor.VisitSelector(expression);
 
 			if (visitor.ProjectionExpression != null)
@@ -566,6 +568,7 @@ namespace NHibernate.Linq.Visitors
 					: (HqlDirectionStatement)_hqlTree.TreeBuilder.Descending();
 
 				_hqlTree.AddOrderByClause(orderBy, direction);
+				_hqlCandidates.Add(clause.Expression);
 			}
 		}
 
