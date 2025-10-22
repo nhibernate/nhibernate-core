@@ -6,6 +6,7 @@ using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace NHibernate.Id
 {
@@ -48,11 +49,16 @@ namespace NHibernate.Id
 		/// </summary>
 		public const string MaxLo = "max_lo";
 
-		private long hi;
-		private long lo;
 		private long maxLo;
 		private System.Type returnClass;
-		private readonly AsyncLock _asyncLock = new AsyncLock();
+		private TenantStateStore<GenerationState> _stateStore;
+		
+		private class GenerationState
+		{
+			public AsyncLock AsyncLock { get; } = new AsyncLock();
+			public long Lo { get; internal set; }
+			public long Hi { get; internal set; }
+		}
 
 		#region IConfigurable Members
 
@@ -67,8 +73,8 @@ namespace NHibernate.Id
 		{
 			base.Configure(type, parms, dialect);
 			maxLo = PropertiesHelper.GetInt64(MaxLo, parms, Int16.MaxValue);
-			lo = maxLo + 1; // so we "clock over" on the first invocation
 			returnClass = type.ReturnedClass;
+			_stateStore = new TenantStateStore<GenerationState>(state => state.Lo = maxLo + 1);// so we "clock over" on the first invocation
 		}
 
 		#endregion
@@ -83,7 +89,9 @@ namespace NHibernate.Id
 		/// <returns>The new identifier as a <see cref="Int64"/>.</returns>
 		public override object Generate(ISessionImplementor session, object obj)
 		{
-			using (_asyncLock.Lock())
+			var generationState = _stateStore.LocateGenerationState(session.GetTenantIdentifier());
+
+			using (generationState.AsyncLock.Lock())
 			{
 				if (maxLo < 1)
 				{
@@ -93,15 +101,15 @@ namespace NHibernate.Id
 						val = Convert.ToInt64(base.Generate(session, obj));
 					return IdentifierGeneratorFactory.CreateNumber(val, returnClass);
 				}
-				if (lo > maxLo)
+				if (generationState.Lo > maxLo)
 				{
 					long hival = Convert.ToInt64(base.Generate(session, obj));
-					lo = (hival == 0) ? 1 : 0;
-					hi = hival * (maxLo + 1);
+					generationState.Lo = (hival == 0) ? 1 : 0;
+					generationState.Hi = hival * (maxLo + 1);
 					log.Debug("New high value: {0}", hival);
 				}
 
-				return IdentifierGeneratorFactory.CreateNumber(hi + lo++, returnClass);
+				return IdentifierGeneratorFactory.CreateNumber(generationState.Hi + generationState.Lo++, returnClass);
 			}
 		}
 

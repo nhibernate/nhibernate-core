@@ -95,7 +95,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: TableAccessCallback
 
-		private partial class TableAccessCallback : IAccessCallback
+		private partial class TableAccessCallback : IMultiTenantAccessCallback
 		{
 
 			#region IAccessCallback Members

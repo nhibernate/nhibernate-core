@@ -80,7 +80,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: SequenceAccessCallback
 
-		private partial class SequenceAccessCallback : IAccessCallback
+		private partial class SequenceAccessCallback : IMultiTenantAccessCallback
 		{
 			private readonly SequenceStructure _owner;
 			private readonly ISessionImplementor _session;
@@ -135,6 +135,8 @@ namespace NHibernate.Id.Enhanced
 					throw ADOExceptionHelper.Convert(_session.Factory.SQLExceptionConverter, sqle, "could not get next sequence value", _owner._sql);
 				}
 			}
+
+			public string GetTenantIdentifier() => _session.GetTenantIdentifier();
 
 			#endregion
 		}
