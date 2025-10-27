@@ -24,12 +24,12 @@ namespace NHibernate.Test.DialectTest
 
 			str = d.GetLimitString(new SqlString("SELECT DISTINCT fish_.id FROM fish fish_"), new SqlString("111"), new SqlString("222"));
 			Assert.AreEqual(
-				"SELECT DISTINCT fish_.id FROM fish fish_ ORDER BY CURRENT_TIMESTAMP OFFSET 111 ROWS FETCH FIRST 222 ROWS ONLY",
+				"SELECT TOP (222) id FROM (SELECT *, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row  FROM (SELECT DISTINCT fish_.id FROM fish fish_) as q_) as query WHERE query.__hibernate_sort_row > 111 ORDER BY query.__hibernate_sort_row",
 				str.ToString());
 
 			str = d.GetLimitString(new SqlString("SELECT DISTINCT fish_.id as ixx9_ FROM fish fish_"), new SqlString("111"), new SqlString("222"));
 			Assert.AreEqual(
-				"SELECT DISTINCT fish_.id as ixx9_ FROM fish fish_ ORDER BY CURRENT_TIMESTAMP OFFSET 111 ROWS FETCH FIRST 222 ROWS ONLY",
+				"SELECT TOP (222) ixx9_ FROM (SELECT *, ROW_NUMBER() OVER(ORDER BY CURRENT_TIMESTAMP) as __hibernate_sort_row  FROM (SELECT DISTINCT fish_.id as ixx9_ FROM fish fish_) as q_) as query WHERE query.__hibernate_sort_row > 111 ORDER BY query.__hibernate_sort_row",
 				str.ToString());
 
 			str = d.GetLimitString(new SqlString("SELECT * FROM fish ORDER BY name"), new SqlString("111"), new SqlString("222"));
@@ -80,16 +80,19 @@ namespace NHibernate.Test.DialectTest
 			var d = new MsSql2012Dialect();
 
 			SqlString str = d.GetLimitString(new SqlString("select distinct c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"), null, new SqlString("10"));
-			Assert.That(str.ToString(), Is.EqualTo("select distinct c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name OFFSET 0 ROWS FETCH FIRST 10 ROWS ONLY"));
+			Assert.That(str.ToString(), Is.EqualTo("select distinct TOP (10) c.Contact_Id as Contact1_19_0_, c._Rating as Rating2_19_0_ from dbo.Contact c where COALESCE(c.Rating, 0) > 0 order by c.Rating desc , c.Last_Name , c.First_Name"));
 		}
 
 		[Test]
 		public void GetLimitStringWithSqlComments()
 		{
 			var d = new MsSql2012Dialect();
-			var limitSqlQuery = d.GetLimitString(new SqlString(" /* criteria query */ SELECT p from lcdtm"), null, new SqlString("2"));
-			Assert.That(limitSqlQuery, Is.Not.Null);
-			Assert.That(limitSqlQuery.ToString(), Is.EqualTo(" /* criteria query */ SELECT p from lcdtm ORDER BY CURRENT_TIMESTAMP OFFSET 0 ROWS FETCH FIRST 2 ROWS ONLY"));
+			var limitSqlQuery1 = d.GetLimitString(new SqlString(" /* criteria query */ SELECT p from lcdtm"), null, new SqlString("2"));
+			var limitSqlQuery2 = d.GetLimitString(new SqlString(" /* criteria query */ SELECT p from lcdtm"), new SqlString("1"), new SqlString("2"));
+			Assert.That(limitSqlQuery1, Is.Not.Null);
+			Assert.That(limitSqlQuery1.ToString(), Is.EqualTo(" /* criteria query */ SELECT TOP (2) p from lcdtm"));
+			Assert.That(limitSqlQuery2, Is.Not.Null);
+			Assert.That(limitSqlQuery2.ToString(), Is.EqualTo(" /* criteria query */ SELECT p from lcdtm ORDER BY CURRENT_TIMESTAMP OFFSET 1 ROWS FETCH FIRST 2 ROWS ONLY"));
 		}
 
 		[Test]
@@ -128,8 +131,8 @@ namespace NHibernate.Test.DialectTest
 					INNER JOIN DirectReports AS ON e.ManagerID = d.EmployeeID
 				)
 				-- Statement that executes the CTE
-				SELECT  ManagerID, EmployeeID, Title, Level
-				FROM    DirectReports ORDER BY CURRENT_TIMESTAMP OFFSET 0 ROWS FETCH FIRST 2 ROWS ONLY";
+				SELECT  TOP (2) ManagerID, EmployeeID, Title, Level
+				FROM    DirectReports";
 
 			var d = new MsSql2012Dialect();
 			var limitSqlQuery = d.GetLimitString(new SqlString(SQL), null, new SqlString("2"));
