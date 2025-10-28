@@ -343,6 +343,15 @@ namespace NHibernate.Type
 			// object needs to have both class and serializable setup before it can
 			// be created.
 			RegisterType(typeof (Object), NHibernateUtil.Object, new[] {"object"});
+
+
+#if NET6_0_OR_GREATER
+			RegisterType(typeof(DateOnly), NHibernateUtil.DateOnlyAsDate, new[] { "dateonly", "dateonlyasdate" });
+
+			RegisterType(typeof(TimeOnly), NHibernateUtil.TimeOnlyAsTime, new[] { "timeonly", "timeonlyastime" },
+				s => GetType(NHibernateUtil.TimeOnlyAsTime, s, scale => new TimeOnlyAsTimeType((byte) scale)),
+				false);
+#endif
 		}
 
 		/// <summary>
@@ -397,6 +406,17 @@ namespace NHibernate.Type
 						 l =>
 						 GetType(NHibernateUtil.Serializable, l,
 								 len => new SerializableType(typeof (object), SqlTypeFactory.GetBinary(len))));
+
+#if NET6_0_OR_GREATER
+			RegisterType(NHibernateUtil.TimeOnlyAsDateTime, new[] { "timeonlyasdatetime" },
+				s => GetType(NHibernateUtil.TimeOnlyAsDateTime, s, scale => new TimeOnlyAsDateTimeType((byte) scale)),
+				false);
+
+			RegisterType(NHibernateUtil.TimeOnlyAsTicks, new[] { "timeonlyasticks" },
+				s => GetType(NHibernateUtil.TimeOnlyAsTicks, s, scale => new TimeOnlyAsTicksType((byte) scale)),
+				false);
+#endif
+
 		}
 
 		private static ICollectionTypeFactory CollectionTypeFactory =>
@@ -916,6 +936,38 @@ namespace NHibernate.Type
 			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.Time.Name, fractionalSecondsPrecision);
 			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new TimeType(SqlTypeFactory.GetTime(fractionalSecondsPrecision)));
 		}
+#if NET6_0_OR_GREATER
+		/// <summary>
+		/// Gets a <see cref="TimeOnlyAsDateTimeType" /> with desired fractional seconds precision.
+		/// </summary>
+		/// <returns>The NHibernate type.</returns>
+		public static NullableType GetTimeOnlyAsDateTimeType(byte fractionalSecondsPrecision)
+		{
+			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.TimeOnlyAsDateTime.Name, fractionalSecondsPrecision);
+			return (NullableType) typeByTypeOfName.GetOrAdd(key, k => new TimeOnlyAsDateTimeType(fractionalSecondsPrecision));
+		}
+
+		/// <summary>
+		/// Gets a <see cref="TimeOnlyAsTicksType" /> with desired fractional seconds precision.
+		/// </summary>
+		/// <returns>The NHibernate type.</returns>
+		public static NullableType GetTimeOnlyAsTicksType(byte fractionalSecondsPrecision)
+		{
+			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.TimeOnlyAsTicks.Name, fractionalSecondsPrecision);
+			return (NullableType) typeByTypeOfName.GetOrAdd(key, k => new TimeOnlyAsTimeType(fractionalSecondsPrecision));
+		}
+
+		/// <summary>
+		/// Gets a <see cref="TimeOnlyAsTimeType" /> with desired fractional seconds precision.
+		/// </summary>
+		/// <param name="fractionalSecondsPrecision">The fractional seconds precision.</param>
+		/// <returns>The NHibernate type.</returns>
+		public static NullableType GetTimeOnlyAsTimeType(byte fractionalSecondsPrecision)
+		{
+			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.TimeOnlyAsTime.Name, fractionalSecondsPrecision);
+			return (NullableType) typeByTypeOfName.GetOrAdd(key, k => new TimeOnlyAsTimeType(fractionalSecondsPrecision));
+		}
+#endif
 
 		// Association Types
 

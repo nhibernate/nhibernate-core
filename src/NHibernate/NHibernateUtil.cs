@@ -137,6 +137,12 @@ namespace NHibernate
 		/// </summary>
 		public static readonly DateType Date = new DateType();
 
+#if NET6_0_OR_GREATER
+		/// <summary>
+		/// NHibernate DateOnlyAsDate type
+		/// </summary>
+		public static readonly DateOnlyAsDateType DateOnlyAsDate = new();
+#endif
 		/// <summary>
 		/// NHibernate local date type
 		/// </summary>
@@ -244,6 +250,22 @@ namespace NHibernate
 		[Obsolete("Use DateTime instead.")]
 		public static readonly TimestampType Timestamp = new TimestampType();
 
+#if NET6_0_OR_GREATER
+		/// <summary>
+		/// NHibernate TimeOnlyAsDateTime type
+		/// </summary>
+		public static readonly TimeOnlyAsDateTimeType TimeOnlyAsDateTime = new();
+
+		/// <summary>
+		/// NHibernate TimeOnlyAsTicks type
+		/// </summary>
+		public static readonly TimeOnlyAsTicksType TimeOnlyAsTicks = new();
+
+		/// <summary>
+		/// NHibernate TimeOnlyAsTime type
+		/// </summary>
+		public static readonly TimeOnlyAsTimeType TimeOnlyAsTime = new();
+#endif
 		/// <summary>
 		/// NHibernate Timestamp type, seeded db side.
 		/// </summary>
