@@ -380,6 +380,14 @@ namespace NHibernate.Loader.Custom
 					queryParameters.ResultTransformer, transformerAliases);
 		}
 
+		protected override void ApplyCachedMetadata(CacheableResultTransformer resultTransformer)
+		{
+			if (transformerAliases.Length == 0 && resultTransformer?.AutoDiscoveredAliases?.Length > 0)
+			{
+				transformerAliases = resultTransformer.AutoDiscoveredAliases;
+			}
+		}
+
 		protected override void ResetEffectiveExpectedType(IEnumerable<IParameterSpecification> parameterSpecs, QueryParameters queryParameters)
 		{
 			parameterSpecs.ResetEffectiveExpectedType(queryParameters);

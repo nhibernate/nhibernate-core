@@ -1894,11 +1894,16 @@ namespace NHibernate.Loader
 			else
 			{
 				result = queryCacheBuilder.GetResultList(result);
+				ApplyCachedMetadata(key.ResultTransformer);
 			}
 
 			result = TransformCacheableResults(queryParameters, key.ResultTransformer, result);
 
 			return GetResultList(result, queryParameters.ResultTransformer);
+		}
+
+		protected virtual void ApplyCachedMetadata(CacheableResultTransformer resultTransformer)
+		{
 		}
 
 		public IList TransformCacheableResults(QueryParameters queryParameters, CacheableResultTransformer transformer, IList result)
