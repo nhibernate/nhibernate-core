@@ -15,7 +15,7 @@ namespace NHibernate.Test
 	[SetUpFixture]
 	public class TestContainerSetup
 	{
-		private static IDatabaseContainer _container;
+		private static volatile IDatabaseContainer _container;
 		private static readonly object _lock = new object();
 
 		internal static string GetConnectionString(string connectionString)
