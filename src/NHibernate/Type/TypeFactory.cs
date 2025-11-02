@@ -342,8 +342,7 @@ namespace NHibernate.Type
 
 			// object needs to have both class and serializable setup before it can
 			// be created.
-			RegisterType(typeof (Object), NHibernateUtil.Object, new[] {"object"});
-
+RegisterType(typeof (Object), NHibernateUtil.Object, new[] {"object"});
 
 #if NET6_0_OR_GREATER
 			RegisterType(typeof(DateOnly), NHibernateUtil.DateOnlyAsDate, new[] { "dateonly", "dateonlyasdate" });
@@ -936,6 +935,7 @@ namespace NHibernate.Type
 			var key = GetKeyForLengthOrScaleBased(NHibernateUtil.Time.Name, fractionalSecondsPrecision);
 			return (NullableType)typeByTypeOfName.GetOrAdd(key, k => new TimeType(SqlTypeFactory.GetTime(fractionalSecondsPrecision)));
 		}
+
 #if NET6_0_OR_GREATER
 		/// <summary>
 		/// Gets a <see cref="TimeOnlyAsDateTimeType" /> with desired fractional seconds precision.

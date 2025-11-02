@@ -48,7 +48,7 @@ namespace NHibernate.Type
 		{
 			if (rs.GetFieldType(index) == typeof(TimeSpan)) //For those dialects where DbType.Time means TimeSpan.
 			{
-				return new TimeOnly(((TimeSpan)rs[index]).Ticks);
+				return new TimeOnly(((TimeSpan) rs[index]).Ticks);
 			}
 
 			var dbValue = rs.GetDateTime(index);
@@ -72,7 +72,7 @@ namespace NHibernate.Type
 		}
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect) =>
-			"'" + (AdjustTimeOnly((TimeOnly) value)).ToString(_sqlFormat) + "'";
+			dialect.ToStringLiteral(AdjustTimeOnly((TimeOnly) value).ToString(_sqlFormat), SqlTypeFactory.GetAnsiString(50));
 	}
 }
 #endif

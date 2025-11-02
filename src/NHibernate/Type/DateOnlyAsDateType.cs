@@ -28,10 +28,9 @@ namespace NHibernate.Type
 		protected override DateTime GetParameterValueToSet(DateOnly dateOnly, ISessionImplementor session) =>
 			dateOnly.ToDateTime(TimeOnly.MinValue);
 
-
 		/// <inheritdoc />
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect) =>
-			"'" + ((DateOnly) value).ToString("yyyy-MM-dd") + "'";
+			dialect.ToStringLiteral(((DateOnly) value).ToString("yyyy-MM-dd"), SqlTypeFactory.GetAnsiString(50));
 	}
 }
 #endif

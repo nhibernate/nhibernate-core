@@ -14,7 +14,6 @@ using NHibernate.Util;
 
 namespace NHibernate.Type
 {
-
 	/// <summary>
 	/// Maps a <see cref="System.TimeOnly" /> property to a <see cref="DbType.Int64" /> column.
 	/// The value persisted is the Ticks property of the TimeOnly value.
@@ -48,7 +47,7 @@ namespace NHibernate.Type
 		protected override long GetParameterValueToSet(TimeOnly timeOnly, ISessionImplementor session) => timeOnly.Ticks;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect) =>
-			AdjustTimeOnly((TimeOnly) value).Ticks.ToString();
+			dialect.ToStringLiteral(AdjustTimeOnly((TimeOnly) value).Ticks.ToString(), SqlTypeFactory.GetAnsiString(50));
 	}
 }
 #endif

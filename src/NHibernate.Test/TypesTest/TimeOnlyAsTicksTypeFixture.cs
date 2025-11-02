@@ -9,7 +9,6 @@ using NUnit.Framework;
 
 namespace NHibernate.Test.TypesTest
 {
-
 	[TestFixture(false)]
 	[TestFixture(true)]
 	public class TimeOnlyAsTicksTypeFixture : AbstractTimeOnlyTypeWithScaleFixture<TimeOnlyAsTicksType>

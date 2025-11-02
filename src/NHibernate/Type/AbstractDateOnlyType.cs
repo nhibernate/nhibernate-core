@@ -37,7 +37,7 @@ namespace NHibernate.Type
 			}
 			catch (Exception ex) when (ex is not FormatException)
 			{
-				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
+				throw new FormatException(string.Format("Input '{0}' was not convertible to DateOnly.", rs[index]), ex);
 			}
 		}
 
@@ -50,7 +50,7 @@ namespace NHibernate.Type
 		/// <inheritdoc />
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			st.Parameters[index].Value = GetParameterValueToSet((DateOnly) value,session);
+			st.Parameters[index].Value = GetParameterValueToSet((DateOnly) value, session);
 		}
 
 		/// <summary>
@@ -82,7 +82,6 @@ namespace NHibernate.Type
 		/// <inheritdoc />
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory) =>
 			value == null ? null : ((DateOnly) value).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-
 	}
 }
 #endif

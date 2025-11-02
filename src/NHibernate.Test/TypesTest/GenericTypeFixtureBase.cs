@@ -224,7 +224,8 @@ namespace NHibernate.Test.TypesTest
 					var value = property.Compile()(testValue);
 					var where = Expression.Lambda<Func<TestEntity, bool>>(Expression.Equal(body.Replace(property.Parameters[0], prop), Expression.Constant(value)), param);
 					TestEntity entity = null;
-					Assert.DoesNotThrow(() => entity = session.Query<TestEntity>().FirstOrDefault(where), "Unable to query property " + member.Member.Name);
+					Assert.That(() => entity = session.Query<TestEntity>().FirstOrDefault(where), Throws.Nothing,
+						"Unable to query property " + member.Member.Name);
 					Assert.That(entity, Is.Not.Null, "Unable to query property " + member.Member.Name);
 				}
 			}

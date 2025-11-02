@@ -38,7 +38,6 @@ namespace NHibernate.Type
 			}
 		}
 
-
 		public override string Name => GetType().Name.EndsWith("Type", StringComparison.Ordinal)
 			? GetType().Name[..^4]
 			: GetType().Name;
@@ -50,7 +49,7 @@ namespace NHibernate.Type
 		public override object DefaultValue => TimeOnly.MinValue;
 
 		/// <summary>
-		/// Truncate (floor) fractional seconds beyond declared precision.
+		/// Truncate (floor) fractional seconds according to the declared precision.
 		/// Override to change behavior (e.g., implement rounding).
 		/// </summary>
 		protected virtual TimeOnly AdjustTimeOnly(TimeOnly timeOnly)
@@ -89,7 +88,7 @@ namespace NHibernate.Type
 			}
 			catch (Exception ex) when (ex is not FormatException)
 			{
-				throw new FormatException(string.Format("Input string '{0}' was not in the correct format.", rs[index]), ex);
+				throw new FormatException(string.Format("Input '{0}' was not convertible to TimeOnly.", rs[index]), ex);
 			}
 		}
 

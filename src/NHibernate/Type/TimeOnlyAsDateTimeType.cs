@@ -61,7 +61,7 @@ namespace NHibernate.Type
 		}
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect) =>
-			"'" + GetDateTimeFromTimeOnly(AdjustTimeOnly((TimeOnly) value)).ToString(_sqlFormat) + "'";
+			dialect.ToStringLiteral(GetDateTimeFromTimeOnly(AdjustTimeOnly((TimeOnly) value)).ToString(_sqlFormat), SqlTypeFactory.GetAnsiString(50));
 	}
 }
 #endif
