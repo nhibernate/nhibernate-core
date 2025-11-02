@@ -17,7 +17,7 @@ namespace NHibernate.Type
 	/// <para>
 	/// Some DB drivers will use a <see cref="TimeSpan"/> value for the <see cref="DbType.Time"/> column, whereas
 	/// others will use a full <see cref="System.DateTime" />. In the latter case, the date part defaults to
-	/// to "1753-01-01" - which should not matter because using this Type indicates that you don't care about the Date portion of the DateTime.
+	/// to "2000-01-01" - which should not matter because using this Type indicates that you don't care about the Date portion of the DateTime.
 	/// However, if you need to adjust this base value, you can specify the parameter 'BaseDateValue' on the type mapping,
 	/// using the date format 'yyyy-MM-dd'
 	/// </para>
@@ -25,7 +25,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public class TimeOnlyAsTimeType : AbstractTimeOnlyType<object>, IParameterizedType
 	{
-		private DateTime BaseDateValue = new(1753, 01, 01);
+		private DateTime BaseDateValue = new(2000, 01, 01);
 		private readonly string _sqlFormat;
 		
 		/// <summary>

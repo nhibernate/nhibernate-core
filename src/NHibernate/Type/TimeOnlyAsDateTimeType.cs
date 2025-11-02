@@ -15,7 +15,7 @@ namespace NHibernate.Type
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This defaults the Date to "1753-01-01" - which should not matter because
+	/// This defaults the Date to "2000-01-01" - which should not matter because
 	/// using this Type indicates that you don't care about the Date portion of the DateTime.
 	/// However, if you need to adjust this base value, you can specify the parameter 'BaseDateValue' on the type mapping,
 	/// using the date format 'yyyy-MM-dd'
@@ -24,7 +24,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public class TimeOnlyAsDateTimeType : AbstractTimeOnlyType<DateTime>, IParameterizedType
 	{
-		private DateTime _baseDateValue = new(1753, 01, 01);
+		private DateTime _baseDateValue = new(2000, 01, 01);
 		private readonly string _sqlFormat;
 		/// <summary>
 		/// Default constructor. Sets the fractional seconds precision (scale) to 0
