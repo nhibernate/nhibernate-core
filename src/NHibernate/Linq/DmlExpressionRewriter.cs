@@ -122,7 +122,7 @@ namespace NHibernate.Linq
 				throw new ArgumentNullException(nameof(expression));
 
 			// Anonymous initializations are not implemented as member initialization but as plain constructor call, potentially wrapped in a Convert expression
-			var newExpression = UnwrapConvert(expression.Body) as NewExpression ??
+			var newExpression = UnwrapConvertExpression(expression.Body) as NewExpression ??
 				throw new ArgumentException("The expression must be an anonymous initialization, e.g. x => new { Name = x.Name, Age = x.Age + 5 }");
 
 			var instance = new DmlExpressionRewriter(expression.Parameters);
@@ -130,12 +130,11 @@ namespace NHibernate.Linq
 			return PrepareExpression<TSource>(sourceExpression, instance._assignments);
 		}
 
-		private static Expression UnwrapConvert(Expression expression)
+		private static Expression UnwrapConvertExpression(Expression expression)
 		{
-			if (expression is UnaryExpression unaryExpression &&
-			    unaryExpression.NodeType is ExpressionType.Convert or ExpressionType.ConvertChecked)
+			if (expression is UnaryExpression ue && ue.NodeType == ExpressionType.Convert)
 			{
-				return unaryExpression.Operand;
+				return ue.Operand;
 			}
 
 			return expression;
