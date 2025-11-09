@@ -30,20 +30,18 @@ namespace NHibernate.Test.CacheTest
 
 		protected override void OnSetUp()
 		{
-			using (var s = OpenSession())
-			{
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
 				s.Save(new Simple(), 1L);
-				s.Flush();
-			}
+			t.Commit();
 		}
 
 		protected override void OnTearDown()
 		{
-			using (var s = OpenSession())
-			{
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
 				s.Delete("from Simple");
-				s.Flush();
-			}
+			t.Commit();
 		}
 
 		[Test]
@@ -106,9 +104,11 @@ namespace NHibernate.Test.CacheTest
 		[Test]
 		public async Task QueryCacheWithAliasToBeanTransformerAsync()
 		{
+			const string query = "select s.id_ as Id from Simple as s;";
+
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				const string query = "select s.id_ as Id from Simple as s;";
 				var result1 = await (s
 					.CreateSQLQuery(query)
 					.SetCacheable(true)
@@ -116,10 +116,15 @@ namespace NHibernate.Test.CacheTest
 					.UniqueResultAsync());
 
 				Assert.That(result1, Is.InstanceOf<SimpleDTO>());
-				var dto1 = (SimpleDTO)result1;
+				var dto1 = (SimpleDTO) result1;
 				Assert.That(dto1.Id, Is.EqualTo(1));
+				await (t.CommitAsync());
+			}
 
-				// Run a second time, just to test the query cache
+			// Run a second time, just to test the query cache
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
 				var result2 = await (s
 					.CreateSQLQuery(query)
 					.SetCacheable(true)
@@ -127,8 +132,9 @@ namespace NHibernate.Test.CacheTest
 					.UniqueResultAsync());
 
 				Assert.That(result2, Is.InstanceOf<SimpleDTO>());
-				var dto2 = (SimpleDTO)result2;
+				var dto2 = (SimpleDTO) result2;
 				Assert.That(dto2.Id, Is.EqualTo(1));
+				await (t.CommitAsync());
 			}
 		}
 
