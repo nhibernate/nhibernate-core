@@ -1,6 +1,7 @@
 using System.Collections;
 using NHibernate.Cfg;
 using NHibernate.DomainModel;
+using NHibernate.Transform;
 using NUnit.Framework;
 using Environment = NHibernate.Cfg.Environment;
 
@@ -89,6 +90,49 @@ namespace NHibernate.Test.CacheTest
 
 				Assert.That(result, Is.EqualTo(200012), "Unexpected cached result");
 			}
+		}
+
+		[Test]
+		public void QueryCacheWithAliasToBeanTransformer()
+		{
+			const string query = "select s.id_ as Id from Simple as s;";
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var result1 = s
+					.CreateSQLQuery(query)
+					.SetCacheable(true)
+					.SetResultTransformer(Transformers.AliasToBean<SimpleDTO>())
+					.UniqueResult();
+
+				Assert.That(result1, Is.InstanceOf<SimpleDTO>());
+				var dto1 = (SimpleDTO) result1;
+				Assert.That(dto1.Id, Is.EqualTo(1));
+				t.Commit();
+			}
+
+			// Run a second time, just to test the query cache
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var result2 = s
+					.CreateSQLQuery(query)
+					.SetCacheable(true)
+					.SetResultTransformer(Transformers.AliasToBean<SimpleDTO>())
+					.UniqueResult();
+
+				Assert.That(result2, Is.InstanceOf<SimpleDTO>());
+				var dto2 = (SimpleDTO) result2;
+				Assert.That(dto2.Id, Is.EqualTo(1));
+				t.Commit();
+			}
+		}
+
+		private class SimpleDTO
+		{
+			public long Id { get; set; }
+			public string Address { get; set; }
 		}
 	}
 }
