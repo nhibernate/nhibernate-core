@@ -69,6 +69,13 @@
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="9.1.1" />
     <PackageReference Include="Npgsql" Version="8.0.3" />
     <PackageReference Include="MySql.Data" Version="8.0.30" />
+    <PackageReference Include="Testcontainers.Db2" Version="4.8.1" />
+    <PackageReference Include="Testcontainers.FirebirdSql" Version="4.8.1" />
+    <PackageReference Include="Testcontainers.MariaDb" Version="4.8.1" />
+    <PackageReference Include="Testcontainers.MsSql" Version="4.8.1" />
+    <PackageReference Include="Testcontainers.MySql" Version="4.8.1" />
+    <PackageReference Include="Testcontainers.Oracle" Version="4.8.1" />
+    <PackageReference Include="Testcontainers.PostgreSql" Version="4.8.1" />
   </ItemGroup>
   <ItemGroup Condition="$(NhNetFx)">
     <Reference Include="System.Configuration" />

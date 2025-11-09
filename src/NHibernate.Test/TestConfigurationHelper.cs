@@ -47,6 +47,12 @@ namespace NHibernate.Test
 			Configuration result = new Configuration();
 			if (hibernateConfigFile != null)
 				result.Configure(hibernateConfigFile);
+
+			var connectionString = result.GetProperty(Cfg.Environment.ConnectionString);
+			if (connectionString?.StartsWith("testcontainers=") == true)
+			{
+				result.SetProperty(Cfg.Environment.ConnectionString, TestContainerSetup.GetConnectionString(connectionString));
+			}
 			return result;
 		}
 
