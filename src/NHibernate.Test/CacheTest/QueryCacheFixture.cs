@@ -97,7 +97,7 @@ namespace NHibernate.Test.CacheTest
 		{
 			using (var s = OpenSession())
 			{
-				const string query = "select s.id_ as Id from Simple as s";
+				const string query = "select s.id_ as Id from Simple as s;";
 				var result1 = s
 					.CreateSQLQuery(query)
 					.SetCacheable(true)
