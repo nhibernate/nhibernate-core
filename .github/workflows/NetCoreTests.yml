@@ -66,7 +66,7 @@ jobs:
     - name: Set up .NET
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8.0.x
+        global-json-file: global.json
 
     - name: Checkout
       uses: actions/checkout@v5
