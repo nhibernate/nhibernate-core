@@ -92,7 +92,7 @@
     <PackageReference Include="System.Data.OracleClient" Version="1.0.8">
       <ExcludeAssets>compile</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="9.0.8" />
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="10.0.0" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.140" />
     <PackageReference Include="NUnitLite" Version="3.14.0" />
   </ItemGroup>
