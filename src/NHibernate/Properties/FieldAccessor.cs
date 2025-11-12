@@ -322,7 +322,7 @@ namespace NHibernate.Properties
 
 			public System.Type Type
 			{
-				get { return @field.FieldType; }
+				get { return this.field.FieldType; }
 			}
 
 			#endregion
