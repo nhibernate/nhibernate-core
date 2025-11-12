@@ -6,7 +6,7 @@
     <VersionPatch  Condition="'$(VersionPatch)'  == ''">0</VersionPatch>
     <!-- Clear VersionSuffix for making release and set it to dev for making development builds -->
     <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
-    <LangVersion Condition="'$(MSBuildProjectExtension)' != '.vbproj'">12.0</LangVersion>
+    <LangVersion Condition="'$(MSBuildProjectExtension)' != '.vbproj'">14.0</LangVersion>
 
     <VersionPrefix Condition="'$(VersionPrefix)' == ''">$(NhVersion).$(VersionPatch)</VersionPrefix>
     <VersionSuffix Condition="'$(VersionSuffix)' != '' AND '$(BuildNumber)' != ''">$(VersionSuffix).$(BuildNumber)</VersionSuffix>
@@ -14,8 +14,8 @@
     <FileVersion Condition="'$(VersionSuffix)' != '' AND '$(BuildNumber)' != ''">$(VersionPrefix).$(BuildNumber)</FileVersion>
     <FileVersion Condition="'$(FileVersion)' == ''">$(VersionPrefix).0</FileVersion>
 
-    <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net48;net8.0</NhAppTargetFrameworks>
-    <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;net48;netcoreapp2.0;netstandard2.0;netstandard2.1;net6.0;net8.0</NhLibTargetFrameworks>
+    <NhAppTargetFrameworks Condition ="$(NhAppTargetFrameworks) == ''">net48;net10.0</NhAppTargetFrameworks>
+    <NhLibTargetFrameworks Condition ="$(NhLibTargetFrameworks) == ''">net461;net48;netcoreapp2.0;netstandard2.0;netstandard2.1;net6.0;net8.0;net10.0</NhLibTargetFrameworks>
     <RuntimeFrameworkVersion Condition="'$(TargetFramework)' == 'netcoreapp2.0'">2.0.3</RuntimeFrameworkVersion>
     <NhNetFx>false</NhNetFx>
     <NhNetFx Condition="$(TargetFramework.StartsWith('net4'))">true</NhNetFx>
@@ -25,6 +25,7 @@
     <NoWarn>$(NoWarn);NU1903</NoWarn>
     <NoWarn Condition="'$(TargetFramework)' == 'net6.0'">$(NoWarn);SYSLIB0011</NoWarn>
     <NoWarn Condition="'$(TargetFramework)' == 'net8.0'">$(NoWarn);SYSLIB0011;SYSLIB0050;SYSLIB0051</NoWarn>
+    <NoWarn Condition="'$(TargetFramework)' == 'net10.0'">$(NoWarn);SYSLIB0011;SYSLIB0050;SYSLIB0051</NoWarn>
 
     <Product>NHibernate</Product>
     <Company>NHibernate.info</Company>
