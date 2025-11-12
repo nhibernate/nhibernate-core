@@ -68,12 +68,20 @@ namespace NHibernate.Util
 		internal static bool IsRealNumberType(this System.Type type)
 		{
 			var code = System.Type.GetTypeCode(type);
-			if (code == TypeCode.Decimal || code == TypeCode.Single || code == TypeCode.Double)
-			{
-				return true;
-			}
-
-			return false;
+			return code == TypeCode.Decimal || code == TypeCode.Single || code == TypeCode.Double;
 		}
+		
+		
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
+		internal static bool IsSpan(this System.Type type)
+		{
+			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Span<>);
+		}
+
+		internal static bool IsReadOnlySpan(this System.Type type)
+		{
+			return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ReadOnlySpan<>);
+		}
+#endif
 	}
 }
