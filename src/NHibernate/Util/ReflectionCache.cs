@@ -33,6 +33,9 @@ namespace NHibernate.Util
 
 			internal static readonly MethodInfo CastDefinition =
 				ReflectHelper.FastGetMethodDefinition(Enumerable.Cast<object>, default(IEnumerable));
+		
+			internal static MethodInfo ContainsDefinition = 
+				ReflectHelper.FastGetMethodDefinition(Enumerable.Contains, default(IEnumerable<object>), default(object));
 
 			internal static readonly MethodInfo GroupByWithElementSelectorDefinition = 
 				ReflectHelper.FastGetMethodDefinition(Enumerable.GroupBy, default(IEnumerable<object>), default(Func<object, object>), default(Func<object, object>));
@@ -88,6 +91,9 @@ namespace NHibernate.Util
 					default(Expression<Func<object, int>>),
 					default(Expression<Func<object, int>>),
 					default(Expression<Func<object, IEnumerable<object>, object>>));
+
+			internal static MethodInfo ContainsDefinition = 
+				ReflectHelper.FastGetMethodDefinition(Queryable.Contains, default(IQueryable<object>), default(object));
 
 			internal static readonly MethodInfo CountDefinition =
 				ReflectHelper.FastGetMethodDefinition(Queryable.Count, default(IQueryable<object>));
