@@ -51,7 +51,7 @@ namespace NHibernate.Transaction
 
 					if (transacted)
 					{
-						trans = connection.BeginTransaction();
+						trans = await (connection.BeginTransactionAsync(cancellationToken)).ConfigureAwait(false);
 					}
 
 					await (work.DoWorkAsync(connection, trans, cancellationToken)).ConfigureAwait(false);
