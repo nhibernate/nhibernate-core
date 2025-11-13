@@ -1,7 +1,6 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using NHibernate.Engine;
 using NHibernate.Hql.Ast;
 using NHibernate.Linq.Visitors;
 using NHibernate.Util;
@@ -21,7 +20,7 @@ namespace NHibernate.Linq.Functions
 					ReflectHelper.GetProperty((DateTime x) => x.Minute),
 					ReflectHelper.GetProperty((DateTime x) => x.Second),
 					ReflectHelper.GetProperty((DateTime x) => x.Date),
-					
+
 					ReflectHelper.GetProperty((DateTimeOffset x) => x.Year),
 					ReflectHelper.GetProperty((DateTimeOffset x) => x.Month),
 					ReflectHelper.GetProperty((DateTimeOffset x) => x.Day),
@@ -29,7 +28,17 @@ namespace NHibernate.Linq.Functions
 					ReflectHelper.GetProperty((DateTimeOffset x) => x.Minute),
 					ReflectHelper.GetProperty((DateTimeOffset x) => x.Second),
 					ReflectHelper.GetProperty((DateTimeOffset x) => x.Date),
-				};
+
+#if NET6_0_OR_GREATER
+					ReflectHelper.GetProperty((DateOnly x) => x.Year),
+					ReflectHelper.GetProperty((DateOnly x) => x.Month),
+					ReflectHelper.GetProperty((DateOnly x) => x.Day),
+
+					ReflectHelper.GetProperty((TimeOnly x) => x.Hour),
+					ReflectHelper.GetProperty((TimeOnly x) => x.Minute),
+					ReflectHelper.GetProperty((TimeOnly x) => x.Second),
+#endif
+			};
 		}
 
 		public override HqlTreeNode BuildHql(MemberInfo member, Expression expression, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
