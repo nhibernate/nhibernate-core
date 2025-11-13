@@ -10,10 +10,10 @@ namespace NHibernate.Test.NHSpecificTest.NH1487
 	public class Entity
 	{
 		int field;
-		public int Id { get { return field; } set { field = value; } }
-		public int A { get { return field; } set { field = value; } }
-		public int B { get { return field; } set { field = value; } }
-		public int C { get { return field; } set { field = value; } }
+		public int Id { get { return this.field; } set { this.field = value; } }
+		public int A { get { return this.field; } set { this.field = value; } }
+		public int B { get { return this.field; } set { this.field = value; } }
+		public int C { get { return this.field; } set { this.field = value; } }
 	}
 
 	/// <summary>
