@@ -8,9 +8,11 @@
 //------------------------------------------------------------------------------
 
 
+using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NUnit.Framework;
+using NHibernate.Linq;
 
 namespace NHibernate.Test.Ado
 {
@@ -274,6 +276,47 @@ namespace NHibernate.Test.Ado
 
 			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
 			await (CleanupAsync());
+		}
+
+		[Test]
+		[Description("The batcher should handle empty batch execution without throwing exceptions.")]
+		public async Task EmptyBatchShouldNotThrowExceptionAsync()
+		{
+			// This test verifies that batchers handle empty batches correctly
+			// DbBatchBatcher had a bug where ExecuteBatch was called on an empty batch,
+			// causing InvalidOperationException: CommandText property has not been initialized
+			// See GH-3725
+
+			using var session = OpenSession();
+			using var transaction = session.BeginTransaction();
+
+			// Execute queries that don't add to the batch
+			_ = await (session.Query<VerySimple>().FirstOrDefaultAsync());
+
+			// Prepare a new command which triggers ExecuteBatch on any existing batch
+			// If the previous command didn't add anything to the batch, this would fail
+			// before the fix with InvalidOperationException
+			_ = await (session.Query<VerySimple>().FirstOrDefaultAsync());
+
+			// Test passes if no exception is thrown
+			await (transaction.CommitAsync());
+		}
+
+		[Test]
+		[Description("Flush with no pending operations should handle empty batch correctly.")]
+		public async Task FlushEmptyBatchShouldNotThrowExceptionAsync()
+		{
+			using var session = OpenSession();
+			using var transaction = session.BeginTransaction();
+
+			// Query without any modifications
+			var count = await (session.Query<VerySimple>().CountAsync());
+			Assert.That(count, Is.GreaterThanOrEqualTo(0));
+
+			// Flush with no pending batch operations should not throw
+			Assert.DoesNotThrowAsync(() => session.FlushAsync());
+
+			await (transaction.CommitAsync());
 		}
 	}
 }
