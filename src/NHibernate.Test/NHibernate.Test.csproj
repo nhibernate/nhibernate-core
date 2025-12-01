@@ -52,6 +52,7 @@
     <Compile Remove="**\NHSpecificTest\NH2484\**" />
     <Compile Remove="**\NHSpecificTest\NH2188\**" />
     <Compile Remove="**\NHSpecificTest\NH3121\**" />
+    <Compile Remove="CacheTest\EntityWithLazyFormula.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="log4net" Version="3.0.2" />
