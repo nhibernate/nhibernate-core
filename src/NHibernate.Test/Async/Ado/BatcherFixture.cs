@@ -12,7 +12,6 @@ using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NUnit.Framework;
-using NHibernate.Linq;
 
 namespace NHibernate.Test.Ado
 {
@@ -279,44 +278,54 @@ namespace NHibernate.Test.Ado
 		}
 
 		[Test]
-		[Description("The batcher should handle empty batch execution without throwing exceptions.")]
-		public async Task EmptyBatchShouldNotThrowExceptionAsync()
+		[Description("Inserting exactly BatchSize entities should not throw on commit. See GH-3725.")]
+		public async Task InsertExactlyBatchSizeEntitiesShouldNotThrowOnCommitAsync()
 		{
-			// This test verifies that batchers handle empty batches correctly
-			// DbBatchBatcher had a bug where ExecuteBatch was called on an empty batch,
-			// causing InvalidOperationException: CommandText property has not been initialized
-			// See GH-3725
+			// This test verifies that DbBatchBatcher handles empty batches correctly.
+			// The bug (GH-3725): When inserting exactly BatchSize entities, the batch auto-executes
+			// when full (via ExecuteBatchWithTiming), which clears _currentBatch but NOT _batchCommand.
+			// On commit, ExecuteBatch() is called, sees _batchCommand is set, and calls DoExecuteBatch
+			// on an empty _currentBatch, causing InvalidOperationException.
 
-			using var session = OpenSession();
-			using var transaction = session.BeginTransaction();
+			// BatchSize is configured as 10 in this fixture
+			const int batchSize = 10;
 
-			// Execute queries that don't add to the batch
-			_ = await (session.Query<VerySimple>().FirstOrDefaultAsync());
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				// Insert exactly BatchSize entities - this fills the batch and triggers auto-execution
+				for (int i = 0; i < batchSize; i++)
+				{
+					await (session.SaveAsync(new VerySimple { Id = 1000 + i, Name = $"Test{i}", Weight = i * 1.1 }));
+				}
 
-			// Prepare a new command which triggers ExecuteBatch on any existing batch
-			// If the previous command didn't add anything to the batch, this would fail
-			// before the fix with InvalidOperationException
-			_ = await (session.Query<VerySimple>().FirstOrDefaultAsync());
+				// Commit triggers ExecuteBatch() which would fail on empty batch without the fix
+				await (transaction.CommitAsync());
+			}
 
-			// Test passes if no exception is thrown
-			await (transaction.CommitAsync());
+			await (CleanupAsync());
 		}
 
 		[Test]
-		[Description("Flush with no pending operations should handle empty batch correctly.")]
-		public async Task FlushEmptyBatchShouldNotThrowExceptionAsync()
+		[Description("Inserting a multiple of BatchSize entities should not throw on commit. See GH-3725.")]
+		public async Task InsertMultipleOfBatchSizeEntitiesShouldNotThrowOnCommitAsync()
 		{
-			using var session = OpenSession();
-			using var transaction = session.BeginTransaction();
+			// Same issue as above but with multiple full batches
+			const int batchSize = 10;
+			const int multiplier = 3;
 
-			// Query without any modifications
-			var count = await (session.Query<VerySimple>().CountAsync());
-			Assert.That(count, Is.GreaterThanOrEqualTo(0));
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				for (int i = 0; i < batchSize * multiplier; i++)
+				{
+					await (session.SaveAsync(new VerySimple { Id = 2000 + i, Name = $"Test{i}", Weight = i * 1.1 }));
+				}
 
-			// Flush with no pending batch operations should not throw
-			Assert.DoesNotThrowAsync(() => session.FlushAsync());
+				await (transaction.CommitAsync());
+			}
 
-			await (transaction.CommitAsync());
+			await (CleanupAsync());
 		}
 	}
 }
