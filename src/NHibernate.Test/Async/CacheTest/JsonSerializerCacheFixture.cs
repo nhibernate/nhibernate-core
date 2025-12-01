@@ -30,7 +30,8 @@ namespace NHibernate.Test.CacheTest
 		protected override string[] Mappings => new[]
 		{
 			"CacheTest.ReadOnly.hbm.xml",
-			"CacheTest.ReadWrite.hbm.xml"
+			"CacheTest.ReadWrite.hbm.xml",
+			"CacheTest.NonStrictReadWrite.hbm.xml"
 		};
 
 		protected override string MappingsAssembly => "NHibernate.Test";
@@ -46,7 +47,7 @@ namespace NHibernate.Test.CacheTest
 			serializer.RegisterType(typeof(Tuple<string, object>), "tso");
 			CoreDistributedCacheProvider.DefaultSerializer = serializer;
 		}
-
+		
 		protected override void OnSetUp()
 		{
 			using (var s = Sfi.OpenSession())
@@ -55,34 +56,25 @@ namespace NHibernate.Test.CacheTest
 				var totalItems = 6;
 				for (var i = 1; i <= totalItems; i++)
 				{
-					var parent = new ReadOnly
-					{
-						Name = $"Name{i}"
-					};
+					var parent = new ReadOnly { Name = $"Name{i}" };
 					for (var j = 1; j <= totalItems; j++)
 					{
-						var child = new ReadOnlyItem
-						{
-							Parent = parent
-						};
-						parent.Items.Add(child);
+						parent.Items.Add(new ReadOnlyItem { Parent = parent });
 					}
 					s.Save(parent);
 				}
 				for (var i = 1; i <= totalItems; i++)
 				{
-					var parent = new ReadWrite
-					{
-						Name = $"Name{i}"
-					};
+					var parent = new ReadWrite { Name = $"Name{i}" };
 					for (var j = 1; j <= totalItems; j++)
 					{
-						var child = new ReadWriteItem
-						{
-							Parent = parent
-						};
-						parent.Items.Add(child);
+						parent.Items.Add(new ReadWriteItem { Parent = parent });
 					}
+					s.Save(parent);
+				}
+				for (var i = 1; i <= totalItems; i++)
+				{
+					var parent = new NonStrictReadWrite() { Name = $"Name{i}" };
 					s.Save(parent);
 				}
 				tx.Commit();
@@ -98,12 +90,13 @@ namespace NHibernate.Test.CacheTest
 				s.CreateQuery("delete from ReadWriteItem").ExecuteUpdate();
 				s.CreateQuery("delete from ReadOnly").ExecuteUpdate();
 				s.CreateQuery("delete from ReadWrite").ExecuteUpdate();
+				s.CreateQuery("delete from NonStrictReadWrite").ExecuteUpdate();
 				tx.Commit();
 			}
 			// Must rebuild the session factory, CoreDistribted cache being not clearable.
 			RebuildSessionFactory();
 		}
-
+		
 		[Test]
 		public async Task CacheableScalarSqlQueryWithTransformerAsync()
 		{
@@ -531,6 +524,21 @@ namespace NHibernate.Test.CacheTest
 			Assert.That(Sfi.Statistics.QueryCachePutCount, Is.EqualTo(0), "Unexpected cache put count");
 			Assert.That(Sfi.Statistics.QueryCacheMissCount, Is.EqualTo(0), "Unexpected cache miss count");
 			Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(future ? 2 : 1), "Unexpected cache hit count");
+		}
+		
+		[Test]
+		public async Task LazyFormulaTestAsync()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var l = await (s.Query<NonStrictReadWrite>().ToListAsync());
+				foreach (var item in l)
+				{
+					Assert.AreEqual(item.Id, item.Count);
+				}
+				await (t.CommitAsync());
+			}
 		}
 	}
 }
