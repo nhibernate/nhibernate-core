@@ -535,7 +535,9 @@ namespace NHibernate.Test.CacheTest
 				var l = await (s.Query<NonStrictReadWrite>().ToListAsync());
 				foreach (var item in l)
 				{
-					Assert.AreEqual(item.Id, item.Count);
+					// The lazy formula will puke if equality is not correct (due to comparison of deserialized
+					// UnfetchedLazyProperty vs LazyPropertyInitializer.UnfetchedProperty
+					Assert.AreEqual(1, item.Count);
 				}
 				await (t.CommitAsync());
 			}
