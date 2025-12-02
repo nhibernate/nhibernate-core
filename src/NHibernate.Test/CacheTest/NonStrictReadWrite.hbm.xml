@@ -9,7 +9,7 @@
       <generator class="native"/>
     </id>
     <property name="Name" />
-    <property name="Count" formula="(select Id)" lazy="true"/>
+    <property name="Count" formula="(select count(*) from NonStrictReadWrite x where x.Id = Id)" lazy="true"/>
   </class>
 
 </hibernate-mapping>
