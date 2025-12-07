@@ -39,11 +39,13 @@ namespace NHibernate.Test.Ado
 			get { return new[] { "Ado.VerySimple.hbm.xml", "Ado.AlmostSimple.hbm.xml" }; }
 		}
 
+		private const int BatchSize = 10;
+
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Environment.FormatSql, "true");
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
-			configuration.SetProperty(Environment.BatchSize, "10");
+			configuration.SetProperty(Environment.BatchSize, BatchSize.ToString());
 			#if NET6_0_OR_GREATER
 			if (_useDbBatch)
 			{
@@ -287,19 +289,18 @@ namespace NHibernate.Test.Ado
 			// On commit, ExecuteBatch() is called, sees _batchCommand is set, and calls DoExecuteBatch
 			// on an empty _currentBatch, causing InvalidOperationException.
 
-			// BatchSize is configured as 10 in this fixture
-			const int batchSize = 10;
-
 			using (var session = OpenSession())
 			using (var transaction = session.BeginTransaction())
 			{
-				// Insert exactly BatchSize entities - this fills the batch and triggers auto-execution
-				for (int i = 0; i < batchSize; i++)
+				// Insert exactly BatchSize entities - this fills the batch and triggers auto-execution.
+				for (int i = 0; i < BatchSize; i++)
 				{
 					await (session.SaveAsync(new VerySimple { Id = 1000 + i, Name = $"Test{i}", Weight = i * 1.1 }));
 				}
 
-				// Commit triggers ExecuteBatch() which would fail on empty batch without the fix
+				// Commit triggers ExecuteBatch() which would fail on empty batch without the fix,
+				// depending on the driver. It fails with Microsoft.Data.SqlClient by example, not with
+				// System.Data.SqlClient.
 				await (transaction.CommitAsync());
 			}
 
