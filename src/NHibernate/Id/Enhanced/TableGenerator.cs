@@ -1,14 +1,12 @@
-﻿using System;
-using System.Data.Common;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Runtime.CompilerServices;
+using System.Data.Common;
+using NHibernate.AdoNet.Util;
 using NHibernate.Engine;
-using NHibernate.Mapping;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.SqlCommand;
-using NHibernate.AdoNet.Util;
 
 namespace NHibernate.Id.Enhanced
 {
@@ -387,23 +385,25 @@ namespace NHibernate.Id.Enhanced
 			}
 		}
 
-		private partial class TableAccessCallback : IAccessCallback
+		private partial class TableAccessCallback : IMultiTenantAccessCallback
 		{
-			private TableGenerator owner;
-			private readonly ISessionImplementor session;
+			private TableGenerator _owner;
+			private readonly ISessionImplementor _session;
 
 			public TableAccessCallback(ISessionImplementor session, TableGenerator owner)
 			{
-				this.session = session;
-				this.owner = owner;
+				_session = session;
+				_owner = owner;
 			}
 
 			#region IAccessCallback Members
 
 			public long GetNextValue()
 			{
-				return Convert.ToInt64(owner.DoWorkInNewTransaction(session));
+				return Convert.ToInt64(_owner.DoWorkInNewTransaction(_session));
 			}
+
+			public string GetTenantIdentifier() => _session.GetTenantIdentifier();
 
 			#endregion
 		}

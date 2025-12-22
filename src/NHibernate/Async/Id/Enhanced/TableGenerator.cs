@@ -9,16 +9,14 @@
 
 
 using System;
-using System.Data.Common;
 using System.Collections.Generic;
 using System.Data;
-using System.Runtime.CompilerServices;
+using System.Data.Common;
+using NHibernate.AdoNet.Util;
 using NHibernate.Engine;
-using NHibernate.Mapping;
+using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Util;
-using NHibernate.SqlCommand;
-using NHibernate.AdoNet.Util;
 
 namespace NHibernate.Id.Enhanced
 {
@@ -36,7 +34,7 @@ namespace NHibernate.Id.Enhanced
 			}
 		}
 
-		private partial class TableAccessCallback : IAccessCallback
+		private partial class TableAccessCallback : IMultiTenantAccessCallback
 		{
 
 			#region IAccessCallback Members
@@ -44,7 +42,7 @@ namespace NHibernate.Id.Enhanced
 			public async Task<long> GetNextValueAsync(CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				return Convert.ToInt64(await (owner.DoWorkInNewTransactionAsync(session, cancellationToken)).ConfigureAwait(false));
+				return Convert.ToInt64(await (_owner.DoWorkInNewTransactionAsync(_session, cancellationToken)).ConfigureAwait(false));
 			}
 
 			#endregion

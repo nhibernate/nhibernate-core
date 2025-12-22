@@ -1,5 +1,5 @@
-﻿using NUnit.Framework;
-using NHibernate.Id.Enhanced;
+﻿using NHibernate.Id.Enhanced;
+using NUnit.Framework;
 
 namespace NHibernate.Test.IdGen.Enhanced
 {

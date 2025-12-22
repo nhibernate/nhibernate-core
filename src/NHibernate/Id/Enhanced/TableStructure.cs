@@ -163,7 +163,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: TableAccessCallback
 
-		private partial class TableAccessCallback : IAccessCallback
+		private partial class TableAccessCallback : IMultiTenantAccessCallback
 		{
 			private readonly TableStructure _owner;
 			private readonly ISessionImplementor _session;
@@ -180,6 +180,8 @@ namespace NHibernate.Id.Enhanced
 			{
 				return Convert.ToInt64(_owner.DoWorkInNewTransaction(_session));
 			}
+
+			public string GetTenantIdentifier() => _session.GetTenantIdentifier();
 
 			#endregion
 		}

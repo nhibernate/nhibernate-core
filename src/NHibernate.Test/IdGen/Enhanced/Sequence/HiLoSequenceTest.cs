@@ -1,12 +1,17 @@
 using System.Collections;
 using NUnit.Framework;
 using NHibernate.Id.Enhanced;
+using NHibernate.Test.MultiTenancy;
 
 namespace NHibernate.Test.IdGen.Enhanced.Sequence
 {
-	[TestFixture]
-	public class HiLoSequenceTest : TestCase
+	[TestFixture(null)]
+	[TestFixture("test")]
+	public class HiLoSequenceTest : TestCaseWithMultiTenancy
 	{
+		public HiLoSequenceTest(string tenantIdentifier) : base(tenantIdentifier)
+		{
+		}
 		protected override string[] Mappings
 		{
 			get { return new[] { "IdGen.Enhanced.Sequence.HiLo.hbm.xml" }; }
@@ -40,18 +45,30 @@ namespace NHibernate.Test.IdGen.Enhanced.Sequence
 						entities[i] = new Entity("" + (i + 1));
 						session.Save(entities[i]);
 						Assert.That(generator.DatabaseStructure.TimesAccessed, Is.EqualTo(1)); // initialization
-						Assert.That(optimizer.LastSourceValue, Is.EqualTo(1)); // initialization
-						Assert.That(optimizer.LastValue, Is.EqualTo(i + 1));
-						Assert.That(optimizer.HiValue, Is.EqualTo(increment + 1));
+						if (TenantIdentifier == null)
+						{
+							Assert.That(optimizer.LastSourceValue, Is.EqualTo(1)); // initialization
+							Assert.That(optimizer.LastValue, Is.EqualTo(i + 1));
+							Assert.That(optimizer.HiValue, Is.EqualTo(increment + 1));
+						}
+						Assert.That(optimizer.GetLastSourceValue(TenantIdentifier), Is.EqualTo(1)); // initialization
+						Assert.That(optimizer.GetLastValue(TenantIdentifier), Is.EqualTo(i + 1));
+						Assert.That(optimizer.GetHiValue(TenantIdentifier), Is.EqualTo(increment + 1));
 					}
 
 					// now force a "clock over"
 					entities[increment] = new Entity("" + increment);
 					session.Save(entities[increment]);
 					Assert.That(generator.DatabaseStructure.TimesAccessed, Is.EqualTo(2));
-					Assert.That(optimizer.LastSourceValue, Is.EqualTo(2));
-					Assert.That(optimizer.LastValue, Is.EqualTo(increment + 1));
-					Assert.That(optimizer.HiValue, Is.EqualTo(increment * 2 + 1));
+					if (TenantIdentifier == null)
+					{
+						Assert.That(optimizer.LastSourceValue, Is.EqualTo(2));
+						Assert.That(optimizer.LastValue, Is.EqualTo(increment + 1));
+						Assert.That(optimizer.HiValue, Is.EqualTo(increment * 2 + 1));
+					}
+					Assert.That(optimizer.GetLastSourceValue(TenantIdentifier), Is.EqualTo(2));
+					Assert.That(optimizer.GetLastValue(TenantIdentifier), Is.EqualTo(increment + 1));
+					Assert.That(optimizer.GetHiValue(TenantIdentifier), Is.EqualTo(increment * 2 + 1));
 
 					transaction.Commit();
 				}
