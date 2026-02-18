@@ -14,12 +14,14 @@ using NHibernate.Engine.Query.Sql;
 using NHibernate.Event;
 using NHibernate.Exceptions;
 using NHibernate.Hql;
+using NHibernate.Intercept;
 using NHibernate.Linq;
 using NHibernate.Loader.Custom;
 using NHibernate.Loader.Custom.Sql;
 using NHibernate.Multi;
 using NHibernate.MultiTenancy;
 using NHibernate.Persister.Entity;
+using NHibernate.Proxy;
 using NHibernate.Transaction;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -334,7 +336,28 @@ namespace NHibernate.Impl
 		//Since 5.2
 		[Obsolete("Replaced by FutureBatch")]
 		public abstract FutureQueryBatch FutureQueryBatch { get; protected internal set; }
-	
+
+		protected private static string TryGetProxyEntityName(ref object entity)
+		{
+			if (entity is INHibernateProxy proxy)
+			{
+				// In case of inheritance proxy EntityName can represent base entity,
+				// So if entity is initialized try to detect actual EntityName
+				if (proxy.HibernateLazyInitializer.IsUninitialized)
+					return proxy.HibernateLazyInitializer.EntityName;
+
+				entity = proxy.HibernateLazyInitializer.GetImplementation();
+			}
+
+			if (entity is IFieldInterceptorAccessor interceptorAccessor && interceptorAccessor.FieldInterceptor != null)
+			{
+				// NH: support of field-interceptor-proxy
+				return interceptorAccessor.FieldInterceptor.EntityName;
+			}
+
+			return null;
+		}
+
 		public virtual IQueryBatch FutureBatch
 			=>_futureMultiBatch ?? (_futureMultiBatch = new QueryBatch(this, true));
 
