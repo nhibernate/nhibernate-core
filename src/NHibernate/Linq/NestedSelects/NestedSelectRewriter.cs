@@ -34,51 +34,11 @@ namespace NHibernate.Linq.NestedSelects
 			if (!nsqmv.HasSubqueries)
 				return;
 
-			var elementExpression = new List<ExpressionHolder>();
-			var group = Expression.Parameter(typeof (IGrouping<Tuple, Tuple>), "g");
-			
-			var replacements = new Dictionary<Expression, Expression>();
-			foreach (var expression in nsqmv.Expressions)
-			{
-				var processed = ProcessExpression(queryModel, sessionFactory, expression, elementExpression, group);
-				if (processed != null)
-					replacements.Add(expression, processed);
-			}
-
-			if (!replacements.Any())
-				return;
-
-			var key = Expression.Property(group, IGroupingKeyProperty);
-
-			var expressions = new List<ExpressionHolder>();
-
-			var identifier = GetIdentifier(sessionFactory, new QuerySourceReferenceExpression(queryModel.MainFromClause));
-
-			var rewriter = new SelectClauseRewriter(key, expressions, identifier, replacements);
-
-			var resultSelector = rewriter.Visit(queryModel.SelectClause.Selector);
-
-			elementExpression.AddRange(expressions);
-
-			var keySelector = CreateSelector(elementExpression, 0);
-
-			var elementSelector = CreateSelector(elementExpression, 1);
-			
-			var input = Expression.Parameter(typeof (IEnumerable<object>), "input");
-
-			var lambda = Expression.Lambda(
-				Expression.Call(GroupByMethod,
-								Expression.Call(CastMethod, input),
-								keySelector,
-								elementSelector),
-				input);
-
-			queryModel.ResultOperators.Add(new ClientSideSelect2(lambda));
-			queryModel.ResultOperators.Add(new ClientSideSelect(Expression.Lambda(resultSelector, @group)));
-
-			var initializers = elementExpression.Select(e => ConvertToObject(e.Expression));
-
-			queryModel.SelectClause.Selector = Expression.NewArrayInit(typeof (object), initializers);
+			var rewriter = new NestedSelectClauseRewriter(sessionFactory, queryModel);
+			var expression = rewriter.Start();
+			var initializers = rewriter.Expressions.Select(ConvertToObject);
+			queryModel.ResultOperators.Add(new ClientSideSelect2((LambdaExpression) expression));
+			queryModel.SelectClause.Selector = Expression.NewArrayInit(typeof(object), initializers);
 		}
 
 		private static Expression ProcessExpression(QueryModel queryModel, ISessionFactory sessionFactory, Expression expression, List<ExpressionHolder> elementExpression, ParameterExpression @group)

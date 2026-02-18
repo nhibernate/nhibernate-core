@@ -18,6 +18,7 @@ TestResult.xml
 .idea/
 .vs/
 /build-common/NHibernate.dev.props
+/nupkg/
 /doc/reference/master.xml
 /doc/bin/
 /doc/obj/
