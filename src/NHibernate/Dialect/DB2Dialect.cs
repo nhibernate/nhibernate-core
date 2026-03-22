@@ -10,9 +10,10 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Dialect
 {
 	/// <summary>
-	/// An SQL dialect for DB2.
+	/// An SQL dialect for DB2 for Linux, UNIX and Windows.
 	/// </summary>
 	/// <remarks>
+	/// <para>
 	/// The DB2Dialect defaults the following configuration properties:
 	/// <list type="table">
 	///		<listheader>
@@ -24,6 +25,11 @@ namespace NHibernate.Dialect
 	///			<description><see cref="NHibernate.Driver.DB2Driver" /></description>
 	///		</item>
 	/// </list>
+	/// </para>
+	/// <para>
+	/// Two BD2 engines exist. One for Linux, UNIX and Windows, and another one for the IBM i system
+	/// (formerly OS/400). For this other engine, see <see cref="DB2400Dialect" />.
+	/// </para>
 	/// </remarks>
 	public class DB2Dialect : Dialect
 	{
@@ -297,9 +303,18 @@ namespace NHibernate.Dialect
 
 		public override long TimestampResolutionInTicks => 10L; // Microseconds.
 
+		/// <summary>
+		/// Indicates if the base <see cref="Dialect.ToStringLiteral(string, SqlType)" /> should be used instead
+		/// of the DB2 specific <see cref="ToStringLiteral(string, SqlType)" />.
+		/// </summary>
+		protected virtual bool UseDialectBaseToStringLiteral => false;
+
 		/// <inheritdoc />
 		public override string ToStringLiteral(string value, SqlType type)
 		{
+			if (UseDialectBaseToStringLiteral)
+				return base.ToStringLiteral(value, type);
+
 			if (value == null)
 				throw new System.ArgumentNullException(nameof(value));
 			if (type == null)
