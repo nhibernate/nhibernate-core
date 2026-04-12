@@ -27,7 +27,7 @@ namespace NHibernate.Dialect
 	/// </list>
 	/// </para>
 	/// <para>
-	/// Two BD2 engines exist. One for Linux, UNIX and Windows, and another one for the IBM i system
+	/// Two DB2 engines exist. One for Linux, UNIX and Windows, and another one for the IBM i system
 	/// (formerly OS/400). For this other engine, see <see cref="DB2400Dialect" />.
 	/// </para>
 	/// </remarks>
