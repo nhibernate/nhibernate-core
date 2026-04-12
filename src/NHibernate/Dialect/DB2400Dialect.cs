@@ -75,15 +75,11 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
-		/// <inheritdoc />
-		/// <remarks>The DB2 specific literal formatting is not valid for DB2400, which requires the default handling
-		/// instead. <see href="https://www.ibm.com/docs/en/i/7.6.0?topic=constants-graphic-string#rbafzgraphicconst__title__3" />
+		/// <remarks>
+		/// <see langword="true" /> by default for DB2400, <see cref="DB2Dialect.ToStringLiteral" /> implementation and
+		/// <see href="https://www.ibm.com/docs/en/i/7.6.0?topic=constants-graphic-string#rbafzgraphicconst__title__3" />.
 		/// </remarks>
-		protected override bool UseDialectBaseToStringLiteral => true;
-
 		/// <inheritdoc />
-		/// <remarks><see langword="true" /> by default for DB2400,
-		/// <see href="https://www.ibm.com/docs/en/i/7.6.0?topic=constants-graphic-string#rbafzgraphicconst__title__3" />.</remarks>
 		protected override bool UseNPrefixForUnicodeStrings => true;
 	}
 }

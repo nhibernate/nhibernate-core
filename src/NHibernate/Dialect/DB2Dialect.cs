@@ -303,16 +303,21 @@ namespace NHibernate.Dialect
 
 		public override long TimestampResolutionInTicks => 10L; // Microseconds.
 
-		/// <summary>
-		/// Indicates if the base <see cref="Dialect.ToStringLiteral(string, SqlType)" /> should be used instead
-		/// of the DB2 specific <see cref="ToStringLiteral(string, SqlType)" />.
-		/// </summary>
-		protected virtual bool UseDialectBaseToStringLiteral => false;
+
+		/// <remarks>
+		/// <see langword="false" /> for DB2 for Linux, UNIX and Windows.<br />
+		/// DB2 for Linux, UNIX and Windows supports Unicode string literals with the U&amp; prefix instead.
+		/// </remarks>
+		/// <inheritdoc />
+		protected override bool UseNPrefixForUnicodeStrings => false;
 
 		/// <inheritdoc />
 		public override string ToStringLiteral(string value, SqlType type)
 		{
-			if (UseDialectBaseToStringLiteral)
+			// DB2 for Linux, UNIX and Windows supports Unicode string literals with the U& prefix. However,
+			// DB2 for IBM i (OS/400) does not support it and uses the N prefix, so we need to be able to
+			// yield the default implementation.
+			if (UseNPrefixForUnicodeStrings)
 				return base.ToStringLiteral(value, type);
 
 			if (value == null)
