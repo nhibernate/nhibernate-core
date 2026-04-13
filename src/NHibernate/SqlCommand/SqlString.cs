@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections;
 using NHibernate.SqlCommand.Parser;
 using System.Text.RegularExpressions;
+using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
 {
