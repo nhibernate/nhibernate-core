@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SqlCommandTest
@@ -416,6 +417,45 @@ namespace NHibernate.Test.SqlCommandTest
 		{
 			SqlString sql = SqlString.Parse("select col from table where (col = test) and id in (select id from foo order by bar)");
 			Assert.AreEqual(" from table where (col = test) and id in (select id from foo order by bar)", sql.GetSubselectString().ToString());
+		}
+
+		[Test]
+		public void PartDeduplicatesCommonSeparatorStrings()
+		{
+			// new string(char[]) produces a runtime instance that is NOT interned and NOT
+			// reference-equal to the StringHelper constants — exactly what happens when
+			// NHibernate builds separator strings dynamically via StringBuilder.ToString().
+			var commaSpace = new string(new[] { ',', ' ' });
+			var closedParen = new string(new[] { ')' });
+			var openParen = new string(new[] { '(' });
+			var comma = new string(new[] { ',' });
+
+			// Precondition: these must be distinct instances from the constants
+			Assert.That(ReferenceEquals(commaSpace, StringHelper.CommaSpace), Is.False, "Precondition");
+			Assert.That(ReferenceEquals(closedParen, StringHelper.ClosedParen), Is.False, "Precondition");
+			Assert.That(ReferenceEquals(openParen, StringHelper.OpenParen), Is.False, "Precondition");
+			Assert.That(ReferenceEquals(comma, StringHelper.Comma), Is.False, "Precondition");
+
+			// Sandwiching each separator between two parameters ensures it lands in a
+			// "middle" Part whose Content is returned directly by the enumerator
+			// (no Substring call), enabling reference-equality verification.
+			var sqlCommaSpace = new SqlString(new object[] { Parameter.Placeholder, commaSpace, Parameter.Placeholder });
+			var sqlClosedParen = new SqlString(new object[] { Parameter.Placeholder, closedParen, Parameter.Placeholder });
+			var sqlOpenParen = new SqlString(new object[] { Parameter.Placeholder, openParen, Parameter.Placeholder });
+			var sqlComma = new SqlString(new object[] { Parameter.Placeholder, comma, Parameter.Placeholder });
+
+			Assert.That(ReferenceEquals(sqlCommaSpace.OfType<string>().Single(), StringHelper.CommaSpace), Is.True, "', ' should be deduplicated");
+			Assert.That(ReferenceEquals(sqlClosedParen.OfType<string>().Single(), StringHelper.ClosedParen), Is.True, "')' should be deduplicated");
+			Assert.That(ReferenceEquals(sqlOpenParen.OfType<string>().Single(), StringHelper.OpenParen), Is.True, "'(' should be deduplicated");
+			Assert.That(ReferenceEquals(sqlComma.OfType<string>().Single(), StringHelper.Comma), Is.True, "',' should be deduplicated");
+		}
+
+		[Test]
+		public void PartPreservesNonSeparatorContent()
+		{
+			const string fragment = "select x from y where z = ";
+			var sql = new SqlString(new object[] { Parameter.Placeholder, fragment, Parameter.Placeholder });
+			Assert.That(sql.OfType<string>().Single(), Is.EqualTo(fragment));
 		}
 
 		[Test]

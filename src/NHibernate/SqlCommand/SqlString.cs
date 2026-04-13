@@ -1064,7 +1064,14 @@ namespace NHibernate.SqlCommand
 			public Part(int sqlIndex, string content)
 			{
 				SqlIndex = sqlIndex;
-				Content = content;
+				Content = content.Length switch
+				{
+					1 when content == StringHelper.ClosedParen => StringHelper.ClosedParen,
+					1 when content == StringHelper.OpenParen   => StringHelper.OpenParen,
+					1 when content == StringHelper.Comma       => StringHelper.Comma,
+					2 when content == StringHelper.CommaSpace  => StringHelper.CommaSpace,
+					_ => content
+				};
 				IsParameter = false;
 			}
 
