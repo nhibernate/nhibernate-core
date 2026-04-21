@@ -532,7 +532,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Tree
 
 		private static string GenerateSuffix(int size, int k)
 		{
-			String suffix = size == 1 ? "" : k.ToString() + '_';
+			String suffix = size == 1 ? "" : StringHelper.GenerateSuffix(k);
 			return suffix;
 		}
 

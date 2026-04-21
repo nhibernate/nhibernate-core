@@ -40,11 +40,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return Get(rs, rs.GetOrdinal(name), session);
-		}
-
 		public override void Set(DbCommand cmd, Object value, int index, ISessionImplementor session)
 		{
 			cmd.Parameters[index].Value = ToCharacter(value);

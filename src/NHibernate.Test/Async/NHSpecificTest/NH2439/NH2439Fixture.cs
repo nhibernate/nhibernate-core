@@ -22,7 +22,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2439
 	{
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(Cfg.Environment.ShowSql, "true");
 		}
 

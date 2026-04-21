@@ -35,7 +35,6 @@ namespace NHibernate.Test.SecondLevelCacheTests
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
 			configuration.Properties[Environment.UseQueryCache] = "true";
 		}

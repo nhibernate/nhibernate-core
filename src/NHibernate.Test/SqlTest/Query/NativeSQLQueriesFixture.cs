@@ -119,7 +119,7 @@ namespace NHibernate.Test.SqlTest.Query
 					.AddJoin("emp", "org.employments")
 					.AddJoin("pers", "emp.employee")
 					.List();
-				Assert.AreEqual(l.Count, 1);
+				Assert.AreEqual(1, l.Count);
 
 				t.Commit();
 			}
@@ -135,7 +135,7 @@ namespace NHibernate.Test.SqlTest.Query
 						.AddJoin("emp", "org.employments")
 						.SetResultTransformer(new DistinctRootEntityResultTransformer())
 						.List();
-				Assert.AreEqual(l.Count, 2);
+				Assert.AreEqual(2, l.Count);
 
 				t.Commit();
 				s.Close();
@@ -172,7 +172,7 @@ namespace NHibernate.Test.SqlTest.Query
 					.AddJoin("pers", "emp.employee")
 					.SetCacheable(true)
 					.List();
-				Assert.AreEqual(l.Count, 1);
+				Assert.AreEqual(1, l.Count);
 
 				t.Commit();
 			}
@@ -189,7 +189,7 @@ namespace NHibernate.Test.SqlTest.Query
 						.SetCacheable(true)
 						.SetResultTransformer(new DistinctRootEntityResultTransformer())
 						.List();
-				Assert.AreEqual(l.Count, 2);
+				Assert.AreEqual(2, l.Count);
 
 				t.Commit();
 				s.Close();
@@ -460,12 +460,12 @@ namespace NHibernate.Test.SqlTest.Query
 			IList l = s.CreateSQLQuery(OrgEmpRegionSQL)
 			           .SetResultSetMapping("org-emp-regionCode")
 			           .List();
-			Assert.AreEqual(l.Count, 2);
+			Assert.AreEqual(2, l.Count);
 
 			l = s.CreateSQLQuery(OrgEmpPersonSQL)
 			     .SetResultSetMapping("org-emp-person")
 			     .List();
-			Assert.AreEqual(l.Count, 1);
+			Assert.AreEqual(1, l.Count);
 
 			t.Commit();
 			s.Close();
@@ -504,12 +504,12 @@ namespace NHibernate.Test.SqlTest.Query
 			IEnumerator iter = s.GetNamedQuery("orgNamesAndOrgs").List().GetEnumerator();
 			iter.MoveNext();
 			object[] o = (object[]) iter.Current;
-			Assert.AreEqual(o[0], "IFA");
-			Assert.AreEqual(((Organization) o[1]).Name, "IFA");
+			Assert.AreEqual("IFA", o[0]);
+			Assert.AreEqual("IFA", ((Organization) o[1]).Name);
 			iter.MoveNext();
 			o = (object[]) iter.Current;
-			Assert.AreEqual(o[0], "JBoss");
-			Assert.AreEqual(((Organization) o[1]).Name, "JBoss");
+			Assert.AreEqual("JBoss", o[0]);
+			Assert.AreEqual("JBoss", ((Organization) o[1]).Name);
 
 			t.Commit();
 			s.Close();
@@ -524,13 +524,13 @@ namespace NHibernate.Test.SqlTest.Query
 			Assert.AreEqual(typeof(Organization), row[0].GetType(), "expecting non-scalar result first");
 			Assert.AreEqual(typeof(string), row[1].GetType(), "expecting scalar result second");
 			Assert.AreEqual("IFA", ((Organization) row[0]).Name);
-			Assert.AreEqual(row[1], "IFA");
+			Assert.AreEqual("IFA", row[1]);
 			iter.MoveNext();
 			row = (object[]) iter.Current;
 			Assert.AreEqual(typeof(Organization), row[0].GetType(), "expecting non-scalar result first");
 			Assert.AreEqual(typeof(string), row[1].GetType(), "expecting scalar result second");
-			Assert.AreEqual(((Organization) row[0]).Name, "JBoss");
-			Assert.AreEqual(row[1], "JBoss");
+			Assert.AreEqual("JBoss", ((Organization) row[0]).Name);
+			Assert.AreEqual("JBoss", row[1]);
 			Assert.IsFalse(iter.MoveNext());
 
 			t.Commit();
@@ -542,11 +542,11 @@ namespace NHibernate.Test.SqlTest.Query
 			iter = s.GetNamedQuery("orgIdsAndOrgNames").List().GetEnumerator();
 			iter.MoveNext();
 			o = (object[]) iter.Current;
-			Assert.AreEqual(o[1], "IFA");
+			Assert.AreEqual("IFA", o[1]);
 			Assert.AreEqual(o[0], idIfa);
 			iter.MoveNext();
 			o = (object[]) iter.Current;
-			Assert.AreEqual(o[1], "JBoss");
+			Assert.AreEqual("JBoss", o[1]);
 			Assert.AreEqual(o[0], idJBoss);
 
 			t.Commit();
@@ -769,7 +769,7 @@ namespace NHibernate.Test.SqlTest.Query
 			IQuery queryWithCollection = s.GetNamedQuery("organizationEmploymentsExplicitAliases");
 			queryWithCollection.SetInt64("id", jboss.Id);
 			list = queryWithCollection.List();
-			Assert.AreEqual(list.Count, 1);
+			Assert.AreEqual(1, list.Count);
 
 			s.Clear();
 
@@ -860,7 +860,7 @@ namespace NHibernate.Test.SqlTest.Query
 			IList l = s.CreateSQLQuery("select name, id, flength, name as scalarName from Speech")
 			           .SetResultSetMapping("speech")
 			           .List();
-			Assert.AreEqual(l.Count, 1);
+			Assert.AreEqual(1, l.Count);
 
 			t.Rollback();
 			s.Close();
@@ -939,7 +939,7 @@ namespace NHibernate.Test.SqlTest.Query
 					.SetResultTransformer(transformer)
 					.Future<object[]>();
 
-				Assert.AreEqual(l.GetEnumerable().Count(), 1);
+				Assert.AreEqual(1, l.GetEnumerable().Count());
 				Assert.AreEqual("Ricardo", l.GetEnumerable().ElementAt(0)[0]);
 				Assert.IsTrue(transformer.TransformListCalled);
 				Assert.IsTrue(transformer.TransformTupleCalled);
@@ -984,7 +984,7 @@ namespace NHibernate.Test.SqlTest.Query
 					.CreateSQLQuery("select Name from Person")
 					.Future<string>();
 
-				Assert.AreEqual(l.GetEnumerable().Count(), 1);
+				Assert.AreEqual(1, l.GetEnumerable().Count());
 				Assert.AreEqual("Ricardo", l.GetEnumerable().ElementAt(0));
 			}
 		}

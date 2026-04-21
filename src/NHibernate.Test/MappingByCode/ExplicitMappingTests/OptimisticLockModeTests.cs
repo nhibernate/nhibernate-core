@@ -26,7 +26,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 				});
 
 			var mappings = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			Assert.AreEqual(mappings.RootClasses[0].optimisticlock, HbmOptimisticLockMode.Dirty);
+			Assert.AreEqual(HbmOptimisticLockMode.Dirty, mappings.RootClasses[0].optimisticlock);
 		}
 	}
 }

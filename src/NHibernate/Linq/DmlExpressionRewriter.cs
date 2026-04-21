@@ -25,10 +25,10 @@ namespace NHibernate.Linq
 				switch (node.BindingType)
 				{
 					case MemberBindingType.Assignment:
-						AddSettersFromAssignment((MemberAssignment)node, subPath);
+						AddSettersFromAssignment((MemberAssignment) node, subPath);
 						break;
 					case MemberBindingType.MemberBinding:
-						AddSettersFromBindings(((MemberMemberBinding)node).Bindings, subPath);
+						AddSettersFromBindings(((MemberMemberBinding) node).Bindings, subPath);
 						break;
 					default:
 						throw new InvalidOperationException($"{node.BindingType} is not supported");
@@ -53,10 +53,10 @@ namespace NHibernate.Linq
 				switch (argument.NodeType)
 				{
 					case ExpressionType.New:
-						AddSettersFromAnonymousConstructor((NewExpression)argument, subPath);
+						AddSettersFromAnonymousConstructor((NewExpression) argument, subPath);
 						break;
 					case ExpressionType.MemberInit:
-						AddSettersFromBindings(((MemberInitExpression)argument).Bindings, subPath);
+						AddSettersFromBindings(((MemberInitExpression) argument).Bindings, subPath);
 						break;
 					default:
 						_assignments.Add(subPath.Substring(1), Expression.Lambda(argument, _parameters));
@@ -121,13 +121,23 @@ namespace NHibernate.Linq
 			if (expression == null)
 				throw new ArgumentNullException(nameof(expression));
 
-			// Anonymous initializations are not implemented as member initialization but as plain constructor call.
-			var newExpression = expression.Body as NewExpression ??
+			// Anonymous initializations are not implemented as member initialization but as plain constructor call, potentially wrapped in a Convert expression
+			var newExpression = UnwrapConvertExpression(expression.Body) as NewExpression ??
 				throw new ArgumentException("The expression must be an anonymous initialization, e.g. x => new { Name = x.Name, Age = x.Age + 5 }");
 
 			var instance = new DmlExpressionRewriter(expression.Parameters);
 			instance.AddSettersFromAnonymousConstructor(newExpression, "");
 			return PrepareExpression<TSource>(sourceExpression, instance._assignments);
+		}
+
+		private static Expression UnwrapConvertExpression(Expression expression)
+		{
+			if (expression is UnaryExpression ue && ue.NodeType == ExpressionType.Convert)
+			{
+				return ue.Operand;
+			}
+
+			return expression;
 		}
 
 		public static Expression PrepareExpression<TSource>(Expression sourceExpression, IReadOnlyDictionary<string, Expression> assignments)

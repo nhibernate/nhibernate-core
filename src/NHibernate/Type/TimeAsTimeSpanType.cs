@@ -17,27 +17,20 @@ namespace NHibernate.Type
 	[Serializable]
 	public partial class TimeAsTimeSpanType : PrimitiveType, IVersionType
 	{
+		private static readonly object ZeroObject = TimeSpan.Zero;
 		private static readonly DateTime BaseDateValue = new DateTime(1753, 01, 01);
 
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
+		/// <summary />
 		public TimeAsTimeSpanType() : base(SqlTypeFactory.Time)
 		{
 		}
 
-		/// <summary>
-		/// Constructor for specifying a time with a scale. Use <see cref="SqlTypeFactory.GetTime"/>.
-		/// </summary>
-		/// <param name="sqlType">The sql type to use for the type.</param>
+		/// <summary />
 		public TimeAsTimeSpanType(TimeSqlType sqlType) : base(sqlType)
 		{
 		}
 
-		public override string Name
-		{
-			get { return "TimeAsTimeSpan"; }
-		}
+		public override string Name => "TimeAsTimeSpan";
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
@@ -58,11 +51,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return Get(rs, rs.GetOrdinal(name), session);
-		}
-
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
 			if (session.Factory.ConnectionProvider.Driver.RequiresTimeSpanForTime)
@@ -71,10 +59,7 @@ namespace NHibernate.Type
 				st.Parameters[index].Value = BaseDateValue.AddTicks(((TimeSpan)value).Ticks);
 		}
 
-		public override System.Type ReturnedClass
-		{
-			get { return typeof(TimeSpan); }
-		}
+		public override System.Type ReturnedClass => typeof(TimeSpan);
 
 		/// <inheritdoc />
 		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
@@ -112,10 +97,7 @@ namespace NHibernate.Type
 			return TimeSpan.Parse(xml);
 		}
 
-		public IComparer Comparator
-		{
-			get { return Comparer<TimeSpan>.Default; }
-		}
+		public IComparer Comparator => Comparer<TimeSpan>.Default;
 
 		#endregion
 
@@ -130,15 +112,9 @@ namespace NHibernate.Type
 			return TimeSpan.Parse(xml);
 		}
 
-		public override System.Type PrimitiveClass
-		{
-			get { return typeof(TimeSpan); }
-		}
+		public override System.Type PrimitiveClass => typeof(TimeSpan);
 
-		public override object DefaultValue
-		{
-			get { return TimeSpan.Zero; }
-		}
+		public override object DefaultValue => ZeroObject;
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{

@@ -92,7 +92,7 @@ namespace NHibernate.Criterion
 		private class ExactMatchMode : MatchMode
 		{
 			/// <summary>
-			/// Initialize a new instance of the <see cref="ExactMatchMode" /> class.
+			/// Initialize a new instance of the <see cref="MatchMode.ExactMatchMode" /> class.
 			/// </summary>
 			public ExactMatchMode() : base(0, "EXACT")
 			{
@@ -115,7 +115,7 @@ namespace NHibernate.Criterion
 		private class StartMatchMode : MatchMode
 		{
 			/// <summary>
-			/// Initialize a new instance of the <see cref="StartMatchMode" /> class.
+			/// Initialize a new instance of the <see cref="MatchMode.StartMatchMode" /> class.
 			/// </summary>
 			public StartMatchMode() : base(1, "START")
 			{
@@ -138,7 +138,7 @@ namespace NHibernate.Criterion
 		private class EndMatchMode : MatchMode
 		{
 			/// <summary>
-			/// Initialize a new instance of the <see cref="EndMatchMode" /> class.
+			/// Initialize a new instance of the <see cref="MatchMode.EndMatchMode" /> class.
 			/// </summary>
 			public EndMatchMode() : base(2, "END")
 			{
@@ -162,7 +162,7 @@ namespace NHibernate.Criterion
 		private class AnywhereMatchMode : MatchMode
 		{
 			/// <summary>
-			/// Initialize a new instance of the <see cref="AnywhereMatchMode" /> class.
+			/// Initialize a new instance of the <see cref="MatchMode.AnywhereMatchMode" /> class.
 			/// </summary>
 			public AnywhereMatchMode() : base(3, "ANYWHERE")
 			{

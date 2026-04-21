@@ -171,7 +171,19 @@ namespace NHibernate.Engine.Query
 				var result = Translators[i].GetEnumerable(queryParameters, session);
 				results[i] = result;
 			}
-			return new JoinedEnumerable(results);
+
+			return Enumerate(results);
+		}
+
+		private static IEnumerable Enumerate(IEnumerable[] enumerables)
+		{
+			foreach (var enumerable in enumerables)
+			{
+				foreach (var o in enumerable)
+				{
+					yield return o;
+				}
+			}
 		}
 
 		public IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session)

@@ -451,6 +451,9 @@ namespace NHibernate.Dialect
 			get { return "create temporary table if not exists"; }
 		}
 
+		/// <inheritdoc />
+		public override string DropTemporaryTableString => "drop temporary table";
+
 		protected virtual void RegisterCastTypes()
 		{
 			// According to the MySql documentation (http://dev.mysql.com/doc/refman/4.1/en/cast-functions.html)

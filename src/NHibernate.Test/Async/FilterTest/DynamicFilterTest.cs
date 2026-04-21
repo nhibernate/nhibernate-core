@@ -108,7 +108,7 @@ namespace NHibernate.Test.FilterTest
 				salespersons = await (session.CreateQuery("select s from Salesperson as s left join fetch s.Orders").ListAsync());
 				Assert.AreEqual(1, salespersons.Count, "Incorrect salesperson count");
 				sp = (Salesperson) salespersons[0];
-				Assert.AreEqual(sp.Orders.Count, 1, "Incorrect order count");
+				Assert.AreEqual(1, sp.Orders.Count, "Incorrect order count");
 			}
 		}
 

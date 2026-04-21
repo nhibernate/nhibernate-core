@@ -43,7 +43,7 @@ namespace NHibernate.Multi
 	}
 
 	/// <summary>
-	/// Create instance via <see cref="LinqBatchItem.Create"/> methods
+	/// Create instance via <see cref="LinqBatchItem.Create{T,TResult}"/> methods
 	/// </summary>
 	/// <typeparam name="T">Result type</typeparam>
 	public partial class LinqBatchItem<T> : QueryBatchItem<T>, ILinqBatchItem

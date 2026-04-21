@@ -25,7 +25,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2318
 	{
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty("linqtohql.generatorsregistry", "NHibernate.Test.NHSpecificTest.NH2318.ExtendedLinqtoHqlGeneratorsRegistry, NHibernate.Test");
 		}
 

@@ -520,7 +520,7 @@ namespace NHibernate.Test.Legacy
 			IQuery q = session.CreateSQLQuery(sql).AddEntity("comp", typeof(Componentizable));
 			IList list = q.List();
 
-			Assert.AreEqual(list.Count, 1);
+			Assert.AreEqual(1, list.Count);
 
 			Componentizable co = (Componentizable) list[0];
 

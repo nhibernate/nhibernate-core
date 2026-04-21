@@ -22,8 +22,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1547
 	{
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
-
 			var driverClass = ReflectHelper.ClassForName(configuration.GetProperty(Cfg.Environment.ConnectionDriver));
 			DriverForSubstitutedCommand.DriverClass = driverClass;
 

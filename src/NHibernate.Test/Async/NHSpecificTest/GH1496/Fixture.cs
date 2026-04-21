@@ -28,7 +28,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1496
 		
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.AppendListeners(ListenerType.PostUpdate, new[] { _auditEventListener });
 		}
 

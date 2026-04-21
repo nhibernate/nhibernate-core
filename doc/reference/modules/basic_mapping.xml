@@ -3919,7 +3919,8 @@
                         <row>
                             <entry><literal>CultureInfo</literal></entry>
                             <entry><literal>System.Globalization.CultureInfo</literal></entry>
-                            <entry><literal>DbType.String</literal> - 5 chars for culture</entry>
+                            <entry><literal>DbType.String</literal> - 5 chars for culture by default;
+                              can be modified by the <literal>length</literal> mapping attribute.</entry>
                             <entry>Default when no <literal>type</literal> attribute specified.</entry>
                         </row>
                         <row>

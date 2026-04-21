@@ -21,11 +21,12 @@ namespace NHibernate.Type
 		// Since v5.0
 		[Obsolete("Use DateTime.MinValue.")]
 		public static readonly DateTime BaseDateValue = DateTime.MinValue;
-		private DateTime customBaseDate = _baseDateValue;
 
 		private static readonly DateTime _baseDateValue = DateTime.MinValue;
 
-		/// <summary>Default constructor</summary>
+		private object customBaseDate = _baseDateValue;
+
+		/// <summary />
 		public DateType() : base(SqlTypeFactory.Date)
 		{
 		}

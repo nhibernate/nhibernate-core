@@ -59,10 +59,10 @@ namespace NHibernate.Test.SqlTest.Custom
 			s = OpenSession();
 			t = s.BeginTransaction();
 			jboss = (Organization)await (s.GetAsync(typeof(Organization), orgId));
-			Assert.AreEqual(jboss.Employments.Count, 2);
+			Assert.AreEqual(2, jboss.Employments.Count);
 			emp = (Employment)GetFirstItem(jboss.Employments);
 			gavin = emp.Employee;
-			Assert.AreEqual(gavin.Name, "GAVIN");
+			Assert.AreEqual("GAVIN", gavin.Name);
 			Assert.AreEqual(s.GetCurrentLockMode(gavin), LockMode.Upgrade);
 			emp.EndDate = DateTime.Today;
 			Employment emp3 = new Employment(gavin, jboss, "US");
@@ -75,7 +75,7 @@ namespace NHibernate.Test.SqlTest.Custom
 			IEnumerator iter = (await (s.GetNamedQuery("allOrganizationsWithEmployees").ListAsync())).GetEnumerator();
 			Assert.IsTrue(iter.MoveNext());
 			Organization o = (Organization)iter.Current;
-			Assert.AreEqual(o.Employments.Count, 3);
+			Assert.AreEqual(3, o.Employments.Count);
 
 			foreach (Employment e in o.Employments)
 			{

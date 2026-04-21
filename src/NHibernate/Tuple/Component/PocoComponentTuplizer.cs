@@ -3,6 +3,7 @@ using NHibernate.Bytecode;
 using NHibernate.Bytecode.Lightweight;
 using NHibernate.Intercept;
 using NHibernate.Properties;
+using NHibernate.Util;
 
 namespace NHibernate.Tuple.Component
 {
@@ -155,12 +156,12 @@ namespace NHibernate.Tuple.Component
 
 		protected internal override IGetter BuildGetter(Mapping.Component component, Mapping.Property prop)
 		{
-			return prop.GetGetter(component.ComponentClass);
+			return prop.GetGetter(component.ComponentClass.UnwrapIfNullable());
 		}
 
 		protected internal override ISetter BuildSetter(Mapping.Component component, Mapping.Property prop)
 		{
-			return prop.GetSetter(component.ComponentClass);
+			return prop.GetSetter(component.ComponentClass.UnwrapIfNullable());
 		}
 
 		protected void SetReflectionOptimizer()

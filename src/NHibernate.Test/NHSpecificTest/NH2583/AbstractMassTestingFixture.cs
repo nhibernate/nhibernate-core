@@ -13,7 +13,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2583
 			public const int BatchSize = 200;
 			protected override void Configure(Configuration configuration)
 			{
-				base.Configure(configuration);
 				configuration.DataBaseIntegration(x => x.BatchSize = BatchSize+5);
 				List<string> cacheSettings = new List<string>(configuration.Properties.Keys.Where(x => x.Contains("cache")));
 				foreach (var cacheSetting in cacheSettings)

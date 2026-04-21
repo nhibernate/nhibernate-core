@@ -17,8 +17,7 @@ namespace NHibernate.Test.ConnectionTest
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(cfg);
-			cfg.SetProperty(Environment.CurrentSessionContextClass, "async_local");
+			configuration.SetProperty(Environment.CurrentSessionContextClass, "async_local");
 		}
 
 		[Test]
@@ -58,9 +57,7 @@ namespace NHibernate.Test.ConnectionTest
 			Assert.That(
 				Sfi.GetCurrentSession(),
 				Is.EqualTo(session),
-				"{0} {1} instead of {2}.", message,
-				Sfi.GetCurrentSession().GetSessionImplementation().SessionId,
-				session.GetSessionImplementation().SessionId);
+				$"{message} {Sfi.GetCurrentSession().GetSessionImplementation().SessionId} instead of {session.GetSessionImplementation().SessionId}.");
 		}
 	}
 }

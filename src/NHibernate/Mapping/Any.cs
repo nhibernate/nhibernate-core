@@ -72,7 +72,13 @@ namespace NHibernate.Mapping
 			_type = GetLazyType();
 		}
 
+		// Since v5.6
+		[Obsolete("This method is not used and will be removed in a future version")]
 		public override void SetTypeUsingReflection(string className, string propertyName, string access)
+		{
+		}
+
+		public override void SetTypeUsingReflection(System.Type propertyOwnerType, string propertyName, string access)
 		{
 		}
 

@@ -449,7 +449,7 @@ namespace NHibernate.Tuple.Entity
 				for (var i = 0; i < componentType.PropertyNames.Length; i++)
 				{
 					MapIdentifierPropertyTypes(
-						!string.IsNullOrEmpty(path) ? $"{path}.{componentType.PropertyNames[i]}" : componentType.PropertyNames[i],
+						!string.IsNullOrEmpty(path) ? string.Intern($"{path}.{componentType.PropertyNames[i]}") : componentType.PropertyNames[i],
 						componentType.Subtypes[i]);
 				}
 			}

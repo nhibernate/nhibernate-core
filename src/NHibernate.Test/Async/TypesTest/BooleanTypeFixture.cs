@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Type;

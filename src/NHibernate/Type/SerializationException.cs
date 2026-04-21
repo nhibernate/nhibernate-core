@@ -49,6 +49,8 @@ namespace NHibernate.Type
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		protected SerializationException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}

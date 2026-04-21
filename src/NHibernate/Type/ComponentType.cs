@@ -156,14 +156,6 @@ namespace NHibernate.Type
 			{
 				return false;
 			}
-			/* 
-			 * NH Different behavior : we don't use the shortcut because NH-1101 
-			 * let the tuplizer choose how cosiderer properties when the component is null.
-			 */
-			if (EntityMode != EntityMode.Poco && (x == null || y == null))
-			{
-				return true;
-			}
 			object[] xvalues = GetPropertyValues(x);
 			object[] yvalues = GetPropertyValues(y);
 			for (int i = 0; i < xvalues.Length; i++)
@@ -181,14 +173,6 @@ namespace NHibernate.Type
 			if (x == y)
 			{
 				return false;
-			}
-			/* 
-			 * NH Different behavior : we don't use the shortcut because NH-1101 
-			 * let the tuplizer choose how cosiderer properties when the component is null.
-			 */
-			if (EntityMode != EntityMode.Poco && (x == null || y == null))
-			{
-				return true;
 			}
 			object[] xvalues = GetPropertyValues(x);
 			object[] yvalues = GetPropertyValues(y);

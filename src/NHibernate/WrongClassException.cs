@@ -69,12 +69,15 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		protected WrongClassException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			entityName = info.GetValue("entityName", typeof(string)) as string;
 			identifier = info.GetValue("identifier", typeof(object));
 		}
 
+#pragma warning disable CS0809
 		/// <summary>
 		/// Sets the serialization info for <see cref="WrongClassException"/> after 
 		/// getting the info from the base Exception.
@@ -86,6 +89,8 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
@@ -93,6 +98,7 @@ namespace NHibernate
 			info.AddValue("entityName", entityName, typeof(string));
 			info.AddValue("identifier", identifier, typeof(object));
 		}
+#pragma warning restore CS0809
 
 		#endregion
 	}

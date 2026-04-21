@@ -37,7 +37,7 @@ namespace NHibernate.Tuple.Entity
 				return base.CreateInstance();
 			}
 
-			var entity = _proxyFactory.GetFieldInterceptionProxy(base.CreateInstance);
+			var entity = ProxyFactoryExtensions.GetFieldInterceptionProxy(_proxyFactory, base.CreateInstance);
 			_entityMetamodel.BytecodeEnhancementMetadata.InjectInterceptor(entity, null);
 			return entity;
 		}

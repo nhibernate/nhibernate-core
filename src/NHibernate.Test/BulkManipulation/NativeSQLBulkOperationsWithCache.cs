@@ -22,9 +22,9 @@ namespace NHibernate.Test.BulkManipulation
 
 		protected override void Configure(Configuration configuration)
 		{
-			cfg.SetProperty(Environment.UseQueryCache, "true");
-			cfg.SetProperty(Environment.UseSecondLevelCache, "true");
-			cfg.SetProperty(Environment.CacheProvider, typeof(SubstituteCacheProvider).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.UseQueryCache, "true");
+			configuration.SetProperty(Environment.UseSecondLevelCache, "true");
+			configuration.SetProperty(Environment.CacheProvider, typeof(SubstituteCacheProvider).AssemblyQualifiedName);
 		}
 
 		[Test]

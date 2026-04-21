@@ -36,18 +36,23 @@ namespace NHibernate
 
 		#region Serialization
 
-		public InvalidProxyTypeException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
+		public InvalidProxyTypeException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
-			Errors = (ICollection<string>)info.GetValue("errors", typeof(ICollection));
+			Errors = (ICollection<string>) info.GetValue("errors", typeof(ICollection));
 		}
 
+#pragma warning disable CS0809
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
 			info.AddValue("errors", Errors, typeof (ICollection));
 		}
+#pragma warning restore CS0809
 
 		#endregion
 	}

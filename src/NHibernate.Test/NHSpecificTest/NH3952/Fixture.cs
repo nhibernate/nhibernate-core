@@ -160,16 +160,14 @@ namespace NHibernate.Test.NHSpecificTest.NH3952
 			}
 			swEnHlp.Stop();
 
-			Assert.Pass(@"Blunt perf timings:
-Cached method: {0}
-Cached method definition + make gen: {1}
-Hazzik GetMethod: {5}
-Hazzik GetMethodDefinition + make gen: {6}
-ReflectHelper.GetMethod: {2}
-ReflectHelper.GetMethodDefinition + make gen: {3}
-EnumerableHelper.GetMethod(generic overload): {4}",
-				swCached.Elapsed, swCachedDef.Elapsed, swRefl.Elapsed, swReflDef.Elapsed, swEnHlp.Elapsed,
-				swRefl2.Elapsed, swRefl2Def.Elapsed);
+			Assert.Pass($@"Blunt perf timings:
+Cached method: {swCached.Elapsed}
+Cached method definition + make gen: {swCachedDef.Elapsed}
+Hazzik GetMethod: {swRefl2.Elapsed}
+Hazzik GetMethodDefinition + make gen: {swRefl2Def.Elapsed}
+ReflectHelper.GetMethod: {swRefl.Elapsed}
+ReflectHelper.GetMethodDefinition + make gen: {swReflDef.Elapsed}
+EnumerableHelper.GetMethod(generic overload): {swEnHlp.Elapsed}");
 		}
 
 		public static MethodInfo GetMethod2<T, TResult>(Func<T, TResult> func, T arg1)

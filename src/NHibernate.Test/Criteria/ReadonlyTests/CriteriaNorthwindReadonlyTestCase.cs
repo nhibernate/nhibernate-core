@@ -32,7 +32,8 @@ namespace NHibernate.Test.Criteria.ReadonlyTests
 					"Northwind.Mappings.User.hbm.xml",
 					"Northwind.Mappings.TimeSheet.hbm.xml",
 					"Northwind.Mappings.Animal.hbm.xml",
-					"Northwind.Mappings.Patient.hbm.xml"
+					"Northwind.Mappings.Patient.hbm.xml",
+					"Northwind.Mappings.CompositeIdEntity.hbm.xml"
 				};
 			}
 		}

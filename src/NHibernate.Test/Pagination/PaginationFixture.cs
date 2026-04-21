@@ -23,7 +23,7 @@ namespace NHibernate.Test.Pagination
 
 		protected override void Configure(Configuration configuration)
 		{
-			cfg.SetProperty(Environment.DefaultBatchFetchSize, "20");
+			configuration.SetProperty(Environment.DefaultBatchFetchSize, "20");
 		}
 
 		[Test]

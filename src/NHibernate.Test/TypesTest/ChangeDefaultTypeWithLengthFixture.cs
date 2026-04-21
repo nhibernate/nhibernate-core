@@ -46,7 +46,6 @@ namespace NHibernate.Test.TypesTest
 				_testDefaultStringType,
 				new[] {"string"},
 				length => new CustomStringType(length));
-			base.Configure(configuration);
 		}
 
 		protected override void DropSchema()

@@ -20,7 +20,7 @@ namespace NHibernate.Test.MappingByCode.IntegrationTests.NH3110
 			var mapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
 
 			var entity = mapping.RootClasses[0];
-			Assert.AreEqual(entity.polymorphism, HbmPolymorphismType.Explicit);
+			Assert.AreEqual(HbmPolymorphismType.Explicit, entity.polymorphism);
 		}
 	}
 }

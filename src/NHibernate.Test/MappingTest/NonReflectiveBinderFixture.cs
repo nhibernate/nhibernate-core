@@ -53,7 +53,7 @@ namespace NHibernate.Test.MappingTest
 			{
 				var ma = element.MetaAttributes;
 				Assert.That(ma, Is.Not.Null);
-				Assert.That(element.GetMetaAttribute("global"), Is.Not.Null,"inherited attribute missing for prop {0}",element.Name);
+				Assert.That(element.GetMetaAttribute("global"), Is.Not.Null, $"inherited attribute missing for prop {element.Name}");
 				MetaAttribute metaAttribute2 = element.GetMetaAttribute("implements");
 				Assert.That(metaAttribute2, Is.Not.Null);
 				Assert.That(element.GetMetaAttribute("globalnoinherit"), Is.Null);

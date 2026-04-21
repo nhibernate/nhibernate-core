@@ -43,11 +43,6 @@ namespace NHibernate.Type
 			return GetBooleanAsObject(Convert.ToBoolean(rs[index]));
 		}
 
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		{
-			return GetBooleanAsObject(Convert.ToBoolean(rs[name]));
-		}
-
 		public override System.Type PrimitiveClass => typeof(bool);
 
 		public override System.Type ReturnedClass => typeof(bool);

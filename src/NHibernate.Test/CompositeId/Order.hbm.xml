@@ -43,6 +43,11 @@
     		insert="false"
 			update="false" 
 			not-null="true"/>
+
+      <many-to-one name="Shipper" fetch="select">
+        <column name="ShipperId" not-null="false"/>
+        <column name="WarehouseId" />
+      </many-to-one>
 			
     	<bag name="LineItems"
     		fetch="join" 

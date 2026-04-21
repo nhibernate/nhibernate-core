@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -86,7 +87,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 
 				Assert.That(parent.Children, Has.Count.EqualTo(1));
 				Assert.That(parent.Children, Does.Contain(child));
-				Assert.That(parent.Children.Single().Id, Is.Not.EqualTo(0));
+				Assert.That(parent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty));
 			}
 		}
 
@@ -104,7 +105,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 
 				Assert.That(parent.Children, Has.Count.EqualTo(1));
 				Assert.That(parent.Children, Does.Contain(child));
-				Assert.That(parent.Children.Single().Id, Is.Not.EqualTo(0));
+				Assert.That(parent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty));
 			}
 		}
 
@@ -132,7 +133,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(1));
 				// Merge should duplicate child and leave original instance un-associated with the session.
 				Assert.That(parent.Children, Does.Not.Contain(child));
-				Assert.That(parent.Children.Single().Id, Is.Not.EqualTo(0));
+				Assert.That(parent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty));
 			}
 		}
 
@@ -153,7 +154,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(1));
 				// Merge should duplicate child and leave original instance un-associated with the session.
 				Assert.That(parent.Children, Does.Not.Contain(child));
-				Assert.That(parent.Children.Single().Id, Is.Not.EqualTo(0));
+				Assert.That(parent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty));
 			}
 		}
 
@@ -179,7 +180,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0));
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
 				Assert.That(nextParent.Children, Does.Contain(child));
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty));
 			}
 
 			using (var session = OpenSession())
@@ -192,7 +193,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
 				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty), "Reloaded data");
 			}
 		}
 
@@ -215,7 +216,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0));
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
 				Assert.That(nextParent.Children, Does.Contain(child));
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty));
 			}
 
 			using (var session = OpenSession())
@@ -228,7 +229,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
 				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty), "Reloaded data");
 			}
 		}
 
@@ -254,7 +255,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0));
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
 				Assert.That(nextParent.Children, Does.Contain(child));
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty));
 			}
 
 			using (var session = OpenSession())
@@ -267,7 +268,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
 				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty), "Reloaded data");
 			}
 		}
 
@@ -290,7 +291,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0));
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
 				Assert.That(nextParent.Children, Does.Contain(child));
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty));
 			}
 
 			using (var session = OpenSession())
@@ -303,7 +304,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
 				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty), "Reloaded data");
 			}
 		}
 
@@ -329,7 +330,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0));
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
 				Assert.That(nextParent.Children, Does.Contain(child));
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty));
 			}
 
 			using (var session = OpenSession())
@@ -342,7 +343,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
 				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty), "Reloaded data");
 			}
 		}
 
@@ -365,7 +366,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0));
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
 				Assert.That(nextParent.Children, Does.Contain(child));
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty));
 			}
 
 			using (var session = OpenSession())
@@ -378,7 +379,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
 				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty), "Reloaded data");
 			}
 		}
 
@@ -404,7 +405,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0));
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
 				Assert.That(nextParent.Children, Does.Contain(child));
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty));
 			}
 
 			using (var session = OpenSession())
@@ -417,7 +418,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
 				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty), "Reloaded data");
 			}
 		}
 
@@ -440,7 +441,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0));
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1));
 				Assert.That(nextParent.Children, Does.Contain(child));
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0));
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty));
 			}
 
 			using (var session = OpenSession())
@@ -453,7 +454,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1754
 				Assert.That(parent.Children, Has.Count.EqualTo(0), "Reloaded data");
 				Assert.That(nextParent.Children, Has.Count.EqualTo(1), "Reloaded data");
 				Assert.That(nextParent.Children, Does.Contain(child), "Reloaded data");
-				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(0), "Reloaded data");
+				Assert.That(nextParent.Children.Single().Id, Is.Not.EqualTo(Guid.Empty), "Reloaded data");
 			}
 		}
 	}

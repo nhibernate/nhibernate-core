@@ -61,13 +61,15 @@ namespace NHibernate
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NonUniqueObjectException"/> class.
 		/// </summary>
-		protected NonUniqueObjectException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
+		protected NonUniqueObjectException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			identifier = info.GetValue("identifier", typeof(Object));
 			entityName = info.GetValue("entityName", typeof(string)) as string;
 		}
 
+#pragma warning disable CS0809
 		/// <summary>
 		/// Sets the serialization info for <see cref="InstantiationException"/> after 
 		/// getting the info from the base Exception.
@@ -79,6 +81,8 @@ namespace NHibernate
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
@@ -86,6 +90,7 @@ namespace NHibernate
 			info.AddValue("identifier", identifier, typeof(Object));
 			info.AddValue("entityName", entityName, typeof(string));
 		}
+#pragma warning restore CS0809
 
 		#endregion
 	}

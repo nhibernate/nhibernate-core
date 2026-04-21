@@ -41,13 +41,9 @@ where 1=1";
 
 				Regex whitespaces = new Regex(@"\s+", RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
 
-				Assert.AreEqual(
-					string.Compare(
-						whitespaces.Replace(sql, " ").Trim(),
-						whitespaces.Replace(renderedSql, " ").Trim(),
-						true
-						),
-					0
+				Assert.That(
+					whitespaces.Replace(renderedSql, " ").Trim(),
+					Is.EqualTo(whitespaces.Replace(sql, " ").Trim()).IgnoreCase
 				);
 			}
 		}

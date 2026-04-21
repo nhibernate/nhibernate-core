@@ -13,7 +13,7 @@ namespace NHibernate.Tuple.Entity
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(PocoEntityTuplizer));
 
-		internal DynamicMapEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappingInfo)
+		public DynamicMapEntityTuplizer(EntityMetamodel entityMetamodel, PersistentClass mappingInfo)
 			: base(entityMetamodel, mappingInfo)
 		{
 			// NH different behavior fo NH-1587

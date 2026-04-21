@@ -91,7 +91,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 		{
 			var driver = Sfi.ConnectionProvider.Driver;
 			if (!driver.SupportsMultipleQueries)
-				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+				Assert.Ignore($"Driver {driver.GetType().FullName} does not support multi-queries");
 
 			// Test querying IntData
 			using (ISession session = this.OpenSession())
@@ -120,7 +120,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2195
 		{
 			var driver = Sfi.ConnectionProvider.Driver;
 			if (!driver.SupportsMultipleQueries)
-				Assert.Ignore("Driver {0} does not support multi-queries", driver.GetType().FullName);
+				Assert.Ignore($"Driver {driver.GetType().FullName} does not support multi-queries");
 
 			// Test querying StringData
 			using (ISession session = this.OpenSession())

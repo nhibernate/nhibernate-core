@@ -19,8 +19,7 @@ namespace NHibernate.Test.ConnectionTest
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(cfg);
-			cfg.SetProperty(Environment.CurrentSessionContextClass, typeof(TestableMapBasedSessionContext).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.CurrentSessionContextClass, typeof(TestableMapBasedSessionContext).AssemblyQualifiedName);
 		}
 
 		protected override void OnSetUp()

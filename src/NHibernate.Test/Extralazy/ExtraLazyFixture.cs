@@ -103,7 +103,7 @@ namespace NHibernate.Test.Extralazy
 				// Have to skip unloaded (non-queued indeed) elements to avoid triggering existence queries on them.
 				foreach (var item in addedItems.Skip(5))
 				{
-					Assert.That(gavin.Companies.Contains(item), Is.True, "Company '{0}' existence", item.Name);
+					Assert.That(gavin.Companies.Contains(item), Is.True, $"Company '{item.Name}' existence");
 				}
 
 				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after checking existence of non-flushed");
@@ -311,7 +311,7 @@ namespace NHibernate.Test.Extralazy
 				// Have to skip unloaded (non-queued indeed) elements to avoid triggering existence queries on them.
 				foreach (var item in addedItems.Skip(5))
 				{
-					Assert.That(gavin.Companies.Contains(item), Is.True, "Company '{0}' existence", item.Name);
+					Assert.That(gavin.Companies.Contains(item), Is.True, $"Company '{item.Name}' existence");
 				}
 
 				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after existence check");
@@ -625,7 +625,7 @@ namespace NHibernate.Test.Extralazy
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 10; i++)
 				{
-					Assert.That(gavin.Companies[i], Is.EqualTo(addedItems[i]), "Comparing added company at index {0}", i);
+					Assert.That(gavin.Companies[i], Is.EqualTo(addedItems[i]), $"Comparing added company at index {i}");
 				}
 
 				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after adding comparing");
@@ -665,7 +665,7 @@ namespace NHibernate.Test.Extralazy
 				Sfi.Statistics.Clear();
 				for (var i = 0; i < 10; i++)
 				{
-					Assert.That(gavin.Companies[i].ListIndex, Is.EqualTo(finalIndexOrder[i]), "Comparing company ListIndex at index {0}", i);
+					Assert.That(gavin.Companies[i].ListIndex, Is.EqualTo(finalIndexOrder[i]), $"Comparing company ListIndex at index {i}");
 				}
 
 				Assert.That(Sfi.Statistics.FlushCount, Is.EqualTo(0), "Flushes count after comparing");
@@ -787,7 +787,7 @@ namespace NHibernate.Test.Extralazy
 				{
 					for (var i = 15; i < 20; i++)
 					{
-						Assert.That(gavin.Companies.Remove(addedItems[i]), Is.True, "Removing transient company at index {0}", i);
+						Assert.That(gavin.Companies.Remove(addedItems[i]), Is.True, $"Removing transient company at index {i}");
 					}
 
 					Assert.That(FindAllOccurrences(sqlLog.GetWholeLog(), "INSERT \n    INTO"), Is.EqualTo(10), "Statements count after removing");
@@ -898,7 +898,7 @@ namespace NHibernate.Test.Extralazy
 
 				for (var i = 0; i < gavin.Companies.Count; i++)
 				{
-					Assert.That(gavin.Companies[i].ListIndex, Is.EqualTo(i), "Comparing company ListIndex at index {0}", i);
+					Assert.That(gavin.Companies[i].ListIndex, Is.EqualTo(i), $"Comparing company ListIndex at index {i}");
 				}
 
 				if (initialize)
@@ -1038,7 +1038,7 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(collection.Count, Is.EqualTo(6), "Credit cards count after loading again Gavin");
 				for (var i = 0; i < 10; i++)
 				{
-					Assert.That(collection.Contains(addedItems[i]), i < 6 ? Is.True : (IResolveConstraint) Is.False, "Checking existence for item at {0}", i);
+					Assert.That(collection.Contains(addedItems[i]), i < 6 ? Is.True : (IResolveConstraint) Is.False, $"Checking existence for item at {i}");
 				}
 
 				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Credit cards initialization status after loading again");
@@ -1129,7 +1129,7 @@ namespace NHibernate.Test.Extralazy
 
 				for (var i = 0; i < gavin.Companies.Count; i++)
 				{
-					Assert.That(gavin.Companies[i].OriginalIndex, Is.EqualTo(finalIndexOrder[i]), "Comparing company index at {0}", i);
+					Assert.That(gavin.Companies[i].OriginalIndex, Is.EqualTo(finalIndexOrder[i]), $"Comparing company index at {i}");
 				}
 
 				if (initialize)
@@ -1871,8 +1871,7 @@ namespace NHibernate.Test.Extralazy
 				Assert.That(collection.Count, Is.EqualTo(6), "Permissions count after loading again Gavin");
 				for (var i = 0; i < 10; i++)
 				{
-					Assert.That(collection.Contains(addedItems[i]), i < 6 ? Is.True : (IResolveConstraint) Is.False,
-						"Checking existence of added element at {0}", i);
+					Assert.That(collection.Contains(addedItems[i]), i < 6 ? Is.True : (IResolveConstraint) Is.False, $"Checking existence of added element at {i}");
 				}
 
 				Assert.That(NHibernateUtil.IsInitialized(collection), Is.False, "Permissions initialization status after loading again");

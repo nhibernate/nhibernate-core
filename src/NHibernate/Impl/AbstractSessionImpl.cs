@@ -395,6 +395,11 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
+		/// Indicates if the session is currently processing some operations.
+		/// </summary>
+		public bool IsProcessing => _processHelper.Processing;
+
+		/// <summary>
 		/// If not nested in another call to <c>BeginProcess</c> on this session, check and update the
 		/// session status and set its session id in context.
 		/// </summary>
@@ -405,6 +410,21 @@ namespace NHibernate.Impl
 		public IDisposable BeginProcess()
 		{
 			return _processHelper.BeginProcess(this);
+		}
+
+		/// <summary>
+		/// If not nested in another call to <c>BeginProcess</c> on this session, optionnaly check
+		/// and update the session status, then set its session id in context and flag it as processing.
+		/// </summary>
+		/// <param name="noCheckAndUpdate"><see langword="true" /> to initiate a processing without
+		/// checking and updating the session.</param>
+		/// <returns>
+		/// If not already processing, an object to dispose for signaling the end of the process.
+		/// Otherwise, <see langword="null" />.
+		/// </returns>
+		protected IDisposable BeginProcess(bool noCheckAndUpdate)
+		{
+			return _processHelper.BeginProcess(this, noCheckAndUpdate);
 		}
 
 		/// <summary>
@@ -429,7 +449,7 @@ namespace NHibernate.Impl
 			private IDisposable _context;
 
 			[NonSerialized]
-			private bool _processing;
+			private volatile bool _processing;
 
 			public ProcessHelper()
 			{
@@ -437,7 +457,7 @@ namespace NHibernate.Impl
 
 			public bool Processing { get => _processing; }
 
-			public IDisposable BeginProcess(AbstractSessionImpl session)
+			public IDisposable BeginProcess(AbstractSessionImpl session, bool noCheckAndUpdate = false)
 			{
 				if (_processing)
 					return null;
@@ -445,7 +465,14 @@ namespace NHibernate.Impl
 				try
 				{
 					_context = SessionIdLoggingContext.CreateOrNull(session.SessionId);
-					session.CheckAndUpdateSessionStatus();
+					if (noCheckAndUpdate)
+					{
+						session.TransactionContext?.Wait();
+					}
+					else
+					{
+						session.CheckAndUpdateSessionStatus();
+					}
 					_processing = true;
 				}
 				catch

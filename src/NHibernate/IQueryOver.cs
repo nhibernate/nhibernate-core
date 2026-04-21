@@ -362,7 +362,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="path">A lambda expression path (e.g., ChildList[0].Granchildren[0].Pets).</param>
 		/// <returns></returns>
-		// Since 5.2
+		// Since v5.2
 		[Obsolete("Use Fetch(SelectMode mode, Expression<Func<TSubType, object>> path) instead")]
 		IQueryOverFetchBuilder<TRoot,TSubType> Fetch(Expression<Func<TRoot, object>> path);
 

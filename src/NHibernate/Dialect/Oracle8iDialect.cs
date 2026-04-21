@@ -265,9 +265,11 @@ namespace NHibernate.Dialect
 
 			// Cast is needed because EXTRACT treats DATE not as legacy Oracle DATE but as ANSI DATE, without time elements.
 			// Therefore, you can extract only YEAR, MONTH, and DAY from a DATE value.
+			// Oracle returns the seconds with fractional precision. It has to be truncated to return the actual second part
 			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(second from cast(?1 as timestamp))"));
 			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(minute from cast(?1 as timestamp))"));
 			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "extract(hour from cast(?1 as timestamp))"));
+			RegisterFunction("secondtruncated", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(floor(extract(second from cast(?1 as timestamp))) as int)"));
 
 			RegisterFunction("date", new StandardSQLFunction("trunc", NHibernateUtil.Date));
 
@@ -532,6 +534,11 @@ namespace NHibernate.Dialect
 			string name = base.GenerateTemporaryTableName(baseTableName);
 			return name.Length > 30 ? name.Substring(1, (30) - (1)) : name;
 		}
+
+		/// <inheritdoc />
+		/// <remarks>Oracle does commit any pending transaction prior to executing any DDL,
+		/// included for temporary tables.</remarks>
+		public override bool? PerformTemporaryTableDDLInIsolation() => true;
 
 		public override bool DropTemporaryTableAfterUse()
 		{

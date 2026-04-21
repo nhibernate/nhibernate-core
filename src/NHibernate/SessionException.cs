@@ -11,8 +11,9 @@ namespace NHibernate
 		{
 		}
 
-		protected SessionException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
+		protected SessionException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}
 	}

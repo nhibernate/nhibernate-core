@@ -264,6 +264,7 @@ namespace NHibernate.Engine
 			entityEntries.Clear();
 			entitySnapshotsByKey.Clear();
 			collectionsByKey.Clear();
+			nonlazyCollections.Clear();
 			collectionEntries.Clear();
 			if (unownedCollections != null)
 			{

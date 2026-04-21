@@ -343,7 +343,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsPropertySplit(new SplitDefinition(typeof (MyClass), "foo", property));
 
 			destination.Merge(source);
-			Assert.That(destination.SplitDefinitions, Has.Count.EqualTo(1));
+			Assert.That(destination.SplitDefinitions.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -354,7 +354,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsPersistentMember(property);
 
 			destination.Merge(source);
-			Assert.That(destination.PersistentMembers, Has.Count.EqualTo(1));
+			Assert.That(destination.PersistentMembers.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -365,7 +365,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsProperty(property);
 
 			destination.Merge(source);
-			Assert.That(destination.Properties, Has.Count.EqualTo(1));
+			Assert.That(destination.Properties.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -376,7 +376,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsMap(property);
 
 			destination.Merge(source);
-			Assert.That(destination.Dictionaries, Has.Count.EqualTo(1));
+			Assert.That(destination.Dictionaries.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -387,7 +387,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsArray(property);
 
 			destination.Merge(source);
-			Assert.That(destination.Arrays, Has.Count.EqualTo(1));
+			Assert.That(destination.Arrays.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -398,7 +398,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsList(property);
 
 			destination.Merge(source);
-			Assert.That(destination.Lists, Has.Count.EqualTo(1));
+			Assert.That(destination.Lists.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -409,7 +409,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsIdBag(property);
 
 			destination.Merge(source);
-			Assert.That(destination.IdBags, Has.Count.EqualTo(1));
+			Assert.That(destination.IdBags.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -420,7 +420,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsBag(property);
 
 			destination.Merge(source);
-			Assert.That(destination.Bags, Has.Count.EqualTo(1));
+			Assert.That(destination.Bags.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -431,7 +431,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsSet(property);
 
 			destination.Merge(source);
-			Assert.That(destination.Sets, Has.Count.EqualTo(1));
+			Assert.That(destination.Sets.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -442,7 +442,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsNaturalId(property);
 
 			destination.Merge(source);
-			Assert.That(destination.NaturalIds, Has.Count.EqualTo(1));
+			Assert.That(destination.NaturalIds.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -453,7 +453,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsVersionProperty(property);
 
 			destination.Merge(source);
-			Assert.That(destination.VersionProperties, Has.Count.EqualTo(1));
+			Assert.That(destination.VersionProperties.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -464,7 +464,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsPoid(property);
 
 			destination.Merge(source);
-			Assert.That(destination.Poids, Has.Count.EqualTo(1));
+			Assert.That(destination.Poids.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -475,7 +475,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsAny(property);
 
 			destination.Merge(source);
-			Assert.That(destination.Any, Has.Count.EqualTo(1));
+			Assert.That(destination.Any.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -486,7 +486,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsOneToManyRelation(property);
 
 			destination.Merge(source);
-			Assert.That(destination.OneToManyRelations, Has.Count.EqualTo(1));
+			Assert.That(destination.OneToManyRelations.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -497,7 +497,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsManyToAnyRelation(property);
 
 			destination.Merge(source);
-			Assert.That(destination.ManyToAnyRelations, Has.Count.EqualTo(1));
+			Assert.That(destination.ManyToAnyRelations.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -508,7 +508,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsManyToManyItemRelation(property);
 
 			destination.Merge(source);
-			Assert.That(destination.ItemManyToManyRelations, Has.Count.EqualTo(1));
+			Assert.That(destination.ItemManyToManyRelations.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -519,7 +519,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsManyToOneRelation(property);
 
 			destination.Merge(source);
-			Assert.That(destination.ManyToOneRelations, Has.Count.EqualTo(1));
+			Assert.That(destination.ManyToOneRelations.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -530,7 +530,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsOneToOneRelation(property);
 
 			destination.Merge(source);
-			Assert.That(destination.OneToOneRelations, Has.Count.EqualTo(1));
+			Assert.That(destination.OneToOneRelations.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -541,7 +541,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsTablePerConcreteClassEntity(typeof (MyClass));
 
 			destination.Merge(source);
-			Assert.That(destination.TablePerConcreteClassEntities, Has.Count.EqualTo(1));
+			Assert.That(destination.TablePerConcreteClassEntities.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -552,7 +552,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsTablePerClassHierarchyEntity(typeof (MyClass));
 
 			destination.Merge(source);
-			Assert.That(destination.TablePerClassHierarchyEntities, Has.Count.EqualTo(1));
+			Assert.That(destination.TablePerClassHierarchyEntities.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -563,7 +563,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsTablePerClassEntity(typeof (MyClass));
 
 			destination.Merge(source);
-			Assert.That(destination.TablePerClassEntities, Has.Count.EqualTo(1));
+			Assert.That(destination.TablePerClassEntities.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -574,7 +574,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsComponent(typeof (MyClass));
 
 			destination.Merge(source);
-			Assert.That(destination.Components, Has.Count.EqualTo(1));
+			Assert.That(destination.Components.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -585,7 +585,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsRootEntity(typeof (MyClass));
 
 			destination.Merge(source);
-			Assert.That(destination.RootEntities, Has.Count.EqualTo(1));
+			Assert.That(destination.RootEntities.Count(), Is.EqualTo(1));
 		}
 
 		[Test]
@@ -596,7 +596,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsDynamicComponent(property, typeof(MyClass));
 
 			destination.Merge(source);
-			Assert.That(destination.DynamicComponents, Has.Count.EqualTo(1));
+			Assert.That(destination.DynamicComponents.Count(), Is.EqualTo(1));
 			Assert.That(destination.GetDynamicComponentTemplate(property), Is.EqualTo(typeof(MyClass)));
 		}
 
@@ -608,7 +608,7 @@ namespace NHibernate.Test.MappingByCode
 			source.AddAsPartOfComposedId(property);
 
 			destination.Merge(source);
-			Assert.That(destination.ComposedIds, Has.Count.EqualTo(1));
+			Assert.That(destination.ComposedIds.Count(), Is.EqualTo(1));
 		}
 
 		[Test]

@@ -81,15 +81,51 @@ namespace NHibernate.Linq.Functions
 
 				ReflectHelper.FastGetMethod(MathF.Pow, default(float), default(float)),
 #endif
+#if NET8_0_OR_GREATER
+				ReflectHelper.FastGetMethod(float.Sin, default(float)),
+				ReflectHelper.FastGetMethod(float.Cos, default(float)),
+				ReflectHelper.FastGetMethod(float.Tan, default(float)),
+				ReflectHelper.FastGetMethod(float.Sinh, default(float)),
+				ReflectHelper.FastGetMethod(float.Cosh, default(float)),
+				ReflectHelper.FastGetMethod(float.Tanh, default(float)),
+				ReflectHelper.FastGetMethod(float.Asin, default(float)),
+				ReflectHelper.FastGetMethod(float.Acos, default(float)),
+				ReflectHelper.FastGetMethod(float.Atan, default(float)),
+				ReflectHelper.FastGetMethod(float.Atan2, default(float), default(float)),
+				ReflectHelper.FastGetMethod(float.Sqrt, default(float)),
+				ReflectHelper.FastGetMethod(float.Abs, default(float)),
+				ReflectHelper.FastGetMethod(float.Sign, default(float)),
+				ReflectHelper.FastGetMethod(float.Floor, default(float)),
+				ReflectHelper.FastGetMethod(float.Ceiling, default(float)),
+				ReflectHelper.FastGetMethod(float.Pow, default(float), default(float)),
+				
+				ReflectHelper.FastGetMethod(double.Sin, default(double)),
+				ReflectHelper.FastGetMethod(double.Cos, default(double)),
+				ReflectHelper.FastGetMethod(double.Tan, default(double)),
+				ReflectHelper.FastGetMethod(double.Sinh, default(double)),
+				ReflectHelper.FastGetMethod(double.Cosh, default(double)),
+				ReflectHelper.FastGetMethod(double.Tanh, default(double)),
+				ReflectHelper.FastGetMethod(double.Asin, default(double)),
+				ReflectHelper.FastGetMethod(double.Acos, default(double)),
+				ReflectHelper.FastGetMethod(double.Atan, default(double)),
+				ReflectHelper.FastGetMethod(double.Atan2, default(double), default(double)),
+				ReflectHelper.FastGetMethod(double.Sqrt, default(double)),
+				ReflectHelper.FastGetMethod(double.Abs, default(double)),
+				ReflectHelper.FastGetMethod(double.Sign, default(double)),
+				ReflectHelper.FastGetMethod(double.Floor, default(double)),
+				ReflectHelper.FastGetMethod(double.Ceiling, default(double)),
+				ReflectHelper.FastGetMethod(double.Pow, default(double), default(double)),
+#endif
 			};
 		}
 
 		public override HqlTreeNode BuildHql(MethodInfo method, Expression expression, ReadOnlyCollection<Expression> arguments, HqlTreeBuilder treeBuilder, IHqlExpressionVisitor visitor)
 		{
-			string function = method.Name.ToLowerInvariant();
-
-			if (function == "pow")
-				function = "power";
+			var function = method.Name.ToLowerInvariant() switch
+			{
+				"pow" => "power",
+				var f => f,
+			};
 
 			var firstArgument = visitor.Visit(arguments[0]).AsExpression();
 

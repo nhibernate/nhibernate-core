@@ -33,7 +33,7 @@ namespace NHibernate.Test.MappingByCode.ExplicitMappingTests
 				ca.Property(x => x.Something, map => map.Length(150));
 			});
 			var hbmMapping = mapper.CompileMappingFor(new[] { typeof(MyClass) });
-			Assert.AreEqual(hbmMapping.RootClasses[0].@abstract, true);
+			Assert.AreEqual(true, hbmMapping.RootClasses[0].@abstract);
 		}
 
 		[Test]

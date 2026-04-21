@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -1066,8 +1067,8 @@ namespace NHibernate.Test.Legacy
 			using (ISession s = OpenSession())
 			{
 				Holder h = (Holder) s.Load(typeof(Holder), hid);
-				Assert.AreEqual(h.Name, "foo");
-				Assert.AreEqual(h.OtherHolder.Name, "bar");
+				Assert.AreEqual("foo", h.Name);
+				Assert.AreEqual("bar", h.OtherHolder.Name);
 				object[] res =
 					(object[]) s.CreateQuery("from Holder h join h.OtherHolder oh where h.OtherHolder.Name = 'bar'").List()[0];
 				Assert.AreSame(h, res[0]);
@@ -1210,10 +1211,7 @@ namespace NHibernate.Test.Legacy
 				s.Delete(baz2);
 				s.Delete(baz3);
 
-				IEnumerable en = new JoinedEnumerable(
-					new IEnumerable[] {baz.FooSet, baz2.FooSet});
-
-				foreach (object obj in en)
+				foreach (var obj in baz.FooSet.Concat(baz2.FooSet))
 				{
 					s.Delete(obj);
 				}
@@ -1418,7 +1416,7 @@ namespace NHibernate.Test.Legacy
 			// DictionaryEntry key - not the index.
 			foreach (Sortable sortable in b.Sortablez)
 			{
-				Assert.AreEqual(sortable.name, "bar");
+				Assert.AreEqual("bar", sortable.name);
 				break;
 			}
 
@@ -1434,7 +1432,7 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(b.Sortablez.Count == 3);
 			foreach (Sortable sortable in b.Sortablez)
 			{
-				Assert.AreEqual(sortable.name, "bar");
+				Assert.AreEqual("bar", sortable.name);
 				break;
 			}
 			s.Flush();
@@ -1449,7 +1447,7 @@ namespace NHibernate.Test.Legacy
 			Assert.IsTrue(b.Sortablez.Count == 3);
 			foreach (Sortable sortable in b.Sortablez)
 			{
-				Assert.AreEqual(sortable.name, "bar");
+				Assert.AreEqual("bar", sortable.name);
 				break;
 			}
 			s.Delete(b);
@@ -5261,16 +5259,13 @@ namespace NHibernate.Test.Legacy
 			Baz baz = new Baz();
 			var bars = new HashSet<BarProxy> { new Bar(), new Bar(), new Bar() };
 			baz.CascadingBars = bars;
-			IList<Foo> foos = new List<Foo>();
-			foos.Add(new Foo());
-			foos.Add(new Foo());
+			var foos = new List<Foo> { new Foo(), new Foo() };
 			baz.FooBag = foos;
 			s.Save(baz);
 
-			IEnumerator enumer = new JoinedEnumerable(new IEnumerable[] {foos, bars}).GetEnumerator();
-			while (enumer.MoveNext())
+			foreach (var foo in foos.Concat(bars.Cast<FooProxy>()))
 			{
-				FooComponent cmp = ((Foo) enumer.Current).Component;
+				var cmp = foo.Component;
 				s.Delete(cmp.Glarch);
 				cmp.Glarch = null;
 			}

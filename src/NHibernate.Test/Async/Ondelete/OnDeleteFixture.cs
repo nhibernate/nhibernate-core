@@ -30,7 +30,7 @@ namespace NHibernate.Test.Ondelete
 
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			cfg.SetProperty(Cfg.Environment.GenerateStatistics, "true");
+			configuration.SetProperty(Cfg.Environment.GenerateStatistics, "true");
 		}
 
 		protected override bool AppliesTo(NHibernate.Dialect.Dialect dialect)

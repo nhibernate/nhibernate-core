@@ -22,10 +22,9 @@ namespace NHibernate.Test.ConnectionTest
 	[TestFixture]
 	public class BatcherFixtureAsync : ConnectionManagementTestCase
 	{
-		protected override void Configure(Configuration config)
+		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(config);
-			config.SetProperty(Environment.BatchSize, "10");
+			configuration.SetProperty(Environment.BatchSize, "10");
 		}
 
 		protected override ISession GetSessionUnderTest()

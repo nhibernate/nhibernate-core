@@ -36,13 +36,17 @@ namespace NHibernate
 
 		#region Serialization
 
-		protected ObjectNotFoundByUniqueKeyException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
+		protected ObjectNotFoundByUniqueKeyException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			Key = info.GetValue(nameof(Key), typeof(object));
 			PropertyName = info.GetString(nameof(PropertyName));
 		}
 
+#pragma warning disable CS0809
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
@@ -50,6 +54,7 @@ namespace NHibernate
 			info.AddValue(nameof(Key), Key);
 			info.AddValue(nameof(PropertyName), PropertyName);
 		}
+#pragma warning restore CS0809
 
 		#endregion Serialization
 	}

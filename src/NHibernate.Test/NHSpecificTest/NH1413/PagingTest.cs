@@ -28,7 +28,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1413
 				ICriteria icriteria = criteria.GetExecutableCriteria(session);
 				icriteria.SetFirstResult(0);
 				icriteria.SetMaxResults(2);
-				Assert.That(2, Is.EqualTo(icriteria.List<Foo>().Count));
+				Assert.That(icriteria.List<Foo>().Count, Is.EqualTo(2));
 			}
 
 			using (ISession session = OpenSession())

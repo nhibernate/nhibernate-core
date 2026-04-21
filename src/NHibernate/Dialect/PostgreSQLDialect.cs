@@ -105,6 +105,8 @@ namespace NHibernate.Dialect
 			// and NHibernate.TestDatabaseSetup does install it.
 			RegisterFunction("new_uuid", new NoArgSQLFunction("uuid_generate_v4", NHibernateUtil.Guid));
 
+			RegisterFunction("secondtruncated", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(floor(extract(second from ?1)) as int)"));
+
 			RegisterKeywords();
 		}
 

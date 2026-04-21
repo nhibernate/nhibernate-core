@@ -162,7 +162,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				{
 					stmnt = connection.CreateCommand();
 					stmnt.Transaction = transaction;
-					stmnt.CommandText = "drop table " + persister.TemporaryIdTableName;
+					stmnt.CommandText = $"{session.Factory.Dialect.DropTemporaryTableString} {persister.TemporaryIdTableName}";
 					await (stmnt.ExecuteNonQueryAsync(cancellationToken)).ConfigureAwait(false);
 					session.Factory.Settings.SqlStatementLogger.LogCommand(stmnt, FormatStyle.Ddl);
 				}

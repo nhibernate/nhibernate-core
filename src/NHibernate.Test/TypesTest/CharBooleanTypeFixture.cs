@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using System;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
@@ -29,6 +30,7 @@ namespace NHibernate.Test.TypesTest
 		}
 
 		[Theory]
+		[Obsolete("Testing obsolete API")]
 		public void GetByName(bool value)
 		{
 			const string name = "0";
@@ -42,7 +44,7 @@ namespace NHibernate.Test.TypesTest
 
 			var result = type.Get(reader, name, session);
 
-			Assert.AreSame(expected, result);
+			Assert.That(result, Is.SameAs(expected));
 		}
 
 		[Theory]

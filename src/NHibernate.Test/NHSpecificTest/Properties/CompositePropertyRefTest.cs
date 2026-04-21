@@ -61,7 +61,7 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 					Assert.IsNull(p2.Address);
 					Assert.IsNotNull(p.Address);
 					var l = s.CreateQuery("from Person").List(); //pull address references for cache
-					Assert.AreEqual(l.Count, 2);
+					Assert.AreEqual(2, l.Count);
 					Assert.IsTrue(l.Contains(p) && l.Contains(p2));
 				}
 			}
@@ -75,7 +75,7 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 				using (s.BeginTransaction())
 				{
 					var l = s.CreateQuery("from Person p order by p.Name").List<Person>(); 
-					Assert.AreEqual(l.Count, 2);
+					Assert.AreEqual(2, l.Count);
 					Assert.IsNull(l[0].Address);
 					Assert.IsNotNull(l[1].Address);
 				}
@@ -90,7 +90,7 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 				using (s.BeginTransaction())
 				{
 					var l = s.CreateQuery("from Person p left join fetch p.Address a order by a.Country").List<Person>();
-					Assert.AreEqual(l.Count, 2);
+					Assert.AreEqual(2, l.Count);
 					if (l[0].Name.Equals("Max"))
 					{
 						Assert.IsNull(l[0].Address);
@@ -135,11 +135,11 @@ namespace NHibernate.Test.NHSpecificTest.Properties
 					var l = s.CreateQuery("from Person p left join fetch p.Accounts a order by p.Name").List<Person>();
 					var p0 = l[0];
 					Assert.IsTrue(NHibernateUtil.IsInitialized(p0.Accounts));
-					Assert.AreEqual(p0.Accounts.Count, 1);
+					Assert.AreEqual(1, p0.Accounts.Count);
 					Assert.AreSame(p0.Accounts.First().User, p0);
 					var p1 = l[1];
 					Assert.IsTrue(NHibernateUtil.IsInitialized(p1.Accounts));
-					Assert.AreEqual(p1.Accounts.Count, 0);
+					Assert.AreEqual(0, p1.Accounts.Count);
 				}
 			}
 		}

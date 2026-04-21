@@ -81,17 +81,23 @@ namespace NHibernate.Exceptions
 		/// <param name="context">
 		/// The <see cref="StreamingContext"/> that contains contextual information about the source or destination.
 		/// </param>
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		protected AggregateHibernateException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			InnerExceptions = (ReadOnlyCollection<Exception>) info.GetValue("InnerExceptions", typeof(ReadOnlyCollection<Exception>));
 		}
 
+#pragma warning disable CS0809
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		[SecurityCritical]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData(info, context);
 			info.AddValue("InnerExceptions", InnerExceptions);
 		}
+#pragma warning restore CS0809
 
 		/// <summary>
 		/// Return a string representation of the aggregate exception.

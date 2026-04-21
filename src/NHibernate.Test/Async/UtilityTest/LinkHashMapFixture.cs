@@ -9,6 +9,7 @@
 
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -19,17 +20,21 @@ namespace NHibernate.Test.UtilityTest
 {
 	using System.Threading.Tasks;
 	[TestFixture]
-	public class LinkedHashMapFixtureAsync
+	public class LinkHashMapFixtureAsync
 	{
-		private static readonly Player[] players = {
-		                                  	new Player("12341", "Boeta Dippenaar"), new Player("23432", "Gary Kirsten"),
-		                                  	new Player("23411", "Graeme Smith"), new Player("55221", "Jonty Rhodes"),
-		                                  	new Player("61234", "Monde Zondeki"), new Player("23415", "Paul Adams")
-		                                  };
+		private static readonly Player[] players =
+		{
+			new Player("12341", "Boeta Dippenaar"),
+			new Player("23432", "Gary Kirsten"),
+			new Player("23411", "Graeme Smith"),
+			new Player("55221", "Jonty Rhodes"),
+			new Player("61234", "Monde Zondeki"),
+			new Player("23415", "Paul Adams")
+		};
 
 		private static void Fill(IDictionary<string, Player> lhm)
 		{
-			foreach (Player player in players)
+			foreach (var player in players)
 				lhm.Add(player.Id, player);
 		}
 
@@ -37,11 +42,11 @@ namespace NHibernate.Test.UtilityTest
 		public async Task ShowDiffAsync()
 		{
 			IDictionary<string, Player> dict = new Dictionary<string, Player>();
-			IDictionary<string, Player> lhm = new LinkedHashMap<string, Player>();
+			IDictionary<string, Player> lhm = new LinkHashMap<string, Player>();
 			Fill(dict);
 			Fill(lhm);
 			// Override the first element
-			Player o = new Player("12341", "Ovirride");
+			var o = new Player("12341", "Override");
 			dict[o.Id] = o;
 			lhm[o.Id] = o;
 			await (Console.Out.WriteLineAsync("Dictionary order:"));
@@ -49,7 +54,7 @@ namespace NHibernate.Test.UtilityTest
 			{
 				Console.Out.WriteLine("Key->{0}", pair.Key);
 			}
-			await (Console.Out.WriteLineAsync("LinkedHashMap order:"));
+			await (Console.Out.WriteLineAsync("LinkHashMap order:"));
 			foreach (KeyValuePair<string, Player> pair in lhm)
 			{
 				Console.Out.WriteLine("Key->{0}", pair.Key);
@@ -65,18 +70,18 @@ namespace NHibernate.Test.UtilityTest
 
 			int numOfEntries = Int16.MaxValue;
 
-			long[] dictPopulateTicks = new long[numOfRuns];
-			long[] dictItemTicks = new long[numOfRuns];
+			var dictPopulateTicks = new long[numOfRuns];
+			var dictItemTicks = new long[numOfRuns];
 
-			long[] linkPopulateTicks = new long[numOfRuns];
-			long[] linkItemTicks = new long[numOfRuns];
+			var linkPopulateTicks = new long[numOfRuns];
+			var linkItemTicks = new long[numOfRuns];
 
-			for (int runIndex = 0; runIndex < numOfRuns; runIndex++)
+			for (var runIndex = 0; runIndex < numOfRuns; runIndex++)
 			{
 				string key;
 				object value;
 				IDictionary<string, object> dictionary = new Dictionary<string, object>();
-				IDictionary<string, object> linked = new LinkedHashMap<string, object>();
+				IDictionary<string, object> linked = new LinkHashMap<string, object>();
 
 				long dictStart = DateTime.Now.Ticks;
 
@@ -118,12 +123,12 @@ namespace NHibernate.Test.UtilityTest
 				linked.Clear();
 			}
 
-			for (int runIndex = 0; runIndex < numOfRuns; runIndex++)
+			for (var runIndex = 0; runIndex < numOfRuns; runIndex++)
 			{
 				decimal linkPopulateOverhead = (linkPopulateTicks[runIndex] / (decimal)dictPopulateTicks[runIndex]);
 				decimal linkItemOverhead = (linkItemTicks[runIndex] / (decimal)dictItemTicks[runIndex]);
 
-				string message = string.Format("LinkedHashMap vs Dictionary (Run-{0}) :",runIndex+1);
+				string message = string.Format("LinkHashMap vs Dictionary (Run-{0}) :",runIndex+1);
 				message += "\n POPULATE:";
 				message += "\n\t linked took " + linkPopulateTicks[runIndex] + " ticks.";
 				message += "\n\t dictionary took " + dictPopulateTicks[runIndex] + " ticks.";

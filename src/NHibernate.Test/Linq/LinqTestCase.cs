@@ -37,7 +37,8 @@ namespace NHibernate.Test.Linq
 					"Northwind.Mappings.Patient.hbm.xml",
 					"Northwind.Mappings.DynamicUser.hbm.xml",
 					"Northwind.Mappings.NumericEntity.hbm.xml",
-					"Northwind.Mappings.CompositeOrder.hbm.xml"
+					"Northwind.Mappings.CompositeOrder.hbm.xml",
+					"Northwind.Mappings.CompositeIdEntity.hbm.xml"
 				};
 			}
 		}

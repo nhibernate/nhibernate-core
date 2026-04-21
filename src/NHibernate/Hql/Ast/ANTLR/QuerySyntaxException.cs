@@ -15,6 +15,8 @@ namespace NHibernate.Hql.Ast.ANTLR
 		public QuerySyntaxException(string message) : base(message) {}
 		public QuerySyntaxException(string message, Exception inner) : base(message, inner) {}
 
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		protected QuerySyntaxException(SerializationInfo info, StreamingContext context) : base(info, context) {}
 
 		public static QuerySyntaxException Convert(RecognitionException e)

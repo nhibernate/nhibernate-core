@@ -100,11 +100,13 @@ namespace NHibernate.Tuple
 			{
 				throw new InstantiationException("Cannot instantiate abstract class or interface: ", mappedClass);
 			}
+
 			// 6.0 TODO: Remove if statement
 			if (generateFieldInterceptionProxy)
 			{
-				return proxyFactory.GetFieldInterceptionProxy(CreateInstance);
+				return ProxyFactoryExtensions.GetFieldInterceptionProxy(proxyFactory, CreateInstance);
 			}
+
 			return CreateInstance();
 		}
 

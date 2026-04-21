@@ -66,7 +66,7 @@ namespace NHibernate.Test.Unionsubclass
 				using (ITransaction t = s.BeginTransaction())
 				{
 					Human gavin = (Human)await (s.CreateCriteria(typeof(Human)).UniqueResultAsync());
-					Assert.AreEqual(gavin.Info.Count, 2);
+					Assert.AreEqual(2, gavin.Info.Count);
 					await (s.DeleteAsync(gavin));
 					await (s.DeleteAsync(gavin.Location));
 					await (t.CommitAsync());

@@ -14,6 +14,7 @@ using System.Collections;
 using NHibernate.Cache;
 using NHibernate.Engine;
 using NHibernate.Impl;
+using NHibernate.Intercept;
 using NHibernate.Persister.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
@@ -115,7 +116,9 @@ namespace NHibernate.Event.Default
 			}
 
 			await (EvictCachedCollectionsAsync(persister, id, source.Factory, cancellationToken)).ConfigureAwait(false);
-
+			
+			RefreshLazyProperties(persister, obj);
+			
 			// NH Different behavior : NH-1601
 			// At this point the entity need the real refresh, all elementes of collections are Refreshed,
 			// the collection state was evicted, but the PersistentCollection (in the entity state)

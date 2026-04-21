@@ -10,6 +10,8 @@ namespace NHibernate.Exceptions
 	[Serializable]
 	public class ADOConnectionException : ADOException
 	{
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		public ADOConnectionException(SerializationInfo info, StreamingContext context) : base(info, context) {}
 		public ADOConnectionException(string message, Exception innerException, string sql) : base(message, innerException, sql) {}
 		public ADOConnectionException(string message, Exception innerException) : base(message, innerException) {}

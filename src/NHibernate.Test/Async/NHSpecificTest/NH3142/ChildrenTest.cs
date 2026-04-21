@@ -32,7 +32,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3142
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(Cfg.Environment.BatchFetchStyle, _fetchStyle.ToString());
 		}
 

@@ -32,7 +32,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 				CreateIdentifierProperty(idSchema, rootClass, id);
 				VerifiyIdTypeIsValid(id.Type, rootClass.EntityName);
 
-				new IdGeneratorBinder(Mappings).BindGenerator(id, GetIdGenerator(idSchema));
+				new IdGeneratorBinder(Mappings).BindGenerator(id, idSchema.Generator);
 
 				id.Table.SetIdentifierValue(id);
 
@@ -45,7 +45,7 @@ namespace NHibernate.Cfg.XmlHbmBinding
 			if (idSchema.name != null)
 			{
 				string access = idSchema.access ?? mappings.DefaultAccess;
-				id.SetTypeUsingReflection(rootClass.MappedClass == null ? null : rootClass.MappedClass.AssemblyQualifiedName, idSchema.name, access);
+				id.SetTypeUsingReflection(rootClass.MappedClass, idSchema.name, access);
 
 				var property = new Property(id) { Name = idSchema.name };
 
@@ -64,11 +64,6 @@ namespace NHibernate.Cfg.XmlHbmBinding
 
 				property.LogMapped(log);
 			}
-		}
-
-		private HbmGenerator GetIdGenerator(HbmId idSchema)
-		{
-			return String.IsNullOrEmpty(idSchema.generator1) ? idSchema.generator : new HbmGenerator() { @class = idSchema.generator1 };
 		}
 
 		private static void VerifiyIdTypeIsValid(IType idType, string className)

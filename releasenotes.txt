@@ -1,4 +1,114 @@
-﻿Build 5.5.3
+Build 5.6.0
+=============================
+
+Release notes - NHibernate - Version 5.6.0
+
+    ##### Possible Breaking Changes #####
+        * A thread synchronization timeout may now occur in case of transaction scope timeout, throwing
+          an additional exception. The additional throw can be disabled through the new setting
+          `transaction.ignore_session_synchronization_failures`. See #3355.
+        * The default value of `transaction.system_completion_lock_timeout` has been lowered from 5000
+          (5 seconds) to 1000 (1 second). See #3355.
+        * Binary serializations of a session factory or a session from previous versions of NHibernate
+          will not be deserializable with NHibernate 5.6.
+        * Oracle9iDialect now registers localtimestamp as current_timestamp, instead of systimestamp.
+          See #3707.
+
+76 issues were resolved in this release.
+
+** Bug
+
+   * #3707 Register localtimestamp as current_timestamp in Oracle9iDialect
+   * #3643 Collection cache lookup failure with enum keys
+   * #3631 Missing version update on dirty collection with another property having optimistic-lock false
+   * #3622 ISession.Refresh does not update lazy properties
+   * #3618 ISQLQuery.ExecuteUpdate produces an exception in certain cases
+   * #3602 Unable to implement custom tuplizer due to internal constructor
+   * #3557 Fix configuration order in tests
+   * #3546 Fix incorrect import in DynamicClassFixture
+   * #3525 Querying Seconds on DateTime(Offset) can cause issues in e.g PostgreSQL
+   * #3523 ScaleDefined is not set by SqlType ctor
+   * #3519 Fix reference errors in XML comments
+   * #3518 Add workaround for Rider to see the Antlr3 generated files at design time
+   * #3498 collection [CollectionKey[]] not located in load context
+   * #3480 Fix null reference exception when running tests with Npgsql 8
+   * #3474 Unwanted implied commits may occur for Oracle and MySql
+   * #3464 Remove duplicate entry in dialects documentation
+   * #3424 Exception when using Future to load an entity with no-lazy children
+   * #3421 Empty dynamic components cause phantom updates
+   * #3355 InvalidOperationException on SequencedHashMap.OrderedEnumerator.MoveNext
+
+** New Feature
+
+   * #3624 Add SybaseASE16Dialect with LIMIT and OFFSET pagination support
+   * #3559 Add new DB2NetDriver and obsolete DB2CoreDriver
+   * #3556 Add support for .NET 8 Math functions
+   * #3461 Support for DbBatch
+
+** Improvement
+
+   * #3703 Guidelines for handling breaking changes
+   * #3687 Relax collection-id mapping
+   * #3682 InternalsVisibleTo NHibernate.Test
+   * #3676 When referencing a composite-id in Linq, the fkey table is wrongly joined
+   * #3657 Allow thread safe usage of SessionFactoryObjectFactory
+   * #3649 Improve some sparse arrays
+   * #3640 Some string.Intern's for minimizing duplicate strings count
+   * #3610 Eliminate memory allocations in GuidCombGenerator under .NET 8+
+   * #3513 Int32Type: avoid unnecessary boxing for common cases
+   * #3486 LinkedHashMap creates enormous amount of memory traffic
+   * #3475 Adjust the doc about flush on commit
+   * #3473 The sql type of the CultureInfoType is too short
+   * #854 NH-1284 - Initialization of nullable structs component
+
+** Task
+
+   * #3706 Update actions/setup-dotnet action to v5
+   * #3705 Enable skip_branch_with_pr: true for appveyor
+   * #3702 Configure backports with Mergify
+   * #3701 Update dependency gitreleasemanager.tool to v0.20.0
+   * #3696 Release 5.6.0
+   * #3694 Merge 5.5.3 into master
+   * #3690 Update actions/checkout action to v5
+   * #3689 Update Microsoft.Data.SqlClient to v5
+   * #3619 Update dependency gitreleasemanager.tool to 0.18.0
+   * #3612 Update dependency log4net to v3
+   * #3596 Migrate renovate config
+   * #3594 Update dependency NUnit3TestAdapter to 4.6.0
+   * #3593 Update dependency NUnit.Console to v3.18.1
+   * #3590 Remove Microsoft.SourceLink.GitHub
+   * #3581 Update dependency NUnit.Analyzers to v4.2.0
+   * #3580 Update dependency log4net to v2.0.17
+   * #3579 Merge 5.5.2 into master
+   * #3574 Remove usage of NHIBERNATE_BOT_TOKEN
+   * #3570 Fixing a typo in PersistEvent.cs
+   * #3562 Migrate .NET Core PostgreSQL Windows tests from AppVeyor to GitHub Actions
+   * #3561 Migrate .NET Core SQLite Windows tests from AppVeyor to GitHub Actions
+   * #3555 Obsolete IValue SetTypeUsingReflection & associated methods
+   * #3553 Obsolete ForeignKeys.IsNotTransientSlow
+   * #3552 Cache zero values to reduce boxing in PrimitiveType.DefaultValue
+   * #3549 Obsolete NullableType.Get by column name
+   * #3543 Obsolete JoinedEnumerable
+   * #3542 Add a security policy
+   * #3533 Update Iesi.Collections to 4.1.1
+   * #3532 Remove mentions of Prevalence cache from documentation
+   * #3522 Fix NUnit2050 warnings
+   * #3521 Update dependency NUnit.Analyzers to v4.1.0
+   * #3510 Merge 5.5.1 into master
+   * #3501 Update dependency NUnit.Console to v3.17.0
+   * #3494 Add .NET 8.0 target
+   * #3492 Add NUnit analyzers
+   * #3484 Modernize the test case example
+   * #3479 Update actions/setup-dotnet action to v4
+   * #3477 Update dependency NSubstitute to v5.1.0
+   * #3372 Update dependency gitreleasemanager.tool to v0.17.0
+
+** Tests
+
+   * #3309 Test Case for Invalid SQL with property-ref on property using a formula
+
+
+Build 5.5.3
 =============================
 
 Release notes - NHibernate - Version 5.5.3

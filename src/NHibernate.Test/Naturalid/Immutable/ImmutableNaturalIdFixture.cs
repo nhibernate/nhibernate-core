@@ -19,9 +19,9 @@ namespace NHibernate.Test.Naturalid.Immutable
 
 		protected override void Configure(Configuration configuration)
 		{
-			cfg.SetProperty(Environment.UseSecondLevelCache, "true");
-			cfg.SetProperty(Environment.UseQueryCache, "true");
-			cfg.SetProperty(Environment.GenerateStatistics, "true");
+			configuration.SetProperty(Environment.UseSecondLevelCache, "true");
+			configuration.SetProperty(Environment.UseQueryCache, "true");
+			configuration.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
 		[Test]

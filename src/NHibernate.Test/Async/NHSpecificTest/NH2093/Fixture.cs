@@ -87,7 +87,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2093
             .SetEntity("p", person)
             .ListAsync<Employee>());
 
-          Assert.AreEqual(list.Count, 1);
+          Assert.AreEqual(1, list.Count);
         }
       }
       finally

@@ -24,8 +24,6 @@ namespace NHibernate.Test.Linq
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
-
 			configuration.SetProperty(Environment.FormatSql, "false");
 			configuration.SetProperty(Environment.LinqToHqlLegacyPreEvaluation, LegacyPreEvaluation.ToString());
 			configuration.SetProperty(Environment.LinqToHqlFallbackOnPreEvaluation, FallbackOnPreEvaluation.ToString());
@@ -323,7 +321,7 @@ namespace NHibernate.Test.Linq
 
 					Assert.That(x, Has.Count.GreaterThan(0));
 					var randomValues = x.Select(o => o.r).Distinct().ToArray();
-					Assert.That(randomValues, Has.All.GreaterThanOrEqualTo(0).And.LessThan(1));
+					Assert.That(randomValues, Has.All.GreaterThanOrEqualTo(0).And.All.LessThan(1));
 
 					if (!LegacyPreEvaluation && IsFunctionSupported("random"))
 					{
@@ -380,7 +378,7 @@ namespace NHibernate.Test.Linq
 					var randomValues = x.Select(o => o.r).Distinct().ToArray();
 					Assert.That(
 						randomValues,
-						Has.All.GreaterThanOrEqualTo(0).And.LessThan(int.MaxValue).And.TypeOf<int>());
+						Has.All.GreaterThanOrEqualTo(0).And.All.LessThan(int.MaxValue).And.All.TypeOf<int>());
 
 					if (!LegacyPreEvaluation && IsFunctionSupported("random") && IsFunctionSupported("floor"))
 					{
@@ -436,7 +434,7 @@ namespace NHibernate.Test.Linq
 
 					Assert.That(x, Has.Count.GreaterThan(0));
 					var randomValues = x.Select(o => o.r).Distinct().ToArray();
-					Assert.That(randomValues, Has.All.GreaterThanOrEqualTo(0).And.LessThan(10).And.TypeOf<int>());
+					Assert.That(randomValues, Has.All.GreaterThanOrEqualTo(0).And.All.LessThan(10).And.All.TypeOf<int>());
 
 					if (!LegacyPreEvaluation && IsFunctionSupported("random") && IsFunctionSupported("floor"))
 					{
@@ -492,7 +490,7 @@ namespace NHibernate.Test.Linq
 
 					Assert.That(x, Has.Count.GreaterThan(0));
 					var randomValues = x.Select(o => o.r).Distinct().ToArray();
-					Assert.That(randomValues, Has.All.GreaterThanOrEqualTo(1).And.LessThan(11).And.TypeOf<int>());
+					Assert.That(randomValues, Has.All.GreaterThanOrEqualTo(1).And.All.LessThan(11).And.All.TypeOf<int>());
 
 					if (!LegacyPreEvaluation && IsFunctionSupported("random") && IsFunctionSupported("floor"))
 					{

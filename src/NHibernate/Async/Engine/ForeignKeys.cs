@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using NHibernate.Id;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -152,6 +153,8 @@ namespace NHibernate.Engine
 		/// <remarks>
 		/// Hit the database to make the determination.
 		/// </remarks>
+		// Since v5.6
+		[Obsolete("This method has no more usages and will be removed in a future version")]
 		public static async Task<bool> IsNotTransientSlowAsync(string entityName, object entity, ISessionImplementor session, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

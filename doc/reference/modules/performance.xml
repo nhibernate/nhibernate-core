@@ -709,13 +709,6 @@ using(var iter = session
                 <entry></entry>
                 <entry>yes</entry>
             </row>
-            <row>
-                <entry>Prevalence Cache</entry>
-                <entry><literal>NHibernate.Caches.Prevalence.PrevalenceCacheProvider, NHibernate.Caches.Prevalence</literal></entry>
-                <entry>memory, disk</entry>
-                <entry></entry>
-                <entry>yes</entry>
-            </row>
             </tbody>
             </tgroup>
         </table>
@@ -873,12 +866,6 @@ using(var iter = session
             </row>
             <row>
                 <entry>SysCache</entry>
-                <entry>yes</entry>
-                <entry>yes</entry>
-                <entry>yes</entry>
-            </row>
-            <row>
-                <entry>PrevalenceCache</entry>
                 <entry>yes</entry>
                 <entry>yes</entry>
                 <entry>yes</entry>

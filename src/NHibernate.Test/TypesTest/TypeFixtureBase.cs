@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-
 namespace NHibernate.Test.TypesTest
 {
 	/// <summary>
@@ -13,20 +10,16 @@ namespace NHibernate.Test.TypesTest
 	{
 		protected abstract string TypeName { get; }
 
-		protected override string MappingsAssembly
-		{
-			get { return "NHibernate.Test"; }
-		}
+		protected override string MappingsAssembly => "NHibernate.Test";
 
-		protected override string[] Mappings
+		protected override string[] Mappings => new[] { $"TypesTest.{TypeName}Class.hbm.xml" };
+
+		protected override void OnTearDown()
 		{
-			get
-			{
-				return new string[]
-					{
-						String.Format("TypesTest.{0}Class.hbm.xml", TypeName)
-					};
-			}
+			using var s = OpenSession();
+			using var t = s.BeginTransaction();
+			s.CreateQuery($"delete {TypeName}Class").ExecuteUpdate();
+			t.Commit();
 		}
 	}
 }

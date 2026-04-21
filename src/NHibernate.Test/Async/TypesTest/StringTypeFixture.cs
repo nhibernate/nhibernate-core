@@ -26,14 +26,6 @@ namespace NHibernate.Test.TypesTest
 			get { return "String"; }
 		}
 
-		protected override void OnTearDown()
-		{
-			using (var s = OpenSession())
-			{
-				s.CreateQuery("delete from StringClass").ExecuteUpdate();
-			}
-		}
-
 		[Test]
 		public async Task InsertNullValueAsync()
 		{

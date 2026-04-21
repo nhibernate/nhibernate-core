@@ -38,8 +38,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3426
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
-
 			if (Dialect is SQLiteDialect)
 			{
 				var connStr = configuration.Properties[Environment.ConnectionString];

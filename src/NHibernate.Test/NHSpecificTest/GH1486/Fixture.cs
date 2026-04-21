@@ -12,7 +12,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1486
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetInterceptor(_interceptor);
 		}
 

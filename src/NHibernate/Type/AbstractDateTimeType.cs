@@ -14,7 +14,7 @@ namespace NHibernate.Type
 	[Serializable]
 	public abstract partial class AbstractDateTimeType : PrimitiveType, IIdentifierType, ILiteralType, IVersionType
 	{
-		private static readonly DateTime BaseDateValue = DateTime.MinValue;
+		private static readonly object BaseDateValue = DateTime.MinValue;
 
 		/// <summary>
 		/// Returns the <see cref="DateTimeKind" /> for the type.
@@ -31,17 +31,12 @@ namespace NHibernate.Type
 		/// <see cref="DateTime.Now" /> otherwise.</value>
 		protected virtual DateTime Now => Kind == DateTimeKind.Utc ? DateTime.UtcNow : DateTime.Now;
 
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		protected AbstractDateTimeType() : base(SqlTypeFactory.DateTime)
+		/// <summary />
+		protected AbstractDateTimeType() : this(SqlTypeFactory.DateTime)
 		{
 		}
 
-		/// <summary>
-		/// Constructor for overriding the default <see cref="SqlType"/>.
-		/// </summary>
-		/// <param name="sqlTypeDateTime">The <see cref="SqlType"/> to use.</param>
+		/// <summary />
 		protected AbstractDateTimeType(SqlType sqlTypeDateTime) : base(sqlTypeDateTime)
 		{
 		}
@@ -57,10 +52,6 @@ namespace NHibernate.Type
 		/// <inheritdoc />
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session) =>
 			GetDateTime(rs, index, session);
-
-		/// <inheritdoc />
-		public override object Get(DbDataReader rs, string name, ISessionImplementor session) =>
-			Get(rs, rs.GetOrdinal(name), session);
 
 		/// <summary>
 		/// Get the <see cref="DateTime" /> in the <see cref="DbDataReader"/> for the Property.

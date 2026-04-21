@@ -229,7 +229,7 @@ namespace NHibernate.Test.Linq
 			var query = (from c in db.Customers
 						 orderby c.CustomerId
 						 select c.CustomerId).Skip(10).Take(10).ToList();
-			Assert.AreEqual(query[0], "BSBEV");
+			Assert.AreEqual("BSBEV", query[0]);
 			Assert.AreEqual(10, query.Count);
 		}
 
@@ -239,19 +239,19 @@ namespace NHibernate.Test.Linq
 			var query = (from c in db.Customers
 							orderby c.CustomerId
 							select c.CustomerId).Skip(10).Take(10).ToList();
-			Assert.AreEqual(query[0], "BSBEV");
+			Assert.AreEqual("BSBEV", query[0]);
 			Assert.AreEqual(10, query.Count);
 
 			query = (from c in db.Customers
 						orderby c.CustomerId
 						select c.CustomerId).Skip(20).Take(10).ToList();
-			Assert.AreNotEqual(query[0], "BSBEV");
+			Assert.AreNotEqual("BSBEV", query[0]);
 			Assert.AreEqual(10, query.Count);
 
 			query = (from c in db.Customers
 						orderby c.CustomerId
 						select c.CustomerId).Skip(10).Take(20).ToList();
-			Assert.AreEqual(query[0], "BSBEV");
+			Assert.AreEqual("BSBEV", query[0]);
 			Assert.AreEqual(20, query.Count);
 		}
 
@@ -276,7 +276,7 @@ namespace NHibernate.Test.Linq
 		{
 			var q = (from c in db.Customers select c.CustomerId).Skip(10).Skip(5);
 			var query = q.ToList();
-			Assert.AreEqual(query[0], "CONSH");
+			Assert.AreEqual("CONSH", query[0]);
 			Assert.AreEqual(76, query.Count);
 		}
 

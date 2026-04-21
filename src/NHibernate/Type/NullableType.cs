@@ -80,7 +80,10 @@ namespace NHibernate.Type
 		/// Most implementors just call the <see cref="Get(DbDataReader, int, ISessionImplementor)"/> 
 		/// overload of this method.
 		/// </remarks>
-		public abstract object Get(DbDataReader rs, string name, ISessionImplementor session);
+		// Since v5.6
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
+		public virtual object Get(DbDataReader rs, string name, ISessionImplementor session) =>
+			Get(rs, rs.GetOrdinal(name), session);
 
 		/// <summary>
 		/// A representation of the value to be embedded in an XML element 

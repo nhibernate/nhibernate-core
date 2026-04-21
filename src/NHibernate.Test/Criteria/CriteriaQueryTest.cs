@@ -3216,7 +3216,7 @@ namespace NHibernate.Test.Criteria
 				var countExec = CriteriaTransformer.TransformToRowCount(ec);
 				var countRes = countExec.UniqueResult();
 
-				Assert.AreEqual(countRes, 1);
+				Assert.AreEqual(1, countRes);
 			}
 		}
 	}

@@ -182,7 +182,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1553.MsSQL
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(Environment.SqlExceptionConverter,
 			                          typeof (SQLUpdateConflictToStaleStateExceptionConverter).AssemblyQualifiedName);
 		}

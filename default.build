@@ -139,6 +139,26 @@
 				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
 			</namespaces>
 		</xmlpoke>
+		
+		<!-- Make sure the property exists - it's only set for some scenarios. -->
+		<property name="nhibernate.transaction.ignore_session_synchronization_failures" value="" unless="${property::exists('nhibernate.transaction.ignore_session_synchronization_failures')}"/>
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='transaction.ignore_session_synchronization_failures']"
+			value="${nhibernate.transaction.ignore_session_synchronization_failures}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
+		
+		<!-- Make sure the property exists - it's only set for some scenarios. -->
+		<property name="nhibernate.transaction.system_completion_lock_timeout" value="" unless="${property::exists('nhibernate.transaction.system_completion_lock_timeout')}"/>
+		<xmlpoke file="${app.config}"
+			xpath="//*/hbm:property[@name='transaction.system_completion_lock_timeout']"
+			value="${nhibernate.transaction.system_completion_lock_timeout}">
+			<namespaces>
+				<namespace prefix="hbm" uri="urn:nhibernate-configuration-2.2" />
+			</namespaces>
+		</xmlpoke>
 	</target>
 
 	<target name="put-connection-settings-into-app-config">

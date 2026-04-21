@@ -362,7 +362,7 @@ namespace NHibernate.Test.SystemTransactions
 			var errors = mtr.GetErrors();
 			if (errors.Length > 0)
 			{
-				Assert.Fail("One or more thread failed, found {0} errors. First exception: {1}", errors.Length, errors[0]);
+				Assert.Fail($"One or more thread failed, found {errors.Length} errors. First exception: {errors[0]}");
 			}
 		}
 
@@ -539,10 +539,11 @@ namespace NHibernate.Test.SystemTransactions
 				}
 				var count = 0;
 				Assert.DoesNotThrow(() => count = s.Query<Person>().Count(), "Failed using the session after scope.");
-				if (count != 1)
+				const int expectedCount = 1;
+				if (count != expectedCount)
 					// We are not testing that here, so just issue a warning. Do not use DodgeTransactionCompletionDelayIfRequired
 					// before previous assert. We want to ascertain the session is usable in any cases.
-					Assert.Warn("Unexpected entity count: {0} instead of {1}. The transaction seems to have a delayed commit.", count, 1);
+					Assert.Warn($"Unexpected entity count: {count} instead of {expectedCount}. The transaction seems to have a delayed commit.");
 			}
 		}
 

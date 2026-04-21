@@ -41,7 +41,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3004
 			unusedParam.ParameterName = driver.FormatNameForParameter("unused");
 			command.Parameters.Add(unusedParam);
 
-			Assert.AreEqual(command.Parameters.Count, 2);
+			Assert.AreEqual(2, command.Parameters.Count);
 
 			SqlString sqlString = new SqlStringBuilder()
 				.AddParameter()
@@ -49,7 +49,7 @@ namespace NHibernate.Test.NHSpecificTest.NH3004
 
 			driver.RemoveUnusedCommandParameters(command, sqlString);
 
-			Assert.AreEqual(command.Parameters.Count, 1);
+			Assert.AreEqual(1, command.Parameters.Count);
 			
 			Assert.AreEqual(command.Parameters[0], usedParam);
 		}

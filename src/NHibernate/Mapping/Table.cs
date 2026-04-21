@@ -27,7 +27,7 @@ namespace NHibernate.Mapping
 	public class Table : IRelationalModel
 	{
 		private readonly List<string> checkConstraints = new List<string>();
-		private readonly LinkedHashMap<string, Column> columns = new LinkedHashMap<string, Column>();
+		private readonly LinkHashMap<string, Column> columns = new();
 		private readonly Dictionary<ForeignKeyKey, ForeignKey> foreignKeys = new Dictionary<ForeignKeyKey, ForeignKey>();
 		private readonly Dictionary<string, Index> indexes = new Dictionary<string, Index>();
 		private int? uniqueInteger;
@@ -1064,9 +1064,12 @@ namespace NHibernate.Mapping
 			{
 				this.referencedClassName = referencedClassName;
 				this.columns = new List<Column>(columns);
+				this.columns.TrimExcess();
+
 				if (referencedColumns != null)
 				{
 					this.referencedColumns = new List<Column>(referencedColumns);
+					this.referencedColumns.TrimExcess();
 				}
 				else
 				{

@@ -593,6 +593,8 @@ namespace NHibernate.Mapping
 			get { return false; }
 		}
 
+		// Since v5.6
+		[Obsolete("This method is not used and will be removed in a future version")]
 		public void SetTypeUsingReflection(string className, string propertyName, string access)
 		{
 		}

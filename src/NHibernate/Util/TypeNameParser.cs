@@ -12,6 +12,8 @@ namespace NHibernate.Util
 	{
 		public ParserException(string message) : base(message) { }
 
+		// Since v5.6
+		[Obsolete("This API supports obsolete formatter-based serialization and will be removed in a future version")]
 		protected ParserException(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 		}

@@ -26,5 +26,7 @@
 			<property name="odbc.explicit_datetime_scale"></property>
 			<property name="oracle.use_n_prefixed_types_for_unicode"></property>
 			<property name="query.default_cast_length"></property>
+			<property name="transaction.ignore_session_synchronization_failures"></property>
+			<property name="transaction.system_completion_lock_timeout"></property>
 		</session-factory>
 	</hibernate-configuration>
