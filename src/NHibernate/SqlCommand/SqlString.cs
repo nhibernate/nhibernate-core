@@ -1065,6 +1065,14 @@ namespace NHibernate.SqlCommand
 			public Part(int sqlIndex, string content)
 			{
 				SqlIndex = sqlIndex;
+				// Deduplicate the most common single- and two-character tokens by returning references
+				// to the compile-time-interned StringHelper constants instead of holding onto the caller's
+				// freshly allocated string. Parens and commas dominate SQL fragment memory after long runs
+				// (see #3608), and this removes their duplication without allocating. The explicit switch
+				// is intentional: benchmarks showed it to be ~5–50× faster than string.IsInterned in this
+				// size range, since the length-gated comparisons against the constants typically fold down
+				// to reference equality, while IsInterned pays for hashing and intern-table synchronisation
+				// on every call.
 				Content = content.Length switch
 				{
 					1 when content == StringHelper.ClosedParen => StringHelper.ClosedParen,
