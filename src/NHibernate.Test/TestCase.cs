@@ -293,9 +293,9 @@ namespace NHibernate.Test
 		{
 			cfg = TestConfigurationHelper.GetDefaultConfiguration();
 
-			AddMappings(cfg);
-
 			Configure(cfg);
+
+			AddMappings(cfg);
 
 			ApplyCacheSettings(cfg);
 		}

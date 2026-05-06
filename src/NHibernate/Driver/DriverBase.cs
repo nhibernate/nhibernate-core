@@ -329,6 +329,55 @@ namespace NHibernate.Driver
 		{
 		}
 
+#if NET6_0_OR_GREATER
+		public void PrepareBatch(DbBatch batch)
+		{
+			OnBeforePrepare(batch);
+
+			if (SupportsPreparingCommands && prepareSql)
+			{
+				batch.Prepare();
+			}
+		}
+
+		/// <summary>
+		/// Override to make any adjustments to the DbBatch object.  (e.g., Oracle custom OUT parameter)
+		/// Parameters have been bound by this point, so their order can be adjusted too.
+		/// This is analogous to the RegisterResultSetOutParameter() function in Hibernate.
+		/// </summary>
+		protected virtual void OnBeforePrepare(DbBatch batch)
+		{
+		}
+
+		public virtual DbBatch CreateBatch()
+		{
+			throw new NotSupportedException();
+		}
+
+		public virtual bool CanCreateBatch => false;
+
+		/// <summary>
+		/// Override to use a custom mechanism to create a <see cref="DbBatchCommand"/> from a <see cref="DbCommand"/>.
+		/// The default implementation relies on the parameters implementing (and properly supporting) <see cref="System.ICloneable"/>
+		/// </summary>
+		/// <param name="dbBatch"></param>
+		/// <param name="dbCommand"></param>
+		/// <returns></returns>
+		public virtual DbBatchCommand CreateDbBatchCommandFromDbCommand(DbBatch dbBatch, DbCommand dbCommand)
+		{
+			var dbBatchCommand = dbBatch.CreateBatchCommand();
+			dbBatchCommand.CommandText = dbCommand.CommandText;
+			dbBatchCommand.CommandType = dbCommand.CommandType;
+			
+			foreach (var param in dbCommand.Parameters)
+			{
+				dbBatchCommand.Parameters.Add(((ICloneable) param).Clone());
+			}
+			return dbBatchCommand;
+		}
+
+#endif
+
 		public DbParameter GenerateOutputParameter(DbCommand command)
 		{
 			var param = GenerateParameter(command, "ReturnValue", SqlTypeFactory.Int32);

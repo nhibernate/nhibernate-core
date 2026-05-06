@@ -63,7 +63,7 @@ namespace NHibernate
 		bool WasCommitted { get; }
 
 		/// <summary>
-		/// Enlist the <see cref="DbCommand"/> in the current Transaction.
+		/// Enlist a <see cref="DbCommand"/> in the current Transaction.
 		/// </summary>
 		/// <param name="command">The <see cref="DbCommand"/> to enlist.</param>
 		/// <remarks>
@@ -81,6 +81,17 @@ namespace NHibernate
 			"RegisterSynchronization(ITransactionCompletionSynchronization)': the TransactionExtensions extension " +
 			"method will call it.")]
 		void RegisterSynchronization(ISynchronization synchronization);
+
+#if NET6_0_OR_GREATER
+		/// <summary>
+		/// Enlist a <see cref="DbBatch"/> in the current Transaction.
+		/// </summary>
+		/// <param name="batch">The <see cref="DbBatch"/> to enlist.</param>
+		/// <remarks>
+		/// It is okay for this to be a no op implementation.
+		/// </remarks>
+		void Enlist(DbBatch batch) => throw new NotImplementedException();
+#endif
 	}
 
 	// 6.0 TODO: merge into ITransaction

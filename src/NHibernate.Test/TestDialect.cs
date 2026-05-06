@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Id;
@@ -61,7 +61,7 @@ namespace NHibernate.Test
 		/// Some databases do not support SELECT FOR UPDATE 
 		/// </summary>
 		public virtual bool SupportsSelectForUpdate => true;
-		
+
 		/// <summary>
 		/// Some databases do not support SELECT FOR UPDATE with paging
 		/// </summary>
@@ -105,7 +105,7 @@ namespace NHibernate.Test
 		/// </summary>
 		public virtual bool SupportsNonDataBoundCondition => true;
 
-		public bool SupportsSqlType(SqlType sqlType)
+		public virtual bool SupportsSqlType(SqlType sqlType)
 		{
 			try
 			{
@@ -218,5 +218,7 @@ namespace NHibernate.Test
 		/// Some databases (MySql) don't support using main table aliases in subquery inside join ON clause
 		/// </summary>
 		public virtual bool SupportsCorrelatedColumnsInSubselectJoin => true;
+
+		public virtual bool SupportsDateTimeWithFractionalSeconds => _dialect.TimestampResolutionInTicks < TimeSpan.TicksPerSecond && SupportsSqlType(new SqlType(DbType.DateTime, (byte) 2));
 	}
 }

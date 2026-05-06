@@ -17,7 +17,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			var hbmId = new HbmCollectionId();
 			new CollectionIdMapper(hbmId);
 			Assert.That(hbmId.generator.@class, Is.Not.Null.And.Not.Empty);
-			Assert.That(hbmId.type, Is.Not.Null.And.Not.Empty);
+			Assert.That(hbmId.type1, Is.Not.Null.And.Not.Empty);
+			Assert.That(hbmId.type, Is.Null);
 		}
 
 		[Test]
@@ -27,7 +28,8 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 			new CollectionIdMapper(hbmId).Generator(Generators.HighLow);
 			
 			Assert.That(hbmId.generator.@class, Is.EqualTo("hilo"));
-			Assert.That(hbmId.type.ToLowerInvariant(), Does.Contain("int"));
+			Assert.That(hbmId.type1.ToLowerInvariant(), Does.Contain("int"));
+			Assert.That(hbmId.type, Is.Null);
 		}
 
 		[Test]
@@ -35,11 +37,12 @@ namespace NHibernate.Test.MappingByCode.MappersTests
 		{
 			var hbmId = new HbmCollectionId();
 			var collectionIdMapper = new CollectionIdMapper(hbmId);
-			collectionIdMapper.Type((IIdentifierType) NHibernateUtil.Int64);
+			collectionIdMapper.Type(NHibernateUtil.Int64);
 			collectionIdMapper.Generator(Generators.HighLow);
 
 			Assert.That(hbmId.generator.@class, Is.EqualTo("hilo"));
-			Assert.That(hbmId.type, Is.EqualTo("Int64"));
+			Assert.That(hbmId.type1, Is.EqualTo("Int64"));
+			Assert.That(hbmId.type, Is.Null);
 		}
 
 		[Test]

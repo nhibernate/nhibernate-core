@@ -4,6 +4,8 @@ using System.Linq.Expressions;
 using NHibernate.Engine;
 using NHibernate.Linq.Clauses;
 using NHibernate.Linq.Visitors;
+using NHibernate.Persister.Entity;
+using NHibernate.Type;
 using NHibernate.Util;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
@@ -92,11 +94,35 @@ namespace NHibernate.Linq.ReWriters
 
 		bool IIsEntityDecider.IsEntity(MemberExpression expression, out bool isIdentifier)
 		{
-			isIdentifier =
-				ExpressionsHelper.TryGetMappedType(_sessionFactory, expression, out var mappedType, out var entityPersister, out _, out var memberPath)
-				&& entityPersister?.IdentifierPropertyName == memberPath;
+			if (ExpressionsHelper.TryGetMappedType(_sessionFactory, expression, out var mappedType, out var entityPersister, out var componentType, out var memberPath))
+			{
+				isIdentifier = IsIdentifierPath(entityPersister, componentType, memberPath);
+				return mappedType?.IsEntityType == true;
+			}
+			isIdentifier = false;
+			return false;
+		}
 
-			return mappedType?.IsEntityType == true;
+		bool IsIdentifierPath(IEntityPersister entityPersister, IAbstractComponentType componentType, string memberPath)
+		{
+			if (entityPersister == null)
+			{
+				return false;
+			}
+			if (entityPersister.IdentifierPropertyName == memberPath)
+			{
+				return true;
+			}
+			// Don't bother to add the join if we're just comparing properties of the composite id
+			if (componentType != null)
+			{
+				var pathParts = memberPath.Split('.');
+				return pathParts.Length == 2
+					&& pathParts[0] == entityPersister.IdentifierPropertyName
+					&& componentType.PropertyNames.Any(name => name == pathParts[1]);
+			}
+
+			return false;
 		}
 	}
 }

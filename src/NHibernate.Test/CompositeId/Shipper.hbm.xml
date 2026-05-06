@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+         namespace="NHibernate.Test.CompositeId"
+         assembly="NHibernate.Test">
+
+<class name="Shipper">
+  <composite-id name="Id">
+    <key-property name="Id" column="Id" />
+    <key-property name="WarehouseId" column="WarehouseId" />
+  </composite-id>
+
+  <property name="Name" length="128"/>
+</class>
+
+</hibernate-mapping>

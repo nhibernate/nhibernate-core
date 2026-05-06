@@ -21,7 +21,7 @@ namespace NHibernate.Test.NHSpecificTest.NH1001
 	{
 		protected override void Configure(Configuration configuration)
 		{
-			cfg.SetProperty(Environment.GenerateStatistics, "true");
+			configuration.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
 		private int employeeId;

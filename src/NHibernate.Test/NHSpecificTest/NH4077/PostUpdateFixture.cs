@@ -55,7 +55,6 @@ namespace NHibernate.Test.NHSpecificTest.NH4077
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			var existingListeners = (configuration.EventListeners.PostUpdateEventListeners ?? Array.Empty<IPostUpdateEventListener>()).ToList();
 			// this evil listener uses the session to perform a few queries and causes an auto-flush to happen
 			existingListeners.Add(new CausesAutoflushListener());

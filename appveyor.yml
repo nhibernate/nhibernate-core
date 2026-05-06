@@ -1,11 +1,12 @@
 version: '{build}'
 image: Visual Studio 2022
+skip_branch_with_pr: true
 environment:
   matrix:
   - DB: SqlServer2008
     CONNECTION_STRING: Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;
   - DB: SqlServer2008-MicrosoftDataSqlClientDriver
-    CONNECTION_STRING: Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;
+    CONNECTION_STRING: Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;TrustServerCertificate=true;
   - DB: Firebird
   - DB: Firebird4
   - DB: MySQL

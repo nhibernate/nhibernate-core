@@ -16,11 +16,11 @@ namespace NHibernate.Test.NHSpecificTest.NH3202
 			if (!(Dialect is MsSql2008Dialect))
 				Assert.Ignore("Test is for MS SQL Server dialect only (custom dialect).");
 
-			if (!typeof(SqlClientDriver).IsAssignableFrom(ReflectHelper.ClassForName(cfg.GetProperty(Environment.ConnectionDriver))))
+			if (!typeof(SqlClientDriver).IsAssignableFrom(ReflectHelper.ClassForName(configuration.GetProperty(Environment.ConnectionDriver))))
 				Assert.Ignore("Test is for MS SQL Server driver only (custom driver is used).");
 
-			cfg.SetProperty(Environment.Dialect, typeof(OffsetStartsAtOneTestDialect).AssemblyQualifiedName);
-			cfg.SetProperty(Environment.ConnectionDriver, typeof(OffsetTestDriver).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.Dialect, typeof(OffsetStartsAtOneTestDialect).AssemblyQualifiedName);
+			configuration.SetProperty(Environment.ConnectionDriver, typeof(OffsetTestDriver).AssemblyQualifiedName);
 		}
 
 		private OffsetStartsAtOneTestDialect OffsetStartsAtOneTestDialect

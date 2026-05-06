@@ -12,7 +12,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1612
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(Environment.UseQueryCache, WithQueryCache.ToString());
 		}
 

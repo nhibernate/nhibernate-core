@@ -485,7 +485,7 @@ namespace NHibernate.Hql.Ast.ANTLR
 				return suffix;
 			}
 
-			suffix = _suffixes.Count == 0 ? string.Empty : _suffixes.Count.ToString() + '_';
+			suffix = _suffixes.Count == 0 ? string.Empty : StringHelper.GenerateSuffix(_suffixes.Count);
 			_suffixes.Add(fromElement, suffix);
 
 			return suffix;

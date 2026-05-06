@@ -30,7 +30,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2043
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetInterceptor(new Namer());
 		}
 

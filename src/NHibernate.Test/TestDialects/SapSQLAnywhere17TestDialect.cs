@@ -1,3 +1,6 @@
+using System.Data;
+using NHibernate.SqlTypes;
+
 namespace NHibernate.Test.TestDialects
 {
 	public class SapSQLAnywhere17TestDialect : TestDialect
@@ -40,8 +43,18 @@ namespace NHibernate.Test.TestDialects
 		public override bool HasBrokenTypeInferenceOnSelectedParameters => true;
 
 		/// <summary>
-		/// Does not support SELECT FOR UPDATE 
+		/// Does not support SELECT FOR UPDATE.
 		/// </summary>
 		public override bool SupportsSelectForUpdate => false;
+
+		public override bool SupportsSqlType(SqlType sqlType)
+		{
+			// The Anywhere dialects define types for DbType the Anywhere driver does not support.
+			return sqlType.DbType switch
+			{
+				DbType.SByte => false,
+				_ => base.SupportsSqlType(sqlType)
+			};
+		}
 	}
 }

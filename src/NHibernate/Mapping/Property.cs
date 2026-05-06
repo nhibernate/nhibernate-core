@@ -66,7 +66,7 @@ namespace NHibernate.Mapping
 		public string Name
 		{
 			get { return name; }
-			set { name = value; }
+			set { name = value == null ? null : string.Intern(value); }
 		}
 
 		public bool IsComposite
@@ -122,7 +122,7 @@ namespace NHibernate.Mapping
 		public string Cascade
 		{
 			get { return cascade; }
-			set { cascade = value; }
+			set { cascade = value == null ? null : string.Intern(value); }
 		}
 
 		public bool IsUpdateable
@@ -168,7 +168,7 @@ namespace NHibernate.Mapping
 		public string PropertyAccessorName
 		{
 			get { return propertyAccessorName; }
-			set { propertyAccessorName = value; }
+			set { propertyAccessorName = value == null ? null : string.Intern(value); }
 		}
 
 		public IGetter GetGetter(System.Type clazz)

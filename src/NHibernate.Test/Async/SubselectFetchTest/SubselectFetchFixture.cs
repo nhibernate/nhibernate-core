@@ -20,9 +20,9 @@ namespace NHibernate.Test.SubselectFetchTest
 	[TestFixture]
 	public class SubselectFetchFixtureAsync : TestCase
 	{
-		protected override void Configure(Configuration cfg)
+		protected override void Configure(Configuration configuration)
 		{
-			cfg.SetProperty(Cfg.Environment.GenerateStatistics, "true");
+			configuration.SetProperty(Cfg.Environment.GenerateStatistics, "true");
 		}
 
 		[Test]

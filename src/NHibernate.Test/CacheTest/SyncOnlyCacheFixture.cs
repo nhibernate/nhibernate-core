@@ -11,10 +11,9 @@ namespace NHibernate.Test.CacheTest
 	[TestFixture]
 	public class SyncOnlyCacheFixture : CacheFixture
 	{
-		protected override void Configure(Configuration cfg)
+		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(cfg);
-			cfg.SetProperty(Environment.CacheReadWriteLockFactory, "sync");
+			configuration.SetProperty(Environment.CacheReadWriteLockFactory, "sync");
 		}
 
 		[Test]

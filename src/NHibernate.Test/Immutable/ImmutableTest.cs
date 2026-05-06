@@ -17,7 +17,6 @@ namespace NHibernate.Test.Immutable
 	{
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(NHibernate.Cfg.Environment.GenerateStatistics, "true");
 			configuration.SetProperty(NHibernate.Cfg.Environment.BatchSize, "0");
 		}

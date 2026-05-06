@@ -19,8 +19,7 @@ namespace NHibernate.Test.ConnectionTest
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(cfg);
-			cfg.SetProperty(Environment.CurrentSessionContextClass, "thread_static");
+			configuration.SetProperty(Environment.CurrentSessionContextClass, "thread_static");
 		}
 
 		[Test]

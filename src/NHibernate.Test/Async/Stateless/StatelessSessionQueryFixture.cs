@@ -31,8 +31,7 @@ namespace NHibernate.Test.Stateless
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
-			cfg.SetProperty(Environment.MaxFetchDepth, 1.ToString());
+			configuration.SetProperty(Environment.MaxFetchDepth, 1.ToString());
 		}
 
 		protected override bool AppliesTo(Dialect.Dialect dialect)

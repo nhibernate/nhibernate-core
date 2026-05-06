@@ -873,6 +873,20 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>escape_backslash_in_strings</literal>
+                        </entry>
+                        <entry>
+                            Indicates if the database needs to have backslash escaped in string literals.
+                            The default value is dialect dependant. That is <literal>false</literal> for
+                            most dialects.
+                            <para>
+                                <emphasis role="strong">eg.</emphasis> 
+                                <literal>true</literal> | <literal>false</literal>
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>show_sql</literal>
                         </entry>
                         <entry>
@@ -1590,6 +1604,11 @@ in the parameter binding.</programlisting>
                         <row>
                             <entry>Sybase Adaptive Server Enterprise 15</entry>
                             <entry><literal>NHibernate.Dialect.SybaseASE15Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
+                            <entry>Sybase Adaptive Server Enterprise 16</entry>
+                            <entry><literal>NHibernate.Dialect.SybaseASE16Dialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>

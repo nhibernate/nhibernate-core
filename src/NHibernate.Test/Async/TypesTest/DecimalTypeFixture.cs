@@ -33,8 +33,6 @@ namespace NHibernate.Test.TypesTest
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
-
 			if (Dialect is FirebirdDialect)
 			{
 				configuration.SetProperty(Environment.QueryDefaultCastPrecision, "18");

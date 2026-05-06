@@ -294,7 +294,7 @@ namespace NHibernate.Type
 		public EnumType() : base(typeof (T))
 		{
 			System.Type type = GetType();
-			typeName = type.FullName + ", " + type.Assembly.GetName().Name;
+			typeName = string.Intern(type.FullName + ", " + type.Assembly.GetName().Name);
 		}
 
 		public override string Name

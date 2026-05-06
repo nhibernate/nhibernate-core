@@ -27,6 +27,9 @@ dotnet_diagnostic.NUnit2031.severity = suggestion
 dotnet_diagnostic.NUnit2049.severity = suggestion
 # The SameAs constraint always fails on value types as the actual and the expected value cannot be the same reference
 dotnet_diagnostic.NUnit2040.severity = suggestion
+dotnet_diagnostic.CA1849.severity = error
+dotnet_diagnostic.CA2007.severity = error
+dotnet_code_quality.CA2007.output_kind = DynamicallyLinkedLibrary
 
 [*.xsd]
 indent_style = tab

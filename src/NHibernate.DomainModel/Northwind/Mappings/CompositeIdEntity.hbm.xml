@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="NHibernate.DomainModel.Northwind.Entities" assembly="NHibernate.DomainModel">
+  <class name="CompositeIdEntity" table="CompositeIdEntity">
+    <composite-id name="Id">
+      <key-property name="ObjectId" column="ObjectId" />
+      <key-property name="TenantId" column="TenantId" />
+    </composite-id>
+    <property name="Name" length="128" />
+  </class>
+</hibernate-mapping>

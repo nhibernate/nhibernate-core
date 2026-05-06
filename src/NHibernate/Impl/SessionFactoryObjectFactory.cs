@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
@@ -78,16 +79,46 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
+		/// Get an instance of the SessionFactory from the local "cache" identified by name if it
+		/// exists, otherwise run the provided factory and return its result.
+		/// </summary>
+		/// <param name="name">The name of the ISessionFactory.</param>
+		/// <param name="instanceBuilder">The ISessionFactory factory to use if the instance is not
+		/// found.</param>
+		/// <returns>An instantiated ISessionFactory.</returns>
+		/// <remarks>
+		/// <para>It is the caller responsibility to ensure <paramref name="instanceBuilder"/>
+		/// will add and yield a session factory of the requested <paramref name="name"/>.</para>
+		/// <para>If the session factory instantiation is performed concurrently outside of a
+		/// <c>GetOrAddNamedInstance</c> call, this method may yield an instance of it still being
+		/// built, which may lead to threading issues.</para>
+		/// </remarks>
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		public static ISessionFactory GetOrBuildNamedInstance(string name, Func<ISessionFactory> instanceBuilder)
+		{
+			if (instanceBuilder == null)
+				throw new ArgumentNullException(nameof(instanceBuilder));
+
+			if (NamedInstances.TryGetValue(name, out var factory))
+				return factory;
+			return instanceBuilder();
+		}
+
+		/// <summary>
 		/// Returns a Named Instance of the SessionFactory from the local "cache" identified by name.
 		/// </summary>
 		/// <param name="name">The name of the ISessionFactory.</param>
-		/// <returns>An instantiated ISessionFactory.</returns>
+		/// <returns>An ISessionFactory if found, <see langword="null" /> otherwise.</returns>
+		/// <remarks>If the session factory instantiation is performed concurrently, this method
+		/// may yield an instance of it still being built, which may lead to threading issues.
+		/// Use <see cref="GetOrBuildNamedInstance(string, Func{ISessionFactory})" /> to get or
+		/// built the session factory in such case.</remarks>
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static ISessionFactory GetNamedInstance(string name)
 		{
 			log.Debug("lookup: name={0}", name);
 			ISessionFactory factory;
-			bool found=NamedInstances.TryGetValue(name, out factory);
+			bool found = NamedInstances.TryGetValue(name, out factory);
 			if (!found)
 			{
 				log.Warn("Not found: {0}", name);
@@ -99,7 +130,7 @@ namespace NHibernate.Impl
 		/// Returns an Instance of the SessionFactory from the local "cache" identified by UUID.
 		/// </summary>
 		/// <param name="uid">The identifier of the ISessionFactory.</param>
-		/// <returns>An instantiated ISessionFactory.</returns>
+		/// <returns>An ISessionFactory if found, <see langword="null" /> otherwise.</returns>
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static ISessionFactory GetInstance(string uid)
 		{

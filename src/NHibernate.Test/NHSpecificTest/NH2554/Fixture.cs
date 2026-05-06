@@ -14,7 +14,6 @@ namespace NHibernate.Test.NHSpecificTest.NH2554
 		protected override void Configure(NHibernate.Cfg.Configuration configuration)
 		{
 			configuration.SetProperty(NHibernate.Cfg.Environment.Hbm2ddlKeyWords, "keywords");
-			base.Configure(configuration);
 		}
 		
 		protected override void OnSetUp()

@@ -10,7 +10,6 @@ namespace NHibernate.Test.Linq.ByMethod
 	{
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(Cfg.Environment.ShowSql, "true");
 		} 
 

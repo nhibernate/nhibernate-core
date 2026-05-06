@@ -20,8 +20,7 @@ namespace NHibernate.Test.IdTest
 
 		protected override void Configure(Configuration configuration)
 		{
-			cfg.SetProperty(Environment.UseIdentifierRollBack, "true");
-			base.Configure(configuration);
+			configuration.SetProperty(Environment.UseIdentifierRollBack, "true");
 		}
 
 		public void SimpleRollback()

@@ -62,6 +62,11 @@ namespace NHibernate.Dialect
 		/// <inheritdoc />
 		public override int MaxAliasLength => 32;
 
+		/// <inheritdoc />
+		/// <remarks><see langword="true" /> by default for Ingres,
+		/// <see href="https://docs.actian.com/ingres/11.0/index.html#page/SQLRef/String_Literals.htm#ww110572" />.</remarks>
+		protected override bool UseNPrefixForUnicodeStrings => true;
+
 		#region Overridden informational metadata
 
 		public override bool SupportsEmptyInList => false;

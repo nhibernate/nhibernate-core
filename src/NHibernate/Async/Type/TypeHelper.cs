@@ -125,6 +125,7 @@ namespace NHibernate.Type
 					continue;
 				}
 
+				value = await (pair.Value.KeyType.AssembleAsync(value, session, null, cancellationToken)).ConfigureAwait(false);
 				var collection = session.PersistenceContext.GetCollection(new CollectionKey(pair.Value, value));
 				await (collection.ForceInitializationAsync(cancellationToken)).ConfigureAwait(false);
 				assembleRow[pair.Key] = collection;

@@ -8,7 +8,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1730
 	{
 		protected override void Configure(Configuration configuration)
 		{
-			cfg.SetProperty(Environment.GenerateStatistics, "true");
+			configuration.SetProperty(Environment.GenerateStatistics, "true");
 		}
 
 		protected override void OnTearDown()

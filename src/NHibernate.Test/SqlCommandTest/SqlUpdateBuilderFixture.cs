@@ -28,7 +28,9 @@ namespace NHibernate.Test.SqlCommandTest
 
 			update.AddColumns(new string[] {"intColumn"}, NHibernateUtil.Int32);
 			update.AddColumns(new string[] {"longColumn"}, NHibernateUtil.Int64);
+#pragma warning disable CS0618 // Type or member is obsolete
 			update.AddColumn("literalColumn", false, (ILiteralType) NHibernateUtil.Boolean);
+#pragma warning restore CS0618 // Type or member is obsolete
 			update.AddColumn("stringColumn", 5.ToString());
 
 			update.SetIdentityColumn(new string[] {"decimalColumn"}, NHibernateUtil.Decimal);

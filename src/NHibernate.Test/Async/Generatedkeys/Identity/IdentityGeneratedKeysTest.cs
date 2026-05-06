@@ -36,7 +36,6 @@ namespace NHibernate.Test.Generatedkeys.Identity
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
 		}
 

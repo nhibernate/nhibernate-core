@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
-using System.Data.Common;
-using NHibernate.Engine;
-using NHibernate.SqlTypes;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+using System.Globalization;
 using System.Numerics;
 using NHibernate.AdoNet;
+using NHibernate.Engine;
+using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
@@ -37,9 +38,11 @@ namespace NHibernate.Type
 			try
 			{
 				var locale = session.Factory.Settings.Locale;
+				var value = rs[index];
 
-				return rs[index] switch
+				return value switch
 				{
+					int _ => value,
 					BigInteger bi => (int) bi,
 					var c => Convert.ToInt32(c, locale)
 				};
@@ -103,7 +106,7 @@ namespace NHibernate.Type
 
 		public override string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
-			return value.ToString();
+			return ((int)value).ToString(CultureInfo.InvariantCulture);
 		}
 	}
 }

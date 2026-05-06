@@ -49,5 +49,10 @@ namespace NHibernate.Cfg.MappingSchema
 		}
 
 		#endregion
+
+		public HbmGenerator Generator
+		{
+			get { return string.IsNullOrEmpty(generator1) ? generator : new HbmGenerator { @class = generator1 }; }
+		}
 	}
 }

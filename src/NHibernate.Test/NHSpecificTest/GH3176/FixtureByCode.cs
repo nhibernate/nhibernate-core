@@ -49,7 +49,6 @@ namespace NHibernate.Test.NHSpecificTest.GH3176
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.Properties[Environment.CacheProvider] = typeof(HashtableCacheProvider).AssemblyQualifiedName;
 			configuration.Properties[Environment.UseSecondLevelCache] = "true";
 			configuration.Properties[Environment.GenerateStatistics] = "true";

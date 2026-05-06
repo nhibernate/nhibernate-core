@@ -50,9 +50,8 @@ namespace NHibernate.Proxy
 
 			foreach (var member in members)
 			{
-				if (member is PropertyInfo)
+				if (member is PropertyInfo property)
 				{
-					var property = (PropertyInfo) member;
 					if(property.ShouldBeProxiable())
 					{
 						MethodInfo[] accessors = property.GetAccessors(true);
@@ -66,21 +65,19 @@ namespace NHibernate.Proxy
 						}
 					}
 				}
-				else if (member is MethodInfo)
+				else if (member is MethodInfo method)
 				{
-					var methodInfo = (MethodInfo) member;
 					// avoid the check of properties getter and setter because already checked when the PropertyInfo was found.
-					if (!IsPropertyMethod(methodInfo) && methodInfo.ShouldBeProxiable())
+					if (!IsPropertyMethod(method) && method.ShouldBeProxiable())
 					{
-						CheckMethodIsVirtual(type, methodInfo);
+						CheckMethodIsVirtual(type, method);
 					}
 				}
-				else if (member is FieldInfo)
+				else if (member is FieldInfo field)
 				{
-					var memberField = (FieldInfo) member;
-					if (memberField.IsPublic || memberField.IsAssembly || memberField.IsFamilyOrAssembly)
+					if (field.IsPublic || field.IsAssembly || field.IsFamilyOrAssembly)
 					{
-						EnlistError(type, "field " + member.Name + " should not be public nor internal (ecapsulate it in a property).");
+						EnlistError(type, "field " + field.Name + " should not be public nor internal (ecapsulate it in a property).");
 					}
 				}
 			}

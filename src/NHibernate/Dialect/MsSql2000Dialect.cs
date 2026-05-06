@@ -755,6 +755,10 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public override int? MaxNumberOfParameters => 2097;
 
+		/// <inheritdoc />
+		/// <remarks><see langword="true" /> by default for SQL Server.</remarks>
+		protected override bool UseNPrefixForUnicodeStrings => true;
+
 		#region Overridden informational metadata
 
 		public override bool SupportsEmptyInList => false;

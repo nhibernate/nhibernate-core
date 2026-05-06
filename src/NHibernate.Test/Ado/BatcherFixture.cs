@@ -1,12 +1,22 @@
+using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace NHibernate.Test.Ado
 {
-	[TestFixture]
+#if NET6_0_OR_GREATER
+	[TestFixture(true)]
+#endif
+	[TestFixture(false)]
 	public class BatcherFixture: TestCase
 	{
+		private readonly bool _useDbBatch;
+
+		public BatcherFixture(bool useDbBatch)
+		{
+			_useDbBatch = useDbBatch;
+		}
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
@@ -17,15 +27,29 @@ namespace NHibernate.Test.Ado
 			get { return new[] { "Ado.VerySimple.hbm.xml", "Ado.AlmostSimple.hbm.xml" }; }
 		}
 
+		private const int BatchSize = 10;
+
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Environment.FormatSql, "true");
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
-			configuration.SetProperty(Environment.BatchSize, "10");
+			configuration.SetProperty(Environment.BatchSize, BatchSize.ToString());
+			#if NET6_0_OR_GREATER
+			if (_useDbBatch)
+			{
+				configuration.SetProperty(Environment.BatchStrategy, typeof(DbBatchBatcherFactory).AssemblyQualifiedName);
+			}
+			#endif
 		}
 
 		protected override bool AppliesTo(Engine.ISessionFactoryImplementor factory)
 		{
+#if NET6_0_OR_GREATER
+			if (_useDbBatch)
+			{
+				return factory.Settings.BatcherFactory is DbBatchBatcherFactory && factory.Settings.ConnectionProvider.Driver is Driver.DriverBase driverBase && driverBase.CanCreateBatch;
+			}
+#endif
 			return !(factory.Settings.BatcherFactory is NonBatchingBatcherFactory);
 		}
 
@@ -129,20 +153,25 @@ namespace NHibernate.Test.Ado
 			Cleanup();
 		}
 
-		[Test, NetFxOnly]
+		[Test]
 		[Description("SqlClient: The batcher log output should be formatted")]
 		public void BatchedoutputShouldBeFormatted()
 		{
 #if NETFX
 			if (Sfi.Settings.BatcherFactory is SqlClientBatchingBatcherFactory == false)
 				Assert.Ignore("This test is for SqlClientBatchingBatcher only");
+#elif NET6_0_OR_GREATER
+			if (Sfi.Settings.BatcherFactory is DbBatchBatcherFactory == false)
+				Assert.Ignore("This test is for DbBatchBatcherFactory only");
+#else
+			Assert.Ignore("This test is for NETFX and NET6_0_OR_GREATER only");
 #endif
 
 			using (var sqlLog = new SqlLogSpy())
 			{
 				FillDb();
 				var log = sqlLog.GetWholeLog();
-				Assert.IsTrue(log.Contains("INSERT \n    INTO"));
+				Assert.That(log, Does.Contain("INSERT \n    INTO").IgnoreCase);
 			}
 
 			Cleanup();
@@ -213,7 +242,7 @@ namespace NHibernate.Test.Ado
 					foreach (var loggingEvent in sl.Appender.GetEvents())
 					{
 						string message = loggingEvent.RenderedMessage;
-						if(message.ToLowerInvariant().Contains("insert"))
+						if(message.Contains("insert"))
 						{
 							Assert.That(message, Does.Contain("batch").IgnoreCase);
 						}
@@ -275,6 +304,56 @@ namespace NHibernate.Test.Ado
 			}
 
 			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Cleanup();
+		}
+
+		[Test]
+		[Description("Inserting exactly BatchSize entities should not throw on commit. See GH-3725.")]
+		public void InsertExactlyBatchSizeEntitiesShouldNotThrowOnCommit()
+		{
+			// This test verifies that DbBatchBatcher handles empty batches correctly.
+			// The bug (GH-3725): When inserting exactly BatchSize entities, the batch auto-executes
+			// when full (via ExecuteBatchWithTiming), which clears _currentBatch but NOT _batchCommand.
+			// On commit, ExecuteBatch() is called, sees _batchCommand is set, and calls DoExecuteBatch
+			// on an empty _currentBatch, causing InvalidOperationException.
+
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				// Insert exactly BatchSize entities - this fills the batch and triggers auto-execution.
+				for (int i = 0; i < BatchSize; i++)
+				{
+					session.Save(new VerySimple { Id = 1000 + i, Name = $"Test{i}", Weight = i * 1.1 });
+				}
+
+				// Commit triggers ExecuteBatch() which would fail on empty batch without the fix,
+				// depending on the driver. It fails with Microsoft.Data.SqlClient by example, not with
+				// System.Data.SqlClient.
+				transaction.Commit();
+			}
+
+			Cleanup();
+		}
+
+		[Test]
+		[Description("Inserting a multiple of BatchSize entities should not throw on commit. See GH-3725.")]
+		public void InsertMultipleOfBatchSizeEntitiesShouldNotThrowOnCommit()
+		{
+			// Same issue as above but with multiple full batches
+			const int batchSize = 10;
+			const int multiplier = 3;
+
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				for (int i = 0; i < batchSize * multiplier; i++)
+				{
+					session.Save(new VerySimple { Id = 2000 + i, Name = $"Test{i}", Weight = i * 1.1 });
+				}
+
+				transaction.Commit();
+			}
+
 			Cleanup();
 		}
 	}

@@ -11,7 +11,6 @@ namespace NHibernate.Test.Linq
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
-			base.Configure(configuration);
 		}
 
 		[Test]

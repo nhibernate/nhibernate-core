@@ -45,7 +45,6 @@ namespace NHibernate.Test.NHSpecificTest.Dates
 
 		protected override void Configure(Cfg.Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(Environment.ShowSql, "true");
 		}
 

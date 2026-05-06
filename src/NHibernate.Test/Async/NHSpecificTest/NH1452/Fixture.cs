@@ -20,7 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.NH1452
 	{
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
 			configuration.SetProperty(Environment.FormatSql, "false");
 		}
 

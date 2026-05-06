@@ -42,7 +42,8 @@ namespace NHibernate.Test.QueryTranslator
 				"Northwind.Mappings.TimeSheet.hbm.xml",
 				"Northwind.Mappings.Animal.hbm.xml",
 				"Northwind.Mappings.Patient.hbm.xml",
-				"Northwind.Mappings.NumericEntity.hbm.xml"
+				"Northwind.Mappings.NumericEntity.hbm.xml",
+				"Northwind.Mappings.CompositeIdEntity.hbm.xml"
 			};
 
 		protected override string MappingsAssembly => "NHibernate.DomainModel";

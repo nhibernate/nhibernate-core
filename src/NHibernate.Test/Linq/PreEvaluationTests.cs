@@ -24,8 +24,6 @@ namespace NHibernate.Test.Linq
 
 		protected override void Configure(Configuration configuration)
 		{
-			base.Configure(configuration);
-
 			configuration.SetProperty(Environment.FormatSql, "false");
 			configuration.SetProperty(Environment.LinqToHqlLegacyPreEvaluation, LegacyPreEvaluation.ToString());
 			configuration.SetProperty(Environment.LinqToHqlFallbackOnPreEvaluation, FallbackOnPreEvaluation.ToString());

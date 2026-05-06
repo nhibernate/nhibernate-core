@@ -44,7 +44,6 @@ namespace NHibernate.Test.MultiTenancy
 					x.MultiTenancyConnectionProvider<TestMultiTenancyConnectionProvider>();
 				});
 			configuration.Properties[Cfg.Environment.GenerateStatistics] = "true";
-			base.Configure(configuration);
 		}
 
 		private static void ValidateSqlServerConnectionAppName(ISession s, string tenantId)

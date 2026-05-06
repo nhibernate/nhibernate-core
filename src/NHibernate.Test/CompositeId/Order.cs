@@ -48,6 +48,7 @@ namespace NHibernate.Test.CompositeId
 		private Customer customer;
 		private IList<LineItem> lineItems = new List<LineItem>();
 		private decimal total;
+		private Shipper shipper;
 
 		public Order() {}
 		public Order(Customer customer)
@@ -86,6 +87,12 @@ namespace NHibernate.Test.CompositeId
 		{
 			get { return total; }
 			set { total = value; }
+		}
+		
+		public virtual Shipper Shipper
+		{
+			get { return shipper; }
+			set { shipper = value; }
 		}
 
 		public virtual LineItem GenerateLineItem(Product product, int quantity)
