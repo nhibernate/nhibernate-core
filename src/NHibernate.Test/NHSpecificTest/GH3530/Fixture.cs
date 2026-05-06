@@ -213,6 +213,7 @@ public class Fixture : BugTestCase
 			[new CultureInfo("en-US"), new CultureInfo("de-DE")],
 			[new CultureInfo("en-US"), new CultureInfo("ar-SA", false)],
 			[new CultureInfo("en-US"), new CultureInfo("th-TH", false)],
+			[new CultureInfo("ar-SA", false), new CultureInfo("ar-SA", false)]
 		];
 	}
 }
