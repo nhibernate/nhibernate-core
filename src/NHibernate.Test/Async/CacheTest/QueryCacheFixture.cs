@@ -43,35 +43,48 @@ namespace NHibernate.Test.CacheTest
 		{
 			using var s = OpenSession();
 			using var t = s.BeginTransaction();
-				s.Delete("from Simple");
+			s.Delete("from Simple");
 			t.Commit();
 		}
 
 		[Test]
 		public async Task QueryCacheWithNullParametersAsync()
 		{
+			const string query = "from Simple s where s = :s or s.Name = :name or s.Address = :address";
+			Sfi.Statistics.Clear();
+			object simple;
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				const string query = "from Simple s where s = :s or s.Name = :name or s.Address = :address";
+				simple = await (s.LoadAsync(typeof(Simple), SimpleId));
 				await (s
 					.CreateQuery(query)
-					.SetEntity("s", await (s.LoadAsync(typeof(Simple), 1L)))
+					.SetEntity("s", simple)
 					.SetString("name", null)
 					.SetString("address", null)
 					.SetCacheable(true)
 					.UniqueResultAsync());
 
-				// Run a second time, just to test the query cache
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
+				await (t.CommitAsync());
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				// Run a second time, just to test the query cache.
 				var result = await (s
 					.CreateQuery(query)
-					.SetEntity("s", await (s.LoadAsync(typeof(Simple), 1L)))
+					.SetEntity("s", simple)
 					.SetString("name", null)
 					.SetString("address", null)
 					.SetCacheable(true)
 					.UniqueResultAsync());
 
 				Assert.That(result, Is.Not.Null);
-				Assert.That(s.GetIdentifier(result), Is.EqualTo(1));
+				Assert.That(s.GetIdentifier(result), Is.EqualTo(SimpleId));
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1));
+				await (t.CommitAsync());
 			}
 		}
 
@@ -86,20 +99,31 @@ namespace NHibernate.Test.CacheTest
 			if (TestDialect.HasBrokenDecimalType)
 				Assert.Ignore("Database does not support properly decimals.");
 
+			const string query = "select cast(200012 as decimal) from Simple where id_ = 1";
+			Sfi.Statistics.Clear();
 			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				var result = await (s
-					.CreateSQLQuery("select cast(200012 as decimal) from Simple where id_ = 1")
+					.CreateSQLQuery(query)
 					.SetCacheable(true)
 					.UniqueResultAsync<decimal>());
 
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0));
 				Assert.That(result, Is.EqualTo(200012), "Unexpected non-cached result");
+				await (t.CommitAsync());
+			}
 
-				result = await (s
-					.CreateSQLQuery("select cast(200012 as decimal) from Simple where id_ = 1")
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+
+				var result = await (s
+					.CreateSQLQuery(query)
 					.SetCacheable(true)
 					.UniqueResultAsync<decimal>());
 
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1));
 				Assert.That(result, Is.EqualTo(200012), "Unexpected cached result");
 			}
 		}
