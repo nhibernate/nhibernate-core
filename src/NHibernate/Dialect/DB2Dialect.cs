@@ -10,9 +10,10 @@ using NHibernate.SqlTypes;
 namespace NHibernate.Dialect
 {
 	/// <summary>
-	/// An SQL dialect for DB2.
+	/// An SQL dialect for DB2 for Linux, UNIX and Windows.
 	/// </summary>
 	/// <remarks>
+	/// <para>
 	/// The DB2Dialect defaults the following configuration properties:
 	/// <list type="table">
 	///		<listheader>
@@ -24,6 +25,11 @@ namespace NHibernate.Dialect
 	///			<description><see cref="NHibernate.Driver.DB2Driver" /></description>
 	///		</item>
 	/// </list>
+	/// </para>
+	/// <para>
+	/// Two DB2 engines exist. One for Linux, UNIX and Windows, and another one for the IBM i system
+	/// (formerly OS/400). For this other engine, see <see cref="DB2400Dialect" />.
+	/// </para>
 	/// </remarks>
 	public class DB2Dialect : Dialect
 	{
@@ -299,9 +305,23 @@ namespace NHibernate.Dialect
 
 		public override long TimestampResolutionInTicks => 10L; // Microseconds.
 
+
+		/// <remarks>
+		/// <see langword="false" /> for DB2 for Linux, UNIX and Windows.<br />
+		/// DB2 for Linux, UNIX and Windows supports Unicode string literals with the U&amp; prefix instead.
+		/// </remarks>
+		/// <inheritdoc />
+		protected override bool UseNPrefixForUnicodeStrings => false;
+
 		/// <inheritdoc />
 		public override string ToStringLiteral(string value, SqlType type)
 		{
+			// DB2 for Linux, UNIX and Windows supports Unicode string literals with the U& prefix. However,
+			// DB2 for IBM i (OS/400) does not support it and uses the N prefix, so we need to be able to
+			// yield the default implementation.
+			if (UseNPrefixForUnicodeStrings)
+				return base.ToStringLiteral(value, type);
+
 			if (value == null)
 				throw new System.ArgumentNullException(nameof(value));
 			if (type == null)
