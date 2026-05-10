@@ -96,7 +96,10 @@ namespace NHibernate.Test.CacheTest
 		[Test]
 		public void QueryCacheWithAliasToBeanTransformer()
 		{
-			const string query = "select s.id_ as Id from Simple as s;";
+			if (!TestDialect.HasActualIntegerTypes)
+				Assert.Ignore("Database does not support properly integers.");
+
+			const string query = "select s.id_ as Id from Simple s;";
 			Sfi.Statistics.Clear();
 
 			using (var s = OpenSession())

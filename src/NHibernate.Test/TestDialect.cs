@@ -208,5 +208,10 @@ namespace NHibernate.Test
 		/// Some databases (MySql) don't support using main table aliases in subquery inside join ON clause
 		/// </summary>
 		public virtual bool SupportsCorrelatedColumnsInSubselectJoin => true;
+
+		/// <summary>
+		/// Some databases don't have actual integer types.
+		/// </summary>
+		public virtual bool HasActualIntegerTypes => true;
 	}
 }
