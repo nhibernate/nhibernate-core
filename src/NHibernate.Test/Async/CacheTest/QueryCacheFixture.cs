@@ -26,13 +26,16 @@ namespace NHibernate.Test.CacheTest
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Environment.UseQueryCache, "true");
+			configuration.SetProperty(Environment.GenerateStatistics, "true");
 		}
+
+		private const long SimpleId = 1;
 
 		protected override void OnSetUp()
 		{
 			using var s = OpenSession();
 			using var t = s.BeginTransaction();
-				s.Save(new Simple(), 1L);
+			s.Save(new Simple(), SimpleId);
 			t.Commit();
 		}
 
@@ -105,6 +108,7 @@ namespace NHibernate.Test.CacheTest
 		public async Task QueryCacheWithAliasToBeanTransformerAsync()
 		{
 			const string query = "select s.id_ as Id from Simple as s;";
+			Sfi.Statistics.Clear();
 
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
@@ -117,11 +121,12 @@ namespace NHibernate.Test.CacheTest
 
 				Assert.That(result1, Is.InstanceOf<SimpleDTO>());
 				var dto1 = (SimpleDTO) result1;
-				Assert.That(dto1.Id, Is.EqualTo(1));
+				Assert.That(dto1.Id, Is.EqualTo(SimpleId), "Unexpected entity Id");
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(0), "Unexpected query cache hit count");
 				await (t.CommitAsync());
 			}
 
-			// Run a second time, just to test the query cache
+			// Run a second time, just to test the query cache.
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
@@ -133,7 +138,8 @@ namespace NHibernate.Test.CacheTest
 
 				Assert.That(result2, Is.InstanceOf<SimpleDTO>());
 				var dto2 = (SimpleDTO) result2;
-				Assert.That(dto2.Id, Is.EqualTo(1));
+				Assert.That(dto2.Id, Is.EqualTo(SimpleId), "Unexpected entity Id");
+				Assert.That(Sfi.Statistics.QueryCacheHitCount, Is.EqualTo(1), "Unexpected query cache hit count");
 				await (t.CommitAsync());
 			}
 		}
