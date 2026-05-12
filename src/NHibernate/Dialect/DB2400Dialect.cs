@@ -6,9 +6,10 @@ using NHibernate.SqlCommand;
 namespace NHibernate.Dialect
 {
 	/// <summary>
-	/// An SQL dialect for DB2 on iSeries OS/400.
+	/// An SQL dialect for DB2 on IBM i (formerly iSeries, formerly OS/400).
 	/// </summary>
 	/// <remarks>
+	/// <para>
 	/// The DB2400Dialect defaults the following configuration properties:
 	/// <list type="table">
 	///		<listheader>
@@ -20,6 +21,11 @@ namespace NHibernate.Dialect
 	///			<description><see cref="NHibernate.Driver.DB2400Driver" /></description>
 	///		</item>
 	/// </list>
+	/// </para>
+	/// <para>
+	/// Two DB2 engines exist. One for Linux, UNIX and Windows, see <see cref="DB2Dialect" />,
+	/// and another one for the IBM i system.
+	/// </para>
 	/// </remarks>
 	public class DB2400Dialect : DB2Dialect
 	{
@@ -68,5 +74,12 @@ namespace NHibernate.Dialect
 		{
 			get { return false; }
 		}
+
+		/// <remarks>
+		/// <see langword="true" /> by default for DB2400, <see cref="DB2Dialect.ToStringLiteral" /> implementation and
+		/// <see href="https://www.ibm.com/docs/en/i/7.6.0?topic=constants-graphic-string#rbafzgraphicconst__title__3" />.
+		/// </remarks>
+		/// <inheritdoc />
+		protected override bool UseNPrefixForUnicodeStrings => true;
 	}
 }
