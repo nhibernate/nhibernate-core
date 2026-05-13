@@ -270,6 +270,12 @@ namespace NHibernate.Cfg
 
 		public const string CollectionTypeFactoryClass = "collectiontype.factory_class";
 
+		/// <summary>
+		/// The class name of the serialization strategy implementation, implementing
+		/// <see cref="NHibernate.Util.ISerializationStrategy"/>.
+		/// </summary>
+		public const string SerializationStrategy = "serialization.strategy_class";
+
 		public const string LinqToHqlGeneratorsRegistry = "linqtohql.generatorsregistry";
 
 		/// <summary>

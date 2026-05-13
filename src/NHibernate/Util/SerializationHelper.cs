@@ -1,10 +1,4 @@
-using System.IO;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-
-#if NET6_0_OR_GREATER
-#pragma warning disable CS0618 //Serialization is obsolete
-#endif
 
 namespace NHibernate.Util
 {
@@ -12,21 +6,12 @@ namespace NHibernate.Util
 	{
 		public static byte[] Serialize(object obj)
 		{
-			var formatter = CreateFormatter();
-			using (var stream = new MemoryStream())
-			{
-				formatter.Serialize(stream, obj);
-				return stream.ToArray();
-			}
+			return SerializationConfiguration.Strategy.Serialize(obj);
 		}
 
 		public static object Deserialize(byte[] data)
 		{
-			var formatter = CreateFormatter();
-			using (var stream = new MemoryStream(data))
-			{
-				return formatter.Deserialize(stream);
-			}
+			return SerializationConfiguration.Strategy.Deserialize(data);
 		}
 
 		internal static void AddValueArray<T>(this SerializationInfo info, string name, T[] values)
@@ -54,16 +39,6 @@ namespace NHibernate.Util
 		internal static T GetValue<T>(this SerializationInfo info, string name)
 		{
 			return (T) info.GetValue(name, typeof(T));
-		}
-
-		private static BinaryFormatter CreateFormatter()
-		{
-			return new BinaryFormatter
-			{
-#if !NETFX
-				SurrogateSelector = new SurrogateSelector()
-#endif
-			};
 		}
 	}
 }

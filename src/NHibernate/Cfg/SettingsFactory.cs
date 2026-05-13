@@ -57,6 +57,7 @@ namespace NHibernate.Cfg
 				dialect = new GenericDialect();
 			}
 			settings.Dialect = dialect;
+			ConfigureSerializationStrategy(properties);
 
 			settings.LinqToHqlGeneratorsRegistry = LinqToHqlGeneratorsRegistryFactory.CreateGeneratorsRegistry(properties);
 			// 6.0 TODO: default to false instead of true, and adjust documentation in xsd, xml comment on Environment
@@ -356,6 +357,25 @@ namespace NHibernate.Cfg
 			settings.BatchingCollectionInitializationBuilder = GetBatchingCollectionInitializationBuilder(settings.BatchFetchStyle);
 
 			return settings;
+		}
+
+		private static void ConfigureSerializationStrategy(IDictionary<string, string> properties)
+		{
+			var strategyClassName = PropertiesHelper.GetString(Environment.SerializationStrategy, properties, null);
+			if (string.IsNullOrEmpty(strategyClassName))
+				return;
+
+			log.Info("Serialization strategy: {0}", strategyClassName);
+			try
+			{
+				var strategyType = ReflectHelper.ClassForName(strategyClassName);
+				var strategy = (ISerializationStrategy) Environment.ObjectsFactory.CreateInstance(strategyType);
+				SerializationConfiguration.Strategy = strategy;
+			}
+			catch (Exception e)
+			{
+				throw new HibernateException("could not instantiate ISerializationStrategy: " + strategyClassName, e);
+			}
 		}
 
 		private ICacheReadWriteLockFactory GetReadWriteLockFactory(string lockFactory)
