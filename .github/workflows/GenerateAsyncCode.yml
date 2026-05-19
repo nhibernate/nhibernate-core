@@ -6,17 +6,20 @@ on:
       - '**.cs'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   generate-async:
     runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.check_changes.outputs.has_changes }}
 
     steps:
     - uses: actions/checkout@v5
       with:
         ref: ${{ github.event.pull_request.head.ref }}
         repository: ${{ github.event.pull_request.head.repo.full_name }}
+        persist-credentials: false
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
@@ -31,14 +34,48 @@ jobs:
         dotnet async-generator
         popd
 
-    - name: Push changes
+    - name: Check for changes
+      id: check_changes
       run: |
-        git config user.name github-actions[bot]
-        git config user.email github-actions[bot]@users.noreply.github.com
-        if [[ -z "$(git status --porcelain)" ]]; then
-            echo "No changes to commit"
-            exit 0
-        fi
         git add -A
-        git commit -am "Generate async files"
-        git push
+        if git diff --cached --quiet -- '*.cs'; then
+          echo "has_changes=false" >> $GITHUB_OUTPUT
+        else
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+          git diff --cached -- '*.cs' > changes.patch
+        fi
+
+    - name: Upload patch
+      if: steps.check_changes.outputs.has_changes == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: async-changes
+        path: changes.patch
+        retention-days: 1
+
+  commit-changes:
+    needs: generate-async
+    if: needs.generate-async.outputs.has_changes == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+        repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+    - name: Download patch
+      uses: actions/download-artifact@v4
+      with:
+        name: async-changes
+
+    - name: Apply patch
+      run: git apply changes.patch
+
+    - name: Commit and push
+      uses: stefanzweifel/git-auto-commit-action@v7
+      with:
+        commit_message: "Generate async files"
+        file_pattern: "**/*.cs"
