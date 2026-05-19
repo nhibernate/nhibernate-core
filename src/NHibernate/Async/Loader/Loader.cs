@@ -1391,6 +1391,7 @@ namespace NHibernate.Loader
 			else
 			{
 				result = queryCacheBuilder.GetResultList(result);
+				ApplyCachedMetadata(key.ResultTransformer);
 			}
 
 			result = TransformCacheableResults(queryParameters, key.ResultTransformer, result);

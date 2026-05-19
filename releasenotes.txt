@@ -108,6 +108,25 @@ Release notes - NHibernate - Version 5.6.0
    * #3309 Test Case for Invalid SQL with property-ref on property using a formula
 
 
+Build 5.5.4
+=============================
+
+Release notes - NHibernate - Version 5.5.4
+
+5 issues were resolved in this release.
+
+** Bug
+
+   * #3738 Incompatible unicode string literals with DB2400Dialect
+   * #3713 Query cache breaks result transformers which need aliases
+   * #3709 Fix collection cache lookup failure with enum keys (backport #3693)
+
+** Task
+
+   * #3746 Release 5.5.4
+   * #3743 Fix vulnerable packages blocking the test build
+
+
 Build 5.5.3
 =============================
 

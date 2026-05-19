@@ -220,5 +220,10 @@ namespace NHibernate.Test
 		public virtual bool SupportsCorrelatedColumnsInSubselectJoin => true;
 
 		public virtual bool SupportsDateTimeWithFractionalSeconds => _dialect.TimestampResolutionInTicks < TimeSpan.TicksPerSecond && SupportsSqlType(new SqlType(DbType.DateTime, (byte) 2));
+
+		/// <summary>
+		/// Some databases don't have actual integer types.
+		/// </summary>
+		public virtual bool HasActualIntegerTypes => true;
 	}
 }
