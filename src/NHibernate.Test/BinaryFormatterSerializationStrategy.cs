@@ -1,11 +1,12 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using NHibernate.Util;
 
 #if NET6_0_OR_GREATER
 #pragma warning disable CS0618 // Serialization is obsolete
 #endif
 
-namespace NHibernate.Util
+namespace NHibernate.Test
 {
 	/// <summary>
 	/// Legacy serialization strategy based on BinaryFormatter.
