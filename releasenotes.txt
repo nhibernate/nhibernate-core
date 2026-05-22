@@ -1,3 +1,16 @@
+Build 5.6.1
+=============================
+
+Release notes - NHibernate - Version 5.6.1
+
+2 issues were resolved in this release.
+
+** Task
+
+   * #3752 Release 5.6.1
+   * #3751 Merge 5.5.4 into 5.6.x
+
+
 Build 5.6.0
 =============================
 
