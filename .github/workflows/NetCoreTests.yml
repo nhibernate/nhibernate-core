@@ -8,7 +8,7 @@ jobs:
       fail-fast: false
       matrix:
         DB: [SQLite]
-        OS: [ubuntu-latest, windows-latest, macos-13]
+        OS: [ubuntu-latest, windows-latest, macos-latest]
         include:
           - DB: SqlServer2008
             CONNECTION_STRING: "Server=localhost;initial catalog=nhibernate;User Id=sa;Password=P@ssw0rd;packet size=4096;"
