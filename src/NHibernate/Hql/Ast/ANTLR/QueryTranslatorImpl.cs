@@ -341,6 +341,15 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
+		public bool ContainsOrderByClause
+		{
+			get
+			{
+				ErrorIfDML();
+				return ((QueryNode)_sqlAst).GetOrderByClause()?.ChildCount > 0;
+			}
+		}
+
 		public ISet<ICollectionPersister> UncacheableCollectionPersisters
 		{
 			get
