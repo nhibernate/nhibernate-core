@@ -10,8 +10,7 @@ jobs:
         DB: [SQLite]
         # macos: SQLite.Core 1.x lacks an arm64 interop lib and so requires an intel macos image. Switching to SQLite 2
         # (without .Core suffix) might allow to run on arm64. See https://system.data.sqlite.org
-        # -large macos images are currently intel only. See https://github.com/actions/runner-images
-        OS: [ubuntu-latest, windows-latest, macos-latest-large]
+        OS: [ubuntu-latest, windows-latest, macos-26-intel]
         include:
           - DB: SqlServer2008
             CONNECTION_STRING: "Server=localhost;initial catalog=nhibernate;User Id=sa;Password=P@ssw0rd;packet size=4096;"
