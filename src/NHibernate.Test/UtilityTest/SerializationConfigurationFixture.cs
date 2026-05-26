@@ -43,7 +43,7 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		[Test]
-		public void CanConfigureStrategyFromNhProperties()
+		public void SessionFactoryPropertiesDoNotOverrideGlobalStrategy()
 		{
 			SerializationConfiguration.Strategy = new ThrowingSerializationStrategy();
 
@@ -58,7 +58,37 @@ namespace NHibernate.Test.UtilityTest
 			var settingsFactory = new SettingsFactory();
 			settingsFactory.BuildSettings(properties);
 
+			Assert.That(SerializationConfiguration.Strategy, Is.TypeOf<ThrowingSerializationStrategy>());
+		}
+
+		[Test]
+		public void InitializeGlobalPropertiesConfiguresSerializationStrategy()
+		{
+			SerializationConfiguration.Strategy = new ThrowingSerializationStrategy();
+
+			var sessionFactoryConfiguration = new SessionFactoryConfigurationBase();
+			sessionFactoryConfiguration.Properties[Environment.SerializationStrategy] =
+				typeof(BinaryFormatterSerializationStrategy).AssemblyQualifiedName;
+
+			var hibernateConfiguration = new StubHibernateConfiguration
+			{
+				ByteCodeProviderType = "lcg",
+				UseReflectionOptimizer = true,
+				SessionFactory = sessionFactoryConfiguration
+			};
+
+			Environment.InitializeGlobalProperties(hibernateConfiguration);
+
 			Assert.That(SerializationConfiguration.Strategy, Is.TypeOf<BinaryFormatterSerializationStrategy>());
+		}
+
+		private sealed class StubHibernateConfiguration : IHibernateConfiguration
+		{
+			public string ByteCodeProviderType { get; set; }
+
+			public bool UseReflectionOptimizer { get; set; }
+
+			public ISessionFactoryConfiguration SessionFactory { get; set; }
 		}
 	}
 }

@@ -529,11 +529,31 @@ namespace NHibernate.Cfg
 
 			BytecodeProviderInstance = BuildBytecodeProvider(GlobalProperties);
 			ObjectsFactory = BuildObjectsFactory(GlobalProperties);
+			ConfigureSerializationStrategy(GlobalProperties);
 			EnableReflectionOptimizer = PropertiesHelper.GetBoolean(PropertyUseReflectionOptimizer, GlobalProperties);
 
 			if (EnableReflectionOptimizer)
 			{
 				log.Info("Using reflection optimizer");
+			}
+		}
+
+		private static void ConfigureSerializationStrategy(IDictionary<string, string> properties)
+		{
+			var strategyClassName = PropertiesHelper.GetString(SerializationStrategy, properties, null);
+			if (string.IsNullOrEmpty(strategyClassName))
+				return;
+
+			log.Info("Serialization strategy: {0}", strategyClassName);
+			try
+			{
+				var strategyType = ReflectHelper.ClassForName(strategyClassName);
+				var strategy = (ISerializationStrategy) ObjectsFactory.CreateInstance(strategyType);
+				SerializationConfiguration.Strategy = strategy;
+			}
+			catch (Exception e)
+			{
+				throw new HibernateException("could not instantiate ISerializationStrategy: " + strategyClassName, e);
 			}
 		}
 
