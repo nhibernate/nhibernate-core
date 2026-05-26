@@ -12,14 +12,14 @@ environment:
   - DB: MySQL
     CONNECTION_STRING: Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;SslMode=none;CharSet=utf8;
 init:
-    # Required for having windows endlines in sources zip
-    - git config --global core.autocrlf true
+# Required for having windows endlines in sources zip
+- git config --global core.autocrlf true
 install:
-    # Install .NET 10, see https://github.com/appveyor/ci/issues/3984 for checking if it remains needed.
-    # Install script recommended here: https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-install-script#recommended-version
-    - ps: |
-      Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile "$env:temp\dotnet-install.ps1"
-      & $env:temp\dotnet-install.ps1 -Channel 10.0 -InstallDir "$env:ProgramFiles\dotnet"
+# Install .NET 10, see https://github.com/appveyor/ci/issues/3984 for checking if it remains needed.
+# Install script recommended here: https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-install-script#recommended-version
+- ps: |
+    Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile "$env:temp\dotnet-install.ps1"
+    & $env:temp\dotnet-install.ps1 -Channel 10.0 -InstallDir "$env:ProgramFiles\dotnet"
 build: off
 before_test:
 - ps: |-
