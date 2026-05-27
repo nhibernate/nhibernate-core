@@ -204,7 +204,7 @@ namespace NHibernate.Properties
 			/// <value>The <see cref="System.Type"/> that the Field returns.</value>
 			public System.Type ReturnType
 			{
-				get { return field.FieldType; }
+				get { return this.field.FieldType; }
 			}
 
 			/// <summary>
@@ -322,7 +322,7 @@ namespace NHibernate.Properties
 
 			public System.Type Type
 			{
-				get { return field.FieldType; }
+				get { return this.field.FieldType; }
 			}
 
 			#endregion
