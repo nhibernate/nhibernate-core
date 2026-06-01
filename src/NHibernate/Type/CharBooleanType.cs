@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -29,14 +30,20 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			string code = Convert.ToString(rs[index]);
-			if (code == null)
+			if (!rs.TryGetString(index, out var dbValue))
+			{
+				var locale = session.Factory.Settings.Locale;
+
+				dbValue = Convert.ToString(rs[index], locale);
+			}
+
+			if (dbValue == null)
 			{
 				return null;
 			}
 			else
 			{
-				return GetBooleanAsObject(code.Equals(TrueString, StringComparison.InvariantCultureIgnoreCase));
+				return GetBooleanAsObject(dbValue.Equals(TrueString, StringComparison.InvariantCultureIgnoreCase));
 			}
 		}
 

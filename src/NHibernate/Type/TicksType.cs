@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -33,7 +34,14 @@ namespace NHibernate.Type
 		/// <returns>An object with the value from the database.</returns>
 		protected override DateTime GetDateTime(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			return new DateTime(Convert.ToInt64(rs[index]), Kind);
+			if (!rs.TryGetInt64(index, out var dbValue))
+			{
+				var locale = session.Factory.Settings.Locale;
+
+				dbValue = Convert.ToInt64(rs[index], locale);
+			}
+
+			return new DateTime(dbValue, Kind);
 		}
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)

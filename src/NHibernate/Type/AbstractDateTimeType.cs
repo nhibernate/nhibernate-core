@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Globalization;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -64,7 +65,14 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				return AdjustDateTime(Convert.ToDateTime(rs[index]));
+				if (!rs.TryGetDateTime(index, out var dbValue))
+				{
+					var locale = session.Factory.Settings.Locale;
+
+					dbValue = Convert.ToDateTime(rs[index], locale);
+				}
+
+				return AdjustDateTime(dbValue);
 			}
 			catch (Exception ex)
 			{

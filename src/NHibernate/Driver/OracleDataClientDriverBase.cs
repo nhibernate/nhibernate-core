@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.AdoNet;
 using NHibernate.Engine.Query;
 using NHibernate.SqlTypes;
@@ -21,24 +19,6 @@ namespace NHibernate.Driver
 	/// </remarks>
 	public abstract partial class OracleDataClientDriverBase : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
 	{
-		private partial class OracleDbCommandWrapper : DbCommandWrapper
-		{
-			private readonly Action<object, bool> _suppressDecimalInvalidCastExceptionSetter;
-
-			public OracleDbCommandWrapper(DbCommand command, Action<object, bool> suppressDecimalInvalidCastExceptionSetter) : base(command)
-			{
-				_suppressDecimalInvalidCastExceptionSetter = suppressDecimalInvalidCastExceptionSetter;
-			}
-
-			protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
-			{
-				var reader = Command.ExecuteReader(behavior);
-				_suppressDecimalInvalidCastExceptionSetter(reader, true);
-
-				return reader;
-			}
-		}
-
 		private const string _commandClassName = "OracleCommand";
 
 		private static readonly SqlType _guidSqlType = new SqlType(DbType.Binary, 16);
@@ -54,6 +34,8 @@ namespace NHibernate.Driver
 		private readonly object _oracleDbTypeBinaryDouble;
 		private readonly object _oracleDbTypeBinaryFloat;
 
+		private readonly Func<object, object> _oracleGetSessionInfo;
+		private readonly Func<object, string> _oracleGetTimeStampFormat;
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
@@ -89,6 +71,10 @@ namespace NHibernate.Driver
 			{
 				_suppressDecimalInvalidCastExceptionSetter = DelegateHelper.BuildPropertySetter<bool>(oracleDataReader, "SuppressGetDecimalInvalidCastException");
 			}
+
+			var oracleGlobalization = ReflectHelper.TypeFromAssembly(clientNamespace + ".OracleGlobalization", driverAssemblyName, true);
+			_oracleGetTimeStampFormat = DelegateHelper.BuildPropertyGetter<string>(oracleGlobalization, "TimeStampFormat");
+			_oracleGetSessionInfo = DelegateHelper.BuildFunc<object>(TypeOfConnection, "GetSessionInfo");
 		}
 
 		/// <inheritdoc/>
@@ -221,25 +207,35 @@ namespace NHibernate.Driver
 			command.Parameters.Insert(0, outCursor);
 		}
 
-		public override DbCommand CreateCommand()
+		public override DbDataReader ExecuteReader(DbCommand command)
 		{
-			var command = base.CreateCommand();
-			if (!SuppressDecimalInvalidCastException)
-			{
-				return command;
-			}
-
-			if (_suppressDecimalInvalidCastExceptionSetter == null)
+			if (!SuppressDecimalInvalidCastException && _suppressDecimalInvalidCastExceptionSetter == null)
 			{
 				throw new NotSupportedException("OracleDataReader.SuppressGetDecimalInvalidCastException property is supported only in ODP.NET version 19.10 or newer");
 			}
 
-			return new OracleDbCommandWrapper(command, _suppressDecimalInvalidCastExceptionSetter);
+			var reader = command.ExecuteReader();
+
+			if (SuppressDecimalInvalidCastException)
+			{
+				_suppressDecimalInvalidCastExceptionSetter(reader, true);
+			}
+
+			string timestampFormat = GetDateFormat(command.Connection);
+
+			return new OracleDbDataReader(reader, timestampFormat);
 		}
 
-		public override DbCommand UnwrapDbCommand(DbCommand command)
+		private string GetDateFormat(DbConnection connection)
 		{
-			return command is OracleDbCommandWrapper wrapper ? wrapper.Command : command;
+			if (_oracleGetSessionInfo == null && _oracleGetTimeStampFormat == null)
+			{
+				return null;
+			}
+
+			var sessionInfo = _oracleGetSessionInfo(connection);
+
+			return _oracleGetTimeStampFormat(sessionInfo);
 		}
 
 		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass => typeof(OracleDataClientBatchingBatcherFactory);

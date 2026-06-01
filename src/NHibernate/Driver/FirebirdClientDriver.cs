@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using NHibernate.AdoNet;
 using NHibernate.Dialect;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
@@ -17,7 +18,7 @@ namespace NHibernate.Driver
 	/// A NHibernate Driver for using the Firebird data provider located in
 	/// <c>FirebirdSql.Data.FirebirdClient</c> assembly.
 	/// </summary>
-	public class FirebirdClientDriver : ReflectionBasedDriver
+	public partial class FirebirdClientDriver : ReflectionBasedDriver
 	{
 		private const string SELECT_CLAUSE_EXP = @"(?<=\bselect\b|\bwhere\b).*";
 		private const string CAST_PARAMS_EXP =
@@ -212,5 +213,12 @@ namespace NHibernate.Driver
 		/// See http://tracker.firebirdsql.org/browse/DNET-766.
 		/// </summary>
 		public override bool SupportsEnlistmentWhenAutoEnlistmentIsDisabled => false;
+
+		public override DbDataReader ExecuteReader(DbCommand command)
+		{
+			var reader = command.ExecuteReader();
+
+			return new FirebirdDbDataReader(reader);
+		}
 	}
 }

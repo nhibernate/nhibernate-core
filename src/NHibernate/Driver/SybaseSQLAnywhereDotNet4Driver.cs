@@ -1,4 +1,7 @@
-﻿namespace NHibernate.Driver
+using System.Data.Common;
+using NHibernate.AdoNet;
+
+namespace NHibernate.Driver
 {
 	/// <summary>
 	/// SQL Dialect for SQL Anywhere 12 - for the NHibernate 3.2.0 distribution
@@ -28,7 +31,7 @@
 	/// Sybase SQL Anywhere 12 using the versioned ADO.NET driver 
 	/// iAnywhere.Data.SQLAnywhere.v4.0.
 	/// </remarks>
-	public class SybaseSQLAnywhereDotNet4Driver : ReflectionBasedDriver
+	public partial class SybaseSQLAnywhereDotNet4Driver : ReflectionBasedDriver
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SybaseSQLAnywhereDotNet4Driver"/> class.
@@ -57,5 +60,12 @@
 		}
 
 		public override bool RequiresTimeSpanForTime => true;
+
+		public override DbDataReader ExecuteReader(DbCommand command)
+		{
+			var reader = command.ExecuteReader();
+
+			return new SqlAnywhereDbDataReader(reader);
+		}
 	}
 }

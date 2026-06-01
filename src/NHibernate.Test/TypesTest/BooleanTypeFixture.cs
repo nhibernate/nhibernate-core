@@ -59,6 +59,9 @@ namespace NHibernate.Test.TypesTest
 			BooleanType type = NHibernateUtil.Boolean;
 			var session = Substitute.For<ISessionImplementor>();
 			var reader = Substitute.For<DbDataReader>();
+
+			reader.GetBoolean(index0).Returns(expected);
+			reader.GetBoolean(index1).Returns(expected);
 			reader[index0].Returns(expected);
 			reader[index1].Returns(expected);
 
@@ -78,8 +81,11 @@ namespace NHibernate.Test.TypesTest
 			var type = NHibernateUtil.Boolean;
 			var session = Substitute.For<ISessionImplementor>();
 			var reader = Substitute.For<DbDataReader>();
+
 			reader.GetOrdinal(name0).Returns(0);
 			reader.GetOrdinal(name1).Returns(1);
+			reader.GetBoolean(0).Returns(expected);
+			reader.GetBoolean(1).Returns(expected);
 			reader[0].Returns(expected);
 			reader[1].Returns(expected);
 

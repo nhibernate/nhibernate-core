@@ -2,10 +2,11 @@ using System;
 using System.Data;
 using System.Data.Common;
 using NHibernate.Util;
+using NHibernate.AdoNet;
 
 namespace NHibernate.Driver
 {
-	public class Sql2008ClientDriver : SqlClientDriver
+	public partial class Sql2008ClientDriver : SqlClientDriver
 	{
 		const byte MaxTime = 5;
 
@@ -34,5 +35,12 @@ namespace NHibernate.Driver
 
 		/// <inheritdoc />
 		public override DateTime MinDate => DateTime.MinValue;
+
+		public override DbDataReader ExecuteReader(DbCommand command)
+		{
+			var reader = command.ExecuteReader();
+
+			return new NoCharDbDataReader(reader);
+		}
 	}
 }
