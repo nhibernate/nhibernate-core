@@ -22,7 +22,7 @@ jobs:
         persist-credentials: false
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5
       with:
         global-json-file: global.json
 
@@ -75,7 +75,7 @@ jobs:
       run: git apply changes.patch
 
     - name: Commit and push
-      uses: stefanzweifel/git-auto-commit-action@v7
+      uses: stefanzweifel/git-auto-commit-action@04702edda442b2e678b25b537cec683a1493fcb9 # v7
       with:
         commit_message: "Generate async files"
         file_pattern: "**/*.cs"
