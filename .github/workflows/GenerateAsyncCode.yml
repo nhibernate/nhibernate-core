@@ -15,7 +15,7 @@ jobs:
       has_changes: ${{ steps.check_changes.outputs.has_changes }}
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       with:
         ref: ${{ github.event.pull_request.head.ref }}
         repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -47,7 +47,7 @@ jobs:
 
     - name: Upload patch
       if: steps.check_changes.outputs.has_changes == 'true'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
       with:
         name: async-changes
         path: changes.patch
@@ -61,13 +61,13 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       with:
         ref: ${{ github.event.pull_request.head.ref }}
         repository: ${{ github.event.pull_request.head.repo.full_name }}
 
     - name: Download patch
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
       with:
         name: async-changes
 

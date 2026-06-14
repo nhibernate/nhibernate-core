@@ -30,5 +30,10 @@ namespace NHibernate.Test.TestDialects
 		/// <inheritdoc />
 		/// <remarks>Canceling a query hangs under Linux with OracleManagedDataClientDriver 21.6.1.</remarks>
 		public override bool SupportsCancelQuery => !RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+
+		/// <inheritdoc />
+		/// <remarks>Oracle does not have an actual integer type, it uses <c>number</c> instead, which is a
+		/// <c>decimal</c> type.</remarks>
+		public override bool HasActualIntegerTypes => false;
 	}
 }
