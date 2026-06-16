@@ -187,6 +187,41 @@ namespace NHibernate.Linq.Visitors
 			}
 			return base.VisitConstant(expression);
 		}
+
+		#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
+		protected override Expression VisitMethodCall(MethodCallExpression node)
+		{
+			if (IsMemoryExtensionContains(node.Method) &&
+			    TryUnwrapImplicitSpanConversion(node.Arguments[0], out var array) &&
+			    array.Type.IsArray)
+			{
+				var contains =
+					ReflectionCache.EnumerableMethods.ContainsDefinition.MakeGenericMethod(array.Type.GetElementType());
+
+				return base.VisitMethodCall(Expression.Call(contains, array, node.Arguments[1]));
+			}
+
+			return base.VisitMethodCall(node);
+		}
+
+		private static bool TryUnwrapImplicitSpanConversion(Expression span, out Expression array)
+		{
+			if (span is MethodCallExpression { Method: { Name: "op_Implicit" } method, Arguments: [var arg] } &&
+			    (method.DeclaringType.IsSpan() || method.DeclaringType.IsReadOnlySpan()))
+			{
+				array = arg;
+				return true;
+			}
+
+			array = null;
+			return false;
+		}
+
+		private static bool IsMemoryExtensionContains(MethodInfo method)
+		{
+			return method.Name == "Contains" && method.DeclaringType == typeof(MemoryExtensions);
+		}
+#endif
 	}
 
 	internal struct QueryVariable : IEquatable<QueryVariable>

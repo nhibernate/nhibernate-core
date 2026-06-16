@@ -1,3 +1,4 @@
+using System.Linq;
 using NHibernate.AdoNet;
 using NHibernate.Cfg;
 using NUnit.Framework;
@@ -26,11 +27,13 @@ namespace NHibernate.Test.Ado
 			get { return new[] { "Ado.VerySimple.hbm.xml", "Ado.AlmostSimple.hbm.xml" }; }
 		}
 
+		private const int BatchSize = 10;
+
 		protected override void Configure(Configuration configuration)
 		{
 			configuration.SetProperty(Environment.FormatSql, "true");
 			configuration.SetProperty(Environment.GenerateStatistics, "true");
-			configuration.SetProperty(Environment.BatchSize, "10");
+			configuration.SetProperty(Environment.BatchSize, BatchSize.ToString());
 			#if NET6_0_OR_GREATER
 			if (_useDbBatch)
 			{
@@ -301,6 +304,56 @@ namespace NHibernate.Test.Ado
 			}
 
 			Assert.That(Sfi.Statistics.PrepareStatementCount, Is.EqualTo(1));
+			Cleanup();
+		}
+
+		[Test]
+		[Description("Inserting exactly BatchSize entities should not throw on commit. See GH-3725.")]
+		public void InsertExactlyBatchSizeEntitiesShouldNotThrowOnCommit()
+		{
+			// This test verifies that DbBatchBatcher handles empty batches correctly.
+			// The bug (GH-3725): When inserting exactly BatchSize entities, the batch auto-executes
+			// when full (via ExecuteBatchWithTiming), which clears _currentBatch but NOT _batchCommand.
+			// On commit, ExecuteBatch() is called, sees _batchCommand is set, and calls DoExecuteBatch
+			// on an empty _currentBatch, causing InvalidOperationException.
+
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				// Insert exactly BatchSize entities - this fills the batch and triggers auto-execution.
+				for (int i = 0; i < BatchSize; i++)
+				{
+					session.Save(new VerySimple { Id = 1000 + i, Name = $"Test{i}", Weight = i * 1.1 });
+				}
+
+				// Commit triggers ExecuteBatch() which would fail on empty batch without the fix,
+				// depending on the driver. It fails with Microsoft.Data.SqlClient by example, not with
+				// System.Data.SqlClient.
+				transaction.Commit();
+			}
+
+			Cleanup();
+		}
+
+		[Test]
+		[Description("Inserting a multiple of BatchSize entities should not throw on commit. See GH-3725.")]
+		public void InsertMultipleOfBatchSizeEntitiesShouldNotThrowOnCommit()
+		{
+			// Same issue as above but with multiple full batches
+			const int batchSize = 10;
+			const int multiplier = 3;
+
+			using (var session = OpenSession())
+			using (var transaction = session.BeginTransaction())
+			{
+				for (int i = 0; i < batchSize * multiplier; i++)
+				{
+					session.Save(new VerySimple { Id = 2000 + i, Name = $"Test{i}", Weight = i * 1.1 });
+				}
+
+				transaction.Commit();
+			}
+
 			Cleanup();
 		}
 	}

@@ -29,8 +29,8 @@ namespace NHibernate.Test.NHSpecificTest.NH1304
 
 		public virtual string Field
 		{
-			get { return field; }
-			set { field = value; }
+			get { return this.field; }
+			set { this.field = value; }
 		}
 
 		public virtual string FieldCamelcase

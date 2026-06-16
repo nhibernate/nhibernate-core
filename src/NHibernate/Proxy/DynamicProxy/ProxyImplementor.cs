@@ -27,7 +27,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		public FieldBuilder InterceptorField
 		{
-			get { return field; }
+			get { return this.field; }
 		}
 
 		public void ImplementProxy(TypeBuilder typeBuilder)

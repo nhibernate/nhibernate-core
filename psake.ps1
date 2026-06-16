@@ -123,7 +123,7 @@ Task Build {
     Exec { 
         dotnet build ./src/NHibernate/NHibernate.csproj -m:1 -c Release
         dotnet build ./src/NHibernate.sln -c Release
-    }
+    } -MaxRetries 1
 }
 
 Task Test -depends Build {
@@ -132,7 +132,7 @@ Task Test -depends Build {
         'NHibernate.Test',
         'NHibernate.Test.VisualBasic'
     ) | ForEach-Object { 
-        $assembly = [IO.Path]::Combine("src", $_, "bin", "Release", "net8.0", "$_.dll")
+        $assembly = [IO.Path]::Combine("src", $_, "bin", "Release", "net10.0", "$_.dll")
         Exec {
             dotnet $assembly --labels=before --nocolor "--result=$_-TestResult.xml"
         }

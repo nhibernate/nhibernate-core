@@ -148,8 +148,8 @@ namespace NHibernate.Linq.Functions
 		{
 			SupportedMethods = new[]
 			{
-				ReflectHelper.FastGetMethodDefinition(Queryable.Contains, default(IQueryable<object>), default(object)),
-				ReflectHelper.FastGetMethodDefinition(Enumerable.Contains, default(IEnumerable<object>), default(object))
+				ReflectionCache.QueryableMethods.ContainsDefinition,
+				ReflectionCache.EnumerableMethods.ContainsDefinition,
 			};
 		}
 

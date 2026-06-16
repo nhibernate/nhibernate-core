@@ -115,6 +115,12 @@ namespace NHibernate.AdoNet
 
 		protected override void DoExecuteBatch(DbCommand ps)
 		{
+			if (_currentBatch.BatchCommands.Count == 0)
+			{
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, 0, ps);
+				return;
+			}
+
 			try
 			{
 				Log.Debug("Executing batch");
@@ -145,6 +151,12 @@ namespace NHibernate.AdoNet
 		protected override async Task DoExecuteBatchAsync(DbCommand ps, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
+			if (_currentBatch.BatchCommands.Count == 0)
+			{
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, 0, ps);
+				return;
+			}
+
 			try
 			{
 				Log.Debug("Executing batch");

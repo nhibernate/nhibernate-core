@@ -8,7 +8,10 @@ jobs:
       fail-fast: false
       matrix:
         DB: [SQLite]
-        OS: [ubuntu-latest, windows-latest, macos-13]
+        # macos: System.Data.SQLite.Core 1.x lacks an arm64 interop lib and so requires an intel macos image. There are
+        # no latest such images, excepted -large but they require a paying GitHub account. https://github.com/actions/runner-images
+        # Switching to System.Data.SQLite 2 (without .Core suffix) might allow to run on arm64. See https://system.data.sqlite.org
+        OS: [ubuntu-latest, windows-latest, macos-26-intel]
         include:
           - DB: SqlServer2008
             CONNECTION_STRING: "Server=localhost;initial catalog=nhibernate;User Id=sa;Password=P@ssw0rd;packet size=4096;"
@@ -63,15 +66,15 @@ jobs:
     - name: Set up ${{matrix.DB}}
       run: ${{matrix.DB_INIT}}
 
+    - name: Checkout
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      with:
+        show-progress: false
+
     - name: Set up .NET
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8.0.x
-
-    - name: Checkout
-      uses: actions/checkout@v5
-      with:
-        show-progress: false
+        global-json-file: global.json
 
     - name: Build and Test
       run: |

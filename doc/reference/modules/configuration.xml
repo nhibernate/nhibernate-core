@@ -1425,12 +1425,12 @@ in the parameter binding.</programlisting>
                     </thead>
                     <tbody>
                         <row>
-                            <entry>DB2</entry> 
+                            <entry>DB2 for Linux, UNIX and Windows</entry>
                             <entry><literal>NHibernate.Dialect.DB2Dialect</literal></entry>
                             <entry></entry>
                         </row>
                         <row>
-                            <entry>DB2 for iSeries (OS/400)</entry> 
+                            <entry>DB2 for IBM i (formerly iSeries, formerly OS/400)</entry> 
                             <entry><literal>NHibernate.Dialect.DB2400Dialect</literal></entry>
                             <entry></entry>
                         </row>
