@@ -32,9 +32,9 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		[Test]
-		public void CanUseBinaryFormatterStrategy()
+		public void CanSerialization()
 		{
-			TestConfigurationHelper.UseBinaryFormatterSerialization();
+			TestConfigurationHelper.UseTestSerialization();
 			var value = new[] { 1, 2, 3 };
 			var bytes = SerializationHelper.Serialize(value);
 			var copy = (int[]) SerializationHelper.Deserialize(bytes);
@@ -52,7 +52,7 @@ namespace NHibernate.Test.UtilityTest
 				[Environment.Dialect] = typeof(Dialect.GenericDialect).AssemblyQualifiedName,
 				[Environment.ConnectionDriver] = typeof(Driver.SqlClientDriver).AssemblyQualifiedName,
 				[Environment.ConnectionString] = "Server=(localdb)\\MSSQLLocalDB;Database=master;Integrated Security=SSPI",
-				[Environment.SerializationStrategy] = typeof(BinaryFormatterSerializationStrategy).AssemblyQualifiedName
+				[Environment.SerializationStrategy] = typeof(TestSerializationStrategy).AssemblyQualifiedName
 			};
 
 			var settingsFactory = new SettingsFactory();
@@ -68,7 +68,7 @@ namespace NHibernate.Test.UtilityTest
 
 			var sessionFactoryConfiguration = new SessionFactoryConfigurationBase();
 			sessionFactoryConfiguration.Properties[Environment.SerializationStrategy] =
-				typeof(BinaryFormatterSerializationStrategy).AssemblyQualifiedName;
+				typeof(TestSerializationStrategy).AssemblyQualifiedName;
 
 			var hibernateConfiguration = new StubHibernateConfiguration
 			{
@@ -79,7 +79,7 @@ namespace NHibernate.Test.UtilityTest
 
 			Environment.InitializeGlobalProperties(hibernateConfiguration);
 
-			Assert.That(SerializationConfiguration.Strategy, Is.TypeOf<BinaryFormatterSerializationStrategy>());
+			Assert.That(SerializationConfiguration.Strategy, Is.TypeOf<TestSerializationStrategy>());
 		}
 
 		private sealed class StubHibernateConfiguration : IHibernateConfiguration

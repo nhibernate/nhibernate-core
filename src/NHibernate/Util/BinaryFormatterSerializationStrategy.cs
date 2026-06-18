@@ -1,16 +1,21 @@
+#if !NET9_0_OR_GREATER
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using NHibernate.Util;
 
 #if NET6_0_OR_GREATER
 #pragma warning disable CS0618 // Serialization is obsolete
 #endif
 
-namespace NHibernate.Test
+namespace NHibernate.Util
 {
 	/// <summary>
-	/// Legacy serialization strategy based on BinaryFormatter.
+	/// Legacy serialization strategy based on <see cref="BinaryFormatter"/>.
 	/// </summary>
+	/// <remarks>
+	/// This strategy is not available on .NET 9.0 or greater, where <see cref="BinaryFormatter"/>
+	/// has been removed from the framework. Applications targeting those frameworks must provide
+	/// their own <see cref="ISerializationStrategy"/> implementation.
+	/// </remarks>
 	public sealed class BinaryFormatterSerializationStrategy : ISerializationStrategy
 	{
 		/// <summary>
@@ -53,3 +58,4 @@ namespace NHibernate.Test
 		}
 	}
 }
+#endif

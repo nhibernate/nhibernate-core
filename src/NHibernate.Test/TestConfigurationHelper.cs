@@ -58,11 +58,11 @@ namespace NHibernate.Test
 		}
 
 		/// <summary>
-		/// Configures NHibernate test runs to use the legacy BinaryFormatter strategy.
+		/// Configures NHibernate test runs to use the test strategy (Legacy BinaryFormatter).
 		/// </summary>
-		public static void UseBinaryFormatterSerialization()
+		public static void UseTestSerialization()
 		{
-			SerializationConfiguration.Strategy = new BinaryFormatterSerializationStrategy();
+			SerializationConfiguration.Strategy = new TestSerializationStrategy();
 		}
 
         private static string FindCurrentTestConfigurationFile(string filename)

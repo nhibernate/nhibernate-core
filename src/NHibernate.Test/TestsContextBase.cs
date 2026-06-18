@@ -13,7 +13,7 @@ namespace NHibernate.Test
 		static TestsContextBase()
 		{
 			ConfigureLog4Net();
-			TestConfigurationHelper.UseBinaryFormatterSerialization();
+			TestConfigurationHelper.UseTestSerialization();
 
 			//When .NET Core App 2.0 tests run from VS/VSTest the entry assembly is "testhost.dll"
 			//so we need to explicitly load the configuration

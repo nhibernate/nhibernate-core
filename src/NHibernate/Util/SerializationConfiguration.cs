@@ -7,7 +7,12 @@ namespace NHibernate.Util
 	/// </summary>
 	public static class SerializationConfiguration
 	{
-		private static ISerializationStrategy _strategy = new ThrowingSerializationStrategy();
+		private static ISerializationStrategy _strategy =
+#if NET9_0_OR_GREATER
+			new ThrowingSerializationStrategy();
+#else
+			new BinaryFormatterSerializationStrategy();
+#endif
 
 		/// <summary>
 		/// Gets or sets the active serialization strategy used by NHibernate.
