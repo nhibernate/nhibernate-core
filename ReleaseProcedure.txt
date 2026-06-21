@@ -10,7 +10,8 @@ These are the tasks typically needed to create an official NHibernate release.
 dotnet gitreleasemanager create -o nhibernate -r nhibernate-core -m 5.3 --token yourGitHubTokenWithRepoContentWritePermission
 
     (Adjust the -m milestone parameter above, and add "-c branchname" if
-    releasing another branch than master)
+    releasing another branch than master. The command must be run from the
+    nhibernate-core folder.)
 
   * Update releasenotes.txt with the list of issues generated in the GitHub
     draft release. Add to the list the release task.

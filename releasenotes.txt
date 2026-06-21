@@ -1,3 +1,48 @@
+Build 5.7.0
+=============================
+
+Release notes - NHibernate - Version 5.7.0
+
+** Highlights
+    * NHibernate targets now directly include .NET 10. This new target come with changes to adapt to the
+      "first-class span types" C# 14 language feature which was breaking some NHibernate features.
+    * 13 issues were resolved in this release.
+
+    ##### Possible Breaking Changes #####
+        * The NHibernate features using binary serialization will now throw a SerializationException for
+          applications targeting .NET 10 or greater. These features can be restored by configuring a
+          serialization strategy with your own custom strategy. (See Cfg.Environment.SerializationStrategy
+          or set NHibernate.Util.SerializationConfiguration.Strategy.) See #3745.
+
+** Bug
+
+   * #3716 Update query with new expression crashes in visual basic
+   * #3725 DbBatchBatcher may fail on empty batch execution
+
+** New Feature
+
+   * #3715 Enable use of Testcontainers
+
+** Improvement
+
+   * #3651 Support for "first-class span types" C# 14 language feature
+   * #3742 Refactor Command parts to avoid duplicate characters. Reduces memory footprint
+   * #3745 Add pluggable serialization strategy and make BinaryFormatter opt-in
+
+** Task
+
+   * #3758 Release 5.7.0
+   * #3722 Use global.json dotnet version for actions
+   * #3749 Update actions/checkout action to v6
+   * #3750 Update GitHub Artifact Actions (major)
+   * #3753 Merge 5.6.1 into master
+   * #3754 Switch macos-13 tests to macos-26-intel
+
+** Tests
+
+   * #3662 Run tests using .NET 10
+
+
 Build 5.6.1
 =============================
 
