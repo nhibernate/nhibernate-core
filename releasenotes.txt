@@ -6,7 +6,7 @@ Release notes - NHibernate - Version 5.7.0
 ** Highlights
     * NHibernate targets now directly include .NET 10. This new target come with changes to adapt to the
       "first-class span types" C# 14 language feature which was breaking some NHibernate features.
-    * 13 issues were resolved in this release.
+    * 14 issues were resolved in this release.
 
     ##### Possible Breaking Changes #####
         * The NHibernate features using binary serialization will now throw a SerializationException for
@@ -22,6 +22,7 @@ Release notes - NHibernate - Version 5.7.0
 ** New Feature
 
    * #3715 Enable use of Testcontainers
+   * #3712 Add DateOnly and TimeOnly support
 
 ** Improvement
 
