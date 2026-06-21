@@ -5,6 +5,7 @@ namespace NHibernate.Test
 	using System;
 	using System.IO;
 	using Cfg;
+	using Util;
 
 	public static class TestConfigurationHelper
 	{
@@ -54,6 +55,14 @@ namespace NHibernate.Test
 				result.SetProperty(Cfg.Environment.ConnectionString, TestContainerSetup.GetConnectionString(connectionString));
 			}
 			return result;
+		}
+
+		/// <summary>
+		/// Configures NHibernate test runs to use the test strategy (Legacy BinaryFormatter).
+		/// </summary>
+		public static void UseTestSerialization()
+		{
+			SerializationConfiguration.Strategy = new TestSerializationStrategy();
 		}
 
         private static string FindCurrentTestConfigurationFile(string filename)
