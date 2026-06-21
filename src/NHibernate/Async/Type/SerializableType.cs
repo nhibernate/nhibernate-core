@@ -11,15 +11,10 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using System.IO;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
-
-#if NET6_0_OR_GREATER
-#pragma warning disable CS0618 //Serialization is obsolete
-#endif
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {

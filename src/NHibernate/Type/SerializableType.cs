@@ -1,15 +1,10 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using System.IO;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
-
-#if NET6_0_OR_GREATER
-#pragma warning disable CS0618 //Serialization is obsolete
-#endif
+using NHibernate.Util;
 
 namespace NHibernate.Type
 {
@@ -137,12 +132,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				var formatter = new BinaryFormatter();
-				using (var ms = new MemoryStream())
-				{
-					formatter.Serialize(ms, obj);
-					return ms.ToArray();
-				}
+				return SerializationConfiguration.Strategy.Serialize(obj);
 			}
 			catch (Exception e)
 			{
@@ -159,11 +149,7 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				var formatter = new BinaryFormatter();
-				using (var ms = new MemoryStream(bytes))
-				{
-					return formatter.Deserialize(ms);
-				}
+				return SerializationConfiguration.Strategy.Deserialize(bytes);
 			}
 			catch (Exception e)
 			{
