@@ -41,12 +41,6 @@ namespace NHibernate.Type
 			}
 		}
 
-		///// <inheritdoc />
-		//public override object Get(DbDataReader rs, string name, ISessionImplementor session)
-		//{
-		//	return Get(rs, rs.GetOrdinal(name), session);
-		//}
-
 		/// <inheritdoc />
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
