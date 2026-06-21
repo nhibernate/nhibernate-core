@@ -342,7 +342,7 @@ namespace NHibernate.Type
 
 			// object needs to have both class and serializable setup before it can
 			// be created.
-RegisterType(typeof (Object), NHibernateUtil.Object, new[] {"object"});
+			RegisterType(typeof (Object), NHibernateUtil.Object, new[] {"object"});
 
 #if NET6_0_OR_GREATER
 			RegisterType(typeof(DateOnly), NHibernateUtil.DateOnlyAsDate, new[] { "dateonly", "dateonlyasdate" });

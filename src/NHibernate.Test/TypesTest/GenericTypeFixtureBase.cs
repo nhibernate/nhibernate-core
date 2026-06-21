@@ -17,7 +17,6 @@ namespace NHibernate.Test.TypesTest
 	/// </summary>
 	public abstract class GenericTypeFixtureBase<TProperty, TType> : TestCase where TType : IType
 	{
-
 		protected override string MappingsAssembly
 		{
 			get { return "NHibernate.Test"; }
@@ -264,6 +263,7 @@ namespace NHibernate.Test.TypesTest
 			s.Query<TestEntity>().Delete();
 			t.Commit();
 		}
+
 		public class TestEntity
 		{
 			public virtual Guid Id { get; set; }
