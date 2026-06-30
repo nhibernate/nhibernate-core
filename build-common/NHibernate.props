@@ -2,8 +2,8 @@
   <Import Condition="Exists('NHibernate.dev.props')" Project="NHibernate.dev.props"/>
 
   <PropertyGroup>
-    <NhVersion     Condition="'$(NhVersion)' == ''"    >5.6</NhVersion>
-    <VersionPatch  Condition="'$(VersionPatch)'  == ''">1</VersionPatch>
+    <NhVersion     Condition="'$(NhVersion)' == ''"    >5.7</NhVersion>
+    <VersionPatch  Condition="'$(VersionPatch)'  == ''">0</VersionPatch>
     <!-- Clear VersionSuffix for making release and set it to dev for making development builds -->
     <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
     <LangVersion Condition="'$(MSBuildProjectExtension)' != '.vbproj'">14.0</LangVersion>
