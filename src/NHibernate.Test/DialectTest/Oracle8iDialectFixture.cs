@@ -1,4 +1,4 @@
-﻿using NHibernate.Cfg;
+using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.SqlCommand;
 using NHibernate.Util;
@@ -148,5 +148,18 @@ namespace NHibernate.Test.DialectTest
 		}
 
 		#endregion
+		[Test]
+		public void TemporaryTableNameTruncation()
+		{
+			string temporaryTableName = new Oracle8iDialect().GenerateTemporaryTableName(
+				"TABLE_NAME_THAT_EXCEEDS_30_CHARACTERS");
+			Assert.AreEqual(
+				30,
+				temporaryTableName.Length);
+			Assert.AreEqual(
+				"HT_TABLE_NAME_THAT_EXCEEDS_30_",
+				temporaryTableName
+			);
+		}
 	}
 }
