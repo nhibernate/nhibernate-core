@@ -1410,6 +1410,15 @@ in the parameter binding.</programlisting>
                 other properties listed above, saving you the effort of specifying them manually.
             </para>
 
+            <para>
+                When a dialect refers to a version of a database engine, that is the minimal version
+                supported by the dialect. The dialect will support later versions of the engine, unless
+                the newer engine version has some incompatible breaking changes (which happens seldomly).
+                Dialects targeting higher versions of an engine are provided when new features in these
+                versions may be used by the dialect, like enabling the use of sequences with SQL Server
+                2012 or later.
+            </para>
+
             <table frame="topbot" id="sql-dialects" revision="2">
                 <title>NHibernate SQL Dialects (<literal>dialect</literal>)</title>
                 <tgroup cols="3">
