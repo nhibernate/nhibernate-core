@@ -90,7 +90,7 @@ namespace NHibernate.Event.Default
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("Processing unreferenced collections");
 
-			ICollection list = IdentityMap.Entries(session.PersistenceContext.CollectionEntries);
+			IList<DictionaryEntry> list = IdentityMap.EntriesList(session.PersistenceContext.CollectionEntries);
 			foreach (DictionaryEntry me in list)
 			{
 				CollectionEntry ce = (CollectionEntry) me.Value;
@@ -104,7 +104,7 @@ namespace NHibernate.Event.Default
 
 			log.Debug("Scheduling collection removes/(re)creates/updates");
 
-			list = IdentityMap.Entries(session.PersistenceContext.CollectionEntries);
+			list = IdentityMap.EntriesList(session.PersistenceContext.CollectionEntries);
 			ActionQueue actionQueue = session.ActionQueue;
 			foreach (DictionaryEntry me in list)
 			{
@@ -148,7 +148,7 @@ namespace NHibernate.Event.Default
 			// It is safe because of how IdentityMap implements entrySet()
 			IEventSource source = @event.Session;
 
-			ICollection list = IdentityMap.ConcurrentEntries(source.PersistenceContext.EntityEntries);
+			IList<DictionaryEntry> list = IdentityMap.ConcurrentEntriesList(source.PersistenceContext.EntityEntries);
 			foreach (DictionaryEntry me in list)
 			{
 				// Update the status of the object and if necessary, schedule an update
@@ -176,7 +176,7 @@ namespace NHibernate.Event.Default
 			// and reset reached, doupdate, etc.
 			log.Debug("dirty checking collections");
 
-			ICollection list = IdentityMap.Entries(session.PersistenceContext.CollectionEntries);
+			IList<DictionaryEntry> list = IdentityMap.EntriesList(session.PersistenceContext.CollectionEntries);
 			foreach (DictionaryEntry entry in list)
 			{
 				await (((CollectionEntry) entry.Value).PreFlushAsync((IPersistentCollection) entry.Key, cancellationToken)).ConfigureAwait(false);
@@ -192,7 +192,7 @@ namespace NHibernate.Event.Default
 			log.Debug("processing flush-time cascades");
 
 			var anything = Anything;
-			ICollection list = IdentityMap.ConcurrentEntries(session.PersistenceContext.EntityEntries);
+			IList<DictionaryEntry> list = IdentityMap.ConcurrentEntriesList(session.PersistenceContext.EntityEntries);
 			//safe from concurrent modification because of how entryList() is implemented on IdentityMap
 			foreach (DictionaryEntry me in list)
 			{

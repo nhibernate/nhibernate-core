@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using NHibernate.Util;
 using NUnit.Framework;
@@ -69,9 +70,9 @@ namespace NHibernate.Test.UtilityTest
 			map.Add(noHashCode1, value1);
 			map.Add(noHashCode2, value2);
 
-			// call ConcurrentEntries and verify it doesn't use the HashCode to build the 
+			// call ConcurrentEntriesList and verify it doesn't use the HashCode to build the 
 			// new list.
-			ICollection concurrent = IdentityMap.ConcurrentEntries(map);
+			IList<DictionaryEntry> concurrent = IdentityMap.ConcurrentEntriesList(map);
 
 			Assert.AreEqual(2, concurrent.Count, "There are two elements in concurrent Map");
 			foreach (DictionaryEntry de in concurrent)
@@ -102,7 +103,7 @@ namespace NHibernate.Test.UtilityTest
 			map.Add(noHashCode1, value1);
 			map.Add(noHashCode2, value2);
 
-			ICollection concurrent = IdentityMap.ConcurrentEntries(map);
+			IList<DictionaryEntry> concurrent = IdentityMap.ConcurrentEntriesList(map);
 
 			for (int i = 0; i < concurrent.Count;)
 			{

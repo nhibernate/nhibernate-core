@@ -60,14 +60,40 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="map">The IDictionary to get the enumeration safe list.</param>
 		/// <returns>A Collection of DictionaryEntries</returns>
+		[Obsolete("Use ConcurrentEntriesList instead.")]
 		public static ICollection ConcurrentEntries(IDictionary map)
 		{
 			return ((IdentityMap)map).EntryList;
 		}
 
+		[Obsolete("Use EntriesList instead.")]
 		public static ICollection Entries(IDictionary map)
 		{
 			return ((IdentityMap)map).EntryList;
+		}
+
+		/// <summary>
+		/// Return the Dictionary Entries (as instances of <c>DictionaryEntry</c> in a list
+		/// that is safe from concurrent modification).  Ie - we may safely add new instances
+		/// to the underlying <c>IDictionary</c> during enumeration of the <c>Values</c>.
+		/// </summary>
+		/// <param name="map">The IDictionary to get the enumeration safe list.</param>
+		/// <returns>A typed list of DictionaryEntries, avoiding boxing when built and enumerated.</returns>
+		public static IList<DictionaryEntry> ConcurrentEntriesList(IDictionary map)
+		{
+			return ((IdentityMap)map).EntryListTyped;
+		}
+
+		/// <summary>
+		/// Return the Dictionary Entries (as instances of <c>DictionaryEntry</c> in a list
+		/// that is safe from concurrent modification).  Ie - we may safely add new instances
+		/// to the underlying <c>IDictionary</c> during enumeration of the <c>Values</c>.
+		/// </summary>
+		/// <param name="map">The IDictionary to get the enumeration safe list.</param>
+		/// <returns>A typed list of DictionaryEntries, avoiding boxing when built and enumerated.</returns>
+		public static IList<DictionaryEntry> EntriesList(IDictionary map)
+		{
+			return ((IdentityMap)map).EntryListTyped;
 		}
 
 		/// <summary>
@@ -220,15 +246,37 @@ namespace NHibernate.Util
 		/// 
 		/// Contains a copy (not that actual instance stored) of the DictionaryEntries in a List.
 		/// </summary>
+		[Obsolete("Use EntryListTyped instead.")]
 		public IList EntryList
+		{
+			get { return (IList) EntryListTyped; }
+		}
+
+		/// <summary>
+		/// Provides a snapshot VIEW in the form of a typed List of the contents of the IdentityMap.
+		/// You can safely iterate over this VIEW and modify the actual IdentityMap because the
+		/// VIEW is a copy of the contents, not a reference to the existing Map.
+		/// 
+		/// Contains a copy (not the actual instance stored) of the DictionaryEntries in a List.
+		/// </summary>
+		/// <remarks>
+		/// This uses <see cref="IDictionaryEnumerator"/> directly, which avoids boxing the
+		/// <see cref="DictionaryEntry"/> structs when building the snapshot list.
+		/// </remarks>
+		public IList<DictionaryEntry> EntryListTyped
 		{
 			get
 			{
-				IList list = new List<object>(map.Count);
-				foreach (DictionaryEntry de in map)
+				var list = new List<DictionaryEntry>(map.Count);
+				if (map.Count == 0)
 				{
-					DictionaryEntry newEntry = new DictionaryEntry(de.Key, de.Value);
-					list.Add(newEntry);
+					return list;
+				}
+
+				IDictionaryEnumerator enumerator = map.GetEnumerator();
+				while (enumerator.MoveNext())
+				{
+					list.Add(enumerator.Entry);
 				}
 
 				return list;
