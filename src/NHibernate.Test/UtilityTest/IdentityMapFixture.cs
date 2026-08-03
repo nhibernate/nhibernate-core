@@ -59,20 +59,20 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		/// <summary>
-		/// Verify that ConcurrentEntities returns an ICollection that contains the same
+		/// Verify that GetEntries returns an ICollection that contains the same
 		/// Keys/Values as originally added into the IdentityMap.
 		/// </summary>
 		[Test]
-		public void ConcurrentEntries()
+		public void GetEntries()
 		{
-			IDictionary map = GetIdentityMap();
+			var map = GetIdentityMap();
 
 			map.Add(noHashCode1, value1);
 			map.Add(noHashCode2, value2);
 
-			// call ConcurrentEntriesList and verify it doesn't use the HashCode to build the 
+			// call GetEntries and verify it doesn't use the HashCode to build the 
 			// new list.
-			IList<DictionaryEntry> concurrent = IdentityMap.ConcurrentEntriesList(map);
+			var concurrent = IdentityMap.GetEntries(map);
 
 			Assert.AreEqual(2, concurrent.Count, "There are two elements in concurrent Map");
 			foreach (DictionaryEntry de in concurrent)
@@ -87,11 +87,10 @@ namespace NHibernate.Test.UtilityTest
 		}
 
 		/// <summary>
-		/// Tests that it is safe to modify the IdentityMap while iterating through the
-		/// ConcurrentEntities.
+		/// Tests that it is safe to modify the IdentityMap while iterating through GetEntries.
 		/// </summary>
 		[Test]
-		public void ConcurrentEntitiesModification()
+		public void GetEntriesModification()
 		{
 			NoHashCode noHashCode3 = new NoHashCode();
 			object value3 = new object();
@@ -99,11 +98,11 @@ namespace NHibernate.Test.UtilityTest
 			NoHashCode noHashCode4 = new NoHashCode();
 			object value4 = new object();
 
-			IDictionary map = GetIdentityMap();
+			var map = GetIdentityMap();
 			map.Add(noHashCode1, value1);
 			map.Add(noHashCode2, value2);
 
-			IList<DictionaryEntry> concurrent = IdentityMap.ConcurrentEntriesList(map);
+			var concurrent = IdentityMap.GetEntries(map);
 
 			for (int i = 0; i < concurrent.Count;)
 			{

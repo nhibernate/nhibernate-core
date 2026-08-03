@@ -60,13 +60,15 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="map">The IDictionary to get the enumeration safe list.</param>
 		/// <returns>A Collection of DictionaryEntries</returns>
-		[Obsolete("Use ConcurrentEntriesList instead.")]
+		// Since v5.8.
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]		
 		public static ICollection ConcurrentEntries(IDictionary map)
 		{
 			return ((IdentityMap)map).EntryList;
 		}
 
-		[Obsolete("Use EntriesList instead.")]
+		// Since v5.8.
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]		
 		public static ICollection Entries(IDictionary map)
 		{
 			return ((IdentityMap)map).EntryList;
@@ -79,22 +81,7 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="map">The IDictionary to get the enumeration safe list.</param>
 		/// <returns>A typed list of DictionaryEntries, avoiding boxing when built and enumerated.</returns>
-		public static IList<DictionaryEntry> ConcurrentEntriesList(IDictionary map)
-		{
-			return ((IdentityMap)map).EntryListTyped;
-		}
-
-		/// <summary>
-		/// Return the Dictionary Entries (as instances of <c>DictionaryEntry</c> in a list
-		/// that is safe from concurrent modification).  Ie - we may safely add new instances
-		/// to the underlying <c>IDictionary</c> during enumeration of the <c>Values</c>.
-		/// </summary>
-		/// <param name="map">The IDictionary to get the enumeration safe list.</param>
-		/// <returns>A typed list of DictionaryEntries, avoiding boxing when built and enumerated.</returns>
-		public static IList<DictionaryEntry> EntriesList(IDictionary map)
-		{
-			return ((IdentityMap)map).EntryListTyped;
-		}
+		internal static List<DictionaryEntry> GetEntries(IDictionary map) => ((IdentityMap)map).GetEntries();
 
 		/// <summary>
 		/// Create the IdentityMap class with the correct class for the IDictionary.
@@ -246,11 +233,9 @@ namespace NHibernate.Util
 		/// 
 		/// Contains a copy (not that actual instance stored) of the DictionaryEntries in a List.
 		/// </summary>
-		[Obsolete("Use EntryListTyped instead.")]
-		public IList EntryList
-		{
-			get { return (IList) EntryListTyped; }
-		}
+		// Since v5.8.
+		[Obsolete("Use GetEntries instead.")]
+		public IList EntryList => GetEntries();
 
 		/// <summary>
 		/// Provides a snapshot VIEW in the form of a typed List of the contents of the IdentityMap.
@@ -263,24 +248,21 @@ namespace NHibernate.Util
 		/// This uses <see cref="IDictionaryEnumerator"/> directly, which avoids boxing the
 		/// <see cref="DictionaryEntry"/> structs when building the snapshot list.
 		/// </remarks>
-		public IList<DictionaryEntry> EntryListTyped
+		public List<DictionaryEntry> GetEntries()
 		{
-			get
+			var list = new List<DictionaryEntry>(map.Count);
+			if (map.Count == 0)
 			{
-				var list = new List<DictionaryEntry>(map.Count);
-				if (map.Count == 0)
-				{
-					return list;
-				}
-
-				IDictionaryEnumerator enumerator = map.GetEnumerator();
-				while (enumerator.MoveNext())
-				{
-					list.Add(enumerator.Entry);
-				}
-
 				return list;
 			}
+
+			var enumerator = map.GetEnumerator();
+			while (enumerator.MoveNext())
+			{
+				list.Add(enumerator.Entry);
+			}
+
+			return list;
 		}
 
 		/// <summary>
