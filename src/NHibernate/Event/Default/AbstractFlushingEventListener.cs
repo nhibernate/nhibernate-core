@@ -90,13 +90,15 @@ namespace NHibernate.Event.Default
 		{
 			log.Debug("Processing unreferenced collections");
 
-			var list = IdentityMap.GetEntries(session.PersistenceContext.CollectionEntries);
-			foreach (var me in list)
+			using (var list = IdentityMapUtils.GetSnapshot<object, object>(session.PersistenceContext.CollectionEntries))
 			{
-				var ce = (CollectionEntry) me.Value;
-				if (!ce.IsReached && !ce.IsIgnore)
+				foreach (var me in list)
 				{
-					Collections.ProcessUnreachableCollection((IPersistentCollection) me.Key, session);
+					var ce = (CollectionEntry) me.Value;
+					if (!ce.IsReached && !ce.IsIgnore)
+					{
+						Collections.ProcessUnreachableCollection((IPersistentCollection) me.Key, session);
+					}
 				}
 			}
 
@@ -104,29 +106,31 @@ namespace NHibernate.Event.Default
 
 			log.Debug("Scheduling collection removes/(re)creates/updates");
 
-			list = IdentityMap.GetEntries(session.PersistenceContext.CollectionEntries);
 			ActionQueue actionQueue = session.ActionQueue;
-			foreach (DictionaryEntry me in list)
+			using (var list = IdentityMapUtils.GetSnapshot<object, object>(session.PersistenceContext.CollectionEntries))
 			{
-				IPersistentCollection coll = (IPersistentCollection) me.Key;
-				CollectionEntry ce = (CollectionEntry) me.Value;
+				foreach (var me in list)
+				{
+					IPersistentCollection coll = (IPersistentCollection) me.Key;
+					CollectionEntry ce = (CollectionEntry) me.Value;
 
-				if (ce.IsDorecreate)
-				{
-					session.Interceptor.OnCollectionRecreate(coll, ce.CurrentKey);
-					actionQueue.AddAction(new CollectionRecreateAction(coll, ce.CurrentPersister, ce.CurrentKey, session));
-				}
-				if (ce.IsDoremove)
-				{
-					session.Interceptor.OnCollectionRemove(coll, ce.LoadedKey);
-					actionQueue.AddAction(
-						new CollectionRemoveAction(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), session));
-				}
-				if (ce.IsDoupdate)
-				{
-					session.Interceptor.OnCollectionUpdate(coll, ce.LoadedKey);
-					actionQueue.AddAction(
-						new CollectionUpdateAction(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), session));
+					if (ce.IsDorecreate)
+					{
+						session.Interceptor.OnCollectionRecreate(coll, ce.CurrentKey);
+						actionQueue.AddAction(new CollectionRecreateAction(coll, ce.CurrentPersister, ce.CurrentKey, session));
+					}
+					if (ce.IsDoremove)
+					{
+						session.Interceptor.OnCollectionRemove(coll, ce.LoadedKey);
+						actionQueue.AddAction(
+							new CollectionRemoveAction(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), session));
+					}
+					if (ce.IsDoupdate)
+					{
+						session.Interceptor.OnCollectionUpdate(coll, ce.LoadedKey);
+						actionQueue.AddAction(
+							new CollectionUpdateAction(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), session));
+					}
 				}
 			}
 			actionQueue.SortCollectionActions();
@@ -147,20 +151,22 @@ namespace NHibernate.Event.Default
 			// It is safe because of how IdentityMap implements entrySet()
 			var source = @event.Session;
 
-			var list = IdentityMap.GetEntries(source.PersistenceContext.EntityEntries);
-			foreach (var me in list)
+			using (var list = IdentityMapUtils.GetSnapshot<object, object>(source.PersistenceContext.EntityEntries))
 			{
-				// Update the status of the object and if necessary, schedule an update
-				var entry = (EntityEntry) me.Value;
-				var status = entry.Status;
-
-				if (status != Status.Loading && status != Status.Gone)
+				foreach (var me in list)
 				{
-					var entityEvent = new FlushEntityEvent(source, me.Key, entry);
-					var listeners = source.Listeners.FlushEntityEventListeners;
-					foreach (var listener in listeners)
+					// Update the status of the object and if necessary, schedule an update
+					var entry = (EntityEntry) me.Value;
+					var status = entry.Status;
+
+					if (status != Status.Loading && status != Status.Gone)
 					{
-						listener.OnFlushEntity(entityEvent);
+						var entityEvent = new FlushEntityEvent(source, me.Key, entry);
+						var listeners = source.Listeners.FlushEntityEventListeners;
+						foreach (var listener in listeners)
+						{
+							listener.OnFlushEntity(entityEvent);
+						}
 					}
 				}
 			}
@@ -174,7 +180,7 @@ namespace NHibernate.Event.Default
 			// and reset reached, doupdate, etc.
 			log.Debug("dirty checking collections");
 
-			var list = IdentityMap.GetEntries(session.PersistenceContext.CollectionEntries);
+			using var list = IdentityMapUtils.GetSnapshot<object, object>(session.PersistenceContext.CollectionEntries);
 			foreach (var entry in list)
 			{
 				((CollectionEntry) entry.Value).PreFlush((IPersistentCollection) entry.Key);
@@ -189,7 +195,7 @@ namespace NHibernate.Event.Default
 			log.Debug("processing flush-time cascades");
 
 			var anything = Anything;
-			var list = IdentityMap.GetEntries(session.PersistenceContext.EntityEntries);
+			using var list = IdentityMapUtils.GetSnapshot<object, object>(session.PersistenceContext.EntityEntries);
 			//safe from concurrent modification because of how entryList() is implemented on IdentityMap
 			foreach (var me in list)
 			{
@@ -276,36 +282,34 @@ namespace NHibernate.Event.Default
 				log.Debug("post flush");
 			}
 
-			IPersistenceContext persistenceContext = session.PersistenceContext;
+			var persistenceContext = session.PersistenceContext;
 			persistenceContext.CollectionsByKey.Clear();
 			persistenceContext.BatchFetchQueue.ClearSubselects();
 			//the database has changed now, so the subselect results need to be invalidated
 
 			// NH Different implementation: In NET an iterator is immutable;
 			// we need something to hold the persistent collection to remove, and it must be less intrusive as possible
-			IDictionary cEntries = persistenceContext.CollectionEntries;
-			List<IPersistentCollection> keysToRemove = new List<IPersistentCollection>(cEntries.Count);
-			foreach (DictionaryEntry me in cEntries)
+			using (var cEntries = IdentityMapUtils.GetSnapshot<object, object>(persistenceContext.CollectionEntries))
 			{
-				CollectionEntry collectionEntry = (CollectionEntry) me.Value;
-				IPersistentCollection persistentCollection = (IPersistentCollection) me.Key;
-				collectionEntry.PostFlush(persistentCollection);
-				if (collectionEntry.LoadedPersister == null)
+				foreach (var me in cEntries)
 				{
-					keysToRemove.Add(persistentCollection);
-				}
-				else
-				{
-					//otherwise recreate the mapping between the collection and its key
-					CollectionKey collectionKey =
-						new CollectionKey(collectionEntry.LoadedPersister, collectionEntry.LoadedKey);
-					persistenceContext.CollectionsByKey[collectionKey] = persistentCollection;
+					var collectionEntry = (CollectionEntry) me.Value;
+					var persistentCollection = (IPersistentCollection) me.Key;
+					collectionEntry.PostFlush(persistentCollection);
+					if (collectionEntry.LoadedPersister == null)
+					{
+						persistenceContext.CollectionEntries.Remove(persistentCollection);
+					}
+					else
+					{
+						//otherwise recreate the mapping between the collection and its key
+						var collectionKey =
+							new CollectionKey(collectionEntry.LoadedPersister, collectionEntry.LoadedKey);
+						persistenceContext.CollectionsByKey[collectionKey] = persistentCollection;
+					}
 				}
 			}
-			foreach (IPersistentCollection key in keysToRemove)
-			{
-				persistenceContext.CollectionEntries.Remove(key);
-			}
+			
 			session.Interceptor.PostFlush((ICollection) persistenceContext.EntitiesByKey.Values);
 		}
 	}

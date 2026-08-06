@@ -46,7 +46,7 @@ namespace NHibernate.Engine
 		private readonly Dictionary<EntityUniqueKey, object> entitiesByUniqueKey;
 
 		// Identity map of EntityEntry instances, by the entity instance
-		private readonly IDictionary entityEntries;
+		private readonly IdentityMap<object, object> entityEntries;
 
 		// Entity proxies, by EntityKey
 		private readonly Dictionary<EntityKey, INHibernateProxy> proxiesByKey;
@@ -56,10 +56,10 @@ namespace NHibernate.Engine
 		private readonly Dictionary<EntityKey, object> entitySnapshotsByKey;
 
 		// Identity map of array holder ArrayHolder instances, by the array instance
-		private readonly IDictionary arrayHolders;
+		private readonly IDictionary<object, IPersistentCollection> arrayHolders;
 
 		// Identity map of CollectionEntry instances, by the collection wrapper
-		private readonly IDictionary collectionEntries;
+		private readonly IdentityMap<object, object> collectionEntries;
 
 		// Collection wrappers, by the CollectionKey
 		private readonly Dictionary<CollectionKey, IPersistentCollection> collectionsByKey;
@@ -84,7 +84,7 @@ namespace NHibernate.Engine
 		// Parent entities cache by their child for cascading
 		// May be empty or not contains all relation
 		[NonSerialized]
-		private IDictionary parentsByChild;
+		private IDictionary<object, object> parentsByChild;
 
 		[NonSerialized]
 		private int cascading;
@@ -116,11 +116,11 @@ namespace NHibernate.Engine
 			entitiesByUniqueKey = new Dictionary<EntityUniqueKey, object>(InitCollectionSize);
 			proxiesByKey = new Dictionary<EntityKey, INHibernateProxy>(InitCollectionSize);
 			entitySnapshotsByKey = new Dictionary<EntityKey, object>(InitCollectionSize);
-			entityEntries = IdentityMap.InstantiateSequenced(InitCollectionSize);
-			collectionEntries = IdentityMap.InstantiateSequenced(InitCollectionSize);
+			entityEntries = IdentityMapUtils.InstantiateSequenced<object, object>(InitCollectionSize);
+			collectionEntries = IdentityMapUtils.InstantiateSequenced<object, object>(InitCollectionSize);
 			collectionsByKey = new Dictionary<CollectionKey, IPersistentCollection>(InitCollectionSize);
-			arrayHolders = IdentityMap.Instantiate(InitCollectionSize);
-			parentsByChild = IdentityMap.Instantiate(InitCollectionSize);
+			arrayHolders = IdentityMapUtils.Instantiate<object, IPersistentCollection>(InitCollectionSize);
+			parentsByChild = IdentityMapUtils.Instantiate<object, object>(InitCollectionSize);
 			nullifiableEntityKeys = new HashSet<EntityKey>();
 			InitTransientState();
 		}
@@ -188,16 +188,10 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> Get the mapping from entity instance to entity entry</summary>
-		public IDictionary EntityEntries
-		{
-			get { return entityEntries; }
-		}
+		public IDictionary EntityEntries => entityEntries;
 
 		/// <summary> Get the mapping from collection instance to collection entry</summary>
-		public IDictionary CollectionEntries
-		{
-			get { return collectionEntries; }
-		}
+		public IDictionary CollectionEntries => collectionEntries;
 
 		/// <summary> Get the mapping from collection key to collection instance</summary>
 		public IDictionary<CollectionKey, IPersistentCollection> CollectionsByKey
@@ -252,10 +246,13 @@ namespace NHibernate.Engine
 				li.UnsetSession();
 			}
 
-			var collectionEntryArray = IdentityMap.GetEntries(collectionEntries);
-			foreach (var entry in collectionEntryArray)
+			
+			using (var collectionEntryArray = collectionEntries.GetSnapshot())
 			{
-				((IPersistentCollection)entry.Key).UnsetSession(Session);
+				foreach (var entry in collectionEntryArray)
+				{
+					((IPersistentCollection)entry.Key).UnsetSession(Session);
+				}
 			}
 
 			arrayHolders.Clear();
@@ -487,27 +484,40 @@ namespace NHibernate.Engine
 		/// <returns> The EntityEntry for the given entity. </returns>
 		public EntityEntry GetEntry(object entity)
 		{
-			return (EntityEntry)entityEntries[entity];
+			if (entityEntries.TryGetValue(entity, out var entry))
+			{
+				return (EntityEntry)entry;
+			}
+			return null;
 		}
 
 		/// <summary> Remove an entity entry from the session cache</summary>
 		public EntityEntry RemoveEntry(object entity)
 		{
-			EntityEntry tempObject = (EntityEntry)entityEntries[entity];
-			entityEntries.Remove(entity);
-			return tempObject;
+			if (entityEntries.TryGetValue(entity, out var tempObject))
+			{
+				entityEntries.Remove(entity);
+				return (EntityEntry)tempObject;
+			}
+
+			return null;
 		}
 
 		/// <summary> Is there an EntityEntry for this instance?</summary>
 		public bool IsEntryFor(object entity)
 		{
-			return entityEntries.Contains(entity);
+			return entityEntries.ContainsKey(entity);
 		}
 
 		/// <summary> Get the collection entry for a persistent collection</summary>
 		public CollectionEntry GetCollectionEntry(IPersistentCollection coll)
 		{
-			return (CollectionEntry)collectionEntries[coll];
+			if (collectionEntries.TryGetValue(coll, out var entry))
+			{
+				return (CollectionEntry)entry;
+			}
+
+			return null;
 		}
 
 		/// <summary> Adds an entity to the internal caches.</summary>
@@ -571,7 +581,7 @@ namespace NHibernate.Engine
 		/// <summary> Is the given collection associated with this persistence context?</summary>
 		public bool ContainsCollection(IPersistentCollection collection)
 		{
-			return collectionEntries.Contains(collection);
+			return collectionEntries.ContainsKey(collection);
 		}
 
 		/// <summary> Is the given proxy associated with this persistence context?</summary>
@@ -1015,7 +1025,12 @@ namespace NHibernate.Engine
 		/// <summary> Get the <tt>PersistentCollection</tt> object for an array</summary>
 		public IPersistentCollection GetCollectionHolder(object array)
 		{
-			return (IPersistentCollection)arrayHolders[array];
+			if (arrayHolders.TryGetValue(array, out var holder))
+			{
+				return holder;
+			}
+			
+			return null;
 		}
 
 		/// <summary> Register a <tt>PersistentCollection</tt> object for an array.
@@ -1033,9 +1048,13 @@ namespace NHibernate.Engine
 		/// </summary>
 		public IPersistentCollection RemoveCollectionHolder(object array)
 		{
-			IPersistentCollection tempObject = (IPersistentCollection)arrayHolders[array];
-			arrayHolders.Remove(array);
-			return tempObject;
+			if (arrayHolders.TryGetValue(array, out var tempObject))
+			{
+				arrayHolders.Remove(array);
+				return tempObject;
+			}
+			
+			return null;
 		}
 
 		/// <summary> Get the snapshot of the pre-flush collection state</summary>
@@ -1135,7 +1154,7 @@ namespace NHibernate.Engine
 			IEntityPersister persister = session.Factory.GetEntityPersister(entityName);
 			ICollectionPersister collectionPersister = session.Factory.GetCollectionPersister(collectionRole);
 
-			object parent = parentsByChild[childEntity];
+			object parent = parentsByChild.TryGetValue(childEntity, out var p) ? p : null;
 			if (parent != null)
 			{
 				var entityEntry = (EntityEntry) entityEntries[parent];
@@ -1148,7 +1167,7 @@ namespace NHibernate.Engine
 			}
 
 			// iterate all the entities currently associated with the persistence context.
-			foreach (DictionaryEntry entry in entityEntries)
+			foreach (var entry in entityEntries)
 			{
 				var entityEntry = (EntityEntry) entry.Value;
 				// does this entity entry pertain to the entity persister in which we are interested (owner)?
@@ -1221,7 +1240,7 @@ namespace NHibernate.Engine
 			ICollectionPersister cp = session.Factory.GetCollectionPersister(entity + '.' + property);
 
 			// try cache lookup first
-			object parent = parentsByChild[childEntity];
+			object parent = parentsByChild.TryGetValue(childEntity, out var p) ? p : null;
 			if (parent != null)
 			{
 				var entityEntry = (EntityEntry) entityEntries[parent];
@@ -1251,7 +1270,7 @@ namespace NHibernate.Engine
 			}
 
 			//Not found in cache, proceed
-			foreach (DictionaryEntry me in entityEntries)
+			foreach (var me in entityEntries)
 			{
 				var ee = (EntityEntry) me.Value;
 				if (persister.IsSubclassEntityName(ee.EntityName))
@@ -1442,7 +1461,7 @@ namespace NHibernate.Engine
 			// collections to this session, as well as the EntityEntry and
 			// CollectionEntry instances; these associations are transient
 			// because serialization is used for different things.
-			parentsByChild = IdentityMap.Instantiate(InitCollectionSize);
+			parentsByChild = IdentityMapUtils.Instantiate<object, object>(InitCollectionSize);
 
 			// OnDeserialization() must be called manually on all Dictionaries and Hashtables,
 			// otherwise they are still empty at this point (the .NET deserialization code calls
@@ -1466,7 +1485,7 @@ namespace NHibernate.Engine
 			}
 
 			// TODO NH: "reconnect" EntityKey with session.factory and create a test for serialization of StatefulPersistenceContext
-			foreach (DictionaryEntry collectionEntry in collectionEntries)
+			foreach (var collectionEntry in collectionEntries)
 			{
 				try
 				{
@@ -1531,11 +1550,11 @@ namespace NHibernate.Engine
 			cascading = 0;
 			entitiesByKey = (Dictionary<EntityKey, object>)info.GetValue("context.entitiesByKey", typeof(Dictionary<EntityKey, object>));
 			entitiesByUniqueKey = (Dictionary<EntityUniqueKey, object>)info.GetValue("context.entitiesByUniqueKey", typeof(Dictionary<EntityUniqueKey, object>));
-			entityEntries = (IdentityMap)info.GetValue("context.entityEntries", typeof(IdentityMap));
+			entityEntries = (IdentityMap<object, object>)info.GetValue("context.entityEntries", typeof(IdentityMap<object, object>));
 			proxiesByKey = (Dictionary<EntityKey, INHibernateProxy>)info.GetValue("context.proxiesByKey", typeof(Dictionary<EntityKey, INHibernateProxy>));
 			entitySnapshotsByKey = (Dictionary<EntityKey, object>)info.GetValue("context.entitySnapshotsByKey", typeof(Dictionary<EntityKey, object>));
-			arrayHolders = (IdentityMap)info.GetValue("context.arrayHolders", typeof(IdentityMap));
-			collectionEntries = (IdentityMap)info.GetValue("context.collectionEntries", typeof(IdentityMap));
+			arrayHolders = (IdentityMap<object, IPersistentCollection>)info.GetValue("context.arrayHolders", typeof(IdentityMap<object, IPersistentCollection>));
+			collectionEntries = (IdentityMap<object, object>)info.GetValue("context.collectionEntries", typeof(IdentityMap<object, object>));
 			collectionsByKey = (Dictionary<CollectionKey, IPersistentCollection>)info.GetValue("context.collectionsByKey", typeof(Dictionary<CollectionKey, IPersistentCollection>));
 			nullifiableEntityKeys = (HashSet<EntityKey>)info.GetValue("context.nullifiableEntityKeys", typeof(HashSet<EntityKey>));
 			unownedCollections = (Dictionary<CollectionKey, IPersistentCollection>)info.GetValue("context.unownedCollections", typeof(Dictionary<CollectionKey, IPersistentCollection>));
@@ -1551,11 +1570,11 @@ namespace NHibernate.Engine
 
 			info.AddValue("context.entitiesByKey", entitiesByKey, typeof(Dictionary<EntityKey, object>));
 			info.AddValue("context.entitiesByUniqueKey", entitiesByUniqueKey, typeof(Dictionary<EntityUniqueKey, object>));
-			info.AddValue("context.entityEntries", entityEntries, typeof(IdentityMap));
+			info.AddValue("context.entityEntries", entityEntries, typeof(IdentityMap<object, object>));
 			info.AddValue("context.proxiesByKey", proxiesByKey, typeof(Dictionary<EntityKey, INHibernateProxy>));
 			info.AddValue("context.entitySnapshotsByKey", entitySnapshotsByKey, typeof(Dictionary<EntityKey, object>));
-			info.AddValue("context.arrayHolders", arrayHolders, typeof(IdentityMap));
-			info.AddValue("context.collectionEntries", collectionEntries, typeof(IdentityMap));
+			info.AddValue("context.arrayHolders", arrayHolders, typeof(IdentityMap<object, IPersistentCollection>));
+			info.AddValue("context.collectionEntries", collectionEntries, typeof(IdentityMap<object, object>));
 			info.AddValue("context.collectionsByKey", collectionsByKey, typeof(Dictionary<CollectionKey, IPersistentCollection>));
 			info.AddValue("context.nullifiableEntityKeys", nullifiableEntityKeys, typeof(HashSet<EntityKey>));
 			info.AddValue("context.unownedCollections", unownedCollections, typeof(Dictionary<CollectionKey, IPersistentCollection>));
