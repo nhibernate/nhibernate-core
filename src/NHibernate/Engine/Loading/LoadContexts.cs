@@ -9,7 +9,7 @@ using NHibernate.Persister.Collection;
 using NHibernate.Util;
 
 namespace NHibernate.Engine.Loading
-{	
+{
 	/// <summary> 
 	/// Maps <see cref="DbDataReader"/> to specific contextual data
 	/// related to processing that <see cref="DbDataReader"/>.
@@ -30,7 +30,7 @@ namespace NHibernate.Engine.Loading
 
 		[NonSerialized]
 		private readonly IPersistenceContext persistenceContext;
-		private IDictionary collectionLoadContexts;
+		private IDictionary<DbDataReader, CollectionLoadContext> collectionLoadContexts;
 
 		private Dictionary<CollectionKey, LoadingCollectionEntry> xrefLoadingCollectionEntries;
 
@@ -71,7 +71,7 @@ namespace NHibernate.Engine.Loading
 		{
 			if (collectionLoadContexts != null)
 			{
-				CollectionLoadContext collectionLoadContext = (CollectionLoadContext)collectionLoadContexts[resultSet];
+				collectionLoadContexts.TryGetValue(resultSet, out var collectionLoadContext);
 				collectionLoadContext.Cleanup();
 				collectionLoadContexts.Remove(resultSet);
 			}
@@ -112,7 +112,7 @@ namespace NHibernate.Engine.Loading
 		/// </summary>
 		public bool HasRegisteredLoadingCollectionEntries
 		{
-				get { return (xrefLoadingCollectionEntries != null && xrefLoadingCollectionEntries.Count != 0); }
+			get { return (xrefLoadingCollectionEntries != null && xrefLoadingCollectionEntries.Count != 0); }
 		}
 
 		/// <summary> 
@@ -126,11 +126,11 @@ namespace NHibernate.Engine.Loading
 			CollectionLoadContext context = null;
 			if (collectionLoadContexts == null)
 			{
-				collectionLoadContexts = IdentityMap.Instantiate(8);
+				collectionLoadContexts = IdentityMapUtils.Instantiate<DbDataReader, CollectionLoadContext>(8);
 			}
 			else
 			{
-				context = (CollectionLoadContext)collectionLoadContexts[resultSet];
+				collectionLoadContexts.TryGetValue(resultSet, out context);
 			}
 			if (context == null)
 			{
