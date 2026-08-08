@@ -96,14 +96,27 @@
     <None Include="../../logo/NHibernate-NuGet.png" Pack="true" PackagePath="/" />
   </ItemGroup>
 
-  <!-- Workaround to enable Rider to see the Antlr3 generated files at design time -->
-  <Target Name="_AntrlDesignTimeGrammarCompilationWorkaround" BeforeTargets="CoreCompile" Condition="'$(BuildingByReSharper)' == 'true'">
+  <!-- Workaround to enable design time builds to see the Antlr3 generated files -->
+  <Target Name="_AntrlDesignTimeGrammarCompilationWorkaround" BeforeTargets="CoreCompile">
     <CallTarget
       Targets="AntlrCompile"
       ContinueOnError="true"
       Condition="'$(DesignTimeBuild)' == 'true' OR '$(BuildingProject)' != 'true'"
     />
   </Target>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Public API tracking, see CONTRIBUTING.md. Every PublicAPI.Shipped* file is merged into one API. -->
+  <ItemGroup>
+    <AdditionalFiles Include="PublicAPI\PublicAPI.Shipped.txt" />
+    <AdditionalFiles Include="PublicAPI\$(TargetFramework)\PublicAPI.Shipped.$(TargetFramework).txt" />
+    <AdditionalFiles Include="PublicAPI\PublicAPI.Unshipped.txt" />
+  </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="NHibernate.Test" />

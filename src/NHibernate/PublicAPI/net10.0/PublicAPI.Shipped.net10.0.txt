@@ -1,0 +1,99 @@
+abstract NHibernate.Type.AbstractDateOnlyType<TParameter>.GetDateOnlyFromReader(System.Data.Common.DbDataReader rs, int index, NHibernate.Engine.ISessionImplementor session) -> System.DateOnly
+abstract NHibernate.Type.AbstractDateOnlyType<TParameter>.GetParameterValueToSet(System.DateOnly dateOnly, NHibernate.Engine.ISessionImplementor session) -> TParameter
+abstract NHibernate.Type.AbstractTimeOnlyType<TParameter>.GetParameterValueToSet(System.TimeOnly timeOnly, NHibernate.Engine.ISessionImplementor session) -> TParameter
+abstract NHibernate.Type.AbstractTimeOnlyType<TParameter>.GetTimeOnlyFromReader(System.Data.Common.DbDataReader rs, int index, NHibernate.Engine.ISessionImplementor session) -> System.TimeOnly
+NHibernate.AdoNet.ConnectionManager.EnlistInTransaction(System.Data.Common.DbBatch batch) -> void
+NHibernate.AdoNet.DbBatchBatcher
+NHibernate.AdoNet.DbBatchBatcher.DbBatchBatcher(NHibernate.AdoNet.ConnectionManager connectionManager, NHibernate.IInterceptor interceptor) -> void
+NHibernate.AdoNet.DbBatchBatcher.Prepare(System.Data.Common.DbBatch batch) -> void
+NHibernate.AdoNet.DbBatchBatcher.PrepareAsync(System.Data.Common.DbBatch batch, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+NHibernate.AdoNet.DbBatchBatcherFactory
+NHibernate.AdoNet.DbBatchBatcherFactory.CreateBatcher(NHibernate.AdoNet.ConnectionManager connectionManager, NHibernate.IInterceptor interceptor) -> NHibernate.Engine.IBatcher
+NHibernate.AdoNet.DbBatchBatcherFactory.DbBatchBatcherFactory() -> void
+NHibernate.Driver.DbProviderFactoryDriveConnectionCommandProvider.CanCreateBatch.get -> bool
+NHibernate.Driver.DbProviderFactoryDriveConnectionCommandProvider.CreateBatch() -> System.Data.Common.DbBatch
+NHibernate.Driver.DriverBase.PrepareBatch(System.Data.Common.DbBatch batch) -> void
+NHibernate.Driver.IDriveConnectionCommandProvider.CanCreateBatch.get -> bool
+NHibernate.Driver.IDriveConnectionCommandProvider.CreateBatch() -> System.Data.Common.DbBatch
+NHibernate.Driver.IDriver.CanCreateBatch.get -> bool
+NHibernate.Driver.IDriver.CreateBatch() -> System.Data.Common.DbBatch
+NHibernate.Driver.IDriver.CreateDbBatchCommandFromDbCommand(System.Data.Common.DbBatch dbBatch, System.Data.Common.DbCommand dbCommand) -> System.Data.Common.DbBatchCommand
+NHibernate.Driver.IDriver.PrepareBatch(System.Data.Common.DbBatch dbBatch) -> void
+NHibernate.Driver.ReflectionDriveConnectionCommandProvider.CanCreateBatch.get -> bool
+NHibernate.Driver.ReflectionDriveConnectionCommandProvider.CreateBatch() -> System.Data.Common.DbBatch
+NHibernate.ITransaction.Enlist(System.Data.Common.DbBatch batch) -> void
+NHibernate.Transaction.AdoTransaction.Enlist(System.Data.Common.DbBatch batch) -> void
+NHibernate.Type.AbstractDateOnlyType<TParameter>
+NHibernate.Type.AbstractDateOnlyType<TParameter>.AbstractDateOnlyType(NHibernate.SqlTypes.SqlType sqlType) -> void
+NHibernate.Type.AbstractTimeOnlyType<TParameter>
+NHibernate.Type.AbstractTimeOnlyType<TParameter>.AbstractTimeOnlyType(byte? fractionalSecondsPrecision, NHibernate.SqlTypes.SqlType sqlType) -> void
+NHibernate.Type.DateOnlyAsDateType
+NHibernate.Type.DateOnlyAsDateType.DateOnlyAsDateType() -> void
+NHibernate.Type.TimeOnlyAsDateTimeType
+NHibernate.Type.TimeOnlyAsDateTimeType.TimeOnlyAsDateTimeType() -> void
+NHibernate.Type.TimeOnlyAsDateTimeType.TimeOnlyAsDateTimeType(byte fractionalSecondsPrecision) -> void
+NHibernate.Type.TimeOnlyAsTicksType
+NHibernate.Type.TimeOnlyAsTicksType.TimeOnlyAsTicksType() -> void
+NHibernate.Type.TimeOnlyAsTicksType.TimeOnlyAsTicksType(byte fractionalSecondsPrecision) -> void
+NHibernate.Type.TimeOnlyAsTimeType
+NHibernate.Type.TimeOnlyAsTimeType.TimeOnlyAsTimeType() -> void
+NHibernate.Type.TimeOnlyAsTimeType.TimeOnlyAsTimeType(byte fractionalSecondsPrecision) -> void
+NHibernate.Util.SerializationHelper.SurrogateSelector
+NHibernate.Util.SerializationHelper.SurrogateSelector.SurrogateSelector() -> void
+override NHibernate.AdoNet.DbBatchBatcher.AddToBatch(NHibernate.AdoNet.IExpectation expectation) -> void
+override NHibernate.AdoNet.DbBatchBatcher.AddToBatchAsync(NHibernate.AdoNet.IExpectation expectation, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+override NHibernate.AdoNet.DbBatchBatcher.BatchSize.get -> int
+override NHibernate.AdoNet.DbBatchBatcher.BatchSize.set -> void
+override NHibernate.AdoNet.DbBatchBatcher.CloseCommands() -> void
+override NHibernate.AdoNet.DbBatchBatcher.CountOfStatementsInCurrentBatch.get -> int
+override NHibernate.AdoNet.DbBatchBatcher.Dispose(bool isDisposing) -> void
+override NHibernate.AdoNet.DbBatchBatcher.DoExecuteBatch(System.Data.Common.DbCommand ps) -> void
+override NHibernate.AdoNet.DbBatchBatcher.DoExecuteBatchAsync(System.Data.Common.DbCommand ps, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+override NHibernate.Driver.ReflectionBasedDriver.CanCreateBatch.get -> bool
+override NHibernate.Driver.ReflectionBasedDriver.CreateBatch() -> System.Data.Common.DbBatch
+override NHibernate.Linq.Visitors.ExpressionParameterVisitor.VisitInvocation(System.Linq.Expressions.InvocationExpression expression) -> System.Linq.Expressions.Expression
+override NHibernate.Type.AbstractDateOnlyType<TParameter>.DefaultValue.get -> object
+override NHibernate.Type.AbstractDateOnlyType<TParameter>.Get(System.Data.Common.DbDataReader rs, int index, NHibernate.Engine.ISessionImplementor session) -> object
+override NHibernate.Type.AbstractDateOnlyType<TParameter>.GetHashCode(object x) -> int
+override NHibernate.Type.AbstractDateOnlyType<TParameter>.IsEqual(object x, object y) -> bool
+override NHibernate.Type.AbstractDateOnlyType<TParameter>.Name.get -> string
+override NHibernate.Type.AbstractDateOnlyType<TParameter>.PrimitiveClass.get -> System.Type
+override NHibernate.Type.AbstractDateOnlyType<TParameter>.ReturnedClass.get -> System.Type
+override NHibernate.Type.AbstractDateOnlyType<TParameter>.Set(System.Data.Common.DbCommand st, object value, int index, NHibernate.Engine.ISessionImplementor session) -> void
+override NHibernate.Type.AbstractDateOnlyType<TParameter>.ToLoggableString(object value, NHibernate.Engine.ISessionFactoryImplementor factory) -> string
+override NHibernate.Type.AbstractTimeOnlyType<TParameter>.DefaultValue.get -> object
+override NHibernate.Type.AbstractTimeOnlyType<TParameter>.Get(System.Data.Common.DbDataReader rs, int index, NHibernate.Engine.ISessionImplementor session) -> object
+override NHibernate.Type.AbstractTimeOnlyType<TParameter>.GetHashCode(object x) -> int
+override NHibernate.Type.AbstractTimeOnlyType<TParameter>.IsEqual(object x, object y) -> bool
+override NHibernate.Type.AbstractTimeOnlyType<TParameter>.Name.get -> string
+override NHibernate.Type.AbstractTimeOnlyType<TParameter>.PrimitiveClass.get -> System.Type
+override NHibernate.Type.AbstractTimeOnlyType<TParameter>.ReturnedClass.get -> System.Type
+override NHibernate.Type.AbstractTimeOnlyType<TParameter>.Set(System.Data.Common.DbCommand st, object value, int index, NHibernate.Engine.ISessionImplementor session) -> void
+override NHibernate.Type.AbstractTimeOnlyType<TParameter>.ToLoggableString(object value, NHibernate.Engine.ISessionFactoryImplementor factory) -> string
+override NHibernate.Type.DateOnlyAsDateType.GetDateOnlyFromReader(System.Data.Common.DbDataReader rs, int index, NHibernate.Engine.ISessionImplementor session) -> System.DateOnly
+override NHibernate.Type.DateOnlyAsDateType.GetParameterValueToSet(System.DateOnly dateOnly, NHibernate.Engine.ISessionImplementor session) -> System.DateTime
+override NHibernate.Type.DateOnlyAsDateType.ObjectToSQLString(object value, NHibernate.Dialect.Dialect dialect) -> string
+override NHibernate.Type.TimeOnlyAsDateTimeType.GetParameterValueToSet(System.TimeOnly timeOnly, NHibernate.Engine.ISessionImplementor session) -> System.DateTime
+override NHibernate.Type.TimeOnlyAsDateTimeType.GetTimeOnlyFromReader(System.Data.Common.DbDataReader rs, int index, NHibernate.Engine.ISessionImplementor session) -> System.TimeOnly
+override NHibernate.Type.TimeOnlyAsDateTimeType.ObjectToSQLString(object value, NHibernate.Dialect.Dialect dialect) -> string
+override NHibernate.Type.TimeOnlyAsTicksType.GetParameterValueToSet(System.TimeOnly timeOnly, NHibernate.Engine.ISessionImplementor session) -> long
+override NHibernate.Type.TimeOnlyAsTicksType.GetTimeOnlyFromReader(System.Data.Common.DbDataReader rs, int index, NHibernate.Engine.ISessionImplementor session) -> System.TimeOnly
+override NHibernate.Type.TimeOnlyAsTicksType.ObjectToSQLString(object value, NHibernate.Dialect.Dialect dialect) -> string
+override NHibernate.Type.TimeOnlyAsTimeType.GetParameterValueToSet(System.TimeOnly timeOnly, NHibernate.Engine.ISessionImplementor session) -> object
+override NHibernate.Type.TimeOnlyAsTimeType.GetTimeOnlyFromReader(System.Data.Common.DbDataReader rs, int index, NHibernate.Engine.ISessionImplementor session) -> System.TimeOnly
+override NHibernate.Type.TimeOnlyAsTimeType.ObjectToSQLString(object value, NHibernate.Dialect.Dialect dialect) -> string
+override NHibernate.Util.SerializationHelper.SurrogateSelector.AddSurrogate(System.Type type, System.Runtime.Serialization.StreamingContext context, System.Runtime.Serialization.ISerializationSurrogate surrogate) -> void
+override NHibernate.Util.SerializationHelper.SurrogateSelector.GetSurrogate(System.Type type, System.Runtime.Serialization.StreamingContext context, out System.Runtime.Serialization.ISurrogateSelector selector) -> System.Runtime.Serialization.ISerializationSurrogate
+override NHibernate.Util.SerializationHelper.SurrogateSelector.RemoveSurrogate(System.Type type, System.Runtime.Serialization.StreamingContext context) -> void
+static NHibernate.Type.TypeFactory.GetTimeOnlyAsDateTimeType(byte fractionalSecondsPrecision) -> NHibernate.Type.NullableType
+static NHibernate.Type.TypeFactory.GetTimeOnlyAsTicksType(byte fractionalSecondsPrecision) -> NHibernate.Type.NullableType
+static NHibernate.Type.TypeFactory.GetTimeOnlyAsTimeType(byte fractionalSecondsPrecision) -> NHibernate.Type.NullableType
+static readonly NHibernate.NHibernateUtil.DateOnlyAsDate -> NHibernate.Type.DateOnlyAsDateType
+static readonly NHibernate.NHibernateUtil.TimeOnlyAsDateTime -> NHibernate.Type.TimeOnlyAsDateTimeType
+static readonly NHibernate.NHibernateUtil.TimeOnlyAsTicks -> NHibernate.Type.TimeOnlyAsTicksType
+static readonly NHibernate.NHibernateUtil.TimeOnlyAsTime -> NHibernate.Type.TimeOnlyAsTimeType
+virtual NHibernate.Driver.DriverBase.CanCreateBatch.get -> bool
+virtual NHibernate.Driver.DriverBase.CreateBatch() -> System.Data.Common.DbBatch
+virtual NHibernate.Driver.DriverBase.CreateDbBatchCommandFromDbCommand(System.Data.Common.DbBatch dbBatch, System.Data.Common.DbCommand dbCommand) -> System.Data.Common.DbBatchCommand
+virtual NHibernate.Driver.DriverBase.OnBeforePrepare(System.Data.Common.DbBatch batch) -> void
+virtual NHibernate.Type.AbstractTimeOnlyType<TParameter>.AdjustTimeOnly(System.TimeOnly timeOnly) -> System.TimeOnly

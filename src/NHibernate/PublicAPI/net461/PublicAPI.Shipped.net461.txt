@@ -1,0 +1,42 @@
+NHibernate.AdoNet.SqlClientBatchingBatcher
+NHibernate.AdoNet.SqlClientBatchingBatcher.SqlClientBatchingBatcher(NHibernate.AdoNet.ConnectionManager connectionManager, NHibernate.IInterceptor interceptor) -> void
+NHibernate.AdoNet.SqlClientBatchingBatcherFactory
+NHibernate.AdoNet.SqlClientBatchingBatcherFactory.SqlClientBatchingBatcherFactory() -> void
+NHibernate.AdoNet.SqlClientSqlCommandSet
+NHibernate.AdoNet.SqlClientSqlCommandSet.Append(System.Data.SqlClient.SqlCommand command) -> void
+NHibernate.AdoNet.SqlClientSqlCommandSet.BatchCommand.get -> System.Data.SqlClient.SqlCommand
+NHibernate.AdoNet.SqlClientSqlCommandSet.CommandTimeout.set -> void
+NHibernate.AdoNet.SqlClientSqlCommandSet.Connection.get -> System.Data.SqlClient.SqlConnection
+NHibernate.AdoNet.SqlClientSqlCommandSet.Connection.set -> void
+NHibernate.AdoNet.SqlClientSqlCommandSet.CountOfCommands.get -> int
+NHibernate.AdoNet.SqlClientSqlCommandSet.Dispose() -> void
+NHibernate.AdoNet.SqlClientSqlCommandSet.ExecuteNonQuery() -> int
+NHibernate.AdoNet.SqlClientSqlCommandSet.SqlClientSqlCommandSet() -> void
+NHibernate.AdoNet.SqlClientSqlCommandSet.Transaction.set -> void
+NHibernate.Context.WcfStateExtension
+NHibernate.Context.WcfStateExtension.Attach(System.ServiceModel.OperationContext owner) -> void
+NHibernate.Context.WcfStateExtension.Detach(System.ServiceModel.OperationContext owner) -> void
+NHibernate.Context.WcfStateExtension.Map.get -> System.Collections.IDictionary
+NHibernate.Context.WcfStateExtension.Map.set -> void
+NHibernate.Context.WcfStateExtension.WcfStateExtension() -> void
+NHibernate.Util.BinaryFormatterSerializationStrategy
+NHibernate.Util.BinaryFormatterSerializationStrategy.BinaryFormatterSerializationStrategy() -> void
+NHibernate.Util.BinaryFormatterSerializationStrategy.Deserialize(byte[] data) -> object
+NHibernate.Util.BinaryFormatterSerializationStrategy.Serialize(object value) -> byte[]
+override NHibernate.AdoNet.SqlClientBatchingBatcher.AddToBatch(NHibernate.AdoNet.IExpectation expectation) -> void
+override NHibernate.AdoNet.SqlClientBatchingBatcher.AddToBatchAsync(NHibernate.AdoNet.IExpectation expectation, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+override NHibernate.AdoNet.SqlClientBatchingBatcher.BatchSize.get -> int
+override NHibernate.AdoNet.SqlClientBatchingBatcher.BatchSize.set -> void
+override NHibernate.AdoNet.SqlClientBatchingBatcher.CloseCommands() -> void
+override NHibernate.AdoNet.SqlClientBatchingBatcher.CountOfStatementsInCurrentBatch.get -> int
+override NHibernate.AdoNet.SqlClientBatchingBatcher.Dispose(bool isDisposing) -> void
+override NHibernate.AdoNet.SqlClientBatchingBatcher.DoExecuteBatch(System.Data.Common.DbCommand ps) -> void
+override NHibernate.AdoNet.SqlClientBatchingBatcher.DoExecuteBatchAsync(System.Data.Common.DbCommand ps, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task
+override NHibernate.Driver.OdbcDriver.CreateCommand() -> System.Data.Common.DbCommand
+override NHibernate.Driver.OdbcDriver.CreateConnection() -> System.Data.Common.DbConnection
+override NHibernate.Driver.OleDbDriver.CreateCommand() -> System.Data.Common.DbCommand
+override NHibernate.Driver.OleDbDriver.CreateConnection() -> System.Data.Common.DbConnection
+override NHibernate.Driver.SqlClientDriver.CreateCommand() -> System.Data.Common.DbCommand
+override NHibernate.Driver.SqlClientDriver.CreateConnection() -> System.Data.Common.DbConnection
+static NHibernate.Util.CollectionHelper.Remove<TKey, TValue>(this System.Collections.Generic.Dictionary<TKey, TValue> dic, TKey key, out TValue value) -> bool
+virtual NHibernate.AdoNet.SqlClientBatchingBatcherFactory.CreateBatcher(NHibernate.AdoNet.ConnectionManager connectionManager, NHibernate.IInterceptor interceptor) -> NHibernate.Engine.IBatcher

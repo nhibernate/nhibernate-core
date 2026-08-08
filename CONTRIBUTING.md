@@ -116,6 +116,16 @@ When you introduce any breaking change:
 
 See Microsoft guidance: the [.NET library breaking change guidance][5] and the [.NET compatibility change rules][6] for definitions and recommended practices.
 
+### Tracking the public API
+
+The public API of *NHibernate.dll* is tracked in `src/NHibernate/PublicAPI` by the [public API analyzers][7], so that binary breaking changes show up in the pull request diff. Changing it fails the build until the baseline is updated.
+
+* **Added API**: apply the *Add to public API* fix on the RS0016 error, or paste the line the error quotes into `PublicAPI.Unshipped.txt`. Add it to `<framework>/PublicAPI.Shipped.<framework>.txt` instead if only that framework has it; RS0017 tells you when an entry is in the wrong file.
+* **Removed API**: prefix its line with `*REMOVED*`, and treat it as the breaking change it is.
+* **Async overloads** are public API too, so run `dotnet async-generator` before updating the baseline.
+
+`dotnet format analyzers ./src/NHibernate/NHibernate.csproj --diagnostics RS0016 --include-generated` records the whole lot for you. `PublicAPI.Unshipped.txt` is merged into the shipped files on release.
+
 ## Further Discussion
 
 The NHibernate team monitors GitHub regularly, so your request will be noticed. If you want to discuss it further, you are welcome to post to the [nhibernate-development mailing list][4]. 
@@ -130,3 +140,4 @@ The NHibernate community values your contributions. Thank you for the time you h
  [4]: http://groups.google.com/group/nhibernate-development
  [5]: https://learn.microsoft.com/en-us/dotnet/standard/library-guidance/breaking-changes
  [6]: https://learn.microsoft.com/en-us/dotnet/core/compatibility/library-change-rules
+ [7]: https://github.com/dotnet/roslyn/blob/main/src/RoslynAnalyzers/PublicApiAnalyzers/PublicApiAnalyzers.Help.md

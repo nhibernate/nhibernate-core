@@ -1,0 +1,10 @@
+NHibernate.Util.BinaryFormatterSerializationStrategy
+NHibernate.Util.BinaryFormatterSerializationStrategy.BinaryFormatterSerializationStrategy() -> void
+NHibernate.Util.BinaryFormatterSerializationStrategy.Deserialize(byte[] data) -> object
+NHibernate.Util.BinaryFormatterSerializationStrategy.Serialize(object value) -> byte[]
+NHibernate.Util.SerializationHelper.SurrogateSelector
+NHibernate.Util.SerializationHelper.SurrogateSelector.SurrogateSelector() -> void
+override NHibernate.Util.SerializationHelper.SurrogateSelector.AddSurrogate(System.Type type, System.Runtime.Serialization.StreamingContext context, System.Runtime.Serialization.ISerializationSurrogate surrogate) -> void
+override NHibernate.Util.SerializationHelper.SurrogateSelector.GetSurrogate(System.Type type, System.Runtime.Serialization.StreamingContext context, out System.Runtime.Serialization.ISurrogateSelector selector) -> System.Runtime.Serialization.ISerializationSurrogate
+override NHibernate.Util.SerializationHelper.SurrogateSelector.RemoveSurrogate(System.Type type, System.Runtime.Serialization.StreamingContext context) -> void
+static NHibernate.Util.CollectionHelper.Remove<TKey, TValue>(this System.Collections.Generic.Dictionary<TKey, TValue> dic, TKey key, out TValue value) -> bool
