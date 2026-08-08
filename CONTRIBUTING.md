@@ -118,11 +118,11 @@ See Microsoft guidance: the [.NET library breaking change guidance][5] and the [
 
 ### Tracking the public API
 
-The public API of *NHibernate.dll* is tracked in `src/NHibernate/PublicAPI` by the [public API analyzers][7], so that binary breaking changes show up in the pull request diff. Changing it fails the build until the baseline is updated.
+The public API of *NHibernate.dll* is tracked in `src/NHibernate/PublicAPI` by the [public API analyzers][7], so that binary breaking changes show up in the pull request diff. Changing it fails the build until you declare the change.
 
 * **Added API**: apply the *Add to public API* fix on the RS0016 error, or paste the line the error quotes into `PublicAPI.Unshipped.txt`. Add it to `<framework>/PublicAPI.Shipped.<framework>.txt` instead if only that framework has it; RS0017 tells you when an entry is in the wrong file.
 * **Removed API**: prefix its line with `*REMOVED*`, and treat it as the breaking change it is.
-* **Async overloads** are public API too, so run `dotnet async-generator` before updating the baseline.
+* **Async overloads** are public API too, so run `dotnet async-generator` before updating the public API files.
 
 `dotnet format analyzers ./src/NHibernate/NHibernate.csproj --diagnostics RS0016 --include-generated` records the whole lot for you. `PublicAPI.Unshipped.txt` is merged into the shipped files on release.
 
