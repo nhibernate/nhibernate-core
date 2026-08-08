@@ -8,3 +8,5 @@ pull_request_rules:
           - "5.5.x"
         assignees:
           - "{{ author }}"
+merge_protections_settings:
+  reporting_method: check-runs
