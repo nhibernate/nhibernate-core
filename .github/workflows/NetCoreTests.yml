@@ -47,18 +47,18 @@ jobs:
               docker run --name firebird -e EnableWireCrypt=true -e FIREBIRD_USER=nhibernate -e FIREBIRD_PASSWORD=nhibernate -e ISC_PASSWORD=nhibernate -e FIREBIRD_DATABASE=nhibernate -p 3050:3050 -d jacobalberty/firebird:v4.0
           # Windows runners can only run Windows containers, so the Linux Firebird image cannot be reused here.
           - DB: Firebird
-            CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=masterkey;charset=utf8;"
+            CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
             OS: windows-latest
             DB_INIT: |
-              choco install firebird --version 3.0.14 --no-progress
+              choco install firebird --version 3.0.14 --no-progress --install-arguments "/SYSDBAPASSWORD=nhibernate"
               $firebird = (Get-ItemProperty 'HKLM:\Software\Firebird Project\Firebird Server\Instances').DefaultInstance
               Add-Content -Path (Join-Path $firebird 'databases.conf') -Value "`r`nnhibernate = $(Join-Path $firebird 'nhibernate.fdb')"
               Restart-Service FirebirdServerDefaultInstance
           - DB: Firebird4
-            CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=masterkey;charset=utf8;"
+            CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
             OS: windows-latest
             DB_INIT: |
-              choco install firebird --version 4.0.7 --no-progress
+              choco install firebird --version 4.0.7 --no-progress --install-arguments "/SYSDBAPASSWORD=nhibernate"
               $firebird = (Get-ItemProperty 'HKLM:\Software\Firebird Project\Firebird Server\Instances').DefaultInstance
               Add-Content -Path (Join-Path $firebird 'databases.conf') -Value "`r`nnhibernate = $(Join-Path $firebird 'nhibernate.fdb')"
               Restart-Service FirebirdServerDefaultInstance
