@@ -60,15 +60,28 @@ namespace NHibernate.Util
 		/// </summary>
 		/// <param name="map">The IDictionary to get the enumeration safe list.</param>
 		/// <returns>A Collection of DictionaryEntries</returns>
+		// Since v5.8.
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]		
 		public static ICollection ConcurrentEntries(IDictionary map)
 		{
 			return ((IdentityMap)map).EntryList;
 		}
 
+		// Since v5.8.
+		[Obsolete("This method has no more usage in NHibernate and will be removed in a future version.")]		
 		public static ICollection Entries(IDictionary map)
 		{
 			return ((IdentityMap)map).EntryList;
 		}
+
+		/// <summary>
+		/// Return the Dictionary Entries (as instances of <c>DictionaryEntry</c> in a list
+		/// that is safe from concurrent modification).  Ie - we may safely add new instances
+		/// to the underlying <c>IDictionary</c> during enumeration of the <c>Values</c>.
+		/// </summary>
+		/// <param name="map">The IDictionary to get the enumeration safe list.</param>
+		/// <returns>A typed list of DictionaryEntries, avoiding boxing when built and enumerated.</returns>
+		internal static List<DictionaryEntry> GetEntries(IDictionary map) => ((IdentityMap)map).GetEntries();
 
 		/// <summary>
 		/// Create the IdentityMap class with the correct class for the IDictionary.
@@ -220,19 +233,36 @@ namespace NHibernate.Util
 		/// 
 		/// Contains a copy (not that actual instance stored) of the DictionaryEntries in a List.
 		/// </summary>
-		public IList EntryList
-		{
-			get
-			{
-				IList list = new List<object>(map.Count);
-				foreach (DictionaryEntry de in map)
-				{
-					DictionaryEntry newEntry = new DictionaryEntry(de.Key, de.Value);
-					list.Add(newEntry);
-				}
+		// Since v5.8.
+		[Obsolete("Use GetEntries instead.")]
+		public IList EntryList => GetEntries();
 
+		/// <summary>
+		/// Provides a snapshot VIEW in the form of a typed List of the contents of the IdentityMap.
+		/// You can safely iterate over this VIEW and modify the actual IdentityMap because the
+		/// VIEW is a copy of the contents, not a reference to the existing Map.
+		/// 
+		/// Contains a copy (not the actual instance stored) of the DictionaryEntries in a List.
+		/// </summary>
+		/// <remarks>
+		/// This uses <see cref="IDictionaryEnumerator"/> directly, which avoids boxing the
+		/// <see cref="DictionaryEntry"/> structs when building the snapshot list.
+		/// </remarks>
+		public List<DictionaryEntry> GetEntries()
+		{
+			var list = new List<DictionaryEntry>(map.Count);
+			if (map.Count == 0)
+			{
 				return list;
 			}
+
+			var enumerator = map.GetEnumerator();
+			while (enumerator.MoveNext())
+			{
+				list.Add(enumerator.Entry);
+			}
+
+			return list;
 		}
 
 		/// <summary>

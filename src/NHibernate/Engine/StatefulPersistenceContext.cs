@@ -252,8 +252,8 @@ namespace NHibernate.Engine
 				li.UnsetSession();
 			}
 
-			var collectionEntryArray = IdentityMap.ConcurrentEntries(collectionEntries);
-			foreach (DictionaryEntry entry in collectionEntryArray)
+			var collectionEntryArray = IdentityMap.GetEntries(collectionEntries);
+			foreach (var entry in collectionEntryArray)
 			{
 				((IPersistentCollection)entry.Key).UnsetSession(Session);
 			}

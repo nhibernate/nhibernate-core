@@ -71,7 +71,9 @@ namespace NHibernate.Test.UtilityTest
 
 			// call ConcurrentEntries and verify it doesn't use the HashCode to build the 
 			// new list.
+#pragma warning disable CS0618 // Type or member is obsolete
 			ICollection concurrent = IdentityMap.ConcurrentEntries(map);
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			Assert.AreEqual(2, concurrent.Count, "There are two elements in concurrent Map");
 			foreach (DictionaryEntry de in concurrent)
@@ -82,6 +84,32 @@ namespace NHibernate.Test.UtilityTest
 				Assert.IsTrue(map.Contains(noCode), "The Key in the concurrent map should have been in the original map's Keys");
 				Assert.IsTrue(noCodeValue == map[noCode],
 				              "The Value identified by the Key in concurrent map should be the same as the IdentityMap");
+			}
+		}
+
+		/// <summary>
+		/// Verify that GetEntries returns an ICollection that contains the same
+		/// Keys/Values as originally added into the IdentityMap.
+		/// </summary>
+		[Test]
+		public void GetEntries()
+		{
+			var map = GetIdentityMap();
+
+			map.Add(noHashCode1, value1);
+			map.Add(noHashCode2, value2);
+
+			var entries = IdentityMap.GetEntries(map);
+
+			Assert.AreEqual(2, entries.Count, "There are two elements in the IdentityMap");
+			foreach (var de in entries)
+			{
+				var noCode = (NoHashCode) de.Key;
+				var noCodeValue = de.Value;
+
+				Assert.IsTrue(map.Contains(noCode), "The Key in the entries should have been in the original map's Keys");
+				Assert.IsTrue(noCodeValue == map[noCode],
+				              "The Value identified by the Key in entries should be the same as the IdentityMap");
 			}
 		}
 
@@ -102,7 +130,9 @@ namespace NHibernate.Test.UtilityTest
 			map.Add(noHashCode1, value1);
 			map.Add(noHashCode2, value2);
 
+#pragma warning disable CS0618 // Type or member is obsolete
 			ICollection concurrent = IdentityMap.ConcurrentEntries(map);
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			for (int i = 0; i < concurrent.Count;)
 			{
@@ -111,6 +141,36 @@ namespace NHibernate.Test.UtilityTest
 
 				i++;
 				Assert.AreEqual(2, concurrent.Count, "Should still be 2 items in the concurrent ICollection");
+				Assert.AreEqual(2 + i, map.Count, "Should be " + (2 + i) + " items in the IdentityMap");
+			}
+		}
+
+		/// <summary>
+		/// Tests that it is safe to modify the IdentityMap while iterating through the
+		/// GetEntries snapshot.
+		/// </summary>
+		[Test]
+		public void GetEntriesModification()
+		{
+			var noHashCode3 = new NoHashCode();
+			var value3 = new object();
+
+			var noHashCode4 = new NoHashCode();
+			var value4 = new object();
+
+			var map = GetIdentityMap();
+			map.Add(noHashCode1, value1);
+			map.Add(noHashCode2, value2);
+
+			var entries = IdentityMap.GetEntries(map);
+
+			for (var i = 0; i < entries.Count;)
+			{
+				if (i == 0) map.Add(noHashCode3, value3);
+				if (i == 1) map.Add(noHashCode4, value4);
+
+				i++;
+				Assert.AreEqual(2, entries.Count, "Should still be 2 items in the GetEntries ICollection");
 				Assert.AreEqual(2 + i, map.Count, "Should be " + (2 + i) + " items in the IdentityMap");
 			}
 		}

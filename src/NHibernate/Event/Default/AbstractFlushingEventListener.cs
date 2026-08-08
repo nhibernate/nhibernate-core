@@ -90,10 +90,10 @@ namespace NHibernate.Event.Default
 		{
 			log.Debug("Processing unreferenced collections");
 
-			ICollection list = IdentityMap.Entries(session.PersistenceContext.CollectionEntries);
-			foreach (DictionaryEntry me in list)
+			var list = IdentityMap.GetEntries(session.PersistenceContext.CollectionEntries);
+			foreach (var me in list)
 			{
-				CollectionEntry ce = (CollectionEntry) me.Value;
+				var ce = (CollectionEntry) me.Value;
 				if (!ce.IsReached && !ce.IsIgnore)
 				{
 					Collections.ProcessUnreachableCollection((IPersistentCollection) me.Key, session);
@@ -104,7 +104,7 @@ namespace NHibernate.Event.Default
 
 			log.Debug("Scheduling collection removes/(re)creates/updates");
 
-			list = IdentityMap.Entries(session.PersistenceContext.CollectionEntries);
+			list = IdentityMap.GetEntries(session.PersistenceContext.CollectionEntries);
 			ActionQueue actionQueue = session.ActionQueue;
 			foreach (DictionaryEntry me in list)
 			{
@@ -145,20 +145,20 @@ namespace NHibernate.Event.Default
 
 			// So this needs to be safe from concurrent modification problems.
 			// It is safe because of how IdentityMap implements entrySet()
-			IEventSource source = @event.Session;
+			var source = @event.Session;
 
-			ICollection list = IdentityMap.ConcurrentEntries(source.PersistenceContext.EntityEntries);
-			foreach (DictionaryEntry me in list)
+			var list = IdentityMap.GetEntries(source.PersistenceContext.EntityEntries);
+			foreach (var me in list)
 			{
 				// Update the status of the object and if necessary, schedule an update
-				EntityEntry entry = (EntityEntry) me.Value;
-				Status status = entry.Status;
+				var entry = (EntityEntry) me.Value;
+				var status = entry.Status;
 
 				if (status != Status.Loading && status != Status.Gone)
 				{
-					FlushEntityEvent entityEvent = new FlushEntityEvent(source, me.Key, entry);
-					IFlushEntityEventListener[] listeners = source.Listeners.FlushEntityEventListeners;
-					foreach (IFlushEntityEventListener listener in listeners)
+					var entityEvent = new FlushEntityEvent(source, me.Key, entry);
+					var listeners = source.Listeners.FlushEntityEventListeners;
+					foreach (var listener in listeners)
 					{
 						listener.OnFlushEntity(entityEvent);
 					}
@@ -174,8 +174,8 @@ namespace NHibernate.Event.Default
 			// and reset reached, doupdate, etc.
 			log.Debug("dirty checking collections");
 
-			ICollection list = IdentityMap.Entries(session.PersistenceContext.CollectionEntries);
-			foreach (DictionaryEntry entry in list)
+			var list = IdentityMap.GetEntries(session.PersistenceContext.CollectionEntries);
+			foreach (var entry in list)
 			{
 				((CollectionEntry) entry.Value).PreFlush((IPersistentCollection) entry.Key);
 			}
@@ -189,12 +189,12 @@ namespace NHibernate.Event.Default
 			log.Debug("processing flush-time cascades");
 
 			var anything = Anything;
-			ICollection list = IdentityMap.ConcurrentEntries(session.PersistenceContext.EntityEntries);
+			var list = IdentityMap.GetEntries(session.PersistenceContext.EntityEntries);
 			//safe from concurrent modification because of how entryList() is implemented on IdentityMap
-			foreach (DictionaryEntry me in list)
+			foreach (var me in list)
 			{
-				EntityEntry entry = (EntityEntry) me.Value;
-				Status status = entry.Status;
+				var entry = (EntityEntry) me.Value;
+				var status = entry.Status;
 				if (status == Status.Loaded || status == Status.Saving || status == Status.ReadOnly)
 				{
 					CascadeOnFlush(session, entry.Persister, me.Key, anything);
