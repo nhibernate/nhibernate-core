@@ -45,12 +45,14 @@ jobs:
             CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
             OS: ubuntu-latest
             DB_INIT: |
-              docker run --name firebird -e EnableWireCrypt=true -e FIREBIRD_USER=nhibernate -e FIREBIRD_PASSWORD=nhibernate -e ISC_PASSWORD=nhibernate -e FIREBIRD_DATABASE=nhibernate -p 3050:3050 -d jacobalberty/firebird:v3.0
+              # ISC_INET_SERVER_HOME points the server at the data directory, otherwise it resolves the relative database name under /tmp.
+              docker run --name firebird -e ISC_INET_SERVER_HOME=/var/lib/firebird/data -e FIREBIRD_CONF_WireCrypt=Enabled -e FIREBIRD_USER=nhibernate -e FIREBIRD_PASSWORD=nhibernate -e FIREBIRD_ROOT_PASSWORD=nhibernate -e FIREBIRD_DATABASE=nhibernate -p 3050:3050 -d firebirdsql/firebird:3
           - DB: Firebird4
             CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
             OS: ubuntu-latest
             DB_INIT: |
-              docker run --name firebird -e EnableWireCrypt=true -e FIREBIRD_USER=nhibernate -e FIREBIRD_PASSWORD=nhibernate -e ISC_PASSWORD=nhibernate -e FIREBIRD_DATABASE=nhibernate -p 3050:3050 -d jacobalberty/firebird:v4.0
+              # ISC_INET_SERVER_HOME points the server at the data directory, otherwise it resolves the relative database name under /tmp.
+              docker run --name firebird -e ISC_INET_SERVER_HOME=/var/lib/firebird/data -e FIREBIRD_CONF_WireCrypt=Enabled -e FIREBIRD_USER=nhibernate -e FIREBIRD_PASSWORD=nhibernate -e FIREBIRD_ROOT_PASSWORD=nhibernate -e FIREBIRD_DATABASE=nhibernate -p 3050:3050 -d firebirdsql/firebird:4
           # Windows runners can only run Windows containers, so the Linux Firebird image cannot be reused here.
           # MaxUnflushedWrites and MaxUnflushedWriteTime default to -1 everywhere but Windows, where they make the
           # engine flush the whole database file every 100 commits and every 5 seconds.
