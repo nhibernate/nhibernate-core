@@ -123,30 +123,29 @@ namespace NHibernate.Test.Hql.Ast
 			// UseMaxForLimit and OffsetStartsAtOne settings, on each execution.
 			const string hql = "from Human h order by h.bodyWeight skip :pSkip take :pTake";
 
-			using (var s = OpenSession())
-			using (var txn = s.BeginTransaction())
-			{
-				var actual = (await (s.CreateQuery(hql)
-					.SetInt32("pSkip", 1)
-					.SetInt32("pTake", 3).ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
-				Assert.That(actual, Is.EqualTo(new[] {6f, 10f, 15f}), "first execution");
+			using var s = OpenSession();
+			using var txn = s.BeginTransaction();
 
-				// Same query string, so same query plan, but other paging values.
-				actual = (await (s.CreateQuery(hql)
-					.SetInt32("pSkip", 2)
-					.SetInt32("pTake", 2).ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
-				Assert.That(actual, Is.EqualTo(new[] {10f, 15f}), "second execution");
+			var actual = (await (s.CreateQuery(hql)
+				.SetInt32("pSkip", 1)
+				.SetInt32("pTake", 3).ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
+			Assert.That(actual, Is.EqualTo(new[] {6f, 10f, 15f}), "first execution");
 
-				// Same query instance, re-executed with other paging values.
-				var query = s.CreateQuery(hql).SetInt32("pSkip", 3).SetInt32("pTake", 1);
-				actual = (await (query.ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
-				Assert.That(actual, Is.EqualTo(new[] {15f}), "third execution");
+			// Same query string, so same query plan, but other paging values.
+			actual = (await (s.CreateQuery(hql)
+				.SetInt32("pSkip", 2)
+				.SetInt32("pTake", 2).ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
+			Assert.That(actual, Is.EqualTo(new[] {10f, 15f}), "second execution");
 
-				actual = (await (query.SetInt32("pSkip", 0).SetInt32("pTake", 2).ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
-				Assert.That(actual, Is.EqualTo(new[] {5f, 6f}), "fourth execution");
+			// Same query instance, re-executed with other paging values.
+			var query = s.CreateQuery(hql).SetInt32("pSkip", 3).SetInt32("pTake", 1);
+			actual = (await (query.ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
+			Assert.That(actual, Is.EqualTo(new[] {15f}), "third execution");
 
-				await (txn.CommitAsync());
-			}
+			actual = (await (query.SetInt32("pSkip", 0).SetInt32("pTake", 2).ListAsync<Human>())).Select(h => h.BodyWeight).ToArray();
+			Assert.That(actual, Is.EqualTo(new[] {5f, 6f}), "fourth execution");
+
+			await (txn.CommitAsync());
 		}
 
 		[Test]

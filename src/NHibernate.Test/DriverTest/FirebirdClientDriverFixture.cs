@@ -204,13 +204,12 @@ namespace NHibernate.Test.DriverTest
 		{
 			// Firebird only accepts an integer literal or a parameter in the offset/fetch clause,
 			// casts are a syntax error there.
-			using (var cmd = BuildOffsetFetchPagingCommand(SqlTypeFactory.Int32))
-			{
-				_driver.AdjustCommand(cmd);
+			using var cmd = BuildOffsetFetchPagingCommand(SqlTypeFactory.Int32);
 
-				var expected = "select col1 from table offset @p0 rows fetch first @p1 rows only";
-				Assert.That(cmd.CommandText, Is.EqualTo(expected));
-			}
+			_driver.AdjustCommand(cmd);
+
+			var expected = "select col1 from table offset @p0 rows fetch first @p1 rows only";
+			Assert.That(cmd.CommandText, Is.EqualTo(expected));
 		}
 
 		[Test]
