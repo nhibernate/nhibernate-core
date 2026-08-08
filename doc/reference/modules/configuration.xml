@@ -1453,6 +1453,19 @@ in the parameter binding.</programlisting>
                             </entry>
                         </row>
                         <row>
+                            <entry>Firebird 3</entry>
+                            <entry><literal>NHibernate.Dialect.Firebird3Dialect</literal></entry>
+                            <entry>
+                                Uses the SQL standard <literal>offset</literal>/<literal>fetch</literal>
+                                clause for paging.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>Firebird 4</entry>
+                            <entry><literal>NHibernate.Dialect.Firebird4Dialect</literal></entry>
+                            <entry></entry>
+                        </row>
+                        <row>
                             <entry>Informix</entry>
                             <entry><literal>NHibernate.Dialect.InformixDialect</literal></entry>
                             <entry></entry>

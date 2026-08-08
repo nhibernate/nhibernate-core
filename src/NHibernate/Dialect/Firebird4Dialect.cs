@@ -2,7 +2,7 @@ using NHibernate.Dialect.Function;
 
 namespace NHibernate.Dialect
 {
-	public class Firebird4Dialect: FirebirdDialect
+	public class Firebird4Dialect: Firebird3Dialect
 	{
 		public override string CurrentTimestampSelectString => "select LOCALTIMESTAMP from RDB$DATABASE";
 

@@ -238,6 +238,20 @@ namespace NHibernate.Test.DriverTest
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType });
 		}
 
+		private DbCommand BuildOffsetFetchPagingCommand(SqlType paramType)
+		{
+			var sqlString =
+				new SqlStringBuilder()
+					.Add("select col1 from table offset ")
+					.AddParameter()
+					.Add(" rows fetch first ")
+					.AddParameter()
+					.Add(" rows only")
+					.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType });
+		}
+
 		private DbCommand BuildInCommand(SqlType paramType)
 		{
 			var sqlString =

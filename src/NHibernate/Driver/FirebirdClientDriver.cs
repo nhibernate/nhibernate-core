@@ -26,7 +26,7 @@ namespace NHibernate.Driver
 			// a comparison,
 			@"[=<>]\s*" +
 			// or a paging instruction,
-			@"|\bfirst\s+|\bskip\s+" +
+			@"|\bfirst\s+|\bskip\s+|\boffset\s+" +
 			// or a "between" condition,
 			@"|\bbetween\s+|\bbetween\s+@p\w+\s+and\s+" +
 			// or a "in" condition.
