@@ -84,10 +84,10 @@ namespace NHibernate.Test.Pagination
 		[Test]
 		public async Task PagingParametersUpdatedOnEachExecution_NH2731Async()
 		{
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
-				for (int i = 4; i <= 8; i++)
+				for (var i = 4; i <= 8; i++)
 				{
 					await (s.SaveAsync(new DataPoint { X = i }));
 				}
@@ -96,8 +96,8 @@ namespace NHibernate.Test.Pagination
 
 			// NH-2731: the limit parameters must be recomputed, according to the dialect
 			// UseMaxForLimit and OffsetStartsAtOne settings, on each execution.
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				var query = s.CreateQuery("from DataPoint dp order by dp.X").SetFirstResult(1).SetMaxResults(2);
 				Assert.That(
@@ -124,8 +124,8 @@ namespace NHibernate.Test.Pagination
 				await (t.CommitAsync());
 			}
 
-			using (ISession s = OpenSession())
-			using (ITransaction t = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				await (s.DeleteAsync("from DataPoint"));
 				await (t.CommitAsync());

@@ -112,10 +112,10 @@ namespace NHibernate.Test.Hql.Ast
 			// UseMaxForLimit and OffsetStartsAtOne settings, on each execution.
 			const string hql = "from Human h order by h.bodyWeight skip :pSkip take :pTake";
 
-			using (ISession s = OpenSession())
-			using (ITransaction txn = s.BeginTransaction())
+			using (var s = OpenSession())
+			using (var txn = s.BeginTransaction())
 			{
-				float[] actual = s.CreateQuery(hql)
+				var actual = s.CreateQuery(hql)
 					.SetInt32("pSkip", 1)
 					.SetInt32("pTake", 3).List<Human>().Select(h => h.BodyWeight).ToArray();
 				Assert.That(actual, Is.EqualTo(new[] {6f, 10f, 15f}), "first execution");
@@ -127,7 +127,7 @@ namespace NHibernate.Test.Hql.Ast
 				Assert.That(actual, Is.EqualTo(new[] {10f, 15f}), "second execution");
 
 				// Same query instance, re-executed with other paging values.
-				IQuery query = s.CreateQuery(hql).SetInt32("pSkip", 3).SetInt32("pTake", 1);
+				var query = s.CreateQuery(hql).SetInt32("pSkip", 3).SetInt32("pTake", 1);
 				actual = query.List<Human>().Select(h => h.BodyWeight).ToArray();
 				Assert.That(actual, Is.EqualTo(new[] {15f}), "third execution");
 
