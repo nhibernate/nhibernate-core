@@ -50,17 +50,15 @@ jobs:
             CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
             OS: windows-latest
             DB_INIT: |
-              choco install firebird --version 3.0.14 --no-progress --install-arguments "/SYSDBAPASSWORD=nhibernate"
-              $firebird = (Get-ItemProperty 'HKLM:\Software\Firebird Project\Firebird Server\Instances').DefaultInstance
-              Add-Content -Path (Join-Path $firebird 'databases.conf') -Value "`r`nnhibernate = $(Join-Path $firebird 'nhibernate.fdb')"
+              choco install firebird --version 3.0.14 --no-progress --install-arguments '/DIR=C:\firebird /SYSDBAPASSWORD=nhibernate'
+              Add-Content -Path 'C:\firebird\databases.conf' -Value "`r`nnhibernate = C:\firebird\nhibernate.fdb"
               Restart-Service FirebirdServerDefaultInstance
           - DB: Firebird4
             CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
             OS: windows-latest
             DB_INIT: |
-              choco install firebird --version 4.0.7 --no-progress --install-arguments "/SYSDBAPASSWORD=nhibernate"
-              $firebird = (Get-ItemProperty 'HKLM:\Software\Firebird Project\Firebird Server\Instances').DefaultInstance
-              Add-Content -Path (Join-Path $firebird 'databases.conf') -Value "`r`nnhibernate = $(Join-Path $firebird 'nhibernate.fdb')"
+              choco install firebird --version 4.0.7 --no-progress --install-arguments '/DIR=C:\firebird /SYSDBAPASSWORD=nhibernate'
+              Add-Content -Path 'C:\firebird\databases.conf' -Value "`r`nnhibernate = C:\firebird\nhibernate.fdb"
               Restart-Service FirebirdServerDefaultInstance
           - DB: MySQL
             CONNECTION_STRING: "Server=localhost;Uid=root;Password=nhibernate;Database=nhibernate;Old Guids=True;SslMode=none;"
