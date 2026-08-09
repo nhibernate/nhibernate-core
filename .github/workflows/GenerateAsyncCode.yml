@@ -20,6 +20,8 @@ jobs:
         ref: ${{ github.event.pull_request.head.ref }}
         repository: ${{ github.event.pull_request.head.repo.full_name }}
         persist-credentials: false
+        # The generator has to build the pull request's own code, this job has no write access to do so.
+        allow-unsafe-pr-checkout: true
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
@@ -65,6 +67,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
         repository: ${{ github.event.pull_request.head.repo.full_name }}
+        allow-unsafe-pr-checkout: true
 
     - name: Download patch
       uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
