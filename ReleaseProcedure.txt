@@ -28,6 +28,11 @@ dotnet gitreleasemanager create -o nhibernate -r nhibernate-core -m 5.3 --token 
   * Check/update version number in NHibernate.props under build-common folder.
     Clear VersionSuffix if present.
 
+  * Move the public API added since the previous release into the shipped files: under
+    src/NHibernate/PublicAPI, append PublicAPI.Unshipped.txt to PublicAPI.Shipped.txt, empty
+    the former, and drop the entries marked with *REMOVED* along with the lines they refer to.
+    See the "Tracking the public API" section of CONTRIBUTING.md.
+
   * If releasing a new minor or major, check whether SECURITY.md should be updated or not.
 
   * Don't forget to commit the above.
