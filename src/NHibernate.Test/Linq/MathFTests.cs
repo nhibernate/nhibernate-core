@@ -119,6 +119,20 @@ namespace NHibernate.Test.Linq
 			Test(o => MathF.Round(MathF.Pow((float)o.Discount, 0.5f), 5));
 		}
 
+		[Test]
+		public void MinTest()
+		{
+			AssumeFunctionSupported("least");
+			Test(o => MathF.Min((float) o.UnitPrice, 20f));
+		}
+
+		[Test]
+		public void MaxTest()
+		{
+			AssumeFunctionSupported("greatest");
+			Test(o => MathF.Max((float) o.UnitPrice, 20f));
+		}
+
 		private void Test(Expression<Func<OrderLine, float>> selector)
 		{
 			var expected = _orderLines

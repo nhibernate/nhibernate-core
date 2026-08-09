@@ -278,7 +278,10 @@ namespace NHibernate.Dialect
 			RegisterFunction("random", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
-			
+
+			RegisterFunction("greatest", new StandardSQLFunction("greatest"));
+			RegisterFunction("least", new StandardSQLFunction("least"));
+
 			RegisterFunction("stddev", new StandardSQLFunction("stddev", NHibernateUtil.Double));
 			RegisterFunction("variance", new StandardSQLFunction("variance", NHibernateUtil.Double));
 

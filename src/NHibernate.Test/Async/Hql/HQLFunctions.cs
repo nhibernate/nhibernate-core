@@ -664,6 +664,33 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public async Task GreatestAndLeastAsync()
+		{
+			AssumeFunctionSupported("greatest");
+			AssumeFunctionSupported("least");
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				await (s.SaveAsync(new Animal("abcdef", 20)));
+				await (tx.CommitAsync());
+			}
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var hql = "select greatest(a.BodyWeight, 30.0), least(a.BodyWeight, 30.0) from Animal a";
+				var lresult = (object[]) await (s.CreateQuery(hql).UniqueResultAsync());
+				Assert.AreEqual(30f, lresult[0]);
+				Assert.AreEqual(20f, lresult[1]);
+
+				hql = "from Animal a where greatest(a.BodyWeight, 30.0) = 30 and least(a.BodyWeight, 30.0) = 20";
+				var result = (Animal) await (s.CreateQuery(hql).UniqueResultAsync());
+				Assert.AreEqual("abcdef", result.Description);
+
+				await (tx.CommitAsync());
+			}
+		}
+
+		[Test]
 		public async Task SqrtAsync()
 		{
 			AssumeFunctionSupported("sqrt");

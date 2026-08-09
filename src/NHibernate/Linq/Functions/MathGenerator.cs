@@ -55,6 +55,30 @@ namespace NHibernate.Linq.Functions
 
 				ReflectHelper.FastGetMethod(Math.Pow, default(double), default(double)),
 
+				ReflectHelper.FastGetMethod(Math.Min, default(decimal), default(decimal)),
+				ReflectHelper.FastGetMethod(Math.Min, default(double), default(double)),
+				ReflectHelper.FastGetMethod(Math.Min, default(float), default(float)),
+				ReflectHelper.FastGetMethod(Math.Min, default(long), default(long)),
+				ReflectHelper.FastGetMethod(Math.Min, default(ulong), default(ulong)),
+				ReflectHelper.FastGetMethod(Math.Min, default(int), default(int)),
+				ReflectHelper.FastGetMethod(Math.Min, default(uint), default(uint)),
+				ReflectHelper.FastGetMethod(Math.Min, default(short), default(short)),
+				ReflectHelper.FastGetMethod(Math.Min, default(ushort), default(ushort)),
+				ReflectHelper.FastGetMethod(Math.Min, default(sbyte), default(sbyte)),
+				ReflectHelper.FastGetMethod(Math.Min, default(byte), default(byte)),
+
+				ReflectHelper.FastGetMethod(Math.Max, default(decimal), default(decimal)),
+				ReflectHelper.FastGetMethod(Math.Max, default(double), default(double)),
+				ReflectHelper.FastGetMethod(Math.Max, default(float), default(float)),
+				ReflectHelper.FastGetMethod(Math.Max, default(long), default(long)),
+				ReflectHelper.FastGetMethod(Math.Max, default(ulong), default(ulong)),
+				ReflectHelper.FastGetMethod(Math.Max, default(int), default(int)),
+				ReflectHelper.FastGetMethod(Math.Max, default(uint), default(uint)),
+				ReflectHelper.FastGetMethod(Math.Max, default(short), default(short)),
+				ReflectHelper.FastGetMethod(Math.Max, default(ushort), default(ushort)),
+				ReflectHelper.FastGetMethod(Math.Max, default(sbyte), default(sbyte)),
+				ReflectHelper.FastGetMethod(Math.Max, default(byte), default(byte)),
+
 #if NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 				ReflectHelper.FastGetMethod(MathF.Sin, default(float)),
 				ReflectHelper.FastGetMethod(MathF.Cos, default(float)),
@@ -80,6 +104,9 @@ namespace NHibernate.Linq.Functions
 				ReflectHelper.FastGetMethod(MathF.Ceiling, default(float)),
 
 				ReflectHelper.FastGetMethod(MathF.Pow, default(float), default(float)),
+
+				ReflectHelper.FastGetMethod(MathF.Min, default(float), default(float)),
+				ReflectHelper.FastGetMethod(MathF.Max, default(float), default(float)),
 #endif
 #if NET8_0_OR_GREATER
 				ReflectHelper.FastGetMethod(float.Sin, default(float)),
@@ -98,7 +125,9 @@ namespace NHibernate.Linq.Functions
 				ReflectHelper.FastGetMethod(float.Floor, default(float)),
 				ReflectHelper.FastGetMethod(float.Ceiling, default(float)),
 				ReflectHelper.FastGetMethod(float.Pow, default(float), default(float)),
-				
+				ReflectHelper.FastGetMethod(float.Min, default(float), default(float)),
+				ReflectHelper.FastGetMethod(float.Max, default(float), default(float)),
+
 				ReflectHelper.FastGetMethod(double.Sin, default(double)),
 				ReflectHelper.FastGetMethod(double.Cos, default(double)),
 				ReflectHelper.FastGetMethod(double.Tan, default(double)),
@@ -115,6 +144,8 @@ namespace NHibernate.Linq.Functions
 				ReflectHelper.FastGetMethod(double.Floor, default(double)),
 				ReflectHelper.FastGetMethod(double.Ceiling, default(double)),
 				ReflectHelper.FastGetMethod(double.Pow, default(double), default(double)),
+				ReflectHelper.FastGetMethod(double.Min, default(double), default(double)),
+				ReflectHelper.FastGetMethod(double.Max, default(double), default(double)),
 #endif
 			};
 		}
@@ -124,6 +155,9 @@ namespace NHibernate.Linq.Functions
 			var function = method.Name.ToLowerInvariant() switch
 			{
 				"pow" => "power",
+				// min and max are aggregates in HQL, their scalar counterparts are named greatest and least.
+				"min" => "least",
+				"max" => "greatest",
 				var f => f,
 			};
 
