@@ -15,6 +15,14 @@ namespace NHibernate.Test
 	[SetUpFixture]
 	public class TestContainerSetup
 	{
+		private const string Db2Image = "icr.io/db2_community/db2:12.1.0.0";
+		private const string FirebirdSqlImage = "jacobalberty/firebird:v4.0";
+		private const string MariaDbImage = "mariadb:10.10";
+		private const string MsSqlImage = "mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04";
+		private const string MySqlImage = "mysql:8.0";
+		private const string OracleImage = "gvenzl/oracle-xe:21.3.0-slim-faststart";
+		private const string PostgreSqlImage = "postgres:15.1";
+
 		private static volatile IDatabaseContainer _container;
 		private static readonly object _lock = new object();
 
@@ -46,19 +54,19 @@ namespace NHibernate.Test
 			switch (dbType.ToLower())
 			{
 				case "db2":
-					return new Db2Builder("icr.io/db2_community/db2:12.1.0.0").Build();
+					return new Db2Builder(Db2Image).Build();
 				case "firebirdsql":
-					return new FirebirdSqlBuilder("jacobalberty/firebird:v4.0").Build();
+					return new FirebirdSqlBuilder(FirebirdSqlImage).Build();
 				case "mariadb":
-					return new MariaDbBuilder("mariadb:10.10").Build();
+					return new MariaDbBuilder(MariaDbImage).Build();
 				case "mssql":
-					return new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04").Build();
+					return new MsSqlBuilder(MsSqlImage).Build();
 				case "mysql":
-					return new MySqlBuilder("mysql:8.0").Build();
+					return new MySqlBuilder(MySqlImage).Build();
 				case "oracle":
-					return new OracleBuilder("gvenzl/oracle-xe:21.3.0-slim-faststart").Build();
+					return new OracleBuilder(OracleImage).Build();
 				case "postgresql":
-					return new PostgreSqlBuilder("postgres:15.1").Build();
+					return new PostgreSqlBuilder(PostgreSqlImage).Build();
 				default:
 					throw new NotSupportedException("Database type not supported: " + dbType);
 			}
