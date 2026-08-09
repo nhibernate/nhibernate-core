@@ -46,19 +46,21 @@ jobs:
             DB_INIT: |
               docker run --name firebird -e EnableWireCrypt=true -e FIREBIRD_USER=nhibernate -e FIREBIRD_PASSWORD=nhibernate -e ISC_PASSWORD=nhibernate -e FIREBIRD_DATABASE=nhibernate -p 3050:3050 -d jacobalberty/firebird:v4.0
           # Windows runners can only run Windows containers, so the Linux Firebird image cannot be reused here.
+          # MaxUnflushedWrites and MaxUnflushedWriteTime default to -1 everywhere but Windows, where they make the
+          # engine flush the whole database file every 100 commits and every 5 seconds.
           - DB: Firebird
             CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
             OS: windows-latest
             DB_INIT: |
               choco install firebird --version 3.0.14 --no-progress --install-arguments '/DIR=C:\firebird /SYSDBAPASSWORD=nhibernate'
-              Add-Content -Path 'C:\firebird\databases.conf' -Value "`r`nnhibernate = C:\firebird\nhibernate.fdb"
+              Add-Content -Path 'C:\firebird\databases.conf' -Value "`r`nnhibernate = C:\firebird\nhibernate.fdb`r`n{`r`n    MaxUnflushedWrites = -1`r`n    MaxUnflushedWriteTime = -1`r`n}"
               Restart-Service FirebirdServerDefaultInstance
           - DB: Firebird4
             CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
             OS: windows-latest
             DB_INIT: |
               choco install firebird --version 4.0.7 --no-progress --install-arguments '/DIR=C:\firebird /SYSDBAPASSWORD=nhibernate'
-              Add-Content -Path 'C:\firebird\databases.conf' -Value "`r`nnhibernate = C:\firebird\nhibernate.fdb"
+              Add-Content -Path 'C:\firebird\databases.conf' -Value "`r`nnhibernate = C:\firebird\nhibernate.fdb`r`n{`r`n    MaxUnflushedWrites = -1`r`n    MaxUnflushedWriteTime = -1`r`n}"
               Restart-Service FirebirdServerDefaultInstance
           - DB: MySQL
             CONNECTION_STRING: "Server=localhost;Uid=root;Password=nhibernate;Database=nhibernate;Old Guids=True;SslMode=none;"
