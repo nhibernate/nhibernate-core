@@ -8,7 +8,9 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Linq;
+using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Dialect;
 using NUnit.Framework;
 using NHibernate.Linq;
@@ -66,6 +68,62 @@ namespace NHibernate.Test.Linq.ByMethod
 						   .ToListAsync());
 
 			Assert.AreEqual(830, orders.Count);
+		}
+
+		[Test]
+		public async Task GetValueOrDefaultOnDateTimeInSelectAsync()
+		{
+			var dates = await (db.Orders
+						  .Select(x => x.ShippingDate.GetValueOrDefault())
+						  .ToListAsync());
+
+			Assert.That(dates, Has.Count.EqualTo(830));
+			Assert.That(dates, Has.Some.EqualTo(default(DateTime)), "Orders without a shipping date should default.");
+		}
+
+		[Test]
+		public async Task GetValueOrDefaultOnDateTimeInWhereAsync()
+		{
+			var orders = await (db.Orders
+						   .Where(x => x.ShippingDate.GetValueOrDefault() > new DateTime(1990, 1, 1))
+						   .ToListAsync());
+
+			Assert.That(orders, Has.Count.EqualTo(await (db.Orders.CountAsync(x => x.ShippingDate != null))));
+		}
+
+		[Test]
+		public async Task GetValueOrDefaultOnDateTimeInOrderByAsync()
+		{
+			var orders = await (db.Orders
+						   .OrderByDescending(x => x.ShippingDate.GetValueOrDefault())
+						   .ToListAsync());
+
+			Assert.That(orders, Has.Count.EqualTo(830));
+		}
+
+		[Test]
+		public async Task GetValueOrDefaultOnEnumStoredAsStringAsync()
+		{
+			using (var sqlLog = new SqlLogSpy())
+			{
+				var users = await (db.Users
+							  .Where(x => x.NullableEnum1.GetValueOrDefault() == EnumStoredAsString.Medium)
+							  .ToListAsync());
+
+				Assert.That(users, Has.Count.EqualTo(2));
+				// The default value must be sent as a string, as the member is mapped as one.
+				Assert.That(sqlLog.GetWholeLog(), Does.Contain(nameof(EnumStoredAsString.Unspecified)));
+			}
+		}
+
+		[Test]
+		public async Task GetValueOrDefaultOnEnumStoredAsInt32Async()
+		{
+			var users = await (db.Users
+						  .Where(x => x.NullableEnum2.GetValueOrDefault() == EnumStoredAsInt32.Unspecified)
+						  .ToListAsync());
+
+			Assert.That(users, Has.Count.EqualTo(2));
 		}
 	}
 }
