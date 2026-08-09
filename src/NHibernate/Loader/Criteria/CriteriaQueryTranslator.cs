@@ -689,6 +689,13 @@ namespace NHibernate.Loader.Criteria
 				}
 			}
 
+			// A non-empty component path here means the path ended on a component instead of an association.
+			if (componentPath.Length > 0)
+			{
+				throw new QueryException(
+					"Criteria objects cannot be created directly on components. Create a criteria on owning entity and use a dotted property to access component property: " + path);
+			}
+
 			logger.Debug("returning entity name={0} for path={1} class={2}",
 				provider.Name, path, provider.GetType().Name);
 			return provider;
