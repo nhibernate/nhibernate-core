@@ -36,6 +36,9 @@ namespace NHibernate.Linq.Visitors
 			{
 				// This expander works recursively
 				SubQueryConditionalExpander.ReWrite(queryModel);
+
+				// Strip the projection of a query which only tests for the existence of rows
+				ReplaceDiscardedProjection(queryModel);
 			}
 
 			NestedSelectRewriter.ReWrite(queryModel, parameters.SessionFactory);
@@ -108,6 +111,20 @@ namespace NHibernate.Linq.Visitors
 			visitor.Visit();
 
 			return visitor._hqlTree.GetTranslation();
+		}
+
+		/// <summary>
+		/// GH-833: a root <c>Any</c> or <c>All</c> only tells whether the query yields any row, its selected
+		/// values are discarded. Select a constant instead, so that no column has to be read at all.
+		/// </summary>
+		private static void ReplaceDiscardedProjection(QueryModel queryModel)
+		{
+			var lastOperator = queryModel.ResultOperators.LastOrDefault();
+			if (!(lastOperator is AnyResultOperator || lastOperator is AllResultOperator))
+				return;
+
+			// The nomination wrapper is required, plain constants are otherwise not projected into the select clause.
+			queryModel.SelectClause.Selector = new NhNominatedExpression(Expression.Constant(1));
 		}
 
 		private readonly IntermediateHqlTree _hqlTree;
