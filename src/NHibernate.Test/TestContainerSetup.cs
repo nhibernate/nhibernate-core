@@ -46,19 +46,19 @@ namespace NHibernate.Test
 			switch (dbType.ToLower())
 			{
 				case "db2":
-					return new Db2Builder().Build();
+					return new Db2Builder("icr.io/db2_community/db2:12.1.0.0").Build();
 				case "firebirdsql":
-					return new FirebirdSqlBuilder().Build();
+					return new FirebirdSqlBuilder("jacobalberty/firebird:v4.0").Build();
 				case "mariadb":
-					return new MariaDbBuilder().Build();
+					return new MariaDbBuilder("mariadb:10.10").Build();
 				case "mssql":
-					return new MsSqlBuilder().Build();
+					return new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04").Build();
 				case "mysql":
-					return new MySqlBuilder().Build();
+					return new MySqlBuilder("mysql:8.0").Build();
 				case "oracle":
-					return new OracleBuilder().Build();
+					return new OracleBuilder("gvenzl/oracle-xe:21.3.0-slim-faststart").Build();
 				case "postgresql":
-					return new PostgreSqlBuilder().Build();
+					return new PostgreSqlBuilder("postgres:15.1").Build();
 				default:
 					throw new NotSupportedException("Database type not supported: " + dbType);
 			}
