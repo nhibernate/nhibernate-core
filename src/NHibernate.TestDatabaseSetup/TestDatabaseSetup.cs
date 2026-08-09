@@ -127,6 +127,14 @@ namespace NHibernate.TestDatabaseSetup
 			// default page-size of 4096 to no more be enough for index key sizes. (Index key
 			// size is limited to a quarter of the page size.)
 			FbConnection.CreateDatabase(connStr, pageSize:16384, forcedWrites:false);
+
+			// TestCase.DropSchema clears the whole connection pool on each fixture teardown, leaving the database
+			// without any attachment. Linger keeps the server from unloading it and reading it back cold every time.
+			using var connection = new FbConnection(connStr);
+			connection.Open();
+			using var command = connection.CreateCommand();
+			command.CommandText = "ALTER DATABASE SET LINGER TO 3";
+			command.ExecuteNonQuery();
 		}
 
 #if NETFX
