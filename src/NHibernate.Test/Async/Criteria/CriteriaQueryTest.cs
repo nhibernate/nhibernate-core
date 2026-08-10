@@ -2528,6 +2528,18 @@ namespace NHibernate.Test.Criteria
 		}
 
 		[Test]
+		public void CriteriaOnComponentAsync()
+		{
+			using var session = OpenSession();
+			using var t = session.BeginTransaction();
+
+			var criteria = session.CreateCriteria(typeof(Student)).CreateCriteria("CityState");
+
+			var exception = Assert.ThrowsAsync<QueryException>(() => criteria.ListAsync());
+			Assert.That(exception.Message, Does.Contain("Criteria objects cannot be created directly on components"));
+		}
+
+		[Test]
 		public async Task PropertySubClassDiscriminatorAsync()
 		{
 			using (ISession s = OpenSession())
