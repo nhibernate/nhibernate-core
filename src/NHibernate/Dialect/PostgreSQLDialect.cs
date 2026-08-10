@@ -89,6 +89,9 @@ namespace NHibernate.Dialect
 			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 			RegisterFunction("bxor", new Function.BitwiseNativeOperation("#"));
 
+			RegisterFunction("greatest", new StandardSQLFunction("greatest"));
+			RegisterFunction("least", new StandardSQLFunction("least"));
+
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
 			RegisterFunction("ceil", new StandardSQLFunction("ceil"));

@@ -299,6 +299,8 @@ namespace NHibernate.Dialect
 
 			// Multi-param numeric dialect functions...
 			RegisterFunction("atan2", new StandardSQLFunction("atan2", NHibernateUtil.Double));
+			RegisterFunction("greatest", new StandardSQLFunction("greatest"));
+			RegisterFunction("least", new StandardSQLFunction("least"));
 			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Int32));
 			RegisterFunction("mod", new ModulusFunction(true, true));
 			RegisterFunction("nvl", new StandardSQLFunction("nvl"));

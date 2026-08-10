@@ -653,6 +653,33 @@ namespace NHibernate.Test.Hql
 		}
 
 		[Test]
+		public void GreatestAndLeast()
+		{
+			AssumeFunctionSupported("greatest");
+			AssumeFunctionSupported("least");
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				s.Save(new Animal("abcdef", 20));
+				tx.Commit();
+			}
+			using (var s = OpenSession())
+			using (var tx = s.BeginTransaction())
+			{
+				var hql = "select greatest(a.BodyWeight, 30.0), least(a.BodyWeight, 30.0) from Animal a";
+				var lresult = (object[]) s.CreateQuery(hql).UniqueResult();
+				Assert.AreEqual(30f, lresult[0]);
+				Assert.AreEqual(20f, lresult[1]);
+
+				hql = "from Animal a where greatest(a.BodyWeight, 30.0) = 30 and least(a.BodyWeight, 30.0) = 20";
+				var result = (Animal) s.CreateQuery(hql).UniqueResult();
+				Assert.AreEqual("abcdef", result.Description);
+
+				tx.Commit();
+			}
+		}
+
+		[Test]
 		public void Sqrt()
 		{
 			AssumeFunctionSupported("sqrt");

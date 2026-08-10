@@ -116,6 +116,69 @@ namespace NHibernate.Test.Linq
 			Test(o => Math.Round(Math.Pow((double)o.Discount, 0.5d), 5));
 		}
 
+		[Test]
+		public void MinTest()
+		{
+			AssumeFunctionSupported("least");
+			Test(o => Math.Min((double) o.UnitPrice, 20d));
+		}
+
+		[Test]
+		public void MaxTest()
+		{
+			AssumeFunctionSupported("greatest");
+			Test(o => Math.Max((double) o.UnitPrice, 20d));
+		}
+
+		[Test]
+		public void MinDecimalTest()
+		{
+			AssumeFunctionSupported("least");
+			TestExact(o => Math.Min(o.UnitPrice, 20m));
+		}
+
+		[Test]
+		public void MaxDecimalTest()
+		{
+			AssumeFunctionSupported("greatest");
+			TestExact(o => Math.Max(o.UnitPrice, 20m));
+		}
+
+		[Test]
+		public void MinInt32Test()
+		{
+			AssumeFunctionSupported("least");
+			TestExact(o => Math.Min(o.Quantity, 20));
+		}
+
+		[Test]
+		public void MaxInt32Test()
+		{
+			AssumeFunctionSupported("greatest");
+			TestExact(o => Math.Max(o.Quantity, 20));
+		}
+
+		[Test]
+		public void MinOnTwoColumnsTest()
+		{
+			AssumeFunctionSupported("least");
+			TestExact(o => Math.Min(o.UnitPrice, o.Discount));
+		}
+
+		[Test]
+		public void MaxOnTwoColumnsTest()
+		{
+			AssumeFunctionSupported("greatest");
+			TestExact(o => Math.Max(o.UnitPrice, o.Discount));
+		}
+
+		[Test]
+		public void NestedMinTest()
+		{
+			AssumeFunctionSupported("least");
+			TestExact(o => Math.Min(Math.Min(o.UnitPrice, o.Discount), 20m));
+		}
+
 		private void Test(Expression<Func<OrderLine, double>> selector)
 		{
 			var expected = _orderLines
@@ -131,6 +194,21 @@ namespace NHibernate.Test.Linq
 			Assert.AreEqual(expected.Count, actual.Count);
 			for (var i = 0; i < expected.Count; i++)
 				Assert.AreEqual(expected[i], actual[i], 0.000001);
+		}
+
+		private void TestExact<T>(Expression<Func<OrderLine, T>> selector)
+		{
+			var expected = _orderLines
+				.Select(selector)
+				.ToList();
+
+			var actual = db.OrderLines
+				.OrderBy(ol => ol.Id)
+				.Select(selector)
+				.Take(10)
+				.ToList();
+
+			Assert.That(actual, Is.EqualTo(expected));
 		}
 	}
 }

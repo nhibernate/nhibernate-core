@@ -469,6 +469,8 @@ namespace NHibernate.Dialect
 			RegisterFunction("upper", new StandardSafeSQLFunction("upper", NHibernateUtil.String, 1));
 			// Modulo does not throw for decimal parameters but they are casted to int by Firebird, which produces unexpected results
 			RegisterFunction("mod", new ModulusFunction(false, false));
+			RegisterFunction("greatest", new StandardSQLFunction("maxvalue"));
+			RegisterFunction("least", new StandardSQLFunction("minvalue"));
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as VARCHAR(255))"));
 			RegisterFunction("strguid", new StandardSQLFunction("uuid_to_char", NHibernateUtil.String));
 			RegisterFunction("sysdate", new CastedFunction("today", NHibernateUtil.Date));

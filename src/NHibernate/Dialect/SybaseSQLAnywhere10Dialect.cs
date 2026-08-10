@@ -333,10 +333,12 @@ namespace NHibernate.Dialect
 			RegisterFunction("get_identity", new VarArgsSQLFunction("get_identity(", ",", ")"));
 			RegisterFunction("graphical_plan", new VarArgsSQLFunction(NHibernateUtil.String, "graphical_plan(", ",", ")"));
 			RegisterFunction("greater", new StandardSQLFunction("greater"));
+			RegisterFunction("greatest", new StandardSQLFunction("greater"));
 			RegisterFunction("identity", new StandardSQLFunction("identity"));
 			RegisterFunction("ifnull", new VarArgsSQLFunction("ifnull(", ",", ")"));
 			RegisterFunction("index_estimate", new VarArgsSQLFunction("index_estimate(", ",", ")"));
 			RegisterFunction("isnull", new VarArgsSQLFunction("isnull(", ",", ")"));
+			RegisterFunction("least", new StandardSQLFunction("lesser"));
 			RegisterFunction("lesser", new StandardSQLFunction("lesser"));
 			RegisterFunction("newid", new NoArgSQLFunction("newid", NHibernateUtil.String, true));
 			RegisterFunction("new_uuid", new NoArgSQLFunction("newid", NHibernateUtil.Guid));
