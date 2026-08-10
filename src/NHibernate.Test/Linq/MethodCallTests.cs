@@ -24,6 +24,55 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void CanExecuteAll()
+		{
+			var result = db.Users.All(u => u.Name != "user-does-not-exist");
+			Assert.IsTrue(result);
+		}
+
+		[Test(Description = "GH-833")]
+		public void AnyDoesNotReadAnyColumn()
+		{
+			using var spy = new SqlLogSpy();
+
+			var result = db.Users.Any();
+
+			Assert.That(result, Is.True);
+			AssertNoColumnIsRead(spy);
+		}
+
+		[Test(Description = "GH-833")]
+		public void AllDoesNotReadAnyColumn()
+		{
+			using var spy = new SqlLogSpy();
+
+			var result = db.Users.All(u => u.Name != "user-does-not-exist");
+
+			Assert.That(result, Is.True);
+			AssertNoColumnIsRead(spy);
+		}
+
+		[Test(Description = "GH-833")]
+		public void AnyOnProjectionDoesNotReadProjectedColumns()
+		{
+			using var spy = new SqlLogSpy();
+
+			var result = db.Users.Select(u => new { u.Name, u.RegisteredAt }).Any();
+
+			Assert.That(result, Is.True);
+			AssertNoColumnIsRead(spy);
+		}
+
+		// "Name" is left out of the checked columns, the restriction of the All case does use it.
+		private static void AssertNoColumnIsRead(SqlLogSpy spy)
+		{
+			var sql = spy.GetWholeLog();
+			Assert.That(sql, Does.Contain("Users"), "The query should still target the Users table.");
+			Assert.That(sql, Does.Not.Contain("UserId").And.Not.Contain("RegisteredAt"),
+				"An existence check should not read the columns of the tested entity.");
+		}
+
+		[Test]
 		public void CanExecuteContains()
 		{
 			var user = db.Users.FirstOrDefault();
