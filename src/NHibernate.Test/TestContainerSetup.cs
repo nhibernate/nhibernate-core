@@ -15,6 +15,14 @@ namespace NHibernate.Test
 	[SetUpFixture]
 	public class TestContainerSetup
 	{
+		private const string Db2Image = "icr.io/db2_community/db2:12.1.0.0";
+		private const string FirebirdSqlImage = "jacobalberty/firebird:v4.0";
+		private const string MariaDbImage = "mariadb:10.10";
+		private const string MsSqlImage = "mcr.microsoft.com/mssql/server:2019-latest";
+		private const string MySqlImage = "mysql:5.7";
+		private const string OracleImage = "gvenzl/oracle-xe:21-slim";
+		private const string PostgreSqlImage = "postgres:13";
+
 		private static volatile IDatabaseContainer _container;
 		private static readonly object _lock = new object();
 
@@ -46,19 +54,19 @@ namespace NHibernate.Test
 			switch (dbType.ToLower())
 			{
 				case "db2":
-					return new Db2Builder().Build();
+					return new Db2Builder(Db2Image).Build();
 				case "firebirdsql":
-					return new FirebirdSqlBuilder().Build();
+					return new FirebirdSqlBuilder(FirebirdSqlImage).Build();
 				case "mariadb":
-					return new MariaDbBuilder().Build();
+					return new MariaDbBuilder(MariaDbImage).Build();
 				case "mssql":
-					return new MsSqlBuilder().Build();
+					return new MsSqlBuilder(MsSqlImage).Build();
 				case "mysql":
-					return new MySqlBuilder().Build();
+					return new MySqlBuilder(MySqlImage).Build();
 				case "oracle":
-					return new OracleBuilder().Build();
+					return new OracleBuilder(OracleImage).Build();
 				case "postgresql":
-					return new PostgreSqlBuilder().Build();
+					return new PostgreSqlBuilder(PostgreSqlImage).Build();
 				default:
 					throw new NotSupportedException("Database type not supported: " + dbType);
 			}
