@@ -1,6 +1,12 @@
 name: .NET Core
 
-on: [push, pull_request]
+on:
+  push:
+    branches-ignore:
+      - gh-readonly-queue/**
+      - renovate/**
+  pull_request:
+  merge_group:
 
 jobs:
   db:
