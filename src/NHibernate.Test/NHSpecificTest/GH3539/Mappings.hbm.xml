@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping 
+	xmlns="urn:nhibernate-mapping-2.2" 
+	assembly="NHibernate.Test" 
+	namespace="NHibernate.Test.NHSpecificTest.GH3539">
+
+	<class name="Person" table="People">
+		<id name="_id" type="int" column="ID" access="field">
+			<generator class="increment"/>
+		</id>
+    <property name="_age" type="int" access="field"/>
+    
+    <component name="_cardInfo" access="field">
+      <set name="_oldCards" table="OldCards" cascade="all" access="field" >
+        <key column="PersonId" />
+        <element column="Card" type="String" />
+      </set>
+    </component>
+	</class>
+
+</hibernate-mapping>
