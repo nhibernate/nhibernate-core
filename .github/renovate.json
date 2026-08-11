@@ -8,7 +8,7 @@
   "pruneStaleBranches": false,
   "automerge": true,
   "platformAutomerge": true,
-  "rebaseWhen": "never",
+  "rebaseWhen": "conflicted",
   "labels": [
     "dependencies",
     "p: Lowest",
