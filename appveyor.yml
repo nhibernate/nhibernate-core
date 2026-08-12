@@ -7,8 +7,6 @@ environment:
     CONNECTION_STRING: Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;
   - DB: SqlServer2008-MicrosoftDataSqlClientDriver
     CONNECTION_STRING: Server=(local)\SQL2017;User ID=sa;Password=Password12!;initial catalog=nhibernate;TrustServerCertificate=true;
-  - DB: MySQL
-    CONNECTION_STRING: Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;SslMode=none;CharSet=utf8;
 init:
 # Required for having windows endlines in sources zip
 - git config --global core.autocrlf true
@@ -22,12 +20,6 @@ build: off
 before_test:
 - ps: |-
     switch ($env:DB) {
-      'MySQL' {
-        Start-Service 'MySQL80'
-        # Create nhibernate database (not handled by NHibernate.TestDatabaseSetup.dll)
-        $env:MYSQL_PWD = 'Password12!'
-        & 'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql' -e 'CREATE DATABASE nhibernate CHARACTER SET utf8 COLLATE utf8_general_ci;' --user=root
-      }
       'Odbc' { Start-Service 'MSSQL$SQL2017' }
       'SqlServer2008' { Start-Service 'MSSQL$SQL2017' }
       'SqlServer2008-MicrosoftDataSqlClientDriver' { Start-Service 'MSSQL$SQL2017' }
