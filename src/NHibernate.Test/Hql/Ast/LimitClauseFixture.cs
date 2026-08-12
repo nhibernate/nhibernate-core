@@ -106,6 +106,38 @@ namespace NHibernate.Test.Hql.Ast
 		}
 
 		[Test]
+		public void SkipTakeWithParameterReExecutedWithOtherValues()
+		{
+			// NH-2731: the limit parameters must be recomputed, according to the dialect
+			// UseMaxForLimit and OffsetStartsAtOne settings, on each execution.
+			const string hql = "from Human h order by h.bodyWeight skip :pSkip take :pTake";
+
+			using var s = OpenSession();
+			using var txn = s.BeginTransaction();
+
+			var actual = s.CreateQuery(hql)
+				.SetInt32("pSkip", 1)
+				.SetInt32("pTake", 3).List<Human>().Select(h => h.BodyWeight).ToArray();
+			Assert.That(actual, Is.EqualTo(new[] {6f, 10f, 15f}), "first execution");
+
+			// Same query string, so same query plan, but other paging values.
+			actual = s.CreateQuery(hql)
+				.SetInt32("pSkip", 2)
+				.SetInt32("pTake", 2).List<Human>().Select(h => h.BodyWeight).ToArray();
+			Assert.That(actual, Is.EqualTo(new[] {10f, 15f}), "second execution");
+
+			// Same query instance, re-executed with other paging values.
+			var query = s.CreateQuery(hql).SetInt32("pSkip", 3).SetInt32("pTake", 1);
+			actual = query.List<Human>().Select(h => h.BodyWeight).ToArray();
+			Assert.That(actual, Is.EqualTo(new[] {15f}), "third execution");
+
+			actual = query.SetInt32("pSkip", 0).SetInt32("pTake", 2).List<Human>().Select(h => h.BodyWeight).ToArray();
+			Assert.That(actual, Is.EqualTo(new[] {5f, 6f}), "fourth execution");
+
+			txn.Commit();
+		}
+
+		[Test]
 		public void SkipTakeWithParameterList()
 		{
 			ISession s = OpenSession();

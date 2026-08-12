@@ -200,6 +200,19 @@ namespace NHibernate.Test.DriverTest
 		}
 
 		[Test]
+		public void AdjustCommand_ParameterWithinOffsetFetchPaging_ParameterIsNotCasted()
+		{
+			// Firebird only accepts an integer literal or a parameter in the offset/fetch clause,
+			// casts are a syntax error there.
+			using var cmd = BuildOffsetFetchPagingCommand(SqlTypeFactory.Int32);
+
+			_driver.AdjustCommand(cmd);
+
+			var expected = "select col1 from table offset @p0 rows fetch first @p1 rows only";
+			Assert.That(cmd.CommandText, Is.EqualTo(expected));
+		}
+
+		[Test]
 		public void AdjustCommand_ParameterWithinIn_ParameterIsNotCasted()
 		{
 			using (var cmd = BuildInCommand(SqlTypeFactory.GetString(255)))
@@ -403,6 +416,20 @@ namespace NHibernate.Test.DriverTest
 					.Add(" skip ")
 					.AddParameter()
 					.Add(" col1 from table")
+					.ToSqlString();
+
+			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType });
+		}
+
+		private DbCommand BuildOffsetFetchPagingCommand(SqlType paramType)
+		{
+			var sqlString =
+				new SqlStringBuilder()
+					.Add("select col1 from table offset ")
+					.AddParameter()
+					.Add(" rows fetch first ")
+					.AddParameter()
+					.Add(" rows only")
 					.ToSqlString();
 
 			return _driver.GenerateCommand(CommandType.Text, sqlString, new[] { paramType, paramType });

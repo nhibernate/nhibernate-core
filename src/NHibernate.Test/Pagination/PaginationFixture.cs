@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Criterion;
 using NHibernate.Dialect;
@@ -63,6 +64,57 @@ namespace NHibernate.Test.Pagination
 
 			using(ISession s = OpenSession())
 			using (ITransaction t = s.BeginTransaction())
+			{
+				s.Delete("from DataPoint");
+				t.Commit();
+			}
+		}
+
+		[Test]
+		public void PagingParametersUpdatedOnEachExecution_NH2731()
+		{
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				for (var i = 4; i <= 8; i++)
+				{
+					s.Save(new DataPoint { X = i });
+				}
+				t.Commit();
+			}
+
+			// NH-2731: the limit parameters must be recomputed, according to the dialect
+			// UseMaxForLimit and OffsetStartsAtOne settings, on each execution.
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
+			{
+				var query = s.CreateQuery("from DataPoint dp order by dp.X").SetFirstResult(1).SetMaxResults(2);
+				Assert.That(
+					query.List<DataPoint>().Select(dp => dp.X).ToArray(),
+					Is.EqualTo(new[] { 5d, 6d }),
+					"first execution");
+
+				Assert.That(
+					query.SetFirstResult(3).SetMaxResults(1).List<DataPoint>().Select(dp => dp.X).ToArray(),
+					Is.EqualTo(new[] { 7d }),
+					"second execution");
+
+				var criteria = s.CreateCriteria<DataPoint>().AddOrder(Order.Asc("X")).SetFirstResult(2).SetMaxResults(2);
+				Assert.That(
+					criteria.List<DataPoint>().Select(dp => dp.X).ToArray(),
+					Is.EqualTo(new[] { 6d, 7d }),
+					"first criteria execution");
+
+				Assert.That(
+					criteria.SetFirstResult(0).SetMaxResults(3).List<DataPoint>().Select(dp => dp.X).ToArray(),
+					Is.EqualTo(new[] { 4d, 5d, 6d }),
+					"second criteria execution");
+
+				t.Commit();
+			}
+
+			using (var s = OpenSession())
+			using (var t = s.BeginTransaction())
 			{
 				s.Delete("from DataPoint");
 				t.Commit();
