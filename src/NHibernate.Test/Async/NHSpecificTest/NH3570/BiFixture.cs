@@ -20,7 +20,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3570
 		private Guid id;
 
 		[Test]
-		[KnownBug("NH-3570")]
 		public async Task ShouldNotSaveRemoveChildAsync()
 		{
 			var parent = new BiParent();

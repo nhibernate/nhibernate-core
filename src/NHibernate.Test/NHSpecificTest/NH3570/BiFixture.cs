@@ -9,7 +9,6 @@ namespace NHibernate.Test.NHSpecificTest.NH3570
 		private Guid id;
 
 		[Test]
-		[KnownBug("NH-3570")]
 		public void ShouldNotSaveRemoveChild()
 		{
 			var parent = new BiParent();
