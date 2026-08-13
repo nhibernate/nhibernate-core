@@ -204,6 +204,11 @@ namespace NHibernate.Test.Linq
 		{
 			try
 			{
+				Assume.That(
+					TestDialect.SupportsQueryTimeoutOnLockWait,
+					Is.True,
+					"The data provider is unable to interrupt a query waiting for a lock");
+
 				using (new TransactionScope(TransactionScopeOption.Suppress, TransactionScopeAsyncFlowOption.Enabled))
 				using (var s2 = OpenSession())
 				using (s2.BeginTransaction())
