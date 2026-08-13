@@ -11,9 +11,14 @@ namespace NHibernate.Linq.Functions
 {
 	internal class GetValueOrDefaultGenerator : IHqlGeneratorForMethod, IRuntimeMethodHqlGenerator, IHqlGeneratorForMethodExtended
 	{
-		public bool SupportsMethod(MethodInfo method)
+		internal static bool IsGetValueOrDefaultMethod(MethodInfo method)
 		{
 			return method != null && String.Equals(method.Name, "GetValueOrDefault", StringComparison.OrdinalIgnoreCase) && method.IsMethodOf(typeof (Nullable<>));
+		}
+
+		public bool SupportsMethod(MethodInfo method)
+		{
+			return IsGetValueOrDefaultMethod(method);
 		}
 
 		public IHqlGeneratorForMethod GetMethodGenerator(MethodInfo method)

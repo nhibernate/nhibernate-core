@@ -263,6 +263,19 @@ namespace NHibernate.Linq.Visitors
 					return node;
 				}
 
+				if (GetValueOrDefaultGenerator.IsGetValueOrDefaultMethod(node.Method) && node.Arguments.Count == 1)
+				{
+					node = (MethodCallExpression) base.VisitMethodCall(node);
+					// GetValueOrDefault is translated to a coalesce, so relate its operands and its result the same
+					// way the coalesce operator does (e.g. o.NullableEnum.GetValueOrDefault() == MyEnum.Option ->
+					// both the default value and MyEnum.Option should have o.NullableEnum as a related expression).
+					var target = UnwrapUnary(node.Object);
+					AddRelatedExpression(null, target, UnwrapUnary(node.Arguments[0]));
+					AddRelatedExpression(null, target, node);
+
+					return node;
+				}
+
 				return base.VisitMethodCall(node);
 			}
 
