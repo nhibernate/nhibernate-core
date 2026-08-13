@@ -81,7 +81,7 @@
     <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Data.OracleClient" />
     <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
-    <PackageReference Include="Npgsql" Version="10.0.3" />
+    <PackageReference Include="Npgsql" Version="8.0.9" />
     <PackageReference Include="Oracle.ManagedDataAccess" Version="21.14.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net10.0'">
