@@ -26,6 +26,14 @@
       "pinDigests": false
     },
     {
+      "description": "Npgsql 9 and later do not support .NET Framework",
+      "matchPackageNames": [
+        "Npgsql"
+      ],
+      "matchCurrentVersion": "(,9.0)",
+      "allowedVersions": "(,9.0)"
+    },
+    {
       "matchSourceUrls": [
         "https://github.com/nunit/nunit"
       ],
