@@ -1,8 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
-    "helpers:pinGitHubActionDigestsToSemver"
+    "config:recommended"
   ],
   "configMigration": true,
   "pruneStaleBranches": false,
@@ -16,14 +15,16 @@
   ],
   "packageRules": [
     {
-      "description": "Do not pin digests for official GitHub actions",
-      "matchManagers": [
-        "github-actions"
+      "description": "Pin third-party actions to a digest",
+      "matchDepTypes": [
+        "action"
       ],
       "matchDepNames": [
-        "actions/**"
+        "!actions/**"
       ],
-      "pinDigests": false
+      "extends": [
+        "helpers:pinGitHubActionDigestsToSemver"
+      ]
     },
     {
       "matchSourceUrls": [
