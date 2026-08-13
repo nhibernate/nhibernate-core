@@ -32,7 +32,7 @@ namespace NHibernate.Test.TestDialects
 		/// <summary>
 		/// MySql.Data after 8.0.30 never ends a query waiting for a lock.
 		/// </summary>
-		public override bool SupportsQueryTimeoutOnLockWait =>
-			typeof(MySqlConnection).Assembly.GetName().Version <= new System.Version(8, 0, 30, 0);
+		public override bool HasBrokenQueryTimeoutOnLockWait =>
+			typeof(MySqlConnection).Assembly.GetName().Version > new System.Version(8, 0, 30, 0);
 	}
 }

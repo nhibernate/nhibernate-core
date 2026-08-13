@@ -205,7 +205,7 @@ namespace NHibernate.Test.Linq
 			try
 			{
 				Assume.That(
-					TestDialect.SupportsQueryTimeoutOnLockWait,
+					!TestDialect.HasBrokenQueryTimeoutOnLockWait,
 					Is.True,
 					"The data provider is unable to interrupt a query waiting for a lock");
 
