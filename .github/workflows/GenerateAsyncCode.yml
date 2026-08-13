@@ -70,7 +70,7 @@ jobs:
         allow-unsafe-pr-checkout: true
 
     - name: Download patch
-      uses: actions/download-artifact@v8
+      uses: actions/download-artifact@v8.0.1
       with:
         name: async-changes
 
