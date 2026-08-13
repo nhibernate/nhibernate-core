@@ -190,6 +190,11 @@ namespace NHibernate.Test.Linq
 
 		private void AssertSeparateTransactionIsLockedOut(string customerId)
 		{
+			Assume.That(
+				!TestDialect.HasBrokenQueryTimeoutOnLockWait,
+				Is.True,
+				"The data provider is unable to interrupt a query waiting for a lock");
+
 			using (new TransactionScope(TransactionScopeOption.Suppress))
 			using (var s2 = OpenSession())
 			using (s2.BeginTransaction())

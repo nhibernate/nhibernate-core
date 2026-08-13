@@ -1,4 +1,6 @@
-﻿namespace NHibernate.Test.TestDialects
+﻿using MySql.Data.MySqlClient;
+
+namespace NHibernate.Test.TestDialects
 {
 	public class MySQL5TestDialect : TestDialect
 	{
@@ -26,5 +28,11 @@
 		/// MySQL data provider may be wrecked by transaction scope timeouts to the point of causing even the teardown to fail.
 		/// </summary>
 		public override bool SupportsTransactionScopeTimeouts => false;
+
+		/// <summary>
+		/// MySql.Data after 8.0.30 never ends a query waiting for a lock.
+		/// </summary>
+		public override bool HasBrokenQueryTimeoutOnLockWait =>
+			typeof(MySqlConnection).Assembly.GetName().Version > new System.Version(8, 0, 30, 0);
 	}
 }

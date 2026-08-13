@@ -55,6 +55,11 @@ namespace NHibernate.Test
 		/// </summary>
 		public virtual bool HasBrokenDecimalType => false;
 
+		/// <summary>
+		/// Some data providers cannot interrupt a query waiting for a lock.
+		/// </summary>
+		public virtual bool HasBrokenQueryTimeoutOnLockWait => false;
+
 		public virtual bool SupportsNullCharactersInUtfStrings => true;
 
 		/// <summary>
