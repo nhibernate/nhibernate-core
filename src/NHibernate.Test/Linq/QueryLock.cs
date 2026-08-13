@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Transactions;
-using NHibernate.Dialect;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -191,7 +190,7 @@ namespace NHibernate.Test.Linq
 		private void AssertSeparateTransactionIsLockedOut(string customerId)
 		{
 			Assume.That(
-				!TestDialect.HasBrokenQueryTimeoutOnLockWait,
+				TestDialect.SupportsNoWaitLock || !TestDialect.HasBrokenQueryTimeoutOnLockWait,
 				Is.True,
 				"The data provider is unable to interrupt a query waiting for a lock");
 
@@ -220,8 +219,7 @@ namespace NHibernate.Test.Linq
 		[Description("Verify that different lock modes are respected even if the query is otherwise exactly the same.")]
 		public void CanChangeLockModeForQuery()
 		{
-			// Limit to a few dialects where we know the "nowait" keyword is used to make life easier.
-			Assume.That(Dialect is MsSql2000Dialect || Dialect is Oracle8iDialect || Dialect is PostgreSQL81Dialect);
+			Assume.That(TestDialect.SupportsNoWaitLock, Is.True, "Dialect does not have a no-wait lock");
 
 			using (session.BeginTransaction())
 			{

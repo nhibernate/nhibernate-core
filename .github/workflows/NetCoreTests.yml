@@ -71,16 +71,16 @@ jobs:
               Add-Content -Path 'C:\firebird\databases.conf' -Value "`r`nnhibernate = C:\firebird\nhibernate.fdb`r`n{`r`n    MaxUnflushedWrites = -1`r`n    MaxUnflushedWriteTime = -1`r`n}"
               Restart-Service FirebirdServerDefaultInstance
           - DB: MySQL
-            CONNECTION_STRING: "Server=localhost;Uid=root;Password=nhibernate;Database=nhibernate;Old Guids=True;SslMode=none;"
+            CONNECTION_STRING: "Server=localhost;Uid=root;Password=nhibernate;Database=nhibernate;SslMode=none;AllowPublicKeyRetrieval=true;"
             OS: ubuntu-latest
             DB_INIT: |
               sudo service mysql stop
-              docker run --name mysql -e MYSQL_ROOT_PASSWORD=nhibernate -e MYSQL_USER=nhibernate -e MYSQL_PASSWORD=nhibernate -e MYSQL_DATABASE=nhibernate -p 3306:3306 --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 -d mysql:5.7 mysqld --lower_case_table_names=1 --character-set-server=utf8 --collation-server=utf8_general_ci
+              docker run --name mysql -e MYSQL_ROOT_PASSWORD=nhibernate -e MYSQL_USER=nhibernate -e MYSQL_PASSWORD=nhibernate -e MYSQL_DATABASE=nhibernate -p 3306:3306 --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 -d mysql:8.4 mysqld --lower_case_table_names=1 --character-set-server=utf8 --collation-server=utf8_general_ci
           - DB: MySQL
-            CONNECTION_STRING: "Server=127.0.0.1;Uid=root;Database=nhibernate;Old Guids=True;SslMode=none;CharSet=utf8;"
+            CONNECTION_STRING: "Server=127.0.0.1;Uid=root;Database=nhibernate;SslMode=none;CharSet=utf8;"
             OS: windows-latest
             DB_INIT: |
-              choco install mysql --version 5.7.44 --no-progress
+              choco install mysql --version 8.4.6 --no-progress
               & 'C:\tools\mysql\current\bin\mysql' --user=root -e 'CREATE DATABASE nhibernate CHARACTER SET utf8 COLLATE utf8_general_ci;'
           - DB: Oracle
             CONNECTION_STRING: "User ID=nhibernate;Password=nhibernate;Metadata Pooling=false;Self Tuning=false;Data Source=(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = XEPDB1)))"

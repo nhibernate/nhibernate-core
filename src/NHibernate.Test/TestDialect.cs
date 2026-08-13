@@ -77,6 +77,11 @@ namespace NHibernate.Test
 		/// </summary>
 		public virtual bool SupportsSelectForUpdateOnOuterJoin => SupportsSelectForUpdate;
 
+		/// <summary>
+		/// Some dialects do not have a no-wait lock.
+		/// </summary>
+		public virtual bool SupportsNoWaitLock => false;
+
 		public virtual bool SupportsHavingWithoutGroupBy => true;
 
 		public virtual bool SupportsComplexExpressionInGroupBy => true;

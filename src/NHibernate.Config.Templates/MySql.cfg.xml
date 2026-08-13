@@ -9,8 +9,8 @@ for your own use before compile tests in VisualStudio.
 		<property name="connection.driver_class">NHibernate.Driver.MySqlDataDriver</property>
 		<property name="connection.connection_string">
 			Database=nhibernate;Data Source=localhost;User Id=nhibernate;Password=;
-			Old Guids=True;
+			AllowPublicKeyRetrieval=true;
 		</property>
-		<property name="dialect">NHibernate.Dialect.MySQL5Dialect</property>
+		<property name="dialect">NHibernate.Dialect.MySQL8Dialect</property>
 	</session-factory>
 </hibernate-configuration>
