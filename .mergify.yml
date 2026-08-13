@@ -10,3 +10,5 @@ pull_request_rules:
           - "{{ author }}"
 merge_protections_settings:
   reporting_method: check-runs
+merge_queue:
+  queue_controls_comment: false
