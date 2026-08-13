@@ -11,6 +11,13 @@ namespace NHibernate.Dialect
 		/// </summary>
 		public override string ForUpdateNowaitString => " for update nowait";
 
-		public override string GetForUpdateNowaitString(string aliases) => ForUpdateNowaitString;
+		/// <summary>
+		/// MySQL locks only the named tables since 8.0.1. It names tables, not columns.
+		/// </summary>
+		public override bool SupportsForUpdateOf => true;
+
+		public override string GetForUpdateString(string aliases) => ForUpdateString + " of " + aliases;
+
+		public override string GetForUpdateNowaitString(string aliases) => ForUpdateString + " of " + aliases + " nowait";
 	}
 }

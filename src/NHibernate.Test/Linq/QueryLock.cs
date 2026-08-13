@@ -78,6 +78,22 @@ namespace NHibernate.Test.Linq
 		}
 
 		[Test]
+		public void CanSetLockOnJoinWithoutLockingTheOtherTable()
+		{
+			Assume.That(Dialect.SupportsForUpdateOf, Is.True, "Dialect locks all the tables of the query");
+
+			using (session.BeginTransaction())
+			{
+				var result = (from c in db.Customers
+				              from o in c.Orders.WithLock(LockMode.Upgrade)
+				              select o).ToList();
+
+				Assert.That(result, Has.Count.EqualTo(830));
+				AssertSeparateTransactionCanLock(result[0].Customer.CustomerId);
+			}
+		}
+
+		[Test]
 		public void CanSetLockOnJoinOuter()
 		{
 			using (session.BeginTransaction())
@@ -212,6 +228,29 @@ namespace NHibernate.Test.Linq
 						Assert.That(result2, Is.Not.Null);
 					},
 					"Expected an exception to indicate locking failure due to already locked.");
+			}
+		}
+
+		private void AssertSeparateTransactionCanLock(string customerId)
+		{
+			Assume.That(
+				TestDialect.SupportsNoWaitLock || !TestDialect.HasBrokenQueryTimeoutOnLockWait,
+				Is.True,
+				"The data provider is unable to interrupt a query waiting for a lock");
+
+			using (new TransactionScope(TransactionScopeOption.Suppress))
+			using (var s2 = OpenSession())
+			using (s2.BeginTransaction())
+			{
+				var result = (
+						from e in s2.Query<Customer>()
+						where e.CustomerId == customerId
+						select e
+					).WithLock(LockMode.UpgradeNoWait)
+					 .WithOptions(o => o.SetTimeout(5))
+					 .ToList();
+
+				Assert.That(result, Has.Count.EqualTo(1), "The customer should not have been locked.");
 			}
 		}
 
