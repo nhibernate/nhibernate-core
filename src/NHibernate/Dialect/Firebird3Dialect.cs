@@ -7,9 +7,15 @@ namespace NHibernate.Dialect
 	/// A dialect for Firebird 3 and above.
 	/// </summary>
 	/// <remarks>
+	/// <para>
 	/// Firebird 3 supports the SQL standard <c>OFFSET</c>/<c>FETCH</c> clause. Unlike the
 	/// <c>FIRST</c>/<c>SKIP</c> clause used by <see cref="FirebirdDialect" />, it is placed at the end of
 	/// the statement and applies to the whole query, including unions.
+	/// </para>
+	/// <para>
+	/// Firebird 3 also supports the SQL standard sequence syntax, with an increment other than one. This
+	/// allows NHibernate to get a range of identifier values with one call.
+	/// </para>
 	/// </remarks>
 	public class Firebird3Dialect : FirebirdDialect
 	{
@@ -53,5 +59,47 @@ namespace NHibernate.Dialect
 		/// The native generator keeps using sequences.
 		/// </remarks>
 		public override System.Type NativeIdentifierGeneratorClass => typeof(SequenceGenerator);
+
+		#region Sequence support
+
+		/// <inheritdoc />
+		public override bool SupportsPooledSequences => true;
+
+		/// <inheritdoc />
+		public override string GetCreateSequenceString(string sequenceName)
+		{
+			return "create sequence " + sequenceName;
+		}
+
+		/// <inheritdoc />
+		protected override string GetCreateSequenceString(string sequenceName, int initialValue, int incrementSize)
+		{
+			// Firebird 3 sets the current value of the sequence to the "start with" value, instead of the
+			// first value to generate. So the first generated value is the "start with" value plus the
+			// increment. Decrease the "start with" value by the increment for getting the initial value as
+			// the first generated value. Firebird 4 changes this to the standard behavior.
+			var startWith = (long) initialValue - incrementSize;
+			return GetCreateSequenceString(sequenceName) + " start with " + startWith + " increment by " + incrementSize;
+		}
+
+		/// <inheritdoc />
+		public override string GetDropSequenceString(string sequenceName)
+		{
+			return "drop sequence " + sequenceName;
+		}
+
+		/// <inheritdoc />
+		public override string GetSequenceNextValString(string sequenceName)
+		{
+			return "select " + GetSelectSequenceNextValString(sequenceName) + " from RDB$DATABASE";
+		}
+
+		/// <inheritdoc />
+		public override string GetSelectSequenceNextValString(string sequenceName)
+		{
+			return "next value for " + sequenceName;
+		}
+
+		#endregion
 	}
 }

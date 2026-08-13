@@ -2,12 +2,19 @@
 NHibernate.Dialect.Firebird3Dialect
 NHibernate.Dialect.Firebird3Dialect.Firebird3Dialect() -> void
 override NHibernate.Dialect.Firebird3Dialect.AppendIdentitySelectToInsert(NHibernate.SqlCommand.SqlString insertString, string identifierColumnName) -> NHibernate.SqlCommand.SqlString
+override NHibernate.Dialect.Firebird3Dialect.GetCreateSequenceString(string sequenceName) -> string
+override NHibernate.Dialect.Firebird3Dialect.GetCreateSequenceString(string sequenceName, int initialValue, int incrementSize) -> string
+override NHibernate.Dialect.Firebird3Dialect.GetDropSequenceString(string sequenceName) -> string
 override NHibernate.Dialect.Firebird3Dialect.GetLimitString(NHibernate.SqlCommand.SqlString queryString, NHibernate.SqlCommand.SqlString offset, NHibernate.SqlCommand.SqlString limit) -> NHibernate.SqlCommand.SqlString
+override NHibernate.Dialect.Firebird3Dialect.GetSelectSequenceNextValString(string sequenceName) -> string
+override NHibernate.Dialect.Firebird3Dialect.GetSequenceNextValString(string sequenceName) -> string
 override NHibernate.Dialect.Firebird3Dialect.IdentityColumnString.get -> string
 override NHibernate.Dialect.Firebird3Dialect.NativeIdentifierGeneratorClass.get -> System.Type
 override NHibernate.Dialect.Firebird3Dialect.NoColumnsInsertString.get -> string
 override NHibernate.Dialect.Firebird3Dialect.SupportsIdentityColumns.get -> bool
 override NHibernate.Dialect.Firebird3Dialect.SupportsInsertSelectIdentity.get -> bool
+override NHibernate.Dialect.Firebird3Dialect.SupportsPooledSequences.get -> bool
+override NHibernate.Dialect.Firebird4Dialect.GetCreateSequenceString(string sequenceName, int initialValue, int incrementSize) -> string
 override NHibernate.Dialect.MySQL8Dialect.ForUpdateNowaitString.get -> string
 override NHibernate.Dialect.MySQL8Dialect.GetForUpdateNowaitString(string aliases) -> string
 override NHibernate.Dialect.MySQL8Dialect.GetForUpdateString(string aliases) -> string

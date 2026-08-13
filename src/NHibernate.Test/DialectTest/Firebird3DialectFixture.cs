@@ -81,5 +81,48 @@ namespace NHibernate.Test.DialectTest
 			Assert.That(_dialect.NativeIdentifierGeneratorClass, Is.EqualTo(typeof(SequenceGenerator)), "native");
 			Assert.That(_dialect.IdentityStyleIdentifierGeneratorClass, Is.EqualTo(typeof(IdentityGenerator)), "identity");
 		}
+
+		[Test]
+		public void SupportsSequencesWithIncrement()
+		{
+			Assert.That(_dialect.SupportsSequences, Is.True, "SupportsSequences");
+			Assert.That(_dialect.SupportsPooledSequences, Is.True, "SupportsPooledSequences");
+		}
+
+		[Test]
+		public void GetCreateSequenceString()
+		{
+			Assert.That(_dialect.GetCreateSequenceString("fish_seq"), Is.EqualTo("create sequence fish_seq"));
+		}
+
+		[Test]
+		public void GetCreateSequenceStringWithInitialValueAndIncrement()
+		{
+			// Firebird 3 generates the "start with" value plus the increment as its first value, so the
+			// "start with" value must be lowered by the increment for getting 10 as the first value.
+			Assert.That(
+				_dialect.GetCreateSequenceStrings("fish_seq", 10, 5),
+				Is.EqualTo(new[] { "create sequence fish_seq start with 5 increment by 5" }));
+		}
+
+		[Test]
+		public void GetDropSequenceString()
+		{
+			Assert.That(_dialect.GetDropSequenceString("fish_seq"), Is.EqualTo("drop sequence fish_seq"));
+		}
+
+		[Test]
+		public void GetSequenceNextValString()
+		{
+			Assert.That(
+				_dialect.GetSequenceNextValString("fish_seq"),
+				Is.EqualTo("select next value for fish_seq from RDB$DATABASE"));
+		}
+
+		[Test]
+		public void GetSelectSequenceNextValString()
+		{
+			Assert.That(_dialect.GetSelectSequenceNextValString("fish_seq"), Is.EqualTo("next value for fish_seq"));
+		}
 	}
 }
