@@ -73,8 +73,7 @@ namespace NHibernate.Test
 		public virtual bool SupportsSelectForUpdateOnOuterJoin => SupportsSelectForUpdate;
 
 		/// <summary>
-		/// Some data providers are unable to interrupt a query waiting for a lock, leaving its timeout to
-		/// never elapse.
+		/// Some data providers cannot interrupt a query waiting for a lock.
 		/// </summary>
 		public virtual bool SupportsQueryTimeoutOnLockWait => true;
 

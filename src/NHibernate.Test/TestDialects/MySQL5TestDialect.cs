@@ -30,11 +30,9 @@ namespace NHibernate.Test.TestDialects
 		public override bool SupportsTransactionScopeTimeouts => false;
 
 		/// <summary>
-		/// MySql.Data does not end a query waiting for a lock: neither the query timeout nor a cancellation
-		/// interrupts it, and once the timeout has elapsed, the connection stops processing the server answer
-		/// too, leaving the query pending forever.
+		/// MySql.Data after 8.0.30 never ends a query waiting for a lock.
 		/// </summary>
 		public override bool SupportsQueryTimeoutOnLockWait =>
-			typeof(MySqlConnection).Assembly.GetName().Version < new System.Version(8, 0, 30);
+			typeof(MySqlConnection).Assembly.GetName().Version <= new System.Version(8, 0, 30, 0);
 	}
 }
