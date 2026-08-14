@@ -7,15 +7,9 @@ namespace NHibernate.Dialect
 	/// A dialect for Firebird 3 and above.
 	/// </summary>
 	/// <remarks>
-	/// <para>
 	/// Firebird 3 supports the SQL standard <c>OFFSET</c>/<c>FETCH</c> clause. Unlike the
 	/// <c>FIRST</c>/<c>SKIP</c> clause used by <see cref="FirebirdDialect" />, it is placed at the end of
 	/// the statement and applies to the whole query, including unions.
-	/// </para>
-	/// <para>
-	/// Firebird 3 also supports the SQL standard sequence syntax, with an increment other than one. This
-	/// allows NHibernate to get a range of identifier values with one call.
-	/// </para>
 	/// </remarks>
 	public class Firebird3Dialect : FirebirdDialect
 	{
@@ -74,10 +68,7 @@ namespace NHibernate.Dialect
 		/// <inheritdoc />
 		protected override string GetCreateSequenceString(string sequenceName, int initialValue, int incrementSize)
 		{
-			// Firebird 3 sets the current value of the sequence to the "start with" value, instead of the
-			// first value to generate. So the first generated value is the "start with" value plus the
-			// increment. Decrease the "start with" value by the increment for getting the initial value as
-			// the first generated value. Firebird 4 changes this to the standard behavior.
+			// "start with" sets the current value, not the first value to generate. Firebird 4 fixes this.
 			var startWith = (long) initialValue - incrementSize;
 			return GetCreateSequenceString(sequenceName) + " start with " + startWith + " increment by " + incrementSize;
 		}

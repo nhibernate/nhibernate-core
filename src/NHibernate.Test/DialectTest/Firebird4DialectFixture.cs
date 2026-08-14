@@ -11,7 +11,7 @@ namespace NHibernate.Test.DialectTest
 		[Test]
 		public void GetCreateSequenceStringWithInitialValueAndIncrement()
 		{
-			// Firebird 4 generates the "start with" value as its first value, unlike Firebird 3.
+			// Not lowered by the increment, unlike Firebird 3.
 			Assert.That(
 				_dialect.GetCreateSequenceStrings("fish_seq", 10, 5),
 				Is.EqualTo(new[] { "create sequence fish_seq start with 10 increment by 5" }));
