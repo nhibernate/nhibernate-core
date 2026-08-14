@@ -17,6 +17,8 @@ namespace NHibernate.Test.TestDialects
 
 		public override bool SupportsAggregateInSubSelect => true;
 
+		public override bool SupportsNoWaitLock => true;
+
 		public override bool SupportsSqlType(SqlType sqlType)
 		{
 			// The Oracle dialects define types for DbType the Oracle driver does not support.

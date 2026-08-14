@@ -14,6 +14,8 @@ namespace NHibernate.Test.TestDialects
 		/// </summary>
 		public override bool SupportsSelectForUpdateWithPaging => false;
 
+		public override bool SupportsNoWaitLock => true;
+
 		/// <inheritdoc />
 		/// <remarks>Canceling a query hangs under Linux with Sql2008ClientDriver. (It may be a data provider bug fixed with MicrosoftDataSqlClientDriver.)</remarks>
 		public override bool SupportsCancelQuery => !RuntimeInformation.IsOSPlatform(OSPlatform.Linux);

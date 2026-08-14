@@ -20,7 +20,7 @@ namespace NHibernate.Test
 		private const string FirebirdSqlImage = "firebirdsql/firebird:4";
 		private const string MariaDbImage = "mariadb:10.10";
 		private const string MsSqlImage = "mcr.microsoft.com/mssql/server:2019-latest";
-		private const string MySqlImage = "mysql:5.7";
+		private const string MySqlImage = "mysql:8.4";
 		private const string OracleImage = "gvenzl/oracle-xe:21-slim";
 		private const string PostgreSqlImage = "postgres:13";
 

@@ -9,6 +9,8 @@
 
 		public override bool SupportsSelectForUpdateOnOuterJoin => false;
 
+		public override bool SupportsNoWaitLock => true;
+
 		public override bool SupportsNullCharactersInUtfStrings => false;
 
 		/// <summary>

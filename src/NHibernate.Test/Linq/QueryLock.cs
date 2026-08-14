@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Transactions;
-using NHibernate.Dialect;
 using NHibernate.DomainModel.Northwind.Entities;
 using NHibernate.Driver;
 using NHibernate.Engine;
@@ -75,6 +74,22 @@ namespace NHibernate.Test.Linq
 
 				Assert.That(result, Has.Count.EqualTo(830));
 				Assert.That(session.GetCurrentLockMode(result[0]), Is.EqualTo(LockMode.Upgrade));
+			}
+		}
+
+		[Test]
+		public void CanSetLockOnJoinWithoutLockingTheOtherTable()
+		{
+			Assume.That(Dialect.SupportsForUpdateOf, Is.True, "Dialect locks all the tables of the query");
+
+			using (session.BeginTransaction())
+			{
+				var result = (from c in db.Customers
+				              from o in c.Orders.WithLock(LockMode.Upgrade)
+				              select o).ToList();
+
+				Assert.That(result, Has.Count.EqualTo(830));
+				AssertSeparateTransactionCanLock(result[0].Customer.CustomerId);
 			}
 		}
 
@@ -191,7 +206,7 @@ namespace NHibernate.Test.Linq
 		private void AssertSeparateTransactionIsLockedOut(string customerId)
 		{
 			Assume.That(
-				!TestDialect.HasBrokenQueryTimeoutOnLockWait,
+				TestDialect.SupportsNoWaitLock || !TestDialect.HasBrokenQueryTimeoutOnLockWait,
 				Is.True,
 				"The data provider is unable to interrupt a query waiting for a lock");
 
@@ -216,12 +231,34 @@ namespace NHibernate.Test.Linq
 			}
 		}
 
+		private void AssertSeparateTransactionCanLock(string customerId)
+		{
+			Assume.That(
+				TestDialect.SupportsNoWaitLock || !TestDialect.HasBrokenQueryTimeoutOnLockWait,
+				Is.True,
+				"The data provider is unable to interrupt a query waiting for a lock");
+
+			using (new TransactionScope(TransactionScopeOption.Suppress))
+			using (var s2 = OpenSession())
+			using (s2.BeginTransaction())
+			{
+				var result = (
+						from e in s2.Query<Customer>()
+						where e.CustomerId == customerId
+						select e
+					).WithLock(LockMode.UpgradeNoWait)
+					 .WithOptions(o => o.SetTimeout(5))
+					 .ToList();
+
+				Assert.That(result, Has.Count.EqualTo(1), "The customer should not have been locked.");
+			}
+		}
+
 		[Test]
 		[Description("Verify that different lock modes are respected even if the query is otherwise exactly the same.")]
 		public void CanChangeLockModeForQuery()
 		{
-			// Limit to a few dialects where we know the "nowait" keyword is used to make life easier.
-			Assume.That(Dialect is MsSql2000Dialect || Dialect is Oracle8iDialect || Dialect is PostgreSQL81Dialect);
+			Assume.That(TestDialect.SupportsNoWaitLock, Is.True, "Dialect does not have a no-wait lock");
 
 			using (session.BeginTransaction())
 			{

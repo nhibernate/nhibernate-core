@@ -20,9 +20,9 @@ Task Set-Configuration {
             'dialect' = 'NHibernate.Dialect.Firebird4Dialect'
         };
         'MySQL' = @{
-            'connection.connection_string' = 'Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;Old Guids=True;SslMode=none;';
+            'connection.connection_string' = 'Server=127.0.0.1;Uid=root;Pwd=Password12!;Database=nhibernate;SslMode=none;AllowPublicKeyRetrieval=true;';
             'connection.driver_class' = 'NHibernate.Driver.MySqlDataDriver';
-            'dialect' = 'NHibernate.Dialect.MySQL5Dialect'
+            'dialect' = 'NHibernate.Dialect.MySQL8Dialect'
         };
         'Odbc' = @{
             # The OdbcDriver inherits SupportsMultipleOpenReaders=true from DriverBase, which requires Mars_Connection=yes for SQL Server.
