@@ -80,13 +80,13 @@ jobs:
             CONNECTION_STRING: "Server=127.0.0.1;Uid=root;Database=nhibernate;SslMode=none;CharSet=utf8;"
             OS: windows-latest
             DB_INIT: |
-              # The CDN keeps only the newest patch. Update the version when the download fails.
-              $mysql = 'mysql-8.4.11-winx64'
-              iwr "https://cdn.mysql.com/Downloads/MySQL-8.4/$mysql.zip" -OutFile mysql.zip -MaximumRetryCount 3 -RetryIntervalSec 15
-              Expand-Archive mysql.zip C:\
+              # The version stays on the 8.4 LTS series, as the Linux job. winget keeps the older versions, the CDN does not.
+              $mysql = 'C:\Program Files\MySQL\MySQL Server 8.4'
+              winget install --exact --id Oracle.MySQL --version 8.4.9 --silent --disable-interactivity --accept-source-agreements --accept-package-agreements
+              # The MSI installs the files only. The server needs a data directory and a service.
               # The tests do not need a binary log or a durable commit.
-              Set-Content C:\$mysql\my.ini @('[mysqld]', 'skip_log_bin', 'innodb_flush_log_at_trx_commit=2')
-              cd C:\$mysql\bin
+              Set-Content "$mysql\my.ini" @('[mysqld]', 'skip_log_bin', 'innodb_flush_log_at_trx_commit=2')
+              cd "$mysql\bin"
               ./mysqld --initialize-insecure
               ./mysqld --install MySQL
               Start-Service MySQL
