@@ -29,6 +29,19 @@ jobs:
             OS: ubuntu-latest
             DB_INIT: |
               docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=P@ssw0rd" -e "MSSQL_PID=Express" -p 1433:1433 -d --name sqlexpress mcr.microsoft.com/mssql/server:2019-latest;
+          # The install creates the SQLEXPRESS instance and gives the sysadmin role to the user that runs the tests.
+          - DB: SqlServer2008
+            CONNECTION_STRING: 'Server=(local)\SQLEXPRESS;initial catalog=nhibernate;Integrated Security=SSPI;packet size=4096;'
+            OS: windows-latest
+            DB_INIT: |
+              winget install --source winget --id Microsoft.SQLServer.2022.Express --exact --accept-package-agreements --accept-source-agreements --disable-interactivity
+              Invoke-Sqlcmd -ServerInstance '(local)\SQLEXPRESS' -TrustServerCertificate -Query 'ALTER DATABASE model SET DELAYED_DURABILITY = FORCED'
+          - DB: SqlServer2008-MicrosoftDataSqlClientDriver
+            CONNECTION_STRING: 'Server=(local)\SQLEXPRESS;initial catalog=nhibernate;Integrated Security=SSPI;packet size=4096;TrustServerCertificate=true;'
+            OS: windows-latest
+            DB_INIT: |
+              winget install --source winget --id Microsoft.SQLServer.2022.Express --exact --accept-package-agreements --accept-source-agreements --disable-interactivity
+              Invoke-Sqlcmd -ServerInstance '(local)\SQLEXPRESS' -TrustServerCertificate -Query 'ALTER DATABASE model SET DELAYED_DURABILITY = FORCED'
           - DB: PostgreSQL
             CONNECTION_STRING: "Host=localhost;Username=nhibernate;Password=nhibernate;Database=nhibernate;Enlist=true;"
             OS: ubuntu-latest
