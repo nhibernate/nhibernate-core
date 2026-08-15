@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <Description>Tool to Generate Hbm classes for use by NHibernate.</Description>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net472;net10.0</TargetFrameworks>
     <AssemblyName>HbmXsd</AssemblyName>
     <AssemblyTitle>NHibernate.Tool.HbmXsd</AssemblyTitle>
     <OutputType>Exe</OutputType>
@@ -11,6 +11,15 @@
 
   <ItemGroup>
     <EmbeddedResource Include="..\NHibernate\nhibernate-mapping.xsd" />
+  </ItemGroup>
+
+  <!-- The .NET Framework supplies XmlCodeExporter and CSharpCodeProvider. .NET does not. -->
+  <ItemGroup Condition="$(NhNetFx)">
+    <Compile Remove="Shims\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="!$(NhNetFx)">
+    <PackageReference Include="System.CodeDom" Version="10.0.11" />
   </ItemGroup>
 
 </Project>
