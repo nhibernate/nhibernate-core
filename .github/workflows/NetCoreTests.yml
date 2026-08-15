@@ -38,9 +38,9 @@ jobs:
             CONNECTION_STRING: "Host=localhost;Username=postgres;Password=nhibernate;Database=nhibernate;Enlist=true;"
             OS: windows-latest
             DB_INIT: |
-              choco install postgresql13 --no-progress --params '/Password:nhibernate'
+              winget install --exact --id PostgreSQL.PostgreSQL.13 --silent --disable-interactivity --accept-source-agreements --accept-package-agreements --custom '--superpassword nhibernate'
               Add-Content -Path 'C:\Program Files\PostgreSQL\13\data\postgresql.conf' -Value "`r`nmax_prepared_transactions = 100"
-              Start-Service 'postgresql-x64-13'
+              Restart-Service 'postgresql-x64-13'
           - DB: Firebird
             CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
             OS: ubuntu-latest
@@ -60,14 +60,14 @@ jobs:
             CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
             OS: windows-latest
             DB_INIT: |
-              choco install firebird --version 3.0.14 --no-progress --install-arguments '/DIR=C:\firebird /SYSDBAPASSWORD=nhibernate'
+              winget install --exact --id FirebirdProject.Firebird.3 --silent --disable-interactivity --accept-source-agreements --accept-package-agreements --custom '/SUPPRESSMSGBOXES /DIR=C:\firebird /SYSDBAPASSWORD=nhibernate'
               Add-Content -Path 'C:\firebird\databases.conf' -Value "`r`nnhibernate = C:\firebird\nhibernate.fdb`r`n{`r`n    MaxUnflushedWrites = -1`r`n    MaxUnflushedWriteTime = -1`r`n}"
               Restart-Service FirebirdServerDefaultInstance
           - DB: Firebird4
             CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
             OS: windows-latest
             DB_INIT: |
-              choco install firebird --version 4.0.7 --no-progress --install-arguments '/DIR=C:\firebird /SYSDBAPASSWORD=nhibernate'
+              winget install --exact --id FirebirdProject.Firebird.4 --silent --disable-interactivity --accept-source-agreements --accept-package-agreements --custom '/SUPPRESSMSGBOXES /DIR=C:\firebird /SYSDBAPASSWORD=nhibernate'
               Add-Content -Path 'C:\firebird\databases.conf' -Value "`r`nnhibernate = C:\firebird\nhibernate.fdb`r`n{`r`n    MaxUnflushedWrites = -1`r`n    MaxUnflushedWriteTime = -1`r`n}"
               Restart-Service FirebirdServerDefaultInstance
           - DB: MySQL
@@ -80,13 +80,13 @@ jobs:
             CONNECTION_STRING: "Server=127.0.0.1;Uid=root;Database=nhibernate;SslMode=none;CharSet=utf8;"
             OS: windows-latest
             DB_INIT: |
-              # The CDN keeps only the newest patch. Update the version when the download fails.
-              $mysql = 'mysql-8.4.11-winx64'
-              iwr "https://cdn.mysql.com/Downloads/MySQL-8.4/$mysql.zip" -OutFile mysql.zip -MaximumRetryCount 3 -RetryIntervalSec 15
-              Expand-Archive mysql.zip C:\
-              # The tests do not need a binary log or a durable commit.
-              Set-Content C:\$mysql\my.ini @('[mysqld]', 'skip_log_bin', 'innodb_flush_log_at_trx_commit=2')
-              cd C:\$mysql\bin
+              # The 8.4 LTS series, as the Linux job.
+              $mysql = 'C:\Program Files\MySQL\MySQL Server 8.4'
+              winget install --exact --id Oracle.MySQL --version 8.4.9 --silent --disable-interactivity --accept-source-agreements --accept-package-agreements
+              # The MSI installs the files only.
+              # The tests do not need the safety, and one file for all the tables makes the DDL faster on NTFS.
+              Set-Content "$mysql\my.ini" @('[mysqld]', 'skip_log_bin', 'innodb_flush_log_at_trx_commit=2', 'innodb_doublewrite=0', 'innodb_file_per_table=0', 'performance_schema=0')
+              cd "$mysql\bin"
               ./mysqld --initialize-insecure
               ./mysqld --install MySQL
               Start-Service MySQL
