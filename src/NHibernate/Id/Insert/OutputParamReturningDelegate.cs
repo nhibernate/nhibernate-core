@@ -38,7 +38,19 @@ namespace NHibernate.Id.Insert
 
 		public override IdentifierGeneratingInsert PrepareIdentifierGeneratingInsert()
 		{
-			return new ReturningIdentifierInsert(factory, idColumnName, ReturnParameterName);
+			var insert = new ReturningIdentifierInsert(factory, idColumnName, ReturnParameterName);
+			AddIdentifierColumn(insert);
+			return insert;
+		}
+
+		/// <summary>
+		/// Add the identifier column to the insert, with the value the database has to generate it from.
+		/// </summary>
+		/// <param name="insert">The insert to add the identifier column to.</param>
+		/// <remarks>By default, add it only if the dialect has an <see cref="Dialect.Dialect.IdentityInsertString" />.</remarks>
+		protected virtual void AddIdentifierColumn(SqlInsertBuilder insert)
+		{
+			insert.AddIdentityColumn(idColumnName);
 		}
 
 		protected internal override DbCommand Prepare(SqlCommandInfo insertSQL, ISessionImplementor session)

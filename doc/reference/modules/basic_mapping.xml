@@ -696,7 +696,8 @@
                         <term><literal>identity</literal></term>
                         <listitem>
                             <para>
-                                supports identity columns in DB2, MySQL, MS SQL Server, Sybase and some other systems.
+                                supports identity columns in DB2, MySQL, MS SQL Server, Sybase, Oracle 12c and later,
+                                and some other systems.
                                 The identifier returned by the database is converted to the property type using
                                 <literal>Convert.ChangeType</literal>. Any integral property type is thus supported.
                                 See <xref linkend="mapping-declaration-id-sequences" />.
@@ -790,7 +791,9 @@
                             <para>
                                 picks <literal>identity</literal>, <literal>sequence</literal> or
                                 <literal>hilo</literal> depending upon the capabilities of the
-                                underlying database.
+                                underlying database. On Oracle it picks <literal>sequence</literal>
+                                even from 12c, which supports identity columns: using them has to
+                                stay an explicit choice, for not breaking existing schemas.
                                 See <xref linkend="mapping-declaration-id-sequences" />.
                             </para>
                         </listitem>
@@ -975,9 +978,10 @@
             <sect3 id="mapping-declaration-id-sequences">
             <title>Identity columns and Sequences</title>
                 <para>
-                    For databases which support identity columns (DB2, MySQL, Sybase, MS SQL), you
+                    For databases which support identity columns (DB2, MySQL, Sybase, MS SQL, Oracle 12c
+                    and later), you
                     may use <literal>identity</literal> key generation. For databases that support
-                    sequences (DB2, Oracle, PostgreSQL, Interbase, McKoi, SAP DB) you may use
+                    sequences (DB2, Oracle, PostgreSQL, Interbase, McKoi, SAP DB, SQL Server 2012 and later) you may use
                     <literal>sequence</literal> style key generation. Both these strategies require
                     two SQL queries to insert a new object.
                 </para>
