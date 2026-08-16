@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+				   assembly="NHibernate.Test"
+				   namespace="NHibernate.Test.CacheTest">
+
+  <class name="NonStrictReadWrite" batch-size="3">
+    <cache usage="nonstrict-read-write" />
+    <id name="Id" unsaved-value="0">
+      <generator class="native"/>
+    </id>
+    <property name="Name" />
+    <property name="Count" formula="(select count(*) from NonStrictReadWrite x where x.Id = Id)" lazy="true"/>
+  </class>
+
+</hibernate-mapping>
