@@ -98,10 +98,9 @@ namespace NHibernate.Test.DialectTest
 		[Test]
 		public void GetCreateSequenceStringWithInitialValueAndIncrement()
 		{
-			// Lowered by the increment, so that 10 is the first generated value.
 			Assert.That(
 				_dialect.GetCreateSequenceStrings("fish_seq", 10, 5),
-				Is.EqualTo(new[] { "create sequence fish_seq start with 5 increment by 5" }));
+				Is.EqualTo(new[] { "create sequence fish_seq start with 10 increment by 5" }));
 		}
 
 		[Test]

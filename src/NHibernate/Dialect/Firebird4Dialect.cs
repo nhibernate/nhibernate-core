@@ -11,12 +11,5 @@ namespace NHibernate.Dialect
 			base.RegisterFunctions();
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("localtimestamp", NHibernateUtil.LocalDateTime, false));
 		}
-
-		/// <inheritdoc />
-		protected override string GetCreateSequenceString(string sequenceName, int initialValue, int incrementSize)
-		{
-			// Unlike Firebird 3, "start with" sets the first value to generate.
-			return GetCreateSequenceString(sequenceName) + " start with " + initialValue + " increment by " + incrementSize;
-		}
 	}
 }

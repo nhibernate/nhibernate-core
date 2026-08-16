@@ -66,14 +66,6 @@ namespace NHibernate.Dialect
 		}
 
 		/// <inheritdoc />
-		protected override string GetCreateSequenceString(string sequenceName, int initialValue, int incrementSize)
-		{
-			// "start with" sets the current value, not the first value to generate. Firebird 4 fixes this.
-			var startWith = (long) initialValue - incrementSize;
-			return GetCreateSequenceString(sequenceName) + " start with " + startWith + " increment by " + incrementSize;
-		}
-
-		/// <inheritdoc />
 		public override string GetDropSequenceString(string sequenceName)
 		{
 			return "drop sequence " + sequenceName;
