@@ -115,6 +115,12 @@ namespace NHibernate.Test
 		/// </summary>
 		public virtual bool SupportsNonDataBoundCondition => true;
 
+		/// <summary>
+		/// Generates the initial value of a sequence as its first value, 
+		/// instead of the initial value plus the increment.
+		/// </summary>
+		public virtual bool SequenceStartsAtInitialValue => true;
+
 		public virtual bool SupportsSqlType(SqlType sqlType)
 		{
 			try

@@ -53,5 +53,36 @@ namespace NHibernate.Dialect
 		/// The native generator keeps using sequences.
 		/// </remarks>
 		public override System.Type NativeIdentifierGeneratorClass => typeof(SequenceGenerator);
+
+		#region Sequence support
+
+		/// <inheritdoc />
+		public override bool SupportsPooledSequences => true;
+
+		/// <inheritdoc />
+		public override string GetCreateSequenceString(string sequenceName)
+		{
+			return "create sequence " + sequenceName;
+		}
+
+		/// <inheritdoc />
+		public override string GetDropSequenceString(string sequenceName)
+		{
+			return "drop sequence " + sequenceName;
+		}
+
+		/// <inheritdoc />
+		public override string GetSequenceNextValString(string sequenceName)
+		{
+			return "select " + GetSelectSequenceNextValString(sequenceName) + " from RDB$DATABASE";
+		}
+
+		/// <inheritdoc />
+		public override string GetSelectSequenceNextValString(string sequenceName)
+		{
+			return "next value for " + sequenceName;
+		}
+
+		#endregion
 	}
 }
