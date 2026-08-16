@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -22,9 +23,9 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			if (rs.GetFieldType(index) == typeof (Guid))
+			if (rs.TryGetGuid(index, out var dbValue))
 			{
-				return rs.GetGuid(index);
+				return dbValue;
 			}
 
 			if (rs.GetFieldType(index) == typeof(byte[]))
@@ -32,7 +33,14 @@ namespace NHibernate.Type
 				return new Guid((byte[])(rs[index]));
 			} 
 
-			return new Guid(Convert.ToString(rs[index]));
+			if (!rs.TryGetString(index, out var dbString))
+			{
+				var locale = session.Factory.Settings.Locale;
+
+				dbString = Convert.ToString(rs[index], locale);
+			}
+
+			return new Guid(dbString);
 		}
 
 		/// <summary></summary>

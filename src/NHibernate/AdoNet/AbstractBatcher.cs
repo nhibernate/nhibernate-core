@@ -252,7 +252,7 @@ namespace NHibernate.AdoNet
 		{
 			try
 			{
-				var reader = cmd.ExecuteReader();
+				var reader = Driver.ExecuteReader(cmd);
 				if (reader == null)
 				{
 					// MySql may return null instead of an exception, by example when the query is canceled by another thread.

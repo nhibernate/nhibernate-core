@@ -1,6 +1,7 @@
 using System;
 using System.Data.Common;
 using System.Xml.Linq;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -38,12 +39,18 @@ namespace NHibernate.Type
 		/// <inheritdoc />
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			// according to documentation, GetValue should return a string, at least for MsSQL
-			// hopefully all DataProvider has the same behaviour
-			string xmlString = Convert.ToString(rs.GetValue(index));
+			if (!rs.TryGetString(index, out var dbValue))
+			{
+				var locale = session.Factory.Settings.Locale;
+
+				// according to documentation, GetValue should return a string, at least for MsSQL
+				// hopefully all DataProvider has the same behaviour
+				dbValue = Convert.ToString(rs.GetValue(index), locale);
+			}
+
 			// 6.0 TODO: inline the call.
 #pragma warning disable 618
-			return FromStringValue(xmlString);
+			return FromStringValue(dbValue);
 #pragma warning restore 618
 		}
 

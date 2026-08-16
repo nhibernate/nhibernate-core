@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq.Expressions;
 using NHibernate.AdoNet;
 using NHibernate.AdoNet.Util;
@@ -228,5 +229,6 @@ namespace NHibernate.Cfg
 		public BatchFetchStyle BatchFetchStyle { get; internal set; }
 		public BatchingEntityLoaderBuilder  BatchingEntityLoaderBuilder { get; internal set; }
 		public BatchingCollectionInitializerBuilder BatchingCollectionInitializationBuilder { get; internal set; }
+		public CultureInfo Locale { get; internal set; }
 	}
 }
