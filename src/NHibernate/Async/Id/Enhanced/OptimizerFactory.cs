@@ -10,7 +10,6 @@
 
 using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using NHibernate.Util;
 
 namespace NHibernate.Id.Enhanced
@@ -28,29 +27,32 @@ namespace NHibernate.Id.Enhanced
 			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
+				var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+				cancellationToken.ThrowIfCancellationRequested();
+
+				using (await (generationState.AsyncLock.LockAsync()).ConfigureAwait(false))
 				{
-					if (_lastSourceValue < 0)
+					if (generationState.LastSourceValue < 0)
 					{
-						_lastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
-						while (_lastSourceValue <= 0)
+						generationState.LastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
+						while (generationState.LastSourceValue <= 0)
 						{
-							_lastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
+							generationState.LastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
 						}
 
 						// upperLimit defines the upper end of the bucket values
-						_upperLimit = (_lastSourceValue * IncrementSize) + 1;
+						generationState.UpperLimit = (generationState.LastSourceValue * IncrementSize) + 1;
 
 						// initialize value to the low end of the bucket
-						_value = _upperLimit - IncrementSize;
+						generationState.Value = generationState.UpperLimit - IncrementSize;
 					}
-					else if (_upperLimit <= _value)
+					else if (generationState.UpperLimit <= generationState.Value)
 					{
-						_lastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
-						_upperLimit = (_lastSourceValue * IncrementSize) + 1;
+						generationState.LastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
+						generationState.UpperLimit = (generationState.LastSourceValue * IncrementSize) + 1;
 					}
 
-					return Make(_value++);
+					return Make(generationState.Value++);
 				}
 			}
 		}
@@ -104,39 +106,41 @@ namespace NHibernate.Id.Enhanced
 			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
+				var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+				cancellationToken.ThrowIfCancellationRequested();
+
+				using (await (generationState.AsyncLock.LockAsync()).ConfigureAwait(false))
 				{
-					if (_hiValue < 0)
+					if (generationState.HiValue < 0)
 					{
-						_value = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
-						if (_value < 1)
+						generationState.Value = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
+						if (generationState.Value < 1)
 						{
 							// unfortunately not really safe to normalize this
 							// to 1 as an initial value like we do the others
 							// because we would not be able to control this if
 							// we are using a sequence...
-							Log.Info("pooled optimizer source reported [{0}] as the initial value; use of 1 or greater highly recommended", _value);
+							Log.Info("pooled optimizer source reported [{0}] as the initial value; use of 1 or greater highly recommended", generationState.Value);
 						}
 
-						if ((_initialValue == -1 && _value < IncrementSize) || _value == _initialValue)
-							_hiValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
+						if ((_initialValue == -1 && generationState.Value < IncrementSize) || generationState.Value == _initialValue)
+							generationState.HiValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
 						else
 						{
-							_hiValue = _value;
-							_value = _hiValue - IncrementSize;
+							generationState.HiValue = generationState.Value;
+							generationState.Value = generationState.HiValue - IncrementSize;
 						}
 					}
-					else if (_value >= _hiValue)
+					else if (generationState.Value >= generationState.HiValue)
 					{
-						_hiValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
-						_value = _hiValue - IncrementSize;
+						generationState.HiValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
+						generationState.Value = generationState.HiValue - IncrementSize;
 					}
 
-					return Make(_value++);
+					return Make(generationState.Value++);
 				}
 			}
 		}
-
 		#endregion
 
 		#region Nested type: PooledLoOptimizer
@@ -147,18 +151,23 @@ namespace NHibernate.Id.Enhanced
 			public override async Task<object> GenerateAsync(IAccessCallback callback, CancellationToken cancellationToken)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				using (await (_asyncLock.LockAsync()).ConfigureAwait(false))
+				var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+				cancellationToken.ThrowIfCancellationRequested();
+
+				using (await (generationState.AsyncLock.LockAsync()).ConfigureAwait(false))
 				{
-					if (_lastSourceValue < 0 || _value >= (_lastSourceValue + IncrementSize))
+					if (generationState.LastSourceValue < 0 || generationState.Value >= (generationState.LastSourceValue + IncrementSize))
 					{
-						_lastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
-						_value = _lastSourceValue;
+						generationState.LastSourceValue = await (callback.GetNextValueAsync(cancellationToken)).ConfigureAwait(false);
+						generationState.Value = generationState.LastSourceValue;
 						// handle cases where initial-value is less than one (hsqldb for instance).
-						while (_value < 1)
-							_value++;
+						if (generationState.Value < 1)
+						{
+							generationState.Value = 1;
+						}
 					}
 
-					return Make(_value++);
+					return Make(generationState.Value++);
 				}
 			}
 		}

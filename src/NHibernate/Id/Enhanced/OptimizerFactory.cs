@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using NHibernate.Util;
 
 namespace NHibernate.Id.Enhanced
@@ -70,9 +69,9 @@ namespace NHibernate.Id.Enhanced
 				ConstructorInfo ctor = optimizerClass.GetConstructor(CtorSignature);
 
 				if (ctor == null)
-					throw new HibernateException("Optimizer does not have expected contructor");
+					throw new HibernateException("Optimizer does not have expected constructor");
 
-				return (IOptimizer)ctor.Invoke(new object[] { returnClass, incrementSize });
+				return (IOptimizer) ctor.Invoke(new object[] { returnClass, incrementSize });
 			}
 			catch (Exception ex)
 			{
@@ -89,7 +88,7 @@ namespace NHibernate.Id.Enhanced
 			IOptimizer optimizer = BuildOptimizer(type, returnClass, incrementSize);
 
 			if (optimizer is IInitialValueAwareOptimizer)
-				((IInitialValueAwareOptimizer)optimizer).InjectInitialValue(explicitInitialValue);
+				((IInitialValueAwareOptimizer) optimizer).InjectInitialValue(explicitInitialValue);
 
 			return optimizer;
 		}
@@ -98,10 +97,7 @@ namespace NHibernate.Id.Enhanced
 
 		public partial class HiLoOptimizer : OptimizerSupport
 		{
-			private long _upperLimit;
-			private long _lastSourceValue = -1;
-			private long _value;
-			private readonly AsyncLock _asyncLock = new AsyncLock();
+			private readonly TenantStateStore<GenerationState> _stateStore = new TenantStateStore<GenerationState>();
 
 			public HiLoOptimizer(System.Type returnClass, int incrementSize) : base(returnClass, incrementSize)
 			{
@@ -115,17 +111,25 @@ namespace NHibernate.Id.Enhanced
 				}
 			}
 
+			public class GenerationState
+			{
+				public AsyncLock AsyncLock { get; } = new AsyncLock();
+				public long LastSourceValue { get; internal set; } = -1;
+				public long Value { get; internal set; }
+				public long UpperLimit { get; internal set; }
+			}
+
 			/// <summary>
 			/// Exposure intended for testing purposes.
 			/// </summary>
 			public override long LastSourceValue
 			{
-				get { return _lastSourceValue; }
+				get { return _stateStore.NoTenantGenerationState.LastSourceValue; }
 			}
 
 			public long LastValue
 			{
-				get { return _value - 1; }
+				get { return _stateStore.NoTenantGenerationState.Value - 1; }
 			}
 
 			/// <summary>
@@ -133,7 +137,21 @@ namespace NHibernate.Id.Enhanced
 			/// </summary>
 			public long HiValue
 			{
-				get { return _upperLimit; }
+				get { return _stateStore.NoTenantGenerationState.UpperLimit; }
+			}
+
+			public long GetHiValue(string tenantIdentifier)
+			{
+				return _stateStore.LocateGenerationState(tenantIdentifier).UpperLimit;
+			}
+
+			public long GetLastSourceValue(string tenantIdentifier)
+			{
+				return _stateStore.LocateGenerationState(tenantIdentifier).LastSourceValue;
+			}
+			public long GetLastValue(string tenantIdentifier)
+			{
+				return _stateStore.LocateGenerationState(tenantIdentifier).Value - 1;
 			}
 
 			public override bool ApplyIncrementSizeToSourceValues
@@ -143,29 +161,31 @@ namespace NHibernate.Id.Enhanced
 
 			public override object Generate(IAccessCallback callback)
 			{
-				using (_asyncLock.Lock())
+				var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+
+				using (generationState.AsyncLock.Lock())
 				{
-					if (_lastSourceValue < 0)
+					if (generationState.LastSourceValue < 0)
 					{
-						_lastSourceValue = callback.GetNextValue();
-						while (_lastSourceValue <= 0)
+						generationState.LastSourceValue = callback.GetNextValue();
+						while (generationState.LastSourceValue <= 0)
 						{
-							_lastSourceValue = callback.GetNextValue();
+							generationState.LastSourceValue = callback.GetNextValue();
 						}
 
 						// upperLimit defines the upper end of the bucket values
-						_upperLimit = (_lastSourceValue * IncrementSize) + 1;
+						generationState.UpperLimit = (generationState.LastSourceValue * IncrementSize) + 1;
 
 						// initialize value to the low end of the bucket
-						_value = _upperLimit - IncrementSize;
+						generationState.Value = generationState.UpperLimit - IncrementSize;
 					}
-					else if (_upperLimit <= _value)
+					else if (generationState.UpperLimit <= generationState.Value)
 					{
-						_lastSourceValue = callback.GetNextValue();
-						_upperLimit = (_lastSourceValue * IncrementSize) + 1;
+						generationState.LastSourceValue = callback.GetNextValue();
+						generationState.UpperLimit = (generationState.LastSourceValue * IncrementSize) + 1;
 					}
 
-					return Make(_value++);
+					return Make(generationState.Value++);
 				}
 			}
 		}
@@ -268,11 +288,8 @@ namespace NHibernate.Id.Enhanced
 		/// </summary>
 		public partial class PooledOptimizer : OptimizerSupport, IInitialValueAwareOptimizer
 		{
-			private long _hiValue = -1;
-			private long _value;
 			private long _initialValue;
-			private readonly AsyncLock _asyncLock = new AsyncLock();
-
+			private readonly TenantStateStore<GenerationState> _stateStore = new TenantStateStore<GenerationState>();
 			public PooledOptimizer(System.Type returnClass, int incrementSize) : base(returnClass, incrementSize)
 			{
 				if (incrementSize < 1)
@@ -285,17 +302,34 @@ namespace NHibernate.Id.Enhanced
 				}
 			}
 
+			public class GenerationState
+			{
+				public AsyncLock AsyncLock { get; } = new AsyncLock();
+				public long Value { get; internal set; }
+				public long HiValue { get; internal set; } = -1;
+			}
+
 			public override long LastSourceValue
 			{
-				get { return _hiValue; }
+				get { return _stateStore.NoTenantGenerationState.HiValue; }
 			}
 
 			/// <summary>
 			/// Exposure intended for testing purposes.
 			/// </summary>
+			/// 
+
 			public long LastValue
 			{
-				get { return _value - 1; }
+				get { return _stateStore.NoTenantGenerationState.Value - 1; }
+			}
+			public long GetLastSourceValue(string tenantIdentifier)
+			{
+				return _stateStore.LocateGenerationState(tenantIdentifier).HiValue;
+			}
+			public long GetLastValue(string tenantIdentifier)
+			{
+				 return _stateStore.LocateGenerationState(tenantIdentifier).Value - 1;
 			}
 
 			public override bool ApplyIncrementSizeToSourceValues
@@ -310,48 +344,47 @@ namespace NHibernate.Id.Enhanced
 
 			public override object Generate(IAccessCallback callback)
 			{
-				using (_asyncLock.Lock())
+				var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+
+				using (generationState.AsyncLock.Lock())
 				{
-					if (_hiValue < 0)
+					if (generationState.HiValue < 0)
 					{
-						_value = callback.GetNextValue();
-						if (_value < 1)
+						generationState.Value = callback.GetNextValue();
+						if (generationState.Value < 1)
 						{
 							// unfortunately not really safe to normalize this
 							// to 1 as an initial value like we do the others
 							// because we would not be able to control this if
 							// we are using a sequence...
-							Log.Info("pooled optimizer source reported [{0}] as the initial value; use of 1 or greater highly recommended", _value);
+							Log.Info("pooled optimizer source reported [{0}] as the initial value; use of 1 or greater highly recommended", generationState.Value);
 						}
 
-						if ((_initialValue == -1 && _value < IncrementSize) || _value == _initialValue)
-							_hiValue = callback.GetNextValue();
+						if ((_initialValue == -1 && generationState.Value < IncrementSize) || generationState.Value == _initialValue)
+							generationState.HiValue = callback.GetNextValue();
 						else
 						{
-							_hiValue = _value;
-							_value = _hiValue - IncrementSize;
+							generationState.HiValue = generationState.Value;
+							generationState.Value = generationState.HiValue - IncrementSize;
 						}
 					}
-					else if (_value >= _hiValue)
+					else if (generationState.Value >= generationState.HiValue)
 					{
-						_hiValue = callback.GetNextValue();
-						_value = _hiValue - IncrementSize;
+						generationState.HiValue = callback.GetNextValue();
+						generationState.Value = generationState.HiValue - IncrementSize;
 					}
 
-					return Make(_value++);
+					return Make(generationState.Value++);
 				}
 			}
 		}
-
 		#endregion
 
 		#region Nested type: PooledLoOptimizer
 
 		public partial class PooledLoOptimizer : OptimizerSupport
 		{
-			private long _lastSourceValue = -1; // last value read from db source
-			private long _value; // the current generator value
-			private readonly AsyncLock _asyncLock = new AsyncLock();
+			private readonly TenantStateStore<GenerationState> _stateStore = new TenantStateStore<GenerationState>();
 
 			public PooledLoOptimizer(System.Type returnClass, int incrementSize) : base(returnClass, incrementSize)
 			{
@@ -365,26 +398,38 @@ namespace NHibernate.Id.Enhanced
 				}
 			}
 
+			public class GenerationState
+			{
+				public AsyncLock AsyncLock { get; } = new AsyncLock();
+				public long LastSourceValue { get; internal set; } = -1;
+				public long Value { get; internal set; }
+			}
+
 			public override object Generate(IAccessCallback callback)
 			{
-				using (_asyncLock.Lock())
+				var generationState = _stateStore.LocateGenerationState(callback.GetTenantIdentifier());
+
+				using (generationState.AsyncLock.Lock())
 				{
-					if (_lastSourceValue < 0 || _value >= (_lastSourceValue + IncrementSize))
+					if (generationState.LastSourceValue < 0 || generationState.Value >= (generationState.LastSourceValue + IncrementSize))
 					{
-						_lastSourceValue = callback.GetNextValue();
-						_value = _lastSourceValue;
+						generationState.LastSourceValue = callback.GetNextValue();
+						generationState.Value = generationState.LastSourceValue;
 						// handle cases where initial-value is less than one (hsqldb for instance).
-						while (_value < 1)
-							_value++;
+						if (generationState.Value < 1)
+						{
+							generationState.Value = 1;
+						}
 					}
 
-					return Make(_value++);
+					return Make(generationState.Value++);
 				}
 			}
 
+
 			public override long LastSourceValue
 			{
-				get { return _lastSourceValue; }
+				get { return _stateStore.NoTenantGenerationState.LastSourceValue; }
 			}
 
 			public override bool ApplyIncrementSizeToSourceValues
@@ -397,7 +442,17 @@ namespace NHibernate.Id.Enhanced
 			/// </summary>
 			public long LastValue
 			{
-				get { return _value - 1; }
+				get { return _stateStore.NoTenantGenerationState.Value - 1; }
+			}
+
+			public long GetLastSourceValue(string tenantIdentifier)
+			{
+				return _stateStore.LocateGenerationState(tenantIdentifier).LastSourceValue;
+			}
+
+			public long GetLastValue(string tenantIdentifier)
+			{
+				return _stateStore.LocateGenerationState(tenantIdentifier).Value - 1;
 			}
 		}
 

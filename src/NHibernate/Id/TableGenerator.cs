@@ -157,7 +157,7 @@ namespace NHibernate.Id
 			using (_asyncLock.Lock())
 			{
 				// This has to be done using a different connection to the containing
-				// transaction becase the new hi value must remain valid even if the
+				// transaction because the new hi value must remain valid even if the
 				// containing transaction rolls back.
 				return DoWorkInNewTransaction(session);
 			}
@@ -220,7 +220,7 @@ namespace NHibernate.Id
 			int rows;
 			do
 			{
-				//the loop ensure atomicitiy of the 
+				//the loop ensures atomicity of the 
 				//select + update even for no transaction
 				//or read committed isolation level (needed for .net?)
 
