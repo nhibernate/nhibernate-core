@@ -36,6 +36,10 @@ namespace NHibernate.Id
 			{
 				return new InsertSelectDelegate(persister, factory);
 			}
+			else if (factory.Dialect.SupportsIdentifierOutParameter)
+			{
+				return new OutputParamReturningDelegate(persister, factory);
+			}
 			else
 			{
 				return new BasicDelegate(persister, factory);
@@ -89,7 +93,7 @@ namespace NHibernate.Id
 			}
 		}
 
-		/// <summary> 
+		/// <summary>
 		/// Delegate for dealing with IDENTITY columns where the dialect requires an
 		/// additional command execution to retrieve the generated IDENTITY value
 		/// </summary>

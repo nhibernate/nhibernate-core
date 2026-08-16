@@ -1,5 +1,6 @@
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Id
 {
@@ -42,11 +43,11 @@ namespace NHibernate.Id
 				sequenceNextValFragment = factory.Dialect.GetSelectSequenceNextValString(sequenceName);
 			}
 
-			public override IdentifierGeneratingInsert PrepareIdentifierGeneratingInsert()
+			/// <inheritdoc />
+			/// <remarks>Generate the identifier from the sequence.</remarks>
+			protected override void AddIdentifierColumn(SqlInsertBuilder insert)
 			{
-				IdentifierGeneratingInsert insert = base.PrepareIdentifierGeneratingInsert();
 				insert.AddColumn(Persister.RootTableKeyColumnNames[0], sequenceNextValFragment);
-				return insert;
 			}
 		}
 

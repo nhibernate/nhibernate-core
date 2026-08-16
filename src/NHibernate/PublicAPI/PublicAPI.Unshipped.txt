@@ -7,6 +7,14 @@ override NHibernate.Dialect.Firebird3Dialect.NativeIdentifierGeneratorClass.get 
 override NHibernate.Dialect.Firebird3Dialect.NoColumnsInsertString.get -> string
 override NHibernate.Dialect.Firebird3Dialect.SupportsIdentityColumns.get -> bool
 override NHibernate.Dialect.Firebird3Dialect.SupportsInsertSelectIdentity.get -> bool
+override NHibernate.Dialect.Oracle12cDialect.IdentityColumnString.get -> string
+override NHibernate.Dialect.Oracle12cDialect.IdentityInsertString.get -> string
+override NHibernate.Dialect.Oracle12cDialect.NativeIdentifierGeneratorClass.get -> System.Type
+override NHibernate.Dialect.Oracle12cDialect.SupportsIdentifierOutParameter.get -> bool
+override NHibernate.Dialect.Oracle12cDialect.SupportsIdentityColumns.get -> bool
+override NHibernate.Id.SequenceIdentityGenerator.SequenceIdentityDelegate.AddIdentifierColumn(NHibernate.SqlCommand.SqlInsertBuilder insert) -> void
+virtual NHibernate.Dialect.Dialect.SupportsIdentifierOutParameter.get -> bool
+virtual NHibernate.Id.Insert.OutputParamReturningDelegate.AddIdentifierColumn(NHibernate.SqlCommand.SqlInsertBuilder insert) -> void
 override NHibernate.Dialect.MySQL8Dialect.ForUpdateNowaitString.get -> string
 override NHibernate.Dialect.MySQL8Dialect.GetForUpdateNowaitString(string aliases) -> string
 override NHibernate.Dialect.MySQL8Dialect.GetForUpdateString(string aliases) -> string

@@ -50,6 +50,12 @@ namespace NHibernate.Test.DialectTest
 			Assert.IsTrue(d.IsQuoted(tableAlreadyQuoted[BeforeQuoteIndex]));
 		}
 
+		[Test]
+		public void IdentityRetrievalIsOptIn()
+		{
+			Assert.That(d.SupportsIdentifierOutParameter, Is.False);
+		}
+
 		/// <summary>
 		/// Test that only the first char identifies that the Identifier
 		/// is Quoted - regardless of what chars are contained in it.

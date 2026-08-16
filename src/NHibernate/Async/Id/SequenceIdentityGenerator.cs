@@ -10,6 +10,7 @@
 
 using NHibernate.Engine;
 using NHibernate.Id.Insert;
+using NHibernate.SqlCommand;
 
 namespace NHibernate.Id
 {
