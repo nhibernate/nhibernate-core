@@ -17,6 +17,7 @@ csharp_new_line_before_members_in_anonymous_types = true
 csharp_new_line_between_query_expression_clauses = true
 
 dotnet_diagnostic.NUnit1032.severity = suggestion
+dotnet_diagnostic.NUnit1034.severity = suggestion
 dotnet_diagnostic.NUnit1028.severity = none
 dotnet_diagnostic.NUnit2045.severity = none
 # Consider using the constraint model, Assert.That
