@@ -19,7 +19,9 @@ namespace NHibernate.Test.NHSpecificTest.NH3874
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return dialect.SupportsIdentityColumns;
+			// The identifier is mapped with a custom type. Retrieving it through a parameter of the
+			// insert statement converts it with Convert.ChangeType, which does not support custom types.
+			return dialect.SupportsIdentityColumns && !dialect.SupportsIdentifierOutParameter;
 		}
 
 		object _id;

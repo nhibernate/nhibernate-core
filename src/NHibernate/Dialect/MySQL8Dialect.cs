@@ -4,7 +4,11 @@ namespace NHibernate.Dialect
 {
 	public class MySQL8Dialect : MySQL57Dialect
 	{
-		public MySQL8Dialect() => RegisterColumnType(DbType.Boolean, "BOOLEAN");
+		public MySQL8Dialect()
+		{
+			RegisterColumnType(DbType.Boolean, "BOOLEAN");
+			RegisterKeyword("vector");
+		}
 
 		/// <summary>
 		/// MySQL supports no-wait locks since 8.0.1.

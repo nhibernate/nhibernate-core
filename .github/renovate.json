@@ -5,6 +5,7 @@
   ],
   "configMigration": true,
   "pruneStaleBranches": false,
+  "separateMultipleMajor": true,
   "automerge": true,
   "platformAutomerge": true,
   "rebaseWhen": "conflicted",

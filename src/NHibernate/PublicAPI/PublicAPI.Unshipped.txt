@@ -1,3 +1,4 @@
+*REMOVED*override NHibernate.Id.SequenceIdentityGenerator.SequenceIdentityDelegate.PrepareIdentifierGeneratingInsert() -> NHibernate.Id.Insert.IdentifierGeneratingInsert
 NHibernate.Dialect.Firebird3Dialect
 NHibernate.Dialect.Firebird3Dialect.Firebird3Dialect() -> void
 NHibernate.Dialect.PostgreSQL13Dialect
@@ -14,16 +15,29 @@ NHibernate.Mapping.ByCode.NativeGuidV7GeneratorDef.DefaultReturnType.get -> Syst
 NHibernate.Mapping.ByCode.NativeGuidV7GeneratorDef.NativeGuidV7GeneratorDef() -> void
 NHibernate.Mapping.ByCode.NativeGuidV7GeneratorDef.Params.get -> object
 NHibernate.Mapping.ByCode.NativeGuidV7GeneratorDef.SupportedAsCollectionElementId.get -> bool
+static NHibernate.Mapping.ByCode.Generators.NativeGuidV7.get -> NHibernate.Mapping.ByCode.IGeneratorDef
 override NHibernate.Dialect.Firebird3Dialect.AppendIdentitySelectToInsert(NHibernate.SqlCommand.SqlString insertString, string identifierColumnName) -> NHibernate.SqlCommand.SqlString
+override NHibernate.Dialect.Firebird3Dialect.GetCreateSequenceString(string sequenceName) -> string
+override NHibernate.Dialect.Firebird3Dialect.GetDropSequenceString(string sequenceName) -> string
 override NHibernate.Dialect.Firebird3Dialect.GetLimitString(NHibernate.SqlCommand.SqlString queryString, NHibernate.SqlCommand.SqlString offset, NHibernate.SqlCommand.SqlString limit) -> NHibernate.SqlCommand.SqlString
+override NHibernate.Dialect.Firebird3Dialect.GetSelectSequenceNextValString(string sequenceName) -> string
+override NHibernate.Dialect.Firebird3Dialect.GetSequenceNextValString(string sequenceName) -> string
 override NHibernate.Dialect.Firebird3Dialect.IdentityColumnString.get -> string
 override NHibernate.Dialect.Firebird3Dialect.NativeIdentifierGeneratorClass.get -> System.Type
 override NHibernate.Dialect.Firebird3Dialect.NoColumnsInsertString.get -> string
 override NHibernate.Dialect.Firebird3Dialect.SupportsIdentityColumns.get -> bool
 override NHibernate.Dialect.Firebird3Dialect.SupportsInsertSelectIdentity.get -> bool
 override NHibernate.Dialect.PostgreSQL13Dialect.SelectGUIDString.get -> string
-static NHibernate.Mapping.ByCode.Generators.NativeGuidV7.get -> NHibernate.Mapping.ByCode.IGeneratorDef
+override NHibernate.Dialect.Firebird3Dialect.SupportsPooledSequences.get -> bool
 override NHibernate.Dialect.MySQL8Dialect.ForUpdateNowaitString.get -> string
 override NHibernate.Dialect.MySQL8Dialect.GetForUpdateNowaitString(string aliases) -> string
 override NHibernate.Dialect.MySQL8Dialect.GetForUpdateString(string aliases) -> string
 override NHibernate.Dialect.MySQL8Dialect.SupportsForUpdateOf.get -> bool
+override NHibernate.Dialect.Oracle12cDialect.IdentityColumnString.get -> string
+override NHibernate.Dialect.Oracle12cDialect.IdentityInsertString.get -> string
+override NHibernate.Dialect.Oracle12cDialect.NativeIdentifierGeneratorClass.get -> System.Type
+override NHibernate.Dialect.Oracle12cDialect.SupportsIdentifierOutParameter.get -> bool
+override NHibernate.Dialect.Oracle12cDialect.SupportsIdentityColumns.get -> bool
+override NHibernate.Id.SequenceIdentityGenerator.SequenceIdentityDelegate.AddIdentifierColumn(NHibernate.SqlCommand.SqlInsertBuilder insert) -> void
+virtual NHibernate.Dialect.Dialect.SupportsIdentifierOutParameter.get -> bool
+virtual NHibernate.Id.Insert.OutputParamReturningDelegate.AddIdentifierColumn(NHibernate.SqlCommand.SqlInsertBuilder insert) -> void

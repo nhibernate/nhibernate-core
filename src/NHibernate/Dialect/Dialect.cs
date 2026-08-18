@@ -1123,6 +1123,13 @@ namespace NHibernate.Dialect
 		}
 
 		/// <summary>
+		/// Does this dialect support retrieving the generated identifier through a parameter added to
+		/// the insert statement by <see cref="AddIdentifierOutParameterToInsert" />?
+		/// </summary>
+		/// <remarks>Ignored when <see cref="SupportsInsertSelectIdentity" /> is <see langword="true" />.</remarks>
+		public virtual bool SupportsIdentifierOutParameter => false;
+
+		/// <summary>
 		/// The keyword used to insert a generated value into an identity column (or null).
 		/// Need if the dialect does not support inserts that specify no column values.
 		/// </summary>
