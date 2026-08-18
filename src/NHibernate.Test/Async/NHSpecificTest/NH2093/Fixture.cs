@@ -39,7 +39,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2093
 
           var type = NHibernateProxyHelper.GuessClass(person);
 
-          Assert.AreEqual(type, typeof(Person));
+          Assert.That(type, Is.EqualTo(typeof(Person)));
         }
 
         using (var s = OpenSession())
@@ -48,7 +48,7 @@ namespace NHibernate.Test.NHSpecificTest.NH2093
 
           var type = NHibernateProxyHelper.GuessClass(person);
 
-          Assert.AreEqual(type, typeof(Person));
+          Assert.That(type, Is.EqualTo(typeof(Person)));
         }
       }
       finally
