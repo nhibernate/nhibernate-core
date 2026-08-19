@@ -84,13 +84,13 @@ jobs:
               Add-Content -Path 'C:\firebird\databases.conf' -Value "`r`nnhibernate = C:\firebird\nhibernate.fdb`r`n{`r`n    MaxUnflushedWrites = -1`r`n    MaxUnflushedWriteTime = -1`r`n}"
               Restart-Service FirebirdServerDefaultInstance
           - DB: MySQL
-            CONNECTION_STRING: "Server=localhost;Uid=root;Password=nhibernate;Database=nhibernate;SslMode=none;AllowPublicKeyRetrieval=true;"
+            CONNECTION_STRING: "Server=localhost;Uid=root;Password=nhibernate;Database=nhibernate;SslMode=Disabled;AllowPublicKeyRetrieval=true;"
             OS: ubuntu-latest
             DB_INIT: |
               sudo service mysql stop
               docker run --name mysql -e MYSQL_ROOT_PASSWORD=nhibernate -e MYSQL_USER=nhibernate -e MYSQL_PASSWORD=nhibernate -e MYSQL_DATABASE=nhibernate -p 3306:3306 --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 -d mysql:8.4 mysqld --lower_case_table_names=1 --character-set-server=utf8 --collation-server=utf8_general_ci --skip-log-bin --innodb-flush-log-at-trx-commit=2
           - DB: MySQL
-            CONNECTION_STRING: "Server=127.0.0.1;Uid=root;Database=nhibernate;SslMode=none;CharSet=utf8;"
+            CONNECTION_STRING: "Server=127.0.0.1;Uid=root;Database=nhibernate;SslMode=Disabled;CharSet=utf8;"
             OS: windows-latest
             DB_INIT: |
               # The 8.4 LTS series, as the Linux job.
