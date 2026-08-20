@@ -487,6 +487,96 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
+		
+		[Test(Description = "GH-3802")]
+		public void UsersWithTypedArrayContains()
+		{
+			var names = new string[] { "ayende", "rahien" };
+
+			var query = (from user in db.Users
+			             where names.Contains(user.Name)
+			             select user).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+		
+		[Test(Description = "GH-3802")]
+		public void UsersWithTypedArrayContainsWithExplicitCast()
+		{
+			var names = new string[] { "ayende", "rahien" };
+
+			var query = db.Users.Where(user => ((string[])names).Contains(user.Name)).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+		
+		[Test(Description = "GH-3802")]
+		public void UsersWithTypedArrayContainsWithExplicitAs()
+		{
+			var names = new string[] { "ayende", "rahien" };
+
+			var query = db.Users.Where(user => (names as string[]).Contains(user.Name)).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+		
+		[Test(Description = "GH-3802")]
+		public void UsersWithTypedArrayEnumerableContainsWithExplicitCast()
+		{
+			var names = new string[] { "ayende", "rahien" };
+
+			var query = db.Users.Where(user => Enumerable.Contains((string[])names, user.Name)).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+		
+
+		[Test(Description = "GH-3802")]
+		public void UsersWithTypedArrayEnumerableContainsWithExplicitAs()
+		{
+			var names = new string[] { "ayende", "rahien" };
+
+			var query = db.Users.Where(user => Enumerable.Contains((names as string[]), user.Name)).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+#nullable enable
+		[Test(Description = "GH-3802")]
+		public void UsersWithArrayContainsNullableEnabled()
+		{
+			var names = new[] { "ayende", "rahien" };
+
+			var query = (from user in db.Users
+			             where names.Contains(user.Name)
+			             select user).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+		// The compiler casts the array to its own type before it converts it to a span, because an expression
+		// tree cannot hold the nullable annotations. The cast must not hide the evaluated array from the
+		// generator.
+		[Test(Description = "GH-3802")]
+		public void UsersWithTypedArrayContainsNullableEnabled()
+		{
+			var names = new string[] { "ayende", "rahien" };
+
+			var query = db.Users.Where(user => names.Contains(user.Name)).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+		
+		[Test(Description = "GH-3802")]
+		public void UsersWithTypedArrayEnumerableContainsNullableEnabled()
+		{
+			var names = new string[] { "ayende", "rahien" };
+
+			var query = db.Users.Where(user => Enumerable.Contains(names, user.Name)).ToList();
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+#nullable restore
 
 		[Test]
 		public void UsersWithListContains()

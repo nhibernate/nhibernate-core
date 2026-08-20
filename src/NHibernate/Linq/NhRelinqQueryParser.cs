@@ -90,6 +90,7 @@ namespace NHibernate.Linq
 			// NH-3799 (#1173): must supply the implicit GetValueOrDefault() default value before
 			// parameterization occurs, otherwise it gets inlined as a literal.
 			preTransformerRegistry.Register(new AddGetValueOrDefaultArgument());
+			preTransformerRegistry.Register(new RemoveRedundantCast());
 			expressionTransformerRegistrar?.Register(preTransformerRegistry);
 
 			return new TransformingExpressionTreeProcessor(preTransformerRegistry).Process;
