@@ -30,7 +30,7 @@ namespace NHibernate.Engine.Loading
 
 		[NonSerialized]
 		private readonly IPersistenceContext persistenceContext;
-		private IDictionary collectionLoadContexts;
+		private IDictionary<DbDataReader, CollectionLoadContext> collectionLoadContexts;
 
 		private Dictionary<CollectionKey, LoadingCollectionEntry> xrefLoadingCollectionEntries;
 
@@ -71,7 +71,7 @@ namespace NHibernate.Engine.Loading
 		{
 			if (collectionLoadContexts != null)
 			{
-				CollectionLoadContext collectionLoadContext = (CollectionLoadContext)collectionLoadContexts[resultSet];
+				collectionLoadContexts.TryGetValue(resultSet, out var collectionLoadContext);
 				collectionLoadContext.Cleanup();
 				collectionLoadContexts.Remove(resultSet);
 			}
@@ -126,11 +126,11 @@ namespace NHibernate.Engine.Loading
 			CollectionLoadContext context = null;
 			if (collectionLoadContexts == null)
 			{
-				collectionLoadContexts = IdentityMap.Instantiate(8);
+				collectionLoadContexts = IdentityMapUtils.Instantiate<DbDataReader, CollectionLoadContext>(8);
 			}
 			else
 			{
-				context = (CollectionLoadContext)collectionLoadContexts[resultSet];
+				collectionLoadContexts.TryGetValue(resultSet, out context);
 			}
 			if (context == null)
 			{
