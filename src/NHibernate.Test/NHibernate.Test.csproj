@@ -85,15 +85,15 @@
     <PackageReference Include="Oracle.ManagedDataAccess" Version="21.23.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net10.0'">
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="10.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="10.0.11" />
     <PackageReference Include="System.CodeDom" Version="4.7.0" />
     <PackageReference Include="System.Data.Odbc" Version="4.7.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Data.OracleClient" Version="1.0.8">
       <ExcludeAssets>compile</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="10.0.0" />
-    <PackageReference Include="System.Security.Permissions" Version="10.0.0" />
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="10.0.11" />
+    <PackageReference Include="System.Security.Permissions" Version="10.0.11" />
     <PackageReference Include="Npgsql" Version="9.0.5" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.230" />
     <PackageReference Include="NUnitLite" Version="3.14.0" />
