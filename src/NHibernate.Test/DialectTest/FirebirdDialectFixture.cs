@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using NHibernate.Dialect;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.DialectTest
 {
@@ -54,6 +56,30 @@ namespace NHibernate.Test.DialectTest
 				//Firebird allows a maximum precision of 18
 
 			Assert.AreEqual("DECIMAL(18, 2)", result);
+		}
+
+		[Test]
+		public void BooleanMapsToSmallIntByDefault()
+		{
+			var dialect = new FirebirdDialect();
+			dialect.Configure(new Dictionary<string, string>());
+
+			Assert.That(dialect.UseNativeBoolean, Is.False);
+			Assert.That(dialect.GetTypeName(NHibernateUtil.Boolean.SqlType), Is.EqualTo("SMALLINT"));
+			Assert.That(dialect.ToBooleanValueString(true), Is.EqualTo("1"));
+			Assert.That(dialect.ToBooleanValueString(false), Is.EqualTo("0"));
+		}
+
+		[Test]
+		public void BooleanMapsToNativeBooleanWhenTheSettingIsOn()
+		{
+			var dialect = new FirebirdDialect();
+			dialect.Configure(new Dictionary<string, string> { { Environment.FirebirdUseNativeBoolean, "true" } });
+
+			Assert.That(dialect.UseNativeBoolean, Is.True);
+			Assert.That(dialect.GetTypeName(NHibernateUtil.Boolean.SqlType), Is.EqualTo("BOOLEAN"));
+			Assert.That(dialect.ToBooleanValueString(true), Is.EqualTo("true"));
+			Assert.That(dialect.ToBooleanValueString(false), Is.EqualTo("false"));
 		}
 
 		#region Private Members
