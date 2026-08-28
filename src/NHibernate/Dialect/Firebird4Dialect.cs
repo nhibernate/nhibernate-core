@@ -10,6 +10,7 @@ namespace NHibernate.Dialect
 		{
 			base.RegisterFunctions();
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("localtimestamp", NHibernateUtil.LocalDateTime, false));
+			RegisterFunction("getexacttimestamp", new NoArgSQLFunction("localtimestamp", NHibernateUtil.LocalDateTime, false));
 		}
 	}
 }

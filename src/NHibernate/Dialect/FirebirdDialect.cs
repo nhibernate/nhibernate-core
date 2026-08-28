@@ -456,7 +456,7 @@ namespace NHibernate.Dialect
 		{
 			OverrideStandardHQLFunctions();
 			RegisterFirebirdServerEmbeddedFunctions();
-			RegisterExternalFbAndIbStandardUDFs();
+			RegisterBuiltInFunctions();
 		}
 
 		private void OverrideStandardHQLFunctions()
@@ -490,13 +490,22 @@ namespace NHibernate.Dialect
 			RegisterFunction("tomorrow", new CastedFunction("tomorrow", NHibernateUtil.Date));
 			RegisterFunction("now", new CastedFunction("now", NHibernateUtil.DateTime));
 			RegisterFunction("iif", new IifSafeSQLFunction());
+			RegisterFunction("decode", new VarArgsSQLFunction("decode(", ", ", ")"));
 			// New embedded functions in FB 2.0 (http://www.firebirdsql.org/rlsnotes20/rnfbtwo-str.html#str-string-func)
 			RegisterFunction("char_length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int64, 1));
 			RegisterFunction("bit_length", new StandardSafeSQLFunction("bit_length", NHibernateUtil.Int64, 1));
 			RegisterFunction("octet_length", new StandardSafeSQLFunction("octet_length", NHibernateUtil.Int64, 1));
 		}
 
-		private void RegisterExternalFbAndIbStandardUDFs()
+		/// <summary>
+		/// Registers the built-in functions of Firebird 2.1 and above.
+		/// </summary>
+		/// <remarks>
+		/// Some names come from the <c>ib_udf</c> and <c>fbudf</c> external libraries. These libraries are
+		/// not installed by default, and Firebird 4 disables external functions. The names are kept for
+		/// compatibility and are mapped to the equivalent built-in function.
+		/// </remarks>
+		private void RegisterBuiltInFunctions()
 		{
 			RegisterMathematicalFunctions();
 			RegisterDateTimeFunctions();
@@ -510,36 +519,40 @@ namespace NHibernate.Dialect
 			RegisterFunction("abs", new StandardSQLFunction("abs", NHibernateUtil.Double));
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling"));
 			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
-			RegisterFunction("div", new StandardSQLFunction("div", NHibernateUtil.Double));
-			RegisterFunction("dpower", new StandardSQLFunction("dpower", NHibernateUtil.Double));
 			RegisterFunction("ln", new StandardSQLFunction("ln", NHibernateUtil.Double));
 			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Double));
 			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
 			RegisterFunction("pi", new NoArgSQLFunction("pi", NHibernateUtil.Double));
 			RegisterFunction("rand", new NoArgSQLFunction("rand", NHibernateUtil.Double));
 			RegisterFunction("random", new NoArgSQLFunction("rand", NHibernateUtil.Double));
+			RegisterFunction("power", new StandardSQLFunction("power", NHibernateUtil.Double));
 			RegisterFunction("sign", new StandardSQLFunction("sign", NHibernateUtil.Int32));
-			RegisterFunction("sqtr", new StandardSQLFunction("sqtr", NHibernateUtil.Double));
 			RegisterFunction("trunc", new StandardSQLFunction("trunc"));
 			RegisterFunction("truncate", new StandardSQLFunction("trunc"));
 			RegisterFunction("floor", new StandardSQLFunction("floor"));
 			RegisterFunction("round", new StandardSQLFunction("round"));
+			// ib_udf names.
+			RegisterFunction("div", new SQLFunctionTemplate(NHibernateUtil.Double, "trunc(?1 / ?2)"));
+			RegisterFunction("dpower", new StandardSQLFunction("power", NHibernateUtil.Double));
+			RegisterFunction("sqtr", new StandardSQLFunction("sqrt", NHibernateUtil.Double));
 		}
 
 		private void RegisterDateTimeFunctions()
 		{
-			RegisterFunction("dow", new StandardSQLFunction("dow", NHibernateUtil.String));
-			RegisterFunction("sdow", new StandardSQLFunction("sdow", NHibernateUtil.String));
-			RegisterFunction("addday", new StandardSQLFunction("addday", NHibernateUtil.DateTime));
-			RegisterFunction("addhour", new StandardSQLFunction("addhour", NHibernateUtil.DateTime));
-			RegisterFunction("addmillisecond", new StandardSQLFunction("addmillisecond", NHibernateUtil.DateTime));
-			RegisterFunction("addminute", new StandardSQLFunction("addminute", NHibernateUtil.DateTime));
-			RegisterFunction("addmonth", new StandardSQLFunction("addmonth", NHibernateUtil.DateTime));
-			RegisterFunction("addsecond", new StandardSQLFunction("addsecond", NHibernateUtil.DateTime));
-			RegisterFunction("addweek", new StandardSQLFunction("addweek", NHibernateUtil.DateTime));
-			RegisterFunction("addyear", new StandardSQLFunction("addyear", NHibernateUtil.DateTime));
-			RegisterFunction("getexacttimestamp", new NoArgSQLFunction("getexacttimestamp", NHibernateUtil.DateTime));
+			RegisterFunction("dateadd", new StandardSQLFunction("dateadd", NHibernateUtil.DateTime));
 			RegisterFunction("secondtruncated", new SQLFunctionTemplate(NHibernateUtil.Int32, "cast(floor(extract(second from ?1)) as int)"));
+			// fbudf names.
+			RegisterFunction("dow", new SQLFunctionTemplate(NHibernateUtil.String, "decode(extract(weekday from ?1), 0, 'Sunday', 1, 'Monday', 2, 'Tuesday', 3, 'Wednesday', 4, 'Thursday', 5, 'Friday', 'Saturday')"));
+			RegisterFunction("sdow", new SQLFunctionTemplate(NHibernateUtil.String, "decode(extract(weekday from ?1), 0, 'Sun', 1, 'Mon', 2, 'Tue', 3, 'Wed', 4, 'Thu', 5, 'Fri', 'Sat')"));
+			RegisterFunction("addday", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(day, ?2, ?1)"));
+			RegisterFunction("addhour", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(hour, ?2, ?1)"));
+			RegisterFunction("addmillisecond", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(millisecond, ?2, ?1)"));
+			RegisterFunction("addminute", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(minute, ?2, ?1)"));
+			RegisterFunction("addmonth", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(month, ?2, ?1)"));
+			RegisterFunction("addsecond", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(second, ?2, ?1)"));
+			RegisterFunction("addweek", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(week, ?2, ?1)"));
+			RegisterFunction("addyear", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(year, ?2, ?1)"));
+			RegisterFunction("getexacttimestamp", new NoArgSQLFunction("current_timestamp", NHibernateUtil.LocalDateTime, false));
 		}
 
 		private void RegisterStringAndCharFunctions()
@@ -550,21 +563,23 @@ namespace NHibernate.Dialect
 			RegisterFunction("ascii", new StandardSQLFunction("ascii_val", NHibernateUtil.Int32));
 			RegisterFunction("lpad", new StandardSQLFunction("lpad"));
 			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
-			RegisterFunction("sright", new StandardSQLFunction("sright"));
 			RegisterFunction("rpad", new StandardSQLFunction("rpad"));
 			RegisterFunction("rtrim", new StandardSQLFunction("rtrim"));
-			RegisterFunction("strlen", new StandardSQLFunction("strlen", NHibernateUtil.Int16));
-			RegisterFunction("substr", new StandardSQLFunction("substr"));
-			RegisterFunction("substrlen", new StandardSQLFunction("substrlen", NHibernateUtil.Int16));
 			RegisterFunction("locate", new PositionFunction());
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
 			RegisterFunction("left", new StandardSQLFunction("left"));
 			RegisterFunction("right", new StandardSQLFunction("right"));
+			// ib_udf names. Their substr takes the first and the last position, both inclusive.
+			RegisterFunction("sright", new StandardSQLFunction("right"));
+			RegisterFunction("strlen", new StandardSQLFunction("char_length", NHibernateUtil.Int64));
+			RegisterFunction("substr", new SQLFunctionTemplate(NHibernateUtil.String, "substring(?1 from ?2 for ?3 - ?2 + 1)"));
+			RegisterFunction("substrlen", new SQLFunctionTemplate(NHibernateUtil.String, "substring(?1 from ?2 for ?3)"));
 		}
 
 		private void RegisterBlobFunctions()
 		{
-			RegisterFunction("string2blob", new StandardSQLFunction("string2blob"));
+			// fbudf name.
+			RegisterFunction("string2blob", new SQLFunctionTemplate(NHibernateUtil.StringClob, "cast(?1 as blob sub_type text)"));
 		}
 
 		private void RegisterTrigonometricFunctions()
