@@ -13,6 +13,8 @@ override NHibernate.Dialect.Firebird3Dialect.NoColumnsInsertString.get -> string
 override NHibernate.Dialect.Firebird3Dialect.SupportsIdentityColumns.get -> bool
 override NHibernate.Dialect.Firebird3Dialect.SupportsInsertSelectIdentity.get -> bool
 override NHibernate.Dialect.Firebird3Dialect.SupportsPooledSequences.get -> bool
+override NHibernate.Dialect.Firebird4Dialect.MaxAliasLength.get -> int
+override NHibernate.Dialect.Firebird4Dialect.RegisterColumnTypes() -> void
 override NHibernate.Dialect.MySQL8Dialect.ForUpdateNowaitString.get -> string
 override NHibernate.Dialect.MySQL8Dialect.GetForUpdateNowaitString(string aliases) -> string
 override NHibernate.Dialect.MySQL8Dialect.GetForUpdateString(string aliases) -> string
