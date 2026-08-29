@@ -22,7 +22,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("current_timestamp", new NoArgSQLFunction("localtimestamp", NHibernateUtil.LocalDateTime, false));
 			RegisterFunction("localtimestamp", new NoArgSQLFunction("localtimestamp", NHibernateUtil.LocalDateTime, false));
 
-      RegisterFunction("base64_encode", new StandardSQLFunction("base64_encode", NHibernateUtil.String));
+			RegisterFunction("base64_encode", new StandardSQLFunction("base64_encode", NHibernateUtil.String));
 			RegisterFunction("base64_decode", new StandardSQLFunction("base64_decode", NHibernateUtil.Binary));
 			RegisterFunction("hex_encode", new StandardSQLFunction("hex_encode", NHibernateUtil.String));
 			RegisterFunction("hex_decode", new StandardSQLFunction("hex_decode", NHibernateUtil.Binary));
