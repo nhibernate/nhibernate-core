@@ -1,6 +1,8 @@
 *REMOVED*override NHibernate.Id.SequenceIdentityGenerator.SequenceIdentityDelegate.PrepareIdentifierGeneratingInsert() -> NHibernate.Id.Insert.IdentifierGeneratingInsert
 NHibernate.Dialect.Firebird3Dialect
 NHibernate.Dialect.Firebird3Dialect.Firebird3Dialect() -> void
+NHibernate.Dialect.FirebirdDialect.UseNativeBoolean.get -> bool
+const NHibernate.Cfg.Environment.FirebirdUseNativeBoolean = "firebird.use_native_boolean" -> string
 override NHibernate.Dialect.Firebird3Dialect.AppendIdentitySelectToInsert(NHibernate.SqlCommand.SqlString insertString, string identifierColumnName) -> NHibernate.SqlCommand.SqlString
 override NHibernate.Dialect.Firebird3Dialect.GetCreateSequenceString(string sequenceName) -> string
 override NHibernate.Dialect.Firebird3Dialect.GetDropSequenceString(string sequenceName) -> string
@@ -14,6 +16,8 @@ override NHibernate.Dialect.Firebird3Dialect.RegisterFunctions() -> void
 override NHibernate.Dialect.Firebird3Dialect.SupportsIdentityColumns.get -> bool
 override NHibernate.Dialect.Firebird3Dialect.SupportsInsertSelectIdentity.get -> bool
 override NHibernate.Dialect.Firebird3Dialect.SupportsPooledSequences.get -> bool
+override NHibernate.Dialect.FirebirdDialect.Configure(System.Collections.Generic.IDictionary<string, string> settings) -> void
+override NHibernate.Dialect.FirebirdDialect.ToBooleanValueString(bool value) -> string
 override NHibernate.Dialect.MySQL8Dialect.ForUpdateNowaitString.get -> string
 override NHibernate.Dialect.MySQL8Dialect.GetForUpdateNowaitString(string aliases) -> string
 override NHibernate.Dialect.MySQL8Dialect.GetForUpdateString(string aliases) -> string
