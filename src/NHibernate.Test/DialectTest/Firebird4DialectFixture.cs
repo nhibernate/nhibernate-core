@@ -9,6 +9,13 @@ namespace NHibernate.Test.DialectTest
 		private readonly Firebird4Dialect _dialect = new Firebird4Dialect();
 
 		[Test]
+		public void CurrentTimestampIsNotTimeZoneAware()
+		{
+			Assert.That(_dialect.CurrentTimestampSQLFunctionName, Is.EqualTo("localtimestamp"));
+			Assert.That(_dialect.CurrentTimestampSelectString, Is.EqualTo("select LOCALTIMESTAMP from RDB$DATABASE"));
+		}
+
+		[Test]
 		public void SupportsCurrentUtcTimestampSelection()
 		{
 			Assert.That(_dialect.SupportsCurrentUtcTimestampSelection, Is.True);
