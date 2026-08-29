@@ -1,3 +1,4 @@
+using NHibernate.Dialect.Function;
 using NHibernate.Id;
 using NHibernate.SqlCommand;
 
@@ -13,6 +14,16 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class Firebird3Dialect : FirebirdDialect
 	{
+		protected override void RegisterFunctions()
+		{
+			base.RegisterFunctions();
+			// Firebird 3 adds the SQL standard statistical aggregates.
+			RegisterFunction("stddev", new StandardSQLFunction("stddev_samp", NHibernateUtil.Double));
+			RegisterFunction("stddev_samp", new StandardSQLFunction("stddev_samp", NHibernateUtil.Double));
+			RegisterFunction("variance", new StandardSQLFunction("var_samp", NHibernateUtil.Double));
+			RegisterFunction("var_samp", new StandardSQLFunction("var_samp", NHibernateUtil.Double));
+		}
+
 		public override SqlString GetLimitString(SqlString queryString, SqlString offset, SqlString limit)
 		{
 			var result = new SqlStringBuilder(queryString);

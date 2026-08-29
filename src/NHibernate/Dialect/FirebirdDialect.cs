@@ -470,12 +470,16 @@ namespace NHibernate.Dialect
 			// Modulo does not throw for decimal parameters but they are casted to int by Firebird, which produces unexpected results
 			RegisterFunction("mod", new ModulusFunction(false, false));
 			RegisterFunction("greatest", new StandardSQLFunction("maxvalue"));
+			RegisterFunction("maxvalue", new StandardSQLFunction("maxvalue"));
 			RegisterFunction("least", new StandardSQLFunction("minvalue"));
+			RegisterFunction("minvalue", new StandardSQLFunction("minvalue"));
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as VARCHAR(255))"));
 			RegisterFunction("strguid", new StandardSQLFunction("uuid_to_char", NHibernateUtil.String));
+			RegisterFunction("uuid_to_char", new StandardSQLFunction("uuid_to_char", NHibernateUtil.String));
 			RegisterFunction("sysdate", new CastedFunction("today", NHibernateUtil.Date));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
 			RegisterFunction("new_uuid", new NoArgSQLFunction("gen_uuid", NHibernateUtil.Guid));
+			RegisterFunction("gen_uuid", new NoArgSQLFunction("gen_uuid", NHibernateUtil.Guid));
 			// Bitwise operations
 			RegisterFunction("band", new Function.BitwiseFunctionOperation("bin_and"));
 			RegisterFunction("bor", new Function.BitwiseFunctionOperation("bin_or"));
@@ -494,6 +498,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("char_length", new StandardSafeSQLFunction("char_length", NHibernateUtil.Int64, 1));
 			RegisterFunction("bit_length", new StandardSafeSQLFunction("bit_length", NHibernateUtil.Int64, 1));
 			RegisterFunction("octet_length", new StandardSafeSQLFunction("octet_length", NHibernateUtil.Int64, 1));
+			RegisterFunction("hash", new StandardSQLFunction("hash", NHibernateUtil.Int64));
 		}
 
 		private void RegisterExternalFbAndIbStandardUDFs()
@@ -512,6 +517,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("ceil", new StandardSQLFunction("ceil"));
 			RegisterFunction("div", new StandardSQLFunction("div", NHibernateUtil.Double));
 			RegisterFunction("dpower", new StandardSQLFunction("dpower", NHibernateUtil.Double));
+			RegisterFunction("exp", new StandardSQLFunction("exp", NHibernateUtil.Double));
 			RegisterFunction("ln", new StandardSQLFunction("ln", NHibernateUtil.Double));
 			RegisterFunction("log", new StandardSQLFunction("log", NHibernateUtil.Double));
 			RegisterFunction("log10", new StandardSQLFunction("log10", NHibernateUtil.Double));
@@ -528,6 +534,7 @@ namespace NHibernate.Dialect
 
 		private void RegisterDateTimeFunctions()
 		{
+			RegisterFunction("datediff", new StandardSQLFunction("datediff", NHibernateUtil.Int64));
 			RegisterFunction("dow", new StandardSQLFunction("dow", NHibernateUtil.String));
 			RegisterFunction("sdow", new StandardSQLFunction("sdow", NHibernateUtil.String));
 			RegisterFunction("addday", new StandardSQLFunction("addday", NHibernateUtil.DateTime));
