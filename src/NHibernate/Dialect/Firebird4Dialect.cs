@@ -1,3 +1,4 @@
+using System.Data;
 using NHibernate.Dialect.Function;
 
 namespace NHibernate.Dialect
@@ -15,6 +16,14 @@ namespace NHibernate.Dialect
 
 		/// <inheritdoc />
 		public override string CurrentTimestampSQLFunctionName => "localtimestamp";
+
+		protected override void RegisterColumnTypes()
+		{
+			base.RegisterColumnTypes();
+			// Firebird 4 raises the maximum precision of exact numeric types from 18 to 38. 29 is the
+			// maximum a .Net decimal can hold.
+			RegisterColumnType(DbType.Decimal, 29, "DECIMAL($p, $s)");
+		}
 
 		protected override void RegisterFunctions()
 		{

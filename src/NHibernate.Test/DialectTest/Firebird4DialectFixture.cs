@@ -14,5 +14,13 @@ namespace NHibernate.Test.DialectTest
 			Assert.That(_dialect.CurrentTimestampSQLFunctionName, Is.EqualTo("localtimestamp"));
 			Assert.That(_dialect.CurrentTimestampSelectString, Is.EqualTo("select LOCALTIMESTAMP from RDB$DATABASE"));
 		}
+
+		[Test]
+		public void GetTypeNameDecimalWithPrecisionGreaterThan18ReturnsThatPrecision()
+		{
+			var result = _dialect.GetTypeName(NHibernateUtil.Decimal.SqlType, 0, 29, 2);
+
+			Assert.That(result, Is.EqualTo("DECIMAL(29, 2)"));
+		}
 	}
 }
