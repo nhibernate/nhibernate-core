@@ -22,5 +22,11 @@ namespace NHibernate.Test.DialectTest
 
 			Assert.That(result, Is.EqualTo("DECIMAL(29, 2)"));
 		}
+
+		[Test]
+		public void MaxAliasLengthIsRaisedToTheFirebird4Limit()
+		{
+			Assert.That(_dialect.MaxAliasLength, Is.EqualTo(63));
+		}
 	}
 }

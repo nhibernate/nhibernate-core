@@ -17,6 +17,12 @@ namespace NHibernate.Dialect
 		/// <inheritdoc />
 		public override string CurrentTimestampSQLFunctionName => "localtimestamp";
 
+		/// <inheritdoc />
+		/// <remarks>
+		/// Firebird 4 increases the identifier length limit from 31 to 63 characters.
+		/// </remarks>
+		public override int MaxAliasLength => 63;
+
 		protected override void RegisterColumnTypes()
 		{
 			base.RegisterColumnTypes();
