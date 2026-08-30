@@ -16,6 +16,15 @@ namespace NHibernate.Test.DialectTest
 		}
 
 		[Test]
+		public void SupportsCurrentUtcTimestampSelection()
+		{
+			Assert.That(_dialect.SupportsCurrentUtcTimestampSelection, Is.True);
+			Assert.That(
+				_dialect.CurrentUtcTimestampSelectString,
+				Is.EqualTo("select cast(CURRENT_TIMESTAMP at time zone 'UTC' as timestamp) from RDB$DATABASE"));
+		}
+
+		[Test]
 		public void GetTypeNameDecimalWithPrecisionGreaterThan18ReturnsThatPrecision()
 		{
 			var result = _dialect.GetTypeName(NHibernateUtil.Decimal.SqlType, 0, 29, 2);

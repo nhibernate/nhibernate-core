@@ -28,11 +28,13 @@ override NHibernate.Dialect.Firebird3Dialect.NoColumnsInsertString.get -> string
 override NHibernate.Dialect.Firebird3Dialect.RegisterFunctions() -> void
 override NHibernate.Dialect.Firebird3Dialect.SupportsIdentityColumns.get -> bool
 override NHibernate.Dialect.Firebird3Dialect.SupportsInsertSelectIdentity.get -> bool
-override NHibernate.Dialect.PostgreSQL13Dialect.SelectGUIDString.get -> string
 override NHibernate.Dialect.Firebird3Dialect.SupportsPooledSequences.get -> bool
 override NHibernate.Dialect.Firebird4Dialect.CurrentTimestampSQLFunctionName.get -> string
+override NHibernate.Dialect.Firebird4Dialect.CurrentUtcTimestampSelectString.get -> string
+override NHibernate.Dialect.Firebird4Dialect.CurrentUtcTimestampSQLFunctionName.get -> string
 override NHibernate.Dialect.Firebird4Dialect.MaxAliasLength.get -> int
 override NHibernate.Dialect.Firebird4Dialect.RegisterColumnTypes() -> void
+override NHibernate.Dialect.Firebird4Dialect.SupportsCurrentUtcTimestampSelection.get -> bool
 override NHibernate.Dialect.MySQL8Dialect.ForUpdateNowaitString.get -> string
 override NHibernate.Dialect.MySQL8Dialect.GetForUpdateNowaitString(string aliases) -> string
 override NHibernate.Dialect.MySQL8Dialect.GetForUpdateString(string aliases) -> string
@@ -42,6 +44,7 @@ override NHibernate.Dialect.Oracle12cDialect.IdentityInsertString.get -> string
 override NHibernate.Dialect.Oracle12cDialect.NativeIdentifierGeneratorClass.get -> System.Type
 override NHibernate.Dialect.Oracle12cDialect.SupportsIdentifierOutParameter.get -> bool
 override NHibernate.Dialect.Oracle12cDialect.SupportsIdentityColumns.get -> bool
+override NHibernate.Dialect.PostgreSQL13Dialect.SelectGUIDString.get -> string
 override NHibernate.Id.SequenceIdentityGenerator.SequenceIdentityDelegate.AddIdentifierColumn(NHibernate.SqlCommand.SqlInsertBuilder insert) -> void
 virtual NHibernate.Dialect.Dialect.SupportsIdentifierOutParameter.get -> bool
 virtual NHibernate.Id.Insert.OutputParamReturningDelegate.AddIdentifierColumn(NHibernate.SqlCommand.SqlInsertBuilder insert) -> void
