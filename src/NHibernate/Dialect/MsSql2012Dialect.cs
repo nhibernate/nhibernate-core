@@ -58,25 +58,25 @@ namespace NHibernate.Dialect
 
 		public override SqlString GetLimitString(SqlString querySqlString, SqlString offset, SqlString limit)
 		{
+			if (offset == null)
+				return base.GetLimitString(querySqlString, null, limit);
+
 			using (var tokenEnum = new SqlTokenizer(querySqlString).GetEnumerator())
 			{
-				if (!tokenEnum.TryParseUntilFirstMsSqlSelectColumn()) return null;
+				if (!tokenEnum.TryParseUntilFirstMsSqlSelectColumn(out _, out var isDistinct)) return null;
+
+				var hasOrderBy = tokenEnum.TryParseUntil("order");
+				if(!hasOrderBy && isDistinct)
+						return base.GetLimitString(querySqlString, offset, limit);
 
 				var result = new SqlStringBuilder(querySqlString);
-				if (!tokenEnum.TryParseUntil("order"))
+				if (!hasOrderBy)
 				{
 					result.Add(" ORDER BY CURRENT_TIMESTAMP");
 				}
 
 				result.Add(" OFFSET ");
-				if (offset != null)
-				{
-					result.Add(offset).Add(" ROWS");
-				}
-				else
-				{
-					result.Add("0 ROWS");
-				}
+				result.Add(offset).Add(" ROWS");
 
 				if (limit != null)
 				{
