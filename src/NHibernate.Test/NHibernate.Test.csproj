@@ -60,7 +60,7 @@
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.117" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.7.3" />
     <PackageReference Include="NSubstitute" Version="6.2.0" />
-    <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="NUnit" Version="4.6.1" />
     <PackageReference Include="NUnit.Analyzers" Version="4.14.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.3.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
@@ -96,7 +96,7 @@
     <PackageReference Include="System.Security.Permissions" Version="10.0.0" />
     <PackageReference Include="Npgsql" Version="9.0.5" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.230" />
-    <PackageReference Include="NUnitLite" Version="3.14.0" />
+    <PackageReference Include="NUnitLite" Version="4.6.1" />
   </ItemGroup>
   <ItemGroup Condition=" '$(NuGetPackageRoot)' != '' ">
     <NativeBinaries Include="$(NuGetPackageRoot)microsoft.sqlserver.compact\4.0.8876.1\NativeBinaries\**\*.*" />
