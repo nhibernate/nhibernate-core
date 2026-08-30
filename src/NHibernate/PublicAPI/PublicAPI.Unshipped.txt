@@ -17,6 +17,7 @@ override NHibernate.Dialect.Firebird3Dialect.SupportsPooledSequences.get -> bool
 override NHibernate.Dialect.Firebird4Dialect.CurrentTimestampSQLFunctionName.get -> string
 override NHibernate.Dialect.Firebird4Dialect.CurrentUtcTimestampSelectString.get -> string
 override NHibernate.Dialect.Firebird4Dialect.CurrentUtcTimestampSQLFunctionName.get -> string
+override NHibernate.Dialect.Firebird4Dialect.RegisterColumnTypes() -> void
 override NHibernate.Dialect.Firebird4Dialect.SupportsCurrentUtcTimestampSelection.get -> bool
 override NHibernate.Dialect.MySQL8Dialect.ForUpdateNowaitString.get -> string
 override NHibernate.Dialect.MySQL8Dialect.GetForUpdateNowaitString(string aliases) -> string
