@@ -62,6 +62,10 @@ namespace NHibernate.Test.Linq
 				Assert.Fail("The test should have thrown a QueryException, but has not thrown anything");
 		}
 
+#if NET9_0_OR_GREATER
+
+#endif
+
 		[Test]
 		public async Task CanQueryByRandomIntAsync()
 		{
