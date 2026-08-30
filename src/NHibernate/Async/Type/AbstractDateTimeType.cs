@@ -13,6 +13,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Globalization;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 

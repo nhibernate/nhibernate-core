@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using NHibernate.AdoNet;
 using NHibernate.AdoNet.Util;
 using NHibernate.Cache;
@@ -354,6 +355,9 @@ namespace NHibernate.Cfg
 			settings.BatchFetchStyle = PropertiesHelper.GetEnum(Environment.BatchFetchStyle, properties, BatchFetchStyle.Legacy);
 			settings.BatchingEntityLoaderBuilder = GetBatchingEntityLoaderBuilder(settings.BatchFetchStyle);
 			settings.BatchingCollectionInitializationBuilder = GetBatchingCollectionInitializationBuilder(settings.BatchFetchStyle);
+			
+			string locale = PropertiesHelper.GetString(Environment.Locale, properties, CultureInfo.InvariantCulture.Name);
+			settings.Locale = CultureInfo.GetCultureInfo(locale);
 
 			return settings;
 		}

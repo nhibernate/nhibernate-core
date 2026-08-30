@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Globalization;
+using NHibernate.AdoNet;
 using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -73,7 +74,14 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			return Convert.ToString(rs[index]);
+			if (!rs.TryGetString(index, out var dbValue))
+			{
+				var locale = session.Factory.Settings.Locale;
+
+				dbValue = Convert.ToString(rs[index], locale);
+			}
+
+			return dbValue;
 		}
 
 		public override bool IsEqual(object x, object y)

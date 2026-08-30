@@ -167,7 +167,7 @@ namespace NHibernate.AdoNet
 			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
-				var reader = await (cmd.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false);
+				var reader = await (Driver.ExecuteReaderAsync(cmd, cancellationToken)).ConfigureAwait(false);
 				if (reader == null)
 				{
 					// MySql may return null instead of an exception, by example when the query is canceled by another thread.

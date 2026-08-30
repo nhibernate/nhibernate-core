@@ -12,8 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.AdoNet;
 using NHibernate.Engine.Query;
 using NHibernate.SqlTypes;
@@ -21,18 +19,35 @@ using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
+	using System.Threading.Tasks;
+	using System.Threading;
 	public abstract partial class OracleDataClientDriverBase : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
 	{
-		private partial class OracleDbCommandWrapper : DbCommandWrapper
+
+		public override Task<DbDataReader> ExecuteReaderAsync(DbCommand command, CancellationToken cancellationToken)
 		{
-
-			protected override async Task<DbDataReader> ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+			if (!SuppressDecimalInvalidCastException && _suppressDecimalInvalidCastExceptionSetter == null)
 			{
-				cancellationToken.ThrowIfCancellationRequested();
-				var reader = await (Command.ExecuteReaderAsync(behavior, cancellationToken)).ConfigureAwait(false);
-				_suppressDecimalInvalidCastExceptionSetter(reader, true);
+				throw new NotSupportedException("OracleDataReader.SuppressGetDecimalInvalidCastException property is supported only in ODP.NET version 19.10 or newer");
+			}
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<DbDataReader>(cancellationToken);
+			}
+			return InternalExecuteReaderAsync();
+			async Task<DbDataReader> InternalExecuteReaderAsync()
+			{
 
-				return reader;
+				var reader = await (command.ExecuteReaderAsync(cancellationToken)).ConfigureAwait(false);
+
+				if (SuppressDecimalInvalidCastException)
+				{
+					_suppressDecimalInvalidCastExceptionSetter(reader, true);
+				}
+
+				string timestampFormat = GetDateFormat(command.Connection);
+
+				return new OracleDbDataReader(reader, timestampFormat);
 			}
 		}
 	}
