@@ -1,0 +1,41 @@
+name: Publish dev build
+
+on:
+  workflow_run:
+    workflows: [".NET Core"]
+    types: [completed]
+    branches: [master, '*.x']
+
+concurrency:
+  group: publish-dev-build
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success'
+    # Windows produces real strong-name signatures; other platforms only public-sign the assemblies.
+    runs-on: windows-latest
+    name: Publish
+
+    env:
+      VersionSuffix: dev
+      BuildNumber: ${{ github.event.workflow_run.run_number }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+      with:
+        ref: ${{ github.event.workflow_run.head_sha }}
+        show-progress: false
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v6
+      with:
+        global-json-file: global.json
+
+    - name: Pack
+      # -m:1 keeps the Antlr code generation from racing across target frameworks.
+      run: dotnet pack src/NHibernate/NHibernate.csproj -c Release -m:1 -o build/nuget_gallery
+
+    - name: Push
+      run: dotnet nuget push "build/nuget_gallery/*.nupkg" -s https://nuget.cloudsmith.io/nhibernate/nhibernate-core/v3/index.json -k ${{ secrets.CLOUDSMITH_API_KEY }} --skip-duplicate
