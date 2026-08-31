@@ -34,17 +34,30 @@ namespace NHibernate.Connection
 		{
 			log.Debug("Obtaining DbConnection from Driver");
 			var conn = Driver.CreateConnection();
+			var success = false;
+
 			try
 			{
 				conn.ConnectionString = connectionString;
 				conn.Open();
+				success = true;
 			}
-			catch (Exception)
+			finally
 			{
-				conn.Dispose();
-				throw;
+				if (!success)
+				{
+					// The cleanup must be done in a finally statement, because the async generator adds another catch statement.
+					try
+					{
+						conn.Dispose();
+					}
+					catch (Exception ex)
+					{
+						log.Warn(ex, "Unable to dispose connection after a failed attempt to open it");
+					}
+				}
 			}
-			
+
 			return conn;
 		}
 	}

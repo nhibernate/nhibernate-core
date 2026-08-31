@@ -232,6 +232,12 @@
     - filePathEndsWith: Linq/MathTests.cs
     - filePathEndsWith: Linq/ExpressionSessionLeakTest.cs
     - filePathEndsWith: Linq/NorthwindDbCreator.cs
+    # These fixtures explicitly exercise both synchronous and asynchronous cleanup.
+    - filePathEndsWith: Ado/AbstractBatcherCancellationFixture.cs
+    - filePathEndsWith: CollectionTest/AbstractCollectionPersisterAsyncTest.cs
+    - filePathEndsWith: ConnectionTest/DriverConnectionProviderTest.cs
+    - filePathEndsWith: ConnectionTest/ThreadLocalSessionContextAsyncTest.cs
+    - filePathEndsWith: LoaderPrepareQueryCommandAsyncTest.cs
     ignoreSearchForAsyncCounterparts:
     - name: Wait
       containingTypeName: Task
