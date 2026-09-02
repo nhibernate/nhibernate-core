@@ -90,13 +90,15 @@ namespace NHibernate.Event.Default
 			cancellationToken.ThrowIfCancellationRequested();
 			log.Debug("Processing unreferenced collections");
 
-			var list = IdentityMap.GetEntries(session.PersistenceContext.CollectionEntries);
-			foreach (var me in list)
+			using (var list = IdentityMapUtils.GetSnapshot<object, object>(session.PersistenceContext.CollectionEntries))
 			{
-				var ce = (CollectionEntry) me.Value;
-				if (!ce.IsReached && !ce.IsIgnore)
+				foreach (var me in list)
 				{
-					await (Collections.ProcessUnreachableCollectionAsync((IPersistentCollection) me.Key, session, cancellationToken)).ConfigureAwait(false);
+					var ce = (CollectionEntry) me.Value;
+					if (!ce.IsReached && !ce.IsIgnore)
+					{
+						await (Collections.ProcessUnreachableCollectionAsync((IPersistentCollection) me.Key, session, cancellationToken)).ConfigureAwait(false);
+					}
 				}
 			}
 
@@ -104,29 +106,31 @@ namespace NHibernate.Event.Default
 
 			log.Debug("Scheduling collection removes/(re)creates/updates");
 
-			list = IdentityMap.GetEntries(session.PersistenceContext.CollectionEntries);
 			ActionQueue actionQueue = session.ActionQueue;
-			foreach (DictionaryEntry me in list)
+			using (var list = IdentityMapUtils.GetSnapshot<object, object>(session.PersistenceContext.CollectionEntries))
 			{
-				IPersistentCollection coll = (IPersistentCollection) me.Key;
-				CollectionEntry ce = (CollectionEntry) me.Value;
+				foreach (var me in list)
+				{
+					IPersistentCollection coll = (IPersistentCollection) me.Key;
+					CollectionEntry ce = (CollectionEntry) me.Value;
 
-				if (ce.IsDorecreate)
-				{
-					session.Interceptor.OnCollectionRecreate(coll, ce.CurrentKey);
-					actionQueue.AddAction(new CollectionRecreateAction(coll, ce.CurrentPersister, ce.CurrentKey, session));
-				}
-				if (ce.IsDoremove)
-				{
-					session.Interceptor.OnCollectionRemove(coll, ce.LoadedKey);
-					actionQueue.AddAction(
-						new CollectionRemoveAction(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), session));
-				}
-				if (ce.IsDoupdate)
-				{
-					session.Interceptor.OnCollectionUpdate(coll, ce.LoadedKey);
-					actionQueue.AddAction(
-						new CollectionUpdateAction(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), session));
+					if (ce.IsDorecreate)
+					{
+						session.Interceptor.OnCollectionRecreate(coll, ce.CurrentKey);
+						actionQueue.AddAction(new CollectionRecreateAction(coll, ce.CurrentPersister, ce.CurrentKey, session));
+					}
+					if (ce.IsDoremove)
+					{
+						session.Interceptor.OnCollectionRemove(coll, ce.LoadedKey);
+						actionQueue.AddAction(
+							new CollectionRemoveAction(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), session));
+					}
+					if (ce.IsDoupdate)
+					{
+						session.Interceptor.OnCollectionUpdate(coll, ce.LoadedKey);
+						actionQueue.AddAction(
+							new CollectionUpdateAction(coll, ce.LoadedPersister, ce.LoadedKey, ce.IsSnapshotEmpty(coll), session));
+					}
 				}
 			}
 			actionQueue.SortCollectionActions();
@@ -148,20 +152,22 @@ namespace NHibernate.Event.Default
 			// It is safe because of how IdentityMap implements entrySet()
 			var source = @event.Session;
 
-			var list = IdentityMap.GetEntries(source.PersistenceContext.EntityEntries);
-			foreach (var me in list)
+			using (var list = IdentityMapUtils.GetSnapshot<object, object>(source.PersistenceContext.EntityEntries))
 			{
-				// Update the status of the object and if necessary, schedule an update
-				var entry = (EntityEntry) me.Value;
-				var status = entry.Status;
-
-				if (status != Status.Loading && status != Status.Gone)
+				foreach (var me in list)
 				{
-					var entityEvent = new FlushEntityEvent(source, me.Key, entry);
-					var listeners = source.Listeners.FlushEntityEventListeners;
-					foreach (var listener in listeners)
+					// Update the status of the object and if necessary, schedule an update
+					var entry = (EntityEntry) me.Value;
+					var status = entry.Status;
+
+					if (status != Status.Loading && status != Status.Gone)
 					{
-						await (listener.OnFlushEntityAsync(entityEvent, cancellationToken)).ConfigureAwait(false);
+						var entityEvent = new FlushEntityEvent(source, me.Key, entry);
+						var listeners = source.Listeners.FlushEntityEventListeners;
+						foreach (var listener in listeners)
+						{
+							await (listener.OnFlushEntityAsync(entityEvent, cancellationToken)).ConfigureAwait(false);
+						}
 					}
 				}
 			}
@@ -176,7 +182,7 @@ namespace NHibernate.Event.Default
 			// and reset reached, doupdate, etc.
 			log.Debug("dirty checking collections");
 
-			var list = IdentityMap.GetEntries(session.PersistenceContext.CollectionEntries);
+			using var list = IdentityMapUtils.GetSnapshot<object, object>(session.PersistenceContext.CollectionEntries);
 			foreach (var entry in list)
 			{
 				await (((CollectionEntry) entry.Value).PreFlushAsync((IPersistentCollection) entry.Key, cancellationToken)).ConfigureAwait(false);
@@ -192,7 +198,7 @@ namespace NHibernate.Event.Default
 			log.Debug("processing flush-time cascades");
 
 			var anything = Anything;
-			var list = IdentityMap.GetEntries(session.PersistenceContext.EntityEntries);
+			using var list = IdentityMapUtils.GetSnapshot<object, object>(session.PersistenceContext.EntityEntries);
 			//safe from concurrent modification because of how entryList() is implemented on IdentityMap
 			foreach (var me in list)
 			{
