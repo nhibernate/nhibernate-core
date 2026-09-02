@@ -38,4 +38,5 @@ jobs:
       run: dotnet pack src/NHibernate/NHibernate.csproj -c Release -m:1 -o build/nuget_gallery
 
     - name: Push
-      run: dotnet nuget push "build/nuget_gallery/*.nupkg" -s https://nuget.cloudsmith.io/nhibernate/nhibernate-core/v3/index.json -k ${{ secrets.CLOUDSMITH_API_KEY }} --skip-duplicate
+      run: dotnet nuget push "*.nupkg" -s https://nuget.cloudsmith.io/nhibernate/nhibernate-core/v3/index.json -k ${{ secrets.CLOUDSMITH_API_KEY }} --skip-duplicate
+      working-directory: build/nuget_gallery
