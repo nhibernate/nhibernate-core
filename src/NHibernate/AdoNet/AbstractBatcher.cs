@@ -250,23 +250,38 @@ namespace NHibernate.AdoNet
 
 		private DbDataReader DoExecuteReader(DbCommand cmd)
 		{
+			DbDataReader reader = null;
+			var success = false;
+
 			try
 			{
-				var reader = cmd.ExecuteReader();
+				reader = cmd.ExecuteReader();
 				if (reader == null)
 				{
 					// MySql may return null instead of an exception, by example when the query is canceled by another thread.
-					throw new InvalidOperationException("The query execution has yielded a null reader. (Has it been canceled?)");
+					throw new InvalidOperationException(
+						"The query execution has yielded a null reader. (Has it been canceled?)");
 				}
-				return _factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders
+
+				reader = _factory.ConnectionProvider.Driver.SupportsMultipleOpenReaders
 					? reader
 					: NHybridDataReader.Create(reader);
+
+				success = true;
+				return reader;
 			}
 			catch (Exception e)
 			{
 				e.Data["actual-sql-query"] = cmd.CommandText;
 				Log.Error(e, "Could not execute query: {0}", cmd.CommandText);
 				throw;
+			}
+			finally
+			{
+				if (!success)
+				{
+					reader?.Dispose();
+				}
 			}
 		}
 
