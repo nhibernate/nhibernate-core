@@ -16,6 +16,7 @@
 // 
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -63,6 +64,7 @@ namespace NHibernate.Linq.Visitors
 		// _partialEvaluationInfo contains a list of the expressions that are safe to be evaluated.
 		private readonly PartialEvaluationInfo _partialEvaluationInfo;
 		private readonly PreTransformationParameters _preTransformationParameters;
+		private static readonly MethodInfo ContainsMethodInfo = ReflectHelper.FastGetMethodDefinition(Enumerable.Contains, default(IEnumerable<object>), default(object));
 
 		private NhPartialEvaluatingExpressionVisitor(
 			PartialEvaluationInfo partialEvaluationInfo,
@@ -157,6 +159,42 @@ namespace NHibernate.Linq.Visitors
 		}
 
 		#region NH additions
+
+		protected override Expression VisitMethodCall(MethodCallExpression node)
+		{
+			DetectEvaluatableExpressionOnCollectionContains(node);
+			return base.VisitMethodCall(node);
+		}
+
+		private void DetectEvaluatableExpressionOnCollectionContains(MethodCallExpression expression)
+		{
+			if (!expression.Method.IsGenericMethod || ContainsMethodInfo != expression.Method.GetGenericMethodDefinition())
+				return;
+			var argument = expression.Arguments[0];
+			if (argument.NodeType != ExpressionType.Call)
+				return;
+
+			if(TryGetCollectionParameter((MethodCallExpression)argument))
+				_partialEvaluationInfo.AddEvaluatableExpression(argument);
+		}
+
+		private bool TryGetCollectionParameter(MethodCallExpression expression)
+		{
+			if (expression.Method.DeclaringType != typeof(Enumerable))
+				return IsCollectionParameter(expression);
+
+			var arg = expression.Arguments[0];
+
+			if (IsCollectionParameter(arg))
+				return true;
+
+			return arg.NodeType == ExpressionType.Call && TryGetCollectionParameter((MethodCallExpression) arg);
+		}
+
+		private bool IsCollectionParameter(Expression expression)
+		{
+			return _partialEvaluationInfo.IsEvaluatableExpression(expression);
+		}
 
 		private bool ContainsVariable(Expression expression)
 		{
