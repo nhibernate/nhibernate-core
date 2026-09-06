@@ -43,7 +43,7 @@ Task Set-Configuration {
         'PostgreSQL' = @{
             'connection.connection_string' = 'Host=localhost;Port=5432;Username=postgres;Password=Password12!;Database=nhibernate;Enlist=true';
             'connection.driver_class' = 'NHibernate.Driver.NpgsqlDriver';
-            'dialect' = 'NHibernate.Dialect.PostgreSQL83Dialect'
+            'dialect' = 'NHibernate.Dialect.PostgreSQL18Dialect'
         };
         'SQLite' = @{
             <#

@@ -1603,6 +1603,22 @@ in the parameter binding.</programlisting>
                             </entry>
                         </row>
                         <row>
+                            <entry>PostgreSQL 13</entry>
+                            <entry><literal>NHibernate.Dialect.PostgreSQL13Dialect</literal></entry>
+                            <entry>
+                                This dialect uses native <literal>gen_random_uuid()</literal> for UUID v4 generation,
+                                instead of requiring the <literal>uuid-ossp</literal> extension.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>PostgreSQL 18</entry>
+                            <entry><literal>NHibernate.Dialect.PostgreSQL18Dialect</literal></entry>
+                            <entry>
+                                This dialect inherits PostgreSQL 13 UUID v4 behavior and adds native
+                                <literal>uuidv7()</literal> support.
+                            </entry>
+                        </row>
+                        <row>
                             <entry>SQLite</entry>
                             <entry><literal>NHibernate.Dialect.SQLiteDialect</literal></entry>
                             <entry>

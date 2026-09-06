@@ -20,6 +20,7 @@ namespace NHibernate.Mapping.ByCode
 			Counter = new CounterGeneratorDef();
 			Increment = new IncrementGeneratorDef();
 			NativeGuid = new NativeGuidGeneratorDef();
+			NativeGuidV7 = new NativeGuidV7GeneratorDef();
 			Select = new SelectGeneratorDef();
 			SequenceHiLo = new SequenceHiLoGeneratorDef();
 			SequenceIdentity = new SequenceIdentityGeneratorDef();
@@ -40,6 +41,7 @@ namespace NHibernate.Mapping.ByCode
 		public static IGeneratorDef Counter { get; private set; }
 		public static IGeneratorDef Increment { get; private set; }
 		public static IGeneratorDef NativeGuid { get; private set; }
+		public static IGeneratorDef NativeGuidV7 { get; private set; }
 		public static IGeneratorDef Select { get; private set; }
 		public static IGeneratorDef SequenceHiLo { get; private set; }
 		public static IGeneratorDef Table { get; private set; }
@@ -337,6 +339,17 @@ namespace NHibernate.Mapping.ByCode
 		}
 
 		#endregion
+	}
+
+	public class NativeGuidV7GeneratorDef : IGeneratorDef
+	{
+		public string Class => "guid.native.v7";
+
+		public object Params => null;
+
+		public System.Type DefaultReturnType => typeof(Guid);
+
+		public bool SupportedAsCollectionElementId => true;
 	}
 
 	public class IncrementGeneratorDef : IGeneratorDef
