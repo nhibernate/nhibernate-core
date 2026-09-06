@@ -1056,6 +1056,8 @@ namespace NHibernate.Loader
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			DbDataReader rs = null;
+			bool success = false;
+			
 			try
 			{
 				// TODO NH: Callable
@@ -1077,14 +1079,23 @@ namespace NHibernate.Loader
 				{
 					AutoDiscoverTypes(rs, queryParameters, forcedResultTransformer);
 				}
+
+				success = true;
 				return rs;
 			}
 			catch (OperationCanceledException) { throw; }
 			catch (Exception sqle)
 			{
 				ADOExceptionReporter.LogExceptions(sqle);
-				session.Batcher.CloseCommand(st, rs);
 				throw;
+			}
+			finally
+			{
+				if (!success)
+				{
+					// The cleanup must be done in a finally statement, because the async generator adds another catch statement.
+					session.Batcher.CloseCommand(st, rs);
+				}
 			}
 		}
 
