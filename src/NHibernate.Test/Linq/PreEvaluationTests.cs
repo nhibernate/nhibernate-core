@@ -289,6 +289,48 @@ namespace NHibernate.Test.Linq
 				});
 		}
 
+#if NET9_0_OR_GREATER
+		[Test]
+		public void CanQueryByGuidV7()
+		{
+			if (!TestDialect.SupportsSqlType(SqlTypeFactory.Guid))
+				Assert.Ignore("Guid are not supported by the target database");
+
+			var isSupported = IsFunctionSupported("new_uuid_v7");
+			RunTest(
+				isSupported,
+				spy =>
+				{
+					var guid = Guid.CreateVersion7();
+					var x = db.Orders.Count(o => guid != Guid.CreateVersion7());
+
+					Assert.That(x, Is.GreaterThan(0));
+					AssertFunctionInSql("new_uuid_v7", spy);
+				});
+		}
+
+		[Test]
+		public void CanSelectGuidV7()
+		{
+			if (!TestDialect.SupportsSqlType(SqlTypeFactory.Guid))
+				Assert.Ignore("Guid are not supported by the target database");
+
+			var isSupported = IsFunctionSupported("new_uuid_v7");
+			RunTest(
+				isSupported,
+				spy =>
+				{
+					var x =
+						db
+							.Orders.Select(o => new { id = o.OrderId, g = Guid.CreateVersion7() })
+							.OrderBy(o => o.id).Take(1).ToList();
+
+					Assert.That(x, Has.Count.GreaterThan(0));
+					AssertFunctionInSql("new_uuid_v7", spy);
+				});
+		}
+#endif
+
 		[Test]
 		public void CanQueryByRandomDouble()
 		{
