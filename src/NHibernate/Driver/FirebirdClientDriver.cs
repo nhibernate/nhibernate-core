@@ -5,7 +5,6 @@ using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using NHibernate.Dialect;
 using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Util;
@@ -39,7 +38,7 @@ namespace NHibernate.Driver
 			@"\s*[=<>])";
 		private static readonly Regex _statementRegEx = new Regex(SELECT_CLAUSE_EXP, RegexOptions.IgnoreCase);
 		private static readonly Regex _castCandidateRegEx = new Regex(CAST_PARAMS_EXP, RegexOptions.IgnoreCase);
-		private readonly FirebirdDialect _fbDialect = new FirebirdDialect();
+		private Dialect.Dialect _fbDialect;
 
 		private bool _disableParameterCasting;
 
@@ -61,7 +60,8 @@ namespace NHibernate.Driver
 		public override void Configure(IDictionary<string, string> settings)
 		{
 			base.Configure(settings);
-			_fbDialect.Configure(settings);
+
+			_fbDialect = Dialect.Dialect.GetDialect(settings);
 
 			_disableParameterCasting = PropertiesHelper.GetBoolean(Environment.FirebirdDisableParameterCasting, settings);
 		}
@@ -131,6 +131,9 @@ namespace NHibernate.Driver
 
 		private string GetFbTypeForParam(SqlType sqlType)
 		{
+			if (_fbDialect == null)
+				throw new InvalidOperationException("Dialect not available, is this driver used without having been configured?");
+
 			if (sqlType.LengthDefined)
 				switch (sqlType.DbType)
 				{
