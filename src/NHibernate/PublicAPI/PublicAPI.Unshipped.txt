@@ -1,6 +1,8 @@
 *REMOVED*override NHibernate.Id.SequenceIdentityGenerator.SequenceIdentityDelegate.PrepareIdentifierGeneratingInsert() -> NHibernate.Id.Insert.IdentifierGeneratingInsert
+const NHibernate.Cfg.Environment.FirebirdUseNativeBoolean = "firebird.use_native_boolean" -> string
 NHibernate.Dialect.Firebird3Dialect
 NHibernate.Dialect.Firebird3Dialect.Firebird3Dialect() -> void
+NHibernate.Dialect.Firebird3Dialect.UseNativeBoolean.get -> bool
 NHibernate.Dialect.PostgreSQL13Dialect
 NHibernate.Dialect.PostgreSQL13Dialect.PostgreSQL13Dialect() -> void
 NHibernate.Dialect.PostgreSQL18Dialect
@@ -15,8 +17,8 @@ NHibernate.Mapping.ByCode.NativeGuidV7GeneratorDef.DefaultReturnType.get -> Syst
 NHibernate.Mapping.ByCode.NativeGuidV7GeneratorDef.NativeGuidV7GeneratorDef() -> void
 NHibernate.Mapping.ByCode.NativeGuidV7GeneratorDef.Params.get -> object
 NHibernate.Mapping.ByCode.NativeGuidV7GeneratorDef.SupportedAsCollectionElementId.get -> bool
-static NHibernate.Mapping.ByCode.Generators.NativeGuidV7.get -> NHibernate.Mapping.ByCode.IGeneratorDef
 override NHibernate.Dialect.Firebird3Dialect.AppendIdentitySelectToInsert(NHibernate.SqlCommand.SqlString insertString, string identifierColumnName) -> NHibernate.SqlCommand.SqlString
+override NHibernate.Dialect.Firebird3Dialect.Configure(System.Collections.Generic.IDictionary<string, string> settings) -> void
 override NHibernate.Dialect.Firebird3Dialect.GetCreateSequenceString(string sequenceName) -> string
 override NHibernate.Dialect.Firebird3Dialect.GetDropSequenceString(string sequenceName) -> string
 override NHibernate.Dialect.Firebird3Dialect.GetLimitString(NHibernate.SqlCommand.SqlString queryString, NHibernate.SqlCommand.SqlString offset, NHibernate.SqlCommand.SqlString limit) -> NHibernate.SqlCommand.SqlString
@@ -29,6 +31,7 @@ override NHibernate.Dialect.Firebird3Dialect.RegisterFunctions() -> void
 override NHibernate.Dialect.Firebird3Dialect.SupportsIdentityColumns.get -> bool
 override NHibernate.Dialect.Firebird3Dialect.SupportsInsertSelectIdentity.get -> bool
 override NHibernate.Dialect.Firebird3Dialect.SupportsPooledSequences.get -> bool
+override NHibernate.Dialect.Firebird3Dialect.ToBooleanValueString(bool value) -> string
 override NHibernate.Dialect.Firebird4Dialect.CurrentTimestampSQLFunctionName.get -> string
 override NHibernate.Dialect.Firebird4Dialect.CurrentUtcTimestampSelectString.get -> string
 override NHibernate.Dialect.Firebird4Dialect.CurrentUtcTimestampSQLFunctionName.get -> string
@@ -46,5 +49,6 @@ override NHibernate.Dialect.Oracle12cDialect.SupportsIdentifierOutParameter.get 
 override NHibernate.Dialect.Oracle12cDialect.SupportsIdentityColumns.get -> bool
 override NHibernate.Dialect.PostgreSQL13Dialect.SelectGUIDString.get -> string
 override NHibernate.Id.SequenceIdentityGenerator.SequenceIdentityDelegate.AddIdentifierColumn(NHibernate.SqlCommand.SqlInsertBuilder insert) -> void
+static NHibernate.Mapping.ByCode.Generators.NativeGuidV7.get -> NHibernate.Mapping.ByCode.IGeneratorDef
 virtual NHibernate.Dialect.Dialect.SupportsIdentifierOutParameter.get -> bool
 virtual NHibernate.Id.Insert.OutputParamReturningDelegate.AddIdentifierColumn(NHibernate.SqlCommand.SqlInsertBuilder insert) -> void
