@@ -1252,11 +1252,14 @@ var session = sessions.OpenSession(conn);
                         </entry>
                         <entry>
                             <para>
-                                Map a boolean to the <literal>BOOLEAN</literal> column type of Firebird 3, instead of <literal>SMALLINT</literal>. Firebird rejects a comparison of a <literal>BOOLEAN</literal> column with <literal>1</literal> or <literal>0</literal>.
+                                Map a boolean to the <literal>BOOLEAN</literal> column type of Firebird 3, instead of
+                                <literal>SMALLINT</literal>. Firebird rejects a comparison of a <literal>BOOLEAN</literal>
+                                column with <literal>1</literal> or <literal>0</literal>.
                             </para>
                             <para>
                                 <emphasis role="strong">eg.</emphasis>
-                                <literal>true</literal> for using the native boolean type | <literal>false</literal> for using <literal>SMALLINT</literal>.
+                                <literal>true</literal> for using the native boolean type | <literal>false</literal> for using
+                                <literal>SMALLINT</literal>.
                             </para>
                             <para>
                                 <literal>false</literal> by default. See
