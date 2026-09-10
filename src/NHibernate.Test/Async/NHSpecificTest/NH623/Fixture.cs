@@ -21,7 +21,8 @@ namespace NHibernate.Test.NHSpecificTest.NH623
 	{
 		protected override bool AppliesTo(Dialect.Dialect dialect)
 		{
-			return !(dialect is HanaDialectBase); // The WHERE clause "isactive = '1'" doesn't work on HANA because idactive is a boolean
+			// The WHERE clause "isactive = '1'" does not work when the column is a boolean.
+			return dialect is not HanaDialectBase && dialect is not Firebird3Dialect { UseNativeBoolean: true };
 		}
 
 		private ISession session;
