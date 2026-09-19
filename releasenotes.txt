@@ -1,3 +1,20 @@
+Build 5.6.2
+=============================
+
+Release notes - NHibernate - Version 5.6.2
+
+    ##### Possible Breaking Changes #####
+        * Binary serializations of a session from previous versions of NHibernate will not be
+          deserializable with NHibernate 5.6.2
+
+2 issues were resolved in this release.
+
+** Task
+
+   * #3860 Release 5.6.2
+   * #3856 Backport #3854: Fix AutoJoinTransaction lost in serialization
+
+
 Build 5.6.1
 =============================
 
