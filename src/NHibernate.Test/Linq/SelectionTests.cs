@@ -556,10 +556,71 @@ namespace NHibernate.Test.Linq
 			Assert.That(db.Users.Where(o => (NullableInt32) o.Id == 1).ToList(), Has.Count.EqualTo(1));
 		}
 
+		[Test]
+		public void ToHashSet()
+		{
+			var hashSet = db.Employees.Select(employee => employee.TitleOfCourtesy).ToHashSet();
+			Assert.That(hashSet.Count, Is.EqualTo(4));
+		}
+
+		[Test]
+		public void ToHashSet_With_Comparer()
+		{
+			var hashSet = db.Employees.Select(employee => employee.Address).ToHashSet(new AddressByCountryComparer());
+			Assert.That(hashSet.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void ToDictionary()
+		{
+			var dictionary = db.Employees.OrderBy(e => e.EmployeeId).Take(3).ToDictionary(e => e.EmployeeId);
+			Assert.Multiple(() =>
+			{
+				Assert.That(dictionary.Count, Is.EqualTo(3));
+
+				Assert.That(dictionary[1].EmployeeId, Is.EqualTo(1));
+				Assert.That(dictionary[2].EmployeeId, Is.EqualTo(2));
+				Assert.That(dictionary[3].EmployeeId, Is.EqualTo(3));
+			});
+		}
+
+		[Test]
+		public void ToDictionary_With_Element_Selector()
+		{
+			var dictionary = db.Employees.OrderBy(e => e.EmployeeId).Take(3).ToDictionary(e => e.Address.PostalCode, e => e.FirstName);
+			Assert.Multiple(() =>
+			{
+				Assert.That(dictionary.Count, Is.EqualTo(3));
+
+				Assert.That(dictionary["98122"], Is.EqualTo("Nancy"));
+				Assert.That(dictionary["98401"], Is.EqualTo("Andrew"));
+				Assert.That(dictionary["98033"], Is.EqualTo("Janet"));
+			});
+		}
+
+		[Test]
+		public void ToDictionary_With_Element_Selector_And_Comparer()
+		{
+			Assert.Throws<ArgumentException>(() => db.Employees.ToDictionary(e => e.Address, e => e.FirstName, new AddressByCountryComparer()), "An item with the same key has already been added.");
+		}
+
+		[Test]
+		public void ToDictionary_With_Comparer()
+		{
+			Assert.Throws<ArgumentException>(() => db.Employees.ToDictionary(e => e.Address, new AddressByCountryComparer()), "An item with the same key has already been added.");
+		}
+
 		public class Wrapper<T>
 		{
 			public T item;
 			public string message;
+		}
+
+		private class AddressByCountryComparer : IEqualityComparer<Address>
+		{
+			public bool Equals(Address x, Address y) => x?.Country == y?.Country;
+
+			public int GetHashCode(Address obj) => obj.Country.GetHashCode();
 		}
 	}
 }
