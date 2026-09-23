@@ -1396,7 +1396,7 @@ namespace NHibernate.Persister.Entity
 				{
 					CacheEntry cacheEntry = (CacheEntry)CacheEntryStructure.Destructure(ce, factory);
 					var initializedValue = InitializeLazyPropertiesFromCache(fieldName, entity, session, entry, cacheEntry, uninitializedLazyProperties);
-					if (initializedValue != LazyPropertyInitializer.UnfetchedProperty)
+					if (!Equals(initializedValue, LazyPropertyInitializer.UnfetchedProperty))
 					{
 						// NOTE EARLY EXIT!!!
 						return initializedValue;
@@ -1567,7 +1567,7 @@ namespace NHibernate.Persister.Entity
 			for (int j = 0; j < lazyPropertyNames.Length; j++)
 			{
 				var cachedValue = disassembledValues[lazyPropertyNumbers[j]];
-				if (cachedValue == LazyPropertyInitializer.UnfetchedProperty)
+				if (Equals(cachedValue, LazyPropertyInitializer.UnfetchedProperty))
 				{
 					if (fieldName == lazyPropertyNames[j])
 					{

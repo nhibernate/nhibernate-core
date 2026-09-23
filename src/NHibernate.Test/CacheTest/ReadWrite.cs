@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace NHibernate.Test.CacheTest
 {
-	public class ReadWrite : CacheEntity
+	public class ReadWrite : NamedCacheEntity
 	{
-		public virtual string Name { get; set; }
-
 		public virtual ISet<ReadWriteItem> Items { get; set; } = new HashSet<ReadWriteItem>();
 	}
 

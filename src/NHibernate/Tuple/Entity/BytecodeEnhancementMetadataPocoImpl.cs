@@ -202,7 +202,7 @@ namespace NHibernate.Tuple.Entity
 			var uninitializedProperties = new HashSet<string>();
 			foreach (var propertyDescriptor in LazyPropertiesMetadata.LazyPropertyDescriptors)
 			{
-				if (entityState[propertyDescriptor.PropertyIndex] == LazyPropertyInitializer.UnfetchedProperty)
+				if (Equals(entityState[propertyDescriptor.PropertyIndex], LazyPropertyInitializer.UnfetchedProperty))
 				{
 					uninitializedProperties.Add(propertyDescriptor.Name);
 				}
