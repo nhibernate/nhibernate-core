@@ -66,13 +66,13 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.3.4" />
     <PackageReference Include="MySql.Data" Version="9.7.0" />
-    <PackageReference Include="Testcontainers.Db2" Version="4.14.0" />
-    <PackageReference Include="Testcontainers.FirebirdSql" Version="4.14.0" />
-    <PackageReference Include="Testcontainers.MariaDb" Version="4.14.0" />
-    <PackageReference Include="Testcontainers.MsSql" Version="4.14.0" />
-    <PackageReference Include="Testcontainers.MySql" Version="4.14.0" />
-    <PackageReference Include="Testcontainers.Oracle" Version="4.14.0" />
-    <PackageReference Include="Testcontainers.PostgreSql" Version="4.14.0" />
+    <PackageReference Include="Testcontainers.Db2" Version="4.15.0" />
+    <PackageReference Include="Testcontainers.FirebirdSql" Version="4.15.0" />
+    <PackageReference Include="Testcontainers.MariaDb" Version="4.15.0" />
+    <PackageReference Include="Testcontainers.MsSql" Version="4.15.0" />
+    <PackageReference Include="Testcontainers.MySql" Version="4.15.0" />
+    <PackageReference Include="Testcontainers.Oracle" Version="4.15.0" />
+    <PackageReference Include="Testcontainers.PostgreSql" Version="4.15.0" />
   </ItemGroup>
   <ItemGroup Condition="$(NhNetFx)">
     <Reference Include="System.Configuration" />
