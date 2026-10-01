@@ -1,3 +1,23 @@
+Build 5.7.1
+=============================
+
+Release notes - NHibernate - Version 5.7.1
+
+    ##### Possible Breaking Changes #####
+        * Binary serializations of a session from previous versions of NHibernate will not be
+          deserializable with NHibernate 5.7.1
+
+3 issues were resolved in this release.
+
+** Bug
+   * #3802 Failures on string[].Contains() calls in LINQ queries
+   * #3782 A deserialized session does not join the current system transaction
+
+** Task
+
+   * #3862 Release 5.7.1
+
+
 Build 5.7.0
 =============================
 
