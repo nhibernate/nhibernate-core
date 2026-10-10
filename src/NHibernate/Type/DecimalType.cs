@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -29,14 +30,23 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			return Convert.ToDecimal(rs[index]);
+			if (!rs.TryGetDecimal(index, out var dbValue))
+			{
+				var locale = session.Factory.Settings.Locale;
+
+				dbValue = Convert.ToDecimal(rs[index], locale);
+			}
+
+			return dbValue;
 		}
 
 		public override System.Type ReturnedClass => typeof(Decimal);
 
 		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			st.Parameters[index].Value = Convert.ToDecimal(value);
+			var locale = session.Factory.Settings.Locale;
+
+			st.Parameters[index].Value = Convert.ToDecimal(value, locale);
 		}
 
 		public override string Name => "Decimal";

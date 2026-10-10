@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 using NHibernate.AdoNet;
 
 namespace NHibernate.Driver
@@ -17,7 +18,7 @@ namespace NHibernate.Driver
 	/// for any updates and/or documentation regarding MySQL.
 	/// </para>
 	/// </remarks>
-	public class MySqlDataDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
+	public partial class MySqlDataDriver : ReflectionBasedDriver, IEmbeddedBatcherFactoryProvider
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MySqlDataDriver"/> class.
@@ -78,6 +79,13 @@ namespace NHibernate.Driver
 		// https://dev.mysql.com/doc/refman/5.7/en/datetime.html
 		/// <inheritdoc />
 		public override DateTime MinDate => new DateTime(1000, 1, 1);
+
+		public override DbDataReader ExecuteReader(DbCommand command)
+		{
+			var reader = command.ExecuteReader();
+
+			return reader != null ? new MySqlDbDataReader(reader) : null;
+		}
 
 		System.Type IEmbeddedBatcherFactoryProvider.BatcherFactoryClass => typeof(MySqlClientBatchingBatcherFactory);
 	}

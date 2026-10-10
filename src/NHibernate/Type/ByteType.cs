@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Globalization;
 using System.Numerics;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -25,11 +26,17 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
+			if (rs.TryGetByte(index, out var dbValue))
+			{
+				return dbValue;
+			}
+
+			var locale = session.Factory.Settings.Locale;
+
 			return rs[index] switch
 			{
-
 				BigInteger bi => (byte) bi,
-				var c => Convert.ToByte(c)
+				var c => Convert.ToByte(c, locale)
 			};
 		}
 
@@ -40,7 +47,11 @@ namespace NHibernate.Type
 		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			var dp = cmd.Parameters[index];
-			dp.Value = dp.DbType == DbType.Int16 ? Convert.ToInt16(value) : Convert.ToByte(value);
+			var locale = session.Factory.Settings.Locale;
+
+			dp.Value = dp.DbType == DbType.Int16
+				? Convert.ToInt16(value, locale)
+				: Convert.ToByte(value, locale);
 		}
 		
 		public override string Name => "Byte";

@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.Common;
 using System.Globalization;
 using System.Numerics;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -29,12 +30,19 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
+			if (rs.TryGetInt16(index, out var dbValue))
+			{
+				return dbValue;
+			}
+
 			try
 			{
+				var locale = session.Factory.Settings.Locale;
+
 				return rs[index] switch
 				{
 					BigInteger bi => (short) bi,
-					var c => Convert.ToInt16(c)
+					var c => Convert.ToInt16(c, locale)
 				};
 			}
 			catch (Exception ex)
@@ -47,7 +55,9 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
-			rs.Parameters[index].Value = Convert.ToInt16(value);
+			var locale = session.Factory.Settings.Locale;
+
+			rs.Parameters[index].Value = Convert.ToInt16(value, locale);
 		}
 
 		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml

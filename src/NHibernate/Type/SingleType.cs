@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.Common;
 using System.Globalization;
 using System.Numerics;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -35,12 +36,19 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
+			if (rs.TryGetFloat(index, out var dbValue))
+			{
+				return dbValue;
+			}
+
 			try
 			{
+				var locale = session.Factory.Settings.Locale;
+
 				return rs[index] switch
 				{
 					BigInteger bi => (float) bi,
-					var v => Convert.ToSingle(v)
+					var v => Convert.ToSingle(v, locale)
 				};
 			}
 			catch (Exception ex)
@@ -53,7 +61,9 @@ namespace NHibernate.Type
 
 		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
-			rs.Parameters[index].Value = Convert.ToSingle(value);
+			var locale = session.Factory.Settings.Locale;
+
+			rs.Parameters[index].Value = Convert.ToSingle(value, locale);
 		}
 
 		// Since 5.2

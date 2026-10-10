@@ -6,7 +6,7 @@ using NHibernate.Util;
 
 namespace NHibernate.Driver
 {
-	public static class DriverExtensions
+	public static partial class DriverExtensions
 	{
 		internal static void AdjustParameterForValue(this IDriver driver, DbParameter parameter, SqlType sqlType, object value)
 		{
@@ -60,5 +60,18 @@ namespace NHibernate.Driver
 		{
 			return driver is DriverBase driverBase ? driverBase.UnwrapDbCommand(command) : command;
 		}
+
+		// 6.0 TODO: merge into IDriver
+		/// <summary>
+		/// Executes the command and returns a <see cref="DbDataReader"/>.
+		/// </summary>
+		/// <param name="driver">The driver.</param>
+		/// <param name="command">The command to execute.</param>
+		/// <returns>A DbDataReader</returns>
+		public static DbDataReader ExecuteReader(this IDriver driver, DbCommand command)
+		{
+			return driver is DriverBase driverBase ? driverBase.ExecuteReader(command) : command.ExecuteReader();
+		}
+
 	}
 }

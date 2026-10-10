@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using NHibernate.AdoNet;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -51,7 +52,14 @@ namespace NHibernate.Type
 
 		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			return StringToObject(Convert.ToString(rs[index]));
+			if (!rs.TryGetString(index, out var dbValue))
+			{
+				var locale = session.Factory.Settings.Locale;
+
+				dbValue = Convert.ToString(rs[index], locale);
+			}
+
+			return StringToObject(dbValue);
 		}
 
 		/// <inheritdoc />
