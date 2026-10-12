@@ -11,10 +11,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 using NHibernate.Event;
 using NHibernate.Hql;
-using NHibernate.Linq;
+using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -46,8 +46,15 @@ namespace NHibernate.Engine.Query
 			QueryParameters queryParametersToUse;
 			if (needsLimit)
 			{
-				Log.Warn("firstResult/maxResults specified on polymorphic query; applying in memory!");
+				if (Translators.Any(t => (t as QueryTranslatorImpl)?.ContainsOrderByClause != false))
+					// in memory evaluation is only problematic if items are skipped or if there is an order by clause thus correctness is not ensured
+					Log.Warn("firstResult/maxResults specified on polymorphic query with order by; applying in memory!");
+				else if (queryParameters.RowSelection.FirstRow > 0)
+					// in memory evaluation is only problematic if items are skipped or if there is an order by clause thus correctness is not ensured
+					Log.Warn("firstResult specified on polymorphic query; applying in memory!");
+
 				RowSelection selection = new RowSelection();
+				UpdateRowSelection(selection, alreadyIncluded: 0);
 				selection.FetchSize = queryParameters.RowSelection.FetchSize;
 				selection.Timeout = queryParameters.RowSelection.Timeout;
 				queryParametersToUse = queryParameters.CreateCopyUsing(selection);
@@ -59,7 +66,7 @@ namespace NHibernate.Engine.Query
 
 			IList combinedResults = results ?? new List<object>();
 			var distinction = new HashSet<object>(ReferenceComparer<object>.Instance);
-			int includedCount = -1;
+			int includedCount = 0;
 			for (int i = 0; i < Translators.Length; i++)
 			{
 				IList tmp = await (Translators[i].ListAsync(session, queryParametersToUse, cancellationToken)).ConfigureAwait(false);
@@ -70,9 +77,7 @@ namespace NHibernate.Engine.Query
 												? 0
 												: queryParameters.RowSelection.FirstRow;
 
-					int max = queryParameters.RowSelection.MaxRows == RowSelection.NoValue
-											? RowSelection.NoValue
-											: queryParameters.RowSelection.MaxRows;
+					int max = queryParametersToUse.RowSelection.MaxRows;
 
 					int size = tmp.Count;
 					for (int x = 0; x < size; x++)
@@ -82,21 +87,33 @@ namespace NHibernate.Engine.Query
 						{
 							continue;
 						}
-						includedCount++;
-						if (includedCount < first)
+						if (includedCount++ < first)
 						{
 							continue;
 						}
 						combinedResults.Add(result);
-						if (max >= 0 && includedCount > max)
+						if (max != RowSelection.NoValue && includedCount >= max)
 						{
 							// break the outer loop !!!
 							return;
 						}
 					}
+
+					UpdateRowSelection(queryParametersToUse.RowSelection, includedCount);
 				}
 				else
 					ArrayHelper.AddAll(combinedResults, tmp);
+			}
+
+			void UpdateRowSelection(RowSelection selection, int alreadyIncluded)
+			{
+				if (queryParameters.RowSelection.MaxRows != RowSelection.NoValue)
+				{
+					if (queryParameters.RowSelection.FirstRow > 0)
+						selection.MaxRows = Math.Max(0, queryParameters.RowSelection.FirstRow + queryParameters.RowSelection.MaxRows - alreadyIncluded);
+					else
+						selection.MaxRows = Math.Max(0, queryParameters.RowSelection.MaxRows - alreadyIncluded);
+				}
 			}
 		}
 
