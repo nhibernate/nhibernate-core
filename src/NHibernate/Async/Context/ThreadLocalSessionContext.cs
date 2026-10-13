@@ -32,23 +32,27 @@ namespace NHibernate.Context
 
 				try
 				{
-					try
-					{
-						var transaction = orphan.GetCurrentTransaction();
-						if (transaction?.IsActive == true)
-							await (transaction.RollbackAsync(cancellationToken)).ConfigureAwait(false);
-					}
-					catch (OperationCanceledException) { throw; }
-					catch (Exception ex)
-					{
-						log.Debug(ex, "Unable to rollback transaction for orphaned session");
-					}
-					orphan.Close();
+					var transaction = orphan.GetCurrentTransaction();
+
+					if (transaction?.IsActive == true)
+						await (transaction.RollbackAsync(cancellationToken)).ConfigureAwait(false);
 				}
 				catch (OperationCanceledException) { throw; }
 				catch (Exception ex)
 				{
-					log.Debug(ex, "Unable to close orphaned session");
+					log.Debug(ex, "Unable to rollback transaction for orphaned session");
+				}
+				finally
+				{
+					// The cleanup must be done in a finally statement, because the async generator adds another catch statement.
+					try
+					{
+						orphan.Close();
+					}
+					catch (Exception ex)
+					{
+						log.Debug(ex, "Unable to close orphaned session");
+					}
 				}
 			}
 		}
