@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using NHibernate.Engine.Query;
+using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH2614
 {
@@ -30,75 +31,73 @@ namespace NHibernate.Test.NHSpecificTest.GH2614
 			}
 		}
 
+		private const string PolymorphicQuery =
+			"SELECT Name FROM NHibernate.Test.NHSpecificTest.GH2614.BaseClass ROOT";
+
 		[Test]
 		public void PolymorphicListReturnsCorrectResults()
 		{
-			using (var s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				var query = s.CreateQuery(
-					@"SELECT Name FROM NHibernate.Test.NHSpecificTest.GH2614.BaseClass ROOT");
-				query.SetMaxResults(10);
-				var list = query.List();
-				Assert.That(list.Count, Is.EqualTo(6));
-			}
+			AssertPolymorphicList(PolymorphicQuery, null, 10, expectedCount: 6, expectWarning: false);
 		}
 
 		[Test]
-		public void PolymorphicListWithSmallMaxResultsReturnsCorrectResults()
+		public void PolymorphicListWithMaxResultsSpanningTranslatorsReturnsCorrectResults([Range(0, 6)] int maxResults)
 		{
-			using (var s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				var query = s.CreateQuery(
-					@"SELECT Name FROM NHibernate.Test.NHSpecificTest.GH2614.BaseClass ROOT");
-				query.SetMaxResults(1);
-				var list = query.List();
-				Assert.That(list.Count, Is.EqualTo(1));
-			}
+			AssertPolymorphicList(PolymorphicQuery, null, maxResults, expectedCount: maxResults, expectWarning: false);
 		}
 
 		[Test]
 		public void PolymorphicListWithSkipReturnsCorrectResults()
 		{
-			using (var s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				var query = s.CreateQuery(
-					@"SELECT Name FROM NHibernate.Test.NHSpecificTest.GH2614.BaseClass ROOT");
-				query.SetFirstResult(5);
-				query.SetMaxResults(5);
-				var list = query.List();
-				Assert.That(list.Count, Is.EqualTo(1));
-			}
+			AssertPolymorphicList(PolymorphicQuery, 5, 5, expectedCount: 1, expectWarning: true);
+		}
+
+		[Test]
+		public void PolymorphicListWithSkipSpanningTranslatorsReturnsCorrectResults()
+		{
+			AssertPolymorphicList(PolymorphicQuery, 1, 4, expectedCount: 4, expectWarning: true);
 		}
 
 		[Test]
 		public void PolymorphicListWithSkipManyReturnsCorrectResults()
 		{
-			using (var s = OpenSession())
-			using (s.BeginTransaction())
-			{
-				var query = s.CreateQuery(
-					@"SELECT Name FROM NHibernate.Test.NHSpecificTest.GH2614.BaseClass ROOT");
-				query.SetFirstResult(6);
-				query.SetMaxResults(5);
-				var list = query.List();
-				Assert.That(list.Count, Is.EqualTo(0));
-			}
+			AssertPolymorphicList(PolymorphicQuery, 6, 5, expectedCount: 0, expectWarning: true);
+		}
+
+		[Test]
+		public void PolymorphicListWithDuplicatesReturnsCorrectResults([Range(1, 6)] int maxResults)
+		{
+			// The cross join yields each entity twice, while the polymorphic query plan removes duplicates in memory.
+			AssertPolymorphicList(
+				"SELECT ROOT FROM NHibernate.Test.NHSpecificTest.GH2614.BaseClass ROOT, NHibernate.Test.NHSpecificTest.GH2614.ConcreteClass1 C",
+				null,
+				maxResults,
+				expectedCount: maxResults,
+				expectWarning: false);
 		}
 
 		[Test]
 		public void PolymorphicListWithOrderByStillShowsWarning()
 		{
+			AssertPolymorphicList(PolymorphicQuery + " ORDER BY ROOT.Name", null, 3, expectedCount: 3, expectWarning: true);
+		}
+
+		private void AssertPolymorphicList(string hql, int? firstResult, int maxResults, int expectedCount, bool expectWarning)
+		{
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
+			using (var logSpy = new LogSpy(typeof(HQLQueryPlan)))
 			{
-				var query = s.CreateQuery(
-					@"SELECT Name FROM NHibernate.Test.NHSpecificTest.GH2614.BaseClass ROOT ORDER BY ROOT.Name");
-				query.SetMaxResults(3);
+				var query = s.CreateQuery(hql);
+				if (firstResult.HasValue)
+					query.SetFirstResult(firstResult.Value);
+				query.SetMaxResults(maxResults);
 				var list = query.List();
-				Assert.That(list.Count, Is.EqualTo(3));
+
+				Assert.That(list.Count, Is.EqualTo(expectedCount));
+				Assert.That(
+					logSpy.GetWholeLog(),
+					expectWarning ? Does.Contain("applying in memory") : Does.Not.Contain("applying in memory"));
 			}
 		}
 	}

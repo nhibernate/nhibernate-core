@@ -46,15 +46,20 @@ namespace NHibernate.Engine.Query
 			QueryParameters queryParametersToUse;
 			if (needsLimit)
 			{
+				// In memory evaluation is only problematic if items are skipped or if there is an order by clause, thus
+				// correctness is not ensured. Otherwise the database still limits the row count of each query (see
+				// SetMaxRows), so no more rows than needed are loaded.
 				if (Translators.Any(t => (t as QueryTranslatorImpl)?.ContainsOrderByClause != false))
-					// in memory evaluation is only problematic if items are skipped or if there is an order by clause thus correctness is not ensured
+				{
 					Log.Warn("firstResult/maxResults specified on polymorphic query with order by; applying in memory!");
+				}
 				else if (queryParameters.RowSelection.FirstRow > 0)
-					// in memory evaluation is only problematic if items are skipped or if there is an order by clause thus correctness is not ensured
+				{
 					Log.Warn("firstResult specified on polymorphic query; applying in memory!");
+				}
 
 				RowSelection selection = new RowSelection();
-				UpdateRowSelection(selection, alreadyIncluded: 0);
+				SetMaxRows(selection, queryParameters.RowSelection, 0);
 				selection.FetchSize = queryParameters.RowSelection.FetchSize;
 				selection.Timeout = queryParameters.RowSelection.Timeout;
 				queryParametersToUse = queryParameters.CreateCopyUsing(selection);
@@ -72,48 +77,68 @@ namespace NHibernate.Engine.Query
 				IList tmp = await (Translators[i].ListAsync(session, queryParametersToUse, cancellationToken)).ConfigureAwait(false);
 				if (needsLimit)
 				{
-					// NOTE : firstRow is zero-based
-					int first = queryParameters.RowSelection.FirstRow == RowSelection.NoValue
-												? 0
-												: queryParameters.RowSelection.FirstRow;
-
-					int max = queryParametersToUse.RowSelection.MaxRows;
-
-					int size = tmp.Count;
-					for (int x = 0; x < size; x++)
+					if (AddLimitedResults(tmp))
 					{
-						object result = tmp[x];
-						if (!distinction.Add(result))
+						// break the outer loop !!!
+						return;
+					}
+
+					var selection = queryParametersToUse.RowSelection;
+					if (selection.MaxRows > 0 && tmp.Count >= selection.MaxRows)
+					{
+						// The database limit has been reached but not the in memory one, so some rows were duplicates.
+						// Load the rows of this query without limit, as done before limiting in the database.
+						selection.MaxRows = RowSelection.NoValue;
+						if (AddLimitedResults(await (Translators[i].ListAsync(session, queryParametersToUse, cancellationToken)).ConfigureAwait(false)))
 						{
-							continue;
-						}
-						if (includedCount++ < first)
-						{
-							continue;
-						}
-						combinedResults.Add(result);
-						if (max != RowSelection.NoValue && includedCount >= max)
-						{
-							// break the outer loop !!!
 							return;
 						}
 					}
 
-					UpdateRowSelection(queryParametersToUse.RowSelection, includedCount);
+					SetMaxRows(selection, queryParameters.RowSelection, includedCount);
 				}
 				else
 					ArrayHelper.AddAll(combinedResults, tmp);
 			}
 
-			void UpdateRowSelection(RowSelection selection, int alreadyIncluded)
+			// Returns true when the requested number of results has been reached.
+			bool AddLimitedResults(IList tmp)
 			{
-				if (queryParameters.RowSelection.MaxRows != RowSelection.NoValue)
+				// NOTE : firstRow is zero-based
+				int first = queryParameters.RowSelection.FirstRow == RowSelection.NoValue
+											? 0
+											: queryParameters.RowSelection.FirstRow;
+
+				// The total of included rows, skipped ones included.
+				int max = queryParameters.RowSelection.MaxRows == RowSelection.NoValue
+											? RowSelection.NoValue
+											: first + queryParameters.RowSelection.MaxRows;
+
+				int size = tmp.Count;
+				for (int x = 0; x < size; x++)
 				{
-					if (queryParameters.RowSelection.FirstRow > 0)
-						selection.MaxRows = Math.Max(0, queryParameters.RowSelection.FirstRow + queryParameters.RowSelection.MaxRows - alreadyIncluded);
-					else
-						selection.MaxRows = Math.Max(0, queryParameters.RowSelection.MaxRows - alreadyIncluded);
+					object result = tmp[x];
+					if (!distinction.Add(result))
+					{
+						continue;
+					}
+					includedCount++;
+					if (includedCount <= first)
+					{
+						continue;
+					}
+					if (max != RowSelection.NoValue && includedCount > max)
+					{
+						return true;
+					}
+					combinedResults.Add(result);
+					if (includedCount == max)
+					{
+						return true;
+					}
 				}
+
+				return false;
 			}
 		}
 
