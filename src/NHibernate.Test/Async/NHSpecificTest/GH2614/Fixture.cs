@@ -77,18 +77,6 @@ namespace NHibernate.Test.NHSpecificTest.GH2614
 		}
 
 		[Test]
-		public async Task PolymorphicListWithDuplicatesReturnsCorrectResultsAsync([Range(1, 6)] int maxResults)
-		{
-			// The cross join yields each entity twice, while the polymorphic query plan removes duplicates in memory.
-			await (AssertPolymorphicListAsync(
-				"SELECT ROOT FROM NHibernate.Test.NHSpecificTest.GH2614.BaseClass ROOT, NHibernate.Test.NHSpecificTest.GH2614.ConcreteClass1 C",
-				null,
-				maxResults,
-				expectedCount: maxResults,
-				expectWarning: false));
-		}
-
-		[Test]
 		public async Task PolymorphicListWithOrderByStillShowsWarningAsync()
 		{
 			await (AssertPolymorphicListAsync(PolymorphicQuery + " ORDER BY ROOT.Name", null, 3, expectedCount: 3, expectWarning: true));

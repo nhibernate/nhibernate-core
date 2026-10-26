@@ -133,19 +133,7 @@ namespace NHibernate.Engine.Query
 						return;
 					}
 
-					var selection = queryParametersToUse.RowSelection;
-					if (selection.MaxRows > 0 && tmp.Count >= selection.MaxRows)
-					{
-						// The database limit has been reached but not the in memory one, so some rows were duplicates.
-						// Load the rows of this query without limit, as done before limiting in the database.
-						selection.MaxRows = RowSelection.NoValue;
-						if (AddLimitedResults(Translators[i].List(session, queryParametersToUse)))
-						{
-							return;
-						}
-					}
-
-					SetMaxRows(selection, queryParameters.RowSelection, includedCount);
+					SetMaxRows(queryParametersToUse.RowSelection, queryParameters.RowSelection, includedCount);
 				}
 				else
 					ArrayHelper.AddAll(combinedResults, tmp);
