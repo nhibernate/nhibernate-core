@@ -12,7 +12,7 @@ namespace NHibernate.Event
 
 		static LoadEventListener()
 		{
-			Reload = new LoadType("Get")
+			Reload = new LoadType("Reload")
 				.SetAllowNulls(false)
 				.SetAllowProxyCreation(false)
 				.SetCheckDeleted(true)
