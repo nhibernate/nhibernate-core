@@ -499,6 +499,96 @@ namespace NHibernate.Test.Linq
 
 			Assert.That(query.Count, Is.EqualTo(2));
 		}
+		
+		[Test(Description = "GH-3802")]
+		public async Task UsersWithTypedArrayContainsAsync()
+		{
+			var names = new string[] { "ayende", "rahien" };
+
+			var query = await ((from user in db.Users
+			             where names.Contains(user.Name)
+			             select user).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+		
+		[Test(Description = "GH-3802")]
+		public async Task UsersWithTypedArrayContainsWithExplicitCastAsync()
+		{
+			var names = new string[] { "ayende", "rahien" };
+
+			var query = await (db.Users.Where(user => ((string[])names).Contains(user.Name)).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+		
+		[Test(Description = "GH-3802")]
+		public async Task UsersWithTypedArrayContainsWithExplicitAsAsync()
+		{
+			var names = new string[] { "ayende", "rahien" };
+
+			var query = await (db.Users.Where(user => (names as string[]).Contains(user.Name)).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+		
+		[Test(Description = "GH-3802")]
+		public async Task UsersWithTypedArrayEnumerableContainsWithExplicitCastAsync()
+		{
+			var names = new string[] { "ayende", "rahien" };
+
+			var query = await (db.Users.Where(user => Enumerable.Contains((string[])names, user.Name)).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+		
+
+		[Test(Description = "GH-3802")]
+		public async Task UsersWithTypedArrayEnumerableContainsWithExplicitAsAsync()
+		{
+			var names = new string[] { "ayende", "rahien" };
+
+			var query = await (db.Users.Where(user => Enumerable.Contains((names as string[]), user.Name)).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+#nullable enable
+		[Test(Description = "GH-3802")]
+		public async Task UsersWithArrayContainsNullableEnabledAsync()
+		{
+			var names = new[] { "ayende", "rahien" };
+
+			var query = await ((from user in db.Users
+			             where names.Contains(user.Name)
+			             select user).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+
+		// The compiler casts the array to its own type before it converts it to a span, because an expression
+		// tree cannot hold the nullable annotations. The cast must not hide the evaluated array from the
+		// generator.
+		[Test(Description = "GH-3802")]
+		public async Task UsersWithTypedArrayContainsNullableEnabledAsync()
+		{
+			var names = new string[] { "ayende", "rahien" };
+
+			var query = await (db.Users.Where(user => names.Contains(user.Name)).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+		
+		[Test(Description = "GH-3802")]
+		public async Task UsersWithTypedArrayEnumerableContainsNullableEnabledAsync()
+		{
+			var names = new string[] { "ayende", "rahien" };
+
+			var query = await (db.Users.Where(user => Enumerable.Contains(names, user.Name)).ToListAsync());
+
+			Assert.That(query.Count, Is.EqualTo(2));
+		}
+#nullable restore
 
 		[Test]
 		public async Task UsersWithListContainsAsync()

@@ -87,6 +87,7 @@ namespace NHibernate.Linq
 			// NH-3247: must remove .Net compiler char to int conversion before
 			// parameterization occurs.
 			preTransformerRegistry.Register(new RemoveCharToIntConversion());
+			preTransformerRegistry.Register(new RemoveRedundantCast());
 			// NH-3799 (#1173): must supply the implicit GetValueOrDefault() default value before
 			// parameterization occurs, otherwise it gets inlined as a literal.
 			preTransformerRegistry.Register(new AddGetValueOrDefaultArgument());

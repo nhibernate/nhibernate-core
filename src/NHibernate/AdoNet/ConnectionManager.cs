@@ -386,11 +386,12 @@ namespace NHibernate.AdoNet
 		private ConnectionManager(SerializationInfo info, StreamingContext context)
 		{
 			_ownConnection = info.GetBoolean("ownConnection");
-			Session = (ISessionImplementor)info.GetValue("session", typeof(ISessionImplementor));
+			Session = (ISessionImplementor) info.GetValue("session", typeof(ISessionImplementor));
 			_connectionReleaseMode =
-				(ConnectionReleaseMode)info.GetValue("connectionReleaseMode", typeof(ConnectionReleaseMode));
-			_interceptor = (IInterceptor)info.GetValue("interceptor", typeof(IInterceptor));
+				(ConnectionReleaseMode) info.GetValue("connectionReleaseMode", typeof(ConnectionReleaseMode));
+			_interceptor = (IInterceptor) info.GetValue("interceptor", typeof(IInterceptor));
 			_connectionAccess = (IConnectionAccess) info.GetValue("connectionAccess", typeof(IConnectionAccess));
+			ShouldAutoJoinTransaction = info.GetBoolean("ShouldAutoJoinTransaction");
 		}
 
 		[SecurityCritical]
@@ -401,6 +402,7 @@ namespace NHibernate.AdoNet
 			info.AddValue("connectionReleaseMode", _connectionReleaseMode, typeof(ConnectionReleaseMode));
 			info.AddValue("interceptor", _interceptor, typeof(IInterceptor));
 			info.AddValue("connectionAccess", _connectionAccess, typeof(IConnectionAccess));
+			info.AddValue("ShouldAutoJoinTransaction", ShouldAutoJoinTransaction);
 		}
 
 		#endregion
