@@ -4,8 +4,14 @@ using NHibernate.Engine;
 namespace NHibernate.Intercept
 {
 	[Serializable]
-	public struct UnfetchedLazyProperty
+	public struct UnfetchedLazyProperty : IEquatable<UnfetchedLazyProperty>
 	{
+		/// <summary>As long as the other instance is the same type, it's considered equal. This
+		/// avoids the issue where a deserialized value fails the base Object.Equals() check due to
+		/// both objects being different references.</summary>
+		public bool Equals(UnfetchedLazyProperty other) => true;
+		public override bool Equals(object obj) => obj is UnfetchedLazyProperty;
+		public override int GetHashCode() => typeof(UnfetchedLazyProperty).GetHashCode();
 	}
 
 	public struct LazyPropertyInitializer
