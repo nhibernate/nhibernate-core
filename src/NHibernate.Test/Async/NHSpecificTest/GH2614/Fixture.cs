@@ -8,11 +8,13 @@
 //------------------------------------------------------------------------------
 
 
+using NHibernate.Engine.Query;
 using NUnit.Framework;
 
 namespace NHibernate.Test.NHSpecificTest.GH2614
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	[TestFixture]
 	public class FixtureAsync : BugTestCase
 	{
@@ -21,8 +23,12 @@ namespace NHibernate.Test.NHSpecificTest.GH2614
 			using (var s = OpenSession())
 			using (var t = s.BeginTransaction())
 			{
-				s.Save(new ConcreteClass1 {Name = "C1"});
-				s.Save(new ConcreteClass2 {Name = "C2"});
+				s.Save(new ConcreteClass1 {Name = "C11"});
+				s.Save(new ConcreteClass1 {Name = "C12"});
+				s.Save(new ConcreteClass2 {Name = "C21"});
+				s.Save(new ConcreteClass2 {Name = "C22"});
+				s.Save(new ConcreteClass2 {Name = "C23"});
+				s.Save(new ConcreteClass2 {Name = "C24"});
 				t.Commit();
 			}
 		}
@@ -37,17 +43,61 @@ namespace NHibernate.Test.NHSpecificTest.GH2614
 			}
 		}
 
+		private const string PolymorphicQuery =
+			"SELECT Name FROM NHibernate.Test.NHSpecificTest.GH2614.BaseClass ROOT";
+
 		[Test]
 		public async Task PolymorphicListReturnsCorrectResultsAsync()
 		{
+			await (AssertPolymorphicListAsync(PolymorphicQuery, null, 10, expectedCount: 6, expectWarning: false));
+		}
+
+		[Test]
+		public async Task PolymorphicListWithMaxResultsSpanningTranslatorsReturnsCorrectResultsAsync([Range(0, 6)] int maxResults)
+		{
+			await (AssertPolymorphicListAsync(PolymorphicQuery, null, maxResults, expectedCount: maxResults, expectWarning: false));
+		}
+
+		[Test]
+		public async Task PolymorphicListWithSkipReturnsCorrectResultsAsync()
+		{
+			await (AssertPolymorphicListAsync(PolymorphicQuery, 5, 5, expectedCount: 1, expectWarning: true));
+		}
+
+		[Test]
+		public async Task PolymorphicListWithSkipSpanningTranslatorsReturnsCorrectResultsAsync()
+		{
+			await (AssertPolymorphicListAsync(PolymorphicQuery, 1, 4, expectedCount: 4, expectWarning: true));
+		}
+
+		[Test]
+		public async Task PolymorphicListWithSkipManyReturnsCorrectResultsAsync()
+		{
+			await (AssertPolymorphicListAsync(PolymorphicQuery, 6, 5, expectedCount: 0, expectWarning: true));
+		}
+
+		[Test]
+		public async Task PolymorphicListWithOrderByStillShowsWarningAsync()
+		{
+			await (AssertPolymorphicListAsync(PolymorphicQuery + " ORDER BY ROOT.Name", null, 3, expectedCount: 3, expectWarning: true));
+		}
+
+		private async Task AssertPolymorphicListAsync(string hql, int? firstResult, int maxResults, int expectedCount, bool expectWarning, CancellationToken cancellationToken = default(CancellationToken))
+		{
 			using (var s = OpenSession())
 			using (s.BeginTransaction())
+			using (var logSpy = new LogSpy(typeof(HQLQueryPlan)))
 			{
-				var query = s.CreateQuery(
-					@"SELECT Name FROM NHibernate.Test.NHSpecificTest.GH2614.BaseClass ROOT");
-				query.SetMaxResults(5);
-				var list = await (query.ListAsync());
-				Assert.That(list.Count, Is.EqualTo(2));
+				var query = s.CreateQuery(hql);
+				if (firstResult.HasValue)
+					query.SetFirstResult(firstResult.Value);
+				query.SetMaxResults(maxResults);
+				var list = await (query.ListAsync(cancellationToken));
+
+				Assert.That(list.Count, Is.EqualTo(expectedCount));
+				Assert.That(
+					logSpy.GetWholeLog(),
+					expectWarning ? Does.Contain("applying in memory") : Does.Not.Contain("applying in memory"));
 			}
 		}
 	}

@@ -14,5 +14,28 @@ namespace NHibernate.Test.DialectTest
 			Assert.That(_dialect.CurrentTimestampSQLFunctionName, Is.EqualTo("localtimestamp"));
 			Assert.That(_dialect.CurrentTimestampSelectString, Is.EqualTo("select LOCALTIMESTAMP from RDB$DATABASE"));
 		}
+
+		[Test]
+		public void SupportsCurrentUtcTimestampSelection()
+		{
+			Assert.That(_dialect.SupportsCurrentUtcTimestampSelection, Is.True);
+			Assert.That(
+				_dialect.CurrentUtcTimestampSelectString,
+				Is.EqualTo("select cast(CURRENT_TIMESTAMP at time zone 'UTC' as timestamp) from RDB$DATABASE"));
+		}
+
+		[Test]
+		public void GetTypeNameDecimalWithPrecisionGreaterThan18ReturnsThatPrecision()
+		{
+			var result = _dialect.GetTypeName(NHibernateUtil.Decimal.SqlType, 0, 29, 2);
+
+			Assert.That(result, Is.EqualTo("DECIMAL(29, 2)"));
+		}
+
+		[Test]
+		public void MaxAliasLengthIsRaisedToTheFirebird4Limit()
+		{
+			Assert.That(_dialect.MaxAliasLength, Is.EqualTo(63));
+		}
 	}
 }

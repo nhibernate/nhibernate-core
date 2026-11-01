@@ -46,14 +46,14 @@ jobs:
             CONNECTION_STRING: "Host=localhost;Username=nhibernate;Password=nhibernate;Database=nhibernate;Enlist=true;"
             OS: ubuntu-latest
             DB_INIT: |
-             docker run -d -e POSTGRES_USER=nhibernate -e POSTGRES_PASSWORD=nhibernate -e POSTGRES_DB=nhibernate -p 5432:5432 postgres:13
+             docker run -d -e POSTGRES_USER=nhibernate -e POSTGRES_PASSWORD=nhibernate -e POSTGRES_DB=nhibernate -p 5432:5432 postgres:18
           - DB: PostgreSQL
             CONNECTION_STRING: "Host=localhost;Username=postgres;Password=nhibernate;Database=nhibernate;Enlist=true;"
             OS: windows-latest
             DB_INIT: |
-              winget install --exact --id PostgreSQL.PostgreSQL.13 --silent --disable-interactivity --accept-source-agreements --accept-package-agreements --custom '--superpassword nhibernate'
-              Add-Content -Path 'C:\Program Files\PostgreSQL\13\data\postgresql.conf' -Value "`r`nmax_prepared_transactions = 100"
-              Restart-Service 'postgresql-x64-13'
+              winget install --exact --id PostgreSQL.PostgreSQL.18 --silent --disable-interactivity --accept-source-agreements --accept-package-agreements --custom '--superpassword nhibernate'
+              Add-Content -Path 'C:\Program Files\PostgreSQL\18\data\postgresql.conf' -Value "`r`nmax_prepared_transactions = 100"
+              Restart-Service 'postgresql-x64-18'
           - DB: Firebird
             CONNECTION_STRING: "DataSource=localhost;Database=nhibernate;User=SYSDBA;Password=nhibernate;charset=utf8;"
             OS: ubuntu-latest

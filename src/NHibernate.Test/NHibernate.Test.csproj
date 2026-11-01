@@ -4,7 +4,7 @@
     <Description>The Unit Tests for NHibernate.</Description>
     <TargetFrameworks>$(NhAppTargetFrameworks)</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
-    <NoWarn>$(NoWarn);3001;3002;3003;3005;8981;SYSLIB0003;SYSLIB0012</NoWarn>
+    <NoWarn>$(NoWarn);3001;3002;3003;3005;8981;SYSLIB0003;SYSLIB0012;NU1901;NU1902;NU1903;NU1904</NoWarn>
     <ContentSQLiteInteropFiles>true</ContentSQLiteInteropFiles>
     <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
     <SignAssembly>true</SignAssembly>
@@ -58,7 +58,7 @@
     <PackageReference Include="NHibernate.Caches.CoreDistributedCache.Memory" Version="5.9.0" />
     <PackageReference Include="NHibernate.Caches.Util.JsonSerializer" Version="5.9.0" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.117" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.7.3" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.7.4" />
     <PackageReference Include="NSubstitute" Version="6.2.0" />
     <PackageReference Include="NUnit" Version="3.14.0" />
     <PackageReference Include="NUnit.Analyzers" Version="4.14.0" />

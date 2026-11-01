@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -12,12 +13,17 @@ namespace NHibernate.Linq.Functions
 {
 	public class NewGuidHqlGenerator : BaseHqlGeneratorForMethod, IAllowPreEvaluationHqlGenerator
 	{
+		private readonly Dictionary<MethodInfo, string> _hqlFunctions = new Dictionary<MethodInfo, string>()
+		{
+			{ ReflectHelper.FastGetMethod(Guid.NewGuid), "new_uuid" },
+#if NET9_0_OR_GREATER
+			{ ReflectHelper.FastGetMethod(Guid.CreateVersion7), "new_uuid_v7" },
+#endif
+		};
+
 		public NewGuidHqlGenerator()
 		{
-			SupportedMethods = new[]
-			{
-				ReflectHelper.FastGetMethod(Guid.NewGuid)
-			};
+			SupportedMethods = _hqlFunctions.Keys;
 		}
 
 		public override HqlTreeNode BuildHql(
@@ -27,21 +33,23 @@ namespace NHibernate.Linq.Functions
 			HqlTreeBuilder treeBuilder,
 			IHqlExpressionVisitor visitor)
 		{
-			return treeBuilder.MethodCall("new_uuid");
+			return treeBuilder.MethodCall(_hqlFunctions[method]);
 		}
 
 		public bool AllowPreEvaluation(MemberInfo member, ISessionFactoryImplementor factory)
 		{
-			if (factory.Dialect.Functions.ContainsKey("new_uuid"))
+			if (member is not MethodInfo method
+				|| !_hqlFunctions.TryGetValue(method, out var functionName)
+				|| factory.Dialect.Functions.ContainsKey(functionName))
 				return false;
 
 			if (factory.Settings.LinqToHqlFallbackOnPreEvaluation)
 				return true;
 
 			throw new QueryException(
-				"Cannot translate NewGuid: new_uuid is " +
+				$"Cannot translate {member.DeclaringType.Name}.{member.Name}: {functionName} is " +
 				$"not supported by {factory.Dialect}. Either enable the fallback on pre-evaluation " +
-				$"({Environment.LinqToHqlFallbackOnPreEvaluation}) or evaluate NewGuid " +
+				$"({Environment.LinqToHqlFallbackOnPreEvaluation}) or evaluate {member.Name} " +
 				"outside of the query.");
 		}
 

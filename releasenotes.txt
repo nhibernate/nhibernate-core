@@ -1,10 +1,32 @@
+Build 5.7.1
+=============================
+
+Release notes - NHibernate - Version 5.7.1
+
+    ##### Possible Breaking Changes #####
+        * Binary serializations of a session from previous versions of NHibernate will not be
+          deserializable with NHibernate 5.7.1
+
+4 issues were resolved in this release.
+
+** Bug
+
+   * #3802 Failures on string[].Contains() calls in LINQ queries
+   * #3782 A deserialized session does not join the current system transaction
+
+** Task
+
+   * #3867 Disable dependency vulnerability warnings for tests
+   * #3862 Release 5.7.1
+
+
 Build 5.7.0
 =============================
 
 Release notes - NHibernate - Version 5.7.0
 
 ** Highlights
-    * NHibernate targets now directly include .NET 10. This new target come with changes to adapt to the
+    * NHibernate targets now directly include .NET 10. This new target comes with changes to adapt to the
       "first-class span types" C# 14 language feature which was breaking some NHibernate features.
     * 14 issues were resolved in this release.
 
@@ -42,6 +64,23 @@ Release notes - NHibernate - Version 5.7.0
 ** Tests
 
    * #3662 Run tests using .NET 10
+
+
+Build 5.6.2
+=============================
+
+Release notes - NHibernate - Version 5.6.2
+
+    ##### Possible Breaking Changes #####
+        * Binary serializations of a session from previous versions of NHibernate will not be
+          deserializable with NHibernate 5.6.2
+
+2 issues were resolved in this release.
+
+** Task
+
+   * #3860 Release 5.6.2
+   * #3856 Backport #3854: Fix AutoJoinTransaction lost in serialization
 
 
 Build 5.6.1
