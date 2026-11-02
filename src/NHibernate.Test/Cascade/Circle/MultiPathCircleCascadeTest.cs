@@ -116,6 +116,7 @@ namespace NHibernate.Test.Cascade.Circle
 			}
 		}
 		
+		[Test]
 		public void MergeEntityWithNonNullablePropSetToNull()
 		{
 			Route route = GetUpdatedDetachedEntity();

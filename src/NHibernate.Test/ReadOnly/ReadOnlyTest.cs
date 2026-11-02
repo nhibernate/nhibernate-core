@@ -75,6 +75,7 @@ namespace NHibernate.Test.ReadOnly
 			//AssertDeleteCount(1);
 		}
 	
+		[Test]
 		public void ReadOnlyMode()
 		{
 			ClearCounts();
