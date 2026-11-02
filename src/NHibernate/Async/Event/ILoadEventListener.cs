@@ -20,7 +20,6 @@ namespace NHibernate.Event
 		/// <param name="event">The load event to be handled. </param>
 		/// <param name="loadType"></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns> The result (i.e., the loaded entity). </returns>
 		Task OnLoadAsync(LoadEvent @event, LoadType loadType, CancellationToken cancellationToken);
 	}
 }
