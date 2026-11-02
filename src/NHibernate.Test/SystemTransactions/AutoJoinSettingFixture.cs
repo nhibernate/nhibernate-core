@@ -1,5 +1,7 @@
 using System.Transactions;
 using NHibernate.Cfg;
+using NHibernate.Engine;
+using NHibernate.Util;
 using NUnit.Framework;
 
 namespace NHibernate.Test.SystemTransactions
@@ -50,6 +52,23 @@ namespace NHibernate.Test.SystemTransactions
 					s.GetSessionImplementation().TransactionContext,
 					autoJoin ? Is.Not.Null : Is.Null);
 			}
+		}
+
+		// Adapted from Hazzik bug report, #3782.
+		[Theory]
+		public void AutoJoinTransactionSurvivesSerialization(bool? autoJoin)
+		{
+			var sb = Sfi.WithOptions();
+			if (autoJoin.HasValue)
+				sb.AutoJoinTransaction(autoJoin.Value);
+
+			using var session = sb.OpenSession();
+			var before = ((ISessionImplementor) session).ConnectionManager.ShouldAutoJoinTransaction;
+
+			var deserialized = (ISession) SerializationHelper.Deserialize(SerializationHelper.Serialize(session));
+			var after = ((ISessionImplementor) deserialized).ConnectionManager.ShouldAutoJoinTransaction;
+
+			Assert.That(after, Is.EqualTo(before));
 		}
 	}
 }

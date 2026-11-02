@@ -1451,6 +1451,8 @@ namespace NHibernate.Loader
 			sqlCommand.ResetParametersIndexesForTheCommand(0);
 			var command = session.Batcher.PrepareQueryCommand(CommandType.Text, sqlString, sqlCommand.ParameterTypes);
 
+			var success = false;
+
 			try
 			{
 				RowSelection selection = queryParameters.RowSelection;
@@ -1464,18 +1466,27 @@ namespace NHibernate.Loader
 				IDriver driver = _factory.ConnectionProvider.Driver;
 				driver.RemoveUnusedCommandParameters(command, sqlString);
 				driver.ExpandQueryParameters(command, sqlString, sqlCommand.ParameterTypes);
+
+				success = true;
 			}
 			catch (HibernateException)
 			{
-				session.Batcher.CloseCommand(command, null);
 				throw;
 			}
 			catch (Exception sqle)
 			{
-				session.Batcher.CloseCommand(command, null);
 				ADOExceptionReporter.LogExceptions(sqle);
 				throw;
 			}
+			finally
+			{
+				if (!success)
+				{
+					// The cleanup must be done in a finally statement, because the async generator adds another catch statement.
+					session.Batcher.CloseCommand(command, null);
+				}
+			}
+
 			return command;
 		}
 
@@ -1535,6 +1546,8 @@ namespace NHibernate.Loader
 			DbCommand st, QueryParameters queryParameters, ISessionImplementor session, IResultTransformer forcedResultTransformer)
 		{
 			DbDataReader rs = null;
+			bool success = false;
+			
 			try
 			{
 				// TODO NH: Callable
@@ -1556,13 +1569,22 @@ namespace NHibernate.Loader
 				{
 					AutoDiscoverTypes(rs, queryParameters, forcedResultTransformer);
 				}
+
+				success = true;
 				return rs;
 			}
 			catch (Exception sqle)
 			{
 				ADOExceptionReporter.LogExceptions(sqle);
-				session.Batcher.CloseCommand(st, rs);
 				throw;
+			}
+			finally
+			{
+				if (!success)
+				{
+					// The cleanup must be done in a finally statement, because the async generator adds another catch statement.
+					session.Batcher.CloseCommand(st, rs);
+				}
 			}
 		}
 

@@ -341,6 +341,18 @@ namespace NHibernate.Hql.Ast.ANTLR
 			}
 		}
 
+		/// <summary>
+		/// Indicates whether the query contains an order by clause.
+		/// </summary>
+		internal bool ContainsOrderByClause
+		{
+			get
+			{
+				ErrorIfDML();
+				return ((QueryNode)_sqlAst).GetOrderByClause()?.ChildCount > 0;
+			}
+		}
+
 		public ISet<ICollectionPersister> UncacheableCollectionPersisters
 		{
 			get

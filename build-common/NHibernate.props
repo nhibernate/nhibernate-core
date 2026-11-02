@@ -2,10 +2,10 @@
   <Import Condition="Exists('NHibernate.dev.props')" Project="NHibernate.dev.props"/>
 
   <PropertyGroup>
-    <NhVersion     Condition="'$(NhVersion)' == ''"    >5.7</NhVersion>
+    <NhVersion     Condition="'$(NhVersion)' == ''"    >5.8</NhVersion>
     <VersionPatch  Condition="'$(VersionPatch)'  == ''">0</VersionPatch>
     <!-- Clear VersionSuffix for making release and set it to dev for making development builds -->
-    <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
+    <VersionSuffix Condition="'$(VersionSuffix)' == ''">dev</VersionSuffix>
     <LangVersion Condition="'$(MSBuildProjectExtension)' != '.vbproj'">14.0</LangVersion>
 
     <VersionPrefix Condition="'$(VersionPrefix)' == ''">$(NhVersion).$(VersionPatch)</VersionPrefix>
@@ -22,7 +22,6 @@
     <!-- Visual Basic requires to use coma (,) as a separator, other project types - semicolon (;) -->
     <DefineConstants Condition="$(NhNetFx) AND '$(MSBuildProjectExtension)' != '.vbproj'">NETFX;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="$(NhNetFx) AND '$(MSBuildProjectExtension)' == '.vbproj'">NETFX,$(DefineConstants)</DefineConstants>
-    <NoWarn>$(NoWarn);NU1903</NoWarn>
     <NoWarn Condition="'$(TargetFramework)' == 'net6.0'">$(NoWarn);SYSLIB0011</NoWarn>
     <NoWarn Condition="'$(TargetFramework)' == 'net8.0'">$(NoWarn);SYSLIB0011;SYSLIB0050;SYSLIB0051</NoWarn>
     <NoWarn Condition="'$(TargetFramework)' == 'net10.0'">$(NoWarn);SYSLIB0011;SYSLIB0050;SYSLIB0051</NoWarn>
