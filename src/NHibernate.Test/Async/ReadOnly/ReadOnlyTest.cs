@@ -15,7 +15,6 @@ using NUnit.Framework;
 namespace NHibernate.Test.ReadOnly
 {
 	using System.Threading.Tasks;
-	using System.Threading;
 	[TestFixture]
 	public class ReadOnlyTestAsync : AbstractReadOnlyTest
 	{
@@ -87,7 +86,8 @@ namespace NHibernate.Test.ReadOnly
 			//AssertDeleteCount(1);
 		}
 	
-		public async Task ReadOnlyModeAsync(CancellationToken cancellationToken = default(CancellationToken))
+		[Test]
+		public async Task ReadOnlyModeAsync()
 		{
 			ClearCounts();
 	
@@ -98,9 +98,9 @@ namespace NHibernate.Test.ReadOnly
 				DataPoint dp = new DataPoint();
 				dp.X = i * 0.1M;
 				dp.Y = (decimal)System.Math.Cos((double)dp.X);
-				await (s.SaveAsync(dp, cancellationToken));
+				await (s.SaveAsync(dp));
 			}
-			await (t.CommitAsync(cancellationToken));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertInsertCount(100);
@@ -113,7 +113,7 @@ namespace NHibernate.Test.ReadOnly
 			// NH-specific: Replace use of Scroll with List
 			IList<DataPoint> sr = await (s.CreateQuery("from DataPoint dp order by dp.X asc")
 					.SetReadOnly(true)
-					.ListAsync<DataPoint>(cancellationToken));
+					.ListAsync<DataPoint>());
 			
 			int index = 0;
 
@@ -125,17 +125,17 @@ namespace NHibernate.Test.ReadOnly
 				}
 				dp.Description = "done!";
 			}
-			await (t.CommitAsync(cancellationToken));
+			await (t.CommitAsync());
 	
 			AssertUpdateCount(1);
 			ClearCounts();
 	
 			s.Clear();
 			t = s.BeginTransaction();
-			IList single = await (s.CreateQuery("from DataPoint where description='done!'").ListAsync(cancellationToken));
+			IList single = await (s.CreateQuery("from DataPoint where description='done!'").ListAsync());
 			Assert.That(single.Count, Is.EqualTo(1));
-			Assert.That(await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync(cancellationToken)), Is.EqualTo(100));
-			await (t.CommitAsync(cancellationToken));
+			Assert.That(await (s.CreateQuery("delete from DataPoint").ExecuteUpdateAsync()), Is.EqualTo(100));
+			await (t.CommitAsync());
 			s.Close();
 	
 			AssertUpdateCount(0);
