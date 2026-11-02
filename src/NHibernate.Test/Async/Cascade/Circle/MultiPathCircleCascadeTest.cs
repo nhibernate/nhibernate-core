@@ -128,9 +128,10 @@ namespace NHibernate.Test.Cascade.Circle
 			}
 		}
 		
-		public async Task MergeEntityWithNonNullablePropSetToNullAsync(CancellationToken cancellationToken = default(CancellationToken))
+		[Test]
+		public async Task MergeEntityWithNonNullablePropSetToNullAsync()
 		{
-			Route route = await (GetUpdatedDetachedEntityAsync(cancellationToken));
+			Route route = await (GetUpdatedDetachedEntityAsync());
 			Node node = route.Nodes.First();
 			node.Name = null;
 	
@@ -139,10 +140,9 @@ namespace NHibernate.Test.Cascade.Circle
 			{
 				try
 				{
-					await (session.MergeAsync(route, cancellationToken));
+					await (session.MergeAsync(route));
 					Assert.Fail("should have thrown an exception");
 				}
-				catch (OperationCanceledException) { throw; }
 				catch (Exception ex)
 				{
 					Assert.That(ex, Is.TypeOf(typeof(PropertyValueException)));
