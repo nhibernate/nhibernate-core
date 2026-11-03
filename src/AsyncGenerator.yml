@@ -238,6 +238,8 @@
     - filePathEndsWith: ConnectionTest/DriverConnectionProviderTest.cs
     - filePathEndsWith: ConnectionTest/ThreadLocalSessionContextAsyncTest.cs
     - filePathEndsWith: LoaderPrepareQueryCommandAsyncTest.cs
+    # This fixture checks that the async API does not perform synchronous reads.
+    - filePathEndsWith: NHSpecificTest/GH3863/AsyncFixture.cs
     ignoreSearchForAsyncCounterparts:
     - name: Wait
       containingTypeName: Task
