@@ -291,6 +291,11 @@ namespace NHibernate.Engine
 			{
 				log.Info("cascade {0} for collection: {1}", action, collectionType.Role);
 
+				// Delete cascades to uninitialized collections, which get loaded when iterating them. Initialize them
+				// explicitly beforehand for allowing the async counterpart of this method to load them asynchronously.
+				if (action == CascadingAction.Delete && child is IPersistentCollection { WasInitialized: false } collection)
+					collection.ForceInitialization();
+
 				foreach (object o in action.GetCascadableChildrenIterator(eventSource, collectionType, child))
 					CascadeProperty(parent, o, elemType, style, null, anything, isCascadeDeleteEnabled);
 
