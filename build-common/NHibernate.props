@@ -34,7 +34,7 @@
 
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <TreatSpecificWarningsAsErrors />
-    
+
     <DisableImplicitPackageTargetFallback>True</DisableImplicitPackageTargetFallback>
 
     <PackageProjectUrl>https://nhibernate.info</PackageProjectUrl>
@@ -45,6 +45,7 @@
     <PackageReleaseNotes Condition="'$(VersionSuffix)' == ''">https://github.com/nhibernate/nhibernate-core/blob/$(VersionPrefix)/releasenotes.txt</PackageReleaseNotes>
     <PackageReleaseNotes Condition="'$(PackageReleaseNotes)' == ''">This is development version for testing purposes only</PackageReleaseNotes>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <RepositoryUrl>https://github.com/nhibernate/nhibernate-core</RepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PublicKey>
