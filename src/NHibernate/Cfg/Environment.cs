@@ -418,6 +418,12 @@ namespace NHibernate.Cfg
 		public const string FirebirdDisableParameterCasting = "firebird.disable_parameter_casting";
 
 		/// <summary>
+		/// Map a boolean to the <c>BOOLEAN</c> column type of Firebird 3, instead of <c>SMALLINT</c>.
+		/// Firebird rejects a comparison of a <c>BOOLEAN</c> column with <c>1</c> or <c>0</c>.
+		/// </summary>
+		public const string FirebirdUseNativeBoolean = "firebird.use_native_boolean";
+
+		/// <summary>
 		/// <para>
 		/// SQLite can store GUIDs in binary or text form, controlled by the BinaryGuid
 		/// connection string parameter (default is 'true'). The BinaryGuid setting will affect

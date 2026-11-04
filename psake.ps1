@@ -17,6 +17,7 @@ Task Set-Configuration {
         'Firebird4' = @{
             'connection.connection_string' = 'DataSource=localhost;Database=nhibernate;User ID=SYSDBA;Password=masterkey;MaxPoolSize=200;';
             'connection.driver_class' = 'NHibernate.Driver.FirebirdClientDriver';
+            'firebird.use_native_boolean' = 'true';
             'dialect' = 'NHibernate.Dialect.Firebird4Dialect'
         };
         'MySQL' = @{

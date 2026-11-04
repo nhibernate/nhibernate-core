@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using NHibernate.Dialect;
 using NHibernate.Id;
 using NHibernate.SqlCommand;
 using NUnit.Framework;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Test.DialectTest
 {
@@ -121,6 +123,30 @@ namespace NHibernate.Test.DialectTest
 		public void GetSelectSequenceNextValString()
 		{
 			Assert.That(_dialect.GetSelectSequenceNextValString("fish_seq"), Is.EqualTo("next value for fish_seq"));
+		}
+
+		[Test]
+		public void BooleanMapsToSmallIntByDefault()
+		{
+			var dialect = new Firebird3Dialect();
+			dialect.Configure(new Dictionary<string, string>());
+
+			Assert.That(dialect.UseNativeBoolean, Is.False);
+			Assert.That(dialect.GetTypeName(NHibernateUtil.Boolean.SqlType), Is.EqualTo("SMALLINT"));
+			Assert.That(dialect.ToBooleanValueString(true), Is.EqualTo("1"));
+			Assert.That(dialect.ToBooleanValueString(false), Is.EqualTo("0"));
+		}
+
+		[Test]
+		public void BooleanMapsToNativeBooleanWhenTheSettingIsOn()
+		{
+			var dialect = new Firebird3Dialect();
+			dialect.Configure(new Dictionary<string, string> { { Environment.FirebirdUseNativeBoolean, "true" } });
+
+			Assert.That(dialect.UseNativeBoolean, Is.True);
+			Assert.That(dialect.GetTypeName(NHibernateUtil.Boolean.SqlType), Is.EqualTo("BOOLEAN"));
+			Assert.That(dialect.ToBooleanValueString(true), Is.EqualTo("true"));
+			Assert.That(dialect.ToBooleanValueString(false), Is.EqualTo("false"));
 		}
 	}
 }

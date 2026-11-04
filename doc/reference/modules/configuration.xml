@@ -1248,6 +1248,27 @@ var session = sessions.OpenSession(conn);
                     </row>
                     <row>
                         <entry>
+                            <literal>firebird.use_native_boolean</literal>
+                        </entry>
+                        <entry>
+                            <para>
+                                Map a boolean to the <literal>BOOLEAN</literal> column type of Firebird 3, instead of
+                                <literal>SMALLINT</literal>. Firebird rejects a comparison of a <literal>BOOLEAN</literal>
+                                column with <literal>1</literal> or <literal>0</literal>.
+                            </para>
+                            <para>
+                                <emphasis role="strong">eg.</emphasis>
+                                <literal>true</literal> for using the native boolean type | <literal>false</literal> for using
+                                <literal>SMALLINT</literal>.
+                            </para>
+                            <para>
+                                <literal>false</literal> by default. See
+                                <ulink url="https://www.firebirdsql.org/file/documentation/chunk/en/refdocs/fblangref30/fblangref30-datatypes-booleantypes.html">Boolean Data Type</ulink>.
+                            </para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
                             <literal>oracle.use_n_prefixed_types_for_unicode</literal>
                         </entry>
                         <entry>

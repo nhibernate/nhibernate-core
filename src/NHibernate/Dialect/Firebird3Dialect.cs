@@ -1,6 +1,10 @@
+using System.Collections.Generic;
+using System.Data;
 using NHibernate.Dialect.Function;
 using NHibernate.Id;
 using NHibernate.SqlCommand;
+using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Dialect
 {
@@ -14,6 +18,29 @@ namespace NHibernate.Dialect
 	/// </remarks>
 	public class Firebird3Dialect : FirebirdDialect
 	{
+		/// <summary>
+		/// Set by <see cref="Environment.FirebirdUseNativeBoolean" />.
+		/// </summary>
+		public bool UseNativeBoolean { get; private set; }
+
+		/// <inheritdoc />
+		public override void Configure(IDictionary<string, string> settings)
+		{
+			base.Configure(settings);
+
+			UseNativeBoolean = PropertiesHelper.GetBoolean(Environment.FirebirdUseNativeBoolean, settings);
+			if (UseNativeBoolean)
+				RegisterColumnType(DbType.Boolean, "BOOLEAN");
+		}
+
+		/// <inheritdoc />
+		public override string ToBooleanValueString(bool value)
+		{
+			return UseNativeBoolean
+				? value ? "true" : "false"
+				: base.ToBooleanValueString(value);
+		}
+
 		protected override void RegisterFunctions()
 		{
 			base.RegisterFunctions();

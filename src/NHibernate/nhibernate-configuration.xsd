@@ -339,6 +339,14 @@
 												</xs:documentation>
 											</xs:annotation>
 										</xs:enumeration>
+										<xs:enumeration value="firebird.use_native_boolean">
+											<xs:annotation>
+												<xs:documentation>
+													Map a boolean to the BOOLEAN column type of Firebird 3, instead of SMALLINT.
+													Firebird rejects a comparison of a BOOLEAN column with 1 or 0.
+												</xs:documentation>
+											</xs:annotation>
+										</xs:enumeration>
 										<xs:enumeration value="sqlite.binaryguid">
 											<xs:annotation>
 												<xs:documentation>

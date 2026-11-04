@@ -23,6 +23,7 @@
 			<property name="query.substitutions">true 1, false 0, yes 'Y', no 'N'</property>
 			<property name="adonet.wrap_result_sets">false</property>
 
+			<property name="firebird.use_native_boolean"></property>
 			<property name="odbc.explicit_datetime_scale"></property>
 			<property name="oracle.use_n_prefixed_types_for_unicode"></property>
 			<property name="query.default_cast_length"></property>
