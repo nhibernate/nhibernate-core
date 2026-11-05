@@ -44,7 +44,7 @@ namespace NHibernate.Engine
 			object cached;
 			if (entitySnapshotsByKey.TryGetValue(key, out cached))
 			{
-				return cached == NoRow ? null : (object[])cached;
+				return cached == NoRow ? null : (object[]) cached;
 			}
 			else
 			{
@@ -126,8 +126,8 @@ namespace NHibernate.Engine
 				//}
 				if (maybeProxy.IsProxy())
 				{
-					var proxy = maybeProxy as INHibernateProxy; 
-					
+					var proxy = maybeProxy as INHibernateProxy;
+
 					ILazyInitializer li = proxy.HibernateLazyInitializer;
 					ReassociateProxy(li, proxy);
 					return li.GetImplementationAsync(cancellationToken); //initialize + unwrap the object
