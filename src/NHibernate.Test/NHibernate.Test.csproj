@@ -57,7 +57,7 @@
     <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
     <PackageReference Include="NHibernate.Caches.CoreDistributedCache.Memory" Version="5.9.0" />
     <PackageReference Include="NHibernate.Caches.Util.JsonSerializer" Version="5.9.0" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.117" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.7.4" />
     <PackageReference Include="NSubstitute" Version="6.2.0" />
     <PackageReference Include="NUnit" Version="3.14.0" />
