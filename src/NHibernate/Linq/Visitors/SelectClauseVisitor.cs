@@ -16,14 +16,22 @@ namespace NHibernate.Linq.Visitors
 		private HashSet<Expression> _hqlNodes;
 		private readonly ParameterExpression _inputParameter;
 		private readonly VisitorParameters _parameters;
+		private readonly HashSet<Expression> _hqlCandidates;
 		private int _iColumn;
 		private List<HqlExpression> _hqlTreeNodes = new List<HqlExpression>();
 		private readonly HqlGeneratorExpressionVisitor _hqlVisitor;
 
-		public SelectClauseVisitor(System.Type inputType, VisitorParameters parameters)
+		// Since v5.6
+		[Obsolete("Use overload providing expressions to be executed with HQL.")]
+		public SelectClauseVisitor(System.Type inputType, VisitorParameters parameters) :
+			this(inputType, parameters, new HashSet<Expression>())
+		{ }
+
+		public SelectClauseVisitor(System.Type inputType, VisitorParameters parameters, HashSet<Expression> hqlCandidates)
 		{
 			_inputParameter = Expression.Parameter(inputType, "input");
 			_parameters = parameters;
+			_hqlCandidates = hqlCandidates;
 			_hqlVisitor = new HqlGeneratorExpressionVisitor(_parameters);
 		}
 
@@ -69,9 +77,9 @@ namespace NHibernate.Linq.Visitors
 
 			if (distinct != null)
 			{
-				var treeNodes = new List<HqlTreeNode>(_hqlTreeNodes.Count + 1) {_hqlTreeBuilder.Distinct()};
+				var treeNodes = new List<HqlTreeNode>(_hqlTreeNodes.Count + 1) { _hqlTreeBuilder.Distinct() };
 				treeNodes.AddRange(_hqlTreeNodes);
-				_hqlTreeNodes = new List<HqlExpression>(1) {_hqlTreeBuilder.ExpressionSubTreeHolder(treeNodes)};
+				_hqlTreeNodes = new List<HqlExpression>(1) { _hqlTreeBuilder.ExpressionSubTreeHolder(treeNodes) };
 			}
 		}
 
@@ -82,7 +90,7 @@ namespace NHibernate.Linq.Visitors
 				return null;
 			}
 
-			if (_hqlNodes.Contains(expression))
+			if (_hqlNodes.Contains(expression) || _hqlCandidates.Contains(expression))
 			{
 				// Pure HQL evaluation
 				_hqlTreeNodes.Add(_hqlVisitor.Visit(expression).AsExpression());
