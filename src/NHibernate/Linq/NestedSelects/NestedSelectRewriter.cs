@@ -34,6 +34,12 @@ namespace NHibernate.Linq.NestedSelects
 			if (!nsqmv.HasSubqueries)
 				return;
 
+			if (HasNestedCollections(nsqmv, sessionFactory))
+			{
+				ReWriteNestedCollections(queryModel, sessionFactory);
+				return;
+			}
+
 			var elementExpression = new List<ExpressionHolder>();
 			var group = Expression.Parameter(typeof (IGrouping<Tuple, Tuple>), "g");
 			
@@ -81,6 +87,28 @@ namespace NHibernate.Linq.NestedSelects
 			queryModel.SelectClause.Selector = Expression.NewArrayInit(typeof (object), initializers);
 		}
 
+		// A collection projected inside another projected collection (e.g. OData $expand=Orders/OrderLines)
+		// needs one join per level and a recursive client side grouping, see #1307.
+		private static bool HasNestedCollections(NestedSelectDetector detector, ISessionFactory sessionFactory)
+		{
+			foreach (var subQuery in detector.Expressions.OfType<SubQueryExpression>())
+			{
+				var nested = new NestedSelectDetector(sessionFactory);
+				nested.Visit(subQuery.QueryModel.SelectClause.Selector);
+				if (nested.HasSubqueries)
+					return true;
+			}
+
+			return false;
+		}
+
+		private static void ReWriteNestedCollections(QueryModel queryModel, ISessionFactory sessionFactory)
+		{
+			var rewriter = new NestedSelectClauseRewriter(sessionFactory, queryModel);
+			queryModel.ResultOperators.Add(new ClientSideSelect2((LambdaExpression) rewriter.Start()));
+			queryModel.SelectClause.Selector = Expression.NewArrayInit(typeof(object), rewriter.Expressions.Select(ConvertToObject));
+		}
+
 		private static Expression ProcessExpression(QueryModel queryModel, ISessionFactory sessionFactory, Expression expression, List<ExpressionHolder> elementExpression, ParameterExpression @group)
 		{
 			var memberExpression = expression as MemberExpression;
@@ -112,9 +140,9 @@ namespace NHibernate.Linq.NestedSelects
 										subQueryMainFromClause.FromExpression,
 										restrictions);
 
-			queryModel.BodyClauses.Add(@join);
+			queryModel.BodyClauses.Add(join);
 
-			var visitor = new SwapQuerySourceVisitor(subQueryMainFromClause, @join);
+			var visitor = new SwapQuerySourceVisitor(subQueryMainFromClause, join);
 
 			queryModel.TransformExpressions(visitor.Swap);
 
@@ -124,7 +152,7 @@ namespace NHibernate.Linq.NestedSelects
 			
 			var elementType = selector.Type;
 
-			var source = new QuerySourceReferenceExpression(@join);
+			var source = new QuerySourceReferenceExpression(join);
 
 			return BuildSubCollectionQuery(sessionFactory, elementExpression, @group, source, selector, elementType, collectionType);
 		}
@@ -144,9 +172,9 @@ namespace NHibernate.Linq.NestedSelects
 										GetElementType(memberExpression.Type),
 										memberExpression);
 
-			queryModel.BodyClauses.Add(@join);
+			queryModel.BodyClauses.Add(join);
 
-			var source = new QuerySourceReferenceExpression(@join);
+			var source = new QuerySourceReferenceExpression(join);
 
 			return BuildSubCollectionQuery(sessionFactory, elementExpression, @group, source, source, source.Type, memberExpression.Type);
 		}
@@ -187,17 +215,17 @@ namespace NHibernate.Linq.NestedSelects
 			{
 				var toArrayMethod = ReflectionCache.EnumerableMethods.ToArrayDefinition.MakeGenericMethod(new[] { elementType });
 
-				var array = Expression.Call(toArrayMethod, @select);
+				var array = Expression.Call(toArrayMethod, select);
 				return array;
 			}
 
 			var constructor = GetCollectionConstructor(collectionType, elementType);
 			if (constructor != null)
-				return Expression.New(constructor, (Expression) @select);
+				return Expression.New(constructor, (Expression) select);
 
 			var toListMethod = ReflectionCache.EnumerableMethods.ToListDefinition.MakeGenericMethod(new[] { elementType });
 
-			return Expression.Call(Expression.Call(toListMethod, @select),
+			return Expression.Call(Expression.Call(toListMethod, select),
 								   "AsReadonly",
 								   System.Type.EmptyTypes);
 		}
