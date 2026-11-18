@@ -140,9 +140,9 @@ namespace NHibernate.Linq.NestedSelects
 										subQueryMainFromClause.FromExpression,
 										restrictions);
 
-			queryModel.BodyClauses.Add(@join);
+			queryModel.BodyClauses.Add(join);
 
-			var visitor = new SwapQuerySourceVisitor(subQueryMainFromClause, @join);
+			var visitor = new SwapQuerySourceVisitor(subQueryMainFromClause, join);
 
 			queryModel.TransformExpressions(visitor.Swap);
 
@@ -152,7 +152,7 @@ namespace NHibernate.Linq.NestedSelects
 			
 			var elementType = selector.Type;
 
-			var source = new QuerySourceReferenceExpression(@join);
+			var source = new QuerySourceReferenceExpression(join);
 
 			return BuildSubCollectionQuery(sessionFactory, elementExpression, @group, source, selector, elementType, collectionType);
 		}
@@ -172,9 +172,9 @@ namespace NHibernate.Linq.NestedSelects
 										GetElementType(memberExpression.Type),
 										memberExpression);
 
-			queryModel.BodyClauses.Add(@join);
+			queryModel.BodyClauses.Add(join);
 
-			var source = new QuerySourceReferenceExpression(@join);
+			var source = new QuerySourceReferenceExpression(join);
 
 			return BuildSubCollectionQuery(sessionFactory, elementExpression, @group, source, source, source.Type, memberExpression.Type);
 		}
@@ -215,17 +215,17 @@ namespace NHibernate.Linq.NestedSelects
 			{
 				var toArrayMethod = ReflectionCache.EnumerableMethods.ToArrayDefinition.MakeGenericMethod(new[] { elementType });
 
-				var array = Expression.Call(toArrayMethod, @select);
+				var array = Expression.Call(toArrayMethod, select);
 				return array;
 			}
 
 			var constructor = GetCollectionConstructor(collectionType, elementType);
 			if (constructor != null)
-				return Expression.New(constructor, (Expression) @select);
+				return Expression.New(constructor, (Expression) select);
 
 			var toListMethod = ReflectionCache.EnumerableMethods.ToListDefinition.MakeGenericMethod(new[] { elementType });
 
-			return Expression.Call(Expression.Call(toListMethod, @select),
+			return Expression.Call(Expression.Call(toListMethod, select),
 								   "AsReadonly",
 								   System.Type.EmptyTypes);
 		}

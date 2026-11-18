@@ -214,53 +214,41 @@ namespace NHibernate.Linq.NestedSelects
 
 		protected override Expression VisitMember(MemberExpression expression)
 		{
-			if (expression.Expression is QuerySourceReferenceExpression)
-			{
-				var memberType = ReflectHelper.GetPropertyOrFieldType(expression.Member);
-				if (memberType != null && memberType.IsCollectionType()
-				    && IsMappedCollection(expression.Member) && memberType.IsGenericType)
-				{
-					var elementType = memberType.GetGenericArguments()[0];
-					int index = JoinAndSaveExpression(expression, GetElementType(expression.Type));
-					var s = Expression.Parameter(typeof(IGrouping<object, object[]>), "s");
-					var selector = Expression.Lambda(Expression.Convert(GetKeyProperty(s), elementType), s);
-					return SelectCollection(selector, GetGroupBy(Source, index), memberType, elementType);
-				}
+			var parentMember = expression.Expression as MemberExpression;
+			if (parentMember == null && !(expression.Expression is QuerySourceReferenceExpression))
+				return base.VisitMember(expression);
 
-				if (memberType != null && IsMapped(expression.Type))
-				{
-					int index = JoinAndSaveExpression(expression, expression.Type);
-					return Expression.Convert(
-						GetKeyProperty(Expression.Call(SingleMethod, GetGroupBy(Source, index))),
-						memberType);
-				}
+			var memberType = ReflectHelper.GetPropertyOrFieldType(expression.Member);
+			if (memberType == null)
+				return base.VisitMember(expression);
+
+			if (memberType.IsGenericType && memberType.IsCollectionType() && IsMappedCollection(expression.Member))
+			{
+				var elementType = memberType.GetGenericArguments()[0];
+				var index = JoinAndSaveExpression(expression, GetElementType(expression.Type));
+				var s = Expression.Parameter(typeof(IGrouping<object, object[]>), "s");
+				var selector = Expression.Lambda(Expression.Convert(GetKeyProperty(s), elementType), s);
+				return SelectCollection(selector, GetGroupBy(GetGroupingSource(parentMember, index), index), memberType, elementType);
 			}
-			else if (expression.Expression is MemberExpression parentMember)
-			{
-				var memberType = ReflectHelper.GetPropertyOrFieldType(expression.Member);
-				if (memberType != null && memberType.IsCollectionType() && IsMappedCollection(expression.Member))
-				{
-					int index = JoinAndSaveExpression(expression, GetElementType(expression.Type));
-					var groupByParent = GetGroupByParent(parentMember, Source,
-						FindParentIndex(index - 1, parentMember.Type));
-					var elementType = memberType.GetGenericArguments()[0];
-					var s = Expression.Parameter(typeof(IGrouping<object, object[]>), "s");
-					var selector = Expression.Lambda(Expression.Convert(GetKeyProperty(s), elementType), s);
-					return SelectCollection(selector, GetGroupBy(groupByParent, index), memberType, elementType);
-				}
 
-				if (memberType != null && IsMapped(expression.Type))
-				{
-					int index = JoinAndSaveExpression(expression, expression.Type);
-					var groupByParent = GetGroupByParent(parentMember, Source,
-						FindParentIndex(index - 1, parentMember.Type));
-					return Expression.Convert(
-						GetKeyProperty(Expression.Call(SingleMethod, GetGroupBy(groupByParent, index))),
-						memberType);
-				}
+			if (IsMapped(expression.Type))
+			{
+				var index = JoinAndSaveExpression(expression, expression.Type);
+				return Expression.Convert(
+					GetKeyProperty(Expression.Call(SingleMethod, GetGroupBy(GetGroupingSource(parentMember, index), index))),
+					memberType);
 			}
 
 			return base.VisitMember(expression);
+		}
+
+		// The rows to group a member by: the current level for a member of the query source,
+		// or the rows of its parent member for a member of a member (e.g. o.Customer.Orders).
+		private Expression GetGroupingSource(MemberExpression parentMember, int index)
+		{
+			if (parentMember == null)
+				return Source;
+			return GetGroupByParent(parentMember, Source, FindParentIndex(index - 1, parentMember.Type));
 		}
 
 		private int FindParentIndex(int startIndex, System.Type parentType)
