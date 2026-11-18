@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Threading.Tasks;
 using NHibernate.Transaction;
 
 namespace NHibernate
@@ -120,6 +121,32 @@ namespace NHibernate
 				throw new NotSupportedException(
 					$"{transaction.GetType()} does not support {nameof(ITransactionCompletionSynchronization)}");
 			registerMethod.Invoke(transaction, new object[] { synchronization });
+		}
+		
+		public static Task BeginAsync(this ITransaction transaction, IsolationLevel isolationLevel)
+		{
+			try
+			{
+				transaction.Begin(isolationLevel);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException(ex);
+			}
+		}
+
+		public static Task BeginAsync(this ITransaction transaction)
+		{
+			try
+			{
+				transaction.Begin();
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException(ex);
+			}
 		}
 	}
 }
