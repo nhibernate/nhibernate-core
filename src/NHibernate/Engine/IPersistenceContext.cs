@@ -457,7 +457,7 @@ namespace NHibernate.Engine
 				existsInDatabase,
 				persister,
 				disableVersionIncrement,
-				loadedState?.Any(o => o == LazyPropertyInitializer.UnfetchedProperty) == true);
+				loadedState?.Any(o => Equals(o, LazyPropertyInitializer.UnfetchedProperty)) == true);
 #pragma warning restore 618
 		}
 
@@ -505,7 +505,7 @@ namespace NHibernate.Engine
 				existsInDatabase,
 				persister,
 				disableVersionIncrement,
-				loadedState?.Any(o => o == LazyPropertyInitializer.UnfetchedProperty) == true);
+				loadedState?.Any(o => Equals(o, LazyPropertyInitializer.UnfetchedProperty)) == true);
 #pragma warning restore 618
 		}
 	}
