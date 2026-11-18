@@ -459,5 +459,79 @@ namespace NHibernate.Test.Linq
 
 			Assert.AreEqual(3, list.Count);
 		}
+
+		[Test(Description = "GH-1307")]
+		public async Task CanSelectNestedCollectionsAsync()
+		{
+			var customers = await (db.Customers
+				.Select(c => new
+				{
+					c.CustomerId,
+					Orders = c.Orders.Select(o => new
+					{
+						o.OrderId,
+						OrderLinesIds = o.OrderLines.Select(ol => ol.Id).ToArray()
+					}).ToArray()
+				})
+				.ToListAsync());
+
+			var expected = await (db.OrderLines
+				.Select(ol => new { ol.Order.Customer.CustomerId, ol.Order.OrderId, ol.Id })
+				.ToListAsync());
+
+			Assert.That(customers.Count, Is.EqualTo(await (db.Customers.CountAsync())));
+			Assert.That(customers.SelectMany(c => c.Orders).Count(), Is.EqualTo(await (db.Orders.CountAsync(o => o.Customer != null))));
+			Assert.That(
+				customers.SelectMany(c => c.Orders.SelectMany(o => o.OrderLinesIds.Select(id => new { c.CustomerId, o.OrderId, Id = id }))),
+				Is.EquivalentTo(expected));
+		}
+
+		[Test(Description = "GH-1307")]
+		public async Task CanSelectNestedCollectionsOfEntitiesAsync()
+		{
+			var customers = await (db.Customers
+				.Select(c => new
+				{
+					Customer = c,
+					Orders = c.Orders.Select(o => new { Order = o, o.OrderLines }).ToList()
+				})
+				.ToListAsync());
+
+			var expected = await (db.OrderLines
+				.Select(ol => new { ol.Order.Customer.CustomerId, ol.Order.OrderId, ol.Id })
+				.ToListAsync());
+
+			Assert.That(customers.Count, Is.EqualTo(await (db.Customers.CountAsync())));
+			Assert.That(
+				customers.SelectMany(c => c.Orders.SelectMany(o => o.OrderLines.Select(ol => new { c.Customer.CustomerId, o.Order.OrderId, ol.Id }))),
+				Is.EquivalentTo(expected));
+		}
+
+		[Test(Description = "GH-1307")]
+		public async Task CanSelectNestedCollectionsWithWhereAsync()
+		{
+			var employees = await (db.Employees
+				.Select(e => new
+				{
+					e.EmployeeId,
+					Orders = e.Orders.Where(o => o.Freight > 100).Select(o => new
+					{
+						o.OrderId,
+						OrderLinesIds = o.OrderLines.Select(ol => ol.Id).ToArray()
+					}).ToArray()
+				})
+				.ToListAsync());
+
+			var expected = await (db.OrderLines
+				.Where(ol => ol.Order.Freight > 100)
+				.Select(ol => new { ol.Order.Employee.EmployeeId, ol.Order.OrderId, ol.Id })
+				.ToListAsync());
+
+			Assert.That(employees.Count, Is.EqualTo(await (db.Employees.CountAsync())));
+			Assert.That(expected, Is.Not.Empty);
+			Assert.That(
+				employees.SelectMany(e => e.Orders.SelectMany(o => o.OrderLinesIds.Select(id => new { e.EmployeeId, o.OrderId, Id = id }))),
+				Is.EquivalentTo(expected));
+		}
 	}
 }
