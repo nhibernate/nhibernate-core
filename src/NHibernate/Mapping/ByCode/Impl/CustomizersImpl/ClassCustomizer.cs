@@ -117,9 +117,9 @@ namespace NHibernate.Mapping.ByCode.Impl.CustomizersImpl
 			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Table(tableName));
 		}
 
-		public void Check(string tableName)
+		public void Check(string check)
 		{
-			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Check(tableName));
+			CustomizersHolder.AddCustomizer(typeof(TEntity), (IClassMapper m) => m.Check(check));
 		}
 
 		public void Catalog(string catalogName)
