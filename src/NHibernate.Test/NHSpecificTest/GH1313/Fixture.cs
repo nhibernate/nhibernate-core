@@ -12,7 +12,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1313
 			using var session = OpenSession();
 			using var transaction = session.BeginTransaction();
 
-			var account = new Account { Id = 1, Name = "Account_1", OldAccountNumber = 1 };
+			var account = new Account { Id = 1, Name = "Account_1", RawNumber = 1, OldAccountNumber = 1001 };
 			var order = new HoldClose
 			{
 				Account = account,
@@ -34,7 +34,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1313
 		}
 
 		[Test]
-		[Explicit("Not fixed yet")]
 		public void ManyToOneTargettingAFormula()
 		{
 			using var session = OpenSession();
@@ -43,6 +42,18 @@ namespace NHibernate.Test.NHSpecificTest.GH1313
 			var result = session.Query<HoldClose>();
 
 			Assert.That(result.ToList(), Has.Count.EqualTo(1));
+			transaction.Commit();
+		}
+
+		[Test]
+		public void ManyToOneTargettingAFormulaIsLoadedLazily()
+		{
+			using var session = OpenSession();
+			using var transaction = session.BeginTransaction();
+
+			var holdClose = session.Query<HoldClose>().Single();
+
+			Assert.That(holdClose.Account.Name, Is.EqualTo("Account_1"));
 			transaction.Commit();
 		}
 	}

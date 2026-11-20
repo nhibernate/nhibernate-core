@@ -24,7 +24,7 @@ namespace NHibernate.Test.NHSpecificTest.GH1313
 			using var session = OpenSession();
 			using var transaction = session.BeginTransaction();
 
-			var account = new Account { Id = 1, Name = "Account_1", OldAccountNumber = 1 };
+			var account = new Account { Id = 1, Name = "Account_1", RawNumber = 1, OldAccountNumber = 1001 };
 			var order = new HoldClose
 			{
 				Account = account,
@@ -46,7 +46,6 @@ namespace NHibernate.Test.NHSpecificTest.GH1313
 		}
 
 		[Test]
-		[Explicit("Not fixed yet")]
 		public async Task ManyToOneTargettingAFormulaAsync()
 		{
 			using var session = OpenSession();
@@ -55,6 +54,18 @@ namespace NHibernate.Test.NHSpecificTest.GH1313
 			var result = session.Query<HoldClose>();
 
 			Assert.That(await (result.ToListAsync()), Has.Count.EqualTo(1));
+			await (transaction.CommitAsync());
+		}
+
+		[Test]
+		public async Task ManyToOneTargettingAFormulaIsLoadedLazilyAsync()
+		{
+			using var session = OpenSession();
+			using var transaction = session.BeginTransaction();
+
+			var holdClose = await (session.Query<HoldClose>().SingleAsync());
+
+			Assert.That(holdClose.Account.Name, Is.EqualTo("Account_1"));
 			await (transaction.CommitAsync());
 		}
 	}

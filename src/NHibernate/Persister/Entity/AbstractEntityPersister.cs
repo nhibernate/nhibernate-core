@@ -2201,6 +2201,10 @@ namespace NHibernate.Persister.Entity
 			if (SubclassTableSpan == 1)
 				return 0;
 
+			var formulaIndex = Array.IndexOf(SubclassFormulaTemplateClosure, column);
+			if (formulaIndex >= 0)
+				return SubclassFormulaTableNumberClosure[formulaIndex];
+
 			int i = Array.IndexOf(SubclassColumnClosure, column);
 
 			// The check for KeyColumnNames was added to fix NH-2491
@@ -2481,10 +2485,27 @@ namespace NHibernate.Persister.Entity
 				{
 					//don't need filters for the static loaders
 					uniqueKeyLoaders[propertyNames[i]] =
-						CreateUniqueKeyLoader(propertyTypes[i], GetPropertyColumnNames(i),
+						CreateUniqueKeyLoader(propertyTypes[i], GetPropertyColumnNamesOrFormulas(i),
 																	CollectionHelper.EmptyDictionary<string, IFilter>());
 				}
 			}
+		}
+
+		/// <summary>
+		/// Get the columns of the numbered property of <em>this</em> class, using the formula template
+		/// (see <see cref="Template.Placeholder"/>) for each formula.
+		/// </summary>
+		private string[] GetPropertyColumnNamesOrFormulas(int i)
+		{
+			var columnNames = propertyColumnNames[i];
+			var formulaTemplates = propertyColumnFormulaTemplates[i];
+			var result = new string[columnNames.Length];
+			for (var k = 0; k < result.Length; k++)
+			{
+				result[k] = columnNames[k] ?? formulaTemplates[k];
+			}
+
+			return result;
 		}
 
 		private EntityLoader CreateUniqueKeyLoader(IType uniqueKeyType, string[] columns, IDictionary<string, IFilter> enabledFilters)

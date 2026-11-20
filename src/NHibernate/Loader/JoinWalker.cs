@@ -1046,10 +1046,12 @@ namespace NHibernate.Loader
 				var columnName = columnNames[0];
 
 				var tableAlias = GenerateAliasForColumn(alias, columnName);
-				var qualifiedName = !string.IsNullOrEmpty(tableAlias)
-					? tableAlias + StringHelper.Dot + columnName
-					: columnName;
-				
+				var qualifiedName = IsFormulaTemplate(columnName)
+					? Template.ReplacePlaceholder(columnName, tableAlias)
+					: !string.IsNullOrEmpty(tableAlias)
+						? tableAlias + StringHelper.Dot + columnName
+						: columnName;
+
 				var whereString = new SqlStringBuilder(batchSize * 5);
 				whereString.Add(qualifiedName);
 				if (batchSize == 1)
@@ -1114,6 +1116,15 @@ namespace NHibernate.Loader
 			}
 		}
 
+		/// <summary>
+		/// Tells if a column name is actually a formula template, which has to be rendered with the
+		/// table alias in place of its <see cref="Template.Placeholder"/>.
+		/// </summary>
+		private static bool IsFormulaTemplate(string columnName)
+		{
+			return columnName.Contains(Template.Placeholder);
+		}
+
 		private void ColumnFragment(SqlStringBuilder builder, string alias, string[] columnNames)
 		{
 			//foo = ? and bar = ?
@@ -1125,8 +1136,11 @@ namespace NHibernate.Loader
 					builder.Add(" and ");
 				}
 
+				var tableAlias = GenerateAliasForColumn(alias, columnName);
 				builder
-					.Add(StringHelper.Qualify(GenerateAliasForColumn(alias, columnName), columnName))
+					.Add(IsFormulaTemplate(columnName)
+						? Template.ReplacePlaceholder(columnName, tableAlias)
+						: StringHelper.Qualify(tableAlias, columnName))
 					.Add("=")
 					.Add(Parameter.Placeholder);
 
