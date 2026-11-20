@@ -4,14 +4,15 @@
 
   <class name="HoldClose" >
     <id name="Id" generator="native"/>
-    <many-to-one name="Account" class="Account" column="accountnumber" property-ref="OldAccountNumber"/>
+    <many-to-one name="Account" class="Account" column="accountnumber" property-ref="OldAccountNumber" foreign-key="none"/>
     <property name="CloseDate"  />
   </class>
   <class name="Account" >
     <id name="Id" generator="assigned"/>
     <property name="Name"/>
-    <property name="OldAccountNumber"  insert="false" update="false" generated="never" >
-      <formula>convert(int,substring([Oldaccountnumber],3,8))</formula>
+    <property name="RawNumber"/>
+    <property name="OldAccountNumber" insert="false" update="false" generated="never" >
+      <formula>(RawNumber + 1000)</formula>
     </property>
   </class>
 
